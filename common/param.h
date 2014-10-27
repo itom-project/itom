@@ -34,6 +34,7 @@
 #include "typeDefs.h"
 #include "byteArray.h"
 #include "retVal.h"
+#include "paramMeta.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -101,17 +102,14 @@ namespace ito
         //--------------------------------------------------------------------------------------------
         //! default constructor, creates "empty" tParam
         ParamBase() : m_type(0), m_name(NULL), m_dVal(0.0), m_iVal(0), m_cVal(NULL) {}
-        ParamBase(const char *name);                                                               // type-less ParamBase with name only
-        ParamBase(const char *name, const uint32 type);                                               // constructor with type and name
-        ParamBase(const char *name, const uint32 type, const char *val);                              // constructor with name and type, char val
-        ParamBase(const char *name, const uint32 type, const double val);                             // constructor with name and type, double val and optional info
-        ParamBase(const char *name, const uint32 type, const int val);                                // constructor with name and type, int val and optional info
+        ParamBase(const ByteArray &name);                                                                  // type-less ParamBase with name only
+        ParamBase(const ByteArray &name, const uint32 type);                                               // constructor with type and name
         ParamBase(const ByteArray &name, const uint32 type, const char *val);                              // constructor with name and type, char val
         ParamBase(const ByteArray &name, const uint32 type, const double val);                             // constructor with name and type, double val and optional info
         ParamBase(const ByteArray &name, const uint32 type, const int val);                                // constructor with name and type, int val and optional info
-        ParamBase(const char *name, const uint32 type, const unsigned int size, const char *values);  // array constructor with name and type, size and array
-        ParamBase(const char *name, const uint32 type, const unsigned int size, const int *values);   // array constructor with name and type, size and array
-        ParamBase(const char *name, const uint32 type, const unsigned int size, const double *values);// array constructor with name and type, size and array
+        ParamBase(const ByteArray &name, const uint32 type, const unsigned int size, const char *values);  // array constructor with name and type, size and array
+        ParamBase(const ByteArray &name, const uint32 type, const unsigned int size, const int *values);   // array constructor with name and type, size and array
+        ParamBase(const ByteArray &name, const uint32 type, const unsigned int size, const double *values);// array constructor with name and type, size and array
         virtual ~ParamBase(); //Destructor
         ParamBase(const ParamBase &copyConstr); //Copy-Constructor
 
@@ -220,294 +218,8 @@ namespace ito
 
     };
 
-    /*!
-    \class ParamMeta
-    \brief Base class for all meta-information classes
-    \sa IntMeta, DoubleMeta, CharMeta, StringMeta, HWMeta, DObjMeta
-    */
-    class ITOMCOMMON_EXPORT ParamMeta
-    {
-    public:
-        ParamMeta() : m_type(0) {}
-        ParamMeta(uint32 type) : m_type(type) {}
-        virtual ~ParamMeta() {}
-        inline uint32 getType() const { return m_type; }
-    protected:
-        uint32 m_type;
-    };
-
-    /*!
-    \class CharMeta
-    \brief Meta-information for Param of type Char or CharArray.
-    \sa ito::Param
-    */
-    class ITOMCOMMON_EXPORT CharMeta : public ParamMeta
-    {
-    public:
-        //! constructor with minimum and maximum value
-        explicit CharMeta(char minVal, char maxVal, char stepSize=1) : ParamMeta(ParamBase::Char), m_minVal(minVal), m_maxVal(maxVal), m_stepSize(stepSize) { if(m_maxVal < m_minVal) std::swap(m_minVal,m_maxVal); }
-        static CharMeta* all() { return new CharMeta(std::numeric_limits<char>::min(), std::numeric_limits<char>::max() ); } //!< returns a new instance of CharMeta, where the min and max are set to the full range available for char.
-        inline char getMin() const { return m_minVal; } //!< returns minimum value
-        inline char getMax() const { return m_maxVal; } //!< returns maximum value
-        inline char getStepSize() const { return m_stepSize; } //!< returns step size
-
-        //! sets the minimum value
-        /*!
-            \param val is the new minimum value, if this is bigger than the current maximum value, the maximum value is changed to val, too
-        */
-        inline void setMin(char val) { m_minVal = val; m_maxVal = std::max(m_maxVal,m_minVal); }
-        
-        //! sets the maximum value
-        /*!
-            \param val is the new maximum value, if this is smaller than the current minimum value, the minimum value is changed to val, too
-        */
-        inline void setMax(char val) { m_maxVal = val; m_minVal = std::min(m_maxVal,m_minVal); }
-
-        //! sets the step size
-        /*!
-            \param val is the new step size, hence only discrete values [minVal, minVal+stepSize, minVal+2*stepSize...,maxVal] are allowed
-        */
-        inline void setStepSize(char val) { m_stepSize = val; }
-    private:
-        char m_minVal;
-        char m_maxVal;
-        char m_stepSize; // >= 1
-    };
-
-    /*!
-    \class IntMeta
-    \brief Meta-information for Param of type Int or IntArray.
-    \sa ito::Param
-    */
-    class ITOMCOMMON_EXPORT IntMeta : public ParamMeta
-    {
-    public:
-        //! constructor with minimum and maximum value
-        explicit IntMeta(int minVal, int maxVal, int stepSize=1) : ParamMeta(ParamBase::Int), m_minVal(minVal), m_maxVal(maxVal), m_stepSize(stepSize) { if(m_maxVal < m_minVal) std::swap(m_minVal,m_maxVal); }
-        static IntMeta* all() { return new IntMeta(std::numeric_limits<int>::min(), std::numeric_limits<int>::max() ); } //!< returns a new instance of IntMeta, where the min and max are set to the full range available for integers.
-        inline int getMin() const { return m_minVal; } //!< returns minimum value
-        inline int getMax() const { return m_maxVal; } //!< returns maximum value
-        inline int getStepSize() const { return m_stepSize; } //!< returns step size
-        
-        //! sets the minimum value
-        /*!
-            \param val is the new minimum value, if this is bigger than the current maximum value, the maximum value is changed to val, too
-        */
-        inline void setMin(int val) { m_minVal = val; m_maxVal = std::max(m_maxVal,m_minVal); }
-        
-        //! sets the maximum value
-        /*!
-            \param val is the new maximum value, if this is smaller than the current minimum value, the minimum value is changed to val, too
-        */
-        inline void setMax(int val) { m_maxVal = val; m_minVal = std::min(m_maxVal,m_minVal); }
-
-        //! sets the step size
-        /*!
-            \param val is the new step size, hence only discrete values [minVal, minVal+stepSize, minVal+2*stepSize...,maxVal] are allowed
-        */
-        inline void setStepSize(int val) { m_stepSize = val; }
-    private:
-        int m_minVal;
-        int m_maxVal;
-        int m_stepSize; // >= 1
-    };
-
-    /*!
-    \class DoubleMeta
-    \brief Meta-information for Param of type Double or DoubleArray.
-    \sa ito::Param
-    */
-    class ITOMCOMMON_EXPORT DoubleMeta : public ParamMeta
-    {
-    public:
-        //! constructor with minimum and maximum value
-        explicit DoubleMeta(double minVal, double maxVal, double stepSize=0.0 /*0.0 means no specific step size*/) : ParamMeta(ParamBase::Double), m_minVal(minVal), m_maxVal(maxVal), m_stepSize(stepSize) { if(m_maxVal < m_minVal) std::swap(m_minVal,m_maxVal); }
-        static DoubleMeta* all() { return new DoubleMeta(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max() ); } //!< returns a new instance of DoubleMeta, where the min and max are set to the full range available for double.
-        inline double getMin() const { return m_minVal; } //!< returns minimum value
-        inline double getMax() const { return m_maxVal; } //!< returns maximum value
-        inline double getStepSize() const { return m_stepSize; } //!< returns step size
-        
-        //! sets the minimum value
-        /*!
-            \param val is the new minimum value, if this is bigger than the current maximum value, the maximum value is changed to val, too
-        */
-        inline void setMin(double val) { m_minVal = val; m_maxVal = std::max(m_maxVal,m_minVal); }
-        
-        //! sets the maximum value
-        /*!
-            \param val is the new maximum value, if this is smaller than the current minimum value, the minimum value is changed to val, too
-        */
-        inline void setMax(double val) { m_maxVal = val; m_minVal = std::min(m_maxVal,m_minVal); }
-
-        //! sets the step size
-        /*!
-            \param val is the new step size, hence only discrete values [minVal, minVal+stepSize, minVal+2*stepSize...,maxVal] are allowed
-        */
-        inline void setStepSize(double val) { m_stepSize = val; }
-    private:
-        double m_minVal;
-        double m_maxVal;
-        double m_stepSize; // >= 0, 0.0 means no specific step size
-    };
-
-    /*!
-    \class HWMeta
-    \brief Meta-information for Param of type HWPtr.
-    \sa ito::Param
-    */
-    class ITOMCOMMON_EXPORT HWMeta : public ParamMeta
-    {
-        public:
-            //! constructor
-            /*!
-                creates HWMeta-information struct where you can pass a bitmask which consists of values of the enumeration
-                ito::tPluginType. The plugin reference of the corresponding Param should then only accept plugins, where
-                all bits are set, too.
-                \sa ito::Plugin, ito::tPluginType
-            */
-            explicit HWMeta(uint32 minType) : ParamMeta(ParamBase::HWRef), m_minType(minType), m_pHWAddInName(NULL) {}
-
-            //! constructor
-            /*!
-                creates HWMeta-information struct where you can pass a specific name of a plugin, which only is
-                allowed by the corresponding plugin-instance.
-                \sa ito::Plugin
-            */
-            explicit HWMeta(const char *HWAddInName) : ParamMeta(ParamBase::HWRef), m_minType(0), m_pHWAddInName(NULL)
-            {
-                if(HWAddInName) m_pHWAddInName = _strdup(HWAddInName);
-            }
-            HWMeta(const HWMeta& cpy) : ParamMeta(ParamBase::HWRef), m_minType(cpy.m_minType), m_pHWAddInName(NULL)
-            {
-                if(cpy.m_pHWAddInName) m_pHWAddInName = _strdup(cpy.m_pHWAddInName);
-            }
-            ~HWMeta() { if(m_pHWAddInName) free(m_pHWAddInName); }            //!< destructor
-            inline uint32 getMinType() const { return m_minType; }                //!< returns type-bitmask which is minimally required by plugin-reference. Default 0. \sa ito::tPluginType
-            inline char * getHWAddInName() const { return m_pHWAddInName; } //!< returns zero-terminated name of specific plugin-name or NULL if not specified.
-        private:
-            uint32 m_minType;            //!< type-bitmask which is minimally required. default: 0
-            char *m_pHWAddInName;    //!< zero-terminated name of specific plugin-name of NULL if not specified.
-    };
-
-    /*!
-    \class StringMeta
-    \brief Meta-information for Param of type String.
-    \sa ito::Param
-    */
-    class ITOMCOMMON_EXPORT StringMeta : public ParamMeta
-    {
-        public:
-            enum tType {
-                String, //!< string elements should be considered as strings (exact match)
-                Wildcard, //!< string elements should be considered as wildcard-expressions (e.g. *.doc)
-                RegExp    //!< string elements should be considered as regular expressions (e.g. ^(.*)[abc]{1,5}$)
-            };
-
-            //! constructor
-            /*!
-                Returns a meta information class for string-types.
-                \param type indicates how the string elements should be considered
-                \sa tType
-            */
-            StringMeta(tType type) : ParamMeta(ParamBase::String), m_stringType(type), m_len(0), m_val(NULL) {}
-
-            //! constructor
-            /*!
-                Returns a meta information class for string-types.
-                \param type indicates how the string elements should be considered
-                \param val adds a first string to the element list
-                \sa tType
-            */
-            StringMeta(tType type, const char* val) : ParamMeta(ParamBase::String), m_stringType(type), m_len(1)
-            {
-                if(val)
-                {
-                    m_val = (char**) calloc(1, sizeof(char*));
-                    m_val[0] = _strdup(val);
-                }
-                else
-                {
-                    m_len = 0;
-                    m_val = NULL;
-                }
-            }
-
-            //! copy constructor
-            StringMeta(const StringMeta& cpy) : ParamMeta(ParamBase::String), m_stringType(cpy.m_stringType), m_len(cpy.m_len), m_val(NULL)
-            {
-                if(m_len > 0)
-                {
-                    m_val = (char**) calloc(m_len, sizeof(char*));
-                    for(int i=0;i<m_len;++i) m_val[i] = _strdup(cpy.m_val[i]);
-                }
-            }
-
-            //! destructor
-            ~StringMeta()
-            {
-                for(int i=0;i<m_len;++i) free(m_val[i]);
-                free(m_val);
-            }
-
-            inline tType getStringType() const { return m_stringType; } //!< returns the type how strings in list should be considered. \sa tType
-            inline int getLen() const { return m_len; } //!< returns the number of string elements in meta information class.
-            inline const char* getString(int idx = 0) const { return (idx >= m_len) ? NULL : m_val[idx]; } //!< returns string from list at index position or NULL, if index is out of range.
-            bool addItem(const char *val) //!< adds another element to the string list.
-            {
-                if(m_val)
-                {
-                    char **m_val_old = m_val;
-					m_val = (char**)realloc(m_val, sizeof(char*) * (++m_len) ); //m_val can change its address. if NULL, reallocation failed and m_val_old still contains old values
-					if (!m_val)
-					{
-                        m_val = m_val_old;
-						m_len--; //failed to add new value
-                        return false;
-					}
-                }
-                else
-                {
-                    m_val = (char**) calloc(++m_len, sizeof(char*));
-                }
-                m_val[m_len-1] = _strdup(val);
-                return true;
-            }
-
-            StringMeta & operator += (const char *val)
-            {
-                addItem(val);
-                return *this;
-            }
-
-        private:
-            tType m_stringType;
-            int m_len;
-            char **m_val;
-    };
-
-    /*!
-    \class DObjMeta
-    \brief Meta-information for Param of type DObjPtr.
-    \sa ito::Param
-    */
-    class ITOMCOMMON_EXPORT DObjMeta : public ParamMeta
-    {
-        public:
-            explicit DObjMeta(uint32 allowedTypes = 0xFFFF, int minDim = 0, int maxDim = std::numeric_limits<int>::max()) : ParamMeta(ParamBase::DObjPtr), m_allowedTypes(allowedTypes), m_minDim(minDim), m_maxDim(maxDim) {}
-            inline int getAllowedTypes() const { return m_allowedTypes; }
-            inline int getMinDim() const { return m_minDim; } //!< returns maximum allowed dimensions of data object
-            inline int getMaxDim() const { return m_maxDim; } //!< returns minimum number of dimensions of data object
-
-        private:
-            uint32 m_allowedTypes;
-            int m_minDim;
-            int m_maxDim;
-    };
-
-
-
     //----------------------------------------------------------------------------------------------------------------------------------
-    /** @class ExtParam
+    /** @class Param
     *   @brief  class for parameter handling e.g. to pass paramters to plugins
     *
     *   The plugins use this class to organize their parameters (internally) and for the paramList which is used
@@ -526,21 +238,21 @@ namespace ito
             //--------------------------------------------------------------------------------------------
             //! default constructor, creates "empty" tParam
             Param() : ParamBase(), m_pMeta(NULL), m_info(NULL) {}
-            Param(const char *name) : ParamBase(name), m_pMeta(NULL), m_info(NULL) {}                         // type-less Param with name only
-            Param(const char *name, const uint32 type) : ParamBase(name, type), m_pMeta(NULL), m_info(NULL) {}   // constructor with type and name
-            Param(const char *name, const uint32 type, const char *val, const char *info);                        // constructor with name and type, char val and optional info
-            Param(const char *name, const uint32 type, const double minVal, const double maxVal, const double val, const char *info); // constructor with name and type, double val, double minVal, double maxVal and optional info
-            Param(const char *name, const uint32 type, const int minVal, const int maxVal, const int val, const char *info); // constructor with name and type, int val, int minVal, int maxVal and optional info
-            Param(const char *name, const uint32 type, const char minVal, const char maxVal, const char val, const char *info); // constructor with name and type, int val, int minVal, int maxVal and optional info
-            Param(const char *name, const uint32 type, const unsigned int size, const char *values, const char *info);  // array constructor with name and type, size and array
-            Param(const char *name, const uint32 type, const unsigned int size, const int *values, const char *info);   // array constructor with name and type, size and array
-            Param(const char *name, const uint32 type, const unsigned int size, const double *values, const char *info);// array constructor with name and type, size and array
-            Param(const char *name, const uint32 type, const int val, ParamMeta *meta, const char *info);
-            Param(const char *name, const uint32 type, const double val, ParamMeta *meta, const char *info);
-            Param(const char *name, const uint32 type, const char val, ParamMeta *meta, const char *info);
-            Param(const char *name, const uint32 type, const unsigned int size, const double *values, ParamMeta *meta, const char *info);
-            Param(const char *name, const uint32 type, const unsigned int size, const int *values, ParamMeta *meta, const char *info);
-            Param(const char *name, const uint32 type, const unsigned int size, const char *values, ParamMeta *meta, const char *info);
+            Param(const ByteArray &name) : ParamBase(name), m_pMeta(NULL), m_info(NULL) {}                         // type-less Param with name only
+            Param(const ByteArray &name, const uint32 type) : ParamBase(name, type), m_pMeta(NULL), m_info(NULL) {}   // constructor with type and name
+            Param(const ByteArray &name, const uint32 type, const char *val, const char *info);                        // constructor with name and type, char val and optional info
+            Param(const ByteArray &name, const uint32 type, const double minVal, const double maxVal, const double val, const char *info); // constructor with name and type, double val, double minVal, double maxVal and optional info
+            Param(const ByteArray &name, const uint32 type, const int minVal, const int maxVal, const int val, const char *info); // constructor with name and type, int val, int minVal, int maxVal and optional info
+            Param(const ByteArray &name, const uint32 type, const char minVal, const char maxVal, const char val, const char *info); // constructor with name and type, int val, int minVal, int maxVal and optional info
+            Param(const ByteArray &name, const uint32 type, const unsigned int size, const char *values, const char *info);  // array constructor with name and type, size and array
+            Param(const ByteArray &name, const uint32 type, const unsigned int size, const int *values, const char *info);   // array constructor with name and type, size and array
+            Param(const ByteArray &name, const uint32 type, const unsigned int size, const double *values, const char *info);// array constructor with name and type, size and array
+            Param(const ByteArray &name, const uint32 type, const int val, ParamMeta *meta, const char *info);
+            Param(const ByteArray &name, const uint32 type, const double val, ParamMeta *meta, const char *info);
+            Param(const ByteArray &name, const uint32 type, const char val, ParamMeta *meta, const char *info);
+            Param(const ByteArray &name, const uint32 type, const unsigned int size, const double *values, ParamMeta *meta, const char *info);
+            Param(const ByteArray &name, const uint32 type, const unsigned int size, const int *values, ParamMeta *meta, const char *info);
+            Param(const ByteArray &name, const uint32 type, const unsigned int size, const char *values, ParamMeta *meta, const char *info);
             ~Param();                        //!< Destructor
             Param(const Param &copyConstr); //!< Copy-Constructor
 
@@ -563,6 +275,11 @@ namespace ito
                 m_info = info;
             }
 
+            inline void setInfo(const ByteArray &info)
+            {
+                m_info = info;
+            }
+
             inline const ParamMeta* getMeta(void) const { return m_pMeta; } //!< returns const-pointer to meta-information instance or NULL if not available
             inline ParamMeta* getMeta(void) { return m_pMeta; }                //!< returns pointer to meta-information instance or NULL if not available
 
@@ -572,9 +289,7 @@ namespace ito
                 \param takeOwnership (default: false) defines, whether this Param should take the ownership of the ParamMeta-instance
                 \sa ito::ParamMeta
             */
-            bool setMeta(ParamMeta* meta, bool takeOwnership = false);
-
-            bool copyMetaFrom(const ParamMeta *meta);
+            void setMeta(ParamMeta* meta, bool takeOwnership = false);
 
             double getMin() const;
             double getMax() const;

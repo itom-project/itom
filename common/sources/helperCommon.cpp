@@ -156,21 +156,26 @@ namespace ito
             if (meta)
             {
                 done = true;
-                switch(meta->getType())
+                switch(meta->getType_())
                 {
-                case ito::Param::Char:
+                case ito::ParamMeta::rttiCharMeta:
+                case ito::ParamMeta::rttiCharArrayMeta:
                     {
                         const ito::CharMeta *cMeta = (const ito::CharMeta*)meta;
                         if (value >= cMeta->getMin() && value <= cMeta->getMax()) result = true;
                     }
                     break;
-                case ito::Param::Int:
+                case ito::ParamMeta::rttiIntMeta:
+                case ito::ParamMeta::rttiIntArrayMeta:
+                case ito::ParamMeta::rttiRangeMeta:
                     {
                         const ito::IntMeta *iMeta = (const ito::IntMeta*)meta;
                         if (value >= iMeta->getMin() && value <= iMeta->getMax()) result = true;
                     }
                     break;
-                case ito::Param::Double:
+                case ito::ParamMeta::rttiDoubleMeta:
+                case ito::ParamMeta::rttiDoubleArrayMeta:
+                case ito::ParamMeta::rttiDoubleRangeMeta:
                     {
                         const ito::DoubleMeta *dMeta = (const ito::DoubleMeta*)meta;
                         if (value >= dMeta->getMin() && value <= dMeta->getMax()) result = true;

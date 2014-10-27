@@ -1024,27 +1024,40 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             if (param.getMeta() != NULL)
             {
                 const ito::HWMeta *pMeta = dynamic_cast<const ito::HWMeta*>(param.getMeta());
-                QString name;
-                if (name != "")
+                ito::ByteArray name = pMeta->getHWAddInName();
+                if (name.length() > 0)
                 {
-                    name = "Only "+QString(pMeta->getHWAddInName())+" is allowed.";
+                    meta = "Only plugin '"+QString(name.data())+"' is allowed.";
                 }
                 else
                 {
-                    if (pMeta->getMinType() & ito::typeDataIO)
-                        meta.append("DataIO, ");
+                    meta = "Plugin of type: ";
+                    
                     if (pMeta->getMinType() & ito::typeActuator)
+                    {
                         meta.append("Actuator, ");
+                    }
                     if (pMeta->getMinType() & ito::typeAlgo)
+                    {
                         meta.append("Algo, ");
+                    }
                     if (pMeta->getMinType() & ito::typeGrabber)
-                        meta.append("Grabber, ");
-                    if (pMeta->getMinType() & ito::typeADDA)
-                        meta.append("ADDA, ");
-                    if (pMeta->getMinType() & ito::typeRawIO)
-                        meta.append("RawIO, ");
+                    {
+                        meta.append("DataIO (Grabber), ");
+                    }
+                    else if (pMeta->getMinType() & ito::typeADDA)
+                    {
+                        meta.append("DataIO (ADDA), ");
+                    }
+                    else if (pMeta->getMinType() & ito::typeRawIO)
+                    {
+                        meta.append("DataIO (RawIO), ");
+                    }
+                    else if (pMeta->getMinType() & ito::typeDataIO)
+                    {
+                        meta.append("DataIO, ");
+                    }
 
-                    meta.insert(0,"Plugin of type: ");
                     meta.append(" are allowed.");
                 }
             }

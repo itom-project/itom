@@ -46,6 +46,9 @@ namespace ito
         static ito::RetVal validateDoubleMetaAndRoundToStepSize(const ito::DoubleMeta *meta, double &value, bool allowRounding = true);
         static ito::RetVal validateIntMeta(const ito::IntMeta *meta, int value);
         static ito::RetVal validateCharMeta(const ito::CharMeta *meta, char value);
+        static ito::RetVal validateCharArrayMeta(const ito::ParamMeta *meta, const char* values, size_t len);
+        static ito::RetVal validateIntArrayMeta(const ito::ParamMeta *meta, const int* values, size_t len);
+        static ito::RetVal validateDoubleArrayMeta(const ito::ParamMeta *meta, const double* values, size_t len);
         static ito::RetVal validateHWMeta(const ito::HWMeta *meta, ito::AddInBase *value, bool mandatory = false);
         static ito::RetVal validateParam(const ito::Param &templateParam, const ito::ParamBase &param, bool strict = true, bool mandatory = false);
         static ito::RetVal validateAndCastParam(const ito::Param &templateParam, ito::ParamBase &param, bool strict = true, bool mandatory = false, bool roundToSteps = false);

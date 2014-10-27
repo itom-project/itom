@@ -10,7 +10,7 @@ OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte ch
 OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
-   
+     
 include("../ItomBuildMacros.cmake")
   
 IF(BUILD_ITOMLIBS_SHARED)
@@ -46,6 +46,7 @@ set(itomCommon_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/typeDefs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/byteArray.h
     ${CMAKE_CURRENT_SOURCE_DIR}/param.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramMeta.h
     ${CMAKE_CURRENT_SOURCE_DIR}/color.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helperColor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interval.h
@@ -55,6 +56,7 @@ set(itomCommon_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/retVal.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/byteArray.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/param.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/paramMeta.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sources/interval.cpp
 )
 

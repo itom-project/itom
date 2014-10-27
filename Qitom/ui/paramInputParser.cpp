@@ -579,9 +579,9 @@ void ParamInputParser::browsePluginPicker(int i)
     int minimumPluginType = 0x0;
     if (hwmeta)
     {
-        if (hwmeta->getHWAddInName())
+        if (!hwmeta->getHWAddInName().empty())
         {
-            pluginName = hwmeta->getHWAddInName();
+            pluginName = hwmeta->getHWAddInName().data();
         }
         minimumPluginType = hwmeta->getMinType();
     }

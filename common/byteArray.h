@@ -81,6 +81,8 @@ class ITOMCOMMON_EXPORT ByteArray
 
         ByteArray &operator=(const ByteArray &rhs);
 
+        ByteArray &operator=(const char *str);
+
         ByteArray &append(const char *str);
 
         ByteArray &append(const ByteArray &str);

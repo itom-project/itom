@@ -59,6 +59,27 @@ ByteArray &ByteArray::operator=(const ByteArray &rhs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ByteArray &ByteArray::operator=(const char *str)
+{
+    decAndFree(d);
+
+    if (str)
+    {
+        int len = strlen(str);
+        d = static_cast<Data*>(malloc(sizeof(Data)+len));
+        d->m_ref = 0;
+        d->m_pData = d->m_buffer;
+        memcpy(d->m_buffer, str, len+1);
+    }
+    else
+    {
+        d = NULL;
+    }
+
+    return *this;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ByteArray &ByteArray::append(const char *str)
 {
     if (str)

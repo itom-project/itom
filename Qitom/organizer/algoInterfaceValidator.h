@@ -26,6 +26,7 @@
 #include <qobject.h>
 #include "../../common/addInInterface.h"
 #include "../../common/sharedStructures.h"
+#include "../helper/paramHelper.h"
 
 #include <qvector.h>
 #include <qvariant.h>
@@ -54,15 +55,11 @@ protected:
         int maxNumOut;
     };
 
-    enum tCompareResult { tCmpEqual, tCmpCompatible, tCmpFailed };
-
     QMap<int,AlgoInterface> m_interfaces;
 
     ito::RetVal init(void);
     bool isValid(const ito::AddInAlgo::tAlgoInterface iface, const ito::AddInAlgo::t_filterParam filterParamFunc, ito::RetVal &ret) const;
     bool getTags(const ito::AddInAlgo::tAlgoInterface iface, const QString &metaInformation, QStringList &tags) const;
-    tCompareResult compareParam(const ito::Param &paramTemplate, const ito::Param &param, ito::RetVal &ret) const;
-    tCompareResult compareMetaParam(const ito::ParamMeta *metaTemplate, const ito::ParamMeta *meta, const char* nameTemplate, const char *name, ito::RetVal &ret) const;
 
 private:
 };
