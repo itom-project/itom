@@ -12,7 +12,7 @@ OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and it
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
      
 include("../ItomBuildMacros.cmake")
-   
+    
 IF(BUILD_ITOMLIBS_SHARED)
     SET(LIBRARY_TYPE SHARED)
     

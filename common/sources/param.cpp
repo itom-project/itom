@@ -957,9 +957,6 @@ const Param Param::operator [] (const int num) const
             ByteArray newName = m_name;
             newName.append(suffix);
 
-            ParamBase("test");
-            //char 
-
             switch (m_type & ~Pointer & paramTypeMask)
             {
                 case Char:
@@ -978,7 +975,7 @@ const Param Param::operator [] (const int num) const
                 case Int:
                     {
                     IntMeta *iMeta = NULL;
-                    if (m_pMeta->getType_() == ParamMeta::rttiIntArrayMeta || m_pMeta->getType_() == ParamMeta::rttiRangeMeta)
+                    if (m_pMeta->getType_() == ParamMeta::rttiIntArrayMeta || m_pMeta->getType_() == ParamMeta::rttiIntervalMeta || m_pMeta->getType_() == ParamMeta::rttiRangeMeta)
                     {
                         const IntMeta *iaMeta = static_cast<const IntMeta*>(m_pMeta);
                         iMeta = new IntMeta(*iaMeta);
@@ -991,7 +988,7 @@ const Param Param::operator [] (const int num) const
                 case Double:
                     {
                     DoubleMeta *dMeta = NULL;
-                    if (m_pMeta->getType_() == ParamMeta::rttiDoubleArrayMeta || m_pMeta->getType_() == ParamMeta::rttiDoubleRangeMeta)
+                    if (m_pMeta->getType_() == ParamMeta::rttiDoubleIntervalMeta || m_pMeta->getType_() == ParamMeta::rttiDoubleIntervalMeta)
                     {
                         const DoubleMeta *daMeta = static_cast<const DoubleMeta*>(m_pMeta);
                         dMeta = new DoubleMeta(*daMeta);
@@ -1068,12 +1065,13 @@ void Param::setMeta(ParamMeta* meta, bool takeOwnership)
             if (ptype == (ito::ParamBase::CharArray & paramTypeMask)) valid = true;
             break;
         case ParamMeta::rttiIntArrayMeta:
+        case ParamMeta::rttiIntervalMeta:
         case ParamMeta::rttiRangeMeta:
         case ParamMeta::rttiRectMeta:
             if (ptype == (ito::ParamBase::IntArray & paramTypeMask)) valid = true;
             break;
         case ParamMeta::rttiDoubleArrayMeta:
-        case ParamMeta::rttiDoubleRangeMeta:
+        case ParamMeta::rttiDoubleIntervalMeta:
             if (ptype == (ito::ParamBase::DoubleArray & paramTypeMask)) valid = true;
             break;
         default:
@@ -1121,11 +1119,14 @@ void Param::setMeta(ParamMeta* meta, bool takeOwnership)
             case ParamMeta::rttiDoubleArrayMeta:
                 m_pMeta = new DoubleArrayMeta(*(DoubleArrayMeta*)(meta));
                 break;
+            case ParamMeta::rttiIntervalMeta:
+                m_pMeta = new IntervalMeta(*(IntervalMeta*)(meta));
+                break;
             case ParamMeta::rttiRangeMeta:
                 m_pMeta = new RangeMeta(*(RangeMeta*)(meta));
                 break;
-            case ParamMeta::rttiDoubleRangeMeta:
-                m_pMeta = new DoubleRangeMeta(*(DoubleRangeMeta*)(meta));
+            case ParamMeta::rttiDoubleIntervalMeta:
+                m_pMeta = new DoubleIntervalMeta(*(DoubleIntervalMeta*)(meta));
                 break;
             case ParamMeta::rttiRectMeta:
                 m_pMeta = new RectMeta(*(RectMeta*)(meta));
@@ -1142,7 +1143,7 @@ void Param::setMeta(ParamMeta* meta, bool takeOwnership)
 *   
 *   This method is a wrapper method for ((ito::IntMeta*)getMeta())->getMax()...
 *   and returns the minimum value of the underlying meta information. It only
-*   returns a valid value for meta structures of type char, charArray, int, intArray, range,
+*   returns a valid value for meta structures of type char, charArray, int, intArray, interval, range,
 *   double, doubleMeta.
 *
 *   @return     minimum value of -Inf maximum does not exist
@@ -1158,6 +1159,7 @@ double Param::getMin() const
             return static_cast<const CharMeta*>(m_pMeta)->getMin();
         case ParamMeta::rttiIntMeta:
         case ParamMeta::rttiIntArrayMeta:
+        case ParamMeta::rttiIntervalMeta:
         case ParamMeta::rttiRangeMeta:
             return static_cast<const IntMeta*>(m_pMeta)->getMin();
         case ParamMeta::rttiDoubleMeta:
@@ -1189,6 +1191,7 @@ double Param::getMax() const
             return static_cast<const CharMeta*>(m_pMeta)->getMax();
         case ParamMeta::rttiIntMeta:
         case ParamMeta::rttiIntArrayMeta:
+        case ParamMeta::rttiIntervalMeta:
         case ParamMeta::rttiRangeMeta:
             return static_cast<const IntMeta*>(m_pMeta)->getMax();
         case ParamMeta::rttiDoubleMeta:

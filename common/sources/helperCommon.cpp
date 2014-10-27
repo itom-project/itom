@@ -167,6 +167,7 @@ namespace ito
                     break;
                 case ito::ParamMeta::rttiIntMeta:
                 case ito::ParamMeta::rttiIntArrayMeta:
+                case ito::ParamMeta::rttiIntervalMeta:
                 case ito::ParamMeta::rttiRangeMeta:
                     {
                         const ito::IntMeta *iMeta = (const ito::IntMeta*)meta;
@@ -175,7 +176,7 @@ namespace ito
                     break;
                 case ito::ParamMeta::rttiDoubleMeta:
                 case ito::ParamMeta::rttiDoubleArrayMeta:
-                case ito::ParamMeta::rttiDoubleRangeMeta:
+                case ito::ParamMeta::rttiDoubleIntervalMeta:
                     {
                         const ito::DoubleMeta *dMeta = (const ito::DoubleMeta*)meta;
                         if (value >= dMeta->getMin() && value <= dMeta->getMax()) result = true;
