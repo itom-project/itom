@@ -1056,25 +1056,25 @@ void Param::setMeta(ParamMeta* meta, bool takeOwnership)
             if (ptype == ito::ParamBase::Double) valid = true;
             break;
         case ParamMeta::rttiStringMeta:
-            if (ptype == ito::ParamBase::String) valid = true;
+            if (ptype == (ito::ParamBase::String & paramTypeMask)) valid = true;
             break;
         case ParamMeta::rttiDObjMeta:
-            if (ptype == ito::ParamBase::DObjPtr) valid = true;
+            if (ptype == (ito::ParamBase::DObjPtr & paramTypeMask)) valid = true;
             break;
         case ParamMeta::rttiHWMeta:
-            if (ptype == ito::ParamBase::HWRef) valid = true;
+            if (ptype == (ito::ParamBase::HWRef & paramTypeMask)) valid = true;
             break;
         case ParamMeta::rttiCharArrayMeta:
-            if (ptype == ito::ParamBase::CharArray) valid = true;
+            if (ptype == (ito::ParamBase::CharArray & paramTypeMask)) valid = true;
             break;
         case ParamMeta::rttiIntArrayMeta:
         case ParamMeta::rttiRangeMeta:
         case ParamMeta::rttiRectMeta:
-            if (ptype == ito::ParamBase::IntArray) valid = true;
+            if (ptype == (ito::ParamBase::IntArray & paramTypeMask)) valid = true;
             break;
         case ParamMeta::rttiDoubleArrayMeta:
         case ParamMeta::rttiDoubleRangeMeta:
-            if (ptype == ito::ParamBase::DoubleArray) valid = true;
+            if (ptype == (ito::ParamBase::DoubleArray & paramTypeMask)) valid = true;
             break;
         default:
             valid = false;
