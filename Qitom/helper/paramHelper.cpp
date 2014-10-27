@@ -180,6 +180,31 @@ namespace ito {
             }
             break;
 
+            case ito::ParamMeta::rttiIntervalMeta:
+            {
+                const ito::IntervalMeta *mT = static_cast<const ito::IntervalMeta*>(metaTemplate);
+                const ito::IntervalMeta *m = static_cast<const ito::IntervalMeta*>(meta);
+                if (!mT || !m)
+                {
+                    ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toLatin1().data(), name, nameTemplate);
+                    return tCmpFailed;
+                }
+                if (m->getMax() == mT->getMax() && m->getMin() == mT->getMin() && m->getIntervalMin() == mT->getIntervalMin() && m->getIntervalMax() == mT->getIntervalMax())
+                {
+                    return tCmpEqual;
+                }
+                else if (m->getMax() >= mT->getMax() && m->getMin() <= mT->getMin() && m->getIntervalMax() >= mT->getIntervalMax() && m->getIntervalMin() <= mT->getIntervalMin())
+                {
+                    return tCmpCompatible;
+                }
+                else
+                {
+                    ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The allowed value range or the allowed interval of parameter '%s' is smaller than the requested range from interface parameter '%s'.").toLatin1().data(), name, nameTemplate);
+                    return tCmpFailed;
+                }
+            }
+            break;
+
             case ito::ParamMeta::rttiRangeMeta:
             {
                 const ito::RangeMeta *mT = static_cast<const ito::RangeMeta*>(metaTemplate);
@@ -286,20 +311,20 @@ namespace ito {
             }
             break;
 
-            case ito::ParamMeta::rttiDoubleRangeMeta:
+            case ito::ParamMeta::rttiDoubleIntervalMeta:
             {
-                const ito::DoubleRangeMeta *mT = static_cast<const ito::DoubleRangeMeta*>(metaTemplate);
-                const ito::DoubleRangeMeta *m = static_cast<const ito::DoubleRangeMeta*>(meta);
+                const ito::DoubleIntervalMeta *mT = static_cast<const ito::DoubleIntervalMeta*>(metaTemplate);
+                const ito::DoubleIntervalMeta *m = static_cast<const ito::DoubleIntervalMeta*>(meta);
                 if (!mT || !m)
                 {
                     ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toLatin1().data(), name, nameTemplate);
                     return tCmpFailed;
                 }
-                if (m->getMax() == mT->getMax() && m->getMin() == mT->getMin() && m->getRangeMin() == mT->getRangeMin() && m->getRangeMax() == mT->getRangeMax())
+                if (m->getMax() == mT->getMax() && m->getMin() == mT->getMin() && m->getIntervalMin() == mT->getIntervalMin() && m->getIntervalMax() == mT->getIntervalMax())
                 {
                     return tCmpEqual;
                 }
-                else if (m->getMax() >= mT->getMax() && m->getMin() <= mT->getMin() && m->getRangeMax() >= mT->getRangeMax() && m->getRangeMin() <= mT->getRangeMin())
+                else if (m->getMax() >= mT->getMax() && m->getMin() <= mT->getMin() && m->getIntervalMax() >= mT->getIntervalMax() && m->getIntervalMin() <= mT->getIntervalMin())
                 {
                     return tCmpCompatible;
                 }
@@ -765,6 +790,40 @@ namespace ito {
                     }
                 }
                 break;
+            case ito::ParamMeta::rttiIntervalMeta:
+                {
+                    const ito::IntervalMeta *drm = (const ito::IntervalMeta*)meta;
+                    if (len != 2)
+                    {
+                        return ito::RetVal(ito::retError, 0, QObject::tr("length of integer array must be 2.").toLatin1().data());
+                    }
+                    int min = drm->getMin();
+                    int max = drm->getMax();
+                    int range = max - min;
+                    int ivalStep = drm->getIntervalStep();
+                    int step = drm->getStepSize();
+
+                    if (values[0] < min || values[0] > values[1] || values[1] > max)
+                    {
+                        return ito::RetVal(ito::retError, 0, QObject::tr("The given integer array [v1,v2] is considered to be a range but does not fit to v1=[%1,v2], v2=[v1,%2]").arg(min).arg(max).toLatin1().data());
+                    }
+
+                    if (step > 1 && (((values[0] - min) % step) != 0 || ((values[1] - min) % step) != 0))
+                    {
+                        return ito::RetVal(ito::retError, 0, QObject::tr("one of the values [v1,v2] do not fit to given step size [%1:%2:%3]").arg(min).arg(step).arg(max).toLatin1().data());
+                    }
+
+                    if (range < drm->getIntervalMin() || range > drm->getIntervalMax())
+                    {
+                        return ito::RetVal(ito::retError, 0, QObject::tr("The given integer array [v1,v2] is considered to be a range but the size of the range (1+v2-v1) is out of bounds [%1,%2]").arg(drm->getIntervalMin()).arg(drm->getIntervalMax()).toLatin1().data());
+                    }
+
+                    if (ivalStep > 1 && ((range - drm->getIntervalMin()) % ivalStep) != 0)
+                    {
+                        return ito::RetVal(ito::retError, 0, QObject::tr("The size of the range (1+bound2-bound1) does not fit to given step size [%1:%2:%3]").arg(drm->getIntervalMin()).arg(ivalStep).arg(drm->getIntervalMax()).toLatin1().data());
+                    }
+                }
+                break;
             case ito::ParamMeta::rttiRangeMeta:
                 {
                     const ito::RangeMeta *drm = (const ito::RangeMeta*)meta;
@@ -788,12 +847,12 @@ namespace ito {
                         return ito::RetVal(ito::retError, 0, QObject::tr("one of the values [v1,v2] do not fit to given step size [%1:%2:%3]").arg(min).arg(step).arg(max).toLatin1().data());
                     }
 
-                    if (range < drm->getRangeMin() || range > drm->getRangeMax())
+                    if (range < drm->getRangeMax() || range > drm->getRangeMax())
                     {
                         return ito::RetVal(ito::retError, 0, QObject::tr("The given integer array [v1,v2] is considered to be a range but the size of the range (1+v2-v1) is out of bounds [%1,%2]").arg(drm->getRangeMin()).arg(drm->getRangeMax()).toLatin1().data());
                     }
 
-                    if (rangeStep > 1 && ((range - drm->getRangeMin()) % rangeStep) != 0)
+                    if (rangeStep > 1 && ((range - drm->getRangeMax()) % rangeStep) != 0)
                     {
                         return ito::RetVal(ito::retError, 0, QObject::tr("The size of the range (1+bound2-bound1) does not fit to given step size [%1:%2:%3]").arg(drm->getRangeMin()).arg(rangeStep).arg(drm->getRangeMax()).toLatin1().data());
                     }
@@ -852,17 +911,17 @@ namespace ito {
                     }
                 }
                 break;
-            case ito::ParamMeta::rttiDoubleRangeMeta:
+            case ito::ParamMeta::rttiDoubleIntervalMeta:
                 {
-                    const ito::DoubleRangeMeta *drm = (const ito::DoubleRangeMeta*)meta;
+                    const ito::DoubleIntervalMeta *drm = (const ito::DoubleIntervalMeta*)meta;
                     if (len != 2)
                     {
                         return ito::RetVal(ito::retError, 0, QObject::tr("length of double array must be 2.").toLatin1().data());
                     }
                     double min = drm->getMin();
                     double max = drm->getMax();
-                    double range = 1.0 + max - min;
-                    double rangeStep = drm->getRangeStepSize();
+                    double range = max - min;
+                    double ivalStep = drm->getIntervalStep();
                     double step = drm->getStepSize();
 
                     if (values[0] < min || values[0] > values[1] || values[1] > max)
@@ -886,22 +945,22 @@ namespace ito {
                         }
                     }
 
-                    if (range < drm->getRangeMin() || range > drm->getRangeMax())
+                    if (range < drm->getIntervalMin() || range > drm->getIntervalMax())
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("The given double array [v1,v2] is considered to be a range but the size of the range (1+v2-v1) is out of bounds [%1,%2]").arg(drm->getRangeMin()).arg(drm->getRangeMax()).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, QObject::tr("The given double array [v1,v2] is considered to be a range but the size of the range (1+v2-v1) is out of bounds [%1,%2]").arg(drm->getIntervalMin()).arg(drm->getIntervalMax()).toLatin1().data());
                     }
 
-                    if (step > 0.0)
+                    if (ivalStep > 0.0)
                     {
                         //the following inequation must hold for an integer value R:
                         //minVal - eps + R(step - eps) < value < minVal + eps + R(step + eps)
                         //this leads to a comparison of R1 and R2 as follows:
                         double eps = std::numeric_limits<double>::epsilon();
-                        int R1 = std::floor( (range - drm->getRangeMin() + eps) / (rangeStep - eps)); //R for left inequation
-                        int R2 = std::ceil( (range - drm->getRangeMin() -eps) / (rangeStep + eps)); //R for right inequation
+                        int R1 = std::floor( (range - drm->getIntervalMin() + eps) / (ivalStep - eps)); //R for left inequation
+                        int R2 = std::ceil( (range - drm->getIntervalMax() -eps) / (ivalStep + eps)); //R for right inequation
                         if (R1 != R2)
                         {
-                            return ito::RetVal(ito::retError, 0, QObject::tr("The size of the range (1+bound2-bound1) does not fit to given step size [%1:%2:%3]").arg(drm->getRangeMin()).arg(rangeStep).arg(drm->getRangeMax()).toLatin1().data());
+                            return ito::RetVal(ito::retError, 0, QObject::tr("The size of the range (1+bound2-bound1) does not fit to given step size [%1:%2:%3]").arg(drm->getIntervalMin()).arg(ivalStep).arg(drm->getIntervalMax()).toLatin1().data());
                         }
                     }
                 }
