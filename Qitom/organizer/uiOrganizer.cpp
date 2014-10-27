@@ -2213,7 +2213,7 @@ RetVal UiOrganizer::getObjectInfo(const QString &classname, ito::UiOrganizer::tQ
 
         const QMetaObject *mo = newWidget->metaObject();
         QMetaProperty prop;
-        int flags;
+        //int flags;
         /*
         for (int i = 0 ; i < mo->propertyCount() ; i++)
         {
