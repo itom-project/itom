@@ -36,32 +36,35 @@ namespace ito
     void **ITOM_API_FUNCS;
 
     void *ITOM_API_FUNCS_ARR[] = {
-        (void*)&ApiFunctions::mfilterGetFunc,           /* [0] */
-        (void*)&ApiFunctions::mfilterCall,              /* [1] */
-        (void*)&ApiFunctions::mfilterParam,             /* [2] */
-        (void*)&ApiFunctions::mfilterParamBase,         /* [3] */
-        (void*)&ApiFunctions::maddInGetInitParams,      /* [4] */
-        (void*)&ApiFunctions::maddInOpenActuator,       /* [5] */
-        (void*)&ApiFunctions::maddInOpenDataIO,         /* [6] */
-        (void*)&ParamHelper::validateStringMeta,        /* [7] */
-        (void*)&ParamHelper::validateDoubleMeta,        /* [8] */
-        (void*)&ParamHelper::validateIntMeta,           /* [9] */
-        (void*)&ParamHelper::validateCharMeta,          /* [10] */
-        (void*)&ParamHelper::validateHWMeta,            /* [11] */
-        (void*)&ParamHelper::compareParam,              /* [12] */
-        (void*)&ParamHelper::validateParam,             /* [13] */
-        (void*)&ParamHelper::getParamFromMapByKey,      /* [14] */
-        (void*)&ParamHelper::parseParamName,            /* [15] */
-        (void*)&ParamHelper::getItemFromArray,          /* [16] */
-        (void*)&saveQLIST2XML,                          /* [17] */
-        (void*)&loadXML2QLIST,                          /* [18] */
-        (void*)&ApiFunctions::mcreateFromDataObject,    /* [19] */
-        (void*)&ParamHelper::getParam,                  /* [20] */
-        (void*)&ApiFunctions::getCurrentWorkingDir,     /* [21] */
-        (void*)&ApiFunctions::mshowConfigurationDialog, /* [22] */
-        (void*)&ParamHelper::updateParameters,           /* [23] */
-        (void*)&ApiFunctions::mcreateFromNamedDataObject,    /* [24] */
-        (void*)&ParamHelper::validateAndCastParam,           /* [25] */
+        (void*)&ApiFunctions::mfilterGetFunc,             /* [0] */
+        (void*)&ApiFunctions::mfilterCall,                /* [1] */
+        (void*)&ApiFunctions::mfilterParam,               /* [2] */
+        (void*)&ApiFunctions::mfilterParamBase,           /* [3] */
+        (void*)&ApiFunctions::maddInGetInitParams,        /* [4] */
+        (void*)&ApiFunctions::maddInOpenActuator,         /* [5] */
+        (void*)&ApiFunctions::maddInOpenDataIO,           /* [6] */
+        (void*)&ParamHelper::validateStringMeta,          /* [7] */
+        (void*)&ParamHelper::validateDoubleMeta,          /* [8] */
+        (void*)&ParamHelper::validateIntMeta,             /* [9] */
+        (void*)&ParamHelper::validateCharMeta,            /* [10] */
+        (void*)&ParamHelper::validateHWMeta,              /* [11] */
+        (void*)&ParamHelper::compareParam,                /* [12] */
+        (void*)&ParamHelper::validateParam,               /* [13] */
+        (void*)&ParamHelper::getParamFromMapByKey,        /* [14] */
+        (void*)&ParamHelper::parseParamName,              /* [15] */
+        (void*)&ParamHelper::getItemFromArray,            /* [16] */
+        (void*)&saveQLIST2XML,                            /* [17] */
+        (void*)&loadXML2QLIST,                            /* [18] */
+        (void*)&ApiFunctions::mcreateFromDataObject,      /* [19] */
+        (void*)&ParamHelper::getParam,                    /* [20] */
+        (void*)&ApiFunctions::getCurrentWorkingDir,       /* [21] */
+        (void*)&ApiFunctions::mshowConfigurationDialog,   /* [22] */
+        (void*)&ParamHelper::updateParameters,            /* [23] */
+        (void*)&ApiFunctions::mcreateFromNamedDataObject, /* [24] */
+        (void*)&ParamHelper::validateAndCastParam,        /* [25] */
+        (void*)&ParamHelper::validateIntArrayMeta,        /* [26] */
+        (void*)&ParamHelper::validateCharArrayMeta,       /* [27] */
+        (void*)&ParamHelper::validateDoubleArrayMeta,     /* [28] */
         NULL
     };
 

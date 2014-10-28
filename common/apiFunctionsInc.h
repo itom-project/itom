@@ -114,7 +114,7 @@ namespace ito
     //! validates a double value with respect to given ito::DoubleMeta instance.
     /*!
         \param meta pointer to a ito::DoubleMeta instance describing the requirements for the number
-        \param value a double value that sould be verified
+        \param value a double value that should be verified
         \return ito::RetVal (ito::retOk if the given value fits the requirements, else ito::retError)
         \sa apiValidateStringMeta, apiValidateIntMeta, apiValidateCharMeta, apiValidateHWMeta, ito::DoubleMeta
     */
@@ -124,7 +124,7 @@ namespace ito
     //! validates an integer value with respect to given ito::IntMeta instance.
     /*!
         \param meta pointer to a ito::IntMeta instance describing the requirements for the number
-        \param value an integer value that sould be verified
+        \param value an integer value that should be verified
         \return ito::RetVal (ito::retOk if the given value fits the requirements, else ito::retError)
         \sa apiValidateStringMeta, apiValidateDoubleMeta, apiValidateCharMeta, apiValidateHWMeta, ito::IntMeta
     */
@@ -134,12 +134,45 @@ namespace ito
     //! validates a char value with respect to given ito::CharMeta instance.
     /*!
         \param meta pointer to a ito::CharMeta instance describing the requirements for the number
-        \param value an integer value that sould be verified
+        \param value an integer value that should be verified
         \return ito::RetVal (ito::retOk if the given value fits the requirements, else ito::retError)
         \sa apiValidateStringMeta, apiValidateDoubleMeta, apiValidateIntMeta, apiValidateHWMeta, ito::CharMeta
     */
     #define apiValidateCharMeta \
         (*(ito::RetVal (*)(const ito::CharMeta *meta, char value)) ito::ITOM_API_FUNCS[10])
+
+//! validates a double value with respect to given ito::DoubleMeta instance.
+    /*!
+        \param meta pointer to a ito::ParamMeta instance (must be DoubleArrayMeta, DoubleIntervalMeta) describing the requirements for the values
+        \param values a double array that should be verified
+        \param len is the length of the array
+        \return ito::RetVal (ito::retOk if the given value fits the requirements, else ito::retError)
+        \sa apiValidateStringMeta, apiValidateIntMeta, apiValidateCharMeta, apiValidateHWMeta, ito::DoubleArrayMeta
+    */
+    #define apiValidateDoubleArrayMeta \
+        (*(ito::RetVal (*)(const ito::ParamMeta *meta, const double* values, size_t len)) ito::ITOM_API_FUNCS[28])
+
+    //! validates an array of integer values with respect to given ito::ParamMeta instance.
+    /*!
+        \param meta pointer to a ito::ParamMeta instance (must be IntArrayMeta, IntervalMeta, RangeMeta, RectMeta) describing the requirements for the values
+        \param values an integer array that should be verified
+        \param len is the length of the array
+        \return ito::RetVal (ito::retOk if the given value fits the requirements, else ito::retError)
+        \sa apiValidateStringMeta, apiValidateDoubleMeta, apiValidateCharMeta, apiValidateHWMeta, ito::IntArrayMeta, ito::RangeMeta, ito::IntervalMeta, ito::RectMeta
+    */
+    #define apiValidateIntArrayMeta \
+        (*(ito::RetVal (*)(const ito::ParamMeta *meta, const int* values, size_t len)) ito::ITOM_API_FUNCS[26])
+
+    //! validates an array of char values with respect to given ito::ParamMeta instance.
+    /*!
+        \param meta pointer to a ito::ParamMeta instance (must be CharArrayMeta) describing the requirements for the values
+        \param values a character array that should be verified
+        \param len is the length of the array
+        \return ito::RetVal (ito::retOk if the given value fits the requirements, else ito::retError)
+        \sa apiValidateStringMeta, apiValidateDoubleMeta, apiValidateIntMeta, apiValidateHWMeta, ito::CharArrayMeta
+    */
+    #define apiValidateCharArrayMeta \
+        (*(ito::RetVal (*)(const ito::ParamMeta *meta, const char* values, size_t len)) ito::ITOM_API_FUNCS[25])
 
     //! validates a plugin pointer with respect to given ito::HWMeta instance.
     /*!

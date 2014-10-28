@@ -384,53 +384,18 @@ namespace ito
     }
 
 
-    //---------------------------------------------------------------------------------
-    RangeMeta::RangeMeta(int minVal, int maxVal, int stepSize /*= 1*/) :
-        IntMeta(minVal, maxVal, stepSize),
-        m_rangeMin(0),
-        m_rangeMax(std::numeric_limits<int>::max()),
-        m_rangeStep(1)
-    {
-        m_type = rttiRangeMeta;
-    }
+    
 
-    //---------------------------------------------------------------------------------
-    RangeMeta::RangeMeta(int minVal, int maxVal, int stepSize, int rangeMin, int rangeMax, int rangeStep /*= 1*/) :
-        IntMeta(minVal, maxVal, stepSize),
-        m_rangeMin(rangeMin),
-        m_rangeMax(rangeMax),
-        m_rangeStep(rangeStep)
-    {
-        m_type = rttiRangeMeta;
-    }
-
-    //---------------------------------------------------------------------------------
-    void RangeMeta::setRangeMin(int val)
-    {
-        m_rangeMin = val; 
-        m_rangeMax = std::max(m_rangeMin, m_rangeMax); 
-    }
-        
-    //---------------------------------------------------------------------------------
-    void RangeMeta::setRangeMax(int val)
-    {
-        m_rangeMax = val; 
-        m_rangeMin = std::min(m_rangeMin, m_rangeMax);
-    }
-
-    //---------------------------------------------------------------------------------
-    void RangeMeta::setRangeStep(int val)
-    {
-        m_rangeStep = val;
-    }
+    
 
 
     //---------------------------------------------------------------------------------
     IntervalMeta::IntervalMeta(int minVal, int maxVal, int stepSize /*= 1*/) :
         IntMeta(minVal, maxVal, stepSize),
-        m_ivalMin(0),
-        m_ivalMax(std::numeric_limits<int>::max()),
-        m_ivalStep(1)
+        m_sizeMin(0),
+        m_sizeMax(std::numeric_limits<int>::max()),
+        m_sizeStep(1),
+        m_isIntervalNotRange(false)
     {
         m_type = rttiIntervalMeta;
     }
@@ -438,9 +403,10 @@ namespace ito
     //---------------------------------------------------------------------------------
     IntervalMeta::IntervalMeta(int minVal, int maxVal, int stepSize, int intervalMin, int intervalMax, int intervalStep /*= 1*/) :
         IntMeta(minVal, maxVal, stepSize),
-        m_ivalMin(intervalMin),
-        m_ivalMax(intervalMax),
-        m_ivalStep(intervalStep)
+        m_sizeMin(intervalMin),
+        m_sizeMax(intervalMax),
+        m_sizeStep(intervalStep),
+        m_isIntervalNotRange(false)
     {
         m_type = rttiIntervalMeta;
     }
@@ -448,62 +414,78 @@ namespace ito
     //---------------------------------------------------------------------------------
     void IntervalMeta::setIntervalMin(int val)
     {
-        m_ivalMin = val; 
-        m_ivalMax = std::max(m_ivalMin, m_ivalMax); 
+        m_sizeMin = val; 
+        m_sizeMax = std::max(m_sizeMin, m_sizeMax); 
     }
         
     //---------------------------------------------------------------------------------
     void IntervalMeta::setIntervalMax(int val)
     {
-        m_ivalMax = val; 
-        m_ivalMin = std::min(m_ivalMin, m_ivalMax);
+        m_sizeMax = val; 
+        m_sizeMin = std::min(m_sizeMin, m_sizeMax);
     }
 
     //---------------------------------------------------------------------------------
     void IntervalMeta::setIntervalStep(int val)
     {
-        m_ivalStep = val;
+        m_sizeStep = val;
+    }
+
+    //---------------------------------------------------------------------------------
+    RangeMeta::RangeMeta(int minVal, int maxVal, int stepSize /*= 1*/) :
+        IntervalMeta(minVal, maxVal, stepSize)
+    {
+        m_type = rttiRangeMeta;
+        m_isIntervalNotRange = false;
+    }
+
+    //---------------------------------------------------------------------------------
+    RangeMeta::RangeMeta(int minVal, int maxVal, int stepSize, int sizeMin, int sizeMax, int sizeStep /*= 1*/) :
+        IntervalMeta(minVal, maxVal, stepSize, sizeMin, sizeMax, sizeStep)
+    {
+        m_type = rttiRangeMeta;
+        m_isIntervalNotRange = false;
     }
 
 
     //---------------------------------------------------------------------------------
     DoubleIntervalMeta::DoubleIntervalMeta(double minVal, double maxVal, double stepSize /*= 0.0*/) :
         DoubleMeta(minVal, maxVal, stepSize),
-        m_ivalMin(0.0),
-        m_ivalMax(std::numeric_limits<double>::max()),
-        m_ivalStep(0.0)
+        m_sizeMin(0.0),
+        m_sizeMax(std::numeric_limits<double>::max()),
+        m_sizeStep(0.0)
     {
         m_type = rttiDoubleIntervalMeta;
     }
 
     //---------------------------------------------------------------------------------
-    DoubleIntervalMeta::DoubleIntervalMeta(double minVal, double maxVal, double stepSize, double intervalMin, double intervalMax, double intervalStep /*= 0.0*/) :
+    DoubleIntervalMeta::DoubleIntervalMeta(double minVal, double maxVal, double stepSize, double sizeMin, double sizeMax, double sizeStep /*= 0.0*/) :
         DoubleMeta(minVal, maxVal, stepSize),
-        m_ivalMin(intervalMin),
-        m_ivalMax(intervalMax),
-        m_ivalStep(intervalStep)
+        m_sizeMin(sizeMin),
+        m_sizeMax(sizeMax),
+        m_sizeStep(sizeStep)
     {
         m_type = rttiDoubleIntervalMeta;
     }
 
     //---------------------------------------------------------------------------------
-    void DoubleIntervalMeta::setIntervalMin(double val)
+    void DoubleIntervalMeta::setSizeMin(double val)
     {
-        m_ivalMin = val; 
-        m_ivalMax = std::max(m_ivalMin, m_ivalMax); 
+        m_sizeMin = val; 
+        m_sizeMax = std::max(m_sizeMin, m_sizeMax); 
     }
         
     //---------------------------------------------------------------------------------
-    void DoubleIntervalMeta::setIntervalMax(double val)
+    void DoubleIntervalMeta::setSizeMax(double val)
     {
-        m_ivalMax = val; 
-        m_ivalMin = std::min(m_ivalMin, m_ivalMax);
+        m_sizeMax = val; 
+        m_sizeMin = std::min(m_sizeMin, m_sizeMax);
     }
 
     //---------------------------------------------------------------------------------
-    void DoubleIntervalMeta::setIntervalStep(double val)
+    void DoubleIntervalMeta::setSizeStep(double val)
     {
-        m_ivalStep = val;
+        m_sizeStep = val;
     }
 
     //---------------------------------------------------------------------------------

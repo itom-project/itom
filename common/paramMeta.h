@@ -418,45 +418,43 @@ namespace ito
         size_t m_numStep;
     };
 
-    /*!
-    \class RangeMeta
-    \brief Meta-information for Param of type RangeMeta.
 
-    The range object is defined by its first and last value, that are both inside of the range, hence the size of the range is (1+last-first).
-    This is the difference to IntervalMeta, where the size of the interval is last-first only.
-    \sa ito::Param, IntervalMeta
+    /*!
+    \class DoubleIntervalMeta
+    \brief Meta-information for Param of type DoubleIntervalMeta.
+    \sa ito::Param
     */
-    class ITOMCOMMON_EXPORT RangeMeta : public IntMeta
+    class ITOMCOMMON_EXPORT DoubleIntervalMeta : public DoubleMeta
     {
     public:
-        explicit RangeMeta(int minVal, int maxVal, int stepSize = 1);
-        explicit RangeMeta(int minVal, int maxVal, int stepSize, int rangeMin, int rangeMax, int rangeStep = 1);
-        inline int getRangeMin() const { return m_rangeMin; }         //!< returns minimum size of range
-        inline int getRangeMax() const { return m_rangeMax; }         //!< returns maximum size of range
-        inline int getRangeStepSize() const { return m_rangeStep; }   //!< returns step size of size of range
+        explicit DoubleIntervalMeta(double minVal, double maxVal, double stepSize = 0.0);
+        explicit DoubleIntervalMeta(double minVal, double maxVal, double stepSize, double sizeMin, double sizeMax, double sizeStep = 0.0);
+        inline double getSizeMin() const { return m_sizeMin; }         //!< returns minimum size of range
+        inline double getSizeMax() const { return m_sizeMax; }         //!< returns maximum size of range
+        inline double getSizeStepSize() const { return m_sizeStep; }   //!< returns step size of size of range
 
-        //! sets the minimum size of the range (= 1+max-min)
+        //! sets the minimum size of the interval (= max-min)
         /*!
             \param val is the new minimum value, if this is bigger than the current maximum value, the maximum value is changed to val, too
         */
-        void setRangeMin(int val);
+        void setSizeMin(double val);
         
-        //! sets the maximum size of the range (= 1+max-min)
+        //! sets the maximum size of the interval (= max-min)
         /*!
             \param val is the new maximum value, if this is smaller than the current minimum value, the minimum value is changed to val, too
         */
-        void setRangeMax(int val);
+        void setSizeMax(double val);
 
-        //! sets the step size of the size of the range (= 1+max-min)
+        //! sets the step size of the size of the interval (= max-min)
         /*!
             \param val is the new step size, hence only discrete values [minVal, minVal+stepSize, minVal+2*stepSize...,maxVal] are allowed
         */
-        void setRangeStep(int val);
+        void setSizeStep(double val);
 
     private:
-        int m_rangeMin;
-        int m_rangeMax;
-        int m_rangeStep;
+        double m_sizeMin;
+        double m_sizeMax;
+        double m_sizeStep;
     };
 
 
@@ -469,10 +467,11 @@ namespace ito
     {
     public:
         explicit IntervalMeta(int minVal, int maxVal, int stepSize = 1);
-        explicit IntervalMeta(int minVal, int maxVal, int stepSize, int intervalMin, int intervalMax, int intervalStep = 1);
-        inline int getIntervalMin() const { return m_ivalMin; }         //!< returns minimum size of range
-        inline int getIntervalMax() const { return m_ivalMax; }         //!< returns maximum size of range
-        inline int getIntervalStep() const { return m_ivalStep; }   //!< returns step size of size of range
+        explicit IntervalMeta(int minVal, int maxVal, int stepSize, int sizeMin, int sizeMax, int intervalStep = 1);
+        inline int getSizeMin() const { return m_sizeMin; }         //!< returns minimum size of interval or range
+        inline int getSizeMax() const { return m_sizeMax; }         //!< returns maximum size of interval or range
+        inline int getSizeStepSize() const { return m_sizeStep; }   //!< returns step size of size of interval or range
+        inline bool isIntervalNotRange() const { return m_isIntervalNotRange; }
 
         //! sets the minimum size of the interval (= max-min)
         /*!
@@ -492,49 +491,29 @@ namespace ito
         */
         void setIntervalStep(int val);
 
-    private:
-        int m_ivalMin;
-        int m_ivalMax;
-        int m_ivalStep;
+    protected:
+        int m_sizeMin;
+        int m_sizeMax;
+        int m_sizeStep;
+        bool m_isIntervalNotRange; //!< this flag describes if this object is an interval where its interval/range is (end-begin) or a range with (1+end-begin)
     };
+
 
     /*!
-    \class DoubleIntervalMeta
-    \brief Meta-information for Param of type DoubleIntervalMeta.
-    \sa ito::Param
+    \class RangeMeta
+    \brief Meta-information for Param of type RangeMeta.
+
+    The range object is defined by its first and last value, that are both inside of the range, hence the size of the range is (1+last-first).
+    This is the difference to IntervalMeta, where the size of the interval is last-first only.
+    \sa ito::Param, IntervalMeta
     */
-    class ITOMCOMMON_EXPORT DoubleIntervalMeta : public DoubleMeta
+    class ITOMCOMMON_EXPORT RangeMeta : public IntervalMeta
     {
     public:
-        explicit DoubleIntervalMeta(double minVal, double maxVal, double stepSize = 0.0);
-        explicit DoubleIntervalMeta(double minVal, double maxVal, double stepSize, double intervalMin, double intervalMax, double intervalStep = 0.0);
-        inline double getIntervalMin() const { return m_ivalMin; }         //!< returns minimum size of range
-        inline double getIntervalMax() const { return m_ivalMax; }         //!< returns maximum size of range
-        inline double getIntervalStep() const { return m_ivalStep; }   //!< returns step size of size of range
-
-        //! sets the minimum size of the interval (= max-min)
-        /*!
-            \param val is the new minimum value, if this is bigger than the current maximum value, the maximum value is changed to val, too
-        */
-        void setIntervalMin(double val);
-        
-        //! sets the maximum size of the interval (= max-min)
-        /*!
-            \param val is the new maximum value, if this is smaller than the current minimum value, the minimum value is changed to val, too
-        */
-        void setIntervalMax(double val);
-
-        //! sets the step size of the size of the interval (= max-min)
-        /*!
-            \param val is the new step size, hence only discrete values [minVal, minVal+stepSize, minVal+2*stepSize...,maxVal] are allowed
-        */
-        void setIntervalStep(double val);
-
-    private:
-        double m_ivalMin;
-        double m_ivalMax;
-        double m_ivalStep;
+        explicit RangeMeta(int minVal, int maxVal, int stepSize = 1);
+        explicit RangeMeta(int minVal, int maxVal, int stepSize, int sizeMin, int sizeMax, int sizeStep = 1);
     };
+
 
     /*!
     \class RectMeta
@@ -551,7 +530,7 @@ namespace ito
         void setWidthRangeMeta(const ito::RangeMeta &widthMeta);
         void setHeightRangeMeta(const ito::RangeMeta &heightMeta);
 
-    private:
+    protected:
         ito::RangeMeta m_heightMeta;
         ito::RangeMeta m_widthMeta;
     };
