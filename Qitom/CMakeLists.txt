@@ -1,6 +1,6 @@
 SET (target_name qitom)
 set(CMAKE_PREFIX_PATH D:/Qt5/5.2.0/msvc2010)
-  
+   
 project(${target_name})
  
 cmake_minimum_required(VERSION 2.8.7)

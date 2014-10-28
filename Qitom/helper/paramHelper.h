@@ -62,6 +62,8 @@ namespace ito
         static ito::RetVal updateParameters(QMap<QString, ito::Param> &paramMap, const QVector<QSharedPointer<ito::ParamBase> > &values);
 
     private:
+        static bool fitToDoubleStepSize(double min, double step, double val);
+
         ParamHelper(){};
         ~ParamHelper(){};
     };
