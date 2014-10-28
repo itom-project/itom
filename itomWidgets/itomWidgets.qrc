@@ -15,5 +15,7 @@
     <file>icons/textedit.png</file>
     <file>icons/vspacer.png</file>
     <file>icons/widget.png</file>
+    <file>icons/clear.svg</file>
+    <file>icons/search.svg</file>
   </qresource>
 </RCC>

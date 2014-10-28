@@ -1,8 +1,8 @@
 /* ********************************************************************
    itom measurement system
    URL: http://www.uni-stuttgart.de/ito
-   Copyright (C) 2012, Institut für Technische Optik (ITO), 
-   Universität Stuttgart, Germany 
+   Copyright (C) 2012, Institut fÃ¼r Technische Optik (ITO), 
+   UniversitÃ¤t Stuttgart, Germany 
  
    This file is part of itom.
 
@@ -22,77 +22,75 @@
 
 
 #include <QtCore/QtPlugin>
-#include "popupWidgetFactory.h"
-#include "popupWidget.h"
+#include "menuComboBoxFactory.h"
+#include "menuComboBox.h"
+
 
 // --------------------------------------------------------------------------
-PopupWidgetFactory::PopupWidgetFactory(QObject *_parent)
+MenuComboBoxFactory::MenuComboBoxFactory(QObject *_parent)
   : QObject(_parent)
 {
 }
 
 // --------------------------------------------------------------------------
-QWidget *PopupWidgetFactory::createWidget(QWidget *_parent)
+QWidget *MenuComboBoxFactory::createWidget(QWidget *_parent)
 {
-    PopupWidget* newWidget = new PopupWidget(_parent);
-    // if the widget is a tooltip, it wouldn't accept children
-    newWidget->setWindowFlags(0);
-    // if the widget auto hides, it disappear from the workplace and don't allow
-    // children anymore.
-    newWidget->setAutoHide(false);
-    return newWidget;
+    MenuComboBox* widget = new MenuComboBox(_parent);
+    return widget;
 }
 
 // --------------------------------------------------------------------------
-QString PopupWidgetFactory::domXml() const
+QString MenuComboBoxFactory::domXml() const
 {
-  return "<widget class=\"PopupWidget\" name=\"popupWidget\">\n</widget>\n";
+  return "<widget class=\"MenuComboBox\" \
+          name=\"MenuComboBox\">\n"
+          "</widget>\n";
 }
 
 // --------------------------------------------------------------------------
-QIcon PopupWidgetFactory::icon() const
+QIcon MenuComboBoxFactory::icon() const
 {
-  return QIcon(":/icons/widget.png");
+  return QIcon(":/icons/combobox.png");
 }
 
 // --------------------------------------------------------------------------
-QString PopupWidgetFactory::includeFile() const
+QString MenuComboBoxFactory::includeFile() const
 {
-    return "popupWidget.h";
+    return "comboBox.h";
 }
 
 // --------------------------------------------------------------------------
-bool PopupWidgetFactory::isContainer() const
+bool MenuComboBoxFactory::isContainer() const
 {
-    return true;
+    return false;
 }
 
 // --------------------------------------------------------------------------
-QString PopupWidgetFactory::name() const
+QString MenuComboBoxFactory::name() const
 {
-    return "PopupWidget";
+    return "MenuComboBox";
 }
 
 //-----------------------------------------------------------------------------
-QString PopupWidgetFactory::group() const
+QString MenuComboBoxFactory::group() const
 { 
     return "itom [widgets]";
 }
 
 //-----------------------------------------------------------------------------
-QString PopupWidgetFactory::toolTip() const
+QString MenuComboBoxFactory::toolTip() const
 { 
     return QString(); 
 }
 
 //-----------------------------------------------------------------------------
-QString PopupWidgetFactory::whatsThis() const
+QString MenuComboBoxFactory::whatsThis() const
 {
     return QString(); 
 }
 
 //-----------------------------------------------------------------------------
-void PopupWidgetFactory::initialize(QDesignerFormEditorInterface *formEditor)
+void MenuComboBoxFactory::initialize(QDesignerFormEditorInterface *formEditor)
 {
     Q_UNUSED(formEditor);
     if (initialized)
@@ -101,3 +99,4 @@ void PopupWidgetFactory::initialize(QDesignerFormEditorInterface *formEditor)
     }
     initialized = true;
 }
+

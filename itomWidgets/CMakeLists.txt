@@ -29,7 +29,7 @@ ENDIF(BUILD_ITOMLIBS_SHARED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-FIND_PACKAGE_QT(OFF UiTools Widgets Svg Designer LinguistTools) #no automoc for Qt5
+FIND_PACKAGE_QT(OFF UiTools Widgets Svg Xml Designer LinguistTools) #no automoc for Qt5
 find_package(VisualLeakDetector QUIET)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../ItomBuildMacros.cmake")
@@ -73,13 +73,26 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/sliderWidgetFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/pathLineEditFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/popupWidgetFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/checkableComboBoxFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/comboBoxFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/searchBoxFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/treeComboBoxFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/menuComboBoxFactory.h    
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSpinBox_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/basePopupWidget_p.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/checkableComboBox.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/comboBox.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/searchBox.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/treeComboBox.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/menuComboBox.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/menuComboBox_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/valueProxy.h
     ${CMAKE_CURRENT_SOURCE_DIR}/utils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/proxyStyle.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/checkableModelHelper.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/completer.h
 )
 
 # the following header files are finally copied into SDK/itomWidgets
@@ -135,6 +148,13 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/sliderWidgetFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/pathLineEditFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/popupWidgetFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/checkableComboBoxFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/comboBoxFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/searchBoxFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/treeComboBoxFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/menuComboBoxFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/checkableModelHelper.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/completer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rangeSlider.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/collapsibleGroupBox.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleRangeSlider.cpp
@@ -146,6 +166,11 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/pathLineEdit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/basePopupWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/checkableComboBox.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/comboBox.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/searchBox.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/treeComboBox.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/menuComboBox.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/valueProxy.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/proxyStyle.cpp
@@ -185,6 +210,7 @@ endif (QT5_FOUND)
 
 #add filters to visual studio
 ADD_SOURCE_GROUP(factories)
+ADD_SOURCE_GROUP(helper)
 #end add filters to visual studio
 
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${itomWidgets_SOURCES} ${itomWidgets_HEADERS} ${itomWidgets_HEADERS_MOC} ${itomWidgets_Factory_HEADERS} ${itomWidgets_Factory_HEADERS_MOC} ${itomWidgets_UI_MOC} ${itomWidgets_rcc_MOC} ${EXISTING_TRANSLATION_FILES})

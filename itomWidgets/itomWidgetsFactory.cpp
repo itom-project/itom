@@ -35,6 +35,11 @@
 #include "factories/sliderWidgetFactory.h"
 #include "factories/pathLineEditFactory.h"
 #include "factories/popupWidgetFactory.h"
+#include "factories/searchBoxFactory.h"
+#include "factories/treeComboBoxFactory.h"
+#include "factories/menuComboBoxFactory.h"
+#include "factories/comboBoxFactory.h"
+#include "factories/checkableComboBoxFactory.h"
 
 //------------------------------------------------------------------------------------------------
 ItomWidgetsFactory::ItomWidgetsFactory(QObject *parent)
@@ -50,6 +55,11 @@ ItomWidgetsFactory::ItomWidgetsFactory(QObject *parent)
     widgets.append(new SliderWidgetFactory(this));
     widgets.append(new PathLineEditFactory(this));
     widgets.append(new PopupWidgetFactory(this));
+    widgets.append(new SearchBoxFactory(this));
+    widgets.append(new TreeComboBoxFactory(this));
+    widgets.append(new MenuComboBoxFactory(this));
+    widgets.append(new ComboBoxFactory(this));
+    widgets.append(new CheckableComboBoxFactory(this));
 }
 
 //------------------------------------------------------------------------------------------------
