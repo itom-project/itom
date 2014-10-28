@@ -65,6 +65,9 @@ public:
   /// the min and max handles
   Handle handleAtPos(const QPoint& pos, QRect& handleRect)const;
 
+  int bound(int min, int max, int step, int value, bool snapToBoundaries = true) const;
+  void rangeBound(int valLimitMin, int valLimitMax, Handle handleChangePriority, int &valMin, int &valMax);
+
   /// Copied verbatim from QSliderPrivate class (see QSlider.cpp)
   int pixelPosToRangeValue(int pos) const;
   int pixelPosFromRangeValue(int val) const;
@@ -80,6 +83,12 @@ public:
   /// End points of the range on the GUI. This is synced with the model.
   int m_MaximumPosition;
   int m_MinimumPosition;
+
+  uint m_PositionStepSize;
+  uint m_MinimumRange;
+  uint m_MaximumRange;
+  uint m_StepSizeRange;
+  bool m_RangeIncludesLimits;
 
   /// Controls selected ?
   QStyle::SubControl m_MinimumSliderSelected;
@@ -123,6 +132,13 @@ RangeSliderPrivate::RangeSliderPrivate(RangeSlider& object)
   this->m_SubclassWidth = 0.0;
   this->m_SelectedHandles = 0;
   this->m_SymmetricMoves = false;
+
+  this->m_PositionStepSize = 1;
+  this->m_MinimumRange = 0;
+  this->m_RangeIncludesLimits = false;
+  this->m_MaximumRange = (this->m_RangeIncludesLimits ? 1 : 0) + this->m_MaximumValue - this->m_MinimumValue;
+  this->m_StepSizeRange = 1;
+  
 }
 
 // --------------------------------------------------------------------------
@@ -133,6 +149,10 @@ void RangeSliderPrivate::init()
   this->m_MaximumValue = q->maximum();
   this->m_MinimumPosition = q->minimum();
   this->m_MaximumPosition = q->maximum();
+
+  this->m_MinimumRange = 0;
+  this->m_MaximumRange = (this->m_RangeIncludesLimits ? 1 : 0) + this->m_MaximumValue - this->m_MinimumValue;
+
   q->connect(q, SIGNAL(rangeChanged(int,int)), q, SLOT(onRangeChanged(int,int)));
 }
 
@@ -198,6 +218,89 @@ RangeSliderPrivate::Handle RangeSliderPrivate::handleAtPos(const QPoint& pos, QR
     }
   handleRect = minimumHandleRect.united(maximumHandleRect);
   return NoHandle;
+}
+
+// --------------------------------------------------------------------------
+int RangeSliderPrivate::bound(int min, int max, int step, int value, bool snapToBoundaries /*= true*/) const
+{
+    if (step == 1)
+    {
+        return qBound(min, value, max);
+    }
+    else
+    {
+        value = qBound(min, value, max);
+
+        //try to round to nearest value following the step size
+        int remainder = (value - min) % step;
+        if (snapToBoundaries && ((value - remainder) == min))
+        {
+            value = min;
+        }
+        else if (snapToBoundaries && ((value + (step - remainder)) == max))
+        {
+            value = max;
+        }
+        else if (remainder > (step/2)) //we want to round up
+        {
+            //check upper limit
+            if (value + remainder <= max)
+            {
+                //not exceeded, then go to the next upper step value
+                value += (step - remainder);
+            }
+            else
+            {
+                //decrementing is always allowed
+                value -= remainder;
+            }
+        }
+        else
+        {
+            //decrementing is always allowed
+            value -= remainder;
+        }
+        return value;
+    }
+}
+
+// --------------------------------------------------------------------------
+void RangeSliderPrivate::rangeBound(int valLimitMin, int valLimitMax, Handle handleChangePriority, int &valMin, int &valMax)
+{
+    int offset = (this->m_RangeIncludesLimits ? 1 : 0);
+    int range = offset + valMax - valMin;
+    bool rangeOk = (range == bound(m_MinimumRange, m_MaximumRange, m_StepSizeRange, range, false));
+
+    if (rangeOk)
+    {
+        //try to fix left boundary and move right one
+        if (handleChangePriority == MaximumHandle || (handleChangePriority == NoHandle && (qAbs(valLimitMin - valMin) < qAbs(valLimitMax - valMax))))
+        {
+            valMin = bound(valLimitMin, valLimitMax, m_PositionStepSize, valMin);
+            valMax = bound(valMin + m_MinimumRange, qMin(valLimitMax, valMin + (int)m_MaximumRange), m_StepSizeRange, valMin + range, false) - offset;
+        }
+        else //try to fix right boundary and move left one
+        {
+            valMax = bound(valLimitMin, valLimitMax, m_PositionStepSize, valMax);
+            valMin = bound(qMax(valLimitMin, valMax - (int)m_MaximumRange), valMax - m_MinimumRange, m_StepSizeRange, valMax - range, false) + offset;
+        }
+    }
+    else
+    {
+        //try to fix left boundary and move right one
+        if (handleChangePriority == MaximumHandle || (handleChangePriority == NoHandle && (qAbs(valLimitMin - valMin) < qAbs(valLimitMax - valMax))))
+        {
+            valMin = bound(valLimitMin, valLimitMax, m_PositionStepSize, valMin);
+            range = bound(m_MinimumRange, m_MaximumRange, m_StepSizeRange, valMax - valMin + offset, false);
+            valMax = bound(valMin + m_MinimumRange, qMin(valLimitMax, valMin + (int)m_MaximumRange), m_StepSizeRange, valMin + range, false) - offset;
+        }
+        else //try to fix right boundary and move left one
+        {
+            valMax = bound(valLimitMin, valLimitMax, m_PositionStepSize, valMax);
+            range = bound(m_MinimumRange, m_MaximumRange, m_StepSizeRange, valMax - valMin + offset, false);
+            valMin = bound(qMax(valLimitMin, valMax - (int)m_MaximumRange), valMax - m_MinimumRange, m_StepSizeRange, valMax - range, false) + offset;
+        }
+    }
 }
 
 // --------------------------------------------------------------------------
@@ -396,13 +499,101 @@ void RangeSlider::setMaximumValue( int max )
 }
 
 // --------------------------------------------------------------------------
+uint RangeSlider::stepSizePosition() const
+{
+  Q_D(const RangeSlider);
+  return d->m_PositionStepSize;
+}
+
+// --------------------------------------------------------------------------
+void RangeSlider::setStepSizePosition(uint stepSize)
+{
+  Q_D(RangeSlider);
+  d->m_PositionStepSize = stepSize;
+  d->m_StepSizeRange = d->bound(stepSize, std::numeric_limits<int>::max(), stepSize, d->m_StepSizeRange);
+  this->setValues( d->m_MinimumValue, d->m_MaximumValue );
+}
+  
+// --------------------------------------------------------------------------
+uint RangeSlider::minimumRange() const
+{
+  Q_D(const RangeSlider);
+  return d->m_MinimumRange;
+}
+
+// --------------------------------------------------------------------------
+void RangeSlider::setMinimumRange(uint min)
+{
+  Q_D(RangeSlider);
+  d->m_MinimumRange = d->bound(min - d->m_StepSizeRange, d->m_MaximumRange, d->m_StepSizeRange, min);
+  this->setValues( d->m_MinimumValue, d->m_MaximumValue );
+}
+  
+// --------------------------------------------------------------------------
+uint RangeSlider::maximumRange() const
+{
+  Q_D(const RangeSlider);
+  return d->m_MaximumRange;
+}
+
+// --------------------------------------------------------------------------
+void RangeSlider::setMaximumRange(uint max)
+{
+  Q_D(RangeSlider);
+  d->m_MaximumRange = d->bound(d->m_MinimumRange, max + d->m_StepSizeRange, d->m_StepSizeRange, max);
+  this->setValues( d->m_MinimumValue, d->m_MaximumValue );
+}
+  
+// --------------------------------------------------------------------------
+uint RangeSlider::stepSizeRange() const
+{
+  Q_D(const RangeSlider);
+  return d->m_StepSizeRange;
+}
+
+// --------------------------------------------------------------------------
+void RangeSlider::setStepSizeRange(uint stepSize)
+{
+  Q_D(RangeSlider);
+  d->m_StepSizeRange = d->bound(d->m_PositionStepSize, std::numeric_limits<int>::max(), d->m_PositionStepSize, stepSize);
+  d->m_MaximumRange = d->bound(d->m_MinimumRange, d->m_MaximumRange + stepSize, stepSize, d->m_MaximumRange);
+  this->setValues( d->m_MinimumValue, d->m_MaximumValue );
+}
+  
+// --------------------------------------------------------------------------
+bool RangeSlider::rangeIncludeLimits() const
+{
+  Q_D(const RangeSlider);
+  return d->m_RangeIncludesLimits;
+}
+
+// --------------------------------------------------------------------------
+void RangeSlider::setRangeIncludeLimits(bool include)
+{
+  Q_D(RangeSlider);
+  d->m_RangeIncludesLimits = include;
+  this->setValues( d->m_MinimumValue, d->m_MaximumValue );
+}
+
+// --------------------------------------------------------------------------
 void RangeSlider::setValues(int l, int u)
 {
   Q_D(RangeSlider);
-  const int minValue = 
-    qBound(this->minimum(), qMin(l,u), this->maximum());
-  const int maxValue = 
-    qBound(this->minimum(), qMax(l,u), this->maximum());
+  int minValue = qMin(l,u);
+  int maxValue = qMax(l,u);
+
+  RangeSliderPrivate::Handle handleChangePriority = RangeSliderPrivate::NoHandle; //both handles per default
+  if ((minValue != d->m_MinimumValue) && maxValue == d->m_MaximumValue)
+  {
+      handleChangePriority = RangeSliderPrivate::MinimumHandle;
+  }
+  else if ((minValue == d->m_MinimumValue) && maxValue != d->m_MaximumValue)
+  {
+      handleChangePriority = RangeSliderPrivate::MaximumHandle;
+  }
+
+  d->rangeBound(this->minimum(), this->maximum(), handleChangePriority, minValue, maxValue);
+
   bool emitMinValChanged = (minValue != d->m_MinimumValue);
   bool emitMaxValChanged = (maxValue != d->m_MaximumValue);
   
@@ -483,10 +674,20 @@ void RangeSlider::setMaximumPosition(int u)
 void RangeSlider::setPositions(int min, int max)
 {
   Q_D(RangeSlider);
-  const int minPosition = 
-    qBound(this->minimum(), qMin(min, max), this->maximum());
-  const int maxPosition = 
-    qBound(this->minimum(), qMax(min, max), this->maximum());
+  int minPosition = qMin(min,max);
+  int maxPosition = qMax(min,max);
+
+  RangeSliderPrivate::Handle handleChangePriority = RangeSliderPrivate::NoHandle; //both handles per default
+  if ((minPosition != d->m_MinimumPosition) && maxPosition == d->m_MaximumPosition)
+  {
+      handleChangePriority = RangeSliderPrivate::MinimumHandle;
+  }
+  else if ((minPosition == d->m_MinimumPosition) && maxPosition != d->m_MaximumPosition)
+  {
+      handleChangePriority = RangeSliderPrivate::MaximumHandle;
+  }
+
+  d->rangeBound(this->minimum(), this->maximum(), handleChangePriority, minPosition, maxPosition);
 
   bool emitMinPosChanged = (minPosition != d->m_MinimumPosition);
   bool emitMaxPosChanged = (maxPosition != d->m_MaximumPosition);

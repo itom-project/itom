@@ -62,6 +62,11 @@ class ITOMWIDGETS_EXPORT RangeSlider : public QSlider
   Q_PROPERTY(int maximumPosition READ maximumPosition WRITE setMaximumPosition)
   Q_PROPERTY(bool symmetricMoves READ symmetricMoves WRITE setSymmetricMoves)
   Q_PROPERTY(QString handleToolTip READ handleToolTip WRITE setHandleToolTip)
+  Q_PROPERTY(uint stepSizePosition READ stepSizePosition WRITE setStepSizePosition)
+  Q_PROPERTY(uint minimumRange READ minimumRange WRITE setMinimumRange)
+  Q_PROPERTY(uint maximumRange READ maximumRange WRITE setMaximumRange)
+  Q_PROPERTY(uint stepSizeRange READ stepSizeRange WRITE setStepSizeRange)
+  Q_PROPERTY(bool rangeIncludeLimits READ rangeIncludeLimits WRITE setRangeIncludeLimits)
 
 public:
   // Superclass typedef
@@ -98,6 +103,37 @@ public:
   /// If tracking is enabled (the default), this is identical to maximumValue.
   int maximumPosition() const;
   void setMaximumPosition(int max);
+
+  /// 
+  /// This property holds the step size for the left or right slider position.
+  /// If the stepSize is equal to 1, this property has no impact.
+  uint stepSizePosition() const;
+  void setStepSizePosition(uint stepSize);
+  
+  /// 
+  /// This property holds the minimum allowed range.
+  /// The range is (1+maximumRange-minimumRange) if rangeIncludeLimits is true, else (maximumRange-minimumRange)
+  uint minimumRange() const;
+  void setMinimumRange(uint min);
+  
+  /// 
+  /// This property holds the maximum allowed range.
+  /// The range is (1+maximumRange-minimumRange) if rangeIncludeLimits is true, else (maximumRange-minimumRange)
+  uint maximumRange() const;
+  void setMaximumRange(uint max);
+  
+  /// 
+  /// This property holds the step size of the allowed range.
+  /// The range is (1+maximumRange-minimumRange) if rangeIncludeLimits is true, else (maximumRange-minimumRange)
+  uint stepSizeRange() const;
+  void setStepSizeRange(uint stepSize);
+  
+  /// 
+  /// This property indicates if the range is assumed to be (1+maximumRange-minimumRange) (true)
+  /// or (maximumRange-minimumRange) (false). The first case is important if the rangeSlider
+  /// is used for ROIs of cameras, where the first and last value are inside of the ROI.
+  bool rangeIncludeLimits() const;
+  void setRangeIncludeLimits(bool include);
 
   ///
   /// Utility function that set the minimum position and
