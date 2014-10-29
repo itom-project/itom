@@ -2033,7 +2033,7 @@ void PythonEngine::pythonRunString(QString cmd)
     case pyStateRunning:
     case pyStateDebugging:
         // no command execution allowed if running or debugging without being in waiting mode
-        qDebug() << "it is now allowed to run a python string in mode pyStateRunning or pyStateDebugging";
+        qDebug() << "it is not allowed to run a python string in mode pyStateRunning or pyStateDebugging";
         break;
     case pyStateDebuggingWaiting:
         pythonStateTransition(pyTransDebugExecCmdBegin);
@@ -2069,7 +2069,7 @@ void PythonEngine::pythonRunFile(QString filename)
     case pyStateDebuggingWaiting:
     case pyStateDebuggingWaitingButBusy:
         // no command execution allowed if running or debugging without being in waiting mode
-        qDebug() << "it is now allowed to run a python file in mode pyStateRunning, pyStateDebugging, pyStateDebuggingWaiting or pyStateDebuggingWaitingButBusy";
+        qDebug() << "it is not allowed to run a python file in mode pyStateRunning, pyStateDebugging, pyStateDebuggingWaiting or pyStateDebuggingWaitingButBusy";
         break;
     }
 }
@@ -2090,7 +2090,7 @@ void PythonEngine::pythonDebugFile(QString filename)
     case pyStateDebuggingWaiting:
     case pyStateDebuggingWaitingButBusy:
         // no command execution allowed if running or debugging without being in waiting mode
-        qDebug() << "it is now allowed to debug a python file in mode pyStateRunning, pyStateDebugging, pyStateDebuggingWaiting or pyStateDebuggingWaitingButBusy";
+        qDebug() << "it is not allowed to debug a python file in mode pyStateRunning, pyStateDebugging, pyStateDebuggingWaiting or pyStateDebuggingWaitingButBusy";
         break;
     }
 }
@@ -2117,7 +2117,7 @@ void PythonEngine::pythonDebugString(QString cmd)
     case pyStateDebuggingWaiting:
     case pyStateDebuggingWaitingButBusy:
         // no command execution allowed if running or debugging without being in waiting mode
-        qDebug() << "it is now allowed to debug a python string in mode pyStateRunning, pyStateDebugging, pyStateDebuggingWaiting or pyStateDebuggingWaitingButBusy";
+        qDebug() << "it is not allowed to debug a python string in mode pyStateRunning, pyStateDebugging, pyStateDebuggingWaiting or pyStateDebuggingWaitingButBusy";
         break;
     }
 }
@@ -2154,7 +2154,7 @@ void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
     case pyStateRunning:
     case pyStateDebugging:
         // no command execution allowed if running or debugging without being in waiting mode
-        std::cerr << "it is now allowed to run a python string in mode pyStateRunning or pyStateDebugging\n" << std::endl;
+        std::cerr << "it is not allowed to run a python string in mode pyStateRunning or pyStateDebugging\n" << std::endl;
         break;
     case pyStateDebuggingWaiting:
         pythonStateTransition(pyTransDebugExecCmdBegin);
@@ -2179,7 +2179,7 @@ void PythonEngine::pythonDebugFunction(PyObject *callable, PyObject *argTuple)
     case pyStateRunning:
     case pyStateDebugging:
         // no command execution allowed if running or debugging without being in waiting mode
-        std::cerr << "it is now allowed to debug a function or python string in mode pyStateRunning or pyStateDebugging\n" << std::endl;
+        std::cerr << "it is not allowed to debug a function or python string in mode pyStateRunning or pyStateDebugging\n" << std::endl;
         break;
     case pyStateDebuggingWaiting:
     case pyStateDebuggingWaitingButBusy:
