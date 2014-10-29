@@ -38,6 +38,8 @@
 #include "rangeWidget.h"
 #include "ui_rangeWidget.h"
 
+#include "../common/paramMeta.h"
+
 // STD includes
 #include <cmath>
 #include <limits>
@@ -462,6 +464,28 @@ void RangeWidget::setSliderValues()
     return;
     }
   d->Slider->setValues(d->MinimumSpinBox->value(), d->MaximumSpinBox->value());
+
+  //the slider is the main instance to adapt values depending on step sizes, range restrictions, ...
+  //therefore recheck it and reset the spin boxes if necessary
+  bool blocked = d->MinimumSpinBox->blockSignals(true);
+  blocked = d->MaximumSpinBox->blockSignals(true);
+
+  int newMin = d->Slider->minimumValue();
+  int newMax = d->Slider->maximumValue();
+  if (newMin != d->MinimumSpinBox->value())
+  {
+    d->MinimumSpinBox->setValue( newMin );
+    setMinimumToMaximumSpinBox( newMin );
+  }
+  if (newMax != d->MaximumSpinBox->value())
+  {
+    d->MaximumSpinBox->setValue( newMax );
+    setMaximumToMinimumSpinBox( newMax );
+  }
+
+  d->MinimumSpinBox->blockSignals(blocked);
+  d->MaximumSpinBox->blockSignals(blocked);
+
 }
 
 // --------------------------------------------------------------------------
@@ -556,6 +580,7 @@ void RangeWidget::changeMaximumValue(int newValue)
 }
 
 // --------------------------------------------------------------------------
+// this slot is called if the values of the slider changed
 void RangeWidget::changeValues(int newMinValue, int newMaxValue)
 {
   Q_D(RangeWidget);
@@ -787,4 +812,91 @@ QSpinBox* RangeWidget::maximumSpinBox()const
 {
   Q_D(const RangeWidget);
   return d->MaximumSpinBox;
+}
+
+
+// --------------------------------------------------------------------------
+uint RangeWidget::stepSizeValue() const
+{
+  Q_D(const RangeWidget);
+  return d->Slider->stepSizePosition ();
+}
+
+// --------------------------------------------------------------------------
+void RangeWidget::setStepSizeValue(uint stepSize)
+{
+  Q_D(RangeWidget);
+  d->Slider->setStepSizePosition(stepSize);
+  if ((uint)(d->MinimumSpinBox->singleStep()) < stepSize)
+  {
+      setSingleStep(stepSize);
+  }
+}
+  
+// --------------------------------------------------------------------------
+uint RangeWidget::minimumRange() const
+{
+  Q_D(const RangeWidget);
+  return d->Slider->minimumRange();
+}
+
+// --------------------------------------------------------------------------
+void RangeWidget::setMinimumRange(uint min)
+{
+  Q_D(RangeWidget);
+  d->Slider->setMinimumRange(min);
+}
+  
+// --------------------------------------------------------------------------
+uint RangeWidget::maximumRange() const
+{
+  Q_D(const RangeWidget);
+  return d->Slider->maximumRange();
+}
+
+// --------------------------------------------------------------------------
+void RangeWidget::setMaximumRange(uint max)
+{
+  Q_D(RangeWidget);
+  d->Slider->setMaximumRange(max);
+}
+  
+// --------------------------------------------------------------------------
+uint RangeWidget::stepSizeRange() const
+{
+  Q_D(const RangeWidget);
+  return d->Slider->stepSizeRange();
+}
+
+// --------------------------------------------------------------------------
+void RangeWidget::setStepSizeRange(uint stepSize)
+{
+  Q_D(RangeWidget);
+  d->Slider->setStepSizeRange(stepSize);
+  if ((uint)(d->MinimumSpinBox->singleStep()) < stepSize)
+  {
+      setSingleStep(stepSize);
+  }
+}
+  
+// --------------------------------------------------------------------------
+bool RangeWidget::rangeIncludeLimits() const
+{
+  Q_D(const RangeWidget);
+  return d->Slider->rangeIncludeLimits();
+}
+
+// --------------------------------------------------------------------------
+void RangeWidget::setRangeIncludeLimits(bool include)
+{
+  Q_D(RangeWidget);
+  d->Slider->setRangeIncludeLimits(include);
+}
+
+// --------------------------------------------------------------------------
+void RangeWidget::setLimitsFromIntervalMeta(const ito::IntervalMeta &intervalMeta)
+{
+    Q_D(RangeWidget);
+    d->Slider->setLimitsFromIntervalMeta(intervalMeta);
+    setStepSizeRange(d->Slider->stepSizeRange()); //in order to possibly adapt the singleStep value
 }

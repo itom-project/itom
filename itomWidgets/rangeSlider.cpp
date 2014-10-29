@@ -40,6 +40,7 @@
 
 //  includes
 #include "rangeSlider.h"
+#include "../common/paramMeta.h"
 
 class RangeSliderPrivate
 {
@@ -525,7 +526,7 @@ uint RangeSlider::minimumRange() const
 void RangeSlider::setMinimumRange(uint min)
 {
   Q_D(RangeSlider);
-  d->m_MinimumRange = d->bound(min - d->m_StepSizeRange, d->m_MaximumRange, d->m_StepSizeRange, min);
+  d->m_MinimumRange = d->bound(0, d->m_MaximumRange, d->m_StepSizeRange, min);
   this->setValues( d->m_MinimumValue, d->m_MaximumValue );
 }
   
@@ -1067,4 +1068,17 @@ bool RangeSlider::event(QEvent* _event)
       break;
     }
   return this->Superclass::event(_event);
+}
+
+// --------------------------------------------------------------------------
+void RangeSlider::setLimitsFromIntervalMeta(const ito::IntervalMeta &intervalMeta)
+{
+    Q_D(RangeSlider);
+    d->m_RangeIncludesLimits = !intervalMeta.isIntervalNotRange();
+    d->m_MaximumRange = intervalMeta.getSizeMax();
+    d->m_MinimumRange = intervalMeta.getSizeMin();
+    d->m_PositionStepSize = intervalMeta.getStepSize();
+    d->m_StepSizeRange = d->bound(d->m_PositionStepSize, std::numeric_limits<int>::max(), d->m_PositionStepSize, intervalMeta.getSizeStepSize());
+    d->m_MinimumRange = d->bound(intervalMeta.getSizeMin() - d->m_StepSizeRange, d->m_MaximumRange, d->m_StepSizeRange, intervalMeta.getSizeMin());
+    setMaximumRange( intervalMeta.getSizeMax() ); //using setMaximumRange in order to finally adapt the current values to allowed values
 }

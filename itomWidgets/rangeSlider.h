@@ -35,8 +35,13 @@
 
 #include "commonWidgets.h"
 
+
 class QStylePainter;
 class RangeSliderPrivate;
+
+namespace ito {
+    class IntervalMeta; //forward declaration
+}
 
 /// \ingroup Widgets
 ///
@@ -60,13 +65,13 @@ class ITOMWIDGETS_EXPORT RangeSlider : public QSlider
   Q_PROPERTY(int maximumValue READ maximumValue WRITE setMaximumValue)
   Q_PROPERTY(int minimumPosition READ minimumPosition WRITE setMinimumPosition)
   Q_PROPERTY(int maximumPosition READ maximumPosition WRITE setMaximumPosition)
-  Q_PROPERTY(bool symmetricMoves READ symmetricMoves WRITE setSymmetricMoves)
-  Q_PROPERTY(QString handleToolTip READ handleToolTip WRITE setHandleToolTip)
   Q_PROPERTY(uint stepSizePosition READ stepSizePosition WRITE setStepSizePosition)
   Q_PROPERTY(uint minimumRange READ minimumRange WRITE setMinimumRange)
   Q_PROPERTY(uint maximumRange READ maximumRange WRITE setMaximumRange)
   Q_PROPERTY(uint stepSizeRange READ stepSizeRange WRITE setStepSizeRange)
   Q_PROPERTY(bool rangeIncludeLimits READ rangeIncludeLimits WRITE setRangeIncludeLimits)
+  Q_PROPERTY(bool symmetricMoves READ symmetricMoves WRITE setSymmetricMoves)
+  Q_PROPERTY(QString handleToolTip READ handleToolTip WRITE setHandleToolTip)
 
 public:
   // Superclass typedef
@@ -160,6 +165,12 @@ public:
   /// Returns true if the maximum value handle is down, false if it is up.
   /// \sa isMinimumSliderDown()
   bool isMaximumSliderDown()const;
+
+  ///
+  /// The range slider can be used for parameters whose meta data is of type ito::IntervalMeta
+  /// or ito::RangeMeta. In this case, the limits, step sizes... of this rangeSlider can
+  /// be automatically adapted to the requirements given by the corresponding parameter.
+  void setLimitsFromIntervalMeta(const ito::IntervalMeta &intervalMeta);
 
 signals:
   ///
