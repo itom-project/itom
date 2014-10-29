@@ -5,16 +5,14 @@ import itom
 
 import matplotlib
 from matplotlib.backend_bases import FigureManagerBase, FigureCanvasBase, \
-     NavigationToolbar2, cursors, TimerBase
+     NavigationToolbar2, cursors
 from matplotlib.backend_bases import ShowBase
 
 from matplotlib._pylab_helpers import Gcf
 from matplotlib.figure import Figure
 from matplotlib.widgets import SubplotTool
 
-import threading
-
-from itom import uiItem, ui
+from itom import uiItem, ui, timer
 
 figureoptions = None
 
@@ -68,53 +66,6 @@ def new_figure_manager( num, *args, **kwargs ):
     manager = FigureManagerItom( canvas, num, itomUI, embeddedCanvas )
     return manager
 
-
-class TimerItom(TimerBase):
-    '''
-    Subclass of :class:`backend_bases.TimerBase` that uses the Timer of the python threading module
-
-    Attributes:
-    * interval: The time between timer events in milliseconds. Default
-        is 1000 ms.
-    * single_shot: Boolean flag indicating whether this timer should
-        operate as single shot (run once and then stop). Defaults to False.
-    * callbacks: Stores list of (func, args) tuples that will be called
-        upon timer events. This list can be manipulated directly, or the
-        functions add_callback and remove_callback can be used.
-    '''
-    def __init__(self, *args, **kwargs):
-        TimerBase.__init__(self, *args, **kwargs)
-
-        # Create a new timer and connect the timeout() signal to the
-        # _on_timer method.
-        self._timer = None
-        if DEBUG: print("timer __init__")
-
-    def __del__(self):
-        # Probably not necessary in practice, but is good behavior to disconnect
-        TimerBase.__del__(self)
-        
-        if(not(self._timer is None)):
-            self._timer.stop()
-            self._timer = None
-        if DEBUG: print("timer __del__")
-
-    def _timer_start(self):
-        self._timer = threading.Timer(self._interval, self._on_timer2)
-        if DEBUG: print("timer start")
-
-    def _timer_stop(self):
-        if(not(self._timer is None)):
-            self._timer.stop()
-        if DEBUG: print("timer stop")
-    
-    def _on_timer2(self):
-        if(self._single == True):
-            if(not(self._timer is None)):
-                self._timer.stop()
-        self._on_timer()
-
-
 class FigureCanvasItom( FigureCanvasBase ):
     keyvald = { 0x01000021 : 'control',
                 0x01000020 : 'shift',
@@ -155,6 +106,7 @@ class FigureCanvasItom( FigureCanvasBase ):
         self.initialized = False
         self.embeddedCanvas = embeddedCanvas
         self._destroying = False
+        self._timer = None
         
         if(embeddedCanvas == False):
             self.canvas = itomUI.canvasWidget  #this object is deleted in the destroy-method of manager, due to cyclic garbage collection
@@ -274,25 +226,6 @@ class FigureCanvasItom( FigureCanvasBase ):
 
         return key
 
-    def new_timer(self, *args, **kwargs):
-        """
-        Creates a new backend-specific subclass of :class:`backend_bases.Timer`.
-        This is useful for getting periodic events through the backend's native
-        event loop. Implemented only for backends with GUIs.
-
-        optional arguments:
-
-        *interval*
-          Timer interval in milliseconds
-        * `single_shot`: Boolean flag indicating whether this timer
-          should operate as single shot (run once and then
-          stop). Defaults to `False`.
-        *callbacks*
-          Sequence of (func, args, kwargs) where func(*args, **kwargs) will
-          be executed by the timer every *interval*.
-        """
-        return TimerItom(*args, **kwargs)
-
     def flush_events(self):
         #QtGui.qApp.processEvents()
         pass
@@ -304,18 +237,23 @@ class FigureCanvasItom( FigureCanvasBase ):
     def stop_event_loop(self):
         FigureCanvasBase.stop_event_loop_default(self)
     stop_event_loop.__doc__=FigureCanvasBase.stop_event_loop_default.__doc__
+    
+    def idle_draw(self):
+        if self._timer:
+            self._timer.stop()
+        self.draw()
+        self._idle = True
 
     def draw_idle(self):
         'update drawing area only if idle'
         d = self._idle
         self._idle = False
-        def idle_draw(*args):
-            self.draw()
-            self._idle = True
+        
         if d: 
-            timer = self.new_timer(interval = 0, callbacks = (idle_draw,None,None))
-            timer.single_shot = True
-            timer.start()
+            if not self._timer:
+                self._timer = timer(1, self.idle_draw) #auto-start, todo: reduce interval to 0 once the itom.timer constructor allows this!
+            else:
+                self._timer.start()
             #print("singleShot draw_idle timer")
     
     def signalDestroyedWidget(self):
