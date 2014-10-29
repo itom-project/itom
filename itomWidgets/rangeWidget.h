@@ -41,6 +41,10 @@ class RangeSlider;
 class QSpinBox;
 class RangeWidgetPrivate;
 
+namespace ito {
+    class IntervalMeta; //forward declaration
+}
+
 /// \ingroup Widgets
 ///
 /// RangeWidget is a wrapper around a DoubleRangeSlider and 2 QSpinBoxes
@@ -54,6 +58,11 @@ class ITOMWIDGETS_EXPORT RangeWidget : public QWidget
   Q_PROPERTY(int maximum READ maximum WRITE setMaximum)
   Q_PROPERTY(int minimumValue READ minimumValue WRITE setMinimumValue)
   Q_PROPERTY(int maximumValue READ maximumValue WRITE setMaximumValue)
+  Q_PROPERTY(uint stepSizeValue READ stepSizeValue WRITE setStepSizeValue)
+  Q_PROPERTY(uint minimumRange READ minimumRange WRITE setMinimumRange)
+  Q_PROPERTY(uint maximumRange READ maximumRange WRITE setMaximumRange)
+  Q_PROPERTY(uint stepSizeRange READ stepSizeRange WRITE setStepSizeRange)
+  Q_PROPERTY(bool rangeIncludeLimits READ rangeIncludeLimits WRITE setRangeIncludeLimits)
   Q_PROPERTY(QString prefix READ prefix WRITE setPrefix)
   Q_PROPERTY(QString suffix READ suffix WRITE setSuffix)
   Q_PROPERTY(int tickInterval READ tickInterval WRITE setTickInterval)
@@ -121,6 +130,37 @@ public:
   /// user pressing an arrow key.
   virtual int singleStep()const;
   virtual void setSingleStep(int step);
+
+  /// 
+  /// This property holds the step size for the left or right slider position.
+  /// If the stepSize is equal to 1, this property has no impact.
+  uint stepSizeValue() const;
+  void setStepSizeValue(uint stepSize);
+  
+  /// 
+  /// This property holds the minimum allowed range.
+  /// The range is (1+maximumRange-minimumRange) if rangeIncludeLimits is true, else (maximumRange-minimumRange)
+  uint minimumRange() const;
+  void setMinimumRange(uint min);
+  
+  /// 
+  /// This property holds the maximum allowed range.
+  /// The range is (1+maximumRange-minimumRange) if rangeIncludeLimits is true, else (maximumRange-minimumRange)
+  uint maximumRange() const;
+  void setMaximumRange(uint max);
+  
+  /// 
+  /// This property holds the step size of the allowed range.
+  /// The range is (1+maximumRange-minimumRange) if rangeIncludeLimits is true, else (maximumRange-minimumRange)
+  uint stepSizeRange() const;
+  void setStepSizeRange(uint stepSize);
+  
+  /// 
+  /// This property indicates if the range is assumed to be (1+maximumRange-minimumRange) (true)
+  /// or (maximumRange-minimumRange) (false). The first case is important if the rangeSlider
+  /// is used for ROIs of cameras, where the first and last value are inside of the ROI.
+  bool rangeIncludeLimits() const;
+  void setRangeIncludeLimits(bool include);
 
   ///
   /// This property holds the spin box's prefix.
@@ -190,6 +230,12 @@ public:
   /// Return the maximum spinbox.
   /// \sa minimumSpinBox(), slider()
   virtual QSpinBox* maximumSpinBox()const;
+
+  ///
+  /// The range slider can be used for parameters whose meta data is of type ito::IntervalMeta
+  /// or ito::RangeMeta. In this case, the limits, step sizes... of this rangeSlider can
+  /// be automatically adapted to the requirements given by the corresponding parameter.
+  void setLimitsFromIntervalMeta(const ito::IntervalMeta &intervalMeta);
 
 public Q_SLOTS:
   ///
