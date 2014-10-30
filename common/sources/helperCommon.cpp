@@ -156,7 +156,7 @@ namespace ito
             if (meta)
             {
                 done = true;
-                switch(meta->getType_())
+                switch(meta->getType())
                 {
                 case ito::ParamMeta::rttiCharMeta:
                 case ito::ParamMeta::rttiCharArrayMeta:

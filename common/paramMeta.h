@@ -77,7 +77,7 @@ namespace ito
         ParamMeta() : m_type(rttiUnknown) {}
         ParamMeta(MetaRtti type) : m_type(type) {}
         virtual ~ParamMeta() {}
-        inline MetaRtti getType_() const { return m_type; }
+        inline MetaRtti getType() const { return m_type; }
     protected:
         MetaRtti m_type;
     };
@@ -524,8 +524,8 @@ namespace ito
     {
     public:
         explicit RectMeta(const ito::RangeMeta &widthMeta, const ito::RangeMeta &heightMeta);
-        inline ito::RangeMeta getWidthRangeMeta() const { return m_widthMeta; }
-        inline ito::RangeMeta getHeightRangeMeta() const { return m_heightMeta; }
+        inline const ito::RangeMeta& getWidthRangeMeta() const { return m_widthMeta; }
+        inline const ito::RangeMeta& getHeightRangeMeta() const { return m_heightMeta; }
 
         void setWidthRangeMeta(const ito::RangeMeta &widthMeta);
         void setHeightRangeMeta(const ito::RangeMeta &heightMeta);

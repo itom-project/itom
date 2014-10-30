@@ -72,13 +72,13 @@ namespace ito {
             return tCmpFailed;
         }
 
-        if (metaTemplate->getType_() != meta->getType_())
+        if (metaTemplate->getType() != meta->getType())
         {
             ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The type of the meta information of parameter '%s' is unequal to this of the interface parameter '%s'.").toLatin1().data(), name, nameTemplate);
             return tCmpFailed;
         }
 
-        switch(metaTemplate->getType_())
+        switch(metaTemplate->getType())
         {
             case ito::ParamMeta::rttiCharMeta:
             {
@@ -673,7 +673,7 @@ namespace ito {
     {
         if (meta)
         {
-            switch (meta->getType_())
+            switch (meta->getType())
             {
             case ito::ParamMeta::rttiCharArrayMeta:
                 {
@@ -712,7 +712,7 @@ namespace ito {
     {
         if (meta)
         {
-            switch (meta->getType_())
+            switch (meta->getType())
             {
             case ito::ParamMeta::rttiIntArrayMeta:
                 {
@@ -749,7 +749,8 @@ namespace ito {
                     }
                     int min = drm->getMin();
                     int max = drm->getMax();
-                    int range = drm->isIntervalNotRange() ? max - min : 1 + max - min; //this is the difference between interval and range
+                    int offset = drm->isIntervalNotRange() ? 0 : 1;
+                    int range = offset + max - min; //this is the difference between interval and range
                     int ivalStep = drm->getSizeStepSize();
                     int step = drm->getStepSize();
 
@@ -758,7 +759,7 @@ namespace ito {
                         return ito::RetVal(ito::retError, 0, QObject::tr("The given integer array [v1,v2] is considered to be a range but does not fit to v1=[%1,v2], v2=[v1,%2]").arg(min).arg(max).toLatin1().data());
                     }
 
-                    if (step > 1 && (((values[0] - min) % step) != 0 || ((values[1] - min) % step) != 0))
+                    if (step > 1 && (((values[0] - min) % step) != 0 || ((offset + values[1] - min) % step) != 0))
                     {
                         return ito::RetVal(ito::retError, 0, QObject::tr("one of the values [v1,v2] do not fit to given step size [%1:%2:%3]").arg(min).arg(step).arg(max).toLatin1().data());
                     }
@@ -814,7 +815,7 @@ namespace ito {
     {
         if (meta)
         {
-            switch (meta->getType_())
+            switch (meta->getType())
             {
             case ito::ParamMeta::rttiDoubleArrayMeta:
                 {
@@ -965,7 +966,7 @@ namespace ito {
                     break;
                 case ito::ParamBase::IntArray:
                     {
-                        if (tmplMeta->getType_() == ito::ParamMeta::rttiIntArrayMeta)
+                        if (tmplMeta->getType() == ito::ParamMeta::rttiIntArrayMeta)
                         {
                             retVal += validateIntMeta(dynamic_cast<const ito::IntMeta*>(tmplMeta), param.getVal<int>()); 
                         }
@@ -977,7 +978,7 @@ namespace ito {
                     break;
                 case ito::ParamBase::DoubleArray:
                     {
-                        if (tmplMeta->getType_() == ito::ParamMeta::rttiDoubleArrayMeta)
+                        if (tmplMeta->getType() == ito::ParamMeta::rttiDoubleArrayMeta)
                         {
                             retVal += validateDoubleMeta(dynamic_cast<const ito::DoubleMeta*>(tmplMeta), param.getVal<double>()); 
                         }
@@ -1098,7 +1099,7 @@ namespace ito {
                     break;
                 case ito::ParamBase::IntArray:
                     {
-                        if (tmplMeta->getType_() == ito::ParamMeta::rttiIntArrayMeta)
+                        if (tmplMeta->getType() == ito::ParamMeta::rttiIntArrayMeta)
                         {
                             retVal += validateIntMeta(dynamic_cast<const ito::IntMeta*>(tmplMeta), param.getVal<int>()); 
                         }
@@ -1110,7 +1111,7 @@ namespace ito {
                     break;
                 case ito::ParamBase::DoubleArray:
                     {
-                        if (tmplMeta->getType_() == ito::ParamMeta::rttiDoubleArrayMeta)
+                        if (tmplMeta->getType() == ito::ParamMeta::rttiDoubleArrayMeta)
                         {
                             retVal += validateDoubleMeta(dynamic_cast<const ito::DoubleMeta*>(tmplMeta), param.getVal<double>()); 
                         }

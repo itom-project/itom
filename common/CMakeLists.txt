@@ -2,7 +2,7 @@ SET (target_name itomCommonLib)
 project(${target_name}) 
 
 cmake_minimum_required(VERSION 2.8)
- 
+   
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
