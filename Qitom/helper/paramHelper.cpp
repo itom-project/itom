@@ -756,12 +756,23 @@ namespace ito {
 
                     if (values[0] < min || values[0] > values[1] || values[1] > max)
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("The given integer array [v1,v2] is considered to be a range but does not fit to v1=[%1,v2], v2=[v1,%2]").arg(min).arg(max).toLatin1().data());
+                        if (drm->isIntervalNotRange())
+                        {
+                            return ito::RetVal(ito::retError, 0, QObject::tr("The given integer array [v1=%1,v2=%2] is considered to be an interval but does not fit to v1=[%3,v2], v2=[v1,%4]").arg(values[0]).arg(values[1]).arg(min).arg(max).toLatin1().data());
+                        }
+                        else
+                        {
+                            return ito::RetVal(ito::retError, 0, QObject::tr("The given integer array [v1=%1,v2=%2] is considered to be a range but does not fit to v1=[%3,v2], v2=[v1,%4]").arg(values[0]).arg(values[1]).arg(min).arg(max).toLatin1().data());
+                        }
                     }
 
-                    if (step > 1 && (((values[0] - min) % step) != 0 || ((offset + values[1] - min) % step) != 0))
+                    if (step > 1 && (((values[0] - min) % step) != 0))
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("one of the values [v1,v2] do not fit to given step size [%1:%2:%3]").arg(min).arg(step).arg(max).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, QObject::tr("The 1st value %1 does not fit to given step size [%2:%3:%4]").arg(values[0]).arg(min).arg(step).arg(max).toLatin1().data());
+                    }
+                    else if (step > 1 && (((offset + values[1] - min) % step) != 0))
+                    {
+                        return ito::RetVal(ito::retError, 0, QObject::tr("The 2nd value %1 does not fit to given step size [%2:%3:%4]").arg(values[1]).arg(min).arg(step).arg(max).toLatin1().data());
                     }
 
                     if (range < drm->getSizeMin() || range > drm->getSizeMax())
@@ -857,12 +868,16 @@ namespace ito {
 
                     if (values[0] < min || values[0] > values[1] || values[1] > max)
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("The given double array [v1,v2] is considered to be an interval but does not fit to v1=[%1,v2], v2=[v1,%2]").arg(min).arg(max).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, QObject::tr("The given double array [v1=%1,v2=%2] is considered to be an interval but does not fit to v1=[%3,v2], v2=[v1,%4]").arg(values[0]).arg(values[1]).arg(min).arg(max).toLatin1().data());
                     }
 
-                    if (!fitToDoubleStepSize(min, step, values[0]) || !fitToDoubleStepSize(min, step, values[1]))
+                    if (!fitToDoubleStepSize(min, step, values[0]))
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("one of the values [v1,v2] do not fit to given step size [%1:%2:%3]").arg(min).arg(step).arg(max).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, QObject::tr("The 1st value %1 does not fit to given step size [%2:%3:%4]").arg(values[0]).arg(min).arg(step).arg(max).toLatin1().data());
+                    }
+                    else if (!fitToDoubleStepSize(min, step, values[1]))
+                    {
+                        return ito::RetVal(ito::retError, 0, QObject::tr("The 2nd value %1 does not fit to given step size [%2:%3:%4]").arg(values[1]).arg(min).arg(step).arg(max).toLatin1().data());
                     }
 
                     if (range < drm->getSizeMin() || range > drm->getSizeMax())
@@ -1105,7 +1120,12 @@ namespace ito {
                         }
                         else
                         {
-                            retVal += ito::RetVal(ito::retWarning, 0, QObject::tr("index-based parameter cannot be validated since non-index based parameter is an interval, range or rect").toLatin1().data());
+                            //temporarily set new value into given template, check it and reset the value in the template.
+                            int *values = templateParam.getVal<int*>();
+                            int old = values[index];
+                            values[index] = param.getVal<int>();
+                            retVal += validateIntArrayMeta(tmplMeta, values, templateParam.getLen());
+                            values[index] = old;
                         }
                     }
                     break;
