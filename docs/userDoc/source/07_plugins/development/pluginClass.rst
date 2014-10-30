@@ -288,9 +288,18 @@ The prototype for the method *getParam* then looks like this:
             //put your switch-case.. for getting the right value here
             
             //finally, save the desired value in the argument val (this is a shared pointer!)
-            *val = it.value();
+            //if the requested parameter name has an index, e.g. roi[0], then the sub-value of the
+            //array is split and returned using the api-function apiGetParam
+            if (hasIndex)
+            {
+                *val = apiGetParam(*it, hasIndex, index, retValue);
+            }
+            else
+            {
+                *val = *it;
+            }
         }
-
+        
         if (waitCond) 
         {
             waitCond->returnValue = retValue;
