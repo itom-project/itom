@@ -1148,10 +1148,17 @@ static const char* ito_AddInInterface_OldVersions[] = {
     NULL
 };
 
-static const char* ito_AddInInterface_CurrentVersion = "ito.AddIn.InterfaceBase/1.3.1";
+//these defines exist since itom 1.3.1
+#define CREATE_ADDININTERFACE_VERSION_STR(major,minor,patch) "ito.AddIn.InterfaceBase/"#major"."#minor"."#patch
+#define CREATE_ADDININTERFACE_VERSION(major,minor,patch) ((major<<16)|(minor<<8)|(patch))
 
-//this define exists since itom 1.3.0
-#define ITOM_ADDININTERFACE_VERSION 0x010300
+#define ITOM_ADDININTERFACE_MAJOR 1
+#define ITOM_ADDININTERFACE_MINOR 3
+#define ITOM_ADDININTERFACE_PATCH 1
+#define ITOM_ADDININTERFACE_VERSION CREATE_ADDININTERFACE_VERSION(ITOM_ADDININTERFACE_MAJOR,ITOM_ADDININTERFACE_MINOR,ITOM_ADDININTERFACE_PATCH)
+static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_VERSION_STR(ITOM_ADDININTERFACE_MAJOR,ITOM_ADDININTERFACE_MINOR,ITOM_ADDININTERFACE_PATCH); //results in "ito.AddIn.InterfaceBase/x.x.x";
+
+
 
 //! must be out of namespace ito, otherwise it results in a strange compiler error (template ...)
 Q_DECLARE_INTERFACE(ito::AddInInterfaceBase, ito_AddInInterface_CurrentVersion /*"ito.AddIn.InterfaceBase/1.1"*/)

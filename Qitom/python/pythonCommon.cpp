@@ -513,10 +513,102 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                     break;
 
                     case ito::ParamBase::CharArray & ito::paramTypeMask:
+                    {
+                        int len = params->at(n).getLen();
+                        char *ptr = params->at(n).getVal<char*>();
+                        switch (len)
+                        {
+                        case 0:
+                            values["values"].append("empty");
+                            break;
+                        case 1:
+                            temp = QString("[%1]").arg(ptr[0]);
+                            values["values"].append(temp);
+                            break;
+                        case 2:
+                            temp = QString("[%1,%2]").arg(ptr[0]).arg(ptr[1]);
+                            values["values"].append(temp);
+                            break;
+                        case 3:
+                            temp = QString("[%1,%2,%3]").arg(ptr[0]).arg(ptr[1]).arg(ptr[2]);
+                            values["values"].append(temp);
+                            break;
+                        case 4:
+                            temp = QString("[%1,%2,%3,%4]").arg(ptr[0]).arg(ptr[1]).arg(ptr[2]).arg(ptr[3]);
+                            values["values"].append(temp);
+                            break;
+                        default:
+                            temp = QString("%1 elements").arg(len);
+                            values["values"].append(temp);
+                            break;
+                        }
+                    }
+                    break;
+
                     case ito::ParamBase::IntArray & ito::paramTypeMask:
+                    {
+                        int len = params->at(n).getLen();
+                        int *ptr = params->at(n).getVal<int*>();
+                        switch (len)
+                        {
+                        case 0:
+                            values["values"].append("empty");
+                            break;
+                        case 1:
+                            temp = QString("[%1]").arg(ptr[0]);
+                            values["values"].append(temp);
+                            break;
+                        case 2:
+                            temp = QString("[%1,%2]").arg(ptr[0]).arg(ptr[1]);
+                            values["values"].append(temp);
+                            break;
+                        case 3:
+                            temp = QString("[%1,%2,%3]").arg(ptr[0]).arg(ptr[1]).arg(ptr[2]);
+                            values["values"].append(temp);
+                            break;
+                        case 4:
+                            temp = QString("[%1,%2,%3,%4]").arg(ptr[0]).arg(ptr[1]).arg(ptr[2]).arg(ptr[3]);
+                            values["values"].append(temp);
+                            break;
+                        default:
+                            temp = QString("%1 elements").arg(len);
+                            values["values"].append(temp);
+                            break;
+                        }
+                    }
+                    break;
+
                     case ito::ParamBase::DoubleArray & ito::paramTypeMask:
-                        temp = QString("%1 elements").arg(QString::number(((*params)[n]).getLen()));
-                        values["values"].append(temp);
+                    {
+                        int len = params->at(n).getLen();
+                        double *ptr = params->at(n).getVal<double*>();
+                        switch (len)
+                        {
+                        case 0:
+                            values["values"].append("empty");
+                            break;
+                        case 1:
+                            temp = QString("[%1]").arg(ptr[0]);
+                            values["values"].append(temp);
+                            break;
+                        case 2:
+                            temp = QString("[%1,%2]").arg(ptr[0]).arg(ptr[1]);
+                            values["values"].append(temp);
+                            break;
+                        case 3:
+                            temp = QString("[%1,%2,%3]").arg(ptr[0]).arg(ptr[1]).arg(ptr[2]);
+                            values["values"].append(temp);
+                            break;
+                        case 4:
+                            temp = QString("[%1,%2,%3,%4]").arg(ptr[0]).arg(ptr[1]).arg(ptr[2]).arg(ptr[3]);
+                            values["values"].append(temp);
+                            break;
+                        default:
+                            temp = QString("%1 elements").arg(len);
+                            values["values"].append(temp);
+                            break;
+                        }
+                    }
                     break;
 
                     case ((ito::ParamBase::Pointer | ito::ParamBase::HWRef) & ito::paramTypeMask):

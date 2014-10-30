@@ -963,7 +963,7 @@ const Param Param::operator [] (const int num) const
                     {
                     
                     CharMeta *cMeta = NULL;
-                    if (m_pMeta->getType_() == ParamMeta::rttiCharArrayMeta)
+                    if (m_pMeta->getType() == ParamMeta::rttiCharArrayMeta)
                     {
                         const CharArrayMeta *caMeta = static_cast<const CharArrayMeta*>(m_pMeta);
                         cMeta = new CharMeta(caMeta->getMin(), caMeta->getMax(), caMeta->getStepSize());
@@ -975,7 +975,7 @@ const Param Param::operator [] (const int num) const
                 case Int:
                     {
                     IntMeta *iMeta = NULL;
-                    if (m_pMeta->getType_() == ParamMeta::rttiIntArrayMeta || m_pMeta->getType_() == ParamMeta::rttiIntervalMeta || m_pMeta->getType_() == ParamMeta::rttiRangeMeta)
+                    if (m_pMeta->getType() == ParamMeta::rttiIntArrayMeta || m_pMeta->getType() == ParamMeta::rttiIntervalMeta || m_pMeta->getType() == ParamMeta::rttiRangeMeta)
                     {
                         const IntMeta *iaMeta = static_cast<const IntMeta*>(m_pMeta);
                         iMeta = new IntMeta(*iaMeta);
@@ -988,7 +988,7 @@ const Param Param::operator [] (const int num) const
                 case Double:
                     {
                     DoubleMeta *dMeta = NULL;
-                    if (m_pMeta->getType_() == ParamMeta::rttiDoubleIntervalMeta || m_pMeta->getType_() == ParamMeta::rttiDoubleIntervalMeta)
+                    if (m_pMeta->getType() == ParamMeta::rttiDoubleIntervalMeta || m_pMeta->getType() == ParamMeta::rttiDoubleIntervalMeta)
                     {
                         const DoubleMeta *daMeta = static_cast<const DoubleMeta*>(m_pMeta);
                         dMeta = new DoubleMeta(*daMeta);
@@ -1033,9 +1033,14 @@ void Param::setMeta(ParamMeta* meta, bool takeOwnership)
         m_pMeta = NULL;
     }
 
+    //BEGIN DEPRECATION / DEPRECATED
+    ParamMeta *meta_ = meta;
+    bool deleteMeta_ = false;
+    //END DEPRECATION / DEPRECATED
+
     if (meta)
     {
-        ito::ParamMeta::MetaRtti metaType = meta->getType_();
+        ito::ParamMeta::MetaRtti metaType = meta->getType();
 
 #if _DEBUG
         bool valid = false;
@@ -1045,12 +1050,39 @@ void Param::setMeta(ParamMeta* meta, bool takeOwnership)
         {
         case ParamMeta::rttiCharMeta:
             if (ptype == ito::ParamBase::Char) valid = true;
+            //BEGIN DEPRECATION / DEPRECATED
+            if (ptype == (ito::ParamBase::CharArray & paramTypeMask)) 
+            {
+                const ito::CharMeta *dm = (const ito::CharMeta*)meta;
+                meta_ = new ito::CharArrayMeta(dm->getMin(), dm->getMax(), dm->getStepSize(), 0, std::numeric_limits<size_t>::max(), 1);
+                deleteMeta_ = true;
+                valid = true;
+            }
+            //END DEPRECATION / DEPRECATED
             break;
         case ParamMeta::rttiIntMeta:
             if (ptype == ito::ParamBase::Int) valid = true;
+            //BEGIN DEPRECATION / DEPRECATED
+            if (ptype == (ito::ParamBase::IntArray & paramTypeMask)) 
+            {
+                const ito::IntMeta *dm = (const ito::IntMeta*)meta;
+                meta_ = new ito::IntArrayMeta(dm->getMin(), dm->getMax(), dm->getStepSize(), 0, std::numeric_limits<size_t>::max(), 1);
+                deleteMeta_ = true;
+                valid = true;
+            }
+            //END DEPRECATION / DEPRECATED
             break;
         case ParamMeta::rttiDoubleMeta:
             if (ptype == ito::ParamBase::Double) valid = true;
+            //BEGIN DEPRECATION / DEPRECATED
+            if (ptype == (ito::ParamBase::DoubleArray & paramTypeMask)) 
+            {
+                const ito::DoubleMeta *dm = (const ito::DoubleMeta*)meta;
+                meta_ = new ito::DoubleArrayMeta(dm->getMin(), dm->getMax(), dm->getStepSize(), 0, std::numeric_limits<size_t>::max(), 1);
+                deleteMeta_ = true;
+                valid = true;
+            }
+            //END DEPRECATION / DEPRECATED
             break;
         case ParamMeta::rttiStringMeta:
             if (ptype == (ito::ParamBase::String & paramTypeMask)) valid = true;
@@ -1086,54 +1118,68 @@ void Param::setMeta(ParamMeta* meta, bool takeOwnership)
 
         if (takeOwnership)
         {
-            m_pMeta = meta; //Param takes ownership of meta
+            m_pMeta = meta_; //Param takes ownership of meta
+
+            //BEGIN DEPRECATION / DEPRECATED
+            if (deleteMeta_) //newly created meta_ is now passed param, therefore delete original meta
+            {
+                delete meta;
+            }
+            //END DEPRECATION / DEPRECATED
         }
         else
         {
             switch(metaType)
             {
             case ParamMeta::rttiCharMeta:
-                m_pMeta = new CharMeta(*(CharMeta*)(meta));
+                m_pMeta = new CharMeta(*(CharMeta*)(meta_));
                 break;
             case ParamMeta::rttiIntMeta:
-                m_pMeta = new IntMeta(*(IntMeta*)(meta));
+                m_pMeta = new IntMeta(*(IntMeta*)(meta_));
                 break;
             case ParamMeta::rttiDoubleMeta:
-                m_pMeta = new DoubleMeta(*(DoubleMeta*)(meta));
+                m_pMeta = new DoubleMeta(*(DoubleMeta*)(meta_));
                 break;
             case ParamMeta::rttiStringMeta:
-                m_pMeta = new StringMeta(*(StringMeta*)(meta));
+                m_pMeta = new StringMeta(*(StringMeta*)(meta_));
                 break;
             case ParamMeta::rttiDObjMeta:
-                m_pMeta = new DObjMeta(*(DObjMeta*)(meta));
+                m_pMeta = new DObjMeta(*(DObjMeta*)(meta_));
                 break;
             case ParamMeta::rttiHWMeta:
-                m_pMeta = new HWMeta(*(HWMeta*)(meta));
+                m_pMeta = new HWMeta(*(HWMeta*)(meta_));
                 break;
             case ParamMeta::rttiCharArrayMeta:
-                m_pMeta = new CharArrayMeta(*(CharArrayMeta*)(meta));
+                m_pMeta = new CharArrayMeta(*(CharArrayMeta*)(meta_));
                 break;
             case ParamMeta::rttiIntArrayMeta:
-                m_pMeta = new IntArrayMeta(*(IntArrayMeta*)(meta));
+                m_pMeta = new IntArrayMeta(*(IntArrayMeta*)(meta_));
                 break;
             case ParamMeta::rttiDoubleArrayMeta:
-                m_pMeta = new DoubleArrayMeta(*(DoubleArrayMeta*)(meta));
+                m_pMeta = new DoubleArrayMeta(*(DoubleArrayMeta*)(meta_));
                 break;
             case ParamMeta::rttiIntervalMeta:
-                m_pMeta = new IntervalMeta(*(IntervalMeta*)(meta));
+                m_pMeta = new IntervalMeta(*(IntervalMeta*)(meta_));
                 break;
             case ParamMeta::rttiRangeMeta:
-                m_pMeta = new RangeMeta(*(RangeMeta*)(meta));
+                m_pMeta = new RangeMeta(*(RangeMeta*)(meta_));
                 break;
             case ParamMeta::rttiDoubleIntervalMeta:
-                m_pMeta = new DoubleIntervalMeta(*(DoubleIntervalMeta*)(meta));
+                m_pMeta = new DoubleIntervalMeta(*(DoubleIntervalMeta*)(meta_));
                 break;
             case ParamMeta::rttiRectMeta:
-                m_pMeta = new RectMeta(*(RectMeta*)(meta));
+                m_pMeta = new RectMeta(*(RectMeta*)(meta_));
                 break;
             default:
                 throw std::logic_error("Type of meta [ParamMeta] is unknown and cannot not be copied or assigned.");
             }
+
+            //BEGIN DEPRECATION / DEPRECATED
+            if (deleteMeta_) //delete newly created meta_, since it is copied above
+            {
+                delete meta_;
+            }
+            //END DEPRECATION / DEPRECATED
         }
     }
 }
@@ -1152,7 +1198,7 @@ double Param::getMin() const
 {
     if (m_pMeta)
     {
-        switch(m_pMeta->getType_())
+        switch(m_pMeta->getType())
         {
         case ParamMeta::rttiCharMeta:
         case ParamMeta::rttiCharArrayMeta:
@@ -1184,7 +1230,7 @@ double Param::getMax() const
 {
     if (m_pMeta)
     {
-        switch(m_pMeta->getType_())
+        switch(m_pMeta->getType())
         {
         case ParamMeta::rttiCharMeta:
         case ParamMeta::rttiCharArrayMeta:
