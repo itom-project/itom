@@ -32,6 +32,7 @@
 #include "typeDefs.h"
 #include "sharedStructuresQt.h"
 #include "commonGlobal.h"
+#include "../common/interval.h"
 
 #if QT_VERSION < 0x050000
 #include <qdialog.h>
@@ -40,6 +41,11 @@
 #endif
 #include <qmap.h>
 #include <qsharedpointer.h>
+
+
+Q_DECLARE_METATYPE(ito::AutoInterval);
+
+
 
 //forward declarations
 namespace ito
