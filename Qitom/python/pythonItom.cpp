@@ -3117,7 +3117,7 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
                 {
                     keyLength = strlen(tempName) + sizeIter + 1;
                     key = (char*)calloc(keyLength, sizeof(char));
-                    sprintf_s(key, keyLength, "%s%i", matrixName, ((size_t)i + 1));
+                    sprintf_s(key, keyLength, "%s%i", matrixName, ((int)i + 1));
                     matlabData = PyMatlabMatDataObjectConverter(tempItem);
                     PyDict_SetItemString(saveDict, key, matlabData);
                     Py_DECREF(matlabData);

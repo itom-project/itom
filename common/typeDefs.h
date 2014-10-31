@@ -212,8 +212,9 @@ namespace ito
 
 // this will be set on Visual Studio only, so this code is added for all other compilers
 #ifndef _MSC_VER
-    #define vsprintf_s(b,l,f,v) vsprintf(b,f,v);
-    #define sprintf_s(b,l,f,v) sprintf(b,f,v);
+    //for the ##__VA_ARGS__ trick see http://stackoverflow.com/questions/5588855/standard-alternative-to-gccs-va-args-trick
+    #define vsprintf_s(b,l,f,...) vsprintf(b,f,##__VA_ARGS__);
+    #define sprintf_s(b,l,f,...) sprintf(b,f,##__VA_ARGS__);
     #define strcat_s(dest,len,source) strcat(dest,source);
     #define strcpy_s(dest,len,source) strcpy(dest,source);
 #endif

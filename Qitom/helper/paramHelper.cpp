@@ -378,7 +378,7 @@ namespace ito {
                 {
                     if (m->getHWAddInName() != NULL)
                     {
-                        ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The meta data of the interface parameter '%s' requires a plugin with name '%s', but parameter '%s' does it not.").toLatin1().data(), nameTemplate, mT->getHWAddInName(), name);
+                        ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The meta data of the interface parameter '%s' requires a plugin with name '%s', but parameter '%s' does it not.").toLatin1().data(), nameTemplate, mT->getHWAddInName().data(), name);
                         return tCmpFailed;
                     }
                     else if (mT->getHWAddInName() != m->getHWAddInName())
@@ -658,7 +658,7 @@ namespace ito {
             }
             if (!(meta->getHWAddInName().empty()) && QString::compare(meta->getHWAddInName().data(), value->getBasePlugin()->objectName(), Qt::CaseInsensitive) != 0)
             {
-                return ito::RetVal::format(ito::retError, 0, QObject::tr("AddIn must be of the following plugin: '%s'.").toLatin1().data(), meta->getHWAddInName());
+                return ito::RetVal::format(ito::retError, 0, QObject::tr("AddIn must be of the following plugin: '%s'.").toLatin1().data(), meta->getHWAddInName().data());
             }
         }
         else if (mandatory && value == NULL)

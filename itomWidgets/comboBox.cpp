@@ -37,7 +37,7 @@
 #include <QWheelEvent>
 
 // CTK includes
-#include "ComboBox.h"
+#include "comboBox.h"
 
 // -------------------------------------------------------------------------
 class ComboBoxPrivate

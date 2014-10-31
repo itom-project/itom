@@ -35,6 +35,8 @@
 #include "byteArray.h"
 #include "retVal.h"
 
+#include <limits>
+
 
 /* definition and macros */
 /* global variables (avoid) */
