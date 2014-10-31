@@ -40,6 +40,7 @@
 
 #include "../../common/typeDefs.h"
 #include "../../common/interval.h"
+#include "../../common/qtMetaTypeDeclarations.h"
 #include "structmember.h"
 #include <qobject.h>
 
