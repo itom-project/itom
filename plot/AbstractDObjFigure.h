@@ -33,10 +33,10 @@
 #include "../common/sharedStructuresQt.h"
 #include "../common/addInInterface.h"
 #include "../common/interval.h"
+#include "../common/qtMetaTypeDeclarations.h"
 
 #include <qpointer.h>
 
-Q_DECLARE_METATYPE(ito::AutoInterval);
 
 #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 
