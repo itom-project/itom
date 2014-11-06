@@ -7,11 +7,20 @@
 Parameters - Meta Information
 =============================
 
+Every parameter of type ito::Param can contain meta information that describe some boundary values, value ranges, allowed values... of the
+parameter. Once a parameter has its valid meta information, itom is able to check given input values with respect to the meta information as well
+as adapt any auto-created input masks to simplify the input with respect to the given constraints.
+
+Most possible types of class ito::Param have their respective meta information structure.
+
+.. _plugin-paramMeta-scheme:
+.. figure:: images/paramMeta.png
+
 Class ParamMeta
 ---------------
 
 The class **ParamMeta** is the base class for all meta information classes. Parameters of class **Param** may
-contain pointers of that class, which then must be casted to the final implementation.
+contain pointers of that class, which then must be cast to the final implementation.
 
 .. doxygenclass:: ito::ParamMeta
     :project: itom

@@ -60,20 +60,20 @@ namespace ito
         */
         enum MetaRtti
         {
-            rttiUnknown = 0,
-            rttiCharMeta = 1,
-            rttiIntMeta = 2,
-            rttiDoubleMeta = 3,
-            rttiStringMeta = 4,
-            rttiHWMeta = 5,
-            rttiDObjMeta = 6,
-            rttiIntArrayMeta = 7,
-            rttiDoubleArrayMeta = 8,
-            rttiCharArrayMeta = 9,
-            rttiIntervalMeta = 10,
-            rttiDoubleIntervalMeta = 11,
-            rttiRangeMeta = 12,
-            rttiRectMeta = 13
+            rttiUnknown = 0,      /*!< unknown parameter */ 
+            rttiCharMeta = 1,     /*!< meta for a char parameter */ 
+            rttiIntMeta = 2,      /*!< meta for an integer parameter */ 
+            rttiDoubleMeta = 3,   /*!< meta for a double parameter */ 
+            rttiStringMeta = 4,   /*!< meta for a string parameter */
+            rttiHWMeta = 5,       /*!< meta for a hardware plugin parameter */
+            rttiDObjMeta = 6,     /*!< meta for a data object parameter */
+            rttiIntArrayMeta = 7, /*!< meta for an integer array parameter */
+            rttiDoubleArrayMeta = 8, /*!< meta for a double array parameter */
+            rttiCharArrayMeta = 9, /*!< meta for a char array parameter */
+            rttiIntervalMeta = 10, /*!< meta for an integer array with two values that represent an interval [value1, value2] parameter */
+            rttiDoubleIntervalMeta = 11, /*!< meta for a double array with two values that represent an interval [value1, value2] parameter (size of the interval is value2-value1) */
+            rttiRangeMeta = 12,    /*!< meta for an integer array with two values that represent a range [value1, value2] parameter (size of a range is 1+value2-value1) */
+            rttiRectMeta = 13      /*!< meta for an integer array with four values that consists of two ranges (vertical and horizontal, e.g. for ROIs of cameras) */
         };
 
         ParamMeta() : m_type(rttiUnknown) {}
