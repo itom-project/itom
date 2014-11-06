@@ -497,7 +497,7 @@ In the following, examples about how to create parameters and meta information o
         //you can add a meta-information struct of class CharMeta to that char-array (if desired)
         
         char* value = param.getVal<char*>();    //returns the pointer to the first element of the array
-        ito::RetVal retValue = param.setVal<char*>(ptr); //should return ito::retOk
+        ito::RetVal retValue = param.setVal<char*>(ptr,5); //should return ito::retOk
         bool numeric = param.isNumeric()        //returns false (even it is an array of numeric values)
         int len = param.getLen()                //5
         ito::Param param0 = param[0];           //returns a char-parameter with value 0
@@ -513,7 +513,7 @@ In the following, examples about how to create parameters and meta information o
         //you can add a meta-information struct of class IntMeta to that integer array (if desired)
         
         int* value = param.getVal<int*>();    //returns the pointer to the first element of the array
-        ito::RetVal retValue = param.setVal<int*>(ptr); //should return ito::retOk
+        ito::RetVal retValue = param.setVal<int*>(ptr,5); //should return ito::retOk
         bool numeric = param.isNumeric()        //returns false (even it is an array of numeric values)
         int len = param.getLen()                //5
         ito::ParamBase param2 = param[1]        //returns integer-parameter (casted to ParamBase) of second item, value: 2
@@ -528,7 +528,7 @@ In the following, examples about how to create parameters and meta information o
         ito::Param param("array", ito::ParamBase::DoubleArray, 5, &ptr, "description");
         
         double* value = param.getVal<double*>();    //returns the pointer to the first element of the array
-        ito::RetVal retValue = param.setVal<double*>(ptr); //should return ito::retOk
+        ito::RetVal retValue = param.setVal<double*>(ptr,5); //should return ito::retOk
         bool numeric = param.isNumeric()        //returns false (even it is an array of numeric values)
         int len = param.getLen()                //5
 

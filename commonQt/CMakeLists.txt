@@ -11,7 +11,7 @@ OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte ch
 OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
-
+ 
 include("../ItomBuildMacros.cmake")
 
 IF(BUILD_ITOMLIBS_SHARED)

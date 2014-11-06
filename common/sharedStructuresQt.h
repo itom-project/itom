@@ -33,10 +33,15 @@
 #include <qsemaphore.h>
 #include <qdebug.h>
 #include <qeventloop.h>
+#include <qmap.h>
+#include <qstring.h>
 
 #include "sharedStructures.h"
 
 #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
+
+typedef QMap<QString, ito::Param> ParamMap;
+typedef ParamMap::iterator ParamMapIterator;
 
 //namespace ito
 //{
