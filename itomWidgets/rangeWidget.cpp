@@ -734,7 +734,10 @@ Qt::Alignment RangeWidget::spinBoxTextAlignment()const
 void RangeWidget::setTracking(bool enable)
 {
   Q_D(RangeWidget);
+  d->MinimumSpinBox->setKeyboardTracking(enable);
+  d->MaximumSpinBox->setKeyboardTracking(enable);
   d->Tracking = enable;
+  Q_ASSERT((d->Tracking == d->MinimumSpinBox->keyboardTracking()) && (d->MinimumSpinBox->keyboardTracking() == d->MaximumSpinBox->keyboardTracking()));
 }
 
 // -------------------------------------------------------------------------
