@@ -27,18 +27,31 @@ body {
 col.field-name{ 
     background-color: #F6E3CE;
     overflow: hidden;
-	width: 115px;
+    width: 115px;
     border-left: 2px solid #000000;
 }
 
 /*class.itom ... Ueberschrift*/
-dl.class dt{
-   font-size: 19px; 
+dl.class > dt{
+   font-size: 12pt; 
+   border-bottom: dotted thin #e0e0e0;
 }
 
 /*Das Wort "class" in der Klassenueberschrift*/
-dl.class dt em.property{
-	font-size: 1.05em  
+dl.class > dt > em{
+    font-size: 12pt;  
+}
+
+dl.class > dt > tt.descname {
+    background-color:;
+    font-size: 16pt;
+    font-weight: bold;
+}
+
+tt > span.pre {
+    font-size: 10pt;
+    font-weight: bold;
+    font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
 }
 
 
@@ -55,18 +68,23 @@ dl.attribute{
 }
 
 /*Hinterlegung des Attributeheaders*/
-dl.attribute dt{
- 	background-color: #E6E6E6;
-  font-size: 13px;
-  padding-left: 7px;
+dl.attribute > dt{
+    background-color: #E6E6E6;
+    font-size: 13px;
+    padding-left: 7px;
 }
 
 /*Hinterlegung des static- und Mehodenheaders*/
 dl.method dt, dl.staticmethod dt, dl.function dt{
- 	background-color: #E6E6E6; 
-  border-top: 1px solid #000000; /*#B40404*/
-  font-size: 13px;
-  padding-left: 7px;
+    background-color: #E6E6E6; 
+    border-top: 0px solid #000000;
+    font-size: 13px;
+    padding-left: 7px;
+    margin-top: 15x;
+}
+
+dl.method, dl.staticmethod, dl.function > dt > tt {
+    font-family: monospace;
 }
 
 div.footer {
@@ -79,13 +97,13 @@ div.footer {
 /* link colors and text decoration */
 
 a:link {
-    font-weight: bold;
+    font-weight: normal;
     text-decoration: none;
     color: #dc3c01;
 }
 
 a:visited {
-    font-weight: bold;
+    font-weight: normal;
     text-decoration: none;
     color: #892601;
 }
@@ -329,15 +347,14 @@ div.seealso {
 
 /* More layout and styles */
 h1 {
-    font-size: 1.3em;
-    font-weight: bold;
+    font-size: 1.8em;
     color: #0c3762;
     border-bottom: dotted thin #e0e0e0;
     margin-top: 30px;
 }
 
 h2 {
-    font-size: 1.2em;
+    font-size: 1.5em;
     font-weight: normal;
     color: #0c3762;
     border-bottom: dotted thin #e0e0e0;
@@ -345,7 +362,7 @@ h2 {
 }
 
 h3 {
-    font-size: 1.1em;
+    font-size: 1.2em;
     font-weight: normal;
     color: #0c3762;
     margin-top: 30px;
@@ -407,11 +424,7 @@ td {
 
 /*Groesse aller Links*/
 /*Vorsicht, da relativ und manche Boxen dadurch extrem grosse Links*/
-tt {
-    background-color: #e2e2e2;
-    font-size: 1.2em;
-    font-family: monospace;
-}
+
 
 pre {
     border-color: #0c3762;
@@ -519,4 +532,27 @@ table.citation td {
 /* So parameter descriptions are displayed inline to the item */
 .breatheparameterlist li tt + p {
     display: inline;
+}
+
+p.breathe-sectiondef-title {
+    border-bottom: dotted thin #e0e0e0;
+    font-weight: bold;
+    margin-top: 30px;
+}
+
+dl.enum > dt {
+    background-color: #E6E6E6; 
+    border-top: 0px solid #000000;
+    font-weight: bold;
+    font-size: 16px;
+    padding-left: 7px;
+    font-family: monospace;
+}
+
+dl.function > dt > tt.descname {
+    background-color: #E6E6E6; 
+    border-top: 0px solid #000000;
+    font-size: 16px;
+    font-family: monospace;
+    font-weight: bold;
 }

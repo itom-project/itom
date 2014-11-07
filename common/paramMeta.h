@@ -47,7 +47,13 @@ namespace ito
     /*!
     \class ParamMeta
     \brief Base class for all meta-information classes
-    \sa IntMeta, DoubleMeta, CharMeta, StringMeta, HWMeta, DObjMeta
+
+    Parameters of type ito::Param can have a pointer to this class. Consider this base class to be abstract, such that
+    it is only allowed to pass the right implementation (derived from this class) that fits to the type of the parameter.
+    The runtime type information value m_type indicates the real type of this pointer, such that a direct cast
+    can be executed.
+
+    \sa ito::CharMeta, ito::IntMeta, ito::DoubleMeta, ito::StringMeta, ito::HWMeta, ito::DObjMeta, ito::CharArrayMeta, ito::IntArrayMeta, ito::DoubleArrayMeta
     */
     class ITOMCOMMON_EXPORT ParamMeta
     {
@@ -76,18 +82,22 @@ namespace ito
             rttiRectMeta = 13      /*!< meta for an integer array with four values that consists of two ranges (vertical and horizontal, e.g. for ROIs of cameras) */
         };
 
-        ParamMeta() : m_type(rttiUnknown) {}
-        ParamMeta(MetaRtti type) : m_type(type) {}
-        virtual ~ParamMeta() {}
-        inline MetaRtti getType() const { return m_type; }
+        ParamMeta() : m_type(rttiUnknown) {}               //!< default constructor with an unknown meta information type
+        ParamMeta(MetaRtti type) : m_type(type) {}         //!< constructor used by derived classes to indicate their real type
+        virtual ~ParamMeta() {}                            //!< destructor
+        inline MetaRtti getType() const { return m_type; } //!< returns runtime type information value
     protected:
         MetaRtti m_type;
     };
 
     /*!
     \class CharMeta
-    \brief Meta-information for Param of type Char or CharArray.
-    \sa ito::Param
+    \brief meta-information for Param of type Char.
+    
+    An object of this class can be used to parametrize a parameter whose type is ito::ParamBase::Char. If set, the given char number
+    can be limited with respect to given minimum and maximum values as well as an optional step size (default: 1).
+
+    \sa ito::Param, ito::ParamMeta
     */
     class ITOMCOMMON_EXPORT CharMeta : public ParamMeta
     {
@@ -124,8 +134,12 @@ namespace ito
 
     /*!
     \class IntMeta
-    \brief Meta-information for Param of type Int or IntArray.
-    \sa ito::Param
+    \brief Meta-information for Param of type Int.
+
+    An object of this class can be used to parametrize a parameter whose type is ito::ParamBase::Int. If set, the given integer number
+    can be limited with respect to given minimum and maximum values as well as an optional step size (default: 1).
+
+    \sa ito::Param, ito::ParamMeta
     */
     class ITOMCOMMON_EXPORT IntMeta : public ParamMeta
     {
@@ -161,8 +175,12 @@ namespace ito
 
     /*!
     \class DoubleMeta
-    \brief Meta-information for Param of type Double or DoubleArray.
-    \sa ito::Param
+    \brief Meta-information for ito::Param of type Double.
+    
+    An object of this class can be used to parametrize a parameter whose type is ito::ParamBase::Double. If set, the given double number
+    can be limited with respect to given minimum and maximum values as well as an optional step size (default: 0.0 -> no step size).
+
+    \sa ito::Param, ito::ParamMeta
     */
     class ITOMCOMMON_EXPORT DoubleMeta : public ParamMeta
     {
@@ -200,7 +218,12 @@ namespace ito
     /*!
     \class HWMeta
     \brief Meta-information for Param of type HWPtr.
-    \sa ito::Param
+    
+    An object of this class can be used to parametrize a parameter whose type is ito::ParamBase::HWPtr, that is an instance of another hardware plugin. 
+    If set, it is possible to restrict the given hardware plugin to a specific type (e.g. dataIO, dataIO + grabber, actuator...) and/or to limit it
+    to a specific name of the plugin (e.g. SerialIO).
+
+    \sa ito::Param, ito::ParamMeta
     */
     class ITOMCOMMON_EXPORT HWMeta : public ParamMeta
     {
@@ -230,7 +253,7 @@ namespace ito
             {
             }
 
-            inline uint32 getMinType() const { return m_minType; }                //!< returns type-bitmask which is minimally required by plugin-reference. Default 0. \sa ito::tPluginType
+            inline uint32 getMinType() const { return m_minType; }             //!< returns type-bitmask which is minimally required by plugin-reference. Default 0. \sa ito::tPluginType
             inline ito::ByteArray getHWAddInName() const { return m_HWName; }  //!< returns name of specific hardware plugin
         private:
             uint32 m_minType;            //!< type-bitmask which is minimally required. default: 0
@@ -240,7 +263,12 @@ namespace ito
     /*!
     \class StringMeta
     \brief Meta-information for Param of type String.
-    \sa ito::Param
+    
+    An object of this class can be used to parametrize a parameter whose type is ito::ParamBase::String. 
+    If set, it is possible to restrict the a given string to fit to a given list of strings. This list of strings
+    might be interpreted in an exact way (tType::String), as wildcard expressions (tType::Wildcard) or as regular expressions (tType::RegExp).
+
+    \sa ito::Param, ito::ParamMeta
     */
     class ITOMCOMMON_EXPORT StringMeta : public ParamMeta
     {
@@ -278,8 +306,8 @@ namespace ito
             inline tType getStringType() const { return m_stringType; } //!< returns the type how strings in list should be considered. \sa tType
             inline int getLen() const { return m_len; }                 //!< returns the number of string elements in meta information class.
             const char* getString(int idx = 0) const;                   //!< returns string from list at index position or NULL, if index is out of range.
-            bool addItem(const char *val);                              //!< adds another element to the string list.
-            StringMeta & operator += (const char *val);
+            bool addItem(const char *val);                              //!< adds another element to the list of patterns.
+            StringMeta & operator += (const char *val);                 //!< add another pattern string to the list of patterns.
 
         private:
             tType m_stringType;
@@ -290,7 +318,10 @@ namespace ito
     /*!
     \class DObjMeta
     \brief Meta-information for Param of type DObjPtr.
-    \sa ito::Param
+
+    (not used yet)
+
+    \sa ito::Param, ito::ParamMeta
     */
     class ITOMCOMMON_EXPORT DObjMeta : public ParamMeta
     {
@@ -309,7 +340,12 @@ namespace ito
     /*!
     \class CharArrayMeta
     \brief Meta-information for Param of type CharArrayMeta.
-    \sa ito::Param
+    
+    An object of this class can be used to parametrize a parameter whose type is ito::ParamBase::CharArray. 
+    Since this meta information class is derived from ito::CharMeta, it is possible to restrict each value to the single value contraints of ito::CharMeta.
+    Furthermore, this class allows restricting the minimum and maximum length of the array as well as the optional step size of the array's length.
+
+    \sa ito::Param, ito::ParamMeta, ito::CharMeta
     */
     class ITOMCOMMON_EXPORT CharArrayMeta : public CharMeta
     {
@@ -346,8 +382,13 @@ namespace ito
 
     /*!
     \class CharArrayMeta
-    \brief Meta-information for Param of type CharArrayMeta.
-    \sa ito::Param
+    \brief Meta-information for Param of type IntArrayMeta.
+    
+    An object of this class can be used to parametrize a parameter whose type is ito::ParamBase::IntArray. 
+    Since this meta information class is derived from ito::IntMeta, it is possible to restrict each value to the single value contraints of ito::IntMeta.
+    Furthermore, this class allows restricting the minimum and maximum length of the array as well as the optional step size of the array's length.
+
+    \sa ito::Param, ito::ParamMeta, ito::IntArray
     */
     class ITOMCOMMON_EXPORT IntArrayMeta : public IntMeta
     {
@@ -385,7 +426,12 @@ namespace ito
     /*!
     \class DoubleArrayMeta
     \brief Meta-information for Param of type DoubleArrayMeta.
-    \sa ito::Param
+    
+    An object of this class can be used to parametrize a parameter whose type is ito::ParamBase::DoubleArray. 
+    Since this meta information class is derived from ito::DoubleArray, it is possible to restrict each value to the single value contraints of ito::DoubleArray.
+    Furthermore, this class allows restricting the minimum and maximum length of the array as well as the optional step size of the array's length.
+
+    \sa ito::Param, ito::ParamMeta, ito::DoubleMeta
     */
     class ITOMCOMMON_EXPORT DoubleArrayMeta : public DoubleMeta
     {
@@ -424,7 +470,13 @@ namespace ito
     /*!
     \class DoubleIntervalMeta
     \brief Meta-information for Param of type DoubleIntervalMeta.
-    \sa ito::Param
+    
+    An object of this class can be used to parametrize a parameter whose type is ito::ParamBase::DoubleArray. 
+    This meta information class indicates that the corresponding double array parameter is interpreted as an interval, hence, only an array
+    consisting of two values is accepted. The size of the interval is defined by the difference (value[1] - value[0]). You can restrict this
+    size to a certain minimum and maximum value as well as indicating a specific step size (default: 0.0 -> no step size).
+
+    \sa ito::Param, ito::ParamMeta, ito::DoubleMeta
     */
     class ITOMCOMMON_EXPORT DoubleIntervalMeta : public DoubleMeta
     {
@@ -462,8 +514,16 @@ namespace ito
 
     /*!
     \class IntervalMeta
-    \brief Meta-information for Param of type IntervalMeta.
-    \sa ito::Param, RangeMeta
+    \brief Meta-information for Param of type IntArrayMeta that represent an interval (minimum, maximum).
+    
+    An object of this class can be used to parametrize a parameter whose type is ito::ParamBase::IntArray. 
+    This meta information class indicates that the corresponding integer array parameter is interpreted as an interval, hence, only an array
+    consisting of two values is accepted. The size of the interval is defined by the difference (value[1] - value[0]). You can restrict this
+    size to a certain minimum and maximum value as well as indicating a specific step size (default: 1).
+
+    An example for an interval might be a certain interval of allowed radius values when optimizing a cylinder fit.
+
+    \sa ito::Param, ito::ParamMeta, ito::RangeMeta, ito::IntMeta, ito::IntervalMeta
     */
     class ITOMCOMMON_EXPORT IntervalMeta : public IntMeta
     {
@@ -503,11 +563,20 @@ namespace ito
 
     /*!
     \class RangeMeta
-    \brief Meta-information for Param of type RangeMeta.
+    \brief Meta-information for Param of type IntArrayMeta that represent a range (left, right).
+    
+    An object of this class can be used to parametrize a parameter whose type is ito::ParamBase::IntArray. 
+    This meta information class indicates that the corresponding integer array parameter is interpreted as a range, hence, only an array
+    consisting of two values is accepted. The size of the interval is defined by the difference (1 + value[1] - value[0]). You can restrict this
+    size to a certain minimum and maximum value as well as indicating a specific step size (default: 1).
+
+    An example for a range might be a one dimension (vertical or horizontal) of a ROI (region of interest) of a camera, where the range
+    determines the first and last pixel value inside of the ROI, such that the total size is the difference between both limits + 1.
 
     The range object is defined by its first and last value, that are both inside of the range, hence the size of the range is (1+last-first).
     This is the difference to IntervalMeta, where the size of the interval is last-first only.
-    \sa ito::Param, IntervalMeta
+
+    \sa ito::Param, ito::ParamMeta, ito::IntervalMeta, ito::IntArrayMeta
     */
     class ITOMCOMMON_EXPORT RangeMeta : public IntervalMeta
     {
@@ -519,8 +588,14 @@ namespace ito
 
     /*!
     \class RectMeta
-    \brief Meta-information for Param of type RectMeta.
-    \sa ito::Param
+    \brief Meta-information for Param of type IntArrayMeta that represent a rectangle (left, top, width, height).
+    
+    An object of this class can be used to parametrize a parameter whose type is ito::ParamBase::IntArray. 
+    This meta information class indicates that the corresponding integer array parameter is interpreted as a rectangle, hence, only an array
+    consisting of four values is accepted. This meta information consists of two object of type ito::RangeMeta, describing the
+    contraints of the horizontal and vertical axes of the rectangle.
+
+    \sa ito::Param, ito::ParamMeta, ito::RangeMeta, ito::IntArrayMeta
     */
     class ITOMCOMMON_EXPORT RectMeta : public ParamMeta
     {
