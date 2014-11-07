@@ -1,5 +1,5 @@
 
-from breathe.renderer.rst.doxygen.base import Renderer
+from .base import Renderer
 
 class DoxygenTypeSubRenderer(Renderer):
 
@@ -9,10 +9,78 @@ class DoxygenTypeSubRenderer(Renderer):
 
         # Process all the compound children
         for compound in self.data_object.get_compound():
-            compound_renderer = self.renderer_factory.create_renderer(self.data_object, compound)
+            context = self.context.create_child_context(compound)
+            compound_renderer = self.renderer_factory.create_renderer(context)
             nodelist.extend(compound_renderer.render())
 
         return nodelist
+
+
+# Used below in CompoundTypeSubRenderer and in RefTypeSubRenderer in compound.py so we have split it
+# out in a helper function. This feels fairly ugly due to the number of arguments. A forced
+# refactoring for the sake of refactoring rather than a beautiful reuse of code.
+def render_compound(
+    name,
+    kind,
+    parent_context,
+    rendered_data,
+    renderer_factory,
+    node_factory,
+    domain_target,
+    doxygen_target,
+    document
+    ):
+
+    # Build targets for linking
+    targets = []
+    targets.extend(domain_target)
+    targets.extend(doxygen_target)
+
+    title_signode = node_factory.desc_signature()
+
+    file_data = parent_context.node_stack[0]
+    new_context = parent_context.create_child_context(file_data.compounddef)
+
+    # Check if there is template information and format it as desired
+    template_signode = None
+    if file_data.compounddef.templateparamlist:
+        context = new_context.create_child_context(file_data.compounddef.templateparamlist)
+        renderer = renderer_factory.create_renderer(context)
+        template_nodes = [node_factory.Text("template <")]
+        template_nodes.extend(renderer.render())
+        template_nodes.append(node_factory.Text(">"))
+        template_signode = node_factory.desc_signature()
+        # Add targets to the template line if it is there
+        template_signode.extend(targets)
+        template_signode.extend(template_nodes)
+    else:
+        # Add targets to title line if there is no template line
+        title_signode.extend(targets)
+
+    # Set up the title
+    title_signode.append(node_factory.emphasis(text=kind))
+    title_signode.append(node_factory.Text(" "))
+    title_signode.append(node_factory.desc_name(text=name))
+
+    contentnode = node_factory.desc_content()
+
+    if file_data.compounddef.includes:
+        for include in file_data.compounddef.includes:
+            context = new_context.create_child_context(include)
+            renderer = renderer_factory.create_renderer(context)
+            contentnode.extend(renderer.render())
+
+    contentnode.extend(rendered_data)
+
+    node = node_factory.desc()
+    node.document = document
+    node['objtype'] = kind
+    if template_signode:
+        node.append(template_signode)
+    node.append(title_signode)
+    node.append(contentnode)
+
+    return [node]
 
 
 class CompoundTypeSubRenderer(Renderer):
@@ -44,72 +112,24 @@ class CompoundTypeSubRenderer(Renderer):
 
     def render(self):
 
-        # Build targets for linking
-        nodelist = self.create_domain_target()
-        nodelist.extend(self.create_doxygen_target())
-
         # Read in the corresponding xml file and process
         file_data = self.compound_parser.parse(self.data_object.refid)
 
-        lines = []
+        context = self.context.create_child_context(file_data)
+        data_renderer = self.renderer_factory.create_renderer(context)
 
-        # Check if there is template information and format it as desired
-        if file_data.compounddef.templateparamlist:
-            renderer = self.renderer_factory.create_renderer(
-                    file_data.compounddef,
-                    file_data.compounddef.templateparamlist
-                    )
-            template = [
-                    self.node_factory.Text("template < ")
-                ]
-            template.extend(renderer.render())
-            template.append(self.node_factory.Text(" >"))
-            lines.append(self.node_factory.line("", *template))
-
-        # Set up the title and a reference for it (refid)
-        kind = self.node_factory.emphasis(text=self.data_object.kind)
-        name = self.node_factory.strong(text=self.data_object.name)
-
-        # Add blank string at the start otherwise for some reason it renders
-        # the emphasis tags around the kind in plain text
-        lines.append(
-                self.node_factory.line(
-                    "", 
-                    self.node_factory.Text(""),
-                    kind,
-                    self.node_factory.Text(" "),
-                    name
-                    )
+        # Defer to function for details
+        return render_compound(
+                self.data_object.name,
+                self.data_object.kind,
+                context,
+                data_renderer.render(),
+                self.renderer_factory,
+                self.node_factory,
+                self.create_domain_target(),
+                self.create_doxygen_target(),
+                self.state.document
                 )
-
-
-        if file_data.compounddef.includes:
-            for include in file_data.compounddef.includes:
-                renderer = self.renderer_factory.create_renderer(
-                        file_data.compounddef,
-                        include
-                        )
-                result = renderer.render()
-                if result:
-                    lines.append(
-                            self.node_factory.line(
-                                "",
-                                self.node_factory.Text(""),
-                                *result
-                                )
-                            )
-
-        nodelist.append(
-                self.node_factory.line_block(
-                    "",
-                    *lines
-                    )
-                )
-
-        data_renderer = self.renderer_factory.create_renderer(self.data_object, file_data)
-        nodelist.extend(data_renderer.render())
-
-        return nodelist
 
 
 class ClassCompoundTypeSubRenderer(CompoundTypeSubRenderer):

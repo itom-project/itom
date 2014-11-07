@@ -1,9 +1,9 @@
 
-from breathe.renderer.rst.doxygen.base import Renderer
-from breathe.renderer.rst.doxygen import index as indexrenderer
-from breathe.renderer.rst.doxygen import compound as compoundrenderer
+from .base import Renderer, RenderContext
+from . import index as indexrenderer
+from . import compound as compoundrenderer
 
-from breathe.parser.doxygen import index, compound, compoundsuper
+from ....parser.doxygen import index, compound, compoundsuper
 
 from docutils import nodes
 import textwrap
@@ -56,6 +56,7 @@ class NullRenderer(Renderer):
     def render(self):
         return []
 
+
 class DoxygenToRstRendererFactory(object):
 
     def __init__(
@@ -91,11 +92,13 @@ class DoxygenToRstRendererFactory(object):
 
     def create_renderer(
             self,
-            parent_data_object,
-            data_object
+            context
             ):
 
-        if not self.filter_.allow(parent_data_object, data_object):
+        parent_data_object = context.node_stack[1]
+        data_object = context.node_stack[0]
+
+        if not self.filter_.allow(context.node_stack):
             return NullRenderer()
 
         child_renderer_factory = self.renderer_factory_creator.create_child_factory(
@@ -119,7 +122,7 @@ class DoxygenToRstRendererFactory(object):
 
         common_args = [
                 self.project_info,
-                data_object,
+                context,
                 child_renderer_factory,
                 self.node_factory,
                 self.state,
@@ -174,7 +177,7 @@ class DoxygenToRstRendererFactory(object):
 
         if node_type == "memberdef":
 
-            if data_object.kind == "function":
+            if data_object.kind in ("function", "slot"):
                 Renderer = compoundrenderer.FuncMemberDefTypeSubRenderer
             elif data_object.kind == "enum":
                 Renderer = compoundrenderer.EnumMemberDefTypeSubRenderer
@@ -256,6 +259,7 @@ class DoxygenToRstRendererFactoryCreator(object):
             "description" : compoundrenderer.DescriptionTypeSubRenderer,
             "param" : compoundrenderer.ParamTypeSubRenderer,
             "docreftext" : compoundrenderer.DocRefTextTypeSubRenderer,
+            "docheading" : compoundrenderer.DocHeadingTypeSubRenderer,
             "docpara" : compoundrenderer.DocParaTypeSubRenderer,
             "docmarkup" : compoundrenderer.DocMarkupTypeSubRenderer,
             "docparamlist" : compoundrenderer.DocParamListTypeSubRenderer,
@@ -267,6 +271,7 @@ class DoxygenToRstRendererFactoryCreator(object):
             "doctitle" : compoundrenderer.DocTitleTypeSubRenderer,
             "docformula" : compoundrenderer.DocForumlaTypeSubRenderer,
             "docimage" : compoundrenderer.DocImageTypeSubRenderer,
+            "docurllink" : compoundrenderer.DocURLLinkSubRenderer,
             "listing" : compoundrenderer.ListingTypeSubRenderer,
             "codeline" : compoundrenderer.CodeLineTypeSubRenderer,
             "highlight" : compoundrenderer.HighlightTypeSubRenderer,
@@ -276,6 +281,8 @@ class DoxygenToRstRendererFactoryCreator(object):
             "verbatim" : compoundrenderer.VerbatimTypeSubRenderer,
             "mixedcontainer" : compoundrenderer.MixedContainerRenderer,
             "unicode" : UnicodeRenderer,
+            "doclist": compoundrenderer.DocListTypeSubRenderer,
+            "doclistitem": compoundrenderer.DocListItemTypeSubRenderer,
             }
 
         try:
