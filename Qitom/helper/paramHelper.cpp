@@ -750,11 +750,11 @@ namespace ito {
                     int min = drm->getMin();
                     int max = drm->getMax();
                     int offset = drm->isIntervalNotRange() ? 0 : 1;
-                    int range = offset + max - min; //this is the difference between interval and range
+                    int range = offset + values[1] - values[0]; //this is the difference between interval and range
                     int ivalStep = drm->getSizeStepSize();
                     int step = drm->getStepSize();
 
-                    if (values[0] < min || values[0] > values[1] || values[1] > max)
+                    if ((values[0] < min) || (values[0] > values[1]) || (values[1] > max))
                     {
                         if (drm->isIntervalNotRange())
                         {
