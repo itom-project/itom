@@ -143,12 +143,17 @@ If desired implement the following optional parameters in the map **m_params**:
     Normalized gain in the range [0.0,1.0]
 * "offset": {double}
     Normalized offset in the range [0.0,1.0]
-* "x0", "y0": {int}
+* "x0", "y0": {int, deprecated (see roi)}
     pixel coordinate of the left top corner of the image or ROI [0..width-1/height-1]
     If this changes, "sizex" or "sizey" must be changed, too.
-* "x1", "y1": {int}
+* "x1", "y1": {int, deprecated (see roi)}
     pixel coordinate of the right bottom corner of the image or ROI [x0+1/y0+1..width-1/height-1]
     If this changes, "sizex" or "sizey" must be changed, too.
+* "roi": {int-array}
+    Since itom AddIn Interface version 1.3.1 (itom 1.4.0 or higher), it is recommended to replace *x0* *y0*, *x1* and *y1* by the integer array based
+    parameter **roi** which expects an array [left, top, width, height]. This parameter can easily be parametrized using the meta information ito::RectMeta
+    and allows the direct configuration of the entire ROI or a single access to one of the four components, by passing the parametername *roi[0]*, *roi[1]*....
+
 
 
 AD-Converters
