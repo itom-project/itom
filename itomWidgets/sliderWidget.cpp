@@ -32,6 +32,7 @@
 #include <QDebug>
 #include <QMouseEvent>
 #include <QPointer>
+#include <QDoubleSpinBox>
 
 // CTK includes
 #include "popupWidget.h"
@@ -558,6 +559,7 @@ Qt::Alignment SliderWidget::spinBoxAlignment()const
 void SliderWidget::setTracking(bool enable)
 {
   Q_D(SliderWidget);
+  d->SpinBox->spinBox()->setKeyboardTracking(enable);
   d->Tracking = enable;
 }
 
