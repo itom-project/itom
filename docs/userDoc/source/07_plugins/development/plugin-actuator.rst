@@ -264,7 +264,7 @@ Implement the following mandatory parameters in the map **m_params**:
 
 * "name": {string | readonly}
     name of the plugin
-* "numAxis": {int | readonly}
+* "numaxis": {int | readonly}
     number of connected axes
 * "async": {int, [0,1]}
     If 1: asynchronous movement. Methods like **setPosAbs** or **setPosRel** only start the movement and immediately return. Hence, the *waitCond* in **waitForDone** is directly released before the loop waiting for the end of the movement is executed. If 0: synchronous movement (default). **setPosAbs** and **setPosRel** block until the end of the movement, hence, *waitCond* in **waitForDone** is only released at the end of the movement. Since **waitForDone** always is running during the movement, the plugin thread is blocked and no further commands can be executed, even in asynchronous mode.
