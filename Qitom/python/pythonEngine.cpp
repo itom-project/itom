@@ -230,7 +230,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             PyImport_AppendInittab("itomDbgWrapper", &PythonEngine::PyInitItomDbg);  //!< add all static, known function calls to python-module itomdbg
 
             Py_Initialize();                                                        //!< must be called after any PyImport_AppendInittab-call
-//            PyEval_InitThreads();                                                   //!< prepare Python multithreading
+            PyEval_InitThreads();                                                   //!< prepare Python multithreading
 
             itomModule = PyImport_ImportModule("itom");
             m_pyModGC = PyImport_ImportModule("gc"); //new reference
@@ -516,7 +516,8 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 PyErr_Print();
             }
 
-
+            PyThreadState *pts = PyGILState_GetThisThreadState(); //wichtige Zeile
+            PyEval_ReleaseThread(pts);
 
             (*retValue) += stringEncodingChanged();
 
@@ -636,6 +637,9 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
     RetVal retValue(retOk);
     if (m_started)
     {
+        PyGILState_STATE gstate;
+        gstate = PyGILState_Ensure();
+
         //unload the possibly loaded auto-reload tool
         if (m_autoReload.classAutoReload)
         {
@@ -964,6 +968,8 @@ void PythonEngine::setAutoReloader(bool enabled, bool checkFile, bool checkCmd, 
 {
     if (m_autoReload.modAutoReload)
     {
+        PyGILState_STATE gstate = PyGILState_Ensure();
+
         if (enabled)
         {
             if (!m_autoReload.classAutoReload)
@@ -1014,6 +1020,8 @@ void PythonEngine::setAutoReloader(bool enabled, bool checkFile, bool checkCmd, 
                 Py_XDECREF(result);
             }
         }
+
+        PyGILState_Release(gstate);
     }
     else
     {
@@ -1032,6 +1040,8 @@ ito::RetVal PythonEngine::autoReloaderCheck()
     {
         if (m_autoReload.enabled && m_autoReload.classAutoReload)
         {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "autoreload", "");
             if (!result)
             {
@@ -1045,6 +1055,8 @@ ito::RetVal PythonEngine::autoReloaderCheck()
                 PyErr_Print();
             }
             Py_XDECREF(result);
+
+            PyGILState_Release(gstate);
         }
         else
         {
@@ -1063,6 +1075,7 @@ ito::RetVal PythonEngine::autoReloaderCheck()
 ito::RetVal PythonEngine::runString(const QString &command)
 {
     RetVal retValue = RetVal(retOk);
+    PyGILState_STATE gstate = PyGILState_Ensure();
 
     PyObject *mainDict = getGlobalDictionary();
     PyObject *localDict = getLocalDictionary();
@@ -1124,6 +1137,8 @@ ito::RetVal PythonEngine::runString(const QString &command)
         Py_XDECREF(result);
     }
 
+    PyGILState_Release(gstate);
+
     return retValue;
 }
 
@@ -1144,6 +1159,8 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
         QDir::setCurrent(desiredPath);
         emit pythonCurrentDirChanged();
     }
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
 
     if (method == 1)
     {
@@ -1294,6 +1311,8 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
         }
     }
 
+    PyGILState_Release(gstate);
+
     return retValue;
 }
 
@@ -1301,6 +1320,8 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
 ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple)
 {
     RetVal retValue = RetVal(retOk);
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
 
     if (m_autoReload.enabled && m_autoReload.checkFctExec)
     {
@@ -1331,6 +1352,8 @@ ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple)
         Py_XDECREF(result);
     }
 
+    PyGILState_Release(gstate);
+
     return retValue;
 }
 
@@ -1346,6 +1369,8 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple)
     }
     else
     {
+        PyGILState_STATE gstate = PyGILState_Ensure();
+
         //!< first, clear all existing breakpoints
         result = PyObject_CallMethod(itomDbgInstance, "clear_all_breaks", "");
         if (result == NULL)
@@ -1432,6 +1457,8 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple)
         //!< disconnect connections for live-changes in breakpoints
         shutdownBreakPointDebugConnections();
         bpModel->resetAllPyBpNumbers();
+
+        PyGILState_Release(gstate);
     }
 
     return retValue;
@@ -1458,6 +1485,8 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
     }
     else
     {
+        PyGILState_STATE gstate = PyGILState_Ensure();
+
         //!< first, clear all existing breakpoints
         result = PyObject_CallMethod(itomDbgInstance, "clear_all_breaks", "");
         if (result == NULL)
@@ -1544,6 +1573,8 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
         //!< disconnect connections for live-changes in breakpoints
         shutdownBreakPointDebugConnections();
         bpModel->resetAllPyBpNumbers();
+
+        PyGILState_Release(gstate);
     }
 
     return retValue;
@@ -1562,6 +1593,8 @@ ito::RetVal PythonEngine::debugString(const QString &command)
     }
     else
     {
+        PyGILState_STATE gstate = PyGILState_Ensure();
+
         //!< first, clear all existing breakpoints
         result = PyObject_CallMethod(itomDbgInstance, "clear_all_breaks", "");
         if (result == NULL)
@@ -1648,6 +1681,8 @@ ito::RetVal PythonEngine::debugString(const QString &command)
         //!< disconnect connections for live-changes in breakpoints
         shutdownBreakPointDebugConnections();
         bpModel->resetAllPyBpNumbers();
+
+        PyGILState_Release(gstate);
     }
 
     return retValue;
@@ -1678,6 +1713,8 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
         {
             firstLine = code;
         }
+
+        PyGILState_STATE gstate = PyGILState_Ensure();
         PyObject *result = PyObject_CallMethod(m_pyModSyntaxCheck, "check", "s", firstLine.toUtf8().data());
 
         if (result && PyList_Check(result) && PyList_Size(result) >= 2)
@@ -1736,12 +1773,15 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
         }
 
         Py_XDECREF(result);
+
+        PyGILState_Release(gstate);
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::pythonAddBreakpoint(const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount, int &pyBpNumber)
 {
+    //when calling this method, the Python GIL must already be locked
     PyObject *result = NULL;
 
     pyBpNumber = -1;
@@ -1793,6 +1833,7 @@ ito::RetVal PythonEngine::pythonAddBreakpoint(const QString &filename, const int
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount)
 {
+    //when calling this method, the Python GIL must already be locked
     PyObject *result = NULL;
     if (itomDbgInstance == NULL)
     {
@@ -1841,6 +1882,7 @@ ito::RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const QStri
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::pythonDeleteBreakpoint(const int pyBpNumber)
 {
+    //when calling this method, the Python GIL must already be locked
     PyObject *result = NULL;
     if (itomDbgInstance == NULL)
     {
@@ -2472,20 +2514,26 @@ void PythonEngine::clearDbgCmdLoop()
 void PythonEngine::breakPointAdded(BreakPointItem bp, int row)
 {
     int pyBpNumber;
+    PyGILState_STATE gstate = PyGILState_Ensure();
     pythonAddBreakpoint(bp.filename, bp.lineno, bp.enabled, bp.temporary, bp.condition, bp.ignoreCount, pyBpNumber);
+    PyGILState_Release(gstate);
     bpModel->setPyBpNumber(bp, pyBpNumber);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::breakPointDeleted(QString /*filename*/, int /*lineNo*/, int pyBpNumber)
 {
+    PyGILState_STATE gstate = PyGILState_Ensure();
     pythonDeleteBreakpoint(pyBpNumber);
+    PyGILState_Release(gstate);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::breakPointChanged(BreakPointItem /*oldBp*/, ito::BreakPointItem newBp)
 {
+    PyGILState_STATE gstate = PyGILState_Ensure();
     pythonEditBreakpoint(newBp.pythonDbgBpNumber, newBp.filename, newBp.lineno, newBp.enabled, newBp.temporary, newBp.condition, newBp.ignoreCount);
+    PyGILState_Release(gstate);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2660,6 +2708,8 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
     }
     else
     {
+        PyGILState_STATE gstate = PyGILState_Ensure();
+
         PyObject *repr = PyObject_Repr(obj);
         if (repr == NULL)
         {
@@ -2681,6 +2731,8 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
             *extendedValue = "unknown";
             Py_XDECREF(repr);
         }
+
+        PyGILState_Release(gstate);
     }
 
     if (semaphore)
@@ -3091,6 +3143,8 @@ bool PythonEngine::renameVariable(bool globalNotLocal, QString oldKey, QString n
         }
         else
         {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             //if (!PyUnicode_IsIdentifier(PyUnicode_FromString(newKey.toLatin1().data())))
             if (!PyUnicode_IsIdentifier(PyUnicode_DecodeLatin1(newKey.toLatin1().data(), newKey.length(), NULL)))
             {
@@ -3125,6 +3179,8 @@ bool PythonEngine::renameVariable(bool globalNotLocal, QString oldKey, QString n
                     }
                 }
             }
+
+            PyGILState_Release(gstate);
         }
 
         if (semaphore != NULL) //release semaphore now, since the following emit command will be a blocking connection, too.
@@ -3199,6 +3255,8 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, QStringList keys, ItomSha
         }
         else
         {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             foreach (key, keys)
             {
                 PyDict_DelItemString(dict, key.toLatin1().data());
@@ -3210,6 +3268,8 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, QStringList keys, ItomSha
                     break;
                 }
             }
+
+            PyGILState_Release(gstate);
 
         }
 
@@ -3279,6 +3339,8 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
         }
         else
         {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             //build dictionary, which should be pickled
             PyObject* pyRet;
             PyObject* pArgs = PyTuple_New(3);
@@ -3314,6 +3376,8 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
             retVal += checkForPyExceptions();
 
             Py_XDECREF(pArgs);
+
+            PyGILState_Release(gstate);
         }
 
 
@@ -3375,6 +3439,8 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
         }
         else
         {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             //PyObject *pArgs = PyTuple_Pack(1, PyUnicode_FromString(filename.toLatin1().data()));
             PyObject *pArgs = PyTuple_Pack(1, PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL));
             PyObject *dict = ito::PythonItom::PyLoadMatlabMat(NULL, pArgs);
@@ -3397,6 +3463,8 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
             }
 
             Py_XDECREF(dict);
+
+            PyGILState_Release(gstate);
 
             if (semaphore) 
             {
@@ -3476,11 +3544,12 @@ void PythonEngine::putParamsToWorkspace(bool globalNotLocal, QStringList names, 
 
         if (destinationDict == NULL)
         {
-            retVal = false;
             retVal += ito::RetVal(ito::retError, 0, tr("values cannot be saved since workspace dictionary not available.").toLatin1().data());
         }
         else
         {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             PyObject *existingItem = NULL;
 
             for (int i=0; i<names.size();i++)
@@ -3522,6 +3591,8 @@ void PythonEngine::putParamsToWorkspace(bool globalNotLocal, QStringList names, 
                     Py_XDECREF(value);
                 }
             }
+
+            PyGILState_Release(gstate);
 
             if (semaphore != NULL) 
             {
@@ -3601,11 +3672,12 @@ void PythonEngine::getParamsFromWorkspace(bool globalNotLocal, QStringList names
 
         if (sourceDict == NULL)
         {
-            retVal = false;
             retVal += ito::RetVal(ito::retError, 0, tr("values cannot be obtained since workspace dictionary not available.").toLatin1().data());
         }
         else
         {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             for (int i=0; i<names.size();i++)
             {
                 value = PyDict_GetItemString (sourceDict, names[i].toLatin1().data()); //borrowed
@@ -3630,6 +3702,8 @@ void PythonEngine::getParamsFromWorkspace(bool globalNotLocal, QStringList names
                     }
                 }
             }
+
+            PyGILState_Release(gstate);
 
             if (semaphore != NULL) 
             {
@@ -3714,6 +3788,8 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
         }
         else
         {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             //if (!PyUnicode_IsIdentifier(PyUnicode_FromString(varname2)))
             if (!PyUnicode_IsIdentifier(PyUnicode_DecodeLatin1(varname2, strlen(varname2), NULL)))
             {
@@ -3777,10 +3853,10 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
                             PyErr_Print();
                         }
                     }
-
-
                 }
             }
+
+            PyGILState_Release(gstate);
         }
 
         if (semaphore != NULL) //release semaphore now, since the following emit command will be a blocking connection, too.
@@ -3842,6 +3918,8 @@ ito::RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QS
         }
         else
         {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             PyObject *result = PyObject_CallMethod(itomFunctions, "getModules", "");
 
             if (!result)
@@ -3860,6 +3938,8 @@ ito::RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QS
                 }
             }
             Py_XDECREF(result);
+
+            PyGILState_Release(gstate);
         }
         //code
 
@@ -3914,6 +3994,8 @@ ito::RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames,
         }
         else
         {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             PyObject *stringList = PythonQtConversion::QStringListToPyList(*modNames);
             modNames->clear();
 
@@ -3930,6 +4012,8 @@ ito::RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames,
             }
             Py_XDECREF(result);
             Py_XDECREF(stringList);
+
+            PyGILState_Release(gstate);
         }
         //code
 
@@ -4048,6 +4132,8 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
         return RetVal(retError, 0, "mainModule is empty or cannot be accessed");
     }
 
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
     PyObject* pickleModule = PyImport_AddModule("pickle"); // borrowed reference
 
     if (pickleModule == NULL)
@@ -4061,72 +4147,75 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
     if (builtinsModule == NULL)
     {
         retval += checkForPyExceptions();
-        return retval;
-    }
-
-    PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //borrowed
-    //PyObject* fileHandle = PyObject_CallFunction(openMethod, "ss", filename.toLatin1().data(),"wb\0"); //new reference
-    
-    PyObject* pyMode = PyUnicode_FromString("wb\0");
-    PyObject* fileHandle = NULL;
-
-    PyObject* pyFileName = PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL);
-    
-    if(pyFileName != NULL)
-    {
-        fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, NULL);
-        Py_DECREF(pyFileName);
-    }
-    
-    if(pyMode) Py_DECREF(pyMode);
-
-
-    if (fileHandle == NULL)
-    {
-        retval += checkForPyExceptions();
     }
     else
     {
-        PyObject *result = NULL;
+        PyObject* openMethod = PyDict_GetItemString(PyModule_GetDict(builtinsModule), "open"); //borrowed
+        //PyObject* fileHandle = PyObject_CallFunction(openMethod, "ss", filename.toLatin1().data(),"wb\0"); //new reference
+    
+        PyObject* pyMode = PyUnicode_FromString("wb\0");
+        PyObject* fileHandle = NULL;
+
+        PyObject* pyFileName = PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL);
+    
+        if(pyFileName != NULL)
+        {
+            fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, NULL);
+            Py_DECREF(pyFileName);
+        }
+    
+        if(pyMode) Py_DECREF(pyMode);
+
+
+        if (fileHandle == NULL)
+        {
+            retval += checkForPyExceptions();
+        }
+        else
+        {
+            PyObject *result = NULL;
         
-        try
-        {
-            result = PyObject_CallMethodObjArgs(pickleModule, PyUnicode_FromString("dump"), dict, fileHandle, NULL);
-        }
-        catch(std::bad_alloc &/*ba*/)
-        {
-            retval += RetVal(retError, 0, "No more memory available during pickling.");
-        }
-        catch(std::exception &exc)
-        {
-            if (exc.what())
+            try
             {
-                retval += ito::RetVal::format(ito::retError,0,"The exception '%s' has been thrown during pickling.", exc.what()); 
+                result = PyObject_CallMethodObjArgs(pickleModule, PyUnicode_FromString("dump"), dict, fileHandle, NULL);
             }
-            else
+            catch(std::bad_alloc &/*ba*/)
             {
-                retval += ito::RetVal(ito::retError,0,"Pickle error. An unspecified exception has been thrown."); 
+                retval += RetVal(retError, 0, "No more memory available during pickling.");
+            }
+            catch(std::exception &exc)
+            {
+                if (exc.what())
+                {
+                    retval += ito::RetVal::format(ito::retError,0,"The exception '%s' has been thrown during pickling.", exc.what()); 
+                }
+                else
+                {
+                    retval += ito::RetVal(ito::retError,0,"Pickle error. An unspecified exception has been thrown."); 
+                }
+            }
+            catch (...)
+            {
+                retval += ito::RetVal(ito::retError,0,"Pickle error. An unspecified exception has been thrown.");  
+            }
+
+            if (result == NULL)
+            {
+                retval += checkForPyExceptions();
+            }
+
+            Py_XDECREF(result);
+
+            if (!PyObject_CallMethod(fileHandle, "close", ""))
+            {
+                retval += checkForPyExceptions();
             }
         }
-        catch (...)
-        {
-            retval += ito::RetVal(ito::retError,0,"Pickle error. An unspecified exception has been thrown.");  
-        }
 
-        if (result == NULL)
-        {
-            retval += checkForPyExceptions();
-        }
+        Py_XDECREF(fileHandle);
 
-        Py_XDECREF(result);
-
-        if (!PyObject_CallMethod(fileHandle, "close", ""))
-        {
-            retval += checkForPyExceptions();
-        }
+        PyGILState_Release(gstate);
     }
-
-    Py_XDECREF(fileHandle);
 
     return retval;
 }
@@ -4170,7 +4259,6 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
         }
         else
         {
-
             retVal += unpickleDictionary(destinationDict, filename, true);
 
             if (semaphore && !released)
@@ -4219,6 +4307,8 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
     {
         return RetVal(retError, 0, "mainModule is empty or cannot be accessed");
     }
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
 
     PyObject* pickleModule = PyImport_AddModule("pickle"); // borrowed reference
 
@@ -4329,6 +4419,8 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
         Py_XDECREF(fileHandle);
         Py_XDECREF(unpickledItem);
     }
+
+    PyGILState_Release(gstate);
 
     return retval;
 

@@ -78,11 +78,15 @@ void PyWorkspaceContainer::clear()
 //-----------------------------------------------------------------------------------------------------------
 void PyWorkspaceContainer::loadDictionary(PyObject *obj, QString fullNameParentItem)
 {
+    
+
     QStringList deleteList;
     
     if(fullNameParentItem == "")
     {
+        PyGILState_STATE gstate = PyGILState_Ensure();
         loadDictionaryRec(obj,"",&m_rootItem,deleteList);
+        PyGILState_Release(gstate);
         emit updateAvailable(&m_rootItem, fullNameParentItem, deleteList);
     }
     else
@@ -105,14 +109,21 @@ void PyWorkspaceContainer::loadDictionary(PyObject *obj, QString fullNameParentI
             }
         }
 
+        PyGILState_STATE gstate = PyGILState_Ensure();
         loadDictionaryRec(obj, fullNameParentItem, parent, deleteList);
+        PyGILState_Release(gstate);
+
         emit updateAvailable(parent, fullNameParentItem, deleteList);
     }
+
+    
 }
 
 //-----------------------------------------------------------------------------------------------------------
 void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, QString fullNameParentItem, PyWorkspaceItem *parentItem, QStringList &deletedKeys)
 {
+    //To call this method, the Python GIL must already be locked!
+
     PyObject* keys = NULL;
     PyObject* values = NULL;
     PyObject *key = NULL;
@@ -294,6 +305,8 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, QString fullNamePare
 //-----------------------------------------------------------------------------------------------------------
 void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *value, QString &fullName, QStringList &deletedKeys, int & /*m_compatibleParamBaseType*/)
 {
+    //To call this method, the Python GIL must already be locked!
+
     Py_ssize_t size;
     bool expandableType = false;
 
