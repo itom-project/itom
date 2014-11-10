@@ -33,6 +33,7 @@
 #include <QMouseEvent>
 //#include <QWeakPointer>
 #include <QPointer>
+#include <QdoubleSpinBox>
 
 // CTK includes
 #include "doubleRangeWidget.h"
@@ -750,7 +751,11 @@ Qt::Alignment DoubleRangeWidget::spinBoxTextAlignment()const
 void DoubleRangeWidget::setTracking(bool enable)
 {
   Q_D(DoubleRangeWidget);
+
+  d->MinimumSpinBox->spinBox()->setKeyboardTracking(enable);
+  d->MaximumSpinBox->spinBox()->setKeyboardTracking(enable);
   d->Tracking = enable;
+  Q_ASSERT((d->Tracking == d->MinimumSpinBox->spinBox()->keyboardTracking()) && (d->MinimumSpinBox->spinBox()->keyboardTracking() == d->MaximumSpinBox->spinBox()->keyboardTracking()));
 }
 
 // -------------------------------------------------------------------------
