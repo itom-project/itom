@@ -90,7 +90,7 @@
 #define REMOVE_PLUGININSTANCE(PluginClass) \
    if (*addInInst) \
    { \
-      delete ((PluginClass *)*addInInst); \
+      delete qobject_cast<PluginClass*>(*addInInst); \
       m_InstList.removeOne(*addInInst); \
    } 
 
