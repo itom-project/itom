@@ -712,7 +712,7 @@ Type conflict for %1</source>
     <message>
         <location line="+29"/>
         <source>Toolbox</source>
-        <translation type="unfinished">Symbolleiste</translation>
+        <translation>Toolbox</translation>
     </message>
     <message>
         <location line="+165"/>

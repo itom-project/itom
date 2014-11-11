@@ -652,12 +652,12 @@ p, li { white-space: pre-wrap; }
         <location filename="../helper/fileDownloader.cpp" line="+108"/>
         <location line="+101"/>
         <source>no network reply instance available</source>
-        <translation type="unfinished">Fehler beim Herunterladen: Keine Antwort erhalten</translation>
+        <translation>Fehler beim Herunterladen: Keine Antwort erhalten</translation>
     </message>
     <message>
         <location line="-13"/>
         <source>Requested URL forces a redirection. Maximum number of redirections exceeded.</source>
-        <translation type="unfinished">Angefragte URL erfordert eine Weiterleitung. Anzahl maximaler Weiterleitungen wurde jedoch überschritten.</translation>
+        <translation>Angefragte URL erfordert eine Weiterleitung. Anzahl maximaler Weiterleitungen wurde jedoch überschritten.</translation>
     </message>
 </context>
 <context>
@@ -2816,7 +2816,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="-67"/>
         <source>The figure class &apos;%1&apos; could not be found or does not support displaying the given type of data. The default class for the given data is used instead.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Klasse &apos;%1&apos; wurde nicht gefunden oder die Daten können nicht angezeigt werden. Es wird zur Anzeige der Daten die Standardklasse verwendet.</translation>
     </message>
     <message>
         <location line="+51"/>
@@ -2854,7 +2854,7 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+50"/>
         <location line="+34"/>
         <source>invalid type or no type defined</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ungültiger Typ oder keine Typendefinition</translation>
     </message>
     <message>
         <location line="-120"/>
@@ -3710,24 +3710,24 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location filename="../ui/helpTreeDockWidget.cpp" line="+370"/>
         <source>Template Error: Parameters section is only defined by either the start or end tag.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Vorlagenfehler: Die &quot;Parameters&quot;-Sektion ist nur definiert um entweder ein Start- oder Endzeiger zu enthalten.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Template Error: End tag of parameters section comes before start tag.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Vorlagenfehler: Der Endzeiger der &quot;Parameters&quot;-Sektion liegt vor dem Startzeiger.</translation>
     </message>
     <message>
         <location line="+21"/>
         <location line="+25"/>
         <source>Template Error: Returns section is only defined by either the start or end tag.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Vorlagenfehler: Die &quot;Returns&quot;-Sektion ist nur definiert um entweder ein Start- oder Endzeiger zu enthalten.</translation>
     </message>
     <message>
         <location line="-21"/>
         <location line="+25"/>
         <source>Template Error: End tag of returns section comes before start tag.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Vorlagenfehler: Der Endzeiger der &quot;Returns&quot;-Sektion liegt vor dem Startzeiger.</translation>
     </message>
     <message>
         <location line="+61"/>
@@ -3747,12 +3747,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+156"/>
         <source>Template Error: %s section is only defined by either the start or end tag.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Vorlagenfehler: Die &quot;%s&quot;-Sektion ist nur definiert um entweder ein Start- oder Endzeiger zu enthalten.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Template Error: End tag of %s section comes before start tag.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Vorlagenfehler: Der Endzeiger der &quot;%s&quot;-Sektion liegt vor dem Startzeiger.</translation>
     </message>
     <message>
         <location line="+44"/>
@@ -6012,7 +6012,7 @@ Katesisch</translation>
         <location filename="../ui/widgetPropGeneralLanguage.cpp" line="+115"/>
         <location line="+20"/>
         <source>Current Language: </source>
-        <translation type="unfinished">Aktuelle Sprache: </translation>
+        <translation>Aktuelle Sprache: </translation>
     </message>
 </context>
 <context>
