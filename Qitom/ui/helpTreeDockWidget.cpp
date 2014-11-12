@@ -348,9 +348,13 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
         {
             QString linkPath;
             for (int j = 0; j <= i; j++)
+            {
                 linkPath.append(splittedLink.mid(0, i + 1)[j] + ".");
+            }
             if (linkPath.right(1) == ".")
+            {
                 linkPath = linkPath.left(linkPath.length() - 1);
+            }
             linkNav.insert(0, ">> <a id=\"HiLink\" href=\"itom://algorithm.html#" + linkPath.toLatin1().toPercentEncoding("",".") + "\">" + splittedLink[i] + "</a>");
         }
         docString.replace("%BREADCRUMB%", linkNav);
@@ -367,15 +371,16 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
         }
         else if (start == -1 || end == -1) //one part is missing
         {
-        retval += ito::RetVal(ito::retError, 0, tr("Template Error: Parameters section is only defined by either the start or end tag.").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, tr("Template Error: Parameters section is only defined by either the start or end tag.").toLatin1().data());
         }
         else if (start > end) //one part is missing
         {
-        retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of parameters section comes before start tag.").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of parameters section comes before start tag.").toLatin1().data());
         }
         else
         {
             parameterSection = docString.mid(start, end + QString("<!--%PARAMETERS_END%-->").size() - start);
+            parameterSection.replace("<!--%PARAMETERS_CAPTION%-->", tr("Parameters")); 
             docString.remove(start, end + QString("<!--%PARAMETERS_END%-->").size() - start);
         }
 
@@ -392,15 +397,16 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
         }
         else if (start == -1 || end == -1) //one part is missing
         {
-        retval += ito::RetVal(ito::retError, 0, tr("Template Error: Returns section is only defined by either the start or end tag.").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, tr("Template Error: Returns section is only defined by either the start or end tag.").toLatin1().data());
         }
         else if (start > end) //one part is missing
         {
-        retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of returns section comes before start tag.").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of returns section comes before start tag.").toLatin1().data());
         }
         else
         {
             returnsSection = docString.mid(start, end + QString("<!--%RETURNS_END%-->").size() - start);
+            returnsSection.replace("<!--%RETURNS_CAPTION%-->", tr("Returns")); 
             docString.remove(start, end + QString("<!--%RETURNS_END%-->").size() - start);
         }
 
@@ -417,15 +423,17 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
         }
         else if (start == -1 || end == -1) //one part is missing
         {
-        retval += ito::RetVal(ito::retError, 0, tr("Template Error: Returns section is only defined by either the start or end tag.").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, tr("Template Error: Returns section is only defined by either the start or end tag.").toLatin1().data());
         }
         else if (start > end) //one part is missing
         {
-        retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of returns section comes before start tag.").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of returns section comes before start tag.").toLatin1().data());
         }
         else
         {
             exampleSection = docString.mid(start, end + QString("<!--%EXAMPLE_END%-->").size() - start);
+            exampleSection.replace("<!--%EXAMPLE_CAPTION%-->", tr("Example"));
+            exampleSection.replace("<!--%EXAMPLELINK_CAPTION%-->", tr("Copy example to clipboard"));
             docString.remove(start, end + QString("<!--%EXAMPLE_END%-->").size() - start);
         }
 
@@ -455,6 +463,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                         {
                             parseParamVector("PARAMMAND", params->paramsMand, parameterSection);
                             parseParamVector("PARAMOPT", params->paramsOpt, parameterSection);
+                            parameterSection.replace("<!--%PARAMOPT_CAPTION%-->", tr("optional"));
                         }
 
                         // Return-Section
@@ -506,6 +515,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                         {
                             parseParamVector("PARAMMAND", params->paramsMand, parameterSection);
                             parseParamVector("PARAMOPT", params->paramsOpt, parameterSection);
+                            parameterSection.replace("<!--%PARAMOPT_CAPTION%-->", tr("optional"));
                         }
 
                         //remove returns section (Widgets can´t return something)
@@ -637,6 +647,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                             {
                                 parseParamVector("PARAMMAND", *paramsMand, parameterSection);
                                 parseParamVector("PARAMOPT" , *paramsOpt, parameterSection);
+                                parameterSection.replace("<!--%PARAMOPT_CAPTION%-->", tr("optional"));
                             }
 
                             //remove returns section (Widgets can´t return something)

@@ -694,12 +694,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="+951"/>
+        <location filename="../helper/paramHelper.cpp" line="+1310"/>
         <source>invalid parameter name</source>
         <translation>Ungültiger Parametername</translation>
     </message>
     <message>
-        <location line="-912"/>
+        <location line="-1271"/>
         <source>Types of parameter &apos;%s&apos; is unequal to required type of interface parameter &apos;%s&apos;</source>
         <translation type="unfinished">Der Typ des Parameters &apos;%s&apos; entspricht nicht dem geforderten Typ des Schnittstellenparameters &apos;%s&apos;</translation>
     </message>
@@ -719,28 +719,34 @@ p, li { white-space: pre-wrap; }
         <location line="+25"/>
         <location line="+25"/>
         <location line="+25"/>
+        <location line="+26"/>
+        <location line="+25"/>
+        <location line="+31"/>
+        <location line="+25"/>
+        <location line="+25"/>
+        <location line="+25"/>
         <location line="+52"/>
-        <location line="+49"/>
+        <location line="+40"/>
         <source>The type of the meta information of parameter &apos;%s&apos; is unequal to this of the interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-163"/>
+        <location line="-261"/>
         <source>The allowed integer range of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="-50"/>
         <source>The allowed char range of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+25"/>
+        <location line="+157"/>
         <source>The allowed double range of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+68"/>
         <source>The string type of the meta information of parameter &apos;%s&apos; is unequal to this of the interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -750,7 +756,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+70"/>
         <source>The allowed data object types of parameter &apos;%s&apos; are more restrictive than these required by the interface parameter &apos;%s&apos;.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -761,12 +767,37 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="-67"/>
         <source>The meta data of the interface parameter &apos;%s&apos; requires a plugin with name &apos;%s&apos;, but parameter &apos;%s&apos; does it not.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="-254"/>
+        <source>The allowed char range or the allowed range of numbers of elements of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+50"/>
+        <source>The allowed integer range or the allowed range of numbers of elements of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>The allowed value range or the allowed interval/range of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+81"/>
+        <source>The allowed double range or the allowed range of numbers of elements of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>The allowed value range or the allowed range of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+77"/>
         <source>Both parameter &apos;%s&apos; and interface parameter &apos;%s&apos; require different plugins.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -776,7 +807,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+59"/>
         <source>meta data of interface parameter &apos;%s&apos; is unknown.</source>
         <translation type="unfinished">Die Meta-Daten der Parameterschnittstelle &apos;%s&apos; sind unbekannt.</translation>
     </message>
@@ -787,46 +818,166 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+7"/>
-        <location line="+185"/>
+        <location line="+158"/>
         <source>AddIn must not be NULL</source>
         <translation>AddIn muss NULL sein</translation>
     </message>
     <message>
-        <location line="-168"/>
+        <location line="-141"/>
+        <location line="+25"/>
         <location line="+34"/>
-        <location line="+43"/>
-        <location line="+40"/>
+        <location line="+31"/>
         <location line="+22"/>
         <source>value out of range [%1, %2]</source>
         <translation>Wert liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
-        <location line="-125"/>
-        <location line="+35"/>
-        <location line="+43"/>
-        <location line="+31"/>
+        <location line="-106"/>
+        <location line="+26"/>
+        <location line="+34"/>
+        <location line="+30"/>
         <location line="+22"/>
         <source>value does not fit to given step size [%1:%2:%3]</source>
         <translation>Wert entspricht nicht der angegebenen Schrittgröße [%1:%2:%3]</translation>
     </message>
     <message>
-        <location line="+118"/>
-        <location line="+137"/>
+        <location line="+42"/>
+        <source>length of char array out of range [%1, %2]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>length of char array does not fit to given step size [%1:%2:%3]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <location line="+191"/>
+        <source>the given meta information does not fit a an array of character values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-171"/>
+        <source>length of integer array out of range [%1, %2]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>length of integer array does not fit to given step size [%1:%2:%3]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>length of integer array must be 2.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>The given integer array [v1=%1,v2=%2] is considered to be an interval but does not fit to v1=[%3,v2], v2=[v1,%4]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The given integer array [v1=%1,v2=%2] is considered to be a range but does not fit to v1=[%3,v2], v2=[v1,%4]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <location line="+105"/>
+        <source>The 1st value %1 does not fit to given step size [%2:%3:%4]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-101"/>
+        <location line="+105"/>
+        <source>The 2nd value %1 does not fit to given step size [%2:%3:%4]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-98"/>
+        <source>The given integer array [v1,v2] is considered to be an interval but the size of the interval (v2-v1) is out of bounds [%1,%2]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The given integer array [v1,v2] is considered to be a range but the size of the range (1+v2-v1) is out of bounds [%1,%2]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <location line="+96"/>
+        <source>The size of the interval (bound2-bound1) does not fit to given step size [%1:%2:%3]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-92"/>
+        <source>The size of the range (1+bound2-bound1) does not fit to given step size [%1:%2:%3]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>length of integer array must be 4.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>the given meta information does not fit a an array of integer values</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>length of double array out of range [%1, %2]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>length of double array does not fit to given step size [%1:%2:%3]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>length of double array must be 2.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>The given double array [v1=%1,v2=%2] is considered to be an interval but does not fit to v1=[%3,v2], v2=[v1,%4]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The given double array [v1,v2] is considered to be an interval but the size of the interval (v2-v1) is out of bounds [%1,%2]</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+82"/>
+        <location line="+133"/>
         <source>Index value is out of range [0, %i]</source>
         <translation>Indexwert liegt außerhalb des Gültigkeitsbereichs [0, %i]</translation>
     </message>
     <message>
-        <location line="+214"/>
+        <location line="-110"/>
+        <source>index-based parameter cannot be validated since non-index based parameter is an interval, range or rect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <location line="+138"/>
+        <source>index-based parameter cannot be validated since non-index based parameter is an interval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+199"/>
         <source>index is ouf of range [0, %i]</source>
         <translation>Index liegt außerhalb des Gültigkeitsbereichs [0, %i]</translation>
     </message>
     <message>
-        <location line="+68"/>
+        <location line="+40"/>
         <source>Paramater is no array type. Indexing not possible.</source>
         <translation>Der Parameter ist nicht vom Typ Array. Eine Indizierung ist nicht möglich.</translation>
     </message>
     <message>
-        <location line="-523"/>
+        <location line="-722"/>
         <source>AddIn does not fit to minimum required type(s).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -836,20 +987,20 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">AddIn muss folgendes Plugin sein: &apos;%s&apos;.</translation>
     </message>
     <message>
-        <location line="+122"/>
-        <location line="+137"/>
+        <location line="+347"/>
+        <location line="+138"/>
         <source>Index-based parameter name requires an array-type parameter.</source>
         <translation type="unfinished">Indexbasierter Parametername erwartet einen Parameter vom Typ Array.</translation>
     </message>
     <message>
         <location line="-122"/>
-        <location line="+138"/>
+        <location line="+139"/>
         <source>Parameter could not be converted to destination type.</source>
         <translation type="unfinished">Der Parameter kann nicht in den benötigten Zielparametertyp umgewandelt werden.</translation>
     </message>
     <message>
-        <location line="-133"/>
-        <location line="+138"/>
+        <location line="-134"/>
+        <location line="+139"/>
         <source>type of parameter does not fit to requested parameter type</source>
         <translation type="unfinished">Der Parametertyp entspricht nicht dem erwarteten Typ</translation>
     </message>
@@ -869,12 +1020,12 @@ p, li { white-space: pre-wrap; }
         <translation>Parameter &apos;%1&apos; wurde nicht gefunden.</translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+81"/>
         <source>param is no array</source>
         <translation>&apos;Param&apos; ist kein Array</translation>
     </message>
     <message>
-        <location filename="../api/apiFunctions.cpp" line="+147"/>
+        <location filename="../api/apiFunctions.cpp" line="+150"/>
         <location filename="../python/pythonCommon.cpp" line="+236"/>
         <source>Unknown parameter type</source>
         <translation>Unbekannter Parametertyp</translation>
@@ -955,7 +1106,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Die Größe der %i. Dimension übersteigt die aktuelle Begrenzung [%i, %i]</translation>
     </message>
     <message>
-        <location filename="../python/pythonCommon.cpp" line="+1022"/>
+        <location filename="../python/pythonCommon.cpp" line="+1114"/>
         <source>Keyword autoLoadParams not of integer type</source>
         <translation type="unfinished">Schlüsselwort autoLoadParams ist nicht vom Typ Integer</translation>
     </message>
@@ -990,7 +1141,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Zeitüberschreitung beim Aufruf spezifischer Funktionen im Plugin.</translation>
     </message>
     <message>
-        <location line="+134"/>
+        <location line="+136"/>
         <source>timeout while getting parameter</source>
         <translation type="unfinished">Zeitüberschreitung beim Lesen der Parameter</translation>
     </message>
@@ -1050,7 +1201,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="+2837"/>
+        <location filename="../python/pythonUi.cpp" line="+2878"/>
         <source>no widget name specified</source>
         <translation type="unfinished">Kein Widget-Name vergeben</translation>
     </message>
@@ -1291,8 +1442,8 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">&apos;UI-Organizer&apos; ist nicht verfügbar!</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractDObjFigure.h" line="+70"/>
-        <location filename="../../plot/AbstractDObjPCLFigure.h" line="+77"/>
+        <location filename="../../plot/AbstractDObjFigure.h" line="+73"/>
+        <location filename="../../plot/AbstractDObjPCLFigure.h" line="+80"/>
         <location line="+2"/>
         <location line="+2"/>
         <source>Source data for plot</source>
@@ -2582,86 +2733,12 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+20"/>
         <source>Types of parameter &apos;%s&apos; is unequal to required type of interface parameter &apos;%s&apos;</source>
-        <translation type="unfinished">Der Typ des Parameters &apos;%s&apos; entspricht nicht dem geforderten Typ des Schnittstellenparameters &apos;%s&apos;</translation>
+        <translation type="obsolete">Der Typ des Parameters &apos;%s&apos; entspricht nicht dem geforderten Typ des Schnittstellenparameters &apos;%s&apos;</translation>
     </message>
     <message>
-        <location line="+8"/>
-        <source>In/Out flags of parameter &apos;%s&apos; are unequal to required flags of interface parameter &apos;%s&apos;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+34"/>
-        <source>The parameter &apos;%s&apos; is restricted by meta information while the interface parameter &apos;%s&apos; is not.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <location line="+12"/>
-        <location line="+25"/>
-        <location line="+25"/>
-        <location line="+25"/>
-        <location line="+52"/>
-        <location line="+49"/>
-        <source>The type of the meta information of parameter &apos;%s&apos; is unequal to this of the interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-163"/>
-        <source>The allowed integer range of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>The allowed char range of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>The allowed double range of parameter &apos;%s&apos; is smaller than the requested range from interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+18"/>
-        <source>The string type of the meta information of parameter &apos;%s&apos; is unequal to this of the interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>String &apos;%s&apos;, requested by meta data of interface parameter &apos;%s&apos; could not be found in meta data of parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+30"/>
-        <source>The allowed data object types of parameter &apos;%s&apos; are more restrictive than these required by the interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <location line="+12"/>
-        <source>The minimum and maximum dimensions of the data object of parameter &apos;%s&apos; are more restrictive than these required by the interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>The meta data of the interface parameter &apos;%s&apos; requires a plugin with name &apos;%s&apos;, but parameter &apos;%s&apos; does it not.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Both parameter &apos;%s&apos; and interface parameter &apos;%s&apos; require different plugins.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+15"/>
-        <source>The minimum plugin type bit mask of parameter &apos;%s&apos; is more restrictive than this of the interface parameter &apos;%s&apos;.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+8"/>
         <source>meta data of interface parameter &apos;%s&apos; is unknown.</source>
-        <translation type="unfinished">Die Meta-Daten der Parameterschnittstelle &apos;%s&apos; sind unbekannt.</translation>
+        <translation type="obsolete">Die Meta-Daten der Parameterschnittstelle &apos;%s&apos; sind unbekannt.</translation>
     </message>
 </context>
 <context>
@@ -3708,39 +3785,66 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::HelpTreeDockWidget</name>
     <message>
-        <location filename="../ui/helpTreeDockWidget.cpp" line="+370"/>
+        <location filename="../ui/helpTreeDockWidget.cpp" line="+374"/>
         <source>Template Error: Parameters section is only defined by either the start or end tag.</source>
-        <translation type="unfinished">Vorlagenfehler: Die &quot;Parameters&quot;-Sektion ist nur definiert um entweder ein Start- oder Endzeiger zu enthalten.</translation>
+        <translation type="unfinished">Vorlagenfehler: Die Parameter-Sektion ist nur definiert um entweder ein Start- oder Endzeiger zu enthalten.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Template Error: End tag of parameters section comes before start tag.</source>
-        <translation type="unfinished">Vorlagenfehler: Der Endzeiger der &quot;Parameters&quot;-Sektion liegt vor dem Startzeiger.</translation>
+        <translation type="unfinished">Vorlagenfehler: Der Endzeiger der Parameter-Sektion liegt vor dem Startzeiger.</translation>
     </message>
     <message>
-        <location line="+21"/>
-        <location line="+25"/>
+        <location line="+5"/>
+        <source>Parameters</source>
+        <translation type="unfinished">Parameter</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <location line="+26"/>
         <source>Template Error: Returns section is only defined by either the start or end tag.</source>
-        <translation type="unfinished">Vorlagenfehler: Die &quot;Returns&quot;-Sektion ist nur definiert um entweder ein Start- oder Endzeiger zu enthalten.</translation>
+        <translation type="unfinished">Vorlagenfehler: Die Rückgabe-Sektion ist nur definiert um entweder ein Start- oder Endzeiger zu enthalten.</translation>
+    </message>
+    <message>
+        <location line="-22"/>
+        <location line="+26"/>
+        <source>Template Error: End tag of returns section comes before start tag.</source>
+        <translation type="unfinished">Vorlagenfehler: Der Endzeiger der Rückgabe-Sektion liegt vor dem Startzeiger.</translation>
     </message>
     <message>
         <location line="-21"/>
-        <location line="+25"/>
-        <source>Template Error: End tag of returns section comes before start tag.</source>
-        <translation type="unfinished">Vorlagenfehler: Der Endzeiger der &quot;Returns&quot;-Sektion liegt vor dem Startzeiger.</translation>
+        <source>Returns</source>
+        <translation type="unfinished">Rückgabe</translation>
     </message>
     <message>
-        <location line="+61"/>
+        <location line="+26"/>
+        <source>Example</source>
+        <translation type="unfinished">Beispiel</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy example to clipboard</source>
+        <translation type="unfinished">Beispiel in die Zwischenablage kopieren</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <location line="+52"/>
+        <location line="+132"/>
+        <source>optional</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="-156"/>
         <source>Unknown filter name &apos;%1&apos;</source>
         <translation type="unfinished">Unbekannter Filtername &apos;%1&apos;</translation>
     </message>
     <message>
-        <location line="+100"/>
+        <location line="+101"/>
         <source>Unknown algorithm plugin with name &apos;%1&apos;</source>
         <translation type="unfinished">Unbekanntes Algorithmus-Plugin namens &apos;%1&apos;</translation>
     </message>
     <message>
-        <location line="+95"/>
+        <location line="+96"/>
         <source>unknown type</source>
         <translation type="unfinished">Unbekannter Typ</translation>
     </message>
@@ -3814,7 +3918,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Platzhalter: &lt;keine Vorlage&gt;</translation>
     </message>
     <message>
-        <location line="+414"/>
+        <location line="+427"/>
         <source>Database %s could not be opened</source>
         <translation type="unfinished">Datenbank &apos;%s&apos; konnte nicht geöffnet werden</translation>
     </message>
@@ -4728,7 +4832,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::PythonEngine</name>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="+268"/>
+        <location filename="../python/pythonEngine.cpp" line="+269"/>
         <source>error importing sys in start python engine
 </source>
         <translation type="unfinished"></translation>
@@ -4752,7 +4856,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+197"/>
+        <location line="+204"/>
         <source>the module itoFunctions could not be loaded.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4979,7 +5083,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::ScriptDockWidget</name>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="+519"/>
+        <location filename="../widgets/scriptDockWidget.cpp" line="+532"/>
         <source>file open</source>
         <translation>Datei öffnen</translation>
     </message>
@@ -5009,7 +5113,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>
     <message>
-        <location line="+531"/>
+        <location line="+530"/>
         <source>move left</source>
         <translation>Nach Links verschieben</translation>
     </message>
@@ -5554,6 +5658,11 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Soll diese neu geladen werden?</translation>
     </message>
     <message>
+        <location line="+187"/>
+        <source>{Global Scope}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../widgets/scriptEditorWidget.h" line="+88"/>
         <source>Untitled%1</source>
         <translation type="unfinished">Unbenannt%1</translation>
@@ -5648,7 +5757,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+188"/>
+        <location line="+213"/>
         <source>defaultButton must be within enum QMessageBox::StandardButton</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5782,8 +5891,8 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2492"/>
-        <location line="+2248"/>
+        <location line="-2517"/>
+        <location line="+2273"/>
         <location line="+64"/>
         <location line="+151"/>
         <location line="+34"/>

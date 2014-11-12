@@ -68,7 +68,7 @@
         <translation type="unfinished">Parameter &apos;%1&apos; wurde im übergebenen Parametervektor nicht gefunden</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+84"/>
         <location line="+125"/>
         <source>name of requested parameter is empty.</source>
         <translation type="unfinished">Der Name des erwarteten Parameters ist leer.</translation>
@@ -410,8 +410,8 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractDObjFigure.h" line="+70"/>
-        <location filename="../../plot/AbstractDObjPCLFigure.h" line="+77"/>
+        <location filename="../../plot/AbstractDObjFigure.h" line="+73"/>
+        <location filename="../../plot/AbstractDObjPCLFigure.h" line="+80"/>
         <location line="+2"/>
         <location line="+2"/>
         <source>Source data for plot</source>
