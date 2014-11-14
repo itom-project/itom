@@ -73,11 +73,13 @@ ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable)
 
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 
-    connect(this, SIGNAL(pythonRunFile(QString)), pyEngine, SLOT(pythonRunFile(QString)));
-    connect(this, SIGNAL(pythonDebugFile(QString)), pyEngine, SLOT(pythonDebugFile(QString)));
-    connect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString,int)));
-    connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(widgetFocusChanged(QWidget*,QWidget*)));
-
+    if (pyEngine)
+    {
+        connect(this, SIGNAL(pythonRunFile(QString)), pyEngine, SLOT(pythonRunFile(QString)));
+        connect(this, SIGNAL(pythonDebugFile(QString)), pyEngine, SLOT(pythonDebugFile(QString)));
+        connect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString,int)));
+        connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(widgetFocusChanged(QWidget*,QWidget*)));
+    }
 
 }
 

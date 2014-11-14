@@ -444,7 +444,7 @@ RetVal ScriptEditorWidget::preShowContextMenuEditor()
     //editorMenuActions["save"]->setEnabled(isModified());
 
     editorMenuActions["runScript"]->setEnabled(!pythonBusy);
-    editorMenuActions["runSelection"]->setEnabled(lineFrom != -1 && (!pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
+    editorMenuActions["runSelection"]->setEnabled(lineFrom != -1 && pyEngine && (!pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
     editorMenuActions["debugScript"]->setEnabled(!pythonBusy);
     editorMenuActions["stopScript"]->setEnabled(pythonBusy);
 
@@ -1230,7 +1230,7 @@ void ScriptEditorWidget::errorListChange(const QStringList &errorList)
 void ScriptEditorWidget::checkSyntax()
 {
     PythonEngine *pyEng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-    if (pyEng->pySyntaxCheckAvailable())
+    if (pyEng && pyEng->pySyntaxCheckAvailable())
     {
         QMetaObject::invokeMethod(pyEng, "pythonSyntaxCheck", Q_ARG(QString, this->text()), Q_ARG(QPointer<QObject>, QPointer<QObject>(this)));
     }

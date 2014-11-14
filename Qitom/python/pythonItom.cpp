@@ -3312,18 +3312,26 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
                                 if (PyDict_Contains(descr->fields, PyUnicode_FromString("itomMetaInformation")))
                                 {
                                     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-                                    PyObject *result = PyObject_CallMethodObjArgs(pyEngine->itomFunctions, PyUnicode_FromString("importMatlabMatAsDataObject"), value, NULL);
-
-                                    if (result == NULL || PyErr_Occurred())
+                                    if (pyEngine)
                                     {
+                                        PyObject *result = PyObject_CallMethodObjArgs(pyEngine->itomFunctions, PyUnicode_FromString("importMatlabMatAsDataObject"), value, NULL);
+
+                                        if (result == NULL || PyErr_Occurred())
+                                        {
+                                            Py_XDECREF(result);
+                                            Py_XDECREF(scipyIoModule);
+                                            PyErr_Print();
+                                            PyErr_SetString(PyExc_RuntimeError, "error while parsing imported dataObject or npDataObject.");
+                                            return NULL;
+                                        }
+                                        PyDict_SetItem(resultLoadMat, key, result);
                                         Py_XDECREF(result);
-                                        Py_XDECREF(scipyIoModule);
-                                        PyErr_Print();
-                                        PyErr_SetString(PyExc_RuntimeError, "error while parsing imported dataObject or npDataObject.");
+                                    }
+                                    else
+                                    {
+                                        PyErr_SetString(PyExc_RuntimeError, "Python Engine not available");
                                         return NULL;
                                     }
-                                    PyDict_SetItem(resultLoadMat, key, result);
-                                    Py_XDECREF(result);
                                 }
                             }
 

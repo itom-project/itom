@@ -892,7 +892,14 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             const ito::IntMeta *pMeta = dynamic_cast<const ito::IntMeta*>(param.getMeta());
             if (pMeta)
             {
-                meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<int>());
+                if (pMeta->getStepSize() == 1)
+                {
+                    meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<int>());
+                }
+                else
+                {
+                    meta = tr("Range: [%1:%2:%3], Default: %4").arg(minText(pMeta->getMin())).arg(pMeta->getStepSize()).arg(maxText(pMeta->getMax())).arg(param.getVal<int>());
+                }
             }
             else
             {
@@ -906,7 +913,14 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             const ito::CharMeta *pMeta = dynamic_cast<const ito::CharMeta*>(param.getMeta());
             if (pMeta)
             {
-                meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<char>());
+                if (pMeta->getStepSize() == 1)
+                {
+                    meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<char>());
+                }
+                else
+                {
+                    meta = tr("Range: [%1:%2:%3], Default: %4").arg(minText(pMeta->getMin())).arg(pMeta->getStepSize()).arg(maxText(pMeta->getMax())).arg(param.getVal<char>());
+                }
             }
             else
             {
@@ -918,10 +932,16 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
         {
             type = "double";
             const ito::DoubleMeta *pMeta = dynamic_cast<const ito::DoubleMeta*>(param.getMeta());
-            if (param.getMeta() != NULL)
+            if (pMeta)
             {
-                
-                meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<double>());
+                if (pMeta->getStepSize() == 0.0)
+                {
+                    meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<double>());
+                }
+                else
+                {
+                    meta = tr("Range: [%1:%2:%3], Default: %4").arg(minText(pMeta->getMin())).arg(pMeta->getStepSize()).arg(maxText(pMeta->getMax())).arg(param.getVal<double>());
+                }
             }
             else
             {
@@ -1001,17 +1021,47 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
         break;
     case ito::ParamBase::CharArray & ito::paramTypeMask:
         {
-            type = "char-list";
+            type = "list of characters";
+            if (param.getMeta() && param.getMeta()->getType() == ito::ParamMeta::rttiCharArrayMeta)
+            {
+                ito::CharArrayMeta *m = (ito::CharArrayMeta*)(param.getMeta());
+            }
         }
         break;
     case ito::ParamBase::IntArray & ito::paramTypeMask:
         {
-            type = "integer-list";
+            const ito::ParamMeta *m = param.getMeta();
+            
+            if ((m && m->getType() == ito::ParamMeta::rttiIntArrayMeta) || !m)
+            {
+                type = "list of integers";
+            }
+            else if (m && m->getType() == ito::ParamMeta::rttiIntervalMeta)
+            {
+                type = "interval [first, last] (integers)";
+            }
+            else if (m && m->getType() == ito::ParamMeta::rttiRangeMeta)
+            {
+                type = "range [first, last] (integers)";
+            }
+            else if (m && m->getType() == ito::ParamMeta::rttiRectMeta)
+            {
+                type = "rectangle [left, top, width, height] (integers)";
+            }
         }
         break;
     case ito::ParamBase::DoubleArray & ito::paramTypeMask:
         {
-            type = "double-list";
+            const ito::ParamMeta *m = param.getMeta();
+
+            if ((m && m->getType() == ito::ParamMeta::rttiDoubleArrayMeta) || !m)
+            {
+                type = "list of float64";
+            }
+            else if (m && m->getType() == ito::ParamMeta::rttiDoubleIntervalMeta)
+            {
+                type = "interval [first, last] (float64)";
+            }
         }
         break;
     case ito::ParamBase::DObjPtr & ito::paramTypeMask:

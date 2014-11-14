@@ -725,8 +725,10 @@ void FileSystemDockWidget::mnuExecuteFile()
     if (m_pTreeView->selectedIndexes().count() > 0)
     {
         PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-//    pyEngine->pythonRunFile(m_pFileSystemModel->fileInfo(m_pTreeView->selectedIndexes().first()).filePath());
-        QMetaObject::invokeMethod(pyEngine, "pythonRunFile", Q_ARG(QString, m_pFileSystemModel->fileInfo(m_pTreeView->selectedIndexes().first()).filePath()));
+        if (pyEngine)
+        {
+            QMetaObject::invokeMethod(pyEngine, "pythonRunFile", Q_ARG(QString, m_pFileSystemModel->fileInfo(m_pTreeView->selectedIndexes().first()).filePath()));
+        }
     }
 }
 

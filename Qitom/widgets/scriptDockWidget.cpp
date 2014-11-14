@@ -1102,7 +1102,7 @@ void ScriptDockWidget::updatePythonActions()
     bool busy2 = busy1 && pythonDebugMode() && pythonInWaitingMode();
 
     m_scriptRunAction->setEnabled(!busy1);
-    m_scriptRunSelectionAction->setEnabled(lineFrom != -1 && (!pyEngine->isPythonBusy() || pyEngine->isPythonDebuggingAndWaiting()));
+    m_scriptRunSelectionAction->setEnabled(lineFrom != -1 && pyEngine && (!pyEngine->isPythonBusy() || pyEngine->isPythonDebuggingAndWaiting()));
     m_scriptDebugAction->setEnabled(!busy1);
     m_scriptStopAction->setEnabled(busy1);
     m_scriptContinueAction->setEnabled(busy2);

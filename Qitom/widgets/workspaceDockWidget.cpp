@@ -357,26 +357,29 @@ void WorkspaceDockWidget::treeWidgetItemChanged(QTreeWidgetItem * item, int /*co
     {
         
         PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-
-        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
-
-        QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-        emit setStatusInformation(tr("renaming variable"), 0);
-
-        QMetaObject::invokeMethod(eng, "renameVariable", Q_ARG(bool, m_globalNotLocal), Q_ARG(QString, m_firstCurrentItemKey), Q_ARG(QString,newKey), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-
-        m_firstCurrentItemKey = QString::Null();
-
-        if (locker.getSemaphore()->waitAndProcessEvents(PLUGINWAIT))
+        if (eng)
         {
-            emit setStatusInformation("", 0);
+
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
+
+            QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+            emit setStatusInformation(tr("renaming variable"), 0);
+
+            QMetaObject::invokeMethod(eng, "renameVariable", Q_ARG(bool, m_globalNotLocal), Q_ARG(QString, m_firstCurrentItemKey), Q_ARG(QString,newKey), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+            m_firstCurrentItemKey = QString::Null();
+
+            if (locker.getSemaphore()->waitAndProcessEvents(PLUGINWAIT))
+            {
+                emit setStatusInformation("", 0);
+            }
+            else
+            {
+                emit setStatusInformation(tr("timeout while renaming variables"), PLUGINWAIT);
+            }
+            QApplication::restoreOverrideCursor();
         }
-        else
-        {
-            emit setStatusInformation(tr("timeout while renaming variables"), PLUGINWAIT);
-        }
-        QApplication::restoreOverrideCursor();
     }
 }
 
