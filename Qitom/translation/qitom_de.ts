@@ -5660,7 +5660,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <message>
         <location line="+187"/>
         <source>{Global Scope}</source>
-        <translation type="unfinished"></translation>
+        <translation>{Globaler Gültigkeitsbereich}</translation>
     </message>
     <message>
         <location filename="../widgets/scriptEditorWidget.h" line="+88"/>
