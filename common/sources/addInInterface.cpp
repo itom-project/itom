@@ -190,6 +190,36 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    //! method for setting various parameters in a sequence
+    /*!
+        Using this method, only one over-thread call needs to be executed in order to set various parameters
+        by calling setParam for each parameter.
+
+        \param values is a vector of parameters to set
+        \param waitCond is the locked semaphore that is released at the end of the method.
+        \sa setParam, ParamBase
+    */
+    ito::RetVal AddInBase::getParamVector(const QVector<QSharedPointer<ito::Param> > values, ItomSharedSemaphore *waitCond)
+    {
+        ItomSharedSemaphoreLocker locker(waitCond);
+
+        ito::RetVal retValue = ito::retOk;
+
+        foreach(const QSharedPointer<ito::Param> &param, values)
+        {
+            retValue += getParam(param,NULL);
+            setAlive();
+        }
+
+        if (waitCond)
+        {
+            waitCond->returnValue = retValue;
+            waitCond->release();
+        }
+        return retValue;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
     //! this method can handle additional functions of your plugin.
     /*!
         Use registerExecFunc to register a specific function name and a set of mandatory and optional default parameters.
@@ -253,6 +283,7 @@ namespace ito
         }
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     void AddInBase::setIdentifier(const QString &identifier)
     {
         m_identifier = identifier;

@@ -614,6 +614,9 @@ namespace ito
             ito::RetVal setParamVector(const QVector<QSharedPointer<ito::ParamBase> > values, ItomSharedSemaphore *waitCond = NULL);
 
             // doc in source-file
+            ito::RetVal getParamVector(const QVector<QSharedPointer<ito::Param> > values, ItomSharedSemaphore *waitCond = NULL);
+
+            // doc in source-file
             virtual ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond = NULL);
        
         private slots:

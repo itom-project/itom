@@ -86,9 +86,10 @@ set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInConfigDialog.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperActuator.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperGrabber.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperActuator.h #deprecated
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperGrabber.h #deprecated
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperCommon.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/pluginThreadCtrl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedFunctionsQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresGraphics.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.h
@@ -109,9 +110,10 @@ set(itomCommonQt_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInInterface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInConfigDialog.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperActuator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperGrabber.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperActuator.cpp #deprecated
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperGrabber.cpp #deprecated
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperCommon.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/pluginThreadCtrl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedFunctionsQt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresPrimitives.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresQt.cpp
