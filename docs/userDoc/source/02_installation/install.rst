@@ -39,6 +39,11 @@ can be downloaded from https://bitbucket.org/itom/itom/downloads. The setup inta
 Build from Sources
 ************************ 
 
+.. note::
+    
+    There is a all-in-one build development installation available (Windows, Visual Studio 2010 only). This contains all dependencies that are required to build itom and its main plugins
+    from sources. See the section `All-In-One development setup` below for more information.
+
 Alternatively, it is possible to get the sources of |itom| (e.g. clone the latest Git repository from https://bitbucket.org/itom/itom.git) and
 compile an up-to-date version of |itom|. This is recommended for developers (e.g. plugin developers) and required for linux users. Before getting the source files,
 check the build dependencies below which contain software packages and libraries necessary to build and |itom|.
@@ -63,6 +68,23 @@ Plugins, Designer-Plugins
 
 Each plugin or designer plugin enhances the core-functionality of |itom| and is compiled in its own project. Therefore the installer or sources of |itom|
 do no contain any plugin. Every plugin is distributed as a library file (*dll*, *so*,...) and - if necessary - other files.
+
+All-In-One development setup
+******************************
+
+For users who want to get a development environment for itom, the main plugins and designer plugins there is an all-in-one development setup available.
+
+Using this setup, you only need to unzip one or two archives to your harddrive, install **git** and **Python** that are included in this archive and
+execute a setup script, written in Python. This script automatically downloads the current sources of |itom| and its plugins from the internet,
+configures the 3rd party dependencies (also provided in this package) and automatically configures and generates CMake for the single repositories.
+Using this setup tool, you can start developing |itom| or plugins within a short time.
+
+For more information see:
+
+.. toctree::
+    :maxdepth: 1
+    
+    all-in-one_development_setup.rst
 
 Get this help
 ***********************

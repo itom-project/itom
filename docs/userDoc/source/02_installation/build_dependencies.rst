@@ -88,6 +88,8 @@ Create the following environment variables (Windows only - you need to log-off f
         
         nmake distclean
         
+.. _compile-qt5-from-sources:
+        
 .. note::
     
     **Compiling Qt 5.x (using the example 64bit, Visual Studio 2010)**
