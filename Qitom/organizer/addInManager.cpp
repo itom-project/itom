@@ -1007,7 +1007,7 @@ namespace ito
         //ref-count of plugin must be zero (that means one instance is holder a single reference), this is rechecked in the following line
         if (aib->getRef(*addIn) != 0)
         {
-            retval += ito::RetVal(ito::retWarning,0,"reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).");
+            retval += ito::RetVal(ito::retWarning, 0, "reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).");
         }
 
         if ((*addIn)->getBasePlugin() == NULL || (*addIn)->getBasePlugin()->getType() == 0)
@@ -1141,7 +1141,7 @@ end:
         //ref-count of plugin must be zero (that means one instance is holder a single reference), this is rechecked in the following line
         if (aib->getRef(*addIn) != 0)
         {
-            retval += ito::RetVal(ito::retWarning,0,"reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).");
+            retval += ito::RetVal(ito::retWarning, 0, "reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).");
         }
 
         if ((*addIn)->getBasePlugin() == NULL || (*addIn)->getBasePlugin()->getType() == 0)
@@ -1269,7 +1269,7 @@ end:
         //ref-count of plugin must be zero (that means one instance is holder a single reference), this is rechecked in the following line
         if (aib->getRef(*addIn) != 0)
         {
-            retval += ito::RetVal(ito::retWarning,0,"reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).");
+            retval += ito::RetVal(ito::retWarning, 0, "reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).");
         }
 
         (*addIn)->init(paramsMand, paramsOpt);
@@ -1797,7 +1797,7 @@ end:
         }
         else
         {
-            retval += ito::RetVal(ito::retWarning,0,tr("no configuration dialog available").toLatin1().data());
+            retval += ito::RetVal(ito::retWarning, 0, tr("no configuration dialog available").toLatin1().data());
         }
 
         if (waitCond)

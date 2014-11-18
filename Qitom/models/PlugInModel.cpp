@@ -430,7 +430,6 @@ QModelIndex PlugInModel::index(int row, int column, const QModelIndex &parent) c
                         //qDebug() << "AlgoWidget: r" << row << ", c:" << column << ", p:" << (void*)widgets.values()[row - filters.count()];
                         return createIndex(row, column, (void*)widgets.values()[row - filters.count()]);
                     }
-
                 }
                 else
                 {
@@ -1447,7 +1446,7 @@ bool PlugInModel::insertInstance(ito::AddInInterfaceBase* addInInterface, bool b
 *
 *
 */
-bool PlugInModel::deleteInstance(ito::AddInInterfaceBase* /*addInInterface*/, ito::AddInBase *addInInstance, bool beginOperation)
+bool PlugInModel::deleteInstance(ito::AddInInterfaceBase* /*addInInterface*/, ito::AddInBase *addInInstance, const bool beginOperation)
 {
     if (beginOperation)
     {
@@ -1455,7 +1454,12 @@ bool PlugInModel::deleteInstance(ito::AddInInterfaceBase* /*addInInterface*/, it
         if (index.isValid())
         {
             QModelIndex parentIdx = parent(index);
-            beginRemoveRows(parentIdx, index.row(), index.row());
+            int i = index.row() - 1;
+            if (i < 0) // This is a strange index behaviour! The minus 1 is reasoned!
+            {
+                i = 0;
+            }
+            beginRemoveRows(parentIdx, i, i);
             return true;
         }
         return false;

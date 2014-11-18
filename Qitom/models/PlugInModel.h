@@ -101,7 +101,7 @@ namespace ito
             int update(void) { emit(beginResetModel()); emit(endResetModel()); return 0; };
 
             bool insertInstance(ito::AddInInterfaceBase* addInInterface, bool beginOperation);
-            bool deleteInstance(ito::AddInInterfaceBase* addInInterface, ito::AddInBase *addInInstance, bool beginOperation);
+            bool deleteInstance(ito::AddInInterfaceBase* addInInterface, ito::AddInBase *addInInstance, const bool beginOperation);
             bool resetModel(bool beginOperation);
 
             QModelIndex getIndexByAddIn(ito::AddInBase *ai) const;
