@@ -479,6 +479,11 @@ bool PlugInModel::getModelIndexInfo(const QModelIndex &index, tItemType &type, s
     type = itemUnknown;
     internalData = 0;
 
+    if (!index.isValid())
+    {
+        return false;
+    }
+
     //table of type vs. internalData
     //itemUnknown           -> 0
     //itemCatDataIO         -> ito::typeDataIO
