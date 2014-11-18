@@ -1063,6 +1063,7 @@ namespace ito
             {
                 if (*addIn != NULL)
                 {
+                    m_plugInModel.insertInstance(aib, false); //end insert, since closeAddIn will call beginRemoveRows...
                     retval += closeAddIn(reinterpret_cast<ito::AddInBase**>(addIn));
                 }
                 *addIn = NULL;
@@ -1085,8 +1086,10 @@ namespace ito
             }
         }
 
-        //updateModel();
-        m_plugInModel.insertInstance(aib, false); //end insert
+        if (*addIn)
+        {
+            m_plugInModel.insertInstance(aib, false); //end insert
+        }
 
 end:
         if (aimWait)
@@ -1195,6 +1198,7 @@ end:
             {
                 if (*addIn != NULL)
                 {
+                    m_plugInModel.insertInstance(aib, false); //end insert, since closeAddIn will call beginRemoveRows...
                     retval += closeAddIn(reinterpret_cast<ito::AddInBase**>(addIn));
                 }
                 *addIn = NULL;
@@ -1217,8 +1221,10 @@ end:
             }
         }
 
-        //updateModel();
-        m_plugInModel.insertInstance(aib, false); //end insert
+        if (*addIn)
+        {
+            m_plugInModel.insertInstance(aib, false); //end insert
+        }
 
 end:
 

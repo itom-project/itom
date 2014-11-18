@@ -1459,11 +1459,7 @@ bool PlugInModel::deleteInstance(ito::AddInInterfaceBase* /*addInInterface*/, it
         if (index.isValid())
         {
             QModelIndex parentIdx = parent(index);
-            int i = index.row() - 1;
-            if (i < 0) // This is a strange index behaviour! The minus 1 is reasoned!
-            {
-                i = 0;
-            }
+            int i = index.row();
             beginRemoveRows(parentIdx, i, i);
             return true;
         }
