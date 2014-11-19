@@ -81,7 +81,7 @@ namespace ito
             void treeWidgetContextMenuRequested(const QPoint &pos);
 
         public slots:
-            void addLastCommand(const QString cmd);
+            void addLastCommand(QString cmd);
             void propertiesChanged();
     };
 
