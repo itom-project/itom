@@ -87,7 +87,7 @@ RetVal UserOrganizer::closeInstance(void)
     \param defUserName
     \return RetVal
 */
-ito::RetVal UserOrganizer::loadSettings(const QString defUserName)
+ito::RetVal UserOrganizer::loadSettings(const QString &defUserName)
 {
     QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, "itomSettings");
     QSettings::setDefaultFormat(QSettings::IniFormat);
