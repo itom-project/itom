@@ -66,6 +66,8 @@ public:
     PluginThreadCtrl(const PluginThreadCtrl &other);
     virtual ~PluginThreadCtrl();                                                         /*! < Destructor */
 
+    PluginThreadCtrl& operator =(const PluginThreadCtrl &other);
+
     ito::RetVal getParam(ito::Param &val, int timeOutMS = PLUGINWAIT);      /*! < Get the parameter of the plugin */
     ito::RetVal setParam(ito::ParamBase val, int timeOutMS = PLUGINWAIT);       /*! < Set the parameter of the plugin */
 };

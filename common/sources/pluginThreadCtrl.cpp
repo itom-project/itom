@@ -98,19 +98,33 @@ PluginThreadCtrl::~PluginThreadCtrl()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PluginThreadCtrl::PluginThreadCtrl(const PluginThreadCtrl &other)
+PluginThreadCtrl::PluginThreadCtrl(const PluginThreadCtrl &other) :
+    m_pPlugin(other.m_pPlugin)
 {
+    if (m_pPlugin)
+    {
+        m_pPlugin->getBasePlugin()->incRef(m_pPlugin); //increment reference, such that camera is not deleted
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PluginThreadCtrl& PluginThreadCtrl::operator =(const PluginThreadCtrl &other)
+{
+    ito::AddInBase *op = other.m_pPlugin;
+    if (op)
+    {
+        op->getBasePlugin()->incRef(op); //increment reference, such that camera is not deleted
+    }
+
     if (m_pPlugin)
     {
         m_pPlugin->getBasePlugin()->decRef(m_pPlugin); //decrement reference
         m_pPlugin = NULL;
     }
 
-    m_pPlugin = other.m_pPlugin;
-    if (m_pPlugin)
-    {
-        m_pPlugin->getBasePlugin()->incRef(m_pPlugin); //increment reference, such that camera is not deleted
-    }
+    m_pPlugin = op;
+
+    return *this;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
