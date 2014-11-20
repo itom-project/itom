@@ -149,8 +149,10 @@ int main(int argc, char *argv[])
         appLibPath.cd("lib");
     }
     QString libDir = QDir::cleanPath(appLibPath.filePath(""));
+    libDir = QDir::toNativeSeparators( libDir );
 
     //and designer path
+    appLibPath = QDir(a.applicationDirPath());
     if(appLibPath.exists("designer"))
     {
         appLibPath.cd("designer");
@@ -162,7 +164,20 @@ int main(int argc, char *argv[])
     }
     QString designerDir = QDir::cleanPath(appLibPath.filePath(""));
 
-    libDir = QDir::toNativeSeparators( libDir );
+    //search for mpl_itom path in itom-packages
+    appLibPath = QDir(a.applicationDirPath());
+    if(appLibPath.exists("itom-packages"))
+    {
+        appLibPath.cd("itom-packages");
+        appLibPath.cd("mpl_itom");
+    }
+    else
+    {
+        appLibPath.cdUp();
+        appLibPath.cd("itom-packages");
+        appLibPath.cd("mpl_itom");
+    }
+    QString mpl_itomDir = QDir::cleanPath(appLibPath.filePath(""));
 
 #if (defined WIN32 || defined WIN64)
     char *oldpath = getenv("path");
@@ -184,8 +199,13 @@ int main(int argc, char *argv[])
     strcat(newpath, oldpath);
 #if (defined WIN32 || defined WIN64)
     _putenv(newpath);
+
+    //this is for the matplotlib config file that is adapted for itom.
+    mpl_itomDir = QString("MPLCONFIGDIR=%1").arg(mpl_itomDir);
+    _putenv(mpl_itomDir.toLatin1().data());
 #else
     setenv("PATH", newpath, 1);
+    setenv("MPLCONFIGDIR", mpl_itomDir.toLatin1().data(), 1);
 #endif
     free(newpath);
 
