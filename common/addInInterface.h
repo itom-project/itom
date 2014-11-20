@@ -685,7 +685,7 @@ namespace ito
             Q_DISABLE_COPY (AddInDataIO)
 
         protected:
-            virtual ~AddInDataIO() = 0;
+            virtual ~AddInDataIO() = 0; //TODO:remove the pure virtual implementation -> requires changed interface-number
             AddInDataIO();
 
             void runStatusChanged(bool deviceStarted);
@@ -754,7 +754,7 @@ namespace ito
             QMutex m_interruptMutex;            /*!< mutex providing a thread-safe handling of the interrupt flag (internal use only) */
 
         protected:
-            virtual ~AddInActuator() = 0;
+            virtual ~AddInActuator() = 0; //TODO:remove the pure virtual implementation -> requires changed interface-number
             AddInActuator();
 
             virtual void connectNotify (const char * signal);

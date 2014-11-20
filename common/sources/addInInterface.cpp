@@ -447,15 +447,16 @@ namespace ito
         m_autoGrabbingEnabled(true)
     {
         qDebug() << "AddInDataIO constructor. ThreadID: " << QThread::currentThreadId();
-        Q_ASSERT_X(1, "AddInDataIO::AddInDataIO", tr("Constructor must be overwritten").toLatin1().data());
-        return;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInDataIO::~AddInDataIO()
     {
-        Q_ASSERT_X(1, "AddInDataIO::~AddInDataIO", tr("Destructor must be overwritten").toLatin1().data());
-        return;
+        if (m_timerID > 0)
+        {
+            killTimer(m_timerID);
+            m_timerID = 0;
+        }
     }
 
 
@@ -735,15 +736,11 @@ namespace ito
         m_nrOfTargetChangedConnections(0), 
         m_interruptFlag(false)
     {
-        Q_ASSERT_X(1, "AddInActuator::~AddInActuator", tr("Constructor must be overwritten").toLatin1().data());
-        return;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInActuator::~AddInActuator()
     {
-        Q_ASSERT_X(1, "AddInActuator::~AddInActuator", tr("Destructor must be overwritten").toLatin1().data());
-        return;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
