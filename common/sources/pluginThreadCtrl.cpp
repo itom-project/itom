@@ -322,7 +322,7 @@ ito::RetVal DataIOThreadCtrl::stopDevice(int timeOutMS)
     \return retOk or retError
     \sa threadActuator, threadCamera, threadCamera::stopDevice, threadCamera::startDevice, threadCamera::getVal, threadCamera::copyVal
 */
-ito::RetVal DataIOThreadCtrl::acquire(const int trigger, int timeOutMS)
+ito::RetVal DataIOThreadCtrl::acquire(const int trigger /*= 0*/, int timeOutMS)
 {
     if (!m_pPlugin)
     {

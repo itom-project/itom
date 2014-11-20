@@ -83,7 +83,7 @@ public:
 
     ito::RetVal startDevice(int timeOutMS = PLUGINWAIT);                     /*! < Set camera active */
     ito::RetVal stopDevice(int timeOutMS = PLUGINWAIT);                      /*! < Set camera deactive */
-    ito::RetVal acquire(const int trigger, int timeOutMS = PLUGINWAIT);      /*! < Trigger an exposure and return before image is done*/
+    ito::RetVal acquire(const int trigger = 0, int timeOutMS = PLUGINWAIT);  /*! < Trigger an exposure and return before image is done*/
     ito::RetVal getVal(ito::DataObject &dObj, int timeOutMS = PLUGINWAIT);   /*! < Get a shallow-copy of the dataObject */
     ito::RetVal copyVal(ito::DataObject &dObj, int timeOutMS = PLUGINWAIT);  /*! < Get a deep-copy of the dataObject */
 
