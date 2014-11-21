@@ -64,6 +64,7 @@ QMutex msgOutputProtection;
 
     The redirection is enabled via args passed to the main function.
 */
+#if QT_VERSION < 0x050000
 void myMessageOutput(QtMsgType type, const char *msg)
 {
     msgOutputProtection.lock();
@@ -86,7 +87,32 @@ void myMessageOutput(QtMsgType type, const char *msg)
     messageStream->flush();
     msgOutputProtection.unlock();
 }
+#else
+void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+//    myMessageOutput(type, msg.toLatin1().data());
+    msgOutputProtection.lock();
 
+    switch (type) 
+    {
+        case QtDebugMsg:
+            (*messageStream) << "[qDebug    " <<  QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << " File: " << context.file << " Line: " << context.line << " Function: " << context.function << "\r\n";
+            break;
+        case QtWarningMsg:
+            (*messageStream) << "[qWarning  " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << " File: " << context.file << " Line: " << context.line << " Function: " << context.function << "\r\n";
+            break;
+        case QtCriticalMsg:
+            (*messageStream) << "[qCritical " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << " File: " << context.file << " Line: " << context.line << " Function: " << context.function << "\r\n";
+            break;
+        case QtFatalMsg:
+            (*messageStream) << "[qFatal    " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << " File: " << context.file << " Line: " << context.line << " Function: " << context.function << "\r\n";
+            abort();
+    }
+
+    messageStream->flush();
+    msgOutputProtection.unlock();
+}
+#endif
 
 //! OpenCV error handler
 /*!
@@ -148,7 +174,11 @@ int main(int argc, char *argv[])
         logfile.setFileName("itomlog.txt");
         logfile.open(QIODevice::WriteOnly);
         messageStream = new QTextStream(&logfile);
+#if QT_VERSION < 0x050000
         qInstallMsgHandler(myMessageOutput);  //uncomment that line if you want to print all debug-information (qDebug, qWarning...) to file itomlog.txt
+#else
+        qInstallMessageHandler(myMessageOutput);
+#endif
     }    
 
 #if defined _DEBUG
