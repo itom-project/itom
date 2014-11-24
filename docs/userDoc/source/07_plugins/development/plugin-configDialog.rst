@@ -117,7 +117,7 @@ The constructor passes the pluginInstance pointer to the constructor of the supe
 .. code-block:: c++
     
     DialogYourPlugin::DialogYourPlugin(ito::AddInBase *pluginInstance) :
-        AbstractAddInConfigDialog(grabber),
+        AbstractAddInConfigDialog(pluginInstance),
         m_firstRun(true)
     {
         ui.setupUi(this);
@@ -127,31 +127,19 @@ Initialize the widgets depending on the parameters of the plugin and change thei
 
 .. code-block:: c++
 
-    void DockWidgetYourPlugin::parametersChanged(QMap<QString, ito::Param> params)
+    void DialogYourPlugin::parametersChanged(QMap<QString, ito::Param> params)
     {
-        if (m_firstRun)
-        {
-            //use params (identical to m_params of the plugin)
-            //and initialize all widgets (e.g. min, max values, labels, enable some,...)
-            
-            //if you use two range widgets (class RangeWidget from itomWidgets) for visualizing the ROI,
-            //you can directly pass the contraints of the width and height in terms of a ito::RectMeta structure, assigned
-            //to the plugin parameter 'roi' to the RangeWidgets:
-            /*ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
-            ui.rangeX01->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
-            ui.rangeY01->setLimitsFromIntervalMeta(rm->getHeightRangeMeta());*/
-            
-            m_firstRun = false;
-        }
+        //use params (identical to m_params of the plugin)
+        //and initialize all widgets (e.g. min, max values, labels, enable some,...)
         
-        if (!m_inEditing)
-        {
-            m_inEditing = true;
-            
-            //change the current value of all widgets to the value given in the params map
-            
-            m_inEditing = false;
-        }
+        //if you use two range widgets (class RangeWidget from itomWidgets) for visualizing the ROI,
+        //you can directly pass the contraints of the width and height in terms of a ito::RectMeta structure, assigned
+        //to the plugin parameter 'roi' to the RangeWidgets:
+        /*ito::RectMeta *rm = static_cast<ito::RectMeta*>(params["roi"].getMeta());
+        ui.rangeX01->setLimitsFromIntervalMeta(rm->getWidthRangeMeta());
+        ui.rangeY01->setLimitsFromIntervalMeta(rm->getHeightRangeMeta());*/
+        
+        //change the current value of all widgets to the value given in the params map
         
         m_currentParameters = params;
     }
@@ -164,7 +152,7 @@ Here is the code for a click on any button of the button box (the objectName of 
 
 .. code-block:: c++
     
-    void DockWidgetYourPlugin::on_buttonBox_clicked(QAbstractButton* btn)
+    void DialogYourPlugin::on_buttonBox_clicked(QAbstractButton* btn)
     {
         ito::RetVal retValue(ito::retOk);
 
@@ -195,7 +183,7 @@ The most important function of these configuration dialogs is the method **apply
 
 .. code-block:: c++
     
-    ito::RetVal DockWidgetYourPlugin::applyParameters()
+    ito::RetVal DialogYourPlugin::applyParameters()
     {
         ito::RetVal retValue(ito::retOk);
         QVector<QSharedPointer<ito::ParamBase> > values;
