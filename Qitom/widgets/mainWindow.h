@@ -141,11 +141,11 @@ public slots:
 
     void setStatusText(QString message, int timeout);
 
-    void pythonAddToolbarButton(QString toolbarName, QString buttonName, QString buttonIconFilename, QString pythonCode);
-    void pythonRemoveToolbarButton(QString toolbarName, QString buttonName);
+    ito::RetVal addToolbarButton(const QString &toolbarName, const QString &buttonName, const QString &buttonIconFilename, const QString &pythonCode, ItomSharedSemaphore *waitCond = NULL);
+    ito::RetVal removeToolbarButton(const QString &toolbarName, const QString &buttonName, bool showMessage = true, ItomSharedSemaphore *waitCond = NULL);
 
-    void pythonAddMenuElement(int typeID, QString key, QString name, QString code, QString buttonIconFilename);
-    void pythonRemoveMenuElement(QString key);
+    ito::RetVal addMenuElement(int typeID, const QString &key, const QString &name, const QString &code, const QString &buttonIconFilename, bool showMessage = true, ItomSharedSemaphore *waitCond = NULL);
+    ito::RetVal removeMenuElement(const QString &key, bool showMessage = true, ItomSharedSemaphore *waitCond = NULL);
     void pythonRunSelection(QString selectionText);
 
     void setCursor(const Qt::CursorShape cursor);

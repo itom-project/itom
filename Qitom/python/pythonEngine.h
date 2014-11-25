@@ -261,10 +261,6 @@ signals:
     void pythonStateChanged(tPythonTransitions pyTransition);
     void pythonModifyLocalDict(PyObject* localDict, ItomSharedSemaphore* semaphore);
     void pythonModifyGlobalDict(PyObject* globalDict, ItomSharedSemaphore* semaphore);
-    void pythonAddToolbarButton(QString toolbarName, QString buttonName, QString buttonIconFilename, QString pythonCode);
-    void pythonRemoveToolbarButton(QString toolbarName, QString buttonName);
-    void pythonAddMenuElement(int typeID, QString key, QString name, QString code, QString icon);
-    void pythonRemoveMenuElement(QString key);
     void pythonCurrentDirChanged();
     void updateCallStack(QStringList filenames, IntList lines, QStringList methods);
     void deleteCallStack();

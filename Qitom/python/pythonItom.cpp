@@ -2344,6 +2344,11 @@ icon : {str}, optional \n\
 argtuple : {tuple}, optional \n\
     Arguments, which will be passed to the method (in order to avoid cyclic references try to only use basic element types). \n\
 \n\
+Raises \n\
+------- \n\
+Runtime error : \n\
+    if the main window is not available \n\
+\n\
 See Also \n\
 --------- \n\
 removeButton()");
@@ -2446,8 +2451,27 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
 
     if (!retValue.containsError())
     {
-        emit pyEngine->pythonAddToolbarButton(toolbarName, qname, qicon, qcode); //queued
-        //emit pyEngine->pythonAddMenuElement(type, qkey, qname, qcode, qicon); //queued
+        QObject *mainWindow = AppManagement::getMainWindow();
+        if (mainWindow)
+        {
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            QMetaObject::invokeMethod(mainWindow, "addToolbarButton", Q_ARG(QString, toolbarName), Q_ARG(QString, qname), Q_ARG(QString, qicon), Q_ARG(QString, qcode), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+            if (!locker->wait(2000))
+            {
+                PyErr_SetString(PyExc_RuntimeError, "timeout while waiting for button being added.");
+                return NULL;
+            }
+            else
+            {
+                retValue += locker->returnValue;
+            }
+        }
+        else
+        {
+            PyErr_SetString(PyExc_RuntimeError, "main window not available. Button cannot be added.");
+            return NULL;
+        }
     }
 
     if (!PythonCommon::transformRetValToPyException(retValue)) return NULL;
@@ -2467,6 +2491,11 @@ toolbarName : {str} \n\
 buttonName : {str} \n\
     The name (str, identifier) of the button to remove.\n\
 \n\
+Raises \n\
+------- \n\
+Runtime error : \n\
+    if the main window is not available or the given button could not be found. \n\
+\n\
 See Also \n\
 --------- \n\
 addButton()");
@@ -2481,8 +2510,30 @@ PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
         return NULL;
     }
 
-    PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
-    emit pyEngine->pythonRemoveToolbarButton(toolbarName, buttonName); //queued connection
+    QObject *mainWindow = AppManagement::getMainWindow();
+    if (mainWindow)
+    {
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QMetaObject::invokeMethod(mainWindow, "removeToolbarButton", Q_ARG(QString, toolbarName), Q_ARG(QString, buttonName), Q_ARG(bool, false), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+        if (!locker->wait(2000))
+        {
+            PyErr_SetString(PyExc_RuntimeError, "timeout while waiting for button being removed.");
+            return NULL;
+        }
+        else
+        {
+            if (!PythonCommon::transformRetValToPyException(locker->returnValue)) 
+            {
+                return NULL;
+            }
+        }
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "main window not available. Button cannot be removed.");
+        return NULL;
+    }
 
     Py_RETURN_NONE;
 }
@@ -2517,6 +2568,11 @@ icon : {str}, optional \n\
     The filename of an icon-file. This can also be relative to the application directory of 'itom'.\n\
 argtuple : {tuple}, optional \n\
     Arguments, which will be passed to method (in order to avoid cyclic references try to only use basic element types).\n\
+\n\
+Raises \n\
+------- \n\
+Runtime error : \n\
+    if the main window is not available or the given button could not be found. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -2660,7 +2716,27 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
 
     if (!retValue.containsError())
     {
-        emit pyEngine->pythonAddMenuElement(type, qkey, qname, qcode, qicon); //queued
+        QObject *mainWindow = AppManagement::getMainWindow();
+        if (mainWindow)
+        {
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            QMetaObject::invokeMethod(mainWindow, "addMenuElement", Q_ARG(int, type), Q_ARG(QString, qkey), Q_ARG(QString, qname), Q_ARG(QString, qcode), Q_ARG(QString, qicon), Q_ARG(bool, false), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+            if (!locker->wait(2000))
+            {
+                PyErr_SetString(PyExc_RuntimeError, "timeout while waiting that menu is added.");
+                return NULL;
+            }
+            else
+            {
+                retValue += locker->returnValue;
+            }
+        }
+        else
+        {
+            PyErr_SetString(PyExc_RuntimeError, "main window not available. Menu could not be added.");
+            return NULL;
+        }
     }
 
     if (!PythonCommon::transformRetValToPyException(retValue)) return NULL;
@@ -2678,6 +2754,11 @@ Parameters \n\
 ----------- \n\
 key : {str} \n\
     The name (str, identifier) of the menu entry to remove.\n\
+\n\
+Raises \n\
+------- \n\
+Runtime error : \n\
+    if the main window is not available or the given button could not be found. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -2718,8 +2799,29 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
             ++it;
         }
     }
-        
-    emit pyEngine->pythonRemoveMenuElement(qkey); //queued connection
+       
+    QObject *mainWindow = AppManagement::getMainWindow();
+    if (mainWindow)
+    {
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QMetaObject::invokeMethod(mainWindow, "removeMenuElement", Q_ARG(QString, qkey), Q_ARG(bool, false), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+        if (!locker->wait(2000))
+        {
+            PyErr_SetString(PyExc_RuntimeError, "timeout while waiting that menu is removed.");
+            return NULL;
+        }
+        else
+        {
+            if (!PythonCommon::transformRetValToPyException(locker->returnValue)) 
+                return NULL;
+        }
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "main window not available. Menu could not be removed.");
+        return NULL;
+    }
 
     Py_RETURN_NONE;
 }

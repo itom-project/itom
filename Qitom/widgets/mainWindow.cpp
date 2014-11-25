@@ -231,14 +231,7 @@ MainWindow::MainWindow() :
     // connections
     if (pyEngine != NULL)
     {
-        //connect(pyEngine, SIGNAL(pythonModifyGlobalDict(PyObject*,ItomSharedSemaphore*)), m_globalWorkspaceDock, SLOT(loadPythonDictionary(PyObject *,ItomSharedSemaphore*)));
-        //connect(pyEngine, SIGNAL(pythonModifyLocalDict(PyObject*,ItomSharedSemaphore*)), m_localWorkspaceDock, SLOT(loadPythonDictionary(PyObject *,ItomSharedSemaphore*)));
         connect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
-        connect(pyEngine, SIGNAL(pythonAddToolbarButton(QString, QString, QString, QString)), this, SLOT(pythonAddToolbarButton(QString, QString, QString, QString)));
-        connect(pyEngine, SIGNAL(pythonRemoveToolbarButton(QString, QString)), this, SLOT(pythonRemoveToolbarButton(QString, QString)));
-
-        connect(pyEngine, SIGNAL(pythonAddMenuElement(int,QString,QString,QString,QString)), this, SLOT(pythonAddMenuElement(int, QString, QString, QString, QString)));
-        connect(pyEngine, SIGNAL(pythonRemoveMenuElement(QString)), this, SLOT(pythonRemoveMenuElement(QString)));
 
         connect(pyEngine, SIGNAL(pythonCurrentDirChanged()), this, SLOT(currentDirectoryChanged()));
         connect(this, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
@@ -375,8 +368,6 @@ MainWindow::~MainWindow()
 
     if (pyEngine != NULL)
     {
-        //disconnect(pyEngine, SIGNAL(pythonModifyGlobalDict(PyObject*,ItomSharedSemaphore*)), m_globalWorkspaceDock, SLOT(loadPythonDictionary(PyObject *,ItomSharedSemaphore*)));
-        //disconnect(pyEngine, SIGNAL(pythonModifyLocalDict(PyObject*,ItomSharedSemaphore*)), m_localWorkspaceDock, SLOT(loadPythonDictionary(PyObject *,ItomSharedSemaphore*)));
         disconnect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
         disconnect(this, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
     }
@@ -1130,8 +1121,10 @@ void MainWindow::setStatusText(QString message, int timeout)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::pythonAddToolbarButton(QString toolbarName, QString buttonName, QString buttonIconFilename, QString pythonCode)
+ito::RetVal MainWindow::addToolbarButton(const QString &toolbarName, const QString &buttonName, const QString &buttonIconFilename, const QString &pythonCode, ItomSharedSemaphore *waitCond /*= NULL*/)
 {
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval;
     QMap<QString, QToolBar*>::const_iterator it = m_userDefinedToolBars.constFind(toolbarName);
     QToolBar *toolbar = NULL;
     QAction *action = NULL;
@@ -1208,13 +1201,24 @@ void MainWindow::pythonAddToolbarButton(QString toolbarName, QString buttonName,
     connect(action, SIGNAL(triggered()), m_userDefinedSignalMapper, SLOT(map()));
     m_userDefinedSignalMapper->setMapping(action, pythonCode);
     toolbar->addAction(action);
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::pythonRemoveToolbarButton(QString toolbarName, QString buttonName)
+ito::RetVal MainWindow::removeToolbarButton(const QString &toolbarName, const QString &buttonName, bool showMessage /*= true*/, ItomSharedSemaphore *waitCond /*= NULL*/)
 {
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval;
     QMap<QString, QToolBar*>::iterator it = m_userDefinedToolBars.find(toolbarName);
     QAction* tempAction;
+    bool found = false;
 
     if (it != m_userDefinedToolBars.end())
     {
@@ -1224,27 +1228,49 @@ void MainWindow::pythonRemoveToolbarButton(QString toolbarName, QString buttonNa
             {
                 (*it)->removeAction(tempAction);
                 DELETE_AND_SET_NULL(tempAction);
+                found = true;
                 break;
             }
         }
-
+        
         if ((*it)->actions().size() == 0) //remove this toolbar
         {
             removeToolBar(*it);
             m_userDefinedToolBars.remove(it.key());
         }
+
+        if (!found)
+        {
+            retval += ito::RetVal::format(ito::retError, 0, "The button '%s' of toolbar '%s' could not be found.", buttonName.toLatin1().data(), toolbarName.toLatin1().data());
+        }
     }
-    else
+    else if (showMessage)
+    {
+        retval += ito::RetVal::format(ito::retError, 0, "The toolbar '%s' could not be found.", toolbarName.toLatin1().data());
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+
+    if (showMessage && retval.containsWarningOrError())
     {
         QMessageBox msgBox;
-        msgBox.setText(tr("The toolbar '") + toolbarName + tr("' could not be found"));
+        msgBox.setText(tr(retval.errorMessage()));
         msgBox.exec();
     }
+
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QString code, QString buttonIconFilename)
+ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QString &name, const QString &code, const QString &buttonIconFilename, bool showMessage /*= true*/, ItomSharedSemaphore *waitCond /*= NULL*/)
 {
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval;
+
     //key is a slash-splitted value: e.g. rootKey/parentKey/nextParentKey/.../myKey
     QStringList keys = key.split("/");
     QString tempKey = "";
@@ -1416,19 +1442,29 @@ void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QSt
         }
     }
 
-    if (retValue.containsError())
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+
+    if (showMessage && retValue.containsError())
     {
         QMessageBox::critical(this, tr("Add menu element"), retValue.errorMessage());
     }
-    else if (retValue.containsWarning())
+    else if (showMessage && retValue.containsWarning())
     {
         QMessageBox::warning(this, tr("Add menu element"), retValue.errorMessage());
     }
+
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::pythonRemoveMenuElement(QString key)
+ito::RetVal MainWindow::removeMenuElement(const QString &key, bool showMessage /*= true*/, ItomSharedSemaphore *waitCond /*= NULL*/)
 {
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval;
     QStringList keys = key.split("/");
     QString tempKey;
     QMenu *parentMenu = NULL;
@@ -1481,10 +1517,22 @@ void MainWindow::pythonRemoveMenuElement(QString key)
         }
         else
         {
-            QMessageBox::warning(this, tr("Remove menu element"), QString(tr("A user-defined menu with the key sequence '%1' could not be found")).arg(key));
+            retval += ito::RetVal::format(ito::retError, 0, "A user-defined menu with the key sequence '%s' could not be found", key.toLatin1().data());
         }
     }
 
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+
+    if (showMessage && retval.containsWarningOrError())
+    {
+        QMessageBox::warning(this, tr("Remove menu element"), tr(retval.errorMessage()));
+    }
+
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
