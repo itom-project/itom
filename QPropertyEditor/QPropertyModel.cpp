@@ -160,12 +160,16 @@ QVariant QPropertyModel::data(const QModelIndex & index, int role /*= Qt::Displa
     case Qt::ToolTipRole:    
         return item->info();
     case Qt::DecorationRole:
-    case Qt::DisplayRole:
     case Qt::EditRole:
         if (index.column() == 0)
             return item->objectName().replace('_', ' ');
         if (index.column() == 1)
             return item->value(role);
+    case Qt::DisplayRole:
+        if (index.column() == 0)
+            return item->objectName().replace('_', ' ');
+        if (index.column() == 1)
+            return item->displayValue(role);
     case Qt::BackgroundRole:
         if (item->isRoot())    return QApplication::palette("QTreeView").brush(QPalette::Normal, QPalette::Button).color();
         break;
