@@ -30,7 +30,7 @@
 
 #include "ui_stringListDialog.h"
 
-#include <QtGui/QDialog>
+#include <qdialog.h>
 
 class StringListDialog: public QDialog
 {
