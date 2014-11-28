@@ -1350,6 +1350,8 @@ end:
             waitCond->deleteSemaphore();
             waitCond = NULL;
 
+            QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::ExcludeSocketNotifiers);
+
             if (aib->getAutoSavePolicy() == ito::autoSaveAlways)
             {
                 retval += saveParamVals(*addIn);
