@@ -343,7 +343,7 @@ class itoDebugger(bdb.Bdb):
         # Don't allow setting breakpoint at a blank line
         if (not line or (line[0] == '#') or
              (line[:3] == '"""') or line[:3] == "'''"):
-            self.error('Blank or comment. Line %d' % lineno)
+            self.error("Blank or comment. File: %s, line %d" % (filename, lineno))
             return 0
         return lineno
 
