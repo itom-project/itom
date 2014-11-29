@@ -2344,6 +2344,11 @@ icon : {str}, optional \n\
 argtuple : {tuple}, optional \n\
     Arguments, which will be passed to the method (in order to avoid cyclic references try to only use basic element types). \n\
 \n\
+Returns \n\
+------- \n\
+handle : {int} \n\
+    handle to the newly created button (pass it to removeButton to delete exactly this button) \n\
+\n\
 Raises \n\
 ------- \n\
 Runtime error : \n\
@@ -2449,13 +2454,15 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
         }
     }
 
+    QSharedPointer<size_t> buttonHandle(new size_t); //this is the handle to the newly created button, this can be used to delete the button afterwards (it corresponds to the pointer address of the corresponding QAction, casted to size_t)
+
     if (!retValue.containsError())
     {
         QObject *mainWindow = AppManagement::getMainWindow();
         if (mainWindow)
         {
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-            QMetaObject::invokeMethod(mainWindow, "addToolbarButton", Q_ARG(QString, toolbarName), Q_ARG(QString, qname), Q_ARG(QString, qicon), Q_ARG(QString, qcode), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            QMetaObject::invokeMethod(mainWindow, "addToolbarButton", Q_ARG(QString, toolbarName), Q_ARG(QString, qname), Q_ARG(QString, qicon), Q_ARG(QString, qcode), Q_ARG(QSharedPointer<size_t>, buttonHandle), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
             if (!locker->wait(2000))
             {
@@ -2475,17 +2482,24 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     }
 
     if (!PythonCommon::transformRetValToPyException(retValue)) return NULL;
-    Py_RETURN_NONE;
+
+    return PyLong_FromSize_t(*buttonHandle);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyRemoveButton_doc,"removeButton(toolbarName, buttonName) -> removes a button from a given toolbar. \n\
+PyDoc_STRVAR(pyRemoveButton_doc,"removeButton(handle | toolbarName [, buttonName]) -> removes a button from a given toolbar. \n\
 \n\
 This method removes an existing button from a toolbar in the main window of 'itom'. This button must have been \n\
 created using `addButton`. If the toolbar is empty after the removal, it is finally deleted. \n\
 \n\
+Pass either the 'handle' parameter of both 'toolbarName' and 'buttonName'. It is more precise to use the handle in order to exactly \n\
+delete the button that has been created by a call to `addButton`. Using the names of the toolbar and the button always delete any \n\
+button that has been created using this data. \n\
+\n\
 Parameters \n\
 ----------- \n\
+handle : {int} \n\
+    The handle returned by addButton(). \n\
 toolbarName : {str} \n\
     The name of the toolbar.\n\
 buttonName : {str} \n\
@@ -2501,20 +2515,35 @@ See Also \n\
 addButton()");
 PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
 {
-    const char* toolbarName;
-    const char* buttonName;
+    const char* toolbarName = NULL;
+    const char* buttonName = NULL;
+    size_t buttonHandle;
+    bool callByNames = true;
 
     if (! PyArg_ParseTuple(pArgs, "ss", &toolbarName, &buttonName))
     {
-        PyErr_SetString(PyExc_TypeError, "wrong length or type of arguments. Type help(removeButton) for more information.");
-        return NULL;
+        PyErr_Clear();
+        callByNames = false;
+        if (!PyArg_ParseTuple(pArgs, "I", &buttonHandle))
+        {
+            PyErr_SetString(PyExc_TypeError, "wrong length or type of arguments. Type help(removeButton) for more information.");
+            return NULL;
+        }
     }
 
     QObject *mainWindow = AppManagement::getMainWindow();
     if (mainWindow)
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(mainWindow, "removeToolbarButton", Q_ARG(QString, toolbarName), Q_ARG(QString, buttonName), Q_ARG(bool, false), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+        if (callByNames)
+        {
+            QMetaObject::invokeMethod(mainWindow, "removeToolbarButton", Q_ARG(QString, toolbarName), Q_ARG(QString, buttonName), Q_ARG(bool, false), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        }
+        else
+        {
+            QMetaObject::invokeMethod(mainWindow, "removeToolbarButton", Q_ARG(size_t, buttonHandle), Q_ARG(bool, false), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        }
 
         if (!locker->wait(2000))
         {

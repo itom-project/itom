@@ -141,8 +141,9 @@ public slots:
 
     void setStatusText(QString message, int timeout);
 
-    ito::RetVal addToolbarButton(const QString &toolbarName, const QString &buttonName, const QString &buttonIconFilename, const QString &pythonCode, ItomSharedSemaphore *waitCond = NULL);
+    ito::RetVal addToolbarButton(const QString &toolbarName, const QString &buttonName, const QString &buttonIconFilename, const QString &pythonCode, QSharedPointer<size_t> buttonHandle, ItomSharedSemaphore *waitCond = NULL);
     ito::RetVal removeToolbarButton(const QString &toolbarName, const QString &buttonName, bool showMessage = true, ItomSharedSemaphore *waitCond = NULL);
+    ito::RetVal removeToolbarButton(const size_t buttonHandle, bool showMessage = true, ItomSharedSemaphore *waitCond = NULL);
 
     ito::RetVal addMenuElement(int typeID, const QString &key, const QString &name, const QString &code, const QString &buttonIconFilename, bool showMessage = true, ItomSharedSemaphore *waitCond = NULL);
     ito::RetVal removeMenuElement(const QString &key, bool showMessage = true, ItomSharedSemaphore *waitCond = NULL);

@@ -1121,7 +1121,7 @@ void MainWindow::setStatusText(QString message, int timeout)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal MainWindow::addToolbarButton(const QString &toolbarName, const QString &buttonName, const QString &buttonIconFilename, const QString &pythonCode, ItomSharedSemaphore *waitCond /*= NULL*/)
+ito::RetVal MainWindow::addToolbarButton(const QString &toolbarName, const QString &buttonName, const QString &buttonIconFilename, const QString &pythonCode, QSharedPointer<size_t> buttonHandle, ItomSharedSemaphore *waitCond /*= NULL*/)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
@@ -1201,6 +1201,7 @@ ito::RetVal MainWindow::addToolbarButton(const QString &toolbarName, const QStri
     connect(action, SIGNAL(triggered()), m_userDefinedSignalMapper, SLOT(map()));
     m_userDefinedSignalMapper->setMapping(action, pythonCode);
     toolbar->addAction(action);
+    *buttonHandle = (size_t)action;
 
     if (waitCond)
     {
@@ -1244,9 +1245,61 @@ ito::RetVal MainWindow::removeToolbarButton(const QString &toolbarName, const QS
             retval += ito::RetVal::format(ito::retError, 0, "The button '%s' of toolbar '%s' could not be found.", buttonName.toLatin1().data(), toolbarName.toLatin1().data());
         }
     }
-    else if (showMessage)
+    else
     {
         retval += ito::RetVal::format(ito::retError, 0, "The toolbar '%s' could not be found.", toolbarName.toLatin1().data());
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+
+    if (showMessage && retval.containsWarningOrError())
+    {
+        QMessageBox msgBox;
+        msgBox.setText(tr(retval.errorMessage()));
+        msgBox.exec();
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal MainWindow::removeToolbarButton(const size_t buttonHandle, bool showMessage /*= true*/, ItomSharedSemaphore *waitCond /*= NULL*/)
+{
+    //buttonHandle is the pointer-address to the QAction of the button
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval;
+    QMap<QString, QToolBar*>::iterator it = m_userDefinedToolBars.begin();
+    QAction* tempAction;
+
+    bool found = false;
+
+    for (it = m_userDefinedToolBars.begin(); it != m_userDefinedToolBars.end() && !found; ++it)
+    {
+        foreach (tempAction, (*it)->actions())
+        {
+            if ((size_t)(tempAction) == buttonHandle)
+            {
+                (*it)->removeAction(tempAction);
+                DELETE_AND_SET_NULL(tempAction);
+                found = true;
+                break;
+            }
+        }
+
+        if (found && (*it)->actions().size() == 0) //remove this toolbar
+        {
+            removeToolBar(*it);
+            m_userDefinedToolBars.remove(it.key());
+        }
+    }
+
+    if (!found)
+    {
+        retval += ito::RetVal::format(ito::retError, 0, "The button (%i) could not be found.", buttonHandle);
     }
 
     if (waitCond)

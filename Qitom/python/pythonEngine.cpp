@@ -117,6 +117,7 @@ PythonEngine::PythonEngine() :
     dictUnicode(NULL)
 {
     qRegisterMetaType<tPythonDbgCmd>("tPythonDbgCmd");
+    qRegisterMetaType<size_t>("size_t");
     qRegisterMetaType<tPythonTransitions>("tPythonTransitions");
     qRegisterMetaType<BreakPointItem>("BreakPointItem");
     qRegisterMetaType<ItomSharedSemaphore*>("ItomSharedSemaphore*");
@@ -137,6 +138,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<QSharedPointer<double> >("QSharedPointer<double>");
     qRegisterMetaType<QSharedPointer<bool> >("QSharedPointer<bool>");
     qRegisterMetaType<QSharedPointer<char> >("QSharedPointer<char>");
+    qRegisterMetaType<QSharedPointer<size_t> >("QSharedPointer<size_t>");
     qRegisterMetaType<QSharedPointer<QString> >("QSharedPointer<QString>");
     qRegisterMetaType<QSharedPointer<QByteArray> >("QSharedPointer<QByteArray>");
     qRegisterMetaType<QSharedPointer<QStringList> >("QSharedPointer<QStringList>");
