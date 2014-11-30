@@ -22,8 +22,10 @@ A single button in a toolbar is created using the command :py:func:`~itom.addBut
 
 .. code-block:: python
     
-    addButton(toolbarName, buttonName, code [, icon, argtuple])
+    buttonHandle = addButton(toolbarName, buttonName, code [, icon, argtuple])
     removeButton(toolbarName, buttonName)
+    #or
+    removeButton(buttonHandle)
 
 Your button is accessed by its name **buttonName**, which also is printed on the button if no icon is defined. The toolbar, where the button
 is displayed, is defined by its name **toolbarName**. You can either provide a python code snippet as string or a reference to any method or function.
@@ -67,6 +69,20 @@ All these buttons are removed by the following lines of code:
     removeButton("myToolbar","HelloWorld")
     removeButton("myToolbar","BtnTest1")
     removeButton("myToolbar","BtnTest2")
+    
+As an alternative approach to delete a button, use its handle, returned by the `addButton` method and pass it to `removeButton`.
+Its advantage is, that exactly the button, that has been created is deleted and not a button with the same name that has been created
+by another instance and is for instance connected with another code snippet.
+
+.. code-block:: python
+    
+    handle = addButton("myToolbar", "HelloWorld", "print('Hello World')")
+    try:
+        removeButton(handle)
+    except RuntimeError:
+        #button did not exist any more (e.g. has been overwritten 
+        #by another addButton command with the same button and toolbar name)
+        pass
     
 .. note::
     
