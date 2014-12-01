@@ -22,6 +22,11 @@ itom.actuator.showConfiguration() -> show configuration dialog of the plugin
 itom.actuator.showToolbox() -> open toolbox of the plugin
 itom.addButton(toolbarName, buttonName, code [, icon, argtuple]) -> adds a button to a toolbar in the main window
 itom.addMenu(type, key [, name, code, icon, argtuple]) -> adds an element to the menu bar of itom.
+itom.autoInterval([min=-inf, max=inf, auto=false]) -> creates a new auto interval object.
+itom.autoInterval.auto
+itom.autoInterval.max
+itom.autoInterval.min
+itom.autoInterval.name
 itom.autoReloader(enabled [,checkFileExec = True, checkCmdExec = True, checkFctExec = False]) -> dis-/enables the module to automatically reload changed modules
 itom.checkSignals
 itom.clc
@@ -51,10 +56,12 @@ itom.dataIO.showToolbox() -> open toolbox of the plugin
 itom.dataIO.startDevice([count=1]) -> starts the given dataIO-plugin.
 itom.dataIO.stopDevice([count=1]) -> stops the given dataIO-plugin.
 itom.dataObject([dims [, dtype='uint8'[, continuous = 0][, data = valueOrSequence]]]) -> constructor to get a new dataObject.
+itom.dataObject.abs() -> return a new data object with the absolute values of the source
 itom.dataObject.addToProtocol(newLine) -> Appends a protocol line to the protocol.
 itom.dataObject.adj() -> Adjugate all elements (inline)
 itom.dataObject.adjugate() -> returns the plane-wise adjugated array of this dataObject.
 itom.dataObject.adjustROI(offsetList) -> adjust the size and position of the region of interest of this data object
+itom.dataObject.arg() -> return a new data object with the argument values of the source
 itom.dataObject.astype(typestring) -> converts this data object to another type
 itom.dataObject.axisDescriptions
 itom.dataObject.axisOffsets
@@ -73,6 +80,7 @@ itom.dataObject.dtype
 itom.dataObject.existTag(key) -> return True if tag with given key exists, else False
 itom.dataObject.eye(size [, dtype='uint8']) -> creates a 2D, square, eye-matrix.
 itom.dataObject.getTagListSize() -> returns the number of tags in the tag dictionary
+itom.dataObject.imag() -> return a new data object with the imaginary part of the source
 itom.dataObject.locateROI() -> returns information about the current region of interest of this data object
 itom.dataObject.makeContinuous() -> return continuous representation of dataObject
 itom.dataObject.metaDict
@@ -83,6 +91,7 @@ itom.dataObject.normalize([minValue=0.0, maxValue=1.0, typestring='']) -> return
 itom.dataObject.ones(dims [, dtype='uint8'[, continuous = 0]]) -> creates new dataObject filled with ones.
 itom.dataObject.rand([dims [, dtype='uint8'[, continuous = 0]]]) -> creates new dataObject filled with uniform distributed random values.
 itom.dataObject.randN(dims [, dtype='uint8'[, continuous = 0]]) -> creates dataObject filled with gaussian distributed random values.
+itom.dataObject.real() -> return a new data object with the real part of the source
 itom.dataObject.reshape(newSizes) -> Returns reshaped shallow copy of data object
 itom.dataObject.setAxisDescription(axisNum, axisDescription) -> Set the description of the specified axis.
 itom.dataObject.setAxisOffset(axisNum, axisOffset) -> Set the offset of the specified axis.
@@ -130,9 +139,11 @@ itom.npDataObject(??) [class]
 itom.numeric:: [module]
 itom.openScript(filename) -> open the given script in current script window.
 itom.plot(data, [className, properties]) -> plots a dataObject in a newly created figure
+itom.plotHelp(plotName [, dictionary = False]) -> generates an online help for the specified plot.
 itom.plotItem(figure[, subplotIdx]) -> instance of the plot or subplot of a figure.
 itom.plotItem.drawAndPickElements
 itom.plotItem.pickPoints(points [,maxNrPoints]) -> method to let the user pick points on a plot (only if plot supports this)
+itom.plotLoaded(plotName) -> check if a certain plot widget is loaded.
 itom.pluginHelp(pluginName [, dictionary = False]) -> generates an online help for the specified plugin.
 itom.pluginLoaded(pluginName) -> check if a certain plugin could be successfully loaded.
 itom.point([type, [xyz, [intensity, ][rgba, ][normal, ][curvature]]) -> creates new point used for class 'pointCloud'.
@@ -200,8 +211,8 @@ itom.region.translate(x,y) -> translateds this region by the given coordinates.
 itom.region.translated(x,y) -> returns a region, translated by the given coordinates.
 itom.region.united(x,y,w,h | region) -> returns a region which is the union of the given region with this region.
 itom.region.xored(x,y,w,h | region) -> returns a region which is an xor combination of the given region with this region.
-itom.removeButton(toolbarName, buttonName) -> removes a button from a given toolbar.
-itom.removeMenu(key) -> remove a menu element with the given key.
+itom.removeButton(handle | toolbarName [, buttonName]) -> removes a button from a given toolbar.
+itom.removeMenu(key | menuHandle) -> remove a menu element with the given key or handle.
 itom.rgba(r, g, b [, alpha=255]) -> creates a new color value from red, green, blue and optional alpha
 itom.rgba.alpha
 itom.rgba.b
@@ -267,6 +278,7 @@ itom.uiItem(...) -> base class representing any widget of a graphical user inter
 itom.uiItem.call(slotOrPublicMethod [,argument1, argument2, ...]) -> calls any public slot of this widget or any accessible public method.
 itom.uiItem.connect(signalSignature, callableMethod) -> connects the signal of the widget with the given callable python method
 itom.uiItem.disconnect(signalSignature, callableMethod) -> disconnects a connection which must have been established with exactly the same parameters.
+itom.uiItem.exists() -> returns true if widget still exists, else false.
 itom.uiItem.getAttribute(attributeNumber) -> returns specified attribute of corresponding widget.
 itom.uiItem.getProperty(propertyName | listOfPropertyNames) -> returns tuple of requested properties (single property or tuple of properties)
 itom.uiItem.getPropertyInfo([propertyName]) -> returns information about the property 'propertyName' of this widget or all properties, if no name indicated.

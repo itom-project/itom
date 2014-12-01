@@ -52,6 +52,7 @@ QWidget *QVariantDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
     case QVariant::Bool:
     case QVariant::Color:
     case QVariant::Font:
+    case QVariant::StringList:
     case QVariant::Int:
     case QMetaType::Float:    
     case QVariant::Double:    
@@ -83,6 +84,7 @@ void QVariantDelegate::setEditorData(QWidget *editor, const QModelIndex &index) 
     case QVariant::Bool:
     case QVariant::Color:
     case QVariant::Font:
+    case QVariant::StringList:
     case QMetaType::Double:
     case QMetaType::Float:
     case QVariant::UserType:
@@ -104,6 +106,7 @@ void QVariantDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, 
     case QVariant::Bool:
     case QVariant::Color:    
     case QVariant::Font:
+    case QVariant::StringList:
     case QMetaType::Double:
     case QMetaType::Float:                
     case QVariant::UserType: 

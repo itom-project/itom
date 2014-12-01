@@ -75,6 +75,9 @@ private:
     void updateMenus();
     void updatePythonActions();
 
+    void getMenuHandlesRecursively(const QMenu *parent, QSharedPointer<QVector<size_t> > menuHandles);
+    QAction* searchActionRecursively(const size_t menuHandle, const QMenu *parent);
+
     ConsoleWidget *m_console;
 
     QVBoxLayout *m_contentLayout;
@@ -99,6 +102,7 @@ private:
     QMap<QString, QToolBar*> m_userDefinedToolBars;
     QMap<QString, QMenu* > m_userDefinedRootMenus;
     QSignalMapper *m_userDefinedSignalMapper;
+    size_t m_userDefinedActionCounter;
 
     QAction *m_appFileNew;
     QAction *m_appFileOpen;
@@ -141,11 +145,13 @@ public slots:
 
     void setStatusText(QString message, int timeout);
 
-    void pythonAddToolbarButton(QString toolbarName, QString buttonName, QString buttonIconFilename, QString pythonCode);
-    void pythonRemoveToolbarButton(QString toolbarName, QString buttonName);
+    ito::RetVal addToolbarButton(const QString &toolbarName, const QString &buttonName, const QString &buttonIconFilename, const QString &pythonCode, QSharedPointer<size_t> buttonHandle, ItomSharedSemaphore *waitCond = NULL);
+    ito::RetVal removeToolbarButton(const QString &toolbarName, const QString &buttonName, QSharedPointer<size_t> buttonHandle, bool showMessage = true, ItomSharedSemaphore *waitCond = NULL);
+    ito::RetVal removeToolbarButton(const size_t buttonHandle, bool showMessage = true, ItomSharedSemaphore *waitCond = NULL);
 
-    void pythonAddMenuElement(int typeID, QString key, QString name, QString code, QString buttonIconFilename);
-    void pythonRemoveMenuElement(QString key);
+    ito::RetVal addMenuElement(int typeID, const QString &key, const QString &name, const QString &code, const QString &buttonIconFilename, QSharedPointer<size_t> menuHandle, bool showMessage = true, ItomSharedSemaphore *waitCond = NULL);
+    ito::RetVal removeMenuElement(const QString &key, QSharedPointer<QVector<size_t> > removedMenuHandles, bool showMessage = true, ItomSharedSemaphore *waitCond = NULL);
+    ito::RetVal removeMenuElement(const size_t menuHandle, QSharedPointer<QVector<size_t> > removedMenuHandles, bool showMessage = true, ItomSharedSemaphore *waitCond = NULL);
     void pythonRunSelection(QString selectionText);
 
     void setCursor(const Qt::CursorShape cursor);

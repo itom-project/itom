@@ -77,8 +77,65 @@ namespace ito
 QMutex PythonEngine::instatiated;
 QMutex PythonEngine::instancePtrProtection;
 PythonEngine* PythonEngine::instance = NULL;
+QString PythonEngine::fctHashPrefix = ":::itomfcthash:::";
 
 using namespace ito;
+
+//----------------------------------------------------------------------------------------------------------------------------------
+FuncWeakRef::FuncWeakRef() : m_proxyObject(NULL), m_argument(NULL), m_handle(0) 
+{
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+FuncWeakRef::FuncWeakRef(PythonProxy::PyProxy *proxyObject, PyObject *argTuple /*= NULL*/) :
+    m_proxyObject(proxyObject),
+    m_argument(argTuple),
+    m_handle(0)
+{
+    Py_XINCREF(m_proxyObject);
+    Py_XINCREF(m_argument);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+FuncWeakRef::FuncWeakRef(const FuncWeakRef &rhs) :
+    m_proxyObject(rhs.m_proxyObject),
+    m_argument(rhs.m_argument),
+    m_handle(0)
+{
+    Py_XINCREF(m_proxyObject);
+    Py_XINCREF(m_argument);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+FuncWeakRef::~FuncWeakRef()
+{
+    Py_XDECREF(m_proxyObject);
+    Py_XDECREF(m_argument);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+FuncWeakRef& FuncWeakRef::operator =(FuncWeakRef rhs)
+{
+    PythonProxy::PyProxy *t1 = m_proxyObject;
+    PyObject *t2 = m_argument;
+
+    m_proxyObject = rhs.m_proxyObject;
+    m_argument = rhs.m_argument;
+    Py_XINCREF(m_proxyObject);
+    Py_XINCREF(m_argument);
+
+    Py_XDECREF(t1);
+    Py_XDECREF(t2);
+
+    return *this;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FuncWeakRef::setHandle(const size_t &handle)
+{
+    m_handle = handle;
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //public
@@ -110,13 +167,14 @@ PythonEngine::PythonEngine() :
     itomDbgInstance(NULL),
     itomModule(NULL),
     itomFunctions(NULL),
+    m_pyFuncWeakRefAutoInc(0),
     m_pyModGC(NULL),
     m_pyModSyntaxCheck(NULL),
-    m_pyFuncWeakRefHashesAutoInc(0),
     m_executeInternalPythonCodeInDebugMode(false),
     dictUnicode(NULL)
 {
     qRegisterMetaType<tPythonDbgCmd>("tPythonDbgCmd");
+    qRegisterMetaType<size_t>("size_t");
     qRegisterMetaType<tPythonTransitions>("tPythonTransitions");
     qRegisterMetaType<BreakPointItem>("BreakPointItem");
     qRegisterMetaType<ItomSharedSemaphore*>("ItomSharedSemaphore*");
@@ -137,6 +195,8 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<QSharedPointer<double> >("QSharedPointer<double>");
     qRegisterMetaType<QSharedPointer<bool> >("QSharedPointer<bool>");
     qRegisterMetaType<QSharedPointer<char> >("QSharedPointer<char>");
+    qRegisterMetaType<QSharedPointer<size_t> >("QSharedPointer<size_t>");
+    qRegisterMetaType<QSharedPointer<QVector<size_t> > >("QSharedPointer<QVector<size_t> >");
     qRegisterMetaType<QSharedPointer<QString> >("QSharedPointer<QString>");
     qRegisterMetaType<QSharedPointer<QByteArray> >("QSharedPointer<QByteArray>");
     qRegisterMetaType<QSharedPointer<QStringList> >("QSharedPointer<QStringList>");
@@ -652,12 +712,10 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
         m_autoReload.checkStringExec = false;
 
 		//delete all remaining weak references in m_pyFuncWeakRefHashes (if available)
-		QHash<QString, QPair<PyObject*,PyObject*> >::iterator it = m_pyFuncWeakRefHashes.begin();
+		QHash<size_t, FuncWeakRef>::iterator it = m_pyFuncWeakRefHashes.begin();
 		while(it != m_pyFuncWeakRefHashes.end())
 		{
-			Py_XDECREF(it->first);
-			Py_XDECREF(it->second);
-			it= m_pyFuncWeakRefHashes.erase(it);
+			it = m_pyFuncWeakRefHashes.erase(it);
 		}
 
         Py_XDECREF(itomDbgInstance);
@@ -1246,12 +1304,12 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
         {
             if (m_autoReload.enabled && m_autoReload.checkFileExec)
             {
-                PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "pre_run_cell", "");
-                if (!result)
+                PyObject *result2 = PyObject_CallMethod(m_autoReload.classAutoReload, "pre_run_cell", "");
+                if (!result2)
                 {
                     PyErr_Print();
                 }
-                Py_XDECREF(result);
+                Py_XDECREF(result2);
             }
 
             result = PyObject_CallMethod(itomDbgInstance, "runScript", "s", pythonFileName.toUtf8().data()); //"s" requires UTF8 encoded char*
@@ -1282,12 +1340,12 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
 
             if (m_autoReload.enabled && m_autoReload.checkFileExec)
             {
-                PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "post_execute_hook", "");
-                if (!result)
+                PyObject *result2 = PyObject_CallMethod(m_autoReload.classAutoReload, "post_execute_hook", "");
+                if (!result2)
                 {
                     PyErr_Print();
                 }
-                Py_XDECREF(result);
+                Py_XDECREF(result2);
             }
 
             Py_XDECREF(result);
@@ -2223,17 +2281,26 @@ void PythonEngine::pythonRunFunction(PyObject *callable, PyObject *argTuple)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonRunStringOrFunction(QString cmdOrFctHash)
 {
-    static QString prefix = ":::itomfcthash:::";
-    QString hashValue;
+    size_t hashValue;
 
-    if (cmdOrFctHash.startsWith(prefix))
+    if (cmdOrFctHash.startsWith(PythonEngine::fctHashPrefix))
     {
-        hashValue = cmdOrFctHash.mid(prefix.length());
-        QHash<QString, QPair<PyObject*,PyObject*> >::iterator it = this->m_pyFuncWeakRefHashes.find(hashValue);
+        bool success;
+
+        QString cmdOrFctHashCropped = cmdOrFctHash.mid(PythonEngine::fctHashPrefix.length());
+        hashValue = cmdOrFctHashCropped.toUInt(&success);
+        
+        if (!success)
+        {
+            std::cerr << "The command '" << cmdOrFctHashCropped.toLatin1().data() << "' seems to be a hashed function or method, but no handle value can be extracted (size_t required)\n" << std::endl;
+            return;
+        }
+
+        QHash<size_t, FuncWeakRef>::iterator it = m_pyFuncWeakRefHashes.find(hashValue);
         if (it != m_pyFuncWeakRefHashes.end())
         {
-            PyObject *callable = it->first; //PyWeakref_GetObject(*it); //borrowed reference
-            PyObject *argTuple = it->second;
+            PyObject *callable = (PyObject*)(it->getProxyObject()); //borrowed reference
+            PyObject *argTuple = it->getArguments(); //borrowed reference
             if (argTuple)
             {
                 Py_INCREF(argTuple);
@@ -2251,13 +2318,13 @@ void PythonEngine::pythonRunStringOrFunction(QString cmdOrFctHash)
             }
             else
             {
-                std::cerr << "The method associated with the key '" << hashValue.toLatin1().data() << "' does not exist any more\n" << std::endl;
+                std::cerr << "The method associated with the key '" << cmdOrFctHashCropped.toLatin1().data() << "' does not exist any more\n" << std::endl;
             }
             Py_XDECREF(argTuple);    
         }
         else
         {
-            std::cerr << "No action associated with key '" << hashValue.toLatin1().data() << "' could be found in internal hash table\n" << std::endl;
+            std::cerr << "No action associated with key '" << cmdOrFctHashCropped.toLatin1().data() << "' could be found in internal hash table\n" << std::endl;
         }
         
     }
@@ -2270,17 +2337,26 @@ void PythonEngine::pythonRunStringOrFunction(QString cmdOrFctHash)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonDebugStringOrFunction(QString cmdOrFctHash)
 {
-    static QString prefix = ":::itomfcthash:::";
-    QString hashValue;
+    size_t hashValue;
 
-    if (cmdOrFctHash.startsWith(prefix))
+    if (cmdOrFctHash.startsWith(PythonEngine::fctHashPrefix))
     {
-        hashValue = cmdOrFctHash.mid(prefix.length());
-        QHash<QString, QPair<PyObject*,PyObject*> >::iterator it = this->m_pyFuncWeakRefHashes.find(hashValue);
+        bool success;
+
+        QString cmdOrFctHashCropped = cmdOrFctHash.mid(PythonEngine::fctHashPrefix.length());
+        hashValue = cmdOrFctHashCropped.toUInt(&success);
+        
+        if (!success)
+        {
+            std::cerr << "The command '" << cmdOrFctHashCropped.toLatin1().data() << "' seems to be a hashed function or method, but no handle value can be extracted (size_t required)\n" << std::endl;
+            return;
+        }
+
+        QHash<size_t, FuncWeakRef>::iterator it = m_pyFuncWeakRefHashes.find(hashValue);
         if (it != m_pyFuncWeakRefHashes.end())
         {
-            PyObject *callable = it->first; //PyWeakref_GetObject(*it); //borrowed reference
-            PyObject *argTuple = it->second;
+            PyObject *callable = (PyObject*)(it->getProxyObject()); //borrowed reference
+            PyObject *argTuple = it->getArguments(); //borrowed reference
             if (argTuple)
             {
                 Py_INCREF(argTuple);
@@ -2289,21 +2365,22 @@ void PythonEngine::pythonDebugStringOrFunction(QString cmdOrFctHash)
             {
                 argTuple = PyTuple_New(0); //new ref
             }
+
             if (callable)
             {
                 Py_INCREF(callable);
                 pythonDebugFunction(callable, argTuple);
+                Py_XDECREF(callable);
             }
             else
             {
-                std::cerr << "The method associated with the key " << hashValue.toLatin1().data() << " does not exist any more\n" << std::endl;
+                std::cerr << "The method associated with the key '" << cmdOrFctHashCropped.toLatin1().data() << "' does not exist any more\n" << std::endl;
             }
-            Py_XDECREF(argTuple);
-            Py_XDECREF(callable);
+            Py_XDECREF(argTuple);    
         }
         else
         {
-            std::cerr << "No action associated with key '" << hashValue.toLatin1().data() << "' could be found in internal hash table\n" << std::endl;
+            std::cerr << "No action associated with key '" << cmdOrFctHashCropped.toLatin1().data() << "' could be found in internal hash table\n" << std::endl;
         }
         
     }

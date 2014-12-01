@@ -3910,7 +3910,16 @@ When calling this method, the complete content of the dataObject is printed to t
 PyObject* PythonDataObject::PyDataObject_data(PyDataObject *self)
 {
     self->dataObject->lockRead();
-    ito::fListCout[self->dataObject->getType()](std::cout,*(self->dataObject));
+    try
+    {
+        ito::fListCout[self->dataObject->getType()](std::cout,*(self->dataObject));
+    }
+    catch(cv::Exception exc)
+    {
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        self->dataObject->unlock();
+        return NULL;
+    }
     self->dataObject->unlock();
     Py_RETURN_NONE;
 }
@@ -6509,7 +6518,7 @@ dataObj : {dataObject} \n\
     converted gray-scale data object of desired type");
 /*static*/ PyObject* PythonDataObject::PyDataObj_ToGray(PyDataObject *self, PyObject *args, PyObject *kwds)
 {
-    const char* type;
+    const char* type = NULL;
     int typeno = ito::tUInt8;
 
     const char *kwlist[] = {"destinationType", NULL};
@@ -6519,11 +6528,14 @@ dataObj : {dataObject} \n\
         return NULL;
     }
 
-    typeno = typeNameToNumber(type);
+    if (type)
+    {
+        typeno = typeNameToNumber(type);
+    }
 
     if (typeno == -1)
     {
-        PyErr_Format(PyExc_TypeError,"The given type string %s is unknown", type);
+        PyErr_Format(PyExc_TypeError,"The given type string '%s' is unknown", type);
         return NULL;
     }
 

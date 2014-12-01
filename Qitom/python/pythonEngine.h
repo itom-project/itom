@@ -67,16 +67,7 @@
 
 #include "pythonNpDataObject.h"
 #include "pythonItom.h"
-
-/*
-#ifdef linux
-    #include "frameobject.h"
-    #include "traceback.h"
-#else
-    #include "include/frameobject.h" //!< for traceback
-    #include "include/traceback.h"
-#endif
-*/
+#include "pythonProxy.h"
 
 #include "../models/breakPointModel.h"
 #include "../../common/sharedStructuresQt.h"
@@ -101,6 +92,28 @@ class QTimer;
 
 namespace ito
 {
+
+class FuncWeakRef
+{
+public:
+    FuncWeakRef();
+    FuncWeakRef(PythonProxy::PyProxy *proxyObject, PyObject *argTuple = NULL);
+    FuncWeakRef(const FuncWeakRef &rhs);
+    ~FuncWeakRef();
+    FuncWeakRef& operator =(FuncWeakRef rhs);
+
+    PythonProxy::PyProxy* getProxyObject() const { return m_proxyObject; } //borrowed reference
+    PyObject* getArguments() const { return m_argument; } //borrowed reference
+    bool isValid() const { return (m_proxyObject != NULL); }
+
+    void setHandle(const size_t &handle);
+    size_t getHandle() const { return m_handle; }
+private:
+    PythonProxy::PyProxy *m_proxyObject;
+    PyObject *m_argument;
+    size_t m_handle;
+};
+
 
 class PythonEngine : public QObject
 {
@@ -222,8 +235,9 @@ private:
 
     QSet<ito::PyWorkspaceContainer*> m_mainWorkspaceContainer;
     QSet<ito::PyWorkspaceContainer*> m_localWorkspaceContainer;
-    QHash<QString, QPair<PyObject*,PyObject*> > m_pyFuncWeakRefHashes; //!< hash table containing weak reference to callable python methods or functions and as second, optional PyObject* an tuple, passed as argument to that function. These functions are for example executed by menu-clicks in the main window.
-    int m_pyFuncWeakRefHashesAutoInc;
+    QHash<size_t, FuncWeakRef> m_pyFuncWeakRefHashes; //!< hash table containing weak reference to callable python methods or functions and as second, optional PyObject* an tuple, passed as argument to that function. These functions are for example executed by menu-clicks in the main window.
+    size_t m_pyFuncWeakRefAutoInc;
+
     bool m_executeInternalPythonCodeInDebugMode; //!< if true, button events, user interface connections to python methods... will be executed by debugger
     PyMethodDef* PythonAdditionalModuleITOM;
 
@@ -254,6 +268,7 @@ private:
     //other static members
     static QMutex instatiated;
     static QMutex instancePtrProtection;
+    static QString fctHashPrefix;
 
     static PythonEngine* instance;
 
@@ -265,10 +280,6 @@ signals:
     void pythonStateChanged(tPythonTransitions pyTransition);
     void pythonModifyLocalDict(PyObject* localDict, ItomSharedSemaphore* semaphore);
     void pythonModifyGlobalDict(PyObject* globalDict, ItomSharedSemaphore* semaphore);
-    void pythonAddToolbarButton(QString toolbarName, QString buttonName, QString buttonIconFilename, QString pythonCode);
-    void pythonRemoveToolbarButton(QString toolbarName, QString buttonName);
-    void pythonAddMenuElement(int typeID, QString key, QString name, QString code, QString icon);
-    void pythonRemoveMenuElement(QString key);
     void pythonCurrentDirChanged();
     void updateCallStack(QStringList filenames, IntList lines, QStringList methods);
     void deleteCallStack();

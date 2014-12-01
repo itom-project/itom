@@ -1865,8 +1865,14 @@ template<typename _Tp> RetVal ConvertToFunc(const DataObject &lhs, DataObject &r
 
           case ito::tInt32:
              rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
-             CastFunc<_Tp, uint32>(&lhs, &rhs, alpha, beta);
+             CastFunc<_Tp, int32>(&lhs, &rhs, alpha, beta);
           break;
+
+          //uint32 is not fully supported by OpenCV -> constructor is blocked
+          /*case ito::tUInt32:
+             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             CastFunc<_Tp, uint32>(&lhs, &rhs, alpha, beta);
+          break;*/
 
           case ito::tFloat32:
              rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
@@ -1894,7 +1900,7 @@ template<typename _Tp> RetVal ConvertToFunc(const DataObject &lhs, DataObject &r
           break;
 
           default:
-             cv::error(cv::Exception(CV_StsAssert, "not defined cast", "", __FILE__, __LINE__));
+             cv::error(cv::Exception(CV_StsAssert, "cast to destination type not defined (e.g. uint32 is not supported)", "", __FILE__, __LINE__));
           break;
        }
 

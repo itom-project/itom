@@ -433,6 +433,9 @@ QListWidget             void selectedTexts() returns a tuple of all selected val
 QListWidget             void selectRows(QVector<int>) select the rows with the given indices (ListWidget must be in multi-selection mode)
 QComboBox               void addItem(QString)
 QComboBox               void addItems(QStringList)
+QComboBox               void removeItem(int)
+QComboBox               void setItemData(int,QVariant) sets the value of the Qt::DisplayRole (displayed text) of the item with the indicated index
+QComboBox               void insertItem(int,QString)
 QTabWidget              int isTabEnabled(int)
 QTabWidget              void setTabEnabled(int,bool)
 QMainWindow             uiItem statusBar() *returns a reference to the statusbar widget*

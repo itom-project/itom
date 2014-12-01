@@ -111,6 +111,9 @@ void WidgetWrapper::initMethodHash()
         MethodDescriptionList qComboBoxList;
         qComboBoxList << buildMethodDescription(QMetaObject::normalizedSignature("addItem(QString)"), "void", 3001, ok );
         qComboBoxList << buildMethodDescription(QMetaObject::normalizedSignature("addItems(QStringList)"), "void", 3002, ok );
+        qComboBoxList << buildMethodDescription(QMetaObject::normalizedSignature("removeItem(int)"), "void", 3003, ok );
+        qComboBoxList << buildMethodDescription(QMetaObject::normalizedSignature("setItemData(int,QVariant)"), "void", 3004, ok );
+        qComboBoxList << buildMethodDescription(QMetaObject::normalizedSignature("insertItem(int,QString)"), "void", 3005, ok );
         methodHash["QComboBox"] = qComboBoxList;
 
         //QTabWidget
@@ -336,6 +339,24 @@ bool WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
             case 3002: //addItems
                 {
                 object2->addItems((*reinterpret_cast< const QStringList(*)>(_a[1])));
+                //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
+                return true;
+                }
+            case 3003: //removeItem
+                {
+                object2->removeItem((*reinterpret_cast< const int(*)>(_a[1])));
+                //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
+                return true;
+                }
+            case 3004: //setItemData
+                {
+                object2->setItemData((*reinterpret_cast< const int(*)>(_a[1])), (*reinterpret_cast< const QVariant(*)>(_a[2])), Qt::DisplayRole);
+                //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
+                return true;
+                }
+            case 3005: //insertItem
+                {
+                object2->insertItem((*reinterpret_cast< const int(*)>(_a[1])), (*reinterpret_cast< const QString(*)>(_a[2])));
                 //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
                 return true;
                 }
