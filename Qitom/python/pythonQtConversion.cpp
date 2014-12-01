@@ -2843,13 +2843,13 @@ MethodDescription::MethodDescription(QMetaMethod &method) :
     m_argTypes(NULL)
 {
     m_methodIndex = method.methodIndex();
-    #if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000
     m_signature = method.methodSignature();
     QByteArray sig(method.methodSignature());
-    #else
+#else
     m_signature = QByteArray(method.signature());
     QByteArray sig(method.signature());
-    #endif
+#endif
     
     int beginArgs = sig.indexOf("(");
     m_name = sig.left(beginArgs);

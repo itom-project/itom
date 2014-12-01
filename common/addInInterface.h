@@ -757,6 +757,8 @@ namespace ito
             virtual ~AddInActuator() = 0; //TODO:remove the pure virtual implementation -> requires changed interface-number
             AddInActuator();
 
+            //remove the following five methods due to an incompatibility with qt5. The number of connected signals to statusChanged
+            //and targetChanged will not be count any more, but the respective signals are always emitted.
             virtual void connectNotify (const char * signal);
             virtual void disconnectNotify (const char * signal);
             int nrOfStatusChangedConnections() const { return m_nrOfStatusChangedConnections; }  /*!< returns number of signal-slot connections to the signal "actuatorStatusChanged" */

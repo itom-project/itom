@@ -4335,9 +4335,15 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+#if QT_VERSION >= 0x050000
+void PythonEngine::connectNotify(const QMetaMethod &signal)
+{
+     if (signal == QMetaMethod::fromSignal(&PythonEngine::pythonAutoReloadChanged))
+#else
 void PythonEngine::connectNotify(const char* signal)
 {
      if (QLatin1String(signal) == SIGNAL(pythonAutoReloadChanged(bool,bool,bool,bool)))
+#endif
      {
         emit pythonAutoReloadChanged(m_autoReload.enabled, m_autoReload.checkFileExec, m_autoReload.checkStringExec, m_autoReload.checkFctExec);
      }

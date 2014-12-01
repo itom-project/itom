@@ -732,8 +732,8 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInActuator::AddInActuator() 
         : AddInBase(), 
-        m_nrOfStatusChangedConnections(0), 
-        m_nrOfTargetChangedConnections(0), 
+        m_nrOfStatusChangedConnections(0), /* deprecated: remove this due to new Qt5 support */
+        m_nrOfTargetChangedConnections(0), /* deprecated: remove this due to new Qt5 support */ 
         m_interruptFlag(false)
     {
     }
@@ -757,14 +757,16 @@ namespace ito
     */
     void AddInActuator::connectNotify(const char * signal)
     {
-        if (QLatin1String(signal) == SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)))
+        //in Qt5, the signature of this protected method changed and hence will not be called in this version.
+        //There, it is no more checked if any signals are connected but the signals are always emitted.
+        /*if (QLatin1String(signal) == SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)))
         {
             m_nrOfStatusChangedConnections++;
         }
         else if (QLatin1String(signal) == SIGNAL(targetChanged(QVector<double>)))
         {
             m_nrOfTargetChangedConnections++;
-        }
+        }*/
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -781,14 +783,14 @@ namespace ito
     */
     void AddInActuator::disconnectNotify(const char * signal)
     {
-        if (QLatin1String(signal) == SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)))
+        /*if (QLatin1String(signal) == SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)))
         {
             m_nrOfStatusChangedConnections--;
         }
         else if (QLatin1String(signal) == SIGNAL(targetChanged(QVector<double>)))
         {
             m_nrOfTargetChangedConnections--;
-        }
+        }*/
     }
     
 
@@ -802,8 +804,8 @@ namespace ito
     */
     void AddInActuator::sendStatusUpdate(const bool statusOnly)
     {
-        if (m_nrOfStatusChangedConnections>0)
-        {
+        //if (m_nrOfStatusChangedConnections>0)
+        //{
             if (statusOnly)
             {
                 emit actuatorStatusChanged(m_currentStatus, QVector<double>());
@@ -812,7 +814,7 @@ namespace ito
             {
                 emit actuatorStatusChanged(m_currentStatus, m_currentPos);
             }
-        }
+        //}
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -822,10 +824,10 @@ namespace ito
     */
     void AddInActuator::sendTargetUpdate()
     {
-        if (m_nrOfTargetChangedConnections>0)
-        {
+        //if (m_nrOfTargetChangedConnections>0)
+        //{
             emit targetChanged(m_targetPos);
-        }
+        //}
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------

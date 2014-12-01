@@ -148,7 +148,11 @@ protected:
 
     ito::RetVal modifyTracebackDepth(int NrOfLevelsToPopAtFront = -1, bool showTraceback = true);
 
+#if QT_VERSION >= 0x050000
+    void connectNotify(const QMetaMethod &signal);
+#else
     void connectNotify(const char* signal);
+#endif
 
 private:
     static PythonEngine *getInstanceInternal();

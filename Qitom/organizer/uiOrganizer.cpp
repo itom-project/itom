@@ -2341,7 +2341,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                 {
                     if (i >= mo->methodOffset())
                     {
-                        #if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000
                         signal.append(meth.methodSignature());
                         QString str1("signal_");
                         str1.append(meth.name());
@@ -2352,7 +2352,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                             str2.append(propInfoMap[meth.name()]);
                         }
                         tmpPropMap.insert(str1, str2);
-                        #else
+#else
                         signal.append(meth.signature());
                         QString str1("signal_");
 
@@ -2367,14 +2367,14 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                             str2.append(propInfoMap[methName.toLatin1()]);
                         }
                         tmpPropMap.insert(str1, str2);
-                        #endif
+#endif
                     }
                 }
                 else if (meth.methodType() == QMetaMethod::Slot && meth.access() == QMetaMethod::Public)
                 {
                     if (i >= mo->methodOffset())
                     {
-                        #if (QT_VERSION >= 0x050000)
+#if (QT_VERSION >= 0x050000)
                             slot.append(meth.methodSignature());
                             QString str1("slot_");
                             str1.append(meth.name());
@@ -2385,7 +2385,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                                 str2.append(propInfoMap[meth.name()]);
                             }
                             tmpPropMap.insert(str1, str2);
-                        #else
+#else
                             
                             slot.append(meth.signature());
                             QString str1("slot_");
@@ -2400,7 +2400,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                                 str2.append(propInfoMap[methName.toLatin1()]);
                             }
                             tmpPropMap.insert(str1, str2);
-                        #endif
+#endif
                     }
                 }
             }
