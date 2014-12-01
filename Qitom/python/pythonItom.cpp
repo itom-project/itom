@@ -2372,24 +2372,19 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     QString qicon;
     QString qcode = "";
     PyObject *argtuple = NULL;
-    bool ok = false;
     RetVal retValue(retOk);
+    ito::FuncWeakRef *funcWeakRef = NULL;
 
-    if (!PyArg_ParseTupleAndKeywords(pArgs, kwds, "ss|OsO!", const_cast<char**>(kwlist), &toolbarName, &name, &code, &icon, &PyTuple_Type, &argtuple))
+    if (!PyArg_ParseTupleAndKeywords(pArgs, kwds, "ssO|sO!", const_cast<char**>(kwlist), &toolbarName, &name, &code, &icon, &PyTuple_Type, &argtuple))
     {
         PyErr_Clear();
 
-        if (!PyArg_ParseTupleAndKeywords(pArgs, kwds, "ss|OsO!", const_cast<char**>(kwlist), &toolbarName, &name, &code, &icon, &PyList_Type, &argtuple))
+        if (!PyArg_ParseTupleAndKeywords(pArgs, kwds, "ssO|sO!", const_cast<char**>(kwlist), &toolbarName, &name, &code, &icon, &PyList_Type, &argtuple))
         {
             return NULL;
         }
         //PyErr_SetString(PyExc_TypeError, "wrong length or type of arguments. Type help(addMenu) for more information.");
         //return NULL;
-    }
-
-    if (code)
-    {
-        qcode = PythonQtConversion::PyObjGetString(code,true,ok);
     }
 
     PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
@@ -2403,55 +2398,7 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
     }
     else
     {
-        if (!code)
-        {
-            retValue += RetVal(retError,0,QObject::tr("Any type of code (String or callable method or function) must be indicated.").toLatin1().data());
-        }
-        else if (!ok) //check whether code is a method or function
-        {
-            if (PyMethod_Check(code) || PyFunction_Check(code))
-            {
-                //create hash-string
-                qkey2 = qkey + "_" +  QString::number(pyEngine->m_pyFuncWeakRefHashesAutoInc++);
-                qcode = ":::itomfcthash:::" + qkey2;
-                if (pyEngine->m_pyFuncWeakRefHashes.contains(qkey2))
-                {
-                    retValue += RetVal(retError,0,QObject::tr("The given button name is already associated to a python method or function. The button can not be created.").toLatin1().data());
-                }
-                else
-                {
-                    PyObject *arguments = PyTuple_New(1);
-                    Py_INCREF(code);
-                    PyTuple_SetItem(arguments,0,code); //steals ref
-                    PyObject *proxy = PyObject_CallObject((PyObject *) &PythonProxy::PyProxyType, arguments); //new ref
-                    Py_DECREF(arguments);
-                        
-                    if (proxy)
-                    {
-                        if (argtuple)
-                        {
-                            if (PyTuple_Check(argtuple))
-                            {
-                                Py_INCREF(argtuple);
-                            }
-                            else //list
-                            {
-                                argtuple = PyList_AsTuple(argtuple); //returns new reference
-                            }
-                        }
-                        pyEngine->m_pyFuncWeakRefHashes[qkey2] = QPair<PyObject*,PyObject*>(proxy,argtuple);
-                    }
-                    else
-                    {
-                        retValue += RetVal(retError,0,QObject::tr("Could not create a itom.proxy-object  of the given callable method or function.").toLatin1().data());
-                    }
-                }
-            }
-            else
-            {
-                retValue += RetVal(retError,0,QObject::tr("The code parameter must either be a python code snippet or a callable method or function object.").toLatin1().data());
-            }
-        }
+        funcWeakRef = hashButtonOrMenuCode(code, argtuple, retValue, qcode);
     }
 
     QSharedPointer<size_t> buttonHandle(new size_t); //this is the handle to the newly created button, this can be used to delete the button afterwards (it corresponds to the pointer address of the corresponding QAction, casted to size_t)
@@ -2466,12 +2413,17 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
 
             if (!locker->wait(2000))
             {
+                unhashButtonOrMenuCode(funcWeakRef); //if the function is already hashed, release it.
                 PyErr_SetString(PyExc_RuntimeError, "timeout while waiting for button being added.");
                 return NULL;
             }
             else
             {
                 retValue += locker->returnValue;
+                if (funcWeakRef)
+                {
+                    funcWeakRef->setHandle(*buttonHandle);
+                }                   
             }
         }
         else
@@ -2535,10 +2487,12 @@ PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
     if (mainWindow)
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QSharedPointer<size_t> buttonHandle_(new size_t);
+        *buttonHandle_ = (size_t)NULL;
 
         if (callByNames)
         {
-            QMetaObject::invokeMethod(mainWindow, "removeToolbarButton", Q_ARG(QString, toolbarName), Q_ARG(QString, buttonName), Q_ARG(bool, false), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            QMetaObject::invokeMethod(mainWindow, "removeToolbarButton", Q_ARG(QString, toolbarName), Q_ARG(QString, buttonName), Q_ARG(QSharedPointer<size_t>, buttonHandle_), Q_ARG(bool, false), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         }
         else
         {
@@ -2553,6 +2507,17 @@ PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
         else
         {
             if (!PythonCommon::transformRetValToPyException(locker->returnValue)) 
+            {
+                return NULL;
+            }
+
+            if (callByNames)
+            {
+                buttonHandle = *buttonHandle_;
+            }
+
+            ito::RetVal retval = PythonItom::unhashButtonOrMenuCode(buttonHandle);
+            if (!PythonCommon::transformRetValToPyException(retval)) 
             {
                 return NULL;
             }
@@ -2598,6 +2563,11 @@ icon : {str}, optional \n\
 argtuple : {tuple}, optional \n\
     Arguments, which will be passed to method (in order to avoid cyclic references try to only use basic element types).\n\
 \n\
+Returns \n\
+------- \n\
+handle : {int} \n\
+    Handle to the recently added leaf node (action, separator or menu item). Use this handle to delete the item including its child items (for type 'menu'). \n\
+\n\
 Raises \n\
 ------- \n\
 Runtime error : \n\
@@ -2621,8 +2591,8 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
     QString qicon;
     QString qcode = "";
     PyObject *argtuple = NULL;
-    bool ok = false;
     RetVal retValue(retOk);
+    ito::FuncWeakRef *funcWeakRef = NULL;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "is|sOsO!", const_cast<char**>(kwlist), &type, &key, &name, &code, &icon, &PyTuple_Type, &argtuple))
     {
@@ -2631,13 +2601,6 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
         {
             return NULL;
         }
-        //PyErr_SetString(PyExc_TypeError, "wrong length or type of arguments. Type help(addMenu) for more information.");
-        //return NULL;
-    }
-
-    if (code)
-    {
-        qcode = PythonQtConversion::PyObjGetString(code,true,ok);
     }
 
     PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
@@ -2663,85 +2626,50 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
         {
         case 0: //BUTTON
             {
-            if (!code)
-            {
-                retValue += RetVal(retError,0,QObject::tr("For menu elements of type 'BUTTON' any type of code (String or callable method or function) must be indicated.").toLatin1().data());
-            }
-            else if (!ok) //check whether code is a method or function
-            {
-                if (PyMethod_Check(code) || PyFunction_Check(code))
+                if (!code)
                 {
-                    //create hash-string
-                    qkey2 = qkey + "_" +  QString::number(pyEngine->m_pyFuncWeakRefHashesAutoInc++);
-                    qcode = ":::itomfcthash:::" + qkey2;
-                    if (pyEngine->m_pyFuncWeakRefHashes.contains(qkey2))
-                    {
-                        retValue += RetVal(retError,0,QObject::tr("The given key is already associated to a python method or function. The menu element can not be created.").toLatin1().data());
-                    }
-                    else
-                    {
-                        PyObject *arguments = PyTuple_New(1);
-                        Py_INCREF(code);
-                        PyTuple_SetItem(arguments,0,code); //steals ref
-                        PyObject *proxy = PyObject_CallObject((PyObject *) &PythonProxy::PyProxyType, arguments); //new ref
-                        Py_DECREF(arguments);
-                        
-                        if (proxy)
-                        {
-                            if (argtuple)
-                            {
-                                if (PyTuple_Check(argtuple))
-                                {
-                                    Py_INCREF(argtuple);
-                                }
-                                else //List
-                                {
-                                    argtuple = PyList_AsTuple(argtuple); //returns new reference
-                                }
-                            }
-                            pyEngine->m_pyFuncWeakRefHashes[qkey2] = QPair<PyObject*,PyObject*>(proxy,argtuple);
-                        }
-                        else
-                        {
-                            retValue += RetVal(retError,0,QObject::tr("Could not create a itom.proxy-object  of the given callable method or function.").toLatin1().data());
-                        }
-                    }
+                    retValue += RetVal(retError,0,QObject::tr("For menu elements of type 'BUTTON' any type of code (String or callable method or function) must be indicated.").toLatin1().data());
                 }
                 else
                 {
-                    retValue += RetVal(retError,0,QObject::tr("The code parameter must either be a python code snippet or a callable method or function object.").toLatin1().data());
+                    funcWeakRef = hashButtonOrMenuCode(code, argtuple, retValue, qcode);
                 }
-            }
             break;
             }
         case 1: //SEPARATOR
             {
-            if (ok && qcode != "")
-            {
-                retValue += RetVal(retWarning,0,QObject::tr("A menu element of type 'separator' can not execute some code. Code argument is ignored.").toLatin1().data());
-                qcode = "";
-            }
-            else if (!ok && code != NULL && code != Py_None)
-            {
-                retValue += RetVal(retWarning,0,QObject::tr("A menu element of type 'separator' can not execute any function or method. Code argument is ignored.").toLatin1().data());
-            }
+                bool ok;
+                qcode = code ? PythonQtConversion::PyObjGetString(code, true, ok) : "";
+                if (ok && qcode != "")
+                {
+                    retValue += RetVal(retWarning,0,QObject::tr("A menu element of type 'separator' can not execute some code. Code argument is ignored.").toLatin1().data());
+                    qcode = "";
+                }
+                else if (!ok && code != NULL && code != Py_None)
+                {
+                    retValue += RetVal(retWarning,0,QObject::tr("A menu element of type 'separator' can not execute any function or method. Code argument is ignored.").toLatin1().data());
+                }
             break;
             }
         case 2: //MENU
             {
-            if (ok && qcode != "")
-            {
-                retValue += RetVal(retWarning,0,QObject::tr("A menu element of type 'menu' can not execute some code. Code argument is ignored.").toLatin1().data());
-                qcode = "";
-            }
-            else if (!ok && code != NULL && code != Py_None)
-            {
-                retValue += RetVal(retWarning,0,QObject::tr("A menu element of type 'menu' can not execute any function or method. Code argument is ignored.").toLatin1().data());
-            }
+                bool ok;
+                qcode = code ? PythonQtConversion::PyObjGetString(code, true, ok) : "";
+                if (ok && qcode != "")
+                {
+                    retValue += RetVal(retWarning,0,QObject::tr("A menu element of type 'menu' can not execute some code. Code argument is ignored.").toLatin1().data());
+                    qcode = "";
+                }
+                else if (!ok && code != NULL && code != Py_None)
+                {
+                    retValue += RetVal(retWarning,0,QObject::tr("A menu element of type 'menu' can not execute any function or method. Code argument is ignored.").toLatin1().data());
+                }
             break;
             }
         }
     }
+
+    QSharedPointer<size_t> menuHandle(new size_t);
 
     if (!retValue.containsError())
     {
@@ -2749,16 +2677,21 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
         if (mainWindow)
         {
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-            QMetaObject::invokeMethod(mainWindow, "addMenuElement", Q_ARG(int, type), Q_ARG(QString, qkey), Q_ARG(QString, qname), Q_ARG(QString, qcode), Q_ARG(QString, qicon), Q_ARG(bool, false), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            QMetaObject::invokeMethod(mainWindow, "addMenuElement", Q_ARG(int, type), Q_ARG(QString, qkey), Q_ARG(QString, qname), Q_ARG(QString, qcode), Q_ARG(QString, qicon), Q_ARG(QSharedPointer<size_t>, menuHandle), Q_ARG(bool, false), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
             if (!locker->wait(2000))
             {
+                unhashButtonOrMenuCode(funcWeakRef);
                 PyErr_SetString(PyExc_RuntimeError, "timeout while waiting that menu is added.");
                 return NULL;
             }
             else
             {
                 retValue += locker->returnValue;
+                if (funcWeakRef)
+                {
+                    funcWeakRef->setHandle(*menuHandle);
+                }
             }
         }
         else
@@ -2769,20 +2702,25 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
     }
 
     if (!PythonCommon::transformRetValToPyException(retValue)) return NULL;
-    Py_RETURN_NONE;
+
+    return PyLong_FromSize_t(*menuHandle);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyRemoveMenu_doc,"removeMenu(key) -> remove a menu element with the given key. \n\
+PyDoc_STRVAR(pyRemoveMenu_doc,"removeMenu(key | menuHandle) -> remove a menu element with the given key or handle. \n\
 \n\
-This function remove a menu element with the given key. \n\
+This function remove a menu element with the given key or menuHandle. \n\
 key is a slash separated list. The sub-components then \n\
 lead the way to the final element, which should be removed. \n\
 \n\
+Alternatively, it is possible to pass the handle obtained by `addMenu`. \n\
+\n\
 Parameters \n\
 ----------- \n\
-key : {str} \n\
+key : {str}, optional\n\
     The name (str, identifier) of the menu entry to remove.\n\
+handle : {int}, optional \n\
+    The handle of the menu entry that should be removed (including its possible child items). \n\
 \n\
 Raises \n\
 ------- \n\
@@ -2794,46 +2732,49 @@ See Also \n\
 addMenu");
 PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *kwds)
 {
-    const char* keyName;
+    const char* keyName = NULL;
+    size_t menuHandle;
     const char *kwlist[] = {"key", NULL};
-    static QString prefix = ":::itomfcthash:::";
+    const char *kwlist2[] = {"menuHandle", NULL};
+    bool keyNotHandle = true;
     QString qkey;
     PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", const_cast<char**>(kwlist), &keyName))
     {
-        PyErr_SetString(PyExc_TypeError, "wrong length or type of arguments. Type help(removeMenu) for more information.");
-        return NULL;
-    }
+        PyErr_Clear();
+        keyNotHandle = false;
 
-    qkey = QString(keyName);
-    if (qkey == "")
-    {
-        PyErr_SetString(PyExc_KeyError, "The given key name must not be empty.");
-        return NULL;
-    }
-
-    //check if hashValue is in m_pyFuncWeakRefHashes and delete it and all hashValues which start with the given hashValue (hence its childs)
-    QHash<QString,QPair<PyObject*,PyObject*> >::iterator it = pyEngine->m_pyFuncWeakRefHashes.begin();
-    while(it != pyEngine->m_pyFuncWeakRefHashes.end())
-    {
-        if (it.key().startsWith(qkey)) //hashValue.startsWith(it.key()))
+        if (!PyArg_ParseTupleAndKeywords(args, kwds, "I", const_cast<char**>(kwlist2), &menuHandle))
         {
-            Py_XDECREF(it->first);
-            Py_XDECREF(it->second);
-            it = pyEngine->m_pyFuncWeakRefHashes.erase(it);
-        }
-        else
-        {
-            ++it;
+            PyErr_SetString(PyExc_TypeError, "wrong length or type of arguments. Type help(removeMenu) for more information.");
+            return NULL;
         }
     }
-       
+    else
+    {
+        qkey = QString(keyName);
+        if (qkey == "")
+        {
+            PyErr_SetString(PyExc_KeyError, "The given key name must not be empty.");
+            return NULL;
+        }
+    }
+
     QObject *mainWindow = AppManagement::getMainWindow();
     if (mainWindow)
     {
+        QSharedPointer<QVector<size_t> > removedMenuHandles(new QVector<size_t>() );
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(mainWindow, "removeMenuElement", Q_ARG(QString, qkey), Q_ARG(bool, false), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+        if (keyNotHandle)
+        {
+            QMetaObject::invokeMethod(mainWindow, "removeMenuElement", Q_ARG(QString, qkey), Q_ARG(QSharedPointer<QVector<size_t> >, removedMenuHandles), Q_ARG(bool, false), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        }
+        else
+        {
+            QMetaObject::invokeMethod(mainWindow, "removeMenuElement", Q_ARG(size_t, menuHandle), Q_ARG(QSharedPointer<QVector<size_t> >, removedMenuHandles), Q_ARG(bool, false), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        }
 
         if (!locker->wait(2000))
         {
@@ -2842,8 +2783,15 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
         }
         else
         {
+            for (int i = 0; i < removedMenuHandles->size(); ++i)
+            {
+                unhashButtonOrMenuCode(removedMenuHandles->at(i));
+            }
+
             if (!PythonCommon::transformRetValToPyException(locker->returnValue)) 
+            {
                 return NULL;
+            }
         }
     }
     else
@@ -4409,6 +4357,146 @@ PyObject* PythonItom::PyInitItom(void)
 
     }
     return m;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::FuncWeakRef* PythonItom::hashButtonOrMenuCode(PyObject *code, PyObject *argtuple, ito::RetVal &retval, QString &codeString)
+{
+    ito::FuncWeakRef *ref = NULL;
+
+    PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
+    
+    if (pyEngine)
+    {
+        if (!code)
+        {
+            retval += ito::RetVal(ito::retError, 0, "no code is given");
+        }
+        else if (PyMethod_Check(code) || PyFunction_Check(code))
+        {
+            
+            PyObject *arguments = PyTuple_New(1);
+            Py_INCREF(code);
+            PyTuple_SetItem(arguments,0,code); //steals ref
+            ito::PythonProxy::PyProxy *proxy = (ito::PythonProxy::PyProxy*)PyObject_CallObject((PyObject *) &PythonProxy::PyProxyType, arguments); //new ref
+            Py_DECREF(arguments);
+                        
+            if (proxy)
+            {
+                if (argtuple)
+                {
+                    if (PyTuple_Check(argtuple))
+                    {
+                        Py_INCREF(argtuple);
+                    }
+                    else if(PyList_Check(argtuple)) //list
+                    {
+                        argtuple = PyList_AsTuple(argtuple); //returns new reference
+                    }
+                    else
+                    {
+                        retval += RetVal(retError, 0, "Given argument must be of type tuple or list.");
+                        Py_DECREF(proxy);
+                    }
+                }
+
+                if (!retval.containsError())
+                {
+                    size_t funcID = (++(pyEngine->m_pyFuncWeakRefAutoInc));
+                    codeString = PythonEngine::fctHashPrefix + QString::number(funcID);
+
+                    ref = new ito::FuncWeakRef(proxy, argtuple);
+                    Py_DECREF(proxy);
+                    Py_XDECREF(argtuple);
+                    
+                    ref = &(pyEngine->m_pyFuncWeakRefHashes.insert(funcID, ito::FuncWeakRef(proxy, argtuple))).value();
+                }
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, "Proxy object of function or method could not be created.");
+            }
+        }
+        else
+        {
+            bool ok;
+            codeString = PythonQtConversion::PyObjGetString(code, true, ok);
+            if (!ok)
+            {
+                retval += ito::RetVal(ito::retError, 0, "code is no function or method call and no executable code string");
+            }
+        }
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, "Python engine is not available");
+    }
+
+    return ref;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//this method removes a possible proxy object to a python method or function including its possible argument tuple
+//from the hash list that has been added there for guarding functions or objects related to toolbar buttons or menu entries.
+/*static*/ ito::RetVal PythonItom::unhashButtonOrMenuCode(const size_t &handle)
+{
+    ito::RetVal retval;
+
+    PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
+    
+    if (pyEngine)
+    {
+        //check if hashValue is in m_pyFuncWeakRefHashes and delete it and all hashValues which start with the given hashValue (hence its childs)
+        QHash<size_t, FuncWeakRef >::iterator it = pyEngine->m_pyFuncWeakRefHashes.begin();
+
+        while(it != pyEngine->m_pyFuncWeakRefHashes.end())
+        {
+            if (it->getHandle() == handle)
+            {
+                it = pyEngine->m_pyFuncWeakRefHashes.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+
+        return ito::retOk;
+    }
+
+    return ito::RetVal(ito::retError, 0, "Python engine is not available");
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal PythonItom::unhashButtonOrMenuCode(const ito::FuncWeakRef *funcWeakRef)
+{
+    ito::RetVal retval;
+
+    if (!funcWeakRef) return retval;
+
+    PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
+    
+    if (pyEngine)
+    {
+        //check if hashValue is in m_pyFuncWeakRefHashes and delete it and all hashValues which start with the given hashValue (hence its childs)
+        QHash<size_t, FuncWeakRef >::iterator it = pyEngine->m_pyFuncWeakRefHashes.begin();
+
+        while(it != pyEngine->m_pyFuncWeakRefHashes.end())
+        {
+            if (&(*it) == funcWeakRef)
+            {
+                it = pyEngine->m_pyFuncWeakRefHashes.erase(it);
+            }
+            else
+            {
+                ++it;
+            }
+        }
+
+        return ito::retOk;
+    }
+
+    return ito::RetVal(ito::retError, 0, "Python engine is not available");
 }
 
 } //end namespace ito

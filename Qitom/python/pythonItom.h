@@ -47,6 +47,8 @@
 namespace ito 
 {
 
+class FuncWeakRef; //forward declaration
+
 class PythonItom
 {
 
@@ -63,10 +65,6 @@ public:
 
     static PyObject* PyPlotImage(PyObject *pSelf, PyObject *pArgs, PyObject *pKwds);
     static PyObject* PyLiveImage(PyObject *pSelf, PyObject *pArgs, PyObject *pKwds);
-    //static PyObject* PyLiveLine(PyObject *pSelf, PyObject *pArgs, PyObject *pKwds);
-    /*static PyObject* PyCloseFigure(PyObject *pSelf, PyObject *pArgs);
-    static PyObject* PySetFigParam(PyObject *pSelf, PyObject *pArgs);
-    static PyObject* PyGetFigParam(PyObject *pSelf, PyObject *pArgs);*/
 
     static PyObject* PyFilter(PyObject *pSelf, PyObject *pArgs, PyObject *kwds);
     static PyObject* PyFilterHelp(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
@@ -126,6 +124,10 @@ public:
 
 protected:
     static QHash<size_t, QString> m_gcTrackerList; //!< list with objects currently tracked by python garbage collector.
+
+    static ito::FuncWeakRef* hashButtonOrMenuCode(PyObject *code, PyObject *argtuple, ito::RetVal &retval, QString &codeString);
+    static ito::RetVal unhashButtonOrMenuCode(const size_t &funcID);
+    static ito::RetVal unhashButtonOrMenuCode(const ito::FuncWeakRef *funcWeakRef);
 };
 
 } //end namespace ito
