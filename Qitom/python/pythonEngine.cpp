@@ -1304,12 +1304,12 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
         {
             if (m_autoReload.enabled && m_autoReload.checkFileExec)
             {
-                PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "pre_run_cell", "");
-                if (!result)
+                PyObject *result2 = PyObject_CallMethod(m_autoReload.classAutoReload, "pre_run_cell", "");
+                if (!result2)
                 {
                     PyErr_Print();
                 }
-                Py_XDECREF(result);
+                Py_XDECREF(result2);
             }
 
             result = PyObject_CallMethod(itomDbgInstance, "runScript", "s", pythonFileName.toUtf8().data()); //"s" requires UTF8 encoded char*
@@ -1340,12 +1340,12 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
 
             if (m_autoReload.enabled && m_autoReload.checkFileExec)
             {
-                PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "post_execute_hook", "");
-                if (!result)
+                PyObject *result2 = PyObject_CallMethod(m_autoReload.classAutoReload, "post_execute_hook", "");
+                if (!result2)
                 {
                     PyErr_Print();
                 }
-                Py_XDECREF(result);
+                Py_XDECREF(result2);
             }
 
             Py_XDECREF(result);

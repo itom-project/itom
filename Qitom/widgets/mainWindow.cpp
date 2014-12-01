@@ -1197,11 +1197,13 @@ ito::RetVal MainWindow::addToolbarButton(const QString &toolbarName, const QStri
     }
 
     action = new QAction(icon, buttonName, toolbar);
-    action->setData(++m_userDefinedActionCounter);
+    action->setProperty("itom__buttonHandle", ++m_userDefinedActionCounter);
     action->setToolTip(buttonName);
+
     connect(action, SIGNAL(triggered()), m_userDefinedSignalMapper, SLOT(map()));
     m_userDefinedSignalMapper->setMapping(action, pythonCode);
     toolbar->addAction(action);
+
     *buttonHandle = (size_t)m_userDefinedActionCounter;
 
     if (waitCond)
@@ -1230,7 +1232,7 @@ ito::RetVal MainWindow::removeToolbarButton(const QString &toolbarName, const QS
             if (tempAction->text() == buttonName)
             {
                 (*it)->removeAction(tempAction);
-                *buttonHandle = (size_t)tempAction->data().toUInt();
+                *buttonHandle = (size_t)(tempAction->property("itom__buttonHandle").toUInt()); //0 if invalid
                 DELETE_AND_SET_NULL(tempAction);
                 found = true;
                 break;
@@ -1284,7 +1286,7 @@ ito::RetVal MainWindow::removeToolbarButton(const size_t buttonHandle, bool show
     {
         foreach (tempAction, (*it)->actions())
         {
-            if ((size_t)(tempAction->data().toUInt()) == buttonHandle)
+            if ((size_t)(tempAction->property("itom__buttonHandle").toUInt()) == buttonHandle)
             {
                 (*it)->removeAction(tempAction);
                 DELETE_AND_SET_NULL(tempAction);
@@ -1325,7 +1327,6 @@ ito::RetVal MainWindow::removeToolbarButton(const size_t buttonHandle, bool show
 ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QString &name, const QString &code, const QString &buttonIconFilename, QSharedPointer<size_t> menuHandle, bool showMessage /*= true*/, ItomSharedSemaphore *waitCond /*= NULL*/)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
-    ito::RetVal retval;
 
     //key is a slash-splitted value: e.g. rootKey/parentKey/nextParentKey/.../myKey
     QStringList keys = key.split("/");
@@ -1400,26 +1401,26 @@ ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QSt
             if (m_userDefinedRootMenus.contains(tempKey))
             {
                 parentMnu = m_userDefinedRootMenus[tempKey];
-                *menuHandle = (size_t)parentMnu->menuAction()->data().toUInt();
+                *menuHandle = (size_t)parentMnu->menuAction()->property("itom__menuHandle").toUInt();
             }
             else
             {
                 if (keys.size() == 0)
                 {
                     parentMnu = menuBar()->addMenu(name);
-                    parentMnu->menuAction()->setData(++m_userDefinedActionCounter);
+                    parentMnu->menuAction()->setData(tempKey);
+                    parentMnu->menuAction()->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
                     *menuHandle = (size_t)m_userDefinedActionCounter;
                 }
                 else
                 {
                     parentMnu = menuBar()->addMenu(tempKey);
-                    parentMnu->menuAction()->setData(++m_userDefinedActionCounter);
+                    parentMnu->menuAction()->setData(tempKey);
+                    parentMnu->menuAction()->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
                     *menuHandle = (size_t)m_userDefinedActionCounter;
                 }
                 m_userDefinedRootMenus[tempKey] = parentMnu;
             }
-
-            
         }
     }
     else
@@ -1460,7 +1461,7 @@ ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QSt
             }
             else
             {
-                retValue += RetVal(retError, 0, tr("menu item already exists.").toLatin1().data());
+                retValue += RetVal(retError, 0, tr("menu item exists already.").toLatin1().data());
             }
         }
         else //element has to be created
@@ -1477,25 +1478,25 @@ ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QSt
                 {
                 case 0: //BUTTON
                     act = parentMnu->addAction(icon,name);
-                    act->setData(++m_userDefinedActionCounter);
+                    act->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
                     act->setIconText(name);
-                    act->setData(QVariant(tempKey));
+                    act->setData(tempKey);
                     connect(act, SIGNAL(triggered()), m_userDefinedSignalMapper, SLOT(map()));
                     m_userDefinedSignalMapper->setMapping(act, code);
                     *menuHandle = (size_t)m_userDefinedActionCounter;
                     break;
                 case 1: //SEPARATOR
                     act = parentMnu->addSeparator();
-                    act->setData(++m_userDefinedActionCounter);
+                    act->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
                     act->setIconText(name);
-                    act->setData(QVariant(tempKey));
+                    act->setData(tempKey);
                     *menuHandle = (size_t)m_userDefinedActionCounter;
                     break;
                 case 2: //MENU
                     parentMnu = parentMnu->addMenu(icon,name);
-                    parentMnu->menuAction()->setData(++m_userDefinedActionCounter);
+                    parentMnu->menuAction()->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
                     parentMnu->menuAction()->setIconText(name);
-                    parentMnu->menuAction()->setData(QVariant(tempKey));
+                    parentMnu->menuAction()->setData(tempKey);
                     *menuHandle = (size_t)m_userDefinedActionCounter;
                     break;
                 default:
@@ -1508,7 +1509,7 @@ ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QSt
 
     if (waitCond)
     {
-        waitCond->returnValue = retval;
+        waitCond->returnValue = retValue;
         waitCond->release();
     }
 
@@ -1521,7 +1522,7 @@ ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QSt
         QMessageBox::warning(this, tr("Add menu element"), retValue.errorMessage());
     }
 
-    return retval;
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1542,7 +1543,7 @@ ito::RetVal MainWindow::removeMenuElement(const QString &key, QSharedPointer<QVe
         it = m_userDefinedRootMenus.find(tempKey);
         if (it != m_userDefinedRootMenus.end())
         {
-            removedMenuHandles->append( (size_t)(it.value()->menuAction()->data().toUInt() ) );
+            removedMenuHandles->append( (size_t)(it.value()->menuAction()->property("itom__menuHandle").toUInt() ) );
             getMenuHandlesRecursively(it.value(), removedMenuHandles);
             (*it)->deleteLater();
             it = m_userDefinedRootMenus.erase(it);
@@ -1581,9 +1582,17 @@ ito::RetVal MainWindow::removeMenuElement(const QString &key, QSharedPointer<QVe
 
         if (keys.size() == 0 && actToDelete)
         {
-            removedMenuHandles->append( (size_t)(actToDelete->data().toUInt()) );
+            removedMenuHandles->append( (size_t)(actToDelete->property("itom__menuHandle").toUInt()) );
             getMenuHandlesRecursively(actToDelete->menu(), removedMenuHandles);
-            actToDelete->deleteLater();
+
+            if (actToDelete->menu()) //this action belongs to a QMenu -> delete the QMenu
+            {
+                actToDelete->menu()->deleteLater();
+            }
+            else //this action is a real action -> directly delete it
+            {
+                actToDelete->deleteLater();
+            }
         }
         else
         {
@@ -1618,7 +1627,7 @@ ito::RetVal MainWindow::removeMenuElement(const size_t menuHandle, QSharedPointe
 
     while (it != m_userDefinedRootMenus.end() && !found)
     {
-        if ( (size_t)it.value()->menuAction()->data().toUInt() == menuHandle)
+        if ( (size_t)it.value()->menuAction()->property("itom__menuHandle").toUInt() == menuHandle)
         {
             found = true;
             removedMenuHandles->append(menuHandle);
@@ -1633,9 +1642,17 @@ ito::RetVal MainWindow::removeMenuElement(const size_t menuHandle, QSharedPointe
             if (actToDelete)
             {
                 found = true;
-                removedMenuHandles->append( (size_t)(actToDelete->data().toUInt()) );
+                removedMenuHandles->append( (size_t)(actToDelete->property("itom__menuHandle").toUInt()) );
                 getMenuHandlesRecursively(actToDelete->menu(), removedMenuHandles);
-                actToDelete->deleteLater();
+                
+                if (actToDelete->menu()) //this action belongs to a QMenu -> delete the QMenu
+                {
+                    actToDelete->menu()->deleteLater();
+                }
+                else //this action is a real action -> directly delete it
+                {
+                    actToDelete->deleteLater();
+                }
             }
         }
 
@@ -1670,7 +1687,7 @@ void MainWindow::getMenuHandlesRecursively(const QMenu *parent, QSharedPointer<Q
         {
             if (a)
             {
-                menuHandles->append( (size_t)a->data().toUInt() );
+                menuHandles->append( (size_t)a->property("itom__menuHandle").toUInt() );
                 getMenuHandlesRecursively(a->menu(), menuHandles);
             }
         }
@@ -1689,7 +1706,7 @@ QAction* MainWindow::searchActionRecursively(const size_t menuHandle, const QMen
 
     foreach (QAction *a, parent->actions())
     {
-        if ((size_t)a->data().toUInt() == menuHandle)
+        if ((size_t)a->property("itom__menuHandle").toUInt() == menuHandle)
         {
             return a;
         }

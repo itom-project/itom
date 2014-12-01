@@ -2688,7 +2688,11 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
             else
             {
                 retValue += locker->returnValue;
-                if (funcWeakRef)
+                if (retValue.containsError())
+                {
+                    unhashButtonOrMenuCode(funcWeakRef);
+                }
+                else if (funcWeakRef)
                 {
                     funcWeakRef->setHandle(*menuHandle);
                 }
@@ -4405,11 +4409,10 @@ PyObject* PythonItom::PyInitItom(void)
                     size_t funcID = (++(pyEngine->m_pyFuncWeakRefAutoInc));
                     codeString = PythonEngine::fctHashPrefix + QString::number(funcID);
 
-                    ref = new ito::FuncWeakRef(proxy, argtuple);
+                    ref = &(pyEngine->m_pyFuncWeakRefHashes.insert(funcID, ito::FuncWeakRef(proxy, argtuple))).value();
+
                     Py_DECREF(proxy);
                     Py_XDECREF(argtuple);
-                    
-                    ref = &(pyEngine->m_pyFuncWeakRefHashes.insert(funcID, ito::FuncWeakRef(proxy, argtuple))).value();
                 }
             }
             else
