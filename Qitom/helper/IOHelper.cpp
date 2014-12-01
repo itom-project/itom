@@ -1097,4 +1097,81 @@ end:
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ QIcon IOHelper::searchIcon(const QString &filename, SearchFolders searchFolders /*= SFAll*/, const QIcon &fallbackIcon /*= QIcon()*/)
+{
+    QIcon icon;
+    bool found = false;
+    QDir dir;
+
+    if (searchFolders & SFResources)
+    {
+        if (filename.startsWith(":"))
+        {
+            icon = QIcon(filename);
+            if (icon.isNull() == false && icon.availableSizes().size() > 0)
+            {
+                found = true;
+            }
+        }
+    }
+
+    if (!found && (searchFolders & SFDirect))
+    {
+        icon = QIcon(filename);
+        if (icon.isNull() == false && icon.availableSizes().size() > 0)
+        {
+            found = true;
+        }
+    }
+
+    if (!found && (searchFolders & SFCurrent))
+    {
+        dir = QDir::current();
+        if (dir.exists() && dir.exists(filename))
+        {
+            icon = QIcon(dir.absoluteFilePath(filename));
+            if (icon.isNull() == false && icon.availableSizes().size() > 0)
+            {
+                found = true;
+            }
+        }
+    }
+
+    if (!found && (searchFolders & SFAppDir))
+    {
+        dir = QCoreApplication::applicationDirPath();
+        if (dir.exists() && dir.exists(filename))
+        {
+            icon = QIcon(dir.absoluteFilePath(filename));
+            if (icon.isNull() == false && icon.availableSizes().size() > 0)
+            {
+                found = true;
+            }
+        }
+    }
+
+    if (!found && (searchFolders & SFAppDirQItom))
+    {
+        dir = QCoreApplication::applicationDirPath();
+        dir.cd("Qitom");
+        if (dir.exists() && dir.exists(filename))
+        {
+            icon = QIcon(dir.absoluteFilePath(filename));
+            if (icon.isNull() == false && icon.availableSizes().size() > 0)
+            {
+                found = true;
+            }
+        }
+    }
+
+    //nothing valid found, return to fallback icon
+    if (!found || icon.isNull() == true || icon.availableSizes().size() == 0)
+    {
+        icon = fallbackIcon;
+    }
+
+    return icon;
+}
+
 } //end namespace ito

@@ -1122,6 +1122,11 @@ void MainWindow::setStatusText(QString message, int timeout)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/*
+An existing button with the same name (text) will not be deleted but a new button is added. This is because the possibly related
+python methods or functions cannot be deleted from this method. However, each button has its unique buttonHandle that can be used
+to explicitely delete the button.
+*/
 ito::RetVal MainWindow::addToolbarButton(const QString &toolbarName, const QString &buttonName, const QString &buttonIconFilename, const QString &pythonCode, QSharedPointer<size_t> buttonHandle, ItomSharedSemaphore *waitCond /*= NULL*/)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
@@ -1139,63 +1144,19 @@ ito::RetVal MainWindow::addToolbarButton(const QString &toolbarName, const QStri
     {
         toolbar = *it;
 
-        //check if this action already exists, if so delete it first
-        foreach(action, (*it)->actions())
-        {
-            if (action->text() == buttonName)
-            {
-                (*it)->removeAction(action);
-                DELETE_AND_SET_NULL(action);
-                break;
-            }
-        }
+        ////check if this action already exists, if so delete it first
+        //foreach(action, (*it)->actions())
+        //{
+        //    if (action->text() == buttonName)
+        //    {
+        //        (*it)->removeAction(action);
+        //        DELETE_AND_SET_NULL(action);
+        //        break;
+        //    }
+        //}
     }
 
-    //check icon
-    QDir basePath;
-    bool iconFound = false;
-    int i = 0;
-    QIcon icon(buttonIconFilename);
-
-    if (buttonIconFilename != "" && icon.isNull())
-    {
-        while (!iconFound && i < 1000)
-        {
-            switch(i)
-            {
-            case 0:
-                basePath = QDir::current();
-                break;
-            case 1:
-                basePath = QCoreApplication::applicationDirPath();
-                break;
-            case 2:
-                basePath = QCoreApplication::applicationDirPath();
-                basePath.cd("Qitom");
-                break;
-            default:
-                i = 1000;
-                break;
-            }
-
-            i++;
-
-            if (basePath.exists())
-            {
-                if (basePath.exists(buttonIconFilename))
-                {
-                    icon = QIcon(basePath.absoluteFilePath(buttonIconFilename));
-                    iconFound = true;
-                }
-            }
-        }
-    }
-
-    if (icon.isNull() || icon.availableSizes().size() == 0)
-    {
-        icon = QIcon("");
-    }
-
+    QIcon icon = IOHelper::searchIcon(buttonIconFilename, IOHelper::SFAll);
     action = new QAction(icon, buttonName, toolbar);
     action->setProperty("itom__buttonHandle", ++m_userDefinedActionCounter);
     action->setToolTip(buttonName);
@@ -1327,182 +1288,113 @@ ito::RetVal MainWindow::removeToolbarButton(const size_t buttonHandle, bool show
 ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QString &name, const QString &code, const QString &buttonIconFilename, QSharedPointer<size_t> menuHandle, bool showMessage /*= true*/, ItomSharedSemaphore *waitCond /*= NULL*/)
 {
     ItomSharedSemaphoreLocker locker(waitCond);
+    RetVal retValue(retOk);
 
     //key is a slash-splitted value: e.g. rootKey/parentKey/nextParentKey/.../myKey
     QStringList keys = key.split("/");
-    QString tempKey = "";
+    QString current_key;
     QAction *act;
-    QMenu *parentMnu = NULL;
-    //QMenu *mnu;
-    RetVal retValue(retOk);
-    QList<QAction*> actionList;
+    QMenu *parent_menu = NULL;
+    QMap<QString, QMenu*>::iterator root_it;
+    bool found = false;
 
     //check icon
-    QIcon icon(buttonIconFilename);
-    QDir basePath;
-    bool iconFound = false;
-    int i = 0;
-    *menuHandle = (size_t)0;
+    QIcon icon = IOHelper::searchIcon(buttonIconFilename, IOHelper::SFAll);
 
-    if (buttonIconFilename != "" && icon.isNull())
+    //some sanity checks
+    if (keys.size() == 1 && typeID != 2)
     {
-        while (!iconFound && i < 1000)
-        {
-            switch(i)
-            {
-            case 0:
-                basePath = QDir::current();
-                break;
-            case 1:
-                basePath = QCoreApplication::applicationDirPath();
-                break;
-            case 2:
-                basePath = QCoreApplication::applicationDirPath();
-                basePath.cd("Qitom");
-                break;
-            default:
-                i = 1000;
-                break;
-            }
-
-            i++;
-
-            if (basePath.exists())
-            {
-                if (basePath.exists(buttonIconFilename))
-                {
-                    icon = QIcon(basePath.absoluteFilePath(buttonIconFilename));
-                    iconFound = true;
-                }
-            }
-        }
+        retValue += ito::RetVal(ito::retError, 0, tr("one single menu element must be of type MENU [2]").toLatin1().data());
     }
-
-    if (icon.isNull() || icon.availableSizes().size() == 0)
+    else if (keys.size() == 0)
     {
-        icon = QIcon("");
+        retValue += ito::RetVal(ito::retError, 0, tr("key must not be empty.").toLatin1().data());
     }
-
-    //check root element
-    if (keys.size() >= 1)
+    else if (typeID < 0 || typeID > 2)
     {
-        if (keys.size() == 1) //single element, must be type MENU
-        {
-            if (typeID != 2)
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("one single menu element must be of type MENU [2]").toLatin1().data());
-            }
-        }
-
-        tempKey = keys[0];
-        keys.pop_front();
-        if (!retValue.containsError())
-        {
-            if (m_userDefinedRootMenus.contains(tempKey))
-            {
-                parentMnu = m_userDefinedRootMenus[tempKey];
-                *menuHandle = (size_t)parentMnu->menuAction()->property("itom__menuHandle").toUInt();
-            }
-            else
-            {
-                if (keys.size() == 0)
-                {
-                    parentMnu = menuBar()->addMenu(name);
-                    parentMnu->menuAction()->setData(tempKey);
-                    parentMnu->menuAction()->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
-                    *menuHandle = (size_t)m_userDefinedActionCounter;
-                }
-                else
-                {
-                    parentMnu = menuBar()->addMenu(tempKey);
-                    parentMnu->menuAction()->setData(tempKey);
-                    parentMnu->menuAction()->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
-                    *menuHandle = (size_t)m_userDefinedActionCounter;
-                }
-                m_userDefinedRootMenus[tempKey] = parentMnu;
-            }
-        }
+        retValue += ito::RetVal(ito::retError, 0, tr("invalid menu item type.").toLatin1().data());
     }
     else
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("no menu element is indicated").toLatin1().data());
-    }
-
-    //check further elements
-    while (keys.size() > 0 && !retValue.containsError())
-    {
-        actionList = parentMnu->actions();
-        tempKey = keys[0];
-        keys.pop_front();
-        act = NULL;
-
-        //search for tempKey in actionList
-        foreach(QAction* a, actionList)
+        //check first level entry (is more special than all other ones since it is register in the m_userDefinedRootMenus map
+        current_key = keys.takeFirst();
+        root_it = m_userDefinedRootMenus.find(current_key);
+        
+        if (root_it != m_userDefinedRootMenus.end())
         {
-            if (a->data().toString() == tempKey)
-            {
-                act = a;
-                break;
-            }
+            parent_menu = root_it.value();
+            *menuHandle = (size_t)parent_menu->menuAction()->property("itom__menuHandle").toUInt();
+        }
+        else //exist new root menu item
+        {
+            parent_menu = menuBar()->addMenu(keys.size() == 0 ? name : current_key); //only the last item gets 'name' as visible name, all the others get their key component
+            parent_menu->menuAction()->setData(current_key);
+            parent_menu->menuAction()->setIconText(current_key);
+            parent_menu->menuAction()->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
+            *menuHandle = (size_t)m_userDefinedActionCounter;
+            m_userDefinedRootMenus[current_key] = parent_menu;
         }
 
-        if (act) //element already exists
+        //now parent_menu is fixed and we can now recursively create the menu item tree until the last item
+        while (parent_menu && keys.size() > 0 && !retValue.containsError())
         {
-            if (keys.size() > 0) //not the last element
+            current_key = keys.takeFirst();
+
+            if (keys.size() > 0) //must be a tree item (menu item, since not the last one)
             {
-                if (act->menu() == NULL) //item is no menu, but has to be a menu
+                //check if parent_menu contains a child-action that is a submenu with the same current_key
+                //if so, use this, else create a new sub-menu
+                found = false;
+                foreach(QAction* a, parent_menu->actions())
                 {
-                    retValue += RetVal::format(retError, 0, tr("The menu item '%s' does already exist but is no menu type").toLatin1().data(), act->iconText().toLatin1().data());
+                    if (a->menu() && a->data().toString() == current_key)
+                    {
+                        //existing one, use it
+                        found = true;
+                        parent_menu = a->menu();
+                        *menuHandle = (size_t)a->property("itom__menuHandle").toUInt();
+                        break;
+                    }
                 }
-                else
+
+                if (!found)
                 {
-                    parentMnu = act->menu();
+                    parent_menu = parent_menu->addMenu(icon,current_key);
+                    parent_menu->menuAction()->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
+                    parent_menu->menuAction()->setIconText(current_key);
+                    parent_menu->menuAction()->setData(current_key);
+                    *menuHandle = (size_t)m_userDefinedActionCounter;
                 }
             }
             else
             {
-                retValue += RetVal(retError, 0, tr("menu item exists already.").toLatin1().data());
-            }
-        }
-        else //element has to be created
-        {
-            if (keys.size() > 0) //not the last element, create menu
-            {      
-                parentMnu = parentMnu->addMenu(tempKey);
-                parentMnu->menuAction()->setIconText(tempKey);
-                parentMnu->menuAction()->setData(QVariant(tempKey));
-            }
-            else
-            {
-                switch(typeID)
+                //append a menu, separator or button to parent_menu and returns its menuHandle.
+                if (typeID == 0) //BUTTON
                 {
-                case 0: //BUTTON
-                    act = parentMnu->addAction(icon,name);
+                    act = parent_menu->addAction(icon,name);
                     act->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
                     act->setIconText(name);
-                    act->setData(tempKey);
+                    act->setData(current_key);
                     connect(act, SIGNAL(triggered()), m_userDefinedSignalMapper, SLOT(map()));
                     m_userDefinedSignalMapper->setMapping(act, code);
                     *menuHandle = (size_t)m_userDefinedActionCounter;
-                    break;
-                case 1: //SEPARATOR
-                    act = parentMnu->addSeparator();
+                }
+                else if (typeID == 2 /*MENU*/)
+                {
+                    parent_menu = parent_menu->addMenu(icon,name);
+                    parent_menu->menuAction()->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
+                    parent_menu->menuAction()->setIconText(name);
+                    parent_menu->menuAction()->setData(current_key);
+                    *menuHandle = (size_t)m_userDefinedActionCounter;
+                }
+                else // if (typeID == 1) //SEPARATOR
+                {
+                    act = parent_menu->addSeparator();
                     act->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
                     act->setIconText(name);
-                    act->setData(tempKey);
+                    act->setData(current_key);
                     *menuHandle = (size_t)m_userDefinedActionCounter;
-                    break;
-                case 2: //MENU
-                    parentMnu = parentMnu->addMenu(icon,name);
-                    parentMnu->menuAction()->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
-                    parentMnu->menuAction()->setIconText(name);
-                    parentMnu->menuAction()->setData(tempKey);
-                    *menuHandle = (size_t)m_userDefinedActionCounter;
-                    break;
-                default:
-                    retValue += RetVal(retError, 0, tr("Invalid typeID.").toLatin1().data());
-                    break;
-                }
+                } 
             }
         }
     }

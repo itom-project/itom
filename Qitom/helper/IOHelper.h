@@ -30,6 +30,7 @@
 
 #include <qstring.h>
 #include <qobject.h>
+#include <qicon.h>
 
 namespace ito {
 
@@ -50,6 +51,18 @@ public:
         IOMimeAll = IOMimeDataObject | IOMimePointCloud | IOMimePolygonMesh
     };
     Q_DECLARE_FLAGS(IOFilters, IOFilter)
+
+    enum SearchFolder
+    {
+        SFResources = 0x001,
+        SFDirect = 0x002,
+        SFCurrent = 0x004,
+        SFAppDir = 0x008,
+        SFAppDirQItom = 0x010,
+        SFAll = SFResources | SFDirect | SFCurrent | SFAppDir | SFAppDirQItom
+    };
+    Q_DECLARE_FLAGS(SearchFolders, SearchFolder)
+
 
     static RetVal openGeneralFile(const QString &generalFileName, bool openUnknownsWithExternalApp = true, bool showMessages = false, QWidget* parent = NULL, const char* errorSlotMemberOfParent = NULL, bool globalNotLocalWorkspace = true);
 
@@ -72,6 +85,8 @@ public:
     static bool fileFitsToFileFilters(const QString &filename, const IOFilters &IOfilters);
 
     static void elideFilepathMiddle(QString &path, int pixelLength);
+
+    static QIcon searchIcon(const QString &filename, SearchFolders searchFolders = SFAll, const QIcon &fallbackIcon = QIcon());
 
 private:
     IOHelper() {};
