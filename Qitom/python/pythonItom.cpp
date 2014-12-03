@@ -29,6 +29,7 @@
 #include "pythonProxy.h"
 #include "pythonFigure.h"
 #include "pythonPlotItem.h"
+#include "pythonRgba.h"
 
 #include "pythonEngine.h"
 
@@ -39,6 +40,7 @@
 #include "../organizer/uiOrganizer.h"
 #include "../organizer/addInManager.h"
 #include "../organizer/userOrganizer.h"
+#include "../organizer/paletteOrganizer.h"
 #include "../organizer/designerWidgetOrganizer.h"
 
 #include <qdir.h>
@@ -4272,6 +4274,275 @@ See Also \n\
 figure.close");
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(setPalette_doc,"setPalette(name, entries) -> set the palette for color bars defined by name.\n\
+\n\
+This methods sets a palette defined by entries within the palette organizer. If the palette does not exist, a new one is created.\n\
+If the palette already exists and is not write protected, the palette is overwritten.\n\
+\n\
+Parameters \n\
+----------- \n\
+name : {string} \n\
+    name of the new palette. \n\
+entries : {dict} \n\
+    dictionary with two floating type entries defining the stop coordiate and its rga value.\n\
+\n\
+See Also \n\
+--------- \n\
+getPalette, getPaletteList");
+PyObject* PythonItom::PySetPalette(PyObject* pSelf, PyObject* pArgs)
+{
+    char* name = NULL;
+    PyObject *tuple = NULL;
+    PyObject *subtuple = NULL;
+
+    unsigned char overwriteIfExists = 1;
+
+    if (!PyArg_ParseTuple(pArgs, "sO", &name, &tuple)) //all borrowed
+    {
+        return NULL;
+    }
+
+    if(!PyTuple_Check(tuple))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "palette not valid");
+        return NULL;            
+    }
+
+    PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+
+    ito::PaletteOrganizer *paletteOrganizer = (PaletteOrganizer*)AppManagement::getPaletteOrganizer();
+
+    if(paletteOrganizer == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "pallette organizer not loaded");
+        return NULL;    
+    }
+
+    ito::ItomPaletteBase palette;
+
+    int length = PyTuple_Size(tuple);
+    bool failed = false;
+    if(length > 1)
+    {
+        subtuple = PyTuple_GetItem(tuple, 0);
+        PyObject* val;
+        ito::uint8 a;
+        ito::uint8 r;
+        ito::uint8 g;
+        ito::uint8 b;
+        QColor color0;
+        QColor color1;
+        if(subtuple && PyTuple_Size(subtuple) > 1)
+        {
+            val = PyTuple_GetItem(subtuple, 1);
+
+            if(PyRgba_Check(val))
+            {
+                a = ((ito::PythonRgba::PyRgba*)val)->rgba.a;
+                r = ((ito::PythonRgba::PyRgba*)val)->rgba.r;
+                g = ((ito::PythonRgba::PyRgba*)val)->rgba.g;
+                b = ((ito::PythonRgba::PyRgba*)val)->rgba.b;
+                color0 = QColor(r, g, b, a);
+            }
+        }
+
+        subtuple = PyTuple_GetItem(tuple, length-1);
+        if(subtuple && PyTuple_Size(subtuple) > 1)
+        {
+            val = PyTuple_GetItem(subtuple, 1);
+
+            if(PyRgba_Check(val))
+            {
+                a = ((ito::PythonRgba::PyRgba*)val)->rgba.a;
+                r = ((ito::PythonRgba::PyRgba*)val)->rgba.r;
+                g = ((ito::PythonRgba::PyRgba*)val)->rgba.g;
+                b = ((ito::PythonRgba::PyRgba*)val)->rgba.b;
+                color1 = QColor(r, g, b, a);
+            }
+        }
+
+        palette = ito::ItomPaletteBase(name, ito::tPaletteIndexed, color0, color1);
+    }
+    
+
+    for(int elem = 1; elem < length - 1; elem ++)
+    {
+        subtuple = PyTuple_GetItem(tuple, elem);
+        PyObject* val;
+        ito::uint8 a;
+        ito::uint8 r;
+        ito::uint8 g;
+        ito::uint8 b;
+        double pos = 0.0;
+        QColor color;
+        if(subtuple && PyTuple_Size(subtuple) > 1)
+        {
+            val = PyTuple_GetItem(subtuple, 1);
+            pos = PyFloat_AsDouble(PyTuple_GetItem(subtuple, 0));
+
+            if(PyRgba_Check(val))
+            {
+                a = ((ito::PythonRgba::PyRgba*)val)->rgba.a;
+                r = ((ito::PythonRgba::PyRgba*)val)->rgba.r;
+                g = ((ito::PythonRgba::PyRgba*)val)->rgba.g;
+                b = ((ito::PythonRgba::PyRgba*)val)->rgba.b;
+                color = QColor(r, g, b, a);
+                palette.insertColorStop(pos, color);
+            }
+        }
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+
+    QMetaObject::invokeMethod(paletteOrganizer, "setColorBarThreaded", Q_ARG(QString,QString(name)), Q_ARG(ito::ItomPaletteBase, palette), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+
+    if (!locker.getSemaphore()->wait(60000))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "timeout while setting palette");
+        return NULL;
+    }
+
+    if (!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue))
+    {
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(getPalette_doc,"getPalette(name) -> get the palette for color bars defined by name.\n\
+\n\
+\n\
+Parameters \n\
+----------- \n\
+name : {string} \n\
+    name of the new palette. \n\
+\n\
+See Also \n\
+--------- \n\
+setPalette, getPaletteList");
+PyObject* PythonItom::PyGetPalette(PyObject* pSelf, PyObject* pArgs)
+{
+    char* name = NULL;
+    PyObject *tuple = NULL;
+    PyObject *subtuple = NULL;
+
+    unsigned char overwriteIfExists = 1;
+
+    if (!PyArg_ParseTuple(pArgs, "s", &name)) //all borrowed
+    {
+        return NULL;
+    }
+
+    PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+
+    ito::PaletteOrganizer *paletteOrganizer = (PaletteOrganizer*)AppManagement::getPaletteOrganizer();
+
+    if(paletteOrganizer == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "pallette organizer not loaded");
+        return NULL;    
+    }
+
+    QSharedPointer<ito::ItomPaletteBase> sharedPalette(new ito::ItomPaletteBase);
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+
+    QMetaObject::invokeMethod(paletteOrganizer, "getColorBarThreaded", Q_ARG(QString,QString(name)), Q_ARG(QSharedPointer<ito::ItomPaletteBase>, sharedPalette), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+
+    if (!locker.getSemaphore()->wait(60000))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "timeout while getting palette");
+        return NULL;
+    }
+
+    if (!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue))
+    {
+        return NULL;
+    }
+
+    tuple = PyTuple_New(sharedPalette->getSize());
+
+    for(int elem = 0; elem < sharedPalette->getSize(); elem++)
+    {
+        subtuple = PyTuple_New(2);
+        PyObject* rgb = ito::PythonRgba::PyRgba_new(&ito::PythonRgba::PyRgbaType, NULL, NULL );
+        ((ito::PythonRgba::PyRgba*)rgb)->rgba.a = sharedPalette->getColor(elem).alpha();
+        ((ito::PythonRgba::PyRgba*)rgb)->rgba.r = sharedPalette->getColor(elem).red();
+        ((ito::PythonRgba::PyRgba*)rgb)->rgba.g = sharedPalette->getColor(elem).green();
+        ((ito::PythonRgba::PyRgba*)rgb)->rgba.b = sharedPalette->getColor(elem).blue();
+        PyTuple_SetItem(subtuple, 0, PyFloat_FromDouble(sharedPalette->getPos(elem)));
+        PyTuple_SetItem(subtuple, 1, rgb);
+        PyTuple_SetItem(tuple, elem, subtuple);
+    }
+
+    return tuple;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(getPaletteList_doc,"getPaletteList(typefilter) -> get a list of color bars / palettes.\n\
+\n\
+\n\
+Parameters \n\
+----------- \n\
+typefilter : {int} \n\
+    currently not implemented filter for palette types. \n\
+\n\
+See Also \n\
+--------- \n\
+setPalette, getPalette");
+PyObject* PythonItom::PyGetPaletteList(PyObject* pSelf, PyObject* pArgs)
+{
+    int typefilter = 0;
+    PyObject *tuple = NULL;
+
+    unsigned char overwriteIfExists = 1;
+
+    if (!PyArg_ParseTuple(pArgs, "i", &typefilter)) //all borrowed
+    {
+        return NULL;
+    }
+
+    PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+
+    ito::PaletteOrganizer *paletteOrganizer = (PaletteOrganizer*)AppManagement::getPaletteOrganizer();
+
+    if(paletteOrganizer == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "pallette organizer not loaded");
+        return NULL;    
+    }
+
+    QSharedPointer<QStringList> sharedPalettes(new QStringList);
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+
+    QMetaObject::invokeMethod(paletteOrganizer, "getColorBarListThreaded", Q_ARG(int,typefilter), Q_ARG(QSharedPointer<QStringList>, sharedPalettes), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+
+    if (!locker.getSemaphore()->wait(60000))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "timeout while getting palette names");
+        return NULL;
+    }
+
+    if (!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue))
+    {
+        return NULL;
+    }
+
+    tuple = PyTuple_New(sharedPalettes->size());
+
+    for(int elem = 0; elem < sharedPalettes->size(); elem++)
+    {
+        PyObject *item;
+        item = PythonQtConversion::QByteArrayToPyUnicodeSecure((*sharedPalettes)[elem].toLatin1());
+        PyTuple_SetItem(tuple, elem, item);
+    }
+
+    return tuple;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------------------
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                                              //
 //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //  //
@@ -4334,6 +4605,9 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"userGetInfo", (PyCFunction)PythonItom::userGetUserInfo, METH_NOARGS, pyGetUserInfo_doc},
     {"autoReloader", (PyCFunction)PythonItom::PyAutoReloader, METH_VARARGS | METH_KEYWORDS, autoReloader_doc},
     {"clc", (PyCFunction)PythonItom::PyClearCommandLine, METH_NOARGS, "clears the itom command line (if available)"},
+    {"getPalette", (PyCFunction)PythonItom::PyGetPalette, METH_VARARGS, getPalette_doc},
+    {"setPalette", (PyCFunction)PythonItom::PySetPalette, METH_VARARGS, setPalette_doc},
+    {"getPaletteList", (PyCFunction)PythonItom::PyGetPaletteList, METH_VARARGS, getPaletteList_doc},
     {NULL, NULL, 0, NULL}
 };
 

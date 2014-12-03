@@ -553,4 +553,95 @@ QList<QString> PaletteOrganizer::getColorBarList(const int type) const
     return outPut;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PaletteOrganizer::setColorBarThreaded(QString name, ito::ItomPaletteBase newPalette, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval = ito::retOk;
+
+    int idx = -1;
+
+    if(restrictedKeyWords.contains(name))
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("Palette %1 has a restricted access.").arg(name).toLatin1().data());
+    }
+    else if(m_colorBarLookUp.contains(name))
+    {
+        idx = m_colorBarLookUp[name];
+        if(m_colorBars[idx].getType() & ito::tPaletteReadOnly)
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("Palette %1 has a write protection.").arg(name).toLatin1().data());
+        }
+        else
+        {
+            m_colorBars[idx] = newPalette;
+        }
+    }
+    else
+    {
+        m_colorBars.append(newPalette);
+        m_colorBarLookUp.insert(name, m_colorBars.size() - 1);
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+    return retval;
+
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PaletteOrganizer::getColorBarThreaded(QString name, QSharedPointer<ito::ItomPaletteBase> palette, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval = ito::retOk;
+
+    bool found = false;
+
+    *palette = this->getColorBar(name, &found);
+
+    if(!found)
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("Palette %1 not found within palette list").arg(name).toLatin1().data());
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+    return retval;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PaletteOrganizer::getColorBarListThreaded(int types, QSharedPointer<QStringList> palettes, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval = ito::retOk;
+
+    bool found = false;
+
+    if(!palettes.isNull())
+    {
+        palettes->clear();
+        QList<QString> curList = this->getColorBarList(0);
+
+        for(int i = 0; i < curList.size(); i++)
+        {
+            palettes->append(curList[i]);
+        }
+        
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("Destination vector not initialized").toLatin1().data());
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+    return retval;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
 }//namespace ito

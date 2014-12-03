@@ -24,10 +24,11 @@
 #define PALETTEORGANIZER_H
 
 #include "../../common/sharedStructures.h"
+#include "../../common/sharedStructuresQt.h"
 #include "../../common/sharedStructuresGraphics.h"
 
 #include <qhash.h>
-
+#include <qsharedpointer.h>
 namespace ito
 {
 
@@ -146,6 +147,9 @@ class PaletteOrganizer : public QObject
         QList<QString> getColorBarList(const int type = ito::tPaletteNoType) const;
         int numberOfColorBars() const {return m_colorBars.length();};
 
+        ito::RetVal setColorBarThreaded(QString name, ito::ItomPaletteBase newPalette, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal getColorBarThreaded(QString name, QSharedPointer<ito::ItomPaletteBase> palette, ItomSharedSemaphore *waitCond = NULL);
+        ito::RetVal getColorBarListThreaded(int types, QSharedPointer<QStringList> palettes, ItomSharedSemaphore *waitCond = NULL);
     private slots:
 
     signals:
