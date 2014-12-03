@@ -1590,6 +1590,8 @@ namespace ito
         id = qRegisterMetaType<QVector<ito::ParamBase>*>("QVector<ito::ParamBase>*");
         id = qRegisterMetaType<QVector<int> >("QVector<int>");
         id = qRegisterMetaType<QVector<double> >("QVector<double>");
+        // used in plotItemsChanged do not remove
+        id = qRegisterMetaType<QVector<float> >("QVector<float>");
 
         id = qRegisterMetaType<QSharedPointer<double> >("QSharedPointer<double>");
         id = qRegisterMetaType<QSharedPointer<QVector<double> > >("QSharedPointer<QVector<double>>");

@@ -1983,7 +1983,7 @@ RetVal UiOrganizer::getSignalIndex(unsigned int objectID, const QString &signalS
         QList<QByteArray> names = metaMethod.parameterTypes();
         foreach (const QByteArray& name, names)
         {
-            tempType =QMetaType::type(name.constData());
+            tempType = QMetaType::type(name.constData());
             if (tempType > 0)
             {
                 argTypes->append(tempType);
