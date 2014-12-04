@@ -2887,6 +2887,13 @@ void PythonEngine::pythonGenericSlot(PyObject* callable, PyObject *argumentTuple
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+static int getoutofhere(void *unused) 
+{ 
+    PyErr_SetNone(PyExc_KeyboardInterrupt); 
+    return -1; 
+} 
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonInterruptExecution() const
 {
 //    PyGILState_STATE gstate;
@@ -2894,7 +2901,9 @@ void PythonEngine::pythonInterruptExecution() const
 
     /* Perform Python actions here. */
     //PyErr_SetString(PyExc_KeyboardInterrupt, "User Interrupt");
-    PyErr_SetInterrupt();
+    Py_AddPendingCall(getoutofhere, NULL); 
+    //PyErr_SetNone(PyExc_KeyboardInterrupt); 
+    //PyErr_SetInterrupt();
     /* evaluate result or handle exception */
 
     /* Release the thread. No Python API allowed beyond this point. */
