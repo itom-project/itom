@@ -97,6 +97,7 @@ public:
     static PyObject *PyPointCloud_insert(PyPointCloud *self, PyObject *args);
     static PyObject *PyPointCloud_erase(PyPointCloud *self, PyObject *args);
     static PyObject *PyPointCloud_toDataObject(PyPointCloud *self);
+    static PyObject *PyPointCloud_copy(PyPointCloud *self);
 
     //-------------------------------------------------------------------------------------------------
     // helper methods
