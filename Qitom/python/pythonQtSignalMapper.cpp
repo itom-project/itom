@@ -169,12 +169,10 @@ int PythonQtSignalMapper::qt_metacall(QMetaObject::Call c, int id, void **argume
         QObject::qt_metacall(c, id, arguments);
     }
 
-//    bool found = false;
     foreach(const PythonQtSignalTarget& t, m_targets)
     {
         if (t.slotId() == id)
         {
-//            found = true;
             t.call(arguments);
             break;
         }
@@ -219,6 +217,7 @@ void PythonQtSignalTarget::call(void ** arguments) const
 
     PyObject *argTuple = PyTuple_New(m_argTypeList.size());
     PyObject *temp = NULL;
+    bool argParsingError = false;
 
     //arguments[0] is return argument
 
@@ -229,62 +228,64 @@ void PythonQtSignalTarget::call(void ** arguments) const
         {
             PyTuple_SetItem(argTuple,i,temp); //steals reference
         }
-        else
+        else //error message is set in ConvertQtValueToPythonInternal
         {
-            PyErr_SetString(PyExc_RuntimeError, "Parameter could not be converted to QT-type");
             PyErr_Print();
             PyErr_Clear();
-            return;
+            argParsingError = true;
+            break;
         }
     }
 
-    //qDebug() << m_signalName.toLatin1().data() << endl;
-    if (m_boundedMethod == false)
+    if (!argParsingError)
     {
-        PyObject *func = PyWeakref_GetObject(m_function);
-        if (func != Py_None)
+        if (m_boundedMethod == false)
         {
-            if (debug)
+            PyObject *func = PyWeakref_GetObject(m_function);
+            if (func != Py_None)
             {
-                pyEngine->pythonDebugFunction(func, argTuple);
+                if (debug)
+                {
+                    pyEngine->pythonDebugFunction(func, argTuple);
+                }
+                else
+                {
+                    pyEngine->pythonRunFunction(func, argTuple);
+                }
             }
             else
             {
-                pyEngine->pythonRunFunction(func, argTuple);
+                PyErr_SetString(PyExc_RuntimeError, "The python slot method is not longer available");
+                PyErr_Print();
+                PyErr_Clear();
             }
         }
         else
         {
-            PyErr_SetString(PyExc_RuntimeError, "The python slot method is not longer available");
-            PyErr_Print();
-            PyErr_Clear();
-        }
-    }
-    else
-    {
-        PyObject *func = PyWeakref_GetObject(m_function);
-        PyObject *inst = PyWeakref_GetObject(m_boundedInstance);
+            PyObject *func = PyWeakref_GetObject(m_function);
+            PyObject *inst = PyWeakref_GetObject(m_boundedInstance);
 
-        if (func == Py_None || inst == Py_None)
-        {
-            PyErr_SetString(PyExc_RuntimeError, "The python slot method is not longer available");
-            PyErr_Print();
-            PyErr_Clear();
-        }
-        else
-        {
-            PyObject *method = PyMethod_New(func, inst); //new ref
-
-            if (debug)
+            if (func == Py_None || inst == Py_None)
             {
-                pyEngine->pythonDebugFunction(method, argTuple);
+                PyErr_SetString(PyExc_RuntimeError, "The python slot method is not longer available");
+                PyErr_Print();
+                PyErr_Clear();
             }
             else
             {
-                pyEngine->pythonRunFunction(method, argTuple);
-            }
+                PyObject *method = PyMethod_New(func, inst); //new ref
 
-            Py_XDECREF(method);
+                if (debug)
+                {
+                    pyEngine->pythonDebugFunction(method, argTuple);
+                }
+                else
+                {
+                    pyEngine->pythonRunFunction(method, argTuple);
+                }
+
+                Py_XDECREF(method);
+            }
         }
     }
 
