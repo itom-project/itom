@@ -229,6 +229,13 @@ void PythonQtSignalTarget::call(void ** arguments) const
         {
             PyTuple_SetItem(argTuple,i,temp); //steals reference
         }
+        else
+        {
+            PyErr_SetString(PyExc_RuntimeError, "Parameter could not be converted to QT-type");
+            PyErr_Print();
+            PyErr_Clear();
+            return;
+        }
     }
 
     //qDebug() << m_signalName.toLatin1().data() << endl;

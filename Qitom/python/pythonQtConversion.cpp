@@ -2678,6 +2678,16 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             }
             return temp;
         }
+        else if (strcmp(name, "QVector<float>") == 0)
+        {
+            QVector<float> *temp2 = (QVector<float>*)data;
+            PyObject *temp = PyTuple_New(temp2->size());
+            for (Py_ssize_t i = 0; i < temp2->size(); ++i)
+            {
+                PyTuple_SetItem(temp, i, PyFloat_FromDouble(temp2->at(i)));
+            }
+            return temp;
+        }
     }
     else
     {
