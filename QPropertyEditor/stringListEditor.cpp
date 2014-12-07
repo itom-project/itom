@@ -25,7 +25,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "StringListEditor.h"
+#include "stringListEditor.h"
 
 #include "stringListDialog.h"
 

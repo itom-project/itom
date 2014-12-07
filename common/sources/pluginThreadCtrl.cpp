@@ -200,7 +200,7 @@ ito::RetVal PluginThreadCtrl::getParam(ito::Param &val, int timeOutMS)
         return ito::RetVal(ito::retError, 0, "no camera available");
     }
 
-    ItomSharedSemaphoreLocker locker = new ItomSharedSemaphore();
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     QSharedPointer<ito::Param> qsParam(new ito::Param(val));
     if (!QMetaObject::invokeMethod(m_pPlugin, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {
@@ -233,7 +233,7 @@ ito::RetVal PluginThreadCtrl::setParam(ito::ParamBase val, int timeOutMS)
         return ito::RetVal(ito::retError, 0, "no camera available");
     }
 
-    ItomSharedSemaphoreLocker locker = new ItomSharedSemaphore();
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     QSharedPointer<ito::ParamBase> qsParam(new ito::ParamBase(val));
     if (!QMetaObject::invokeMethod(m_pPlugin, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {
@@ -291,7 +291,7 @@ ito::RetVal DataIOThreadCtrl::startDevice(int timeOutMS)
         return ito::RetVal(ito::retError, 0, "no camera available");
     }
 
-    ItomSharedSemaphoreLocker locker = new ItomSharedSemaphore();
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     if (!QMetaObject::invokeMethod(m_pPlugin, "startDevice", Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking startDevice");
@@ -316,7 +316,7 @@ ito::RetVal DataIOThreadCtrl::stopDevice(int timeOutMS)
         return ito::RetVal(ito::retError, 0, "no camera available");
     }
 
-    ItomSharedSemaphoreLocker locker = new ItomSharedSemaphore();
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     if (!QMetaObject::invokeMethod(m_pPlugin, "stopDevice", Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking stopDevice");
@@ -343,7 +343,7 @@ ito::RetVal DataIOThreadCtrl::acquire(const int trigger /*= 0*/, int timeOutMS)
         return ito::RetVal(ito::retError, 0, "no camera available");
     }
 
-    ItomSharedSemaphoreLocker locker = new ItomSharedSemaphore();
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     if (!QMetaObject::invokeMethod(m_pPlugin, "acquire", Q_ARG(int, trigger), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking acquire");
@@ -371,7 +371,7 @@ ito::RetVal DataIOThreadCtrl::getVal(ito::DataObject &dObj, int timeOutMS)   /*!
         return ito::RetVal(ito::retError, 0, "no camera available");
     }
 
-    ItomSharedSemaphoreLocker locker = new ItomSharedSemaphore();
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     if (!QMetaObject::invokeMethod(m_pPlugin, "getVal", Q_ARG(void*, (void *)&dObj), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking getVal");
@@ -399,7 +399,7 @@ ito::RetVal DataIOThreadCtrl::copyVal(ito::DataObject &dObj, int timeOutMS)  /*!
         return ito::RetVal(ito::retError, 0, "no camera available");
     }
 
-    ItomSharedSemaphoreLocker locker = new ItomSharedSemaphore();
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     if (!QMetaObject::invokeMethod(m_pPlugin, "copyVal", Q_ARG(void*, (void *)&dObj), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking copyVal");
@@ -430,7 +430,7 @@ ito::RetVal DataIOThreadCtrl::getImageParams(int &bpp, int &sizex, int &sizey, i
     }
 
     
-    ItomSharedSemaphoreLocker locker = new ItomSharedSemaphore();
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     QSharedPointer<ito::Param> param1(new ito::Param("bpp", ito::ParamBase::Int));
     QSharedPointer<ito::Param> param2(new ito::Param("sizex", ito::ParamBase::Int));
     QSharedPointer<ito::Param> param3(new ito::Param("sizey", ito::ParamBase::Int));
@@ -516,7 +516,7 @@ ito::RetVal ActuatorThreadCtrl::setPosRel(const QVector<int> &axes, const QVecto
         return ito::RetVal(ito::retError, 0, QObject::tr("Error during setPosRel: Vectors differ in size").toLatin1().data());
     }
 
-    ItomSharedSemaphoreLocker locker = new ItomSharedSemaphore();
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     if(!QMetaObject::invokeMethod(m_pPlugin, "setPosRel", Q_ARG(QVector<int>, axes), Q_ARG(QVector<double>, relPositions), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking setPosRel");
@@ -552,7 +552,7 @@ ito::RetVal ActuatorThreadCtrl::setPosAbs(const QVector<int> &axes, const QVecto
         return ito::RetVal(ito::retError, 0, QObject::tr("Error during setPosAbs: Vectors differ in size").toLatin1().data());
     }
 
-    ItomSharedSemaphoreLocker locker = new ItomSharedSemaphore();
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
     if(!QMetaObject::invokeMethod(m_pPlugin, "setPosAbs", Q_ARG(QVector<int>, axes), Q_ARG(QVector<double>, absPositions), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {
@@ -583,7 +583,7 @@ ito::RetVal ActuatorThreadCtrl::setPosRel(int axis, double relPosition, int time
         return ito::RetVal(ito::retError, 0, "no actuator available");
     }
 
-    ItomSharedSemaphoreLocker locker = new ItomSharedSemaphore();
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
     if (!QMetaObject::invokeMethod(m_pPlugin, "setPosRel", Q_ARG(int, axis), Q_ARG(double, relPosition), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {
@@ -614,7 +614,7 @@ ito::RetVal ActuatorThreadCtrl::setPosAbs(int axis, double absPosition, int time
         return ito::RetVal(ito::retError, 0, "no actuator available");
     }
 
-    ItomSharedSemaphoreLocker locker = new ItomSharedSemaphore();
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     if (!QMetaObject::invokeMethod(m_pPlugin, "setPosAbs", Q_ARG(int, axis), Q_ARG(double, absPosition), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking setPosAbs");
@@ -644,7 +644,7 @@ ito::RetVal ActuatorThreadCtrl::getPos(int axis, double &position, int timeOutMS
     QSharedPointer<double> posSP(new double);
     *posSP = 0.0;
 
-    ItomSharedSemaphoreLocker locker = new ItomSharedSemaphore();
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
     if (!QMetaObject::invokeMethod(m_pPlugin, "getPos", Q_ARG(int, (const int) axis), Q_ARG(QSharedPointer<double>, posSP), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {
@@ -682,7 +682,7 @@ ito::RetVal ActuatorThreadCtrl::getPos(QVector<int> axes, QVector<double> &posit
     QSharedPointer<QVector<double> > posVecSP(new QVector<double>());
     posVecSP->fill(0.0, axes.size());
 
-    ItomSharedSemaphoreLocker locker = new ItomSharedSemaphore();
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
     if (!QMetaObject::invokeMethod(m_pPlugin, "getPos", Q_ARG(QVector<int>, axes), Q_ARG(QSharedPointer<QVector<double> >, posVecSP), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
     {
