@@ -231,7 +231,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<ito::PythonQObjectMarshal>("ito::PythonQObjectMarshal");
     qRegisterMetaType<Qt::CursorShape>("Qt::CursorShape");
     qRegisterMetaType<ito::ItomPaletteBase>("ito::ItomPaletteBase");
-    qRegisterMetaType<QSharedPointer<ito::ItomPaletteBase>>("QSharedPointer<ito::ItomPaletteBase>");
+    qRegisterMetaType<QSharedPointer<ito::ItomPaletteBase> >("QSharedPointer<ito::ItomPaletteBase>");
 
     m_autoReload.modAutoReload = NULL;
     m_autoReload.classAutoReload = NULL;
