@@ -848,13 +848,31 @@ void ScriptDockWidget::currentTabChanged(int index)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! slot connected to each ScriptEditorWidget instance. Invoked if any content in any script changed.
 /*!
-    calls slot currentTabChanged with active tab index as parameter.
+    calls slot currentTabChanged with tab index of scriptEditorWidget that sent the signal or
+    the active tab index if no sender is available.
 
     \sa currentTabChanged
 */
 void ScriptDockWidget::scriptModificationChanged(bool /*changed*/)
 {
-    currentTabChanged(m_actTabIndex);
+    //in case of save-all or other commands that change other scripts than the active on, this slot
+    //needs to know the sender of the signal:
+    const QObject *senderObject = sender();
+
+    if (senderObject)
+    {
+        for (int i = 0; i < m_tab->count(); ++i)
+        {
+            if (qobject_cast<QObject*>(getEditorByIndex(i)) == senderObject)
+            {
+                currentTabChanged(i);
+            }
+        }
+    }
+    else
+    {    
+        currentTabChanged(m_actTabIndex);
+    }
     updateEditorActions();
 }
 
