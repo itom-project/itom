@@ -1689,9 +1689,9 @@ void ScriptDockWidget::mnuSaveAllScripts()
 {
     ScriptEditorWidget *sew;
     RetVal retValue(retOk);
-    for (int i = 0; i < m_tab->count() && !retValue.containsError(); i++)
+    for (int i = 0; i < m_tab->count() && !retValue.containsError(); ++i)
     {
-        sew = getEditorByIndex(m_actTabIndex);
+        sew = getEditorByIndex(i);
         if (sew != NULL)
         {
             retValue += sew->saveFile(false);
