@@ -1165,7 +1165,7 @@ ito::RetVal MainWindow::addToolbarButton(const QString &toolbarName, const QStri
     m_userDefinedSignalMapper->setMapping(action, pythonCode);
     toolbar->addAction(action);
 
-    *buttonHandle = (size_t)m_userDefinedActionCounter;
+    *buttonHandle = m_userDefinedActionCounter;
 
     if (waitCond)
     {
@@ -1331,7 +1331,7 @@ ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QSt
             parent_menu->menuAction()->setData(current_key);
             parent_menu->menuAction()->setIconText(current_key);
             parent_menu->menuAction()->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
-            *menuHandle = (size_t)m_userDefinedActionCounter;
+            *menuHandle = m_userDefinedActionCounter;
             m_userDefinedRootMenus[current_key] = parent_menu;
         }
 
@@ -1363,7 +1363,7 @@ ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QSt
                     parent_menu->menuAction()->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
                     parent_menu->menuAction()->setIconText(current_key);
                     parent_menu->menuAction()->setData(current_key);
-                    *menuHandle = (size_t)m_userDefinedActionCounter;
+                    *menuHandle = m_userDefinedActionCounter;
                 }
             }
             else
@@ -1377,7 +1377,7 @@ ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QSt
                     act->setData(current_key);
                     connect(act, SIGNAL(triggered()), m_userDefinedSignalMapper, SLOT(map()));
                     m_userDefinedSignalMapper->setMapping(act, code);
-                    *menuHandle = (size_t)m_userDefinedActionCounter;
+                    *menuHandle = m_userDefinedActionCounter;
                 }
                 else if (typeID == 2 /*MENU*/)
                 {
@@ -1385,7 +1385,7 @@ ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QSt
                     parent_menu->menuAction()->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
                     parent_menu->menuAction()->setIconText(name);
                     parent_menu->menuAction()->setData(current_key);
-                    *menuHandle = (size_t)m_userDefinedActionCounter;
+                    *menuHandle = m_userDefinedActionCounter;
                 }
                 else // if (typeID == 1) //SEPARATOR
                 {
@@ -1393,7 +1393,7 @@ ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QSt
                     act->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
                     act->setIconText(name);
                     act->setData(current_key);
-                    *menuHandle = (size_t)m_userDefinedActionCounter;
+                    *menuHandle = m_userDefinedActionCounter;
                 } 
             }
         }

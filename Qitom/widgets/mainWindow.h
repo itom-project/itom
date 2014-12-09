@@ -102,7 +102,7 @@ private:
     QMap<QString, QToolBar*> m_userDefinedToolBars;
     QMap<QString, QMenu* > m_userDefinedRootMenus;
     QSignalMapper *m_userDefinedSignalMapper;
-    size_t m_userDefinedActionCounter;
+    unsigned int m_userDefinedActionCounter;
 
     QAction *m_appFileNew;
     QAction *m_appFileOpen;
