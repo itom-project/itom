@@ -1338,35 +1338,60 @@ namespace ito
     {
         ItomSharedSemaphoreLocker locker(aimWait);
         ito::RetVal retval = ito::retOk;
-        ito::AddInManager *aim = NULL;
         ItomSharedSemaphore *waitCond = NULL;
+        bool timeout = false;
 
         ito::AddInInterfaceBase *aib = (*addIn)->getBasePlugin();
 
         if (aib->getRef(*addIn) <= 0) //this instance holds the last reference of the plugin. close it now.
         {
-            waitCond = new ItomSharedSemaphore();
-            QMetaObject::invokeMethod(*addIn, "close", Q_ARG(ItomSharedSemaphore*, waitCond));
-            waitCond->wait(AppManagement::timeouts.pluginInitClose); //TODO: what if the close gets into a timeout, then it is dangerous to delete the plugin later!!!
-            retval += waitCond->returnValue;
-            waitCond->deleteSemaphore();
-            waitCond = NULL;
-
-            QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents | QEventLoop::ExcludeSocketNotifiers);
-
-            if (aib->getAutoSavePolicy() == ito::autoSaveAlways)
+            //we always promised that if the init-method is called in the main thread, the close method is called in the main thread, too.
+            //Therefore pull it to the main thread, if necessary.
+            if (!aib->getCallInitInNewThread())
             {
-                retval += saveParamVals(*addIn);
+                (*addIn)->moveToThread(QThread::currentThread());
             }
 
-            m_plugInModel.deleteInstance((*addIn)->getBasePlugin(), (*addIn), true); //begin remove
+            waitCond = new ItomSharedSemaphore();
+            QMetaObject::invokeMethod(*addIn, "close", Q_ARG(ItomSharedSemaphore*, waitCond));
 
-            retval += decRefParamPlugins(*addIn);
-            retval += aib->closeInst(addIn);
-            aim = ito::AddInManager::getInstance();
+            while (waitCond->wait(AppManagement::timeouts.pluginInitClose) == false && !timeout)
+            {
+                if ((*addIn)->isAlive() == 0)
+                {
+                    timeout = true;
+                    retval += ito::RetVal(ito::retError, 0, "timeout while closing plugin");
+                }
+            }
 
-            m_plugInModel.deleteInstance((*addIn)->getBasePlugin(), (*addIn), false); //end remove
-            //aim->m_pAddInManager->updateModel();
+            if (!timeout)
+            {
+                retval += waitCond->returnValue;
+
+                if (aib->getCallInitInNewThread())
+                {
+                    (*addIn)->moveToThread(QThread::currentThread());
+                }
+            
+                if (aib->getAutoSavePolicy() == ito::autoSaveAlways)
+                {
+                    retval += saveParamVals(*addIn);
+                }
+
+                m_plugInModel.deleteInstance((*addIn)->getBasePlugin(), (*addIn), true); //begin remove
+
+                retval += decRefParamPlugins(*addIn);
+                retval += aib->closeInst(addIn);
+
+                m_plugInModel.deleteInstance((*addIn)->getBasePlugin(), (*addIn), false); //end remove
+            }
+            else
+            {
+                qDebug() << "Plugin could not be safely removed. Unknown state for plugin.";
+                //TODO: what happens in the case that the close method does not return???
+                //until now, we can not put it to the dead-plugin stack since this stack only handles plugins
+                //that could not be initialized.
+            }
 
         }
         else
