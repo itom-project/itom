@@ -36,7 +36,7 @@ public slots:
     void showTreeview();
     void unshowTreeview();
     void propertiesChanged();
-    void showPluginInfo(QString name, int type, const QModelIndex modelIndex, bool fromLink);
+    void showPluginInfo(const QString &name, int type, const QModelIndex &modelIndex, bool fromLink);
     ito::RetVal showFilterWidgetPluginHelp(const QString &filtername, itemType type);
 
 private slots:
@@ -69,9 +69,9 @@ private:
     };
 
     static void createFilterWidgetNode(int fOrW, QStandardItemModel* model, const QMap<int,QIcon> *iconGallery);
-    static void createItemRek(QStandardItemModel* model, QStandardItem& parent, const QString parentPath, QList<SqlItem> &items, const QMap<int,QIcon> *iconGallery);
+    static void createItemRek(QStandardItem& parent, const QString &parentPath, QList<SqlItem> &items, const QMap<int,QIcon> *iconGallery);
     static ito::RetVal loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel, const QMap<int,QIcon> *iconGallery, const DisplayBool &show);
-    static ito::RetVal readSQL(const QString &filter, const QString &file, QList<SqlItem> &items);
+    static ito::RetVal readSQL(const QString &file, QList<SqlItem> &items);
 
     void CreateItem(QStandardItemModel& model, QStringList &items);
     void saveIni();
@@ -79,7 +79,7 @@ private:
     ito::RetVal displayHelp(const QString &path);
     QStringList separateLink(const QUrl &link);
     ito::RetVal highlightContent(const QString &prefix , const QString &name , const QString &param , const QString &shortDesc, const QString &helpText, const QString &error, QTextDocument *document);
-    QModelIndex findIndexByPath(const int type, QStringList path, QStandardItem* current);
+    QModelIndex findIndexByPath(const int type, QStringList path, const QStandardItem* current);
 
     QString parseFilterWidgetContent(const QString &input);
     ito::RetVal parseParamVector(const QString &sectionname, const QVector<ito::Param> &paramVector, QString &content);

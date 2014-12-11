@@ -330,7 +330,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
     // needed for breadcrumb and for list of children in algorithms
     QString linkNav;
 
-    if (type != 6)
+    if (type != typeCategory)
     {
         // Standard html-Template laden
         // -------------------------------------
@@ -1356,14 +1356,13 @@ void HelpTreeDockWidget::propertiesChanged()
 //! Creates the model (tree) from the given data. 
 /*! The function is recursiv. It always calles itself with the rest of the list that is not in the tree yet.
 
-    \param model main model of the Widget
     \param parent parent that might have children. This function is going to find them and add them from the list.
     \param parentPath absolute path of the parent
     \param items list of all sql items that are not processed yet
     \param iconGallery Gallery with icons for classes, modules etc.
     
 */
-/*static*/ void HelpTreeDockWidget::createItemRek(QStandardItemModel* model, QStandardItem& parent, const QString parentPath, QList<SqlItem> &items, const QMap<int,QIcon> *iconGallery)
+/*static*/ void HelpTreeDockWidget::createItemRek(QStandardItem& parent, const QString &parentPath, QList<SqlItem> &items, const QMap<int,QIcon> *iconGallery)
 {
     SqlItem firstItem;
     int m_urPath = Qt::UserRole + 1;
@@ -1385,13 +1384,13 @@ void HelpTreeDockWidget::propertiesChanged()
             }
             else
             { // Kein Link Normales Bild
-                node->setIcon((*iconGallery)[firstItem.type]); //Don't load icons here from file since operations on QPixmap are not allowed in another thread
+                node->setIcon(iconGallery->value(firstItem.type)); //Don't load icons here from file since operations on QPixmap are not allowed in another thread
             }
             node->setEditable(false);
             node->setData(firstItem.path, m_urPath);
             node->setData(1, m_urType);
             node->setToolTip(firstItem.path);
-            createItemRek(model, *node, firstItem.path, items, iconGallery);
+            createItemRek(*node, firstItem.path, items, iconGallery);
             parent.appendRow(node);
         }
         else if (firstItem.prefix.indexOf(parentPath) == 0) //parentPath is the first part of path
@@ -1410,7 +1409,7 @@ void HelpTreeDockWidget::propertiesChanged()
             node->setEditable(false);
             node->setData(firstItem.prefix, m_urPath); 
             node->setData(1, m_urType); //typ 1 = docstring wird aus sql gelesen
-            createItemRek(model, *node, firstItem.prefix, items, iconGallery);  
+            createItemRek(*node, firstItem.prefix, items, iconGallery);  
             parent.appendRow(node);
         }
         else
@@ -1425,14 +1424,13 @@ void HelpTreeDockWidget::propertiesChanged()
 /*! This function openes a sql database that contains all the static help informations. All these informations are written into a list.
     createItemRek creates the model from this list.
 
-    \param filter not used anymore
     \param file the path of the sql database
     \param items this parameter is  filled with a list of SqlItems (struct from the header file)
     \return ito::RetVal
 
     \sa createItemRek
 */
-/*static*/ ito::RetVal HelpTreeDockWidget::readSQL(/*QList<QSqlDatabase> &DBList,*/ const QString &filter, const QString &file, QList<SqlItem> &items)
+/*static*/ ito::RetVal HelpTreeDockWidget::readSQL(const QString &file, QList<SqlItem> &items)
 {
     ito::RetVal retval = ito::retOk;
     QFile f(file);
@@ -1579,11 +1577,11 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
             sqlList.clear();
             QString temp;
             temp = path+'/'+includedDBs.at(i);
-            retval = readSQL(/*DBList,*/ "", temp, sqlList);
+            retval = readSQL(temp, sqlList);
             QCoreApplication::processEvents();
             if (!retval.containsWarningOrError())
             {
-                createItemRek(mainModel, *(mainModel->invisibleRootItem()), "", sqlList, iconGallery);
+                createItemRek(*(mainModel->invisibleRootItem()), "", sqlList, iconGallery);
             }
             else
             {/* The Database named: m_pIncludedDBs[i] is not available anymore!!! show Error*/}
@@ -1849,7 +1847,7 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
     \param modelIndex that was clicked. If it´s empty, it´s a call from a link or from extern
     \param fromLink if true, a link called that slot
 */
-void HelpTreeDockWidget::showPluginInfo(QString name, int type, const QModelIndex modelIndex, bool fromLink)
+void HelpTreeDockWidget::showPluginInfo(const QString &name, int type, const QModelIndex &modelIndex, bool fromLink)
 {
     // Check if it´s a click by the back or forward button
     if (modelIndex.isValid())
@@ -1936,7 +1934,7 @@ void HelpTreeDockWidget::showPluginInfo(QString name, int type, const QModelInde
     \param current item whose children are searched
     \return QModelIndex
 */
-QModelIndex HelpTreeDockWidget::findIndexByPath(const int type, QStringList path, QStandardItem* current)
+QModelIndex HelpTreeDockWidget::findIndexByPath(const int type, QStringList path, const QStandardItem* current)
 {
     QStandardItem *temp;
     int counts;
