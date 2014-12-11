@@ -2072,10 +2072,7 @@ void HelpTreeDockWidget::on_splitter_splitterMoved (int pos, int index)
     {
         m_percWidthUn = pos / width * 100;
     }
-    if (m_percWidthVi < m_percWidthUn)
-    {
-        m_percWidthVi = m_percWidthUn + 10;
-    }
+
     if (m_percWidthVi == 0)
     {
         m_percWidthVi = 30;
