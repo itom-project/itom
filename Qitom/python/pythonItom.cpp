@@ -1129,6 +1129,7 @@ Parameters \n\
 ----------- \n\
 plotName : {str} \n\
     is the fullname of a plot as specified in the properties window (case insensitive).\n\
+    if * or empty string is given, a list of availble widgets is returned.\n\
 dictionary : {bool}, optional \n\
     if `dictionary == True`, function returns a dict with plot slots and properties and does not print anything to the console (default: False)\n\
 \n\
@@ -1176,6 +1177,28 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
     {
         PyErr_SetString(PyExc_RuntimeError, "no ui-manager found");
         Py_RETURN_NONE;
+    }
+    else if(plotName == NULL || strlen(plotName) == 0 || (strlen(plotName) == 1 && plotName[0] == '*'))
+    {
+        bool found = false;
+        QList<ito::FigurePlugin> plugins = dwo->getPossibleFigureClasses(0, 0, 0);
+
+        FigurePlugin fig;
+        result = PyDict_New();
+        int i = 0;
+        foreach (fig, plugins)
+        {
+            if (retDict)
+            {
+                item = PythonQtConversion::QStringToPyObject(fig.classname); //new ref
+                PyDict_SetItemString(result, QString::number(i).toLatin1().data(), item);
+                Py_DECREF(item);
+            }
+            else
+            {
+                std::cout << "#" << i++ <<"\t" << fig.classname.toLatin1().data() << "\n";
+            }
+        }        
     }
     else
     {
@@ -1515,195 +1538,18 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
         
         }
     }
-/*
-    PyObject *noneText = PyUnicode_FromString("None");
 
-    switch(plugtype)
+    if(result)
     {
-        default:
-        break;
-        case ito::typeDataIO:
-        case ito::typeActuator:
-            retval = AIM->getInitParams(pluginName, plugtype, &pluginNum, paramsMand, paramsOpt);
-            if (retval.containsWarningOrError())
-            {
-                Py_DECREF(result);
-
-                PythonCommon::setReturnValueMessage(retval, pluginName, PythonCommon::loadPlugin);
-                return NULL;
-            }
-
-            if (retDict == 0)
-            {
-                std::cout << "\nINITIALISATION PARAMETERS:\n";
-            }
-
-            if (paramsMand)
-            {
-                if ((*paramsMand).size())
-                {
-                    if (retDict)
-                    {
-                        resultmand = PrntOutParams(paramsMand, false, true, -1, false);
-                        PyDict_SetItemString(result, "Mandatory Parameters", resultmand);
-                        Py_DECREF(resultmand);
-                    }
-                    else
-                    {
-                        std::cout << "\n Mandatory parameters:\n";
-                        resultmand = PrntOutParams(paramsMand, false, true, -1);
-                        Py_DECREF(resultmand);
-                    }
-                  
-                }
-                else if (!retDict)
-                {
-                    std::cout << "  Initialisation function has no mandatory parameters \n";
-                }
-            }
-            else if (!retDict)
-            {
-                   std::cout << "  Initialisation function has no mandatory parameters \n";
-            }
-
-            if (paramsOpt)
-            {
-                if ((*paramsOpt).size())
-                {
-                    if (retDict)
-                    {
-                        resultopt = PrntOutParams(paramsOpt, false, true, -1, false);
-                        PyDict_SetItemString(result, "Optional Parameters", resultopt);
-                        Py_DECREF(resultopt);
-                    }
-                    else
-                    {
-                        std::cout << "\n Optional parameters:\n";
-                        resultopt = PrntOutParams(paramsOpt, false, true, -1);
-                        Py_DECREF(resultopt);
-                    }                    
-                }
-                else if (!retDict)
-                {
-                    std::cout << "  Initialisation function has no optional parameters \n";
-                }
-            }
-            else if (!retDict)
-            {
-                    std::cout << "  Initialisation function has no optional parameters \n";
-            }
-
-            if (!retDict)
-            {
-                std::cout << "\n";
-                std::cout << "\nFor more information use the member functions 'getParamListInfo()' and 'getExecFuncInfo()'\n\n";
-            }
-            break;
-
-        case ito::typeAlgo:
+        if (retDict > 0)
         {
-            
-            if (pluginNum >= 0 && pluginNum < AIM->getAlgList()->size())
-            {
-                pluginNum += AIM->getActList()->size();
-
-                ito::AddInAlgo *algoInst = (ito::AddInAlgo *)((ito::AddInInterfaceBase *)AIM->getAddInPtr(pluginNum))->getInstList()[0];
-
-                QHash<QString, ito::AddInAlgo::FilterDef *> funcList;
-                algoInst->getFilterList(funcList);
-
-                if (funcList.size() > 0)
-                {
-                    if (!retDict)
-                    {
-                        std::cout << "\nThis is the container for following filters:\n";
-                    }
-                    QStringList keyList = funcList.keys();
-                    keyList.sort();
-
-                    if (retDict)
-                    {
-                        PyObject *algorithmlist = PyDict_New();
-                        for (int algos = 0; algos < keyList.size(); algos++)
-                        {
-                            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(keyList.value(algos).toLatin1());
-                            PyDict_SetItemString(algorithmlist, keyList.value(algos).toLatin1().data(), item);
-                            Py_DECREF(item);
-                        }
-                        PyDict_SetItemString(result, "filter", algorithmlist);
-                        Py_DECREF(algorithmlist);
-                    }
-                    else
-                    {
-                        for (int algos = 0; algos < keyList.size(); algos++)
-                        {
-                            std::cout << "> " << algos << "  " << keyList.value(algos).toLatin1().data() << "\n";
-                        }
-
-                        std::cout << "\nFor more information use 'filterHelp(\"filterName\")'\n\n";
-                    }
-                }
-                else if (retDict)
-                {
-                    Py_INCREF(Py_None);
-                    PyDict_SetItemString(result, "filter", Py_None);
-                }
-
-                QHash<QString, ito::AddInAlgo::AlgoWidgetDef *> widgetList;
-                algoInst->getAlgoWidgetList(widgetList);
-
-                if (widgetList.size() > 0)
-                {
-                    if (!retDict)
-                    {
-                        std::cout << "\nThis is the container for following widgets:\n";
-                    }
-
-                    QStringList keyList = widgetList.keys();
-                    keyList.sort();
-
-                    if (retDict)
-                    {
-                        PyObject *widgetlist = PyDict_New();
-                        for (int widgets = 0; widgets < keyList.size(); widgets++)
-                        {
-                            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(keyList.value(widgets).toLatin1());
-                            PyDict_SetItemString(widgetlist, keyList.value(widgets).toLatin1().data(), item);
-                            Py_DECREF(item);
-                        }
-                        PyDict_SetItemString(result, "widgets", widgetlist);
-                        Py_DECREF(widgetlist);
-                    }
-                    else
-                    {
-                        for (int widgets = 0; widgets < keyList.size(); widgets++)
-                        {
-                            std::cout << "> " << widgets << "  " << keyList.value(widgets).toLatin1().data() << "\n";
-                        }
-                        std::cout << "\nFor more information use 'widgetHelp(\"widgetName\")'\n";
-                    }
-                }
-                else
-                {
-                    Py_INCREF(Py_None);
-                    PyDict_SetItemString(result, "widgets", Py_None);
-                }
-
-            }
+            return result;
         }
-        break;
-    }
-
-    Py_DECREF(noneText);
-*/
-    if (retDict > 0)
-    {
-        return result;
-    }
-    else
-    {
-        Py_DECREF(result);
-        Py_RETURN_NONE;
+        else
+        {
+            Py_DECREF(result);
+            Py_RETURN_NONE;
+        }
     }
 
     Py_RETURN_NONE;
