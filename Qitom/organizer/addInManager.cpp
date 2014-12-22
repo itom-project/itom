@@ -1459,7 +1459,7 @@ namespace ito
         ito::RetVal ret = ito::retOk;
         QFile paramFile;
         QString pluginUniqueId = plugin->getIdentifier();
-        if(pluginUniqueId == "")
+        if (pluginUniqueId == "")
         {
             pluginUniqueId = QString::number(plugin->getID());
         }
@@ -1514,7 +1514,7 @@ namespace ito
         ito::RetVal ret = ito::retOk;
         QFile paramFile;
         QString pluginUniqueId = plugin->getIdentifier();
-        if(pluginUniqueId == "")
+        if (pluginUniqueId == "")
         {
             pluginUniqueId = QString::number(plugin->getID());
         }
