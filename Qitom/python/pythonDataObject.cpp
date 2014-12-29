@@ -34,6 +34,8 @@
 #include "pythonQtConversion.h"
 #include "dataObjectFuncs.h"
 
+#define PROTOCOL_STR_LENGTH 128
+
 namespace ito
 {
 
@@ -2757,8 +2759,8 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
 
     if(doneScalar)
     {
-        char buf[50] = {0};
-        sprintf_s(buf, 50, "Added %g scalar to dataObject.", scalar);
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Added %g scalar to dataObject.", scalar);
         if(retObj) retObj->dataObject->addToProtocol(buf);
         
     }
@@ -2851,8 +2853,8 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
 
     if(doneScalar)
     {
-        char buf[60] = {0};
-        sprintf_s(buf, 60, "Substracting %g scalar from dataObject or vice versa.", scalar);
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Substracting %g scalar from dataObject or vice versa.", scalar);
 
         if(retObj) retObj->dataObject->addToProtocol(buf);
         
@@ -2929,10 +2931,10 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
 
         dobj1->dataObject->unlock();
 
-        char buf[60] = {0};
-        sprintf_s(buf, 60, "Multiplied  dataObject scalar with %g.", factor);
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Multiplied dataObject scalar with %g.", factor);
 
-        if(retObj) retObj->dataObject->addToProtocol(buf);
+        if(retObj) retObj->dataObject->addToProtocol(  buf);
 
         return (PyObject*)retObj;
     }
@@ -2964,8 +2966,8 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
 
         dobj2->dataObject->unlock();
 
-        char buf[60] = {0};
-        sprintf_s(buf, 60, "Multiplied  dataObject scalar with %g.", factor);
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Multiplied dataObject scalar with %g.", factor);
 
         if(retObj) retObj->dataObject->addToProtocol(buf);
 
@@ -3027,9 +3029,8 @@ PyObject* PythonDataObject::PyDataObj_nbDivide(PyObject* o1, PyObject* o2)
 
         dobj1->dataObject->unlock();
 
-        char buf[60] = {0};
-
-        sprintf_s(buf, 60, "Multiplied dataObject scalar with 1/%g.", factor);
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Multiplied dataObject scalar with 1/%g.", factor);
 
         if(retObj) retObj->dataObject->addToProtocol(buf);
 
@@ -3243,8 +3244,8 @@ PyObject* PythonDataObject::PyDataObj_nbLshift(PyObject* o1, PyObject* o2)
 
     dobj1->dataObject->unlock();
     
-    char buf[50] = {0};
-    sprintf_s(buf, 50, "Left shift by %i on dataObject.", shift);
+    char buf[PROTOCOL_STR_LENGTH] = {0};
+    sprintf_s(buf, PROTOCOL_STR_LENGTH, "Left shift by %i on dataObject.", shift);
 
     retObj->dataObject->addToProtocol(buf);
     return (PyObject*)retObj;
@@ -3290,9 +3291,8 @@ PyObject* PythonDataObject::PyDataObj_nbRshift(PyObject* o1, PyObject* o2)
 
     dobj1->dataObject->unlock();
 
-    char buf[50] = {0};
-
-    sprintf_s(buf, 50, "Right shift by %i on dataObject.", shift);
+    char buf[PROTOCOL_STR_LENGTH] = {0};
+    sprintf_s(buf, PROTOCOL_STR_LENGTH, "Right shift by %i on dataObject.", shift);
 
     retObj->dataObject->addToProtocol(buf);
     return (PyObject*)retObj;
@@ -3455,8 +3455,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2)
 
         dobj1->dataObject->unlock();
 
-        char buf[60] = {0};
-        sprintf_s(buf, 60, "Inplace scalar addition of %g.", val);
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar addition of %g.", val);
 
         dobj1->dataObject->addToProtocol(buf);
         
@@ -3523,8 +3523,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
 
         dobj1->dataObject->unlock();
 
-        char buf[60] = {0};
-        sprintf_s(buf, 60, "Inplace scalar substraction of %g.", val);
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar substraction of %g.", val);
 
         dobj1->dataObject->addToProtocol(buf);
     }
@@ -3599,8 +3599,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* 
 
         dobj1->dataObject->unlock();
 
-        char buf[60] = {0};
-        sprintf_s(buf, 60, "Inplace scalar multiplication of %g.", factor);
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar multiplication of %g.", factor);
 
         dobj1->dataObject->addToProtocol(buf);
     }
@@ -3653,8 +3653,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceTrueDivide(PyObject* o1, PyObject
 
         dobj1->dataObject->unlock();
 
-        char buf[60] = {0};
-        sprintf_s(buf, 60, "Inplace scalar devision of %g.", factor);
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar devision of %g.", factor);
 
         dobj1->dataObject->addToProtocol(buf);
     }
@@ -3702,9 +3702,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceLshift(PyObject* o1, PyObject* o2
     *(dobj1->dataObject) <<= static_cast<unsigned int>(shift);
     dobj1->dataObject->unlock();
 
-    char buf[60] = {0};
-
-    sprintf_s(buf, 60, "Inplace left shift by %i.", shift);
+    char buf[PROTOCOL_STR_LENGTH] = {0};
+    sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace left shift by %i.", shift);
 
     dobj1->dataObject->addToProtocol(buf);
 
@@ -3735,8 +3734,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceRshift(PyObject* o1, PyObject* o2
     *(dobj1->dataObject) >>= static_cast<unsigned int>(shift);
     dobj1->dataObject->unlock();
 
-    char buf[60] = {0};
-    sprintf_s(buf, 60, "Inplace right shift by %i.", shift);
+    char buf[PROTOCOL_STR_LENGTH] = {0};
+    sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace right shift by %i.", shift);
 
     dobj1->dataObject->addToProtocol(buf);
 
@@ -4517,9 +4516,8 @@ PyObject* PythonDataObject::PyDataObject_astype(PyDataObject *self, PyObject* ar
         PyDataObject_SetBase(retObj, (PyObject*)self);
     }
 
-    char buf[100] = {0};
-
-    sprintf_s(buf, 100, "Converted from dataObject of type %s to type %s", typeNumberToName(self->dataObject->getType()), type);
+    char buf[PROTOCOL_STR_LENGTH] = {0};
+    sprintf_s(buf, PROTOCOL_STR_LENGTH, "Converted from dataObject of type %s to type %s", typeNumberToName(self->dataObject->getType()), type);
 
 
     if(retObj) retObj->dataObject->addToProtocol(buf);
@@ -4609,7 +4607,6 @@ PyObject* PythonDataObject::PyDataObject_normalize(PyDataObject *self, PyObject*
     }
 
     char buf[200] = {0};
-
     sprintf_s(buf, 200, "Normalized from dataObject of type %s to type %s between %g and %g.", typeNumberToName(self->dataObject->getType()), type, dmin , dmax);
 
     if(retObj) retObj->dataObject->addToProtocol(buf);
