@@ -166,15 +166,20 @@ namespace ito
         */
         enum tPrimitive
         {
-            tNoType         =   0,   /**! NoType for pick*/
-            tMultiPointPick =   6,   /**! Multi point pick*/
-            tPoint          =   101, /**! Element is tPoint or order to pick points*/
-            tLine           =   102, /**! Element is tLine or order to pick lines*/
-            tRectangle      =   103, /**! Element is tRectangle or order to pick rectangles*/
-            tSquare         =   104, /**! Element is tSquare or order to pick squares*/
-            tEllipse        =   105, /**! Element is tEllipse or order to pick ellipses*/
-            tCircle         =   106, /**! Element is tCircle or order to pick circles*/
-            tPolygon        =   110  /**! Element is tPolygon or order to pick polygon*/
+            tNoType           =   0,            /**! NoType for pick*/
+            tMultiPointPick   =   6,            /**! Multi point pick*/
+            tPoint            =   101,          /**! Element is tPoint or order to pick points*/
+            tLine             =   102,          /**! Element is tLine or order to pick lines*/
+            tRectangle        =   103,          /**! Element is tRectangle or order to pick rectangles*/
+            tSquare           =   104,          /**! Element is tSquare or order to pick squares*/
+            tEllipse          =   105,          /**! Element is tEllipse or order to pick ellipses*/
+            tCircle           =   106,          /**! Element is tCircle or order to pick circles*/
+            tPolygon          =   110,          /**! Element is tPolygon or order to pick polygon*/
+            tMoveLock         =   0x00010000,   /**! Element is readOnly */
+            tRotateLock       =   0x00020000,   /**! Element can not be moved */
+            tResizeLock       =   0x00040000,   /**! Element can not be moved */
+            tTypeMask         =   0x0000FFFF,   /**! Mask for the type space */
+            tFlagMask         =   0xFFFF0000    /**! Mask for the flag space */
         };
 
 /** \cond HIDDEN_SYMBOLS */

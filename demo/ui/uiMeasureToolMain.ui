@@ -153,9 +153,9 @@
  <connections>
   <connection>
    <sender>dataPlot</sender>
-   <signal>plotItemChanged(ito::int32,ito::int32,QVector&lt;ito::float32&gt;)</signal>
+   <signal>plotItemChanged(int,int,QVector&lt;float&gt;)</signal>
    <receiver>measurementTable</receiver>
-   <slot>plotItemChanged(ito::int32,ito::int32,QVector&lt;ito::float32&gt;)</slot>
+   <slot>plotItemChanged(int,int,QVector&lt;float&gt;)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>232</x>

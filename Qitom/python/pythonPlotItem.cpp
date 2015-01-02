@@ -254,7 +254,7 @@ maxNrElements: {int}, optional \n\
     }
 
     
-    switch(elementType)
+    switch(elementType & ito::PrimitiveContainer::tTypeMask)
     {
         case ito::PrimitiveContainer::tSquare:
         case ito::PrimitiveContainer::tCircle:
