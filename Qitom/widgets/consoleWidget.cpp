@@ -24,15 +24,16 @@
 #include "consoleWidget.h"
 #include "../global.h"
 #include "../AppManagement.h"
-#include <QMessageBox>
+
+#include <qmessagebox.h>
 #include <qfile.h>
 #include <qmimedata.h>
 #include <qurl.h>
 #include <qfileinfo.h>
+#include <qregexp.h>
 
 #include "../organizer/userOrganizer.h"
-//#include "../widgets/lastCommandDockWidget.h"
-//#include "../widgets/mainWindow.h"
+#include "../organizer/scriptEditorOrganizer.h"
 
 namespace ito
 {
@@ -67,6 +68,7 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     
     connect(this, SIGNAL(wantToCopy()), SLOT(copy()));
     connect(this, SIGNAL(selectionChanged()), SLOT(selChanged()));
+    connect(this, SIGNAL(SCN_DOUBLECLICK(int,int,int)), SLOT(textDoubleClicked(int,int,int)));
 
     if (qout)
     {
@@ -755,6 +757,34 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
     else
     {
         event->ignore();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)
+{
+    if (modifiers == 0)
+    {
+        QString selectedText = text(line);
+
+        //check for the following style '  File "x:\...py", line xxx, in ... and if found open the script at the given line to jump to the indicated error location in the script
+        if (selectedText.startsWith("  File \""))
+        {
+            QRegExp rx("^  File \"(.*\\.[pP][yY])\", line (\\d+), in .*$");
+            if (rx.indexIn(selectedText) >= 0)
+            {
+                ScriptEditorOrganizer *seo = qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+                if (seo)
+                {
+                    bool ok;
+                    int line = rx.cap(2).toInt(&ok);
+                    if (ok)
+                    {
+                        seo->openScript(rx.cap(1), NULL, line - 1);
+                    }
+                }
+            }
+        }
     }
 }
 
