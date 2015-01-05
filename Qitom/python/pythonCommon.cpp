@@ -1012,10 +1012,12 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
             if (mandPParsed)
             {
                 free(mandPParsed);
+                mandPParsed = NULL;
             }
             if (optPParsed)
             {
                 free(optPParsed);
+                optPParsed = NULL;
             }
             return ito::RetVal::format(ito::retError,0,"wrong number of parameters (%i given, %i mandatory and %i optional required)",argsLen + kwdsLen, numMandParams, numOptParams);
     }
@@ -1033,10 +1035,12 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
                 if (mandPParsed)
                 {
                     free(mandPParsed);
+                    mandPParsed = NULL;
                 }
                 if (optPParsed)
                 {
                     free(optPParsed);
+                    optPParsed = NULL;
                 }
                 return ito::RetVal::format(ito::retError, 0, "parameter %d - %s passed as arg and keyword!", n, tkey);
             }
@@ -1049,10 +1053,12 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
                 if (mandPParsed)
                 {
                     free(mandPParsed);
+                    mandPParsed = NULL;
                 }
                 if (optPParsed)
                 {
                     free(optPParsed);
+                    optPParsed = NULL;
                 }
                 return ito::RetVal::format(ito::retError, 0, "optional parameter %d - %s passed as arg and keyword!", n, tkey);
             }
@@ -1089,10 +1095,12 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
             if (mandPParsed) 
             {
                 free(mandPParsed);
+                mandPParsed = NULL;
             }
             if (optPParsed)  
             {
                 free(optPParsed);
+                optPParsed = NULL;
             }
             std::cerr << "there are keyword arguments that does not exist in mandatory or optional parameters." << std::endl;
             errOutInitParams(defaultParamListMand, -1, "Mandatory parameters are:");
@@ -1119,10 +1127,12 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
             if (mandPParsed)
             {
                 free(mandPParsed);
+                mandPParsed = NULL;
             }
             if (optPParsed)
             {
                 free(optPParsed);
+                optPParsed = NULL;
             }
             return ito::RetVal::format(ito::retError,0,"wrong number of parameters (%i given, %i mandatory and %i optional required)", argsLen + kwdsLen, numMandParams, numOptParams);
         }
@@ -1152,10 +1162,12 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
             if (mandPParsed)
             {
                 free(mandPParsed);
+                mandPParsed = NULL;
             }
             if (optPParsed)
             {
                 free(optPParsed);
+                optPParsed = NULL;
             }
             return ito::retError;
         }
@@ -1180,10 +1192,12 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
             if (mandPParsed)
             {
                 free(mandPParsed);
+                mandPParsed = NULL;
             }
             if (optPParsed)
             {
                 free(optPParsed);
+                optPParsed = NULL;
             }
             return ito::retError;
         }
@@ -1208,10 +1222,12 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
             if (mandPParsed)
             {
                 free(mandPParsed);
+                mandPParsed = NULL;
             }
             if (optPParsed)
             {
                 free(optPParsed);
+                optPParsed = NULL;
             }
             return ito::retError;
         }
@@ -1224,16 +1240,26 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
             tempObj = PyDict_GetItemString(kwds, tkey);
             if (tempObj)
             {
-                if (checkAndSetParamVal(tempObj, &((*defaultParamListOpt)[n]), paramListOptOut[n], &(optPParsed[n])) != ito::retOk)
+                retval = checkAndSetParamVal(tempObj, &((*defaultParamListOpt)[n]), paramListOptOut[n], &(optPParsed[n])); 
+                if (retval.containsError())
                 {
-                    errOutInitParams(defaultParamListOpt, n, "wrong parameter type");
+                    if (retval.hasErrorMessage())
+                    {
+                        errOutInitParams(defaultParamListOpt, n, retval.errorMessage());
+                    }
+                    else
+                    {
+                        errOutInitParams(defaultParamListOpt, n, "wrong parameter type");
+                    }
                     if (mandPParsed)
                     {
                         free(mandPParsed);
+                        mandPParsed = NULL;
                     }
                     if (optPParsed)
                     {
                         free(optPParsed);
+                        optPParsed = NULL;
                     }
                     return ito::retError;
                 }
@@ -1244,10 +1270,12 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
     if (mandPParsed)
     {
         free(mandPParsed);
+        mandPParsed = NULL;
     }
     if (optPParsed)
     {
         free(optPParsed);
+        optPParsed = NULL;
     }
 
     return ito::retOk;
