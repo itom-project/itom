@@ -1182,7 +1182,7 @@ QString HelpTreeDockWidget::minText(int minimum) const
 */
 QString HelpTreeDockWidget::minText(double minimum) const
 {
-    if (std::abs(minimum - std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon())
+    if (std::abs(minimum + std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon())
     {
         return "-inf";
     }
