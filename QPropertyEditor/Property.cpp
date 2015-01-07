@@ -50,9 +50,9 @@ QVariant Property::value(int /*role = Qt::UserRole*/) const
         return QVariant();
 }
 
-QString Property::displayValue(int /*role = Qt::UserRole*/) const
+QString Property::displayValue(int role /*= Qt::UserRole*/) const
 {
-    QVariant v = value();
+    QVariant v = value(role);
     if (v.type() == QVariant::StringList)
     {
         QStringList stringlist = v.toStringList();
