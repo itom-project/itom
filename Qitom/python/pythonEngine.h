@@ -26,6 +26,7 @@
 /*if you add any include to this file you will DIE an immediate, horrible, painful death*/
 
 #include <string>
+#include <exception>
 //#ifndef Q_MOC_RUN
 //    #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API
 //    #define NO_IMPORT_ARRAY
@@ -160,6 +161,8 @@ protected:
     ito::RetVal runFunction(PyObject *callable, PyObject *argTuple);
 
     ito::RetVal modifyTracebackDepth(int NrOfLevelsToPopAtFront = -1, bool showTraceback = true);
+
+    PyObject* setPyErrFromException(const std::exception &exc);
 
 #if QT_VERSION >= 0x050000
     void connectNotify(const QMetaMethod &signal);

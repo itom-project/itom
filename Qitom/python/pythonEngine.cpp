@@ -643,6 +643,32 @@ void PythonEngine::propertiesChanged()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyObject* PythonEngine::setPyErrFromException(const std::exception &exc)
+{
+    const std::exception *p_exc = &exc;
+    const cv::Exception *p_cvexc = NULL;
+
+    if ((p_cvexc = dynamic_cast<const cv::Exception*>(p_exc)) != NULL)
+    {
+        const char* errorStr = cvErrorStr(p_cvexc->code);
+        return PyErr_Format(PyExc_RuntimeError, "OpenCV Error: %s (%s) in %s, file %s, line %d",
+            errorStr, p_cvexc->err.c_str(), p_cvexc->func.size() > 0 ?
+            p_cvexc->func.c_str() : "unknown function", p_cvexc->file.c_str(), p_cvexc->line );
+    }
+    else
+    {
+        if (exc.what())
+        {
+            return PyErr_Format(PyExc_RuntimeError, "The exception '%s' has been thrown", exc.what());
+        }
+        else
+        {
+            return PyErr_Format(PyExc_RuntimeError, "The exception '<unknown>' has been thrown"); 
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::scanAndRunAutostartFolder(QString currentDirAfterScan /*= QString()*/)
 {
     //store current directory
@@ -1147,14 +1173,21 @@ ito::RetVal PythonEngine::runString(const QString &command)
             Py_XDECREF(result);
         }
 
-        //input to PyRun_String must be UTF8
-        if (command.contains('\n')) //multi-line commands must have the Py_file_input flag
+        try
         {
-            result = PyRun_String(command.toUtf8().data(), Py_file_input /*Py_single_input*/ , mainDict, localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
+            //input to PyRun_String must be UTF8
+            if (command.contains('\n')) //multi-line commands must have the Py_file_input flag
+            {
+                result = PyRun_String(command.toUtf8().data(), Py_file_input /*Py_single_input*/ , mainDict, localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
+            }
+            else //this command is a single line command, then Py_single_input must be set, such that the output of any command is printed in the next line, else this output is supressed (if no print command is executed)
+            {
+                result = PyRun_String(command.toUtf8().data(), Py_single_input, mainDict , localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
+            }
         }
-        else //this command is a single line command, then Py_single_input must be set, such that the output of any command is printed in the next line, else this output is supressed (if no print command is executed)
+        catch(std::exception &exc)
         {
-            result = PyRun_String(command.toUtf8().data(), Py_single_input, mainDict , localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
+            result = setPyErrFromException(exc);
         }
 
         if (result == NULL)
@@ -1316,7 +1349,14 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                 Py_XDECREF(result2);
             }
 
-            result = PyObject_CallMethod(itomDbgInstance, "runScript", "s", pythonFileName.toUtf8().data()); //"s" requires UTF8 encoded char*
+            try
+            {
+                result = PyObject_CallMethod(itomDbgInstance, "runScript", "s", pythonFileName.toUtf8().data()); //"s" requires UTF8 encoded char*
+            }
+            catch(std::exception &exc)
+            {
+                result = setPyErrFromException(exc);
+            }
 
             if (result == NULL)
             {
@@ -1374,7 +1414,16 @@ ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple)
         Py_XDECREF(result);
     }
 
-    PyObject *ret = PyObject_CallObject(callable, argTuple);
+    PyObject *ret;
+    try
+    {
+        ret = PyObject_CallObject(callable, argTuple);
+    }
+    catch(std::exception &exc)
+    {
+        ret = setPyErrFromException(exc);
+    }
+
     if (ret == NULL)
     {
         PyErr_Print();
@@ -1451,7 +1500,14 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple)
             Py_XDECREF(result);
         }
 
-        result = PyObject_CallMethod(itomDbgInstance, "debugFunction", "OO", callable, argTuple);
+        try
+        {
+            result = PyObject_CallMethod(itomDbgInstance, "debugFunction", "OO", callable, argTuple);
+        }
+        catch(std::exception &exc)
+        {
+            result = setPyErrFromException(exc);
+        }
 
         clearDbgCmdLoop();
 
@@ -1563,7 +1619,14 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
             Py_XDECREF(result);
         }
 
-        result = PyObject_CallMethod(itomDbgInstance, "debugScript", "s", pythonFileName.toUtf8().data()); //"s" requires utf-8 encoded string
+        try
+        {
+            result = PyObject_CallMethod(itomDbgInstance, "debugScript", "s", pythonFileName.toUtf8().data()); //"s" requires utf-8 encoded string
+        }
+        catch(std::exception &exc)
+        {
+            result = setPyErrFromException(exc);
+        }
 
         clearDbgCmdLoop();
 
@@ -1667,7 +1730,14 @@ ito::RetVal PythonEngine::debugString(const QString &command)
             Py_XDECREF(result);
         }
 
-        result = PyObject_CallMethod(itomDbgInstance, "debugString", "s", command.toUtf8().data()); //command must be UTF8
+        try
+        {
+            result = PyObject_CallMethod(itomDbgInstance, "debugString", "s", command.toUtf8().data()); //command must be UTF8
+        }
+        catch(std::exception &exc)
+        {
+            result = setPyErrFromException(exc);
+        }
 
         clearDbgCmdLoop();
 

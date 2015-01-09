@@ -5806,8 +5806,22 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject *self, PyObject *args)
     }
     else
     {
+        //at first try to make continuous copy of data object and handle possible exceptions before going on
+        ito::DataObject *continuousObject = NULL;
+        try
+        {
+            continuousObject = new ito::DataObject(ito::makeContinuous(*selfDO));
+        }
+        catch(cv::Exception exc)
+        {
+            continuousObject = NULL;
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            selfDO->unlock();
+            return NULL;
+        }
+
         PyDataObject *newDO = PythonDataObject::createEmptyPyDataObject();
-        newDO->dataObject = new ito::DataObject(ito::makeContinuous(*selfDO));
+        newDO->dataObject = continuousObject;
 
         PyDataObject_SetBase(newDO, self->base);
         selfDO->unlock();
