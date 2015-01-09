@@ -1718,29 +1718,46 @@ template<typename _Tp> RetVal DeepCopyPartialFunc(DataObject &lhs, DataObject &r
 {
    if (&lhs == &rhs)
    {
-         return 0;
+         return ito::retOk;
    }
+
+   const cv::Mat **lhs_mdata = (const cv::Mat**)lhs.get_mdata();
+   cv::Mat **rhs_mdata = (cv::Mat**)rhs.get_mdata();
+   const cv::Mat *lhs_mat;
+   cv::Mat *rhs_mat;
 
    int sizeX = static_cast<int>(lhs.getSize(lhs.getDims() - 1));
    int sizeY = static_cast<int>(lhs.getSize(lhs.getDims() - 2));
-   for (int nMat = 0; nMat < lhs.calcNumMats(); nMat++)
-   {
-        cv::Mat_<_Tp> *cvMatLhs = ((cv::Mat_<_Tp> *)lhs.get_mdata()[lhs.seekMat(nMat)]);
-        cv::Mat_<_Tp> *cvMatRhs = ((cv::Mat_<_Tp> *)rhs.get_mdata()[rhs.seekMat(nMat)]);
 
-        if (cvMatLhs->isContinuous() && cvMatRhs->isContinuous())
+   int lineBytes = sizeX * sizeof(_Tp);
+   int planeBytes = sizeY * sizeX * sizeof(_Tp);
+
+   const uchar *lhs_ptr;
+   uchar *rhs_ptr;
+
+   for (int nMat = 0; nMat < lhs.calcNumMats(); ++nMat)
+   {
+        lhs_mat = lhs_mdata[lhs.seekMat(nMat)];
+        rhs_mat = rhs_mdata[rhs.seekMat(nMat)];
+
+        if (lhs_mat->isContinuous() && rhs_mat->isContinuous())
         {
-           memcpy(cvMatRhs->ptr(0), cvMatLhs->ptr(0), sizeX * sizeY * sizeof(_Tp));
+           memcpy(rhs_mat->data, lhs_mat->data, planeBytes);
         }
         else
         {
-           for (int y = 0; y < sizeY; y++)
-           {
-               memcpy(cvMatRhs->ptr(y), cvMatLhs->ptr(y), sizeX * sizeof(_Tp));
-           }
+            lhs_ptr = lhs_mat->data;
+            rhs_ptr = rhs_mat->data;
+
+            for (int y = 0; y < sizeY; ++y)
+            {
+                memcpy(rhs_ptr, lhs_ptr, lineBytes);
+                lhs_ptr += lhs_mat->step[0];
+                rhs_ptr += rhs_mat->step[0];
+            }
         }
    }
-   return 0;
+   return ito::retOk;
 }
 
 typedef RetVal (*tDeepCopyPartialFunc)(DataObject &lhs, DataObject &rhs);
@@ -5980,7 +5997,68 @@ template<typename _Tp> RetVal MakeContinuousFunc(const DataObject &dObj, DataObj
         return RetVal(retOk);
     }
 
-    resDObj = DataObject(dObj.getDims() , dObj.m_osize, dObj.getType() , 1);
+    resDObj = DataObject(dObj.getDims() , dObj.m_size, dObj.getType() , 1);
+    resDObj.m_owndata = 1;
+    dObj.copyAxisTagsTo(resDObj);
+    dObj.copyTagMapTo(resDObj);
+
+    int dims = dObj.getDims();
+    int newNumMats = resDObj.mdata_size();
+
+    if(newNumMats > 0)
+    {
+        uchar* newDataPtr = ((cv::Mat_<_Tp>*)(resDObj.m_data[0]))->data;
+        int newMatSize = sizeof(_Tp) * resDObj.m_osize[dims-2] * resDObj.m_osize[dims-1];
+        const cv::Mat *tempMat = dObj.getCvPlaneMat(0);
+
+        if (tempMat->isContinuous())
+        {
+            //first plane
+            memcpy((void*)newDataPtr , (void*)(tempMat->datastart), newMatSize);
+            newDataPtr += newMatSize;
+
+            //further planes
+            for (int n = 1; n < newNumMats; ++n)
+            {
+                tempMat = dObj.getCvPlaneMat(n);
+                memcpy((void*)newDataPtr , (void*)(tempMat->datastart), newMatSize);
+                newDataPtr += newMatSize;
+            }
+        }
+        else
+        {
+            int rows = tempMat->rows;
+            int cols = tempMat->cols;
+            newMatSize = sizeof(_Tp) * resDObj.m_osize[dims-1]; //only the size of one row in bytes
+            const uchar *srcPtr = tempMat->data;
+
+            //first plane
+            for (int r = 0; r < rows; ++r)
+            {
+                memcpy((void*)newDataPtr , (void*)(srcPtr), newMatSize);
+                newDataPtr += newMatSize;
+                srcPtr += tempMat->step[0];
+            }
+
+            //further planes
+            for (int n = 1; n < newNumMats; ++n)
+            {
+                tempMat = dObj.getCvPlaneMat(n);
+                srcPtr = tempMat->data;
+
+                for (int r = 0; r < rows; ++r)
+                {
+                    memcpy((void*)newDataPtr , (void*)(srcPtr), newMatSize);
+                    newDataPtr += newMatSize;
+                    srcPtr += tempMat->step[0];
+                }
+            }
+        }
+    }
+
+
+    //#### OLD VERSION: all data is copied and a roi of the source object is finally applied to the destination, continous object (memory intense)
+    /*resDObj = DataObject(dObj.getDims() , dObj.m_osize, dObj.getType() , 1);
     resDObj.m_owndata = 1;
 
     int dims = dObj.getDims();
@@ -6025,7 +6103,7 @@ template<typename _Tp> RetVal MakeContinuousFunc(const DataObject &dObj, DataObj
         {
             ((cv::Mat*)resDObj.m_data[n])->adjustROI(dtop,dbottom,dleft,dright);
         }
-    }
+    }*/
 
     return RetVal(retOk);
 }
@@ -6035,6 +6113,11 @@ MAKEFUNCLIST(MakeContinuousFunc)
 
 //! high-level method which copies an incontinuously organized data object to a continuously organized resulting data object, which is returned
 /*!
+    If the given data object already is in a continuous form (e.g. 2D object or continuous representation for higher dimensions), a shallow
+    copy to the given object is returned. In any other cases, a deep copy of the given object is returned, where the entire data block is
+    continuously aligned in memory. Additionally, only values within the current region of interest are copied to the new, continous object (in order
+    to safe memory).
+
     \param &dObj is the source data object
     \return resulting data object
     \sa MakeContinuousFunc
