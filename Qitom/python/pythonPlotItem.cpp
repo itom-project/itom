@@ -87,6 +87,13 @@ int PythonPlotItem::PyPlotItem_init(PyPlotItem *self, PyObject *args, PyObject *
         {
             return -1;
         }
+
+        if (objectID == 0 && figure == NULL)
+        {
+            //this avoid a crash if plotItem is instantiated without any arguments
+            PyErr_SetString(PyExc_RuntimeError, "PlotItem requires an existing figure as argument and / or a valid subplotIdx or objectID");
+            return -1;
+        }
     }
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
