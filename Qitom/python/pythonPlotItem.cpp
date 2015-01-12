@@ -382,7 +382,39 @@ PyTypeObject PythonPlotItem::PyPlotItemType = {
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonPlotItem::PyPlotItem_addTpDict(PyObject *tp_dict)
 {
+    PyObject *value;
     
+    value = Py_BuildValue("i",ito::PrimitiveContainer::tMultiPointPick);
+    PyDict_SetItemString(tp_dict, "PrimitiveMultiPointPick", value);
+    Py_DECREF(value);
+
+    value = Py_BuildValue("i",ito::PrimitiveContainer::tPoint);
+    PyDict_SetItemString(tp_dict, "PrimitivePoint", value);
+    Py_DECREF(value);
+
+    value = Py_BuildValue("i",ito::PrimitiveContainer::tLine);
+    PyDict_SetItemString(tp_dict, "PrimitiveLine", value);
+    Py_DECREF(value);
+
+    value = Py_BuildValue("i",ito::PrimitiveContainer::tRectangle);
+    PyDict_SetItemString(tp_dict, "PrimitiveRectangle", value);
+    Py_DECREF(value);
+
+    value = Py_BuildValue("i",ito::PrimitiveContainer::tSquare);
+    PyDict_SetItemString(tp_dict, "PrimitiveSquare", value);
+    Py_DECREF(value);
+
+    value = Py_BuildValue("i",ito::PrimitiveContainer::tEllipse);
+    PyDict_SetItemString(tp_dict, "PrimitiveEllipse", value);
+    Py_DECREF(value);
+
+    value = Py_BuildValue("i",ito::PrimitiveContainer::tCircle);
+    PyDict_SetItemString(tp_dict, "PrimitiveCircle", value);
+    Py_DECREF(value);
+
+    value = Py_BuildValue("i",ito::PrimitiveContainer::tPolygon);
+    PyDict_SetItemString(tp_dict, "PrimitivePolygon", value);
+    Py_DECREF(value);
 }
 
 

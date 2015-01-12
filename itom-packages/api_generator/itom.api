@@ -129,6 +129,8 @@ itom.getAppPath() -> returns absolute path of application base directory.
 itom.getCurrentPath() -> returns absolute path of current working directory.
 itom.getDebugger() -> returns new reference to debugger instance
 itom.getDefaultScaleableUnits() -> Get a list with the strings of the standard scalable units.
+itom.getPalette(name) -> get the palette for color bars defined by name.
+itom.getPaletteList(typefilter) -> get a list of color bars / palettes.
 itom.getScreenInfo() -> returns dictionary with information about all available screens.
 itom.liveImage(cam, [className, properties]) -> show a camera live image in a newly created figure
 itom.loadDataObject(filename, dataObject [, doNotAppendIDO]) -> load a dataObject from the harddrive.
@@ -141,6 +143,14 @@ itom.openScript(filename) -> open the given script in current script window.
 itom.plot(data, [className, properties]) -> plots a dataObject in a newly created figure
 itom.plotHelp(plotName [, dictionary = False]) -> generates an online help for the specified plot.
 itom.plotItem(figure[, subplotIdx]) -> instance of the plot or subplot of a figure.
+itom.plotItem.PrimitiveCircle
+itom.plotItem.PrimitiveEllipse
+itom.plotItem.PrimitiveLine
+itom.plotItem.PrimitiveMultiPointPick
+itom.plotItem.PrimitivePoint
+itom.plotItem.PrimitivePolygon
+itom.plotItem.PrimitiveRectangle
+itom.plotItem.PrimitiveSquare
 itom.plotItem.drawAndPickElements
 itom.plotItem.pickPoints(points [,maxNrPoints]) -> method to let the user pick points on a plot (only if plot supports this)
 itom.plotLoaded(plotName) -> check if a certain plot widget is loaded.
@@ -165,6 +175,7 @@ itom.point.xyz
 itom.pointCloud([type] | pointCloud [,indices] | width, height [,point] | point) -> creates new point cloud.
 itom.pointCloud.append(point) -> appends point at the end of the point cloud.
 itom.pointCloud.clear() -> clears the whole point cloud
+itom.pointCloud.copy() -> returns a deep copy of this point cloud.
 itom.pointCloud.dense
 itom.pointCloud.empty
 itom.pointCloud.erase(indices) -> erases the points in point clouds indicated by indices (single number of slice)
@@ -226,6 +237,7 @@ itom.scaleValueAndUnit
 itom.scriptEditor() -> opens new, empty script editor window (undocked)
 itom.setApplicationCursor
 itom.setCurrentPath(newPath) -> set current working directory to given absolute newPath
+itom.setPalette(name, entries) -> set the palette for color bars defined by name.
 itom.timer(interval, callbackFunc, [argTuple]) -> new callback timer
 itom.timer.isActive() -> returns timer status
 itom.timer.setInterval(interval) -> sets timer interval in [ms]
