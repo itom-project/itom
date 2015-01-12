@@ -21,7 +21,6 @@
 *********************************************************************** */
 
 #include "dialogSelectUser.h"
-
 #include "../AppManagement.h"
 
 namespace ito {
@@ -64,6 +63,8 @@ void DialogSelectUser::userListCurrentChanged(const QModelIndex &current, const 
         }
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogSelectUser::on_userList_doubleClicked(const QModelIndex current)
 {
     if (m_userModel)

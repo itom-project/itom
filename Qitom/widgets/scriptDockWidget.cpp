@@ -1036,8 +1036,11 @@ void ScriptDockWidget::tabContextMenuEvent(QContextMenuEvent * event)
     for (int i = 0; i < m_tab->count(); i++)
     {
         tabRectangle = m_tab->getTabBar()->tabRect(i);
+        int eventX = event->pos().x();
+//qDebug() << "tabRectangle: " << tabRectangle << ", event->pos(): " << event->pos() << ", m_tab->pos():" << m_tab->pos() << ", m_tab->getTabBar()->pos(): " << m_tab->getTabBar()->pos();
 
-        if (tabRectangle.contains(event->pos()-m_tab->pos()-m_tab->getTabBar()->pos()))
+//        if (tabRectangle.contains(event->pos() - m_tab->pos() - m_tab->getTabBar()->pos()))
+        if (tabRectangle.x() <= eventX && (tabRectangle.x() + tabRectangle.width()) >= eventX)
         {
             m_tab->setCurrentIndex(i);
             m_actTabIndex = i;

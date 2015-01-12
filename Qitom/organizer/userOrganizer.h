@@ -29,22 +29,25 @@
 namespace ito
 {
 
-enum userTypes {
+enum userTypes
+{
     userTypeBasic = 0,
     userTypeAdministrator = 1,
     userTypeDeveloper = 2
 };    
 
-enum userFeatures {
+enum userFeatures
+{
     featDeveloper   =   1,
     featFileSystem  =   2,
     featUserManag   =   4,
     featPlugins     =   8,
     featConsole     =   16,
-    featConsoleRW   =   32
+    featConsoleRW   =   32,
+    featProperties  =   64
 };
 
-#define allFeatures ((userFeatures) (featDeveloper | featFileSystem | featUserManag | featPlugins | featConsole | featConsoleRW))
+#define allFeatures ((userFeatures) (featDeveloper | featFileSystem | featUserManag | featPlugins | featConsole | featConsoleRW | featProperties))
 
 
 class UserOrganizer : QObject
@@ -85,7 +88,12 @@ class UserOrganizer : QObject
         void setSettingsFile(QString &settingsFile) { m_settingsFile = settingsFile; }
         inline QString getSettingsFile() const { return m_settingsFile; };
         ito::RetVal loadSettings(const QString &defUserName);
-        char hasFeature(userFeatures feature) { return (m_features & feature) > 0; }
+        char hasFeature(userFeatures feature)
+//        { return (m_features & feature) > 0; }
+        {
+            bool b = (m_features & feature) > 0;
+            return b;
+        }
 
 private:
         UserOrganizer(void);

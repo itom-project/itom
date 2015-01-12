@@ -337,20 +337,38 @@ MainWindow::MainWindow() :
 */
 MainWindow::~MainWindow()
 {
-    if (m_fileSystemDock) m_fileSystemDock->saveState("itomFileSystemDockWidget");
-    if (m_helpDock) m_helpDock->saveState("itomHelpDockWidget");
-    if (m_globalWorkspaceDock) m_globalWorkspaceDock->saveState("itomGlobalWorkspaceDockWidget");
-    if (m_localWorkspaceDock) m_localWorkspaceDock->saveState("itomLocalWorkspaceDockWidget");
-    if (m_pAIManagerWidget) m_pAIManagerWidget->saveState("itomPluginsDockWidget");
+    if (m_fileSystemDock)
+    {
+        m_fileSystemDock->saveState("itomFileSystemDockWidget");
+    }
+    if (m_helpDock)
+    {
+        m_helpDock->saveState("itomHelpDockWidget");
+    }
+    if (m_globalWorkspaceDock)
+    {
+        m_globalWorkspaceDock->saveState("itomGlobalWorkspaceDockWidget");
+    }
+    if (m_localWorkspaceDock)
+    {
+        m_localWorkspaceDock->saveState("itomLocalWorkspaceDockWidget");
+    }
+    if (m_pAIManagerWidget)
+    {
+        m_pAIManagerWidget->saveState("itomPluginsDockWidget");
+    }
 
     QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
-    settings->beginGroup("Python");
-    settings->setValue("pyReloadEnabled", m_actions["py_autoReloadEnabled"]->isChecked());
-    settings->setValue("pyReloadCheckFile", m_actions["py_autoReloadFile"]->isChecked());
-    settings->setValue("pyReloadCheckCmd", m_actions["py_autoReloadCmd"]->isChecked());
-    settings->setValue("pyReloadCheckFct", m_actions["py_autoReloadFunc"]->isChecked());
-    settings->endGroup();
+    if (m_actions["py_autoReloadEnabled"])
+    {
+        settings->beginGroup("Python");
+        settings->setValue("pyReloadEnabled", m_actions["py_autoReloadEnabled"]->isChecked());
+        settings->setValue("pyReloadCheckFile", m_actions["py_autoReloadFile"]->isChecked());
+        settings->setValue("pyReloadCheckCmd", m_actions["py_autoReloadCmd"]->isChecked());
+        settings->setValue("pyReloadCheckFct", m_actions["py_autoReloadFunc"]->isChecked());
+        settings->endGroup();
+    }
 
     settings->beginGroup("MainWindow");
     settings->setValue("maximized", isMaximized());
@@ -566,11 +584,14 @@ void MainWindow::createActions()
     m_actions["exit"] = new QAction(tr("Exit"), this);
     connect(m_actions["exit"], SIGNAL(triggered()), this, SLOT(mnuExitApplication()));
 
-    if (uOrg->hasFeature(featUserManag))
+    if (uOrg->hasFeature(featProperties))
     {
         m_actions["properties"] = new QAction(QIcon(":/application/icons/adBlockAction.png"), tr("Properties..."), this);
         connect(m_actions["properties"] , SIGNAL(triggered()), this, SLOT(mnuShowProperties()));
+    }
 
+    if (uOrg->hasFeature(featUserManag))
+    {
         m_actions["usermanagement"] = new QAction(QIcon(":/misc/icons/User.png"), tr("User Management..."), this);
         connect(m_actions["usermanagement"] , SIGNAL(triggered()), this, SLOT(mnuShowUserManagement()));
     }
