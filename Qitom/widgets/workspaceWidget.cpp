@@ -48,6 +48,9 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
 {
     QStringList headers;
 
+    setDragDropMode( QAbstractItemView::DragOnly );
+    this->model()->setSupportedDragActions(Qt::CopyAction);
+
     setColumnCount(3);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
     
@@ -95,6 +98,83 @@ WorkspaceWidget::~WorkspaceWidget()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+QStringList WorkspaceWidget::mimeTypes() const
+{
+    QStringList types = QTreeWidget::mimeTypes();
+
+    if (types.contains("text/plain") == false)
+    {
+        types.append("text/plain");
+    }
+
+    return types;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QMimeData * WorkspaceWidget::mimeData(const QList<QTreeWidgetItem *> items) const
+{
+    QMimeData *mimeData = QTreeWidget::mimeData(items);
+    QStringList texts;
+
+    //QByteArray encoded = mimeData->data("application/x-qabstractitemmodeldatalist");
+    //QDataStream stream(&encoded, QIODevice::ReadOnly);
+
+    QString name;
+    QSharedPointer<QString> tempValue;
+    const QTreeWidgetItem *tempItem = NULL;
+    QString fullName("empty item");
+    QByteArray type;
+
+    foreach(const QTreeWidgetItem *item, items)
+    {
+        fullName = item->data(0, Qt::UserRole+1).toString();
+        type = item->data(0, Qt::UserRole + 3).toByteArray();
+
+        if (item->parent() == NULL)
+        {
+            name = item->text(0);
+        }
+        else
+        {
+            tempItem = item;
+            while(tempItem->parent() != NULL)
+            {
+                if (type[0] == PY_DICT || type[0] == PY_MAPPING || type[0] == PY_LIST)
+                {
+                    if (type[1] == PY_NUMBER)
+                    {
+                        name.prepend( "[" + tempItem->text(0) + "]" );
+                    }
+                    else
+                    {
+                        name.prepend( "[\"" + tempItem->text(0) + "\"]" );
+                    }
+                }
+                else if (type[0] == PY_ATTR)
+                {
+                    name.prepend( "." + tempItem->text(0) );
+                }
+                tempItem = tempItem->parent();
+            }
+            name.prepend( tempItem->text(0) );
+        }
+
+        texts.append(name);
+    }
+
+    //while (!stream.atEnd())
+    //{
+    //    int row, col;
+    //    QMap<int,  QVariant> roleDataMap;
+    //    stream >> row >> col >> roleDataMap;
+    //    texts.append( roleDataMap[0].toString() );
+    //}
+
+    mimeData->setData("text/plain", texts.join("\n").toLatin1() );
+    return mimeData;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 int WorkspaceWidget::numberOfSelectedMainItems() const
 {
     unsigned int counter = 0;
@@ -115,7 +195,7 @@ void WorkspaceWidget::updateView(QHash<QString,ito::PyWorkspaceItem*> items, QSt
     QTreeWidgetItem *tempItem;
     foreach(const ito::PyWorkspaceItem *item, items)
     {
-        hashName = baseName + m_delimiter + item->m_name;
+        hashName = baseName + m_delimiter + item->m_key;
         it = m_itemHash.find(hashName);
         if (it != m_itemHash.end())
         {
@@ -128,19 +208,20 @@ void WorkspaceWidget::updateView(QHash<QString,ito::PyWorkspaceItem*> items, QSt
             if (parent == NULL)
             {
                 addTopLevelItem(actItem);
-                actItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+                actItem->setFlags(Qt::ItemIsDragEnabled | Qt::ItemIsEditable | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
             }
             else
             {
-                actItem->setFlags( Qt::ItemIsEnabled );
+                actItem->setFlags( Qt::ItemIsDragEnabled | Qt::ItemIsEnabled );
             }
         }
 
-        actItem->setText(0, item->m_name);
+        actItem->setText(0, item->m_name22);
         actItem->setText(1, item->m_value);
         actItem->setText(2, item->m_type);
         actItem->setData(0, Qt::UserRole + 1, hashName);
         actItem->setData(0, Qt::UserRole + 2, item->m_compatibleParamBaseType);
+        actItem->setData(0, Qt::UserRole + 3, item->m_key.left(2).toLatin1());
 
         if (item->m_childState == ito::PyWorkspaceItem::stateNoChilds)
         {
@@ -259,10 +340,12 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
     QSharedPointer<QString> tempValue;
     QTreeWidgetItem *tempItem = NULL;
     QString fullName("empty item");
+    QByteArray type;
 
 	if (item)
     {
 		fullName = item->data(0, Qt::UserRole+1).toString();
+        type = item->data(0, Qt::UserRole + 3).toByteArray();
         ito::PyWorkspaceItem* item2 = m_workspaceContainer->getItemByFullName( fullName );
         extendedValue = item2->m_extendedValue;
 
@@ -275,7 +358,21 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
             tempItem = item;
             while(tempItem->parent() != NULL)
             {
-                name.prepend( "[" + tempItem->text(0) + "]" );
+                if (type[0] == PY_DICT || type[0] == PY_MAPPING || type[0] == PY_LIST)
+                {
+                    if (type[1] == PY_NUMBER)
+                    {
+                        name.prepend( "[" + tempItem->text(0) + "]" );
+                    }
+                    else
+                    {
+                        name.prepend( "[\"" + tempItem->text(0) + "\"]" );
+                    }
+                }
+                else if (type[0] == PY_ATTR)
+                {
+                    name.prepend( "." + tempItem->text(0) );
+                }
                 tempItem = tempItem->parent();
             }
             name.prepend( tempItem->text(0) );

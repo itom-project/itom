@@ -62,6 +62,13 @@
 #include <qset.h>
 #include <qstringlist.h>
 
+#define PY_LIST 'l'
+#define PY_MAPPING 'm'
+#define PY_ATTR 'a'
+#define PY_DICT 'd'
+#define PY_NUMBER 'n'
+#define PY_STRING 's'
+
 namespace ito
 {
 
@@ -78,7 +85,8 @@ public:
 
     enum childState { stateNoChilds = 0x00, stateChilds = 0x01};
 
-    QString m_name;
+    QString m_name22;
+    QString m_key;
     QString m_type;
     QString m_value;
     QString m_extendedValue;
@@ -99,7 +107,7 @@ public:
     ~PyWorkspaceContainer();
 
     void clear();
-    void loadDictionary(PyObject *obj, QString fullNameParentItem = "");
+    void loadDictionary(PyObject *obj, const QString &fullNameParentItem = "");
 
     inline bool isGlobalWorkspace() const { return m_globalNotLocal; }
     inline bool isRoot(PyWorkspaceItem *item) const { return item == &m_rootItem; }
@@ -114,7 +122,7 @@ public:
     PyWorkspaceItem m_rootItem;
 
 private:
-    void loadDictionaryRec(PyObject *obj, QString fullNameParentItem, PyWorkspaceItem *parentItem, QStringList &deletedKeys);
+    void loadDictionaryRec(PyObject *obj, const QString &fullNameParentItem, PyWorkspaceItem *parentItem, QStringList &deletedKeys);
     void parseSinglePyObject(PyWorkspaceItem *item, PyObject *value, QString &fullName, QStringList &deletedKeys, int &m_compatibleParamBaseType);
 
     QSet<QByteArray> m_blackListType;

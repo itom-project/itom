@@ -2700,7 +2700,13 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
     int i=0;
     float f=0.0;
     PyObject *tempObj = NULL;
+    PyObject *number = NULL;
+
+    char itemKeyType, itemType;
+    QByteArray itemName;
+    QByteArray itemKey;
     bool ok;
+
     if (items.count() > 0 && items[0] == "") items.removeFirst();
 
     if (globalNotLocal)
@@ -2714,22 +2720,42 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
 
     while(items.count() > 0 && obj)
     {
+        itemName = items[0].toLatin1();
+
+        if (itemName.size() < 4) //every item has the form "as:name" where a,s... are values of the enumeration PyWorkspaceContainer:WorkspaceItemType
+        {
+            return NULL;
+        }
+        else
+        {
+            itemKey = itemName.mid(3);
+            itemType = itemName.at(0);
+            itemKeyType = itemName.at(1); //keyword is a number of a string
+        }
+
         if (PyDict_Check(obj))
         {
-            tempObj = PyDict_GetItemString(obj, items[0].toLatin1().data());
-            if (tempObj == NULL) //maybe key is a number
+            if (itemKeyType == 's') //string
             {
-                i = items[0].toInt(&ok);
+                tempObj = PyDict_GetItemString(obj, itemKey); //borrowed
+            }
+            else if (itemKeyType == 'n') //number
+            {
+                i = itemKey.toInt(&ok);
                 if (ok)
                 {
-                    tempObj = PyDict_GetItem(obj, PyLong_FromLong(i));
+                    number = PyLong_FromLong(i);
+                    tempObj = PyDict_GetItem(obj, number); //borrowed
+                    Py_XDECREF(number);
                 }
-                if (!ok || obj == NULL)
+                if (!ok || tempObj == NULL)
                 {
                     f = items[0].toFloat(&ok); //here, often, a rounding problem occurres... (this could not be fixed until now)
                     if (ok)
                     {
-                        tempObj = PyDict_GetItem(obj, PyFloat_FromDouble(f));
+                        number = PyFloat_FromDouble(i);
+                        tempObj = PyDict_GetItem(obj, number); //borrowed
+                        Py_XDECREF(number);
                     }
                 }
             }
@@ -2737,14 +2763,14 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
         }
         else if (PyList_Check(obj))
         {
-            i = items[0].toInt(&ok);
-            if (!ok || i<0 || i>=PyList_Size(obj)) return NULL; //error
+            i = itemKey.toInt(&ok);
+            if (!ok || i < 0 || i >= PyList_Size(obj)) return NULL; //error
             obj = PyList_GET_ITEM(obj,i);
         }
         else if (PyTuple_Check(obj))
         {
-            i = items[0].toInt(&ok);
-            if (!ok || i<0 || i>=PyTuple_Size(obj)) return NULL; //error
+            i = itemKey.toInt(&ok);
+            if (!ok || i < 0 || i >= PyTuple_Size(obj)) return NULL; //error
             obj = PyTuple_GET_ITEM(obj,i);
         }
         else if (PyObject_HasAttr(obj, dictUnicode))
@@ -2752,20 +2778,27 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
             PyObject *temp = PyObject_GetAttr(obj, dictUnicode);
             if (temp)
             {
-                tempObj = PyDict_GetItemString(temp, items[0].toLatin1().data());
-                if (tempObj == NULL) //maybe key is a number
+                if (itemKeyType == 's') //string
                 {
-                    i = items[0].toInt(&ok);
+                    tempObj = PyDict_GetItemString(obj, itemKey); //borrowed
+                }
+                else if (itemKeyType == 'n') //number
+                {
+                    i = itemKey.toInt(&ok);
                     if (ok)
                     {
-                        tempObj = PyDict_GetItem(temp, PyLong_FromLong(i));
+                        number = PyLong_FromLong(i);
+                        tempObj = PyDict_GetItem(obj, number); //borrowed
+                        Py_XDECREF(number);
                     }
-                    if (!ok || obj == NULL)
+                    if (!ok || tempObj == NULL)
                     {
                         f = items[0].toFloat(&ok); //here, often, a rounding problem occurres... (this could not be fixed until now)
                         if (ok)
                         {
-                            tempObj = PyDict_GetItem(temp, PyFloat_FromDouble(f));
+                            number = PyFloat_FromDouble(i);
+                            tempObj = PyDict_GetItem(obj, number); //borrowed
+                            Py_XDECREF(number);
                         }
                     }
                 }
@@ -2981,29 +3014,6 @@ void PythonEngine::pythonInterruptExecution() const
 
     qDebug("PyErr_SetInterrupt() in pythonThread");
 };
-
-////----------------------------------------------------------------------------------------------------------------------------------
-//PyObject* PythonEngine::checkForTimeoutHelper(ItomSharedSemaphore* semaphore, int timeout, PyObject *retValueOk)
-//{
-//    if (semaphore && semaphore->wait(timeout))
-//    {
-//        ItomSharedSemaphore::deleteSemaphore(semaphore);
-//        semaphore = NULL;
-//        Py_INCREF(retValueOk);
-//        return retValueOk;
-//    }
-//    else
-//    {
-//        ItomSharedSemaphore::deleteSemaphore(semaphore);
-//        semaphore = NULL;
-//        if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
-//        {
-//            return PyErr_Occurred();
-//        }
-//        PyErr_SetString(PyExc_RuntimeError, "timeout in ItomSharedSemaphore");
-//        return NULL;
-//    }
-//}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

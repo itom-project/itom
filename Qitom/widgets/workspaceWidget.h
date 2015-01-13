@@ -42,6 +42,7 @@
 #include "../python/pythonWorkspace.h"
 
 #include <qtreewidget.h>
+#include <qmimedata.h>
 
 #include <qhash.h>
 #include <qset.h>
@@ -61,6 +62,8 @@ public:
     inline ito::PyWorkspaceContainer* getWorkspaceContainer() { return m_workspaceContainer; }
 
 protected:
+    QStringList mimeTypes() const;
+    QMimeData * mimeData(const QList<QTreeWidgetItem *> items) const;
 
 private:
     void updateView(QHash<QString,ito::PyWorkspaceItem*> items, QString baseName, QTreeWidgetItem *parent = NULL);
