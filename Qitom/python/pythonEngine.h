@@ -80,6 +80,7 @@
 #include <qqueue.h>
 #include <qset.h>
 #include <qpointer.h>
+#include <qatomic.h>
 
 
 /* definition and macros */
@@ -205,6 +206,8 @@ private:
 
     ito::RetVal autoReloaderCheck();
 
+    static int queuedInterrupt(void *unused); 
+
     //member variables
     bool m_started;
     //QString m_itomMemberClasses;
@@ -275,6 +278,8 @@ private:
 
     static PythonEngine* instance;
 
+    QAtomicInt m_interruptCounter; //protects that a python interrupt can only be placed if there is no interrupt event queued yet.
+
     // friend class
     friend class ito::PythonItom;
 
@@ -300,7 +305,7 @@ public slots:
     void pythonDebugFile(QString filename);
     void pythonRunStringOrFunction(QString cmdOrFctHash);
     void pythonDebugStringOrFunction(QString cmdOrFctHash);
-    void pythonInterruptExecution() const;
+    void pythonInterruptExecution();
     void pythonDebugCommand(tPythonDbgCmd cmd);
 
     void setAutoReloader(bool enabled, bool checkFile, bool checkCmd, bool checkFct);

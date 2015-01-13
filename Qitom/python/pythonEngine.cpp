@@ -2990,21 +2990,28 @@ void PythonEngine::pythonGenericSlot(PyObject* callable, PyObject *argumentTuple
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-static int getoutofhere(void *unused) 
+/*static*/ int PythonEngine::queuedInterrupt(void * /*unused*/) 
 { 
     PyErr_SetNone(PyExc_KeyboardInterrupt); 
+    PythonEngine::getInstanceInternal()->m_interruptCounter.deref();
     return -1; 
 } 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::pythonInterruptExecution() const
+void PythonEngine::pythonInterruptExecution()
 {
 //    PyGILState_STATE gstate;
 //    gstate = PyGILState_Ensure();
 
     /* Perform Python actions here. */
     //PyErr_SetString(PyExc_KeyboardInterrupt, "User Interrupt");
-    Py_AddPendingCall(getoutofhere, NULL); 
+
+    //only queue the interrupt event if not yet done.
+    if (m_interruptCounter == 0)
+    {
+        m_interruptCounter.ref();
+        Py_AddPendingCall(queuedInterrupt, NULL); 
+    }
     //PyErr_SetNone(PyExc_KeyboardInterrupt); 
     //PyErr_SetInterrupt();
     /* evaluate result or handle exception */

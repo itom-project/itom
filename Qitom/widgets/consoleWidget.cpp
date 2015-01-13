@@ -421,11 +421,13 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
 
     if (key == Qt::Key_C && (modifiers & Qt::ControlModifier) && (modifiers & Qt::ShiftModifier))
     {
-        if (PythonEngine::getInstance())
+
+        PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+        if (pyeng)
         {
-            //PyErr_SetInterrupt();
-            PythonEngine::getInstance()->pythonInterruptExecution();
+            pyeng->pythonInterruptExecution();
         }
+
         acceptEvent = false; //!< no action necessary
         forwardEvent = false;
     }
