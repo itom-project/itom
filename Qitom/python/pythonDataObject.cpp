@@ -94,7 +94,7 @@ dims : {sequence of integers}, optional \n\
     'dims' is a list or tuple indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns. If not given, an empty data object is created.\n\
 dtype : {str}, optional \n\
     'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','uint32','float32','float64','complex64','complex128', 'rgba32'\n\
-continuous : {str}, optional \n\
+continuous : {int}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 data : {str}, optional \n\
     'data' is a single value or a sequence with the same amount of values than the data object. The values from data will be assigned to the new data object (filled row by row).\n\
@@ -6796,7 +6796,7 @@ dims : {integer list} \n\
     'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns\n\
 dtype : {str}, optional \n\
     'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','float32','float64','complex64','complex128', 'rgba32'\n\
-continuous : {str}, optional \n\
+continuous : {int}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 \n\
 Returns \n\
@@ -6852,7 +6852,7 @@ dims : {integer list} \n\
     'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns\n\
 dtype : {str}, optional \n\
     'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','float32','float64','complex64','complex128', 'rgba32'\n\
-continuous : {str}, optional \n\
+continuous : {int}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 \n\
 Returns \n\
@@ -6915,7 +6915,7 @@ dims : {integer list} \n\
     'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns.\n\
 dtype : {str}, optional \n\
     'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','float32','float64','complex64','complex128'\n\
-continuous : {str}, optional \n\
+continuous : {int}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 \n\
 Returns \n\
@@ -6974,7 +6974,7 @@ dims : {integer list} \n\
     'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns.\n\
 dtype : {str}, optional \n\
     'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32', 'float32','float64','complex64','complex128'\n\
-continuous : {str}, optional \n\
+continuous : {int}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 \n\
 Returns \n\
