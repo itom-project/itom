@@ -32,15 +32,17 @@ namespace ito
 
 class DialogVariableDetail : public QDialog 
 {
+    Q_OBJECT
+
 public:
-    DialogVariableDetail(QString name, QString type, QString value);
+    DialogVariableDetail(const QString &name, const QString &type, const QString &value);
     ~DialogVariableDetail() {};
 
 private:
     Ui::DialogVariableDetail ui;
 
 private slots:
-
+    void on_btnCopyClipboard_clicked();
 };
 
 } //end namespace ito

@@ -22,10 +22,13 @@
 
 #include "dialogVariableDetail.h"
 
+#include <qclipboard.h>
+
 namespace ito
 {
 
-DialogVariableDetail::DialogVariableDetail(QString name, QString type, QString value) :
+//----------------------------------------------------------------------------------------------
+DialogVariableDetail::DialogVariableDetail(const QString &name, const QString &type, const QString &value) :
     QDialog()
 {
     ui.setupUi(this);
@@ -33,18 +36,13 @@ DialogVariableDetail::DialogVariableDetail(QString name, QString type, QString v
     ui.txtName->setText(name);
     ui.txtType->setText(type);
     ui.txtValue->setPlainText(value);
-    /*ui.
-    ui.lblFilename->setText(filename);
-    ui.lblLineNr->setText(QString::number(linenr));
+}
 
-    ui.checkEnabled->setChecked(enabled);
-    ui.checkTemporaryBP->setChecked(temporary);
-
-    ui.spinBoxIgnoreCount->setValue(ignoreCount);
-
-    ui.txtCondition->setText(condition);
-*/
-
+//----------------------------------------------------------------------------------------------
+void DialogVariableDetail::on_btnCopyClipboard_clicked()
+{
+    QClipboard *clipboard = QApplication::clipboard();
+    clipboard->setText(ui.txtName->text(), QClipboard::Clipboard);
 }
 
 } //end namespace ito
