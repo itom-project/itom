@@ -182,7 +182,7 @@ void MainApplication::setupApplication()
     QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
     //add further folders to path-variable
-#if (defined WIN32 || defined WIN64)
+
     //you can add further pathes to the application-internal PATH variable by adding the following lines to the ini-file:
     /*[Application]
     searchPathes\size=1 ->add here the number of pathes
@@ -200,6 +200,7 @@ void MainApplication::setupApplication()
     settings->endArray();
     settings->endGroup();
 
+#if (defined WIN32 || defined WIN64)
     if (pathes.length() > 0)
     {
         QString p = pathes.join(";");
@@ -207,7 +208,17 @@ void MainApplication::setupApplication()
         QByteArray newpath = "path=" + p.toLatin1() + ";" + oldpath; //set libDir at the beginning of the path-variable
         _putenv(newpath.data());
     }
+#else //linux
+    if (pathes.length() > 0)
+    {
+        QString p = pathes.join(":");
+        QByteArray oldpath = getenv("PATH");
+        QByteArray newpath = p.toLatin1() + ":" + oldpath; //set libDir at the beginning of the path-variable
+        setenv("PATH", newpath.data(), 1);
+    }
+#endif
 
+#if (defined WIN32 || defined WIN64)
     //This check is done since the KMP_AFFINITY feature of OpenMP
     //is only available on Intel CPUs and lead to a severe warning
     //on other CPUs.
@@ -223,10 +234,10 @@ void MainApplication::setupApplication()
     {
         _putenv_s("KMP_AFFINITY","none");
     }
-    
-    //std::cout << "CPU vendor = " << vendor.data() << endl; 
-    
+#else
+    //todo: check for Intel/AMD and set KMP_AFFINITY if not Intel
 #endif
+
 
     settings->beginGroup("Language");
     QString language = settings->value("language", "en").toString();
