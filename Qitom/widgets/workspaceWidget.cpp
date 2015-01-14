@@ -1,8 +1,8 @@
-/* ********************************************************************
+﻿/* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut f�r Technische Optik (ITO),
-    Universit�t Stuttgart, Germany
+    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Universität Stuttgart, Germany
 
     This file is part of itom.
   
@@ -49,7 +49,9 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
     QStringList headers;
 
     setDragDropMode( QAbstractItemView::DragOnly );
+#if QT_VERSION < 0x050000
     this->model()->setSupportedDragActions(Qt::CopyAction);
+#endif
 
     setColumnCount(3);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -86,6 +88,15 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
     connect(this,SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),this,SLOT(itemDoubleClicked(QTreeWidgetItem*, int))); //when double-clicking on an item, its content is showed in DialogVariableDetail-Dialog
     connect(this,SIGNAL(itemExpanded(QTreeWidgetItem*)),this,SLOT(itemExpanded(QTreeWidgetItem*)));
 }
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+#if QT_VERSION >= 0x050000
+Qt::DropActions WorkspaceWidget::​supportedDragActions() const
+{
+    return supportedDropActions() | Qt::CopyAction;
+}
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! destructor

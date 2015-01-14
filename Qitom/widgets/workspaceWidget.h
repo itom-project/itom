@@ -1,4 +1,4 @@
-/* ********************************************************************
+﻿/* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2013, Institut fuer Technische Optik (ITO),
@@ -75,6 +75,9 @@ private:
     ito::PyWorkspaceContainer *m_workspaceContainer;
 
     QString m_delimiter;
+#if QT_VERSION >= 0x050000
+    Qt::DropActions ​supportedDragActions() const;
+#endif
 
 signals:
 
