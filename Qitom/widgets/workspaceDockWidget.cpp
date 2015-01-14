@@ -239,7 +239,7 @@ void WorkspaceDockWidget::mnuExportItem()
             if (item->parent() == NULL)
             {
                 keyList.append(item->data(0, Qt::DisplayRole).toString());
-                compatibleParamBaseTypes.append(item->data(0, Qt::UserRole + 2).toInt());;
+                compatibleParamBaseTypes.append(item->data(0, Qt::UserRole + 2).toInt());
             }
         }
 
@@ -272,7 +272,6 @@ void WorkspaceDockWidget::mnuImportItem()
         QString message = QString();
         if (errorMsg) message = errorMsg;
         QMessageBox::critical(this, tr("Import data"), tr("Error while importing variables:\n%1").arg(message));
-        //std::cerr << "error while importing variables. reason: " << message.toLatin1().data() << "\n" << std::endl;
     }
 }
 

@@ -85,7 +85,7 @@ public:
 
     enum childState { stateNoChilds = 0x00, stateChilds = 0x01};
 
-    QString m_name22;
+    QString m_name;
     QString m_key;
     QString m_type;
     QString m_value;

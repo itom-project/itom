@@ -43,7 +43,7 @@
 
 #include <qtreewidget.h>
 #include <qmimedata.h>
-
+#include <qpixmap.h>
 #include <qhash.h>
 #include <qset.h>
 
@@ -64,6 +64,7 @@ public:
 protected:
     QStringList mimeTypes() const;
     QMimeData * mimeData(const QList<QTreeWidgetItem *> items) const;
+    void startDrag(Qt::DropActions supportedActions);
 
 private:
     void updateView(QHash<QString,ito::PyWorkspaceItem*> items, QString baseName, QTreeWidgetItem *parent = NULL);
@@ -75,6 +76,7 @@ private:
     ito::PyWorkspaceContainer *m_workspaceContainer;
 
     QString m_delimiter;
+    QPixmap m_dragPixmap;
 #if QT_VERSION >= 0x050000
     Qt::DropActions ​supportedDragActions() const;
 #endif

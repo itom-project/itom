@@ -43,7 +43,7 @@ PyWorkspaceItem::~PyWorkspaceItem()
 //-----------------------------------------------------------------------------------------------------------
 PyWorkspaceItem::PyWorkspaceItem(const PyWorkspaceItem &other)
 {
-    m_name22 = other.m_name22;
+    m_name = other.m_name;
     m_key = other.m_key;
     m_type = other.m_type;
     m_value = other.m_value;
@@ -159,7 +159,7 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, const QString &fullN
                     if(it == parentItem->m_childs.end()) //not existing yet
                     {
                         actItem = new PyWorkspaceItem();
-                        actItem->m_name22 = keyText;
+                        actItem->m_name = keyText;
                         actItem->m_key = keyKey;
                         actItem->m_exist = true;
                         actItem->m_isarrayelement = true;
@@ -175,7 +175,7 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, const QString &fullN
                     else //item with this name already exists
                     {
                         actItem = *it;
-                        actItem->m_name22 = keyText;
+                        actItem->m_name = keyText;
                         actItem->m_exist = true;
                         actItem->m_isarrayelement = true;
                         fullName = fullNameParentItem + m_delimiter + actItem->m_key;
@@ -267,7 +267,7 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, const QString &fullN
                         {
                             actItem = new PyWorkspaceItem();
                             actItem->m_key = keyKey;
-                            actItem->m_name22 = keyText;
+                            actItem->m_name = keyText;
                             actItem->m_exist = true;
                             actItem->m_isarrayelement = true;
                             fullName = fullNameParentItem + m_delimiter + actItem->m_key;

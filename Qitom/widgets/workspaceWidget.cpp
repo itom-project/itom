@@ -73,6 +73,9 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
     m_itemHash.clear();
 
     m_delimiter = QString( QByteArray::fromHex("AAD791A8") );
+
+    QIcon icon(":/application/icons/preferences-python.png");
+    m_dragPixmap = icon.pixmap(22,22);
   
    /* '__', 'NoneType', 'type',\
         'bool', 'int', 'long', 'float', 'complex',\
@@ -227,12 +230,12 @@ void WorkspaceWidget::updateView(QHash<QString,ito::PyWorkspaceItem*> items, QSt
             }
         }
 
-        actItem->setText(0, item->m_name22);
-        actItem->setText(1, item->m_value);
-        actItem->setText(2, item->m_type);
+        actItem->setText(0, item->m_name); //name of variable, key-word of dictionary of index number of sequences (list, tuple..)
+        actItem->setText(1, item->m_value); //content of variable
+        actItem->setText(2, item->m_type); //data type
         actItem->setData(0, Qt::UserRole + 1, hashName);
         actItem->setData(0, Qt::UserRole + 2, item->m_compatibleParamBaseType);
-        actItem->setData(0, Qt::UserRole + 3, item->m_key.left(2).toLatin1());
+        actItem->setData(0, Qt::UserRole + 3, item->m_key.left(2).toLatin1()); //m_key is ab:name where a is [PY_LIST,PY_MAPPING,PY_DICT,PY_ATTR] and b is [PY_NUMBER or PY_STRING]
 
         if (item->m_childState == ito::PyWorkspaceItem::stateNoChilds)
         {
@@ -437,6 +440,30 @@ void WorkspaceWidget::itemCollapsed(QTreeWidgetItem* item)
     m_workspaceContainer->m_accessMutex.lock();
     m_workspaceContainer->m_expandedFullNames.remove(fullName);
     m_workspaceContainer->m_accessMutex.unlock();
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WorkspaceWidget::startDrag(Qt::DropActions supportedActions)
+{
+    //QTreeWidget::startDrag(supportedActions);
+    QList<QTreeWidgetItem*> items = selectedItems();
+    if (items.count() > 0) 
+    {
+        QMimeData *data = mimeData(items);
+        if (!data)
+            return;
+        QRect rect;
+        QDrag *drag = new QDrag(this);
+        drag->setPixmap(m_dragPixmap);
+        drag->setMimeData(data);
+        Qt::DropAction defaultDropAction = Qt::IgnoreAction;
+        if (this->defaultDropAction() != Qt::IgnoreAction && (supportedActions & this->defaultDropAction()))
+            defaultDropAction = this->defaultDropAction();
+        else if (supportedActions & Qt::CopyAction && dragDropMode() != QAbstractItemView::InternalMove)
+            defaultDropAction = Qt::CopyAction;
+        drag->exec(supportedActions, defaultDropAction);
+    }
 }
 
 } //end namespace ito

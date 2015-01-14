@@ -239,7 +239,7 @@ end:
 
             if (eng->isPythonBusy() && !eng->isPythonDebuggingAndWaiting())
             {
-                return RetVal(retError, 2, tr("variables cannot be imported since python is busy right now").toLatin1().data());
+                return RetVal(retError, 2, tr("variables cannot be exported since python is busy right now").toLatin1().data());
             }
 
             QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
