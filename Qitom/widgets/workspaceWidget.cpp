@@ -25,7 +25,9 @@
 
 #include "../AppManagement.h"
 #include "../ui/dialogVariableDetail.h"
+
 #include <qstringlist.h>
+#include <qdrag.h>
 
 namespace ito
 {
