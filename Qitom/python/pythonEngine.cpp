@@ -333,9 +333,10 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("error importing sys in start python engine\n").toLatin1().data());
             if ((tretVal = runString("import itom")) != ito::retOk)
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("error importing itom in start python engine\n").toLatin1().data());
-            if ((tretVal = runString("sys.stdout = itom.pythonStream(1)")) != ito::retOk)
+            //the streams __stdout__ and __stderr__, pointing to the original streams at startup are None, but need to have a valid value for instance when using pip.
+            if ((tretVal = runString("sys.stdout = sys.__stdout__ = itom.pythonStream(1)")) != ito::retOk)
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("error redirecting stdout in start python engine\n").toLatin1().data());
-            if ((tretVal = runString("sys.stderr = itom.pythonStream(2)")) != ito::retOk)
+            if ((tretVal = runString("sys.stderr = sys.__stderr__ = itom.pythonStream(2)")) != ito::retOk)
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("error redirecting stderr in start python engine\n").toLatin1().data());
 
 
