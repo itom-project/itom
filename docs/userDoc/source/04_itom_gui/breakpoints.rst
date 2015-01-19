@@ -1,3 +1,5 @@
+.. _gui-breakpoints:
+
 Breakpoints
 ************
 .. image:: images/breakpoints.png
