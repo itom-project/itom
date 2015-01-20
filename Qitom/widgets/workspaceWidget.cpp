@@ -374,6 +374,8 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
             tempItem = item;
             while(tempItem->parent() != NULL)
             {
+                type = tempItem->data(0, Qt::UserRole + 3).toByteArray();
+
                 if (type[0] == PY_DICT || type[0] == PY_MAPPING || type[0] == PY_LIST)
                 {
                     if (type[1] == PY_NUMBER)

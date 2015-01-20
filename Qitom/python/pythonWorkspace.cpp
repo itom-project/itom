@@ -142,7 +142,7 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, const QString &fullN
     if(Py_IsInitialized() && obj != NULL)
     {
 
-        if(PySequence_Check(obj))
+        if(PyTuple_Check(obj) || PyList_Check(obj)) //was PySequence_Check(obj) before, however a class can also implement the sequence protocol
         {
             for( i = 0 ; i < PySequence_Size(obj) ; i++)
             {
@@ -199,7 +199,7 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, const QString &fullN
                 values = PyDict_Values(obj); //new ref
                 keyType[0] = PY_DICT;
             }
-            else if(PyMapping_Check(obj))
+            else if(PyMapping_Check(obj) && PyMapping_Size(obj) > 0)
             {
                 keys = PyMapping_Keys(obj); //new ref
                 values = PyMapping_Values(obj); //new ref
