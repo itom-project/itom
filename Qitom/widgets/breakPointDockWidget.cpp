@@ -40,7 +40,7 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
 {
     m_breakPointView = new QTreeViewItom(this);
 
-    m_enOrDisAbleAllBrakpoints = false;
+    m_enOrDisAbleAllBreakpoints = false;
 
     AbstractDockWidget::init();
 
@@ -51,7 +51,7 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
 
     connect(m_breakPointView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(treeViewContextMenuRequested(const QPoint &)));
     
-    connect(m_breakPointView, SIGNAL(clicked(const QModelIndex &)), this, SLOT(treeViewSelectionChanged(const QModelIndex &)));
+    connect(m_breakPointView, SIGNAL(selectedItemsChanged()), this, SLOT(treeViewSelectionChanged()));
     
     m_breakPointView->setTextElideMode(Qt::ElideLeft);
     m_breakPointView->sortByColumn(0);
@@ -67,6 +67,8 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
         // maybe it would be good to connect the rowsRemoved-Signal as well. Just to be shure!
     }
     m_breakPointView->setColumnWidth(0, 200);
+
+    updateActions();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -139,7 +141,7 @@ void BreakPointDockWidget::treeViewContextMenuRequested(const QPoint &pos)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void BreakPointDockWidget::treeViewSelectionChanged(const QModelIndex & index)
+void BreakPointDockWidget::treeViewSelectionChanged()
 {
     updateActions();
 }
@@ -183,20 +185,22 @@ void BreakPointDockWidget::mnuEditBreakpoint()
         {
             QModelIndex sel = m_breakPointView->selectedIndexes()[0];
             BreakPointItem bp = model->getBreakPoint(sel);
-
-            DialogEditBreakpoint *dlg = new DialogEditBreakpoint(bp.filename, bp.lineno+1, bp.enabled, bp.temporary , bp.ignoreCount, bp.condition);
-            dlg->exec();
-            if (dlg->result() == QDialog::Accepted)
+            if (bp.lineno > -1)
             {
-                dlg->getData(bp.enabled, bp.temporary, bp.ignoreCount, bp.condition);
-                bp.conditioned = (bp.condition != "") || (bp.ignoreCount > 0) || bp.temporary;
+                DialogEditBreakpoint *dlg = new DialogEditBreakpoint(bp.filename, bp.lineno+1, bp.enabled, bp.temporary , bp.ignoreCount, bp.condition);
+                dlg->exec();
+                if (dlg->result() == QDialog::Accepted)
+                {
+                    dlg->getData(bp.enabled, bp.temporary, bp.ignoreCount, bp.condition);
+                    bp.conditioned = (bp.condition != "") || (bp.ignoreCount > 0) || bp.temporary;
 
-                model->changeBreakPoint(sel, bp);
+                    model->changeBreakPoint(sel, bp);
+                }
+
+                DELETE_AND_SET_NULL(dlg);
+
+                model->changeBreakPoint(sel, bp, true);
             }
-
-            DELETE_AND_SET_NULL(dlg);
-
-            model->changeBreakPoint(sel, bp, true);
         }
     }
 }
@@ -208,7 +212,7 @@ void BreakPointDockWidget::mnuEnOrDisAbleBrakpoint()
     if (model)
     {
         QModelIndexList selected;
-        if (m_enOrDisAbleAllBrakpoints)
+        if (m_enOrDisAbleAllBreakpoints)
         { // select all
             selected = model->getAllBreakPointIndizes();
         }
@@ -219,15 +223,11 @@ void BreakPointDockWidget::mnuEnOrDisAbleBrakpoint()
         for (int i = 0; i<selected.length(); ++i)
         {
             BreakPointItem bp = model->getBreakPoint(selected[i]);
-            if (bp.enabled)
+            if (bp.lineno > -1) //else the item is not valid
             {
-                bp.enabled = false;
+                bp.enabled = !bp.enabled;
+                model->changeBreakPoint(selected[i], bp, true);
             }
-            else
-            {
-                bp.enabled = true;
-            }
-            model->changeBreakPoint(selected[i], bp, true);
         }
     }
 }
@@ -236,16 +236,22 @@ void BreakPointDockWidget::mnuEnOrDisAbleBrakpoint()
 void BreakPointDockWidget::mnuEnOrDisAbleAllBrakpoints()
 {
     m_breakPointView->clearSelection();
-    m_enOrDisAbleAllBrakpoints = true;
+    m_enOrDisAbleAllBreakpoints = true;
     mnuEnOrDisAbleBrakpoint();
-    m_enOrDisAbleAllBrakpoints = false;
+    m_enOrDisAbleAllBreakpoints = false;
     m_breakPointView->clearSelection();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void BreakPointDockWidget::updateActions()
 {
+    //m_pActDelBP (only active if only one or more breakpoints are selected)
+    //m_pActDelAllBPs (always active)
+    //m_pActEditBP (only active if exactly one breakpoint is selected)
+    //m_pActToggleBP (only active if only one or more breakpoints are selected)
+    //m_pActToggleAllBPs (always active)
     QModelIndexList sel = m_breakPointView->selectedIndexes();
+
     if (sel.length() == 1 && sel.at(0).parent().isValid())
     {
         m_pActEditBP->setEnabled(true);
@@ -254,17 +260,17 @@ void BreakPointDockWidget::updateActions()
     {
         m_pActEditBP->setEnabled(false);
     }
+
+    m_pActToggleBP->setEnabled(sel.length() >= 1);
+    m_pActDelBP->setEnabled(sel.length() >= 1);
+
     for (int i = 0; i < sel.length(); ++i)
     {
-        if (sel.at(i).parent().isValid())
-        {
-            m_pActToggleBP->setEnabled(true);
-            m_pActDelBP->setEnabled(true);
-        }
-        else
+        if (!sel.at(i).parent().isValid())
         {
             m_pActToggleBP->setEnabled(false);
             m_pActDelBP->setEnabled(false);
+            break;
         }
     }
 }

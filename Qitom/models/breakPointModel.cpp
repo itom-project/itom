@@ -575,10 +575,10 @@ int BreakPointModel::nrOfBreakpointsInFile(const int fileIdx) const
     {
         QString filename = m_scriptFiles[fileIdx];
         int count = 0;
-
-        foreach(const BreakPointItem &item, m_breakpoints)
+        
+        for (int i = 0; i < m_breakpoints.size(); ++i)
         {
-            if (QString::compare(item.filename, filename, m_filenameCaseSensitivity) == 0)
+            if (QString::compare(m_breakpoints[i].filename, filename, m_filenameCaseSensitivity) == 0)
             {
                 count++;
             }
