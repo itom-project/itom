@@ -2878,6 +2878,7 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObject* globalDict, PyObject* localDict)
 {
+    //if localDict is equal to globalDict, the localDict is the current global dict (currently debugging at top level) -> it is sufficient to only show the global dict and delete the local dict
     //qDebug() << "python emitPythonDictionary. Thread: " << QThread::currentThreadId ();
     if (emitGlobal && m_mainWorkspaceContainer.count() > 0)
     {
@@ -2903,7 +2904,7 @@ void PythonEngine::emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObjec
 
     if (emitLocal && m_localWorkspaceContainer.count() > 0)
     {
-        if (localDict != NULL)
+        if (localDict != NULL && localDict != globalDict)
         {
             foreach (ito::PyWorkspaceContainer* cont, m_localWorkspaceContainer)
             {
@@ -3145,7 +3146,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             }
             else
             {
-                pyEngine->emitPythonDictionary(true,false,globalDict,NULL);
+                pyEngine->emitPythonDictionary(true,true,globalDict,NULL);
             }
         }
 
