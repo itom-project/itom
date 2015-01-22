@@ -3010,7 +3010,16 @@ void PythonEngine::pythonInterruptExecution()
     if (m_interruptCounter == 0)
     {
         m_interruptCounter.ref();
-        Py_AddPendingCall(queuedInterrupt, NULL); 
+        if (isPythonDebugging() && isPythonDebuggingAndWaiting())
+        {
+            dbgCmdMutex.lock();
+            debugCommandQueue.insert(0, ito::pyDbgQuit);
+            dbgCmdMutex.unlock();
+        }
+        else
+        {
+            Py_AddPendingCall(queuedInterrupt, NULL);
+        }
     }
     //PyErr_SetNone(PyExc_KeyboardInterrupt); 
     //PyErr_SetInterrupt();
@@ -3202,6 +3211,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             {
                 PyErr_Print();
             }
+            PythonEngine::getInstanceInternal()->m_interruptCounter.deref();
             break;
         }
     }

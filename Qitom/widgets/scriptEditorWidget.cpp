@@ -941,7 +941,8 @@ void ScriptEditorWidget::menuStopScript()
     {
         if (eng->isPythonDebugging() && eng->isPythonDebuggingAndWaiting())
         {
-            QMetaObject::invokeMethod(eng, "pythonDebugCommand", Q_ARG(tPythonDbgCmd, pyDbgQuit));
+//            QMetaObject::invokeMethod(eng, "pythonDebugCommand", Q_ARG(tPythonDbgCmd, pyDbgQuit));
+            eng->pythonInterruptExecution();
         }
         else
         {

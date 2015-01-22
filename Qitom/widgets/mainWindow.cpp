@@ -1768,7 +1768,12 @@ void MainWindow::mnuScriptStop()
 {
     if (pythonDebugMode() && pythonInWaitingMode())
     {
-        emit(pythonDebugCommand(ito::pyDbgQuit));
+        PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+        if (pyeng)
+        {
+            pyeng->pythonInterruptExecution();
+        }
+//        emit(pythonDebugCommand(ito::pyDbgQuit));
         raise();
     }
     else

@@ -1879,8 +1879,13 @@ void ScriptDockWidget::mnuScriptStop()
 {
     if (pythonDebugMode() && pythonInWaitingMode())
     {
-        emit (pythonDebugCommand(ito::pyDbgQuit));
+//        emit (pythonDebugCommand(ito::pyDbgQuit));
         //activateWindow(); (if you uncomment this line,the script window will always dissappear in the background - that's a little bit crazy, therefore don't activate it here)
+        PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+        if (pyeng)
+        {
+            pyeng->pythonInterruptExecution();
+        }
     }
     else
     {
