@@ -37,7 +37,7 @@ Double-clicking on an item opens an small dialog where the content of the variab
     
     print(VARIABLENAME)
 
-The context menu, depicted in the figure above shows some important methods of this toolbox. Most of them are also accessible by the toolboxes
+The context menu, depicted in the figure above, shows some important methods of this toolbox. Most of them are also accessible by the toolboxes
 toolbar. You can always delete |vardelete| one or multiple selected variables or you can rename |varrename| one selected variable. Additionally, there is the possibility
 to import |varimport| or export |varexport| variables to or from this workspace.
 
@@ -62,6 +62,8 @@ In both the file open and save dialogs, the filter list always considers all fil
 
 All variables which are defined in python console or in any python script are stored as global variables.
 These can be seen in the Global Variables Toolbox.
+
+In order to insert the name of a variable into the :ref:`command line <console>` or a :ref:`script editor widget <gui-editor>` you can drag-and-drop a root-level variable into the destination widget. Currently, the drag-and-drop is only available for root-level variables. In any other cases you can access the entire string to the variable or its subitems (for lists, tuples, dictionaries, classes...) by double-clicking on the item. Then, a dialog is opened that shows details about the clicked item. Click the copy-icon next to the name of the variable in order to copy the name string into the clipboard.
 
 
 .. |varexport| image:: images/varexport.png  

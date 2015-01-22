@@ -54,6 +54,8 @@ public:
     {
         PyObject_HEAD
         int type;   /*!<  1: stream catches cout-stream, 2: stream catches cerr-stream */
+        PyObject *encoding;
+        char closed;
     } 
     PythonStream;
 

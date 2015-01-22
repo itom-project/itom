@@ -9,7 +9,7 @@ Introduction
 =============
 
 One main component of |itom| is the integrated scripting language |python|. In order to make |itom| ready for the future, |python| is based on the version-family 3.
-If you already know |python| or already have used |python|, you probabily know about the huge functionality which already is provided by |python| itself or by one of its
+If you already know |python| or already have used |python|, you probably know about the huge functionality which already is provided by |python| itself or by one of its
 various modules, that are available in the internet. The good is, that you can execute the same |python|-scripts in |itom|. There are only few limitations concerning
 some |python| modules (see :ref:`script-python-limitations`).
 

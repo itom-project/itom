@@ -2172,7 +2172,7 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
         else if (methods.indexIn(line) != -1)
         {
             // Methode
-            //checken ob line-1 == @declarator besitzt
+            //checken ob line-1 == @decorator besitzt
             ClassNavigatorItem *meth = new ClassNavigatorItem();
             meth->m_name = methods.cap(3) + methods.cap(4);
             meth->m_args = methods.cap(5);
@@ -2186,30 +2186,29 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
                 meth->m_priv = false;
             }
             // Check for indentation:
-            if (methods.cap(1).length() == 0)
-            {// No indentation => Global Method
-                if (parent->m_internalType == ClassNavigatorItem::typePyRoot)
-                {
-                    meth->setInternalType(ClassNavigatorItem::typePyGlobal);
-                    parent->m_member.append(meth);
-                }
-                else
-                {
-                    DELETE_AND_SET_NULL(meth);
-                    return i;
-                }
-            }            
-            else if (methods.cap(1).length() == depth*tabLength)
+            //if (methods.cap(1).length() == 0)
+            //{// No indentation => Global Method
+            //    if (parent->m_internalType == ClassNavigatorItem::typePyRoot)
+            //    {
+            //        meth->setInternalType(ClassNavigatorItem::typePyGlobal);
+            //        parent->m_member.append(meth);
+            //    }
+            //    else
+            //    {
+            //        DELETE_AND_SET_NULL(meth);
+            //        return i;
+            //    }
+            //}            
+            if (methods.cap(1).length() == depth*tabLength)
             {// Child des parents
                 if (decorator.indexIn(decoLine) != -1)
                 {
-                    QString TODO = decorator.cap(3);
-                    //if (decorator.cap(3) == "staticmethod")
-                    if (TODO == "staticmethod")
+                    QString decorator_ = decorator.cap(3);
+                    if (decorator_ == "staticmethod")
                     {
                         meth->setInternalType(ClassNavigatorItem::typePyStaticDef);
                     }
-                    else if (decorator.cap(3) == "classmethod")
+                    else if (decorator_ == "classmethod")
                     {
                         meth->setInternalType(ClassNavigatorItem::typePyClMethDef);
                     }

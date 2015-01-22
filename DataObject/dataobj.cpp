@@ -5286,6 +5286,12 @@ DataObject DataObject::squeeze() const
     }
 
     int numMats = calcNumMats();
+
+    if (numMats == 0)
+    {
+        cv::error(cv::Exception(CV_StsAssert,"DataObject to squeeze must contain at least one value (has zero planes).",  "", __FILE__, __LINE__));
+    }
+
     cv::Mat * planes = new cv::Mat[numMats];
 
     for(int i = 0 ; i < numMats ; i++)

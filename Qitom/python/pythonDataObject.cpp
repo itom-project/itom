@@ -4793,15 +4793,32 @@ will also change the original data set.\n\
 This method is equal to numpy.squeeze");
 PyObject* PythonDataObject::PyDataObject_squeeze(PyDataObject *self, PyObject* /*args*/)
 {
-    if (self->dataObject == NULL) return 0;
+    if (self->dataObject == NULL) return NULL;
+    bool unlocked = false;
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
     self->dataObject->lockRead();
-    ito::DataObject resObj = self->dataObject->squeeze();
-    self->dataObject->unlock();
+    
+    try
+    {
+        ito::DataObject resObj = self->dataObject->squeeze();
+        self->dataObject->unlock();
+        unlocked = true;
+        retObj->dataObject = new ito::DataObject(resObj);
+    }
+    catch(cv::Exception exc)
+    {
+        if (!unlocked)
+        {
+            self->dataObject->unlock();
+        }
+        retObj->dataObject = NULL;
 
-    retObj->dataObject = new ito::DataObject(resObj);
+        Py_DECREF(retObj);
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        return NULL;
+    }
 
     if (!retObj->dataObject->getOwnData())
     {
@@ -4902,7 +4919,7 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
             {
                 singlePointIdx[i] = 0;
                 error = true;
-                PyErr_SetString(PyExc_TypeError, "length of key-tuple exceeds dimension of data object");
+                PyErr_SetString(PyExc_IndexError, "length of key-tuple exceeds dimension of data object");
             }
         }
         else if (PySlice_Check(elem))
@@ -4912,10 +4929,15 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
             Py_ssize_t start, stop, step, slicelength;
             if (PySlice_GetIndicesEx(elem, self->dataObject->getSize(i), &start, &stop, &step, &slicelength) == 0)
             {
-                if (step != 1)
+                if (slicelength < 1)
                 {
                     error = true;
-                    PyErr_SetString(PyExc_TypeError, "step size must be one.");
+                    PyErr_SetString(PyExc_IndexError, "length of slice must be >= 1");
+                }
+                else if (step != 1)
+                {
+                    error = true;
+                    PyErr_SetString(PyExc_IndexError, "step size must be one.");
                 }
                 else
                 {

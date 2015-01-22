@@ -333,9 +333,10 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("error importing sys in start python engine\n").toLatin1().data());
             if ((tretVal = runString("import itom")) != ito::retOk)
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("error importing itom in start python engine\n").toLatin1().data());
-            if ((tretVal = runString("sys.stdout = itom.pythonStream(1)")) != ito::retOk)
+            //the streams __stdout__ and __stderr__, pointing to the original streams at startup are None, but need to have a valid value for instance when using pip.
+            if ((tretVal = runString("sys.stdout = sys.__stdout__ = itom.pythonStream(1)")) != ito::retOk)
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("error redirecting stdout in start python engine\n").toLatin1().data());
-            if ((tretVal = runString("sys.stderr = itom.pythonStream(2)")) != ito::retOk)
+            if ((tretVal = runString("sys.stderr = sys.__stderr__ = itom.pythonStream(2)")) != ito::retOk)
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("error redirecting stderr in start python engine\n").toLatin1().data());
 
 
@@ -2877,6 +2878,7 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObject* globalDict, PyObject* localDict)
 {
+    //if localDict is equal to globalDict, the localDict is the current global dict (currently debugging at top level) -> it is sufficient to only show the global dict and delete the local dict
     //qDebug() << "python emitPythonDictionary. Thread: " << QThread::currentThreadId ();
     if (emitGlobal && m_mainWorkspaceContainer.count() > 0)
     {
@@ -2902,7 +2904,7 @@ void PythonEngine::emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObjec
 
     if (emitLocal && m_localWorkspaceContainer.count() > 0)
     {
-        if (localDict != NULL)
+        if (localDict != NULL && localDict != globalDict)
         {
             foreach (ito::PyWorkspaceContainer* cont, m_localWorkspaceContainer)
             {
@@ -3153,7 +3155,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             }
             else
             {
-                pyEngine->emitPythonDictionary(true,false,globalDict,NULL);
+                pyEngine->emitPythonDictionary(true,true,globalDict,NULL);
             }
         }
 

@@ -98,7 +98,7 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
     int t = QRegion::Rectangle;
     PyObject *other = NULL;
 
-    if(PyTuple_Size(args) == 0)
+    if(!args || PyTuple_Size(args) == 0)
     {
         DELETE_AND_SET_NULL(self->r);
         self->r = new QRegion();
@@ -161,7 +161,7 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
     }
     else
     {
-        result = PyUnicode_FromFormat("Figure(rects: %i)", self->r->rectCount() );
+        result = PyUnicode_FromFormat("Region(rects: %i)", self->r->rectCount() );
     }
     return result;
 }

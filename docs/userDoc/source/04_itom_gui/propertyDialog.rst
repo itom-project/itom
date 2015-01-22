@@ -63,10 +63,14 @@ By "Add File" is is possible to add python files that are executed when itom is 
 Editor
 ------
 
+.. _gui-prop-py-api:
+
 API
 ^^^
 
 The api files listed in the checkbox are necessary for syntax highlighting. New api files can be added by clicking on the "Add API" button on the right side.
+
+.. _gui-prop-auto-completion:
 
 Auto Completion
 ^^^^^^^^^^^^^^^
@@ -89,6 +93,8 @@ The other function  shows a list of available members of classes after entering 
 
 The three radio buttons in the group box at the bottom of the page set the source of the auto completion. Therefore take a look at API.
 
+.. _gui-prop-calltips:
+
 Calltips
 ^^^^^^^^
 
@@ -98,6 +104,8 @@ Calltips are tooltips that appear to display arguments of functions. They appear
     :scale: 100%
     :align: center
 
+.. _gui-prop-py-general:
+    
 General
 ^^^^^^^
 
@@ -117,11 +125,16 @@ Inside "Indentation Warning" group box it is possible to select which kind of in
 
 The radio buttons inside the "End-of-line (EOL) mode" group box decide whether to use "", "" or "" as eol, depending on your operating system.
 
-The Python Syntax Checker checks the code inside the editor widget for bugs. If there are bug, a small red ladybug is shown besides the line numbers. If the cursor is moved over a ladybug, a tooltip shows the error.
+The **Python Syntax Checker** checks the code inside the editor widget for bugs. If there are bug, a small red ladybug is shown besides the line numbers. If the cursor is moved over a ladybug, a tooltip shows the error (for more information see the help about the :ref:`script editor window <gui-editor-syntax-check>`).
 
 * The Itom module is always included in every script. This causes wrong bugs appearances because the checking module (frosted) is not able to see the itom inclusion. To avoid these errors check the "Automatically include itom module..." check box. It includes "include itom" in every header before checking the code to avoid wrong bugs. 
 
-* The "Check  intervall" check box sets the intervall the code is send to "frosted" for syntax checks. 
+* The "Check interval" check box sets the interval the code is send to "frosted" for syntax checks. 
+
+The **class navigator** feature allows configuring the :ref:`class navigator <gui-editor-class-navigator>` of any script editor window. The checkbox of the entire groupbox en- or disables this feature. Use the timer to recheck the script structure after a certain amount of seconds since the last change of the script. If the timer is disabled, the structure is only analyzed when the script is shown or loaded.
+
+
+.. _gui-prop-py-styles:
 
 Styles
 ^^^^^^
