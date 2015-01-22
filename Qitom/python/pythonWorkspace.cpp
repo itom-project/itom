@@ -262,7 +262,7 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, const QString &fullN
                             keyKey[1] = PY_STRING;
                         }
 
-                        it = parentItem->m_childs.find(keyText);
+                        it = parentItem->m_childs.find(keyKey);
                         if(it == parentItem->m_childs.end()) //not existing yet
                         {
                             actItem = new PyWorkspaceItem();
@@ -277,6 +277,7 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, const QString &fullN
                                 //load subtree
                                 loadDictionaryRec(value, fullName, actItem, deletedKeys);
                             }
+
                             parentItem->m_childs.insert(keyKey,actItem);
                         }
                         else //item with this name already exists
