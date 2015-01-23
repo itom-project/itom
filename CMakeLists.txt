@@ -15,7 +15,7 @@ if (BUILD_TARGET64)
 else (BUILD_TARGET64)
    set(CMAKE_SIZEOF_VOID_P 4)
 endif (BUILD_TARGET64) 
- 
+  
      
 ADD_SUBDIRECTORY(DataObject) 
      

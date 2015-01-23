@@ -50,34 +50,35 @@ if(CMAKE_HOST_WIN32)
     endif()
 endif()
 
-#on MSVC enable build using OpenMP for compiling
+
 if(MSVC)
     ADD_DEFINITIONS(/MP)
 
     # set some optimization compiler flags
     # i.e.:
     #   - Ox full optimization (replaces standard O2 set by cmake)
-    #    - Oi enable intrinsic functions
-    #    - Ot favor fast code
-    #    - Oy omit frame pointers
-    #    - GL whole program optimization
-    #     - GT fibre safe optimization
-    #    - openmp enable openmp support, isn't enabled globally here as it breaks opencv
-    SET ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /Ot /Oy /GL /openmp -D USEOPENMP" )
-    SET ( CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /Ot /Oy /GL /openmp -D USEOPENMP" )
+    #   - Oi enable intrinsic functions
+    #   - Ot favor fast code
+    #   - Oy omit frame pointers
+    #   - GL whole program optimization
+    #   - GT fibre safe optimization
+    #   - openmp enable openmp support, isn't enabled globally here as it breaks opencv
+    SET ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /Ot /Oy /GL" )
+    SET ( CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /Ot /Oy /GL" )
     SET ( CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
 endif (MSVC)
 
-IF (UNIX)
-    find_package(OpenMP)
-    if (OPENMP_FOUND)
-        set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-        SET ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D USEOPENMP" )
-        SET ( CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D USEOPENMP" )
-    endif()
-    message(STATUS "enabeling openmp for linux")
-ENDIF (UNIX)
+#try to enable OpenMP (e.g. not available with VS Express)
+find_package(OpenMP)
+
+IF (OPENMP_FOUND)
+    message(STATUS "OpenMP found and enabled for release compilation")
+    SET ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${OpenMP_CXX_FLAGS} -D USEOPENMP" )
+    SET ( CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${OpenMP_C_FLAGS} -D USEOPENMP" )
+ELSE(OPENMP_FOUND)
+    message(STATUS "OpenMP not found.")
+ENDIF(OPENMP_FOUND)
+
 
 IF (BUILD_ITOMLIBS_SHARED OR ITOM_SDK_SHARED_LIBS)
     ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
@@ -134,13 +135,13 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
     set (QT5_FOUND FALSE)
         
     IF (DETECT_QT5)
-		
+        
         #TRY TO FIND QT5
         find_package(Qt5 COMPONENTS Core QUIET)
         
         if (${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND")
-			
-	        #maybe Qt5.0 is installed that does not support the overall FindQt5 script
+            
+            #maybe Qt5.0 is installed that does not support the overall FindQt5 script
             find_package(Qt5Core QUIET)
             IF (NOT Qt5Core_FOUND)
                 IF(${BUILD_QTVERSION} STREQUAL "auto")
