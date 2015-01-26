@@ -1727,14 +1727,22 @@ dialogButtons : {dict}, optional \n\
 childOfMainWindow :  {bool}, optional \n\
     for type TYPEDIALOG and TYPEWINDOW only. Indicates whether window should be a child of itom main window (default: True) \n\
 deleteOnClose : {bool}, optional \n\
-    Indicates whether window should be deleted if user closes it or if it is hidden (default: Hidden, False)");
+    Indicates whether window should be deleted if user closes it or if it is hidden (default: Hidden, False) \n\
+dockWidgetArea : {int}, optional \n\
+    Only for type ui.TYPEDOCKWIDGET (2). Indicates the position where the dock widget should be placed: \n\
+    \n\
+        * 1 (ui.LEFTDOCKWIDGETAREA) \n\
+        * 2 (ui.RIGHTDOCKWIDGETAREA) \n\
+        * 4 (ui.TOPDOCKWIDGETAREA): default \n\
+        * 8 (ui.BOTTOMDOCKWIDGETAREA)");
 int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
 {
-    const char *kwlist[] = {"filename", "type", "dialogButtonBar", "dialogButtons", "childOfMainWindow", "deleteOnClose", NULL};
+    const char *kwlist[] = {"filename", "type", "dialogButtonBar", "dialogButtons", "childOfMainWindow", "deleteOnClose", "dockWidgetArea", NULL};
     PyObject *dialogButtons = NULL;
     PyObject *tmp;
     PyBytesObject *bytesFilename = NULL; //weak reference
     char *internalFilename;
+    int dockWidgetArea = Qt::TopDockWidgetArea;
     //PyUnicode_FSConverter
 
     if(args == NULL || PyTuple_Size(args) == 0) //empty constructor
@@ -1742,7 +1750,7 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
         return 0;
     }
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "O&|iiO!bb", const_cast<char**>(kwlist), &PyUnicode_FSConverter, &bytesFilename, &self->winType, &self->buttonBarType, &PyDict_Type, &dialogButtons, &self->childOfMainWindow, &self->deleteOnClose))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "O&|iiO!bbi", const_cast<char**>(kwlist), &PyUnicode_FSConverter, &bytesFilename, &self->winType, &self->buttonBarType, &PyDict_Type, &dialogButtons, &self->childOfMainWindow, &self->deleteOnClose, &dockWidgetArea))
     {
         //PyErr_SetString(PyExc_TypeError,"Arguments does not fit to required list of arguments. See help(ui)."); //message is already set by method above and the text is more specific.
         //Py_XDECREF(bytesFilename); //error: crash if bytesFilename is deleted here. Why?
@@ -1814,7 +1822,7 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
         }
     }
 
-    int uiDescription = UiOrganizer::createUiDescription(self->winType,self->buttonBarType,self->childOfMainWindow,self->deleteOnClose);
+    int uiDescription = UiOrganizer::createUiDescription(self->winType,self->buttonBarType,self->childOfMainWindow,self->deleteOnClose, dockWidgetArea);
     QSharedPointer<QByteArray> className(new QByteArray());
     QSharedPointer<unsigned int> objectID(new unsigned int);
     QMetaObject::invokeMethod(uiOrga, "createNewDialog",Q_ARG(QString,QString(self->filename)), Q_ARG(int, uiDescription), Q_ARG(StringMap, dialogButtonMap), Q_ARG(QSharedPointer<uint>, dialogHandle),Q_ARG(QSharedPointer<uint>, initSlotCount), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
@@ -3124,6 +3132,20 @@ void PythonUi::PyUi_addTpDict(PyObject *tp_dict)
     Py_DECREF(value);
     value = Py_BuildValue("i", 2);
     PyDict_SetItemString(tp_dict, "BUTTONBAR_VERTICAL", value);
+    Py_DECREF(value);
+
+    //add dock widget area
+    value = Py_BuildValue("i", Qt::LeftDockWidgetArea);
+    PyDict_SetItemString(tp_dict, "LEFTDOCKWIDGETAREA", value);
+    Py_DECREF(value);
+    value = Py_BuildValue("i", Qt::RightDockWidgetArea);
+    PyDict_SetItemString(tp_dict, "RIGHTDOCKWIDGETAREA", value);
+    Py_DECREF(value);
+    value = Py_BuildValue("i", Qt::TopDockWidgetArea);
+    PyDict_SetItemString(tp_dict, "TOPDOCKWIDGETAREA", value);
+    Py_DECREF(value);
+    value = Py_BuildValue("i", Qt::BottomDockWidgetArea);
+    PyDict_SetItemString(tp_dict, "BOTTOMDOCKWIDGETAREA", value);
     Py_DECREF(value);
 }
 

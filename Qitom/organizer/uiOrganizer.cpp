@@ -489,7 +489,13 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
 
     int type, buttonBarType;
     bool childOfMainWindow;
-    UiOrganizer::parseUiDescription(uiDescription, &type, &buttonBarType, &childOfMainWindow, &deleteOnClose);
+    int dockWidgetArea;
+    UiOrganizer::parseUiDescription(uiDescription, &type, &buttonBarType, &childOfMainWindow, &deleteOnClose, &dockWidgetArea);
+
+    if ((dockWidgetArea & Qt::AllDockWidgetAreas) == 0)
+    {
+        retValue += ito::RetVal(ito::retError, 0, "dockWidgetArea is invalid");
+    }
 
     QMainWindow *mainWin = childOfMainWindow ? qobject_cast<QMainWindow*>(AppManagement::getMainWindow()) : NULL;
 
@@ -710,9 +716,14 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
                     }
                     else
                     {
+                        Qt::DockWidgetArea dwa = Qt::TopDockWidgetArea;
+                        if (dockWidgetArea == Qt::LeftDockWidgetArea) dwa = Qt::LeftDockWidgetArea;
+                        else if (dockWidgetArea == Qt::RightDockWidgetArea) dwa = Qt::RightDockWidgetArea;
+                        else if (dockWidgetArea == Qt::BottomDockWidgetArea) dwa = Qt::BottomDockWidgetArea;
+
                         QDockWidget *dockWidget = new QDockWidget(wid->windowTitle(), mainWin);
                         dockWidget->setWidget(wid);
-                        mainWin->addDockWidget(Qt::TopDockWidgetArea, dockWidget);
+                        mainWin->addDockWidget(dwa, dockWidget);
 
                         set = new UiContainer(dockWidget);
                         *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;

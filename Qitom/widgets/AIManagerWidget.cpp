@@ -126,7 +126,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, const QString &objName, Q
     m_pSortFilterProxyModel = new QSortFilterProxyModel(this);
     m_pSortFilterProxyModel->setSourceModel(aim->getPluginModel());
     m_pAIManagerView->setModel(m_pSortFilterProxyModel);
-    m_pAIManagerView->sortByColumn(1,Qt::AscendingOrder);
+    m_pAIManagerView->sortByColumn(0, Qt::AscendingOrder);
     connect(m_pAIManagerView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)), Qt::DirectConnection);
 
     // expanding DataIO node
