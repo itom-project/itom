@@ -54,16 +54,16 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
         #addButton("toolBarRoughnesStatistics","Ra/Sa","surfaceAnalysisTools.calcRaSa()", "")
         #addButton("toolBarRoughnesStatistics","Rq/Sq","surfaceAnalysisTools.calcRqSq()", "")
         if self.hasButtons == True:
-            addButton(self.myNameDelete,"Substract Plane", self.planefit, ":/misc/icons/itom_icons/linelev.png")
-            addButton(self.myNameDelete,"Substract Polynome", self.polyfit, ":/misc/icons/itom_icons/polylev.png")
+            addButton(self.myNameDelete,"Subtract Plane", self.planefit, ":/misc/icons/itom_icons/linelev.png")
+            addButton(self.myNameDelete,"Subtract Polynome", self.polyfit, ":/misc/icons/itom_icons/polylev.png")
         
     def __del__(self):
         #removeButton("roughness","Rz/Sz")
         #removeButton("roughness","Ra/Sa")
         #removeButton("roughness","Rq/Sq")
         
-        #removeButton("roughness","Substract Plane")
-        #removeButton("roughness","Substract Polynome")
+        #removeButton("roughness","Subtract Plane")
+        #removeButton("roughness","Subtract Polynome")
         
         #removeButton(self.myNameDelete,"Rz/Sz")
         #removeButton(self.myNameDelete,"Ra/Sa")
@@ -73,8 +73,8 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
             removeMenu(hashName)
         
         if self.hasButtons == True:
-            removeButton(self.myNameDelete,"Substract Plane")
-            removeButton(self.myNameDelete,"Substract Polynome")
+            removeButton(self.myNameDelete,"Subtract Plane")
+            removeButton(self.myNameDelete,"Subtract Polynome")
     
     def __getVarNameText(self, defaultVarName, valuename, textstring = "Calculate {} for Object:"):
         [varname, check] = ui.getText("Variable input", textstring.format(valuename), defaultVarName)
