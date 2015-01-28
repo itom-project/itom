@@ -63,11 +63,11 @@ class UserOrganizer : QObject
         inline void setUserRole(const int role) { m_userRole = role; }
         void setUserRole(const QString role) 
         { 
-            if (role == "developer")
+            if (role == strConstRoleDeveloper)
             {
                 m_userRole = 2;
             }
-            else if (role == "admin")
+            else if (role == strConstRoleAdministrator)
             {
                 m_userRole = 1;
             }
@@ -77,6 +77,7 @@ class UserOrganizer : QObject
             }
         }
         inline int getUserRole() const { return m_userRole; }
+        QString getFeatureName(const userFeatures &feature) const;
         QString getUserID(void) const;
         QString getUserID(QString inifile) const;
         int getFlagsFromFile(QString fileName);
@@ -94,8 +95,19 @@ class UserOrganizer : QObject
             bool b = (m_features & feature) > 0;
             return b;
         }
+        QString strConstFeatDeveloper;
+        QString strConstFeatFileSystem;
+        QString strConstFeatUserManag;
+        QString strConstFeatPlugins;
+        QString strConstFeatConsole;
+        QString strConstFeatConsoleRO;
+        QString strConstFeatProperties;
+        QString strConstRole;
+        QString strConstRoleUser;
+        QString strConstRoleAdministrator;
+        QString strConstRoleDeveloper;
 
-private:
+    private:
         UserOrganizer(void);
         UserOrganizer(UserOrganizer  &/*copyConstr*/) : QObject() {}
         ~UserOrganizer(void) {};

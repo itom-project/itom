@@ -22,6 +22,7 @@
 
 #include "dialogSelectUser.h"
 #include "../AppManagement.h"
+#include "../organizer/userOrganizer.h"
 
 namespace ito {
 
@@ -49,39 +50,102 @@ void DialogSelectUser::DialogInit(UserModel *model)
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogSelectUser::userListCurrentChanged(const QModelIndex &current, const QModelIndex &previous)
 {
+    bool userExists = false;
+
+    ui.permissionList->clear();
+
     if (m_userModel)
     {
         QModelIndex curIdx = ui.userList->currentIndex();
         if (curIdx.isValid())
         {
-            QModelIndex midx = m_userModel->index(curIdx.row(), 0);
-            ui.lineEdit_name->setText(midx.data().toString());
-            midx = m_userModel->index(curIdx.row(), 2);
-            ui.lineEdit_role->setText(midx.data().toString());
-            midx = m_userModel->index(curIdx.row(), 3);
-            ui.lineEdit_iniFile->setText(midx.data().toString());
+            userExists = true;
+
+            UserOrganizer *uio = (UserOrganizer*)AppManagement::getUserOrganizer();
+            ui.lineEdit_name->setText(m_userModel->index(curIdx.row(), 0).data().toString());
+            ui.lineEdit_id->setText(m_userModel->index(curIdx.row(), 1).data().toString());
+            ui.lineEdit_iniFile->setText(m_userModel->index(curIdx.row(), 3).data().toString());
+
+            QString roleText;
+            QModelIndex midx = m_userModel->index(curIdx.row(), 2);
+            if (midx.data().toString() == "developer")
+            {
+                roleText = uio->strConstRoleDeveloper;
+            }
+            else if (midx.data().toString() == "admin")
+            {
+                roleText = uio->strConstRoleAdministrator;
+            }
+            else
+            {
+                roleText = uio->strConstRoleUser;
+            }
+            ui.permissionList->addItem(uio->strConstRole + ": " + roleText);
+
+            long flags = uio->getFlagsFromFile(m_userModel->index(curIdx.row(), 3).data().toString());
+            if (flags & featDeveloper)
+            {
+                ui.permissionList->addItem(uio->strConstFeatDeveloper);
+            }
+
+            if (flags & featFileSystem)
+            {
+                ui.permissionList->addItem(uio->strConstFeatFileSystem);
+            }
+
+            if (flags & featUserManag)
+            {
+                ui.permissionList->addItem(uio->strConstFeatUserManag);
+            }
+
+            if (flags & featPlugins)
+            {
+                ui.permissionList->addItem(uio->strConstFeatPlugins);
+            }
+
+            if (flags & featProperties)
+            {
+                ui.permissionList->addItem(uio->strConstFeatProperties);
+            }
+
+            if ((flags & featConsole) && (flags & featConsoleRW))
+            {
+                ui.permissionList->addItem(uio->strConstFeatConsole);
+            }
+            else if (flags & featConsole)
+            {
+                ui.permissionList->addItem(uio->strConstFeatConsoleRO);
+            }
         }
+    }
+
+    if (!userExists)
+    {
+        ui.lineEdit_name->setText("");
+        ui.lineEdit_id->setText("");
+        ui.lineEdit_iniFile->setText("");
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogSelectUser::on_userList_doubleClicked(const QModelIndex current)
 {
-    if (m_userModel)
-    {
-        QModelIndex curIdx = ui.userList->currentIndex();
-        if (curIdx.isValid())
-        {
-            QModelIndex midx = m_userModel->index(curIdx.row(), 0);
-            ui.lineEdit_name->setText(midx.data().toString());
-            midx = m_userModel->index(curIdx.row(), 2);
-            ui.lineEdit_role->setText(midx.data().toString());
-            midx = m_userModel->index(curIdx.row(), 3);
-            ui.lineEdit_iniFile->setText(midx.data().toString());
-        }
-    }
     this->accept();
-    return;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogSelectUser::on_buttonBox_clicked(QAbstractButton* btn)
+{
+    QDialogButtonBox::ButtonRole role = ui.buttonBox->buttonRole(btn);
+
+    if (role == QDialogButtonBox::AcceptRole)
+    {
+        accept(); //AcceptRole
+    }
+    else
+    {
+        reject(); //close dialog with reject
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

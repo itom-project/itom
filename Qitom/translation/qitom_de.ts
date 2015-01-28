@@ -604,23 +604,41 @@ p, li { white-space: pre-wrap; }
     <name>DialogSelectUser</name>
     <message>
         <location filename="../ui/dialogSelectUser.ui"/>
-        <source>Dialog</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>Name</source>
         <translation>Name</translation>
     </message>
     <message>
-        <location/>
         <source>Role</source>
-        <translation>Rolle</translation>
+        <translation type="obsolete">Rolle</translation>
+    </message>
+    <message>
+        <source>Ini-File</source>
+        <translation type="obsolete">INI-Datei</translation>
     </message>
     <message>
         <location/>
-        <source>Ini-File</source>
-        <translation>INI-Datei</translation>
+        <source>Run itom as...</source>
+        <translation type="unfinished">Unter folgendem Benutzer starten...</translation>
+    </message>
+    <message>
+        <location/>
+        <source>User</source>
+        <translation type="unfinished">Benutzer</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Permission</source>
+        <translation type="unfinished">Berechtigungen</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Ini File</source>
+        <translation>Ini-Datei</translation>
+    </message>
+    <message>
+        <location/>
+        <source>ID</source>
+        <translation></translation>
     </message>
 </context>
 <context>
@@ -644,6 +662,16 @@ p, li { white-space: pre-wrap; }
         <location/>
         <source>Value:</source>
         <translation>Wert:</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Copy name to clipboard</source>
+        <translation>In die Zwischenablage kopieren</translation>
+    </message>
+    <message>
+        <location/>
+        <source>copy</source>
+        <translation>Kopieren</translation>
     </message>
 </context>
 <context>
@@ -694,12 +722,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="+1310"/>
+        <location filename="../helper/paramHelper.cpp" line="+1314"/>
         <source>invalid parameter name</source>
         <translation>Ungültiger Parametername</translation>
     </message>
     <message>
-        <location line="-1271"/>
+        <location line="-1275"/>
         <source>Types of parameter &apos;%s&apos; is unequal to required type of interface parameter &apos;%s&apos;</source>
         <translation type="unfinished">Der Typ des Parameters &apos;%s&apos; entspricht nicht dem geforderten Typ des Schnittstellenparameters &apos;%s&apos;</translation>
     </message>
@@ -852,12 +880,12 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+15"/>
-        <location line="+191"/>
+        <location line="+195"/>
         <source>the given meta information does not fit a an array of character values</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-171"/>
+        <location line="-175"/>
         <source>length of integer array out of range [%1, %2]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -883,18 +911,18 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+6"/>
-        <location line="+105"/>
+        <location line="+109"/>
         <source>The 1st value %1 does not fit to given step size [%2:%3:%4]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-101"/>
-        <location line="+105"/>
+        <location line="-105"/>
+        <location line="+109"/>
         <source>The 2nd value %1 does not fit to given step size [%2:%3:%4]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-98"/>
+        <location line="-102"/>
         <source>The given integer array [v1,v2] is considered to be an interval but the size of the interval (v2-v1) is out of bounds [%1,%2]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -905,12 +933,12 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+8"/>
-        <location line="+96"/>
+        <location line="+100"/>
         <source>The size of the interval (bound2-bound1) does not fit to given step size [%1:%2:%3]</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-92"/>
+        <location line="-96"/>
         <source>The size of the range (1+bound2-bound1) does not fit to given step size [%1:%2:%3]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -941,6 +969,11 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+10"/>
+        <source>The first value of the given double interval [%1,%2] is bigger than the second value.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>The given double array [v1=%1,v2=%2] is considered to be an interval but does not fit to v1=[%3,v2], v2=[v1,%4]</source>
         <translation type="unfinished"></translation>
     </message>
@@ -977,7 +1010,7 @@ p, li { white-space: pre-wrap; }
         <translation>Der Parameter ist nicht vom Typ Array. Eine Indizierung ist nicht möglich.</translation>
     </message>
     <message>
-        <location line="-722"/>
+        <location line="-726"/>
         <source>AddIn does not fit to minimum required type(s).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -987,7 +1020,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">AddIn muss folgendes Plugin sein: &apos;%s&apos;.</translation>
     </message>
     <message>
-        <location line="+347"/>
+        <location line="+351"/>
         <location line="+138"/>
         <source>Index-based parameter name requires an array-type parameter.</source>
         <translation type="unfinished">Indexbasierter Parametername erwartet einen Parameter vom Typ Array.</translation>
@@ -1106,7 +1139,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Die Größe der %i. Dimension übersteigt die aktuelle Begrenzung [%i, %i]</translation>
     </message>
     <message>
-        <location filename="../python/pythonCommon.cpp" line="+1114"/>
+        <location filename="../python/pythonCommon.cpp" line="+1142"/>
         <source>Keyword autoLoadParams not of integer type</source>
         <translation type="unfinished">Schlüsselwort autoLoadParams ist nicht vom Typ Integer</translation>
     </message>
@@ -1201,7 +1234,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="+2878"/>
+        <location filename="../python/pythonUi.cpp" line="+2886"/>
         <source>no widget name specified</source>
         <translation type="unfinished">Kein Widget-Name vergeben</translation>
     </message>
@@ -1345,7 +1378,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="+2571"/>
+        <location filename="../python/pythonItom.cpp" line="+2467"/>
         <source>Menu element must have a valid key.</source>
         <translation type="unfinished">Menüelement muss einen gültigen Schlüssel haben.</translation>
     </message>
@@ -1355,39 +1388,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
-        <source>The given key is already associated to a python method or function. The menu element can not be created.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-158"/>
-        <location line="+185"/>
-        <source>Could not create a itom.proxy-object  of the given callable method or function.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="-229"/>
+        <location line="-234"/>
         <source>Button must have a valid name.</source>
         <translation type="unfinished">Der Button muss einen gültigen Namen haben.</translation>
     </message>
     <message>
-        <location line="+6"/>
-        <source>Any type of code (String or callable method or function) must be indicated.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>The given button name is already associated to a python method or function. The button can not be created.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+33"/>
-        <location line="+185"/>
-        <source>The code parameter must either be a python code snippet or a callable method or function object.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+9"/>
+        <location line="+248"/>
         <source>A menu element of type &apos;separator&apos; can not execute some code. Code argument is ignored.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1397,7 +1403,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+10"/>
         <source>A menu element of type &apos;menu&apos; can not execute some code. Code argument is ignored.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1575,36 +1581,36 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+180"/>
-        <location line="+134"/>
-        <location line="+129"/>
+        <location line="+143"/>
+        <location line="+137"/>
         <source>Wrong plugin name</source>
         <translation type="unfinished">Falscher Plugin-Name</translation>
     </message>
     <message>
-        <location line="-242"/>
-        <location line="+134"/>
+        <location line="-257"/>
+        <location line="+143"/>
         <source>Base plugin or appropriate plugin type not indicated for this plugin.</source>
         <translation type="unfinished">Für dieses Plugin wurde kein Basis-Plugin oder geeigneter Plugin-Typ gefunden.</translation>
     </message>
     <message>
-        <location line="-113"/>
+        <location line="-118"/>
         <source>timeout while initializing dataIO</source>
         <translation type="unfinished">Zeitüberschreitung während der Initialisierung von DataIO</translation>
     </message>
     <message>
-        <location line="+42"/>
-        <location line="+132"/>
-        <location line="+91"/>
+        <location line="+43"/>
+        <location line="+141"/>
+        <location line="+86"/>
         <source>Parameter has own parameter management. Keyword &apos;autoLoadParams&apos; is ignored.</source>
         <translation type="unfinished">Parameter haben ein eigenes Management. Schlüsselwort &apos;autoLoadParams&apos; wurde ignoriert.</translation>
     </message>
     <message>
-        <location line="-131"/>
+        <location line="-127"/>
         <source>timeout while initializing actuator</source>
         <translation type="unfinished">Zeitüberschreitung während der Initialisierung von Actuator</translation>
     </message>
     <message>
-        <location line="+684"/>
+        <location line="+706"/>
         <source>no toolbox available</source>
         <translation type="unfinished">Keine Symbolleiste verfügbar</translation>
     </message>
@@ -2641,7 +2647,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../common/addInInterface.h" line="+1075"/>
+        <location filename="../../common/addInInterface.h" line="+1080"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation>Nicht-Inizialisierte Vektoren bei Pflichtparametern!</translation>
     </message>
@@ -2659,7 +2665,14 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInManager</name>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="-59"/>
+        <location filename="../organizer/addInManager.cpp" line="-893"/>
+        <location line="+143"/>
+        <location line="+136"/>
+        <source>Plugin instance is invalid (NULL)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+555"/>
         <source>no configuration dialog available</source>
         <translation>Kein Konfigurationsdialogs vorhanden</translation>
     </message>
@@ -2744,7 +2757,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::BreakPointDockWidget</name>
     <message>
-        <location filename="../widgets/breakPointDockWidget.cpp" line="+93"/>
+        <location filename="../widgets/breakPointDockWidget.cpp" line="+95"/>
         <source>breakpoints</source>
         <translation type="unfinished">Haltepunkte</translation>
     </message>
@@ -2835,7 +2848,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::ConsoleWidget</name>
     <message>
-        <location filename="../widgets/consoleWidget.cpp" line="+828"/>
+        <location filename="../widgets/consoleWidget.cpp" line="+860"/>
         <source>script execution</source>
         <translation type="unfinished">Skript wird ausgeführt</translation>
     </message>
@@ -3422,27 +3435,19 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DialogUserManagement</name>
     <message>
-        <location filename="../widgets/userManagement.cpp" line="+252"/>
-        <location line="+6"/>
-        <location line="+33"/>
-        <location line="+10"/>
         <source>Error</source>
-        <translation type="unfinished">Fehler</translation>
+        <translation type="obsolete">Fehler</translation>
     </message>
     <message>
-        <location line="-49"/>
         <source>UserID is empty! Cannot create user!</source>
-        <translation type="unfinished">Die Benutzer-ID ist leer! Der Benutzer kann nicht erstellt werden!</translation>
+        <translation type="obsolete">Die Benutzer-ID ist leer! Der Benutzer kann nicht erstellt werden!</translation>
     </message>
     <message>
-        <location line="+6"/>
         <source>UserID already exists! Cannot create user!</source>
-        <translation type="unfinished">Die Benutzer-ID wurde bereits vergeben! Benutzer kann nicht erstellt werden!</translation>
+        <translation type="obsolete">Die Benutzer-ID wurde bereits vergeben! Benutzer kann nicht erstellt werden!</translation>
     </message>
     <message>
-        <location line="+18"/>
-        <location line="+6"/>
-        <location line="+47"/>
+        <location filename="../widgets/userManagement.cpp" line="+302"/>
         <location line="+7"/>
         <location line="+7"/>
         <location line="+6"/>
@@ -3452,27 +3457,28 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Warnung</translation>
     </message>
     <message>
-        <location line="-82"/>
         <source>No or invalid group entered, setting to developer!</source>
-        <translation type="unfinished">Es wurde keine oder eine ungültige Gruppe ausgewählt. Als Gruppe wurde &apos;Entwickler&apos; eingestellt!</translation>
+        <translation type="obsolete">Es wurde keine oder eine ungültige Gruppe ausgewählt. Als Gruppe wurde &apos;Entwickler&apos; eingestellt!</translation>
     </message>
     <message>
-        <location line="+6"/>
         <source>No user name entered, creating user with empty name!</source>
-        <translation type="unfinished">Es wurde kein Benutzername eingegeben. Das Konto wurde mit einem leeren Namen erstellt!</translation>
+        <translation type="obsolete">Es wurde kein Benutzername eingegeben. Das Konto wurde mit einem leeren Namen erstellt!</translation>
     </message>
     <message>
-        <location line="+9"/>
         <source>Standard itom ini file not found, aborting!</source>
-        <translation type="unfinished">Die Standard-Ini-Datei von itom wurde nicht gefunden! Der Vorgang wurde abgebrochen!</translation>
+        <translation type="obsolete">Die Standard-Ini-Datei von itom wurde nicht gefunden! Der Vorgang wurde abgebrochen!</translation>
     </message>
     <message>
-        <location line="+10"/>
         <source>Could not copy standard itom ini file!</source>
-        <translation type="unfinished">Die Standard-Ini-Datei von itom konnte nicht kopiert werden!</translation>
+        <translation type="obsolete">Die Standard-Ini-Datei von itom konnte nicht kopiert werden!</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="-137"/>
+        <source>User Management - Current User: </source>
+        <translation type="unfinished">Benutzerverwaltung - Aktueller Benutzer: </translation>
+    </message>
+    <message>
+        <location line="+108"/>
         <source>User ID not found, aborting!</source>
         <translation type="unfinished">Die Benutzer-ID wurde nicht gefunden! Der Vorgang wurde abgebrochen!</translation>
     </message>
@@ -3490,6 +3496,53 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+6"/>
         <source>Cannot delete current user, aborting!</source>
         <translation type="unfinished">Der aktuelle Benutzer kann nicht gelöscht werden! Der Vorgang wurde abgebrochen!</translation>
+    </message>
+</context>
+<context>
+    <name>ito::DialogUserManagementEdit</name>
+    <message>
+        <location filename="../widgets/userManagementEdit.cpp" line="+99"/>
+        <location line="+7"/>
+        <location line="+6"/>
+        <location line="+7"/>
+        <location line="+14"/>
+        <source>Error</source>
+        <translation type="unfinished">Fehler</translation>
+    </message>
+    <message>
+        <location line="-34"/>
+        <source>Name is empty! Cannot create user!</source>
+        <translation type="unfinished">Name ist leer! Benutzer kann nicht erstellt werden!</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>UserID already exists! Cannot create user!</source>
+        <translation type="unfinished">Die Benutzer-ID wurde bereits vergeben! Benutzer kann nicht erstellt werden!</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>No user name entered, aborting!</source>
+        <translation type="unfinished">Kein Benutzername! Vorgang wird abgebrochen!</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>ItomSettings directory not found, aborting!</source>
+        <translation type="unfinished">Das Verzeichnis &quot;itomSettings&quot; wurde nicht gefunden! Vorgang wird abgebrochen!</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Could not copy standard itom ini file!</source>
+        <translation type="unfinished">Die Standard-Ini-Datei von itom konnte nicht kopiert werden!</translation>
+    </message>
+    <message>
+        <location line="+43"/>
+        <source>User Management - New User</source>
+        <translation type="unfinished">Benutzerverwaltung - Neuer Benutzer erstellen</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>User Management - Edit User</source>
+        <translation type="unfinished">Benutzerverwaltung - Benutzer bearbeiten</translation>
     </message>
 </context>
 <context>
@@ -3631,13 +3684,13 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+573"/>
+        <location line="+575"/>
         <location line="+13"/>
         <source>delete</source>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-584"/>
+        <location line="-586"/>
         <source>cut</source>
         <translation>Ausschneiden</translation>
     </message>
@@ -3697,7 +3750,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Aktuelles Stammverzeichnis auswählen</translation>
     </message>
     <message>
-        <location line="+222"/>
+        <location line="+224"/>
         <source>the selected items</source>
         <translation type="unfinished">der ausgewählte Eintrag</translation>
     </message>
@@ -3859,16 +3912,23 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Vorlagenfehler: Der Endzeiger der &quot;%s&quot;-Sektion liegt vor dem Startzeiger.</translation>
     </message>
     <message>
-        <location line="+44"/>
-        <location line="+14"/>
-        <location line="+15"/>
+        <location line="+46"/>
+        <location line="+21"/>
+        <location line="+21"/>
         <source>Range: [%1,%2], Default: %3</source>
         <translation type="unfinished">Bereich: [%1, %2], Voreinstellung: %3</translation>
     </message>
     <message>
-        <location line="-25"/>
-        <location line="+14"/>
-        <location line="+15"/>
+        <location line="-38"/>
+        <location line="+21"/>
+        <location line="+21"/>
+        <source>Range: [%1:%2:%3], Default: %4</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-37"/>
+        <location line="+21"/>
+        <location line="+21"/>
         <source>Default: %1</source>
         <translation type="unfinished">Voreinstellung: %1</translation>
     </message>
@@ -3918,7 +3978,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Platzhalter: &lt;keine Vorlage&gt;</translation>
     </message>
     <message>
-        <location line="+427"/>
+        <location line="+455"/>
         <source>Database %s could not be opened</source>
         <translation type="unfinished">Datenbank &apos;%s&apos; konnte nicht geöffnet werden</translation>
     </message>
@@ -3981,8 +4041,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Python-Engine ist nicht verfügbar</translation>
     </message>
     <message>
-        <location line="-171"/>
-        <location line="+176"/>
+        <location line="+5"/>
         <source>variables cannot be imported since python is busy right now</source>
         <translation type="unfinished">Variablen können nicht importiert werden während Python läuft</translation>
     </message>
@@ -4003,7 +4062,8 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Datei kann nicht geöffnet werden</translation>
     </message>
     <message>
-        <location line="-103"/>
+        <location line="-164"/>
+        <location line="+61"/>
         <source>variables cannot be exported since python is busy right now</source>
         <translation type="unfinished">Variablen können nicht exportiert werden während Python ausgeführt wird</translation>
     </message>
@@ -4209,7 +4269,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation></translation>
     </message>
     <message>
-        <location line="+83"/>
+        <location line="+94"/>
         <source>load translations...</source>
         <translation>Übersetzungen werden geladen...</translation>
     </message>
@@ -4277,7 +4337,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::MainWindow</name>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="+102"/>
+        <location filename="../widgets/mainWindow.cpp" line="+103"/>
         <source>itom</source>
         <translation>itom</translation>
     </message>
@@ -4317,12 +4377,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation></translation>
     </message>
     <message>
-        <location line="+45"/>
+        <location line="+38"/>
         <source>Python could not be started. itom cannot be used in the desired way.</source>
         <translation type="unfinished">Python konnte nicht gestartet werden. itom kann so nicht benutzt werden.</translation>
     </message>
     <message>
-        <location line="+318"/>
+        <location line="+334"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
@@ -4342,7 +4402,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Optionen...</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+6"/>
         <source>User Management...</source>
         <translation>Benutzerverwaltung...</translation>
     </message>
@@ -4362,12 +4422,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Geladene Plugins...</translation>
     </message>
     <message>
-        <location line="-438"/>
+        <location line="-450"/>
         <source>Command History</source>
         <translation type="unfinished">Befehlsliste</translation>
     </message>
     <message>
-        <location line="+444"/>
+        <location line="+456"/>
         <source>Help...</source>
         <translation>Hilfe...</translation>
     </message>
@@ -4512,18 +4572,28 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Skript</translation>
     </message>
     <message>
-        <location line="+804"/>
+        <location line="+586"/>
+        <source>key must not be empty.</source>
+        <translation type="unfinished">Der Schlüssel darf nicht leer sein.</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>invalid menu item type.</source>
+        <translation type="unfinished">Ungültiger Typ von &quot;menu item&quot;.</translation>
+    </message>
+    <message>
+        <location line="+348"/>
         <source>there is no python code associated with this action.</source>
         <translation type="unfinished">Dieser Komponente wurde kein Python-Code hinterlegt.</translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+67"/>
         <source>The UI designer (Qt designer) could not be started (%1).</source>
         <translation type="unfinished">Der UI-Designer (QT-Designer) konnte nicht geöffnet werden (%1).</translation>
     </message>
     <message>
-        <location line="-1440"/>
-        <location line="+592"/>
+        <location line="-1589"/>
+        <location line="+604"/>
         <source>Help</source>
         <translation type="unfinished">Hilfe</translation>
     </message>
@@ -4580,58 +4650,52 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Der Hilfeassistent konnte nicht gestartet werden.</translation>
     </message>
     <message>
-        <location line="+151"/>
         <source>The toolbar &apos;</source>
-        <translation>Die Symbolleiste &apos;</translation>
+        <translation type="obsolete">Die Symbolleiste &apos;</translation>
     </message>
     <message>
-        <location line="+0"/>
         <source>&apos; could not be found</source>
-        <translation>&apos; wurde nicht gefunden</translation>
+        <translation type="obsolete">&apos; wurde nicht gefunden</translation>
     </message>
     <message>
-        <location line="+69"/>
+        <location line="+226"/>
         <source>one single menu element must be of type MENU [2]</source>
         <translation type="unfinished">Das Menüelement muss vom Typ MENU sein [2]</translation>
     </message>
     <message>
-        <location line="+28"/>
         <source>no menu element is indicated</source>
-        <translation type="unfinished">Es wurde kein Menüelement erkannt</translation>
+        <translation type="obsolete">Es wurde kein Menüelement erkannt</translation>
     </message>
     <message>
-        <location line="+27"/>
         <source>The menu item &apos;%s&apos; does already exist but is no menu type</source>
-        <translation type="unfinished">Das Menüelement &apos;%s&apos;  existiert bereits, ist jedoch nicht Typ von MENU</translation>
+        <translation type="obsolete">Das Menüelement &apos;%s&apos;  existiert bereits, ist jedoch nicht Typ von MENU</translation>
     </message>
     <message>
-        <location line="+9"/>
         <source>menu item already exists.</source>
-        <translation type="unfinished">Das Menüelement existiert bereits.</translation>
+        <translation type="obsolete">Das Menüelement existiert bereits.</translation>
     </message>
     <message>
-        <location line="+39"/>
         <source>Invalid typeID.</source>
-        <translation type="unfinished">Ungültige Typ-ID.</translation>
+        <translation type="obsolete">Ungültige Typ-ID.</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+103"/>
         <location line="+4"/>
         <source>Add menu element</source>
         <translation type="unfinished">Menüpunkt hinzufügen</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+89"/>
+        <location line="+64"/>
         <source>Remove menu element</source>
         <translation type="unfinished">Menüelement löschen</translation>
     </message>
     <message>
-        <location line="+0"/>
         <source>A user-defined menu with the key sequence &apos;%1&apos; could not be found</source>
-        <translation type="unfinished">Das Benutzerdefiniertes Menü mit dem Schlüssel &apos;%1&apos; konnte nicht gefunden werden</translation>
+        <translation type="obsolete">Das Benutzerdefiniertes Menü mit dem Schlüssel &apos;%1&apos; konnte nicht gefunden werden</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+61"/>
         <source>Current Directory: %1</source>
         <translation type="unfinished">Aktuelles Verzeichnis: %1</translation>
     </message>
@@ -4647,6 +4711,29 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <message>
         <source>The UI designer (Qt designer) could not be started.</source>
         <translation type="obsolete">Der UI-Designer (Qt designer) konnte nicht gestartet werden.</translation>
+    </message>
+</context>
+<context>
+    <name>ito::PaletteOrganizer</name>
+    <message>
+        <location filename="../organizer/paletteOrganizer.cpp" line="+565"/>
+        <source>Palette %1 has a restricted access.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Palette %1 has a write protection.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+33"/>
+        <source>Palette %1 not found within palette list</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+31"/>
+        <source>Destination vector not initialized</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4784,7 +4871,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Beschreibung</translation>
     </message>
     <message>
-        <location line="+702"/>
+        <location line="+706"/>
         <location line="+425"/>
         <source>Actuator</source>
         <translation type="unfinished">Motor</translation>
@@ -4832,7 +4919,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::PythonEngine</name>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="+269"/>
+        <location filename="../python/pythonEngine.cpp" line="+333"/>
         <source>error importing sys in start python engine
 </source>
         <translation type="unfinished"></translation>
@@ -4844,7 +4931,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+3"/>
         <source>error redirecting stdout in start python engine
 </source>
         <translation type="unfinished"></translation>
@@ -4877,7 +4964,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Deadlock in Python.</translation>
     </message>
     <message>
-        <location line="+134"/>
+        <location line="+158"/>
         <source>Python not initialized</source>
         <translation type="unfinished">Python ist nicht inizialisiert</translation>
     </message>
@@ -4902,7 +4989,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Hauptwörterbuch ist leer</translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+36"/>
         <source>exiting desired.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4922,14 +5009,14 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Datei konnte nicht im &quot;ReadOnly&quot;-Modus geöffnet werden</translation>
     </message>
     <message>
+        <location line="+135"/>
         <location line="+119"/>
-        <location line="+112"/>
-        <location line="+104"/>
+        <location line="+111"/>
         <source>Error while clearing all breakpoints in itoDebugger.</source>
         <translation type="unfinished">Fehler beim Löschen aller Haltepunkte im ITO-Debugger.</translation>
     </message>
     <message>
-        <location line="+201"/>
+        <location line="+208"/>
         <source>Error while transmitting breakpoints to itoDebugger.</source>
         <translation type="unfinished">Fehler beim Übermitteln der Haltepunkte zum ITO-Debugger.</translation>
     </message>
@@ -4944,7 +5031,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Fehler beim Löschen eines Haltepunktes im ITO-Debugger.</translation>
     </message>
     <message>
-        <location line="+1596"/>
+        <location line="+1652"/>
         <source>The number of names and values must be equal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5113,7 +5200,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>
     <message>
-        <location line="+530"/>
+        <location line="+551"/>
         <source>move left</source>
         <translation>Nach Links verschieben</translation>
     </message>
@@ -5382,7 +5469,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Symbolleiste Lesezeichen</translation>
     </message>
     <message>
-        <location line="+603"/>
+        <location line="+612"/>
         <location line="+87"/>
         <source>find and replace</source>
         <translation>Suchen und Ersetzen</translation>
@@ -5398,7 +5485,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>%1 Vorkommen ersetzt</translation>
     </message>
     <message>
-        <location line="-929"/>
+        <location line="-938"/>
         <source>Ctrl+H</source>
         <comment>QShortcut</comment>
         <translation></translation>
@@ -5454,7 +5541,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::ScriptEditorOrganizer</name>
     <message>
-        <location filename="../organizer/scriptEditorOrganizer.cpp" line="+289"/>
+        <location filename="../organizer/scriptEditorOrganizer.cpp" line="+291"/>
         <source>Script Editor</source>
         <translation>Skript-Editor</translation>
     </message>
@@ -5578,7 +5665,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Haltepunkte d&amp;eaktivieren</translation>
     </message>
     <message>
-        <location line="+476"/>
+        <location line="+477"/>
         <location line="+80"/>
         <location line="+47"/>
         <source>unsaved changes</source>
@@ -5658,7 +5745,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Soll diese neu geladen werden?</translation>
     </message>
     <message>
-        <location line="+187"/>
+        <location line="+186"/>
         <source>{Global Scope}</source>
         <translation>{Globaler Gültigkeitsbereich}</translation>
     </message>
@@ -5691,7 +5778,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+99"/>
+        <location line="+105"/>
         <source>figHandle %i is no handle for a figure window.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5726,7 +5813,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+126"/>
+        <location line="+131"/>
         <source>designer plugin widget (&apos;%1&apos;) could not be created</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5891,8 +5978,8 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2517"/>
-        <location line="+2273"/>
+        <location line="-2522"/>
+        <location line="+2278"/>
         <location line="+64"/>
         <location line="+151"/>
         <location line="+34"/>
@@ -5960,6 +6047,65 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <location line="+0"/>
         <source>iniFile</source>
         <translation>INI-Datei</translation>
+    </message>
+</context>
+<context>
+    <name>ito::UserOrganizer</name>
+    <message>
+        <location filename="../organizer/userOrganizer.cpp" line="+56"/>
+        <location line="+11"/>
+        <source>Developer</source>
+        <translation type="unfinished">Entwickler</translation>
+    </message>
+    <message>
+        <location line="-10"/>
+        <source>File System</source>
+        <translation type="unfinished">Dateisystem</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>User Management</source>
+        <translation type="unfinished">Benutzerverwaltung</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Addin Manager (Plugins)</source>
+        <translation type="unfinished">Addin-Manager (Plugins)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Console</source>
+        <translation type="unfinished">Konsole</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Console (Read Only)</source>
+        <translation type="unfinished">Kondole (nur lesend)</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Properties</source>
+        <translation type="unfinished">Optionen</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Role</source>
+        <translation type="unfinished">Rolle</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>User</source>
+        <translation type="unfinished">Benutzer</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Administrator</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+74"/>
+        <source>Standard User</source>
+        <translation type="unfinished">Standardbenutzer</translation>
     </message>
 </context>
 <context>
@@ -6313,7 +6459,7 @@ Katesisch</translation>
 %1</translation>
     </message>
     <message>
-        <location line="+91"/>
+        <location line="+92"/>
         <source>renaming variable</source>
         <translation>Variable umbenennen</translation>
     </message>
@@ -6326,7 +6472,7 @@ Katesisch</translation>
 <context>
     <name>ito::WorkspaceWidget</name>
     <message>
-        <location filename="../widgets/workspaceWidget.cpp" line="+56"/>
+        <location filename="../widgets/workspaceWidget.cpp" line="+63"/>
         <source>Globals</source>
         <translation>Global</translation>
     </message>
@@ -6348,7 +6494,7 @@ Katesisch</translation>
         <translation>Lokal</translation>
     </message>
     <message>
-        <location line="+237"/>
+        <location line="+345"/>
         <source>timeout while asking python for detailed information</source>
         <translation>Zeitüberschreitung bei der Anfrage an Python für detailierte Informationen</translation>
     </message>
@@ -6392,48 +6538,170 @@ Katesisch</translation>
 <context>
     <name>userManagement</name>
     <message>
-        <location filename="../widgets/userManagement.ui"/>
-        <source>Plugins</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location/>
         <source>Enable All</source>
-        <translation>Alle aktivieren</translation>
+        <translation type="obsolete">Alle aktivieren</translation>
     </message>
     <message>
-        <location/>
         <source>Disable All</source>
-        <translation>Alle deaktivieren</translation>
+        <translation type="obsolete">Alle deaktivieren</translation>
     </message>
     <message>
-        <location/>
         <source>Main Application Features</source>
-        <translation>Hauptanwendung</translation>
+        <translation type="obsolete">Hauptanwendung</translation>
     </message>
     <message>
-        <location/>
         <source>Developer Tools
 (Workspace, Breakpoints,
  Ui-Designer, Call Stack)</source>
-        <translation>Entwickler-Tools
+        <translation type="obsolete">Entwickler-Tools
 (Workspace, Haltepunkte,
  Ui-Designer, Call Stack)</translation>
     </message>
     <message>
+        <source>Edit Properties</source>
+        <translation type="obsolete">Editor-Eigentschaften</translation>
+    </message>
+    <message>
+        <source>File System Widget</source>
+        <translation type="obsolete">Dateisystem</translation>
+    </message>
+    <message>
+        <source>Addin Manager Widget</source>
+        <translation type="obsolete">AddIn-Manager</translation>
+    </message>
+    <message>
+        <source>Console</source>
+        <translation type="obsolete">Konsole</translation>
+    </message>
+    <message>
+        <source>read only</source>
+        <translation type="obsolete">nur lesen</translation>
+    </message>
+    <message>
+        <source>off</source>
+        <translation type="obsolete">aus</translation>
+    </message>
+    <message>
+        <source>User / Group</source>
+        <translation type="obsolete">Benutzer / Gruppen</translation>
+    </message>
+    <message>
+        <location filename="../widgets/userManagement.ui"/>
+        <source>Name</source>
+        <translation>Name</translation>
+    </message>
+    <message>
+        <source>Group</source>
+        <translation type="obsolete">Gruppe</translation>
+    </message>
+    <message>
+        <location/>
+        <source>ID</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Ini File</source>
+        <translation>Ini-Datei</translation>
+    </message>
+    <message>
+        <source>Reset All In Group</source>
+        <translation type="obsolete">Gruppe zurücksetzen</translation>
+    </message>
+    <message>
+        <location/>
+        <source>New User</source>
+        <translation type="unfinished">Neuer Benutzer erstellen</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Delete User</source>
+        <translation>Benutzer löschen</translation>
+    </message>
+    <message>
+        <source>developer</source>
+        <translation type="obsolete">Entwickler</translation>
+    </message>
+    <message>
+        <source>admin</source>
+        <translation type="obsolete">Administrator</translation>
+    </message>
+    <message>
+        <source>user</source>
+        <translation type="obsolete">Benutzer</translation>
+    </message>
+    <message>
+        <location/>
+        <source>User Management</source>
+        <translation>Benutzerverwaltung</translation>
+    </message>
+    <message>
+        <location/>
+        <source>User</source>
+        <translation type="unfinished">Benutzer</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Permission</source>
+        <translation type="unfinished">Berechtigungen</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Edit User</source>
+        <translation type="unfinished">Benutzer bearbeiten</translation>
+    </message>
+</context>
+<context>
+    <name>userManagementEdit</name>
+    <message>
+        <location filename="../widgets/userManagementEdit.ui"/>
+        <source>User Management Edit / New</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>User</source>
+        <translation>Benutzer</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Name</source>
+        <translation>Name</translation>
+    </message>
+    <message>
+        <location/>
+        <source>ID</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Main Application Permission</source>
+        <translation type="unfinished">Berechtigungen in der Hauptanwendung</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Developer Tools (Workspace, Breakpoints, Ui-Designer, Call Stack)</source>
+        <translation type="unfinished">Entwickler-Tools (Workspace, Haltepunkte,  Ui-Designer, Call Stack)</translation>
+    </message>
+    <message>
         <location/>
         <source>Edit Properties</source>
-        <translation>Editor-Eigentschaften</translation>
+        <translation type="unfinished">Optionen ändern</translation>
+    </message>
+    <message>
+        <location/>
+        <source>Addin Manager Widget (Plugins)</source>
+        <translation type="unfinished">Addin-Manager (Plugins)</translation>
     </message>
     <message>
         <location/>
         <source>File System Widget</source>
-        <translation>Dateisystem</translation>
+        <translation type="unfinished">Dateisystem</translation>
     </message>
     <message>
         <location/>
-        <source>Addin Manager Widget</source>
-        <translation>AddIn-Manager</translation>
+        <source>User Management</source>
+        <translation type="unfinished">Benutzerverwaltung</translation>
     </message>
     <message>
         <location/>
@@ -6457,63 +6725,18 @@ Katesisch</translation>
     </message>
     <message>
         <location/>
-        <source>User / Group</source>
-        <translation>Benutzer / Gruppen</translation>
+        <source>Role</source>
+        <translation>Rolle</translation>
     </message>
     <message>
         <location/>
-        <source>Name</source>
-        <translation>Name</translation>
-    </message>
-    <message>
-        <location/>
-        <source>Group</source>
-        <translation>Gruppe</translation>
-    </message>
-    <message>
-        <location/>
-        <source>ID</source>
+        <source>Adminitrator</source>
         <translation></translation>
     </message>
     <message>
         <location/>
-        <source>Ini File</source>
-        <translation>Ini-Datei</translation>
-    </message>
-    <message>
-        <location/>
-        <source>Reset All In Group</source>
-        <translation>Gruppe zurücksetzen</translation>
-    </message>
-    <message>
-        <location/>
-        <source>New User</source>
-        <translation>Neuer Benutzer</translation>
-    </message>
-    <message>
-        <location/>
-        <source>Delete User</source>
-        <translation>Benutzer löschen</translation>
-    </message>
-    <message>
-        <location/>
-        <source>developer</source>
-        <translation>Entwickler</translation>
-    </message>
-    <message>
-        <location/>
-        <source>admin</source>
-        <translation>Administrator</translation>
-    </message>
-    <message>
-        <location/>
-        <source>user</source>
-        <translation>Benutzer</translation>
-    </message>
-    <message>
-        <location/>
-        <source>User Management</source>
-        <translation>Benutzerverwaltung</translation>
+        <source>Developer</source>
+        <translation></translation>
     </message>
 </context>
 </TS>

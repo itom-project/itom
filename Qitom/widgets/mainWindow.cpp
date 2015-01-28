@@ -110,10 +110,10 @@ MainWindow::MainWindow() :
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
     setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
-
     //content
     m_contentLayout = new QVBoxLayout;
 
+    // user
     ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
     if (uOrg->hasFeature(featConsole))
     {

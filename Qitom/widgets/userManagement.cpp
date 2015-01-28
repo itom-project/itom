@@ -21,6 +21,7 @@
 *********************************************************************** */
 
 #include "userManagement.h"
+#include "userManagementEdit.h"
 #include "../AppManagement.h"
 #include "../organizer/userOrganizer.h"
 
@@ -33,37 +34,82 @@
 
 namespace ito {
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
-int DialogUserManagement::getFlags()
+void DialogUserManagement::readModel(const QModelIndex &index)
 {
-    int flags = 0;
-    if (ui.checkBox_fileSystem->isChecked())
-    {
-        flags |= featFileSystem;
-    }
-    if (ui.checkBox_devTools->isChecked())
-    {
-        flags |= featDeveloper;
-    }
-    if (ui.checkBox_editProperties->isChecked())
-    {
-        flags |= featUserManag;
-    }
-    if (ui.checkBox_addInManager->isChecked())
-    {
-        flags |= featPlugins;
-    }
-    if (ui.radioButton_consoleNormal->isChecked())
-    {
-        flags |= featConsole | featConsoleRW;
-    }
-    if (ui.radioButton_consoleNormal->isChecked())
-    {
-        flags |= featConsole;
-    }
+    ui.permissionList->clear();
 
-    return flags;
+    if (index.isValid())
+    {
+        UserOrganizer *uio = (UserOrganizer*)AppManagement::getUserOrganizer();
+        ui.lineEdit_name->setText(m_userModel->index(index.row(), 0).data().toString());
+        ui.lineEdit_id->setText(m_userModel->index(index.row(), 1).data().toString());
+        ui.lineEdit_iniFile->setText(m_userModel->index(index.row(), 3).data().toString());
+
+        QString roleText;
+        QModelIndex midx = m_userModel->index(index.row(), 2);
+        if (midx.data().toString() == "developer")
+        {
+            roleText = uio->strConstRoleDeveloper;
+        }
+        else if (midx.data().toString() == "admin")
+        {
+            roleText = uio->strConstRoleAdministrator;
+        }
+        else
+        {
+            roleText = uio->strConstRoleUser;
+        }
+        ui.permissionList->addItem(uio->strConstRole + ": " + roleText);
+
+        long flags = uio->getFlagsFromFile(m_userModel->index(index.row(), 3).data().toString());
+        if (flags & featDeveloper)
+        {
+            ui.permissionList->addItem(uio->strConstFeatDeveloper);
+        }
+
+        if (flags & featFileSystem)
+        {
+            ui.permissionList->addItem(uio->strConstFeatFileSystem);
+        }
+
+        if (flags & featUserManag)
+        {
+            ui.permissionList->addItem(uio->strConstFeatUserManag);
+        }
+
+        if (flags & featPlugins)
+        {
+            ui.permissionList->addItem(uio->strConstFeatPlugins);
+        }
+
+        if (flags & featProperties)
+        {
+            ui.permissionList->addItem(uio->strConstFeatProperties);
+        }
+
+        if ((flags & featConsole) && (flags & featConsoleRW))
+        {
+            ui.permissionList->addItem(uio->strConstFeatConsole);
+        }
+        else if (flags & featConsole)
+        {
+            ui.permissionList->addItem(uio->strConstFeatConsoleRO);
+        }
+
+//        ui.userList->setCurrentIndex(index);
+        ui.pushButton_editUser->setEnabled(true);
+        ui.pushButton_delUser->setEnabled(m_currentUser != ui.lineEdit_name->text());
+    }
+    else
+    {
+        ui.lineEdit_name->setText("");
+        ui.lineEdit_id->setText("");
+        ui.lineEdit_iniFile->setText("");
+
+        ui.pushButton_editUser->setEnabled(false);
+        ui.pushButton_delUser->setEnabled(false);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -90,7 +136,7 @@ void DialogUserManagement::loadUserList()
 
     QStringList iniList = appDir.entryList(QStringList("itom_*.ini"));
 
-//    int nUser = 0;
+    bool userModelHasItem = false;
     foreach(QString iniFile, iniList) 
     {
         QSettings settings(QDir::cleanPath(appDir.absoluteFilePath(iniFile)), QSettings::IniFormat);
@@ -100,56 +146,54 @@ void DialogUserManagement::loadUserList()
         {
             qDebug() << "found user ini file: " << iniFile;
             m_userModel->addUser(UserInfoStruct(QString(settings.value("name").toString()), iniFile.mid(5, iniFile.length() - 9), QDir::cleanPath(appDir.absoluteFilePath(iniFile)), QString(settings.value("role").toString())));
+            userModelHasItem = true;
         }
         settings.endGroup();
     }
 
     ui.userList->setModel(m_userModel);
+
+    if (!userModelHasItem)
+    {
+        ui.pushButton_editUser->setEnabled(false);
+        ui.pushButton_delUser->setEnabled(false);
+    }
+    else
+    {
+        readModel(m_userModel->index(0, 1));
+    }
+
     selModel = ui.userList->selectionModel();
-    QObject::connect(selModel, SIGNAL(currentChanged (const QModelIndex &, const QModelIndex &)), this, SLOT(userListCurrentChanged(const QModelIndex &, const QModelIndex &))); 
+
+    QObject::connect(selModel, SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(userListCurrentChanged(const QModelIndex &, const QModelIndex &))); 
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogUserManagement::openUserManagementEdit(const QString fileName, UserModel *userModel)
+{
+    DialogUserManagementEdit *dlg = new DialogUserManagementEdit(fileName, userModel);
+    dlg->exec();
+    if (dlg->result() == QDialog::Accepted)
+    {
+        loadUserList();
+    }
+
+    DELETE_AND_SET_NULL(dlg);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogUserManagement::DialogUserManagement(QWidget *parent, Qt::WindowFlags f) :
     QDialog(parent),
-    m_userModel(NULL)
+    m_userModel(NULL),
+    m_currentUser("")
 {
     ui.setupUi(this);
 
+    ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
+    m_currentUser = uOrg->getUserName();
+    setWindowTitle(tr("User Management - Current User: ") + m_currentUser);
+
     loadUserList();
-/*
-    m_userModel = new UserModel();
-    QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, "itomSettings");
-    QSettings::setDefaultFormat(QSettings::IniFormat);
-
-    QString settingsFile;
-    QDir appDir(QCoreApplication::applicationDirPath());
-    if (!appDir.cd("itomSettings"))
-    {
-        appDir.mkdir("itomSettings");
-        appDir.cd("itomSettings");
-    }
-
-    QStringList iniList = appDir.entryList(QStringList("itom_*.ini"));
-
-    int nUser = 0;
-    foreach(QString iniFile, iniList) 
-    {
-        QSettings settings(QDir::cleanPath(appDir.absoluteFilePath(iniFile)), QSettings::IniFormat);
-
-        settings.beginGroup("ITOMIniFile");
-        if (settings.contains("name"))
-        {
-            qDebug() << "found user ini file: " << iniFile;
-            m_userModel->addUser(UserInfoStruct(QString(settings.value("name").toString()), iniFile.mid(5, iniFile.length() - 9), QDir::cleanPath(appDir.absoluteFilePath(iniFile)), QString(settings.value("role").toString())));
-        }
-        settings.endGroup();
-    }
-
-    ui.userList->setModel(m_userModel);
-    QItemSelectionModel *selModel = ui.userList->selectionModel();
-    QObject::connect(selModel, SIGNAL(currentChanged (const QModelIndex &, const QModelIndex &)), this, SLOT(userListCurrentChanged(const QModelIndex &, const QModelIndex &))); 
-*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -161,157 +205,86 @@ DialogUserManagement::~DialogUserManagement()
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogUserManagement::userListCurrentChanged(const QModelIndex &current, const QModelIndex &previous)
 {
+    readModel(ui.userList->currentIndex());
+/*    ui.permissionList->clear();
+
     QModelIndex curIdx = ui.userList->currentIndex();
     if (curIdx.isValid())
     {
-        QModelIndex midx = m_userModel->index(curIdx.row(), 0);
-        ui.lineEdit_name->setText(midx.data().toString());
-        midx = m_userModel->index(curIdx.row(), 1);
-        ui.lineEdit_id->setText(midx.data().toString());
-        midx = m_userModel->index(curIdx.row(), 2);
+        UserOrganizer *uio = (UserOrganizer*)AppManagement::getUserOrganizer();
+        ui.lineEdit_name->setText(m_userModel->index(curIdx.row(), 0).data().toString());
+        ui.lineEdit_id->setText(m_userModel->index(curIdx.row(), 1).data().toString());
+        ui.lineEdit_iniFile->setText(m_userModel->index(curIdx.row(), 3).data().toString());
+
+        QString roleText;
+        QModelIndex midx = m_userModel->index(curIdx.row(), 2);
         if (midx.data().toString() == "developer")
         {
-            ui.comboBox_group->setCurrentIndex(0);
+            roleText = uio->strConstRoleDeveloper;
         }
         else if (midx.data().toString() == "admin")
         {
-            ui.comboBox_group->setCurrentIndex(1);
+            roleText = uio->strConstRoleAdministrator;
         }
         else
         {
-            ui.comboBox_group->setCurrentIndex(2);
+            roleText = uio->strConstRoleUser;
         }
-        midx = m_userModel->index(curIdx.row(), 3);
-        ui.lineEdit_iniFile->setText(midx.data().toString());
-        UserOrganizer *uio = (UserOrganizer*)AppManagement::getUserOrganizer();
-        long flags = uio->getFlagsFromFile(midx.data().toString());
+        ui.permissionList->addItem(uio->strConstRole + ": " + roleText);
+
+        long flags = uio->getFlagsFromFile(m_userModel->index(curIdx.row(), 3).data().toString());
+        if (flags & featDeveloper)
+        {
+            ui.permissionList->addItem(uio->strConstFeatDeveloper);
+        }
 
         if (flags & featFileSystem)
         {
-            ui.checkBox_fileSystem->setChecked(1);
-        }
-        else
-        {
-            ui.checkBox_fileSystem->setChecked(0);
-        }
-
-        if (flags & featDeveloper)
-        {
-            ui.checkBox_devTools->setChecked(1);
-        }
-        else
-        {
-            ui.checkBox_devTools->setChecked(0);
+            ui.permissionList->addItem(uio->strConstFeatFileSystem);
         }
 
         if (flags & featUserManag)
         {
-            ui.checkBox_editProperties->setChecked(1);
-        }
-        else
-        {
-            ui.checkBox_editProperties->setChecked(0);
+            ui.permissionList->addItem(uio->strConstFeatUserManag);
         }
 
         if (flags & featPlugins)
         {
-            ui.checkBox_addInManager->setChecked(1);
+            ui.permissionList->addItem(uio->strConstFeatPlugins);
         }
-        else
+
+        if (flags & featProperties)
         {
-            ui.checkBox_addInManager->setChecked(0);
+            ui.permissionList->addItem(uio->strConstFeatProperties);
         }
 
         if ((flags & featConsole) && (flags & featConsoleRW))
         {
-            ui.radioButton_consoleNormal->setChecked(1);
+            ui.permissionList->addItem(uio->strConstFeatConsole);
         }
         else if (flags & featConsole)
         {
-            ui.radioButton_consoleRO->setChecked(1);
+            ui.permissionList->addItem(uio->strConstFeatConsoleRO);
         }
-        else
-        {
-            ui.radioButton_consoleOff->setChecked(1);
-        }
+
+        ui.pushButton_editUser->setEnabled(true);
+        ui.pushButton_delUser->setEnabled(m_currentUser != ui.lineEdit_name->text());
     }
+    else
+    {
+        ui.lineEdit_name->setText("");
+        ui.lineEdit_id->setText("");
+        ui.lineEdit_iniFile->setText("");
+
+        ui.pushButton_editUser->setEnabled(false);
+        ui.pushButton_delUser->setEnabled(false);
+    }*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogUserManagement::on_pushButton_newUser_clicked()
 {
-    QString uid = ui.lineEdit_id->text();
-    QString group;
-    QString name;
-    QString iniFile;
-    QModelIndex startIdx = m_userModel->index(0, 1);
-    QModelIndexList uidList = m_userModel->match(startIdx, Qt::DisplayRole, uid, -1);
-
-    if (uid.isEmpty())
-    {
-        QMessageBox::critical(this, tr("Error"), tr("UserID is empty! Cannot create user!"), QMessageBox::Ok);
-        return;
-    }
-
-    if (!uidList.isEmpty())
-    {
-        QMessageBox::critical(this, tr("Error"), tr("UserID already exists! Cannot create user!"), QMessageBox::Ok);
-        return;
-    }
-
-    if (ui.comboBox_group->currentText() == "developer")
-    {
-        group = "developer";
-    }
-    else if (ui.comboBox_group->currentText() == "admin")
-    {
-        group = "admin";
-    }
-    else if (ui.comboBox_group->currentText() == "user")
-    {
-        group = "user";
-    }
-    else
-    {
-        QMessageBox::warning(this, tr("Warning"), tr("No or invalid group entered, setting to developer!"), QMessageBox::Ok);
-        group = "developer";
-    }
-    
-    if ((name = ui.lineEdit_name->text()).isEmpty())
-    {
-        QMessageBox::warning(this, tr("Warning"), tr("No user name entered, creating user with empty name!"), QMessageBox::Ok);
-        name = "";
-    }
-
-    QDir appDir(QCoreApplication::applicationDirPath());
-    if (!appDir.cd("itomSettings"))
-    {
-        if (!appDir.exists("itomDefault.ini"))
-        {
-            QMessageBox::critical(this, tr("Error"), tr("Standard itom ini file not found, aborting!"), QMessageBox::Ok);
-            return;
-        }
-    }
-    else
-    {
-        QFile stdIniFile(QDir::cleanPath(appDir.absoluteFilePath(QString("itomDefault.ini"))));
-        iniFile = QDir::cleanPath(appDir.absoluteFilePath(QString("itom_").append(uid).append(".ini")));
-        if (!stdIniFile.copy(iniFile))
-        {
-            QMessageBox::critical(this, tr("Error"), tr("Could not copy standard itom ini file!"), QMessageBox::Ok);
-            return;
-        }
-    }
-
-    QSettings settings(iniFile, QSettings::IniFormat);
-    settings.beginGroup("ITOMIniFile");
-    settings.setValue("name", name);
-    settings.setValue("role", group);
-    UserOrganizer *uio = (UserOrganizer*)AppManagement::getUserOrganizer();
-    uio->writeFlagsToFile(getFlags(), iniFile);
-    settings.endGroup();
-
-    loadUserList();
+    openUserManagementEdit("", m_userModel);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -359,28 +332,25 @@ void DialogUserManagement::on_pushButton_delUser_clicked()
 
         loadUserList();
     }
-
-    return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogUserManagement::on_pushButton_resetGroup_clicked()
+void DialogUserManagement::on_pushButton_editUser_clicked()
 {
+    QModelIndex curIdx = ui.userList->currentIndex();
+    if (curIdx.isValid())
+    {
+        openUserManagementEdit(m_userModel->index(curIdx.row(), 3).data().toString(), m_userModel);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogUserManagement::on_pushButton_pluginsEnableAll_clicked()
+void DialogUserManagement::on_userList_doubleClicked(const QModelIndex & index)
 {
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void DialogUserManagement::on_pushButton_pluginsDisableAll_clicked()
-{
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void DialogUserManagement::on_buttonBox_apply()
-{
+    if (index.isValid())
+    {
+        openUserManagementEdit(m_userModel->index(index.row(), 3).data().toString(), m_userModel);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

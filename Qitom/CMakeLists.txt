@@ -236,6 +236,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.h    
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagementEdit.h    
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceDockWidget.h
@@ -285,6 +286,7 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/uiDebugViewer.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/uiMainWindow.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagementEdit.ui
 )
 
 IF (QT5_FOUND)
@@ -404,6 +406,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.cpp    
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagementEdit.cpp    
 )
 
 if(MSVC)

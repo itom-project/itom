@@ -20,44 +20,39 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef USERMANAGEMENTWIDGET_H
-#define USERMANAGEMENTWIDGET_H
+#ifndef USERMANAGEMENTEDITWIDGET_H
+#define USERMANAGEMENTEDITWIDGET_H
 
 #include "../models/UserModel.h"
 
 #include <qdialog.h>
 
-#include "ui_userManagement.h"
+#include "ui_userManagementEdit.h"
 
 namespace ito {
 
-class DialogUserManagement : public QDialog
+class DialogUserManagementEdit : public QDialog
 {
     Q_OBJECT
 
     public:
-        DialogUserManagement(QWidget * parent = 0, Qt::WindowFlags f = 0);
-        ~DialogUserManagement();
-        Ui::userManagement ui;
+        DialogUserManagementEdit(const QString fileName, UserModel *userModel, QWidget * parent = 0, Qt::WindowFlags f = 0);
+        ~DialogUserManagementEdit();
+        Ui::userManagementEdit ui;
 
     private:
         UserModel *m_userModel;
-        QString m_currentUser;
-        void readModel(const QModelIndex &index);
-        void loadUserList();
-        void openUserManagementEdit(const QString fileName, UserModel *userModel);
+        int getFlags();
+        bool saveUser();
+        QString m_fileName;
 
     protected:
-        void init();
+//        void init();
 
     private slots:
-        void userListCurrentChanged(const QModelIndex &current, const QModelIndex &previous);
-        void on_pushButton_newUser_clicked();
-        void on_pushButton_delUser_clicked();
-        void on_pushButton_editUser_clicked();
-        void on_userList_doubleClicked(const QModelIndex & index);
+        void on_buttonBox_clicked(QAbstractButton* btn);
 };
 
 } //end namespace ito
 
-#endif //USERMANAGEMENTWIDGET_H
+#endif //USERMANAGEMENTEDITWIDGET_H

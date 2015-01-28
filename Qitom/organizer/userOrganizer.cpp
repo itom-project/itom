@@ -44,9 +44,27 @@ namespace ito
 
 //! userOrganizer implementation
 //----------------------------------------------------------------------------------------------------------------------------------
-UserOrganizer::UserOrganizer(void) : QObject(), m_userRole(2), m_userName("ito"), m_features(allFeatures), m_settingsFile("") 
+UserOrganizer::UserOrganizer(void) :
+    QObject(),
+    m_userRole(2),
+    m_userName("ito"),
+    m_features(allFeatures),
+    m_settingsFile("") 
 {
     AppManagement::setUserOrganizer(this);
+
+    strConstFeatDeveloper = tr("Developer");
+    strConstFeatFileSystem = tr("File System");
+    strConstFeatUserManag = tr("User Management");
+    strConstFeatPlugins = tr("Addin Manager (Plugins)");
+    strConstFeatConsole = tr("Console");
+    strConstFeatConsoleRO = tr("Console (Read Only)");
+    strConstFeatProperties = tr("Properties");
+
+    strConstRole = tr("Role");
+    strConstRoleUser = tr("User");
+    strConstRoleAdministrator = tr("Administrator");
+    strConstRoleDeveloper = tr("Developer");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -118,6 +136,8 @@ ito::RetVal UserOrganizer::loadSettings(const QString &defUserName)
     if (curUserModel.rowCount() > 0) 
     {
         char foundDefUser = 0;
+
+        curUserModel.addUser(UserInfoStruct(tr("Standard User"), "itom.ini", QDir::cleanPath(appDir.absoluteFilePath("itom.ini")), strConstRoleAdministrator));
 
         DialogSelectUser userDialog;
         userDialog.ui.userList->setModel(&curUserModel);
@@ -224,6 +244,11 @@ int UserOrganizer::getFlagsFromFile(QString fileName)
     QByteArray fileFlags = settings.value("flags").toByteArray();
     settings.endGroup();
 
+    if (fileFlags.count() == 0)
+    {
+        return allFeatures;
+    }
+
     QByteArray res;
     for (int n = 0; n < nameHash.result().length(); n++)
     {
@@ -259,6 +284,35 @@ void UserOrganizer::writeFlagsToFile(int flags, QString iniFile)
     }
     settings.setValue("flags", fileFlags);
     settings.endGroup();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! shortdesc
+/*! longdesc
+
+    \return QString
+*/
+QString UserOrganizer::getFeatureName(const userFeatures &feature) const
+{
+    switch(feature)
+    {
+        case featDeveloper:
+            return strConstFeatDeveloper;
+        case featFileSystem:
+            return strConstFeatFileSystem;
+        case featUserManag:
+            return strConstFeatUserManag;
+        case featPlugins:
+            return strConstFeatPlugins;
+        case featConsole:
+            return strConstFeatConsole;
+        case featConsoleRW:
+            return strConstFeatConsoleRO;
+        case featProperties:
+            return strConstFeatProperties;
+    }
+
+    return "";
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
