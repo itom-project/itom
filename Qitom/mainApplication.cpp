@@ -402,7 +402,7 @@ void MainApplication::setupApplication()
         m_splashScreen->showMessage(tr("load ui organizer..."), Qt::AlignRight | Qt::AlignBottom);
         QCoreApplication::processEvents();
 
-        m_uiOrganizer = new UiOrganizer();
+        m_uiOrganizer = new UiOrganizer(retValue);
         AppManagement::setUiOrganizer(qobject_cast<QObject*>(m_uiOrganizer));
 
         m_splashScreen->showMessage(tr("scan and load designer widgets..."), Qt::AlignRight | Qt::AlignBottom);

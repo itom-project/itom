@@ -303,7 +303,7 @@ public:
 
     typedef QMap<QString,QString> tQMapArg;
 
-    UiOrganizer();
+    UiOrganizer(ito::RetVal &retval);
     ~UiOrganizer();
 
     void showDialog(QWidget *parent);

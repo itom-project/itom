@@ -106,7 +106,7 @@ unsigned int UiOrganizer::autoIncObjectCounter = 1;
     creates the singleton instance of WidgetWrapper. The garbage collection timer is not started yet, since
     this is done if the first user interface becomes being organized by this class.
 */
-UiOrganizer::UiOrganizer() :
+UiOrganizer::UiOrganizer(ito::RetVal &retval) :
     m_garbageCollectorTimer(0)
 {
     m_dialogList.clear();
@@ -118,6 +118,11 @@ UiOrganizer::UiOrganizer() :
     qRegisterMetaType<ito::UiDataContainer>("ito::UiDataContainer&");
     qRegisterMetaType<ito::UiOrganizer::tQMapArg*>("ito::UiOrganizer::tQMapArg*");
     qRegisterMetaType<ito::UiOrganizer::tQMapArg*>("ito::UiOrganizer::tQMapArg&");
+
+    if (QEvent::registerEventType(QEvent::User+123) != QEvent::User+123)
+    {
+        retval += ito::RetVal(ito::retWarning, 0, "The user defined event id 123 could not been registered for use in UiOrganizer since it is already in use.");
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
