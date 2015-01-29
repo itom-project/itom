@@ -280,6 +280,12 @@ void MainApplication::setupApplication()
     {
         textCodec = QTextCodec::codecForName("ISO 8859-1"); //latin1 is default
     }
+    if (!textCodec)
+    {
+        textCodec = QTextCodec::codecForLocale();
+    }
+
+    AppManagement::setScriptTextCodec(textCodec);
 
     // None of these two is available in Qt5 and according to
     // Qt docu it should not have been used anyway. So 

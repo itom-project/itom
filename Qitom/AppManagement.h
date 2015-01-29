@@ -27,6 +27,8 @@
 #include <qobject.h>
 #include <qmutex.h>
 
+class QTextCode;
+
 namespace ito
 {
 
@@ -51,6 +53,9 @@ class AppManagement
         inline static QObject* getUiOrganizer() { QMutexLocker locker (&m_mutex); return m_uiOrganizer; }  /*!< returns static pointer to UiOrganizer instance */
         inline static QObject* getProcessOrganizer() { QMutexLocker locker (&m_mutex); return m_processOrganizer; }  /*!< returns static pointer to ProcessOrganizer instance */
         inline static QObject* getUserOrganizer() { QMutexLocker locker (&m_mutex); return m_userOrganizer; }
+        
+        static QTextCodec* getScriptTextCodec();
+        static void setScriptTextCodec(QTextCodec *codec);
 
 
         static void setScriptEditorOrganizer(QObject* scriptEditorOrganizer)                                /*!< sets ScriptEditorOrganizer instance pointer */
@@ -125,6 +130,7 @@ class AppManagement
         static QObject* m_uiOrganizer; /*!< static pointer to UiOrganizer (default: NULL) */
         static QObject* m_processOrganizer; /*!< static pointer to ProcessOrganizer (default: NULL) */
         static QObject *m_userOrganizer;    /*!< static pointer to UserOrganizer (default: NULL) */
+        static QTextCodec *m_scriptTextCodec; /*!< static, borrowed pointer to the text codec used for loading and saving script files */
         static QMutex m_mutex;  /*!< static mutex, protecting every read and write operation in class AppManagement */
 
 };

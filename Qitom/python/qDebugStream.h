@@ -50,20 +50,7 @@ signals:
 protected:
 
     //! this method overwrites a corresponding method in basic_streambuf class and is invoked, if buffer risks to overflow
-    virtual int_type overflow(int_type v)
-    {
-        if (v == '\n')
-        {
-            emit flushStream(QString(m_string.c_str()), msg_type);
-            m_string.erase(m_string.begin(), m_string.end());
-        }
-        else
-        {
-            m_string += v;
-        }
-
-        return v;
-    };
+    virtual std::basic_streambuf<char>::int_type overflow(int_type v);
 
     virtual std::streamsize xsputn(const char *p, std::streamsize n);
 

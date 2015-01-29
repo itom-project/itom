@@ -42,6 +42,7 @@
 #include <qtimer.h>
 #include <qpainter.h>
 #include <qmimedata.h>
+#include <qtextcodec.h>
 
 namespace ito 
 {
@@ -989,8 +990,11 @@ RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument
     }
     else
     {
-
-        QString text(file.readAll());
+        //in Qt4, QString(QByteArray) created the string with fromAscii(byteArray), in Qt5 it is fromUtf8(byteArray)
+        //therefore there is a setting property telling the encoding of saved python files and the files are loaded assuming
+        //this special encoding. If no encoding is given, latin1 is always assumed.
+        QByteArray content = file.readAll();
+        QString text = AppManagement::getScriptTextCodec()->toUnicode(content);
         file.close();
 
         clearAllBookmarks();
@@ -1069,8 +1073,9 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
     }
 
     convertEols(QsciScintilla::EolUnix);
-
-    file.write(text().toLatin1());
+    
+    QString t = text();
+    file.write(AppManagement::getScriptTextCodec()->fromUnicode(t));
     file.close();
 
     QFileInfo fi(getFilename());
@@ -1129,7 +1134,9 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
     m_pFileSysWatcher->removePath(getFilename());
 
     convertEols(QsciScintilla::EolUnix);
-    file.write(text().toLatin1());
+    
+    QString t = text();
+    file.write(AppManagement::getScriptTextCodec()->fromUnicode(t));
     file.close();
 
     changeFilename(tempFileName);

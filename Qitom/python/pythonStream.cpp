@@ -67,7 +67,7 @@ int PyStream::PythonStream_init(PythonStream *self, PyObject *args, PyObject *kw
     }
 
     Py_XDECREF(self->encoding);
-    self->encoding = PyUnicode_FromString("latin_1");
+    self->encoding = PyUnicode_FromString("latin_1"); //the python stdout and stderr streams will be encoded using latin_1
     self->closed = 0;
 
     return 0;
