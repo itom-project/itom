@@ -53,6 +53,7 @@ UserOrganizer::UserOrganizer(void) :
 {
     AppManagement::setUserOrganizer(this);
 
+    m_userName= tr("Standard User");
     strConstFeatDeveloper = tr("Developer");
     strConstFeatFileSystem = tr("File System");
     strConstFeatUserManag = tr("User Management");
@@ -137,7 +138,7 @@ ito::RetVal UserOrganizer::loadSettings(const QString &defUserName)
     {
         char foundDefUser = 0;
 
-        curUserModel.addUser(UserInfoStruct(tr("Standard User"), "itom.ini", QDir::cleanPath(appDir.absoluteFilePath("itom.ini")), strConstRoleAdministrator));
+        curUserModel.addUser(UserInfoStruct(tr("Standard User"), "itom.ini", QDir::cleanPath(appDir.absoluteFilePath("itom.ini")), "admin"));
 
         DialogSelectUser userDialog;
         userDialog.ui.userList->setModel(&curUserModel);
