@@ -599,15 +599,24 @@ RetVal ScriptEditorWidget::setCursorPosAndEnsureVisible(int line)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal ScriptEditorWidget::setCursorPosAndEnsureVisibleWithSelection(int line, QString name)
+RetVal ScriptEditorWidget::setCursorPosAndEnsureVisibleWithSelection(int line, const QString &currentClass, const QString &currentMethod)
 {
-    setCursorPosAndEnsureVisible(line);
-    // regular expression for Classes and Methods
-    QRegExp reg("(\\s*)(class||def)\\s(.+)\\(.*");
-    reg.setMinimal(true);
-    reg.indexIn(this->text(line), 0);
-    this->setSelection(line, reg.pos(3), line, reg.pos(3) + reg.cap(3).length());
-    return retOk;
+    ito::RetVal retval;
+    
+    if (line >= 0)
+    {
+        retval += setCursorPosAndEnsureVisible(line);
+        // regular expression for Classes and Methods
+        QRegExp reg("(\\s*)(class||def)\\s(.+)\\(.*");
+        reg.setMinimal(true);
+        reg.indexIn(this->text(line), 0);
+        setSelection(line, reg.pos(3), line, reg.pos(3) + reg.cap(3).length());
+    }
+
+    m_currentClass = currentClass;
+    m_currentMethod = currentMethod;
+
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

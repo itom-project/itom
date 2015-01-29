@@ -86,9 +86,11 @@ public:
     inline bool getCanCopy() const { return canCopy; }
     inline bool isBookmarked() const { return !bookmarkErrorHandles.empty(); }
     inline QString getUntitledName() const { return tr("Untitled%1").arg(unnamedNumber); }
+    inline QString getCurrentClass() const { return m_currentClass; } //currently chosen class in class navigator for this script editor widget
+    inline QString getCurrentMethod() const { return m_currentMethod; } //currently chosen method in class navigator for this script editor widget
 
     RetVal setCursorPosAndEnsureVisible(int line);
-    RetVal setCursorPosAndEnsureVisibleWithSelection(int line, QString name);
+    RetVal setCursorPosAndEnsureVisibleWithSelection(int line, const QString &currentClass, const QString &currentMethod);
 
     const ScriptEditorStorage saveState() const;
     RetVal restoreState(const ScriptEditorStorage &data);
@@ -221,6 +223,8 @@ private:
     QTimer *m_classNavigatorTimer;              // Class Navigator Timer
     bool m_classNavigatorTimerEnabled;          // Class Navigator Timer Enable
     int m_classNavigatorInterval;               // Class Navigator Timer Interval
+    QString m_currentClass;
+    QString m_currentMethod;
 
     int buildClassTree(ClassNavigatorItem *parent, int parentDepth, int lineNumber);
 

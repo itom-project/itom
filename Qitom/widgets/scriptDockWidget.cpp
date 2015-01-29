@@ -282,24 +282,27 @@ void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
 // public Slot invoked by requestModelRebuild from EditorWidget or by tabchange etc.
 void ScriptDockWidget::updateClassesBox(ScriptEditorWidget *editor)
 { 
-    QString lastClass;
-    QString lastMethod;
-    ClassNavigatorItem *lastClassItem = (ClassNavigatorItem*)(m_classBox->itemData(m_classBox->currentIndex(), Qt::UserRole).value<void*>());
-    ClassNavigatorItem *lastMethodItem = (ClassNavigatorItem*)(m_methodBox->itemData(m_methodBox->currentIndex(), Qt::UserRole).value<void*>());
-    if (lastClassItem)
+    if (m_ClassNavigatorEnabled && editor)
     {
-        lastClass = lastClassItem->m_name;
-    }
-    if (lastMethodItem)
-    {
-        lastMethod = lastMethodItem->m_name;
-    }
+        
+        /*ClassNavigatorItem *lastClassItem = (ClassNavigatorItem*)(m_classBox->itemData(m_classBox->currentIndex(), Qt::UserRole).value<void*>());
+        ClassNavigatorItem *lastMethodItem = (ClassNavigatorItem*)(m_methodBox->itemData(m_methodBox->currentIndex(), Qt::UserRole).value<void*>());
+        if (lastClassItem)
+        {
+            lastClass = lastClassItem->m_name;
+        }
+        if (lastMethodItem)
+        {
+            lastMethod = lastMethodItem->m_name;
+        }*/
 
-
-    if (m_ClassNavigatorEnabled)
-    {
         if (m_tab->currentIndex() == m_tab->indexOf(editor))
         {
+            QString lastClass = editor->getCurrentClass();
+            QString lastMethod = editor->getCurrentMethod();
+
+            ClassNavigatorItem *lastMethodItem = NULL;
+
             m_methodBox->setEnabled(false);
             m_classBox->setEnabled(false);
             disconnect(m_classBox, SIGNAL(activated (QString)), this, SLOT(classChosen(QString)));
@@ -331,16 +334,12 @@ void ScriptDockWidget::updateClassesBox(ScriptEditorWidget *editor)
                 bool lastClassFound = false;
                 for (int i = 0; i < m_classBox->count(); ++i)
                 {
-                    lastClassItem = (ClassNavigatorItem*)(m_classBox->itemData(i, Qt::UserRole).value<void*>());
-                    if (lastClassItem)
+                    if (m_classBox->itemText(i) == lastClass)
                     {
-                        if (lastClassItem->m_name == lastClass)
-                        {
-                            m_classBox->setCurrentIndex(i);
-                            classChosen(""); // This empty cal avoids the jump to the position
-                            lastClassFound = true;
-                            break;
-                        }
+                        m_classBox->setCurrentIndex(i);
+                        classChosen(""); // This empty cal avoids the jump to the position
+                        lastClassFound = true;
+                        break;
                     }
                 }
                 /*int iMethod = m_methodBox->findText(lastMethod);*/
@@ -362,7 +361,7 @@ void ScriptDockWidget::updateClassesBox(ScriptEditorWidget *editor)
             }
             else
             {
-                // Otherwise choose global skope
+                // Otherwise choose global scope
                 classChosen("");
             }
         }
@@ -379,12 +378,23 @@ void ScriptDockWidget::classChosen(const QString &text)
     ClassNavigatorItem *classItem = (ClassNavigatorItem*)(m_classBox->itemData(m_classBox->currentIndex(), Qt::UserRole).value<void*>());
     if (classItem)
     {
+        ClassNavigatorItem *methodItem = (ClassNavigatorItem*)(m_methodBox->itemData(m_classBox->currentIndex(), Qt::UserRole).value<void*>());
+        QString method = methodItem ? methodItem->m_name : "";
+        QString className = m_classBox->currentText();
+
         m_methodBox->setEnabled(false);
         disconnect(m_methodBox, SIGNAL(activated (QString)), this, SLOT(methodChosen(QString)));
         m_methodBox->clear();
-        if (text != "" && classItem->m_lineno >= 0 && classItem->m_internalType != ClassNavigatorItem::typePyRoot)
+        if (text != "")
         {
-            this->getCurrentEditor()->setCursorPosAndEnsureVisibleWithSelection(classItem->m_lineno, classItem->m_name);
+            if (classItem->m_lineno >= 0 && classItem->m_internalType != ClassNavigatorItem::typePyRoot)
+            {
+                this->getCurrentEditor()->setCursorPosAndEnsureVisibleWithSelection(classItem->m_lineno, className, method);
+            }
+            else
+            {
+                this->getCurrentEditor()->setCursorPosAndEnsureVisibleWithSelection(-1, className, method);
+            }
         }
         fillMethodBox(classItem);
         connect(m_methodBox, SIGNAL(activated (QString)), this, SLOT(methodChosen(QString)));
@@ -401,7 +411,9 @@ void ScriptDockWidget::methodChosen(const QString &text)
     {
         if (methodItem->m_lineno >= 0)
         {
-            this->getCurrentEditor()->setCursorPosAndEnsureVisibleWithSelection(methodItem->m_lineno, methodItem->m_name);
+            QString className = m_classBox->currentText();
+
+            this->getCurrentEditor()->setCursorPosAndEnsureVisibleWithSelection(methodItem->m_lineno, className,  methodItem->m_name);
         }
     }
 }
