@@ -59,6 +59,8 @@ The functions **continue**, **step**, **step over**, **step out** and **stop** a
 
 More information about breakpoints are given in the next section.
 
+.. _gui-editor-breakpoints:
+
 Breakpoints
 ~~~~~~~~~~~~
 

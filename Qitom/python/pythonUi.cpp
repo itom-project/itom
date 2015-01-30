@@ -1698,7 +1698,7 @@ PyObject* PythonUi::PyUi_new(PyTypeObject *type, PyObject * args, PyObject * kwd
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiInit_doc,"ui(filename, [type, dialogButtonBar, dialogButtons, childOfMainWindow, deleteOnClose]) -> instance of user interface \n\
+PyDoc_STRVAR(pyUiInit_doc,"ui(filename, [type, dialogButtonBar, dialogButtons, childOfMainWindow, deleteOnClose, dockWidgetArea]) -> instance of user interface \n\
 \n\
 The class **ui** wraps a user interface, externally designed and given by a ui-file. If your user interface is a dialog or window, \n\
 chose *ui.TYPEWINDOW* as type, if the user interface is a widget (simplest case), chose *ui.TYPEDIALOG* and your widget \n\

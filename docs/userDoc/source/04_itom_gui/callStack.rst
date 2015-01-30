@@ -29,4 +29,5 @@ becomes the current line. You can use the call stack in order to trace the entir
     or further scripts. Python has an improved caching mechanism for all modules and packages that have been imported at any place of your script.
     Once imported, the modules and packages are translated in an intermediate file that is cached and saved in a **__pycache__** folder. Further changes
     in any related script file are not executed if the old files are still cached. In order to force |itom| reloading any modules, either delete the
-    cache folders, use the **reload** method from the module **imp** or use the dialog **reloadModules** from |itom|.
+    cache folders, use the **reload** method from the module **imp** or use the dialog **reloadModules** from |itom|. For more information about reloading
+    plugins see :ref:`here <script-language-reload-modules>`.

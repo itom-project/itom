@@ -185,7 +185,19 @@ Main window or widget as dockable toolbox (TYPEDOCKWIDGET)
 -----------------------------------------------------------
 
 It is also possible to integrate user-defined main windows or widgets as dockable toolbox in the main window of |itom|. This is done using the type value **ui.TYPEDOCKWIDGET**. Then the
-widget is registered as dockwidget in the main window of |itom| and once it becomes visible, its startup position is at the top-center position.
+widget is registered as dockwidget in the main window of |itom| and once it becomes visible, its startup position is at the top-center position. You can define the initial dock area using
+the optional argument *dockWidgetArea* of the class :py:class:`itom.ui`.
+
+.. code-block:: python
+    
+    win = ui("testWindow.ui", ui.TYPEDOCKWIDGET, dockWidgetArea = ui.RIGHTDOCKWIDGETAREA)
+    
+Possible values for *dockWidgetArea* are:
+    
+    ui.LEFTDOCKWIDGETAREA = 1
+    ui.RIGHTDOCKWIDGETAREA = 2
+    ui.TOPDOCKWIDGETAREA = 4
+    ui.BOTTOMDOCKWIDGETAREA = 8
 
 
 Accessing control elements

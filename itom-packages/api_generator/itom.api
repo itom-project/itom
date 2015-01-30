@@ -201,6 +201,8 @@ itom.polygonMesh.nrOfPolygons
 itom.processEvents
 itom.proxy(??) [class]
 itom.pythonStream(??) [doc: PythonStream objects]
+itom.pythonStream.closed
+itom.pythonStream.encoding
 itom.pythonStream.fileno
 itom.pythonStream.flush
 itom.pythonStream.name
@@ -243,10 +245,12 @@ itom.timer.isActive() -> returns timer status
 itom.timer.setInterval(interval) -> sets timer interval in [ms]
 itom.timer.start() -> starts timer
 itom.timer.stop() -> stops timer
-itom.ui(filename, [type, dialogButtonBar, dialogButtons, childOfMainWindow, deleteOnClose]) -> instance of user interface
+itom.ui(filename, [type, dialogButtonBar, dialogButtons, childOfMainWindow, deleteOnClose, dockWidgetArea]) -> instance of user interface
+itom.ui.BOTTOMDOCKWIDGETAREA
 itom.ui.BUTTONBAR_HORIZONTAL
 itom.ui.BUTTONBAR_NO
 itom.ui.BUTTONBAR_VERTICAL
+itom.ui.LEFTDOCKWIDGETAREA
 itom.ui.MsgBoxAbort
 itom.ui.MsgBoxApply
 itom.ui.MsgBoxCancel
@@ -268,6 +272,8 @@ itom.ui.MsgBoxSave
 itom.ui.MsgBoxSaveAll
 itom.ui.MsgBoxYes
 itom.ui.MsgBoxYesToAll
+itom.ui.RIGHTDOCKWIDGETAREA
+itom.ui.TOPDOCKWIDGETAREA
 itom.ui.TYPEDIALOG
 itom.ui.TYPEDOCKWIDGET
 itom.ui.TYPEWINDOW
