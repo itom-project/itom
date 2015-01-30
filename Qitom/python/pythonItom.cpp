@@ -3773,6 +3773,21 @@ PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(setApplicationCursor_doc,"setApplicationCursor([cursorIndex = -1]) -> changes the itom cursor or restores the previously set cursor if -1 \n\
+\n\
+This methods changes the overall cursor icon of itom where cursorIndex corresponds to the Qt enumeration Qt::CursorShape. e.g.:\n\
+\n\
+    * 0: Arrow \n\
+    * 2: Cross Cursor \n\
+    * 3: Wait Curson \n\
+    * 13: Pointing Hand Cursor \n\
+    * 14: Forbidden Cursor \n\
+    * 16: Busy Cursor \n\
+\n\
+Parameters \n\
+----------- \n\
+cursorIndex : {int} optional\n\
+The cursor enumeration value of the desired cursor shape (Qt::CursorShape) or -1 if the previous cursor should be restored (default)");
 PyObject* PythonItom::setApplicationCursor(PyObject* pSelf, PyObject* pArgs)
 {
     int i = -1;
@@ -4440,17 +4455,17 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"gcEndTracking", (PyCFunction)PythonItom::PyGCEndTracking, METH_NOARGS, "gcEndTracking() -> compares the current object list of the garbage collector with the recently saved list."},
     //{"getGlobalDict", (PyCFunction)PythonItom::PyGetGlobalDict, METH_NOARGS, "getGlobalDict() -> returns borrowed reference to global dictionary of itom python instance"},
     {"getScreenInfo", (PyCFunction)PythonItom::PyGetScreenInfo, METH_NOARGS, getScreenInfo_doc},
-    {"setApplicationCursor", (PyCFunction)PythonItom::setApplicationCursor, METH_VARARGS, NULL},
+    {"setApplicationCursor", (PyCFunction)PythonItom::setApplicationCursor, METH_VARARGS, setApplicationCursor_doc},
     {"loadIDC", (PyCFunction)PythonItom::PyLoadIDC, METH_VARARGS | METH_KEYWORDS, pyLoadIDC_doc},
     {"saveIDC", (PyCFunction)PythonItom::PySaveIDC, METH_VARARGS | METH_KEYWORDS, pySaveIDC_doc},
-    {"compressData", (PyCFunction)PythonItom::compressData, METH_VARARGS, "compresses the given string using the method qCompress"},
-    {"uncompressData", (PyCFunction)PythonItom::uncompressData, METH_VARARGS, "uncompresses the given string using the method qUncompress"},
+    {"compressData", (PyCFunction)PythonItom::compressData, METH_VARARGS, "compressData(str) -> compresses the given string using the method qCompress"},
+    {"uncompressData", (PyCFunction)PythonItom::uncompressData, METH_VARARGS, "uncompressData(str) -> uncompresses the given string using the method qUncompress"},
     {"userIsAdmin", (PyCFunction)PythonItom::userCheckIsAdmin, METH_NOARGS, pyCheckIsAdmin_doc},
     {"userIsDeveloper", (PyCFunction)PythonItom::userCheckIsDeveloper, METH_NOARGS, pyCheckIsDeveloper_doc},
     {"userIsUser", (PyCFunction)PythonItom::userCheckIsUser, METH_NOARGS, pyCheckIsUser_doc},
     {"userGetInfo", (PyCFunction)PythonItom::userGetUserInfo, METH_NOARGS, pyGetUserInfo_doc},
     {"autoReloader", (PyCFunction)PythonItom::PyAutoReloader, METH_VARARGS | METH_KEYWORDS, autoReloader_doc},
-    {"clc", (PyCFunction)PythonItom::PyClearCommandLine, METH_NOARGS, "clears the itom command line (if available)"},
+    {"clc", (PyCFunction)PythonItom::PyClearCommandLine, METH_NOARGS, "clc() -> clears the itom command line (if available)"},
     {"getPalette", (PyCFunction)PythonItom::PyGetPalette, METH_VARARGS, getPalette_doc},
     {"setPalette", (PyCFunction)PythonItom::PySetPalette, METH_VARARGS, setPalette_doc},
     {"getPaletteList", (PyCFunction)PythonItom::PyGetPaletteList, METH_VARARGS, getPaletteList_doc},
