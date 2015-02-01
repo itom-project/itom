@@ -115,7 +115,7 @@ MainWindow::MainWindow() :
 
     // user
     ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
-    if (uOrg->hasFeature(featConsole))
+    if (uOrg->hasFeature(featConsoleRead) || uOrg->hasFeature(featConsoleReadWrite))
     {
         qDebug(".. before loading console widget");
         //console (central widget):

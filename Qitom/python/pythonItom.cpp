@@ -3987,7 +3987,7 @@ PyObject* PythonItom::userCheckIsAdmin(PyObject* /*pSelf*/)
         return NULL;
     }
 
-    if (userOrg->getUserRole() == ito::userTypeAdministrator)
+    if (userOrg->getUserRole() == ito::userRoleAdministrator)
     {
         return Py_True;
     }
@@ -4014,7 +4014,7 @@ PyObject* PythonItom::userCheckIsDeveloper(PyObject* /*pSelf*/)
         return NULL;
     }
 
-    if (userOrg->getUserRole() == ito::userTypeDeveloper)
+    if (userOrg->getUserRole() == ito::userRoleDeveloper)
     {
         return Py_True;
     }
@@ -4041,7 +4041,7 @@ PyObject* PythonItom::userCheckIsUser(PyObject* /*pSelf*/)
         return NULL;
     }
 
-    if (userOrg->getUserRole() == ito::userTypeBasic)
+    if (userOrg->getUserRole() == ito::userRoleBasic)
     {
         return Py_True;
     }
@@ -4084,13 +4084,13 @@ PyObject* PythonItom::userGetUserInfo(PyObject* /*pSelf*/)
     // Type
     switch(userOrg->getUserRole())
     {
-        case ito::userTypeBasic:
+        case ito::userRoleBasic:
             item = PyUnicode_FromString("user");
         break;
-        case ito::userTypeAdministrator:
+        case ito::userRoleAdministrator:
             item = PyUnicode_FromString("administrator");
         break;
-        case ito::userTypeDeveloper:
+        case ito::userRoleDeveloper:
             item = PyUnicode_FromString("developer");
         break;
         default:

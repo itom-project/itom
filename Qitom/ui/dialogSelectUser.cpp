@@ -61,60 +61,48 @@ void DialogSelectUser::userListCurrentChanged(const QModelIndex &current, const 
         {
             userExists = true;
 
-            UserOrganizer *uio = (UserOrganizer*)AppManagement::getUserOrganizer();
             ui.lineEdit_name->setText(m_userModel->index(curIdx.row(), 0).data().toString());
             ui.lineEdit_id->setText(m_userModel->index(curIdx.row(), 1).data().toString());
             ui.lineEdit_iniFile->setText(m_userModel->index(curIdx.row(), 3).data().toString());
 
-            QString roleText;
-            QModelIndex midx = m_userModel->index(curIdx.row(), 2);
-            if (midx.data().toString() == "developer")
-            {
-                roleText = uio->strConstRoleDeveloper;
-            }
-            else if (midx.data().toString() == "admin")
-            {
-                roleText = uio->strConstRoleAdministrator;
-            }
-            else
-            {
-                roleText = uio->strConstRoleUser;
-            }
-            ui.permissionList->addItem(uio->strConstRole + ": " + roleText);
+            ito::UserRole role = m_userModel->index(curIdx.row(), 2).data().value<ito::UserRole>();
+            UserFeatures features = m_userModel->index(curIdx.row(), 4).data().value<UserFeatures>();
+            
+            ui.permissionList->addItem(tr("Role") + ": " + m_userModel->getRoleName(role));
+            
 
-            long flags = uio->getFlagsFromFile(m_userModel->index(curIdx.row(), 3).data().toString());
-            if (flags & featDeveloper)
+            if (features & featDeveloper)
             {
-                ui.permissionList->addItem(uio->strConstFeatDeveloper);
+                ui.permissionList->addItem(m_userModel->getFeatureName(featDeveloper));
             }
 
-            if (flags & featFileSystem)
+            if (features & featFileSystem)
             {
-                ui.permissionList->addItem(uio->strConstFeatFileSystem);
+                ui.permissionList->addItem(m_userModel->getFeatureName(featFileSystem));
             }
 
-            if (flags & featUserManag)
+            if (features & featUserManag)
             {
-                ui.permissionList->addItem(uio->strConstFeatUserManag);
+                ui.permissionList->addItem(m_userModel->getFeatureName(featUserManag));
             }
 
-            if (flags & featPlugins)
+            if (features & featPlugins)
             {
-                ui.permissionList->addItem(uio->strConstFeatPlugins);
+                ui.permissionList->addItem(m_userModel->getFeatureName(featPlugins));
             }
 
-            if (flags & featProperties)
+            if (features & featProperties)
             {
-                ui.permissionList->addItem(uio->strConstFeatProperties);
+                ui.permissionList->addItem(m_userModel->getFeatureName(featProperties));
             }
 
-            if ((flags & featConsole) && (flags & featConsoleRW))
+            if ((features & featConsoleReadWrite))
             {
-                ui.permissionList->addItem(uio->strConstFeatConsole);
+                ui.permissionList->addItem(m_userModel->getFeatureName(featConsoleReadWrite));
             }
-            else if (flags & featConsole)
+            else if (features & featConsoleRead)
             {
-                ui.permissionList->addItem(uio->strConstFeatConsoleRO);
+                ui.permissionList->addItem(m_userModel->getFeatureName(featConsoleRead));
             }
         }
     }
