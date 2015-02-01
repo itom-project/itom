@@ -63,11 +63,14 @@ class UserOrganizer : QObject
         inline void setUserRole(const int role) { m_userRole = role; }
         void setUserRole(const QString role) 
         { 
-            if (role == strConstRoleDeveloper)
+            // names are "developer
+            //if (role.compare(strConstRoleDeveloper, Qt::CaseInsensitive) == 0)
+            if (role.compare(strConstRoleDeveloper, Qt::CaseInsensitive) == 0 || role == "developer")
             {
                 m_userRole = 2;
             }
-            else if (role == strConstRoleAdministrator)
+            //else if (role.compare(strConstRoleAdministrator, Qt::CaseInsensitive) == 0)
+            else if (role.compare(strConstRoleAdministrator, Qt::CaseInsensitive) == 0 || role == "admin")
             {
                 m_userRole = 1;
             }
