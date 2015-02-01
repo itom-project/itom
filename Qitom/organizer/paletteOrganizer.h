@@ -36,9 +36,9 @@ class ItomPaletteBase
 {
     public:
 
-        ItomPaletteBase():m_name(""), m_type(0), m_inverseColorOne(), m_inverseColorTwo() {m_colorStops.clear();};
-        ItomPaletteBase(const QString name, const char type): m_name(name), m_type(type), m_inverseColorOne(), m_inverseColorTwo() {m_colorStops.clear();};
-        ItomPaletteBase(const QString name, const char type, QColor start, QColor stop): m_name(name), m_type(type), m_inverseColorOne(), m_inverseColorTwo() 
+        ItomPaletteBase():m_name(""), m_type(0), m_inverseColorOne(), m_inverseColorTwo(), m_invalidColor() {m_colorStops.clear();};
+        ItomPaletteBase(const QString name, const char type): m_name(name), m_type(type), m_inverseColorOne(), m_inverseColorTwo(), m_invalidColor() {m_colorStops.clear();};
+        ItomPaletteBase(const QString name, const char type, QColor start, QColor stop): m_name(name), m_type(type), m_inverseColorOne(), m_inverseColorTwo() , m_invalidColor()
         {
             m_colorStops.clear();
             m_colorStops.append(QPair<double, QColor>(0.0, start));
@@ -47,6 +47,7 @@ class ItomPaletteBase
 
         ItomPaletteBase(const ItomPaletteBase & scr)
         {
+            m_invalidColor = scr.m_invalidColor;
             m_inverseColorOne = scr.m_inverseColorOne;
             m_inverseColorTwo = scr.m_inverseColorTwo;
             m_name = scr.m_name;
@@ -81,6 +82,9 @@ class ItomPaletteBase
         bool   setInversColorTwo(const QColor color);
         QColor getInversColorTwo() const {return m_inverseColorTwo;};
         
+        bool setInvalidColor(const QColor color);
+        QColor getInvalidColor() const;
+
         QColor getColorFirst() const {return m_colorStops[0].second;};
         QColor getColorLast() const {return m_colorStops[m_colorStops.size()-1].second;};
         QColor getColor(unsigned int color) const;
@@ -93,7 +97,7 @@ class ItomPaletteBase
         void calculateInverseColors(QColor &inv1, QColor &inv2);
         //QColor getColor(double pos) const;
 
-        QVector<ito::uint32> get256Colors() const;
+        QVector<ito::uint32> get256Colors(bool includeAlpha = false) const;
 
     protected:
         inline void removeWriteProtection() { m_type = m_type & !ito::tPaletteReadOnly; return;};
@@ -106,7 +110,7 @@ class ItomPaletteBase
 
         QColor m_inverseColorTwo;
         QColor m_inverseColorOne;
-
+        QColor m_invalidColor;
         QVector<QPair<double, QColor> > m_colorStops;
 
         int findUpper( double pos ) const;
