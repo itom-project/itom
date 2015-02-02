@@ -41,7 +41,6 @@ class UserOrganizer : QObject
 
         inline const QString getUserName() const { return m_userName; }
         inline int getUserRole() const { return m_userRole; }
-        QString getFeatureName(const UserFeature &feature) const;
         QString getUserID(void) const;
 
         inline UserModel* getUserModel() const { return m_userModel; }

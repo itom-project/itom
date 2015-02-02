@@ -116,59 +116,41 @@ ito::RetVal UserOrganizer::loadSettings(const QString &defUserName)
 
     if (m_userModel->rowCount() > 1) 
     {
-        char foundDefUser = 0;
+        bool foundDefUser = false;
 
-        DialogSelectUser userDialog;
-        userDialog.ui.userList->setModel(m_userModel);
-        userDialog.DialogInit(m_userModel);
+        DialogSelectUser userDialog(m_userModel);
+
 #if linux
         QString curSysUser(qgetenv("USER")); ///for MAc or Linux
 #else
         QString curSysUser(qgetenv("USERNAME")); //for windows
 #endif
 
-        for (int curIdx = 0; curIdx < m_userModel->rowCount(); curIdx++)
+        if (defUserName.isEmpty())
         {
-            QModelIndex midx = m_userModel->index(curIdx, 1);
-            if (midx.isValid())
-            {
-                QString curUid(midx.data().toString());
-                if (!defUserName.isEmpty())
-                {
-                    if (curUid == defUserName)
-                    {
-                        QModelIndex actIdx = m_userModel->index(curIdx, 0);
-                        userDialog.ui.userList->setCurrentIndex(actIdx);
-                        foundDefUser = 1;
-                    }
-                }
-                else
-                {
-                    if (curUid == curSysUser)
-                    {
-                        QModelIndex actIdx = m_userModel->index(curIdx, 0);
-                        userDialog.ui.userList->setCurrentIndex(actIdx);
-                    }
-                }
-            }
+            userDialog.selectUser(curSysUser);
+        }
+        else
+        {
+            foundDefUser = userDialog.selectUser(defUserName);
         }
 
-        if (foundDefUser == 0)
+        if (!foundDefUser)
         {
-            int ret = userDialog.exec();
-            if (ret == 0)
+            if (userDialog.exec() == QDialog::Rejected)
             {
                 return ito::retError;
             }
 
-            QModelIndex curIdx = userDialog.ui.userList->currentIndex();
+            QModelIndex curIdx = userDialog.selectedIndex();
             QModelIndex fIdx = m_userModel->index(curIdx.row(), 3);
-            settingsFile = QString(fIdx.data().toString());
+            settingsFile = fIdx.data().toString();
         }
         else
         {
             settingsFile = QString("itom_").append(defUserName).append(".ini");
         }
+
         qDebug() << "settingsFile path: " << settingsFile;
         m_settingsFile = settingsFile;
 
@@ -239,6 +221,7 @@ ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
             qDebug() << "found user ini file: " << iniFile;
             UserInfoStruct uis;
             uis.iniFile = absfile;
+            uis.standardUser = false;
             if (readUserDataFromFile(absfile, uis.name, uis.id, uis.features, uis.role) == ito::retOk)
             {
                 m_userModel->addUser(uis);
@@ -246,12 +229,8 @@ ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
         }
     }
 
-    if (m_userModel->rowCount() > 0) 
-    {
-        char foundDefUser = 0;
-        UserInfoStruct uis(m_strConstStdUser, "itom.ini", QDir::cleanPath(appDir.absoluteFilePath("itom.ini")), userRoleAdministrator, ~UserFeatures());
-        m_userModel->addUser(uis);
-    }
+    UserInfoStruct uis(m_strConstStdUser, "itom.ini", QDir::cleanPath(appDir.absoluteFilePath("itom.ini")), userRoleAdministrator, ~UserFeatures(), true);
+    m_userModel->addUser(uis);
 
     return retval;
 }
@@ -395,17 +374,6 @@ ito::RetVal UserOrganizer::writeUserDataToFile(const QString &username, const QS
     retval += scanSettingFilesAndLoadModel();
 
     return retval;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//! shortdesc
-/*! longdesc
-
-    \return QString
-*/
-QString UserOrganizer::getFeatureName(const UserFeature &feature) const
-{
-    return m_userModel->getFeatureName(feature);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

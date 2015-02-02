@@ -41,12 +41,12 @@ void DialogUserManagement::readModel(const QModelIndex &index)
 
     if (index.isValid())
     {
-         ui.lineEdit_name->setText(m_userModel->index(index.row(), 0).data().toString());
-        ui.lineEdit_id->setText(m_userModel->index(index.row(), 1).data().toString());
-        ui.lineEdit_iniFile->setText(m_userModel->index(index.row(), 3).data().toString());
+        ui.lineEdit_name->setText(m_userModel->index(index.row(), UserModel::umiName).data().toString());
+        ui.lineEdit_id->setText(m_userModel->index(index.row(), UserModel::umiId).data().toString());
+        ui.lineEdit_iniFile->setText(m_userModel->index(index.row(), UserModel::umiIniFile).data().toString());
 
-        ito::UserRole role = m_userModel->index(index.row(), 2).data().value<ito::UserRole>();
-        UserFeatures features = m_userModel->index(index.row(), 4).data().value<UserFeatures>();
+        ito::UserRole role = m_userModel->index(index.row(), UserModel::umiRole).data().value<ito::UserRole>();
+        UserFeatures features = m_userModel->index(index.row(), UserModel::umiFeatures).data().value<UserFeatures>();
             
         ui.permissionList->addItem(tr("Role") + ": " + m_userModel->getRoleName(role));
 
@@ -85,8 +85,18 @@ void DialogUserManagement::readModel(const QModelIndex &index)
         }
 
 //        ui.userList->setCurrentIndex(index);
-        ui.pushButton_editUser->setEnabled(true);
+        if (m_userModel->data(index, Qt::EditRole).isValid())
+        {
+            ui.pushButton_editUser->setEnabled(true);
+        }
+        else
+        {
+            ui.pushButton_editUser->setEnabled(false); //standard user
+        }
+
         ui.pushButton_delUser->setEnabled(m_currentUser != ui.lineEdit_name->text());
+
+        ui.userList->setCurrentIndex(index);
     }
     else
     {
@@ -96,6 +106,8 @@ void DialogUserManagement::readModel(const QModelIndex &index)
 
         ui.pushButton_editUser->setEnabled(false);
         ui.pushButton_delUser->setEnabled(false);
+
+        ui.userList->setCurrentIndex(QModelIndex());
     }
 }
 
@@ -105,24 +117,11 @@ void DialogUserManagement::loadUserList()
     QItemSelectionModel *selModel = ui.userList->selectionModel();
     QObject::disconnect(selModel, SIGNAL(currentChanged (const QModelIndex &, const QModelIndex &)), this, SLOT(userListCurrentChanged(const QModelIndex &, const QModelIndex &))); 
     
-    readModel(m_userModel->index(0, 1));
+    readModel(m_userModel->index(0, 0));
 
     selModel = ui.userList->selectionModel();
 
     QObject::connect(selModel, SIGNAL(currentChanged(const QModelIndex &, const QModelIndex &)), this, SLOT(userListCurrentChanged(const QModelIndex &, const QModelIndex &))); 
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void DialogUserManagement::openUserManagementEdit(const QString &filename, UserModel *userModel)
-{
-    DialogUserManagementEdit *dlg = new DialogUserManagementEdit(filename, userModel);
-    dlg->exec();
-    if (dlg->result() == QDialog::Accepted)
-    {
-        loadUserList();
-    }
-
-    DELETE_AND_SET_NULL(dlg);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -156,8 +155,14 @@ void DialogUserManagement::userListCurrentChanged(const QModelIndex &current, co
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogUserManagement::on_pushButton_newUser_clicked()
 {
-    openUserManagementEdit("", m_userModel);
-    loadUserList();
+    DialogUserManagementEdit *dlg = new DialogUserManagementEdit("", m_userModel);
+    if (dlg->exec() == QDialog::Accepted)
+    {
+        loadUserList();
+        readModel(m_userModel->index(m_userModel->rowCount() - 2, 0)); //last is the standard user, new is the one before
+    }
+
+    DELETE_AND_SET_NULL(dlg);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -219,8 +224,14 @@ void DialogUserManagement::on_userList_doubleClicked(const QModelIndex & index)
 {
     if (index.isValid())
     {
-        openUserManagementEdit(m_userModel->index(index.row(), 3).data().toString(), m_userModel);
-        loadUserList();
+        DialogUserManagementEdit *dlg = new DialogUserManagementEdit(m_userModel->index(index.row(), UserModel::umiIniFile).data().toString(), m_userModel);
+        if (dlg->exec() == QDialog::Accepted)
+        {
+            loadUserList();
+            readModel(index);
+        }
+
+        DELETE_AND_SET_NULL(dlg);
     }
 }
 

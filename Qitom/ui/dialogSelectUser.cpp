@@ -27,11 +27,16 @@
 namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogSelectUser::DialogSelectUser(QWidget *parent) :
+DialogSelectUser::DialogSelectUser(UserModel *model, QWidget *parent) :
     QDialog(parent),
-    m_userModel(NULL)
+    m_userModel(model)
 {
     ui.setupUi(this);
+
+    ui.userList->setModel(m_userModel);
+
+    QItemSelectionModel *selModel = ui.userList->selectionModel();
+    QObject::connect(selModel, SIGNAL(currentChanged (const QModelIndex &, const QModelIndex &)), this, SLOT(userListCurrentChanged(const QModelIndex &, const QModelIndex &)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -40,11 +45,24 @@ DialogSelectUser::~DialogSelectUser()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogSelectUser::DialogInit(UserModel *model)
+bool DialogSelectUser::selectUser(const QString &id)
 {
-    m_userModel = model;
-    QItemSelectionModel *selModel = ui.userList->selectionModel();
-    QObject::connect(selModel, SIGNAL(currentChanged (const QModelIndex &, const QModelIndex &)), this, SLOT(userListCurrentChanged(const QModelIndex &, const QModelIndex &))); 
+    for (int curIdx = 0; curIdx < m_userModel->rowCount(); curIdx++)
+    {
+        QModelIndex midx = m_userModel->index(curIdx, 1); //id
+        if (midx.isValid())
+        {
+            if (QString::compare(id, midx.data().toString(), Qt::CaseInsensitive) == 0)
+            {
+                QModelIndex actIdx = m_userModel->index(curIdx, 0);
+                ui.userList->setCurrentIndex(actIdx);
+                return true;
+            }
+        }
+    }
+
+    ui.userList->setCurrentIndex(m_userModel->index(0,0));
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -60,17 +78,17 @@ void DialogSelectUser::userListCurrentChanged(const QModelIndex &current, const 
         if (curIdx.isValid())
         {
             userExists = true;
+            int curRow = curIdx.row();
 
-            ui.lineEdit_name->setText(m_userModel->index(curIdx.row(), 0).data().toString());
-            ui.lineEdit_id->setText(m_userModel->index(curIdx.row(), 1).data().toString());
-            ui.lineEdit_iniFile->setText(m_userModel->index(curIdx.row(), 3).data().toString());
+            ui.lineEdit_name->setText(m_userModel->index(curRow, UserModel::umiName).data().toString());
+            ui.lineEdit_id->setText(m_userModel->index(curRow, UserModel::umiId).data().toString());
+            ui.lineEdit_iniFile->setText(m_userModel->index(curRow, UserModel::umiIniFile).data().toString());
 
-            ito::UserRole role = m_userModel->index(curIdx.row(), 2).data().value<ito::UserRole>();
-            UserFeatures features = m_userModel->index(curIdx.row(), 4).data().value<UserFeatures>();
+            ito::UserRole role = m_userModel->index(curRow, UserModel::umiRole).data().value<ito::UserRole>();
+            UserFeatures features = m_userModel->index(curRow, UserModel::umiFeatures).data().value<UserFeatures>();
             
             ui.permissionList->addItem(tr("Role") + ": " + m_userModel->getRoleName(role));
             
-
             if (features & featDeveloper)
             {
                 ui.permissionList->addItem(m_userModel->getFeatureName(featDeveloper));

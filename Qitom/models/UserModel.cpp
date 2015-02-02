@@ -108,17 +108,41 @@ QVariant UserModel::data(const QModelIndex &index, int role) const
     {
         switch (index.column())
         {
-            case 0:
+            case umiName:
                 temp = m_userInfo.at(index.row()).name;
                 return QVariant(temp);
-            case 1:
+            case umiId:
                 return m_userInfo.at(index.row()).id;
-            case 2:
+            case umiRole:
                 return QVariant::fromValue<UserRole>(m_userInfo.at(index.row()).role);
-            case 3:
+            case umiIniFile:
                 return m_userInfo.at(index.row()).iniFile;
-            case 4:
+            case umiFeatures:
                 return QVariant::fromValue<UserFeatures>(m_userInfo.at(index.row()).features);
+        }
+    }
+    else if (role == Qt::EditRole)
+    {
+        if (m_userInfo[index.row()].standardUser)
+        {
+            return QVariant(); //standard user is not editible
+        }
+        else
+        {
+            switch (index.column())
+            {
+                case umiName:
+                    temp = m_userInfo.at(index.row()).name;
+                    return QVariant(temp);
+                case umiId:
+                    return m_userInfo.at(index.row()).id;
+                case umiRole:
+                    return QVariant::fromValue<UserRole>(m_userInfo.at(index.row()).role);
+                case umiIniFile:
+                    return m_userInfo.at(index.row()).iniFile;
+                case umiFeatures:
+                    return QVariant::fromValue<UserFeatures>(m_userInfo.at(index.row()).features);
+            }
         }
     }
 

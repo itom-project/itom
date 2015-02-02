@@ -35,8 +35,6 @@ enum UserRole
     userRoleDeveloper = 2
 };   
 
-
-
 enum UserFeature
 {
     featDeveloper           =   1,
@@ -57,12 +55,13 @@ Q_DECLARE_FLAGS(UserFeatures, UserFeature)
 struct UserInfoStruct
 {
     UserInfoStruct() {};
-    UserInfoStruct(const QString &sname, const QString &suid, const QString siniFile, UserRole srole, UserFeatures sfeatures) : name(sname), id(suid), iniFile(siniFile), role(srole), features(sfeatures) {}
+    UserInfoStruct(const QString &sname, const QString &suid, const QString siniFile, UserRole srole, UserFeatures sfeatures, bool sStandardUser) : name(sname), id(suid), iniFile(siniFile), role(srole), features(sfeatures), standardUser(sStandardUser) {}
     QString name;
     QString id;
     QString iniFile;
     UserRole role;
     UserFeatures features;
+    bool standardUser;
 };
 
 /** @class UserModel
@@ -78,6 +77,15 @@ class UserModel : public QAbstractItemModel
     public:
         UserModel(/*const QString &data, QObject *parent = 0*/);
         ~UserModel();
+
+        enum UserModelIndex
+        {
+            umiName = 0,
+            umiId = 1,
+            umiRole = 2,
+            umiIniFile = 3,
+            umiFeatures = 4
+        };
 
         QString getRoleName(const UserRole &role) const;
         QString getFeatureName(const UserFeature &feature) const;
