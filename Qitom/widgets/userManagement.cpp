@@ -94,7 +94,7 @@ void DialogUserManagement::readModel(const QModelIndex &index)
             ui.pushButton_editUser->setEnabled(false); //standard user
         }
 
-        ui.pushButton_delUser->setEnabled(m_currentUser != ui.lineEdit_name->text());
+        ui.pushButton_delUser->setEnabled(m_currentUser != ui.lineEdit_name->text() && ui.lineEdit_name->text() != tr("Standard User"));
 
         ui.userList->setCurrentIndex(index);
     }
