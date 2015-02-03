@@ -3645,7 +3645,7 @@ PyObject* PythonItom::scaleValueAndUnit(PyObject * /*pSelf*/, PyObject *pArgs, P
     if (unitObj)
     {
         bool ok;
-        unitIn.append(PythonQtConversion::PyObjGetString(unitObj, true, ok);
+        unitIn.append(PythonQtConversion::PyObjGetString(unitObj, true, ok));
         if (!ok)
         {
             PyErr_SetString(PyExc_TypeError, "valueUnit must be a string.");
