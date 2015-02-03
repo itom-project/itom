@@ -2820,22 +2820,22 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
         return NULL;
     }
 
-    bool ok;
-    caption = PythonQtConversion::PyObjGetString(captionObj, true, ok);
+    bool ok = true;
+    caption = captionObj ? PythonQtConversion::PyObjGetString(captionObj, true, ok) : "";
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "caption must be a string.");
         return NULL;
     }
 
-    directory = PythonQtConversion::PyObjGetString(directoryObj, true, ok);
+    directory = directoryObj ? PythonQtConversion::PyObjGetString(directoryObj, true, ok) : "";
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "directory must be a string.");
         return NULL;
     }
 
-    filters = PythonQtConversion::PyObjGetString(filtersObj, true, ok);
+    filters = filtersObj ? PythonQtConversion::PyObjGetString(filtersObj, true, ok) : "";
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "filters must be a string.");

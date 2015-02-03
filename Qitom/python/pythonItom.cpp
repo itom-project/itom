@@ -3627,12 +3627,12 @@ PyObject* PythonItom::scaleValueAndUnit(PyObject * /*pSelf*/, PyObject *pArgs, P
     int length = PyTuple_Size(pArgs);
     double value = 0.0;
     double valueOut = 0.0;
-    const char* unitString = NULL;
+    PyObject* unitObj = NULL;
     PyObject *myList = NULL;
     QString unitIn("");
-    QString unitOut("");
+    QString unitOut;
 
-    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O!ds", const_cast<char**>(kwlist), &PyList_Type, &myList, &value, &unitString))
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O!dO", const_cast<char**>(kwlist), &PyList_Type, &myList, &value, &unitObj))
     {
         return NULL;
     }
@@ -3642,14 +3642,20 @@ PyObject* PythonItom::scaleValueAndUnit(PyObject * /*pSelf*/, PyObject *pArgs, P
         myQlist.append(PythonQtConversion::PyObjGetString(PyList_GetItem(myList, i)));
     }
 
-    if (unitString)
+    if (unitObj)
     {
-        unitIn.append(unitString);
+        bool ok;
+        unitIn.append(PythonQtConversion::PyObjGetString(unitObj, true, ok);
+        if (!ok)
+        {
+            PyErr_SetString(PyExc_TypeError, "valueUnit must be a string.");
+            return NULL;
+        }
     }
 
     ito::RetVal ret = ito::formatDoubleWithUnit(myQlist, unitIn, value, valueOut, unitOut);
 
-    return Py_BuildValue("ds", valueOut, unitOut.toLatin1().data());
+    return Py_BuildValue("dN", valueOut, PythonQtConversion::QStringToPyObject(unitOut)); //"N" -> Py_BuildValue steals reference from QStringToPyObject
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
