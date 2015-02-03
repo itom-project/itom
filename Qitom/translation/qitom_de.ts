@@ -621,9 +621,8 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Unter folgendem Benutzer starten...</translation>
     </message>
     <message>
-        <location/>
         <source>User</source>
-        <translation type="unfinished">Benutzer</translation>
+        <translation type="obsolete">Benutzer</translation>
     </message>
     <message>
         <location/>
@@ -639,6 +638,11 @@ p, li { white-space: pre-wrap; }
         <location/>
         <source>ID</source>
         <translation></translation>
+    </message>
+    <message>
+        <location/>
+        <source>Select user</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1234,7 +1238,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="+2886"/>
+        <location filename="../python/pythonUi.cpp" line="+3011"/>
         <source>no widget name specified</source>
         <translation type="unfinished">Kein Widget-Name vergeben</translation>
     </message>
@@ -3433,6 +3437,14 @@ Meldung: &apos;%1&apos;</translation>
     </message>
 </context>
 <context>
+    <name>ito::DialogSelectUser</name>
+    <message>
+        <location filename="../ui/dialogSelectUser.cpp" line="+90"/>
+        <source>Role</source>
+        <translation type="unfinished">Rolle</translation>
+    </message>
+</context>
+<context>
     <name>ito::DialogUserManagement</name>
     <message>
         <source>Error</source>
@@ -3447,7 +3459,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Die Benutzer-ID wurde bereits vergeben! Benutzer kann nicht erstellt werden!</translation>
     </message>
     <message>
-        <location filename="../widgets/userManagement.cpp" line="+302"/>
+        <location filename="../widgets/userManagement.cpp" line="+172"/>
         <location line="+7"/>
         <location line="+7"/>
         <location line="+6"/>
@@ -3473,12 +3485,17 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="obsolete">Die Standard-Ini-Datei von itom konnte nicht kopiert werden!</translation>
     </message>
     <message>
-        <location line="-137"/>
+        <location line="-150"/>
+        <source>Role</source>
+        <translation type="unfinished">Rolle</translation>
+    </message>
+    <message>
+        <location line="+80"/>
         <source>User Management - Current User: </source>
         <translation type="unfinished">Benutzerverwaltung - Aktueller Benutzer: </translation>
     </message>
     <message>
-        <location line="+108"/>
+        <location line="+41"/>
         <source>User ID not found, aborting!</source>
         <translation type="unfinished">Die Benutzer-ID wurde nicht gefunden! Der Vorgang wurde abgebrochen!</translation>
     </message>
@@ -3501,16 +3518,16 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DialogUserManagementEdit</name>
     <message>
-        <location filename="../widgets/userManagementEdit.cpp" line="+99"/>
+        <location filename="../widgets/userManagementEdit.cpp" line="+55"/>
         <location line="+7"/>
         <location line="+6"/>
-        <location line="+7"/>
-        <location line="+14"/>
+        <location line="+56"/>
+        <location line="+6"/>
         <source>Error</source>
         <translation type="unfinished">Fehler</translation>
     </message>
     <message>
-        <location line="-34"/>
+        <location line="-75"/>
         <source>Name is empty! Cannot create user!</source>
         <translation type="unfinished">Name ist leer! Benutzer kann nicht erstellt werden!</translation>
     </message>
@@ -3525,17 +3542,20 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Kein Benutzername! Vorgang wird abgebrochen!</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+62"/>
+        <source>UserOrganizer not found!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>ItomSettings directory not found, aborting!</source>
-        <translation type="unfinished">Das Verzeichnis &quot;itomSettings&quot; wurde nicht gefunden! Vorgang wird abgebrochen!</translation>
+        <translation type="obsolete">Das Verzeichnis &quot;itomSettings&quot; wurde nicht gefunden! Vorgang wird abgebrochen!</translation>
     </message>
     <message>
-        <location line="+14"/>
         <source>Could not copy standard itom ini file!</source>
-        <translation type="unfinished">Die Standard-Ini-Datei von itom konnte nicht kopiert werden!</translation>
+        <translation type="obsolete">Die Standard-Ini-Datei von itom konnte nicht kopiert werden!</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+33"/>
         <source>User Management - New User</source>
         <translation type="unfinished">Benutzerverwaltung - Neuer Benutzer erstellen</translation>
     </message>
@@ -4274,7 +4294,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Übersetzungen werden geladen...</translation>
     </message>
     <message>
-        <location line="+34"/>
+        <location line="+40"/>
         <source>load style...</source>
         <translation type="unfinished">Style wird geladen...</translation>
     </message>
@@ -5170,7 +5190,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::ScriptDockWidget</name>
     <message>
-        <location filename="../widgets/scriptDockWidget.cpp" line="+532"/>
+        <location filename="../widgets/scriptDockWidget.cpp" line="+544"/>
         <source>file open</source>
         <translation>Datei öffnen</translation>
     </message>
@@ -5554,7 +5574,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::ScriptEditorWidget</name>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="+269"/>
+        <location filename="../widgets/scriptEditorWidget.cpp" line="+270"/>
         <source>&amp;toggle bookmark</source>
         <translation type="unfinished">Lesezeichen ein-/aus&amp;schalten</translation>
     </message>
@@ -5665,20 +5685,20 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Haltepunkte d&amp;eaktivieren</translation>
     </message>
     <message>
-        <location line="+477"/>
-        <location line="+80"/>
-        <location line="+47"/>
+        <location line="+486"/>
+        <location line="+83"/>
+        <location line="+48"/>
         <source>unsaved changes</source>
         <translation type="unfinished">Ungespeicherte Änderungen</translation>
     </message>
     <message>
-        <location line="-127"/>
-        <location line="+127"/>
+        <location line="-131"/>
+        <location line="+131"/>
         <source>there are unsaved changes in the current document. Do you want to save it first?</source>
         <translation type="unfinished">Es gibt noch ungespeicherte Änderungen im aktuellen Dokument. Sollen diese zuerst gespeichert werden?</translation>
     </message>
     <message>
-        <location line="-110"/>
+        <location line="-114"/>
         <source>error while opening file</source>
         <translation type="unfinished">Fehler beim Öffnen der Datei</translation>
     </message>
@@ -5688,19 +5708,19 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Datei %1 konnte nicht geladen werden</translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="+66"/>
         <source>there are unsaved changes in the document &apos;%1&apos;. Do you want to save it first?</source>
         <translation type="unfinished">Im Dokument &apos;%1&apos; gibt es noch ungespeicherte Änderungen. Sollen diese zuerst gespeichert werden?</translation>
     </message>
     <message>
         <location line="+16"/>
-        <location line="+58"/>
+        <location line="+59"/>
         <source>error while accessing file</source>
         <translation type="unfinished">Fehler beim Zugriff auf die Datei</translation>
     </message>
     <message>
-        <location line="-58"/>
-        <location line="+58"/>
+        <location line="-59"/>
+        <location line="+59"/>
         <source>file %1 could not be accessed</source>
         <translation type="unfinished">Auf die Datei %1 konnte nicht zugegriffen werden</translation>
     </message>
@@ -5710,7 +5730,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Speichern unter...</translation>
     </message>
     <message>
-        <location line="+696"/>
+        <location line="+698"/>
         <source>Print</source>
         <translation>Drucken</translation>
     </message>
@@ -5758,7 +5778,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::UiOrganizer</name>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="+275"/>
+        <location filename="../organizer/uiOrganizer.cpp" line="+280"/>
         <source>the plugin did not return a valid widget pointer.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6048,64 +6068,110 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <source>iniFile</source>
         <translation>INI-Datei</translation>
     </message>
-</context>
-<context>
-    <name>ito::UserOrganizer</name>
     <message>
-        <location filename="../organizer/userOrganizer.cpp" line="+56"/>
-        <location line="+11"/>
+        <location line="+0"/>
+        <source>features</source>
+        <translation type="unfinished">Eigenschaften</translation>
+    </message>
+    <message>
+        <location line="+196"/>
+        <location line="+14"/>
         <source>Developer</source>
         <translation type="unfinished">Entwickler</translation>
     </message>
     <message>
-        <location line="-10"/>
-        <source>File System</source>
-        <translation type="unfinished">Dateisystem</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>User Management</source>
-        <translation type="unfinished">Benutzerverwaltung</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Addin Manager (Plugins)</source>
-        <translation type="unfinished">Addin-Manager (Plugins)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Console</source>
-        <translation type="unfinished">Konsole</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Console (Read Only)</source>
-        <translation type="unfinished">Kondole (nur lesend)</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Properties</source>
-        <translation type="unfinished">Optionen</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Role</source>
-        <translation type="unfinished">Rolle</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>User</source>
-        <translation type="unfinished">Benutzer</translation>
-    </message>
-    <message>
-        <location line="+1"/>
+        <location line="-12"/>
         <source>Administrator</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+2"/>
+        <source>User</source>
+        <translation type="unfinished">Benutzer</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>File System</source>
+        <translation type="unfinished">Dateisystem</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>User Management</source>
+        <translation type="unfinished">Benutzerverwaltung</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Addin Manager (Plugins)</source>
+        <translation type="unfinished">Addin-Manager (Plugins)</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Console</source>
+        <translation type="unfinished">Konsole</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Console (Read Only)</source>
+        <translation type="unfinished">Kondole (nur lesend)</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Properties</source>
+        <translation type="unfinished">Optionen</translation>
+    </message>
+</context>
+<context>
+    <name>ito::UserOrganizer</name>
+    <message>
+        <source>Developer</source>
+        <translation type="obsolete">Entwickler</translation>
+    </message>
+    <message>
+        <source>File System</source>
+        <translation type="obsolete">Dateisystem</translation>
+    </message>
+    <message>
+        <source>User Management</source>
+        <translation type="obsolete">Benutzerverwaltung</translation>
+    </message>
+    <message>
+        <source>Addin Manager (Plugins)</source>
+        <translation type="obsolete">Addin-Manager (Plugins)</translation>
+    </message>
+    <message>
+        <source>Console</source>
+        <translation type="obsolete">Konsole</translation>
+    </message>
+    <message>
+        <source>Console (Read Only)</source>
+        <translation type="obsolete">Kondole (nur lesend)</translation>
+    </message>
+    <message>
+        <source>Properties</source>
+        <translation type="obsolete">Optionen</translation>
+    </message>
+    <message>
+        <source>Role</source>
+        <translation type="obsolete">Rolle</translation>
+    </message>
+    <message>
+        <source>User</source>
+        <translation type="obsolete">Benutzer</translation>
+    </message>
+    <message>
+        <location filename="../organizer/userOrganizer.cpp" line="+56"/>
         <source>Standard User</source>
         <translation type="unfinished">Standardbenutzer</translation>
+    </message>
+    <message>
+        <location line="+264"/>
+        <source>itomSettings directory not found, aborting!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Could not copy standard itom ini file!</source>
+        <translation type="unfinished">Die Standard-Ini-Datei von itom konnte nicht kopiert werden!</translation>
     </message>
 </context>
 <context>
@@ -6730,13 +6796,13 @@ Katesisch</translation>
     </message>
     <message>
         <location/>
-        <source>Adminitrator</source>
+        <source>Developer</source>
         <translation></translation>
     </message>
     <message>
         <location/>
-        <source>Developer</source>
-        <translation></translation>
+        <source>Administrator</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

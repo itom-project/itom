@@ -85,16 +85,8 @@ void DialogUserManagement::readModel(const QModelIndex &index)
         }
 
 //        ui.userList->setCurrentIndex(index);
-        if (m_userModel->data(index, Qt::EditRole).isValid())
-        {
-            ui.pushButton_editUser->setEnabled(true);
-        }
-        else
-        {
-            ui.pushButton_editUser->setEnabled(false); //standard user
-        }
-
-        ui.pushButton_delUser->setEnabled(m_currentUser != ui.lineEdit_name->text() && ui.lineEdit_name->text() != tr("Standard User"));
+        ui.pushButton_editUser->setEnabled(m_userModel->data(index, Qt::EditRole).isValid());
+        ui.pushButton_delUser->setEnabled(m_currentUser != ui.lineEdit_name->text() && m_userModel->data(index, Qt::EditRole).isValid());
 
         ui.userList->setCurrentIndex(index);
     }
