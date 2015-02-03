@@ -226,7 +226,7 @@ void DialogUserManagement::on_pushButton_editUser_clicked()
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogUserManagement::on_userList_doubleClicked(const QModelIndex & index)
 {
-    if (index.isValid())
+    if (index.isValid() && ui.pushButton_editUser->isEnabled())
     {
         DialogUserManagementEdit *dlg = new DialogUserManagementEdit(m_userModel->index(index.row(), UserModel::umiIniFile).data().toString(), m_userModel);
         if (dlg->exec() == QDialog::Accepted)
