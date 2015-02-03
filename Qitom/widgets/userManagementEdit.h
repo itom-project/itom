@@ -47,6 +47,7 @@ class DialogUserManagementEdit : public QDialog
 
     protected:
 //        void init();
+        QString clearName(const QString &name);
 
     private slots:
         void on_buttonBox_clicked(QAbstractButton* btn);

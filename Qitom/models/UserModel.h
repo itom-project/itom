@@ -98,6 +98,7 @@ class UserModel : public QAbstractItemModel
         int columnCount(const QModelIndex &parent = QModelIndex()) const;
         int addUser(const UserInfoStruct &newUser);
         void removeAllUsers();
+        bool removeUser(const QModelIndex &index);
 
     private:
         QList<QString> m_headers;               //!<  string list of names of column headers

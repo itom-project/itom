@@ -208,6 +208,10 @@ void DialogUserManagement::on_pushButton_delUser_clicked()
         if (!file.remove())
             QMessageBox::warning(this, tr("Warning"), tr((QString("file: \n").append(iniFile).append("\ncould not be deleted!")).toLatin1().data()), QMessageBox::Ok);
 
+        foreach (const QModelIndex &mi, uidList)
+        {
+            m_userModel->removeUser(mi);
+        }
         loadUserList();
     }
 }

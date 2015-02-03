@@ -43,11 +43,11 @@ bool DialogUserManagementEdit::saveUser()
 
     if (newUser && ui.lineEdit_id->text().isEmpty())
     {
-        uid = ui.lineEdit_name->text();
+        uid = clearName(ui.lineEdit_name->text());
     }
     else
     {
-        uid = ui.lineEdit_id->text();
+        uid = clearName(ui.lineEdit_id->text());
     }
 
     if (username.isEmpty())
@@ -132,6 +132,22 @@ bool DialogUserManagementEdit::saveUser()
     }
 
     return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString DialogUserManagementEdit::clearName(const QString &name)
+{
+    QString name_(name);
+    name_.replace( QRegExp( "[" + QRegExp::escape( "\\/:*?\"<>|" ) + "]" ), QString( "_" ) );
+    name_.replace("ä", "ae");
+    name_.replace("ö", "oe");
+    name_.replace("ü", "ue");
+    name_.replace("Ä", "Ae");
+    name_.replace("Ö", "Oe");
+    name_.replace("Ü", "Ue");
+    name_.replace("ß", "ss");
+
+    return name_;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -202,6 +202,19 @@ int UserModel::addUser(const UserInfoStruct &newUser)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+bool UserModel::removeUser(const QModelIndex &index)
+{
+    if (index.row() >= 0 && index.row() < rowCount())
+    {
+        beginRemoveRows(parent(index), index.row(), index.row());
+        m_userInfo.removeAt(index.row());
+        endRemoveRows();
+        return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void UserModel::removeAllUsers()
 {
     beginResetModel();
