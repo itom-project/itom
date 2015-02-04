@@ -460,6 +460,7 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
             else
             {
                 possibleSignatures += QByteArray("'" + method->signature() + "', ");
+                ok = false;
             }
         }
     }
