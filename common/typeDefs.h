@@ -37,6 +37,12 @@
   #include <unistd.h>    // neede for usleep
 #endif
 
+#ifdef _MSC_VER
+	#if (_MSC_VER >= 1800)
+		#include <algorithm>
+	#endif
+#endif
+
 // WARNING it is very EVIL to include ANY QT STUFF here!!!
 
 namespace ito
