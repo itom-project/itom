@@ -919,7 +919,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
 				encodingType = PythonQtConversion::utf_8;
 				encodingName = "utf_8";
 			}
-			else if (qtCodecName == "ISO-8859-1" || qtCodecName == "latin1")
+			else if (qtCodecName == "ISO-8859-1" || qtCodecName == "latin1" || qtCodecName == "cp1252" || qtCodecName == "windows-1252")
 			{
 				encodingType = PythonQtConversion::latin_1;
 				encodingName = "latin_1";

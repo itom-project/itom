@@ -131,15 +131,15 @@ QString PythonQtConversion::PyObjGetString(PyObject* val, bool strict, bool& ok)
     ok = true;
     if (PyBytes_Check(val))
     {
-        r = QString(PyObjGetBytes(val, strict, ok));
+        r = QString::fromUtf8(PyObjGetBytes(val, strict, ok));
     }
     else if (PyUnicode_Check(val))
     {
-        PyObject *repr2 = PyUnicodeToPyByteObject(val);
-        if (repr2 != NULL)
+        PyObject *latin1repr = PyUnicode_AsLatin1String(val); //we need to have a latin1-decoded string, since we assume to have latin1 in the QString conversion below.
+        if (latin1repr != NULL)
         {
-            r = QString(PyObjGetBytes(repr2, strict, ok));
-            Py_XDECREF(repr2);
+            r = QString::fromLatin1(PyObjGetBytes(latin1repr, strict, ok));
+            Py_XDECREF(latin1repr);
         }
     } 
     else if (!strict) 
@@ -175,7 +175,7 @@ QString PythonQtConversion::PyObjGetString(PyObject* val, bool strict, bool& ok)
     \param ok (ByRef) is set to true if conversion succeeded.
     \return resulting QString
 */
-std::string PythonQtConversion::PyObjGetStdString(PyObject* val, bool strict, bool& ok) 
+std::string PythonQtConversion::PyObjGetStdStringAsLatin1(PyObject* val, bool strict, bool& ok) 
 {
     std::string r;
     ok = true;
@@ -185,11 +185,11 @@ std::string PythonQtConversion::PyObjGetStdString(PyObject* val, bool strict, bo
     }
     else if (PyUnicode_Check(val))
     {
-        PyObject *repr2 = PyUnicodeToPyByteObject(val);
-        if (repr2 != NULL)
+        PyObject *latin1repr = PyUnicode_AsLatin1String(val); //we need to have a latin1-decoded string, since we assume to have latin1 in the QString conversion below.
+        if (latin1repr != NULL)
         {
-            r = std::string(PyObjGetBytes(repr2, strict, ok));
-            Py_XDECREF(repr2);
+            r = std::string(PyObjGetBytes(latin1repr, strict, ok));
+            Py_XDECREF(latin1repr);
         }
     } 
     else if (!strict) 
@@ -198,7 +198,7 @@ std::string PythonQtConversion::PyObjGetStdString(PyObject* val, bool strict, bo
         PyObject* str =  PyObject_Str(val);
         if (str) 
         {
-            r = PyObjGetStdString(str, strict, ok);
+            r = PyObjGetStdStringAsLatin1(str, strict, ok);
             Py_DECREF(str);
         } 
         else 
@@ -233,7 +233,8 @@ QByteArray PythonQtConversion::PyObjGetBytes(PyObject* val, bool strict, bool& o
     if (PyBytes_Check(val)) 
     {
         Py_ssize_t size = PyBytes_GET_SIZE(val);
-        r = QByteArray(PyBytes_AS_STRING(val), size);
+		const char *b = PyBytes_AS_STRING(val);
+        r = QByteArray(b, size);
     } 
     else if (strict)
     {

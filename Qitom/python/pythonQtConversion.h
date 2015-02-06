@@ -82,8 +82,8 @@ public:
     static QString PyObjGetString(PyObject* val) { bool ok; QString s = PyObjGetString(val, false, ok); return s; }
     //! get string value from py object
     static QString PyObjGetString(PyObject* val, bool strict, bool &ok);
-    //! get std::string value from py object
-    static std::string PyObjGetStdString(PyObject* val, bool strict, bool &ok);
+    //! get std::string value from py object. std::string has latin1 encoding
+    static std::string PyObjGetStdStringAsLatin1(PyObject* val, bool strict, bool &ok);
     //! get bytes from py object
     static QByteArray PyObjGetBytes(PyObject* val, bool strict, bool &ok);
     //! get int from py object
