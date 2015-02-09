@@ -31,7 +31,7 @@
 namespace ito
 {
 
-class UserOrganizer : QObject
+class UserOrganizer : public QObject
 {
     Q_OBJECT
 

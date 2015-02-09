@@ -20,7 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "UserManagementEdit.h"
+#include "userManagementEdit.h"
 #include "../AppManagement.h"
 #include "../organizer/userOrganizer.h"
 
@@ -29,6 +29,7 @@
 #include <qtimer.h>
 #include <qdebug.h>
 #include <QCryptographicHash>
+#include <qobject.h>
 
 namespace ito {
 
