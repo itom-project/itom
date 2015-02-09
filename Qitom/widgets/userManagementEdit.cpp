@@ -29,7 +29,6 @@
 #include <qtimer.h>
 #include <qdebug.h>
 #include <QCryptographicHash>
-#include <qobject.h>
 
 namespace ito {
 
