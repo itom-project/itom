@@ -46,7 +46,8 @@ namespace ito
 //----------------------------------------------------------------------------------------------------------------------------------
 UserOrganizer::UserOrganizer(void) :
     QObject(),
-    m_userRole(userRoleAdministrator),
+    // 09/02/15 ck changed default role to developer
+    m_userRole(userRoleDeveloper),
     m_features(~UserFeatures(0)),
     m_settingsFile(""),
     m_userModel(new UserModel())
@@ -179,7 +180,9 @@ ito::RetVal UserOrganizer::loadSettings(const QString &defUserName)
         qDebug() << "settingsFile path: " << settingsFile;
         m_settingsFile = settingsFile;
         m_userName = m_strConstStdUser;
-        m_userRole = userRoleAdministrator;
+//        m_userRole = userRoleAdministrator;
+        // 09/02/15 ck changed default role to developer
+        m_userRole = userRoleDeveloper;
         m_features = ~UserFeatures();
     }
 
@@ -229,7 +232,8 @@ ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
         }
     }
 
-    UserInfoStruct uis(m_strConstStdUser, "itom.ini", QDir::cleanPath(appDir.absoluteFilePath("itom.ini")), userRoleAdministrator, ~UserFeatures(), true);
+    // 09/02/15 ck changed default role to developer
+    UserInfoStruct uis(m_strConstStdUser, "itom.ini", QDir::cleanPath(appDir.absoluteFilePath("itom.ini")), userRoleDeveloper, ~UserFeatures(), true);
     m_userModel->addUser(uis);
 
     return retval;
@@ -253,7 +257,8 @@ ito::RetVal UserOrganizer::readUserDataFromFile(const QString &filename, QString
         uid = getUserID(filename);
 
         //user type
-        QString roleStr = settings.value("role", "administrator").toString().toLower();
+        // 09/02/15 ck changed default role to developer
+        QString roleStr = settings.value("role", "developer").toString().toLower();
         if (roleStr == "developer")
         {
             role = userRoleDeveloper;
