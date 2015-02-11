@@ -78,7 +78,7 @@ private:
     QString m_delimiter;
     QPixmap m_dragPixmap;
 #if QT_VERSION >= 0x050000
-    Qt::DropActions ​supportedDragActions() const;
+    Qt::DropActions supportedDragActions() const;
 #endif
 
 signals:

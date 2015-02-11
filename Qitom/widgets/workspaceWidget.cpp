@@ -97,7 +97,7 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
 
 //----------------------------------------------------------------------------------------------------------------------------------
 #if QT_VERSION >= 0x050000
-Qt::DropActions WorkspaceWidget::​supportedDragActions() const
+Qt::DropActions WorkspaceWidget::supportedDragActions() const
 {
     return supportedDropActions() | Qt::CopyAction;
 }

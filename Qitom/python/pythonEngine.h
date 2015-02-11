@@ -247,7 +247,7 @@ private:
     bool m_executeInternalPythonCodeInDebugMode; //!< if true, button events, user interface connections to python methods... will be executed by debugger
     PyMethodDef* PythonAdditionalModuleITOM;
 
-    // decides if itom is automatically included in every source file before it´s handed to the syntax checker
+    // decides if itom is automatically included in every source file before it is handed to the syntax checker
     bool m_includeItom;
 
     struct AutoReload
