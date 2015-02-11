@@ -1393,6 +1393,9 @@ namespace ito
                 //that could not be initialized.
             }
 
+            waitCond->deleteSemaphore();
+            waitCond = NULL;
+
         }
         else
         {
