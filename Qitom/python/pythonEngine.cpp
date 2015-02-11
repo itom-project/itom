@@ -3009,9 +3009,9 @@ void PythonEngine::pythonInterruptExecution()
     //PyErr_SetString(PyExc_KeyboardInterrupt, "User Interrupt");
 
     //only queue the interrupt event if not yet done.
-    if (m_interruptCounter == 0)
+    if (m_interruptCounter.testAndSetRelaxed(0, 1)) //==operator(int) of QAtomicInt does not exist for all versions of Qt5. testAndSetRelaxed returns true, if the value was 0 (and assigns one to it)
     {
-        m_interruptCounter.ref();
+        //m_interruptCounter.ref(); (not necessary any more due to testAndSetRelaxed above)
         if (isPythonDebugging() && isPythonDebuggingAndWaiting())
         {
             dbgCmdMutex.lock();
