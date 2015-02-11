@@ -225,6 +225,9 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud&");
     qRegisterMetaType<ito::PCLPolygonMesh >("ito::PCLPolygonMesh&");
     qRegisterMetaType<ito::PCLPoint >("ito::PCLPoint");
+    qRegisterMetaType<QSharedPointer<ito::PCLPointCloud> >("QSharedPointer<ito::PCLPointCloud>");
+    qRegisterMetaType<QSharedPointer<ito::PCLPolygonMesh> >("QSharedPointer<ito::PCLPolygonMesh>");
+    qRegisterMetaType<QSharedPointer<ito::PCLPoint> >("QSharedPointer<ito::PCLPoint>");
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
     qRegisterMetaType<ito::PyWorkspaceContainer*>("PyWorkspaceContainer*");
     qRegisterMetaType<ito::PyWorkspaceItem*>("PyWorkspaceItem*");

@@ -979,15 +979,18 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 #if ITOM_POINTCLOUDLIBRARY > 0
         else if (Py_TYPE(val) == &ito::PythonPCL::PyPointCloudType)
         {
-            type = QMetaType::type("ito::PCLPointCloud");
+            //type = QMetaType::type("ito::PCLPointCloud");
+            type = QMetaType::type("QSharedPointer<ito::PCLPointCloud>");
         }
         else if (Py_TYPE(val) == &ito::PythonPCL::PyPointType)
         {
-            type = QMetaType::type("ito::PCLPoint");
+            //type = QMetaType::type("ito::PCLPoint");
+            type = QMetaType::type("QSharedPointer<ito::PCLPoint>");
         }
         else if (Py_TYPE(val) == &ito::PythonPCL::PyPolygonMeshType)
         {
-            type = QMetaType::type("ito::PCLPolygonMesh");
+            //type = QMetaType::type("ito::PCLPolygonMesh");
+            type = QMetaType::type("QSharedPointer<ito::PCLPolygonMesh>");
         }
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
         else if ((Py_TYPE(val) == &ito::PythonDataObject::PyDataObjectType) || PyArray_Check(val))
@@ -1298,6 +1301,33 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             if (ok)
             {
                 v = qVariantFromValue<ito::PCLPointCloud >(pcl);
+            }
+        }
+        else if (type == QMetaType::type("QSharedPointer<ito::PCLPointCloud>"))
+        {
+            if (PyPointCloud_Check(val))
+            {
+                ito::PythonPCL::PyPointCloud* pyPlc = (ito::PythonPCL::PyPointCloud*)val;
+                if (pyPlc && pyPlc->data)
+                {
+                    if (pyPlc->data == NULL)
+                    {
+                        v = QVariant();
+                    }
+                    else
+                    {
+                        QSharedPointer<ito::PCLPointCloud> value(new ito::PCLPointCloud(*pyPlc->data));
+                        v = qVariantFromValue<QSharedPointer<ito::PCLPointCloud> >(value);
+                    }
+                }
+                else
+                {
+                    v = QVariant();
+                }
+            }
+            else
+            {
+                v = QVariant();
             }
         }
         else if (type == QMetaType::type("ito::PCLPoint"))
@@ -2128,6 +2158,19 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                     #endif
                 }
             }
+            else if (type == QMetaType::type("QSharedPointer<ito::PCLPointCloud>"))
+            {
+                ito::PythonPCL::PyPointCloud* pyPlc = (ito::PythonPCL::PyPointCloud*)val;
+                if (pyPlc && pyPlc->data)
+                {
+                    QSharedPointer<ito::PCLPointCloud> sharedBuffer = ito::PythonSharedPointerGuard::createPythonSharedPointer<ito::PCLPointCloud>(pyPlc->data, val);
+                    #if QT_VERSION >= 0x050000
+                    *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&sharedBuffer));
+                    #else
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&sharedBuffer));
+                    #endif
+                }
+            }
             else if (type == QMetaType::type("ito::PCLPoint"))
             {
                 bool ok;
@@ -2633,6 +2676,21 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
         else if (strcmp(name, "ito::PCLPointCloud") == 0)
         {
             return PCLPointCloudToPyObject(*((ito::PCLPointCloud*)data));
+        }
+        else if (strcmp(name, "QSharedPointer<ito::PCLPointCloud>") == 0)
+        {
+            QSharedPointer<ito::PCLPointCloud> *sharedPtr = (QSharedPointer<ito::PCLPointCloud>*)data;
+            if (sharedPtr == NULL)
+            {
+                PyErr_SetString(PyExc_TypeError, "The given QSharedPointer is NULL");
+                return NULL;
+            }
+            if (sharedPtr->data() == NULL)
+            {
+                Py_RETURN_NONE;
+                //return PyErr_SetString(PyExc_TypeError, "Internal dataObject of QSharedPointer is NULL");
+            }
+            return PCLPointCloudToPyObject(*(sharedPtr->data()));
         }
         else if (strcmp(name, "ito::PCLPoint") == 0)
         {

@@ -41,6 +41,7 @@
 
 #if ITOM_POINTCLOUDLIBRARY > 0
 Q_DECLARE_METATYPE(ito::PCLPointCloud)
+Q_DECLARE_METATYPE(QSharedPointer<ito::PCLPointCloud>)
 Q_DECLARE_METATYPE(ito::PCLPoint)
 Q_DECLARE_METATYPE(ito::PCLPolygonMesh)
 #endif
