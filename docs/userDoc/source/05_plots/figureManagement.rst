@@ -39,9 +39,9 @@ class :py:class:`~itom.figure` has these methods, too:
 With method signature:
 
 .. autosummary::
-	:toctree: generated
-	
-	itom.figure.plot
+    :toctree: generated
+    
+    itom.figure.plot
     itom.figure.liveImage
 
 Both have the optional keyword parameter *areaIndex*, such that you define in which sub-plotting area the requested plot or live image should be depicted. If you don't provide

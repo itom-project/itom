@@ -226,11 +226,11 @@ Properties
 
 **colorMode** : *int*, Defines color handling, either "palette-based color" or "RGB-color"
 
-**zAxisInterval** : *QPointF*, Sets the visible range of the displayed z-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].
+**zAxisInterval** : *autoInterval*. If member *auto* of *autoInterval* is False, the visible range of the displayed z-axis is set to the given range (in coordinates of the data object); else the range is automatically determined and set [default].
 
-**yAxisInterval** : *QPointF*, Sets the visible range of the displayed y-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].
+**yAxisInterval** : If member *auto* of *autoInterval* is False, the visible range of the displayed y-axis is set to the given range (in coordinates of the data object); else the range is automatically determined and set [default].
 
-**xAxisInterval** : *QPointF*, Sets the visible range of the displayed x-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].
+**xAxisInterval** : If member *auto* of *autoInterval* is False, the visible range of the displayed x-axis is set to the given range (in coordinates of the data object); else the range is automatically determined and set [default].
 
 **camera** : *ito::AddInDataIO*, Use this property to set a camera/grabber to this plot (live image).
 
