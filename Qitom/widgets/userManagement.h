@@ -45,7 +45,6 @@ class DialogUserManagement : public QDialog
         QString m_currentUser;
         void readModel(const QModelIndex &index);
         void loadUserList();
-        void openUserManagementEdit(const QString fileName, UserModel *userModel);
 
     protected:
         void init();

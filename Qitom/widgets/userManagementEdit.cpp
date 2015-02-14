@@ -20,11 +20,10 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "UserManagementEdit.h"
+#include "userManagementEdit.h"
 #include "../AppManagement.h"
 #include "../organizer/userOrganizer.h"
 
-#include <QSettings>
 #include <QDir>
 #include <qmessagebox.h>
 #include <qtimer.h>
@@ -33,68 +32,25 @@
 
 namespace ito {
 
-
-//----------------------------------------------------------------------------------------------------------------------------------
-int DialogUserManagementEdit::getFlags()
-{
-    int flags = 0;
-    if (ui.checkBox_fileSystem->isChecked())
-    {
-        flags |= featFileSystem;
-    }
-
-    if (ui.checkBox_devTools->isChecked())
-    {
-        flags |= featDeveloper;
-    }
-
-    if (ui.checkBox_editProperties->isChecked())
-    {
-        flags |= featProperties;
-    }
-
-    if (ui.checkBox_userManag->isChecked())
-    {
-        flags |= featUserManag;
-    }
-
-    if (ui.checkBox_addInManager->isChecked())
-    {
-        flags |= featPlugins;
-    }
-
-    if (ui.radioButton_consoleNormal->isChecked())
-    {
-        flags |= featConsole | featConsoleRW;
-    }
-
-    if (ui.radioButton_consoleRO->isChecked())
-    {
-        flags |= featConsole;
-    }
-
-    return flags;
-}
-
 //----------------------------------------------------------------------------------------------------------------------------------
 bool DialogUserManagementEdit::saveUser()
 {
     bool newUser = m_fileName == "";
     QString uid;
     QString group;
-    QString name = ui.lineEdit_name->text();
+    QString username = ui.lineEdit_name->text();
     QString iniFile;
 
     if (newUser && ui.lineEdit_id->text().isEmpty())
     {
-        uid = ui.lineEdit_name->text();
+        uid = clearName(ui.lineEdit_name->text());
     }
     else
     {
-        uid = ui.lineEdit_id->text();
+        uid = clearName(ui.lineEdit_id->text());
     }
 
-    if (name.isEmpty())
+    if (username.isEmpty())
     {
         QMessageBox::critical(this, tr("Error"), tr("Name is empty! Cannot create user!"), QMessageBox::Ok);
         return false;
@@ -107,67 +63,98 @@ bool DialogUserManagementEdit::saveUser()
         return false;
     }
 
-    if ((name = ui.lineEdit_name->text()).isEmpty())
+    if ((username = ui.lineEdit_name->text()).isEmpty())
     {
         QMessageBox::critical(this, tr("Error"), tr("No user name entered, aborting!"), QMessageBox::Ok);
         return false;
     }
 
-    QDir appDir(QCoreApplication::applicationDirPath());
-    if (!appDir.cd("itomSettings"))
+    UserOrganizer *uio = qobject_cast<UserOrganizer*>(AppManagement::getUserOrganizer());
+    if (uio)
     {
-        QMessageBox::critical(this, tr("Error"), tr("ItomSettings directory not found, aborting!"), QMessageBox::Ok);
-        return false;
-/*        if (!appDir.exists("itomDefault.ini"))
+        UserRole role = userRoleBasic;
+        if (ui.radioButton_roleDevel->isChecked())
         {
-            QMessageBox::critical(this, tr("Error"), tr("Standard itom ini file not found, aborting!"), QMessageBox::Ok);
-        }*/
-    }
+            role = userRoleDeveloper;
+        }
+        else if (ui.radioButton_roleAdmin->isChecked())
+        {
+            role = userRoleAdministrator;
+        }
 
-    if (newUser)
-    {
-        QFile stdIniFile(QDir::cleanPath(appDir.absoluteFilePath(QString("itomDefault.ini"))));
-        iniFile = QDir::cleanPath(appDir.absoluteFilePath(QString("itom_").append(uid).append(".ini")));
-        if (!stdIniFile.copy(iniFile))
+        UserFeatures flags;
+        if (ui.checkBox_fileSystem->isChecked())
         {
-            QMessageBox::critical(this, tr("Error"), tr("Could not copy standard itom ini file!"), QMessageBox::Ok);
+            flags |= featFileSystem;
+        }
+
+        if (ui.checkBox_devTools->isChecked())
+        {
+            flags |= featDeveloper;
+        }
+
+        if (ui.checkBox_editProperties->isChecked())
+        {
+            flags |= featProperties;
+        }
+
+        if (ui.checkBox_userManag->isChecked())
+        {
+            flags |= featUserManag;
+        }
+
+        if (ui.checkBox_addInManager->isChecked())
+        {
+            flags |= featPlugins;
+        }
+
+        if (ui.radioButton_consoleNormal->isChecked())
+        {
+            flags |= featConsoleReadWrite;
+        }
+
+        if (ui.radioButton_consoleRO->isChecked())
+        {
+            flags |= featConsoleRead;
+        }
+
+        ito::RetVal retval = uio->writeUserDataToFile(username, uid, flags, role); 
+        if (retval.containsError())
+        {
+            QMessageBox::critical(this, tr("Error"), tr(retval.errorMessage()), QMessageBox::Ok);
             return false;
         }
     }
     else
     {
-        iniFile = m_fileName;
+        QMessageBox::critical(this, tr("Error"), tr("UserOrganizer not found!"), QMessageBox::Ok);
+        return false;
     }
-
-    if (ui.radioButton_roleDevel->isChecked())
-    {
-        group = "developer";
-    }
-    else if (ui.radioButton_roleAdmin->isChecked())
-    {
-        group = "admin";
-    }
-    else
-    {
-        group = "user";
-    }
-    
-    QSettings settings(iniFile, QSettings::IniFormat);
-    settings.beginGroup("ITOMIniFile");
-    settings.setValue("name", name);
-    settings.setValue("role", group);
-    UserOrganizer *uio = (UserOrganizer*)AppManagement::getUserOrganizer();
-    uio->writeFlagsToFile(getFlags(), iniFile);
-    settings.endGroup();
 
     return true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogUserManagementEdit::DialogUserManagementEdit(const QString fileName, UserModel *userModel, QWidget *parent, Qt::WindowFlags f) :
-    QDialog(parent),
+QString DialogUserManagementEdit::clearName(const QString &name)
+{
+    QString name_(name);
+    name_.replace( QRegExp( "[" + QRegExp::escape( "\\/:*?\"<>|" ) + "]" ), QString( "_" ) );
+    name_.replace("ä", "ae");
+    name_.replace("ö", "oe");
+    name_.replace("ü", "ue");
+    name_.replace("Ä", "Ae");
+    name_.replace("Ö", "Oe");
+    name_.replace("Ü", "Ue");
+    name_.replace("ß", "ss");
+
+    return name_;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, UserModel *userModel, QWidget *parent, Qt::WindowFlags f) :
+    QDialog(parent, f),
     m_userModel(userModel),
-    m_fileName(fileName)
+    m_fileName(filename)
 {
     ui.setupUi(this);
 
@@ -179,53 +166,52 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString fileName, UserM
     {
         setWindowTitle(tr("User Management - Edit User"));
 
-        QSettings settings(fileName, QSettings::IniFormat);
-
-        settings.beginGroup("ITOMIniFile");
-        if (settings.contains("name"))
+        UserOrganizer *uio = qobject_cast<UserOrganizer*>(AppManagement::getUserOrganizer());
+        if (uio)
         {
-            ui.lineEdit_name->setText(QString(settings.value("name").toString()));
-
-            QFileInfo file = m_fileName;
-            QString fileName = file.fileName();
-            ui.lineEdit_id->setText(fileName.mid(5, fileName.length() - 9));
-            ui.lineEdit_id->setEnabled(false);
-
-            QString roleStr = QString(settings.value("role").toString());
-            if (roleStr == "developer")
+            QString username;
+            QString uid;
+            UserFeatures features;
+            UserRole role;
+            if (uio->readUserDataFromFile(filename, username, uid, features, role) == ito::retOk)
             {
-                ui.radioButton_roleDevel->setChecked(true);
-            }
-            else if (roleStr == "admin")
-            {
-                ui.radioButton_roleAdmin->setChecked(true);
-            }
-            else
-            {
-                ui.radioButton_roleUser->setChecked(true);
-            }
-        }
-        settings.endGroup();
+                ui.lineEdit_name->setText(username);
+                
+                ui.lineEdit_id->setText(uid);
+                ui.lineEdit_id->setEnabled(false);
+                
+                switch (role)
+                {
+                case userRoleAdministrator:
+                    ui.radioButton_roleAdmin->setChecked(true);
+                    break;
+                case userRoleDeveloper:
+                    ui.radioButton_roleDevel->setChecked(true);
+                    break;
+                default:
+                    ui.radioButton_roleUser->setChecked(true);
+                }
 
-        UserOrganizer *uio = (UserOrganizer*)AppManagement::getUserOrganizer();
-        long flags = uio->getFlagsFromFile(fileName);
-        ui.checkBox_devTools->setChecked(flags & featDeveloper);
-        ui.checkBox_fileSystem->setChecked(flags & featFileSystem);
-        ui.checkBox_userManag->setChecked(flags & featUserManag);
-        ui.checkBox_addInManager->setChecked(flags & featPlugins);
-        ui.checkBox_editProperties->setChecked(flags & featProperties);
+                ui.checkBox_devTools->setChecked(features & featDeveloper);
+                ui.checkBox_fileSystem->setChecked(features & featFileSystem);
+                ui.checkBox_userManag->setChecked(features & featUserManag);
+                ui.checkBox_addInManager->setChecked(features & featPlugins);
+                ui.checkBox_editProperties->setChecked(features & featProperties);
 
-        if ((flags & featConsole) && (flags & featConsoleRW))
-        {
-            ui.radioButton_consoleNormal->setChecked(true);
-        }
-        else if (flags & featConsole)
-        {
-            ui.radioButton_consoleRO->setChecked(true);
-        }
-        else
-        {
-            ui.radioButton_consoleOff->setChecked(true);
+                if ((features & featConsoleReadWrite))
+                {
+                    ui.radioButton_consoleNormal->setChecked(true);
+                }
+                else if (features & featConsoleRead)
+                {
+                    ui.radioButton_consoleRO->setChecked(true);
+                }
+                else
+                {
+                    ui.radioButton_consoleOff->setChecked(true);
+                }
+
+            }
         }
     }
 }

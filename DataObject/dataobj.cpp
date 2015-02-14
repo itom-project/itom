@@ -725,6 +725,7 @@ uchar ** DataObject::get_mdata(void) const
    return this->m_data;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! returns the pointer to the underlying cv::Mat that represents the plane with given planeIndex of the entire data object.
 /*!
     This command is equivalent to (cv::Mat*)(m_data[seekMat(planeIndex)]) but checks for out-of-range errors.
@@ -2576,7 +2577,7 @@ template<typename _Tp> RetVal CopyMatFunc(uchar **src, uchar **&dst, bool transp
 typedef RetVal (*tCopyMatFunc)(uchar **src, uchar  **&dst, bool transposed, const int sizeofs);
 MAKEFUNCLIST(CopyMatFunc)
 
-
+//-----------------------------------------------------------------------------------------------------------
 //! assign-operator which creates a two-dimensional data object as a shallow copy of a two dimensional cv::Mat object.
 /*!
     shallow-copy means, that the header information of this data-object is physically created at the hard disk, while the data is shared
@@ -2626,6 +2627,7 @@ DataObject & DataObject::operator = (const cv::Mat &rhs)
     return *this;
 }
 
+//-----------------------------------------------------------------------------------------------------------
 //! assign-operator which makes a shallow-copy of the rhs data object and stores it in this data object
 /*!
     shallow-copy means, that the header information of the rhs data-object is physically copied to this-dataObject while
@@ -2638,10 +2640,13 @@ DataObject & DataObject::operator = (const cv::Mat &rhs)
 */
 DataObject & DataObject::operator = (const DataObject &rhs)
 {
+#if _DEBUG
     if(rhs.m_objSharedDataLock != NULL && rhs.m_objSharedDataLock->getLockStatus() == -1)
     {
+
         cv::error(cv::Exception(CV_StsAssert,"data of assigned data object may not be locked for writing","", __FILE__, __LINE__));
     }
+#endif
 
    if (this == &rhs)
    {
@@ -2737,7 +2742,7 @@ DataObject::DataObject(const DataObject& copyConstr) : m_pRefCount(0), m_dims(0)
     }
 }
 
-
+//-----------------------------------------------------------------------------------------------------------
 DataObject::DataObject(const DataObject& dObj, bool transposed)
 {
     if(!transposed) //shallow copy of dataobject
@@ -6361,7 +6366,7 @@ int DataObject::addToProtocol(const std::string &value)
     return 0;
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 int DataObject::elemSize() const
 {
     switch(m_type)
@@ -6388,27 +6393,31 @@ int DataObject::elemSize() const
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 DObjIterator DataObject::begin()
 {
     return DObjIterator(this, 0);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 DObjIterator DataObject::end()
 {
     return DObjIterator(this, getTotal());
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 DObjConstIterator DataObject::constBegin() const
 {
     return DObjConstIterator(this, 0);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 DObjConstIterator DataObject::constEnd() const
 {
     return DObjConstIterator(this, getTotal());
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 // Function return the offset of the values stored within the dataOject
 double DataObject::getValueOffset() const
 {
@@ -6416,6 +6425,7 @@ double DataObject::getValueOffset() const
     return m_pDataObjectTags->m_valueOffset;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 // Function return the scaling of values stored within the dataOject
 double DataObject::getValueScale() const
 {
@@ -6423,13 +6433,15 @@ double DataObject::getValueScale() const
     return m_pDataObjectTags->m_valueScale;
 }
 
-// Function return the unit description for the values stoerd within the dataOject
+//----------------------------------------------------------------------------------------------------------------------------------
+// Function return the unit description for the values stored within the dataOject
 const std::string DataObject::getValueUnit() const
 {
     if(!m_pDataObjectTags) return std::string(); //default
     return m_pDataObjectTags->m_valueUnit;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 // Function return the description for the values stored within the dataOject, if tagspace does not exist, NULL is returned.
 std::string DataObject::getValueDescription() const
 {
@@ -6437,6 +6449,7 @@ std::string DataObject::getValueDescription() const
     return m_pDataObjectTags->m_valueDescription;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 // Function return the axis-offset for the existing axis specified by axisNum. If axisNum is out of dimension range it returns NULL.
 double DataObject::getAxisOffset(const int axisNum) const
 {
@@ -6449,6 +6462,7 @@ double DataObject::getAxisOffset(const int axisNum) const
     return m_pDataObjectTags->m_axisOffsets[axisNum] - m_roi[axisNum];
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //!< Function returns the axis-description for the exist axis specified by axisNum. If axisNum is out of dimension range it returns NULL.
 double DataObject::getAxisScale(const int axisNum) const
 {
@@ -6461,6 +6475,7 @@ double DataObject::getAxisScale(const int axisNum) const
     return m_pDataObjectTags->m_axisScales[axisNum];
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //!< Function returns the axis-unit-description for the exist axis specified by axisNum. If axisNum is out of dimension range it returns NULL.
 const std::string DataObject::getAxisUnit(const int axisNum, bool &validOperation) const
 {
@@ -6478,6 +6493,7 @@ const std::string DataObject::getAxisUnit(const int axisNum, bool &validOperatio
     return m_pDataObjectTags->m_axisUnit[axisNum];
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //!< Function returns the axis-description for the exist specified by axisNum. If axisNum is out of dimension range it returns NULL.
 std::string DataObject::getAxisDescription(const int axisNum, bool &validOperation) const
 {
@@ -6496,7 +6512,7 @@ std::string DataObject::getAxisDescription(const int axisNum, bool &validOperati
     return m_pDataObjectTags->m_axisDescription[axisNum];
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 DataObjectTagType DataObject::getTag(const std::string &key, bool &validOperation) const
 {
     validOperation = false;
@@ -6513,6 +6529,7 @@ DataObjectTagType DataObject::getTag(const std::string &key, bool &validOperatio
     return DataObjectTagType();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 bool DataObject::getTagByIndex(const int tagNumber, std::string &key, DataObjectTagType &value) const
 {
     if(!m_pDataObjectTags)
@@ -6539,6 +6556,7 @@ bool DataObject::getTagByIndex(const int tagNumber, std::string &key, DataObject
     return true;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //!<  Function returns the string-value for 'key' identified by int tagNumber. If key in the TagMap do not exist NULL is returned
 std::string DataObject::getTagKey(const int tagNumber, bool &validOperation) const
 {
@@ -6561,6 +6579,7 @@ std::string DataObject::getTagKey(const int tagNumber, bool &validOperation) con
     return (*it).first;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //!< Function returns the number of elements in the Tags-Maps
 int DataObject::getTagListSize() const
 {
@@ -6568,6 +6587,7 @@ int DataObject::getTagListSize() const
     return static_cast<int>(m_pDataObjectTags->m_tags.size());
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //!<  Function to set the string-value of the value unit, return 1 if values does not exist
 int DataObject::setValueUnit(const std::string &unit)
 {
@@ -6576,6 +6596,7 @@ int DataObject::setValueUnit(const std::string &unit)
     return 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //!<  Function to set the string-value of the value description, return 1 if values does not exist
 int DataObject::setValueDescription(const std::string &description)
 {
@@ -6584,6 +6605,7 @@ int DataObject::setValueDescription(const std::string &description)
     return 0;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal DataObject::getXYRotationalMatrix(double &r11, double &r12, double &r13, double &r21, double &r22, double &r23, double &r31, double &r32, double &r33) const
 {
     if(!m_pDataObjectTags) return RetVal(retError, 0, "Tagspace not initialized"); // error
@@ -6599,6 +6621,7 @@ RetVal DataObject::getXYRotationalMatrix(double &r11, double &r12, double &r13, 
     return retOk;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal DataObject::setXYRotationalMatrix(double r11, double r12, double r13, double r21, double r22, double r23, double r31, double r32, double r33)
 {
     if(!m_pDataObjectTags) return RetVal(retError, 0, "Tagspace not initialized"); // error
@@ -6614,147 +6637,6 @@ RetVal DataObject::setXYRotationalMatrix(double r11, double r12, double r13, dou
     return retOk;
 }
 
-////! missing documentation
-///*!
-//    \todo check that function
-//*/
-//template <typename _Tp> RetVal MinMaxLocFunc(const DataObject &dObj, double *minVal, double *maxVal, int *minPos, int *maxPos)
-//{
-//    if(std::numeric_limits<_Tp>::is_exact)
-//    {
-//        *maxVal = std::numeric_limits<_Tp>::min();
-//    }
-//    else
-//    {
-//        *maxVal = -1 * std::numeric_limits<_Tp>::max();
-//    }
-//
-//    *minVal = std::numeric_limits<_Tp>::max();
-//
-//    int minMatNum = 0;
-//    int maxMatNum = 0;
-//    int numMats = 0;
-//    int tMat = 0;
-//    numMats = dObj.calcNumMats();
-//    cv::Point minPt;
-//    cv::Point maxPt;
-//    cv::Point absMinPt;
-//    cv::Point absMaxPt;
-//
-//    double absMinVal = std::numeric_limits<_Tp>::max();
-//
-//    double absMaxVal = std::numeric_limits<_Tp>::min();
-//
-//    if(!std::numeric_limits<_Tp>::is_exact)
-//    {
-//        absMaxVal = -1 * std::numeric_limits<_Tp>::max();
-//    }
-//
-//    double locMinVal = std::numeric_limits<_Tp>::max();
-//
-//    double locMaxVal = std::numeric_limits<_Tp>::min();
-//    if(!std::numeric_limits<_Tp>::is_exact)
-//    {
-//        locMaxVal = -1 * std::numeric_limits<_Tp>::max();
-//    }
-//
-//    for (int nMat = 0; nMat < numMats; nMat++)
-//    {
-//        tMat = dObj.seekMat(nMat, numMats);
-//        if (dObj.isT())
-//        {
-//            cv::minMaxLoc(*(cv::Mat_<_Tp> *)((dObj.get_mdata())[tMat]), &locMinVal, &locMaxVal, &minPt, &maxPt);
-//        }
-//        else
-//        {
-//            cv::minMaxLoc(((cv::Mat_<_Tp> *)((dObj.get_mdata())[tMat]))->t(), &locMinVal, &locMaxVal, &minPt, &maxPt);
-//        }
-//        if (locMinVal < absMinVal)
-//        {
-//            absMinVal = locMinVal;
-//            absMinPt = minPt;
-//            minMatNum = tMat;
-//        }
-//        if (locMaxVal > absMaxVal)
-//        {
-//            absMaxVal = locMaxVal;
-//            absMaxPt = maxPt;
-//            maxMatNum = tMat;
-//        }
-//    }
-//
-//    *minVal = absMinVal;
-//    *maxVal = absMaxVal;
-//    if (minPos)
-//    {
-//       dObj.matNumToIdx(minMatNum, minPos);
-//       minPos[dObj.getDims() - 1] = absMinPt.x;
-//       minPos[dObj.getDims() - 2] = absMinPt.y;
-//    }
-//
-//    if (maxPos)
-//    {
-//       dObj.matNumToIdx(maxMatNum, minPos);
-//       maxPos[dObj.getDims() - 1] = absMaxPt.x;
-//       maxPos[dObj.getDims() - 2] = absMaxPt.y;
-//    }
-//
-//    return 0;
-//}
-//
-////! template specialization for data object of type complex64. throws cv::Exception, since the data type is not supported.
-//template <> RetVal MinMaxLocFunc<ito::complex64>(const DataObject & /*dObj*/, double * /*minVal*/, double * /*maxVal*/, int * /*minPos*/, int * /*maxPos*/)
-//{
-//   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-//   return 0;
-//}
-//
-////! template specialization for data object of type complex128. throws cv::Exception, since the data type is not supported.
-//template <> RetVal MinMaxLocFunc<ito::complex128>(const DataObject & /*dObj*/, double * /*minVal*/, double * /*maxVal*/, int * /*minPos*/, int * /*maxPos*/)
-//{
-//   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-//   return 0;
-//}
-//
-//
-//typedef RetVal (*tMinMaxLocFunc)(const DataObject &dObj, double *minVal, double *maxVal, int *minPos, int *maxPos);
-//MAKEFUNCLIST(MinMaxLocFunc)
-//
-////! missing documentation
-///*!
-//    \todo check that function
-//*/
-//RetVal minMaxLoc(const DataObject &dObj, double *minVal, double *maxVal, int *minPos, int *maxPos)
-//{
-//    return fListMinMaxLocFunc[dObj.getType()](dObj, minVal, maxVal, minPos, maxPos);
-//}
-
-////----------------------------------------------------------------------------------------------------------------------------------
-//template<> RetVal DataObject::copyFromData2D<int8>(const int8*, const int, const int);
-//template<> RetVal DataObject::copyFromData2D<uint8>(const uint8*, const int, const int);
-//template<> RetVal DataObject::copyFromData2D<int16>(const int16*, const int, const int);
-//template<> RetVal DataObject::copyFromData2D<uint16>(const uint16*, const int, const int);
-//template<> RetVal DataObject::copyFromData2D<int32>(const int32*, const int, const int);
-//template<> RetVal DataObject::copyFromData2D<uint32>(const uint32*, const int, const int);
-//template<> RetVal DataObject::copyFromData2D<ito::float32>(const float32*, const int, const int);
-//template<> RetVal DataObject::copyFromData2D<ito::float64>(const float64*, const int, const int);
-//template<> RetVal DataObject::copyFromData2D<ito::complex64>(const complex64*, const int, const int);
-//template<> RetVal DataObject::copyFromData2D<ito::complex128>(const complex128*, const int, const int);
-//template<> RetVal DataObject::copyFromData2D<ito::Rgba32>(const Rgba32*, const int, const int);
-//
-////----------------------------------------------------------------------------------------------------------------------------------
-//template<> RetVal DataObject::copyFromData2D<int8>(const int8*, const int, const int, const int, const int, const int, const int);
-//template<> RetVal DataObject::copyFromData2D<uint8>(const uint8*, const int, const int, const int, const int, const int, const int);
-//template<> RetVal DataObject::copyFromData2D<int16>(const int16*, const int, const int, const int, const int, const int, const int);
-//template<> RetVal DataObject::copyFromData2D<uint16>(const uint16*, const int, const int, const int, const int, const int, const int);
-//template<> RetVal DataObject::copyFromData2D<int32>(const int32*, const int, const int, const int, const int, const int, const int);
-//template<> RetVal DataObject::copyFromData2D<uint32>(const uint32*, const int, const int, const int, const int, const int, const int);
-//template<> RetVal DataObject::copyFromData2D<ito::float32>(const float32*, const int, const int, const int, const int, const int, const int);
-//template<> RetVal DataObject::copyFromData2D<ito::float64>(const float64*, const int, const int, const int, const int, const int, const int);
-//template<> RetVal DataObject::copyFromData2D<ito::complex64>(const complex64*, const int, const int, const int, const int, const int, const int);
-//template<> RetVal DataObject::copyFromData2D<ito::complex128>(const complex128*, const int, const int, const int, const int, const int, const int);
-//template<> RetVal DataObject::copyFromData2D<ito::Rgba32>(const Rgba32*, const int, const int, const int, const int, const int, const int);
-
 //----------------------------------------------------------------------------------------------------------------------------------
 template DATAOBJ_EXPORT RetVal DataObject::linspace<int8>(const int8, const int8, const int8, const int);
 template DATAOBJ_EXPORT RetVal DataObject::linspace<uint8>(const uint8, const uint8, const uint8, const int);
@@ -6764,12 +6646,6 @@ template DATAOBJ_EXPORT RetVal DataObject::linspace<int32>(const int32, const in
 template DATAOBJ_EXPORT RetVal DataObject::linspace<uint32>(const uint32, const uint32, const uint32, const int);
 template DATAOBJ_EXPORT RetVal DataObject::linspace<float32>(const float32, const float32, const float32, const int);
 template DATAOBJ_EXPORT RetVal DataObject::linspace<float64>(const float64, const float64, const float64, const int);
-
-template <class T>
-T Sum(T a, T b)
-{
-     return (a + b);
-}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 }// namespace ito

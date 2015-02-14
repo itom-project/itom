@@ -115,7 +115,7 @@ MainWindow::MainWindow() :
 
     // user
     ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
-    if (uOrg->hasFeature(featConsole))
+    if (uOrg->hasFeature(featConsoleRead) || uOrg->hasFeature(featConsoleReadWrite))
     {
         qDebug(".. before loading console widget");
         //console (central widget):
@@ -1223,8 +1223,9 @@ ito::RetVal MainWindow::removeToolbarButton(const QString &toolbarName, const QS
         
         if ((*it)->actions().size() == 0) //remove this toolbar
         {
+            QString tmpName = it.key();
             removeToolBar(*it);
-            m_userDefinedToolBars.remove(it.key());
+            m_userDefinedToolBars.remove(tmpName);
         }
 
         if (!found)

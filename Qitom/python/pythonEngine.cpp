@@ -225,6 +225,9 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud&");
     qRegisterMetaType<ito::PCLPolygonMesh >("ito::PCLPolygonMesh&");
     qRegisterMetaType<ito::PCLPoint >("ito::PCLPoint");
+    qRegisterMetaType<QSharedPointer<ito::PCLPointCloud> >("QSharedPointer<ito::PCLPointCloud>");
+    qRegisterMetaType<QSharedPointer<ito::PCLPolygonMesh> >("QSharedPointer<ito::PCLPolygonMesh>");
+    qRegisterMetaType<QSharedPointer<ito::PCLPoint> >("QSharedPointer<ito::PCLPoint>");
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
     qRegisterMetaType<ito::PyWorkspaceContainer*>("PyWorkspaceContainer*");
     qRegisterMetaType<ito::PyWorkspaceItem*>("PyWorkspaceItem*");
@@ -919,7 +922,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
 				encodingType = PythonQtConversion::utf_8;
 				encodingName = "utf_8";
 			}
-			else if (qtCodecName == "ISO-8859-1" || qtCodecName == "latin1")
+			else if (qtCodecName == "ISO-8859-1" || qtCodecName == "latin1" || qtCodecName == "cp1252" || qtCodecName == "windows-1252")
 			{
 				encodingType = PythonQtConversion::latin_1;
 				encodingName = "latin_1";
@@ -3009,9 +3012,9 @@ void PythonEngine::pythonInterruptExecution()
     //PyErr_SetString(PyExc_KeyboardInterrupt, "User Interrupt");
 
     //only queue the interrupt event if not yet done.
-    if (m_interruptCounter == 0)
+    if (m_interruptCounter.testAndSetRelaxed(0, 1)) //==operator(int) of QAtomicInt does not exist for all versions of Qt5. testAndSetRelaxed returns true, if the value was 0 (and assigns one to it)
     {
-        m_interruptCounter.ref();
+        //m_interruptCounter.ref(); (not necessary any more due to testAndSetRelaxed above)
         if (isPythonDebugging() && isPythonDebuggingAndWaiting())
         {
             dbgCmdMutex.lock();

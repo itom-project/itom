@@ -8,6 +8,12 @@ This changelog only contains the most important changes taken from the commit-me
 itom
 ********
 
+**Version 1.4.0 (2015-02-17)**
+
+(more than 200 commits in itom repository)
+
+
+
 **Version 1.3.0 (2014-10-07)**
 
 (more than 150 commits in itom repository)
@@ -140,6 +146,10 @@ there is no continuous changelog for these version
 Plugins
 ******************
 
+**Version 1.4.0 (2015-02-17)**
+
+(more than 170 commits in plugins repository)
+
 **Version 1.3.0 (2014-10-07)**
 
 (more than 100 commits in plugins repository)
@@ -199,6 +209,40 @@ there is no continuous changelog for these version
 
 Designer Plugins
 ******************
+
+**Version 1.4.0 (2015-02-17)**
+
+(more than 50 commits in designerPlugins repository)
+
+* itom1dqwtplot: changed slots for setPicker / getPicker from ito::int32 / ito::float32 to int and float due to conversion / call problems.
+* itom1dqwtplot: fixes some rescaling problems when switching the complex representation or the row/column representation.
+* itom1dqwtplot, itom2dqwtplot: improvements in panner, magnifier, zoomer with and without fixed aspect ratio. Magnification is now possible using Ctrl + mouse wheel.
+* itom1dqwtplot, itom2dqwtplot: geometric elements can now obtain labels (accessible via slots)
+* Initial commit of vtk3dVisualizer to visualize pointclouds, polygon meshes, geometric elements. These elements are organized in a tree view and can be parametrized. The display is realized using Vtk and the PointCloudLibrary.
+* Encoding fixes in itom1dqwtplot and itom2dqwtplot due to default encoding changes in Qt5 (switched from Latin1 to Utf8)
+* itom2dqwtplot:  Added property to change geometric element modification mode
+* itom1dqwtplot:  Improved linewidth for copy pasted export
+* itom1dqwtplot, itom2dqwtplot:  zoom stack of zoomer and magnifier tools is synchronized with panner such that changing the plane or complex representation does not change the zoomed rectangle after a panning event)
+* itom1dqwtplot, itom2dqwtplot: some handling fixes in export properties of 1d and 2d qwt plot. The properties are now shown before the file-save-dialog in order to give the user an overview about the possibilities before he needs to indicate a filename.
+* itom1dqwtplot, itom2dqwtplot: shortcuts added for actions 'save' and 'copyToClipboard'
+* itom1dqwtplot: property lineStyle and lineWidth added
+* itom1dqwtplot, itom2dqwtplot: copy-to-clipboard added to tools menu of 1d and 2d qwt plot. Improved keyPressEvents for both plots (playing with event->ignore() and event->accept())
+* itom1dqwtplot: rounding fix in order to show the right data to given z-stack-cut coordinates.
+* improvements in itom2dqwtplot: z-stack picker obtains the general color set including a semi-transparent background box; the z-plane can be selected via a property 'planeIndex'
+* itom2dqwtplot: z-stack and linecut window has an appropriate window title
+* itom1dqwtplot, itom2dqwtplot: Working on an improved geometric element handling (e.g. modes for move, modify points) Adapted type switches and comparisons to handle flagged geometric elements via type ito::PrimitiveContainer::tTypeMask 
+* itom1dqwtplot, itom2dqwtplot: Added new icons for geometric element modification.
+* Added shift and alt modifier to itom2dqwtplot to move / rotate geometric lines with fixed length
+* update to qwt 6.1.2 for compability with Qt 5.4
+* Improving EvaluateGeometricsFigure to evaluate 3D-Data
+* Improved functionality of EvaluateGeometricsFigure to calculate distances between ellipse centers
+* fix in itom1dqwtplot and itom2dqwtplot: dataObjects were not updated if only their content, but not the size, type... changed
+* changes for access of plotItemChanged via python
+* Added colorMap to overlayImage for Itom2dQwtPlot via overlayColorMap-Property
+* itom1dqwtplot: legend (optional) added to itom1dqwtplot (properties: legendPosition (Off, Left, Top, Right, Bottom) and legendTitles (StringList) added). Per default, the legend is not displayed, and if it is displayed, the default names are curve 0, curve 1, curve 2...
+* itom2dqwtplot is principally able to display 1xN or Nx1 data objects (was blocked until now; but sometimes people want to do this)
+* itom1dqwtplot, itom2dqwtplot adapted to ito::AutoInterval class (xAxisInterval, yAxisInterval, zAxisInterval are of this type now)
+* itom1dqwtplot, itom2dqwtplot: Added background, axis and tick color
 
 **Version 1.3.0 (2014-10-07)**
 

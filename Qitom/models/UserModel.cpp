@@ -32,8 +32,8 @@ using namespace ito;
 */
 UserModel::UserModel()
 {
-    m_headers << tr("Name") << tr("Id") << tr("role") << tr("iniFile");
-    m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft);
+    m_headers << tr("Name") << tr("Id") << tr("role") << tr("iniFile") << tr("features");
+    m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -108,15 +108,41 @@ QVariant UserModel::data(const QModelIndex &index, int role) const
     {
         switch (index.column())
         {
-            case 0:
+            case umiName:
                 temp = m_userInfo.at(index.row()).name;
                 return QVariant(temp);
-            case 1:
+            case umiId:
                 return m_userInfo.at(index.row()).id;
-            case 2:
-                return m_userInfo.at(index.row()).role;
-            case 3:
+            case umiRole:
+                return QVariant::fromValue<UserRole>(m_userInfo.at(index.row()).role);
+            case umiIniFile:
                 return m_userInfo.at(index.row()).iniFile;
+            case umiFeatures:
+                return QVariant::fromValue<UserFeatures>(m_userInfo.at(index.row()).features);
+        }
+    }
+    else if (role == Qt::EditRole)
+    {
+        if (m_userInfo[index.row()].standardUser)
+        {
+            return QVariant(); //standard user is not editible
+        }
+        else
+        {
+            switch (index.column())
+            {
+                case umiName:
+                    temp = m_userInfo.at(index.row()).name;
+                    return QVariant(temp);
+                case umiId:
+                    return m_userInfo.at(index.row()).id;
+                case umiRole:
+                    return QVariant::fromValue<UserRole>(m_userInfo.at(index.row()).role);
+                case umiIniFile:
+                    return m_userInfo.at(index.row()).iniFile;
+                case umiFeatures:
+                    return QVariant::fromValue<UserFeatures>(m_userInfo.at(index.row()).features);
+            }
         }
     }
 
@@ -176,3 +202,60 @@ int UserModel::addUser(const UserInfoStruct &newUser)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+bool UserModel::removeUser(const QModelIndex &index)
+{
+    if (index.row() >= 0 && index.row() < rowCount())
+    {
+        beginRemoveRows(parent(index), index.row(), index.row());
+        m_userInfo.removeAt(index.row());
+        endRemoveRows();
+        return true;
+    }
+    return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void UserModel::removeAllUsers()
+{
+    beginResetModel();
+    m_userInfo.clear();
+    endResetModel();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString UserModel::getRoleName(const UserRole &role) const
+{
+    switch (role)
+    {
+    case userRoleDeveloper:
+        return tr("Developer");
+    case userRoleAdministrator:
+        return tr("Administrator");
+    default:
+        return tr("User");   
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString UserModel::getFeatureName(const UserFeature &feature) const
+{
+    switch(feature)
+    {
+        case featDeveloper:
+            return tr("Developer");
+        case featFileSystem:
+            return tr("File System");
+        case featUserManag:
+            return tr("User Management");
+        case featPlugins:
+            return tr("Addin Manager (Plugins)");
+        case featConsoleReadWrite:
+            return tr("Console");
+        case featConsoleRead:
+            return tr("Console (Read Only)");
+        case featProperties:
+            return tr("Properties");
+    }
+
+    return "";
+}

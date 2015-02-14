@@ -27,11 +27,16 @@
 namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogSelectUser::DialogSelectUser(QWidget *parent) :
+DialogSelectUser::DialogSelectUser(UserModel *model, QWidget *parent) :
     QDialog(parent),
-    m_userModel(NULL)
+    m_userModel(model)
 {
     ui.setupUi(this);
+
+    ui.userList->setModel(m_userModel);
+
+    QItemSelectionModel *selModel = ui.userList->selectionModel();
+    QObject::connect(selModel, SIGNAL(currentChanged (const QModelIndex &, const QModelIndex &)), this, SLOT(userListCurrentChanged(const QModelIndex &, const QModelIndex &)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -40,11 +45,24 @@ DialogSelectUser::~DialogSelectUser()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogSelectUser::DialogInit(UserModel *model)
+bool DialogSelectUser::selectUser(const QString &id)
 {
-    m_userModel = model;
-    QItemSelectionModel *selModel = ui.userList->selectionModel();
-    QObject::connect(selModel, SIGNAL(currentChanged (const QModelIndex &, const QModelIndex &)), this, SLOT(userListCurrentChanged(const QModelIndex &, const QModelIndex &))); 
+    for (int curIdx = 0; curIdx < m_userModel->rowCount(); curIdx++)
+    {
+        QModelIndex midx = m_userModel->index(curIdx, 1); //id
+        if (midx.isValid())
+        {
+            if (QString::compare(id, midx.data().toString(), Qt::CaseInsensitive) == 0)
+            {
+                QModelIndex actIdx = m_userModel->index(curIdx, 0);
+                ui.userList->setCurrentIndex(actIdx);
+                return true;
+            }
+        }
+    }
+
+    ui.userList->setCurrentIndex(m_userModel->index(0,0));
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -60,61 +78,49 @@ void DialogSelectUser::userListCurrentChanged(const QModelIndex &current, const 
         if (curIdx.isValid())
         {
             userExists = true;
+            int curRow = curIdx.row();
 
-            UserOrganizer *uio = (UserOrganizer*)AppManagement::getUserOrganizer();
-            ui.lineEdit_name->setText(m_userModel->index(curIdx.row(), 0).data().toString());
-            ui.lineEdit_id->setText(m_userModel->index(curIdx.row(), 1).data().toString());
-            ui.lineEdit_iniFile->setText(m_userModel->index(curIdx.row(), 3).data().toString());
+            ui.lineEdit_name->setText(m_userModel->index(curRow, UserModel::umiName).data().toString());
+            ui.lineEdit_id->setText(m_userModel->index(curRow, UserModel::umiId).data().toString());
+            ui.lineEdit_iniFile->setText(m_userModel->index(curRow, UserModel::umiIniFile).data().toString());
 
-            QString roleText;
-            QModelIndex midx = m_userModel->index(curIdx.row(), 2);
-            if (midx.data().toString() == "developer")
+            ito::UserRole role = m_userModel->index(curRow, UserModel::umiRole).data().value<ito::UserRole>();
+            UserFeatures features = m_userModel->index(curRow, UserModel::umiFeatures).data().value<UserFeatures>();
+            
+            ui.permissionList->addItem(tr("Role") + ": " + m_userModel->getRoleName(role));
+            
+            if (features & featDeveloper)
             {
-                roleText = uio->strConstRoleDeveloper;
-            }
-            else if (midx.data().toString() == "admin")
-            {
-                roleText = uio->strConstRoleAdministrator;
-            }
-            else
-            {
-                roleText = uio->strConstRoleUser;
-            }
-            ui.permissionList->addItem(uio->strConstRole + ": " + roleText);
-
-            long flags = uio->getFlagsFromFile(m_userModel->index(curIdx.row(), 3).data().toString());
-            if (flags & featDeveloper)
-            {
-                ui.permissionList->addItem(uio->strConstFeatDeveloper);
+                ui.permissionList->addItem(m_userModel->getFeatureName(featDeveloper));
             }
 
-            if (flags & featFileSystem)
+            if (features & featFileSystem)
             {
-                ui.permissionList->addItem(uio->strConstFeatFileSystem);
+                ui.permissionList->addItem(m_userModel->getFeatureName(featFileSystem));
             }
 
-            if (flags & featUserManag)
+            if (features & featUserManag)
             {
-                ui.permissionList->addItem(uio->strConstFeatUserManag);
+                ui.permissionList->addItem(m_userModel->getFeatureName(featUserManag));
             }
 
-            if (flags & featPlugins)
+            if (features & featPlugins)
             {
-                ui.permissionList->addItem(uio->strConstFeatPlugins);
+                ui.permissionList->addItem(m_userModel->getFeatureName(featPlugins));
             }
 
-            if (flags & featProperties)
+            if (features & featProperties)
             {
-                ui.permissionList->addItem(uio->strConstFeatProperties);
+                ui.permissionList->addItem(m_userModel->getFeatureName(featProperties));
             }
 
-            if ((flags & featConsole) && (flags & featConsoleRW))
+            if ((features & featConsoleReadWrite))
             {
-                ui.permissionList->addItem(uio->strConstFeatConsole);
+                ui.permissionList->addItem(m_userModel->getFeatureName(featConsoleReadWrite));
             }
-            else if (flags & featConsole)
+            else if (features & featConsoleRead)
             {
-                ui.permissionList->addItem(uio->strConstFeatConsoleRO);
+                ui.permissionList->addItem(m_userModel->getFeatureName(featConsoleRead));
             }
         }
     }

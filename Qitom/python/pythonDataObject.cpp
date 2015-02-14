@@ -1305,7 +1305,7 @@ int PythonDataObject::PyDataObject_setTags(PyDataObject *self, PyObject *value, 
 
     while (PyDict_Next(value, &pos, &key, &content))
     {
-        keyString = PythonQtConversion::PyObjGetStdString(key, false, stringOk);
+        keyString = PythonQtConversion::PyObjGetStdStringAsLatin1(key, false, stringOk);
         if (stringOk)
         {
             if (PyFloat_Check(content)||PyLong_Check(content))
@@ -1314,7 +1314,7 @@ int PythonDataObject::PyDataObject_setTags(PyDataObject *self, PyObject *value, 
             }
             else
             {
-                contentString = PythonQtConversion::PyObjGetStdString(content, false, stringOk);
+                contentString = PythonQtConversion::PyObjGetStdStringAsLatin1(content, false, stringOk);
                 if (stringOk)
                 {
                     self->dataObject->setTag(keyString, contentString);
@@ -1583,7 +1583,7 @@ int PythonDataObject::PyDataObject_setAxisDescriptions(PyDataObject *self, PyObj
     for (Py_ssize_t i = 0; i < dims; i++)
     {
         seqItem = PySequence_GetItem(value,i); //new reference
-        tempString = PythonQtConversion::PyObjGetStdString(seqItem,true,ok);
+        tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(seqItem,true,ok);
         Py_XDECREF(seqItem);
         if (!ok)
         {
@@ -1667,7 +1667,7 @@ int PythonDataObject::PyDataObject_setAxisUnits(PyDataObject *self, PyObject *va
     for (Py_ssize_t i = 0; i < dims; i++)
     {
         seqItem = PySequence_GetItem(value,i); //new reference
-        tempString = PythonQtConversion::PyObjGetStdString(seqItem,true,ok);
+        tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(seqItem,true,ok);
         Py_XDECREF(seqItem);
         if (!ok)
         {
@@ -1705,7 +1705,7 @@ int PythonDataObject::PyDataObject_setValueUnit(PyDataObject *self, PyObject *va
     }
 
     bool ok;
-    std::string unit = PythonQtConversion::PyObjGetStdString(value,true,ok);
+    std::string unit = PythonQtConversion::PyObjGetStdStringAsLatin1(value,true,ok);
 
     if (!ok)
     {
@@ -1753,7 +1753,7 @@ int PythonDataObject::PyDataObject_setValueDescription(PyDataObject *self, PyObj
     }
 
     bool ok;
-    std::string unit = PythonQtConversion::PyObjGetStdString(value,true,ok);
+    std::string unit = PythonQtConversion::PyObjGetStdStringAsLatin1(value,true,ok);
 
     if (!ok)
     {
@@ -2309,7 +2309,7 @@ PyObject* PythonDataObject::PyDataObj_SetAxisDescription(PyDataObject *self, PyO
     }
 
     bool ok;
-    std::string tagValString = PythonQtConversion::PyObjGetStdString(tagvalue,true,ok);
+    std::string tagValString = PythonQtConversion::PyObjGetStdStringAsLatin1(tagvalue,true,ok);
 
     if (!ok)
     {
@@ -2362,7 +2362,7 @@ PyObject* PythonDataObject::PyDataObj_SetAxisUnit(PyDataObject *self, PyObject *
     }
 
     bool ok;
-    std::string tagValString = PythonQtConversion::PyObjGetStdString(tagvalue,true,ok);
+    std::string tagValString = PythonQtConversion::PyObjGetStdStringAsLatin1(tagvalue,true,ok);
 
     if (!ok)
     {
@@ -2423,7 +2423,7 @@ PyObject* PythonDataObject::PyDataObj_SetTag(PyDataObject *self, PyObject *args)
     else
     {
         bool ok;
-        std::string tagValString = PythonQtConversion::PyObjGetStdString(tagvalue,true,ok);
+        std::string tagValString = PythonQtConversion::PyObjGetStdStringAsLatin1(tagvalue,true,ok);
 
         if (!ok)
         {
@@ -2550,7 +2550,7 @@ PyObject* PythonDataObject::PyDataObj_AddToProtocol(PyDataObject *self, PyObject
     }
 
     bool ok;
-    std::string unitString = PythonQtConversion::PyObjGetStdString(unit,true,ok);
+    std::string unitString = PythonQtConversion::PyObjGetStdStringAsLatin1(unit,true,ok);
 
     if (!ok)
     {
@@ -6256,7 +6256,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
         {
             while (PyDict_Next(tempTag, &pos, &key, &value))
             {
-                keyString = PythonQtConversion::PyObjGetStdString(key, false, stringOk);
+                keyString = PythonQtConversion::PyObjGetStdStringAsLatin1(key, false, stringOk);
                 if (stringOk)
                 {
                     if (PyFloat_Check(value)||PyLong_Check(value))
@@ -6265,7 +6265,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
                     }
                     else
                     {
-                        tempString = PythonQtConversion::PyObjGetStdString(value, false, stringOk);
+                        tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(value, false, stringOk);
                         if (stringOk)
                         {
                             self->dataObject->setTag(keyString, tempString);
@@ -6306,7 +6306,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
             for (Py_ssize_t i=0;i<PySequence_Size(tempTag);i++)
             {
                 seqItem = PySequence_GetItem(tempTag,i); //new reference
-                tempString = PythonQtConversion::PyObjGetStdString(seqItem, false, stringOk);
+                tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(seqItem, false, stringOk);
                 if (stringOk)
                 {
                     self->dataObject->setAxisDescription(i, tempString);
@@ -6322,7 +6322,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
             for (Py_ssize_t i=0;i<PySequence_Size(tempTag);i++)
             {
                 seqItem = PySequence_GetItem(tempTag,i); //new reference
-                tempString = PythonQtConversion::PyObjGetStdString(seqItem, false, stringOk);
+                tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(seqItem, false, stringOk);
                 if (stringOk)
                 {
                     self->dataObject->setAxisUnit(i, tempString);
@@ -6333,7 +6333,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
 
         // 6. valueUnit
         tempTag = PyTuple_GetItem(tagTuple,6); //borrowed
-        tempString = PythonQtConversion::PyObjGetStdString(tempTag, false, stringOk);
+        tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(tempTag, false, stringOk);
         if (stringOk)
         {
             self->dataObject->setValueUnit(tempString);
@@ -6341,7 +6341,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
 
         // 7. valueDescription
         tempTag = PyTuple_GetItem(tagTuple,7); //borrowed
-        tempString = PythonQtConversion::PyObjGetStdString(tempTag, false, stringOk);
+        tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(tempTag, false, stringOk);
         if (stringOk)
         {
             self->dataObject->setValueDescription(tempString);

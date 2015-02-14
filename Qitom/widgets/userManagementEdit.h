@@ -36,18 +36,18 @@ class DialogUserManagementEdit : public QDialog
     Q_OBJECT
 
     public:
-        DialogUserManagementEdit(const QString fileName, UserModel *userModel, QWidget * parent = 0, Qt::WindowFlags f = 0);
+        DialogUserManagementEdit(const QString &filename, UserModel *userModel, QWidget * parent = 0, Qt::WindowFlags f = 0);
         ~DialogUserManagementEdit();
         Ui::userManagementEdit ui;
 
     private:
         UserModel *m_userModel;
-        int getFlags();
         bool saveUser();
         QString m_fileName;
 
     protected:
 //        void init();
+        QString clearName(const QString &name);
 
     private slots:
         void on_buttonBox_clicked(QAbstractButton* btn);

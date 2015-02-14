@@ -1393,6 +1393,9 @@ namespace ito
                 //that could not be initialized.
             }
 
+            waitCond->deleteSemaphore();
+            waitCond = NULL;
+
         }
         else
         {
@@ -1634,6 +1637,9 @@ namespace ito
         id = qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud");
         id = qRegisterMetaType<ito::PCLPolygonMesh >("ito::PCLPolygonMesh");
         id = qRegisterMetaType<ito::PCLPoint >("ito::PCLPoint");
+        id = qRegisterMetaType<QSharedPointer<ito::PCLPointCloud> >("QSharedPointer<ito::PCLPointCloud>");
+        id = qRegisterMetaType<QSharedPointer<ito::PCLPolygonMesh> >("QSharedPointer<ito::PCLPolygonMesh>");
+        id = qRegisterMetaType<QSharedPointer<ito::PCLPoint> >("QSharedPointer<ito::PCLPoint>");
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
 
         m_deadPlugins.clear();

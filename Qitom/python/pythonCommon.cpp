@@ -1387,45 +1387,6 @@ ito::RetVal findAndDeleteReservedInitKeyWords(PyObject *kwds, bool * enableAutoL
 }
 
 //------------------------------------------------------------------------------------------------------------------
-//PyObject* transformQVariant2PyObject(QVariant *value, ito::RetVal &retValue)
-//{
-//    retValue += ito::retOk;
-//
-//    switch(value->type())
-//    {
-//    case QVariant::Invalid:
-//        retValue += ito::RetVal(ito::retError, 0, QObject::tr("invalid return value").toLatin1().data());
-//        return NULL;
-//        break;
-//    case QVariant::Bool:
-//        if (value->toBool() == true)
-//        {
-//            Py_INCREF(Py_True);
-//            return Py_True;
-//        }
-//        else
-//        {
-//            Py_INCREF(Py_False);
-//            return Py_False;
-//        }
-//        break;
-//    case QVariant::Int:
-//        return Py_BuildValue("i",value->toInt());
-//        break;
-//    case QVariant::Double:
-//        return Py_BuildValue("d",value->toDouble());
-//        break;
-//    case QVariant::String:
-//        return Py_BuildValue("s", value->toString().toLatin1().data());
-//        break;
-//    default:
-//        retValue += ito::RetVal(ito::retError, 0, QObject::tr("unknown parameter of type QVariant").toLatin1().data());
-//        return NULL;
-//        break;
-//    }
-//}
-
-//------------------------------------------------------------------------------------------------------------------
 PyObject* buildFilterOutputValues(QVector<QVariant> *outVals, ito::RetVal &retValue)
 {
     PyObject *tuple = NULL;

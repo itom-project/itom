@@ -859,8 +859,8 @@ class DATAOBJ_EXPORT DataObject
         //inline lead to a linker error on MSVC when calling from several methods
         int setAxisOffset(const unsigned int axisNum, const double offset);
         int setAxisScale(const unsigned int axisNum, const double scale);
-        int setAxisUnit(const unsigned int axisNum, const std::string &unit);
-        int setAxisDescription(const unsigned int axisNum, const std::string &description);
+        int setAxisUnit(const unsigned int axisNum, const std::string &unit); //unit must be latin1 encoded
+        int setAxisDescription(const unsigned int axisNum, const std::string &description); //description must be latin1 encoded
         int setTag(const std::string &key, const DataObjectTagType &value);
         bool existTag(const std::string &key) const;
         bool deleteTag(const std::string &key);
