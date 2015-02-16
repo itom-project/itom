@@ -115,27 +115,48 @@ You can get the famous \"hello world!\" in a very simple way. Just write in the 
     
     print("hello world!")
 
-The command is executed immediately. Let us proceed to a more advanced example involving a camera.
+The command is executed immediately and prints the text *hello world!* to the command line. Let us proceed to a more advanced example involving a camera.
 
-Getting a snapshot
---------------------
+Get a camera snapshot
+----------------------
 
-In this example we will explain how you can open a camera and make a snapshot step by step. Python code can be written and executed in two differnt ways, either directly, line by line, using the console, or in the form of complete scripts and fucntions, executed as small programs. In this example we will use the console and will type in our commands directly. Later you can write your code in executable scripts or functions and you can control these functions with your own GUI elements.
+In this example we will explain step by step how to open a camera and make a snapshot. Python code can be written and executed in two different ways, either directly, line by line, using the console, or in the form of complete scripts. In this example we will use the console and will directly type our commands. Later you can write your code in executable scripts or functions and you can control these functions with your own GUI elements.
 
-You will need the **DummyGrabber**-PlugIn for this script to work.
+You will need the **DummyGrabber**-plugin for this script to work. This plugin is a virtual camera plugin that provides noise images in order to simulate a real camera.
 
 Step 1: Open the camera
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-First you have to start your camera device using the respective dataIO plugin. In our example we use the DummyGrabber, but in principle you can use any camera connected to your computer for which you have an |itom| plugin. Similarly to the previous example of the **DummyMotor** we need to create an instance of the **DummyGrabber**, only this time, we will instantiate from python instead of from the GUI. 
+First you have to start your camera device using the respective :py:class:`~itom.dataIO` plugin. In our example we use the plugin *DummyGrabber*, but in general you can use any camera connected to your computer for which you have an |itom| plugin. Similarly to the previous example of the **DummyMotor** we need to create an instance of the **DummyGrabber**. However, we will create this instance using Python script commands instead: 
 
 .. code-block:: python
     :linenos:
     
     camera = dataIO("DummyGrabber", 1024, 800)
+    
+How did we know what to write there? Select **Info...** from the context menu of *DummyGrabber* in order to show the help page about the *DummyGrabber* plugin:
+
+.. figure:: images/dummyGrabberHelp.png
+    :scale: 70%
+    
+.. note::
+    
+    If you don't see the help page, go to the properties dialog of |itom| (menu **File >> Properties**) and select the checkbox **Show DataIO and Actuator** in the tab **General >> Help Viewer**.
+    
+In the help page, all mandatory and optional parameters are listed and described that are needed to instantiate one camera (the same holds for motors). If you remember the connection to the motor above, these parameters have been added to the dialog for the motor's initialization. In case of the camera, there are up to three optional parameters. The first two describe the virtual chip size of the camera, the third one is the desired bit depth, whose default ist 8 bit.
+
+In order to create an instance of the camera, we create an object of the Python class :py:class:`~itom.dataIO`, which is part of the module :py:mod:`itom`. Since this module has been globally imported at startup of |itom| using::
+    
+    from itom import *
+    
+it is allowed to directly write **dataIO** instead of **itom.dataIO**. The constructor of this class requires the name of the plugin (as string) as first parameter. The following parameters are all mandatory parameters followed by the optional ones. You don't need to indicate all optional ones. Therefore, the example only set the parameters *maxXSize* and *maxYSize*. The bitdepth *bpp* was omitted, hence, its default value is assumed.
+
+After initialization, one instance of the camera has been created and is listed in the plugin's toolbox (with a yellow background, saying that it has been created via Python). Additionally, you will find the variable **camera** in the global workspace toolbox of |itom|. Use this variable in order to work with the camera.
 
 Step 2: Get the list of parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Every hardware plugin (dataIO or actuator) has a set of parameters. You can read the current value, the allowed range or values and a description of each parameter using Python.
 
 With the following command you get a list with all available parameters for your device.
 
@@ -143,11 +164,20 @@ With the following command you get a list with all available parameters for your
     :linenos:
     
     print(camera.getParamList())
+    
+A full list of all parameters including their current value and description is obtained via:
+
+.. code-block:: python
+    :linenos:
+    
+    camera.getParamListInfo()
+    
+In the printed list you can also see if the parameter is read-only (r) or can also be set (rw) like shown in the next step.
 
 Step 3: Setting Parameters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-You can set the parameters of the camera as you need it. For example, we might wish to set the upper left corner of the ROI, the integration time (in seconds) of the capturing process or the bit-depth of the captured signal:
+Parameters of the device that are not marked as read-only can be set as you need it. For example, we might wish to set the upper left corner of the ROI, the integration time (in seconds) of the capturing process or the bit-depth of the captured signal:
 
 .. code-block:: python
     :linenos:
@@ -170,14 +200,14 @@ If you are interested in the current value of a parameter you can use the follow
 Step 5: Taking a snapshot
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Before you can use the camera you have to start it.
+Before you can use the camera you have to start it (this must be done only once).
 
 .. code-block:: python
     :linenos:
     
     camera.startDevice()
 
-Following that you can acquire an image.
+Afterwards, acquire a new image. This is the time when the acquisition starts.
 
 .. code-block:: python
     :linenos:
@@ -198,6 +228,13 @@ Here you have to be careful, because data is just a reference (**shallow copy!**
     :linenos:
     
     dataCopy = data.copy()
+    
+Alternatively, you can also use the command :py:meth:`~itom.dataIO.copyVal` to directly get a copy of the object from the camera:
+
+.. code-block:: python
+    :linenos:
+    
+    camera.copyVal(data)
 
 Step 6: Displaying the image
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
