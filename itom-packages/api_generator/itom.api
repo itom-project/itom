@@ -29,9 +29,9 @@ itom.autoInterval.min
 itom.autoInterval.name
 itom.autoReloader(enabled [,checkFileExec = True, checkCmdExec = True, checkFctExec = False]) -> dis-/enables the module to automatically reload changed modules
 itom.checkSignals
-itom.clc
+itom.clc() -> clears the itom command line (if available)
 itom.close(handle|'all') -> method to close any specific or all open figures (unless any figure-instance still keeps track of them)
-itom.compressData
+itom.compressData(str) -> compresses the given string using the method qCompress
 itom.dataIO(name[, mandparams, optparams]) -> creates new instance of dataIO plugin 'name'
 itom.dataIO.TRIGGER_SOFTWARE
 itom.dataIO.acquire(trigger=dataIO.TRIGGER_SOFTWARE) -> triggers a new the camera acquisition
@@ -237,7 +237,7 @@ itom.saveIDC(filename, dict [,overwriteIfExists = True]) -> saves the given dict
 itom.saveMatlabMat(filename, values[, matrixName = 'matrix']) -> save strings, numbers, arrays or combinations into a Matlab mat file.
 itom.scaleValueAndUnit
 itom.scriptEditor() -> opens new, empty script editor window (undocked)
-itom.setApplicationCursor
+itom.setApplicationCursor([cursorIndex = -1]) -> changes the itom cursor or restores the previously set cursor if -1
 itom.setCurrentPath(newPath) -> set current working directory to given absolute newPath
 itom.setPalette(name, entries) -> set the palette for color bars defined by name.
 itom.timer(interval, callbackFunc, [argTuple]) -> new callback timer
@@ -306,7 +306,7 @@ itom.uiItem.invokeKeyboardInterrupt(signalSignature) -> connects the given signa
 itom.uiItem.setAttribute(attributeNumber, value) -> sets attribute of corresponding widget.
 itom.uiItem.setProperty(propertyDict) -> each property in the parameter dictionary is set to the dictionaries value.
 itom.uiItem.setWindowFlags(flags) -> set window flags of corresponding widget.
-itom.uncompressData
+itom.uncompressData(str) -> uncompresses the given string using the method qUncompress
 itom.userGetInfo() -> return a dictionary with the current user management information.
 itom.userIsAdmin() -> return True if USER has administrator status.
 itom.userIsDeveloper() -> return True if USER has developer status.

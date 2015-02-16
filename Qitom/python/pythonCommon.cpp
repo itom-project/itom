@@ -264,6 +264,8 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
     values["type"] = QStringList();
     values["values"] = QStringList();
     values["description"] = QStringList();
+    values["readwrite"] = QStringList();
+    bool readonly;
 
     PyObject *pVector = PyTuple_New( params->size() ); // new reference
 
@@ -272,6 +274,17 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
         if ((*params)[n].getType() != 0)
         {
             p_pyLine = PyDict_New();    // new reference
+
+            if (params->at(n).getFlags() & ito::ParamBase::Readonly)
+            {
+                values["readwrite"].append("r");
+                readonly = true;
+            }
+            else
+            {
+                values["readwrite"].append("rw");
+                readonly = false;
+            }
 
             switch(((*params)[n]).getType())
             {
@@ -348,6 +361,8 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
             item = PyLong_FromLong(n);
             PyDict_SetItemString(p_pyLine, "index", item);
             Py_DECREF(item);
+
+            PyDict_SetItemString(p_pyLine, "readonly", readonly ? Py_True : Py_False);
 
             if (addInfos)
             {
@@ -642,6 +657,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
     int nameLength = 4;
     int typeLength = 4;
     int valuesLength = 5;
+    int readWriteLength = 3;
     QString output;
 
     foreach(const QString &str, values["number"])
@@ -669,6 +685,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
     nameLength += 1;
     typeLength += 1;
     valuesLength += 2;
+    readWriteLength += 1;
 
     // write a heading
     if (asErr)
@@ -684,13 +701,15 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
     output.append(temp);
     temp = QString("Name").leftJustified(nameLength,' ');
     output.append(temp);
-    temp = QString("type").leftJustified(typeLength,' ');
+    temp = QString("Type").leftJustified(typeLength,' ');
     output.append(temp);
     if (addInfos)
     {
-        temp = QString("value").leftJustified(valuesLength,' ');
+        temp = QString("Value").leftJustified(valuesLength,' ');
         output.append(temp);
-        output.append("description");
+        temp = QString("R/W").leftJustified(readWriteLength, ' ');
+        output.append(temp);
+        output.append("Description");
     }
     output.append("\n");
 
@@ -713,6 +732,8 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
         if (addInfos)
         {
             temp = values["values"][i].leftJustified(valuesLength,' ', true);
+            output.append(temp);
+            temp = values["readwrite"][i].leftJustified(readWriteLength,' ', true);
             output.append(temp);
             output.append(values["description"][i]);
         }
