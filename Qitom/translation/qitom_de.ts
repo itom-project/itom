@@ -642,7 +642,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location/>
         <source>Select user</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Benutzer auswählen</translation>
     </message>
 </context>
 <context>
@@ -1143,7 +1143,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Die Größe der %i. Dimension übersteigt die aktuelle Begrenzung [%i, %i]</translation>
     </message>
     <message>
-        <location filename="../python/pythonCommon.cpp" line="+1142"/>
+        <location filename="../python/pythonCommon.cpp" line="+1163"/>
         <source>Keyword autoLoadParams not of integer type</source>
         <translation type="unfinished">Schlüsselwort autoLoadParams ist nicht vom Typ Integer</translation>
     </message>
@@ -1183,7 +1183,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Zeitüberschreitung beim Lesen der Parameter</translation>
     </message>
     <message>
-        <location line="+333"/>
+        <location line="+334"/>
         <source>timeout.</source>
         <translation>Zeitüberschreitung.</translation>
     </message>
@@ -1238,7 +1238,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="+3011"/>
+        <location filename="../python/pythonUi.cpp" line="+3012"/>
         <source>no widget name specified</source>
         <translation type="unfinished">Kein Widget-Name vergeben</translation>
     </message>
@@ -1614,7 +1614,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Zeitüberschreitung während der Initialisierung von Actuator</translation>
     </message>
     <message>
-        <location line="+706"/>
+        <location line="+712"/>
         <source>no toolbox available</source>
         <translation type="unfinished">Keine Symbolleiste verfügbar</translation>
     </message>
@@ -2669,14 +2669,14 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInManager</name>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="-893"/>
+        <location filename="../organizer/addInManager.cpp" line="-899"/>
         <location line="+143"/>
         <location line="+136"/>
         <source>Plugin instance is invalid (NULL)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+555"/>
+        <location line="+561"/>
         <source>no configuration dialog available</source>
         <translation>Kein Konfigurationsdialogs vorhanden</translation>
     </message>
@@ -3544,7 +3544,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+62"/>
         <source>UserOrganizer not found!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&quot;UserOrganizer&quot; wurde nicht gefunden!</translation>
     </message>
     <message>
         <source>ItomSettings directory not found, aborting!</source>
@@ -3943,7 +3943,7 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+21"/>
         <location line="+21"/>
         <source>Range: [%1:%2:%3], Default: %4</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bereich: [%1:%2:%3], Voreinstellung: %4</translation>
     </message>
     <message>
         <location line="-37"/>
@@ -4592,7 +4592,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Skript</translation>
     </message>
     <message>
-        <location line="+586"/>
+        <location line="+587"/>
         <source>key must not be empty.</source>
         <translation type="unfinished">Der Schlüssel darf nicht leer sein.</translation>
     </message>
@@ -4612,7 +4612,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Der UI-Designer (QT-Designer) konnte nicht geöffnet werden (%1).</translation>
     </message>
     <message>
-        <location line="-1589"/>
+        <location line="-1590"/>
         <location line="+604"/>
         <source>Help</source>
         <translation type="unfinished">Hilfe</translation>
@@ -4678,7 +4678,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="obsolete">&apos; wurde nicht gefunden</translation>
     </message>
     <message>
-        <location line="+226"/>
+        <location line="+227"/>
         <source>one single menu element must be of type MENU [2]</source>
         <translation type="unfinished">Das Menüelement muss vom Typ MENU sein [2]</translation>
     </message>
@@ -4939,7 +4939,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::PythonEngine</name>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="+333"/>
+        <location filename="../python/pythonEngine.cpp" line="+336"/>
         <source>error importing sys in start python engine
 </source>
         <translation type="unfinished"></translation>
@@ -6159,14 +6159,14 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="obsolete">Benutzer</translation>
     </message>
     <message>
-        <location filename="../organizer/userOrganizer.cpp" line="+56"/>
+        <location filename="../organizer/userOrganizer.cpp" line="+57"/>
         <source>Standard User</source>
         <translation type="unfinished">Standardbenutzer</translation>
     </message>
     <message>
-        <location line="+264"/>
+        <location line="+268"/>
         <source>itomSettings directory not found, aborting!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Verzeichnis &quot;itomSettings&quot; wurde nicht gefunden! Vorgang abgebrochen!</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -6802,7 +6802,7 @@ Katesisch</translation>
     <message>
         <location/>
         <source>Administrator</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 </TS>
