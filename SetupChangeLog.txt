@@ -30,8 +30,8 @@ Doku erstellen:
 2. Doxygen-Dokumentation erstellen (Reiter "Run", Button "Run Doxygen")
 3. itom_doxygen.dox abspeichern
 4. itom starten
-5. in \Build\itom\docs\userDoc die python-Datei "create_doc.py" ausführen
-6. in \Build\itom\docs\pluginDoc die python-Datei "create_all_plugin_docs.py" ausführen
+5. in \Build\itom\docs\userDoc die python-Datei "create_doc.py" ausführen und Hilfe starten
+6. in \Build\itom\docs\pluginDoc die python-Datei "create_all_plugin_docs.py" ausführen, Build-Verzeichnis der freien Plugins wählen und Hilfe starten
 
 
 CHANGE-LOG
