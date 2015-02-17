@@ -185,7 +185,8 @@ Source: "{#SourceDirItomBuild}\designer\translation\*.qm"; DestDir: "{app}\desig
 Source: "{#SourceDirItomBuild}\plugins\AerotechEnsemble\*.*"; DestDir: "{app}\plugins\AerotechEnsemble"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\BasicFilters\*.*"; DestDir: "{app}\plugins\BasicFilters"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\AVTVimba\*.*"; DestDir: "{app}\plugins\AVTVimba"; Flags: promptifolder recursesubdirs
-Source: "{#SourceDirItomBuild}\plugins\BasicFilters\*.*"; DestDir: "{app}\plugins\BasicFilters"; Flags: promptifolder recursesubdirs ;GPL (no included in setup)
+Source: "{#SourceDirItomBuild}\plugins\BasicFilters\*.*"; DestDir: "{app}\plugins\BasicFilters"; Flags: promptifolder recursesubdirs
+; Source: "{#SourceDirItomBuild}\plugins\BasicGPLFilters\*.*"; DestDir: "{app}\plugins\BasicGPLFilters"; Flags: promptifolder recursesubdirs ;GPL (no included in setup)
 Source: "{#SourceDirItomBuild}\plugins\cmu1394\*.*"; DestDir: "{app}\plugins\cmu1394"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\dataobjectarithmetic\*.*"; DestDir: "{app}\plugins\dataobjectarithmetic"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\DataObjectIO\*.*"; DestDir: "{app}\plugins\DataObjectIO"; Flags: promptifolder recursesubdirs
