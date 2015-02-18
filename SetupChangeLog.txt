@@ -30,8 +30,8 @@ Doku erstellen:
 2. Doxygen-Dokumentation erstellen (Reiter "Run", Button "Run Doxygen")
 3. itom_doxygen.dox abspeichern
 4. itom starten
-5. in \Build\itom\docs\userDoc die python-Datei "create_doc.py" ausführen
-6. in \Build\itom\docs\pluginDoc die python-Datei "create_all_plugin_docs.py" ausführen
+5. in \Build\itom\docs\userDoc die python-Datei "create_doc.py" ausführen und Hilfe starten
+6. in \Build\itom\docs\pluginDoc die python-Datei "create_all_plugin_docs.py" ausführen, Build-Verzeichnis der freien Plugins wählen und Hilfe starten
 
 
 CHANGE-LOG
@@ -48,3 +48,4 @@ Setup 1.0.14 - Erstellt am 30.08.2013 - AddInInterface "ito.AddIn.InterfaceBase/
 Setup 1.1.0  - Erstellt am 27.01.2014 - AddInInterface "ito.AddIn.InterfaceBase/1.1.24"
 Setup 1.2.0  - Erstellt am 27.05.2014 - AddInInterface "ito.AddIn.InterfaceBase/1.2.1"
 Setup 1.3.0  - Erstellt am 08.10.2014 - AddInInterface "ito.AddIn.InterfaceBase/1.3.0"
+Setup 1.4.0  - Erstellt am 17.02.2015 - AddInInterface "ito.AddIn.InterfaceBase/1.3.1"

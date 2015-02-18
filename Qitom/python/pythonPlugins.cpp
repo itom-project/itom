@@ -824,6 +824,7 @@ Using one of the parameter names, its current value can be obtained by `getParam
 is writable by `setParam('name', newValue)` (if not read-only) \n\
 \n\
 This method prints a detailed table with the name, current value, description string and further meta information of every plugin parameter. \n\
+Additionally, the column R/W indicates if this parameter is writable or read-only. \n\
 \n\
 Parameters \n\
 ----------- \n\

@@ -12,6 +12,56 @@ itom
 
 (more than 200 commits in itom repository)
 
+* improved getting started documentation
+* CMake adapted for detection Visual Studio versions > 2010
+* dockWidgetArea added as optional parameter for :py:class:`itom.ui`-class such that windows of type ui.TYPEDOCKWIDGET can be placed at different locations.
+* find_package(OpenMP) added to ItomBuildMacros for all compilers, since Visual Studio Express does not provide this tool.
+* improved drag&drop from variable names from workspace to console
+* redesigned user management dialogs
+* python access key to variables in workspace widget can now be inserted into console or scripts via drag&drop, detailed variables window also contain the right access key for dicts, list, tuples, attributes...
+* itom.plotItem.PrimitiveEllipse, PrimitiveLine... added as constants to the class :py:class:`plotItem` of itom module in Python.
+* double click on Python error message (filename, line-number) in console opens the script at the indicated line
+* increased buffer size of data object protocol strings since sprintf crashes upon buffer overflow (even sprintf_s, debug assertion)
+* Improved :py:meth:`itom.plotHelp`-command to get a list of all plot widget
+* new demo scripts added (see demo subfolder)
+* :py:meth:`pointCloud.copy()` for deep copies added
+* Make Python loops interruptible from GUI
+* Added functions to edit, add and read out color maps bases on rgba-values
+* :py:meth:`itom.addMenu` / :py:meth:`itom.removeMenu` / :py:meth:`itom.addButton` / :py:meth:`itom.removeButton`: the methods to add a button or menu element always return an unique handle to the recently added item. The methods to remove them can be called with this handle to exactly delete the element that has been added (does not remove an element with the same name that replaced the previously added one). With this change, a bug has been fixed: In some cases methods or functions connected to menu items have not been released when deleting the parent menu element.
+* observeInvocation in AbstractAddInConfigDialog and abstractAddInDockWidget now use the waitAndProcessEvents method of ItomSharedSemaphore instead of a "self-programmed" version doing the same.
+* :py:meth:`itom.addButton` returns handle to button, this handle can be used to call :py:meth:`itom.removeButton`(handle) to exactly delete this button. The existing method :py:meth:`itom.removeButton`(toolbarName, buttonName) still exists as other possibility
+* AddInManager::initAddIn: let this method also processEvents when it waits for the plugin's init method to be finished. Then, the plugin can directly invoke slots from GUI-related elements of the plugin within its init method. * Bugfix in dataObject.toGray() with default parameter (type)
+* QPropertyEditor can now handle QStringList properties (with list editor dialog for editing the QStringList)
+* methods removeItem, setItemData and insertItem of QComboBox are now callable from Python (via .call(...) command)
+* Qt5 fixes and adaptions (encodings, qmessagehandler, linkage against shell32 for Qt5.4 and Windows, ...)
+* 'log' can be passed as argument to the executable to redirect debug outputs to itomlog.txt.
+* always set Environmental Variable MPLCONFIGDIR to itom-packages/mpl_itom such that an individual matplotlibrc config file can be placed there. You can set the backend within this config file to module://mpl_itom.backend_itomagg such that matplotlib always renders to itom windows if used within itom.
+* All-In-One build environment for Qt5, Python 3.4, VS2010, 32 or 64bit, PCL 1.8.0, VTK 6.1 created. Documentation about all-in-one build environment added.
+* Added more flexible thread-safe control classes for all types of dataIO (grabber, ADDA, rawIO) and actuators (using inheritance).
+* added multi-parameter slot getParamVector to ito::AddInBase (similar to setParamVector).
+* class CameraThreadCtrl inserted in helperGrabber.h (part of SDK; replacement for threadCamera). The new class guards the camera by temporarily incrementing its reference counter, checks the isAlive() flag when waiting for semaphores and directly frees the semaphore after usage. A camera pointer can directly be passed to this class.
+* some checks inserted to avoid crashes at startup if Python could not be found.
+* theme for html documentation adapted
+* replaced c-cast in REMOVE_PLUGININSTANCE by qobject_cast (due to some rare problems deleting plugins)
+* documentation: sphinx extension Breathe updated to version 3.1
+* improved parameter validation for floating point parameters (consider epsilon value)
+* typedef ParamMap and ParamMapIterator as simplification for QMap<QString,ito::Param> ... inserted
+* better detection of OpenCV under linux
+* fix in backend of matplotlib (timer from threading package to redraw canvas for instance after a zoom or home operation did not work. Replaced by itom.timer)
+* range: (min,max,step) and value: (min,max,step) also added for rangeWidget of itomWidgets project. rangeSlider and rangeWidget can now also be parametrized passing an IntervalMeta or RangeMeta object.
+* RangeSlider widgets now have the properties minimumRange, maximumRange, stepSizeRange, stepSizePosition
+* some new widgets added to itomWidgets project
+* IntervalMeta, RangeMeta, DoubleIntervalMeta, CharArrayMeta, IntArrayMeta, DoubleArrayMeta, RectMeta added as inherited classes from paramMeta. AddInInterface incremented to 1.3.1.
+* bugfix in dataObject when creating a huge (1000x500x500, complex128) object (continuous mode). 
+* method :py:class:`uiItem.exists` added in order to check if the widget, wrapped by uiItem, still exists.
+* bugfix in squeezeConvertCheck2DDataObject if numberOfAllowedTypes = 0 (all types allowed)
+* Python script navigator added to script editor window (dropdown boxes for classes and methods)
+* implicit cast of ito::Rgba32 value to setVal<int> of ito::Param of type integer.
+* improved integration of class itom.autoInterval and the corresponding c++ class ito::AutoInterval. Conversion to other data types added.
+* documentation about programming of AD-converter plugins (dataIO, type ADDA) added
+* several bugfixes in breakPointModel (case-insensitivity of filenames,  better error message if breakpoint is in empty line, ...)
+* many other bugs fixed
+* improvements in documentation
 
 
 **Version 1.3.0 (2014-10-07)**
@@ -149,6 +199,31 @@ Plugins
 **Version 1.4.0 (2015-02-17)**
 
 (more than 170 commits in plugins repository)
+
+* vertex and fragment shader error in gl based plugins: Since NVIDIA 347.xx, no character (including space, \n...) must be before #version directive. Else shaders may not be compiled (error C0204, version directive must be first statement)
+* linux support for ttyS, ttyUSB and ttyACM in plugin **serialIO** added, selection via portnumber S=0-999 USB=1000-1999 ACM=2000-2999
+* some fixes in **FireGrabber**
+* fix a crash in **PCOPixelFly** if camera is not correctly connected with the board
+* fix in **OpenCVGrabber** when using the EasyCAP or similar analog-digital video converters (USB2)
+* filters *cvResize*, *cvSplitChannels*, *cvMergeChannels* added to **OpenCVFilters** for interpolated size change of a data object
+* timestamp added to tags of acquired data objects in **PGRFlyCapture**. Further fixes to achieve highest possible framerate. (don't use extended shutter for high frame rates and don't set the smallest possible frame time, since this leads to a really low frame rate, a frame time close to the minimum achieves high frame rates.)
+* **Ximea**: bugfixes, added *gpo* and *gpi*, backward compatibility to older Ximea API...
+* filter *cropBox* for **PclTools** inserted to crop points inside or outside of an arbitrary positioned and rotated box.
+* **PclTools** adapted to PCL 1.8 and split into several files due to a big-object-compiler error.
+* bugfixes in **glDisplay**, can now also display Rgba32 data objects. Additionally, existing textures can be changed with *editTextures*.
+* many config dialogs and toolboxes inherit now the new abstract base classes.
+* fixes in grabFramebuffer of **dispWindow** plugin
+* fixes in cvUndistortPoints, cvInitUndistortRectifyMap and cvRemap (**OpenCVFilters**)
+* fitPlane and getInterpolatedValues in **FittingFilters** can now also be executed using the "least median of squares"
+* plugin **OpenCVFiltersNonFree** created. This contains non BSD licensed code from OpenCV and is not included in the itom setup per default.
+* plugin **AVTVimba** created and released under LGPL (for cameras from Allied Vision)
+* plugin **AndorSDK3** create and released under LGPL (for cameras from Andor, tested with Zyla 5 camera)
+* plugin **NewportSMC100** added and released under LGPL to control actuators from Newport (SMC 100)
+* plugin **libmodbus** added and released under LGPL. This supports the communication protocol *modbus* (based on libmodbus 3.1.2 from https://github.com/stephane/libmodbus)
+* plugin **PI_GCS2** added and released under LGPL. This controls *Physik Instrumente* devices using the GCS2 command set (tested with E-753).
+* plugin **demoAlgorithms** released under LGPL.
+* plugin **SuperlumBS** added and released under LGPL (for Broadband swept light source).
+* plugin **NI-DAQmx** for National Instruments DAQmx interface added and released under LGPL.
 
 **Version 1.3.0 (2014-10-07)**
 
