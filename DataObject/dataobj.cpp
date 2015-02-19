@@ -4469,17 +4469,40 @@ DataObject DataObject::operator ^ (const DataObject & rhs)
 */
 DataObject DataObject::at(const ito::Range &rowRange, const ito::Range &colRange)
 {
-   if (m_dims != 2)
-   {
-         cv::error(cv::Exception(CV_StsAssert,"DataObject::at with rowRange and colRange argument only defined for dims==2","", __FILE__, __LINE__));
-   }
+    if (m_dims != 2)
+    {
+            cv::error(cv::Exception(CV_StsAssert,"DataObject::at with rowRange and colRange argument only defined for dims==2","", __FILE__, __LINE__));
+    }
 
-   Range ranges[2]; 
-         ranges[1].start = colRange.start;
-         ranges[1].end = colRange.end;
-         ranges[0].start = rowRange.start;
-         ranges[0].end = rowRange.end;
-   return (*this).at(ranges);
+    Range ranges[2]; 
+    ranges[1].start = colRange.start;
+    ranges[1].end = colRange.end;
+    ranges[0].start = rowRange.start;
+    ranges[0].end = rowRange.end;
+    return this->at(ranges);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! addressing method for two-dimensional data object with two given range-values. returns shallow copy of addressed regions.
+/*!
+    \param rowRange is the desired rowRange which should be in the new ROI (considers any existing ROI, too)
+    \param colRange is the desired colRange which should be in the new ROI (considers any existing ROI, too)
+    \return new data object which is a shallow copy of this data object and whose ROI is set to the given row- and col-ranges
+    \throws cv::Exception if number of dimensions is unequal to two.
+*/
+DataObject DataObject::at(const ito::Range &rowRange, const ito::Range &colRange) const
+{
+    if (m_dims != 2)
+    {
+            cv::error(cv::Exception(CV_StsAssert,"DataObject::at with rowRange and colRange argument only defined for dims==2","", __FILE__, __LINE__));
+    }
+
+    Range ranges[2]; 
+    ranges[1].start = colRange.start;
+    ranges[1].end = colRange.end;
+    ranges[0].start = rowRange.start;
+    ranges[0].end = rowRange.end;
+    return this->at(ranges);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -4519,6 +4542,51 @@ MAKEFUNCLIST(GetRangeFunc)
     \sa GetRangeFunc
 */
 DataObject DataObject::at(ito::Range *ranges)
+{
+    DataObject resMat = *this;
+
+    int *lims = new int[m_dims*2];
+    int size;
+    int start, end;
+
+    for(int n = 0; n < m_dims; n++)
+    {
+        start = ranges[n].start;
+        end = ranges[n].end;
+        if(start > end) std::swap(start,end);
+        lims[ (n*2) ] = -ranges[n].start;
+        if(ranges[n].start == INT_MIN) // range all
+        {
+            lims[ (n*2) ] = 0;
+        }        
+        size = m_size.m_p[n];
+        if(ranges[n].end == INT_MAX) //range all
+        {
+            lims[ (n*2) + 1] = 0;
+        }
+        else
+        {
+            lims[ (n*2) + 1] = -((int)size - ranges[n].end);
+        }
+    }
+
+    resMat.adjustROI(m_dims, lims);
+
+    delete[] lims;
+
+    return resMat;   
+}
+
+//! addressing method for n-dimensional data object with n given range-values. returns shallow copy of addressed regions
+/*!
+    If any of the given ranges exceed the boundaries of its corresponding dimension, the range will be set to the boundaries.
+    ranges will be given in "virtual" order, hence, the transpose-flag is considered by this method.
+
+    \param *ranges is vector of desired ranges for each dimension
+    \return new data object with shallow copy of this data object and adjusted ROI with respect to the given ranges
+    \sa GetRangeFunc
+*/
+DataObject DataObject::at(ito::Range *ranges) const
 {
     DataObject resMat = *this;
 
@@ -4692,6 +4760,39 @@ RetVal DataObject::locateROI(int *wholeSizes, int *offsets)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! method locates ROI of this data object within its original data block
+/*!
+    long description
+
+    \param *wholeSizes is an allocated array of size m_dims, which is filled with the original matrix-sizes (considering the transpose-flag, hence, the output is in user-friendly form)
+    \param *offsets is dimension-wise offset in order to get from the original first element of the matrix to the subpart within the region of interest, array must be pre-allocated, too.
+    \return retOk
+*/
+RetVal DataObject::locateROI(int *wholeSizes, int *offsets) const
+{
+   for (int nDim = 0; nDim < m_dims - 2; nDim++)
+   {
+      wholeSizes[nDim] = static_cast<int>(m_osize[nDim]);
+      offsets[nDim] = static_cast<int>(m_roi[nDim]);
+   }
+
+   if(m_dims > 1)
+   {
+      wholeSizes[m_dims - 2] = static_cast<int>(m_osize[m_dims - 2]);
+      offsets[m_dims - 2] = static_cast<int>(m_roi[m_dims - 2]);
+      wholeSizes[m_dims - 1] = static_cast<int>(m_osize[m_dims - 1]);
+      offsets[m_dims - 1] = static_cast<int>(m_roi[m_dims - 1]);       
+   }
+   else if(m_dims == 1)
+   {
+       wholeSizes[0] = static_cast<int>(m_osize[0]);
+       offsets[0] = static_cast<int>(m_roi[0]);
+   }
+
+   return 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! method get ROI of this data object within its original data block
 /*!
     \params dims is the number of dimensions
@@ -4701,6 +4802,41 @@ RetVal DataObject::locateROI(int *wholeSizes, int *offsets)
     \return retOk
 */
 RetVal DataObject::locateROI(int *lims)
+{
+   for (int nDim = 0; nDim < m_dims - 2; nDim++)
+   {
+      lims[2*nDim] = static_cast<int>(m_roi[nDim]);
+      lims[2*nDim+1] = static_cast<int>(m_size[nDim])-static_cast<int>(m_osize[nDim]);
+   }
+
+   if(m_dims > 1)
+   {
+       {
+          lims[2*(m_dims-1)] = static_cast<int>(m_roi[(m_dims-1)]);
+          lims[2*(m_dims-1)+1] = static_cast<int>(m_size[(m_dims-1)])-static_cast<int>(m_osize[(m_dims-1)]);
+          lims[2*(m_dims-2)] = static_cast<int>(m_roi[(m_dims-2)]);
+          lims[2*(m_dims-2)+1] = static_cast<int>(m_size[(m_dims-2)])-static_cast<int>(m_osize[(m_dims-2)]);
+       }
+   }
+   else if(m_dims == 1)
+   {
+          lims[0] = static_cast<int>(m_roi[0]);
+          lims[1] = static_cast<int>(m_size[0])-static_cast<int>(m_osize[0]);
+   }
+
+   return 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! method get ROI of this data object within its original data block
+/*!
+    \params dims is the number of dimensions
+    \param *lims is a integer array whose length is 2*dims.
+        For every dimension, two adjacent values indicates the shift of the ROI. The first of both values indicates the shift of the ROI towards the first element in the matrix (positive direction).
+        The second value indicates the shift of the ROI towards the last element in the matrix (positive direction).
+    \return retOk
+*/
+RetVal DataObject::locateROI(int *lims) const
 {
    for (int nDim = 0; nDim < m_dims - 2; nDim++)
    {
@@ -4924,14 +5060,14 @@ DataObject DataObject::trans() const
     \param selRow indicates the zero-based row-index (considering any existing ROI)
     \return retOk
 */
-template<typename _Tp> RetVal RowFunc(DataObject *dObj, const unsigned int selRow)
+template<typename _Tp> RetVal RowFunc(const DataObject *dObj, const unsigned int selRow)
 {
    (*((cv::Mat_<_Tp> *)(dObj->get_mdata()[0]))) = (((cv::Mat_<_Tp> *)(dObj->get_mdata()[0]))->row(selRow));
 
    return 0;
 }
 
-typedef RetVal (*tRowFunc)(DataObject *dObj, const unsigned int selRow);
+typedef RetVal (*tRowFunc)(const DataObject *dObj, const unsigned int selRow);
 MAKEFUNCLIST(RowFunc)
 
 //! high-level method which makes a new header for the specified matrix row and returns it. The underlying data of the new matrix is shared with the original matrix.
@@ -4956,6 +5092,28 @@ DataObject DataObject::row(const int selRow)
    return resMat;
 }
 
+//! high-level method which makes a new header for the specified matrix row and returns it. The underlying data of the new matrix is shared with the original matrix.
+/*!
+    \param selRow is the specific zero-based row index
+    \return new data object
+    \throws cv::Exception if dimension is unequal to two.
+    \sa RowFunc
+*/
+DataObject DataObject::row(const int selRow) const
+{
+   if (m_dims != 2)
+   {
+      cv::error(cv::Exception(CV_StsAssert,"DataObject::row only defined for dims==2","", __FILE__, __LINE__));
+   }
+
+   DataObject resMat = *this;
+   fListRowFunc[m_type](&resMat, selRow);
+   resMat.m_size.m_p[0] = 1;
+   resMat.m_roi.m_p[0] = selRow;
+
+   return resMat;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! low-level, templated method which changes the region of interest of the data object to the selected zero-based col index
 /*!
@@ -4963,13 +5121,13 @@ DataObject DataObject::row(const int selRow)
     \param unsigned int selCol indicates the zero-based col-index (considering any existing ROI)
     \return retOk
 */
-template<typename _Tp> RetVal ColFunc(DataObject *dObj, const unsigned int selCol)
+template<typename _Tp> RetVal ColFunc(const DataObject *dObj, const unsigned int selCol)
 {
    (*((cv::Mat_<_Tp> *)(dObj->get_mdata()[0]))) = (((cv::Mat_<_Tp> *)(dObj->get_mdata()[0]))->col(selCol));
    return 0;
 }
 
-typedef RetVal (*tColFunc)(DataObject *dObj, const unsigned int selCol);
+typedef RetVal (*tColFunc)(const DataObject *dObj, const unsigned int selCol);
 MAKEFUNCLIST(ColFunc)
 
 //! high-level method which makes a new header for the specified matrix column and returns it. The underlying data of the new matrix is shared with the original matrix.
@@ -4980,6 +5138,28 @@ MAKEFUNCLIST(ColFunc)
     \sa ColFunc
 */
 DataObject DataObject::col(const int selCol)
+{
+   if (m_dims != 2)
+   {
+      cv::error(cv::Exception(CV_StsAssert,"DataObject::col only defined for dims==2","", __FILE__, __LINE__));
+   }
+
+   DataObject resMat = *this;
+   fListColFunc[m_type](&resMat, selCol);
+   resMat.m_size.m_p[1] = 1;
+   resMat.m_roi.m_p[1] = selCol;
+
+   return resMat;
+}
+
+//! high-level method which makes a new header for the specified matrix column and returns it. The underlying data of the new matrix is shared with the original matrix.
+/*!
+    \param selCol is the specific zero-based row index
+    \return new data object
+    \throws cv::Exception if dimension is unequal to two.
+    \sa ColFunc
+*/
+DataObject DataObject::col(const int selCol) const
 {
    if (m_dims != 2)
    {
@@ -5545,26 +5725,22 @@ template<typename T2> DataObject::operator T2 ()
 template<typename _Tp> RetVal GrayScaleCastFunc(const DataObject *dObj, DataObject *resObj)
 {
    int numMats = dObj->calcNumMats();
-   int resTmat = 0;
-   int srcTmat = 0;
 
    int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
    int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
-   cv::Mat * srcMat = NULL;
+   const cv::Mat * srcMat = NULL;
    cv::Mat * dstMat = NULL;
-   ito::Rgba32* srcPtr;
+   const ito::Rgba32* srcPtr;
    _Tp* dstPtr;
 
     for (int nmat = 0; nmat < numMats; nmat++)
     {
-        resTmat = resObj->seekMat(nmat, numMats);
-        srcTmat = dObj->seekMat(nmat, numMats);
-        srcMat = ((cv::Mat*)((dObj->get_mdata())[srcTmat]));
-        dstMat = ((cv::Mat*)((resObj->get_mdata())[resTmat]));
+        srcMat = dObj->getCvPlaneMat(nmat);
+        dstMat = resObj->getCvPlaneMat(nmat);
         for (int y = 0; y < sizey; y++)
         {
             dstPtr = (_Tp*)dstMat->ptr(y);
-            srcPtr = (ito::Rgba32*)srcMat->ptr(y);
+            srcPtr = (const ito::Rgba32*)srcMat->ptr(y);
             for (int x = 0; x < sizex; x++)
             {
                 dstPtr[x] = cv::saturate_cast<_Tp>(0.299 * srcPtr[x].r + 0.587 * srcPtr[x].g + 0.114 * srcPtr[x].b);
@@ -5594,7 +5770,70 @@ DataObject DataObject::toGray(const int destinationType /*= ito::tUInt8*/)
     {
         cv::error(cv::Exception(CV_StsAssert,"destinationType must be real.","", __FILE__, __LINE__));
     }
+    
+    DataObject resObj = DataObject(m_dims, m_size, destinationType);
 
+    switch (destinationType)
+    {
+        case ito::tInt8:
+            GrayScaleCastFunc<int8>(this, &resObj);
+        break;
+
+        case ito::tUInt8:
+            GrayScaleCastFunc<uint8>(this, &resObj);
+        break;
+
+        case ito::tInt16:
+            GrayScaleCastFunc<int16>(this, &resObj);
+        break;
+
+        case ito::tUInt16:
+            GrayScaleCastFunc<uint16>(this, &resObj);
+        break;
+
+        case ito::tInt32:
+            GrayScaleCastFunc<uint32>(this, &resObj);
+        break;
+
+        case ito::tFloat32:
+            GrayScaleCastFunc<float32>(this, &resObj);
+        break;
+
+        case ito::tFloat64:
+            GrayScaleCastFunc<float64>(this, &resObj);
+        break;
+
+        default:
+            cv::error(cv::Exception(CV_StsAssert, "destinationType must be real.", "", __FILE__, __LINE__));
+        break;
+    }
+
+    copyTagMapTo(resObj);
+    copyAxisTagsTo(resObj);
+
+    return resObj;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! converts a color image (rgba32) to a gray-scale image
+/*!
+    usage: res = static_cast<ito::float32>(sourceDataObject)
+
+    \throws cv::Exception if cast failed, e.g. if cast not possible or types unknown
+    \return cast data object
+    \sa convertTo, CastFunc
+*/
+DataObject DataObject::toGray(const int destinationType /*= ito::tUInt8*/) const
+{
+    if (this->m_type != ito::tRGBA32)
+    {
+        cv::error(cv::Exception(CV_StsAssert,"data type of dataObject must be rgba32.","", __FILE__, __LINE__));
+    }
+    else if (destinationType == ito::tComplex64 || destinationType == ito::tComplex128)
+    {
+        cv::error(cv::Exception(CV_StsAssert,"destinationType must be real.","", __FILE__, __LINE__));
+    }
+    
     DataObject resObj = DataObject(m_dims, m_size, destinationType);
 
     switch (destinationType)

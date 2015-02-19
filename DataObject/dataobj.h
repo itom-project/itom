@@ -1547,8 +1547,12 @@ class DATAOBJ_EXPORT DataObject
             return (*(cv::Mat_<_Tp> *)(m_data[matNum]))(idx[m_dims - 2], idx[m_dims - 1]);
         }
 
-        DataObject at(const ito::Range &rowRange, const ito::Range &colRange);     /*!< addressing method for two-dimensional data object with two given range-values. returns shallow copy of addressed regions */
-        DataObject at(ito::Range *ranges);                                       /*!< addressing method for n-dimensional data object with n given range-values. returns shallow copy of addressed regions */
+        //deprecated, will be replaced by const version.
+        DataObject at(const ito::Range &rowRange, const ito::Range &colRange);          /*!< addressing method for two-dimensional data object with two given range-values. returns shallow copy of addressed regions */
+        //deprecated, will be replaced by const version.
+        DataObject at(ito::Range *ranges);                                              /*!< addressing method for n-dimensional data object with n given range-values. returns shallow copy of addressed regions */
+        DataObject at(const ito::Range &rowRange, const ito::Range &colRange) const;    /*!< addressing method for two-dimensional data object with two given range-values. returns shallow copy of addressed regions */
+        DataObject at(ito::Range *ranges) const;                                        /*!< addressing method for n-dimensional data object with n given range-values. returns shallow copy of addressed regions */
 
         //! returns pointer to the data in the y-th row in the 2d-matrix plane matNum
         /*!
@@ -1576,16 +1580,32 @@ class DATAOBJ_EXPORT DataObject
             return ((cv::Mat*)m_data[matIndex])->ptr(y);
         }
 
+        //deprecated, will be replaced by const version.
         DataObject row(const int selRow);
+        
+        //deprecated, will be replaced by const version.
         DataObject col(const int selCol);
+        
+        DataObject row(const int selRow) const;
+        DataObject col(const int selCol) const;
 
+        //deprecated, will be replaced by const version.
         DataObject toGray(const int destinationType = ito::tUInt8);
+        
+        DataObject toGray(const int destinationType = ito::tUInt8) const;
 
         // ROI
         DataObject & adjustROI(const int dtop, const int dbottom, const int dleft, const int dright);   /*!< changes the boundaries of the ROI of a two-dimensional data object by the given incremental values */
         DataObject & adjustROI(const unsigned char dims, const int *lims);                              /*!< changes the boundaries of the ROI of a n-dimensional data object by the given incremental values */
-        RetVal locateROI(int *wholeSizes, int *offsets);                              /*!< locates the boundaries of the ROI of a n-dimensional data object and returns the original size and the distances to the physical borders */
-        RetVal locateROI(int *lims);                                                  /*!< locates the boundaries of the ROI of a n-dimensional data object the distances to the physical borders */
+        
+        //deprecated, will be replaced by const version.
+        RetVal locateROI(int *wholeSizes, int *offsets);                                                /*!< locates the boundaries of the ROI of a n-dimensional data object and returns the original size and the distances to the physical borders */
+        
+        //deprecated, will be replaced by const version.
+        RetVal locateROI(int *lims);                                                                    /*!< locates the boundaries of the ROI of a n-dimensional data object the distances to the physical borders */
+        
+        RetVal locateROI(int *wholeSizes, int *offsets) const;                                          /*!< locates the boundaries of the ROI of a n-dimensional data object and returns the original size and the distances to the physical borders */
+        RetVal locateROI(int *lims) const;                                                              /*!< locates the boundaries of the ROI of a n-dimensional data object the distances to the physical borders */
 
         //! copies the externally given source data inside this data object
         /*!
