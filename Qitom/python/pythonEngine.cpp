@@ -3015,7 +3015,11 @@ int PythonEngine::queuedInterrupt(void * state)
 	ito::PythonEngine *pyEng = PythonEngine::getInstanceInternal();
 	if (pyEng)
 	{
+#if QT_VERSION > 0x050000
 		return (pyEng->m_interruptCounter.load() > 0);
+#else
+        return ((int)(pyEng->m_interruptCounter) > 0);
+#endif
 	}
 	return false;
 }
