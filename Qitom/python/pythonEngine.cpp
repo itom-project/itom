@@ -3010,6 +3010,17 @@ int PythonEngine::queuedInterrupt(void * state)
 } 
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ bool PythonEngine::isInterruptQueued()
+{
+	ito::PythonEngine *pyEng = PythonEngine::getInstanceInternal();
+	if (pyEng)
+	{
+		return (pyEng->m_interruptCounter.load() > 0);
+	}
+	return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonInterruptExecution()
 {
 //    PyGILState_STATE gstate;
