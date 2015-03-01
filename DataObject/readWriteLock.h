@@ -52,7 +52,7 @@ namespace ito {
 #ifdef WIN32
 //#if defined _WINDOWS || defined WIN32
 
-    class DATAOBJ_EXPORT ReadWriteLock
+    class ReadWriteLock
     {
     private:
 
@@ -113,6 +113,11 @@ namespace ito {
         */
         void lockRead(int increment = 1)
         {
+            if (status == -1)
+            {
+                std::cout << "info: try to lock for reading, but currently locked for writing\n" << std::endl;
+            }
+
             //if(!TryEnterCriticalSection(&mWriteLock))
             //{
             //    int i=1;
@@ -138,6 +143,15 @@ namespace ito {
         */
         void lockWrite()
         {
+            if (status == -1)
+            {
+                std::cout << "info: try to lock for writing, but currently locked for writing\n" << std::endl;
+            }
+
+            if (status > 0)
+            {
+                std::cout << "info: try to lock for writing, but currently locked for reading\n" << std::endl;
+            }
             //if(!TryEnterCriticalSection(&mWriteLock))
             //{
             //    int i=1;
@@ -219,7 +233,7 @@ namespace ito {
 
 #else
 
-    class DATAOBJ_EXPORT ReadWriteLock
+    class ReadWriteLock
     {
         public:
             //! constructor

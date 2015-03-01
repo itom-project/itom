@@ -323,11 +323,11 @@ ito::RetVal pointCloudFromXYZ(const DataObject* mapX, const DataObject* mapY, co
     if (!retval.containsError())
     {
         uint32_t width, height;
-        cv::Mat *x = reinterpret_cast<cv::Mat*>(mapX->get_mdata()[ mapX->seekMat(0) ]);
-        cv::Mat *y = reinterpret_cast<cv::Mat*>(mapY->get_mdata()[ mapY->seekMat(0) ]);
-        cv::Mat *z = reinterpret_cast<cv::Mat*>(mapZ->get_mdata()[ mapZ->seekMat(0) ]);
+        const cv::Mat *x = mapX->get_mdata()[ mapX->seekMat(0) ];
+        const cv::Mat *y = mapY->get_mdata()[ mapY->seekMat(0) ];
+        const cv::Mat *z = mapZ->get_mdata()[ mapZ->seekMat(0) ];
 
-        ito::float32 *xRow, *yRow, *zRow;
+        const ito::float32 *xRow, *yRow, *zRow;
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
         pcl::PointXYZ point;
         ito::PCLPointCloud pointCloud;
@@ -419,12 +419,12 @@ ito::RetVal pointCloudFromXYZI(const DataObject* mapX, const DataObject* mapY, c
     if (!retval.containsError())
     {
         uint32_t width, height;
-        cv::Mat *x = reinterpret_cast<cv::Mat*>(mapX->get_mdata()[ mapX->seekMat(0) ]);
-        cv::Mat *y = reinterpret_cast<cv::Mat*>(mapY->get_mdata()[ mapY->seekMat(0) ]);
-        cv::Mat *z = reinterpret_cast<cv::Mat*>(mapZ->get_mdata()[ mapZ->seekMat(0) ]);
-        cv::Mat *intensity = reinterpret_cast<cv::Mat*>(mapI->get_mdata()[ mapI->seekMat(0) ]);
+        const cv::Mat *x = mapX->get_mdata()[ mapX->seekMat(0) ];
+        const cv::Mat *y = mapY->get_mdata()[ mapY->seekMat(0) ];
+        const cv::Mat *z = mapZ->get_mdata()[ mapZ->seekMat(0) ];
+        const cv::Mat *intensity = mapI->get_mdata()[ mapI->seekMat(0) ];
 
-        ito::float32 *xRow, *yRow, *zRow, *iRow;
+        const ito::float32 *xRow, *yRow, *zRow, *iRow;
         pcl::PointCloud<pcl::PointXYZI>::Ptr cloud;
         pcl::PointXYZI point;
         ito::PCLPointCloud pointCloud;
@@ -672,7 +672,7 @@ template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const i
 //------------------------------------------------------------------------------------------------------------------------------
 template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const ito::DataObject *mapI, const ito::float32 firstX, const ito::float32 stepX, const ito::float32 firstY, const ito::float32 stepY, const bool deleteNaN, ito::PCLPointCloud &out, bool &isDense)
 {
-    cv::Mat *intensity = reinterpret_cast<cv::Mat*>(mapI->get_mdata()[ mapI->seekMat(0) ]);
+    const cv::Mat *intensity = mapI->get_mdata()[ mapI->seekMat(0) ];
 
     switch(mapI->getType())
     {
@@ -809,7 +809,7 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
 //        ito::float32 *zRow;
 //        ito::float32 *iRow;
 
-        cv::Mat *z = reinterpret_cast<cv::Mat*>(mapDisp->get_mdata()[ mapDisp->seekMat(0) ]);
+        const cv::Mat *z = mapDisp->get_mdata()[ mapDisp->seekMat(0) ];
 
         if (mapI == NULL)
         {
@@ -945,10 +945,10 @@ ito::RetVal pointCloudFromDisparityRGBA(const DataObject* mapDisp, const DataObj
     if (retval == ito::retOk)
     {
         uint32_t width, height;
-        ito::float32 *zRow;
-        ito::Rgba32 *cRow;
+        const ito::float32 *zRow;
+        const ito::Rgba32 *cRow;
 
-        cv::Mat *z = reinterpret_cast<cv::Mat*>(mapDisp->get_mdata()[ mapDisp->seekMat(0) ]);
+        const cv::Mat *z = mapDisp->get_mdata()[ mapDisp->seekMat(0) ];
 
         if (mapColor == NULL)
         {
@@ -1017,7 +1017,7 @@ ito::RetVal pointCloudFromDisparityRGBA(const DataObject* mapDisp, const DataObj
         }
         else
         {
-            cv::Mat *color = reinterpret_cast<cv::Mat*>(mapColor->get_mdata()[ mapColor->seekMat(0) ]);
+            const cv::Mat *color = mapColor->get_mdata()[ mapColor->seekMat(0) ];
 
             pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud;
             pcl::PointXYZRGBA point;

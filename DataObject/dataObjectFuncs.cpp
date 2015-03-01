@@ -48,7 +48,7 @@ namespace dObjHelper
 
     template<typename _Tp> RetVal minValueFunc(const DataObject *dObj, float64 &minValue, uint32 *firstLocation, bool ignoreInf)
     {
-        unsigned int numMats = dObj->calcNumMats();
+        unsigned int numMats = dObj->getNumPlanes();
         int matIndex = 0;
         int m,n;
 
@@ -179,7 +179,7 @@ namespace dObjHelper
         
     template<typename _Tp> RetVal maxValueFunc(const DataObject *dObj, float64 &maxValue, uint32 *firstLocation, bool ignoreNaN)
     {
-       unsigned int numMats = dObj->calcNumMats();
+       unsigned int numMats = dObj->getNumPlanes();
        int matIndex = 0;
        int m,n;
 
@@ -321,7 +321,7 @@ namespace dObjHelper
     */
     template<typename _Tp> RetVal minMaxValueFunc(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf, const int /*specialDataTypeFlags*/)
     {
-        int numMats = dObj->calcNumMats();
+        int numMats = dObj->getNumPlanes();
         int matIndex = 0;
 
         int m,n;
@@ -431,7 +431,7 @@ namespace dObjHelper
     */
     template<> RetVal minMaxValueFunc<ito::complex64>(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf, const int specialDataTypeFlags)
     {
-        int numMats = dObj->calcNumMats();
+        int numMats = dObj->getNumPlanes();
         int matIndex = 0;
 
         uint32 m,n;
@@ -708,7 +708,7 @@ namespace dObjHelper
 
     template<> RetVal minMaxValueFunc<ito::complex128>(const DataObject *dObj, float64 &minValue, uint32 * /*firstMinLocation*/, float64 &maxValue, uint32 *firstMaxLocation, bool ignoreInf, const int specialDataTypeFlags)
     {
-        int numMats = dObj->calcNumMats();
+        int numMats = dObj->getNumPlanes();
         int matIndex = 0;
 
         int m,n;
@@ -961,7 +961,7 @@ namespace dObjHelper
     */
     template<> RetVal minMaxValueFunc<Rgba32>(const DataObject *dObj, float64 &minValue, uint32 *firstMinLocation, float64 &maxValue, uint32 *firstMaxLocation, bool /*ignoreInf*/, const int specialDataTypeFlags)
     {
-        int numMats = dObj->calcNumMats();
+        int numMats = dObj->getNumPlanes();
         int matIndex = 0;
 
         int m,n;
@@ -1201,7 +1201,7 @@ namespace dObjHelper
     */
     template<typename _Tp, typename _BufTp> RetVal meanValueFunc(const DataObject *dObj, float64 &meanResult, bool ignoreNaN)
     {
-        unsigned int numMats = dObj->calcNumMats();
+        unsigned int numMats = dObj->getNumPlanes();
         int matIndex = 0;
 
         int m,n;
@@ -1321,13 +1321,13 @@ namespace dObjHelper
         {
         case tUInt8:
         {
-            if((dObj->calcNumMats() * dObj->getSize(dims-1) * dObj->getSize(dims-2)) > 8388000) retval += meanValueFunc<uint8, float64>(dObj, meanResult, false);
+            if((dObj->getNumPlanes() * dObj->getSize(dims-1) * dObj->getSize(dims-2)) > 8388000) retval += meanValueFunc<uint8, float64>(dObj, meanResult, false);
             else retval += meanValueFunc<uint8, int32>(dObj, meanResult, false);
             break;
         }
         case tInt8:
         {
-            if((dObj->calcNumMats() * dObj->getSize(dims-1) * dObj->getSize(dims-2)) > 8388000) retval += meanValueFunc<int8, float64>(dObj, meanResult, false);
+            if((dObj->getNumPlanes() * dObj->getSize(dims-1) * dObj->getSize(dims-2)) > 8388000) retval += meanValueFunc<int8, float64>(dObj, meanResult, false);
             else retval += meanValueFunc<int8, int32>(dObj, meanResult, false);
             break;
         }   
@@ -1388,7 +1388,7 @@ namespace dObjHelper
     */
     template<typename _Tp, typename _BufTp> RetVal devValueFunc(const ito::DataObject *dObj, const int devTypFlag, float64 &meanResult, float64 &devResult, bool ignoreNaN)
     {
-        unsigned int numMats = dObj->calcNumMats();
+        unsigned int numMats = dObj->getNumPlanes();
         int matIndex = 0;
 
         int m,n;
@@ -1571,13 +1571,13 @@ namespace dObjHelper
         {
         case tUInt8:
         {
-            if((dObj->calcNumMats() * dObj->getSize(dims-1) * dObj->getSize(dims-2)) > 8388000) retval += devValueFunc<uint8, float64>(dObj, devTypFlag, meanValue, devValue, false);
+            if((dObj->getNumPlanes() * dObj->getSize(dims-1) * dObj->getSize(dims-2)) > 8388000) retval += devValueFunc<uint8, float64>(dObj, devTypFlag, meanValue, devValue, false);
             else retval += devValueFunc<uint8, int32>(dObj, devTypFlag, meanValue, devValue, false);
             break;
         }
         case tInt8:
         {
-            if((dObj->calcNumMats() * dObj->getSize(dims-1) * dObj->getSize(dims-2)) > 8388000) retval += devValueFunc<int8, float64>(dObj, devTypFlag, meanValue, devValue, false);
+            if((dObj->getNumPlanes() * dObj->getSize(dims-1) * dObj->getSize(dims-2)) > 8388000) retval += devValueFunc<int8, float64>(dObj, devTypFlag, meanValue, devValue, false);
             else retval += devValueFunc<int8, int32>(dObj, devTypFlag, meanValue, devValue, false);
             break;
         }        
@@ -1634,7 +1634,7 @@ namespace dObjHelper
     */
     RetVal calcCVDFT(DataObject *dObjIO, const bool inverse, const bool inverseAsReal, const bool lineWise)
     {
-        unsigned int numMats = dObjIO->calcNumMats();
+        unsigned int numMats = dObjIO->getNumPlanes();
         std::string protocol("Applied ");
         ito::RetVal retval(ito::retOk);
         
