@@ -34,6 +34,7 @@
 
 #include "readWriteLock.h"
 
+#define NOREADWRITELOCK 1
 
 namespace ito {
 
@@ -7175,22 +7176,28 @@ RetVal DataObject::setXYRotationalMatrix(double r11, double r12, double r13, dou
 //----------------------------------------------------------------------------------------------------------------------------------
 void DataObject::lockRead()
 {
+#ifndef NOREADWRITELOCK
     m_objHeaderLock->lockRead();
     if(m_objSharedDataLock) m_objSharedDataLock->lockRead();
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DataObject::lockWrite()
 {
+#ifndef NOREADWRITELOCK
     m_objHeaderLock->lockWrite();
     if(m_objSharedDataLock) m_objSharedDataLock->lockWrite();
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DataObject::unlock()
 {
+#ifndef NOREADWRITELOCK
     if(m_objSharedDataLock) m_objSharedDataLock->unlock();
     m_objHeaderLock->unlock();
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
