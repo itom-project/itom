@@ -668,7 +668,7 @@ namespace dObjHelper
             return ito::RetVal::format(ito::retError, 0, "DataObject was not initialized in function getRowPointer(...)");   
         }
 
-        pointer = (_Tp***)calloc(dObj->calcNumMats() + 1, sizeof(_Tp**));
+        pointer = (_Tp***)calloc(dObj->getNumPlanes() + 1, sizeof(_Tp**));
 
         if(pointer == NULL)
         {
@@ -678,15 +678,16 @@ namespace dObjHelper
         ito::RetVal retVal(ito::retOk);
         int sizeY = dObj->getSize(dObj->getDims() - 2);
 
-        uchar** mdata = dObj->get_mdata();
-        for(int i = 0; i < dObj->calcNumMats(); i++)
+        cv::Mat** mdata = dObj->get_mdata();
+        int numMats = dObj->getNumPlanes();
+        for(int i = 0; i < dObj->getNumPlanes(); i++)
         {
             pointer[i] = (_Tp**)calloc(sizeY, sizeof(_Tp*));
             if(pointer[i])
             {
                 for(int y = 0; y < sizeY; y++)
                 {
-                    pointer[i][y] = ((cv::Mat*)(mdata[dObj->seekMat(i)]))->ptr<_Tp>(y);
+                    pointer[i][y] = mdata[dObj->seekMat(i, numMats)]->ptr<_Tp>(y);
                 }
             }
             else

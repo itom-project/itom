@@ -152,6 +152,8 @@ public:
 
     QList<int> parseAndSplitCommandInMainComponents(const char *str, QByteArray &encoding) const; //can be directly called from different thread
 
+	static bool isInterruptQueued();
+
 protected:
     //RetVal syntaxCheck(char* pythonFileName);       // syntaxCheck for file with filename pythonFileName
     ito::RetVal runPyFile(const QString &pythonFileName);         // run file pythonFileName
@@ -206,7 +208,8 @@ private:
 
     ito::RetVal autoReloaderCheck();
 
-    static int queuedInterrupt(void *unused); 
+    static int queuedInterrupt(void *state); 
+	
 
     //member variables
     bool m_started;

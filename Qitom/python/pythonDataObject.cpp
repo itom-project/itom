@@ -3911,7 +3911,7 @@ PyObject* PythonDataObject::PyDataObject_data(PyDataObject *self)
     self->dataObject->lockRead();
     try
     {
-        ito::fListCout[self->dataObject->getType()](std::cout,*(self->dataObject));
+        std::cout << *(self->dataObject);
     }
     catch(cv::Exception exc)
     {
@@ -4149,33 +4149,6 @@ PyObject* PythonDataObject::PyDataObject_trans(PyDataObject *self)
     if(retObj) retObj->dataObject->addToProtocol("Created by transponation of a dataObject.");
 
     return (PyObject*)retObj;
-
-    // PyErr_SetString(PyExc_ValueError, "TODO: due to removal of transpose flag (obsolete?)");
-    // return NULL;
-    //if (self->dataObject == NULL)
-    //{
-    //    PyErr_SetString(PyExc_ValueError, "data object is NULL");
-    //    return NULL;
-    //}
-    ////self->dataObject->lockWrite();
-    ////self->dataObject->trans();
-    ////self->dataObject->unlock();
-    ////Py_RETURN_NONE;
-
-    //PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-    //self->dataObject->lockWrite();
-    //
-    //retObj->dataObject = new ito::DataObject(*(self->dataObject));
-    //retObj->dataObject->trans();
-
-    //if (!retObj->dataObject->getOwnData())
-    //{
-    //    PyDataObject_SetBase(retObj, (PyObject*)self);
-    //}
-
-    //self->dataObject->unlock();
-
-    //return (PyObject*)retObj;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -3248,6 +3248,40 @@ RetVal UiOrganizer::figurePickPointsInterrupt(unsigned int objectID)
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::isFigureItem(unsigned int objectID,  QSharedPointer<unsigned int> isFigureItem, ItomSharedSemaphore *semaphore)
+{
+    QWidget *widget = qobject_cast<QWidget*>(getWeakObjectReference(objectID));
+    RetVal retval;
+
+    if (widget)
+    {
+        const QMetaObject* metaObject = widget->metaObject();
+        if (metaObject->indexOfSlot("userInteractionStart(int,bool,int)") == -1 || metaObject->indexOfSignal("userInteractionDone(int,bool,QPolygonF)") == -1)
+        {
+            *isFigureItem = 0;
+        }
+        else
+        {
+            *isFigureItem = 1;
+        }
+    }
+    else
+    {
+        retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toLatin1().data());
+		*isFigureItem = 0;
+    }
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
+
+    return retval;
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ void UiOrganizer::threadSafeDeleteUi(unsigned int *handle)

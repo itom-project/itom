@@ -1150,6 +1150,7 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/1.2.0", //outdated on 2014-03-14 due to change in AddInDataIO::setVal(const char *data, const int length, ItomSharedSemaphore *waitCond = NULL); (const void *data changed to const char *data) (Qt5 bugfix)
     "ito.AddIn.InterfaceBase/1.2.1", //outdated on 2014-10-06 due to changes in APIs, retVal.h and itomWidgets-project. The next version 1.3.0 is the version for the setup 1.3.0.
     "ito.AddIn.InterfaceBase/1.3.0", //outdated on 2014-10-27 due to insertion of ito::AutoInterval object and addition of further ito::ParamMeta classes.
+    "ito.AddIn.InterfaceBase/1.3.1", //outdated on 2015-03-01 due to rework on data object
     NULL
 };
 
@@ -1158,10 +1159,10 @@ static const char* ito_AddInInterface_OldVersions[] = {
 #define CREATE_ADDININTERFACE_VERSION(major,minor,patch) ((major<<16)|(minor<<8)|(patch))
 
 #define ITOM_ADDININTERFACE_MAJOR 1
-#define ITOM_ADDININTERFACE_MINOR 3
-#define ITOM_ADDININTERFACE_PATCH 1
+#define ITOM_ADDININTERFACE_MINOR 4
+#define ITOM_ADDININTERFACE_PATCH 0
 #define ITOM_ADDININTERFACE_VERSION CREATE_ADDININTERFACE_VERSION(ITOM_ADDININTERFACE_MAJOR,ITOM_ADDININTERFACE_MINOR,ITOM_ADDININTERFACE_PATCH)
-static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_VERSION_STR(1,3,1); //results in "ito.AddIn.InterfaceBase/x.x.x"; (the numbers 1,3,1 can not be replaced by the macros above. Does not work properly)
+static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_VERSION_STR(1,4,0); //results in "ito.AddIn.InterfaceBase/x.x.x"; (the numbers 1,3,1 can not be replaced by the macros above. Does not work properly)
 
 
 

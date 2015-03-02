@@ -2658,7 +2658,7 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static */PyObject* PythonItom::PyCheckSignals(PyObject* /*pSelf*/)
 {
-    int result = PyErr_CheckSignals();
+    int result = PythonEngine::isInterruptQueued() ? 1 : 0; //PyErr_CheckSignals();
     return Py_BuildValue("i", result);
     //Py_RETURN_NONE;
 }
