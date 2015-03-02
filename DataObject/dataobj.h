@@ -810,7 +810,7 @@ class DATAOBJ_EXPORT DataObject
             \remark the returned type is an array of cv::Mat*, you should cast it to the appropriate type (e.g. cv::_Mat<int8>)
             \sa seekMat, getCvPlaneMat
         */
-        inline cv::Mat** DataObject::get_mdata(void)
+        inline cv::Mat** get_mdata(void)
         {
            return (cv::Mat**)m_data;
         }

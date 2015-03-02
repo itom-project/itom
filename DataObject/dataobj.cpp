@@ -2303,127 +2303,6 @@ RetVal DataObject::deepCopyPartial(DataObject &rhs)
     return ret;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-//! converts data in DataObject lhs to DataObject rhs with a given type
-/*!
-    Every element of the source data object is copied to the destionation data object by using this transformation<BR>
-        elem_destination = static_cast<newType>(elem_source * alpha + beta)
-
-    \param &lhs is the left-hand sided data object, whose data should be converted
-    \param &rhs is the destination data object, whose memory is firstly deleted, then newly allocated
-    \param type is the type-number of the destination element
-    \param alpha scaling factor (default: 1.0)
-    \param beta offset value (default: 0.0)
-    \return retOk
-    \throws cv::Exception(CV_StsAssert) if conversion type is unknown
-    \sa convertTo, CastFunc
-*/
-template<typename _Tp> RetVal ConvertToFunc(const DataObject &lhs, DataObject &rhs, const int type, const double alpha, const double beta)
-{
-   if (&lhs == &rhs)
-   {
-         return ito::RetVal(ito::retError, 0, "inplace-conversion of dataObject not possible");
-   }
-   //_Tp is source type
-
-   if(type == lhs.getType() && alpha == 1.0 && beta == 0.0)
-   {
-       rhs = lhs;
-   }
-   else
-   {
-       rhs.freeData();
-
-       switch (type)
-       {
-          case ito::tInt8:
-             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
-             CastFunc<_Tp, int8>(&lhs, &rhs, alpha, beta);
-          break;
-
-          case ito::tUInt8:
-             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
-             CastFunc<_Tp, uint8>(&lhs, &rhs, alpha, beta);
-          break;
-
-          case ito::tInt16:
-             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
-             CastFunc<_Tp, int16>(&lhs, &rhs, alpha, beta);
-          break;
-
-          case ito::tUInt16:
-             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
-             CastFunc<_Tp, uint16>(&lhs, &rhs, alpha, beta);
-          break;
-
-          case ito::tInt32:
-             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
-             CastFunc<_Tp, int32>(&lhs, &rhs, alpha, beta);
-          break;
-
-          //uint32 is not fully supported by OpenCV -> constructor is blocked
-          /*case ito::tUInt32:
-             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
-             CastFunc<_Tp, uint32>(&lhs, &rhs, alpha, beta);
-          break;*/
-
-          case ito::tFloat32:
-             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
-             CastFunc<_Tp, float32>(&lhs, &rhs, alpha, beta);
-          break;
-
-          case ito::tFloat64:
-             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
-             CastFunc<_Tp, float64>(&lhs, &rhs, alpha, beta);
-          break;
-
-          case ito::tComplex64:
-             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
-             CastFunc<_Tp, complex64>(&lhs, &rhs, alpha, beta);
-          break;
-
-          case ito::tComplex128:
-             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
-             CastFunc<_Tp, complex128>(&lhs, &rhs, alpha, beta);
-          break;
-
-          case ito::tRGBA32:
-              rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
-              CastFunc<_Tp, Rgba32>(&lhs, &rhs, alpha, beta);
-          break;
-
-          default:
-             cv::error(cv::Exception(CV_StsAssert, "cast to destination type not defined (e.g. uint32 is not supported)", "", __FILE__, __LINE__));
-          break;
-       }
-
-        lhs.copyTagMapTo(rhs);   //Deepcopy the tagspace
-        lhs.copyAxisTagsTo(rhs); //Deepcopy the tagspace
-   }
-
-   return ito::retOk;
-}
-
-typedef RetVal (*tConvertToFunc)(const DataObject &lhs, DataObject &rhs, const int type, const double alpha, const double beta);
-
-MAKEFUNCLIST(ConvertToFunc);
-
-//! high-level, non-templated matrix conversion
-/*!
-    Every element of the source matrix is converted to a new, given type. Additionally a floating-point scaling and offset parameter is possible.
-
-    \param &rhs is the destination data object, whose memory is firstly deleted, then newly allocated
-    \param type is the type-number of the destination element
-    \param alpha scaling factor (default: 1.0)
-    \param beta offset value (default: 0.0)
-    \throws cv::Exception if cast failed, e.g. if cast not possible or types unknown
-    \return retOk
-    \sa fListConvertToFunc
-*/
-RetVal DataObject::convertTo(DataObject &rhs, const int type, const double alpha, const double beta ) const
-{
-    return fListConvertToFunc[m_type](*this, rhs, type, alpha, beta);
-}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
@@ -2459,6 +2338,7 @@ RetVal DataObject::copyTagMapTo(DataObject &rhs) const
 
     return ito::retOk;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \detail this function makes a deepcopy of the axis and value metadata from this object to rhs object.
@@ -6039,6 +5919,129 @@ template<typename T2> DataObject::operator T2 ()
     }
     return *this;
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! converts data in DataObject lhs to DataObject rhs with a given type
+/*!
+    Every element of the source data object is copied to the destionation data object by using this transformation<BR>
+        elem_destination = static_cast<newType>(elem_source * alpha + beta)
+
+    \param &lhs is the left-hand sided data object, whose data should be converted
+    \param &rhs is the destination data object, whose memory is firstly deleted, then newly allocated
+    \param type is the type-number of the destination element
+    \param alpha scaling factor (default: 1.0)
+    \param beta offset value (default: 0.0)
+    \return retOk
+    \throws cv::Exception(CV_StsAssert) if conversion type is unknown
+    \sa convertTo, CastFunc
+*/
+template<typename _Tp> RetVal ConvertToFunc(const DataObject &lhs, DataObject &rhs, const int type, const double alpha, const double beta)
+{
+   if (&lhs == &rhs)
+   {
+         return ito::RetVal(ito::retError, 0, "inplace-conversion of dataObject not possible");
+   }
+   //_Tp is source type
+
+   if(type == lhs.getType() && alpha == 1.0 && beta == 0.0)
+   {
+       rhs = lhs;
+   }
+   else
+   {
+       rhs.freeData();
+
+       switch (type)
+       {
+          case ito::tInt8:
+             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             CastFunc<_Tp, int8>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tUInt8:
+             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             CastFunc<_Tp, uint8>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tInt16:
+             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             CastFunc<_Tp, int16>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tUInt16:
+             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             CastFunc<_Tp, uint16>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tInt32:
+             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             CastFunc<_Tp, int32>(&lhs, &rhs, alpha, beta);
+          break;
+
+          //uint32 is not fully supported by OpenCV -> constructor is blocked
+          /*case ito::tUInt32:
+             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             CastFunc<_Tp, uint32>(&lhs, &rhs, alpha, beta);
+          break;*/
+
+          case ito::tFloat32:
+             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             CastFunc<_Tp, float32>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tFloat64:
+             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             CastFunc<_Tp, float64>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tComplex64:
+             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             CastFunc<_Tp, complex64>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tComplex128:
+             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             CastFunc<_Tp, complex128>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tRGBA32:
+              rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+              CastFunc<_Tp, Rgba32>(&lhs, &rhs, alpha, beta);
+          break;
+
+          default:
+             cv::error(cv::Exception(CV_StsAssert, "cast to destination type not defined (e.g. uint32 is not supported)", "", __FILE__, __LINE__));
+          break;
+       }
+
+        lhs.copyTagMapTo(rhs);   //Deepcopy the tagspace
+        lhs.copyAxisTagsTo(rhs); //Deepcopy the tagspace
+   }
+
+   return ito::retOk;
+}
+
+typedef RetVal (*tConvertToFunc)(const DataObject &lhs, DataObject &rhs, const int type, const double alpha, const double beta);
+
+MAKEFUNCLIST(ConvertToFunc);
+
+//! high-level, non-templated matrix conversion
+/*!
+    Every element of the source matrix is converted to a new, given type. Additionally a floating-point scaling and offset parameter is possible.
+
+    \param &rhs is the destination data object, whose memory is firstly deleted, then newly allocated
+    \param type is the type-number of the destination element
+    \param alpha scaling factor (default: 1.0)
+    \param beta offset value (default: 0.0)
+    \throws cv::Exception if cast failed, e.g. if cast not possible or types unknown
+    \return retOk
+    \sa fListConvertToFunc
+*/
+RetVal DataObject::convertTo(DataObject &rhs, const int type, const double alpha, const double beta ) const
+{
+    return fListConvertToFunc[m_type](*this, rhs, type, alpha, beta);
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> RetVal GrayScaleCastFunc(const DataObject *dObj, DataObject *resObj)
