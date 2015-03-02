@@ -6873,6 +6873,11 @@ int DataObject::addToProtocol(const std::string &value)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! returns number of bytes required by each value in the array.
+/*!
+
+    \return the size of each array element in bytes.
+*/
 int DataObject::elemSize() const
 {
     switch(m_type)
@@ -6900,24 +6905,48 @@ int DataObject::elemSize() const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! returns iterator to the first item in the data object array
+/*!
+    \return iterator
+    \sa DObjIterator
+*/
 DObjIterator DataObject::begin()
 {
     return DObjIterator(this, 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! returns iterator to the end value of this data object array
+/*!
+    The end value is the first item outside of the data object array.
+
+    \return iterator
+    \sa DObjIterator
+*/
 DObjIterator DataObject::end()
 {
     return DObjIterator(this, getTotal());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! returns constant iterator to the first item in the data object array
+/*!
+    \return iterator
+    \sa DObjConstIterator
+*/
 DObjConstIterator DataObject::constBegin() const
 {
     return DObjConstIterator(this, 0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! returns constant iterator to the end value of this data object array
+/*!
+    The end value is the first item outside of the data object array.
+
+    \return iterator
+    \sa DObjConstIterator
+*/
 DObjConstIterator DataObject::constEnd() const
 {
     return DObjConstIterator(this, getTotal());

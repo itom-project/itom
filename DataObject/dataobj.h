@@ -30,7 +30,6 @@
 
 #include "defines.h"
 
-//#include <crtdbg.h>
 #include <cstdlib>
 #include <iostream>
 #include <complex>
@@ -48,9 +47,6 @@
 
 #include "../common/sharedStructures.h"
 #include "../common/color.h"
-
-
-
 
 
 namespace cv 
@@ -225,7 +221,6 @@ namespace ito {
 class DObjIterator;
 class DataObject;
 class Range;
-struct Scalar;
 class DataObjectTags;
 class DataObjectTagType;
 class DataObjectTagsPrivate;
@@ -236,6 +231,8 @@ class ReadWriteLock;
 /*!
     \class Range
     \brief each range value has a start and end point. Optionally range can be marked as Range::all(), which indicates a full range
+
+    start always indicates the first zero-based index of a range, end is the excluded index of the range, hence one item after the last item in the range.
 */
 class DATAOBJ_EXPORT Range
 {
@@ -251,20 +248,26 @@ class DATAOBJ_EXPORT Range
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/*!
+    \class DataObjectTagType
+    \brief Variant storage class for either a double or a string value.
+
+    The tag map of a data object always contains values of this class such that tags can be either of type string or double.
+*/
 class DATAOBJ_EXPORT DataObjectTagType
 {
     public:
         enum tTagType
         {
-            typeInvalid     = 0x000000,
-            typeDouble      = 0x000008,
-            typeString      = 0x000020
+            typeInvalid     = 0x000000, //!< invalid tag type
+            typeDouble      = 0x000008, //!< tag type double
+            typeString      = 0x000020  //!< tag type string (\sa ByteArray)
         };
 
     private:
-        double m_dVal;
-        tTagType m_type; //!< parameter type, maybe int, char, double or pointer
-        ByteArray m_strValue;
+        double m_dVal;          //!< if the tag type is double, the real double value is stored here
+        tTagType m_type;        //!< type indicator of this class (invalid, double or string)
+        ByteArray m_strValue;   //!< if the tag type is string, the string data is stored in this ByteArray variable.
 
     public:
         //!< Constructor
@@ -276,6 +279,7 @@ class DATAOBJ_EXPORT DataObjectTagType
         //!< Copy Constructor
         DataObjectTagType(const DataObjectTagType& a) : m_dVal(a.m_dVal), m_type(a.m_type), m_strValue(a.m_strValue) {}
 
+        //! assignment operator will copy the content of the right-hand-sided DataObjectTagType to this object.
         DataObjectTagType & operator = (const DataObjectTagType &rhs)
         {
             this->m_dVal = rhs.m_dVal;
@@ -285,8 +289,10 @@ class DATAOBJ_EXPORT DataObjectTagType
             return *this;
         }
 
+        //! returns type of tag (\sa tTagType)
         inline int getType(void) const {return m_type;}
 
+        //! returns if tag is valid (double or string) or invalid (e.g. due to use of default constructor)
         inline bool isValid(void) const { return (m_type == DataObjectTagType::typeInvalid) ? false: true;}
 
         /** getVal_ToDouble  read parameter value and try to convert to double
@@ -342,35 +348,53 @@ class DATAOBJ_EXPORT DataObjectTagType
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/*!
+    \class DObjConstIterator
+    \brief constant iterator through data object
 
+    Use this iterator to iterate over all items within the related data object.
+    The order of the iteration is a C-wise ordering, hence row after row for a 2D data object.
+    This iterator only allows reading the item values, use DObjIterator for an additional write access.
+
+    \sa DObjIterator
+*/
 class DATAOBJ_EXPORT DObjConstIterator
 {
 public:
      
     //! default constructor
     DObjConstIterator();
+
     //! constructor that sets the iterator to the beginning of the matrix 
     DObjConstIterator(const DataObject* _dObj, int pos = 0);
+
     //! copy constructor
     DObjConstIterator(const DObjConstIterator& it);
     
     //! copy operator
     DObjConstIterator& operator = (const DObjConstIterator& it);
+
     //! returns the current matrix element
     const uchar* operator *() const;
+
     //! returns the i-th matrix element, relative to the current
     const uchar* operator [](int i) const;
     
     //! shifts the iterator forward by the specified number of elements
     DObjConstIterator& operator += (int ofs);
+
     //! shifts the iterator backward by the specified number of elements
     DObjConstIterator& operator -= (int ofs);
+
     //! decrements the iterator
     DObjConstIterator& operator --();
+
     //! decrements the iterator
     DObjConstIterator operator --(int);
+
     //! increments the iterator
     DObjConstIterator& operator ++();
+
     //! increments the iterator
     DObjConstIterator operator ++(int);
 
@@ -382,47 +406,67 @@ public:
     bool operator >= (const DObjConstIterator& dObjIt);
 
 protected:
+    //! moves the iterator to an absolute position
     void seekAbs(int ofs);
+
+    //! moves the iterator by a certain number of elements
     void seekRel(int ofs);
     
-    const DataObject* dObj;
-    bool   planeContinuous;
-    int elemSize;
-    uchar* ptr;
-    uchar* sliceStart;
-    uchar* sliceEnd;
-    int plane;
+    const DataObject* dObj; //!< reference to the related data object
+    bool   planeContinuous; //!< indicates whether dObj is continuously organized in each plane for faster seek operations
+    int elemSize;           //!< 
+    uchar* ptr;             //!< pointer to the current value of the iterator
+    uchar* sliceStart;      //!< pointer to the first item within the current continuous slice
+    uchar* sliceEnd;        //!< pointer to the last item within the current continuous slice
+    int plane;              //!< plane index where the iterator is currently positioned
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/*!
+    \class DObjIterator
+    \brief iterator through data object
+
+    Use this iterator to iterate over all items within the related data object.
+    The order of the iteration is a C-wise ordering, hence row after row for a 2D data object.
+    This iterator allows reading and writing the content of the data object.
+*/
 class DATAOBJ_EXPORT DObjIterator : public DObjConstIterator
 {
 public:
      
     //! default constructor
     DObjIterator();
+
     //! constructor that sets the iterator to the beginning of the matrix 
     DObjIterator(DataObject* _dObj, int pos = 0);
+
     //! copy constructor
     DObjIterator(const DObjIterator& it);
     
     //! copy operator
     DObjIterator& operator = (const DObjIterator& it);
+
     //! returns the current matrix element
     uchar* operator *();
+
     //! returns the i-th matrix element, relative to the current
     uchar* operator [](int i);
     
     //! shifts the iterator forward by the specified number of elements
     DObjIterator& operator += (int ofs);
+
     //! shifts the iterator backward by the specified number of elements
     DObjIterator& operator -= (int ofs);
+
     //! decrements the iterator
     DObjIterator& operator --();
+
     //! decrements the iterator
     DObjIterator operator --(int);
+
     //! increments the iterator
     DObjIterator& operator ++();
+
     //! increments the iterator
     DObjIterator operator ++(int);
 };
@@ -988,7 +1032,7 @@ class DATAOBJ_EXPORT DataObject
         DataObject mul(const DataObject &mat2, const double scale = 1.0) const;
         DataObject div(const DataObject &mat2, const double scale = 1.0) const;
         DataObject squeeze() const;
-        int elemSize() const;
+        int elemSize() const;  /*!< number of bytes that are required by each value inside of the data object array (e.g. 1 for uint8, 2 for int16...) */
 
         //! addressing method for two-dimensional data object.
         /*!
