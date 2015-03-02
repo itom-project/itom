@@ -1034,7 +1034,7 @@ int DataObject::seekMat(const int matNum, const int numMats) const
 
     if (m_dims <= 2)
     {
-            return 0;
+        return 0;
     }
 
     //in order to understand the calculation, consider first to determine the index-vector, where the last two items are set to zero.
@@ -1084,19 +1084,38 @@ int DataObject::seekMat(const int matNum, const int numMats) const
     ////end 1. and 2. possibility
 
     //begin 3. possibility, directly combine 2. possiblity into one loop without allocating idx-vector
-    int val = matNum;
-    int t = 1;
     int result = 0;
-    int idx = 0;
-    int planeSize = 1;
 
-    for(int i = m_dims - 3 ; i >= 0 ; --i)
+    //a little bit of loop unrolling to allow faster run for the most common dimensions (0,1,2,3)
+    switch (m_dims)
     {
-        idx = ( val/t ) % m_size[i];
-        result += (idx + m_roi[i]) * planeSize;
-        val -= (idx * t);
-        t *= m_size[i];
-        planeSize *= m_osize[i];
+    case 0:
+    case 1:
+    case 2:
+        break;
+    case 3:
+        {
+        int idx = matNum % m_size[0];
+        result += (idx + m_roi[0]);
+        }
+        break;
+    default:
+        {
+        int val = matNum;
+        int t = 1;
+        int idx = 0;
+        int planeSize = 1;
+
+        for(int i = m_dims - 3 ; i >= 0 ; --i)
+        {
+            idx = (val / t) % m_size[i];
+            result += (idx + m_roi[i]) * planeSize;
+            val -= (idx * t);
+            t *= m_size[i];
+            planeSize *= m_osize[i];
+        }
+        }
+        break;
     }
 
     return result;
