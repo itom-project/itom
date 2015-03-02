@@ -29,6 +29,7 @@
 #define __DATAOBJFUNCH
 
 #include "dataobj.h"
+#include <assert.h>     /* assert */
 
 //! creates template defined function table for all supported data types
 #define MAKEHELPERFUNCLIST(FuncName) static t##FuncName fList##FuncName[] = \
@@ -707,7 +708,7 @@ namespace dObjHelper
     //-----------------------------------------------------------------------------------------------
     /*! \fn isIntType 
         \brief  Helpfunction to check if object type is integer type or not and if integer point the size is spezified in size
-        \param[in]   type    Type of a DataObject 
+        \param[in]   type    tDataType of a DataObject 
         \param[out]  size    Number of bytes if floating point type (1 or 4) else -1
         \author  Lyda
         \sa  
@@ -740,7 +741,7 @@ namespace dObjHelper
     //-----------------------------------------------------------------------------------------------
     /*! \fn isFPType 
         \brief  Helpfunction to check if object type is floating point type or not and if floating point point the size is spezified in size
-        \param[in]   type    ITO-Objtype of a DataObject 
+        \param[in]   type    tDataType of a DataObject 
         \param[out]  size    Number of bytes if floating point type (4 or 8) else -1
         \author  Lyda
         \sa  
@@ -768,7 +769,7 @@ namespace dObjHelper
     //-----------------------------------------------------------------------------------------------
     /*! \fn isCplxType 
         \brief  Helpfunction to check if object type is complex-type or not and if complex point the size is spezified in size
-        \param[in]   type    ITO-Objtype of a DataObject 
+        \param[in]   type    tDataType of a DataObject 
         \param[out]  size    Number of bytes if complex type (8 or 16) else -1
         \author  Lyda
         \sa  
@@ -795,97 +796,88 @@ namespace dObjHelper
 
     //-----------------------------------------------------------------------------------------------
     /*! \fn isEqualDObj 
-        \brief  Helpfunction to check if to dataObjects are equal in size/dims and type. Returns false if not equal
+        \brief  Helpfunction to check if two dataObjects are equal in size/dims and type. Returns false if not equal
         \param[in]   dObj1   DataObject1
         \param[in]   dObj2   DataObject2
         \param[out]  typeFlag    If true both objects are of same type
         \param[out]  dimsFlag    If true both object have same dims and sizes 
         \param[out]  last2DimsFlag   If true x/y of the object are equal
-        \return true of equal else false
+        \return true if equal else false
         \author  Lyda
         \sa  
         \date    12.2011 
     */
-    inline bool dObjareEqualDetail(ito::DataObject *dObj1, ito::DataObject *dObj2, bool &typeFlag, bool &dimsFlag, bool &last2DimsFlag)
+    inline bool dObjareEqualDetail(const ito::DataObject *dObj1, const ito::DataObject *dObj2, bool &typeFlag, bool &dimsFlag, bool &last2DimsFlag)
     {
-        bool retVal = true;
-        typeFlag = true;
-        dimsFlag = true;
+        assert(dObj1 && dObj2);
+
+        bool sizeEqual;
+
         last2DimsFlag = true;
-        //transFlag = true;
 
-        if(dObj1->getType() != dObj2->getType())
-        {
-            retVal = false;
-            typeFlag = false;
-        }
-        /*if(dObj1->isT() != dObj2->isT())
-        {
-            retVal = false;
-            transFlag = false;        
-        }*/
+        int d1 = dObj1->getDims();
+        int d2 = dObj2->getDims();
+        dimsFlag = (d1 == d2);
+        typeFlag = (dObj1->getType() == dObj2->getType());
 
-        if(dObj1->getDims() != dObj2->getDims())
+        if(d1 != d2)
         {
-            retVal = false;
-            dimsFlag = false;
-            if(dObj1->getSize(dObj1->getDims() - 2) != dObj2->getSize(dObj2->getDims() - 2))
+            sizeEqual = false;
+
+            if (d1 >= 2 && d2 >= 2)
             {
-                last2DimsFlag = false;
+                if(dObj1->getSize(dObj1->getDims() - 2) != dObj2->getSize(dObj2->getDims() - 2))
+                {
+                    last2DimsFlag = false;
+                }
+                else if(dObj1->getSize(dObj1->getDims() - 1) != dObj2->getSize(dObj2->getDims() - 1))
+                {
+                    last2DimsFlag = false;
+                }
             }
-            if(dObj1->getSize(dObj1->getDims() - 1) != dObj2->getSize(dObj2->getDims() - 1))
+            else
             {
                 last2DimsFlag = false;
             }
         }
         else
         {
-            for(int i = 0; i < dObj1->getDims()-2; i++)
+            sizeEqual = (dObj1->getSize() == dObj2->getSize());
+
+            if (d1 >= 2)
             {
-                if(dObj1->getSize(i) != dObj2->getSize(i))
+                if(dObj1->getSize(dObj1->getDims() - 2) != dObj2->getSize(dObj2->getDims() - 2))
                 {
-                    retVal = false;
+                    last2DimsFlag = false;
+                }
+                else if(dObj1->getSize(dObj1->getDims() - 1) != dObj2->getSize(dObj2->getDims() - 1))
+                {
+                    last2DimsFlag = false;
                 }
             }
-            if(dObj1->getSize(dObj1->getDims() - 2) != dObj2->getSize(dObj2->getDims() - 2))
+            else
             {
                 last2DimsFlag = false;
-                retVal = false;
-            }
-            if(dObj1->getSize(dObj1->getDims() - 1) != dObj2->getSize(dObj2->getDims() - 1))
-            {
-                last2DimsFlag = false;
-                retVal = false;
             }
         }
-        return retVal;
+        return typeFlag && dimsFlag && last2DimsFlag && sizeEqual;
     }
 
     //-----------------------------------------------------------------------------------------------
     /*! \fn isEqualShort 
-        \brief  Helpfunction to check if to dataObjects are equal in size/dims and type. Returns false if not equal
-        \param[in]   dObj1   DataObject1
-        \param[in]   dObj2   DataObject2
-        \return true of equal eslse false
+        \brief  check if both data objects are equal concerning their number of dimensions, sizes and type
+        \param[in]   dObj1   first data object
+        \param[in]   dObj2   second data obect
+        \return true if size and type of both objects are equal, else false
         \author  Lyda
         \sa  
         \date    12.2011 
     */
-    inline bool dObjareEqualShort(ito::DataObject *obj1, ito::DataObject *obj2)
+    inline bool dObjareEqualShort(const ito::DataObject *obj1, const ito::DataObject *obj2)
     {
-        if(obj1->getDims() == obj2->getDims() && obj1->getType() == obj2->getType() /*&& obj1->isT() == obj2->isT()*/)
-        {
-            for(int i = 0; i < obj1->getDims(); i++)
-            {
-                if(obj1->getSize(i) != obj2->getSize(i))
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-        else
-            return false;
+        assert(obj1 && obj2);
+
+        return (obj1->getType() == obj2->getType()) && (obj1->getSize() == obj2->getSize());
     }
 
     //! Helperfunction to copy axis related tags from a n-D-Object to a m-D-Object.
