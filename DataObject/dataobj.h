@@ -475,10 +475,10 @@ public:
 class DATAOBJ_EXPORT DataObject
 {
     private:
-        //! helper method for creation of header information
+        //! create header information for data objects with a given size and step sizes to jump from one element in a dimension to the next one.
         void createHeader(const unsigned char dimensions, const int *sizes, const int *steps, const int elemSize);
 
-        //! helper method for creation of header information considering the region of interest
+        //! create header information for data objects with a given size, optional roi indeces and a possible original size
         void createHeaderWithROI(const unsigned char dimensions, const int *sizes, const int *osizes = NULL, const int *roi = NULL);
 
         void create(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous, const uchar* continuousDataPtr = NULL, const int* steps = NULL);  /*!< allocates new data */
@@ -684,7 +684,6 @@ class DATAOBJ_EXPORT DataObject
         //!<  Function to set the string-value of the value description, return 1 if values does not exist
         int setValueDescription(const std::string &description);
 
-        //inline lead to a linker error on MSVC when calling from several methods
         int setAxisOffset(const unsigned int axisNum, const double offset);
         int setAxisScale(const unsigned int axisNum, const double scale);
         int setAxisUnit(const unsigned int axisNum, const std::string &unit); //unit must be latin1 encoded
@@ -782,6 +781,8 @@ class DATAOBJ_EXPORT DataObject
                 case 1:
                 case 2:
                     return 1;
+                case 3:
+                    return m_size[0];
                 default:
                 {
                     int numMat = 1;
@@ -934,7 +935,9 @@ class DATAOBJ_EXPORT DataObject
         
         RetVal copyTo(DataObject &rhs, unsigned char regionOnly = 0) const;   /*!< deeply copies the data of this data object to the given rhs-dataObject, whose existing data will be deleted first. */
         RetVal convertTo(DataObject &rhs, const int type, const double alpha=1, const double beta=0 ) const;
-        RetVal deepCopyPartial(DataObject &rhs);                         /*!< copies the values of each element from this data object to the ROI of the given rhs-dataObject. The rhs-dataObject must be allocated yet and its ROI must be the same size than this ROI */
+        
+        //! copy all values of this data object to the copyTo data object. The copyTo-data object must be allocated and have the same type and size (of its roi) than this data object.
+        RetVal deepCopyPartial(DataObject &copyTo);      
 
         //! returns 0, this is the index of the first element in valid DataObject range.
         DObjIterator begin();

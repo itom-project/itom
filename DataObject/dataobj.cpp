@@ -846,7 +846,7 @@ DataObject::~DataObject(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! returns the pointer to the underlying cv::Mat that represents the plane with given planeIndex of the entire data object.
 /*!
-    This command is equivalent to (cv::Mat*)(m_data[seekMat(planeIndex)]) but checks for out-of-range errors.
+    This command is equivalent to get_mdata()[seekMat(planeIndex)] but checks for out-of-range errors.
 
     \param planeIndex is the zero-based index of the requested plane within the current ROI of the data object
     \return pointer to the cv::Mat plane or NULL if planeIndex is out of range
@@ -866,7 +866,7 @@ cv::Mat* DataObject::getCvPlaneMat(const int planeIndex)
 
 //! returns the pointer to the underlying cv::Mat that represents the plane with given planeIndex of the entire data object.
 /*!
-    This command is equivalent to (cv::Mat*)(m_data[seekMat(planeIndex)]) but checks for out-of-range errors.
+    This command is equivalent to get_mdata()[seekMat(planeIndex)] but checks for out-of-range errors.
 
     \param planeIndex is the zero-based index of the requested plane within the current ROI of the data object
     \return pointer to the cv::Mat plane or NULL if planeIndex is out of range
@@ -2247,16 +2247,16 @@ MAKEFUNCLIST(DeepCopyPartialFunc);
     \throws cv::Exception(CV_StsAssert) if sizes or type of both matrices are not equal
     \sa DeepCopyPartialFunc
 */
-RetVal DataObject::deepCopyPartial(DataObject &rhs)
+RetVal DataObject::deepCopyPartial(DataObject &copyTo)
 {
-    if(m_type != rhs.m_type)
+    if(m_type != copyTo.m_type)
     {
         cv::error(cv::Exception(CV_StsAssert, "DataObject - operands differ in type","", __FILE__,__LINE__));
     }
 
     //calc and compare squeezed dimensions
     int thisDims = this->getDims();
-    int rhsDims = rhs.getDims();
+    int rhsDims = copyTo.getDims();
     int *thisSizes = new int[thisDims];
     int *rhsSizes = new int[rhsDims];
 
@@ -2271,7 +2271,7 @@ RetVal DataObject::deepCopyPartial(DataObject &rhs)
     j = 0;
     for(int i=0; i<rhsDims; i++)
     {
-        rhsSizes[j] = rhs.getSize(i);
+        rhsSizes[j] = copyTo.getSize(i);
         if(rhsSizes[j]>1) j++;
     }
     rhsDims = j;
@@ -2292,7 +2292,7 @@ RetVal DataObject::deepCopyPartial(DataObject &rhs)
     delete[] thisSizes;
     delete[] rhsSizes;
 
-    ito::RetVal ret = fListDeepCopyPartialFunc[m_type](*this, rhs);
+    ito::RetVal ret = fListDeepCopyPartialFunc[m_type](*this, copyTo);
 
     //in copypartial, no tags or axis (offsets, scales...) should be copy to core object!
     //if(!ret.containsError())
@@ -2986,12 +2986,15 @@ DataObject & DataObject::operator = (const cv::Mat &rhs)
 //! assign-operator which makes a shallow-copy of the rhs data object and stores it in this data object
 /*!
     shallow-copy means, that the header information of the rhs data-object is physically copied to this-dataObject while
-    the data is shared, hence, only its reference counter is incremented
+    the data is shared, hence, only its reference counter is incremented.
+
+    The previous array covered by this data object is completely released before assigning the new rhs data object.
+    In order to deeply copy the values from one object into another pre-allocated object use the method deepCopyPartial.
 
     \param &rhs is the data object where the shallow copy is taken from. At first, the existing data of this object is freed.
     \return this data object
     \throws cv::Exception if lock state of both objects is not equal. Please make sure, that both lock states are equal
-    \sa CopyMatFunc
+    \sa CopyMatFunc, deepCopyPartial
 */
 DataObject & DataObject::operator = (const DataObject &rhs)
 {
