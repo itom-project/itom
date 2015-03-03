@@ -191,7 +191,14 @@ int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
         return -1;
     }
 
-    Py_XINCREF(self->callbackFunc->m_callbackArgs);
+    if (self->callbackFunc->m_callbackArgs)
+    {
+        Py_INCREF(self->callbackFunc->m_callbackArgs);
+    }
+    else
+    {
+        self->callbackFunc->m_callbackArgs = PyTuple_New(0); //if the callback function of the timeout event is debugged, it must not get a NULL object but at least an empty tuple!
+    }
 
     PyObject *temp = NULL;
     if(PyMethod_Check(tempObj))
