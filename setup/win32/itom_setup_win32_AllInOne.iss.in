@@ -134,11 +134,12 @@ Source: "{#SourceRedistributable}\vcredist_x86.exe"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\python-3.4.3.msi"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\numpy-1.9.2rc1+mkl-cp34-none-win32.whl"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\scipy-0.15.1-cp34-none-win32.whl"; DestDir: "{tmp}"
-; Source: "{#SourceDirPython}\4. pyparsing-2.0.0.win32-py3.3.exe"; DestDir: "{tmp}"
-; Source: "{#SourceDirPython}\5. python-dateutil-2.2.win32-py3.3.exe"; DestDir: "{tmp}"
-; Source: "{#SourceDirPython}\6. six-1.6.1.win32-py3.3.exe"; DestDir: "{tmp}"
-; Source: "{#SourceDirPython}\7. matplotlib-1.3.1.win32-py3.3.exe"; DestDir: "{tmp}"
-; Source: "{#SourceDirPython}\8. Pillow-2.0.0.win32-py3.3.exe"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\six-1.9.0-py2.py3-none-any.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\pyparsing-2.0.3-py3-none-any.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\python_dateutil-2.4.0-py2.py3-none-any.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\pytz-2014.10-py2.py3-none-any.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\matplotlib-1.4.3-cp34-none-win32.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\frosted-1.4.1-py2.py3-none-any.whl"; DestDir: "{tmp}"
 Source: "{#SourceDirQT}\uic.exe"; DestDir: "{app}"; Flags: promptifolder  
 
 ; Default INI
@@ -260,24 +261,24 @@ Filename: "{tmp}\vcredist_x86.exe"; Flags: shellexec waituntilterminated; Status
 Filename: "{tmp}\python-3.4.3.msi"; Flags: shellexec waituntilterminated; StatusMsg: "Phyton 3.3..."; Components: PYTHON
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\numpy-1.9.2rc1+mkl-cp34-none-win32.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "NumPy..."; Components: NUMPY
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\scipy-0.15.1-cp34-none-win32.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "SciPy..."; Components: SCIPY
-; Filename: "{tmp}\2. numpy-MKL-1.8.1.win32-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "NumPy..."; Components: NUMPY
-; Filename: "{tmp}\3. scipy-0.14.0.win32-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "SciPy..."; Components: SCIPY
-; Filename: "{tmp}\4. pyparsing-2.0.0.win32-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "PyParsing..."; Components: PYPARSING
-; Filename: "{tmp}\5. python-dateutil-2.2.win32-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "DateUtil..."; Components: DATEUTIL
-; Filename: "{tmp}\6. six-1.6.1.win32-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "DateUtil..."; Components: SIX
-; Filename: "{tmp}\7. matplotlib-1.3.1.win32-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "MatPlotLib..."; Components: MATPLOTLIB
-; Filename: "{tmp}\8. Pillow-2.0.0.win32-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Pillow..."; Components: PILLOW
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\six-1.9.0-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "Six..."; Components: SIX
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\pyparsing-2.0.3-py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "PyParsing..."; Components: PYPARSING
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\python_dateutil-2.4.0-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "DateUtil..."; Components: DATEUTIL
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\pytz-2014.10-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "PyTz..."; Components: PYTZ
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\matplotlib-1.4.3-cp34-none-win32.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "MatPlotLib..."; Components: MATPLOTLIB
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\frosted-1.4.1-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "Frosted..."; Components: FROSTED
 Filename: "{app}\{#ExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(Name, "&", "&&")}}"; Components: Main
 
 [InstallDelete]
 Type: files; Name: "{tmp}\python-3.4.3.msi"
 Type: files; Name: "{tmp}\numpy-1.9.2rc1+mkl-cp34-none-win32.whl"
 Type: files; Name: "{tmp}\scipy-0.15.1-cp34-none-win32.whl"
-; Type: files; Name: "{tmp}\4. pyparsing-2.0.0.win32-py3.3.exe"
-; Type: files; Name: "{tmp}\5. python-dateutil-2.2.win32-py3.3.exe"
-; Type: files; Name: "{tmp}\6. six-1.6.1.win32-py3.3.exe"
-; Type: files; Name: "{tmp}\7. matplotlib-1.3.1.win32-py3.3.exe"
-; Type: files; Name: "{tmp}\8. Pillow-2.0.0.win32-py3.3.exe"
+Type: files; Name: "{tmp}\six-1.9.0-py2.py3-none-any.whl"
+Type: files; Name: "{tmp}\pyparsing-2.0.3-py3-none-any.whl"
+Type: files; Name: "{tmp}\python_dateutil-2.4.0-py2.py3-none-any.whl"
+Type: files; Name: "{tmp}\pytz-2014.10-py2.py3-none-any.whl"
+Type: files; Name: "{tmp}\matplotlib-1.4.3-cp34-none-win32.whl"
+Type: files; Name: "{tmp}\frosted-1.4.1-py2.py3-none-any.whl"
 Type: files; Name: "{tmp}\vcredist_x86.exe"
 Type: filesandordirs; Name: "{tmp}\wheelhouse"
 
@@ -290,11 +291,12 @@ Name: "CREDPACK"; Description: "Microsoft Visual C++ 2010 Redistributable Packag
 Name: "PYTHON"; Description: "Python 3.4.3"; Types: Install; Flags: checkablealone
 Name: "NUMPY"; Description: "numpy-1.9.2rc1+mkl-cp34-none-win32"; Types: Install; Flags: checkablealone
 Name: "SCIPY"; Description: "scipy-0.15.1-cp34-none-win32"; Types: Install; Flags: checkablealone
-; Name: "PYPARSING"; Description: "pyparsing-2.0.0.win32-py3.3"; Types: Install; Flags: checkablealone
-; Name: "DATEUTIL"; Description: "python-dateutil-2.2.win32-py3.3"; Types: Install; Flags: checkablealone
-; Name: "SIX"; Description: "six-1.6.1.win32-py3.3"; Types: Install; Flags: checkablealone
-; Name: "MATPLOTLIB"; Description: "matplotlib-1.3.1.win32-py3.3"; Types: Install; Flags: checkablealone
-; Name: "PILLOW"; Description: "Pillow-2.0.0.win32-py3.3"; Types: Install; Flags: checkablealone
+Name: "SIX"; Description: "six-1.9.0-py2.py3-none-any"; Types: Install; Flags: checkablealone
+Name: "PYPARSING"; Description: "pyparsing-2.0.3-py3-none-any"; Types: Install; Flags: checkablealone
+Name: "DATEUTIL"; Description: "python_dateutil-2.4.0-py2.py3-none-any"; Types: Install; Flags: checkablealone
+Name: "PYTZ"; Description: "pytz-2014.10-py2.py3-none-any"; Types: Install; Flags: checkablealone
+Name: "MATPLOTLIB"; Description: "matplotlib-1.4.3-cp34-none-win32"; Types: Install; Flags: checkablealone
+Name: "FROSTED"; Description: "frosted-1.4.1-py2.py3-none-any"; Types: Install; Flags: checkablealone
 Name: "SDK"; Description: "itom SDK"; Types: Install; Flags: checkablealone
 
 [UninstallDelete]
