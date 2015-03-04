@@ -139,6 +139,7 @@ Source: "{#SourceDirPython}\pyparsing-2.0.3-py3-none-any.whl"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\python_dateutil-2.4.0-py2.py3-none-any.whl"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\pytz-2014.10-py2.py3-none-any.whl"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\matplotlib-1.4.3-cp34-none-win_amd64.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\pies-2.6.3.tar.gz"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\frosted-1.4.1-py2.py3-none-any.whl"; DestDir: "{tmp}"
 Source: "{#SourceDirQT}\uic.exe"; DestDir: "{app}"; Flags: promptifolder  
 
@@ -266,6 +267,7 @@ Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-w
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\python_dateutil-2.4.0-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "DateUtil..."; Components: DATEUTIL
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\pytz-2014.10-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "PyTz..."; Components: PYTZ
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\matplotlib-1.4.3-cp34-none-win_amd64.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "MatPlotLib..."; Components: MATPLOTLIB
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\pies-2.6.3.tar.gz"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "Pies..."; Components: FROSTED
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\frosted-1.4.1-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "Frosted..."; Components: FROSTED
 Filename: "{app}\{#ExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(Name, "&", "&&")}}"; Components: Main
 
@@ -278,6 +280,7 @@ Type: files; Name: "{tmp}\pyparsing-2.0.3-py3-none-any.whl"
 Type: files; Name: "{tmp}\python_dateutil-2.4.0-py2.py3-none-any.whl"
 Type: files; Name: "{tmp}\pytz-2014.10-py2.py3-none-any.whl"
 Type: files; Name: "{tmp}\matplotlib-1.4.3-cp34-none-win_amd64.whl"
+Type: files; Name: "{tmp}\pies-2.6.3.tar.gz"
 Type: files; Name: "{tmp}\frosted-1.4.1-py2.py3-none-any.whl"
 Type: files; Name: "{tmp}\vcredist_x64.exe"
 Type: filesandordirs; Name: "{tmp}\wheelhouse"
