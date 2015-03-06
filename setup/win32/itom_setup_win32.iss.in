@@ -290,11 +290,11 @@ begin
   if DirExists(Path) then begin
     Filter := Path;
     if Filename <> '' then begin
-      if Copy(Filter, Length(Filter), 1)<>'\' then  Filter := Filter + '\';    
+      if Copy(Filter, Length(Filter), 1)<>'\' then  Filter := Filter + '\';
       Filter := Filter + Filename;
-    end; 
+    end;
     DelTree(Filter, IsDir, DeleteFiles, DeleteSubdirsAlso);
-  end 
+  end;
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
