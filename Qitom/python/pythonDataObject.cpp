@@ -4856,11 +4856,16 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
 
     if (!PyTuple_Check(key))
     {
-        key = PyTuple_Pack(1,key);
+        key = PyTuple_Pack(1,key); //new reference
+    }
+    else
+    {
+        Py_INCREF(key);
     }
 
     if (PyTuple_Size(key) != dims)
     {
+        Py_DECREF(key);
         self->dataObject->unlock();
         PyErr_SetString(PyExc_TypeError, "length of key-tuple does not fit to dimension of data object");
         return NULL;
@@ -4967,6 +4972,8 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
     DELETE_AND_SET_NULL_ARRAY(ranges);
     DELETE_AND_SET_NULL_ARRAY(singlePointIdx);
 
+    Py_DECREF(key);
+
     return retObj;
 }
 
@@ -4986,6 +4993,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
     int dims = self->dataObject->getDims();
     ito::Range *ranges = NULL;
     unsigned int *idx = NULL; //redundant to range, if only single indizes are addressed
+    PyDataObject *mask = NULL;
 
     if (dims <= 0)
     {
@@ -4993,81 +5001,98 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
         return -1;
     }
 
-    if (!PyTuple_Check(key))
+    if (PyDataObject_Check(key))
     {
-        key = PyTuple_Pack(1,key);
+        mask = (PyDataObject*)key;
     }
-
-    if (PyTuple_Size(key) != dims)
+    else
     {
-        self->dataObject->unlock();
-        PyErr_SetString(PyExc_TypeError, "length of key-tuple does not fit to dimension of data object");
-        return -1;
-    }
-
-    Py_ssize_t length = PyTuple_Size(key);
-    ranges = new ito::Range[dims];
-    idx = new unsigned int[dims];
-
-    bool error = false;
-    bool containsSlices = false;
-    PyObject* elem = NULL;
-    int temp1;
-
-    for (Py_ssize_t i = 0; i < length && !error; i++)
-    {
-        elem = PyTuple_GetItem(key, i);
-
-        //check type of elem, must be int or stride
-        if (PyLong_Check(elem))
+        if (!PyTuple_Check(key))
         {
-            temp1 = PyLong_AsLong(elem);
-
-            if (temp1 >= 0 && temp1 < static_cast<long>(self->dataObject->getSize(i)))
-            {
-                ranges[i].start = temp1;
-                ranges[i].end = temp1+1;
-                idx[i] = temp1;
-            }
-            else
-            {
-                error = true;
-                PyErr_SetString(PyExc_TypeError, "length of key-tuple exceeds dimension of data object");
-            }
-        }
-        else if (PySlice_Check(elem))
-        {
-            containsSlices = true;
-            Py_ssize_t start, stop, step, slicelength;
-            if (PySlice_GetIndicesEx(elem, self->dataObject->getSize(i), &start, &stop, &step, &slicelength) == 0)
-            {
-                if (step != 1)
-                {
-                    error = true;
-                    PyErr_SetString(PyExc_TypeError, "step size must be one.");
-                }
-                else
-                {
-                    ranges[i].start = start;
-                    ranges[i].end = stop; //stop already points one index after the last index within the range, this is the same definition than openCV has.
-                }
-            }
-            else
-            {
-                error = true;
-                //error is already set by command
-                //PyErr_SetString(PyExc_TypeError, "no valid start and stop element can be found for given slice");
-            }
+            key = PyTuple_Pack(1,key); //new reference
         }
         else
         {
-            error = true;
-            PyErr_SetString(PyExc_TypeError, "range tuple element is neither of type integer nor of type slice");
+            Py_INCREF(key); //increment reference
         }
 
+        if (PyTuple_Size(key) != dims)
+        {
+            Py_DECREF(key);
+            self->dataObject->unlock();
+            PyErr_SetString(PyExc_TypeError, "length of key-tuple does not fit to dimension of data object");
+            return -1;
+        }
     }
 
-    if (containsSlices)
+    Py_ssize_t length = 0;
+    bool error = false;
+    bool containsSlices = false;
+    
+    if (!mask)
+    {
+        length = PyTuple_Size(key);
+        ranges = new ito::Range[dims];
+        idx = new unsigned int[dims];
+
+        PyObject* elem = NULL;
+        int temp1;
+
+        for (Py_ssize_t i = 0; i < length && !error; i++)
+        {
+            elem = PyTuple_GetItem(key, i);
+
+            //check type of elem, must be int or stride
+            if (PyLong_Check(elem))
+            {
+                temp1 = PyLong_AsLong(elem);
+
+                if (temp1 >= 0 && temp1 < static_cast<long>(self->dataObject->getSize(i)))
+                {
+                    ranges[i].start = temp1;
+                    ranges[i].end = temp1+1;
+                    idx[i] = temp1;
+                }
+                else
+                {
+                    error = true;
+                    PyErr_SetString(PyExc_TypeError, "length of key-tuple exceeds dimension of data object");
+                }
+            }
+            else if (PySlice_Check(elem))
+            {
+                containsSlices = true;
+                Py_ssize_t start, stop, step, slicelength;
+                if (PySlice_GetIndicesEx(elem, self->dataObject->getSize(i), &start, &stop, &step, &slicelength) == 0)
+                {
+                    if (step != 1)
+                    {
+                        error = true;
+                        PyErr_SetString(PyExc_TypeError, "step size must be one.");
+                    }
+                    else
+                    {
+                        ranges[i].start = start;
+                        ranges[i].end = stop; //stop already points one index after the last index within the range, this is the same definition than openCV has.
+                    }
+                }
+                else
+                {
+                    error = true;
+                    //error is already set by command
+                    //PyErr_SetString(PyExc_TypeError, "no valid start and stop element can be found for given slice");
+                }
+            }
+            else
+            {
+                error = true;
+                PyErr_SetString(PyExc_TypeError, "range tuple element is neither of type integer nor of type slice");
+            }
+
+        }
+    }
+
+    if (containsSlices) //key is no mask data object
     {
         if (!error)
         {
@@ -5151,32 +5176,122 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
         dataObj.unlock();
 
     }
-    else //contains no slices
+    else if (mask)
     {
-
         void* valuePtr;
         ito::tDataType fromType = ito::tInt8;
-        int32 value1;
-        float64 value2;
-        complex128 value3;
 
         if (!error)
         {
             if (PyLong_Check(value))
             {
-                value1 = PyLong_AsLong(value);
+                int32 value1 = PyLong_AsLong(value);
                 valuePtr = static_cast<void*>(&value1);
                 fromType = ito::tInt32;
             }
             else if (PyFloat_Check(value))
             {
-                value2 = PyFloat_AsDouble(value);
+                float64 value2 = PyFloat_AsDouble(value);
                 valuePtr = static_cast<void*>(&value2);
                 fromType = ito::tFloat64;
             }
             else if (PyComplex_Check(value))
             {
-                value3 = complex128(PyComplex_RealAsDouble(value), PyComplex_ImagAsDouble(value));
+                complex128 value3 = complex128(PyComplex_RealAsDouble(value), PyComplex_ImagAsDouble(value));
+                valuePtr = static_cast<void*>(&value3);
+                fromType = ito::tComplex128;
+            }
+            else if (Py_TYPE(value) == &ito::PythonRgba::PyRgbaType)
+            {
+                ito::PythonRgba::PyRgba *rgba = (ito::PythonRgba::PyRgba*)(value);
+                fromType = ito::tRGBA32;
+                valuePtr = static_cast<void*>(&rgba->rgba); //will be valid until end of function since this is a direct access to the underlying structure.
+            }
+            else
+            {
+                error = true;
+                PyErr_SetString(PyExc_TypeError, "assign value has no of the following types: integer, floating point, complex");
+            }
+
+            self->dataObject->unlock();
+        }
+
+        if (!error && fromType != ito::tInt8)
+        {
+
+            self->dataObject->lockWrite();
+
+            try
+            {
+                switch(self->dataObject->getType())
+                {
+                case ito::tUInt8:
+                    self->dataObject->setTo(ito::numberConversion<uint8>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                case ito::tInt8:
+                    self->dataObject->setTo(ito::numberConversion<int8>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                case ito::tUInt16:
+                    self->dataObject->setTo(ito::numberConversion<uint16>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                case ito::tInt16:
+                    self->dataObject->setTo(ito::numberConversion<int16>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                case ito::tUInt32:
+                    self->dataObject->setTo(ito::numberConversion<uint32>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                case ito::tInt32:
+                    self->dataObject->setTo(ito::numberConversion<int32>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                case ito::tRGBA32:
+                    self->dataObject->setTo(ito::numberConversion<ito::Rgba32>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                case ito::tFloat32:
+                    self->dataObject->setTo(ito::numberConversion<float32>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                case ito::tFloat64:
+                    self->dataObject->setTo(ito::numberConversion<float64>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                case ito::tComplex64:
+                    self->dataObject->setTo(ito::numberConversion<complex64>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                case ito::tComplex128:
+                    self->dataObject->setTo(ito::numberConversion<complex128>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                }
+
+            }
+            catch(cv::Exception exc)
+            {
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                error = true;
+            }
+
+            self->dataObject->unlock();
+        }
+    }
+    else //contains no slices and key is no mask
+    {
+        void* valuePtr;
+        ito::tDataType fromType = ito::tInt8;
+
+        if (!error)
+        {
+            if (PyLong_Check(value))
+            {
+                int32 value1 = PyLong_AsLong(value);
+                valuePtr = static_cast<void*>(&value1);
+                fromType = ito::tInt32;
+            }
+            else if (PyFloat_Check(value))
+            {
+                float64 value2 = PyFloat_AsDouble(value);
+                valuePtr = static_cast<void*>(&value2);
+                fromType = ito::tFloat64;
+            }
+            else if (PyComplex_Check(value))
+            {
+                complex128 value3 = complex128(PyComplex_RealAsDouble(value), PyComplex_ImagAsDouble(value));
                 valuePtr = static_cast<void*>(&value3);
                 fromType = ito::tComplex128;
             }
@@ -5268,6 +5383,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
         }
     }
 
+    if (!mask) Py_DECREF(key);
     DELETE_AND_SET_NULL_ARRAY(ranges);
     DELETE_AND_SET_NULL_ARRAY(idx);
 
