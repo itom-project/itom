@@ -934,17 +934,32 @@ class DATAOBJ_EXPORT DataObject
         void unlock();
         
         RetVal copyTo(DataObject &rhs, unsigned char regionOnly = 0) const;   /*!< deeply copies the data of this data object to the given rhs-dataObject, whose existing data will be deleted first. */
-        RetVal convertTo(DataObject &rhs, const int type, const double alpha=1, const double beta=0 ) const;
+        RetVal convertTo(DataObject &rhs, const int type, const double alpha=1, const double beta=0 ) const; /*!< Convertes an array to another data type with optional scaling (alpha * value + beta) */
+
+        RetVal setTo(const int8 &value, const DataObject &mask = DataObject());        /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
+        RetVal setTo(const uint8 &value, const DataObject &mask = DataObject());       /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
+        RetVal setTo(const int16 &value, const DataObject &mask = DataObject());       /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
+        RetVal setTo(const uint16 &value, const DataObject &mask = DataObject());      /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
+        RetVal setTo(const int32 &value, const DataObject &mask = DataObject());       /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
+        RetVal setTo(const uint32 &value, const DataObject &mask = DataObject());      /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
+        RetVal setTo(const float32 &value, const DataObject &mask = DataObject());     /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
+        RetVal setTo(const float64 &value, const DataObject &mask = DataObject());     /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
+        RetVal setTo(const complex64 &value, const DataObject &mask = DataObject());   /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
+        RetVal setTo(const complex128 &value, const DataObject &mask = DataObject());  /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
+        RetVal setTo(const ito::Rgba32 &value, const DataObject &mask = DataObject()); /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
         
         //! copy all values of this data object to the copyTo data object. The copyTo-data object must be allocated and have the same type and size (of its roi) than this data object.
         RetVal deepCopyPartial(DataObject &copyTo);      
 
-        //! returns 0, this is the index of the first element in valid DataObject range.
+        //! Returns the matrix iterator and sets it to the first matrix element.
         DObjIterator begin();
-        //! returns index of last-element in DataObject range incremented by one. (equal to number of elements in total range)
+        //! Returns the matrix iterator and sets it to the after-last matrix element.
         DObjIterator end();
 
+        //! Returns the matrix read-only iterator and sets it to the first matrix element.
         DObjConstIterator constBegin() const;
+
+        //! Returns the matrix read-only iterator and sets it to the after-last matrix element.
         DObjConstIterator constEnd() const;
 
         //// Arithmetic Operators
@@ -1151,6 +1166,7 @@ class DATAOBJ_EXPORT DataObject
 
         DataObject at(const ito::Range &rowRange, const ito::Range &colRange) const;    /*!< addressing method for two-dimensional data object with two given range-values. returns shallow copy of addressed regions */
         DataObject at(ito::Range *ranges) const;                                        /*!< addressing method for n-dimensional data object with n given range-values. returns shallow copy of addressed regions */
+        DataObject at(const DataObject &mask) const;                                    /*!< addressing method that returns a Mx1 data object of the same type than this object with only values that are marked in the given uint8 mask object */
 
         //! returns pointer to the data in the y-th row in the 2d-matrix plane matNum
         /*!
@@ -1254,9 +1270,6 @@ DATAOBJ_EXPORT DataObject imag(const DataObject &dObj);             /*!< calcula
 
 DATAOBJ_EXPORT DataObject makeContinuous(const DataObject &dObj);   /*!< if the given data object is not continuously organized, copies the content to a new continuous data object */
 
-
-//RetVal minMaxLoc(const DataObject &dObj, double *minVal, double *maxVal, int *minPos = NULL, int *maxPos = NULL);
-
 //! templated method for converting a given scalar value to the data type, indicated by the template parameter
 /*!
     \param fromType is the data type of the given scalar
@@ -1265,45 +1278,44 @@ DATAOBJ_EXPORT DataObject makeContinuous(const DataObject &dObj);   /*!< if the 
     \throws cv::Exception if the input data type is unknown or if the conversion failed
     \sa saturate_cast
 */
-template<typename _Tp> inline _Tp numberConversion(ito::tDataType fromType, void *scalar)
+template<typename _Tp> inline _Tp numberConversion(ito::tDataType fromType, const void *scalar)
 {
-    //_Tp retValue = 0;
     _Tp retValue;
 
     switch(fromType)
     {
     case ito::tUInt8:
-        retValue = cv::saturate_cast<_Tp>(*(static_cast<uint8*>(scalar)));
+        retValue = cv::saturate_cast<_Tp>(*(static_cast<const uint8*>(scalar)));
         break;
     case ito::tInt8:
-        retValue = cv::saturate_cast<_Tp>(*(static_cast<int8*>(scalar)));
+        retValue = cv::saturate_cast<_Tp>(*(static_cast<const int8*>(scalar)));
         break;
     case ito::tUInt16:
-        retValue = cv::saturate_cast<_Tp>(*(static_cast<uint16*>(scalar)));
+        retValue = cv::saturate_cast<_Tp>(*(static_cast<const uint16*>(scalar)));
         break;
     case ito::tInt16:
-        retValue = cv::saturate_cast<_Tp>(*(static_cast<int16*>(scalar)));
+        retValue = cv::saturate_cast<_Tp>(*(static_cast<const int16*>(scalar)));
         break;
     case ito::tUInt32:
-        retValue = cv::saturate_cast<_Tp>(*(static_cast<uint32*>(scalar)));
+        retValue = cv::saturate_cast<_Tp>(*(static_cast<const uint32*>(scalar)));
         break;
     case ito::tInt32:
-        retValue = cv::saturate_cast<_Tp>(*(static_cast<int32*>(scalar)));
+        retValue = cv::saturate_cast<_Tp>(*(static_cast<const int32*>(scalar)));
         break;
     case ito::tFloat32:
-        retValue = cv::saturate_cast<_Tp>(*(static_cast<ito::float32*>(scalar)));
+        retValue = cv::saturate_cast<_Tp>(*(static_cast<const ito::float32*>(scalar)));
         break;
     case ito::tFloat64:
-        retValue = cv::saturate_cast<_Tp>(*(static_cast<ito::float64*>(scalar)));
+        retValue = cv::saturate_cast<_Tp>(*(static_cast<const ito::float64*>(scalar)));
         break;
     case ito::tComplex64:
-        retValue = cv::saturate_cast<_Tp>(*(static_cast<ito::complex64*>(scalar)));
+        retValue = cv::saturate_cast<_Tp>(*(static_cast<const ito::complex64*>(scalar)));
         break;
     case ito::tComplex128:
-        retValue = cv::saturate_cast<_Tp>(*(static_cast<ito::complex128*>(scalar)));
+        retValue = cv::saturate_cast<_Tp>(*(static_cast<const ito::complex128*>(scalar)));
         break;
     case ito::tRGBA32:
-        retValue = cv::saturate_cast<_Tp>(*(static_cast<ito::Rgba32*>(scalar)));
+        retValue = cv::saturate_cast<_Tp>(*(static_cast<const ito::Rgba32*>(scalar)));
         break;
     default:
         cv::error(cv::Exception(CV_StsAssert, "Input value type unkown", "", __FILE__, __LINE__));
@@ -1311,6 +1323,12 @@ template<typename _Tp> inline _Tp numberConversion(ito::tDataType fromType, void
     }
 
     return retValue;
+};
+
+//deprecated
+template<typename _Tp> inline _Tp numberConversion(ito::tDataType fromType, void *scalar)
+{
+    return numberConversion<_Tp>(fromType, const_cast<const void*>(scalar));
 };
 
 

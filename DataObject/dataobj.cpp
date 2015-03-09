@@ -3223,31 +3223,34 @@ template<typename _Tp> RetVal AssignScalarFunc(DataObject *src, const ito::tData
     int numMats = src->getNumPlanes();
     int MatNum = 0;
 
-    _Tp scalar2 = ito::numberConversion<_Tp>(type, const_cast<void*>(scalar)); //convert the void* scalar to the data type of the source data object (throws error if not possible)
+    _Tp scalar2 = ito::numberConversion<_Tp>(type, scalar); //convert the void* scalar to the data type of the source data object (throws error if not possible)
 
-    cv::Mat_<_Tp> * tempMat = NULL;
+    cv::Mat** tempMats = src->get_mdata();
+    cv::Mat* tempMat;
+    _Tp* dstPtr = NULL;
     int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
     int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
     for (int nmat = 0; nmat < numMats; nmat++)
     {
         MatNum = src->seekMat(nmat, numMats);
-        tempMat = static_cast<cv::Mat_<_Tp> *>(src->get_mdata()[MatNum]);
+        tempMat = tempMats[MatNum];
 
         for (int y = 0; y < sizey; y++)
         {
-            _Tp* dstPtr = (_Tp*)tempMat->ptr(y);
-            for (int x = 0; x < sizex; x++)
+            dstPtr = tempMat->ptr<_Tp>(y);
+            for (int x = 0; x < sizex; ++x)
             {
-                dstPtr[x] = (_Tp)scalar2;
+                dstPtr[x] = scalar2;
             }
         }
     }
 
-    return 0;
+    return retOk;
 }
 
 typedef RetVal (*tAssignScalarFunc)(DataObject *src, const ito::tDataType type, const void *scalar);
 MAKEFUNCLIST(AssignScalarFunc);
+
 
 //! Every data element in this data object is set to the given value
 /*!
@@ -3380,6 +3383,222 @@ DataObject & DataObject::operator = (const ito::Rgba32 &value)
     fListAssignScalarFunc[m_type](this, ito::tRGBA32, static_cast<const void*>(&value));
     return *this;
 }
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! low-level, templated helper method to assign the given scalar to every element within its ROI in DataObject src.
+/*!
+    The scalar value is converted to the type of the source data object
+
+    \param *src is the source data object whose elements will be modified
+    \param type is the data type of the scalar value
+    \param *scalar is a void pointer to the scalar value
+    \return retOk
+    \throws cv::exception if conversion of scalar to dataObject's type is not possible
+    \sa numberConcversion
+*/
+template<typename _Tp> RetVal AssignScalarMaskFunc(DataObject *src, const DataObject *mask, const ito::tDataType type, const void *scalar)
+{
+    if (mask->getDims() < 2)
+    {
+        return AssignScalarFunc<_Tp>(src, type, scalar);
+    }
+    else
+    {
+        ito::RetVal retval;
+        if (mask->getType() != ito::tUInt8)
+        {
+            retval += ito::RetVal(ito::retError, 0, "mask must have type uint8");
+        }
+        else if (mask->getSize() != src->getSize())
+        {
+            retval += ito::RetVal(ito::retError, 0, "size of mask must correspond to size of data object");
+        }
+        else
+        {
+            int numMats = src->getNumPlanes();
+            int MatNum = 0;
+
+            _Tp scalar2 = ito::numberConversion<_Tp>(type, scalar); //convert the void* scalar to the data type of the source data object (throws error if not possible)
+
+            cv::Mat** tempMats = src->get_mdata();
+            cv::Mat* tempMat;
+            _Tp* dstPtr = NULL;
+            const cv::Mat** maskMats = mask->get_mdata();
+            const cv::Mat* maskMat;
+            const ito::uint8* maskPtr = NULL;
+
+            int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
+            int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
+
+            for (int nmat = 0; nmat < numMats; nmat++)
+            {
+                MatNum = src->seekMat(nmat, numMats);
+                tempMat = tempMats[MatNum];
+                MatNum = mask->seekMat(nmat, numMats);
+                maskMat = maskMats[MatNum];
+
+                for (int y = 0; y < sizey; y++)
+                {
+                    maskPtr = maskMat->ptr<ito::uint8>(y);
+                    dstPtr = tempMat->ptr<_Tp>(y);
+                    for (int x = 0; x < sizex; ++x)
+                    {
+                        if (maskPtr[x] > 0)
+                        {
+                            dstPtr[x] = scalar2;
+                        }
+                    }
+                }
+            }
+        }
+
+        return retval;
+    }
+}
+
+typedef RetVal (*tAssignScalarMaskFunc)(DataObject *src, const DataObject *mask, const ito::tDataType type, const void *scalar);
+MAKEFUNCLIST(AssignScalarMaskFunc);
+
+//! Sets all or some of the array elements to the specific value
+/*!
+    \param assigned scalar converted to the actual array type
+    \param mask Operation mask of the same size as *this and type uint8 or empty data object if no mask should be considered (default)
+    \return retError in case of error
+    \sa AssignScalarValue
+*/
+RetVal DataObject::setTo(const int8 &value, const DataObject &mask /*= DataObject()*/)
+{
+    return fListAssignScalarMaskFunc[m_type](this, &mask, ito::tInt8, static_cast<const void*>(&value));
+}
+
+//! Sets all or some of the array elements to the specific value
+/*!
+    \param assigned scalar converted to the actual array type
+    \param mask Operation mask of the same size as *this and type uint8 or empty data object if no mask should be considered (default)
+    \return retError in case of error
+    \sa AssignScalarValue
+*/
+RetVal DataObject::setTo(const uint8 &value, const DataObject &mask /*= DataObject()*/)
+{
+    return fListAssignScalarMaskFunc[m_type](this, &mask, ito::tUInt8, static_cast<const void*>(&value));
+}
+
+//! Sets all or some of the array elements to the specific value
+/*!
+    \param assigned scalar converted to the actual array type
+    \param mask Operation mask of the same size as *this and type uint8 or empty data object if no mask should be considered (default)
+    \return retError in case of error
+    \sa AssignScalarValue
+*/
+RetVal DataObject::setTo(const int16 &value, const DataObject &mask /*= DataObject()*/)
+{
+    return fListAssignScalarMaskFunc[m_type](this, &mask, ito::tInt16, static_cast<const void*>(&value));
+}
+
+//! Sets all or some of the array elements to the specific value
+/*!
+    \param assigned scalar converted to the actual array type
+    \param mask Operation mask of the same size as *this and type uint8 or empty data object if no mask should be considered (default)
+    \return retError in case of error
+    \sa AssignScalarValue
+*/
+RetVal DataObject::setTo(const uint16 &value, const DataObject &mask /*= DataObject()*/)
+{
+    return fListAssignScalarMaskFunc[m_type](this, &mask, ito::tUInt16, static_cast<const void*>(&value));
+}
+
+//! Sets all or some of the array elements to the specific value
+/*!
+    \param assigned scalar converted to the actual array type
+    \param mask Operation mask of the same size as *this and type uint8 or empty data object if no mask should be considered (default)
+    \return retError in case of error
+    \sa AssignScalarValue
+*/
+RetVal DataObject::setTo(const int32 &value, const DataObject &mask /*= DataObject()*/)
+{
+    return fListAssignScalarMaskFunc[m_type](this, &mask, ito::tInt32, static_cast<const void*>(&value));
+}
+
+//! Sets all or some of the array elements to the specific value
+/*!
+    \param assigned scalar converted to the actual array type
+    \param mask Operation mask of the same size as *this and type uint8 or empty data object if no mask should be considered (default)
+    \return retError in case of error
+    \sa AssignScalarValue
+*/
+RetVal DataObject::setTo(const uint32 &value, const DataObject &mask /*= DataObject()*/)
+{
+    return fListAssignScalarMaskFunc[m_type](this, &mask, ito::tUInt32, static_cast<const void*>(&value));
+}
+
+//! Sets all or some of the array elements to the specific value
+/*!
+    \param assigned scalar converted to the actual array type
+    \param mask Operation mask of the same size as *this and type uint8 or empty data object if no mask should be considered (default)
+    \return retError in case of error
+    \sa AssignScalarValue
+*/
+RetVal DataObject::setTo(const float32 &value, const DataObject &mask /*= DataObject()*/)
+{
+    return fListAssignScalarMaskFunc[m_type](this, &mask, ito::tFloat32, static_cast<const void*>(&value));
+}
+
+//! Sets all or some of the array elements to the specific value
+/*!
+    \param assigned scalar converted to the actual array type
+    \param mask Operation mask of the same size as *this and type uint8 or empty data object if no mask should be considered (default)
+    \return retError in case of error
+    \sa AssignScalarValue
+*/
+RetVal DataObject::setTo(const float64 &value, const DataObject &mask /*= DataObject()*/)
+{
+    return fListAssignScalarMaskFunc[m_type](this, &mask, ito::tFloat64, static_cast<const void*>(&value));
+}
+
+//! Sets all or some of the array elements to the specific value
+/*!
+    \param assigned scalar converted to the actual array type
+    \param mask Operation mask of the same size as *this and type uint8 or empty data object if no mask should be considered (default)
+    \return retError in case of error
+    \sa AssignScalarValue
+*/
+RetVal DataObject::setTo(const complex64 &value, const DataObject &mask /*= DataObject()*/)
+{
+    return fListAssignScalarMaskFunc[m_type](this, &mask, ito::tComplex64, static_cast<const void*>(&value));
+}
+
+//! Sets all or some of the array elements to the specific value
+/*!
+    \param assigned scalar converted to the actual array type
+    \param mask Operation mask of the same size as *this and type uint8 or empty data object if no mask should be considered (default)
+    \return retError in case of error
+    \sa AssignScalarValue
+*/
+RetVal DataObject::setTo(const complex128 &value, const DataObject &mask /*= DataObject()*/)
+{
+    return fListAssignScalarMaskFunc[m_type](this, &mask, ito::tComplex128, static_cast<const void*>(&value));
+}
+
+//! Sets all or some of the array elements to the specific value
+/*!
+    \param assigned scalar converted to the actual array type
+    \param mask Operation mask of the same size as *this and type uint8 or empty data object if no mask should be considered (default)
+    \return retError in case of error
+    \sa AssignScalarValue
+*/
+RetVal DataObject::setTo(const ito::Rgba32 &value, const DataObject &mask /*= DataObject()*/)
+{
+    return fListAssignScalarMaskFunc[m_type](this, &mask, ito::tRGBA32, static_cast<const void*>(&value));
+}
+
+//! Sets all or some of the array elements to the specific value
+/*!
+    \param assigned scalar converted to the actual array type
+    \param mask Operation mask of the same size as *this and type uint8 or empty data object if no mask should be considered (default)
+    \return retError in case of error
+    \sa AssignScalarValue
+*/
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // arithmetic operators
@@ -3783,26 +4002,28 @@ template<typename _Tp> RetVal OpScalarMulFunc(DataObject *src, const double &fac
    int numMats = src->getNumPlanes();
    int MatNum = 0;
 
-   cv::Mat_<_Tp> * tempMat = NULL;
+   cv::Mat* tempMat = NULL;
    _Tp* dstPtr = NULL;
    int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
    int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
+
+
    for (int nmat = 0; nmat < numMats; nmat++)
    {
        MatNum = src->seekMat(nmat, numMats);
-       tempMat = static_cast<cv::Mat_<_Tp> *>((src->get_mdata())[MatNum]);
+       tempMat = src->get_mdata()[MatNum];
 
        for (int y = 0; y < sizey; y++)
        {
-           dstPtr = (_Tp*)tempMat->ptr(y);
+           dstPtr = tempMat->ptr<_Tp>(y);
            for (int x = 0; x < sizex; x++)
            {
-               dstPtr[x] *= factor;
+               dstPtr[x] = cv::saturate_cast<_Tp>(dstPtr[x] * factor);
            }
        }
    }
 
-   return 0;
+   return retOk;
 }
 
 template<> RetVal OpScalarMulFunc<ito::complex64>(DataObject *src, const double &factor)
@@ -3811,18 +4032,18 @@ template<> RetVal OpScalarMulFunc<ito::complex64>(DataObject *src, const double 
    int MatNum = 0;
    ito::complex64 factor2 = ito::complex64(cv::saturate_cast<ito::float32>(factor), 0.0);
 
-   cv::Mat_<ito::complex64> * tempMat = NULL;
+   cv::Mat* tempMat = NULL;
    ito::complex64*  dstPtr = NULL;
    int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
    int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
    for (int nmat = 0; nmat < numMats; nmat++)
    {
        MatNum = src->seekMat(nmat, numMats);
-       tempMat = static_cast<cv::Mat_<ito::complex64> *>((src->get_mdata())[MatNum]);
+       tempMat = src->get_mdata()[MatNum];
 
        for (int y = 0; y < sizey; y++)
        {
-           dstPtr = (ito::complex64*)tempMat->ptr(y);
+           dstPtr = tempMat->ptr<ito::complex64>(y);
            for (int x = 0; x < sizex; x++)
            {
                dstPtr[x] = cv::saturate_cast<ito::complex64>(dstPtr[x] * factor2);
@@ -3839,18 +4060,18 @@ template<> RetVal OpScalarMulFunc<ito::complex128>(DataObject *src, const double
    int MatNum = 0;
    ito::complex128 factor2 = ito::complex128(cv::saturate_cast<ito::float64>(factor), 0.0);
 
-   cv::Mat_<ito::complex128> * tempMat = NULL;
+   cv::Mat * tempMat = NULL;
    ito::complex128* dstPtr = NULL;
    int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
    int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
    for (int nmat = 0; nmat < numMats; nmat++)
    {
        MatNum = src->seekMat(nmat, numMats);
-       tempMat = static_cast<cv::Mat_<ito::complex128> *>((src->get_mdata())[MatNum]);
+       tempMat = src->get_mdata()[MatNum];
 
        for (int y = 0; y < sizey; y++)
        {
-           dstPtr = (ito::complex128*)tempMat->ptr(y);
+           dstPtr = tempMat->ptr<ito::complex128>(y);
            for (int x = 0; x < sizex; x++)
            {
                dstPtr[x] = cv::saturate_cast<ito::complex128>(dstPtr[x] * factor2);
@@ -3869,21 +4090,21 @@ template<> RetVal OpScalarMulFunc<ito::Rgba32>(DataObject *src, const double &fa
    ito::Rgba32 factor2;
    factor2 = (factor < 0.0 ? (ito::uint32)0 : (factor > 4294967295 ? (ito::uint32)0xFFFFFFFF : (ito::uint32)(factor + 0.5)));
 
-   cv::Mat_<ito::Rgba32> * tempMat = NULL;
+   cv::Mat* tempMat = NULL;
    ito::Rgba32* dstPtr = NULL;
    int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
    int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
    for (int nmat = 0; nmat < numMats; nmat++)
    {
        MatNum = src->seekMat(nmat, numMats);
-       tempMat = static_cast<cv::Mat_<ito::Rgba32> *>((src->get_mdata())[MatNum]);
+       tempMat = src->get_mdata()[MatNum];
 
        for (int y = 0; y < sizey; y++)
        {
-           dstPtr = (ito::Rgba32*)tempMat->ptr(y);
+           dstPtr = tempMat->ptr<ito::Rgba32>(y);
            for (int x = 0; x < sizex; x++)
            {
-               dstPtr[x] *= (ito::Rgba32)factor2;
+               dstPtr[x] *= factor2;
            }
        }
    }
@@ -4930,6 +5151,75 @@ DataObject DataObject::at(ito::Range *ranges) const
     delete[] lims;
 
     return resMat;   
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! addressing method that returns a 1xM data object of the same type than this object with only values that are marked in the given uint8 mask object
+/*!
+    This method returns a new 1xM data object with the same type than this data object. The M columns are filled with a values
+    of this data object whose corresponding mask value is != 0.
+
+    \param mask is a uint8 mask data object with the same size than this object. Values != 0 are valid values in the mask.
+    \return new data object with shallow copy of this data object and adjusted ROI with respect to the given ranges
+*/
+DataObject DataObject::at(const DataObject &mask) const
+{
+    if (mask.getDims() != m_dims || (mask.getSize() != getSize()))
+    {
+        cv::error(cv::Exception(CV_StsAssert,"The mask object must have the same size than this data object","", __FILE__, __LINE__));
+    }
+    else if (mask.getType() != ito::tUInt8)
+    {
+        cv::error(cv::Exception(CV_StsAssert,"The mask object must have type uint8","", __FILE__, __LINE__));
+    }
+
+    int numPlanes = getNumPlanes();
+    int sizeY = m_size[m_dims - 2];
+    int sizeX = m_size[m_dims - 1];
+    int counts = 0;
+    const cv::Mat *maskMat;
+    const cv::Mat *mat;
+
+    for (int i = 0; i < numPlanes; ++i)
+    {
+        maskMat = mask.getCvPlaneMat(i);
+        counts += cvCountNonZero(maskMat);
+    }
+    
+    ito::DataObject result(1, counts, m_type);
+    copyTagMapTo(result);
+
+    ito::uint8 *dataRow = result.rowPtr(0,0);
+    const ito::uint8 *maskRow;
+    const ito::uint8 *srcRow;
+    unsigned int c = 0;
+    int es = elemSize();
+
+    for (int i = 0; i < numPlanes; ++i)
+    {
+        maskMat = mask.getCvPlaneMat(i);
+        mat = getCvPlaneMat(i);
+
+        for (int y = 0; y < sizeY; ++y)
+        {
+            maskRow = maskMat->ptr(y);
+            srcRow = mat->ptr(y);
+
+            for (int x = 0; x < sizeX; ++x)
+            {
+                if (maskRow[x])
+                {
+                    memcpy(dataRow, srcRow, es);
+                    dataRow += es;
+                }
+
+                maskRow++;
+                srcRow += es;
+            }
+        }
+    }
+
+    return result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
