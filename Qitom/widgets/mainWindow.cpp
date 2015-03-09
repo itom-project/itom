@@ -1723,7 +1723,7 @@ void MainWindow::mnuShowDesigner()
             QString appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
             env.insert("QT_PLUGIN_PATH", appPath);
 #if linux
-	    QString pathEnv = env.value("PATH");
+	        QString pathEnv = env.value("PATH");
             pathEnv.prepend(appPath + ":");
             env.insert("PATH", pathEnv);
 #else
@@ -1740,7 +1740,8 @@ void MainWindow::mnuShowDesigner()
             QStringList arguments;
             arguments << "-server"/* << filename*/;
             QString app = ProcessOrganizer::getAbsQtToolPath( "designer" );
-            process->start(app); //, arguments);
+            //qDebug() << app << arguments;
+            process->start(app, arguments); //the arguments stringlist must be given here, else the process cannot be started in a setup environment!
         }
     }
 }

@@ -596,10 +596,13 @@ end:
             env.insert("QT_PLUGIN_PATH", appPath);
 
 #if linux
+            QString pathEnv = env.value("PATH");
+            pathEnv.prepend(appPath + ":");
+            env.insert("PATH", pathEnv);
 #else
-                QString pathEnv = env.value("Path");
-                pathEnv.prepend(appPath + ";");
-                env.insert("Path", pathEnv);
+            QString pathEnv = env.value("Path");
+            pathEnv.prepend(appPath + ";");
+            env.insert("Path", pathEnv);
 #endif
 
             process->setProcessEnvironment(env);
