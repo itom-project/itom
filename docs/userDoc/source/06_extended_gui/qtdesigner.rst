@@ -28,6 +28,13 @@ can choose the base type of the user interface you want to create.
 
 .. figure:: images_userGUI/designerNew.png
     :scale: 70%
+    
+.. note::
+    
+    There is a known issue in the setup 1.4.0 (or earlier) concerning an unsuccessful startup of the external Qt designer. If you want to open
+    the designer using the button in the toolbox of the itom main window, the startup may fail. This bug is known and will be fixed
+    in future releases. Until then, please open the designer either by starting the **designer.exe** in the application folder of itom
+    or open an existing ui-file (e.g. in the demo folder of itom). This issue only affects setup versions (32bit and 64bit) for Windows.
 
 In principle you have the possibility to choose between three different base layouts:
 
