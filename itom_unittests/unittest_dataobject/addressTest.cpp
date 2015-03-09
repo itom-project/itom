@@ -3,7 +3,7 @@
 #include "../../Common/sharedStructures.h"
 
 //opencv
-#pragma warning( disable : 4996 ) //C:\OpenCV2.3\build\include\opencv2/flann/logger.h(70): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead.
+#pragma warning( disable : 4996 )
 #pragma once
 #include "opencv/cv.h"
 #include "../../DataObject/dataobj.h"
@@ -96,6 +96,5 @@ TYPED_TEST(AddressTest, checkDim)
     EXPECT_EQ ( this->matrix2x2.getDims(),2);
     EXPECT_EQ ( this->matrix2x2.getDims(),2);
 
-    EXPECT_EQ ( this->matrix1x1x1.getDims(),3);
-    
+    EXPECT_EQ ( this->matrix1x1x1.getDims(),3);   
 }
