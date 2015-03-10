@@ -2587,8 +2587,9 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
     ito::DataObject resDataObj;
     PyDataObject* resultObject = NULL;
 
-    if (PyArg_Parse(other, "O!", &PyDataObjectType, &otherDataObj))
+    if (PyDataObject_Check(other))
     {
+        otherDataObj = (PyDataObject*)(other);
         if (otherDataObj->dataObject == NULL)
         {
             PyErr_SetString(PyExc_TypeError, "internal data object of compare object is empty.");
@@ -2612,7 +2613,8 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
         }
         catch(cv::Exception exc)
         {
-            //PyErr_Format(PyExc_TypeError, "file: %s, line: %d, error: %s", (exc.file).c_str(), exc.line, (exc.err).c_str());
+            self->dataObject->unlock();
+            otherDataObj->dataObject->unlock();
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             return NULL;
         }
@@ -2624,9 +2626,46 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
         resultObject->dataObject = new ito::DataObject(resDataObj); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         return (PyObject*)resultObject;
     }
+    else if (PyFloat_Check(other) || PyLong_Check(other))
+    {
+        double value = PyFloat_AsDouble(other);
+        if (!PyErr_Occurred())
+        {
+            self->dataObject->lockRead();
+
+            try
+            {
+                switch (cmp_op)
+                {
+                case Py_LT: resDataObj = *(self->dataObject) < value; break;
+                case Py_LE: resDataObj = *(self->dataObject) <= value; break;
+                case Py_EQ: resDataObj = *(self->dataObject) == value; break;
+                case Py_NE: resDataObj = *(self->dataObject) != value; break;
+                case Py_GT: resDataObj = *(self->dataObject) > value; break;
+                case Py_GE: resDataObj = *(self->dataObject) >= value; break;
+                }
+            }
+            catch(cv::Exception exc)
+            {
+                self->dataObject->unlock();
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                return NULL;
+            }
+
+            self->dataObject->unlock();
+
+            resultObject = createEmptyPyDataObject();
+            resultObject->dataObject = new ito::DataObject(resDataObj); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            return (PyObject*)resultObject;
+        }
+        else
+        {
+            return NULL;
+        }
+    }
     else
     {
-        PyErr_SetString(PyExc_TypeError, "second argument of comparison operator is no data object.");
+        PyErr_SetString(PyExc_TypeError, "second argument of comparison operator is no data object or real, scalar value.");
 		return NULL;
     }
 }
@@ -4839,107 +4878,137 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
     int dims = self->dataObject->getDims();
     ito::Range *ranges = NULL;
     unsigned int *singlePointIdx = NULL;
+    PyDataObject *mask = NULL;
     bool singlePoint = true;
+    bool error = false;
 
     if (dims <= 0)
     {
         self->dataObject->unlock();
         Py_RETURN_NONE;
     }
-
-    if (dims == 1)
+    else if (dims == 1)
     {
         self->dataObject->unlock();
         PyErr_SetString(PyExc_TypeError, "data object dimension must not be one, but two instead");
         return NULL;
     }
 
-    if (!PyTuple_Check(key))
+    if (PyDataObject_Check(key))
     {
-        key = PyTuple_Pack(1,key); //new reference
+        mask = (PyDataObject*)(key);
+        Py_INCREF(key);
     }
     else
     {
-        Py_INCREF(key);
-    }
-
-    if (PyTuple_Size(key) != dims)
-    {
-        Py_DECREF(key);
-        self->dataObject->unlock();
-        PyErr_SetString(PyExc_TypeError, "length of key-tuple does not fit to dimension of data object");
-        return NULL;
-    }
-
-    Py_ssize_t length = PyTuple_Size(key);
-    ranges = new ito::Range[dims];
-    singlePointIdx = new unsigned int[dims];
-    bool error = false;
-    PyObject* elem = NULL;
-    int temp1;
-
-    for (Py_ssize_t i = 0; i < length && !error; i++)
-    {
-        elem = PyTuple_GetItem(key, i);
-
-        //check type of elem, must be int or stride
-        if (PyLong_Check(elem))
+        if (!PyTuple_Check(key))
         {
-            temp1 = PyLong_AsLong(elem);
-
-            if (temp1 >= 0 && temp1 < static_cast<long>(self->dataObject->getSize(i))) //temp1 is still the virtual order, therefore check agains the getSize-method which considers the transpose-flag
-            {
-                ranges[i].start = temp1;
-                ranges[i].end = temp1 + 1;
-                singlePointIdx[i] = temp1;
-            }
-            else
-            {
-                singlePointIdx[i] = 0;
-                error = true;
-                PyErr_SetString(PyExc_IndexError, "length of key-tuple exceeds dimension of data object");
-            }
-        }
-        else if (PySlice_Check(elem))
-        {
-            singlePoint = false;
-
-            Py_ssize_t start, stop, step, slicelength;
-            if (PySlice_GetIndicesEx(elem, self->dataObject->getSize(i), &start, &stop, &step, &slicelength) == 0)
-            {
-                if (slicelength < 1)
-                {
-                    error = true;
-                    PyErr_SetString(PyExc_IndexError, "length of slice must be >= 1");
-                }
-                else if (step != 1)
-                {
-                    error = true;
-                    PyErr_SetString(PyExc_IndexError, "step size must be one.");
-                }
-                else
-                {
-                    ranges[i].start = start;
-                    ranges[i].end = stop; //stop already points one index after the last index within the range, this is the same definition than openCV has.
-                }
-            }
-            else
-            {
-                error = true;
-                //error is already set by command
-                //PyErr_SetString(PyExc_TypeError, "no valid start and stop element can be found for given slice");
-            }
+            key = PyTuple_Pack(1,key); //new reference
         }
         else
         {
-            error = true;
-            PyErr_SetString(PyExc_TypeError, "range tuple element is neither of type integer nor of type slice");
+            Py_INCREF(key);
+        }
+
+        if (PyTuple_Size(key) != dims)
+        {
+            Py_DECREF(key);
+            self->dataObject->unlock();
+            PyErr_SetString(PyExc_TypeError, "length of key-tuple does not fit to dimension of data object");
+            return NULL;
+        }
+
+        Py_ssize_t length = PyTuple_Size(key);
+        ranges = new ito::Range[dims];
+        singlePointIdx = new unsigned int[dims];
+        PyObject* elem = NULL;
+        int temp1;
+
+        for (Py_ssize_t i = 0; i < length && !error; i++)
+        {
+            elem = PyTuple_GetItem(key, i);
+
+            //check type of elem, must be int or stride
+            if (PyLong_Check(elem))
+            {
+                temp1 = PyLong_AsLong(elem);
+
+                if (temp1 >= 0 && temp1 < static_cast<long>(self->dataObject->getSize(i))) //temp1 is still the virtual order, therefore check agains the getSize-method which considers the transpose-flag
+                {
+                    ranges[i].start = temp1;
+                    ranges[i].end = temp1 + 1;
+                    singlePointIdx[i] = temp1;
+                }
+                else
+                {
+                    singlePointIdx[i] = 0;
+                    error = true;
+                    PyErr_SetString(PyExc_IndexError, "length of key-tuple exceeds dimension of data object");
+                }
+            }
+            else if (PySlice_Check(elem))
+            {
+                singlePoint = false;
+
+                Py_ssize_t start, stop, step, slicelength;
+                if (PySlice_GetIndicesEx(elem, self->dataObject->getSize(i), &start, &stop, &step, &slicelength) == 0)
+                {
+                    if (slicelength < 1)
+                    {
+                        error = true;
+                        PyErr_SetString(PyExc_IndexError, "length of slice must be >= 1");
+                    }
+                    else if (step != 1)
+                    {
+                        error = true;
+                        PyErr_SetString(PyExc_IndexError, "step size must be one.");
+                    }
+                    else
+                    {
+                        ranges[i].start = start;
+                        ranges[i].end = stop; //stop already points one index after the last index within the range, this is the same definition than openCV has.
+                    }
+                }
+                else
+                {
+                    error = true;
+                    //error is already set by command
+                    //PyErr_SetString(PyExc_TypeError, "no valid start and stop element can be found for given slice");
+                }
+            }
+            else
+            {
+                error = true;
+                PyErr_SetString(PyExc_TypeError, "range tuple element is neither of type integer nor of type slice");
+            }
         }
     }
 
     if (!error)
     {
-        if (singlePoint)
+        if (mask)
+        {
+            PyDataObject *retObj2 = PythonDataObject::createEmptyPyDataObject(); // new reference
+            try
+            {
+                retObj2->dataObject = new ito::DataObject(self->dataObject->at(*(mask->dataObject)));
+
+                if (!retObj2->dataObject->getOwnData())
+                {
+                    PyDataObject_SetBase(retObj2, (PyObject*)self);
+                }
+
+                retObj2->dataObject->unlock();
+                retObj = (PyObject*)retObj2;
+            }
+            catch(cv::Exception exc)
+            {
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                Py_DECREF(retObj2);
+                retObj2 = NULL;
+            }
+        }
+        else if (singlePoint)
         {
             retObj = PyDataObj_At(self->dataObject, singlePointIdx);
         }
@@ -4985,7 +5054,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
     if (self->dataObject == NULL)
     {
         PyErr_SetString(PyExc_TypeError, "data object is NULL");
-        return 0;
+        return -1;
     }
 
     self->dataObject->lockRead();
@@ -4998,12 +5067,14 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
     if (dims <= 0)
     {
         self->dataObject->unlock();
+        PyErr_SetString(PyExc_TypeError, "empty data object.");
         return -1;
     }
 
     if (PyDataObject_Check(key))
     {
         mask = (PyDataObject*)key;
+        Py_INCREF(key); //increment reference
     }
     else
     {
@@ -5383,7 +5454,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
         }
     }
 
-    if (!mask) Py_DECREF(key);
+    Py_DECREF(key);
     DELETE_AND_SET_NULL_ARRAY(ranges);
     DELETE_AND_SET_NULL_ARRAY(idx);
 

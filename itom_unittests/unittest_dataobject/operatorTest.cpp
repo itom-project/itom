@@ -487,9 +487,9 @@ TYPED_TEST(operatorTest, CompareEQ_test)
     }
     else
     {
-        mat3_1d = mat1_1d == mat2_1d;
-	    mat3_2d = mat1_2d == mat2_2d;
-	    mat3_3d = mat1_3d == mat2_3d;
+        mat3_1d = (mat1_1d == mat2_1d);
+	    mat3_2d = (mat1_2d == mat2_2d);
+	    mat3_3d = (mat1_3d == mat2_3d);
 		
 	    EXPECT_EQ ( this->mat3_1d.at<ito::uint8>(0,0), cv::saturate_cast<ito::uint8>(255));
 	    EXPECT_NE ( this->mat3_1d.at<ito::uint8>(0,0), cv::saturate_cast<ito::uint8>(0));
@@ -511,6 +511,26 @@ TYPED_TEST(operatorTest, CompareEQ_test)
 		EXPECT_EQ ( this->mat3_3d.at<ito::uint8>(2,0,1), cv::saturate_cast<ito::uint8>(0));		//!< Values of the elements on this location are kept different in both matrices mat1_3d and mat2_3d to check if the resultant matrix mat3_3d contains '0' value on the same location.
 		EXPECT_EQ ( this->mat3_3d.at<ito::uint8>(2,1,0), cv::saturate_cast<ito::uint8>(255));
 		EXPECT_EQ ( this->mat3_3d.at<ito::uint8>(2,1,1), cv::saturate_cast<ito::uint8>(255));
+
+        mat3_1d = (mat1_1d == 1);
+        EXPECT_EQ(mat3_1d.at<ito::uint8>(0,0), 255);
+
+        mat3_2d = (mat1_2d == 5.0);
+        EXPECT_EQ(mat3_2d.at<ito::uint8>(0,0), 0);
+        EXPECT_EQ(mat3_2d.at<ito::uint8>(1,0), 255);
+        EXPECT_EQ(mat3_2d.at<ito::uint8>(0,1), 0);
+        EXPECT_EQ(mat3_2d.at<ito::uint8>(1,1), 0);
+
+        mat3_3d = (mat1_3d == 65);
+        EXPECT_EQ ( mat3_3d.at<ito::uint8>(0,0,0), cv::saturate_cast<ito::uint8>(0));
+		EXPECT_EQ ( mat3_3d.at<ito::uint8>(0,0,1), cv::saturate_cast<ito::uint8>(0));		
+		EXPECT_EQ ( mat3_3d.at<ito::uint8>(0,1,0), cv::saturate_cast<ito::uint8>(0));
+		EXPECT_EQ ( mat3_3d.at<ito::uint8>(1,0,2), cv::saturate_cast<ito::uint8>(255));
+		EXPECT_EQ ( mat3_3d.at<ito::uint8>(1,1,3), cv::saturate_cast<ito::uint8>(0));		
+		EXPECT_EQ ( mat3_3d.at<ito::uint8>(2,0,0), cv::saturate_cast<ito::uint8>(0));
+		EXPECT_EQ ( mat3_3d.at<ito::uint8>(2,0,1), cv::saturate_cast<ito::uint8>(0));		
+		EXPECT_EQ ( mat3_3d.at<ito::uint8>(2,1,0), cv::saturate_cast<ito::uint8>(0));
+		EXPECT_EQ ( mat3_3d.at<ito::uint8>(2,1,1), cv::saturate_cast<ito::uint8>(0));
     }		 
 }
 
@@ -636,6 +656,22 @@ TYPED_TEST(operatorTest, CompareGE_test)
 		EXPECT_NE ( this->mat3_2d.at<ito::uint8>(0,0), cv::saturate_cast<ito::uint8>(0));
 		EXPECT_EQ ( this->mat3_3d.at<ito::uint8>(1,1,1), cv::saturate_cast<ito::uint8>(255));
 		EXPECT_NE ( this->mat3_3d.at<ito::uint8>(1,1,1), cv::saturate_cast<ito::uint8>(0));	
+
+        mat3_1d = mat1_1d >= 7;
+		mat3_2d = mat1_2d >= 7;
+		mat3_3d = mat1_3d >= 7;
+
+        EXPECT_EQ ( mat3_1d.at<ito::uint8>(0,0), 255);
+		EXPECT_EQ ( mat3_2d.at<ito::uint8>(0,0), 255);
+		EXPECT_EQ ( mat3_3d.at<ito::uint8>(1,1,1), 255);
+
+        mat3_1d = mat1_1d >= 35;
+		mat3_2d = mat1_2d >= 35;
+		mat3_3d = mat1_3d >= 35;
+
+        EXPECT_EQ ( mat3_1d.at<ito::uint8>(0,0), 0);
+		EXPECT_EQ ( mat3_2d.at<ito::uint8>(0,0), 0);
+		EXPECT_EQ ( mat3_3d.at<ito::uint8>(1,1,1), 0);
     }	
 }
 
@@ -678,6 +714,22 @@ TYPED_TEST(operatorTest, CompareLT_test)
 	    EXPECT_NE ( this->mat3_2d.at<ito::uint8>(0,0), cv::saturate_cast<ito::uint8>(0));
 	    EXPECT_EQ ( this->mat3_3d.at<ito::uint8>(1,1,1), cv::saturate_cast<ito::uint8>(255));
 	    EXPECT_NE ( this->mat3_3d.at<ito::uint8>(1,1,1), cv::saturate_cast<ito::uint8>(0));	
+
+        mat3_1d = mat1_1d < 7;
+		mat3_2d = mat1_2d < 7;
+		mat3_3d = mat1_3d < 7;
+
+        EXPECT_EQ ( mat3_1d.at<ito::uint8>(0,0), 0);
+		EXPECT_EQ ( mat3_2d.at<ito::uint8>(0,0), 0);
+		EXPECT_EQ ( mat3_3d.at<ito::uint8>(1,1,1), 0);
+
+        mat3_1d = mat1_1d < 35;
+		mat3_2d = mat1_2d < 35;
+		mat3_3d = mat1_3d < 35;
+
+        EXPECT_EQ ( mat3_1d.at<ito::uint8>(0,0), 255);
+		EXPECT_EQ ( mat3_2d.at<ito::uint8>(0,0), 255);
+		EXPECT_EQ ( mat3_3d.at<ito::uint8>(1,1,1), 255);
     }			
 }
 

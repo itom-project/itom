@@ -4163,9 +4163,9 @@ template<typename _Tp> RetVal CmpFunc(const DataObject *src1, const DataObject *
    int rhsMatNum = 0;
    int resMatNum = 0;
 
-   const cv::Mat_<_Tp> *src1mat;
-   const cv::Mat_<_Tp> *src2mat;
-   cv::Mat_<uint8> *dest;
+   const cv::Mat *src1mat;
+   const cv::Mat *src2mat;
+   cv::Mat *dest;
 
    for (int nmat = 0; nmat < numMats; nmat++)
    {
@@ -4173,9 +4173,9 @@ template<typename _Tp> RetVal CmpFunc(const DataObject *src1, const DataObject *
       rhsMatNum = src2->seekMat(nmat, numMats);
       resMatNum = dst->seekMat(nmat, numMats);
 
-      src1mat = static_cast<const cv::Mat_<_Tp> *>(src1->get_mdata()[lhsMatNum]);
-      src2mat = static_cast<const cv::Mat_<_Tp> *>(src2->get_mdata()[rhsMatNum]);
-      dest = static_cast<cv::Mat_<uint8> *>(dst->get_mdata()[resMatNum]);
+      src1mat = src1->get_mdata()[lhsMatNum];
+      src2mat = src2->get_mdata()[rhsMatNum];
+      dest = dst->get_mdata()[resMatNum];
 
       if(src1mat->depth() == 1 || src1mat->depth() == 7)
       {
@@ -4185,7 +4185,7 @@ template<typename _Tp> RetVal CmpFunc(const DataObject *src1, const DataObject *
       cv::compare(*src1mat, *src2mat, *dest, cmpOp);
    }
 
-   return 0;
+   return ito::retOk;
 }
 
 //! template specialisation for compare function of type complex64
@@ -4315,6 +4315,160 @@ DataObject DataObject::operator != (DataObject &rhs)
 
     DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous | rhs.m_continuous);
     RetVal retValue = fListCmpFunc[m_type](this, &rhs, &resMat, cv::CMP_NE);
+
+    return resMat;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! low-level, templated method which compares each element in source-matrix1 with its corresponding element in source-matrix2 and saves the result in a destionation matrix
+/*!
+    \param *src1 is the first source matrix
+    \param *src2 is the second source matrix
+    \param *dst is the destination matrix, which must have the same ROI than src1 and src2 and must be of type uint8
+    \param cmpOp is the compare operator (cv::CMP_EQ, cv::CMP_GT, cv::CMP_GE, cv::CMP_LT, cv::CMP_LE, cv::CMP_NE)
+    \remark no comparison is possible for source matrices of type int8 (due to openCV-problems)
+    \throws cv::Exception if source matrix is of type int8
+    \return retOk
+*/
+template<typename _Tp> RetVal CmpFuncScalar(const DataObject *src, const float64 &value, DataObject *dst, int cmpOp)
+{
+   int numMats = src->getNumPlanes();
+   int matNum = 0;
+   int resMatNum = 0;
+
+   const cv::Mat *srcmat;
+   cv::Mat *dest;
+
+   for (int nmat = 0; nmat < numMats; nmat++)
+   {
+      matNum = src->seekMat(nmat, numMats);
+      resMatNum = dst->seekMat(nmat, numMats);
+
+      srcmat = src->get_mdata()[matNum];
+      dest = dst->get_mdata()[resMatNum];
+
+      if(srcmat->depth() == 1 || srcmat->depth() == 7)
+      {
+          cv::error(cv::Exception(CV_StsAssert, "Compare operator not defined for int8.", "", __FILE__, __LINE__));
+      }      
+
+      cv::compare(*srcmat, value, *dest, cmpOp);
+   }
+
+   return ito::retOk;
+}
+
+//! template specialisation for compare function of type complex64
+/*!
+    \throws cv::Exception since comparison is not defined for complex input types
+*/
+template<> RetVal CmpFuncScalar<ito::complex64>(const DataObject * /*src*/, const float64 &/*value*/, DataObject * /*dst*/, int /*cmpOp*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
+//! template specialisation for compare function of type complex128
+/*!
+    \throws cv::Exception since comparison is not defined for complex input types
+*/
+template<> RetVal CmpFuncScalar<ito::complex128>(const DataObject * /*src*/, const float64 &/*value*/, DataObject * /*dst*/, int /*cmpOp*/)
+{
+   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
+   return 0;
+}
+
+typedef RetVal (*tCmpFuncScalar)(const DataObject *src, const float64 &value, DataObject *dst, int cmpOp);
+MAKEFUNCLIST(CmpFuncScalar);
+
+
+//! compare operator, compares for "lower than"
+/*!
+    \param value is the value with which this data object should element-wisely be compared
+    \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the element-wise comparison
+    \throws cv::Exception if both data objects doesn't have the same size or type
+    \sa CmpFunc
+*/
+DataObject DataObject::operator < (const float64 &value)
+{
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    RetVal retValue = fListCmpFuncScalar[m_type](this, value, &resMat, cv::CMP_LT);
+
+    return resMat;
+}
+
+//! compare operator, compares for "bigger than"
+/*!
+    \param value is the value with which this data object should element-wisely be compared
+    \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the element-wise comparison
+    \throws cv::Exception if both data objects doesn't have the same size or type
+    \sa CmpFunc
+*/
+DataObject DataObject::operator > (const float64 &value)
+{
+   DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    RetVal retValue = fListCmpFuncScalar[m_type](this, value, &resMat, cv::CMP_GT);
+
+    return resMat;
+}
+
+//! compare operator, compares for "lower or equal than"
+/*!
+    \param value is the value with which this data object should element-wisely be compared
+    \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the element-wise comparison
+    \throws cv::Exception if both data objects doesn't have the same size or type
+    \sa CmpFunc
+*/
+DataObject DataObject::operator <= (const float64 &value)
+{
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    RetVal retValue = fListCmpFuncScalar[m_type](this, value, &resMat, cv::CMP_LE);
+
+    return resMat;
+}
+
+//! compare operator, compares for "bigger or equal than"
+/*!
+    \param value is the value with which this data object should element-wisely be compared
+    \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the element-wise comparison
+    \throws cv::Exception if both data objects doesn't have the same size or type
+    \sa CmpFunc
+*/
+DataObject DataObject::operator >= (const float64 &value)
+{
+   DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    RetVal retValue = fListCmpFuncScalar[m_type](this, value, &resMat, cv::CMP_GE);
+
+    return resMat;
+}
+
+//! compare operator, compares for "equal to"
+/*!
+    \param value is the value with which this data object should element-wisely be compared
+    \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the element-wise comparison
+    \throws cv::Exception if both data objects doesn't have the same size or type
+    \sa CmpFunc
+*/
+DataObject DataObject::operator == (const float64 &value)
+{
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    RetVal retValue = fListCmpFuncScalar[m_type](this, value, &resMat, cv::CMP_EQ);
+
+    return resMat;
+}
+
+//! compare operator, compares for "unequal to"
+/*!
+    \param value is the value with which this data object should element-wisely be compared
+    \return compare matrix of type uint8, which contains 0 or 1, depending on the result of the element-wise comparison
+    \throws cv::Exception if both data objects doesn't have the same size or type
+    \sa CmpFunc
+*/
+DataObject DataObject::operator != (const float64 &value)
+{
+    DataObject resMat(m_dims, m_size.m_p, tUInt8, this->m_continuous);
+    RetVal retValue = fListCmpFuncScalar[m_type](this, value, &resMat, cv::CMP_NE);
 
     return resMat;
 }

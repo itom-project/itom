@@ -1004,6 +1004,13 @@ class DATAOBJ_EXPORT DataObject
         DataObject operator == (DataObject &rhs);
         DataObject operator != (DataObject &rhs);
 
+        DataObject operator < (const float64 &value);
+        DataObject operator > (const float64 &value);
+        DataObject operator <= (const float64 &value);
+        DataObject operator >= (const float64 &value);
+        DataObject operator == (const float64 &value);
+        DataObject operator != (const float64 &value);
+
         // bitshift operators
         DataObject operator << (const unsigned int shiftbit);
         DataObject & operator <<= (const unsigned int shiftbit);
