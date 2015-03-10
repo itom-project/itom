@@ -259,7 +259,7 @@ Name: "{commondesktop}\{#Name}"; Filename: "{app}\{#ExeName}"; Tasks: desktopico
 
 [Run]
 Filename: "{tmp}\vcredist_x86.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2010 Redistributable Package (x86)..."; Components: CREDPACK;
-Filename: "{tmp}\python-3.4.3.msi"; Flags: shellexec waituntilterminated; StatusMsg: "Phyton 3.3..."; Components: PYTHON
+Filename: "{tmp}\python-3.4.3.msi"; Flags: shellexec waituntilterminated; StatusMsg: "Phyton 3.4..."; Components: PYTHON
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\numpy-1.9.2rc1+mkl-cp34-none-win32.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "NumPy..."; Components: NUMPY
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\scipy-0.15.1-cp34-none-win32.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "SciPy..."; Components: SCIPY
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\six-1.9.0-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "Six..."; Components: SIX
@@ -372,12 +372,16 @@ end;
 function GetPythonPath(Value: string): string;
 var  PythonPath: string;
      Found: Boolean;
+     RootKey: Integer;
 begin
   Found := True;
-  if not RegQueryStringValue(HKLM, 'SOFTWARE\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
-    if not RegQueryStringValue(HKLM, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
-      if not RegQueryStringValue(HKCU, 'SOFTWARE\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
-        if not RegQueryStringValue(HKCU, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
+  if IsWin64 then  RootKey := HKEY_LOCAL_MACHINE_64
+  else  RootKey := HKEY_LOCAL_MACHINE;
+  
+  if not RegQueryStringValue(RootKey, 'SOFTWARE\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
+    if not RegQueryStringValue(RootKey, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
+      if not RegQueryStringValue(RootKey, 'SOFTWARE\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
+        if not RegQueryStringValue(RootKey, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
           MsgBox('Python path was not found in registry!', mbError, MB_OK);
           Found := False;
         end; 
@@ -387,6 +391,4 @@ begin
   
   if Found then
     Result := PythonPath;
-    
-//  MsgBox('Python path is "' + Result + '"!', mbError, MB_OK);
 end;
