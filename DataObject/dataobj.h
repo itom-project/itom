@@ -592,6 +592,8 @@ class DATAOBJ_EXPORT DataObject
         RetVal copyFromData2DInternal(const uchar* src, const int sizeOfElem, const int sizeX, const int sizeY);  
         RetVal copyFromData2DInternal(const uchar* src, const int sizeOfElem, const int sizeX, const int x0, const int y0, const int width, const int height);
         
+        // Forward declaration: Default values are not allowed for friend functions, adding a non-friend function with default argument instead
+        template<typename _Tp> RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel = 0);
 
         //low-level, templated methods
         //most low-level methods are marked "friend" such that they can access private members of their data object parameters
@@ -606,7 +608,7 @@ class DATAOBJ_EXPORT DataObject
         template<typename _Tp> friend RetVal AssignScalarFunc(const DataObject *src, const ito::tDataType type, const void *scalar);
         template<typename _Tp> friend RetVal MakeContinuousFunc(const DataObject &dObj, DataObject &resDObj);
         template<typename _Tp> friend RetVal EvaluateTransposeFlagFunc(DataObject *dObj);
-        template<typename _Tp> friend RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel = 0);
+        template<typename _Tp> friend RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel);
         template<typename _Tp> friend std::ostream& coutFunc(std::ostream& out, const DataObject& dObj);
 
         // more friends due to change of std::vector to int ** for m_data ...
