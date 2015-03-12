@@ -55,12 +55,13 @@ check the build dependencies below which contain software packages and libraries
     git_clone.rst
     build_cmake.rst
 
-For linux, a short description of the installation that contains more specific information than the sections above, is available here:
+For linux as well as Mac OS X, a short description of the installation that contains more specific information than the sections above, is available here:
 
 .. toctree::
     :maxdepth: 1
     
     build_linux.rst
+    build_osx.rst
 
 
 Plugins, Designer-Plugins

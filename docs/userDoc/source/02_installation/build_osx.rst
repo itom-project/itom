@@ -38,10 +38,10 @@ Required:
 * Editor **QScintilla2**
 * **git**
 * **Cmake**
-* *PointCloudLibrary** (if exists version 1.6 or better 1.7, else see http://pointclouds.org/downloads/linux.html or build it on your own, the point cloud library is optional!)
+* **PointCloudLibrary** (if exists version 1.6 or better 1.7, else see http://pointclouds.org/downloads/linux.html or build it on your own, the point cloud library is optional!)
 * **Doxygen** (doxygen, doxygen-gui)
-* glew 
-* fftw
+* **glew**
+* **fftw**
 
 To install all in one rush run
 
@@ -102,7 +102,7 @@ Click Browse Build and navigate to your build Folder (you might have to create i
 
 Click the configure button. You will be asked how you would like to generate the files. Choose Unix-Makefile from the Drop Down menu and Click OK. CMake will perform some tests and return a set of red boxes appear in the CMake Window.
 
-Uncheck BUILD_SHARED_LIBS, uncheck BUILD_TESTS, add an SDK path to CMAKE_OSX_SYSROOT, it will look something like this “/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk”. Add x86_64 to CMAKE_OSX_ARCHITECTURES, this tells it to compile against the current system. Uncheck WITH_1394, uncheck WITH_FFMPEG.
+Uncheck **BUILD_SHARED_LIBS**, uncheck **BUILD_TESTS**, add an **SDK path** to **CMAKE_OSX_SYSROOT**, it will look something like this **/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk**. Add **x86_64** to **CMAKE_OSX_ARCHITECTURES**, this tells it to compile against the current system. Uncheck **WITH_1394**, uncheck **WITH_FFMPEG**.
 
 Click generate.
 
@@ -167,7 +167,7 @@ Use **CMake** to create the necessary makefiles for debug and/or release:
 5. Usually, CMake should find most of the necessary third-party libraries, however you should check the following things:
     
     * OpenCV: OpenCV is located by the file **OpenCVConfig.cmake** in the directory **OpenCV_DIR**. Usually this is automatically detected in **~/opencv/build/OpenCVConfig.cmake**. If this is not the case, set **OpenCV_DIR** to the correct directory and press configure.
-    * Python3: On OS X CMake always finds the Python version 2 as default version. This is wrong. Therefore set the following variables to the right pathes: PYTHON_EXECUTABLE to /Library/Frameworks/Python.framework/Versions/3.4/bin, PYTHON_INCLUDE_DIR to /Library/Frameworks/Python.framework/Versions/3.4/include, PYTHON_LIBRARY to /Library/Frameworks/Python.framework/Versions/3.4/lib/libpython3.4.dylib . The suffix 3.4 might also be different. It is also supported to use any other version of Python 3.
+    * Python3: On OS X CMake always finds the Python version 2 as default version. This is wrong. Therefore set the following variables to the right pathes: **PYTHON_EXECUTABLE** to **/Library/Frameworks/Python.framework/Versions/3.4/bin**, **PYTHON_INCLUDE_DIR** to **/Library/Frameworks/Python.framework/Versions/3.4/include**, **PYTHON_LIBRARY** to **/Library/Frameworks/Python.framework/Versions/3.4/lib/libpython3.4.dylib**. The suffix 3.4 might also be different. It is also supported to use any other version of Python 3.
 6. Push the configure button again and then generate.
 7. Now you can build |itom| by the **make** command:
     
