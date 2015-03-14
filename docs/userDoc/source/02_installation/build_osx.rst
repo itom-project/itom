@@ -45,12 +45,12 @@ The following list describe packages that are required or recommended for buildi
 
 Required packages:
 
-* **Qt** (it is also possible to build it from source http://qt-project.org/doc/qt-4.8/install-mac.html )
+* **Qt**
 * **QScintilla2**
 * **git**
 * **Cmake**
 * **PointCloudLibrary**
-* **Doxygen** (doxygen, doxygen-gui)
+* **Doxygen**
 * **glew**
 * **fftw**
 
@@ -67,7 +67,7 @@ To install all in one rush run
 
     brew tap homebrew/science
     brew tap homebrew/python
-	brew install git gcc python3 pkg-config
+    brew install git gcc python3 pkg-config
     brew install qt --with-developer --with-docs
     brew install doxygen --with-doxywizard --with-graphviz
     brew install qscintilla2 --with-python3
@@ -93,7 +93,7 @@ To edit you aliases execute the following command.
 
 .. code-block:: bash
 
-    printf "alias python='python3'\n" >> ~/.bash_profile; . ~/.bash_profile
+    printf "alias python='python3'\n" >> ~/.bash_profile
 
 The same thing must be done for *pip* and *easy_install*. Be adviced to check the installed version number of python and change it when necessary. The command python --version will give you the installed version number.
 
@@ -187,23 +187,52 @@ The plugins and designerPlugins will finally be compiled and then copy their res
 Known Problems
 --------------
 
-    PyPort bug
-    ----------
-    If you get build errors that trace back to an error like
+PyPort bug
+^^^^^^^^^^
+If you get build errors that trace back to an error like
 
-    .. code-block:: bash
-        ... /__locale:436:15: error: C++ requires a type specifier for all declarations
-            char_type toupper(char_type __c) const
-                            ^~~~~~~~~~~~~~~~~~~~~~
-        /opt/local/Library/Frameworks/Python.framework/Versions/2.7/Headers/pyport.h:731:29: note: expanded from macro 'toupper'
+.. code-block:: bash
+    ... /__locale:436:15: error: C++ requires a type specifier for all declarations
+        char_type toupper(char_type __c) const
+                        ^~~~~~~~~~~~~~~~~~~~~~
+    /opt/local/Library/Frameworks/Python.framework/Versions/2.7/Headers/pyport.h:731:29: note: expanded from macro 'toupper'
 
-    You are using a deprecated version of PyPort.
+You are using a deprecated version of PyPort.
 
-    Locate **pyport.h**, it might be located in **/Library/Frameworks/Python.framework/Versions/3.4/include/python3.4m/pyport.h**. Open it and replace
+Locate **pyport.h**, it might be located in **/Library/Frameworks/Python.framework/Versions/3.4/include/python3.4m/pyport.h**. Open it and replace
 
-    .. code-block:: c
+.. code-block:: c
 
-        #ifdef _PY_PORT_CTYPE_UTF8_ISSUE
+    #ifdef _PY_PORT_CTYPE_UTF8_ISSUE
+        #include <ctype.h>
+        #include <wctype.h>
+        #undef isalnum
+        #define isalnum(c) iswalnum(btowc(c))
+        #undef isalpha
+        #define isalpha(c) iswalpha(btowc(c))
+        #undef islower
+        #define islower(c) iswlower(btowc(c))
+        #undef isspace
+        #define isspace(c) iswspace(btowc(c))
+        #undef isupper
+        #define isupper(c) iswupper(btowc(c))
+        #undef tolower
+        #define tolower(c) towlower(btowc(c))
+        #undef toupper
+        #define toupper(c) towupper(btowc(c))
+    #endif
+
+with
+
+.. code-block:: c
+
+    #ifdef _PY_PORT_CTYPE_UTF8_ISSUE
+        #ifndef __cplusplus
+            /* The workaround below is unsafe in C++ because
+             * the <locale> defines these symbols as real functions,
+             * with a slightly different signature.
+             * See python issue #10910
+             */
             #include <ctype.h>
             #include <wctype.h>
             #undef isalnum
@@ -221,45 +250,16 @@ Known Problems
             #undef toupper
             #define toupper(c) towupper(btowc(c))
         #endif
+    #endif
 
-    with
+See also http://bugs.python.org/review/10910/diff/8559/Include/pyport.h
 
-    .. code-block:: c
+python3 not available in commmand line
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+To make Python 3.x and its tools available to the command line add it to the PATH with a command like
 
-        #ifdef _PY_PORT_CTYPE_UTF8_ISSUE
-            #ifndef __cplusplus
-                /* The workaround below is unsafe in C++ because
-                 * the <locale> defines these symbols as real functions,
-                 * with a slightly different signature.
-                 * See python issue #10910
-                 */
-                #include <ctype.h>
-                #include <wctype.h>
-                #undef isalnum
-                #define isalnum(c) iswalnum(btowc(c))
-                #undef isalpha
-                #define isalpha(c) iswalpha(btowc(c))
-                #undef islower
-                #define islower(c) iswlower(btowc(c))
-                #undef isspace
-                #define isspace(c) iswspace(btowc(c))
-                #undef isupper
-                #define isupper(c) iswupper(btowc(c))
-                #undef tolower
-                #define tolower(c) towlower(btowc(c))
-                #undef toupper
-                #define toupper(c) towupper(btowc(c))
-            #endif
-        #endif
+.. code-block:: bash
 
-    See also http://bugs.python.org/review/10910/diff/8559/Include/pyport.h
+    sudo export PATH=/Library/Frameworks/Python.framework/Versions/3.4/bin:$PATH
 
-    python3 not available in commmand line
-    --------------------------------------
-    To make Python 3.x and its tools available to the command line add it to the PATH with a command like
-
-    .. code-block:: bash
-
-        sudo export PATH=/Library/Frameworks/Python.framework/Versions/3.4/bin:$PATH
-
-    Be sure to adapt the path as necessary. Especially be use to change the version number to the actually installed one.
+Be sure to adapt the path as necessary. Especially be use to change the version number to the actually installed one.
