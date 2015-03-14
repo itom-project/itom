@@ -1,7 +1,7 @@
 .. include:: ../include/global.inc
 
 Build on Mac OS X
-================
+=================
 
 This section describes how |itom| and its plugins are built on a Apple Mac systems running OS X 10.7 or later (tested on OS X 10.9 and 10.10). The general approach is similar to the other documentation in the install chapter that are mainly focussed on Windows.
 
@@ -38,8 +38,8 @@ Run the following command once before installing anything
 
 Homebrew can also be installed as described at http://brew.sh .
 
-Necessary brew packages
--------------------
+Dependencies
+------------
 
 The following list describe packages that are required or recommended for building |itom| and how to install them using brew.
 
@@ -61,28 +61,40 @@ Required Python packages:
 * **Pillow**
 * **Matplotlib**
 
-To install all in one rush run
+To install all in one rush run the follwing list of commands. This might take a whole lot of time (we might talk about hours).
 
 .. code-block:: bash
 
+    brew update
     brew tap homebrew/science
     brew tap homebrew/python
     brew install git gcc python3 pkg-config
     brew install qt --with-developer --with-docs
+    brew install pyqt --with-python3
     brew install doxygen --with-doxywizard --with-graphviz
     brew install qscintilla2 --with-python3
-    brew install opencv pcl ffmpeg glew fftw
+    brew install ffmpeg glew fftw
     brew install numpy --with-python3
-    brew install scipy --with-python3
+    brew link numpy --overwrite
     brew install pillow --with-python3
+    brew link pillow --overwrite
     brew install matplotlib --with-python3 --with-pyqt
+    brew link matplotlib --overwrite
     brew install matplotlib-basemap --with-python3
+    brew link matplotlib-basemap --overwrite
+    brew install scipy --with-python3
+    brew link scipy --overwrite
+    brew install opencv pcl caskroom/cask/brew-cask
+    brew cask install qt-creator
+    brew linkapps
 
-The following command will link some installed apps to the Application folder
+The above commands in one line:
 
 .. code-block:: bash
 
-    brew linkapps
+    brew update; brew tap homebrew/science; brew tap homebrew/python; brew install git gcc python3 pkg-config; brew install qt --with-developer --with-docs; brew install doxygen --with-doxywizard --with-graphviz; brew install pyqt --with-python3; brew install qscintilla2 --with-python3; brew install ffmpeg glew fftw; brew install numpy --with-python3; brew link numpy --overwrite; brew install pillow --with-python3; brew link pillow --overwrite; brew install matplotlib --with-python3 --with-pyqt; brew link matplotlib --overwrite; brew install matplotlib-basemap --with-python3; brew link matplotlib-basemap --overwrite; brew install scipy --with-python3; brew link scipy --overwrite; brew install opencv pcl caskroom/cask/brew-cask; brew cask install qt-creator; brew linkapps
+
+If you would like to compile |itom| with Qt 5 replace *brew install qt --with-developer --with-docs* with *brew install qt5 --with-developer --with-docs* and *brew install pyqt --with-python3* with *brew install pyqt5 --with-python* .
 
 Python 3
 --------
@@ -158,8 +170,9 @@ Use **CMake** to create the necessary makefiles for debug and/or release:
 
 1. Indicate the folder **sources/itom** as source folder
 2. Indicate either the folder **build_debug/itom** or **build_release/itom** as build folder. If the build folder already contains configured makefiles, the last configuration will automatically loaded into the CMake gui.
+2b. Check Advanced to *see* all available options.
 3. Set the following variables:
-    
+
     * **CMAKE_BUILD_TYPE** to either **debug** or **release**
     * **BUILD_TARGET64** to ON.
     * **BUILD_UNICODE** to ON if you want to build with unicode support (recommended)
@@ -167,13 +180,55 @@ Use **CMake** to create the necessary makefiles for debug and/or release:
     
 4. Push the configure button
 5. Usually, CMake should find most of the necessary third-party libraries, however you should check the following things:
-    
-    * OpenCV: OpenCV is located by the file **OpenCVConfig.cmake** in the directory **OpenCV_DIR**. Usually this is automatically detected in **~/opencv/build/OpenCVConfig.cmake**. If this is not the case, set **OpenCV_DIR** to the correct directory and press configure.
-    * Python3: On OS X CMake always finds the Python version 2 as default version. This is wrong. Therefore set the following variables to the right pathes: **PYTHON_EXECUTABLE** to **/Library/Frameworks/Python.framework/Versions/3.4/bin**, **PYTHON_INCLUDE_DIR** to **/Library/Frameworks/Python.framework/Versions/3.4/include**, **PYTHON_LIBRARY** to **/Library/Frameworks/Python.framework/Versions/3.4/lib/libpython3.4.dylib**. The suffix 3.4 might also be different. It is also supported to use any other version of Python 3.
-6. Push the configure button again and then generate.
-7. Now you can build |itom| by the **make** command:
+  
+    * **Build Parameter**:
+        * **BUILD_TARGET64**: *FALSE*
+        * **BUILD_UNICODE**: *TRUE*
+
+    * **System Parameter**:
+        * **CMAKE_OSX_ARCHITECTURES**: *x86_64*
+        * **CMAKE_OSX_SYSROOT**: */Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk*
+
+    The suffix SDK version might also be different as well as the path.
+
+    * **OpenMP**: OpenMP is not available when using the default compiler clang. If your setup includes OpenMP set *-fopenmp* to *OpenMP_CXX_FLAGS* and *OpenMP_C_FLAGS*.
+
+    * **Python3**: On OS X CMake always finds the Python version 2 as default version. This is wrong. Therefore set the following variables to the right pathes: 
+
+        * **PYTON_EXECUTABLE**: /usr/local/bin/python3.4
+        * **PYTHON_INCLUDE_DIR**: /usr/local/Cellar/python3/3.4.3/Frameworks/Python.framework/Versions/3.4/include/python3.4m
+        * **PYTHON_LIBRARY**: /usr/local/Cellar/python3/3.4.3/Frameworks/Python.framework/Versions/3.4/lib/libpython3.4.dylib
+        * **PYTHON_LIBRARY_DEBUG**: /usr/local/Cellar/python3/3.4.3/Frameworks/Python.PYTHON_LIBRARY_RELEASE**: framework/Versions/3.4/lib/libpython3.4.dylib
+
+    The suffix 3.4 might also be different. It is also supported to use any other version of Python 3.
+
+    * **OpenCV**:
+        * **OpenCV_BIN_DIR**: /../bin
+        * **OpenCV_CONFIG_PATH**: /usr/local/share/OpenCV
+        * **OpenCV_DIR**: /usr/local/share/OpenCV
+
+    * **QScintilla2**:
+        * **QSCINTILLA_INCLUDE_DIR**: /usr/local/Cellar/qscintilla2/2.8.3/include
+        * **QSCINTILLA_LIBRARY**: debug;/usr/local/Cellar/qscintilla2/2.8.3/lib/libqscintilla2.dylib;optimized;/usr/local/Cellar/qscintilla2/2.8.3/lib/libqscintilla2.dylib
+        * **QSCINTILLA_LIBRARY_DEBUG**: /usr/local/Cellar/qscintilla2/2.8.3/lib/libqscintilla2.dylib
+        * **QSCINTILLA_LIBRARY_RELEASE**: /usr/local/Cellar/qscintilla2/2.8.3/lib/libqscintilla2.dylib
+
+    The version 2.8.3 might also be different. It is also supported to use any other version of QScintilla2.
+
+    * **PointCloudLibrary** (optonal):
+        * **PCL_COMMON_INCLUDE_DIR**: /usr/local/include/pcl-1.7
+        * **PCL_COMMON_LIBRARY**: /usr/local/lib/libpcl_common.dylib
+        * **PCL_COMMON_LIBRARY_DEBUG**: /usr/local/lib/libpcl_common.dylib
+        * **PCL_COMMON_DIR**: /usr/local/share/pcl-1.7
+
+    The version 1.7 might also be different. It is also supported to use any other version of the PointCloudLibrary.
+
+6. Push the generate button.
+7. Now you can build |itom| by the **make** or using **Xcode** command:
     
     * **make**: Open a command line and switch to the **build_debug/itom** or **build_release/itom** directory. Simply call **make** such that the file **qitom** or **qitomd** (debug) is built. Start this application by calling **./qitom** or **./qitomd** in order to run |itom|.
+
+    * **Xcode**: If you plan to change something in the source code it is recommended to use Xcode. Just open the **itom.xcodeproj** with Xcode and compile the project.
     
 Build plugins
 ---------------
@@ -254,8 +309,8 @@ with
 
 See also http://bugs.python.org/review/10910/diff/8559/Include/pyport.h
 
-python3 not available in commmand line
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+python3 not available in Terminal
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 To make Python 3.x and its tools available to the command line add it to the PATH with a command like
 
 .. code-block:: bash
