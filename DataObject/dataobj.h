@@ -36,7 +36,7 @@
 #include <limits>
 #include <string>
 
-#if !linux
+#if (!defined linux) && (!defined __APPLE__)
     #pragma warning(disable:4996)
 #endif
 
@@ -472,6 +472,28 @@ public:
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
+
+// Forward declaration of friend methods
+#ifdef __APPLE__
+    template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char dimensions, const int *sizes, const unsigned char continuous, const uchar* continuousDataPtr, const int* steps);
+    template<typename _Tp> RetVal CreateFuncWithCVPlanes(DataObject *dObj, const unsigned char dimensions, const int *sizes, const cv::Mat* planes, const unsigned int nrOfPlanes);
+    template<typename _Tp> RetVal FreeFunc(DataObject *dObj);
+    template<typename _Tp> RetVal SecureFreeFunc(DataObject *dObj);
+    template<typename _Tp> RetVal CopyToFunc(const DataObject &lhs, DataObject &rhs, unsigned char regionOnly);
+    template<typename _Tp> RetVal ConvertToFunc(const DataObject &lhs, DataObject &rhs, const int type, const double alpha, const double beta);
+    template<typename _Tp> RetVal AdjustROIFunc(DataObject *dObj, const int *lims);
+    template<typename _Tp> RetVal MinMaxLocFunc(const DataObject &dObj, double *minVal, double *maxVal, int *minPos, int *maxPos);
+    template<typename _Tp> RetVal AssignScalarFunc(const DataObject *src, const ito::tDataType type, const void *scalar);
+    template<typename _Tp> RetVal MakeContinuousFunc(const DataObject &dObj, DataObject &resDObj);
+    template<typename _Tp> RetVal EvaluateTransposeFlagFunc(DataObject *dObj);
+    template<typename _Tp> RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel);
+    template<typename _Tp> std::ostream& coutFunc(std::ostream& out, const DataObject& dObj);
+    
+    // more friends due to change of std::vector to int ** for m_data ...
+    template<typename _Tp> RetVal GetRangeFunc(DataObject *dObj, const int dtop, const int dbottom, const int dleft, const int dright);
+    template<typename _Tp> RetVal AdjustROIFunc(DataObject *dObj, int dtop, int dbottom, int dleft, int dright);
+#endif // __APPLE__
+    
 class DATAOBJ_EXPORT DataObject
 {
     private:
@@ -594,7 +616,7 @@ class DATAOBJ_EXPORT DataObject
         
         // Forward declaration: Default values are not allowed for friend functions, adding a non-friend function with default argument instead
         template<typename _Tp> RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel = 0);
-
+    
         //low-level, templated methods
         //most low-level methods are marked "friend" such that they can access private members of their data object parameters
         template<typename _Tp> friend RetVal CreateFunc(DataObject *dObj, const unsigned char dimensions, const int *sizes, const unsigned char continuous, const uchar* continuousDataPtr, const int* steps);
