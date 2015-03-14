@@ -53,13 +53,19 @@
     #if (defined linux) | (defined CMAKE)
         #include "Python.h"
         #include "numpy/arrayobject.h"
+    #elif (defined __APPLE__) | (defined CMAKE)
+        #include "Python.h"
+        #include "numpy/arrayobject.h"
     #else
         #include "Python.h"
         #include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
     #endif
     #define _DEBUG
 #else
-    #ifdef linux
+    #ifdef (defined linux)
+        #include "Python.h"
+        #include "numpy/arrayobject.h"
+    #elif (defined __APPLE__)
         #include "Python.h"
         #include "numpy/arrayobject.h"
     #else

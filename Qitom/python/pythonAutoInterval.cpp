@@ -204,7 +204,7 @@ PyMethodDef PythonAutoInterval::PyAutoInterval_methods[] = {
     };
 
 PyMemberDef PythonAutoInterval::PyAutoInterval_members[] = {
-    #ifndef linux //TODO offsetof with member in GCC not possible
+    #ifdef WIN32 //TODO offsetof with member in GCC not possible
         {"min", T_FLOAT, offsetof(PyAutoInterval, interval.rmin()), 0, "min"}, 
         {"max", T_FLOAT, offsetof(PyAutoInterval, interval.rmax()), 0, "max"}, 
         {"auto", T_BOOL, offsetof(PyAutoInterval, interval.rauto()), 0, "auto"},  

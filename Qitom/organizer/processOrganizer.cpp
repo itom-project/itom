@@ -28,8 +28,8 @@
 #include <qcoreapplication.h>
 #include <qlibraryinfo.h>
 
-#ifndef linux
-#include <Windows.h>
+#if WIN32
+    #include <Windows.h>
 #endif
 
 namespace ito
@@ -112,7 +112,7 @@ ProcessOrganizer::~ProcessOrganizer()
 */
 /*static*/ QString ProcessOrganizer::getAbsQtToolPath(const QString &binaryName)
 {
-#ifdef linux
+#ifndef WIN32
     QDir dir;
     QString binaryName2 = binaryName;
 
@@ -324,7 +324,7 @@ void ProcessOrganizer::readyReadStandardOutput()
 */
 bool ProcessOrganizer::bringWindowsOnTop(const QString &windowName)
 {
-#ifndef linux
+#ifdef WIN32
 
 #if UNICODE
     wchar_t *nameArray = new wchar_t[ windowName.size() + 2];

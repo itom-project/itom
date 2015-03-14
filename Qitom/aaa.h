@@ -17,6 +17,10 @@
         #include "Python.h"
         #include "node.h"
         #include "numpy/arrayobject.h"
+    #elif (defined __APPLE__) | (defined CMAKE)
+        #include "Python.h"
+        #include "node.h"
+        #include "numpy/arrayobject.h"
     #else
         #include "Python.h"
         #include "node.h"
@@ -24,7 +28,11 @@
     #endif
     #define _DEBUG
 #else
-    #ifdef linux
+    #if (defined linux)
+        #include "Python.h"
+        #include "node.h"
+        #include "numpy/arrayobject.h"
+    #elif (defined __APPLE__)
         #include "Python.h"
         #include "node.h"
         #include "numpy/arrayobject.h"

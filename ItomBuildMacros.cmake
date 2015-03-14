@@ -69,7 +69,8 @@ if(MSVC)
 endif (MSVC)
 
 #try to enable OpenMP (e.g. not available with VS Express)
-find_package(OpenMP)
+# QUIET: It drives you nuts on systems that do not allow OpenMP (like the clang compiler of VS Exp.)
+find_package(OpenMP QUIET)
 
 IF (OPENMP_FOUND)
     message(STATUS "OpenMP found and enabled for release compilation")
