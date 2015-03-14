@@ -3,7 +3,7 @@
 Build on Mac OS X
 ================
 
-This section describes how |itom| and its plugins are built on a Apple Mac systems running OS X 10.7 or later (tested on OS X 10.10). The general approach is similar to the other documentation in the install chapter that are mainly focussed on Windows.
+This section describes how |itom| and its plugins are built on a Apple Mac systems running OS X 10.7 or later (tested on OS X 10.9 and 10.10). The general approach is similar to the other documentation in the install chapter that are mainly focussed on Windows.
 
 Xcode
 -----
@@ -14,104 +14,106 @@ Since OSX Lion, the Xcode installation doesn't by default include the command li
 
 Once Xcode has been installed, run Xcode and then open the preferences. Select the Download section and the Components tab and install Command Line Tools from there.
 
+CMake
+-----
+
+Go to **http://www.cmake.org** to download and install the current stable releasse of CMake. It is recommended to download a release that looks like **cmake-x.y.z-Darwin-x86_64.dmg**
+
 Homebrew
 --------
 
 Most necessary packages can be obtained by the package manager of your solution. We will use Homebrew.
 
-Open a terminal window and copy and paste 
+Open a terminal window and copy and paste the following line into a terminal
 
 .. code-block:: bash
 
-    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" into the terminal
+    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+Run the following command once before installing anything
+
+.. code-block:: bash
+
+    brew doctor
 
 Homebrew can also be installed as described at http://brew.sh .
 
 Necessary brew packages
 -------------------
 
-The following list describe packages that are required or recommended for building |itom| and how to install them using brew:
+The following list describe packages that are required or recommended for building |itom| and how to install them using brew.
 
-Required:
+Required packages:
 
 * **Qt** (it is also possible to build it from source http://qt-project.org/doc/qt-4.8/install-mac.html )
-* Editor **QScintilla2**
+* **QScintilla2**
 * **git**
 * **Cmake**
-* **PointCloudLibrary** (if exists version 1.6 or better 1.7, else see http://pointclouds.org/downloads/linux.html or build it on your own, the point cloud library is optional!)
+* **PointCloudLibrary**
 * **Doxygen** (doxygen, doxygen-gui)
 * **glew**
 * **fftw**
+
+Required Python packages:
+
+* **NumPy**
+* **SciPy**
+* **Pillow**
+* **Matplotlib**
 
 To install all in one rush run
 
 .. code-block:: bash
 
-	brew install git gcc python3 cmake qt pkg-config freetype libpng ffmpeg qscintilla2 glew pcl fftw doxygen
+    brew tap homebrew/science
+    brew tap homebrew/python
+	brew install git gcc python3 pkg-config
+    brew install qt --with-developer --with-docs
+    brew install doxygen --with-doxywizard --with-graphviz
+    brew install qscintilla2 --with-python3
+    brew install opencv pcl ffmpeg glew fftw
+    brew install numpy --with-python3
+    brew install scipy --with-python3
+    brew install pillow --with-python3
+    brew install matplotlib --with-python3 --with-pyqt
+    brew install matplotlib-basemap --with-python3
+
+The following command will link some installed apps to the Application folder
+
+.. code-block:: bash
+
+    brew linkapps
 
 Python 3
 --------
 
-The default Python version on OS X is 2.x. Since |itom| is using Python 3.x you installed in the previous step but it is'nt recommended to replace version 2.x with 3.x.
+The default Python version on OS X is 2.x. Since |itom| is using Python 3.x you installed in the previous step but it is'nt recommended to replace version 2.x with 3.x. We will set an alias for python3, so when entered python in a terminal session, python3 will be called.
 
-To make Python 3.x and its tools available to the command line add it to the PATH with a command like
+To edit you aliases execute the following command.
 
 .. code-block:: bash
 
-    sudo export PATH=/Library/Frameworks/Python.framework/Versions/3.4/bin:$PATH
+    printf "alias python='python3'\n" >> ~/.bash_profile; . ~/.bash_profile
 
-Be sure to adapt the path as necessary. Especially be use to change the version number to the actually installed one. 
+The same thing must be done for *pip* and *easy_install*. Be adviced to check the installed version number of python and change it when necessary. The command python --version will give you the installed version number.
+
+.. code-block:: bash
+
+    printf "alias easy_install='/usr/local/Cellar/python3/3.4.3/bin/easy_install-3.4'\n" >> ~/.bash_profile
+    printf "alias pip='/usr/local/Cellar/python3/3.4.3/bin/pip3.4'\n" >> ~/.bash_profile
+    . ~/.bash_profile
 
 Now we need to install two packages using easy_install (again remeber to check your version number!):
 
 .. code-block:: bash
 
-    sudo easy_install-3.4 virtualenv
-    sudo easy_install-3.4 pyparsing
-    
-Python dependencies
--------------------
+    sudo easy_install virtualenv pyparsing
 
-It is now time to install the missing Python packages using the following bash command
+We need some more python packages. Just run the following command:
 
 .. code-block:: bash
 
-    pip3 install ipython mpmath numpy scipy Pillow dateutil matplotlib
-
-This will install the following packages:
-
-* **iPython** 
-* **NumPy**
-* **SciPy**
-* **Pillow**
-* **dateutil**
-* **Matplotlib**
-
-OpenCV
-------
-
-OpenCV must be build by the user and can not be downloaded prebuild.
-
-Go to http://opencv.org/downloads.html to download the current stable version of OpenCV.
-
-Extract it to a location you want to keep it, i.e. ~/opencv/.
-
-Open CMake, click Browse Source and navigate to your OpenCV folder.
-
-Click Browse Build and navigate to your build Folder (you might have to create it before).
-
-Click the configure button. You will be asked how you would like to generate the files. Choose Unix-Makefile from the Drop Down menu and Click OK. CMake will perform some tests and return a set of red boxes appear in the CMake Window.
-
-Uncheck **BUILD_SHARED_LIBS**, uncheck **BUILD_TESTS**, add an **SDK path** to **CMAKE_OSX_SYSROOT**, it will look something like this **/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk**. Add **x86_64** to **CMAKE_OSX_ARCHITECTURES**, this tells it to compile against the current system. Uncheck **WITH_1394**, uncheck **WITH_FFMPEG**.
-
-Click generate.
-
-In a terminal go to your OpenCV build directory, make and install the library:
-
-.. code-block:: bash
-    cd ~/opencv/build
-    make
-    sudo make install
+    pip install ipython mpmath sphinx 
 
 Recommended folder structure
 -----------------------------
@@ -136,7 +138,7 @@ Similar to Windows, the following folder structure is recommended:
 To create all folders in your user directory in one step, call the following bash commands:
 
 .. code-block:: bash
-    mkdir ~/itom; cd ~/itom; mkdir ./sources; mkdir ./build_debug; mkdir build_release
+    mkdir ~/itom; cd ~/itom; mkdir ./sources; mkdir ./build_debug; mkdir ./build_debug/itom; mkdir ./build_debug/plugins; mkdir ./build_debug/designerPlugins; mkdir ./build_release; mkdir ./build_release/itom; mkdir ./build_release/plugins; mkdir ./build_release/designerPlugins
 
 Obtain the sources
 --------------------
@@ -182,52 +184,26 @@ If you don't want to have some of the plugins, simply uncheck them in CMake unde
 
 The plugins and designerPlugins will finally be compiled and then copy their resulting library files into the **designer** and **plugins** subfolder of |itom|. Restart |itom| and you the plugin will be loaded.
 
-PyPort bug
-----------
-If you get build errors that trace back to an error like
+Known Problems
+--------------
 
-.. code-block:: bash
-    ... /__locale:436:15: error: C++ requires a type specifier for all declarations
-        char_type toupper(char_type __c) const
-                        ^~~~~~~~~~~~~~~~~~~~~~
-    /opt/local/Library/Frameworks/Python.framework/Versions/2.7/Headers/pyport.h:731:29: note: expanded from macro 'toupper'
+    PyPort bug
+    ----------
+    If you get build errors that trace back to an error like
 
-You are using a deprecated version of PyPort.
+    .. code-block:: bash
+        ... /__locale:436:15: error: C++ requires a type specifier for all declarations
+            char_type toupper(char_type __c) const
+                            ^~~~~~~~~~~~~~~~~~~~~~
+        /opt/local/Library/Frameworks/Python.framework/Versions/2.7/Headers/pyport.h:731:29: note: expanded from macro 'toupper'
 
-Locate **pyport.h**, it might be located in **/Library/Frameworks/Python.framework/Versions/3.4/include/python3.4m/pyport.h**. Open it and replace
+    You are using a deprecated version of PyPort.
 
-.. code-block:: c
+    Locate **pyport.h**, it might be located in **/Library/Frameworks/Python.framework/Versions/3.4/include/python3.4m/pyport.h**. Open it and replace
 
-    #ifdef _PY_PORT_CTYPE_UTF8_ISSUE
-        #include <ctype.h>
-        #include <wctype.h>
-        #undef isalnum
-        #define isalnum(c) iswalnum(btowc(c))
-        #undef isalpha
-        #define isalpha(c) iswalpha(btowc(c))
-        #undef islower
-        #define islower(c) iswlower(btowc(c))
-        #undef isspace
-        #define isspace(c) iswspace(btowc(c))
-        #undef isupper
-        #define isupper(c) iswupper(btowc(c))
-        #undef tolower
-        #define tolower(c) towlower(btowc(c))
-        #undef toupper
-        #define toupper(c) towupper(btowc(c))
-    #endif
+    .. code-block:: c
 
-with
-
-.. code-block:: c
-
-    #ifdef _PY_PORT_CTYPE_UTF8_ISSUE
-        #ifndef __cplusplus
-            /* The workaround below is unsafe in C++ because
-             * the <locale> defines these symbols as real functions,
-             * with a slightly different signature.
-             * See python issue #10910
-             */
+        #ifdef _PY_PORT_CTYPE_UTF8_ISSUE
             #include <ctype.h>
             #include <wctype.h>
             #undef isalnum
@@ -245,7 +221,45 @@ with
             #undef toupper
             #define toupper(c) towupper(btowc(c))
         #endif
-    #endif
 
-See also http://bugs.python.org/review/10910/diff/8559/Include/pyport.h
+    with
 
+    .. code-block:: c
+
+        #ifdef _PY_PORT_CTYPE_UTF8_ISSUE
+            #ifndef __cplusplus
+                /* The workaround below is unsafe in C++ because
+                 * the <locale> defines these symbols as real functions,
+                 * with a slightly different signature.
+                 * See python issue #10910
+                 */
+                #include <ctype.h>
+                #include <wctype.h>
+                #undef isalnum
+                #define isalnum(c) iswalnum(btowc(c))
+                #undef isalpha
+                #define isalpha(c) iswalpha(btowc(c))
+                #undef islower
+                #define islower(c) iswlower(btowc(c))
+                #undef isspace
+                #define isspace(c) iswspace(btowc(c))
+                #undef isupper
+                #define isupper(c) iswupper(btowc(c))
+                #undef tolower
+                #define tolower(c) towlower(btowc(c))
+                #undef toupper
+                #define toupper(c) towupper(btowc(c))
+            #endif
+        #endif
+
+    See also http://bugs.python.org/review/10910/diff/8559/Include/pyport.h
+
+    python3 not available in commmand line
+    --------------------------------------
+    To make Python 3.x and its tools available to the command line add it to the PATH with a command like
+
+    .. code-block:: bash
+
+        sudo export PATH=/Library/Frameworks/Python.framework/Versions/3.4/bin:$PATH
+
+    Be sure to adapt the path as necessary. Especially be use to change the version number to the actually installed one.
