@@ -776,7 +776,12 @@ void MainWindow::createMenus()
     //linux: in some linux distributions, the menu bar did not appear if it is displayed
     //on top of the desktop. Therefore, native menu bars (as provided by the OS) are disabled here.
     //see: qt-project.org/forums/viewthread/7445
+#ifndef __APPLE__
     menuBar()->setNativeMenuBar(false);
+#else // __APPLE__
+    // OS X: without the native menu bar option, the menu bar is displayed within the window which might be irritating.
+    menuBar()->setNativeMenuBar(true);
+#endif // __APPLE__
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
