@@ -91,7 +91,12 @@ MainWindow::MainWindow() :
     m_userDefinedActionCounter(0)
 {
     //qDebug() << "mainWindow. Thread: " << QThread::currentThreadId ();
+#ifdef __APPLE__
+    // Setting high res icon for OS X
+    QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/q_itoM1024"));
+#else
     QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/curAppIcon.png"));
+#endif
 
     qDebug("build main window");
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
