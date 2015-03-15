@@ -49,6 +49,9 @@ Required packages:
 * **QScintilla2**
 * **git**
 * **Cmake**
+
+Recommended packages:
+
 * **PointCloudLibrary**
 * **Doxygen**
 * **glew**
@@ -57,9 +60,14 @@ Required packages:
 Required Python packages:
 
 * **NumPy**
+
+Recommended Pyton packages:
+
 * **SciPy**
 * **Pillow**
 * **Matplotlib**
+* **sphinx**
+* **frosted**
 
 To install all in one rush run the follwing list of commands. This might take a whole lot of time (we might talk about hours).
 
@@ -119,7 +127,7 @@ Now we need to install two packages using easy_install (again remeber to check y
 
 .. code-block:: bash
 
-    sudo easy_install virtualenv pyparsing
+    sudo easy_install virtualenv pyparsing frosted
 
 We need some more python packages. Just run the following command:
 
@@ -173,24 +181,20 @@ Use **CMake** to create the necessary makefiles for debug and/or release:
 2b. Check Advanced to *see* all available options.
 3. Set the following variables:
 
-    * **CMAKE_BUILD_TYPE** to either **debug** or **release**
-    * **BUILD_TARGET64** to ON.
-    * **BUILD_UNICODE** to ON if you want to build with unicode support (recommended)
-    * **BUILD_WITH_PCL** to ON if you have the point cloud library available on your computer and want to compile |itom| with support for point clouds and polygon meshes.
+    * **Itom Parameter**:
+        * **BUILD_TARGET64** to ON.
+        * **BUILD_UNICODE** to ON if you want to build with unicode support (recommended)
+        * **BUILD_WITH_PCL** to ON if you have the point cloud library available on your computer and want to compile |itom| with support for point clouds and polygon meshes.
     
+    * **System Parameter**:
+        * **CMAKE_BUILD_TYPE** to either **debug** or **release**
+        * **CMAKE_OSX_ARCHITECTURES**: *x86_64*
+        * **CMAKE_OSX_SYSROOT**: */Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk*
+        The suffix SDK version might also be different as well as the path.
+
 4. Push the configure button
 5. Usually, CMake should find most of the necessary third-party libraries, however you should check the following things:
   
-    * **Build Parameter**:
-        * **BUILD_TARGET64**: *FALSE*
-        * **BUILD_UNICODE**: *TRUE*
-
-    * **System Parameter**:
-        * **CMAKE_OSX_ARCHITECTURES**: *x86_64*
-        * **CMAKE_OSX_SYSROOT**: */Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk*
-
-    The suffix SDK version might also be different as well as the path.
-
     * **OpenMP**: OpenMP is not available when using the default compiler clang. If your setup includes OpenMP set *-fopenmp* to *OpenMP_CXX_FLAGS* and *OpenMP_C_FLAGS*.
 
     * **Python3**: On OS X CMake always finds the Python version 2 as default version. This is wrong. Therefore set the following variables to the right pathes: 
@@ -244,6 +248,7 @@ Known Problems
 
 PyPort bug
 ^^^^^^^^^^
+
 If you get build errors that trace back to an error like
 
 .. code-block:: bash
@@ -311,6 +316,7 @@ See also http://bugs.python.org/review/10910/diff/8559/Include/pyport.h
 
 python3 not available in Terminal
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 To make Python 3.x and its tools available to the command line add it to the PATH with a command like
 
 .. code-block:: bash
@@ -318,3 +324,24 @@ To make Python 3.x and its tools available to the command line add it to the PAT
     sudo export PATH=/Library/Frameworks/Python.framework/Versions/3.4/bin:$PATH
 
 Be sure to adapt the path as necessary. Especially be use to change the version number to the actually installed one.
+
+pip install fails with *TypeError: unorderable types: str() < NoneType()*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Open /usr/local/Cellar/python3/3.4.3/libexec/setuptools/__init__.py and change 
+
+.. code-block:: c
+
+    self.py_version,
+    self.platform,
+
+for 
+
+.. code-block:: c
+
+    self.py_version or '',
+    self.platform or '',
+
+Do the same for /usr/local/lib/python3.4/site-packages/setuptools-12.2-py3.4.egg/pkg_resources/__init__.py
+
+Source: https://bitbucket.org/minrk/setuptools/commits/e7d8f68ea7c603638562cf8278daa5d16e699f4e
