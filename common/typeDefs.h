@@ -33,7 +33,7 @@
 #include <exception>      // std::exception
 #include <string.h>
 #include <stdexcept>
-#if defined(linux) || defined(__APPLE__) 
+#ifndef WIN32
   #include <unistd.h>    // neede for usleep
 #endif
 
@@ -209,7 +209,7 @@ namespace ito
 
     #define GLOBAL_LOG_LEVEL tLogLevel(logAll)
 
-#if defined(linux) || defined(__APPLE__) 
+#ifndef WIN32
     #define _strdup strdup
     #define _itoa itoa
     #define _snprintf snprintf

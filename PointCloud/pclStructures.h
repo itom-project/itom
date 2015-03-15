@@ -33,13 +33,13 @@
 
 #include <vector>
 
-#if (!defined linux) && (!defined __APPLE__)
+#ifdef WIN32
 #pragma warning( disable: 4996) //supress deprecated warning of pcl (which occur very often)
 #endif
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/PolygonMesh.h>
-#if (!defined linux) && (!defined __APPLE__)
+#ifdef WIN32
 #pragma warning( default: 4996) //show 4996 warnings again
 #endif
 

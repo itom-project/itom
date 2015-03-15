@@ -1261,7 +1261,7 @@ void FileSystemDockWidget::pathAnchorClicked(const QUrl &link)
 //----------------------------------------------------------------------------------------------------------------------------------
 QString FileSystemDockWidget::getHtmlTag(const QString &tag)
 {
-#ifdef __linux__
+#ifndef WIN32
     QChar separator = '/';
 #else
     QChar separator = '\\';

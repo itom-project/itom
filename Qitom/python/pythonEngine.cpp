@@ -69,7 +69,7 @@
 #include "pythonMatlab.h"
 #endif
 
-#if linux
+#ifndef WIN32
 #include <langinfo.h>
 #endif
 
@@ -894,7 +894,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
 	if (codec)
 	{
 		QList<QByteArray> aliases;
-#ifndef linux
+#ifdef WIN32
 		if (codec->name() == "System" || codec->name() == "system")
 		{
 			aliases << "ISO-8859-1"; //with Qt4 and Windows, the default codec is called System and is then mapped to ISO-8859-1

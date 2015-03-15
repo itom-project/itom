@@ -38,7 +38,7 @@
 
 //python
 // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-#if (defined _DEBUG) && (!defined linux)
+#if (defined _DEBUG) && (defined WIN32)
     #undef _DEBUG
     #include "patchlevel.h"
     #define _DEBUG
@@ -90,14 +90,14 @@ QMap<QString, QString> ito::getItomVersionMap()
         case QSysInfo::WV_WINDOWS8:     items["itom_SysType"] = "Windows 8";            break;
         case QSysInfo::WV_WINDOWS8_1:   items["itom_SysType"] = "Windows 8.1";          break;
         case QSysInfo::WV_WINDOWS8_1+1: items["itom_SysType"] = "Windows 10";           break;
-        default:                        items["itom_SysType"] = "Windows";              break,
+        default:                        items["itom_SysType"] = "Windows";              break;
     }
     #if (defined Q_OS_WIN64)
         items["itom_SysType"].append(" 64-Bit");
     #else
         items["itom_SysType"].append(" 32-Bit");
     #endif
-    #if (defined _DEBUG) && (!defined linux)
+    #if (defined _DEBUG) && (defined WIN32)
         items["itom_SysType"].append(" DEBUG");
     #endif
 #elif (defined Q_OS_MACX)
@@ -117,9 +117,9 @@ QMap<QString, QString> ito::getItomVersionMap()
         case QSysInfo::MV_10_9:     items["itom_SysType"] = "OS X 10.9";        break;
         case QSysInfo::MV_10_9+1:   items["itom_SysType"] = "OS X 10.10";       break;
         case QSysInfo::MV_10_9+2:   items["itom_SysType"] = "OS X 10.11";       break;
-        default:                    items["itom_SysType"] = "Mac OS X";         break;
+        default:                    items["itom_SysType"] = "OS X";             break;
     }
-    #if (defined _DEBUG) && (!defined linux)
+    #if (defined _DEBUG) && (defined __APPLE__)
         items["itom_SysType"].append(" DEBUG");
     #endif
 #else

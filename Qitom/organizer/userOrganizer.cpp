@@ -121,8 +121,8 @@ ito::RetVal UserOrganizer::loadSettings(const QString &defUserName)
 
         DialogSelectUser userDialog(m_userModel);
 
-#if linux
-        QString curSysUser(qgetenv("USER")); ///for MAc or Linux
+#ifndef WIN32
+        QString curSysUser(qgetenv("USER")); ///for OS X or Linux
 #else
         QString curSysUser(qgetenv("USERNAME")); //for windows
 #endif

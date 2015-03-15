@@ -36,7 +36,7 @@
 #include <limits>
 #include <string>
 
-#if (!defined linux) && (!defined __APPLE__)
+#ifdef WIN32
     #pragma warning(disable:4996)
 #endif
 

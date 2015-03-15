@@ -1684,7 +1684,7 @@ void ScriptEditorWidget::breakPointAdd(BreakPointItem bp, int /*row*/)
 {
     int newHandle = -1;
 
-#if linux
+#ifndef WIN32
     if (bp.filename != "" && bp.filename == getFilename())
 #else
     if (bp.filename != "" && QString::compare(bp.filename, getFilename(), Qt::CaseInsensitive) == 0)
@@ -1742,7 +1742,7 @@ void ScriptEditorWidget::breakPointDelete(QString filename, int lineNo, int /*py
 {
     bool found = false;
 
-#if defined linux
+#ifndef WIN32
     if (filename != "" && filename == getFilename())
 #else
     if (filename != "" && QString::compare(filename, getFilename(), Qt::CaseInsensitive) == 0)
@@ -1788,7 +1788,7 @@ void ScriptEditorWidget::breakPointDelete(QString filename, int lineNo, int /*py
 //!< slot, invoked by BreakPointModel
 void ScriptEditorWidget::breakPointChange(BreakPointItem oldBp, BreakPointItem newBp)
 {
-#if defined linux
+#ifndef WIN32
     if (oldBp.filename == getFilename())
 #else
     if (QString::compare(oldBp.filename, getFilename(), Qt::CaseInsensitive) == 0)
@@ -1797,7 +1797,7 @@ void ScriptEditorWidget::breakPointChange(BreakPointItem oldBp, BreakPointItem n
         breakPointDelete(oldBp.filename, oldBp.lineno, oldBp.pythonDbgBpNumber);
     }
 
-#if defined linux
+#ifndef WIN32
     if (newBp.filename == getFilename())
 #else
     if (QString::compare(newBp.filename, getFilename(), Qt::CaseInsensitive) == 0)

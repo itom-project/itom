@@ -1727,7 +1727,7 @@ void MainWindow::mnuShowDesigner()
             QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
             QString appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
             env.insert("QT_PLUGIN_PATH", appPath);
-#if linux
+#ifndef WIN32
 	        QString pathEnv = env.value("PATH");
             pathEnv.prepend(appPath + ":");
             env.insert("PATH", pathEnv);

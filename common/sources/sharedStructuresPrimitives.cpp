@@ -35,12 +35,11 @@ namespace ito
         int newSize = 64;
         int cols = 11;
 
-#if (defined _DEBUG) && (!defined linux)
+#if (defined _DEBUG) && (defined WIN32)
         if (primitives.getDims() != 0 && primitives.getSize(primitives.getDims()-1) < 11)
         {
             cv::error(cv::Exception(CV_StsAssert, "Error, primitives object not valid.", "", __FILE__, __LINE__));
         }
-
 #endif
 
         if (primitives.getDims() == 2 || primitives.calcNumMats() == 1)

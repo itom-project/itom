@@ -274,8 +274,10 @@ namespace ito
             }
 
             QStringList filters;
-#if linux
+#ifdef linux
             filters << "*.a" << "*.so";
+#elif (defined __APPLE__)
+            filters << "*.a" << "*.dylib";            
 #else
             filters << "*.dll";
 #endif 

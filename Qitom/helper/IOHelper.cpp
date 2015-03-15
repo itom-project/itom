@@ -566,7 +566,7 @@ end:
                 QString appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
                 env.insert("QT_PLUGIN_PATH", appPath);
 
-#if linux
+#ifndef WIN32
 #else
                 QString pathEnv = env.value("Path");
                 pathEnv.prepend(appPath + ";");
@@ -595,7 +595,7 @@ end:
             QString appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
             env.insert("QT_PLUGIN_PATH", appPath);
 
-#if linux
+#ifndef WIN32
             QString pathEnv = env.value("PATH");
             pathEnv.prepend(appPath + ":");
             env.insert("PATH", pathEnv);
