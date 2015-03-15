@@ -47,7 +47,7 @@ endif()
 
 # Append executable if necessary (OS X fix)
 IF(APPLE)
-    IF(NOT "${PYTHON_EXECUTABLE}" MATCHES "/python$")
+    IF(NOT "${PYTHON_EXECUTABLE}" MATCHES "/python[0-9\\.]*")
         set(PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE}/python")
     endif()
 endif()
@@ -59,6 +59,8 @@ if(PYTHONINTERP_FOUND)
         OUTPUT_VARIABLE _NUMPY_VALUES
         ERROR_VARIABLE _NUMPY_ERROR_VALUE
         OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+        message(${_NUMPY_SEARCH_SUCCESS})
 
     if(_NUMPY_SEARCH_SUCCESS MATCHES 0)
         set(NUMPY_FOUND TRUE)
