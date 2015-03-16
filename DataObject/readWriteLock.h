@@ -31,8 +31,7 @@
 #include "defines.h"
 
 // Use Window or Posix
-//#if defined (_WINDOWS) || defined (WIN32)
-#ifdef WIN32
+#if defined (WIN32) || defined (_WIN64)
      #include <windows.h>
 #else
      #ifndef POSIX
@@ -49,8 +48,7 @@
 */
 namespace ito {
 
-#ifdef WIN32
-//#if defined _WINDOWS || defined WIN32
+#if defined (WIN32) || defined (_WIN64)
 
     class ReadWriteLock
     {
@@ -231,7 +229,7 @@ namespace ito {
         inline int getLockStatus() const { return status; }
     };
 
-#else
+#else //defined (WIN32) || defined (_WIN64)
 
     class ReadWriteLock
     {

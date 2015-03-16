@@ -47,7 +47,7 @@
 namespace ito
 {
 
-#if (defined WIN32 || defined WIN64)
+#if (defined(Q_OS_WIN32) || defined(Q_OS_WIN64))
 class CPUID {
   ito::uint32 regs[4];
 
@@ -200,7 +200,7 @@ void MainApplication::setupApplication()
     settings->endArray();
     settings->endGroup();
 
-#if (defined WIN32 || defined WIN64)
+#if (defined(Q_OS_WIN32) || defined(Q_OS_WIN64))
     if (pathes.length() > 0)
     {
         QString p = pathes.join(";");
@@ -218,7 +218,7 @@ void MainApplication::setupApplication()
     }
 #endif
 
-#if (defined WIN32 || defined WIN64)
+#if (defined(Q_OS_WIN32) || defined(Q_OS_WIN64))
     //This check is done since the KMP_AFFINITY feature of OpenMP
     //is only available on Intel CPUs and lead to a severe warning
     //on other CPUs.
