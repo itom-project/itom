@@ -20,10 +20,6 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-//#if (defined WIN32 || defined WIN64)
-//    #include <QtCore/qt_windows.h>
-//#endif
-
 #include "mainApplication.h"
 #include "main.h"
 #include "organizer/userOrganizer.h"
