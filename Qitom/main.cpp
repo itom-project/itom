@@ -243,7 +243,7 @@ int main(int argc, char *argv[])
     }
     QString mpl_itomDir = QDir::cleanPath(appLibPath.filePath(""));
 
-#if (defined(Q_OS_WIN32) || defined(Q_OS_WIN64))
+#ifdef WIN32
     char *oldpath = getenv("path");
     char pathSep[] = ";";
 #else
@@ -252,7 +252,7 @@ int main(int argc, char *argv[])
 #endif
     char *newpath = (char*)malloc(strlen(oldpath) + libDir.size() + designerDir.size() + 11);
     newpath[0] = 0;
-#if (defined(Q_OS_WIN32) || defined(Q_OS_WIN64))
+#ifdef WIN32
     strcat(newpath, "path=");
 #else
 #endif
@@ -261,7 +261,7 @@ int main(int argc, char *argv[])
     strcat(newpath, designerDir.toLatin1().data());
     strcat(newpath, pathSep);
     strcat(newpath, oldpath);
-#if (defined(Q_OS_WIN32) || defined(Q_OS_WIN64))
+#ifdef WIN32
     _putenv(newpath);
 
     //this is for the matplotlib config file that is adapted for itom.

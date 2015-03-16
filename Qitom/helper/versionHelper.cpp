@@ -76,14 +76,14 @@ QMap<QString, QString> ito::getItomVersionMap()
 
     //itom_SysType
 #if (defined linux)
-    items["itom_SysType"] = "Q_OS_LINUX";
-#elif (defined Q_OS_WIN32)
-    #if (defined Q_OS_WIN64)
+    items["itom_SysType"] = "Linux (Unix)";
+#elif (defined WIN32)
+    #if (defined _WIN64)
         items["itom_SysType"] = "Windows 64-Bit";
     #else
         items["itom_SysType"] = "Windows 32-Bit";
     #endif
-    #if (defined _DEBUG) && (!defined linux)
+    #if (defined _DEBUG)
         items["itom_SysType"].append(" DEBUG");
     #endif
 #else

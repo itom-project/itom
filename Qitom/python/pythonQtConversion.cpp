@@ -2793,7 +2793,7 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
     case latin_1:
     case iso_8859_1:
         return PyUnicode_DecodeLatin1(byteArray,len,errors);
-#if defined(WIN) || defined(WIN32) || defined(_WIN64) || defined(_WINDOWS) || defined(Q_OS_WIN32)
+#if defined(WIN) || defined(WIN32) || defined(_WIN64) || defined(_WINDOWS)
     case mbcs:
         return PyUnicode_DecodeMBCS(byteArray, len, errors);
 #endif
@@ -2842,7 +2842,7 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
     case latin_1:
     case iso_8859_1:
         return PyUnicode_AsLatin1String(unicode);
-#if defined(WIN) || defined(WIN32) || defined(_WIN64) || defined(_WINDOWS)
+#if defined(WIN) || defined(WIN32) || defined(_WIN64)
     case mbcs:
         return PyUnicode_AsMBCSString(unicode);
 #endif
