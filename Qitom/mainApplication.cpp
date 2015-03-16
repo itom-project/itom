@@ -53,7 +53,7 @@ class CPUID {
 
 public:
   void load(unsigned i) {
-#ifdef WIN64
+#ifdef Q_OS_WIN64
     asm volatile
       ("cpuid" : "=a" (regs[0]), "=b" (regs[1]), "=c" (regs[2]), "=d" (regs[3])
        : "a" (i), "c" (0));
