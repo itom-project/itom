@@ -53,13 +53,13 @@ class CPUID {
 
 public:
   void load(unsigned i) {
-#ifdef Q_OS_WIN64
+#ifndef _MSC_VER
     asm volatile
       ("cpuid" : "=a" (regs[0]), "=b" (regs[1]), "=c" (regs[2]), "=d" (regs[3])
        : "a" (i), "c" (0));
     // ECX is set to zero for CPUID function 4    
 #else
-    __cpuid((ito::int32 *)regs, (ito::int32)i);
+    __cpuid((ito::int32 *)regs, (ito::int32)i); //Microsoft specific for x86 and x64
 #endif
   }
 
