@@ -493,6 +493,16 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 #if ITOM_PYTHONMATLAB == 1
             PyImport_AppendInittab("matlab", &PyInit_matlab);
 #endif
+            PyObject *python_path_prefix = PySys_GetObject("exec_prefix"); //borrowed reference
+            if (python_path_prefix)
+            {
+                bool ok;
+                pythonPathPrefix = PythonQtConversion::PyObjGetString(python_path_prefix, true, ok);
+                if (!ok)
+                {
+                    pythonPathPrefix = QString();
+                }
+            }
 
             //try to add folder "itom-package" to sys.path
             PyObject *syspath = PySys_GetObject("path"); //borrowed reference
