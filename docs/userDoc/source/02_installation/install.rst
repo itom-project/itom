@@ -16,8 +16,13 @@ Before installation, please review the minimum system requirements.
     * Windows 7 *or*
     * Windows 8 (not tested yet) *or*
     * Linux based OS (tested with Debian and Ubuntu)
+    * Mac OS X 10.9 (Mavericks) or later
 
-* 32 or 64bit processor architecture, SSE and SSE2 support
+* Processor architectur
+    
+    * Windows and Linux: 32 or 64bit processor architecture, SSE and SSE2 support
+    * Max OS X: All Intel-based Macs with an Intel Core 2 or later
+
 * 800MHz processor (dual-core recommended)
 * 512MB of RAM
 * 1024 x 768 screen resolution
