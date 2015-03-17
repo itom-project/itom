@@ -36,9 +36,6 @@ $RECYCLE.BIN/
 .AppleDouble
 .LSOverride
 
-# Icon must end with two \r
-Icon
-
 
 # Thumbnails
 ._*
@@ -125,11 +122,8 @@ DerivedData
 [Dd]ebugPublic/
 [Rr]elease/
 [Rr]eleases/
-x64/
-x86/
 build/
 bld/
-[Bb]in/
 [Oo]bj/
 
 # Visual Studo 2015 cache/options directory
@@ -165,7 +159,6 @@ dlldata.c
 *.tlh
 *.tmp
 *.tmp_proj
-*.log
 *.vspscc
 *.vssscc
 .builds
@@ -324,20 +317,14 @@ install_manifest.txt
 __pycache__/
 *.py[cod]
 
-# C extensions
-*.so
-
 # Distribution / packaging
 .Python
 env/
 build/
 develop-eggs/
 dist/
-downloads/
 eggs/
 .eggs/
-lib/
-lib64/
 parts/
 sdist/
 var/
@@ -368,34 +355,15 @@ coverage.xml
 *.mo
 *.pot
 
-# Django stuff:
-*.log
-
 # Sphinx documentation
 docs/_build/
-
-# PyBuilder
-target/
 
 
 ### IPythonNotebook ###
 # Temporary data
 .ipynb_checkpoints/
 
-
 ### Qt ###
-# C++ objects and libs
-
-*.slo
-*.lo
-*.o
-*.a
-*.la
-*.lai
-*.so
-*.dll
-*.dylib
-
 # Qt-es
 
 /.qmake.cache
@@ -418,4 +386,3 @@ Makefile*
 #QtCtreator Qml
 *.qmlproject.user
 *.qmlproject.user.*
-
