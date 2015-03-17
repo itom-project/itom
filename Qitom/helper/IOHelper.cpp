@@ -566,8 +566,7 @@ end:
                 QString appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
                 env.insert("QT_PLUGIN_PATH", appPath);
 
-#ifndef WIN32
-#else
+#ifdef WIN32
                 QString pathEnv = env.value("Path");
                 pathEnv.prepend(appPath + ";");
                 env.insert("Path", pathEnv);

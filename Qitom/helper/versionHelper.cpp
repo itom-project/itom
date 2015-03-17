@@ -76,8 +76,8 @@ QMap<QString, QString> ito::getItomVersionMap()
 
     //itom_SysType
 #if (defined linux)
-    items["itom_SysType"] = "Q_OS_LINUX";
-#elif (defined Q_OS_WIN32)
+    items["itom_SysType"] = "Linux (Unix)";
+#elif (defined WIN32)
 #include <QSysInfo>
     switch( qWinVersion() )
     {
@@ -92,12 +92,12 @@ QMap<QString, QString> ito::getItomVersionMap()
         case QSysInfo::WV_WINDOWS8_1+1: items["itom_SysType"] = "Windows 10";           break;
         default:                        items["itom_SysType"] = "Windows";              break;
     }
-    #if (defined Q_OS_WIN64)
+    #if (defined _WIN64)
         items["itom_SysType"].append(" 64-Bit");
     #else
         items["itom_SysType"].append(" 32-Bit");
     #endif
-    #if (defined _DEBUG) && (defined WIN32)
+    #if (defined _DEBUG)
         items["itom_SysType"].append(" DEBUG");
     #endif
 #elif (defined Q_OS_MACX)
@@ -119,7 +119,7 @@ QMap<QString, QString> ito::getItomVersionMap()
         case QSysInfo::MV_10_9+2:   items["itom_SysType"] = "OS X 10.11";       break;
         default:                    items["itom_SysType"] = "OS X";             break;
     }
-    #if (defined _DEBUG) && (defined __APPLE__)
+    #if (defined _DEBUG)
         items["itom_SysType"].append(" DEBUG");
     #endif
 #else

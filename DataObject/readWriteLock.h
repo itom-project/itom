@@ -31,7 +31,6 @@
 #include "defines.h"
 
 // Use Window or Posix
-//#if defined (_WINDOWS) || defined (WIN32)
 #ifdef WIN32
      #include <windows.h>
 #else
@@ -50,7 +49,6 @@
 namespace ito {
 
 #ifdef WIN32
-//#if defined _WINDOWS || defined WIN32
 
     class ReadWriteLock
     {

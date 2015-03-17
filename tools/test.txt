@@ -1,6 +1,0 @@
-    versiontarget.target = version.h
-    versiontarget.commands = $$PWD/../tools/subwcrev.sh $$PWD $$PWD/version.tmpl $$PWD/version.h
-    versiontarget.depends = FORCE
-
-    PRE_TARGETDEPS += version.h
-    QMAKE_EXTRA_TARGETS += versiontarget

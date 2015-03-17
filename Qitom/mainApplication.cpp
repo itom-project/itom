@@ -47,27 +47,27 @@
 namespace ito
 {
 
-#if (defined WIN32 || defined WIN64)
-class CPUID {
-  ito::uint32 regs[4];
+#ifdef WIN32
+    class CPUID {
+      ito::uint32 regs[4];
 
-public:
-  void load(unsigned i) {
-#ifdef WIN64
-    asm volatile
-      ("cpuid" : "=a" (regs[0]), "=b" (regs[1]), "=c" (regs[2]), "=d" (regs[3])
-       : "a" (i), "c" (0));
-    // ECX is set to zero for CPUID function 4    
-#else
-    __cpuid((ito::int32 *)regs, (ito::int32)i);
-#endif
-  }
+    public:
+      void load(unsigned i) {
+    #ifndef _MSC_VER
+        asm volatile
+          ("cpuid" : "=a" (regs[0]), "=b" (regs[1]), "=c" (regs[2]), "=d" (regs[3])
+           : "a" (i), "c" (0));
+        // ECX is set to zero for CPUID function 4    
+    #else
+        __cpuid((ito::int32 *)regs, (ito::int32)i); //Microsoft specific for x86 and x64
+    #endif
+      }
 
-  const ito::uint32 &EAX() const {return regs[0];}
-  const ito::uint32 &EBX() const {return regs[1];}
-  const ito::uint32 &ECX() const {return regs[2];}
-  const ito::uint32 &EDX() const {return regs[3];}
-};
+      const ito::uint32 &EAX() const {return regs[0];}
+      const ito::uint32 &EBX() const {return regs[1];}
+      const ito::uint32 &ECX() const {return regs[2];}
+      const ito::uint32 &EDX() const {return regs[3];}
+    };
 #endif
 
 /*!
@@ -200,7 +200,7 @@ void MainApplication::setupApplication()
     settings->endArray();
     settings->endGroup();
 
-#if (defined WIN32 || defined WIN64)
+#ifdef WIN32
     if (pathes.length() > 0)
     {
         QString p = pathes.join(";");
@@ -208,7 +208,7 @@ void MainApplication::setupApplication()
         QByteArray newpath = "path=" + p.toLatin1() + ";" + oldpath; //set libDir at the beginning of the path-variable
         _putenv(newpath.data());
     }
-#else //linux
+#else // (defined linux) && (defined _APPLE_)
     if (pathes.length() > 0)
     {
         QString p = pathes.join(":");
@@ -218,7 +218,7 @@ void MainApplication::setupApplication()
     }
 #endif
 
-#if (defined WIN32 || defined WIN64)
+#ifdef WIN32
     //This check is done since the KMP_AFFINITY feature of OpenMP
     //is only available on Intel CPUs and lead to a severe warning
     //on other CPUs.
@@ -235,7 +235,7 @@ void MainApplication::setupApplication()
         _putenv_s("KMP_AFFINITY","none");
     }
 #else
-    //todo: check for Intel/AMD and set KMP_AFFINITY if not Intel
+    // \todo check for Intel/AMD and set KMP_AFFINITY if not Intel
 #endif
 
 

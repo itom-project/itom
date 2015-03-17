@@ -255,6 +255,8 @@ private:
     QHash<size_t, FuncWeakRef> m_pyFuncWeakRefHashes; //!< hash table containing weak reference to callable python methods or functions and as second, optional PyObject* an tuple, passed as argument to that function. These functions are for example executed by menu-clicks in the main window.
     size_t m_pyFuncWeakRefAutoInc;
 
+    QString pythonPathPrefix; //!< absolute path to the python executable
+
     bool m_executeInternalPythonCodeInDebugMode; //!< if true, button events, user interface connections to python methods... will be executed by debugger
     PyMethodDef* PythonAdditionalModuleITOM;
 

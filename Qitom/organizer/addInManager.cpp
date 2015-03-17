@@ -230,12 +230,12 @@ namespace ito
             //search for base plugin folder
             pluginsDir = QDir(qApp->applicationDirPath());
 
-#if defined(Q_OS_WIN)
+#if defined(WIN32)
             if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
             {
                 pluginsDir.cdUp();
             }
-#elif defined(Q_OS_MAC)
+#elif defined(__APPLE__)
             if (pluginsDir.dirName() == "MacOS")
             {
                 pluginsDir.cdUp();

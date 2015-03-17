@@ -544,14 +544,16 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
                     if (encodedByteArray)
                     {
                         item->m_extendedValue = item->m_value = PyBytes_AS_STRING(encodedByteArray);
-                        if(item->m_value.length()>20)
-                        {
-                            item->m_value = item->m_value.replace("\n",";");
-                        }
-                        else if(item->m_value.length() > 100)
+                        
+                        if(item->m_value.length() > 100)
                         {
                             item->m_value = "<double-click to show value>";
                         }
+                        else if(item->m_value.length()>20)
+                        {
+                            item->m_value = item->m_value.replace("\n",";");
+                        }
+
                         Py_XDECREF(encodedByteArray);
                     }
                     else

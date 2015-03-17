@@ -198,10 +198,10 @@ namespace ito
         QDir pluginsDir = QDir(qApp->applicationDirPath());
         RetVal ret = retOk;
 
-#if defined(Q_OS_WIN)
+#if defined(WIN32)
         if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
             pluginsDir.cdUp();
-#elif defined(Q_OS_MAC)
+#elif defined(__APPLE__)
         if (pluginsDir.dirName() == "MacOS")
         {
             pluginsDir.cdUp();
