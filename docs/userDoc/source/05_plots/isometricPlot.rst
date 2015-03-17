@@ -3,7 +3,7 @@ isometric Plot
 
 "ItomIsoGLWidget" is a plot for pseudo 3D visualization of image like DataObjects. It is based on openGL and renders the objects
 either to triangles ("triangle mode") or points ("Joe-Mode").
-All DataTypes except "rgba32" are accepted. To plot complex objects, it is possible to select between the following modes: "absolut", "phase", "real" and "imaginary".
+All DataTypes except "rgba32" are accepted. To plot complex objects, it is possible to select between the following modes: "absolute", "phase", "real" and "imaginary".
 
 The figure does not support z-stack sectioning. The "ItomIsoGLWidget" does support neither graphic element / marker plotting nor line or pixel picking. Hence this plot will be improved and replaced by a new version for the next release.
 
@@ -33,15 +33,15 @@ Slots
 
 **ito::RetVal setLinePlot( double x0, double y0, double x1, double y1 [, int linePlotIdx = -1])**:
 
- this can be invoked by python to trigger a lineplot, inherited from *class AbstractDObjFigure*, **not implemented at the moment**
+ this can be invoked by python to trigger a line plot, inherited from *class AbstractDObjFigure*, **not implemented at the moment**
 
- *x0, double*: first position of linePlot in x-Direction
+ *x0, double*: first position of line plot in x-Direction
  
- *y0, double*: first position of linePlot in y-Direction
+ *y0, double*: first position of line plot in y-Direction
  
- *x1, double*: second position of linePlot in x-Direction
+ *x1, double*: second position of line plot in x-Direction
  
- *y1, double*: second position of linePlot in x-Direction
+ *y1, double*: second position of line plot in x-Direction
  
 
 **ito::RetVal setSource( ito::DataObject source, ItomSharedSemaphore* )**

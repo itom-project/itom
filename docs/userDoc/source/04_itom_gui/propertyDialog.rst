@@ -1,5 +1,7 @@
 .. include:: ../include/global.inc
 
+.. _gui-propertydialog:
+
 Property Dialog
 ===============
 
@@ -25,9 +27,9 @@ This property section is responsible for the behaviour of the "Help" dialog. If 
 Local and remote databases
 """"""""""""""""""""""""""
 
-Most help files are organized in databases. To display these files, the green underlined checkbox has to be checked. To manage, update and load new databases the green box offers a variety of options. Each database listed underneath "Local" are safed on the harddrive. The last column shows if there are any online updates available. To refresh the updatestate of the databases, just click the "refresh" button above. 
+Most help files are organized in databases. To display these files, the green underlined checkbox has to be checked. To manage, update and load new databases the green box offers a variety of options. Each database listed underneath "Local" are saved on the harddrive. The last column shows if there are any online updates available. To refresh the updatestate of the databases, just click the "refresh" button above. 
 
-If the the internet connection is very slow a timout error might appear during updates. In this case increase the timeout time and check you internet connection.
+If the the internet connection is very slow a timeout error might appear during updates. In this case increase the timeout time and check you internet connection.
 
 Generated help files
 """"""""""""""""""""
@@ -79,7 +81,7 @@ Auto Completion
     :scale: 100%
     :align: center
 
-The auto completion has two main functions. It offers available commands after entering some characters (number of minimum characters can be set in the "treshold" spin box).
+The auto completion has two main functions. It offers available commands after entering some characters (number of minimum characters can be set in the "threshold" spin box).
 
 .. figure:: images/propEditorAutoCompletion_2.png
     :scale: 100%
@@ -115,7 +117,7 @@ The first group box manages the indentation.
 * if "Use tabs for indentation" is checked, tabs are used, otherwise spaces.
 * 
 * "Show Whitespaces" displays small light grey dots in each indentation.
-* The "Indentaion Width" spinbox sets the standard width for the indentation
+* The "Indentation Width" spinbox sets the standard width for the indentation
 
 Inside "Indentation Warning" group box it is possible to select which kind of indentation is marked as wrong. Make sure not to create a conflict with the checkboxes listed above ("use Tabs for Indentation"). The following image shows a warning caused by wrong indentation (tabs).
 
@@ -139,7 +141,7 @@ The **class navigator** feature allows configuring the :ref:`class navigator <gu
 Styles
 ^^^^^^
 	
-This page is responsible for the highlighting of reserved words, comments, indentifier and so on. The style for each type of text, listed in the listbox, can be set individually. 
+This page is responsible for the highlighting of reserved words, comments, identifier and so on. The style for each type of text, listed in the listbox, can be set individually. 
 
 Plots and Figures
 -----------------
