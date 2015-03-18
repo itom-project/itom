@@ -6,9 +6,9 @@ Plots of data objects
 
 The most common way to plot an arbitrary data object is the :py:meth:`~itom.plot` command contained in the module :py:mod:`itom`.
 
-In the first example, we create an one-dimensional data object with random values (16bit, signed, fixed point precision) and simple want
+In the first example, we create an one-dimensional data object with random values (16bit, signed, fixed point precision) and then want
 to visualize this data object in a line plot. itom is able to recognize the type of plot you desire and uses the plot plugin which is
-set to be default for this type of plot (static, line plot). The defaults can be set in the property dialog of itom.
+set to be default for this type of plot (static, line plot). The defaults can be set in the :ref:`property dialog <gui-propertydialog>` of itom.
 
 .. code-block:: python
     
@@ -21,14 +21,14 @@ set to be default for this type of plot (static, line plot). The defaults can be
     set to 1.
 
 If you have various plot plugins available that can handle that type of data object, you can also force the plot command to use your
-specific plugin, which is defined by its class name (see itom's property dialog for the class name). If the class name cannot be found
-or is not able to plot the type of data object, itom falls back to the default plot plugin:
+specific plugin, which is defined by its class name (see itom's :ref:`property dialog <gui-propertydialog>` for the class name). 
+If the class name cannot be found or if it is not able to plot the type of data object, itom falls back to the default plot plugin:
 
 .. code-block:: python
     
-    plot(data1d, "Itom1DQwtPlot")
+    plot(data1d, "Itom1DQwtPlot") #case insensitive plot class name
 
-The result of both examples can be like this:
+The result of both examples looks like this:
 
 .. figure:: images/plot1d.png
     :scale: 70%
@@ -46,7 +46,8 @@ Then, you obtain a figure that looks like this:
 .. figure:: images/plot2d.png
     :scale: 70%
 
-If you not only work with data objects but also with numpy
+If you not only work with data objects but also with numpy you can also pass numpy arrays to the :py:meth:`~itom.plot` command. An implicit shallow
+copy in terms of a :py:class:`itom.dataObject` is then created and passed to the plots.
 
 If the plot is opened in its own figure window, you have a dock-button in the toolbar on the right side. Click on this button in order to dock
 the plot into the main window of itom.
@@ -55,8 +56,8 @@ the plot into the main window of itom.
 Live images of cameras and grabbers
 ------------------------------------
 
-itom is not only able to plot data objects but can also show live streams of connected and opened cameras. Cameras can be all plugins of type
-dataIO that also have the grabber-type flag defined (see the section grabbers of your plugin toolbox in itom). If a live image of a specific camera
+itom is not only able to plot data objects but can also show live streams of connected and opened cameras. Cameras are implemented as plugins of type
+dataIO that also have the grabber-type flag defined (see the section grabbers of your :ref:`plugin toolbox <gui-plugins>` in itom). If a live image of a specific camera
 should be created, the following process is started:
 
 1. The camera is asked for its parameters *sizex* and *sizey*. If one of these dimensions is equal to one, a live line image is opened, else a two-dimensional live image is opened.
@@ -70,7 +71,7 @@ is set to True (which is also the default case):
 .. code-block:: python
     
     cam = dataIO("DummyGrabber")
-    cam.setAutoGrabbing(True)
+    cam.setAutoGrabbing(True) #can be omitted if auto grabbing already enabled
     liveImage(cam)
 
 You can also show the live image of any camera using the GUI. Right-click on the opened camera instance in the plugin toolbox and choose **live image**:

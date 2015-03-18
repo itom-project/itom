@@ -13,7 +13,7 @@ The following list describe packages that are required or recommended for buildi
 
 Required:
 
-* **Qt 4** (libqtcore4, libqt4-dev, libqt4-...)
+* **Qt4** or **Qt5** (libqtcore4, libqt4-dev, libqt4-...)
 * Editor **QScintilla** (libqscintilla2-8 or similar, libqscintilla2-dev)
 * **OpenCV** (libopencv-core2.3 or libopencv-core2.4, libopencv-core-dev, libopencv-imgproc, libopencv-highgui...)
 * **Python3** (python3, python3-dev, python3-dbg)

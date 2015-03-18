@@ -15,7 +15,7 @@ Software packages
 
 - IDE, Compiler (e.g. Visual Studio 2010 Professional, QtCreator...)
 - CMake (recommended 2.8.9 or higher)
-- Qt-framework (4.7 or higher, 4.8 recommended, 5.x in preparation)
+- Qt-framework (4.7 or higher, 4.8 or >= 5.3 recommended)
 - QScintilla2 (2.6 or higher)
 - OpenCV 2.3 or higher (2.4 recommended)
 - Python 3.2 or higher
@@ -24,7 +24,7 @@ Software packages
 
 **Optional Software-Packages**
 
-- PointCloudLibrary 1.6 or higher (optional)
+- PointCloudLibrary 1.6 or higher (>= 1.7 recommended, optional)
 - Qt-AddOn for Visual Studio (requires .NET 2.0 framework with SP 1.0)
 - Doxygen (for creating the source code documentation)
 - Python-Packages: SciPy, Distribute, Sphinx (user documentation generation), scikit-image, matplotlib...
@@ -49,15 +49,14 @@ Download **CMake** from http://www.cmake.org/cmake/resources/software.html and i
 
 **Qt-framework** (mandatory)
 
-Download the **Qt-framework** (version 4.7 or higher, 4.8.x recommended, 5.x is coming soon) from http://qt-project.org/downloads. If you find a setup version for your IDE and compiler, 
+Download the **Qt-framework** (version 4.7 or higher, 4.8.x or >= 5.3 recommended) from http://qt-project.org/downloads. If you find a setup version for your IDE and compiler, 
 you can directly install it. Otherwise, you need to configure and build **Qt** on your computer - see box below (e.g. Qt 4.8.x with Visual Studio 2010, 64bit needs to be compiled). For
-Qt5 either download the ready-to-use binaries from qt-project.org or compile it from sources and follow the instruction in the box below). If you use the ready-to-use binaries, make sure
-to use a version with OpenGL.
+Qt5 either download the ready-to-use binaries from qt-project.org, compile it from sources and follow the instruction in the box below or consider to use the :ref:`all-in-one-development setup <install-all-in-one-dev-setup>`). If you use the ready-to-use binaries, make sure to use a version with OpenGL.
 
 Create the following environment variables (Windows only - you need to log-off from your computer in order to activate changes to environment variables):
 
 * create an entry **QTDIR** and set it to the *Qt*-base directory (e.g. **C:\\Qt\\4.8.0**)
-* create an entry **QMAKESPEC** and set it to the string **win32-msvc2010** (even if you are compiling for 64bit) or similar (see http://qt-project.org/doc/qt-4.8/qmake-environment-reference.html#qmakespec)
+* for Qt4.x create an entry **QMAKESPEC** and set it to the string **win32-msvc2010** (even if you are compiling for 64bit) or similar (see http://qt-project.org/doc/qt-4.8/qmake-environment-reference.html#qmakespec)
 * add the following text to the Path variable: **;%QTDIR%\\bin** (please only **add** this string, **do not replace** the existing path-entry)
 
 .. note::
@@ -231,7 +230,7 @@ Get a version of NumPy that fits to your python version and install it. On Windo
 
 **pip** (optional)
 
-**Pip** is the new package installation tool for |python| packages. If you don't have **pip** already installed use the following hints to get **pip**. Download the file from https://raw.github.com/pypa/pip/master/contrib/get-pip.py and save it to any temporary directory. Then open the file **get-pip.py** with the python version used for compiling |itom| (e.g. python32.exe). As an alternative, open a command line and switch to the directory where you save the file **get-pip.py**.
+**Pip** is the new package installation tool for |python| packages. If you don't have **pip** already installed (already included in Python >= 3.4) use the following hints to get **pip**. Download the file from https://raw.github.com/pypa/pip/master/contrib/get-pip.py and save it to any temporary directory. Then open the file **get-pip.py** with the python version used for compiling |itom| (e.g. python32.exe). As an alternative, open a command line and switch to the directory where you save the file **get-pip.py**.
 
 Assuming that Python is located under **C:\\Python32**, execute the following command::
     
