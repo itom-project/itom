@@ -527,30 +527,46 @@ else (UPDATE_TRANSLATIONS)
 endif (UPDATE_TRANSLATIONS)
 #handle translations END
 
-#if(APPLE)
-# # An .app-Bundle for OS X would be nice unfortunately the python engine can not be started using a bundle.
-#    SET_SOURCE_FILES_PROPERTIES(${target_name} PROPERTIES MACOSX_BUNDLE_INFO_STRING "itom - an Open Source Measurement, Automation and Evaluation Software\nhttp://itom.bitbucket.org")
-#    SET_SOURCE_FILES_PROPERTIES(${target_name} PROPERTIES MACOSX_BUNDLE_ICON_FILE "")
-#    SET_SOURCE_FILES_PROPERTIES(${target_name} PROPERTIES MACOSX_BUNDLE_GUI_IDENTIFIER "python.UniStuttgart.ITO.Itom")
-#    SET_SOURCE_FILES_PROPERTIES(${target_name} PROPERTIES MACOSX_BUNDLE_LONG_VERSION_STRING "${ITOM_versionString}")
-#    SET_SOURCE_FILES_PROPERTIES(${target_name} PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME "Itom")
-#    SET_SOURCE_FILES_PROPERTIES(${target_name} PROPERTIES MACOSX_BUNDLE_SHORT_VERSION_STRING "${ITOM_versionString}")
-#    SET_SOURCE_FILES_PROPERTIES(${target_name} PROPERTIES MACOSX_BUNDLE_BUNDLE_VERSION "${ITOM_versionString}")
-#    SET_SOURCE_FILES_PROPERTIES(${target_name} PROPERTIES MACOSX_BUNDLE_COPYRIGHT "The core components and the main application of itom are covered by the GNU Library General Public Licence (GNU LGPL). All components belonging to the SDK of itom (e.g. dataObject, pointCloud, addInInterface,...) are additionally covered by an itom exception. The main idea of this exception is to allow other libraries (e.g. plugins) to include and link agains components of itom SDK independent on the specific license model of the respective “other” library. For more information see http://itom.bitbucket.org/latest/docs/01_introduction/introduction.html#licensing.")
+IF(APPLE)
+    SET(MACOSX_BUNDLE TRUE)
 
-#    ADD_EXECUTABLE(${target_name} MACOSX_BUNDLE ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENCENDY} )
-#elseif(WIN32)
+    SET(MACOSX_BUNDLE_BUNDLE_NAME "itom")
+    SET(MACOSX_BUNDLE_GUI_IDENTIFIER "ITO.itom")
+    SET(MACOSX_BUNDLE_INFO_STRING "itom - an Open Source Measurement, Automation and Evaluation Software\nhttp://itom.bitbucket.org")
+    #SET(MACOSX_BUNDLE_LONG_VERSION_STRING "${ITOM_versionString}")
+    #SET(MACOSX_BUNDLE_SHORT_VERSION_STRING "${ITOM_versionString}")
+    SET(MACOSX_BUNDLE_BUNDLE_VERSION ${ITOM_versionString})
+    SET(MACOSX_BUNDLE_COPYRIGHT "The core components and the main application of itom are covered by the GNU Library General Public Licence (GNU LGPL). All components belonging to the SDK of itom (e.g. dataObject, pointCloud, addInInterface,...) are additionally covered by an itom exception. The main idea of this exception is to allow other libraries (e.g. plugins) to include and link agains components of itom SDK independent on the specific license model of the respective “other” library. For more information see http://itom.bitbucket.org/latest/docs/01_introduction/introduction.html#licensing.")
+
+    SET(target_icon itomicon.icns)
+    SET(target_icon_path "${CMAKE_CURRENT_SOURCE_DIR}/appicon/osx/${target_icon}")
+    SET(MACOSX_BUNDLE_ICON_FILE "${target_icon}")
+    SET_SOURCE_FILES_PROPERTIES(${target_icon_path} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+
+    ADD_EXECUTABLE(${target_name} MACOSX_BUNDLE ${target_icon_path} ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENCENDY} )
+
+#    SET_SOURCE_FILES_PROPERTIES(
+#      apple1_aux1
+#      apple1_aux2
+#      PROPERTIES
+#      MACOSX_PACKAGE_LOCATION MacOSX
+#      )
+#    SET_SOURCE_FILES_PROPERTIES(
+#      apple1_res1
+#      apple1_res2
+#      PROPERTIES
+#      MACOSX_PACKAGE_LOCATION Resources
+#      )
+
+    set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "itomd")
+    set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "itom.app")
+ELSE(APPLE)
     ADD_EXECUTABLE(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENCENDY} )
-#else()
-#    ADD_EXECUTABLE(${target_name} ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENCENDY} )
-#endif()
-#if(APPLE)
-    set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "Itomd")
-    set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "Itom")
-#else(APPLE)
+
     set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
     set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "qitom")
-#endif(APPLE)
+ENDIF(APPLE)
+
 ADD_DEPENDENCIES(${target_name} ${target_name}_prebuild)
 ADD_DEPENDENCIES(${target_name} itomWidgets)
 
