@@ -112,7 +112,79 @@ ProcessOrganizer::~ProcessOrganizer()
 */
 /*static*/ QString ProcessOrganizer::getAbsQtToolPath(const QString &binaryName)
 {
-#ifndef WIN32
+#ifdef __APPLE__
+    for( int i = 0; i < 4; ++i)
+    {
+        QDir dir;
+        QString binaryName2 = binaryName;
+        
+        // second try: append .app
+        if( i == 1)
+        {
+            if(!binaryName2.endsWith(".app"))
+            {
+                binaryName2.append(".app");
+            }
+        }
+        // third try: first letter upper case
+        else if( i == 2)
+        {
+            binaryName2[0] = binaryName2[0].toUpper();
+        }
+        // fourth try: first letter upper case and .app
+        else if( i == 2)
+        {
+            binaryName2[0] = binaryName2[0].toUpper();
+            if(!binaryName2.endsWith(".app"))
+            {
+                binaryName2.append(".app");
+            }
+        }
+        
+        //1. first try: in this application dir
+        dir.setPath( QCoreApplication::applicationDirPath() );
+        QStringList entryList = dir.entryList(QDir::Executable | QDir::Files | QDir::Dirs);
+        if(entryList.contains(binaryName2)) //dir.exists(binaryName2))
+        {
+            return dir.absoluteFilePath( binaryName2 );
+        }
+        
+        //2. next try: qt binary dir (when installing qt from sources)
+        dir.setPath( QLibraryInfo::location( QLibraryInfo::BinariesPath ) );
+        entryList = dir.entryList(QDir::Executable | QDir::Files | QDir::Dirs);
+        if(entryList.contains(binaryName2))
+        {
+            return dir.absoluteFilePath( binaryName2 );
+        }
+       
+        //3. next try: qt parent dir (when installing qt from sources)
+        dir.setPath( QLibraryInfo::location( QLibraryInfo::PrefixPath ) );
+        entryList = dir.entryList(QDir::Executable | QDir::Files | QDir::Dirs);
+        if(entryList.contains(binaryName2))
+        {
+            return dir.absoluteFilePath( binaryName2 );
+        }
+        
+        //4. next try: system applications directory
+        dir.setPath( "/Applications");
+        entryList = dir.entryList(QDir::Executable | QDir::Files | QDir::Dirs);
+        if(entryList.contains(binaryName2))
+        {
+            return dir.absoluteFilePath( binaryName2 );
+        }
+        
+        //5. next try: user applications directory
+        dir.setPath( QDir::homePath() + "/Applications");
+        entryList = dir.entryList(QDir::Executable | QDir::Files | QDir::Dirs);
+        if(entryList.contains(binaryName2))
+        {
+            return dir.absoluteFilePath( binaryName2 );
+        }
+    }
+    
+    //6. return as is
+    return binaryName;
+#elif (!defined WIN32)
     QDir dir;
     QString binaryName2 = binaryName;
 
@@ -133,11 +205,10 @@ ProcessOrganizer::~ProcessOrganizer()
     {
         return dir.absoluteFilePath( binaryName2 );
     }
-
+    
+    //3. return as is
     return binaryName;
-
 #else
-
     QDir dir;
     QString binaryName2 = binaryName;
     if(!binaryName2.endsWith(".exe"))
