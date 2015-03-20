@@ -1353,12 +1353,27 @@ PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ PyObject* PythonUi::PyUiItem_info(PyUiItem *self)
+PyDoc_STRVAR(PyUiItemInfo_doc,"info(verbose = 0) -> prints information about properties, public accessible slots and signals of the wrapped widget. \n\
+\n\
+Parameters \n\
+----------- \n\
+verbose : {int} \n\
+    0: only properties, slots and signals that do not come from Qt-classes are printed (default) \n\
+    1: properties, slots and signals are printed up to Qt GUI base classes \n\
+    2: all properties, slots and signals are printed");
+/*static*/ PyObject* PythonUi::PyUiItem_info(PyUiItem *self, PyObject *args)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
+        return NULL;
+    }
+
+    int showAll = 0;
+
+    if(!PyArg_ParseTuple(args, "|i", &showAll))
+    {
         return NULL;
     }
 
@@ -1374,7 +1389,18 @@ PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
 
     //!> we need this as otherwise the Q_ARG macro does not recognize our templated QMap
 //    QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int,UiOrganizer::infoShowItomInheritance), Q_ARG(QSharedPointer<QVariantMap>, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
-    QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int,UiOrganizer::infoShowItomInheritance), Q_ARG(ito::UiOrganizer::tQMapArg*, NULL), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    if (showAll >= 2)
+    {
+        QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int,UiOrganizer::infoShowAllInheritance), Q_ARG(ito::UiOrganizer::tQMapArg*, NULL), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    }
+    else if (showAll == 1)
+    {
+        QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int,UiOrganizer::infoShowInheritanceUpToWidget), Q_ARG(ito::UiOrganizer::tQMapArg*, NULL), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    }
+    else
+    {
+        QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int,UiOrganizer::infoShowItomInheritance), Q_ARG(ito::UiOrganizer::tQMapArg*, NULL), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    }
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -1384,6 +1410,11 @@ PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
 
     retValue += locker.getSemaphore()->returnValue;
     if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    if (showAll < 2)
+    {
+        std::cout << "For more properties, slots and signals call info(1) or info(2)\n" << std::endl;
+    }
 
     Py_RETURN_NONE;
 }
@@ -1564,7 +1595,7 @@ PyMethodDef PythonUi::PyUiItem_methods[] = {
         {"getWindowFlags", (PyCFunction)PyUiItem_getWindowFlags, METH_NOARGS, PyUiItemGetWindowFlags_doc},
         {"setWindowFlags", (PyCFunction)PyUiItem_setWindowFlags, METH_VARARGS, PyUiItemSetWindowFlags_doc},
         {"invokeKeyboardInterrupt", (PyCFunction)PyUiItem_connectKeyboardInterrupt, METH_VARARGS, PyUiItemConnectKeyboardInterrupt_doc},
-        {"info", (PyCFunction)PyUiItem_info, METH_NOARGS, NULL},
+        {"info", (PyCFunction)PyUiItem_info, METH_VARARGS, PyUiItemInfo_doc},
         {"exists", (PyCFunction)PyUiItem_exists, METH_NOARGS, PyUiItemExists_doc},
         {NULL}  /* Sentinel */
 };
