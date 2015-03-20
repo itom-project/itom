@@ -1353,7 +1353,7 @@ PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyUiItemInfo_doc,"info(verbose = 0) -> prints information about properties, public accessible slots and signals of the wrapped widget. \n\
+PyDoc_STRVAR(PyUiItemInfo_doc,"info([verbose = 0]) -> prints information about properties, public accessible slots and signals of the wrapped widget. \n\
 \n\
 Parameters \n\
 ----------- \n\
