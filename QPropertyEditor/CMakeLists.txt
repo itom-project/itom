@@ -4,6 +4,12 @@ project(${target_name})
 
 cmake_minimum_required(VERSION 2.8)
 
+IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
+    if(POLICY CMP0042)
+        cmake_policy(SET CMP0042 NEW)
+    ENDIF(POLICY CMP0042)
+ENDIF()
+
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
