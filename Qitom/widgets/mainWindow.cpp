@@ -1022,7 +1022,6 @@ void MainWindow::mnuShowAssistant()
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
         retval += m_pHelpSystem->rebuildHelpIfNotUpToDate();
         collectionFile = m_pHelpSystem->getHelpCollectionAbsFileName();
-        qDebug() << collectionFile;
         QApplication::restoreOverrideCursor();
     }
     else

@@ -112,138 +112,74 @@ ProcessOrganizer::~ProcessOrganizer()
 */
 /*static*/ QString ProcessOrganizer::getAbsQtToolPath(const QString &binaryName)
 {
+    QList<QDir> dirList;    // Possible directories
+    QList<QString> binList; // Possible binary names
+    
+    // Define binary names and possible directories
 #ifdef __APPLE__
-    for( int i = 0; i < 4; ++i)
+    binList.append( binaryName);
+    binList.append( binaryName + ".app");
+    binList.append( binaryName);
+    binList[2][0] = binList.at(2).at(0).toUpper();
+    binList.append( binList.at(2) + ".app");
+    
+    dirList.append( QDir( QCoreApplication::applicationDirPath()));
+    dirList.append( QDir( QLibraryInfo::location( QLibraryInfo::BinariesPath)));
+    dirList.append( QDir( QLibraryInfo::location( QLibraryInfo::PrefixPath)));
+    dirList.append( QDir( QCoreApplication::applicationDirPath()));
+    dirList.append( QDir( "/Applications"));
+    dirList.append( QDir( QDir::homePath() + "/Applications"));
+#elif (defined linux)
+    binList.append( binaryName);
+    
+    dirList.append( QDir( QCoreApplication::applicationDirPath()));
+    dirList.append( QDir( QLibraryInfo::location( QLibraryInfo::BinariesPath)));
+#else // WIN32
+    if( binaryName.endsWith(".exe"))
     {
-        QDir dir;
-        QString binaryName2 = binaryName;
-        
-        // second try: append .app
-        if( i == 1)
-        {
-            if(!binaryName2.endsWith(".app"))
-            {
-                binaryName2.append(".app");
-            }
-        }
-        // third try: first letter upper case
-        else if( i == 2)
-        {
-            binaryName2[0] = binaryName2[0].toUpper();
-        }
-        // fourth try: first letter upper case and .app
-        else if( i == 2)
-        {
-            binaryName2[0] = binaryName2[0].toUpper();
-            if(!binaryName2.endsWith(".app"))
-            {
-                binaryName2.append(".app");
-            }
-        }
-        
-        //1. first try: in this application dir
-        dir.setPath( QCoreApplication::applicationDirPath() );
-        QStringList entryList = dir.entryList(QDir::Executable | QDir::Files | QDir::Dirs);
-        if(entryList.contains(binaryName2)) //dir.exists(binaryName2))
-        {
-            return dir.absoluteFilePath( binaryName2 );
-        }
-        
-        //2. next try: qt binary dir (when installing qt from sources)
-        dir.setPath( QLibraryInfo::location( QLibraryInfo::BinariesPath ) );
-        entryList = dir.entryList(QDir::Executable | QDir::Files | QDir::Dirs);
-        if(entryList.contains(binaryName2))
-        {
-            return dir.absoluteFilePath( binaryName2 );
-        }
-       
-        //3. next try: qt parent dir (when installing qt from sources)
-        dir.setPath( QLibraryInfo::location( QLibraryInfo::PrefixPath ) );
-        entryList = dir.entryList(QDir::Executable | QDir::Files | QDir::Dirs);
-        if(entryList.contains(binaryName2))
-        {
-            return dir.absoluteFilePath( binaryName2 );
-        }
-        
-        //4. next try: system applications directory
-        dir.setPath( "/Applications");
-        entryList = dir.entryList(QDir::Executable | QDir::Files | QDir::Dirs);
-        if(entryList.contains(binaryName2))
-        {
-            return dir.absoluteFilePath( binaryName2 );
-        }
-        
-        //5. next try: user applications directory
-        dir.setPath( QDir::homePath() + "/Applications");
-        entryList = dir.entryList(QDir::Executable | QDir::Files | QDir::Dirs);
-        if(entryList.contains(binaryName2))
-        {
-            return dir.absoluteFilePath( binaryName2 );
-        }
+        binList.append( binaryName);
+    }
+    else
+    {
+        binList.append( binaryName + ".exe");
     }
     
-    //6. return as is
-    return binaryName;
-#elif (!defined WIN32)
-    QDir dir;
-    QString binaryName2 = binaryName;
-
-    //1. first try: in this application dir
-    dir.setPath( QCoreApplication::applicationDirPath() );
-    QStringList entryList = dir.entryList(QDir::Executable | QDir::Files);
-    //qDebug() << dir << entryList << dir.entryList(QDir::Files);
-    if(entryList.contains(binaryName2)) //dir.exists(binaryName2))
-    {
-        return dir.absoluteFilePath( binaryName2 );
-    }
-
-    //2. next try: qt binary dir (when installing qt from sources)
-    dir.setPath( QLibraryInfo::location( QLibraryInfo::BinariesPath ) );
-    entryList = dir.entryList(QDir::Executable | QDir::Files);
-    //qDebug() << dir << entryList << dir.entryList(QDir::Files);
-    if(entryList.contains(binaryName2))
-    {
-        return dir.absoluteFilePath( binaryName2 );
-    }
-    
-    //3. return as is
-    return binaryName;
-#else
-    QDir dir;
-    QString binaryName2 = binaryName;
-    if(!binaryName2.endsWith(".exe"))
-    {
-        binaryName2.append(".exe");
-    }
-
-    //1. first try: in this application dir
-    dir.setPath( QCoreApplication::applicationDirPath() );
-    if(dir.exists(binaryName2))
-    {
-        return dir.absoluteFilePath( binaryName2 );
-    }
-
-    //2. next try: qt binary dir (when installing qt from sources)
-    dir.setPath( QLibraryInfo::location( QLibraryInfo::BinariesPath ) );
-    if(dir.exists(binaryName2))
-    {
-        return dir.absoluteFilePath( binaryName2 );
-    }
-
-    //3. QTDIR
+    dirList.append( QDir( QCoreApplication::applicationDirPath()));
+    dirList.append( QDir( QLibraryInfo::location( QLibraryInfo::BinariesPath)));
     QByteArray qtdirenv = qgetenv( "QTDIR" );
     if(qtdirenv.size() > 0)
     {
-        dir.setPath( qtdirenv );
-        if(dir.exists(binaryName2))
+        dirList.append( QDir( (QString)qtdirenv));
+    }
+#endif
+    
+    // Loop through possible directories
+    for(int iD = 0; iD < dirList.size(); ++iD)
+    {
+        // Loop through possible binary file names
+        for( int iB = 0; iB < binList.size(); ++iB)
         {
-            return dir.absoluteFilePath( binaryName2 );
+#ifdef WIN32
+            if( dirList.at(iD).exists())
+            {
+                return dirList.at(iD).absoluteFilePath( binList.at(iB));
+            }
+#else // linux || __APPLE__
+            #ifdef __APPLE__
+                QStringList entryList = dirList.at(iD).entryList(QDir::Executable | QDir::Files | QDir::Dirs);
+            #else // linux
+                QStringList entryList = dirList.at(iD).entryList(QDir::Executable | QDir::Files);
+            #endif
+            if(entryList.contains(binList.at(iB)))
+            {
+                return dirList.at(iD).absoluteFilePath( binList.at(iB));
+            }
+#endif
         }
     }
 
-    //4. return as is
+    // nothing found, return as is
     return binaryName;
-#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
