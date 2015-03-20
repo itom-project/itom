@@ -5367,7 +5367,6 @@ DataObject DataObject::at(const DataObject &mask) const
                     dataRow += es;
                 }
 
-                //maskRow++;
                 srcRow += es;
             }
         }
