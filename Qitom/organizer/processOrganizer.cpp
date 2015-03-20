@@ -117,40 +117,30 @@ ProcessOrganizer::~ProcessOrganizer()
     
     // Define binary names and possible directories
 #ifdef __APPLE__
-    binList.append( binaryName);
-    binList.append( binaryName + ".app");
-    binList.append( binaryName);
-    binList[2][0] = binList.at(2).at(0).toUpper();
-    binList.append( binList.at(2) + ".app");
+    binList.append( binaryName);                                                    // unchanges file name
+    if( !binaryName.endsWith(".app")){ binList.append( binaryName + ".app");}       // .app added
+    binList.append( binaryName); binList[2][0] = binList.at(2).at(0).toUpper();     // capitalize first letter
+    if( !binaryName.endsWith(".app")){ binList.append( binList.at(2) + ".app");}    // capitalize first letter and .app added
     
-    dirList.append( QDir( QCoreApplication::applicationDirPath()));
-    dirList.append( QDir( QLibraryInfo::location( QLibraryInfo::BinariesPath)));
-    dirList.append( QDir( QLibraryInfo::location( QLibraryInfo::PrefixPath)));
-    dirList.append( QDir( QCoreApplication::applicationDirPath()));
-    dirList.append( QDir( "/Applications"));
-    dirList.append( QDir( QDir::homePath() + "/Applications"));
+    dirList.append( QDir( QCoreApplication::applicationDirPath()));                 // itom app dir
+    dirList.append( QDir( QLibraryInfo::location( QLibraryInfo::BinariesPath)));    // Qt bin dir
+    dirList.append( QDir( QLibraryInfo::location( QLibraryInfo::PrefixPath)));      // Qt master dir
+    dirList.append( QDir( QCoreApplication::applicationDirPath()));                 // bin dir in /Library/ and /usr/
+    dirList.append( QDir( "/Applications"));                                        // global app dir
+    dirList.append( QDir( QDir::homePath() + "/Applications"));                     // user app dir
 #elif (defined linux)
-    binList.append( binaryName);
+    binList.append( binaryName);                                                    // unchanges file name
     
-    dirList.append( QDir( QCoreApplication::applicationDirPath()));
-    dirList.append( QDir( QLibraryInfo::location( QLibraryInfo::BinariesPath)));
+    dirList.append( QDir( QCoreApplication::applicationDirPath()));                 // itom app dir
+    dirList.append( QDir( QLibraryInfo::location( QLibraryInfo::BinariesPath)));    // Qt bin dir
 #else // WIN32
-    if( binaryName.endsWith(".exe"))
-    {
-        binList.append( binaryName);
-    }
-    else
-    {
-        binList.append( binaryName + ".exe");
-    }
+    if( binaryName.endsWith(".exe")){ binList.append( binaryName);}                 // unchanges file name
+    else{ binList.append( binaryName + ".exe");}                                    // .exe added
     
-    dirList.append( QDir( QCoreApplication::applicationDirPath()));
-    dirList.append( QDir( QLibraryInfo::location( QLibraryInfo::BinariesPath)));
+    dirList.append( QDir( QCoreApplication::applicationDirPath()));                 // itom app dir
+    dirList.append( QDir( QLibraryInfo::location( QLibraryInfo::BinariesPath)));    // Qt bin dir
     QByteArray qtdirenv = qgetenv( "QTDIR" );
-    if(qtdirenv.size() > 0)
-    {
-        dirList.append( QDir( (QString)qtdirenv));
-    }
+    if(qtdirenv.size() > 0){ dirList.append( QDir( (QString)qtdirenv));}            // Qt dir from global defines
 #endif
     
     // Loop through possible directories
@@ -159,6 +149,7 @@ ProcessOrganizer::~ProcessOrganizer()
         // Loop through possible binary file names
         for( int iB = 0; iB < binList.size(); ++iB)
         {
+            // Check for binary file name to exist in directory
 #ifdef WIN32
             if( dirList.at(iD).exists())
             {
