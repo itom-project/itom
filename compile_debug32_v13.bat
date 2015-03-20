@@ -1,6 +1,6 @@
 CALL "%VS130COMNTOOLS%\vsvars32.bat" x86
 
-msbuild.exe %~dp0\ALL_BUILD.vcxproj /p:configuration=debug /p:platform=win32
+msbuild.exe "%~dp0\ALL_BUILD.vcxproj" /p:configuration=debug /p:platform=win32
 
 pause
 

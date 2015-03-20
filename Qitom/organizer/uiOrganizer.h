@@ -298,7 +298,8 @@ public:
     {
         infoShowNoInheritance = 0x0001,
         infoShowItomInheritance = 0x0002,
-        infoShowAllInheritance =0x0004 | infoShowItomInheritance
+        infoShowInheritanceUpToWidget = 0x0004,
+        infoShowAllInheritance =0x0008
     };
 
     typedef QMap<QString,QString> tQMapArg;

@@ -583,6 +583,12 @@ RetVal AbstractDockWidget::addToolBar(QToolBar *tb, const QString &key, Qt::Tool
     t.tb = tb;
     m_toolbars.append(t);
 
+#ifdef __APPLE__
+    // Bug fix: Issue #35
+    // OS X hides windows/ dialog after adding a toolbar
+    m_pWindow->show();
+#endif // __APPLE__
+    
     return retOk;
 }
 

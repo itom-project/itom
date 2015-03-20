@@ -5337,7 +5337,7 @@ DataObject DataObject::at(const DataObject &mask) const
     for (int i = 0; i < numPlanes; ++i)
     {
         maskMat = mask.getCvPlaneMat(i);
-        counts += cvCountNonZero(maskMat);
+        counts += cv::countNonZero(*maskMat);
     }
     
     ito::DataObject result(1, counts, m_type);
@@ -5367,7 +5367,6 @@ DataObject DataObject::at(const DataObject &mask) const
                     dataRow += es;
                 }
 
-                maskRow++;
                 srcRow += es;
             }
         }

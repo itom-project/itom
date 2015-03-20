@@ -2283,10 +2283,16 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
 
         const QMetaObject *mo = obj->metaObject();
         className = mo->className();
+        QStringList qtBaseClasses = QStringList() << "QWidget" << "QMainWindow" << "QFrame";
 
         while (mo != NULL)
         {
-            if (QString(mo->className()).startsWith("Q") && (type & infoShowAllInheritance) != infoShowAllInheritance)
+            if ( (type & infoShowInheritanceUpToWidget) && qtBaseClasses.contains(mo->className(), Qt::CaseInsensitive) == 0)
+            {
+                break;
+            }
+            
+            if (QString(mo->className()).startsWith("Q") && (type & infoShowItomInheritance))
             {
                 break;
             }
@@ -2421,10 +2427,13 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                 }
             }
 
-            if (type & infoShowItomInheritance)
+            if (type & (infoShowItomInheritance | infoShowInheritanceUpToWidget | infoShowAllInheritance))
             {
                 mo = mo->superClass();
-                tmpPropMap.insert(QString("inheritance"), mo->className());
+                if (mo)
+                {
+                    tmpPropMap.insert(QString("inheritance"), mo->className());
+                }
             }
             else
             {
