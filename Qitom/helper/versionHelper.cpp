@@ -32,6 +32,8 @@
 #include "PointCloud/pclVersion.h"
 #include "DataObject/dataobjVersion.h"
 
+#include <QSysInfo>
+
 #if ITOM_POINTCLOUDLIBRARY > 0
 #include <pcl/pcl_config.h>
 #endif
@@ -78,8 +80,8 @@ QMap<QString, QString> ito::getItomVersionMap()
 #if (defined linux)
     items["itom_SysType"] = "Linux (Unix)";
 #elif (defined WIN32)
-#include <QSysInfo>
-    switch( qWinVersion() )
+
+    switch( QSysInfo::WindowsVersion )
     {
         case QSysInfo::WV_NT:           items["itom_SysType"] = "Windows NT";           break;
         case QSysInfo::WV_2000:         items["itom_SysType"] = "Windows 2000";         break;
@@ -88,8 +90,12 @@ QMap<QString, QString> ito::getItomVersionMap()
         case QSysInfo::WV_VISTA:        items["itom_SysType"] = "Windows Vista";        break;
         case QSysInfo::WV_WINDOWS7:     items["itom_SysType"] = "Windows 7";            break;
         case QSysInfo::WV_WINDOWS8:     items["itom_SysType"] = "Windows 8";            break;
+#if QT_VERSION >= 0x050000
         case QSysInfo::WV_WINDOWS8_1:   items["itom_SysType"] = "Windows 8.1";          break;
+#endif
+#if QT_VERSION >= 0x050200
         case QSysInfo::WV_WINDOWS8_1+1: items["itom_SysType"] = "Windows 10";           break;
+#endif
         default:                        items["itom_SysType"] = "Windows";              break;
     }
     #if (defined _WIN64)
@@ -101,8 +107,7 @@ QMap<QString, QString> ito::getItomVersionMap()
         items["itom_SysType"].append(" DEBUG");
     #endif
 #elif (defined Q_OS_MACX)
-    #include <QSysInfo>
-    switch( qMacVersion())
+    switch( QSysInfo::MacintoshVersion )
     {
         case QSysInfo::MV_9:        items["itom_SysType"] = "Mac OS 9";         break;
         case QSysInfo::MV_10_0:     items["itom_SysType"] = "Mac OS X 10.0";    break;
