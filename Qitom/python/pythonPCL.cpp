@@ -28,7 +28,7 @@
 #if ITOM_POINTCLOUDLIBRARY > 0
 
 #ifndef CMAKE
-    #if (defined _DEBUG) && (!defined linux)
+    #if (defined _DEBUG) && (defined WIN32)
         #pragma comment(lib, "PointCloudd.lib")
         #pragma comment(lib, "pcl_common_debug.lib")
     #else
@@ -36,7 +36,7 @@
         #pragma comment(lib, "pcl_common_release.lib")
     #endif
 #else
-    /*#if (defined _DEBUG) && (!defined linux)
+    /*#if (defined _DEBUG) && (defined WIN32)
         #pragma comment(lib, "PointCloud.lib")
         #pragma comment(lib, "pcl_common_debug.lib")
     #else
@@ -1755,7 +1755,7 @@ PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/
         }
 
         QString tempFilename = buf;
-#if !linux // on linux the path is already included
+#ifdef WIN32 // on linux the path is already included
         while(tempFilename.size() > 0 && (tempFilename.startsWith("/") || tempFilename.startsWith("\\") ))
         {
             tempFilename.remove(0,1);
@@ -1856,7 +1856,7 @@ PyObject* PythonPCL::PyPointCloud_SetState(PyPointCloud *self, PyObject *args)
         }
 
         QString tempFilename = buf;
-#if !linux // on linux the path is already included
+#ifdef WIN32 // on linux the path is already included
         while(tempFilename.size() > 0 && (tempFilename.startsWith("/") || tempFilename.startsWith("\\") ))
         {
             tempFilename.remove(0,1);
@@ -3704,7 +3704,7 @@ PyObject* PythonPCL::PyPolygonMesh_Reduce(PyPolygonMesh *self, PyObject * /*args
         }
 
         QString tempFilename = buf;
-#if !linux // on linux the path is already included
+#ifdef WIN32 // on linux the path is already included
         while(tempFilename.size() > 0 && (tempFilename.startsWith("/") || tempFilename.startsWith("\\") ))
         {
             tempFilename.remove(0,1);
@@ -3780,7 +3780,7 @@ PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
         }
 
         QString tempFilename = buf;
-#if !linux // on linux the path is already included
+#ifdef WIN32 // on linux the path is already included
         while(tempFilename.size() > 0 && (tempFilename.startsWith("/") || tempFilename.startsWith("\\") ))
         {
             tempFilename.remove(0,1);

@@ -91,7 +91,12 @@ MainWindow::MainWindow() :
     m_userDefinedActionCounter(0)
 {
     //qDebug() << "mainWindow. Thread: " << QThread::currentThreadId ();
+#ifdef __APPLE__
+    // Setting high res icon for OS X
+    QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/q_itoM1024"));
+#else
     QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/curAppIcon.png"));
+#endif
 
     qDebug("build main window");
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
@@ -776,7 +781,12 @@ void MainWindow::createMenus()
     //linux: in some linux distributions, the menu bar did not appear if it is displayed
     //on top of the desktop. Therefore, native menu bars (as provided by the OS) are disabled here.
     //see: qt-project.org/forums/viewthread/7445
+#ifndef __APPLE__
     menuBar()->setNativeMenuBar(false);
+#else // __APPLE__
+    // OS X: without the native menu bar option, the menu bar is displayed within the window which might be irritating.
+    menuBar()->setNativeMenuBar(true);
+#endif // __APPLE__
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -997,6 +1007,12 @@ void MainWindow::mnuOpenFile()
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuShowAssistant()
 {
+#ifdef __APPLE__
+    QString appName = "Assistant";
+#else
+    QString appName = "assistant";
+#endif
+    
     ito::RetVal retval;
     QString collectionFile;
 
@@ -1027,7 +1043,7 @@ void MainWindow::mnuShowAssistant()
         if (po)
         {
             bool existingProcess = false;
-            QProcess *process = po->getProcess("assistant", true, existingProcess, true);
+            QProcess *process = po->getProcess(appName, true, existingProcess, true);
 
             if (existingProcess && process->state() == QProcess::Running)
             {
@@ -1044,7 +1060,7 @@ void MainWindow::mnuShowAssistant()
                 args << QLatin1String(collectionFile.toLatin1().data());
                 args << QLatin1String("-enableRemoteControl");
 
-                QString app = ProcessOrganizer::getAbsQtToolPath("assistant");
+                QString app = ProcessOrganizer::getAbsQtToolPath(appName);
 
                 process->start(app, args);
 
@@ -1534,7 +1550,7 @@ ito::RetVal MainWindow::removeMenuElement(const size_t menuHandle, QSharedPointe
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
     QString tempKey;
-    QMenu *parentMenu = NULL;
+    // QMenu *parentMenu = NULL; // unused
     QAction *actToDelete = NULL;
     bool found = false;
     QMap<QString, QMenu*>::iterator it = m_userDefinedRootMenus.begin();
@@ -1705,15 +1721,21 @@ void MainWindow::userDefinedActionTriggered(const QString &pythonCode)
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuShowDesigner()
 {
+#ifdef __APPLE__
+    QString appName = "Designer";
+#else
+    QString appName = "designer";
+#endif
+    
     ProcessOrganizer *po = qobject_cast<ProcessOrganizer*>(AppManagement::getProcessOrganizer());
     if (po)
     {
         bool existingProcess = false;
-        QProcess *process = po->getProcess("designer", true, existingProcess, false);
+        QProcess *process = po->getProcess(appName, true, existingProcess, false);
 
         if (existingProcess && process->state() == QProcess::Running)
         {
-            //assistant is already loaded. try to activate it by sending the activateIdentifier command without arguments (try-and-error to find this way to activate it)
+            //designer is already loaded. try to activate it by sending the activateIdentifier command without arguments (try-and-error to find this way to activate it)
             QByteArray ba("activateIdentifier \n");
             process->write(ba);
         }
@@ -1722,7 +1744,8 @@ void MainWindow::mnuShowDesigner()
             QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
             QString appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
             env.insert("QT_PLUGIN_PATH", appPath);
-#if linux
+            
+#ifndef WIN32
 	        QString pathEnv = env.value("PATH");
             pathEnv.prepend(appPath + ":");
             env.insert("PATH", pathEnv);
@@ -1731,15 +1754,21 @@ void MainWindow::mnuShowDesigner()
             pathEnv.prepend(appPath + ";");
             env.insert("path", pathEnv);
 #endif
+            
+#ifdef __APPLE__
+            env.insert("PATH", env.value("PATH") + ":" + env.value("HOME") + "/Applications");
+            env.insert("PATH", env.value("PATH") + ":/Applications");
+#endif // __APPLE__
+            
             process->setProcessEnvironment(env);
-
+            
             connect(process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(designerError(QProcess::ProcessError)));
 
-            po->clearStandardOutputBuffer("designer");
+            po->clearStandardOutputBuffer(appName);
 
             QStringList arguments;
             arguments << "-server"/* << filename*/;
-            QString app = ProcessOrganizer::getAbsQtToolPath( "designer" );
+            QString app = ProcessOrganizer::getAbsQtToolPath(appName);
             //qDebug() << app << arguments;
             process->start(app, arguments); //the arguments stringlist must be given here, else the process cannot be started in a setup environment!
         }

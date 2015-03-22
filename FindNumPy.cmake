@@ -47,7 +47,7 @@ endif()
 
 # Append executable if necessary (OS X fix)
 IF(APPLE)
-    IF(NOT "${PYTHON_EXECUTABLE}" MATCHES "/python$")
+    IF(NOT "${PYTHON_EXECUTABLE}" MATCHES "/python[0-9\\.]*")
         set(PYTHON_EXECUTABLE "${PYTHON_EXECUTABLE}/python")
     endif()
 endif()

@@ -91,7 +91,7 @@ namespace ito
             foreach(obj, m_autoGrabbingListeners)
             {
                 waitConds[i] = new ItomSharedSemaphore();
-                //TODO: on Linux a crash occurs here when closing the liveImage ... maybe the same reason why we get an error message on windows?
+                // \todo On Linux a crash occurs here when closing the liveImage ... maybe the same reason why we get an error message on windows?
                 if (!QMetaObject::invokeMethod( obj, "setSource", Q_ARG(QSharedPointer<ito::DataObject>, QSharedPointer<ito::DataObject>(new ito::DataObject(m_data))), Q_ARG(ItomSharedSemaphore*, waitConds[i])))
                 {
                     retValue += ito::RetVal(ito::retWarning, 1001, tr("slot 'setSource' of live source node could not be invoked").toLatin1().data());

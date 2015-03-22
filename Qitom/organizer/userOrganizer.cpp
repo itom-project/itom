@@ -121,11 +121,10 @@ ito::RetVal UserOrganizer::loadSettings(const QString &defUserName)
 
         DialogSelectUser userDialog(m_userModel);
 
-#if linux
-        QString curSysUser(qgetenv("USER")); ///for MAc or Linux
-#else
-        QString curSysUser(qgetenv("USERNAME")); //for windows
-#endif
+        // User(name) variable is not necessarily OS dependend. So this will give us the best chance to find the actual user name http://stackoverflow.com/questions/26552517/get-system-username-in-qt
+        QString curSysUser = qgetenv("USERNAME");
+        if (curSysUser.isEmpty())
+            curSysUser = qgetenv("USER");
 
         if (defUserName.isEmpty())
         {

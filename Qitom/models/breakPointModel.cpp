@@ -72,7 +72,7 @@ BreakPointModel::BreakPointModel() : QAbstractItemModel()
     m_headers   << tr("line")          << tr("condition")         << tr("temporary")            << tr("enabled")              << tr("ignore count");
     m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignRight) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignHCenter) << QVariant(Qt::AlignHCenter) << QVariant(Qt::AlignRight);
 
-#if defined linux
+#ifndef WIN32
     m_filenameCaseSensitivity = Qt::CaseSensitive;
 #else
     m_filenameCaseSensitivity = Qt::CaseInsensitive;
@@ -163,7 +163,7 @@ RetVal BreakPointModel::restoreState()
 */
 RetVal BreakPointModel::addBreakPoint(BreakPointItem bp)
 {
-#if defined linux
+#ifndef WIN32
     //in linux bp.filename is casesensitive and must fit
 #else
     //correct incoming filename with respect to the real case-sensitive version:

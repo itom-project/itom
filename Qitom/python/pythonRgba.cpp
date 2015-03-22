@@ -517,7 +517,7 @@ PyMethodDef PythonRgba::PyRgba_methods[] = {
     };
 
 PyMemberDef PythonRgba::PyRgba_members[] = {
-    #ifndef linux //TODO offsetof with member in GCC not possible
+    #ifdef WIN32 //TODO offsetof with member in GCC not possible
         {"r", T_UBYTE, offsetof(PyRgba, rgba.r), 0, "red"}, 
         {"g", T_UBYTE, offsetof(PyRgba, rgba.g), 0, "green"}, 
         {"b", T_UBYTE, offsetof(PyRgba, rgba.b), 0, "blue"}, 

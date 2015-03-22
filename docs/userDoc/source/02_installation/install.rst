@@ -16,8 +16,13 @@ Before installation, please review the minimum system requirements.
     * Windows 7 *or*
     * Windows 8 (not tested yet) *or*
     * Linux based OS (tested with Debian and Ubuntu)
+    * Mac OS X 10.9 (Mavericks) or later
 
-* 32 or 64bit processor architecture, SSE and SSE2 support
+* Processor architectur
+    
+    * Windows and Linux: 32 or 64bit processor architecture, SSE and SSE2 support
+    * Max OS X: All Intel-based Macs with an Intel Core 2 or later
+
 * 800MHz processor (dual-core recommended)
 * 512MB of RAM
 * 1024 x 768 screen resolution
@@ -55,12 +60,13 @@ check the build dependencies below which contain software packages and libraries
     git_clone.rst
     build_cmake.rst
 
-For linux, a short description of the installation that contains more specific information than the sections above, is available here:
+For linux as well as Mac OS X, a short description of the installation that contains more specific information than the sections above, is available here:
 
 .. toctree::
     :maxdepth: 1
     
     build_linux.rst
+    build_osx.rst
 
 
 Plugins, Designer-Plugins

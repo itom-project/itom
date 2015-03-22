@@ -208,7 +208,7 @@ void MainApplication::setupApplication()
         QByteArray newpath = "path=" + p.toLatin1() + ";" + oldpath; //set libDir at the beginning of the path-variable
         _putenv(newpath.data());
     }
-#else //linux
+#else // (defined linux) && (defined _APPLE_)
     if (pathes.length() > 0)
     {
         QString p = pathes.join(":");
@@ -235,7 +235,7 @@ void MainApplication::setupApplication()
         _putenv_s("KMP_AFFINITY","none");
     }
 #else
-    //todo: check for Intel/AMD and set KMP_AFFINITY if not Intel
+    // \todo check for Intel/AMD and set KMP_AFFINITY if not Intel
 #endif
 
 
