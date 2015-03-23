@@ -144,26 +144,26 @@ ProcessOrganizer::~ProcessOrganizer()
 #endif
     
     // Loop through possible directories
-    for(int iD = 0; iD < dirList.size(); ++iD)
+    foreach (const QDir &directory, dirList)
     {
         // Loop through possible binary file names
-        for( int iB = 0; iB < binList.size(); ++iB)
+        foreach (const QString &binary, binList)
         {
             // Check for binary file name to exist in directory
 #ifdef WIN32
-            if( dirList.at(iD).exists())
+            if( directory.exists(binary))
             {
-                return dirList.at(iD).absoluteFilePath( binList.at(iB));
+                return directory.absoluteFilePath(binary);
             }
 #else // linux || __APPLE__
             #ifdef __APPLE__
-                QStringList entryList = dirList.at(iD).entryList(QDir::Executable | QDir::Files | QDir::Dirs);
+                QStringList entryList = directory.entryList(QDir::Executable | QDir::Files | QDir::Dirs);
             #else // linux
-                QStringList entryList = dirList.at(iD).entryList(QDir::Executable | QDir::Files);
+                QStringList entryList = directory.entryList(QDir::Executable | QDir::Files);
             #endif
-            if(entryList.contains(binList.at(iB)))
+            if(entryList.contains(binary))
             {
-                return dirList.at(iD).absoluteFilePath( binList.at(iB));
+                return directory.absoluteFilePath(binary);
             }
 #endif
         }
