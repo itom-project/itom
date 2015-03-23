@@ -104,6 +104,9 @@ void DoubleRangeSliderPrivate::init()
 {
   Q_Q(DoubleRangeSlider);
   this->Slider = new RangeSlider(q);
+  this->Slider->setStepSizeRange(1);
+  this->Slider->setMinimumRange(0);
+  this->Slider->setMaximumRange(std::numeric_limits<int>::max() - 1 /*this->Slider->stepSizeRange()*/);
   QHBoxLayout* l = new QHBoxLayout(q);
   l->addWidget(this->Slider);
   l->setContentsMargins(0,0,0,0);
@@ -827,6 +830,9 @@ void DoubleRangeSlider::setSlider(RangeSlider* newslider)
   newslider->setTracking(d->Slider->hasTracking());
   newslider->setTickInterval(d->Slider->tickInterval());
   newslider->setTickPosition(d->Slider->tickPosition());
+  newslider->setMinimumRange(d->Slider->minimumRange());
+  newslider->setMaximumRange(d->Slider->maximumRange());
+  newslider->setStepSizeRange(d->Slider->stepSizeRange());
   delete d->Slider;
   qobject_cast<QHBoxLayout*>(this->layout())->addWidget(newslider);
   d->Slider = newslider;
