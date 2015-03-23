@@ -962,3 +962,60 @@ MACRO(PLUGIN_DOCUMENTATION target main_document) #main_document without .rst at 
     SET(PLUGIN_DOC_MAIN ${main_document})
     configure_file(${ITOM_SDK_DIR}/docs/pluginDoc/plugin_doc_config.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/docs/plugin_doc_config.cfg)
 ENDMACRO(PLUGIN_DOCUMENTATION)
+
+
+# OSX ONLY: Copy files from source directory to destination directory in app bundle, substituting any
+# variables (RECURSIVE). Create destination directory if it does not exist. destDir append ../abc.app/MacOS.
+IF(APPLE)
+    MACRO(COPY_TO_BUNDLE target srcDir destDir)
+        FILE(GLOB_RECURSE templateFiles RELATIVE ${srcDir} ${srcDir}/*)
+        FOREACH(templateFile ${templateFiles})
+            set(srcTemplatePath ${srcDir}/${templateFile})
+            IF(NOT IS_DIRECTORY ${srcTemplatePath})
+                add_custom_command(TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${srcTemplatePath}" "$<TARGET_FILE_DIR:${target_name}>/${destDir}/${templateFile}")
+            ENDIF(NOT IS_DIRECTORY ${srcTemplatePath})
+        ENDFOREACH(templateFile)
+    ENDMACRO(COPY_TO_BUNDLE)
+ENDIF(APPLE)
+
+# OSX ONLY: Copy files from source directory to destination directory in app bundle, substituting any
+# variables (RECURSIVE). Create destination directory if it does not exist. destDir append ../abc.app/MacOS.
+IF(APPLE)
+    MACRO(COPY_TO_BUNDLE_NONREC target srcDir destDir)
+        FILE(GLOB templateFiles RELATIVE ${srcDir} ${srcDir}/*)
+        FOREACH(templateFile ${templateFiles})
+            set(srcTemplatePath ${srcDir}/${templateFile})
+            IF(NOT IS_DIRECTORY ${srcTemplatePath})
+                add_custom_command(TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${srcTemplatePath}" "$<TARGET_FILE_DIR:${target_name}>/${destDir}/${templateFile}")
+            ENDIF(NOT IS_DIRECTORY ${srcTemplatePath})
+        ENDFOREACH(templateFile)
+    ENDMACRO(COPY_TO_BUNDLE)
+ENDIF(APPLE)
+
+# OSX ONLY: Copy files of certain type from source directory to destination directory in app bundle, substituting any
+# variables (RECURSIVE). Create destination directory if it does not exist. destDir append ../abc.app/MacOS
+IF(APPLE)
+    MACRO(COPY_TYPE_TO_BUNDLE target srcDir destDir type)
+        FILE(GLOB_RECURSE templateFiles RELATIVE ${srcDir} ${srcDir}/*${type})
+        FOREACH(templateFile ${templateFiles})
+            set(srcTemplatePath ${srcDir}/${templateFile})
+            IF(NOT IS_DIRECTORY ${srcTemplatePath})
+                add_custom_command(TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${srcTemplatePath}" "$<TARGET_FILE_DIR:${target_name}>/${destDir}/${templateFile}")
+            ENDIF(NOT IS_DIRECTORY ${srcTemplatePath})
+        ENDFOREACH(templateFile)
+    ENDMACRO(COPY_TYPE_TO_BUNDLE)
+ENDIF(APPLE)
+
+# OSX ONLY: Copy files of certain type from source directory to destination directory in app bundle, substituting any
+# variables (NON-RECURSIVE). Create destination directory if it does not exist. destDir append ../abc.app/MacOS
+IF(APPLE)
+    MACRO(COPY_TYPE_TO_BUNDLE_NONREC target srcDir destDir type)
+        FILE(GLOB templateFiles RELATIVE ${srcDir} ${srcDir}/*${type})
+        FOREACH(templateFile ${templateFiles})
+            set(srcTemplatePath ${srcDir}/${templateFile})
+            IF(NOT IS_DIRECTORY ${srcTemplatePath})
+                add_custom_command(TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${srcTemplatePath}" "$<TARGET_FILE_DIR:${target_name}>/${destDir}/${templateFile}")
+            ENDIF(NOT IS_DIRECTORY ${srcTemplatePath})
+        ENDFOREACH(templateFile)
+    ENDMACRO(COPY_TYPE_TO_BUNDLE)
+ENDIF(APPLE)

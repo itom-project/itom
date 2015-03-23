@@ -557,21 +557,29 @@ IF(APPLE)
     ADD_EXECUTABLE(${target_name} MACOSX_BUNDLE ${target_icon_path} ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENCENDY} )
 
     # SET_SOURCE_FILES_PROPERTIES(
-    #     ${CMAKE_CURRENT_SOURCE_DIR}/../itoDebugger.py
-    #     ${CMAKE_CURRENT_SOURCE_DIR}/../itoFunctions.py
-    #     ${CMAKE_CURRENT_SOURCE_DIR}/../itom-packages/*
+    #     ${CMAKE_BINARY_DIR}/../itoDebugger.py
+    #     ${CMAKE_BINARY_DIR}/../itoFunctions.py
     #     PROPERTIES MACOSX_PACKAGE_LOCATION MacOSX
     # )
 
-   # SET_SOURCE_FILES_PROPERTIES(
-   #   apple1_res1
-   #   apple1_res2
-   #   PROPERTIES MACOSX_PACKAGE_LOCATION Resources
-   #   )
+    # SET_SOURCE_FILES_PROPERTIES(
+    #   apple1_res1
+    #   apple1_res2
+    #   PROPERTIES MACOSX_PACKAGE_LOCATION Resources
+    #   )
 
     # Set binary file names for OS X
     set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "itomd")
     set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "itom")
+
+    # Copy files into app bundle after build
+    COPY_TYPE_TO_BUNDLE_NONREC(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../" "" ".dylib")
+    COPY_TYPE_TO_BUNDLE_NONREC(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../" "" ".py")
+    COPY_TO_BUNDLE(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../itom-packages" "itom-packages")
+    COPY_TO_BUNDLE(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../plugins" "plugins")
+    COPY_TO_BUNDLE(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../designer" "designer")
+    COPY_TO_BUNDLE(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../help" "help")
+    COPY_TO_BUNDLE(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../demo" "../demo")
 ELSE(APPLE)
     # Executable for WINDOWS and LINUX
     ADD_EXECUTABLE(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENCENDY} )
