@@ -89,6 +89,8 @@ itom.dataObject.name() -> returns the name of this object (dataObject)
 itom.dataObject.ndim
 itom.dataObject.normalize([minValue=0.0, maxValue=1.0, typestring='']) -> returns the normalization of this dataObject
 itom.dataObject.ones(dims [, dtype='uint8'[, continuous = 0]]) -> creates new dataObject filled with ones.
+itom.dataObject.physToPix(values [, axes]) -> returns the pixel coordinates for the given physical coordinates.
+itom.dataObject.pixToPhys(values [, axes]) -> returns the physical coordinates for the given pixel coordinates.
 itom.dataObject.rand([dims [, dtype='uint8'[, continuous = 0]]]) -> creates new dataObject filled with uniform distributed random values.
 itom.dataObject.randN(dims [, dtype='uint8'[, continuous = 0]]) -> creates dataObject filled with gaussian distributed random values.
 itom.dataObject.real() -> return a new data object with the real part of the source
@@ -142,7 +144,7 @@ itom.numeric:: [module]
 itom.openScript(filename) -> open the given script in current script window.
 itom.plot(data, [className, properties]) -> plots a dataObject in a newly created figure
 itom.plotHelp(plotName [, dictionary = False]) -> generates an online help for the specified plot.
-itom.plotItem(figure[, subplotIdx]) -> instance of the plot or subplot of a figure.
+itom.plotItem(figure | uiItem[, subplotIdx]) -> instance of the plot or subplot of a figure.
 itom.plotItem.PrimitiveCircle
 itom.plotItem.PrimitiveEllipse
 itom.plotItem.PrimitiveLine
@@ -213,7 +215,7 @@ itom.region.ELLIPSE
 itom.region.RECTANGLE
 itom.region.boundingRect
 itom.region.contains(x,y[,w,h]) -> returns True if the given point or rectangle is fully contained in this region, otherwise returns False.
-itom.region.createMask() -> creates mask data object based on this region.
+itom.region.createMask([boundingRegion]) -> creates mask data object based on this region and the optional boundingRegion.
 itom.region.empty
 itom.region.intersected(x,y,w,h | region) -> returns a region which is the intersection of a new region and this region.
 itom.region.intersects(x,y,w,h | region) -> returns True if this region intersects with the given region, else False.
@@ -301,7 +303,7 @@ itom.uiItem.getAttribute(attributeNumber) -> returns specified attribute of corr
 itom.uiItem.getProperty(propertyName | listOfPropertyNames) -> returns tuple of requested properties (single property or tuple of properties)
 itom.uiItem.getPropertyInfo([propertyName]) -> returns information about the property 'propertyName' of this widget or all properties, if no name indicated.
 itom.uiItem.getWindowFlags(flags) -> gets window flags of corresponding widget.
-itom.uiItem.info
+itom.uiItem.info([verbose = 0]) -> prints information about properties, public accessible slots and signals of the wrapped widget.
 itom.uiItem.invokeKeyboardInterrupt(signalSignature) -> connects the given signal with a slot immediately invoking a python interrupt signal.
 itom.uiItem.setAttribute(attributeNumber, value) -> sets attribute of corresponding widget.
 itom.uiItem.setProperty(propertyDict) -> each property in the parameter dictionary is set to the dictionaries value.

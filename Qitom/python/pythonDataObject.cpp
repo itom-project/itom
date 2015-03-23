@@ -2378,6 +2378,262 @@ PyObject* PythonDataObject::PyDataObj_SetAxisUnit(PyDataObject *self, PyObject *
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectPhysToPix_doc,"physToPix(values [, axes]) -> returns the pixel coordinates for the given physical coordinates. \n\
+\n\
+This method transforms a physical axis coordinate into its corresponding pixel coordinate. The transformation is influenced \n\
+by the offset and scaling of each axis: \n\
+\n\
+phys = (pix - offset) * scaling \n\
+\n\
+If no axes parameter is given, the values are assumed to belong the the ascending axis list (0,1,2,3...). \n\
+\n\
+Parameters  \n\
+------------\n\
+values : {float, float-tuple}\n\
+    One single physical coordinate or a tuple of physical coordinates.\n\
+axes : {int, int-tuple}, optional\n\
+    If this is given, the values are mapped to the axis indices given by this value or tuple. Else, an ascending list starting with index 0 is assumed. \n\
+\n\
+Returns \n\
+-------- \n\
+Float or float-tuple with the pixel coordinates for each physical coordinate at the given axis index. \n\
+\n\
+Raises \n\
+------- \n\
+Value error : \n\
+    if the given axes is invalid (out of range)");
+PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *args, PyObject *kwds)
+{
+    static const char *kwlist[] = {"values","axes", NULL};
+    double value;
+    int axis = 0;
+    PyObject *values = NULL;
+    PyObject *axes = NULL;
+    bool single = false;
+    bool isInsideImage;
+
+    //3. check for argument: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]
+    PyErr_Clear();
+    if (PyArg_ParseTupleAndKeywords(args, kwds, "d|i", const_cast<char**>(kwlist), &value, &axis)) //&PyList_Type, &dimList, &type, &continuous))
+    {
+        single = true;
+    }
+    else if (PyErr_Clear(), !PyArg_ParseTupleAndKeywords(args, kwds, "O|O", const_cast<char**>(kwlist), &values, &axes))
+    {
+        return NULL;
+    }
+
+    if (single)
+    {
+        if (self->dataObject->getDims() <= axis)
+        {
+            return PyErr_Format(PyExc_ValueError, "axis %i is out of bounds", axis);
+        }
+        else
+        {
+            return Py_BuildValue("d", self->dataObject->getPhysToPix(axis, value, isInsideImage));
+        }
+    }
+    else
+    {
+        if (!PySequence_Check(values))
+        {
+            PyErr_SetString(PyExc_ValueError, "values must be a float value or a sequence of floats");
+            return NULL;
+        }
+        else if (axes && !PySequence_Check(axes))
+        {
+            PyErr_SetString(PyExc_ValueError, "axes must be an integer value or a sequence of integers");
+            return NULL;
+        }
+        else if (axes && PySequence_Length(values) != PySequence_Length(axes))
+        {
+            PyErr_SetString(PyExc_ValueError, "values and axes must have the same size");
+            return NULL;
+        }
+
+        PyObject *v = NULL;
+        PyObject *a = NULL;
+        PyObject *result = PyTuple_New(PySequence_Length(values));
+
+        for (Py_ssize_t i = 0; i < PySequence_Length(values); ++i)
+        {
+            v = PySequence_Fast_GET_ITEM(values, i); //borrowed
+            if (axes)
+            {
+                a = PySequence_Fast_GET_ITEM(axes, i); //borrowed
+            }
+
+            if (PyFloat_Check(v))
+            {
+                value = PyFloat_AsDouble(v);
+            }
+            else if (PyLong_Check(v))
+            {
+                value = PyLong_AsLong(v);
+            }
+            else
+            {
+                Py_DECREF(result);
+                return PyErr_Format(PyExc_ValueError, "%i. value cannot be interpreted as float", i);
+            }
+
+            if (a)
+            {
+                if (PyLong_Check(a))
+                {
+                    axis = PyLong_AsLong(a);
+                }
+                else
+                {
+                    Py_DECREF(result);
+                    return PyErr_Format(PyExc_ValueError, "%i. axis cannot be interpreted as integer", i);
+                }
+            }
+            else
+            {
+                axis = i;
+            }
+
+            PyTuple_SetItem(result, i, PyFloat_FromDouble(self->dataObject->getPhysToPix(axis, value, isInsideImage)));
+        }
+
+        return result;
+
+    }
+
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectPixToPhys_doc,"pixToPhys(values [, axes]) -> returns the physical coordinates for the given pixel coordinates. \n\
+\n\
+This method transforms a pixel coordinate into its corresponding physical coordinate. The transformation is influenced \n\
+by the offset and scaling of each axis: \n\
+\n\
+pix = (phys / scaling) + offset \n\
+\n\
+If no axes parameter is given, the values are assumed to belong the the ascending axis list (0,1,2,3...). \n\
+\n\
+Parameters  \n\
+------------\n\
+values : {float, float-tuple}\n\
+    One single pixel coordinate or a tuple of pixel coordinates.\n\
+axes : {int, int-tuple}, optional\n\
+    If this is given, the values are mapped to the axis indices given by this value or tuple. Else, an ascending list starting with index 0 is assumed. \n\
+\n\
+Returns \n\
+-------- \n\
+Float or float-tuple with the physical coordinates for each pixel coordinate at the given axis index. \n\
+\n\
+Raises \n\
+------- \n\
+Value error : \n\
+    if the given axes is invalid (out of range)");
+PyObject* PythonDataObject::PyDataObj_PixToPhys(PyDataObject *self, PyObject *args, PyObject *kwds)
+{
+        static const char *kwlist[] = {"values","axes", NULL};
+    double value;
+    int axis = 0;
+    PyObject *values = NULL;
+    PyObject *axes = NULL;
+    bool single = false;
+    bool isInsideImage;
+
+    //3. check for argument: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]
+    PyErr_Clear();
+    if (PyArg_ParseTupleAndKeywords(args, kwds, "d|i", const_cast<char**>(kwlist), &value, &axis)) //&PyList_Type, &dimList, &type, &continuous))
+    {
+        single = true;
+    }
+    else if (PyErr_Clear(), !PyArg_ParseTupleAndKeywords(args, kwds, "O|O", const_cast<char**>(kwlist), &values, &axes))
+    {
+        return NULL;
+    }
+
+    if (single)
+    {
+        if (self->dataObject->getDims() <= axis)
+        {
+            return PyErr_Format(PyExc_ValueError, "axis %i is out of bounds", axis);
+        }
+        else
+        {
+            return Py_BuildValue("d", self->dataObject->getPixToPhys(axis, value, isInsideImage));
+        }
+    }
+    else
+    {
+        if (!PySequence_Check(values))
+        {
+            PyErr_SetString(PyExc_ValueError, "values must be a float value or a sequence of floats");
+            return NULL;
+        }
+        else if (axes && !PySequence_Check(axes))
+        {
+            PyErr_SetString(PyExc_ValueError, "axes must be an integer value or a sequence of integers");
+            return NULL;
+        }
+        else if (axes && PySequence_Length(values) != PySequence_Length(axes))
+        {
+            PyErr_SetString(PyExc_ValueError, "values and axes must have the same size");
+            return NULL;
+        }
+
+        PyObject *v = NULL;
+        PyObject *a = NULL;
+        PyObject *result = PyTuple_New(PySequence_Length(values));
+
+        for (Py_ssize_t i = 0; i < PySequence_Length(values); ++i)
+        {
+            v = PySequence_Fast_GET_ITEM(values, i); //borrowed
+            if (axes)
+            {
+                a = PySequence_Fast_GET_ITEM(axes, i); //borrowed
+            }
+
+            if (PyFloat_Check(v))
+            {
+                value = PyFloat_AsDouble(v);
+            }
+            else if (PyLong_Check(v))
+            {
+                value = PyLong_AsLong(v);
+            }
+            else
+            {
+                Py_DECREF(result);
+                return PyErr_Format(PyExc_ValueError, "%i. value cannot be interpreted as float", i);
+            }
+
+            if (a)
+            {
+                if (PyLong_Check(a))
+                {
+                    axis = PyLong_AsLong(a);
+                }
+                else
+                {
+                    Py_DECREF(result);
+                    return PyErr_Format(PyExc_ValueError, "%i. axis cannot be interpreted as integer", i);
+                }
+            }
+            else
+            {
+                axis = i;
+            }
+
+            PyTuple_SetItem(result, i, PyFloat_FromDouble(self->dataObject->getPixToPhys(axis, value, isInsideImage)));
+        }
+
+        return result;
+
+    }
+
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyDataObjectSetTag_doc,"setTag(key, tagvalue) -> Set the value of tag specified by key. \n\
 \n\
 Sets the value of an existing tag (defined by key) in the tag dictionary to the string or double tagvalue or \
@@ -7317,6 +7573,8 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"existTag",(PyCFunction)PyDataObj_TagExists, METH_VARARGS, pyDataObjectTagExists_doc},
         {"getTagListSize",(PyCFunction)PyDataObj_GetTagListSize, METH_NOARGS, pyDataObjectGetTagListSize_doc},
         {"addToProtocol",(PyCFunction)PyDataObj_AddToProtocol, METH_VARARGS, pyDataObjectAddToProtocol_doc},
+        {"physToPix",(PyCFunction)PyDataObj_PhysToPix, METH_KEYWORDS | METH_VARARGS, pyDataObjectPhysToPix_doc},
+        {"pixToPhys",(PyCFunction)PyDataObj_PixToPhys, METH_KEYWORDS | METH_VARARGS, pyDataObjectPixToPhys_doc},
         
         {"copy",(PyCFunction)PythonDataObject::PyDataObject_copy, METH_VARARGS, pyDataObjectCopy_doc},
         {"astype", (PyCFunction)PythonDataObject::PyDataObject_astype, METH_VARARGS | METH_KEYWORDS, pyDataObjectAstype_doc},

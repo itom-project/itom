@@ -145,6 +145,8 @@ class PythonDataObject
         static PyObject* PyDataObj_SetAxisScale(PyDataObject *self, PyObject *args);
         static PyObject* PyDataObj_SetAxisDescription(PyDataObject *self, PyObject *args);
         static PyObject* PyDataObj_SetAxisUnit(PyDataObject *self, PyObject *args);
+        static PyObject* PyDataObj_PhysToPix(PyDataObject *self, PyObject *args, PyObject *kwds);
+        static PyObject* PyDataObj_PixToPhys(PyDataObject *self, PyObject *args, PyObject *kwds);
 
         static PyObject* PyDataObj_SetTag(PyDataObject *self, PyObject *args);
         static PyObject* PyDataObj_DeleteTag(PyDataObject *self, PyObject *args);
