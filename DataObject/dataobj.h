@@ -652,6 +652,9 @@ namespace ito {
         
         //! constructor for 3-dimensional data object which uses the data given by the continuousDataPtr.
         DataObject(const int sizeZ, const int sizeY, const int sizeX, const int type, const uchar* continuousDataPtr,  const int* steps = NULL);
+
+        //! constructor for data object with given dimension. The data is newly allocated and arbitrarily filled.
+        DataObject(const MSize &sizes, const int type, const unsigned char continuous = 0);
         
         //! constructor for data object with given dimension. The data is newly allocated and arbitrarily filled.
         DataObject(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous = 0);

@@ -786,6 +786,20 @@ DataObject::DataObject(const int sizeZ, const int sizeY, const int sizeX, const 
 /*!
     the owndata-flag is set to true
 
+    \param sizes
+    \param type is the data-type of each element (use type of enumeration tDataType)
+    \param continuous indicates whether all matrix-planes should continuously lie in memory (1) or not (0) (default: 0)
+    \sa create, tDataType
+*/
+DataObject::DataObject(const MSize &sizes, const int type, const unsigned char continuous /*= 0*/) : m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0), m_objHeaderLock(new ito::ReadWriteLock())
+{
+    this->create(sizes.m_p[-1], sizes.operator const int *(), type, m_continuous);
+}
+
+//! constructor for data object with given dimension. The data is newly allocated and arbitrarily filled.
+/*!
+    the owndata-flag is set to true
+
     \param dimensions indicates the total number of dimensions
     \param *sizes is a vector of size 'dimensions', where each element gives the size (not osize) of the specific dimension
     \param type is the data-type of each element (use type of enumeration tDataType)
