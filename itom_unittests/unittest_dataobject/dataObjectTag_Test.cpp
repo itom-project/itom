@@ -224,6 +224,93 @@ TYPED_TEST(dataObjectTag_Test,getValueScale_Test)
 	EXPECT_EQ(ValueScale,cv::saturate_cast<double>(1));		//checks if the scale value of the mat1_1d matrix is 1 (default value)
 };
 
+//getValueScale_Test
+/*!
+	This test checks functionality of "getPixToPhys" function of a DataObject.
+*/
+TYPED_TEST(dataObjectTag_Test,getPixToPhys_Test)
+{
+    mat2_2d.setAxisScale(0, 0.3);
+    mat2_2d.setAxisScale(1, 10.5);
+    mat2_2d.setAxisOffset(0, 5.2);
+    mat2_2d.setAxisOffset(1, -2.7);
+
+    //tPhys = (pix - offset) * scale
+    double val = mat2_2d.getPixToPhys(0, 0);
+    EXPECT_EQ(val, (0 - 5.2) * 0.3);
+    val = mat2_2d.getPixToPhys(0, 1);
+    EXPECT_EQ(val, (1 - 5.2) * 0.3);
+    val = mat2_2d.getPixToPhys(1, 0);
+    EXPECT_EQ(val, (0 + 2.7) * 10.5);
+    val = mat2_2d.getPixToPhys(1, 1);
+    EXPECT_EQ(val, (1 + 2.7) * 10.5);
+
+
+    //tPhys = (pix - offset) * scale
+    bool isInside;
+    val = mat2_2d.getPixToPhys(0, 0, isInside);
+    EXPECT_EQ(val, (0 - 5.2) * 0.3);
+    EXPECT_TRUE(isInside);
+    val = mat2_2d.getPixToPhys(0, 1, isInside);
+    EXPECT_EQ(val, (1 - 5.2) * 0.3);
+    EXPECT_TRUE(isInside);
+    val = mat2_2d.getPixToPhys(1, 0, isInside);
+    EXPECT_EQ(val, (0 + 2.7) * 10.5);
+    EXPECT_TRUE(isInside);
+    val = mat2_2d.getPixToPhys(1, 1, isInside);
+    EXPECT_EQ(val, (1 + 2.7) * 10.5);
+    EXPECT_TRUE(isInside);
+
+    val = mat2_2d.getPixToPhys(1, -1, isInside);
+    EXPECT_FALSE(isInside);
+    val = mat2_2d.getPixToPhys(0, 7, isInside);
+    EXPECT_FALSE(isInside);
+};
+
+
+//getValueScale_Test
+/*!
+	This test checks functionality of "getPhysToPix" function of a DataObject.
+*/
+TYPED_TEST(dataObjectTag_Test,getPhysToPix_Test)
+{
+    mat2_2d.setAxisScale(0, 0.3);
+    mat2_2d.setAxisScale(1, 10.5);
+    mat2_2d.setAxisOffset(0, 5.2);
+    mat2_2d.setAxisOffset(1, -2.7);
+
+    //tPx = (phys / scale) + offset
+    double val = mat2_2d.getPhysToPix(0, (0 - 5.2) * 0.3);
+    EXPECT_EQ(val, 0);
+    val = mat2_2d.getPhysToPix(0, (1 - 5.2) * 0.3);
+    EXPECT_EQ(val, 1);
+    val = mat2_2d.getPhysToPix(1, (0 + 2.7) * 10.5);
+    EXPECT_EQ(val, 0);
+    val = mat2_2d.getPhysToPix(1, (1 + 2.7) * 10.5);
+    EXPECT_EQ(val, 1);
+
+
+    //tPx = (phys / scale) + offset
+    bool isInside;
+    val = mat2_2d.getPhysToPix(0, (0 - 5.2) * 0.3, isInside);
+    EXPECT_EQ(val, 0);
+    EXPECT_TRUE(isInside);
+    val = mat2_2d.getPhysToPix(0, (1 - 5.2) * 0.3, isInside);
+    EXPECT_EQ(val, 1);
+    EXPECT_TRUE(isInside);
+    val = mat2_2d.getPhysToPix(1, (0 + 2.7) * 10.5, isInside);
+    EXPECT_EQ(val, 0);
+    EXPECT_TRUE(isInside);
+    val = mat2_2d.getPhysToPix(1, (1 + 2.7) * 10.5, isInside);
+    EXPECT_EQ(val, 1);
+    EXPECT_TRUE(isInside);
+
+    val = mat2_2d.getPhysToPix(1, -10, isInside);
+    EXPECT_FALSE(isInside);
+    val = mat2_2d.getPhysToPix(0, 70, isInside);
+    EXPECT_FALSE(isInside);
+};
+
 //set_getAxisUnit_Test1d
 /*!
 	This test checks functionality of "setAxisUnit" and "getAxisUnit" functions of DataObject for 1 dimensional matrices.

@@ -1957,7 +1957,8 @@ double DataObject::getPhysToPix(const unsigned int dim, const double phys, bool 
 
     if(m_pDataObjectTags)
     {
-        tPx = (phys / getAxisScale(dim) + getAxisOffset(dim));
+        //tPx = (phys / scale) + offset
+        tPx = (phys / m_pDataObjectTags->m_axisScales[dim]) + (m_pDataObjectTags->m_axisOffsets[dim] - m_roi[dim]);
     }
     else
     {
@@ -1977,6 +1978,45 @@ double DataObject::getPhysToPix(const unsigned int dim, const double phys, bool 
     else
     {
         isInsideImage = true;
+    }
+
+    return tPx;
+}
+
+
+/**
+\brief Function returns the not rounded pixel index of a physical coordinate
+\detail Function returns the not rounded pixel index of a physical coordinate (Unit-Coordinate = ( px-Coordinate - Offset)* Scale).
+        To avoid memory access-error, the return value is clipped within the range of the image ([0...imagesize-1])
+\param[in] dim  Axis-dimension for which the physical coordinate is calculated
+\param[in] pix  Pixel-index as double
+\return (double)( pix / AxisScale + AxisOffset) & [0..imagesize-1]
+*/
+double DataObject::getPhysToPix(const unsigned int dim, const double phys) const
+{
+    double tPx = 0.0;
+    if(static_cast<int>(dim) >= m_dims)
+    {
+        return 0.0;
+    }
+
+    if(m_pDataObjectTags)
+    {
+        //tPx = (phys / scale) + offset
+        tPx = (phys / m_pDataObjectTags->m_axisScales[dim]) + (m_pDataObjectTags->m_axisOffsets[dim] - m_roi[dim]);
+    }
+    else
+    {
+        tPx = phys;
+    }
+
+    if(tPx > getSize(dim) - 1)
+    {
+        tPx = static_cast<double>(getSize(dim)- 1);
+    }
+    else if( tPx < 0)
+    {
+        tPx = 0;
     }
 
     return tPx;
@@ -2067,7 +2107,8 @@ double DataObject::getPixToPhys(const unsigned int dim, const double pix, bool &
     }
     if(m_pDataObjectTags)
     {
-        tPhys = (pix - getAxisOffset(dim)) * getAxisScale(dim);
+        //tPhys = (pix - offset) * scale
+        tPhys = (pix - (m_pDataObjectTags->m_axisOffsets[dim] - m_roi[dim])) * m_pDataObjectTags->m_axisScales[dim];
     }
     else
     {
@@ -2081,6 +2122,34 @@ double DataObject::getPixToPhys(const unsigned int dim, const double pix, bool &
     else
     {
         isInsideImage = true;
+    }
+
+    return tPhys;
+}
+
+/**
+\brief Function returns the physical coordinate of a pixel
+\detail Function returns the physical coordinate of a pixel index (Unit-Coordinate = ( px-Coordinate - Offset)* Scale).
+\param[in] dim  Axis-dimension for which the physical coordinate is calculated
+\param[in] pix  Pixel-index as double
+\return (double)( pix - AxisOffset)* AxisScale)
+*/
+double DataObject::getPixToPhys(const unsigned int dim, const double pix) const
+{
+    double tPhys = 0.0;
+    if(static_cast<int>(dim) >= m_dims)
+    {
+        return 0.0;
+    }
+
+    if(m_pDataObjectTags)
+    {
+        //tPhys = (pix - offset) * scale
+        tPhys = (pix - (m_pDataObjectTags->m_axisOffsets[dim] - m_roi[dim])) * m_pDataObjectTags->m_axisScales[dim];
+    }
+    else
+    {
+        tPhys = pix;
     }
 
     return tPhys;

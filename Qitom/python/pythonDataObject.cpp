@@ -2410,7 +2410,6 @@ PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *ar
     PyObject *values = NULL;
     PyObject *axes = NULL;
     bool single = false;
-    bool isInsideImage;
 
     //3. check for argument: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]
     PyErr_Clear();
@@ -2431,7 +2430,7 @@ PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *ar
         }
         else
         {
-            return Py_BuildValue("d", self->dataObject->getPhysToPix(axis, value, isInsideImage));
+            return Py_BuildValue("d", self->dataObject->getPhysToPix(axis, value));
         }
     }
     else
@@ -2495,7 +2494,7 @@ PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *ar
                 axis = i;
             }
 
-            PyTuple_SetItem(result, i, PyFloat_FromDouble(self->dataObject->getPhysToPix(axis, value, isInsideImage)));
+            PyTuple_SetItem(result, i, PyFloat_FromDouble(self->dataObject->getPhysToPix(axis, value)));
         }
 
         return result;
@@ -2538,7 +2537,6 @@ PyObject* PythonDataObject::PyDataObj_PixToPhys(PyDataObject *self, PyObject *ar
     PyObject *values = NULL;
     PyObject *axes = NULL;
     bool single = false;
-    bool isInsideImage;
 
     //3. check for argument: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]
     PyErr_Clear();
@@ -2559,7 +2557,7 @@ PyObject* PythonDataObject::PyDataObj_PixToPhys(PyDataObject *self, PyObject *ar
         }
         else
         {
-            return Py_BuildValue("d", self->dataObject->getPixToPhys(axis, value, isInsideImage));
+            return Py_BuildValue("d", self->dataObject->getPixToPhys(axis, value));
         }
     }
     else
@@ -2623,7 +2621,7 @@ PyObject* PythonDataObject::PyDataObj_PixToPhys(PyDataObject *self, PyObject *ar
                 axis = i;
             }
 
-            PyTuple_SetItem(result, i, PyFloat_FromDouble(self->dataObject->getPixToPhys(axis, value, isInsideImage)));
+            PyTuple_SetItem(result, i, PyFloat_FromDouble(self->dataObject->getPixToPhys(axis, value)));
         }
 
         return result;

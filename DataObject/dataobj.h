@@ -726,6 +726,11 @@ namespace ito {
          \brief Function returns the not rounded pixel index of a physical coordinate
          */
         double getPhysToPix(const unsigned int dim, const double phys, bool &isInsideImage) const;
+
+        /**
+         \brief Function returns the not rounded pixel index of a physical coordinate
+         */
+        double getPhysToPix(const unsigned int dim, const double phys) const;
         
         /**
          \brief Function returns the not rounded pixel index of a physical coordinate
@@ -736,6 +741,11 @@ namespace ito {
          \brief Function returns the physical coordinate of a pixel
          */
         double getPixToPhys(const unsigned int dim, const double pix, bool &isInsideImage) const;
+
+        /**
+         \brief Function returns the physical coordinate of a pixel
+         */
+        double getPixToPhys(const unsigned int dim, const double pix) const;
         
         /**
          \brief Function to access (set) the rotiational matrix by each element
