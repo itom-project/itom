@@ -89,9 +89,6 @@ for buildername in buildernames:
             raise RuntimeError("qcollectiongenerator failed")
         else:
             print("qcollectiongenerator successfully executed")
-            raise RuntimeError("qcollectiongenerator failed")
-        else:
-            print("qcollectiongenerator successfully executed")
             
         ret = itom.ui.msgInformation("show result","do you want to see the result?",ui.MsgBoxYes | ui.MsgBoxNo)
         if(ret[0] == ui.MsgBoxYes):
