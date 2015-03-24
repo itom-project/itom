@@ -2080,7 +2080,7 @@ namespace dObjHelper
         \param sizeX is the allowed range for the width of the 2d data object (start and end are included)
         \param sizeY is the allowed range for the height of the 2d data object (start and end are included)
         \param retval is the return value
-        \param convertToType is the type the data object should be converted to (ito::tInt8, ito::tFloat32...) or 0 if no conversion should be done
+        \param convertToType is the type the data object should be converted to (ito::tInt8, ito::tFloat32...) or -1 if no conversion should be done (changed after itom 1.4.0, was 0 before which stands for int8)
         \param numberOfAllowedTypes is the number of types that are allowed for the incoming object or 0 if all types are allowed
         \param ... is the list of allowed types in terms of ito::tDataType added as multiple arguments (their number must correspond to numberOfAllowedTypes)
         \return shallow or deep copy of the (squeezed) input data object.
@@ -2088,6 +2088,12 @@ namespace dObjHelper
     ito::DataObject squeezeConvertCheck2DDataObject(const ito::DataObject *dObj, const char* name, const ito::Range &sizeY, const ito::Range &sizeX, ito::RetVal &retval, int convertToType, uint8 numberOfAllowedTypes, ...)
     {
         ito::DataObject out;
+
+        //TODO: remove this at the next interface change;
+        if (convertToType == 0)
+        {
+            std::cout << "Warning: behaviour of convertToType in squeezeConvertCheck2DDataObject changed. 0 means a conversion to int8 instead of an unchanged object - like in the version before. Please check your code\n" << std::endl;
+        }
 
         if(dObj == NULL)
         {
@@ -2121,7 +2127,7 @@ namespace dObjHelper
                 else
                 {
                     //check if it needs to be converted
-                    if (convertToType > 0 && (convertToType != dObj->getType()))
+                    if (convertToType >= 0 && (convertToType != dObj->getType()))
                     {
                         retval += dObj->convertTo(out, convertToType);
                     }
