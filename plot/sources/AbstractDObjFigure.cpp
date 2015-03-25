@@ -75,8 +75,7 @@ QSharedPointer<ito::DataObject> AbstractDObjFigure::getSource(void) const
 void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source) 
 { 
     ito::RetVal retval = ito::retOk;
-    QSharedPointer<ito::DataObject> oldSource; //possible backup for previous source, this backup must be alive until updateParam with the new one has been completely propagated
-
+    
     if (m_cameraConnected)
     {
         retval += removeLiveSource(); //removes possibly existing live source
@@ -89,13 +88,19 @@ void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source)
         //if so, free previous
         if (m_dataPointer["source"].data() != source.data())
         {
-            oldSource = m_dataPointer["source"];
+            QSharedPointer<ito::DataObject> oldSource = m_dataPointer["source"]; //possible backup for previous source, this backup must be alive until updateParam with the new one has been completely propagated
             if (oldSource)
+            {
                 oldSource->lockWrite();
+            }
+
             // sometimes crash here when replacing the source
             m_dataPointer["source"] = source;
+
             if (oldSource)
+            {
                 oldSource->unlock();
+            }
         }  
     }
     else
