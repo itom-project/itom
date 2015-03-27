@@ -239,7 +239,7 @@ void WorkspaceDockWidget::mnuExportItem()
             if (item->parent() == NULL)
             {
                 keyList.append(item->data(0, Qt::DisplayRole).toString());
-                compatibleParamBaseTypes.append(item->data(0, Qt::UserRole + 2).toInt());;
+                compatibleParamBaseTypes.append(item->data(0, Qt::UserRole + 2).toInt());
             }
         }
 
@@ -272,7 +272,6 @@ void WorkspaceDockWidget::mnuImportItem()
         QString message = QString();
         if (errorMsg) message = errorMsg;
         QMessageBox::critical(this, tr("Import data"), tr("Error while importing variables:\n%1").arg(message));
-        //std::cerr << "error while importing variables. reason: " << message.toLatin1().data() << "\n" << std::endl;
     }
 }
 
@@ -357,26 +356,29 @@ void WorkspaceDockWidget::treeWidgetItemChanged(QTreeWidgetItem * item, int /*co
     {
         
         PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-
-        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
-
-        QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-
-        emit setStatusInformation(tr("renaming variable"), 0);
-
-        QMetaObject::invokeMethod(eng, "renameVariable", Q_ARG(bool, m_globalNotLocal), Q_ARG(QString, m_firstCurrentItemKey), Q_ARG(QString,newKey), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-
-        m_firstCurrentItemKey = QString::Null();
-
-        if (locker.getSemaphore()->waitAndProcessEvents(PLUGINWAIT))
+        if (eng)
         {
-            emit setStatusInformation("", 0);
+
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
+
+            QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+
+            emit setStatusInformation(tr("renaming variable"), 0);
+
+            QMetaObject::invokeMethod(eng, "renameVariable", Q_ARG(bool, m_globalNotLocal), Q_ARG(QString, m_firstCurrentItemKey), Q_ARG(QString,newKey), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+            m_firstCurrentItemKey = QString::Null();
+
+            if (locker.getSemaphore()->waitAndProcessEvents(PLUGINWAIT))
+            {
+                emit setStatusInformation("", 0);
+            }
+            else
+            {
+                emit setStatusInformation(tr("timeout while renaming variables"), PLUGINWAIT);
+            }
+            QApplication::restoreOverrideCursor();
         }
-        else
-        {
-            emit setStatusInformation(tr("timeout while renaming variables"), PLUGINWAIT);
-        }
-        QApplication::restoreOverrideCursor();
     }
 }
 

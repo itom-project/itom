@@ -1,5 +1,4 @@
 SET (target_name qitom)
-set(CMAKE_PREFIX_PATH D:/Qt5/5.2.0/msvc2010)
    
 project(${target_name})
  
@@ -15,7 +14,6 @@ OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WA
 SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
 OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
 OPTION(BUILD_WITH_NPDATAOBJECT "Build with the python class itom.npDataObject. This is deprecated and will be removed in coming versions since it is incompatible with Numpy 1.7 or higher" OFF)
- 
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 include("../ItomBuildMacros.cmake")  
@@ -236,6 +234,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.h    
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagementEdit.h    
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceDockWidget.h
@@ -285,6 +284,7 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/uiDebugViewer.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/uiMainWindow.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagementEdit.ui
 )
 
 IF (QT5_FOUND)
@@ -404,6 +404,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.cpp    
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagementEdit.cpp    
 )
 
 if(MSVC)
@@ -525,9 +526,69 @@ else (UPDATE_TRANSLATIONS)
 endif (UPDATE_TRANSLATIONS)
 #handle translations END
 
-ADD_EXECUTABLE(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENCENDY} )
-set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
-set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "qitom")
+#Find ITOM_VERION version by looking at global.h
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/global.h ITOM_VERSIONS_TMP REGEX "^#define ITOM_VERSION_[A-Z]+[ \t]+0x[0-9A-F]+$")
+string(REGEX REPLACE ".*#define ITOM_VERSION_MAJOR[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_MAJOR ${ITOM_VERSIONS_TMP})
+string(REGEX REPLACE ".*#define ITOM_VERSION_MINOR[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_MINOR ${ITOM_VERSIONS_TMP})
+string(REGEX REPLACE ".*#define ITOM_VERSION_PATCH[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_PATCH ${ITOM_VERSIONS_TMP})
+#set(ITOM_VERSION_STRING ${ITOM_VERSION_MAJOR}.${ITOM_VERSION_MINOR}.${ITOM_VERSION_PATCH} CACHE STRING "" FORCE)
+
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/global.h ITOM_VERSIONS_TMP REGEX "^#define ITOM_VERSION_STR[ \t]+.*$")
+string(REGEX REPLACE ".*#define ITOM_VERSION_STR[ \t]+.([0-9\\.]+).*" "\\1" ITOM_VERSION_STRING ${ITOM_VERSIONS_TMP})
+
+IF(APPLE)
+    # Set meta data for OS X bundle
+    SET(MACOSX_BUNDLE TRUE)
+    SET(MACOSX_BUNDLE_BUNDLE_NAME "itom")
+    SET(MACOSX_BUNDLE_GUI_IDENTIFIER "ITO.itom")
+    SET(MACOSX_BUNDLE_INFO_STRING "itom - an Open Source Measurement, Automation and Evaluation Software\nhttp://itom.bitbucket.org")
+    SET(MACOSX_BUNDLE_LONG_VERSION_STRING "${ITOM_VERSION_STRING}")
+    SET(MACOSX_BUNDLE_SHORT_VERSION_STRING "${ITOM_VERSION_STRING}")
+    SET(MACOSX_BUNDLE_BUNDLE_VERSION ${ITOM_VERSION_STRING})
+    SET(MACOSX_BUNDLE_COPYRIGHT "GNU LGPL with itom exception. Used plugins and libraries might differ. http://itom.bitbucket.org/latest/docs/01_introduction/introduction.html#licensing.")
+
+    # Setting icon for OS X
+    SET(target_icon itomicon.icns)
+    SET(target_icon_path "${CMAKE_CURRENT_SOURCE_DIR}/appicon/osx/${target_icon}")
+    SET(MACOSX_BUNDLE_ICON_FILE "${target_icon}")
+    SET_SOURCE_FILES_PROPERTIES(${target_icon_path} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
+
+    # Add executable for OS X
+    ADD_EXECUTABLE(${target_name} MACOSX_BUNDLE ${target_icon_path} ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENCENDY} )
+
+    # SET_SOURCE_FILES_PROPERTIES(
+    #     ${CMAKE_BINARY_DIR}/../itoDebugger.py
+    #     ${CMAKE_BINARY_DIR}/../itoFunctions.py
+    #     PROPERTIES MACOSX_PACKAGE_LOCATION MacOSX
+    # )
+
+    # SET_SOURCE_FILES_PROPERTIES(
+    #   apple1_res1
+    #   apple1_res2
+    #   PROPERTIES MACOSX_PACKAGE_LOCATION Resources
+    #   )
+
+    # Set binary file names for OS X
+    set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "itomd")
+    set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "itom")
+
+    # Copy files into app bundle after build
+    COPY_TYPE_TO_BUNDLE_NONREC(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../" "" ".dylib")
+    COPY_TYPE_TO_BUNDLE_NONREC(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../" "" ".py")
+    COPY_TO_BUNDLE(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../itom-packages" "itom-packages")
+    COPY_TO_BUNDLE(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../plugins" "plugins")
+    COPY_TO_BUNDLE(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../designer" "designer")
+    COPY_TO_BUNDLE(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../help" "help")
+    COPY_TO_BUNDLE(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../demo" "../demo")
+ELSE(APPLE)
+    # Executable for WINDOWS and LINUX
+    ADD_EXECUTABLE(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENCENDY} )
+
+    # Set binary file names for  WINDOWS and LINUX
+    set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
+    set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_RELEASE "qitom")
+ENDIF(APPLE)
+
 ADD_DEPENDENCIES(${target_name} ${target_name}_prebuild)
 ADD_DEPENDENCIES(${target_name} itomWidgets)
 
@@ -575,7 +636,11 @@ ENDIF(BUILD_WITH_PCL)
 #TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_WIDGET_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor)
 
 IF (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib ${PYMATLAB_LIBRARIES})
+	if (WIN32)
+		TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib ${PYMATLAB_LIBRARIES} shell32)
+	else (WIN32)
+		TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib ${PYMATLAB_LIBRARIES})
+	endif (WIN32)
 ELSE (QT5_FOUND)
     TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib ${PYMATLAB_LIBRARIES})
 ENDIF (QT5_FOUND)
@@ -616,16 +681,6 @@ FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../docs/docsTmpl/sphinxext       DESTINATI
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../docs/userDoc/source/ext       DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/docs)
 
 #FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/itom_sdk.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include)
-
-#Find ITOM_VERION version by looking at global.h
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/global.h ITOM_VERSIONS_TMP REGEX "^#define ITOM_VERSION_[A-Z]+[ \t]+0x[0-9A-F]+$")
-string(REGEX REPLACE ".*#define ITOM_VERSION_MAJOR[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_MAJOR ${ITOM_VERSIONS_TMP})
-string(REGEX REPLACE ".*#define ITOM_VERSION_MINOR[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_MINOR ${ITOM_VERSIONS_TMP})
-string(REGEX REPLACE ".*#define ITOM_VERSION_PATCH[ \t]+(0x[0-9A-F]+).*" "\\1" ITOM_VERSION_PATCH ${ITOM_VERSIONS_TMP})
-#set(ITOM_VERSION_STRING ${ITOM_VERSION_MAJOR}.${ITOM_VERSION_MINOR}.${ITOM_VERSION_PATCH} CACHE STRING "" FORCE)
-
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/global.h ITOM_VERSIONS_TMP REGEX "^#define ITOM_VERSION_STR[ \t]+.*$")
-string(REGEX REPLACE ".*#define ITOM_VERSION_STR[ \t]+.([0-9\\.]+).*" "\\1" ITOM_VERSION_STRING ${ITOM_VERSIONS_TMP})
 
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h ITOM_VERSIONS_TMP REGEX "^.*static const char\\* ito_AddInInterface_CurrentVersion[ \t]+=+.*$")
 string(REGEX REPLACE ".*static const char\\* ito_AddInInterface_CurrentVersion[ \t]+=[ \t]+.([a-zA-Z0-9\\./]+).*" "\\1" ITOM_VERSION_STRING_WITH_API ${ITOM_VERSIONS_TMP})

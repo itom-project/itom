@@ -22,12 +22,21 @@ In order to start the **Qt Designer**, click on the corresponding icon in the to
 
 .. figure:: images_userGUI/mainsymbols2.png
     :scale: 70%
+    :align: left
 
 or double-click on a corresponding **ui**-file in the file system widget of |itom|. In the first case, **Qt Designer** shows an initialization dialog, where you
 can choose the base type of the user interface you want to create.
 
 .. figure:: images_userGUI/designerNew.png
     :scale: 70%
+    :align: left
+    
+.. note::
+    
+    There is a known issue in the setup 1.4.0 (or earlier) concerning an unsuccessful startup of the external Qt designer. If you want to open
+    the designer using the button in the toolbox of the itom main window, the startup may fail. This bug is known and will be fixed
+    in future releases. Until then, please open the designer either by starting the **designer.exe** in the application folder of itom
+    or open an existing ui-file (e.g. in the demo folder of itom). This issue only affects setup versions (32bit and 64bit) for Windows.
 
 In principle you have the possibility to choose between three different base layouts:
 
@@ -47,6 +56,7 @@ on your surface. If the **Qt Designer** is started from |itom| you will even fin
 provided by |itom| and can also be placed on your surface. The choice of these plugins depend on the designer plugins that are currently available in your installation of |itom|.
 
 .. figure:: images_userGUI/qtdesigner1.png
+    :align: left
 
 After having placed one widget on the canvas, you will see its properties in the property toolbox of **Qt Designer**. Every widget has the common property **objectName**. If you assign
 a unique object name to any of your control elements, it is possible to access and manipulate this widget from a |python| script in |itom| using this name, too. In general many of the
@@ -85,6 +95,7 @@ Let us create an exemplary user interface. In **Qt Creator** the following widge
 
 .. figure:: images_userGUI/testWidget.png
     :scale: 70%
+    :align: left
 
 On the right side of the widget *testWidget* you see the hierarchical organization of objects that are put on the widget. At first, a group box has been placed on the widget. Inside of
 this group box two radio buttons have been placed using a simple drag&drop from the widget library. Both radio buttons are aligned inside of the group box with a vertical layout. This
@@ -118,6 +129,7 @@ clicked an **OK**-button.
 
 .. figure:: images_userGUI/testWidgetItom.png
     :scale: 70%
+    :align: left
 
 It is also possible to open the dialog in a non-modal version or to open it in a modal style however to immediately force python to continue the script execution. This depends
 on the parameters of :py:meth:`~itom.ui.show`. However only in the modal case above, the closing result can be tracked by |python|. Additionally, this is also only possible if 
@@ -128,6 +140,7 @@ Right now, you don't have the possibility to quit the dialog using any button (*
 
 .. figure:: images_userGUI/testWidgetButtonBar.png
     :scale: 70%
+    :align: left
 
 Next, you need to select which buttons should be included in the button bar. This is done by creating a python dictionary, where each elements corresponds to one button. The
 key-word of the item corresponds to the role of the button (see enumeration *QDialogButtonBox::ButtonRole** of the |Qt|-library documentation) and the value is the text of the
@@ -160,6 +173,7 @@ If you are not interested in the exact return value of the dialog but you want t
 create an user interface based on a **dialog** or **main window** in **Qt Designer**.
 
 .. figure:: images_userGUI/testWindow.png
+    :align: left
 
 The figure shows an exemplary user interface (**testWindow.ui**) that is based on a main window. On the right side, there have been added three buttons, nested in a vertical layout.
 On the left side, there is a list widget (objectName: **listWidget**, type: **List Widget**). Additionally a menu has been added that consists of three items.
@@ -185,7 +199,19 @@ Main window or widget as dockable toolbox (TYPEDOCKWIDGET)
 -----------------------------------------------------------
 
 It is also possible to integrate user-defined main windows or widgets as dockable toolbox in the main window of |itom|. This is done using the type value **ui.TYPEDOCKWIDGET**. Then the
-widget is registered as dockwidget in the main window of |itom| and once it becomes visible, its startup position is at the top-center position.
+widget is registered as dockwidget in the main window of |itom| and once it becomes visible, its startup position is at the top-center position. You can define the initial dock area using
+the optional argument *dockWidgetArea* of the class :py:class:`itom.ui`.
+
+.. code-block:: python
+    
+    win = ui("testWindow.ui", ui.TYPEDOCKWIDGET, dockWidgetArea = ui.RIGHTDOCKWIDGETAREA)
+    
+Possible values for *dockWidgetArea* are:
+    
+    ui.LEFTDOCKWIDGETAREA = 1
+    ui.RIGHTDOCKWIDGETAREA = 2
+    ui.TOPDOCKWIDGETAREA = 4
+    ui.BOTTOMDOCKWIDGETAREA = 8
 
 
 Accessing control elements
@@ -433,6 +459,9 @@ QListWidget             void selectedTexts() returns a tuple of all selected val
 QListWidget             void selectRows(QVector<int>) select the rows with the given indices (ListWidget must be in multi-selection mode)
 QComboBox               void addItem(QString)
 QComboBox               void addItems(QStringList)
+QComboBox               void removeItem(int)
+QComboBox               void setItemData(int,QVariant) sets the value of the Qt::DisplayRole (displayed text) of the item with the indicated index
+QComboBox               void insertItem(int,QString)
 QTabWidget              int isTabEnabled(int)
 QTabWidget              void setTabEnabled(int,bool)
 QMainWindow             uiItem statusBar() *returns a reference to the statusbar widget*
@@ -467,6 +496,7 @@ with a checkbox and a textfield. Let us define a signal-slot-connection, such th
 
 .. figure:: images_userGUI/uiSignalSlot1.png
     :scale: 70%
+    :align: left
 
 This type of gui-internal connections are completely done in **Qt Creator**. Therefore chose the "Signal and Slots" editing mode, that is obtained by clicking the symbol |qtsignalslotmode|
 in the toolbar or by pressing *F4*. Then you can make a drag&drop connection between the emitting widget and the receiver-widget. After releasing the mouse button, the connection dialog,
@@ -474,6 +504,7 @@ depicted in the following figure becomes visible:
 
 .. figure:: images_userGUI/uiSignalSlot2.png
     :scale: 70%
+    :align: left
 
 Here you can choose which signal of the emitting widget should be connected with which slot of the destination. At the beginning, only slots and signals of the specific widget classes are
 visible. However, you can check the checkbox below, in order to also show the signals and slots of the inherited classes. Please make sure, that you only choose pairs of signals and
@@ -495,6 +526,7 @@ If you established a signal-slot-connection between an element of the GUI and a 
 is obtained by setting any breakpoint into the specific line and toggling the button *Run python code in debug mode* in the menu **Script** of |itom|.
 
 .. figure:: images_userGUI/runPyCodeInDebug.png
+    :align: left
 
 Hints and limitations
 ==========================================

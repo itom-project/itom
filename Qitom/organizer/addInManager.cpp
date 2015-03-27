@@ -230,12 +230,12 @@ namespace ito
             //search for base plugin folder
             pluginsDir = QDir(qApp->applicationDirPath());
 
-#if defined(Q_OS_WIN)
+#if defined(WIN32)
             if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
             {
                 pluginsDir.cdUp();
             }
-#elif defined(Q_OS_MAC)
+#elif defined(__APPLE__)
             if (pluginsDir.dirName() == "MacOS")
             {
                 pluginsDir.cdUp();
@@ -274,8 +274,10 @@ namespace ito
             }
 
             QStringList filters;
-#if linux
+#ifdef linux
             filters << "*.a" << "*.so";
+#elif (defined __APPLE__)
+            filters << "*.a" << "*.dylib";            
 #else
             filters << "*.dll";
 #endif 
@@ -992,103 +994,112 @@ namespace ito
         if (QString::compare((m_addInListDataIO[pluginNum])->objectName(), name, Qt::CaseInsensitive) != 0)
         {
             retval += ito::RetVal(ito::retError, 0, QObject::tr("Wrong plugin name").toLatin1().data());
-            goto end;
-        }
-
-        aib = qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[pluginNum]);
-        m_plugInModel.insertInstance(aib, true); //begin insert
-        retval += aib->getAddInInst(reinterpret_cast<ito::AddInBase **>(addIn));
-        if ((!addIn) || (!*addIn))
-        {
-            if (retval != ito::retError) retval += ito::retError;
-            goto end;
-        }
-
-        //ref-count of plugin must be zero (that means one instance is holder a single reference), this is rechecked in the following line
-        if (aib->getRef(*addIn) != 0)
-        {
-            retval += ito::RetVal(ito::retWarning,0,"reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).");
-        }
-
-        if ((*addIn)->getBasePlugin() == NULL || (*addIn)->getBasePlugin()->getType() == 0)
-        {
-            retval += ito::RetVal(ito::retError, 2000, QObject::tr("Base plugin or appropriate plugin type not indicated for this plugin.").toLatin1().data());
-            goto end;
-        }
-
-        retval += initDockWidget(static_cast<ito::AddInBase*>(*addIn));
-
-        waitCond = new ItomSharedSemaphore();
-
-        callInitInNewThread = (*addIn)->getBasePlugin()->getCallInitInNewThread();
-
-        if (callInitInNewThread)
-        {
-            (*addIn)->MoveToThread();
-        }
-
-        QMetaObject::invokeMethod(*addIn, "init", Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(ItomSharedSemaphore*, waitCond));
-
-        while (!waitCond->wait(AppManagement::timeouts.pluginInitClose))
-        {
-            if (!(*addIn)->isAlive())
-            {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while initializing dataIO").toLatin1().data());
-                timeoutOccurred = true;
-                break;
-            }
-        }
-        retval += waitCond->returnValue;
-        waitCond->deleteSemaphore();
-        waitCond = NULL;
-
-        if (!callInitInNewThread)
-        {
-            (*addIn)->MoveToThread();
-        }
-
-        if (timeoutOccurred == true)
-        {
-            //increment depending addIns in order to keep their reference alive while this plugin is in a undefined status.
-            incRefParamPlugins(*addIn, paramsMand, paramsOpt);
-
-            retval += registerPluginAsDeadPlugin(*addIn);
-            *addIn = NULL;
         }
         else
         {
-            //no timeout
-
-            if (!((*addIn)->getBasePlugin()->getType() & ito::typeDataIO) || retval.containsError())
+            aib = qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[pluginNum]);
+            m_plugInModel.insertInstance(aib, true); //begin insert
+            retval += aib->getAddInInst(reinterpret_cast<ito::AddInBase **>(addIn));
+            if ((!addIn) || (!*addIn))
             {
-                if (*addIn != NULL)
+                retval += ito::RetVal(ito::retError, 0, tr("Plugin instance is invalid (NULL)").toLatin1().data());
+            }
+        }
+
+        if (!retval.containsError())
+        {
+            //ref-count of plugin must be zero (that means one instance is holder a single reference), this is rechecked in the following line
+            if (aib->getRef(*addIn) != 0)
+            {
+                retval += ito::RetVal(ito::retWarning, 0, "reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).");
+            }
+
+            if ((*addIn)->getBasePlugin() == NULL || (*addIn)->getBasePlugin()->getType() == 0)
+            {
+                retval += ito::RetVal(ito::retError, 2000, QObject::tr("Base plugin or appropriate plugin type not indicated for this plugin.").toLatin1().data());
+            }
+        }
+
+        if (!retval.containsError())
+        {
+            retval += initDockWidget(static_cast<ito::AddInBase*>(*addIn));
+
+            waitCond = new ItomSharedSemaphore();
+
+            callInitInNewThread = (*addIn)->getBasePlugin()->getCallInitInNewThread();
+
+            if (callInitInNewThread)
+            {
+                (*addIn)->MoveToThread();
+            }
+
+            QMetaObject::invokeMethod(*addIn, "init", Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(ItomSharedSemaphore*, waitCond));
+
+            //this gives the plugin's init method to invoke a slot of any gui instance of the plugin within its init method. Else this slot is called after
+            //having finished this initAddIn method (since main thread is blocked).
+            while (!waitCond->waitAndProcessEvents(AppManagement::timeouts.pluginInitClose, QEventLoop::ExcludeUserInputEvents | QEventLoop::ExcludeSocketNotifiers))
+            {
+                if (!(*addIn)->isAlive())
                 {
-                    retval += closeAddIn(reinterpret_cast<ito::AddInBase**>(addIn));
+                    retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while initializing dataIO").toLatin1().data());
+                    timeoutOccurred = true;
+                    break;
                 }
+            }
+            retval += waitCond->returnValue;
+            waitCond->deleteSemaphore();
+            waitCond = NULL;
+
+            if (!callInitInNewThread)
+            {
+                (*addIn)->MoveToThread();
+            }
+
+            if (timeoutOccurred == true)
+            {
+                //increment depending addIns in order to keep their reference alive while this plugin is in a undefined status.
+                incRefParamPlugins(*addIn, paramsMand, paramsOpt);
+
+                retval += registerPluginAsDeadPlugin(*addIn);
                 *addIn = NULL;
             }
             else
             {
-                incRefParamPlugins(*addIn, paramsMand, paramsOpt);
+                //no timeout
 
-                policy = (*addIn)->getBasePlugin()->getAutoLoadPolicy();
-
-                if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
+                if (!((*addIn)->getBasePlugin()->getType() & ito::typeDataIO) || retval.containsError())
                 {
-                    retval += ito::RetVal(ito::retWarning, 0, QObject::tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toLatin1().data());
+                    if (*addIn != NULL)
+                    {
+                        m_plugInModel.insertInstance(aib, false); //end insert, since closeAddIn will call beginRemoveRows...
+                        retval += closeAddIn(reinterpret_cast<ito::AddInBase**>(addIn));
+                    }
+                    *addIn = NULL;
                 }
-
-                if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
+                else
                 {
-                    retval += loadParamVals(reinterpret_cast<ito::AddInBase*>(*addIn));
+                    incRefParamPlugins(*addIn, paramsMand, paramsOpt);
+
+                    policy = (*addIn)->getBasePlugin()->getAutoLoadPolicy();
+
+                    if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
+                    {
+                        retval += ito::RetVal(ito::retWarning, 0, QObject::tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toLatin1().data());
+                    }
+
+                    if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
+                    {
+                        retval += loadParamVals(reinterpret_cast<ito::AddInBase*>(*addIn));
+                    }
                 }
+            }
+
+            if (*addIn)
+            {
+                m_plugInModel.insertInstance(aib, false); //end insert
             }
         }
 
-        //updateModel();
-        m_plugInModel.insertInstance(aib, false); //end insert
-
-end:
         if (aimWait)
         {
             aimWait->returnValue = retval;
@@ -1126,101 +1137,109 @@ end:
         if (QString::compare((m_addInListAct[pluginNum])->objectName(), name, Qt::CaseInsensitive) != 0)
         {
             retval += ito::RetVal(ito::retError, 0, QObject::tr("Wrong plugin name").toLatin1().data());
-            goto end;
-        }
-
-        aib = qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[pluginNum]);
-        m_plugInModel.insertInstance(aib, true); //begin insert
-        retval += aib->getAddInInst(reinterpret_cast<ito::AddInBase **>(addIn));
-        if ((!addIn) || (!*addIn))
-        {
-            if (retval != ito::retError) retval += ito::retError;
-            goto end;
-        }
-
-        //ref-count of plugin must be zero (that means one instance is holder a single reference), this is rechecked in the following line
-        if (aib->getRef(*addIn) != 0)
-        {
-            retval += ito::RetVal(ito::retWarning,0,"reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).");
-        }
-
-        if ((*addIn)->getBasePlugin() == NULL || (*addIn)->getBasePlugin()->getType() == 0)
-        {
-            retval += ito::RetVal(ito::retError, 2000, QObject::tr("Base plugin or appropriate plugin type not indicated for this plugin.").toLatin1().data());
-            goto end;
-        }
-
-        retval += initDockWidget(static_cast<ito::AddInBase*>(*addIn));
-
-        waitCond = new ItomSharedSemaphore();
-
-        callInitInNewThread = (*addIn)->getBasePlugin()->getCallInitInNewThread();
-
-        if (callInitInNewThread)
-        {
-            (*addIn)->MoveToThread();
-        }
-
-        QMetaObject::invokeMethod(*addIn, "init", Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(ItomSharedSemaphore*, waitCond));
-
-        while (!waitCond->wait(AppManagement::timeouts.pluginInitClose))
-        {
-            if (!(*addIn)->isAlive())
-            {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while initializing actuator").toLatin1().data());
-                timeoutOccurred = true;
-                break;
-            }
-        }
-        retval += waitCond->returnValue;
-        waitCond->deleteSemaphore();
-        waitCond = NULL;
-
-        if (!callInitInNewThread)
-        {
-            (*addIn)->MoveToThread();
-        }
-
-        if (timeoutOccurred == true)
-        {
-            //increment depending addIns in order to keep their reference alive while this plugin is in a undefined status.
-            incRefParamPlugins(*addIn, paramsMand, paramsOpt);
-
-            retval += registerPluginAsDeadPlugin(*addIn);
-            *addIn = NULL;
         }
         else
         {
-            if (!((*addIn)->getBasePlugin()->getType() & ito::typeActuator) || retval.containsError())
+            aib = qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[pluginNum]);
+            m_plugInModel.insertInstance(aib, true); //begin insert
+            retval += aib->getAddInInst(reinterpret_cast<ito::AddInBase **>(addIn));
+            if ((!addIn) || (!*addIn))
             {
-                if (*addIn != NULL)
+                retval += ito::RetVal(ito::retError, 0, tr("Plugin instance is invalid (NULL)").toLatin1().data());
+            }
+        }
+
+        if (!retval.containsError())
+        {
+            //ref-count of plugin must be zero (that means one instance is holder a single reference), this is rechecked in the following line
+            if (aib->getRef(*addIn) != 0)
+            {
+                retval += ito::RetVal(ito::retWarning, 0, "reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).");
+            }
+
+            if ((*addIn)->getBasePlugin() == NULL || (*addIn)->getBasePlugin()->getType() == 0)
+            {
+                retval += ito::RetVal(ito::retError, 2000, QObject::tr("Base plugin or appropriate plugin type not indicated for this plugin.").toLatin1().data());
+            }
+        }
+
+        if (!retval.containsError())
+        {
+            retval += initDockWidget(static_cast<ito::AddInBase*>(*addIn));
+
+            waitCond = new ItomSharedSemaphore();
+
+            callInitInNewThread = (*addIn)->getBasePlugin()->getCallInitInNewThread();
+
+            if (callInitInNewThread)
+            {
+                (*addIn)->MoveToThread();
+            }
+
+            QMetaObject::invokeMethod(*addIn, "init", Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(ItomSharedSemaphore*, waitCond));
+
+            //this gives the plugin's init method to invoke a slot of any gui instance of the plugin within its init method. Else this slot is called after
+            //having finished this initAddIn method (since main thread is blocked).
+            while (!waitCond->waitAndProcessEvents(AppManagement::timeouts.pluginInitClose, QEventLoop::ExcludeUserInputEvents | QEventLoop::ExcludeSocketNotifiers))
+            {
+                if (!(*addIn)->isAlive())
                 {
-                    retval += closeAddIn(reinterpret_cast<ito::AddInBase**>(addIn));
+                    retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while initializing actuator").toLatin1().data());
+                    timeoutOccurred = true;
+                    break;
                 }
+            }
+            retval += waitCond->returnValue;
+            waitCond->deleteSemaphore();
+            waitCond = NULL;
+
+            if (!callInitInNewThread)
+            {
+                (*addIn)->MoveToThread();
+            }
+
+            if (timeoutOccurred == true)
+            {
+                //increment depending addIns in order to keep their reference alive while this plugin is in a undefined status.
+                incRefParamPlugins(*addIn, paramsMand, paramsOpt);
+
+                retval += registerPluginAsDeadPlugin(*addIn);
                 *addIn = NULL;
             }
             else
             {
-                incRefParamPlugins(*addIn, paramsMand, paramsOpt);
-
-                policy = (*addIn)->getBasePlugin()->getAutoLoadPolicy();
-
-                if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
+                if (!((*addIn)->getBasePlugin()->getType() & ito::typeActuator) || retval.containsError())
                 {
-                    retval += ito::RetVal(ito::retWarning, 0, QObject::tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toLatin1().data());
+                    if (*addIn != NULL)
+                    {
+                        m_plugInModel.insertInstance(aib, false); //end insert, since closeAddIn will call beginRemoveRows...
+                        retval += closeAddIn(reinterpret_cast<ito::AddInBase**>(addIn));
+                    }
+                    *addIn = NULL;
                 }
-
-                if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
+                else
                 {
-                    retval += loadParamVals(reinterpret_cast<ito::AddInBase*>(*addIn));
+                    incRefParamPlugins(*addIn, paramsMand, paramsOpt);
+
+                    policy = (*addIn)->getBasePlugin()->getAutoLoadPolicy();
+
+                    if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
+                    {
+                        retval += ito::RetVal(ito::retWarning, 0, QObject::tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toLatin1().data());
+                    }
+
+                    if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
+                    {
+                        retval += loadParamVals(reinterpret_cast<ito::AddInBase*>(*addIn));
+                    }
                 }
             }
+
+            if (*addIn)
+            {
+                m_plugInModel.insertInstance(aib, false); //end insert
+            }
         }
-
-        //updateModel();
-        m_plugInModel.insertInstance(aib, false); //end insert
-
-end:
 
         if (aimWait)
         {
@@ -1255,61 +1274,52 @@ end:
         if (QString::compare((m_addInListAlgo[pluginNum])->objectName(), name, Qt::CaseInsensitive) != 0)
         {
             retval += ito::RetVal(ito::retError, 0, QObject::tr("Wrong plugin name").toLatin1().data());
-            goto end;
         }
-
-        aib = qobject_cast<ito::AddInInterfaceBase *>(m_addInListAlgo[pluginNum]);
-        retval += aib->getAddInInst(reinterpret_cast<ito::AddInBase **>(addIn));
-        if ((!addIn) || (!*addIn))
+        else
         {
-            if (retval != ito::retError) retval += ito::retError;
-            goto end;
-        }
-
-        //ref-count of plugin must be zero (that means one instance is holder a single reference), this is rechecked in the following line
-        if (aib->getRef(*addIn) != 0)
-        {
-            retval += ito::RetVal(ito::retWarning,0,"reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).");
-        }
-
-        (*addIn)->init(paramsMand, paramsOpt);
-//        retval += initDockWidget(static_cast<ito::AddInBase*>(*addIn));
-//        *addIn = qobject_cast<ito::AddInAlgo *>(m_addInListAlg[pluginNum]);
-
-        if (!((*addIn)->getBasePlugin()->getType() & ito::typeAlgo) || retval.containsError())
-        {
-            if (*addIn != NULL)
+            aib = qobject_cast<ito::AddInInterfaceBase *>(m_addInListAlgo[pluginNum]);
+            retval += aib->getAddInInst(reinterpret_cast<ito::AddInBase **>(addIn));
+            if ((!addIn) || (!*addIn))
             {
-                retval += closeAddIn(reinterpret_cast<ito::AddInBase**>(addIn));
+                retval += ito::RetVal(ito::retError, 0, tr("Plugin instance is invalid (NULL)").toLatin1().data());
             }
-            *addIn = NULL;
-            goto end;
         }
 
-        if (retval != ito::retOk)
+        if (!retval.containsError())
         {
-            goto end;
+            //ref-count of plugin must be zero (that means one instance is holder a single reference), this is rechecked in the following line
+            if (aib->getRef(*addIn) != 0)
+            {
+                retval += ito::RetVal(ito::retWarning, 0, "reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).");
+            }
+
+            (*addIn)->init(paramsMand, paramsOpt);
+
+            if (!((*addIn)->getBasePlugin()->getType() & ito::typeAlgo) || retval.containsError())
+            {
+                if (*addIn != NULL)
+                {
+                    retval += closeAddIn(reinterpret_cast<ito::AddInBase**>(addIn));
+                }
+                *addIn = NULL;
+            }
         }
 
-//        incRefParamPlugins(paramsMand, paramsOpt);
-        //m_plugInModel.insertInstance((*addIn)->getBasePlugin(), *addIn, true); //begin insert
-
-        policy = (*addIn)->getBasePlugin()->getAutoLoadPolicy();
-
-        if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
+        if (!retval.containsError())
         {
-            retval += ito::RetVal(ito::retWarning, 0, QObject::tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toLatin1().data());
+            policy = (*addIn)->getBasePlugin()->getAutoLoadPolicy();
+
+            if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
+            {
+                retval += ito::RetVal(ito::retWarning, 0, QObject::tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toLatin1().data());
+            }
+
+            if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
+            {
+                retval += loadParamVals(reinterpret_cast<ito::AddInBase*>(*addIn));
+            }
         }
 
-        if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
-        {
-            retval += loadParamVals(reinterpret_cast<ito::AddInBase*>(*addIn));
-        }
-
-        //updateModel();
-        //m_plugInModel.insertInstance((*addIn)->getBasePlugin(), *addIn, false); //end insert
-
-    end:
         if (aimWait)
         {
             aimWait->returnValue = retval;
@@ -1330,33 +1340,63 @@ end:
     {
         ItomSharedSemaphoreLocker locker(aimWait);
         ito::RetVal retval = ito::retOk;
-        ito::AddInManager *aim = NULL;
         ItomSharedSemaphore *waitCond = NULL;
+        bool timeout = false;
 
         ito::AddInInterfaceBase *aib = (*addIn)->getBasePlugin();
 
         if (aib->getRef(*addIn) <= 0) //this instance holds the last reference of the plugin. close it now.
         {
-            waitCond = new ItomSharedSemaphore();
-            QMetaObject::invokeMethod(*addIn, "close", Q_ARG(ItomSharedSemaphore*, waitCond));
-            waitCond->wait(AppManagement::timeouts.pluginInitClose); //TODO: what if the close gets into a timeout, then it is dangerous to delete the plugin later!!!
-            retval += waitCond->returnValue;
-            waitCond->deleteSemaphore();
-            waitCond = NULL;
-
-            if (aib->getAutoSavePolicy() == ito::autoSaveAlways)
+            //we always promised that if the init-method is called in the main thread, the close method is called in the main thread, too.
+            //Therefore pull it to the main thread, if necessary.
+            if (!aib->getCallInitInNewThread())
             {
-                retval += saveParamVals(*addIn);
+                (*addIn)->moveToThread(QThread::currentThread());
             }
 
-            m_plugInModel.deleteInstance((*addIn)->getBasePlugin(), (*addIn), true); //begin remove
+            waitCond = new ItomSharedSemaphore();
+            QMetaObject::invokeMethod(*addIn, "close", Q_ARG(ItomSharedSemaphore*, waitCond));
 
-            retval += decRefParamPlugins(*addIn);
-            retval += aib->closeInst(addIn);
-            aim = ito::AddInManager::getInstance();
+            while (waitCond->wait(AppManagement::timeouts.pluginInitClose) == false && !timeout)
+            {
+                if ((*addIn)->isAlive() == 0)
+                {
+                    timeout = true;
+                    retval += ito::RetVal(ito::retError, 0, "timeout while closing plugin");
+                }
+            }
 
-            m_plugInModel.deleteInstance((*addIn)->getBasePlugin(), (*addIn), false); //end remove
-            //aim->m_pAddInManager->updateModel();
+            if (!timeout)
+            {
+                retval += waitCond->returnValue;
+
+                if (aib->getCallInitInNewThread())
+                {
+                    (*addIn)->moveToThread(QThread::currentThread());
+                }
+            
+                if (aib->getAutoSavePolicy() == ito::autoSaveAlways)
+                {
+                    retval += saveParamVals(*addIn);
+                }
+
+                m_plugInModel.deleteInstance((*addIn)->getBasePlugin(), (*addIn), true); //begin remove
+
+                retval += decRefParamPlugins(*addIn);
+                retval += aib->closeInst(addIn);
+
+                m_plugInModel.deleteInstance((*addIn)->getBasePlugin(), (*addIn), false); //end remove
+            }
+            else
+            {
+                qDebug() << "Plugin could not be safely removed. Unknown state for plugin.";
+                //TODO: what happens in the case that the close method does not return???
+                //until now, we can not put it to the dead-plugin stack since this stack only handles plugins
+                //that could not be initialized.
+            }
+
+            waitCond->deleteSemaphore();
+            waitCond = NULL;
 
         }
         else
@@ -1424,7 +1464,7 @@ end:
         ito::RetVal ret = ito::retOk;
         QFile paramFile;
         QString pluginUniqueId = plugin->getIdentifier();
-        if(pluginUniqueId == "")
+        if (pluginUniqueId == "")
         {
             pluginUniqueId = QString::number(plugin->getID());
         }
@@ -1479,7 +1519,7 @@ end:
         ito::RetVal ret = ito::retOk;
         QFile paramFile;
         QString pluginUniqueId = plugin->getIdentifier();
-        if(pluginUniqueId == "")
+        if (pluginUniqueId == "")
         {
             pluginUniqueId = QString::number(plugin->getID());
         }
@@ -1580,6 +1620,8 @@ end:
         id = qRegisterMetaType<QVector<ito::ParamBase>*>("QVector<ito::ParamBase>*");
         id = qRegisterMetaType<QVector<int> >("QVector<int>");
         id = qRegisterMetaType<QVector<double> >("QVector<double>");
+        // used in plotItemsChanged do not remove
+        id = qRegisterMetaType<QVector<float> >("QVector<float>");
 
         id = qRegisterMetaType<QSharedPointer<double> >("QSharedPointer<double>");
         id = qRegisterMetaType<QSharedPointer<QVector<double> > >("QSharedPointer<QVector<double>>");
@@ -1597,6 +1639,9 @@ end:
         id = qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud");
         id = qRegisterMetaType<ito::PCLPolygonMesh >("ito::PCLPolygonMesh");
         id = qRegisterMetaType<ito::PCLPoint >("ito::PCLPoint");
+        id = qRegisterMetaType<QSharedPointer<ito::PCLPointCloud> >("QSharedPointer<ito::PCLPointCloud>");
+        id = qRegisterMetaType<QSharedPointer<ito::PCLPolygonMesh> >("QSharedPointer<ito::PCLPolygonMesh>");
+        id = qRegisterMetaType<QSharedPointer<ito::PCLPoint> >("QSharedPointer<ito::PCLPoint>");
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
 
         m_deadPlugins.clear();
@@ -1797,7 +1842,7 @@ end:
         }
         else
         {
-            retval += ito::RetVal(ito::retWarning,0,tr("no configuration dialog available").toLatin1().data());
+            retval += ito::RetVal(ito::retWarning, 0, tr("no configuration dialog available").toLatin1().data());
         }
 
         if (waitCond)

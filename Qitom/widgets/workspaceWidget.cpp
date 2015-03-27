@@ -1,8 +1,8 @@
-/* ********************************************************************
+ï»¿/* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2013, Institut fÃ¼r Technische Optik (ITO),
+    UniversitÃ¤t Stuttgart, Germany
 
     This file is part of itom.
   
@@ -25,7 +25,9 @@
 
 #include "../AppManagement.h"
 #include "../ui/dialogVariableDetail.h"
+
 #include <qstringlist.h>
+#include <qdrag.h>
 
 namespace ito
 {
@@ -48,6 +50,11 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
 {
     QStringList headers;
 
+    setDragDropMode( QAbstractItemView::DragOnly );
+#if QT_VERSION < 0x050000
+    this->model()->setSupportedDragActions(Qt::CopyAction);
+#endif
+
     setColumnCount(3);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
     
@@ -68,6 +75,9 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
     m_itemHash.clear();
 
     m_delimiter = QString( QByteArray::fromHex("AAD791A8") );
+
+    QIcon icon(":/application/icons/preferences-python.png");
+    m_dragPixmap = icon.pixmap(22,22);
   
    /* '__', 'NoneType', 'type',\
         'bool', 'int', 'long', 'float', 'complex',\
@@ -84,6 +94,15 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
     connect(this,SIGNAL(itemExpanded(QTreeWidgetItem*)),this,SLOT(itemExpanded(QTreeWidgetItem*)));
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+#if QT_VERSION >= 0x050000
+Qt::DropActions WorkspaceWidget::supportedDragActions() const
+{
+    return supportedDropActions() | Qt::CopyAction;
+}
+#endif
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! destructor
 WorkspaceWidget::~WorkspaceWidget()
@@ -92,6 +111,83 @@ WorkspaceWidget::~WorkspaceWidget()
     m_workspaceContainer->deleteLater();
     disconnect(this,SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),this,SLOT(itemDoubleClicked(QTreeWidgetItem*, int)));
     disconnect(this,SIGNAL(itemExpanded(QTreeWidgetItem*)),this,SLOT(itemExpanded(QTreeWidgetItem*)));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QStringList WorkspaceWidget::mimeTypes() const
+{
+    QStringList types = QTreeWidget::mimeTypes();
+
+    if (types.contains("text/plain") == false)
+    {
+        types.append("text/plain");
+    }
+
+    return types;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QMimeData * WorkspaceWidget::mimeData(const QList<QTreeWidgetItem *> items) const
+{
+    QMimeData *mimeData = QTreeWidget::mimeData(items);
+    QStringList texts;
+
+    //QByteArray encoded = mimeData->data("application/x-qabstractitemmodeldatalist");
+    //QDataStream stream(&encoded, QIODevice::ReadOnly);
+
+    QString name;
+    QSharedPointer<QString> tempValue;
+    const QTreeWidgetItem *tempItem = NULL;
+    QString fullName("empty item");
+    QByteArray type;
+
+    foreach(const QTreeWidgetItem *item, items)
+    {
+        fullName = item->data(0, Qt::UserRole+1).toString();
+        type = item->data(0, Qt::UserRole + 3).toByteArray();
+
+        if (item->parent() == NULL)
+        {
+            name = item->text(0);
+        }
+        else
+        {
+            tempItem = item;
+            while(tempItem->parent() != NULL)
+            {
+                if (type[0] == PY_DICT || type[0] == PY_MAPPING || type[0] == PY_LIST)
+                {
+                    if (type[1] == PY_NUMBER)
+                    {
+                        name.prepend( "[" + tempItem->text(0) + "]" );
+                    }
+                    else
+                    {
+                        name.prepend( "[\"" + tempItem->text(0) + "\"]" );
+                    }
+                }
+                else if (type[0] == PY_ATTR)
+                {
+                    name.prepend( "." + tempItem->text(0) );
+                }
+                tempItem = tempItem->parent();
+            }
+            name.prepend( tempItem->text(0) );
+        }
+
+        texts.append(name);
+    }
+
+    //while (!stream.atEnd())
+    //{
+    //    int row, col;
+    //    QMap<int,  QVariant> roleDataMap;
+    //    stream >> row >> col >> roleDataMap;
+    //    texts.append( roleDataMap[0].toString() );
+    //}
+
+    mimeData->setData("text/plain", texts.join("\n").toLatin1() );
+    return mimeData;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -115,7 +211,7 @@ void WorkspaceWidget::updateView(QHash<QString,ito::PyWorkspaceItem*> items, QSt
     QTreeWidgetItem *tempItem;
     foreach(const ito::PyWorkspaceItem *item, items)
     {
-        hashName = baseName + m_delimiter + item->m_name;
+        hashName = baseName + m_delimiter + item->m_key;
         it = m_itemHash.find(hashName);
         if (it != m_itemHash.end())
         {
@@ -128,19 +224,20 @@ void WorkspaceWidget::updateView(QHash<QString,ito::PyWorkspaceItem*> items, QSt
             if (parent == NULL)
             {
                 addTopLevelItem(actItem);
-                actItem->setFlags(Qt::ItemIsEditable | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+                actItem->setFlags(Qt::ItemIsDragEnabled | Qt::ItemIsEditable | Qt::ItemIsSelectable | Qt::ItemIsEnabled);
             }
             else
             {
-                actItem->setFlags( Qt::ItemIsEnabled );
+                actItem->setFlags( Qt::ItemIsDragEnabled | Qt::ItemIsEnabled );
             }
         }
 
-        actItem->setText(0, item->m_name);
-        actItem->setText(1, item->m_value);
-        actItem->setText(2, item->m_type);
+        actItem->setText(0, item->m_name); //name of variable, key-word of dictionary of index number of sequences (list, tuple..)
+        actItem->setText(1, item->m_value); //content of variable
+        actItem->setText(2, item->m_type); //data type
         actItem->setData(0, Qt::UserRole + 1, hashName);
         actItem->setData(0, Qt::UserRole + 2, item->m_compatibleParamBaseType);
+        actItem->setData(0, Qt::UserRole + 3, item->m_key.left(2).toLatin1()); //m_key is ab:name where a is [PY_LIST,PY_MAPPING,PY_DICT,PY_ATTR] and b is [PY_NUMBER or PY_STRING]
 
         if (item->m_childState == ito::PyWorkspaceItem::stateNoChilds)
         {
@@ -259,10 +356,12 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
     QSharedPointer<QString> tempValue;
     QTreeWidgetItem *tempItem = NULL;
     QString fullName("empty item");
+    QByteArray type;
 
 	if (item)
     {
 		fullName = item->data(0, Qt::UserRole+1).toString();
+        type = item->data(0, Qt::UserRole + 3).toByteArray();
         ito::PyWorkspaceItem* item2 = m_workspaceContainer->getItemByFullName( fullName );
         extendedValue = item2->m_extendedValue;
 
@@ -275,7 +374,23 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
             tempItem = item;
             while(tempItem->parent() != NULL)
             {
-                name.prepend( "[" + tempItem->text(0) + "]" );
+                type = tempItem->data(0, Qt::UserRole + 3).toByteArray();
+
+                if (type[0] == PY_DICT || type[0] == PY_MAPPING || type[0] == PY_LIST)
+                {
+                    if (type[1] == PY_NUMBER)
+                    {
+                        name.prepend( "[" + tempItem->text(0) + "]" );
+                    }
+                    else
+                    {
+                        name.prepend( "[\"" + tempItem->text(0) + "\"]" );
+                    }
+                }
+                else if (type[0] == PY_ATTR)
+                {
+                    name.prepend( "." + tempItem->text(0) );
+                }
                 tempItem = tempItem->parent();
             }
             name.prepend( tempItem->text(0) );
@@ -329,6 +444,30 @@ void WorkspaceWidget::itemCollapsed(QTreeWidgetItem* item)
     m_workspaceContainer->m_accessMutex.lock();
     m_workspaceContainer->m_expandedFullNames.remove(fullName);
     m_workspaceContainer->m_accessMutex.unlock();
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WorkspaceWidget::startDrag(Qt::DropActions supportedActions)
+{
+    //QTreeWidget::startDrag(supportedActions);
+    QList<QTreeWidgetItem*> items = selectedItems();
+    if (items.count() > 0) 
+    {
+        QMimeData *data = mimeData(items);
+        if (!data)
+            return;
+        QRect rect;
+        QDrag *drag = new QDrag(this);
+        drag->setPixmap(m_dragPixmap);
+        drag->setMimeData(data);
+        Qt::DropAction defaultDropAction = Qt::IgnoreAction;
+        if (this->defaultDropAction() != Qt::IgnoreAction && (supportedActions & this->defaultDropAction()))
+            defaultDropAction = this->defaultDropAction();
+        else if (supportedActions & Qt::CopyAction && dragDropMode() != QAbstractItemView::InternalMove)
+            defaultDropAction = Qt::CopyAction;
+        drag->exec(supportedActions, defaultDropAction);
+    }
 }
 
 } //end namespace ito

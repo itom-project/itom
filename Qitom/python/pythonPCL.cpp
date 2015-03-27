@@ -28,7 +28,7 @@
 #if ITOM_POINTCLOUDLIBRARY > 0
 
 #ifndef CMAKE
-    #if (defined _DEBUG) && (!defined linux)
+    #if (defined _DEBUG) && (defined WIN32)
         #pragma comment(lib, "PointCloudd.lib")
         #pragma comment(lib, "pcl_common_debug.lib")
     #else
@@ -36,7 +36,7 @@
         #pragma comment(lib, "pcl_common_release.lib")
     #endif
 #else
-    /*#if (defined _DEBUG) && (!defined linux)
+    /*#if (defined _DEBUG) && (defined WIN32)
         #pragma comment(lib, "PointCloud.lib")
         #pragma comment(lib, "pcl_common_debug.lib")
     #else
@@ -1703,6 +1703,35 @@ See Also \n\
 }
 
 //------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCloudCopy_doc,"copy() -> returns a deep copy of this point cloud.\n\
+\n\
+Returns \n\
+------- \n\
+cloud : {pointCloud}\n\
+    An exact copy if this point cloud.\n\
+");
+/*static*/ PyObject* PythonPCL::PyPointCloud_copy(PyPointCloud *self)
+{  
+    PyPointCloud* result = (PyPointCloud*)PyObject_Call((PyObject*)&PyPointCloudType, NULL, NULL);
+
+    if (result && self->data)
+    {
+        //this is an inefficient implementation of a real deep copy constructor!
+        DELETE_AND_SET_NULL(result->data);
+        std::vector<int> indices;
+        indices.resize(self->data->size());
+        for (size_t i = 0; i < self->data->size(); ++i)
+        {
+            indices[i] = i;
+        }
+
+        result->data = new PCLPointCloud(*(self->data), indices);
+    }
+
+    return (PyObject*)result;
+}
+
+//------------------------------------------------------------------------------------------------------
 PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/)
 {
     if(self->data == NULL)
@@ -1726,7 +1755,7 @@ PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/
         }
 
         QString tempFilename = buf;
-#if !linux // on linux the path is already included
+#ifdef WIN32 // on linux the path is already included
         while(tempFilename.size() > 0 && (tempFilename.startsWith("/") || tempFilename.startsWith("\\") ))
         {
             tempFilename.remove(0,1);
@@ -1827,7 +1856,7 @@ PyObject* PythonPCL::PyPointCloud_SetState(PyPointCloud *self, PyObject *args)
         }
 
         QString tempFilename = buf;
-#if !linux // on linux the path is already included
+#ifdef WIN32 // on linux the path is already included
         while(tempFilename.size() > 0 && (tempFilename.startsWith("/") || tempFilename.startsWith("\\") ))
         {
             tempFilename.remove(0,1);
@@ -2261,6 +2290,8 @@ PyMethodDef PythonPCL::PyPointCloud_methods[] = {
     {"fromXYZ",       (PyCFunction)PyPointCloud_fromXYZ, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZ_doc},
     {"fromXYZI",      (PyCFunction)PyPointCloud_fromXYZI, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZI_doc},
     {"fromDisparity", (PyCFunction)PyPointCloud_fromDisparity, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromDisparity_doc},
+
+    {"copy",          (PyCFunction)PyPointCloud_copy, METH_NOARGS, pyPointCloudCopy_doc},
     
     {NULL}  /* Sentinel */
 };
@@ -3673,7 +3704,7 @@ PyObject* PythonPCL::PyPolygonMesh_Reduce(PyPolygonMesh *self, PyObject * /*args
         }
 
         QString tempFilename = buf;
-#if !linux // on linux the path is already included
+#ifdef WIN32 // on linux the path is already included
         while(tempFilename.size() > 0 && (tempFilename.startsWith("/") || tempFilename.startsWith("\\") ))
         {
             tempFilename.remove(0,1);
@@ -3749,7 +3780,7 @@ PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
         }
 
         QString tempFilename = buf;
-#if !linux // on linux the path is already included
+#ifdef WIN32 // on linux the path is already included
         while(tempFilename.size() > 0 && (tempFilename.startsWith("/") || tempFilename.startsWith("\\") ))
         {
             tempFilename.remove(0,1);

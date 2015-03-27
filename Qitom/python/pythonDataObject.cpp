@@ -34,6 +34,8 @@
 #include "pythonQtConversion.h"
 #include "dataObjectFuncs.h"
 
+#define PROTOCOL_STR_LENGTH 128
+
 namespace ito
 {
 
@@ -92,7 +94,7 @@ dims : {sequence of integers}, optional \n\
     'dims' is a list or tuple indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns. If not given, an empty data object is created.\n\
 dtype : {str}, optional \n\
     'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','uint32','float32','float64','complex64','complex128', 'rgba32'\n\
-continuous : {str}, optional \n\
+continuous : {int}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 data : {str}, optional \n\
     'data' is a single value or a sequence with the same amount of values than the data object. The values from data will be assigned to the new data object (filled row by row).\n\
@@ -1303,7 +1305,7 @@ int PythonDataObject::PyDataObject_setTags(PyDataObject *self, PyObject *value, 
 
     while (PyDict_Next(value, &pos, &key, &content))
     {
-        keyString = PythonQtConversion::PyObjGetStdString(key, false, stringOk);
+        keyString = PythonQtConversion::PyObjGetStdStringAsLatin1(key, false, stringOk);
         if (stringOk)
         {
             if (PyFloat_Check(content)||PyLong_Check(content))
@@ -1312,7 +1314,7 @@ int PythonDataObject::PyDataObject_setTags(PyDataObject *self, PyObject *value, 
             }
             else
             {
-                contentString = PythonQtConversion::PyObjGetStdString(content, false, stringOk);
+                contentString = PythonQtConversion::PyObjGetStdStringAsLatin1(content, false, stringOk);
                 if (stringOk)
                 {
                     self->dataObject->setTag(keyString, contentString);
@@ -1581,7 +1583,7 @@ int PythonDataObject::PyDataObject_setAxisDescriptions(PyDataObject *self, PyObj
     for (Py_ssize_t i = 0; i < dims; i++)
     {
         seqItem = PySequence_GetItem(value,i); //new reference
-        tempString = PythonQtConversion::PyObjGetStdString(seqItem,true,ok);
+        tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(seqItem,true,ok);
         Py_XDECREF(seqItem);
         if (!ok)
         {
@@ -1665,7 +1667,7 @@ int PythonDataObject::PyDataObject_setAxisUnits(PyDataObject *self, PyObject *va
     for (Py_ssize_t i = 0; i < dims; i++)
     {
         seqItem = PySequence_GetItem(value,i); //new reference
-        tempString = PythonQtConversion::PyObjGetStdString(seqItem,true,ok);
+        tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(seqItem,true,ok);
         Py_XDECREF(seqItem);
         if (!ok)
         {
@@ -1703,7 +1705,7 @@ int PythonDataObject::PyDataObject_setValueUnit(PyDataObject *self, PyObject *va
     }
 
     bool ok;
-    std::string unit = PythonQtConversion::PyObjGetStdString(value,true,ok);
+    std::string unit = PythonQtConversion::PyObjGetStdStringAsLatin1(value,true,ok);
 
     if (!ok)
     {
@@ -1751,7 +1753,7 @@ int PythonDataObject::PyDataObject_setValueDescription(PyDataObject *self, PyObj
     }
 
     bool ok;
-    std::string unit = PythonQtConversion::PyObjGetStdString(value,true,ok);
+    std::string unit = PythonQtConversion::PyObjGetStdStringAsLatin1(value,true,ok);
 
     if (!ok)
     {
@@ -2307,7 +2309,7 @@ PyObject* PythonDataObject::PyDataObj_SetAxisDescription(PyDataObject *self, PyO
     }
 
     bool ok;
-    std::string tagValString = PythonQtConversion::PyObjGetStdString(tagvalue,true,ok);
+    std::string tagValString = PythonQtConversion::PyObjGetStdStringAsLatin1(tagvalue,true,ok);
 
     if (!ok)
     {
@@ -2360,7 +2362,7 @@ PyObject* PythonDataObject::PyDataObj_SetAxisUnit(PyDataObject *self, PyObject *
     }
 
     bool ok;
-    std::string tagValString = PythonQtConversion::PyObjGetStdString(tagvalue,true,ok);
+    std::string tagValString = PythonQtConversion::PyObjGetStdStringAsLatin1(tagvalue,true,ok);
 
     if (!ok)
     {
@@ -2372,6 +2374,260 @@ PyObject* PythonDataObject::PyDataObj_SetAxisUnit(PyDataObject *self, PyObject *
     {
         PyErr_SetString(PyExc_RuntimeError, "set axis unit failed");
     }
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectPhysToPix_doc,"physToPix(values [, axes]) -> returns the pixel coordinates for the given physical coordinates. \n\
+\n\
+This method transforms a physical axis coordinate into its corresponding pixel coordinate. The transformation is influenced \n\
+by the offset and scaling of each axis: \n\
+\n\
+phys = (pix - offset) * scaling \n\
+\n\
+If no axes parameter is given, the values are assumed to belong the the ascending axis list (0,1,2,3...). \n\
+\n\
+Parameters  \n\
+------------\n\
+values : {float, float-tuple}\n\
+    One single physical coordinate or a tuple of physical coordinates.\n\
+axes : {int, int-tuple}, optional\n\
+    If this is given, the values are mapped to the axis indices given by this value or tuple. Else, an ascending list starting with index 0 is assumed. \n\
+\n\
+Returns \n\
+-------- \n\
+Float or float-tuple with the pixel coordinates for each physical coordinate at the given axis index. \n\
+\n\
+Raises \n\
+------- \n\
+Value error : \n\
+    if the given axes is invalid (out of range)");
+PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *args, PyObject *kwds)
+{
+    static const char *kwlist[] = {"values","axes", NULL};
+    double value;
+    int axis = 0;
+    PyObject *values = NULL;
+    PyObject *axes = NULL;
+    bool single = false;
+
+    //3. check for argument: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]
+    PyErr_Clear();
+    if (PyArg_ParseTupleAndKeywords(args, kwds, "d|i", const_cast<char**>(kwlist), &value, &axis)) //&PyList_Type, &dimList, &type, &continuous))
+    {
+        single = true;
+    }
+    else if (PyErr_Clear(), !PyArg_ParseTupleAndKeywords(args, kwds, "O|O", const_cast<char**>(kwlist), &values, &axes))
+    {
+        return NULL;
+    }
+
+    if (single)
+    {
+        if (self->dataObject->getDims() <= axis)
+        {
+            return PyErr_Format(PyExc_ValueError, "axis %i is out of bounds", axis);
+        }
+        else
+        {
+            return Py_BuildValue("d", self->dataObject->getPhysToPix(axis, value));
+        }
+    }
+    else
+    {
+        if (!PySequence_Check(values))
+        {
+            PyErr_SetString(PyExc_ValueError, "values must be a float value or a sequence of floats");
+            return NULL;
+        }
+        else if (axes && !PySequence_Check(axes))
+        {
+            PyErr_SetString(PyExc_ValueError, "axes must be an integer value or a sequence of integers");
+            return NULL;
+        }
+        else if (axes && PySequence_Length(values) != PySequence_Length(axes))
+        {
+            PyErr_SetString(PyExc_ValueError, "values and axes must have the same size");
+            return NULL;
+        }
+
+        PyObject *v = NULL;
+        PyObject *a = NULL;
+        PyObject *result = PyTuple_New(PySequence_Length(values));
+
+        for (Py_ssize_t i = 0; i < PySequence_Length(values); ++i)
+        {
+            v = PySequence_Fast_GET_ITEM(values, i); //borrowed
+            if (axes)
+            {
+                a = PySequence_Fast_GET_ITEM(axes, i); //borrowed
+            }
+
+            if (PyFloat_Check(v))
+            {
+                value = PyFloat_AsDouble(v);
+            }
+            else if (PyLong_Check(v))
+            {
+                value = PyLong_AsLong(v);
+            }
+            else
+            {
+                Py_DECREF(result);
+                return PyErr_Format(PyExc_ValueError, "%i. value cannot be interpreted as float", i);
+            }
+
+            if (a)
+            {
+                if (PyLong_Check(a))
+                {
+                    axis = PyLong_AsLong(a);
+                }
+                else
+                {
+                    Py_DECREF(result);
+                    return PyErr_Format(PyExc_ValueError, "%i. axis cannot be interpreted as integer", i);
+                }
+            }
+            else
+            {
+                axis = i;
+            }
+
+            PyTuple_SetItem(result, i, PyFloat_FromDouble(self->dataObject->getPhysToPix(axis, value)));
+        }
+
+        return result;
+
+    }
+
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectPixToPhys_doc,"pixToPhys(values [, axes]) -> returns the physical coordinates for the given pixel coordinates. \n\
+\n\
+This method transforms a pixel coordinate into its corresponding physical coordinate. The transformation is influenced \n\
+by the offset and scaling of each axis: \n\
+\n\
+pix = (phys / scaling) + offset \n\
+\n\
+If no axes parameter is given, the values are assumed to belong the the ascending axis list (0,1,2,3...). \n\
+\n\
+Parameters  \n\
+------------\n\
+values : {float, float-tuple}\n\
+    One single pixel coordinate or a tuple of pixel coordinates.\n\
+axes : {int, int-tuple}, optional\n\
+    If this is given, the values are mapped to the axis indices given by this value or tuple. Else, an ascending list starting with index 0 is assumed. \n\
+\n\
+Returns \n\
+-------- \n\
+Float or float-tuple with the physical coordinates for each pixel coordinate at the given axis index. \n\
+\n\
+Raises \n\
+------- \n\
+Value error : \n\
+    if the given axes is invalid (out of range)");
+PyObject* PythonDataObject::PyDataObj_PixToPhys(PyDataObject *self, PyObject *args, PyObject *kwds)
+{
+        static const char *kwlist[] = {"values","axes", NULL};
+    double value;
+    int axis = 0;
+    PyObject *values = NULL;
+    PyObject *axes = NULL;
+    bool single = false;
+
+    //3. check for argument: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]
+    PyErr_Clear();
+    if (PyArg_ParseTupleAndKeywords(args, kwds, "d|i", const_cast<char**>(kwlist), &value, &axis)) //&PyList_Type, &dimList, &type, &continuous))
+    {
+        single = true;
+    }
+    else if (PyErr_Clear(), !PyArg_ParseTupleAndKeywords(args, kwds, "O|O", const_cast<char**>(kwlist), &values, &axes))
+    {
+        return NULL;
+    }
+
+    if (single)
+    {
+        if (self->dataObject->getDims() <= axis)
+        {
+            return PyErr_Format(PyExc_ValueError, "axis %i is out of bounds", axis);
+        }
+        else
+        {
+            return Py_BuildValue("d", self->dataObject->getPixToPhys(axis, value));
+        }
+    }
+    else
+    {
+        if (!PySequence_Check(values))
+        {
+            PyErr_SetString(PyExc_ValueError, "values must be a float value or a sequence of floats");
+            return NULL;
+        }
+        else if (axes && !PySequence_Check(axes))
+        {
+            PyErr_SetString(PyExc_ValueError, "axes must be an integer value or a sequence of integers");
+            return NULL;
+        }
+        else if (axes && PySequence_Length(values) != PySequence_Length(axes))
+        {
+            PyErr_SetString(PyExc_ValueError, "values and axes must have the same size");
+            return NULL;
+        }
+
+        PyObject *v = NULL;
+        PyObject *a = NULL;
+        PyObject *result = PyTuple_New(PySequence_Length(values));
+
+        for (Py_ssize_t i = 0; i < PySequence_Length(values); ++i)
+        {
+            v = PySequence_Fast_GET_ITEM(values, i); //borrowed
+            if (axes)
+            {
+                a = PySequence_Fast_GET_ITEM(axes, i); //borrowed
+            }
+
+            if (PyFloat_Check(v))
+            {
+                value = PyFloat_AsDouble(v);
+            }
+            else if (PyLong_Check(v))
+            {
+                value = PyLong_AsLong(v);
+            }
+            else
+            {
+                Py_DECREF(result);
+                return PyErr_Format(PyExc_ValueError, "%i. value cannot be interpreted as float", i);
+            }
+
+            if (a)
+            {
+                if (PyLong_Check(a))
+                {
+                    axis = PyLong_AsLong(a);
+                }
+                else
+                {
+                    Py_DECREF(result);
+                    return PyErr_Format(PyExc_ValueError, "%i. axis cannot be interpreted as integer", i);
+                }
+            }
+            else
+            {
+                axis = i;
+            }
+
+            PyTuple_SetItem(result, i, PyFloat_FromDouble(self->dataObject->getPixToPhys(axis, value)));
+        }
+
+        return result;
+
+    }
+
     Py_RETURN_NONE;
 }
 
@@ -2421,7 +2677,7 @@ PyObject* PythonDataObject::PyDataObj_SetTag(PyDataObject *self, PyObject *args)
     else
     {
         bool ok;
-        std::string tagValString = PythonQtConversion::PyObjGetStdString(tagvalue,true,ok);
+        std::string tagValString = PythonQtConversion::PyObjGetStdStringAsLatin1(tagvalue,true,ok);
 
         if (!ok)
         {
@@ -2548,7 +2804,7 @@ PyObject* PythonDataObject::PyDataObj_AddToProtocol(PyDataObject *self, PyObject
     }
 
     bool ok;
-    std::string unitString = PythonQtConversion::PyObjGetStdString(unit,true,ok);
+    std::string unitString = PythonQtConversion::PyObjGetStdStringAsLatin1(unit,true,ok);
 
     if (!ok)
     {
@@ -2585,8 +2841,9 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
     ito::DataObject resDataObj;
     PyDataObject* resultObject = NULL;
 
-    if (PyArg_Parse(other, "O!", &PyDataObjectType, &otherDataObj))
+    if (PyDataObject_Check(other))
     {
+        otherDataObj = (PyDataObject*)(other);
         if (otherDataObj->dataObject == NULL)
         {
             PyErr_SetString(PyExc_TypeError, "internal data object of compare object is empty.");
@@ -2610,7 +2867,8 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
         }
         catch(cv::Exception exc)
         {
-            //PyErr_Format(PyExc_TypeError, "file: %s, line: %d, error: %s", (exc.file).c_str(), exc.line, (exc.err).c_str());
+            self->dataObject->unlock();
+            otherDataObj->dataObject->unlock();
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             return NULL;
         }
@@ -2622,9 +2880,46 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
         resultObject->dataObject = new ito::DataObject(resDataObj); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         return (PyObject*)resultObject;
     }
+    else if (PyFloat_Check(other) || PyLong_Check(other))
+    {
+        double value = PyFloat_AsDouble(other);
+        if (!PyErr_Occurred())
+        {
+            self->dataObject->lockRead();
+
+            try
+            {
+                switch (cmp_op)
+                {
+                case Py_LT: resDataObj = *(self->dataObject) < value; break;
+                case Py_LE: resDataObj = *(self->dataObject) <= value; break;
+                case Py_EQ: resDataObj = *(self->dataObject) == value; break;
+                case Py_NE: resDataObj = *(self->dataObject) != value; break;
+                case Py_GT: resDataObj = *(self->dataObject) > value; break;
+                case Py_GE: resDataObj = *(self->dataObject) >= value; break;
+                }
+            }
+            catch(cv::Exception exc)
+            {
+                self->dataObject->unlock();
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                return NULL;
+            }
+
+            self->dataObject->unlock();
+
+            resultObject = createEmptyPyDataObject();
+            resultObject->dataObject = new ito::DataObject(resDataObj); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            return (PyObject*)resultObject;
+        }
+        else
+        {
+            return NULL;
+        }
+    }
     else
     {
-        PyErr_SetString(PyExc_TypeError, "second argument of comparison operator is no data object.");
+        PyErr_SetString(PyExc_TypeError, "second argument of comparison operator is no data object or real, scalar value.");
 		return NULL;
     }
 }
@@ -2757,8 +3052,8 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
 
     if(doneScalar)
     {
-        char buf[50] = {0};
-        sprintf_s(buf, 50, "Added %g scalar to dataObject.", scalar);
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Added %g scalar to dataObject.", scalar);
         if(retObj) retObj->dataObject->addToProtocol(buf);
         
     }
@@ -2851,8 +3146,8 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
 
     if(doneScalar)
     {
-        char buf[60] = {0};
-        sprintf_s(buf, 60, "Substracting %g scalar from dataObject or vice versa.", scalar);
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Substracting %g scalar from dataObject or vice versa.", scalar);
 
         if(retObj) retObj->dataObject->addToProtocol(buf);
         
@@ -2929,10 +3224,10 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
 
         dobj1->dataObject->unlock();
 
-        char buf[60] = {0};
-        sprintf_s(buf, 60, "Multiplied  dataObject scalar with %g.", factor);
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Multiplied dataObject scalar with %g.", factor);
 
-        if(retObj) retObj->dataObject->addToProtocol(buf);
+        if(retObj) retObj->dataObject->addToProtocol(  buf);
 
         return (PyObject*)retObj;
     }
@@ -2964,8 +3259,8 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
 
         dobj2->dataObject->unlock();
 
-        char buf[60] = {0};
-        sprintf_s(buf, 60, "Multiplied  dataObject scalar with %g.", factor);
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Multiplied dataObject scalar with %g.", factor);
 
         if(retObj) retObj->dataObject->addToProtocol(buf);
 
@@ -3027,9 +3322,8 @@ PyObject* PythonDataObject::PyDataObj_nbDivide(PyObject* o1, PyObject* o2)
 
         dobj1->dataObject->unlock();
 
-        char buf[60] = {0};
-
-        sprintf_s(buf, 60, "Multiplied dataObject scalar with 1/%g.", factor);
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Multiplied dataObject scalar with 1/%g.", factor);
 
         if(retObj) retObj->dataObject->addToProtocol(buf);
 
@@ -3243,8 +3537,8 @@ PyObject* PythonDataObject::PyDataObj_nbLshift(PyObject* o1, PyObject* o2)
 
     dobj1->dataObject->unlock();
     
-    char buf[50] = {0};
-    sprintf_s(buf, 50, "Left shift by %i on dataObject.", shift);
+    char buf[PROTOCOL_STR_LENGTH] = {0};
+    sprintf_s(buf, PROTOCOL_STR_LENGTH, "Left shift by %i on dataObject.", shift);
 
     retObj->dataObject->addToProtocol(buf);
     return (PyObject*)retObj;
@@ -3290,9 +3584,8 @@ PyObject* PythonDataObject::PyDataObj_nbRshift(PyObject* o1, PyObject* o2)
 
     dobj1->dataObject->unlock();
 
-    char buf[50] = {0};
-
-    sprintf_s(buf, 50, "Right shift by %i on dataObject.", shift);
+    char buf[PROTOCOL_STR_LENGTH] = {0};
+    sprintf_s(buf, PROTOCOL_STR_LENGTH, "Right shift by %i on dataObject.", shift);
 
     retObj->dataObject->addToProtocol(buf);
     return (PyObject*)retObj;
@@ -3455,8 +3748,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2)
 
         dobj1->dataObject->unlock();
 
-        char buf[60] = {0};
-        sprintf_s(buf, 60, "Inplace scalar addition of %g.", val);
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar addition of %g.", val);
 
         dobj1->dataObject->addToProtocol(buf);
         
@@ -3523,8 +3816,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
 
         dobj1->dataObject->unlock();
 
-        char buf[60] = {0};
-        sprintf_s(buf, 60, "Inplace scalar substraction of %g.", val);
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar substraction of %g.", val);
 
         dobj1->dataObject->addToProtocol(buf);
     }
@@ -3599,8 +3892,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* 
 
         dobj1->dataObject->unlock();
 
-        char buf[60] = {0};
-        sprintf_s(buf, 60, "Inplace scalar multiplication of %g.", factor);
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar multiplication of %g.", factor);
 
         dobj1->dataObject->addToProtocol(buf);
     }
@@ -3653,8 +3946,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceTrueDivide(PyObject* o1, PyObject
 
         dobj1->dataObject->unlock();
 
-        char buf[60] = {0};
-        sprintf_s(buf, 60, "Inplace scalar devision of %g.", factor);
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar devision of %g.", factor);
 
         dobj1->dataObject->addToProtocol(buf);
     }
@@ -3702,9 +3995,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceLshift(PyObject* o1, PyObject* o2
     *(dobj1->dataObject) <<= static_cast<unsigned int>(shift);
     dobj1->dataObject->unlock();
 
-    char buf[60] = {0};
-
-    sprintf_s(buf, 60, "Inplace left shift by %i.", shift);
+    char buf[PROTOCOL_STR_LENGTH] = {0};
+    sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace left shift by %i.", shift);
 
     dobj1->dataObject->addToProtocol(buf);
 
@@ -3735,8 +4027,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceRshift(PyObject* o1, PyObject* o2
     *(dobj1->dataObject) >>= static_cast<unsigned int>(shift);
     dobj1->dataObject->unlock();
 
-    char buf[60] = {0};
-    sprintf_s(buf, 60, "Inplace right shift by %i.", shift);
+    char buf[PROTOCOL_STR_LENGTH] = {0};
+    sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace right shift by %i.", shift);
 
     dobj1->dataObject->addToProtocol(buf);
 
@@ -3910,7 +4202,16 @@ When calling this method, the complete content of the dataObject is printed to t
 PyObject* PythonDataObject::PyDataObject_data(PyDataObject *self)
 {
     self->dataObject->lockRead();
-    ito::fListCout[self->dataObject->getType()](std::cout,*(self->dataObject));
+    try
+    {
+        std::cout << *(self->dataObject);
+    }
+    catch(cv::Exception exc)
+    {
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        self->dataObject->unlock();
+        return NULL;
+    }
     self->dataObject->unlock();
     Py_RETURN_NONE;
 }
@@ -4141,33 +4442,6 @@ PyObject* PythonDataObject::PyDataObject_trans(PyDataObject *self)
     if(retObj) retObj->dataObject->addToProtocol("Created by transponation of a dataObject.");
 
     return (PyObject*)retObj;
-
-    // PyErr_SetString(PyExc_ValueError, "TODO: due to removal of transpose flag (obsolete?)");
-    // return NULL;
-    //if (self->dataObject == NULL)
-    //{
-    //    PyErr_SetString(PyExc_ValueError, "data object is NULL");
-    //    return NULL;
-    //}
-    ////self->dataObject->lockWrite();
-    ////self->dataObject->trans();
-    ////self->dataObject->unlock();
-    ////Py_RETURN_NONE;
-
-    //PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-    //self->dataObject->lockWrite();
-    //
-    //retObj->dataObject = new ito::DataObject(*(self->dataObject));
-    //retObj->dataObject->trans();
-
-    //if (!retObj->dataObject->getOwnData())
-    //{
-    //    PyDataObject_SetBase(retObj, (PyObject*)self);
-    //}
-
-    //self->dataObject->unlock();
-
-    //return (PyObject*)retObj;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -4508,9 +4782,8 @@ PyObject* PythonDataObject::PyDataObject_astype(PyDataObject *self, PyObject* ar
         PyDataObject_SetBase(retObj, (PyObject*)self);
     }
 
-    char buf[100] = {0};
-
-    sprintf_s(buf, 100, "Converted from dataObject of type %s to type %s", typeNumberToName(self->dataObject->getType()), type);
+    char buf[PROTOCOL_STR_LENGTH] = {0};
+    sprintf_s(buf, PROTOCOL_STR_LENGTH, "Converted from dataObject of type %s to type %s", typeNumberToName(self->dataObject->getType()), type);
 
 
     if(retObj) retObj->dataObject->addToProtocol(buf);
@@ -4600,7 +4873,6 @@ PyObject* PythonDataObject::PyDataObject_normalize(PyDataObject *self, PyObject*
     }
 
     char buf[200] = {0};
-
     sprintf_s(buf, 200, "Normalized from dataObject of type %s to type %s between %g and %g.", typeNumberToName(self->dataObject->getType()), type, dmin , dmax);
 
     if(retObj) retObj->dataObject->addToProtocol(buf);
@@ -4787,15 +5059,32 @@ will also change the original data set.\n\
 This method is equal to numpy.squeeze");
 PyObject* PythonDataObject::PyDataObject_squeeze(PyDataObject *self, PyObject* /*args*/)
 {
-    if (self->dataObject == NULL) return 0;
+    if (self->dataObject == NULL) return NULL;
+    bool unlocked = false;
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
     self->dataObject->lockRead();
-    ito::DataObject resObj = self->dataObject->squeeze();
-    self->dataObject->unlock();
+    
+    try
+    {
+        ito::DataObject resObj = self->dataObject->squeeze();
+        self->dataObject->unlock();
+        unlocked = true;
+        retObj->dataObject = new ito::DataObject(resObj);
+    }
+    catch(cv::Exception exc)
+    {
+        if (!unlocked)
+        {
+            self->dataObject->unlock();
+        }
+        retObj->dataObject = NULL;
 
-    retObj->dataObject = new ito::DataObject(resObj);
+        Py_DECREF(retObj);
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        return NULL;
+    }
 
     if (!retObj->dataObject->getOwnData())
     {
@@ -4843,97 +5132,145 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
     int dims = self->dataObject->getDims();
     ito::Range *ranges = NULL;
     unsigned int *singlePointIdx = NULL;
+    PyDataObject *mask = NULL;
     bool singlePoint = true;
+    bool error = false;
 
     if (dims <= 0)
     {
         self->dataObject->unlock();
         Py_RETURN_NONE;
     }
-
-    if (dims == 1)
+    else if (dims == 1)
     {
         self->dataObject->unlock();
         PyErr_SetString(PyExc_TypeError, "data object dimension must not be one, but two instead");
         return NULL;
     }
 
-    if (!PyTuple_Check(key))
+    if (PyDataObject_Check(key))
     {
-        key = PyTuple_Pack(1,key);
+        mask = (PyDataObject*)(key);
+        Py_INCREF(key);
     }
-
-    if (PyTuple_Size(key) != dims)
+    else
     {
-        self->dataObject->unlock();
-        PyErr_SetString(PyExc_TypeError, "length of key-tuple does not fit to dimension of data object");
-        return NULL;
-    }
-
-    Py_ssize_t length = PyTuple_Size(key);
-    ranges = new ito::Range[dims];
-    singlePointIdx = new unsigned int[dims];
-    bool error = false;
-    PyObject* elem = NULL;
-    int temp1;
-
-    for (Py_ssize_t i = 0; i < length && !error; i++)
-    {
-        elem = PyTuple_GetItem(key, i);
-
-        //check type of elem, must be int or stride
-        if (PyLong_Check(elem))
+        if (!PyTuple_Check(key))
         {
-            temp1 = PyLong_AsLong(elem);
-
-            if (temp1 >= 0 && temp1 < static_cast<long>(self->dataObject->getSize(i))) //temp1 is still the virtual order, therefore check agains the getSize-method which considers the transpose-flag
-            {
-                ranges[i].start = temp1;
-                ranges[i].end = temp1 + 1;
-                singlePointIdx[i] = temp1;
-            }
-            else
-            {
-                singlePointIdx[i] = 0;
-                error = true;
-                PyErr_SetString(PyExc_TypeError, "length of key-tuple exceeds dimension of data object");
-            }
-        }
-        else if (PySlice_Check(elem))
-        {
-            singlePoint = false;
-
-            Py_ssize_t start, stop, step, slicelength;
-            if (PySlice_GetIndicesEx(elem, self->dataObject->getSize(i), &start, &stop, &step, &slicelength) == 0)
-            {
-                if (step != 1)
-                {
-                    error = true;
-                    PyErr_SetString(PyExc_TypeError, "step size must be one.");
-                }
-                else
-                {
-                    ranges[i].start = start;
-                    ranges[i].end = stop; //stop already points one index after the last index within the range, this is the same definition than openCV has.
-                }
-            }
-            else
-            {
-                error = true;
-                //error is already set by command
-                //PyErr_SetString(PyExc_TypeError, "no valid start and stop element can be found for given slice");
-            }
+            key = PyTuple_Pack(1,key); //new reference
         }
         else
         {
-            error = true;
-            PyErr_SetString(PyExc_TypeError, "range tuple element is neither of type integer nor of type slice");
+            Py_INCREF(key);
+        }
+
+        if (PyTuple_Size(key) != dims)
+        {
+            Py_DECREF(key);
+            self->dataObject->unlock();
+            PyErr_SetString(PyExc_TypeError, "length of key-tuple does not fit to dimension of data object");
+            return NULL;
+        }
+
+        Py_ssize_t length = PyTuple_Size(key);
+        ranges = new ito::Range[dims];
+        singlePointIdx = new unsigned int[dims];
+        PyObject* elem = NULL;
+        int temp1;
+        int axisSize;
+
+        for (Py_ssize_t i = 0; i < length && !error; i++)
+        {
+            elem = PyTuple_GetItem(key, i);
+            axisSize = self->dataObject->getSize(i);
+
+            //check type of elem, must be int or stride
+            if (PyLong_Check(elem))
+            {
+                temp1 = PyLong_AsLong(elem);
+
+                //index -1 will be the last element, -2 the element before the last...
+                if (temp1 < 0)
+                {
+                    temp1 = axisSize + temp1;
+                }
+
+                if (temp1 >= 0 && temp1 < axisSize) //temp1 is still the virtual order, therefore check agains the getSize-method which considers the transpose-flag
+                {
+                    ranges[i].start = temp1;
+                    ranges[i].end = temp1 + 1;
+                    singlePointIdx[i] = temp1;
+                }
+                else
+                {
+                    singlePointIdx[i] = 0;
+                    error = true;
+                    PyErr_Format(PyExc_IndexError, "index %i is out of bounds for axis %i with size %i", PyLong_AsLong(elem), i, axisSize);
+                }
+            }
+            else if (PySlice_Check(elem))
+            {
+                singlePoint = false;
+
+                Py_ssize_t start, stop, step, slicelength;
+                if (PySlice_GetIndicesEx(elem, axisSize, &start, &stop, &step, &slicelength) == 0)
+                {
+                    if (slicelength < 1)
+                    {
+                        error = true;
+                        PyErr_SetString(PyExc_IndexError, "length of slice must be >= 1");
+                    }
+                    else if (step != 1)
+                    {
+                        error = true;
+                        PyErr_SetString(PyExc_IndexError, "step size must be one.");
+                    }
+                    else
+                    {
+                        ranges[i].start = start;
+                        ranges[i].end = stop; //stop already points one index after the last index within the range, this is the same definition than openCV has.
+                    }
+                }
+                else
+                {
+                    error = true;
+                    //error is already set by command
+                    //PyErr_SetString(PyExc_TypeError, "no valid start and stop element can be found for given slice");
+                }
+            }
+            else
+            {
+                error = true;
+                PyErr_SetString(PyExc_TypeError, "range tuple element is neither of type integer nor of type slice");
+            }
         }
     }
 
     if (!error)
     {
-        if (singlePoint)
+        if (mask)
+        {
+            PyDataObject *retObj2 = PythonDataObject::createEmptyPyDataObject(); // new reference
+            try
+            {
+                retObj2->dataObject = new ito::DataObject(self->dataObject->at(*(mask->dataObject)));
+
+                if (!retObj2->dataObject->getOwnData())
+                {
+                    PyDataObject_SetBase(retObj2, (PyObject*)self);
+                }
+
+                retObj2->dataObject->unlock();
+                retObj = (PyObject*)retObj2;
+            }
+            catch(cv::Exception exc)
+            {
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                Py_DECREF(retObj2);
+                retObj2 = NULL;
+            }
+        }
+        else if (singlePoint)
         {
             retObj = PyDataObj_At(self->dataObject, singlePointIdx);
         }
@@ -4966,6 +5303,8 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
     DELETE_AND_SET_NULL_ARRAY(ranges);
     DELETE_AND_SET_NULL_ARRAY(singlePointIdx);
 
+    Py_DECREF(key);
+
     return retObj;
 }
 
@@ -4977,7 +5316,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
     if (self->dataObject == NULL)
     {
         PyErr_SetString(PyExc_TypeError, "data object is NULL");
-        return 0;
+        return -1;
     }
 
     self->dataObject->lockRead();
@@ -4985,88 +5324,116 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
     int dims = self->dataObject->getDims();
     ito::Range *ranges = NULL;
     unsigned int *idx = NULL; //redundant to range, if only single indizes are addressed
+    PyDataObject *mask = NULL;
 
     if (dims <= 0)
     {
         self->dataObject->unlock();
+        PyErr_SetString(PyExc_TypeError, "empty data object.");
         return -1;
     }
 
-    if (!PyTuple_Check(key))
+    if (PyDataObject_Check(key))
     {
-        key = PyTuple_Pack(1,key);
+        mask = (PyDataObject*)key;
+        Py_INCREF(key); //increment reference
     }
-
-    if (PyTuple_Size(key) != dims)
+    else
     {
-        self->dataObject->unlock();
-        PyErr_SetString(PyExc_TypeError, "length of key-tuple does not fit to dimension of data object");
-        return -1;
-    }
-
-    Py_ssize_t length = PyTuple_Size(key);
-    ranges = new ito::Range[dims];
-    idx = new unsigned int[dims];
-
-    bool error = false;
-    bool containsSlices = false;
-    PyObject* elem = NULL;
-    int temp1;
-
-    for (Py_ssize_t i = 0; i < length && !error; i++)
-    {
-        elem = PyTuple_GetItem(key, i);
-
-        //check type of elem, must be int or stride
-        if (PyLong_Check(elem))
+        if (!PyTuple_Check(key))
         {
-            temp1 = PyLong_AsLong(elem);
-
-            if (temp1 >= 0 && temp1 < static_cast<long>(self->dataObject->getSize(i)))
-            {
-                ranges[i].start = temp1;
-                ranges[i].end = temp1+1;
-                idx[i] = temp1;
-            }
-            else
-            {
-                error = true;
-                PyErr_SetString(PyExc_TypeError, "length of key-tuple exceeds dimension of data object");
-            }
-        }
-        else if (PySlice_Check(elem))
-        {
-            containsSlices = true;
-            Py_ssize_t start, stop, step, slicelength;
-            if (PySlice_GetIndicesEx(elem, self->dataObject->getSize(i), &start, &stop, &step, &slicelength) == 0)
-            {
-                if (step != 1)
-                {
-                    error = true;
-                    PyErr_SetString(PyExc_TypeError, "step size must be one.");
-                }
-                else
-                {
-                    ranges[i].start = start;
-                    ranges[i].end = stop; //stop already points one index after the last index within the range, this is the same definition than openCV has.
-                }
-            }
-            else
-            {
-                error = true;
-                //error is already set by command
-                //PyErr_SetString(PyExc_TypeError, "no valid start and stop element can be found for given slice");
-            }
+            key = PyTuple_Pack(1,key); //new reference
         }
         else
         {
-            error = true;
-            PyErr_SetString(PyExc_TypeError, "range tuple element is neither of type integer nor of type slice");
+            Py_INCREF(key); //increment reference
         }
 
+        if (PyTuple_Size(key) != dims)
+        {
+            Py_DECREF(key);
+            self->dataObject->unlock();
+            PyErr_SetString(PyExc_TypeError, "length of key-tuple does not fit to dimension of data object");
+            return -1;
+        }
     }
 
-    if (containsSlices)
+    Py_ssize_t length = 0;
+    bool error = false;
+    bool containsSlices = false;
+    
+    if (!mask)
+    {
+        length = PyTuple_Size(key);
+        ranges = new ito::Range[dims];
+        idx = new unsigned int[dims];
+
+        PyObject* elem = NULL;
+        int temp1;
+        int axisSize;
+
+        for (Py_ssize_t i = 0; i < length && !error; i++)
+        {
+            elem = PyTuple_GetItem(key, i);
+            axisSize = self->dataObject->getSize(i);
+
+            //check type of elem, must be int or stride
+            if (PyLong_Check(elem))
+            {
+                temp1 = PyLong_AsLong(elem);
+
+                //index -1 will be the last element, -2 the element before the last...
+                if (temp1 < 0)
+                {
+                    temp1 = axisSize + temp1;
+                }
+
+                if (temp1 >= 0 && temp1 < axisSize)
+                {
+                    ranges[i].start = temp1;
+                    ranges[i].end = temp1+1;
+                    idx[i] = temp1;
+                }
+                else
+                {
+                    error = true;
+                    PyErr_Format(PyExc_IndexError, "index %i is out of bounds for axis %i with size %i", PyLong_AsLong(elem), i, axisSize);
+                }
+            }
+            else if (PySlice_Check(elem))
+            {
+                containsSlices = true;
+                Py_ssize_t start, stop, step, slicelength;
+                if (PySlice_GetIndicesEx(elem, axisSize, &start, &stop, &step, &slicelength) == 0)
+                {
+                    if (step != 1)
+                    {
+                        error = true;
+                        PyErr_SetString(PyExc_TypeError, "step size must be one.");
+                    }
+                    else
+                    {
+                        ranges[i].start = start;
+                        ranges[i].end = stop; //stop already points one index after the last index within the range, this is the same definition than openCV has.
+                    }
+                }
+                else
+                {
+                    error = true;
+                    //error is already set by command
+                    //PyErr_SetString(PyExc_TypeError, "no valid start and stop element can be found for given slice");
+                }
+            }
+            else
+            {
+                error = true;
+                PyErr_SetString(PyExc_TypeError, "range tuple element is neither of type integer nor of type slice");
+            }
+
+        }
+    }
+
+    if (containsSlices) //key is no mask data object
     {
         if (!error)
         {
@@ -5150,32 +5517,122 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
         dataObj.unlock();
 
     }
-    else //contains no slices
+    else if (mask)
     {
-
         void* valuePtr;
         ito::tDataType fromType = ito::tInt8;
-        int32 value1;
-        float64 value2;
-        complex128 value3;
 
         if (!error)
         {
             if (PyLong_Check(value))
             {
-                value1 = PyLong_AsLong(value);
+                int32 value1 = PyLong_AsLong(value);
                 valuePtr = static_cast<void*>(&value1);
                 fromType = ito::tInt32;
             }
             else if (PyFloat_Check(value))
             {
-                value2 = PyFloat_AsDouble(value);
+                float64 value2 = PyFloat_AsDouble(value);
                 valuePtr = static_cast<void*>(&value2);
                 fromType = ito::tFloat64;
             }
             else if (PyComplex_Check(value))
             {
-                value3 = complex128(PyComplex_RealAsDouble(value), PyComplex_ImagAsDouble(value));
+                complex128 value3 = complex128(PyComplex_RealAsDouble(value), PyComplex_ImagAsDouble(value));
+                valuePtr = static_cast<void*>(&value3);
+                fromType = ito::tComplex128;
+            }
+            else if (Py_TYPE(value) == &ito::PythonRgba::PyRgbaType)
+            {
+                ito::PythonRgba::PyRgba *rgba = (ito::PythonRgba::PyRgba*)(value);
+                fromType = ito::tRGBA32;
+                valuePtr = static_cast<void*>(&rgba->rgba); //will be valid until end of function since this is a direct access to the underlying structure.
+            }
+            else
+            {
+                error = true;
+                PyErr_SetString(PyExc_TypeError, "assign value has no of the following types: integer, floating point, complex");
+            }
+
+            self->dataObject->unlock();
+        }
+
+        if (!error && fromType != ito::tInt8)
+        {
+
+            self->dataObject->lockWrite();
+
+            try
+            {
+                switch(self->dataObject->getType())
+                {
+                case ito::tUInt8:
+                    self->dataObject->setTo(ito::numberConversion<uint8>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                case ito::tInt8:
+                    self->dataObject->setTo(ito::numberConversion<int8>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                case ito::tUInt16:
+                    self->dataObject->setTo(ito::numberConversion<uint16>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                case ito::tInt16:
+                    self->dataObject->setTo(ito::numberConversion<int16>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                case ito::tUInt32:
+                    self->dataObject->setTo(ito::numberConversion<uint32>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                case ito::tInt32:
+                    self->dataObject->setTo(ito::numberConversion<int32>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                case ito::tRGBA32:
+                    self->dataObject->setTo(ito::numberConversion<ito::Rgba32>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                case ito::tFloat32:
+                    self->dataObject->setTo(ito::numberConversion<float32>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                case ito::tFloat64:
+                    self->dataObject->setTo(ito::numberConversion<float64>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                case ito::tComplex64:
+                    self->dataObject->setTo(ito::numberConversion<complex64>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                case ito::tComplex128:
+                    self->dataObject->setTo(ito::numberConversion<complex128>(fromType, valuePtr), *(mask->dataObject));
+                    break;
+                }
+
+            }
+            catch(cv::Exception exc)
+            {
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                error = true;
+            }
+
+            self->dataObject->unlock();
+        }
+    }
+    else //contains no slices and key is no mask
+    {
+        void* valuePtr;
+        ito::tDataType fromType = ito::tInt8;
+
+        if (!error)
+        {
+            if (PyLong_Check(value))
+            {
+                int32 value1 = PyLong_AsLong(value);
+                valuePtr = static_cast<void*>(&value1);
+                fromType = ito::tInt32;
+            }
+            else if (PyFloat_Check(value))
+            {
+                float64 value2 = PyFloat_AsDouble(value);
+                valuePtr = static_cast<void*>(&value2);
+                fromType = ito::tFloat64;
+            }
+            else if (PyComplex_Check(value))
+            {
+                complex128 value3 = complex128(PyComplex_RealAsDouble(value), PyComplex_ImagAsDouble(value));
                 valuePtr = static_cast<void*>(&value3);
                 fromType = ito::tComplex128;
             }
@@ -5267,6 +5724,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
         }
     }
 
+    Py_DECREF(key);
     DELETE_AND_SET_NULL_ARRAY(ranges);
     DELETE_AND_SET_NULL_ARRAY(idx);
 
@@ -5800,8 +6258,22 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject *self, PyObject *args)
     }
     else
     {
+        //at first try to make continuous copy of data object and handle possible exceptions before going on
+        ito::DataObject *continuousObject = NULL;
+        try
+        {
+            continuousObject = new ito::DataObject(ito::makeContinuous(*selfDO));
+        }
+        catch(cv::Exception exc)
+        {
+            continuousObject = NULL;
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            selfDO->unlock();
+            return NULL;
+        }
+
         PyDataObject *newDO = PythonDataObject::createEmptyPyDataObject();
-        newDO->dataObject = new ito::DataObject(ito::makeContinuous(*selfDO));
+        newDO->dataObject = continuousObject;
 
         PyDataObject_SetBase(newDO, self->base);
         selfDO->unlock();
@@ -6214,7 +6686,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
         {
             while (PyDict_Next(tempTag, &pos, &key, &value))
             {
-                keyString = PythonQtConversion::PyObjGetStdString(key, false, stringOk);
+                keyString = PythonQtConversion::PyObjGetStdStringAsLatin1(key, false, stringOk);
                 if (stringOk)
                 {
                     if (PyFloat_Check(value)||PyLong_Check(value))
@@ -6223,7 +6695,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
                     }
                     else
                     {
-                        tempString = PythonQtConversion::PyObjGetStdString(value, false, stringOk);
+                        tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(value, false, stringOk);
                         if (stringOk)
                         {
                             self->dataObject->setTag(keyString, tempString);
@@ -6264,7 +6736,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
             for (Py_ssize_t i=0;i<PySequence_Size(tempTag);i++)
             {
                 seqItem = PySequence_GetItem(tempTag,i); //new reference
-                tempString = PythonQtConversion::PyObjGetStdString(seqItem, false, stringOk);
+                tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(seqItem, false, stringOk);
                 if (stringOk)
                 {
                     self->dataObject->setAxisDescription(i, tempString);
@@ -6280,7 +6752,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
             for (Py_ssize_t i=0;i<PySequence_Size(tempTag);i++)
             {
                 seqItem = PySequence_GetItem(tempTag,i); //new reference
-                tempString = PythonQtConversion::PyObjGetStdString(seqItem, false, stringOk);
+                tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(seqItem, false, stringOk);
                 if (stringOk)
                 {
                     self->dataObject->setAxisUnit(i, tempString);
@@ -6291,7 +6763,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
 
         // 6. valueUnit
         tempTag = PyTuple_GetItem(tagTuple,6); //borrowed
-        tempString = PythonQtConversion::PyObjGetStdString(tempTag, false, stringOk);
+        tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(tempTag, false, stringOk);
         if (stringOk)
         {
             self->dataObject->setValueUnit(tempString);
@@ -6299,7 +6771,7 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
 
         // 7. valueDescription
         tempTag = PyTuple_GetItem(tagTuple,7); //borrowed
-        tempString = PythonQtConversion::PyObjGetStdString(tempTag, false, stringOk);
+        tempString = PythonQtConversion::PyObjGetStdStringAsLatin1(tempTag, false, stringOk);
         if (stringOk)
         {
             self->dataObject->setValueDescription(tempString);
@@ -6509,7 +6981,7 @@ dataObj : {dataObject} \n\
     converted gray-scale data object of desired type");
 /*static*/ PyObject* PythonDataObject::PyDataObj_ToGray(PyDataObject *self, PyObject *args, PyObject *kwds)
 {
-    const char* type;
+    const char* type = NULL;
     int typeno = ito::tUInt8;
 
     const char *kwlist[] = {"destinationType", NULL};
@@ -6519,11 +6991,14 @@ dataObj : {dataObject} \n\
         return NULL;
     }
 
-    typeno = typeNameToNumber(type);
+    if (type)
+    {
+        typeno = typeNameToNumber(type);
+    }
 
     if (typeno == -1)
     {
-        PyErr_Format(PyExc_TypeError,"The given type string %s is unknown", type);
+        PyErr_Format(PyExc_TypeError,"The given type string '%s' is unknown", type);
         return NULL;
     }
 
@@ -6773,7 +7248,7 @@ dims : {integer list} \n\
     'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns\n\
 dtype : {str}, optional \n\
     'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','float32','float64','complex64','complex128', 'rgba32'\n\
-continuous : {str}, optional \n\
+continuous : {int}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 \n\
 Returns \n\
@@ -6829,7 +7304,7 @@ dims : {integer list} \n\
     'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns\n\
 dtype : {str}, optional \n\
     'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','float32','float64','complex64','complex128', 'rgba32'\n\
-continuous : {str}, optional \n\
+continuous : {int}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 \n\
 Returns \n\
@@ -6892,7 +7367,7 @@ dims : {integer list} \n\
     'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns.\n\
 dtype : {str}, optional \n\
     'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','float32','float64','complex64','complex128'\n\
-continuous : {str}, optional \n\
+continuous : {int}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 \n\
 Returns \n\
@@ -6951,7 +7426,7 @@ dims : {integer list} \n\
     'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns.\n\
 dtype : {str}, optional \n\
     'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32', 'float32','float64','complex64','complex128'\n\
-continuous : {str}, optional \n\
+continuous : {int}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 \n\
 Returns \n\
@@ -7112,6 +7587,8 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"existTag",(PyCFunction)PyDataObj_TagExists, METH_VARARGS, pyDataObjectTagExists_doc},
         {"getTagListSize",(PyCFunction)PyDataObj_GetTagListSize, METH_NOARGS, pyDataObjectGetTagListSize_doc},
         {"addToProtocol",(PyCFunction)PyDataObj_AddToProtocol, METH_VARARGS, pyDataObjectAddToProtocol_doc},
+        {"physToPix",(PyCFunction)PyDataObj_PhysToPix, METH_KEYWORDS | METH_VARARGS, pyDataObjectPhysToPix_doc},
+        {"pixToPhys",(PyCFunction)PyDataObj_PixToPhys, METH_KEYWORDS | METH_VARARGS, pyDataObjectPixToPhys_doc},
         
         {"copy",(PyCFunction)PythonDataObject::PyDataObject_copy, METH_VARARGS, pyDataObjectCopy_doc},
         {"astype", (PyCFunction)PythonDataObject::PyDataObject_astype, METH_VARARGS | METH_KEYWORDS, pyDataObjectAstype_doc},

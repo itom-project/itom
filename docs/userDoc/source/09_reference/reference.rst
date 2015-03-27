@@ -26,6 +26,7 @@ Content:
    polygonMesh.rst
    region.rst
    rgba.rst
+   autoInterval.rst
 
 For an alphabetic index see:
 

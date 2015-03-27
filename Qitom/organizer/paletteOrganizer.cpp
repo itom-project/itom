@@ -36,11 +36,14 @@ namespace ito
 {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! shortdesc
-/*! longdesc
+//! \brief      Find the next color stop and its values within this palette
 
-    \param pos
-    \return int
+/*! \detail     The palette itself is based on a small set of color stops. 
+                Between this stops, the color is linear interpolated.
+                This function is used to give the next valid color stop for a position to allow such an interpolation.
+
+    \param      pos     the position within the palette 
+    \return     int     the index of the next color stop
 */
 inline int ItomPaletteBase::findUpper( double pos ) const
 {
@@ -71,11 +74,11 @@ inline int ItomPaletteBase::findUpper( double pos ) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! shortdesc
-/*! longdesc
+//! \brief      Set the first inverse color for this color bar
+/*! \detail     Each colorbar has 2 inverse colors to highlight lines, cursers ...
 
-    \param color
-    \return bool
+    \param      color   new color as QColor value
+    \return     bool    true if success
 */
 bool ItomPaletteBase::setInversColorOne(const QColor color)
 {
@@ -92,11 +95,11 @@ bool ItomPaletteBase::setInversColorOne(const QColor color)
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! shortdesc
-/*! longdesc
+//! \brief      Set the second inverse color for this color bar
+/*! \detail     Each colorbar has 2 inverse colors to highlight lines, cursers ...
 
-    \param color
-    \return bool
+    \param      color   new color as QColor value
+    \return     bool    true if success
 */
 bool ItomPaletteBase::setInversColorTwo(const QColor color)
 {
@@ -112,12 +115,44 @@ bool ItomPaletteBase::setInversColorTwo(const QColor color)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! shortdesc
-/*! longdesc
+//! \brief      Set the invalid color for this color bar
+/*! \detail     Each colorbar has a invalid color for inf and NaN values
 
-    \param pos
-    \param color
-    \return bool
+    \param      color   new color as QColor value
+    \return     bool    true if success
+*/
+bool ItomPaletteBase::setInvalidColor(const QColor color)
+{
+    if((m_type & ito::tPaletteReadOnly) && m_invalidColor.isValid())
+    {
+        //qDebug() << "ItomPalette setInversColorTwo. Tried to write to a readonly palette. ";
+        return false;
+    }
+
+    m_invalidColor = color;
+
+    return true;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+//! \brief      Get the invalid color for this color bar
+/*! \detail     Each colorbar has a invalid color for inf and NaN values
+
+    \param      color   new color as QColor value
+    \return     bool    the invalid color or if not defined the first colorStop or else black
+*/
+QColor ItomPaletteBase::getInvalidColor() const 
+{
+    return m_invalidColor.isValid() ? m_invalidColor : (m_colorStops.size() > 0 ? QColor(m_colorStops[0].second) : QColor(0,0,0));
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+//! \brief      Insert a new color stop into the palette defined by color and position
+
+/*! \detail     The palette itself is based on a small set of color stops. 
+                Between this stops, the color is linear interpolated.
+
+    \param      pos     the position within the palette 
+    \param      color   new color as QColor value
+    \return     bool    true if success
 */
 bool ItomPaletteBase::insertColorStop( double pos, const QColor color )
 {
@@ -164,11 +199,11 @@ bool ItomPaletteBase::insertColorStop( double pos, const QColor color )
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! shortdesc
-/*! longdesc
+//! \brief      Get the position of the n-th color-stop in the palette
+/*! \detail     This function returns the position (doubel value) of the color stop devined by int color
 
-    \param color
-    \return double
+    \param      color     index of the color to retrieve
+    \return     double    position of the color stop
 */
 double ItomPaletteBase::getPos(unsigned int color) const
 {
@@ -177,11 +212,11 @@ double ItomPaletteBase::getPos(unsigned int color) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! shortdesc
-/*! longdesc
+//! \brief      Get the RGBA-Color of the n-th color-stop in the palette
+/*! \detail     This function returns the position (doubel value) of the color stop devined by int color
 
-    \param color
-    \return QColor
+    \param      color     index of the color to retrieve
+    \return     QColor    the RGBA-Color of the color stop
 */
 QColor ItomPaletteBase::getColor(unsigned int color) const
 {
@@ -190,11 +225,11 @@ QColor ItomPaletteBase::getColor(unsigned int color) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! shortdesc
-/*! longdesc
+//! \brief      Function which shall calculate the ideal inverse colors
+/*! \detail     Not inplemented yet
 
-    \param inv1
-    \param inv2
+    \param      inv1     first invalid color
+    \param      inv2     second invalid color
 */
 void ItomPaletteBase::calculateInverseColors(QColor &inv1, QColor &inv2)
 {
@@ -204,10 +239,10 @@ void ItomPaletteBase::calculateInverseColors(QColor &inv1, QColor &inv2)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! shortdesc
-/*! longdesc
+//! \brief      This function updates the internal structur of the palette after modifications
+/*! \detail     This function updates the internal structur of the palette after modifications
 
-    \param updateInverseColors
+    \param      updateInverseColors     recalculate the ideals inverse color
 */
 void ItomPaletteBase::update(const bool updateInverseColors)
 {
@@ -231,15 +266,13 @@ void ItomPaletteBase::update(const bool updateInverseColors)
     }
     m_paletteStucture.inverseColorOne = m_inverseColorOne;
     m_paletteStucture.inverseColorTwo = m_inverseColorTwo;
-
+    m_paletteStucture.invalidColor = m_invalidColor;
     return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! shortdesc
-/*! longdesc
-
-    \return ItomPalette
+//! \brief      This function returns the internal structur of the palett
+/*! \detail     This function returns the internal structur of the palett
 */
 ItomPalette ItomPaletteBase::getPalette()
 {
@@ -251,12 +284,12 @@ ItomPalette ItomPaletteBase::getPalette()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! shortdesc
-/*! longdesc
+//! \brief      Transform the color stops to a 256 color vector
+/*! \detail     Transform the color stops to a 256 color vector
 
-    \return QVector<ito::uint32>
+    \param      updateInverseColors     recalculate the ideals inverse color
 */
-QVector<ito::uint32> ItomPaletteBase::get256Colors() const
+QVector<ito::uint32> ItomPaletteBase::get256Colors(bool includeAlpha) const
 {
     QVector<ito::uint32> colors(256);
     
@@ -268,10 +301,12 @@ QVector<ito::uint32> ItomPaletteBase::get256Colors() const
         float offsetR = m_colorStops[curIdx].second.red();
         float offsetG = m_colorStops[curIdx].second.green();
         float offsetB = m_colorStops[curIdx].second.blue();
+        float offsetA = m_colorStops[curIdx].second.alpha();
 
-        unsigned char rVal = 0.0;
-        unsigned char gVal = 0.0;
-        unsigned char bVal = 0.0;
+        unsigned char rVal = 0;
+        unsigned char gVal = 0;
+        unsigned char bVal = 0;
+        unsigned char alphaVal = 0;
 
         colors[0] = ((unsigned int)m_colorStops[curIdx].second.blue());
         colors[0] += ((unsigned int)m_colorStops[curIdx].second.green()) << 8;
@@ -280,6 +315,12 @@ QVector<ito::uint32> ItomPaletteBase::get256Colors() const
         colors[255] = ((unsigned int)m_colorStops[m_colorStops.size()-1].second.blue());
         colors[255] += ((unsigned int)m_colorStops[m_colorStops.size()-1].second.green()) << 8;
         colors[255] += ((unsigned int)m_colorStops[m_colorStops.size()-1].second.red()) <<16;
+
+        if(includeAlpha)
+        {
+            colors[0] += ((unsigned int)m_colorStops[curIdx].second.alpha()) <<24;
+            colors[255] += ((unsigned int)m_colorStops[m_colorStops.size()-1].second.alpha()) <<24;
+        }
 
         for(int i = 1; i < 255; i++)
         {
@@ -290,15 +331,23 @@ QVector<ito::uint32> ItomPaletteBase::get256Colors() const
                 offsetR = m_colorStops[curIdx].second.red();
                 offsetG = m_colorStops[curIdx].second.green();
                 offsetB = m_colorStops[curIdx].second.blue();
+                offsetA = m_colorStops[curIdx].second.alpha();
             }
 
             bVal = saturate_cast(((float)m_colorStops[curIdx+1].second.blue() - (float)m_colorStops[curIdx].second.blue())/(m_colorStops[curIdx+1].first - m_colorStops[curIdx].first) * (pos - m_colorStops[curIdx].first) + offsetB);
             gVal = saturate_cast(((float)m_colorStops[curIdx+1].second.green() - (float)m_colorStops[curIdx].second.green())/(m_colorStops[curIdx+1].first - m_colorStops[curIdx].first) * (pos - m_colorStops[curIdx].first) + offsetG);
             rVal = saturate_cast(((float)m_colorStops[curIdx+1].second.red() - (float)m_colorStops[curIdx].second.red())/(m_colorStops[curIdx+1].first - m_colorStops[curIdx].first) * (pos - m_colorStops[curIdx].first) + offsetR);
 
+            alphaVal = saturate_cast(((float)m_colorStops[curIdx+1].second.alpha() - (float)m_colorStops[curIdx].second.alpha())/(m_colorStops[curIdx+1].first - m_colorStops[curIdx].first) * (pos - m_colorStops[curIdx].first) + offsetA);
+
             colors[i] = ((unsigned int)bVal);
             colors[i] += ((unsigned int)gVal) << 8;
             colors[i] += ((unsigned int)rVal) <<16;
+
+            if(includeAlpha)
+            {
+                colors[i] += ((unsigned int)alphaVal) <<24;
+            }
         }
     }
     else
@@ -551,6 +600,97 @@ QList<QString> PaletteOrganizer::getColorBarList(const int type) const
         }
     }
     return outPut;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PaletteOrganizer::setColorBarThreaded(QString name, ito::ItomPaletteBase newPalette, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval = ito::retOk;
+
+    int idx = -1;
+
+    if(restrictedKeyWords.contains(name))
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("Palette %1 has a restricted access.").arg(name).toLatin1().data());
+    }
+    else if(m_colorBarLookUp.contains(name))
+    {
+        idx = m_colorBarLookUp[name];
+        if(m_colorBars[idx].getType() & ito::tPaletteReadOnly)
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("Palette %1 has a write protection.").arg(name).toLatin1().data());
+        }
+        else
+        {
+            m_colorBars[idx] = newPalette;
+        }
+    }
+    else
+    {
+        m_colorBars.append(newPalette);
+        m_colorBarLookUp.insert(name, m_colorBars.size() - 1);
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+    return retval;
+
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PaletteOrganizer::getColorBarThreaded(QString name, QSharedPointer<ito::ItomPaletteBase> palette, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval = ito::retOk;
+
+    bool found = false;
+
+    *palette = this->getColorBar(name, &found);
+
+    if(!found)
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("Palette %1 not found within palette list").arg(name).toLatin1().data());
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+    return retval;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PaletteOrganizer::getColorBarListThreaded(int types, QSharedPointer<QStringList> palettes, ItomSharedSemaphore *waitCond)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval = ito::retOk;
+
+    bool found = false;
+
+    if(!palettes.isNull())
+    {
+        palettes->clear();
+        QList<QString> curList = this->getColorBarList(0);
+
+        for(int i = 0; i < curList.size(); i++)
+        {
+            palettes->append(curList[i]);
+        }
+        
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("Destination vector not initialized").toLatin1().data());
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+    return retval;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
 }//namespace ito

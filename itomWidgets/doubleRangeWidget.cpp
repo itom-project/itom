@@ -33,7 +33,7 @@
 #include <QMouseEvent>
 //#include <QWeakPointer>
 #include <QPointer>
-#include <QdoubleSpinBox>
+#include <QDoubleSpinBox>
 
 // CTK includes
 #include "doubleRangeWidget.h"

@@ -1,4 +1,4 @@
-/* ********************************************************************
+﻿/* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
     Copyright (C) 2013, Institut fuer Technische Optik (ITO),
@@ -26,7 +26,7 @@
 #ifndef Q_MOC_RUN
     //python
     // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-    #if (defined _DEBUG) && (!defined linux)
+    #if (defined _DEBUG) && (defined WIN32)
         #undef _DEBUG
         #include "Python.h"
         #define _DEBUG
@@ -42,7 +42,8 @@
 #include "../python/pythonWorkspace.h"
 
 #include <qtreewidget.h>
-
+#include <qmimedata.h>
+#include <qpixmap.h>
 #include <qhash.h>
 #include <qset.h>
 
@@ -61,6 +62,9 @@ public:
     inline ito::PyWorkspaceContainer* getWorkspaceContainer() { return m_workspaceContainer; }
 
 protected:
+    QStringList mimeTypes() const;
+    QMimeData * mimeData(const QList<QTreeWidgetItem *> items) const;
+    void startDrag(Qt::DropActions supportedActions);
 
 private:
     void updateView(QHash<QString,ito::PyWorkspaceItem*> items, QString baseName, QTreeWidgetItem *parent = NULL);
@@ -72,6 +76,10 @@ private:
     ito::PyWorkspaceContainer *m_workspaceContainer;
 
     QString m_delimiter;
+    QPixmap m_dragPixmap;
+#if QT_VERSION >= 0x050000
+    Qt::DropActions supportedDragActions() const;
+#endif
 
 signals:
 

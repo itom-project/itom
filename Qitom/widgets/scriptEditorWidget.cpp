@@ -42,6 +42,7 @@
 #include <qtimer.h>
 #include <qpainter.h>
 #include <qmimedata.h>
+#include <qtextcodec.h>
 
 namespace ito 
 {
@@ -444,7 +445,7 @@ RetVal ScriptEditorWidget::preShowContextMenuEditor()
     //editorMenuActions["save"]->setEnabled(isModified());
 
     editorMenuActions["runScript"]->setEnabled(!pythonBusy);
-    editorMenuActions["runSelection"]->setEnabled(lineFrom != -1 && (!pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
+    editorMenuActions["runSelection"]->setEnabled(lineFrom != -1 && pyEngine && (!pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
     editorMenuActions["debugScript"]->setEnabled(!pythonBusy);
     editorMenuActions["stopScript"]->setEnabled(pythonBusy);
 
@@ -599,15 +600,24 @@ RetVal ScriptEditorWidget::setCursorPosAndEnsureVisible(int line)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal ScriptEditorWidget::setCursorPosAndEnsureVisibleWithSelection(int line, QString name)
+RetVal ScriptEditorWidget::setCursorPosAndEnsureVisibleWithSelection(int line, const QString &currentClass, const QString &currentMethod)
 {
-    setCursorPosAndEnsureVisible(line);
-    // regular expression for Classes and Methods
-    QRegExp reg("(\\s*)(class||def)\\s(.+)\\(.*");
-    reg.setMinimal(true);
-    reg.indexIn(this->text(line), 0);
-    this->setSelection(line, reg.pos(3), line, reg.pos(3) + reg.cap(3).length());
-    return retOk;
+    ito::RetVal retval;
+    
+    if (line >= 0)
+    {
+        retval += setCursorPosAndEnsureVisible(line);
+        // regular expression for Classes and Methods
+        QRegExp reg("(\\s*)(class||def)\\s(.+)\\(.*");
+        reg.setMinimal(true);
+        reg.indexIn(this->text(line), 0);
+        setSelection(line, reg.pos(3), line, reg.pos(3) + reg.cap(3).length());
+    }
+
+    m_currentClass = currentClass;
+    m_currentMethod = currentMethod;
+
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -941,7 +951,8 @@ void ScriptEditorWidget::menuStopScript()
     {
         if (eng->isPythonDebugging() && eng->isPythonDebuggingAndWaiting())
         {
-            QMetaObject::invokeMethod(eng, "pythonDebugCommand", Q_ARG(tPythonDbgCmd, pyDbgQuit));
+//            QMetaObject::invokeMethod(eng, "pythonDebugCommand", Q_ARG(tPythonDbgCmd, pyDbgQuit));
+            eng->pythonInterruptExecution();
         }
         else
         {
@@ -979,8 +990,11 @@ RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument
     }
     else
     {
-
-        QString text(file.readAll());
+        //in Qt4, QString(QByteArray) created the string with fromAscii(byteArray), in Qt5 it is fromUtf8(byteArray)
+        //therefore there is a setting property telling the encoding of saved python files and the files are loaded assuming
+        //this special encoding. If no encoding is given, latin1 is always assumed.
+        QByteArray content = file.readAll();
+        QString text = AppManagement::getScriptTextCodec()->toUnicode(content);
         file.close();
 
         clearAllBookmarks();
@@ -1059,8 +1073,9 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
     }
 
     convertEols(QsciScintilla::EolUnix);
-
-    file.write(text().toLatin1());
+    
+    QString t = text();
+    file.write(AppManagement::getScriptTextCodec()->fromUnicode(t));
     file.close();
 
     QFileInfo fi(getFilename());
@@ -1119,7 +1134,9 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
     m_pFileSysWatcher->removePath(getFilename());
 
     convertEols(QsciScintilla::EolUnix);
-    file.write(text().toLatin1());
+    
+    QString t = text();
+    file.write(AppManagement::getScriptTextCodec()->fromUnicode(t));
     file.close();
 
     changeFilename(tempFileName);
@@ -1230,7 +1247,7 @@ void ScriptEditorWidget::errorListChange(const QStringList &errorList)
 void ScriptEditorWidget::checkSyntax()
 {
     PythonEngine *pyEng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-    if (pyEng->pySyntaxCheckAvailable())
+    if (pyEng && pyEng->pySyntaxCheckAvailable())
     {
         QMetaObject::invokeMethod(pyEng, "pythonSyntaxCheck", Q_ARG(QString, this->text()), Q_ARG(QPointer<QObject>, QPointer<QObject>(this)));
     }
@@ -1667,7 +1684,7 @@ void ScriptEditorWidget::breakPointAdd(BreakPointItem bp, int /*row*/)
 {
     int newHandle = -1;
 
-#if linux
+#ifndef WIN32
     if (bp.filename != "" && bp.filename == getFilename())
 #else
     if (bp.filename != "" && QString::compare(bp.filename, getFilename(), Qt::CaseInsensitive) == 0)
@@ -1725,7 +1742,7 @@ void ScriptEditorWidget::breakPointDelete(QString filename, int lineNo, int /*py
 {
     bool found = false;
 
-#if defined linux
+#ifndef WIN32
     if (filename != "" && filename == getFilename())
 #else
     if (filename != "" && QString::compare(filename, getFilename(), Qt::CaseInsensitive) == 0)
@@ -1771,7 +1788,7 @@ void ScriptEditorWidget::breakPointDelete(QString filename, int lineNo, int /*py
 //!< slot, invoked by BreakPointModel
 void ScriptEditorWidget::breakPointChange(BreakPointItem oldBp, BreakPointItem newBp)
 {
-#if defined linux
+#ifndef WIN32
     if (oldBp.filename == getFilename())
 #else
     if (QString::compare(oldBp.filename, getFilename(), Qt::CaseInsensitive) == 0)
@@ -1780,7 +1797,7 @@ void ScriptEditorWidget::breakPointChange(BreakPointItem oldBp, BreakPointItem n
         breakPointDelete(oldBp.filename, oldBp.lineno, oldBp.pythonDbgBpNumber);
     }
 
-#if defined linux
+#ifndef WIN32
     if (newBp.filename == getFilename())
 #else
     if (QString::compare(newBp.filename, getFilename(), Qt::CaseInsensitive) == 0)
@@ -2171,7 +2188,7 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
         else if (methods.indexIn(line) != -1)
         {
             // Methode
-            //checken ob line-1 == @declarator besitzt
+            //checken ob line-1 == @decorator besitzt
             ClassNavigatorItem *meth = new ClassNavigatorItem();
             meth->m_name = methods.cap(3) + methods.cap(4);
             meth->m_args = methods.cap(5);
@@ -2185,30 +2202,29 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
                 meth->m_priv = false;
             }
             // Check for indentation:
-            if (methods.cap(1).length() == 0)
-            {// No indentation => Global Method
-                if (parent->m_internalType == ClassNavigatorItem::typePyRoot)
-                {
-                    meth->setInternalType(ClassNavigatorItem::typePyGlobal);
-                    parent->m_member.append(meth);
-                }
-                else
-                {
-                    DELETE_AND_SET_NULL(meth);
-                    return i;
-                }
-            }            
-            else if (methods.cap(1).length() == depth*tabLength)
+            //if (methods.cap(1).length() == 0)
+            //{// No indentation => Global Method
+            //    if (parent->m_internalType == ClassNavigatorItem::typePyRoot)
+            //    {
+            //        meth->setInternalType(ClassNavigatorItem::typePyGlobal);
+            //        parent->m_member.append(meth);
+            //    }
+            //    else
+            //    {
+            //        DELETE_AND_SET_NULL(meth);
+            //        return i;
+            //    }
+            //}            
+            if (methods.cap(1).length() == depth*tabLength)
             {// Child des parents
                 if (decorator.indexIn(decoLine) != -1)
                 {
-                    QString TODO = decorator.cap(3);
-                    //if (decorator.cap(3) == "staticmethod")
-                    if (TODO == "staticmethod")
+                    QString decorator_ = decorator.cap(3);
+                    if (decorator_ == "staticmethod")
                     {
                         meth->setInternalType(ClassNavigatorItem::typePyStaticDef);
                     }
-                    else if (decorator.cap(3) == "classmethod")
+                    else if (decorator_ == "classmethod")
                     {
                         meth->setInternalType(ClassNavigatorItem::typePyClMethDef);
                     }

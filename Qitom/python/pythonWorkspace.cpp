@@ -44,6 +44,7 @@ PyWorkspaceItem::~PyWorkspaceItem()
 PyWorkspaceItem::PyWorkspaceItem(const PyWorkspaceItem &other)
 {
     m_name = other.m_name;
+    m_key = other.m_key;
     m_type = other.m_type;
     m_value = other.m_value;
     m_extendedValue = other.m_extendedValue;
@@ -76,7 +77,7 @@ void PyWorkspaceContainer::clear()
 }
 
 //-----------------------------------------------------------------------------------------------------------
-void PyWorkspaceContainer::loadDictionary(PyObject *obj, QString fullNameParentItem)
+void PyWorkspaceContainer::loadDictionary(PyObject *obj, const QString &fullNameParentItem)
 {
     
 
@@ -84,6 +85,7 @@ void PyWorkspaceContainer::loadDictionary(PyObject *obj, QString fullNameParentI
     
     if(fullNameParentItem == "")
     {
+
         PyGILState_STATE gstate = PyGILState_Ensure();
         loadDictionaryRec(obj,"",&m_rootItem,deleteList);
         PyGILState_Release(gstate);
@@ -92,7 +94,11 @@ void PyWorkspaceContainer::loadDictionary(PyObject *obj, QString fullNameParentI
     else
     {
         QStringList nameSplit = fullNameParentItem.split(m_delimiter);
-        if(nameSplit[0] == "") nameSplit.removeFirst();
+        if(nameSplit[0] == "") 
+        {
+            nameSplit.removeFirst();
+        }
+
         PyWorkspaceItem *parent = &m_rootItem;
         QHash<QString, ito::PyWorkspaceItem*>::iterator it;
 
@@ -120,7 +126,7 @@ void PyWorkspaceContainer::loadDictionary(PyObject *obj, QString fullNameParentI
 }
 
 //-----------------------------------------------------------------------------------------------------------
-void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, QString fullNameParentItem, PyWorkspaceItem *parentItem, QStringList &deletedKeys)
+void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, const QString &fullNameParentItem, PyWorkspaceItem *parentItem, QStringList &deletedKeys)
 {
     //To call this method, the Python GIL must already be locked!
 
@@ -131,9 +137,11 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, QString fullNamePare
     QHash<QString, PyWorkspaceItem*>::iterator it;
     Py_ssize_t i;
     QString keyText;
+    QString keyKey;
     PyObject* keyUTF8String = NULL;
     PyWorkspaceItem *actItem;
     QString fullName;
+    char keyType[] = {0,0};
 
     //at first, set status of all childs of parentItem to "not-existing"
     it = parentItem->m_childs.begin();
@@ -146,7 +154,7 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, QString fullNamePare
     if(Py_IsInitialized() && obj != NULL)
     {
 
-        if(PySequence_Check(obj))
+        if(PyTuple_Check(obj) || PyList_Check(obj)) //was PySequence_Check(obj) before, however a class can also implement the sequence protocol
         {
             for( i = 0 ; i < PySequence_Size(obj) ; i++)
             {
@@ -155,29 +163,34 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, QString fullNamePare
                 if(!m_blackListType.contains(value->ob_type->tp_name)) // only if not on blacklist
                 {
                     keyText = QString::number(i);
+                    keyKey = "xx:" + keyText; //list + number
+                    keyKey[0] = PY_LIST;
+                    keyKey[1] = PY_NUMBER;
 
                     it = parentItem->m_childs.find(keyText);
                     if(it == parentItem->m_childs.end()) //not existing yet
                     {
                         actItem = new PyWorkspaceItem();
                         actItem->m_name = keyText;
+                        actItem->m_key = keyKey;
                         actItem->m_exist = true;
                         actItem->m_isarrayelement = true;
-                        fullName = fullNameParentItem + m_delimiter + actItem->m_name;
+                        fullName = fullNameParentItem + m_delimiter + actItem->m_key;
                         parseSinglePyObject(actItem, value, fullName, deletedKeys, actItem->m_compatibleParamBaseType );
                         if(m_expandedFullNames.contains(fullName))
                         {
                             //load subtree
                             loadDictionaryRec(value, fullName, actItem, deletedKeys);
                         }
-                        parentItem->m_childs.insert(keyText,actItem);
+                        parentItem->m_childs.insert(keyKey,actItem);
                     }
                     else //item with this name already exists
                     {
                         actItem = *it;
+                        actItem->m_name = keyText;
                         actItem->m_exist = true;
                         actItem->m_isarrayelement = true;
-                        fullName = fullNameParentItem + m_delimiter + actItem->m_name;
+                        fullName = fullNameParentItem + m_delimiter + actItem->m_key;
                         parseSinglePyObject(actItem, value, fullName, deletedKeys, actItem->m_compatibleParamBaseType );
                         if(m_expandedFullNames.contains(fullName))
                         {
@@ -196,18 +209,21 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, QString fullNamePare
             {
                 keys = PyDict_Keys(obj); //new ref
                 values = PyDict_Values(obj); //new ref
+                keyType[0] = PY_DICT;
             }
-            else if(PyMapping_Check(obj))
+            else if(PyMapping_Check(obj) && PyMapping_Size(obj) > 0)
             {
                 keys = PyMapping_Keys(obj); //new ref
                 values = PyMapping_Values(obj); //new ref
+                keyType[0] = PY_MAPPING;
             }
             else if(PyObject_HasAttr(obj, dictUnicode))
             {
-                PyObject *subdict = PyObject_GetAttr(obj, dictUnicode);
-                keys = PyDict_Keys(subdict);
-                values = PyDict_Values(subdict);
+                PyObject *subdict = PyObject_GetAttr(obj, dictUnicode); //new ref
+                keys = PyDict_Keys(subdict); //new ref
+                values = PyDict_Values(subdict); //new ref
                 Py_DECREF(subdict);
+                keyType[0] = PY_ATTR;
             }
 
             if(keys && values)
@@ -231,43 +247,58 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, QString fullNamePare
                                 {
                                     keyText = QString::number( PyLong_AsLongLong(key) );
                                 }
+                                keyKey = "xx:" + keyText;
+                                keyKey[0] = keyType[0];
+                                keyKey[1] = PY_NUMBER;
                             }
                             else if(PyFloat_Check(key))
                             {
                                 keyText = QString::number( PyFloat_AsDouble(key) );
+                                keyKey = ":" + keyText;
+                                keyKey[0] = keyType[0];
+                                keyKey[1] = PY_NUMBER;
                             }
                             else
                             {
                                 keyText = "<unknown>";
+                                keyKey = "xx:" + keyText;
+                                keyKey[0] = keyType[0];
+                                keyKey[1] = PY_STRING;
                             }
                         }
                         else
                         {
                             keyText = PyBytes_AsString(keyUTF8String); //borrowed reference to char-pointer in keyUTF8String
+                            keyKey = "xx:" + keyText;
+                            keyKey[0] = keyType[0];
+                            keyKey[1] = PY_STRING;
                         }
 
-                        it = parentItem->m_childs.find(keyText);
+                        it = parentItem->m_childs.find(keyKey);
                         if(it == parentItem->m_childs.end()) //not existing yet
                         {
                             actItem = new PyWorkspaceItem();
+                            actItem->m_key = keyKey;
                             actItem->m_name = keyText;
                             actItem->m_exist = true;
                             actItem->m_isarrayelement = true;
-                            fullName = fullNameParentItem + m_delimiter + actItem->m_name;
+                            fullName = fullNameParentItem + m_delimiter + actItem->m_key;
                             parseSinglePyObject(actItem, value, fullName, deletedKeys, actItem->m_compatibleParamBaseType);
                             if(m_expandedFullNames.contains(fullName))
                             {
                                 //load subtree
                                 loadDictionaryRec(value, fullName, actItem, deletedKeys);
                             }
-                            parentItem->m_childs.insert(keyText,actItem);
+
+                            parentItem->m_childs.insert(keyKey,actItem);
                         }
                         else //item with this name already exists
                         {
                             actItem = *it;
+                            actItem->m_key = keyKey;
                             actItem->m_exist = true;
                             actItem->m_isarrayelement = true;
-                            fullName = fullNameParentItem + m_delimiter + actItem->m_name;
+                            fullName = fullNameParentItem + m_delimiter + actItem->m_key;
                             parseSinglePyObject(actItem, value, fullName, deletedKeys, actItem->m_compatibleParamBaseType);
                             if(m_expandedFullNames.contains(fullName))
                             {
@@ -291,7 +322,7 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, QString fullNamePare
     {
         if( (*it)->m_exist == false)
         {
-            deletedKeys << fullNameParentItem + m_delimiter + (*it)->m_name;
+            deletedKeys << fullNameParentItem + m_delimiter + (*it)->m_key;
             delete (*it);
             it = parentItem->m_childs.erase(it);
         }
@@ -403,7 +434,7 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
         item->m_childState = PyWorkspaceItem::stateNoChilds;
         foreach(const PyWorkspaceItem *child, item->m_childs)
         {
-            deletedKeys << fullName + "." + child->m_name;
+            deletedKeys << fullName + "." + child->m_key;
             delete child;
         }
         item->m_childs.clear();
@@ -527,14 +558,16 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
                     if (encodedByteArray)
                     {
                         item->m_extendedValue = item->m_value = PyBytes_AS_STRING(encodedByteArray);
-                        if(item->m_value.length()>20)
-                        {
-                            item->m_value = item->m_value.replace("\n",";");
-                        }
-                        else if(item->m_value.length() > 100)
+                        
+                        if(item->m_value.length() > 100)
                         {
                             item->m_value = "<double-click to show value>";
                         }
+                        else if(item->m_value.length()>20)
+                        {
+                            item->m_value = item->m_value.replace("\n",";");
+                        }
+
                         Py_XDECREF(encodedByteArray);
                     }
                     else

@@ -33,6 +33,7 @@
 //! static method which is called if variable of type PyStream in python workspace has been deleted in order to free allocated memory.
 void PyStream::PythonStream_dealloc(PythonStream* self)
 {
+    Py_XDECREF(self->encoding);
     Py_TYPE(self)->tp_free((PyObject*)self);
 }
 
@@ -65,13 +66,18 @@ int PyStream::PythonStream_init(PythonStream *self, PyObject *args, PyObject *kw
         return -1; 
     }
 
+    Py_XDECREF(self->encoding);
+    self->encoding = PyUnicode_FromString("latin_1"); //the python stdout and stderr streams will be encoded using latin_1
+    self->closed = 0;
+
     return 0;
 }
 
 //! static PyMemberDef table which describes every member of PyStream type
 PyMemberDef PyStream::PythonStream_members[] = {
-    {"type", T_INT, offsetof(PyStream::PythonStream, type), 0,
-     "PythonStream type"},
+    {"type", T_INT, offsetof(PyStream::PythonStream, type), READONLY, "PythonStream type"},
+    {"encoding", T_OBJECT_EX, offsetof(PyStream::PythonStream, encoding), READONLY, "Encoding of stream"},
+    {"closed", T_BOOL, offsetof(PyStream::PythonStream, closed), READONLY, "Indicates if stream is closed"},
     {NULL}  /* Sentinel */
 };
 

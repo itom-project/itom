@@ -17,6 +17,8 @@ import shutil
 import glob
 import modify_doc
 
+from sys import platform as _platform
+
 #def process_docstring(app, what, name, obj, options, lines):
 #    pass
     
@@ -78,8 +80,12 @@ for buildername in buildernames:
         #search for relative name to case insensitive document itomdocumentation.qhcp (linux is case-sensitive)
         #[iI] is a regexp for case insensitive letter i e.g.
         filenames = glob.glob("build/qthelp/[iI][tT][oO][mM][dD]ocumentation.qhcp") 
-        ret = subprocess.call(["qcollectiongenerator", filenames[0]])
-        if(ret != 0):
+        ret = 0
+        if _platform == "darwin":   # OS X
+            ret = subprocess.call(["qcollectiongenerator", os.getcwd()+'/'+filenames[0]], shell=True)
+        else:
+            ret = subprocess.call(["qcollectiongenerator", filenames[0]])
+        if(ret != 0 and ret != 127):
             raise RuntimeError("qcollectiongenerator failed")
         else:
             print("qcollectiongenerator successfully executed")
@@ -87,7 +93,10 @@ for buildername in buildernames:
         ret = itom.ui.msgInformation("show result","do you want to see the result?",ui.MsgBoxYes | ui.MsgBoxNo)
         if(ret[0] == ui.MsgBoxYes):
             filenames = glob.glob("build/qthelp/[iI][tT][oO][mM][dD]ocumentation.qhc") 
-            subprocess.check_call(["assistant", "-collectionFile", filenames[0]])
+            if _platform == "darwin":   # OS X
+                subprocess.check_call(["/Applications/Assistant.app/Contents/MacOS/Assistant", "-collectionFile", os.getcwd()+'/'+filenames[0]], shell=True)
+            else:
+                subprocess.check_call(["assistant", "-collectionFile", filenames[0]])
             
     elif(buildername == "htmlhelp"):
         hhc = "${HTML_HELP_COMPILER}" #"C:/Program Files (x86)/HTML Help Workshop/hhc.exe"

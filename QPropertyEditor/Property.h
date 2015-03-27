@@ -57,6 +57,13 @@ public:
      * @return QVariant the data converted to a QVariant
      */
     virtual QVariant value(int role = Qt::UserRole) const;
+
+    /**
+     * The value stored by this property
+     * @return QString the data converted to a readable string
+     */
+    virtual QString displayValue(int role = Qt::UserRole) const;
+
     /**
      * Sets the value stored by this property
      * @param value the data converted to a QVariant
@@ -153,6 +160,8 @@ private slots:
     void setValue(bool value);
 
     void setValue(QFont value);
+
+    void setValue(QStringList value);
 
 protected:
     QObject*    m_propertyObject;

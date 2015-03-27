@@ -460,6 +460,7 @@ PyObject* PythonUi::PyUiItem_call(PyUiItem *self, PyObject* args)
             else
             {
                 possibleSignatures += QByteArray("'" + method->signature() + "', ");
+                ok = false;
             }
         }
     }
@@ -1352,12 +1353,27 @@ PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ PyObject* PythonUi::PyUiItem_info(PyUiItem *self)
+PyDoc_STRVAR(PyUiItemInfo_doc,"info([verbose = 0]) -> prints information about properties, public accessible slots and signals of the wrapped widget. \n\
+\n\
+Parameters \n\
+----------- \n\
+verbose : {int} \n\
+    0: only properties, slots and signals that do not come from Qt-classes are printed (default) \n\
+    1: properties, slots and signals are printed up to Qt GUI base classes \n\
+    2: all properties, slots and signals are printed");
+/*static*/ PyObject* PythonUi::PyUiItem_info(PyUiItem *self, PyObject *args)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
     if(uiOrga == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
+        return NULL;
+    }
+
+    int showAll = 0;
+
+    if(!PyArg_ParseTuple(args, "|i", &showAll))
+    {
         return NULL;
     }
 
@@ -1373,7 +1389,18 @@ PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
 
     //!> we need this as otherwise the Q_ARG macro does not recognize our templated QMap
 //    QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int,UiOrganizer::infoShowItomInheritance), Q_ARG(QSharedPointer<QVariantMap>, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
-    QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int,UiOrganizer::infoShowItomInheritance), Q_ARG(ito::UiOrganizer::tQMapArg*, NULL), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    if (showAll >= 2)
+    {
+        QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int,UiOrganizer::infoShowAllInheritance), Q_ARG(ito::UiOrganizer::tQMapArg*, NULL), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    }
+    else if (showAll == 1)
+    {
+        QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int,UiOrganizer::infoShowInheritanceUpToWidget), Q_ARG(ito::UiOrganizer::tQMapArg*, NULL), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    }
+    else
+    {
+        QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int,UiOrganizer::infoShowItomInheritance), Q_ARG(ito::UiOrganizer::tQMapArg*, NULL), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    }
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -1383,6 +1410,11 @@ PyObject* PythonUi::PyUiItem_getWindowFlags(PyUiItem *self)
 
     retValue += locker.getSemaphore()->returnValue;
     if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    if (showAll < 2)
+    {
+        std::cout << "For more properties, slots and signals call info(1) or info(2)\n" << std::endl;
+    }
 
     Py_RETURN_NONE;
 }
@@ -1563,7 +1595,7 @@ PyMethodDef PythonUi::PyUiItem_methods[] = {
         {"getWindowFlags", (PyCFunction)PyUiItem_getWindowFlags, METH_NOARGS, PyUiItemGetWindowFlags_doc},
         {"setWindowFlags", (PyCFunction)PyUiItem_setWindowFlags, METH_VARARGS, PyUiItemSetWindowFlags_doc},
         {"invokeKeyboardInterrupt", (PyCFunction)PyUiItem_connectKeyboardInterrupt, METH_VARARGS, PyUiItemConnectKeyboardInterrupt_doc},
-        {"info", (PyCFunction)PyUiItem_info, METH_NOARGS, NULL},
+        {"info", (PyCFunction)PyUiItem_info, METH_VARARGS, PyUiItemInfo_doc},
         {"exists", (PyCFunction)PyUiItem_exists, METH_NOARGS, PyUiItemExists_doc},
         {NULL}  /* Sentinel */
 };
@@ -1698,7 +1730,7 @@ PyObject* PythonUi::PyUi_new(PyTypeObject *type, PyObject * args, PyObject * kwd
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiInit_doc,"ui(filename, [type, dialogButtonBar, dialogButtons, childOfMainWindow, deleteOnClose]) -> instance of user interface \n\
+PyDoc_STRVAR(pyUiInit_doc,"ui(filename, [type, dialogButtonBar, dialogButtons, childOfMainWindow, deleteOnClose, dockWidgetArea]) -> instance of user interface \n\
 \n\
 The class **ui** wraps a user interface, externally designed and given by a ui-file. If your user interface is a dialog or window, \n\
 chose *ui.TYPEWINDOW* as type, if the user interface is a widget (simplest case), chose *ui.TYPEDIALOG* and your widget \n\
@@ -1727,14 +1759,22 @@ dialogButtons : {dict}, optional \n\
 childOfMainWindow :  {bool}, optional \n\
     for type TYPEDIALOG and TYPEWINDOW only. Indicates whether window should be a child of itom main window (default: True) \n\
 deleteOnClose : {bool}, optional \n\
-    Indicates whether window should be deleted if user closes it or if it is hidden (default: Hidden, False)");
+    Indicates whether window should be deleted if user closes it or if it is hidden (default: Hidden, False) \n\
+dockWidgetArea : {int}, optional \n\
+    Only for type ui.TYPEDOCKWIDGET (2). Indicates the position where the dock widget should be placed: \n\
+    \n\
+        * 1 (ui.LEFTDOCKWIDGETAREA) \n\
+        * 2 (ui.RIGHTDOCKWIDGETAREA) \n\
+        * 4 (ui.TOPDOCKWIDGETAREA): default \n\
+        * 8 (ui.BOTTOMDOCKWIDGETAREA)");
 int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
 {
-    const char *kwlist[] = {"filename", "type", "dialogButtonBar", "dialogButtons", "childOfMainWindow", "deleteOnClose", NULL};
+    const char *kwlist[] = {"filename", "type", "dialogButtonBar", "dialogButtons", "childOfMainWindow", "deleteOnClose", "dockWidgetArea", NULL};
     PyObject *dialogButtons = NULL;
     PyObject *tmp;
     PyBytesObject *bytesFilename = NULL; //weak reference
     char *internalFilename;
+    int dockWidgetArea = Qt::TopDockWidgetArea;
     //PyUnicode_FSConverter
 
     if(args == NULL || PyTuple_Size(args) == 0) //empty constructor
@@ -1742,7 +1782,7 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
         return 0;
     }
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "O&|iiO!bb", const_cast<char**>(kwlist), &PyUnicode_FSConverter, &bytesFilename, &self->winType, &self->buttonBarType, &PyDict_Type, &dialogButtons, &self->childOfMainWindow, &self->deleteOnClose))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "O&|iiO!bbi", const_cast<char**>(kwlist), &PyUnicode_FSConverter, &bytesFilename, &self->winType, &self->buttonBarType, &PyDict_Type, &dialogButtons, &self->childOfMainWindow, &self->deleteOnClose, &dockWidgetArea))
     {
         //PyErr_SetString(PyExc_TypeError,"Arguments does not fit to required list of arguments. See help(ui)."); //message is already set by method above and the text is more specific.
         //Py_XDECREF(bytesFilename); //error: crash if bytesFilename is deleted here. Why?
@@ -1814,7 +1854,7 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
         }
     }
 
-    int uiDescription = UiOrganizer::createUiDescription(self->winType,self->buttonBarType,self->childOfMainWindow,self->deleteOnClose);
+    int uiDescription = UiOrganizer::createUiDescription(self->winType,self->buttonBarType,self->childOfMainWindow,self->deleteOnClose, dockWidgetArea);
     QSharedPointer<QByteArray> className(new QByteArray());
     QSharedPointer<unsigned int> objectID(new unsigned int);
     QMetaObject::invokeMethod(uiOrga, "createNewDialog",Q_ARG(QString,QString(self->filename)), Q_ARG(int, uiDescription), Q_ARG(StringMap, dialogButtonMap), Q_ARG(QSharedPointer<uint>, dialogHandle),Q_ARG(QSharedPointer<uint>, initSlotCount), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
@@ -2060,16 +2100,33 @@ getInt, getText, getItem");
 PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"title", "label", "defaultValue", "min", "max", "decimals", NULL};
-    const char *title = 0;
-    const char *label = 0;
+    PyObject *titleObj = NULL;
+    PyObject *labelObj = NULL;
+    QString title;
+    QString label;
     double defaultValue = 0;
     double minValue = -2147483647;
     double maxValue = 2147483647;
     int decimals = 1;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "ssd|ddi", const_cast<char**>(kwlist), &title, &label, &defaultValue, &minValue, &maxValue, &decimals))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOd|ddi", const_cast<char**>(kwlist), &titleObj, &labelObj, &defaultValue, &minValue, &maxValue, &decimals))
     {
         PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), default value (double), min (double, optional), max (double, optional), decimals (int, optional)");
+        return NULL;
+    }
+
+    bool ok;
+    title = PythonQtConversion::PyObjGetString(titleObj, true, ok);
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "title must be a string.");
+        return NULL;
+    }
+
+    label = PythonQtConversion::PyObjGetString(labelObj, true, ok);
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "label must be a string.");
         return NULL;
     }
 
@@ -2088,7 +2145,7 @@ PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kw
     QSharedPointer<double> retDblValue(new double);
     *retDblValue = defaultValue;
 
-    QMetaObject::invokeMethod(uiOrga, "showInputDialogGetDouble", Q_ARG(QString, QString(title)), Q_ARG(QString, QString(label)), Q_ARG(double, defaultValue), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<double>, retDblValue), Q_ARG(double,minValue), Q_ARG(double,maxValue), Q_ARG(int,decimals), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "showInputDialogGetDouble", Q_ARG(QString, title), Q_ARG(QString, label), Q_ARG(double, defaultValue), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<double>, retDblValue), Q_ARG(double,minValue), Q_ARG(double,maxValue), Q_ARG(int,decimals), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
@@ -2114,20 +2171,13 @@ PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kw
             return NULL;
         }
     }
-    /*if(!locker.getSemaphore()->wait(-1))
-    {
-        PyErr_SetString(PyExc_RuntimeError, "timeout while showing input dialog");
-        return NULL;
-    }*/
     
     if(*retOk == true)
     {
-        //Py_INCREF(Py_True);
         return Py_BuildValue("dO", *retDblValue, Py_True );
     }
     else
     {
-        //Py_INCREF(Py_False);
         return Py_BuildValue("dO", defaultValue, Py_False );
     }
 }
@@ -2161,16 +2211,33 @@ getDouble, getText, getItem");
 PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"title", "label", "defaultValue", "min", "max", "step", NULL};
-    const char *title = 0;
-    const char *label = 0;
+    PyObject *titleObj = NULL;
+    PyObject *labelObj = NULL;
+    QString title;
+    QString label;
     int defaultValue = 0;
     int minValue = -2147483647;
     int maxValue = 2147483647;
     int step = 1;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "ssi|iii", const_cast<char**>(kwlist), &title, &label, &defaultValue, &minValue, &maxValue, &step))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOi|iii", const_cast<char**>(kwlist), &titleObj, &labelObj, &defaultValue, &minValue, &maxValue, &step))
     {
         PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), default value (int), min (int, optional), max (int, optional), step (int, optional)");
+        return NULL;
+    }
+
+    bool ok;
+    title = PythonQtConversion::PyObjGetString(titleObj, true, ok);
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "title must be a string.");
+        return NULL;
+    }
+
+    label = PythonQtConversion::PyObjGetString(labelObj, true, ok);
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "label must be a string.");
         return NULL;
     }
 
@@ -2189,7 +2256,7 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
     QSharedPointer<int> retIntValue(new int);
     *retIntValue = defaultValue;
 
-    QMetaObject::invokeMethod(uiOrga, "showInputDialogGetInt", Q_ARG(QString, QString(title)), Q_ARG(QString, QString(label)), Q_ARG(int, defaultValue), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<int>, retIntValue), Q_ARG(int,minValue), Q_ARG(int,maxValue), Q_ARG(int,step), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "showInputDialogGetInt", Q_ARG(QString, title), Q_ARG(QString, label), Q_ARG(int, defaultValue), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<int>, retIntValue), Q_ARG(int,minValue), Q_ARG(int,maxValue), Q_ARG(int,step), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
@@ -2215,20 +2282,13 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
             return NULL;
         }
     }
-    /*if(!locker.getSemaphore()->wait(-1))
-    {
-        PyErr_SetString(PyExc_RuntimeError, "timeout while showing input dialog");
-        return NULL;
-    }*/
     
     if(*retOk == true)
     {
-        //Py_INCREF(Py_True);
         return Py_BuildValue("iO", *retIntValue, Py_True );
     }
     else
     {
-        //Py_INCREF(Py_False);
         return Py_BuildValue("iO", defaultValue, Py_False );
     }
 }
@@ -2260,17 +2320,33 @@ getInt, getDouble, getText");
 PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"title", "label", "stringList", "currentIndex", "editable", NULL};
-    const char *title = 0;
-    const char *label = 0;
+    PyObject *titleObj = NULL;
+    PyObject *labelObj = NULL;
+    QString title;
+    QString label;
     PyObject *stringList = NULL;
     int currentIndex = 0;
     bool editable = false;
     QStringList stringListQt;
     QString temp;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "ssO|ib", const_cast<char**>(kwlist), &title, &label, &stringList, &currentIndex, &editable))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOO|ib", const_cast<char**>(kwlist), &titleObj, &labelObj, &stringList, &currentIndex, &editable))
     {
-        //PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), string list (list, tuple), currentIndex (int), editable (bool)");
+        return NULL;
+    }
+
+    bool ok;
+    title = PythonQtConversion::PyObjGetString(titleObj, true, ok);
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "title must be a string.");
+        return NULL;
+    }
+
+    label = PythonQtConversion::PyObjGetString(labelObj, true, ok);
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "label must be a string.");
         return NULL;
     }
 
@@ -2317,7 +2393,7 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
     QSharedPointer<QString> retString(new QString());
     
 
-    QMetaObject::invokeMethod(uiOrga, "showInputDialogGetItem", Q_ARG(QString, QString(title)), Q_ARG(QString, QString(label)), Q_ARG(QStringList, stringListQt), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<QString>, retString), Q_ARG(int, currentIndex), Q_ARG(bool, editable), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "showInputDialogGetItem", Q_ARG(QString, title), Q_ARG(QString, label), Q_ARG(QStringList, stringListQt), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<QString>, retString), Q_ARG(int, currentIndex), Q_ARG(bool, editable), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
@@ -2343,21 +2419,13 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
             return NULL;
         }
     }
-    /*if(!locker.getSemaphore()->wait(-1))
-    {
-        PyErr_SetString(PyExc_RuntimeError, "timeout while showing input dialog");
-        return NULL;
-    }*/
     
     if(*retOk == true)
     {
-        //Py_INCREF(Py_True);
-        QByteArray ba = retString->toLatin1();
-        return Py_BuildValue("sO", ba.data(), Py_True );
+        return Py_BuildValue("NO", PythonQtConversion::QStringToPyObject(*retString), Py_True ); //"N" -> Py_BuildValue steals reference from QStringToPyObject
     }
     else
     {
-        //Py_INCREF(Py_False);
         return Py_BuildValue("sO", "", Py_False );
     }
 }
@@ -2384,13 +2452,38 @@ getInt, getDouble, getItem");
 PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"title", "label", "defaultString", NULL};
-    const char *title = 0;
-    const char *label = 0;
-    const char *defaultString = 0;
+    PyObject *titleObj = NULL;
+    PyObject *labelObj = NULL;
+    PyObject *defaultObj = NULL;
+    QString title;
+    QString label;
+    QString defaultString;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "sss", const_cast<char**>(kwlist), &title, &label, &defaultString))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOO", const_cast<char**>(kwlist), &titleObj, &labelObj, &defaultObj))
     {
         PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), default string (string)");
+        return NULL;
+    }
+
+    bool ok;
+    title = PythonQtConversion::PyObjGetString(titleObj, true, ok);
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "title must be a string.");
+        return NULL;
+    }
+
+    label = PythonQtConversion::PyObjGetString(labelObj, true, ok);
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "label must be a string.");
+        return NULL;
+    }
+
+    defaultString = PythonQtConversion::PyObjGetString(defaultObj, true, ok);
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "default string must be a string.");
         return NULL;
     }
 
@@ -2408,7 +2501,7 @@ PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds
     *retOk = false;
     QSharedPointer<QString> retStringValue(new QString(defaultString));
 
-    QMetaObject::invokeMethod(uiOrga, "showInputDialogGetText", Q_ARG(QString, QString(title)), Q_ARG(QString, QString(label)), Q_ARG(QString, QString(defaultString)), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<QString>, retStringValue), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "showInputDialogGetText", Q_ARG(QString, title), Q_ARG(QString, label), Q_ARG(QString, defaultString), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<QString>, retStringValue), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
@@ -2434,21 +2527,14 @@ PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds
             return NULL;
         }
     }
-    /*if(!locker.getSemaphore()->wait(-1))
-    {
-        PyErr_SetString(PyExc_RuntimeError, "timeout while showing input dialog");
-        return NULL;
-    }*/
     
     if(*retOk == true)
     {
-        //Py_INCREF(Py_True);
-        return Py_BuildValue("sO", retStringValue->toLatin1().data(), Py_True );
+        return Py_BuildValue("NO", PythonQtConversion::QStringToPyObject(*retStringValue), Py_True ); //"N" -> Py_BuildValue steals reference from QStringToPyObject
     }
     else
     {
-        //Py_INCREF(Py_False);
-        return Py_BuildValue("sO", defaultString, Py_False );
+        return Py_BuildValue("NO", PythonQtConversion::QStringToPyObject(defaultString), Py_False ); //"N" -> Py_BuildValue steals reference from QStringToPyObject
     }
 }
 
@@ -2552,15 +2638,32 @@ PyObject* PythonUi::PyUi_msgCritical(PyUi *self, PyObject *args, PyObject *kwds)
 PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *kwds, int type)
 {
     const char *kwlist[] = {"title", "text", "buttons", "defaultButton", "parent", NULL};
-    const char *title = 0;
-    const char *text = 0;
+    PyObject *titleObj = NULL;
+    PyObject *textObj = NULL;
+    QString title;
+    QString text;
     int buttons = QMessageBox::Ok;
     int defaultButton = QMessageBox::NoButton;
     PythonUi::PyUi *parentItem = NULL;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "ss|iiO!", const_cast<char**>(kwlist), &title, &text, &buttons, &defaultButton, &PythonUi::PyUiType, &parentItem))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "OO|iiO!", const_cast<char**>(kwlist), &titleObj, &textObj, &buttons, &defaultButton, &PythonUi::PyUiType, &parentItem))
     {
         PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), buttons (combination of ui.MsgBox[...]), defaultButton (ui.MsgBox[...])");
+        return NULL;
+    }
+
+    bool ok;
+    title = PythonQtConversion::PyObjGetString(titleObj, true, ok);
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "title must be a string.");
+        return NULL;
+    }
+
+    text = PythonQtConversion::PyObjGetString(textObj, true, ok);
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "text must be a string.");
         return NULL;
     }
 
@@ -2578,7 +2681,7 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
     *retButton = QMessageBox::Escape;
     QSharedPointer<QString> retButtonText(new QString());
     unsigned int parentUiHandle = parentItem ? parentItem->uiHandle : 0;
-    QMetaObject::invokeMethod(uiOrga, "showMessageBox", Q_ARG(uint, parentUiHandle), Q_ARG(int, type), Q_ARG(QString, QString(title)), Q_ARG(QString, QString(text)), Q_ARG(int, buttons), Q_ARG(int, defaultButton), Q_ARG(QSharedPointer<int>, retButton), Q_ARG(QSharedPointer<QString>, retButtonText), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(uiOrga, "showMessageBox", Q_ARG(uint, parentUiHandle), Q_ARG(int, type), Q_ARG(QString, title), Q_ARG(QString, text), Q_ARG(int, buttons), Q_ARG(int, defaultButton), Q_ARG(QSharedPointer<int>, retButton), Q_ARG(QSharedPointer<QString>, retButtonText), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
@@ -2604,16 +2707,11 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
             return NULL;
         }
     }
-    /*if(!locker.getSemaphore()->wait(-1))
-    {
-        PyErr_SetString(PyExc_RuntimeError, "timeout while showing message box");
-        return NULL;
-    }*/
 
     retValue = locker.getSemaphore()->returnValue;
     if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
     
-    return Py_BuildValue("is", *retButton, retButtonText->toLatin1().data());
+    return Py_BuildValue("iN", *retButton, PythonQtConversion::QStringToPyObject(*retButtonText)); //"N" -> Py_BuildValue steals reference from QStringToPyObject
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2645,14 +2743,31 @@ getSaveFileName, getOpenFileName");
 PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"caption", "directory", "options", "parent", NULL};
-    const char *caption = 0;
-    const char *directory = 0;
+    PyObject *captionObj = NULL;
+    PyObject *directoryObj = NULL;
+    QString caption;
+    QString directory;
     int options = 1; //QFileDialog::ShowDirsOnly
     PythonUi::PyUi *parentItem = NULL;
 
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "ss|iO!", const_cast<char**>(kwlist), &caption, &directory, &options, &PythonUi::PyUiType, &parentItem))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "OO|iO!", const_cast<char**>(kwlist), &captionObj, &directoryObj, &options, &PythonUi::PyUiType, &parentItem))
     {
+        return NULL;
+    }
+
+    bool ok;
+    caption = PythonQtConversion::PyObjGetString(captionObj, true, ok);
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "caption must be a string.");
+        return NULL;
+    }
+
+    directory = PythonQtConversion::PyObjGetString(directoryObj, true, ok);
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "directory must be a string.");
         return NULL;
     }
 
@@ -2669,7 +2784,7 @@ PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, P
     unsigned int parentHandle = (parentItem) ? parentItem->uiHandle : 0;
     QSharedPointer<QString> sharedDir(new QString(directory));
 
-    QMetaObject::invokeMethod(uiOrga, "showFileDialogExistingDir", Q_ARG(uint, parentHandle), Q_ARG(QString, QString(caption)), Q_ARG(QSharedPointer<QString>, sharedDir), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(uiOrga, "showFileDialogExistingDir", Q_ARG(uint, parentHandle), Q_ARG(QString, caption), Q_ARG(QSharedPointer<QString>, sharedDir), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(-1))
     {
@@ -2686,7 +2801,7 @@ PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, P
     }
     else
     {
-        return Py_BuildValue("s", sharedDir->toLatin1().data());
+        return Py_BuildValue("N", PythonQtConversion::QStringToPyObject(*sharedDir)); //"N" -> Py_BuildValue steals reference from QStringToPyObject
     }
 }
 
@@ -2722,15 +2837,40 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
 {
     
     const char *kwlist[] = {"caption", "startDirectory", "filters", "selectedFilterIndex", "options", "parent", NULL};
-    const char *caption = "";
-    const char *directory = "";
-    const char *filters = "";
+    PyObject *captionObj = NULL;
+    PyObject *directoryObj = NULL;
+    PyObject *filtersObj = NULL;
+    QString caption;
+    QString directory;
+    QString filters;
     int selectedFilterIndex = 0;
     int options = 0;
     PythonUi::PyUi *parentItem = NULL;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "|sssiiO!", const_cast<char**>(kwlist), &caption, &directory, &filters, &selectedFilterIndex, &options, &PythonUi::PyUiType, &parentItem))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "|OOOiiO!", const_cast<char**>(kwlist), &captionObj, &directoryObj, &filtersObj, &selectedFilterIndex, &options, &PythonUi::PyUiType, &parentItem))
     {
+        return NULL;
+    }
+
+    bool ok = true;
+    caption = captionObj ? PythonQtConversion::PyObjGetString(captionObj, true, ok) : "";
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "caption must be a string.");
+        return NULL;
+    }
+
+    directory = directoryObj ? PythonQtConversion::PyObjGetString(directoryObj, true, ok) : "";
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "directory must be a string.");
+        return NULL;
+    }
+
+    filters = filtersObj ? PythonQtConversion::PyObjGetString(filtersObj, true, ok) : "";
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "filters must be a string.");
         return NULL;
     }
 
@@ -2747,7 +2887,7 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
 
     QSharedPointer<QString> file(new QString());
     //QString caption, QString directory, QString filter, QSharedPointer<QString> file, int selectedFilterIndex, int options, ItomSharedSemaphore *semaphore
-    QMetaObject::invokeMethod(uiOrga, "showFileOpenDialog", Q_ARG(uint, parentHandle), Q_ARG(QString, QString(caption)), Q_ARG(QString, QString(directory)), Q_ARG(QString, QString(filters)), Q_ARG(QSharedPointer<QString>, file), Q_ARG(int, selectedFilterIndex), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(uiOrga, "showFileOpenDialog", Q_ARG(uint, parentHandle), Q_ARG(QString, caption), Q_ARG(QString, directory), Q_ARG(QString, filters), Q_ARG(QSharedPointer<QString>, file), Q_ARG(int, selectedFilterIndex), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(-1))
     {
@@ -2764,7 +2904,7 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
     }
     else
     {
-        return Py_BuildValue("s", file->toLatin1().data());
+        return Py_BuildValue("N", PythonQtConversion::QStringToPyObject(*file)); //"N" -> Py_BuildValue steals reference from QStringToPyObject
     }
 }
 
@@ -2802,15 +2942,40 @@ PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObje
 {
     
     const char *kwlist[] = {"caption", "startDirectory", "filters", "selectedFilterIndex", "options", "parent", NULL};
-    const char *caption = "";
-    const char *directory = "";
-    const char *filters = "";
+    PyObject *captionObj = NULL;
+    PyObject *directoryObj = NULL;
+    PyObject *filtersObj = NULL;
+    QString caption;
+    QString directory;
+    QString filters;
     int selectedFilterIndex = 0;
     int options = 0;
     PythonUi::PyUi *parentItem = NULL;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "|sssiiO!", const_cast<char**>(kwlist), &caption, &directory, &filters, &selectedFilterIndex, &options, &PythonUi::PyUiType, &parentItem))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "|OOOiiO!", const_cast<char**>(kwlist), &captionObj, &directoryObj, &filtersObj, &selectedFilterIndex, &options, &PythonUi::PyUiType, &parentItem))
     {
+        return NULL;
+    }
+
+    bool ok;
+    caption = PythonQtConversion::PyObjGetString(captionObj, true, ok);
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "caption must be a string.");
+        return NULL;
+    }
+
+    directory = PythonQtConversion::PyObjGetString(directoryObj, true, ok);
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "directory must be a string.");
+        return NULL;
+    }
+
+    filters = PythonQtConversion::PyObjGetString(filtersObj, true, ok);
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "filters must be a string.");
         return NULL;
     }
 
@@ -2827,7 +2992,7 @@ PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObje
 
     QSharedPointer<QString> file(new QString());
     //QString caption, QString directory, QString filter, QSharedPointer<QString> file, int selectedFilterIndex, int options, ItomSharedSemaphore *semaphore
-    QMetaObject::invokeMethod(uiOrga, "showFileSaveDialog", Q_ARG(uint, parentHandle), Q_ARG(QString, QString(caption)), Q_ARG(QString, QString(directory)), Q_ARG(QString, QString(filters)), Q_ARG(QSharedPointer<QString>, file), Q_ARG(int, selectedFilterIndex), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(uiOrga, "showFileSaveDialog", Q_ARG(uint, parentHandle), Q_ARG(QString, caption), Q_ARG(QString, directory), Q_ARG(QString, filters), Q_ARG(QSharedPointer<QString>, file), Q_ARG(int, selectedFilterIndex), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(-1))
     {
@@ -2844,7 +3009,7 @@ PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObje
     }
     else
     {
-        return Py_BuildValue("s", file->toLatin1().data());
+        return Py_BuildValue("N", PythonQtConversion::QStringToPyObject(*file)); //"N" -> Py_BuildValue steals reference from QStringToPyObject
     }
 }
 
@@ -3124,6 +3289,20 @@ void PythonUi::PyUi_addTpDict(PyObject *tp_dict)
     Py_DECREF(value);
     value = Py_BuildValue("i", 2);
     PyDict_SetItemString(tp_dict, "BUTTONBAR_VERTICAL", value);
+    Py_DECREF(value);
+
+    //add dock widget area
+    value = Py_BuildValue("i", Qt::LeftDockWidgetArea);
+    PyDict_SetItemString(tp_dict, "LEFTDOCKWIDGETAREA", value);
+    Py_DECREF(value);
+    value = Py_BuildValue("i", Qt::RightDockWidgetArea);
+    PyDict_SetItemString(tp_dict, "RIGHTDOCKWIDGETAREA", value);
+    Py_DECREF(value);
+    value = Py_BuildValue("i", Qt::TopDockWidgetArea);
+    PyDict_SetItemString(tp_dict, "TOPDOCKWIDGETAREA", value);
+    Py_DECREF(value);
+    value = Py_BuildValue("i", Qt::BottomDockWidgetArea);
+    PyDict_SetItemString(tp_dict, "BOTTOMDOCKWIDGETAREA", value);
     Py_DECREF(value);
 }
 

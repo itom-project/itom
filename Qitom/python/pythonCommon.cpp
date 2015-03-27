@@ -264,6 +264,8 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
     values["type"] = QStringList();
     values["values"] = QStringList();
     values["description"] = QStringList();
+    values["readwrite"] = QStringList();
+    bool readonly;
 
     PyObject *pVector = PyTuple_New( params->size() ); // new reference
 
@@ -272,6 +274,17 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
         if ((*params)[n].getType() != 0)
         {
             p_pyLine = PyDict_New();    // new reference
+
+            if (params->at(n).getFlags() & ito::ParamBase::Readonly)
+            {
+                values["readwrite"].append("r");
+                readonly = true;
+            }
+            else
+            {
+                values["readwrite"].append("rw");
+                readonly = false;
+            }
 
             switch(((*params)[n]).getType())
             {
@@ -348,6 +361,8 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
             item = PyLong_FromLong(n);
             PyDict_SetItemString(p_pyLine, "index", item);
             Py_DECREF(item);
+
+            PyDict_SetItemString(p_pyLine, "readonly", readonly ? Py_True : Py_False);
 
             if (addInfos)
             {
@@ -642,6 +657,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
     int nameLength = 4;
     int typeLength = 4;
     int valuesLength = 5;
+    int readWriteLength = 3;
     QString output;
 
     foreach(const QString &str, values["number"])
@@ -669,6 +685,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
     nameLength += 1;
     typeLength += 1;
     valuesLength += 2;
+    readWriteLength += 1;
 
     // write a heading
     if (asErr)
@@ -684,13 +701,15 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
     output.append(temp);
     temp = QString("Name").leftJustified(nameLength,' ');
     output.append(temp);
-    temp = QString("type").leftJustified(typeLength,' ');
+    temp = QString("Type").leftJustified(typeLength,' ');
     output.append(temp);
     if (addInfos)
     {
-        temp = QString("value").leftJustified(valuesLength,' ');
+        temp = QString("Value").leftJustified(valuesLength,' ');
         output.append(temp);
-        output.append("description");
+        temp = QString("R/W").leftJustified(readWriteLength, ' ');
+        output.append(temp);
+        output.append("Description");
     }
     output.append("\n");
 
@@ -713,6 +732,8 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
         if (addInfos)
         {
             temp = values["values"][i].leftJustified(valuesLength,' ', true);
+            output.append(temp);
+            temp = values["readwrite"][i].leftJustified(readWriteLength,' ', true);
             output.append(temp);
             output.append(values["description"][i]);
         }
@@ -1012,10 +1033,12 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
             if (mandPParsed)
             {
                 free(mandPParsed);
+                mandPParsed = NULL;
             }
             if (optPParsed)
             {
                 free(optPParsed);
+                optPParsed = NULL;
             }
             return ito::RetVal::format(ito::retError,0,"wrong number of parameters (%i given, %i mandatory and %i optional required)",argsLen + kwdsLen, numMandParams, numOptParams);
     }
@@ -1033,10 +1056,12 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
                 if (mandPParsed)
                 {
                     free(mandPParsed);
+                    mandPParsed = NULL;
                 }
                 if (optPParsed)
                 {
                     free(optPParsed);
+                    optPParsed = NULL;
                 }
                 return ito::RetVal::format(ito::retError, 0, "parameter %d - %s passed as arg and keyword!", n, tkey);
             }
@@ -1049,10 +1074,12 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
                 if (mandPParsed)
                 {
                     free(mandPParsed);
+                    mandPParsed = NULL;
                 }
                 if (optPParsed)
                 {
                     free(optPParsed);
+                    optPParsed = NULL;
                 }
                 return ito::RetVal::format(ito::retError, 0, "optional parameter %d - %s passed as arg and keyword!", n, tkey);
             }
@@ -1089,10 +1116,12 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
             if (mandPParsed) 
             {
                 free(mandPParsed);
+                mandPParsed = NULL;
             }
             if (optPParsed)  
             {
                 free(optPParsed);
+                optPParsed = NULL;
             }
             std::cerr << "there are keyword arguments that does not exist in mandatory or optional parameters." << std::endl;
             errOutInitParams(defaultParamListMand, -1, "Mandatory parameters are:");
@@ -1119,10 +1148,12 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
             if (mandPParsed)
             {
                 free(mandPParsed);
+                mandPParsed = NULL;
             }
             if (optPParsed)
             {
                 free(optPParsed);
+                optPParsed = NULL;
             }
             return ito::RetVal::format(ito::retError,0,"wrong number of parameters (%i given, %i mandatory and %i optional required)", argsLen + kwdsLen, numMandParams, numOptParams);
         }
@@ -1152,10 +1183,12 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
             if (mandPParsed)
             {
                 free(mandPParsed);
+                mandPParsed = NULL;
             }
             if (optPParsed)
             {
                 free(optPParsed);
+                optPParsed = NULL;
             }
             return ito::retError;
         }
@@ -1180,10 +1213,12 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
             if (mandPParsed)
             {
                 free(mandPParsed);
+                mandPParsed = NULL;
             }
             if (optPParsed)
             {
                 free(optPParsed);
+                optPParsed = NULL;
             }
             return ito::retError;
         }
@@ -1208,10 +1243,12 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
             if (mandPParsed)
             {
                 free(mandPParsed);
+                mandPParsed = NULL;
             }
             if (optPParsed)
             {
                 free(optPParsed);
+                optPParsed = NULL;
             }
             return ito::retError;
         }
@@ -1224,16 +1261,26 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
             tempObj = PyDict_GetItemString(kwds, tkey);
             if (tempObj)
             {
-                if (checkAndSetParamVal(tempObj, &((*defaultParamListOpt)[n]), paramListOptOut[n], &(optPParsed[n])) != ito::retOk)
+                retval = checkAndSetParamVal(tempObj, &((*defaultParamListOpt)[n]), paramListOptOut[n], &(optPParsed[n])); 
+                if (retval.containsError())
                 {
-                    errOutInitParams(defaultParamListOpt, n, "wrong parameter type");
+                    if (retval.hasErrorMessage())
+                    {
+                        errOutInitParams(defaultParamListOpt, n, retval.errorMessage());
+                    }
+                    else
+                    {
+                        errOutInitParams(defaultParamListOpt, n, "wrong parameter type");
+                    }
                     if (mandPParsed)
                     {
                         free(mandPParsed);
+                        mandPParsed = NULL;
                     }
                     if (optPParsed)
                     {
                         free(optPParsed);
+                        optPParsed = NULL;
                     }
                     return ito::retError;
                 }
@@ -1244,10 +1291,12 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
     if (mandPParsed)
     {
         free(mandPParsed);
+        mandPParsed = NULL;
     }
     if (optPParsed)
     {
         free(optPParsed);
+        optPParsed = NULL;
     }
 
     return ito::retOk;
@@ -1357,45 +1406,6 @@ ito::RetVal findAndDeleteReservedInitKeyWords(PyObject *kwds, bool * enableAutoL
     }
     return ito::retOk;
 }
-
-//------------------------------------------------------------------------------------------------------------------
-//PyObject* transformQVariant2PyObject(QVariant *value, ito::RetVal &retValue)
-//{
-//    retValue += ito::retOk;
-//
-//    switch(value->type())
-//    {
-//    case QVariant::Invalid:
-//        retValue += ito::RetVal(ito::retError, 0, QObject::tr("invalid return value").toLatin1().data());
-//        return NULL;
-//        break;
-//    case QVariant::Bool:
-//        if (value->toBool() == true)
-//        {
-//            Py_INCREF(Py_True);
-//            return Py_True;
-//        }
-//        else
-//        {
-//            Py_INCREF(Py_False);
-//            return Py_False;
-//        }
-//        break;
-//    case QVariant::Int:
-//        return Py_BuildValue("i",value->toInt());
-//        break;
-//    case QVariant::Double:
-//        return Py_BuildValue("d",value->toDouble());
-//        break;
-//    case QVariant::String:
-//        return Py_BuildValue("s", value->toString().toLatin1().data());
-//        break;
-//    default:
-//        retValue += ito::RetVal(ito::retError, 0, QObject::tr("unknown parameter of type QVariant").toLatin1().data());
-//        return NULL;
-//        break;
-//    }
-//}
 
 //------------------------------------------------------------------------------------------------------------------
 PyObject* buildFilterOutputValues(QVector<QVariant> *outVals, ito::RetVal &retValue)

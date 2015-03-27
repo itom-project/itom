@@ -27,28 +27,33 @@ In the following we will guide you through the installation setup with a couple 
 .. figure:: images/itom_install/setup01.jpg
     :alt: Language selection
     :scale: 70%
+    :align: left
     
     Please select your desired language for the setup.
 
 .. figure:: images/itom_install/setup02.jpg
     :alt: Start screen
     :scale: 70%
+    :align: left
     
     The start screen of the setup will appear.
 
 .. figure:: images/itom_install/setup03.jpg
     :scale: 70%
+    :align: left
     
     Read the license text and agree to it.
 
 .. figure:: images/itom_install/setup04.jpg
     :scale: 70%
+    :align: left
     
     Choose where to install |itom| on your file system.
 
 .. figure:: images/itom_install/setup05.jpg
     :alt: components
     :scale: 70%
+    :align: left
     
     Depending on your version of the setup, you now need to (de)select some optional components.
     The SDK is important if you want to develop your own plugins for |itom|. If you have the extended
@@ -59,21 +64,25 @@ In the following we will guide you through the installation setup with a couple 
 
 .. figure:: images/itom_install/setup06.jpg
     :scale: 70%
+    :align: left
     
     Select the name of |itom| in your Windows start menu.
 
 .. figure:: images/itom_install/setup07.jpg
     :scale: 70%
+    :align: left
     
     Choose whether you want to have an |itom| shortcut on your desktop
 
 .. figure:: images/itom_install/setup08.jpg
     :scale: 70%
+    :align: left
     
     Now, a summary of the installation steps is given. Press next if you want to start the installation...
 
 .. figure:: images/itom_install/setup09.jpg
     :scale: 70%
+    :align: left
     
     The installation is executed now. |itom| is not copying any files in another folder than the indicated program
     folder (besides python or any python-packages). However this setup creates an application entry in the Windows
@@ -82,68 +91,81 @@ In the following we will guide you through the installation setup with a couple 
 
 .. figure:: images/itom_install/setup11.png
     :scale: 70%
+    :align: left
     
     If not already available, the Microsoft Visual C++ 2010 Runtime Libraries are installed now. 
 
 .. figure:: images/itom_install/setup12.png
     :scale: 70%
+    :align: left
     
 Depending on your selected components, python and/or any python packages are now installed:
 
 .. figure:: images/itom_install/install08.png
     :scale: 70%
+    :align: left
     
     Install Python 3.2.1 for the current user or for all users.
 
 .. figure:: images/itom_install/install10.png
     :scale: 70%
+    :align: left
     
     Customize your Python installation. We recommend leaving everything as is.
 
 .. figure:: images/itom_install/install11.png
     :scale: 70%
+    :align: left
     
     You've completed the Python installation as well. We're getting getting closer.
 
 .. figure:: images/itom_install/install12.png
     :scale: 70%
+    :align: left
     
     Continue with the installation of NumPy.
 
 .. figure:: images/itom_install/install13.png
     :scale: 70%
+    :align: left
     
     You should be able to continue right away.
 
 .. figure:: images/itom_install/install14.png
     :scale: 70%
+    :align: left
     
     Start the NumPy installation.
 
 .. figure:: images/itom_install/install15.png
     :alt: alternate text
     :scale: 70%
+    :align: left
     
     Confirm that NumPy was successfully installed.
 
 .. figure:: images/itom_install/install16.png
     :scale: 70%
+    :align: left
     
     Eventually, we have to install scipy, press "Next" to continue
 
 .. figure:: images/itom_install/install17.png
     :scale: 70%
+    :align: left
     
     Continue.
 
 .. figure:: images/itom_install/install18.png
     :alt: alternate text
     :scale: 70%
+    :align: left
     
     Yes, we are ready to install. Proceed please.
 
 .. figure:: images/itom_install/install19.png
     :scale: 70%
+    :align: left
     
     Another confirmation, now scipy has been installed successfully.
 
@@ -151,11 +173,13 @@ Finally, the entire setup is finished:
 
 .. figure:: images/itom_install/setup10.jpg
     :scale: 70%
+    :align: left
     
 That's it:
 
 .. figure:: images/itom_install/install21.png
     :width: 800px
+    :align: left
 	
     This is |itom|!
 

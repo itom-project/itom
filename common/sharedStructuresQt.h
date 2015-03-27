@@ -210,6 +210,9 @@ class ItomSharedSemaphoreLocker
         //! returns the pointer to the guarded ItomSharedSemaphore.
         inline ItomSharedSemaphore* getSemaphore() const { return m_semaphore; }
 
+        //! returns the pointer to the guarded ItomSharedSemaphore.
+        ItomSharedSemaphore* operator ->() const { return m_semaphore; }
+
         //! assigns another ItomSharedSemaphore to this locker. 
         /*
             If this locker already guards an instance of ItomSharedSemaphore its reference counter is decremented first. \sa ItomSharedSemaphore::deleteSemaphore.

@@ -42,8 +42,9 @@ class DialogUserManagement : public QDialog
 
     private:
         UserModel *m_userModel;
+        QString m_currentUser;
+        void readModel(const QModelIndex &index);
         void loadUserList();
-        int getFlags();
 
     protected:
         void init();
@@ -52,10 +53,8 @@ class DialogUserManagement : public QDialog
         void userListCurrentChanged(const QModelIndex &current, const QModelIndex &previous);
         void on_pushButton_newUser_clicked();
         void on_pushButton_delUser_clicked();
-        void on_pushButton_resetGroup_clicked();
-        void on_pushButton_pluginsEnableAll_clicked();
-        void on_pushButton_pluginsDisableAll_clicked();
-        void on_buttonBox_apply();
+        void on_pushButton_editUser_clicked();
+        void on_userList_doubleClicked(const QModelIndex & index);
 };
 
 } //end namespace ito

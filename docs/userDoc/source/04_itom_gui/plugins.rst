@@ -1,9 +1,12 @@
 .. include:: ../include/global.inc
 
+.. _gui-plugins:
+
 Plugins
 ********
 
 .. image:: images/dockPlugins.png
+    :align: left
 
 The plugin toolbox shows all loaded plugins included any opened instances. The plugins are divided into the following types:
 

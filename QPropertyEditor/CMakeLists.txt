@@ -4,15 +4,21 @@ project(${target_name})
 
 cmake_minimum_required(VERSION 2.8)
 
+IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
+    if(POLICY CMP0042)
+        cmake_policy(SET CMP0042 OLD)
+    ENDIF(POLICY CMP0042)
+ENDIF()
+
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.") 
 OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
-   
+  
 IF(BUILD_ITOMLIBS_SHARED)
     SET(LIBRARY_TYPE SHARED)
-	ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
+    ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
     ADD_DEFINITIONS(-DQPROPERTYEDITOR_DLL -D_QPROPERTYEDITOR_DLL)
 ELSE(BUILD_ITOMLIBS_SHARED)
     SET(LIBRARY_TYPE STATIC)
@@ -38,6 +44,12 @@ ELSE(CMAKE_BUILD_TYPE)
     SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
 ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
+INCLUDE_DIRECTORIES(
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${ITOM_SDK_INCLUDE_DIRS}
+    )
+
 
 set(qpropertyeditor_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/defines.h
@@ -50,13 +62,9 @@ set(qpropertyeditor_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/QPropertyModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/QVariantDelegate.h
     ${CMAKE_CURRENT_SOURCE_DIR}/itomCustomTypes.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/stringListEditor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/stringListDialog.h
 )
-
-IF (QT5_FOUND)
-#    QT5_WRAP_CPP(qproperteditor_HEADERS_MOC ${qpropertyeditor_HEADERS})
-ELSE (QT5_FOUND)
-    QT4_WRAP_CPP_ITOM(qproperteditor_HEADERS_MOC ${qpropertyeditor_HEADERS})
-ENDIF (QT5_FOUND)
 
 set(qpropertyeditor_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/ColorCombo.cpp
@@ -67,10 +75,29 @@ set(qpropertyeditor_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/QPropertyEditorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/QPropertyModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/QVariantDelegate.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/itomCustomTypes.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/itomCustomTypes.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/stringListEditor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/stringListDialog.cpp
 )
 
-add_library(${target_name} ${LIBRARY_TYPE} ${qpropertyeditor_SOURCES} ${qpropertyeditor_HEADERS} ${qproperteditor_HEADERS_MOC})
+set(qpropertyeditor_UI
+    ${CMAKE_CURRENT_SOURCE_DIR}/stringListDialog.ui
+)
+
+set(qpropertyeditor_RCC
+    #add absolute pathes to any *.qrc resource files here
+)
+
+if (QT5_FOUND)
+    QT5_WRAP_UI(qpropertyeditor_UI_MOC ${qpropertyeditor_UI})
+    QT5_ADD_RESOURCES(qpropertyeditor_RCC_MOC ${qpropertyeditor_RCC})
+else (QT5_FOUND)
+    QT4_WRAP_CPP_ITOM(qproperteditor_HEADERS_MOC ${qpropertyeditor_HEADERS})
+    QT4_WRAP_UI_ITOM(qpropertyeditor_UI_MOC ${qpropertyeditor_UI})
+    QT4_ADD_RESOURCES(qpropertyeditor_RCC_MOC ${qpropertyeditor_RCC})
+endif (QT5_FOUND)
+
+add_library(${target_name} ${LIBRARY_TYPE} ${qpropertyeditor_SOURCES} ${qpropertyeditor_HEADERS} ${qproperteditor_HEADERS_MOC} ${qpropertyeditor_UI_MOC} ${qpropertyeditor_RCC_MOC})
 
 TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} itomCommonLib)
 IF (QT5_FOUND)

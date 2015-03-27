@@ -24,6 +24,8 @@
 #include "organizer/addInManager.h"
 #include "organizer/userOrganizer.h"
 
+#include <qtextcodec.h>
+
 namespace ito
 {
 
@@ -44,18 +46,41 @@ QObject* AppManagement::m_processOrganizer = NULL;
 QObject* AppManagement::m_userOrganizer = NULL;
 QMutex AppManagement::m_mutex;
 AppManagement::Timeouts AppManagement::timeouts;
+QTextCodec* AppManagement::m_scriptTextCodec = NULL;
 
-
-QObject* AppManagement::getAddInManager() 
+//-------------------------------------------------------------------------------------------
+/*static*/ QObject* AppManagement::getAddInManager() 
 { 
     QMutexLocker locker (&m_mutex); 
     return qobject_cast<QObject*>(ito::AddInManager::getInstance()); 
 }
 
-QString AppManagement::getSettingsFile(void)
+//-------------------------------------------------------------------------------------------
+/*static*/ QString AppManagement::getSettingsFile(void)
 {
     QMutexLocker locker(&m_mutex);
     return ((ito::UserOrganizer*)m_userOrganizer)->getSettingsFile();
+}
+
+//-------------------------------------------------------------------------------------------
+/*static*/ QTextCodec* AppManagement::getScriptTextCodec()
+{
+    QMutexLocker locker(&m_mutex);
+    if (m_scriptTextCodec)
+    {
+        return m_scriptTextCodec;
+    }
+    else
+    {
+        return QTextCodec::codecForLocale();
+    }
+}
+
+//-------------------------------------------------------------------------------------------
+/*static*/ void AppManagement::setScriptTextCodec(QTextCodec *codec)
+{
+    QMutexLocker locker(&m_mutex);
+    m_scriptTextCodec = codec;
 }
 
 } //end namespace ito

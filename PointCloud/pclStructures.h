@@ -33,13 +33,13 @@
 
 #include <vector>
 
-#ifndef linux
+#ifdef WIN32
 #pragma warning( disable: 4996) //supress deprecated warning of pcl (which occur very often)
 #endif
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 #include <pcl/PolygonMesh.h>
-#ifndef linux
+#ifdef WIN32
 #pragma warning( default: 4996) //show 4996 warnings again
 #endif
 
@@ -183,6 +183,36 @@ private:
     ito::tPCLPointType m_type;
 };
 
+// Forward declaration of friend methods
+#ifdef __APPLE__
+    class PCLPointCloud;
+    template<typename _Tp> pcl::PointCloud<_Tp>* getPointCloudPtrInternal(ito::PCLPointCloud &pc);
+    template<typename _Tp> const pcl::PointCloud<_Tp>* getPointCloudPtrInternal(const ito::PCLPointCloud &pc);
+    
+#if PCL_VERSION_COMPARE(>=,1,7,0)
+    template<typename _Tp> pcl::PCLHeader GetHeaderFunc(ito::PCLPointCloud &pc);
+    template<typename _Tp> pcl::PCLHeader GetHeaderFunc(const ito::PCLPointCloud *pc);
+#else
+    template<typename _Tp> std_msgs::Header GetHeaderFunc(ito::PCLPointCloud &pc);
+    template<typename _Tp> std_msgs::Header GetHeaderFunc(const ito::PCLPointCloud *pc);
+#endif
+    template<typename _Tp> uint32_t GetWidthFunc(const ito::PCLPointCloud *pc);
+    template<typename _Tp> uint32_t GetHeightFunc(const ito::PCLPointCloud *pc);
+    template<typename _Tp> void SetHeightFunc(ito::PCLPointCloud *pc, uint32_t height);
+    template<typename _Tp> bool GetDenseFunc(const ito::PCLPointCloud *pc);
+    template<typename _Tp> void SetDenseFunc(ito::PCLPointCloud *pc, bool dense);
+    template<typename _Tp> void SetWidthFunc(ito::PCLPointCloud *pc, uint32_t width);
+    template<typename _Tp> void PcAddFunc(ito::PCLPointCloud *pc1, const ito::PCLPointCloud *pc2, ito::PCLPointCloud *pcRes);
+    template<typename _Tp> void SetItemFunc(ito::PCLPointCloud *pc, size_t n, ito::PCLPoint &point);
+    template<typename _Tp> void PushBackFunc(ito::PCLPointCloud * pc, const ito::PCLPoint & point);
+    template<typename _Tp> bool EmptyFunc(const ito::PCLPointCloud *pc);
+    template<typename _Tp> void ReserveResizeFunc(ito::PCLPointCloud *pc, size_t n, bool reserveNotResize);
+    template<typename _Tp> void ClearFunc(ito::PCLPointCloud *pc);
+    template<typename _Tp> void EraseFunc(ito::PCLPointCloud *pc, uint32_t startIndex, uint32_t endIndex);
+    template<typename _Tp> void InsertFunc(ito::PCLPointCloud *pc, uint32_t index, const ito::PCLPoint& point);
+    template<typename _Tp> std::string GetFieldsListFunc(const ito::PCLPointCloud *pc);
+#endif // __APPLE__
+    
 class POINTCLOUD_EXPORT PCLPointCloud
 {
 public:

@@ -126,7 +126,7 @@ void UserInteractionWatcher::userInteractionDone(int type, bool aborted, QPolygo
 {
     int dims = 2; //m_dObjPtr ? m_dObjPtr->getDims() : 2;
     
-    switch(type)
+    switch(type & ito::PrimitiveContainer::tTypeMask)
     {
         case ito::PrimitiveContainer::tSquare:
         case ito::PrimitiveContainer::tCircle:

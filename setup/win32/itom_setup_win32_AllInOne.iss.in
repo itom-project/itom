@@ -11,7 +11,7 @@
 #define SourceDirQT "${QT_BINARY_DIR}"
 #define SourceDirOpenCV "${OpenCV_BIN_DIR}"
 #define SourceRedistributable "W:\m\ITOM\Installationen\1. MS VisualStudio 2010 Pro"
-#define SourceDirPython "W:\m\ITOM\Installationen\5. Python 3.3\32 Bit"
+#define SourceDirPython "W:\m\ITOM\Installationen\5. Python 3.4\32 Bit"
 #define SourceDirPCL "${PCL_DIR}\.."
 #define ExeName "Qitom.exe"
 #define Name "itom"
@@ -131,16 +131,16 @@ Source: "{#SourceDirQT}\..\translations\qt_??.qm"; DestDir: "{app}\translation";
 Source: "{#SourceDirQT}\assistant.exe"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\designer.exe"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceRedistributable}\vcredist_x86.exe"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\1. python-3.3.0.msi"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\2. numpy-MKL-1.8.1.win32-py3.3.exe"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\3. scipy-0.14.0.win32-py3.3.exe"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\4. pyparsing-2.0.0.win32-py3.3.exe"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\5. python-dateutil-2.2.win32-py3.3.exe"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\6. six-1.6.1.win32-py3.3.exe"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\7. matplotlib-1.3.1.win32-py3.3.exe"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\8. Pillow-2.0.0.win32-py3.3.exe"; DestDir: "{tmp}"
-
-; vielleicht
+Source: "{#SourceDirPython}\python-3.4.3.msi"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\numpy-1.9.2rc1+mkl-cp34-none-win32.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\scipy-0.15.1-cp34-none-win32.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\six-1.9.0-py2.py3-none-any.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\pyparsing-2.0.3-py3-none-any.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\python_dateutil-2.4.0-py2.py3-none-any.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\pytz-2014.10-py2.py3-none-any.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\matplotlib-1.4.3-cp34-none-win32.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\pies-2.6.3.tar.gz"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\frosted-1.4.1-py2.py3-none-any.whl"; DestDir: "{tmp}"
 Source: "{#SourceDirQT}\uic.exe"; DestDir: "{app}"; Flags: promptifolder  
 
 ; Default INI
@@ -184,6 +184,8 @@ Source: "{#SourceDirItomBuild}\designer\translation\*.qm"; DestDir: "{app}\desig
 ; Plugins
 Source: "{#SourceDirItomBuild}\plugins\AerotechEnsemble\*.*"; DestDir: "{app}\plugins\AerotechEnsemble"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\BasicFilters\*.*"; DestDir: "{app}\plugins\BasicFilters"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\AVTVimba\*.*"; DestDir: "{app}\plugins\AVTVimba"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\BasicFilters\*.*"; DestDir: "{app}\plugins\BasicFilters"; Flags: promptifolder recursesubdirs
 ; Source: "{#SourceDirItomBuild}\plugins\BasicGPLFilters\*.*"; DestDir: "{app}\plugins\BasicGPLFilters"; Flags: promptifolder recursesubdirs ;GPL (no included in setup)
 Source: "{#SourceDirItomBuild}\plugins\cmu1394\*.*"; DestDir: "{app}\plugins\cmu1394"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\dataobjectarithmetic\*.*"; DestDir: "{app}\plugins\dataobjectarithmetic"; Flags: promptifolder recursesubdirs
@@ -200,16 +202,20 @@ Source: "{#SourceDirItomBuild}\plugins\glDisplay\*.*"; DestDir: "{app}\plugins\g
 Source: "{#SourceDirItomBuild}\plugins\GWInstekPSP\*.*"; DestDir: "{app}\plugins\GWInstekPSP"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\IDSuEye\*.*"; DestDir: "{app}\plugins\IDSuEye"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\LeicaMotorFocus\*.*"; DestDir: "{app}\plugins\LeicaMotorFocus"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\LibModBus\*.*"; DestDir: "{app}\plugins\LibModBus"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\MSMediaFoundation\*.*"; DestDir: "{app}\plugins\MSMediaFoundation"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\NewportSMC100\*.*"; DestDir: "{app}\plugins\NewportSMC100"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\OpenCVFilters\*.*"; DestDir: "{app}\plugins\OpenCVFilters"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\OpenCVGrabber\*.*"; DestDir: "{app}\plugins\OpenCVGrabber"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PclTools\*.*"; DestDir: "{app}\plugins\PclTools"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PCOCamera\*.*"; DestDir: "{app}\plugins\PCOCamera"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PCOPixelFly\*.*"; DestDir: "{app}\plugins\PCOPixelFly"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PGRFlyCapture\*.*"; DestDir: "{app}\plugins\PGRFlyCapture"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\PI_GCS2\*.*"; DestDir: "{app}\plugins\PI_GCS2"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\PIPiezoCtrl\*.*"; DestDir: "{app}\plugins\PIPiezoCtrl"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\QCam\*.*"; DestDir: "{app}\plugins\QCam"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\SerialIO\*.*"; DestDir: "{app}\plugins\SerialIO"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\SuperlumBS\*.*"; DestDir: "{app}\plugins\SuperlumBS"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsCCS\*.*"; DestDir: "{app}\plugins\ThorlabsCCS"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\USBMotion3XIII\*.*"; DestDir: "{app}\plugins\USBMotion3XIII"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\Vistek\*.*"; DestDir: "{app}\plugins\Vistek"; Flags: promptifolder recursesubdirs
@@ -253,26 +259,31 @@ Name: "{commondesktop}\{#Name}"; Filename: "{app}\{#ExeName}"; Tasks: desktopico
 
 [Run]
 Filename: "{tmp}\vcredist_x86.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2010 Redistributable Package (x86)..."; Components: CREDPACK;
-Filename: "{tmp}\1. python-3.3.0.msi"; Flags: shellexec waituntilterminated; StatusMsg: "Phyton 3.3..."; Components: PYTHON
-Filename: "{tmp}\2. numpy-MKL-1.8.1.win32-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "NumPy..."; Components: NUMPY
-Filename: "{tmp}\3. scipy-0.14.0.win32-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "SciPy..."; Components: SCIPY
-Filename: "{tmp}\4. pyparsing-2.0.0.win32-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "PyParsing..."; Components: PYPARSING
-Filename: "{tmp}\5. python-dateutil-2.2.win32-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "DateUtil..."; Components: DATEUTIL
-Filename: "{tmp}\6. six-1.6.1.win32-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "DateUtil..."; Components: SIX
-Filename: "{tmp}\7. matplotlib-1.3.1.win32-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "MatPlotLib..."; Components: MATPLOTLIB
-Filename: "{tmp}\8. Pillow-2.0.0.win32-py3.3.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Pillow..."; Components: PILLOW
+Filename: "{tmp}\python-3.4.3.msi"; Flags: shellexec waituntilterminated; StatusMsg: "Phyton 3.4..."; Components: PYTHON
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\numpy-1.9.2rc1+mkl-cp34-none-win32.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "NumPy..."; Components: NUMPY
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\scipy-0.15.1-cp34-none-win32.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "SciPy..."; Components: SCIPY
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\six-1.9.0-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "Six..."; Components: SIX
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\pyparsing-2.0.3-py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "PyParsing..."; Components: PYPARSING
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\python_dateutil-2.4.0-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "DateUtil..."; Components: DATEUTIL
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\pytz-2014.10-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "PyTz..."; Components: PYTZ
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\matplotlib-1.4.3-cp34-none-win32.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "MatPlotLib..."; Components: MATPLOTLIB
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\pies-2.6.3.tar.gz"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "Pies..."; Components: FROSTED
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\frosted-1.4.1-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "Frosted..."; Components: FROSTED
 Filename: "{app}\{#ExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(Name, "&", "&&")}}"; Components: Main
 
 [InstallDelete]
-Type: files; Name: "{tmp}\1. python-3.3.0.msi"
-Type: files; Name: "{tmp}\2. numpy-MKL-1.8.1.win32-py3.3.exe"
-Type: files; Name: "{tmp}\3. scipy-0.14.0.win32-py3.3.exe"
-Type: files; Name: "{tmp}\4. pyparsing-2.0.0.win32-py3.3.exe"
-Type: files; Name: "{tmp}\5. python-dateutil-2.2.win32-py3.3.exe"
-Type: files; Name: "{tmp}\6. six-1.6.1.win32-py3.3.exe"
-Type: files; Name: "{tmp}\7. matplotlib-1.3.1.win32-py3.3.exe"
-Type: files; Name: "{tmp}\8. Pillow-2.0.0.win32-py3.3.exe"
+Type: files; Name: "{tmp}\python-3.4.3.msi"
+Type: files; Name: "{tmp}\numpy-1.9.2rc1+mkl-cp34-none-win32.whl"
+Type: files; Name: "{tmp}\scipy-0.15.1-cp34-none-win32.whl"
+Type: files; Name: "{tmp}\six-1.9.0-py2.py3-none-any.whl"
+Type: files; Name: "{tmp}\pyparsing-2.0.3-py3-none-any.whl"
+Type: files; Name: "{tmp}\python_dateutil-2.4.0-py2.py3-none-any.whl"
+Type: files; Name: "{tmp}\pytz-2014.10-py2.py3-none-any.whl"
+Type: files; Name: "{tmp}\matplotlib-1.4.3-cp34-none-win32.whl"
+Type: files; Name: "{tmp}\pies-2.6.3.tar.gz"
+Type: files; Name: "{tmp}\frosted-1.4.1-py2.py3-none-any.whl"
 Type: files; Name: "{tmp}\vcredist_x86.exe"
+Type: filesandordirs; Name: "{tmp}\wheelhouse"
 
 [Types]
 Name: "Install"; Description: "Installation"; Flags: iscustom
@@ -280,14 +291,15 @@ Name: "Install"; Description: "Installation"; Flags: iscustom
 [Components]
 Name: "Main"; Description: "{#Name}"; Types: Install; Flags: checkablealone fixed
 Name: "CREDPACK"; Description: "Microsoft Visual C++ 2010 Redistributable Package (x86)"; Types: Install; Flags: checkablealone fixed; Check: NeedInstallRP10
-Name: "PYTHON"; Description: "Python 3.3.0"; Types: Install; Flags: checkablealone
-Name: "NUMPY"; Description: "numpy-MKL-1.8.1.win32-py3.3"; Types: Install; Flags: checkablealone
-Name: "SCIPY"; Description: "scipy-0.14.0.win32-py3.3"; Types: Install; Flags: checkablealone
-Name: "PYPARSING"; Description: "pyparsing-2.0.0.win32-py3.3"; Types: Install; Flags: checkablealone
-Name: "DATEUTIL"; Description: "python-dateutil-2.2.win32-py3.3"; Types: Install; Flags: checkablealone
-Name: "SIX"; Description: "six-1.6.1.win32-py3.3"; Types: Install; Flags: checkablealone
-Name: "MATPLOTLIB"; Description: "matplotlib-1.3.1.win32-py3.3"; Types: Install; Flags: checkablealone
-Name: "PILLOW"; Description: "Pillow-2.0.0.win32-py3.3"; Types: Install; Flags: checkablealone
+Name: "PYTHON"; Description: "Python 3.4.3"; Types: Install; Flags: checkablealone
+Name: "NUMPY"; Description: "numpy-1.9.2rc1+mkl-cp34-none-win32"; Types: Install; Flags: checkablealone
+Name: "SCIPY"; Description: "scipy-0.15.1-cp34-none-win32"; Types: Install; Flags: checkablealone
+Name: "SIX"; Description: "six-1.9.0-py2.py3-none-any"; Types: Install; Flags: checkablealone
+Name: "PYPARSING"; Description: "pyparsing-2.0.3-py3-none-any"; Types: Install; Flags: checkablealone
+Name: "DATEUTIL"; Description: "python_dateutil-2.4.0-py2.py3-none-any"; Types: Install; Flags: checkablealone
+Name: "PYTZ"; Description: "pytz-2014.10-py2.py3-none-any"; Types: Install; Flags: checkablealone
+Name: "MATPLOTLIB"; Description: "matplotlib-1.4.3-cp34-none-win32"; Types: Install; Flags: checkablealone
+Name: "FROSTED"; Description: "frosted-1.4.1-py2.py3-none-any"; Types: Install; Flags: checkablealone
 Name: "SDK"; Description: "itom SDK"; Types: Install; Flags: checkablealone
 
 [UninstallDelete]
@@ -326,11 +338,11 @@ begin
   if DirExists(Path) then begin
     Filter := Path;
     if Filename <> '' then begin
-      if Copy(Filter, Length(Filter), 1)<>'\' then  Filter := Filter + '\';    
+      if Copy(Filter, Length(Filter), 1)<>'\' then  Filter := Filter + '\';
       Filter := Filter + Filename;
-    end; 
+    end;
     DelTree(Filter, IsDir, DeleteFiles, DeleteSubdirsAlso);
-  end 
+  end;
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
@@ -357,3 +369,26 @@ begin
   end;
 end;
 
+function GetPythonPath(Value: string): string;
+var  PythonPath: string;
+     Found: Boolean;
+     RootKey: Integer;
+begin
+  Found := True;
+  if IsWin64 then  RootKey := HKEY_LOCAL_MACHINE_64
+  else  RootKey := HKEY_LOCAL_MACHINE;
+  
+  if not RegQueryStringValue(RootKey, 'SOFTWARE\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
+    if not RegQueryStringValue(RootKey, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
+      if not RegQueryStringValue(RootKey, 'SOFTWARE\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
+        if not RegQueryStringValue(RootKey, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
+          MsgBox('Python path was not found in registry!', mbError, MB_OK);
+          Found := False;
+        end; 
+      end;
+    end; 
+  end;
+  
+  if Found then
+    Result := PythonPath;
+end;

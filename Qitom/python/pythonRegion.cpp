@@ -98,7 +98,7 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
     int t = QRegion::Rectangle;
     PyObject *other = NULL;
 
-    if(PyTuple_Size(args) == 0)
+    if(!args || PyTuple_Size(args) == 0)
     {
         DELETE_AND_SET_NULL(self->r);
         self->r = new QRegion();
@@ -161,7 +161,7 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
     }
     else
     {
-        result = PyUnicode_FromFormat("Figure(rects: %i)", self->r->rectCount() );
+        result = PyUnicode_FromFormat("Region(rects: %i)", self->r->rectCount() );
     }
     return result;
 }
@@ -613,13 +613,16 @@ You can either use the parameters 'x','y','w','h' OR 'region'.");
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(pyRegionCreateMask_doc,"createMask() -> creates mask data object based on this region. \n\
+PyDoc_STRVAR(pyRegionCreateMask_doc,"createMask([boundingRegion]) -> creates mask data object based on this region and the optional boundingRegion. \n\
 \n\
 Returns a uint8-dataObject whose size corresponds to the width and height of the bounding rectangle. \n\
 All pixels contained in the region have a value of 255 while the rest is set to 0. The offset value of \n\
 the dataObject is set such that it fits to the real position of the region, since the first element \n\
-in the dataObject corresponds to the left upper corner of the bounding rectangle.");
-/*static*/ PyObject* PythonRegion::PyRegion_createMask(PyRegion *self)
+in the dataObject corresponds to the left upper corner of the bounding rectangle.\n\
+\n\
+Indicate a boundingRegion in order to increase the size of the returned data object. Its size will \n\
+have the size of the union between the boundingRegion and the region.");
+/*static*/ PyObject* PythonRegion::PyRegion_createMask(PyRegion *self, PyObject *args, PyObject *kwds)
 {
     if(!self || self->r == NULL)
     {
@@ -627,11 +630,33 @@ in the dataObject corresponds to the left upper corner of the bounding rectangle
         return NULL;
     }
 
+    PyObject *boundingRegion = NULL;
+    const char *kwlist[] = {"boundingRegion", NULL};
+    QRect bounds;
     QRect r = self->r->boundingRect();
-    int w = r.width();
-    int h = r.height();
-    int x = r.x();
-    int y = r.y();
+
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "|O!", const_cast<char**>(kwlist), &PyRegionType, &boundingRegion) )
+    {
+        return NULL;
+    }
+    else
+    {
+        if (boundingRegion)
+        {
+            QRegion reg = self->r->united( *(((PyRegion*)boundingRegion)->r) );
+            bounds = reg.boundingRect().united(self->r->boundingRect());
+        }
+        else
+        {
+            bounds = r;
+        }
+    }
+
+    int w = bounds.width();
+    int h = bounds.height();
+    int x = bounds.x();
+    int y = bounds.y();
+    
 
     ito::DataObject *d = new ito::DataObject();
     d->zeros(h, w, ito::tUInt8);
@@ -803,7 +828,7 @@ PyMethodDef PythonRegion::PyRegion_methods[] = {
     {"xored", (PyCFunction)PyRegion_xored, METH_VARARGS | METH_KEYWORDS, pyRegionXored_doc},
     {"__reduce__", (PyCFunction)PyRegion_Reduce, METH_VARARGS,      "__reduce__ method for handle pickling commands"},
     {"__setstate__", (PyCFunction)PyRegion_SetState, METH_VARARGS,  "__setstate__ method for handle unpickling commands"},
-    {"createMask", (PyCFunction)PyRegion_createMask, METH_NOARGS, pyRegionCreateMask_doc },
+    {"createMask", (PyCFunction)PyRegion_createMask, METH_VARARGS | METH_KEYWORDS, pyRegionCreateMask_doc },
     {NULL}  /* Sentinel */
 };
 

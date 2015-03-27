@@ -49,7 +49,6 @@ ColorCombo::~ColorCombo()
 
 QColor ColorCombo::color() const
 {
-//    return qVariantValue<QColor>(itemData(currentIndex(), Qt::DecorationRole));
     return itemData(currentIndex(), Qt::DecorationRole).value<QColor>();
 }
 
@@ -89,7 +88,6 @@ void ColorCombo::currentChanged(int index)
     }
     else
     {
-//        emit colorChanged( qVariantValue<QColor>(itemData(currentIndex(), Qt::DecorationRole)) );
         emit colorChanged( itemData(currentIndex(), Qt::DecorationRole).value<QColor>() );
     }
 }

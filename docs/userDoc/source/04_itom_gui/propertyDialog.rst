@@ -1,5 +1,7 @@
 .. include:: ../include/global.inc
 
+.. _gui-propertydialog:
+
 Property Dialog
 ===============
 
@@ -25,9 +27,9 @@ This property section is responsible for the behaviour of the "Help" dialog. If 
 Local and remote databases
 """"""""""""""""""""""""""
 
-Most help files are organized in databases. To display these files, the green underlined checkbox has to be checked. To manage, update and load new databases the green box offers a variety of options. Each database listed underneath "Local" are safed on the harddrive. The last column shows if there are any online updates available. To refresh the updatestate of the databases, just click the "refresh" button above. 
+Most help files are organized in databases. To display these files, the green underlined checkbox has to be checked. To manage, update and load new databases the green box offers a variety of options. Each database listed underneath "Local" are saved on the harddrive. The last column shows if there are any online updates available. To refresh the updatestate of the databases, just click the "refresh" button above. 
 
-If the the internet connection is very slow a timout error might appear during updates. In this case increase the timeout time and check you internet connection.
+If the the internet connection is very slow a timeout error might appear during updates. In this case increase the timeout time and check you internet connection.
 
 Generated help files
 """"""""""""""""""""
@@ -63,10 +65,14 @@ By "Add File" is is possible to add python files that are executed when itom is 
 Editor
 ------
 
+.. _gui-prop-py-api:
+
 API
 ^^^
 
 The api files listed in the checkbox are necessary for syntax highlighting. New api files can be added by clicking on the "Add API" button on the right side.
+
+.. _gui-prop-auto-completion:
 
 Auto Completion
 ^^^^^^^^^^^^^^^
@@ -75,7 +81,7 @@ Auto Completion
     :scale: 100%
     :align: center
 
-The auto completion has two main functions. It offers available commands after entering some characters (number of minimum characters can be set in the "treshold" spin box).
+The auto completion has two main functions. It offers available commands after entering some characters (number of minimum characters can be set in the "threshold" spin box).
 
 .. figure:: images/propEditorAutoCompletion_2.png
     :scale: 100%
@@ -89,6 +95,8 @@ The other function  shows a list of available members of classes after entering 
 
 The three radio buttons in the group box at the bottom of the page set the source of the auto completion. Therefore take a look at API.
 
+.. _gui-prop-calltips:
+
 Calltips
 ^^^^^^^^
 
@@ -98,6 +106,8 @@ Calltips are tooltips that appear to display arguments of functions. They appear
     :scale: 100%
     :align: center
 
+.. _gui-prop-py-general:
+    
 General
 ^^^^^^^
 
@@ -107,7 +117,7 @@ The first group box manages the indentation.
 * if "Use tabs for indentation" is checked, tabs are used, otherwise spaces.
 * 
 * "Show Whitespaces" displays small light grey dots in each indentation.
-* The "Indentaion Width" spinbox sets the standard width for the indentation
+* The "Indentation Width" spinbox sets the standard width for the indentation
 
 Inside "Indentation Warning" group box it is possible to select which kind of indentation is marked as wrong. Make sure not to create a conflict with the checkboxes listed above ("use Tabs for Indentation"). The following image shows a warning caused by wrong indentation (tabs).
 
@@ -117,16 +127,21 @@ Inside "Indentation Warning" group box it is possible to select which kind of in
 
 The radio buttons inside the "End-of-line (EOL) mode" group box decide whether to use "", "" or "" as eol, depending on your operating system.
 
-The Python Syntax Checker checks the code inside the editor widget for bugs. If there are bug, a small red ladybug is shown besides the line numbers. If the cursor is moved over a ladybug, a tooltip shows the error.
+The **Python Syntax Checker** checks the code inside the editor widget for bugs. If there are bug, a small red ladybug is shown besides the line numbers. If the cursor is moved over a ladybug, a tooltip shows the error (for more information see the help about the :ref:`script editor window <gui-editor-syntax-check>`).
 
 * The Itom module is always included in every script. This causes wrong bugs appearances because the checking module (frosted) is not able to see the itom inclusion. To avoid these errors check the "Automatically include itom module..." check box. It includes "include itom" in every header before checking the code to avoid wrong bugs. 
 
-* The "Check  intervall" check box sets the intervall the code is send to "frosted" for syntax checks. 
+* The "Check interval" check box sets the interval the code is send to "frosted" for syntax checks. 
+
+The **class navigator** feature allows configuring the :ref:`class navigator <gui-editor-class-navigator>` of any script editor window. The checkbox of the entire groupbox en- or disables this feature. Use the timer to recheck the script structure after a certain amount of seconds since the last change of the script. If the timer is disabled, the structure is only analyzed when the script is shown or loaded.
+
+
+.. _gui-prop-py-styles:
 
 Styles
 ^^^^^^
 	
-This page is responsible for the highlighting of reserved words, comments, indentifier and so on. The style for each type of text, listed in the listbox, can be set individually. 
+This page is responsible for the highlighting of reserved words, comments, identifier and so on. The style for each type of text, listed in the listbox, can be set individually. 
 
 Plots and Figures
 -----------------

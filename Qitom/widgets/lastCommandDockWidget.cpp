@@ -209,8 +209,9 @@ void LastCommandDockWidget::updateActions()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void LastCommandDockWidget::addLastCommand(const QString cmd)
+void LastCommandDockWidget::addLastCommand(QString cmd)
 {
+    cmd = cmd.trimmed();
     if (m_enabled)
     {
         QTreeWidgetItem *lastDateItem = NULL;

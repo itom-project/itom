@@ -41,10 +41,16 @@ message(STATUS ${ITOM_SDK_FIND_QUIETLY})
 IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
     
     INCLUDE(${ITOM_SDK_CONFIG_FILE})
-	
-	IF(NOT ${ITOM_SDK_BUILD_TARGET64} STREQUAL ${BUILD_TARGET64})
-		MESSAGE(FATAL_ERROR "BUILD_TARGET64 option does not correspond to configuration of itom SDK")
-	ENDIF(NOT ${ITOM_SDK_BUILD_TARGET64} STREQUAL ${BUILD_TARGET64})
+
+    IF (${BUILD_TARGET64})
+        IF (NOT ((${ITOM_SDK_BUILD_TARGET64} STREQUAL "TRUE") OR (${ITOM_SDK_BUILD_TARGET64} STREQUAL "ON")))
+            MESSAGE(FATAL_ERROR "BUILD_TARGET64 (ON) option does not correspond to configuration of itom SDK")
+        ENDIF()
+    ELSE (${BUILD_TARGET64})
+        IF (NOT ((${ITOM_SDK_BUILD_TARGET64} STREQUAL "FALSE") OR (${ITOM_SDK_BUILD_TARGET64} STREQUAL "OFF")))
+            MESSAGE(FATAL_ERROR "BUILD_TARGET64 (OFF) option does not correspond to configuration of itom SDK")
+        ENDIF()
+    ENDIF (${BUILD_TARGET64})
 
     #find include directory
     FIND_PATH(ITOM_SDK_INCLUDE_DIR "itom_sdk.h" PATHS "${ITOM_SDK_DIR}" PATH_SUFFIXES "include" DOC "")
@@ -59,22 +65,31 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
       SET(SDK_PLATFORM "x64")
     endif ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
     
-    IF(MSVC10)
+
+	IF(MSVC10)
         SET(SDK_COMPILER "vc10")
     ELSEIF(MSVC9)
         SET(SDK_COMPILER "vc9")
     ELSEIF(MSVC8)
         SET(SDK_COMPILER "vc8")
     ELSEIF(MSVC)
-        SET(SDK_COMPILER "vc${MSVC_VERSION}$")
+        SET(SDK_COMPILER "vc${MSVC_VERSION}")
     ELSEIF(CMAKE_COMPILER_IS_GNUCXX)
-    SET(SDK_COMPILER "gnucxx")
+        SET(SDK_COMPILER "gnucxx")
+    ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        SET(SDK_COMPILER "clang")
+    ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        SET(SDK_COMPILER "gnucxx")
+    ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+        SET(SDK_COMPILER "intel")
+    ELSEIF(APPLE)
+        SET(SDK_COMPILER "osx_default")
     ELSE(MSVC10)
         SET(SDK_COMPILER "unknown")
     ENDIF(MSVC10)
     
     SET(ITOM_SDK_LIBSUFFIX "/lib/${SDK_COMPILER}_${SDK_PLATFORM}")
-
+	message(STATUS "ITOM SUF: ${ITOM_SDK_LIBSUFFIX}")
     
     #Initiate the variable before the loop
     set(GLOBAL ITOM_SDK_LIBS "")

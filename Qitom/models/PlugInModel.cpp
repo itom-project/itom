@@ -430,7 +430,6 @@ QModelIndex PlugInModel::index(int row, int column, const QModelIndex &parent) c
                         //qDebug() << "AlgoWidget: r" << row << ", c:" << column << ", p:" << (void*)widgets.values()[row - filters.count()];
                         return createIndex(row, column, (void*)widgets.values()[row - filters.count()]);
                     }
-
                 }
                 else
                 {
@@ -479,6 +478,11 @@ bool PlugInModel::getModelIndexInfo(const QModelIndex &index, tItemType &type, s
 {
     type = itemUnknown;
     internalData = 0;
+
+    if (!index.isValid())
+    {
+        return false;
+    }
 
     //table of type vs. internalData
     //itemUnknown           -> 0
@@ -1447,7 +1451,7 @@ bool PlugInModel::insertInstance(ito::AddInInterfaceBase* addInInterface, bool b
 *
 *
 */
-bool PlugInModel::deleteInstance(ito::AddInInterfaceBase* /*addInInterface*/, ito::AddInBase *addInInstance, bool beginOperation)
+bool PlugInModel::deleteInstance(ito::AddInInterfaceBase* /*addInInterface*/, ito::AddInBase *addInInstance, const bool beginOperation)
 {
     if (beginOperation)
     {
@@ -1455,7 +1459,8 @@ bool PlugInModel::deleteInstance(ito::AddInInterfaceBase* /*addInInterface*/, it
         if (index.isValid())
         {
             QModelIndex parentIdx = parent(index);
-            beginRemoveRows(parentIdx, index.row(), index.row());
+            int i = index.row();
+            beginRemoveRows(parentIdx, i, i);
             return true;
         }
         return false;

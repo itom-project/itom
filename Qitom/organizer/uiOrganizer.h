@@ -298,31 +298,35 @@ public:
     {
         infoShowNoInheritance = 0x0001,
         infoShowItomInheritance = 0x0002,
-        infoShowAllInheritance =0x0004 | infoShowItomInheritance
+        infoShowInheritanceUpToWidget = 0x0004,
+        infoShowAllInheritance =0x0008
     };
 
     typedef QMap<QString,QString> tQMapArg;
 
-    UiOrganizer();
+    UiOrganizer(ito::RetVal &retval);
     ~UiOrganizer();
 
     void showDialog(QWidget *parent);
     inline QObject *getPluginReference(unsigned int objectID) { return getWeakObjectReference(objectID); }
 
-    static inline void parseUiDescription(int uiDescription, int* uiType = NULL, int* buttonBarType = NULL, bool* childOfMainWindow = NULL, bool* deleteOnClose = NULL)
+    static inline void parseUiDescription(int uiDescription, int* uiType = NULL, int* buttonBarType = NULL, bool* childOfMainWindow = NULL, bool* deleteOnClose = NULL, int* dockWidgetArea = NULL)
     {
-        if(uiType) *uiType = (uiDescription & 0x000000FF); //bits 1-8
-        if(buttonBarType) *buttonBarType = ((uiDescription & 0x0000FF00) >> 8); //bits 9-16
-        if(childOfMainWindow) *childOfMainWindow = ((uiDescription & 0x00FF0000) > 0); //bits 17-24
-        if(deleteOnClose) *deleteOnClose = ((uiDescription & 0xFF000000) > 0); //bits 25-32
+        if(uiType) *uiType =                        (uiDescription & 0x000000FF);        //bits 1-8
+        if(buttonBarType) *buttonBarType =         ((uiDescription & 0x0000FF00) >> 8);  //bits 9-16
+        if(childOfMainWindow) *childOfMainWindow = ((uiDescription & 0x000F0000) > 0);   //bits 17-20
+        if(deleteOnClose) *deleteOnClose =         ((uiDescription & 0x00F00000) > 0);   //bits 21-24 
+        if(dockWidgetArea) *dockWidgetArea =       ((uiDescription & 0xFF000000) >> 24); //bits 25-32
     }
 
-    static inline int createUiDescription(int uiType, int buttonBarType, bool childOfMainWindow, bool deleteOnClose) 
+    static inline int createUiDescription(int uiType, int buttonBarType, bool childOfMainWindow, bool deleteOnClose, int dockWidgetArea) 
     { 
         int v = uiType; //bits 1-8
-        if(childOfMainWindow) v += (1 << 16); //bits 17-24
-        if(deleteOnClose) v+= (1 << 24); //bits 25-32
         v += (buttonBarType << 8); //bits 9-16
+        if(childOfMainWindow) v += (1 << 16); //bits 17-24
+        if(deleteOnClose) v+= (1 << 20); //bits 21-24
+        v += (dockWidgetArea << 24); //bits 25-32
+        
         return v;
     }
 
@@ -428,6 +432,7 @@ public slots:
     RetVal figurePickPoints(unsigned int objectID, QSharedPointer<ito::DataObject> coords, int maxNrPoints, ItomSharedSemaphore *semaphore);
     RetVal figureDrawGeometricElements(unsigned int objectID, QSharedPointer<ito::DataObject> coords, int elementType, int maxNrElements, ItomSharedSemaphore *semaphore);
     RetVal figurePickPointsInterrupt(unsigned int objectID);
+	RetVal isFigureItem(unsigned int objectID,  QSharedPointer<unsigned int> isFigureItem, ItomSharedSemaphore *semaphore);
 
     void figureDestroyed(QObject *obj)
     {

@@ -190,6 +190,36 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    //! method for setting various parameters in a sequence
+    /*!
+        Using this method, only one over-thread call needs to be executed in order to set various parameters
+        by calling setParam for each parameter.
+
+        \param values is a vector of parameters to set
+        \param waitCond is the locked semaphore that is released at the end of the method.
+        \sa setParam, ParamBase
+    */
+    ito::RetVal AddInBase::getParamVector(const QVector<QSharedPointer<ito::Param> > values, ItomSharedSemaphore *waitCond)
+    {
+        ItomSharedSemaphoreLocker locker(waitCond);
+
+        ito::RetVal retValue = ito::retOk;
+
+        foreach(const QSharedPointer<ito::Param> &param, values)
+        {
+            retValue += getParam(param,NULL);
+            setAlive();
+        }
+
+        if (waitCond)
+        {
+            waitCond->returnValue = retValue;
+            waitCond->release();
+        }
+        return retValue;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
     //! this method can handle additional functions of your plugin.
     /*!
         Use registerExecFunc to register a specific function name and a set of mandatory and optional default parameters.
@@ -253,6 +283,7 @@ namespace ito
         }
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     void AddInBase::setIdentifier(const QString &identifier)
     {
         m_identifier = identifier;
@@ -416,15 +447,16 @@ namespace ito
         m_autoGrabbingEnabled(true)
     {
         qDebug() << "AddInDataIO constructor. ThreadID: " << QThread::currentThreadId();
-        Q_ASSERT_X(1, "AddInDataIO::AddInDataIO", tr("Constructor must be overwritten").toLatin1().data());
-        return;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInDataIO::~AddInDataIO()
     {
-        Q_ASSERT_X(1, "AddInDataIO::~AddInDataIO", tr("Destructor must be overwritten").toLatin1().data());
-        return;
+        if (m_timerID > 0)
+        {
+            killTimer(m_timerID);
+            m_timerID = 0;
+        }
     }
 
 
@@ -700,19 +732,15 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInActuator::AddInActuator() 
         : AddInBase(), 
-        m_nrOfStatusChangedConnections(0), 
-        m_nrOfTargetChangedConnections(0), 
+        m_nrOfStatusChangedConnections(0), /* deprecated: remove this due to new Qt5 support */
+        m_nrOfTargetChangedConnections(0), /* deprecated: remove this due to new Qt5 support */ 
         m_interruptFlag(false)
     {
-        Q_ASSERT_X(1, "AddInActuator::~AddInActuator", tr("Constructor must be overwritten").toLatin1().data());
-        return;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInActuator::~AddInActuator()
     {
-        Q_ASSERT_X(1, "AddInActuator::~AddInActuator", tr("Destructor must be overwritten").toLatin1().data());
-        return;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -729,14 +757,16 @@ namespace ito
     */
     void AddInActuator::connectNotify(const char * signal)
     {
-        if (QLatin1String(signal) == SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)))
+        //in Qt5, the signature of this protected method changed and hence will not be called in this version.
+        //There, it is no more checked if any signals are connected but the signals are always emitted.
+        /*if (QLatin1String(signal) == SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)))
         {
             m_nrOfStatusChangedConnections++;
         }
         else if (QLatin1String(signal) == SIGNAL(targetChanged(QVector<double>)))
         {
             m_nrOfTargetChangedConnections++;
-        }
+        }*/
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -753,14 +783,14 @@ namespace ito
     */
     void AddInActuator::disconnectNotify(const char * signal)
     {
-        if (QLatin1String(signal) == SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)))
+        /*if (QLatin1String(signal) == SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)))
         {
             m_nrOfStatusChangedConnections--;
         }
         else if (QLatin1String(signal) == SIGNAL(targetChanged(QVector<double>)))
         {
             m_nrOfTargetChangedConnections--;
-        }
+        }*/
     }
     
 
@@ -774,8 +804,8 @@ namespace ito
     */
     void AddInActuator::sendStatusUpdate(const bool statusOnly)
     {
-        if (m_nrOfStatusChangedConnections>0)
-        {
+        //if (m_nrOfStatusChangedConnections>0)
+        //{
             if (statusOnly)
             {
                 emit actuatorStatusChanged(m_currentStatus, QVector<double>());
@@ -784,7 +814,7 @@ namespace ito
             {
                 emit actuatorStatusChanged(m_currentStatus, m_currentPos);
             }
-        }
+        //}
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -794,10 +824,10 @@ namespace ito
     */
     void AddInActuator::sendTargetUpdate()
     {
-        if (m_nrOfTargetChangedConnections>0)
-        {
+        //if (m_nrOfTargetChangedConnections>0)
+        //{
             emit targetChanged(m_targetPos);
-        }
+        //}
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------

@@ -106,7 +106,7 @@ unsigned int UiOrganizer::autoIncObjectCounter = 1;
     creates the singleton instance of WidgetWrapper. The garbage collection timer is not started yet, since
     this is done if the first user interface becomes being organized by this class.
 */
-UiOrganizer::UiOrganizer() :
+UiOrganizer::UiOrganizer(ito::RetVal &retval) :
     m_garbageCollectorTimer(0)
 {
     m_dialogList.clear();
@@ -118,6 +118,11 @@ UiOrganizer::UiOrganizer() :
     qRegisterMetaType<ito::UiDataContainer>("ito::UiDataContainer&");
     qRegisterMetaType<ito::UiOrganizer::tQMapArg*>("ito::UiOrganizer::tQMapArg*");
     qRegisterMetaType<ito::UiOrganizer::tQMapArg*>("ito::UiOrganizer::tQMapArg&");
+
+    if (QEvent::registerEventType(QEvent::User+123) != QEvent::User+123)
+    {
+        retval += ito::RetVal(ito::retWarning, 0, "The user defined event id 123 could not been registered for use in UiOrganizer since it is already in use.");
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -489,7 +494,13 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
 
     int type, buttonBarType;
     bool childOfMainWindow;
-    UiOrganizer::parseUiDescription(uiDescription, &type, &buttonBarType, &childOfMainWindow, &deleteOnClose);
+    int dockWidgetArea;
+    UiOrganizer::parseUiDescription(uiDescription, &type, &buttonBarType, &childOfMainWindow, &deleteOnClose, &dockWidgetArea);
+
+    if ((dockWidgetArea & Qt::AllDockWidgetAreas) == 0)
+    {
+        retValue += ito::RetVal(ito::retError, 0, "dockWidgetArea is invalid");
+    }
 
     QMainWindow *mainWin = childOfMainWindow ? qobject_cast<QMainWindow*>(AppManagement::getMainWindow()) : NULL;
 
@@ -710,9 +721,14 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
                     }
                     else
                     {
+                        Qt::DockWidgetArea dwa = Qt::TopDockWidgetArea;
+                        if (dockWidgetArea == Qt::LeftDockWidgetArea) dwa = Qt::LeftDockWidgetArea;
+                        else if (dockWidgetArea == Qt::RightDockWidgetArea) dwa = Qt::RightDockWidgetArea;
+                        else if (dockWidgetArea == Qt::BottomDockWidgetArea) dwa = Qt::BottomDockWidgetArea;
+
                         QDockWidget *dockWidget = new QDockWidget(wid->windowTitle(), mainWin);
                         dockWidget->setWidget(wid);
-                        mainWin->addDockWidget(Qt::TopDockWidgetArea, dockWidget);
+                        mainWin->addDockWidget(dwa, dockWidget);
 
                         set = new UiContainer(dockWidget);
                         *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
@@ -1983,7 +1999,7 @@ RetVal UiOrganizer::getSignalIndex(unsigned int objectID, const QString &signalS
         QList<QByteArray> names = metaMethod.parameterTypes();
         foreach (const QByteArray& name, names)
         {
-            tempType =QMetaType::type(name.constData());
+            tempType = QMetaType::type(name.constData());
             if (tempType > 0)
             {
                 argTypes->append(tempType);
@@ -2267,10 +2283,16 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
 
         const QMetaObject *mo = obj->metaObject();
         className = mo->className();
+        QStringList qtBaseClasses = QStringList() << "QWidget" << "QMainWindow" << "QFrame";
 
         while (mo != NULL)
         {
-            if (QString(mo->className()).startsWith("Q") && (type & infoShowAllInheritance) != infoShowAllInheritance)
+            if ( (type & infoShowInheritanceUpToWidget) && qtBaseClasses.contains(mo->className(), Qt::CaseInsensitive) == 0)
+            {
+                break;
+            }
+            
+            if (QString(mo->className()).startsWith("Q") && (type & infoShowItomInheritance))
             {
                 break;
             }
@@ -2341,7 +2363,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                 {
                     if (i >= mo->methodOffset())
                     {
-                        #if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000
                         signal.append(meth.methodSignature());
                         QString str1("signal_");
                         str1.append(meth.name());
@@ -2352,7 +2374,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                             str2.append(propInfoMap[meth.name()]);
                         }
                         tmpPropMap.insert(str1, str2);
-                        #else
+#else
                         signal.append(meth.signature());
                         QString str1("signal_");
 
@@ -2367,14 +2389,14 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                             str2.append(propInfoMap[methName.toLatin1()]);
                         }
                         tmpPropMap.insert(str1, str2);
-                        #endif
+#endif
                     }
                 }
                 else if (meth.methodType() == QMetaMethod::Slot && meth.access() == QMetaMethod::Public)
                 {
                     if (i >= mo->methodOffset())
                     {
-                        #if (QT_VERSION >= 0x050000)
+#if (QT_VERSION >= 0x050000)
                             slot.append(meth.methodSignature());
                             QString str1("slot_");
                             str1.append(meth.name());
@@ -2385,7 +2407,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                                 str2.append(propInfoMap[meth.name()]);
                             }
                             tmpPropMap.insert(str1, str2);
-                        #else
+#else
                             
                             slot.append(meth.signature());
                             QString str1("slot_");
@@ -2400,15 +2422,18 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                                 str2.append(propInfoMap[methName.toLatin1()]);
                             }
                             tmpPropMap.insert(str1, str2);
-                        #endif
+#endif
                     }
                 }
             }
 
-            if (type & infoShowItomInheritance)
+            if (type & (infoShowItomInheritance | infoShowInheritanceUpToWidget | infoShowAllInheritance))
             {
                 mo = mo->superClass();
-                tmpPropMap.insert(QString("inheritance"), mo->className());
+                if (mo)
+                {
+                    tmpPropMap.insert(QString("inheritance"), mo->className());
+                }
             }
             else
             {
@@ -3227,6 +3252,40 @@ RetVal UiOrganizer::figurePickPointsInterrupt(unsigned int objectID)
    else
     {
         retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toLatin1().data());
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::isFigureItem(unsigned int objectID,  QSharedPointer<unsigned int> isFigureItem, ItomSharedSemaphore *semaphore)
+{
+    QWidget *widget = qobject_cast<QWidget*>(getWeakObjectReference(objectID));
+    RetVal retval;
+
+    if (widget)
+    {
+        const QMetaObject* metaObject = widget->metaObject();
+        if (metaObject->indexOfSlot("userInteractionStart(int,bool,int)") == -1 || metaObject->indexOfSignal("userInteractionDone(int,bool,QPolygonF)") == -1)
+        {
+            *isFigureItem = 0;
+        }
+        else
+        {
+            *isFigureItem = 1;
+        }
+    }
+    else
+    {
+        retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toLatin1().data());
+		*isFigureItem = 0;
+    }
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+        semaphore->deleteSemaphore();
     }
 
     return retval;

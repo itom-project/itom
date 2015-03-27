@@ -95,6 +95,7 @@ protected:
 
 private slots:
     void selChanged(); 
+    void textDoubleClicked(int position, int line, int modifiers);
 
 private:
     struct cmdQueueStruct

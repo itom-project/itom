@@ -167,21 +167,14 @@ ito::RetVal AbstractAddInDockWidget::observeInvocation(ItomSharedSemaphore *wait
 {
     ito::RetVal retval;
     bool timeout = false;
-    QTime time;
-    time.start();
     if (d->m_pPlugin)
     {
-        while(!timeout && waitCond->wait(10) == false)
+        while(!timeout && waitCond->waitAndProcessEvents(PLUGINWAIT) == false)
         {
-            QCoreApplication::processEvents();
-            if (time.elapsed() > PLUGINWAIT)
+            if (d->m_pPlugin->isAlive() == false)
             {
-                if (d->m_pPlugin->isAlive() == false)
-                {
-                    retval += ito::RetVal(ito::retError, 0, tr("Timeout while waiting for answer from plugin instance.").toLatin1().data());
-                    timeout = true;
-                }
-                time.restart();
+                retval += ito::RetVal(ito::retError, 0, tr("Timeout while waiting for answer from plugin instance.").toLatin1().data());
+                timeout = true;
             }
         }
         
@@ -385,6 +378,7 @@ ito::RetVal AbstractAddInDockWidget::requestActuatorStatusAndPositions(bool send
     return retval;
 }
 
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AbstractAddInDockWidget::setActuatorInterrupt() const
 {
     ito::RetVal retval;

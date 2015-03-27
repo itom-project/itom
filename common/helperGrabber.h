@@ -56,6 +56,7 @@ namespace ito
     * \date 04.2012
     */
 
+    //this class is deprecated. Please consider using ito::CameraThreadCtrl.
     class ITOMCOMMONQT_EXPORT threadCamera
     {
         private:
@@ -83,6 +84,32 @@ namespace ito
             ito::RetVal setParam(ito::ParamBase val, int timeOutMS = PLUGINWAIT);       /*! < Set the parameter of the stage */
 
             ito::RetVal getImageParams(int &bpp, int &xsize, int &ysize, int timeOutMS = PLUGINWAIT); /*! < Combined function to get the most important camera features */
+    };
+
+
+    class ITOMCOMMONQT_EXPORT CameraThreadCtrl
+    {
+        private:
+            ito::AddInGrabber *m_pCamera;                   /*! < Handle to the Grabber */
+            ito::RetVal waitForSemaphore(ItomSharedSemaphore *waitCond, int timeOutMS = PLUGINWAIT);    /*! < Wait until camera-thread has finished the last command */
+
+        public:
+            CameraThreadCtrl();                                                                  /*! < Constructor */
+            CameraThreadCtrl(const ito::ParamBase &cameraParameter, ito::RetVal *retval = NULL); /*! < Constructor */
+            CameraThreadCtrl(ito::AddInGrabber *camera, ito::RetVal *retval = NULL);             /*! < Constructor */
+            CameraThreadCtrl(CameraThreadCtrl &other);
+            ~CameraThreadCtrl();                                                                 /*! < Destructor */
+
+            ito::RetVal startDevice(int timeOutMS = PLUGINWAIT);                     /*! < Set camera active */
+            ito::RetVal stopDevice(int timeOutMS = PLUGINWAIT);                      /*! < Set camera deactive */
+            ito::RetVal acquire(const int trigger, int timeOutMS = PLUGINWAIT);      /*! < Trigger an exposure and return before image is done*/
+            ito::RetVal getVal(ito::DataObject &dObj, int timeOutMS = PLUGINWAIT);   /*! < Get a shallow-copy of the dataObject */
+            ito::RetVal copyVal(ito::DataObject &dObj, int timeOutMS = PLUGINWAIT);  /*! < Get a deep-copy of the dataObject */
+
+            ito::RetVal getParam(ito::Param &val, int timeOutMS = PLUGINWAIT);      /*! < Get the parameter of the stage */
+            ito::RetVal setParam(ito::ParamBase val, int timeOutMS = PLUGINWAIT);       /*! < Set the parameter of the stage */
+
+            ito::RetVal getImageParams(int &bpp, int &sizex, int &sizey, int timeOutMS = PLUGINWAIT); /*! < Combined function to get the most important camera features */
     };
 
 }   // end namespace ito

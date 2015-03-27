@@ -121,6 +121,7 @@ namespace ito
         QVector<ito::uint32> colorVector256;
         QColor inverseColorOne;
         QColor inverseColorTwo;
+        QColor invalidColor;
     };
 
 }

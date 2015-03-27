@@ -58,7 +58,7 @@ namespace ito
 
             QMenu *m_pContextMenu;                  /*!< Contextmenu with the same actions as the toolbar */
             
-            bool m_enOrDisAbleAllBrakpoints;        /*!< This is a flag used to signalize the enableBP method that it has to select all entries or just the ones the user selected  */
+            bool m_enOrDisAbleAllBreakpoints;        /*!< This is a flag used to signalize the enableBP method that it has to select all entries or just the ones the user selected  */
 
             ShortcutAction* m_pActDelBP;
             ShortcutAction* m_pActDelAllBPs;
@@ -77,7 +77,7 @@ namespace ito
             void mnuEnOrDisAbleBrakpoint();
             void mnuEnOrDisAbleAllBrakpoints();
             void treeViewContextMenuRequested(const QPoint &pos);
-            void treeViewSelectionChanged(const QModelIndex & index);
+            void treeViewSelectionChanged();
             void actualizeTree(const QModelIndex &parent, int start, int end);
 
     };

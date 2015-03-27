@@ -1,6 +1,3 @@
-#SET(ITOM_SDK_DIR "${ITOM_DIR}/SDK" CACHE PATH "base path to the sdk directory of itom")
-#SET(ITOM_SDK_DIR "${ITOM_DIR}/SDK" CACHE PATH "base path to the sdk directory of itom")
-
 #########################################################################
 #set general things
 #########################################################################
@@ -40,44 +37,70 @@ ELSE (${CMAKE_MAJOR_VERSION} EQUAL 3)
     ENDIF (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} STRGREATER 2.7)
 ENDIF (${CMAKE_MAJOR_VERSION} EQUAL 3)
 
+#These are the overall pre-compiler directives for itom and its plugins:
+#
+#Windows:
+#  x86: WIN32, _WIN32
+#  x64: WIN32, _WIN32, WIN64, _WIN64
+#Linux:
+#       linux, Linux
+#Apple:
+#       __APPLE__
+IF(CMAKE_HOST_WIN32)
+    IF(BUILD_TARGET64)
+        SET(CMAKE_CXX_FLAGS "/DWIN32 /D_WIN32 /DWIN64 /D_WIN64" ${CMAKE_CXX_FLAGS})
+    ELSE(BUILD_TARGET64)
+        SET(CMAKE_CXX_FLAGS "/DWIN32 /D_WIN32" ${CMAKE_CXX_FLAGS})
+    ENDIF(BUILD_TARGET64)
+ELSEIF(CMAKE_HOST_APPLE)
+    ADD_DEFINITIONS(-D__APPLE__)
+ELSEIF(CMAKE_HOST_UNIX) #this also includes apple, which is however already handled above
+    ADD_DEFINITIONS(-DLinux -Dlinux)
+ENDIF()
 
-#on windows systems, replace WIN32 preprocessor by _WIN64 if on 64bit
-if(CMAKE_HOST_WIN32)
-    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-        string (REPLACE "/DWIN32" "/D_WIN64" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS}) 
-    else() 
-        #ok
-    endif()
-endif()
 
-#on MSVC enable build using OpenMP for compiling
 if(MSVC)
     ADD_DEFINITIONS(/MP)
 
     # set some optimization compiler flags
     # i.e.:
     #   - Ox full optimization (replaces standard O2 set by cmake)
-    #    - Oi enable intrinsic functions
-    #    - Ot favor fast code
-    #    - Oy omit frame pointers
-    #    - GL whole program optimization
-    #     - GT fibre safe optimization
-    #    - openmp enable openmp support, isn't enabled globally here as it breaks opencv
-    SET ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /Ot /Oy /GL /openmp -D USEOPENMP" )
-    SET ( CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /Ot /Oy /GL /openmp -D USEOPENMP" )
+    #   - Oi enable intrinsic functions
+    #   - Ot favor fast code
+    #   - Oy omit frame pointers
+    #   - GL whole program optimization
+    #   - GT fibre safe optimization
+    #   - openmp enable openmp support, isn't enabled globally here as it breaks opencv
+    SET ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /Ot /Oy /GL" )
+    SET ( CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi /Ot /Oy /GL" )
     SET ( CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
-endif (MSVC)
+ENDIF (MSVC)
 
-IF (UNIX)
-    find_package(OpenMP)
-    if (OPENMP_FOUND)
-        set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-        set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-        SET ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D USEOPENMP" )
-        SET ( CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -D USEOPENMP" )
-    endif()
-    message(STATUS "enabeling openmp for linux")
-ENDIF (UNIX)
+#try to enable OpenMP (e.g. not available with VS Express)
+find_package(OpenMP QUIET)
+
+IF (OPENMP_FOUND)
+    message(STATUS "OpenMP found and enabled for release compilation")
+    SET ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${OpenMP_CXX_FLAGS} -D USEOPENMP" )
+    SET ( CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${OpenMP_C_FLAGS} -D USEOPENMP" )
+ELSE(OPENMP_FOUND)
+    message(STATUS "OpenMP not found.")
+ENDIF(OPENMP_FOUND)
+
+# Begin: Remove duplicates compilation flags
+separate_arguments(CMAKE_CXX_FLAGS)
+list(REMOVE_DUPLICATES CMAKE_CXX_FLAGS)
+string(REPLACE ";" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+
+separate_arguments(CMAKE_CXX_FLAGS_RELEASE)
+list(REMOVE_DUPLICATES CMAKE_CXX_FLAGS_RELEASE)
+string(REPLACE ";" " " CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+
+separate_arguments(CMAKE_C_FLAGS_RELEASE)
+list(REMOVE_DUPLICATES CMAKE_C_FLAGS_RELEASE)
+string(REPLACE ";" " " CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
+# End: Remove duplicates compilation flags
+
 
 IF (BUILD_ITOMLIBS_SHARED OR ITOM_SDK_SHARED_LIBS)
     ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
@@ -87,7 +110,7 @@ MACRO (BUILD_PARALLEL_LINUX targetName)
   if(CMAKE_COMPILER_IS_GNUCXX)
       message(STATUS "GNUCXX pipe flag enabled")
       set_target_properties(${targetName} PROPERTIES COMPILE_FLAGS "-pipe")
-  endif(CMAKE_COMPILER_IS_GNUCXX)
+  ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 ENDMACRO (BUILD_PARALLEL_LINUX)
 
 
@@ -113,34 +136,34 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
         if (CMAKE_VERSION VERSION_GREATER 2.8.7)
             if (POLICY CMP0020)
                 cmake_policy(SET CMP0020 NEW)
-            endif (POLICY CMP0020)
-        else ()
+            ENDIF (POLICY CMP0020)
+        ELSE ()
             MESSAGE(SEND_ERROR "with cmake <= 2.8.7 Qt5 cannot be detected.")
-        endif ()
+        ENDIF ()
         SET(DETECT_QT5 TRUE)
     ELSEIF(${BUILD_QTVERSION} STREQUAL "auto")
         if (CMAKE_VERSION VERSION_GREATER 2.8.7)
             if (POLICY CMP0020)
                 cmake_policy(SET CMP0020 NEW)
-            endif (POLICY CMP0020)
+            ENDIF (POLICY CMP0020)
             SET(DETECT_QT5 TRUE)
-        else ()
+        ELSE ()
             MESSAGE(STATUS "with cmake <= 2.8.7 no Qt4 auto-detection is possible. Search for Qt4")
             SET(DETECT_QT5 FALSE)
-        endif ()
+        ENDIF ()
     ELSE()
         MESSAGE(SEND_ERROR "wrong value for BUILD_QTVERSION. auto, Qt4 or Qt5 allowed")
     ENDIF()
     set (QT5_FOUND FALSE)
         
     IF (DETECT_QT5)
-		
+        
         #TRY TO FIND QT5
         find_package(Qt5 COMPONENTS Core QUIET)
         
-        if (${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND")
-			
-	        #maybe Qt5.0 is installed that does not support the overall FindQt5 script
+        IF (${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND")
+            
+            #maybe Qt5.0 is installed that does not support the overall FindQt5 script
             find_package(Qt5Core QUIET)
             IF (NOT Qt5Core_FOUND)
                 IF(${BUILD_QTVERSION} STREQUAL "auto")
@@ -151,11 +174,11 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
             ELSE (NOT Qt5Core_FOUND)
                 set(QT5_FOUND TRUE)
                 
-                if (WIN32)
+                IF (WIN32)
                     find_package(WindowsSDK REQUIRED)
                     set (CMAKE_PREFIX_PATH "${WINDOWSSDK_PREFERRED_DIR}/Lib/")
                     set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${WINDOWSSDK_PREFERRED_DIR}/Lib/)
-                endif (WIN32)
+                ENDIF (WIN32)
                 
                 set(QT5_FOUND TRUE)
                 
@@ -174,13 +197,13 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
                 ENDFOREACH (comp)
             ENDIF (NOT Qt5Core_FOUND)
             
-        else (${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND")
+        ELSE (${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND")
             #QT5 could be found with component based find_package command
-            if (WIN32)
+            IF (WIN32)
               find_package(WindowsSDK REQUIRED)
               set (CMAKE_PREFIX_PATH "${WINDOWSSDK_PREFERRED_DIR}/Lib/")
               set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${WINDOWSSDK_PREFERRED_DIR}/Lib/)
-            endif (WIN32)
+            ENDIF (WIN32)
             
             find_package(Qt5 COMPONENTS ${Components} REQUIRED)
             set(QT5_FOUND TRUE)
@@ -196,11 +219,11 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
                     add_definitions(${Qt5Widgets_DEFINITIONS})
                 ENDIF ()
             ENDFOREACH (comp)
-        endif (${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
+        ENDIF (${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
         
     ENDIF (DETECT_QT5)
 
-    if (NOT DETECT_QT5)
+    IF (NOT DETECT_QT5)
         #TRY TO FIND QT4
         SET(QT5_FOUND FALSE)
         find_package(Qt4 REQUIRED)
@@ -233,7 +256,7 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
         ENDFOREACH (comp)
         
         INCLUDE(${QT_USE_FILE})
-    endif (NOT DETECT_QT5)
+    ENDIF (NOT DETECT_QT5)
     
     ADD_DEFINITIONS(${QT_DEFINITIONS})
 ENDMACRO (FIND_PACKAGE_QT)
@@ -245,7 +268,7 @@ ENDMACRO (FIND_PACKAGE_QT)
 # PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 #
 # Hereby, ITOM_LANGUAGES is a semicolon-separeted string with different languages, e.g. "de;fr"
-# EXISTING_TRANSLATION_FILES is an option (ON/OFF) that decides whether the qm-file should only be build from the existing ts-file or if the ts-file
+# EXISTING_TRANSLATION_FILES is an option (ON/OFF) that decides whether the qm-file should only be build from the existing ts-file or IF the ts-file
 # is reconfigured with respect to the given files in FILES_TO_TRANSLATE.
 #
 # Please note, that you need to add the resulting QM_FILES to the copy-list using the macro
@@ -256,28 +279,28 @@ MACRO (PLUGIN_TRANSLATION qm_files target force_translation_update existing_tran
     SET(TRANSLATION_OUTPUT_FILES)
     SET(QMFILES)
 
-    if (${force_translation_update})
-        if (QT5_FOUND)
+    IF (${force_translation_update})
+        IF (QT5_FOUND)
             QT5_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
-        else (QT5_FOUND)
+        ELSE (QT5_FOUND)
             QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target} ${languages} ${files_to_translate})
-        endif (QT5_FOUND)
+        ENDIF (QT5_FOUND)
         
         add_custom_target (_${target}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
         add_dependencies(${target} _${target}_translation)
         
-        if (QT5_FOUND)
+        IF (QT5_FOUND)
             QT5_ADD_TRANSLATION_ITOM(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
-        else (QT5_FOUND)
+        ELSE (QT5_FOUND)
             QT4_ADD_TRANSLATION_ITOM(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${TRANSLATIONS_FILES})
-        endif (QT5_FOUND)
-    else (${force_translation_update})
-        if (QT5_FOUND)
+        ENDIF (QT5_FOUND)
+    ELSE (${force_translation_update})
+        IF (QT5_FOUND)
             QT5_ADD_TRANSLATION_ITOM(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${existing_translation_files})
-        else (QT5_FOUND)
+        ELSE (QT5_FOUND)
             QT4_ADD_TRANSLATION_ITOM(QMFILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target} ${existing_translation_files})
-        endif (QT5_FOUND)
-    endif (${force_translation_update})
+        ENDIF (QT5_FOUND)
+    ENDIF (${force_translation_update})
     
     SET(${qm_files} ${${qm_files}} ${QMFILES})
     
@@ -368,15 +391,15 @@ MACRO(QT4_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
     foreach (_file ${_lupdate_files})
             get_filename_component(_ext ${_file} EXT)
             get_filename_component(_abs_FILE ${_file} ABSOLUTE)
-            if(_ext MATCHES "ts")
+            IF(_ext MATCHES "ts")
                     list(APPEND _my_tsfiles ${_abs_FILE})
-            else()
-                    if(NOT _ext)
+            ELSE()
+                    IF(NOT _ext)
                             list(APPEND _my_dirs ${_abs_FILE})
-                    else()
+                    ELSE()
                             list(APPEND _my_sources ${_abs_FILE})
-                    endif()
-            endif()
+                    ENDIF()
+            ENDIF()
     endforeach()
 
     #message(STATUS "native ts ${_my_tsfiles}")
@@ -386,9 +409,9 @@ MACRO(QT4_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
             #message(STATUS "scan ${_tsFile}")
             get_filename_component(_ext ${_tsFile} EXT)
             get_filename_component(_abs_FILE ${_tsFile} ABSOLUTE)
-            if(EXISTS ${_abs_FILE})
+            IF(EXISTS ${_abs_FILE})
                     list(APPEND _my_tsfiles ${_abs_FILE})
-            else()
+            ELSE()
                     #message(STATUS "...ist aber nicht da")
                     #create new ts file
                     add_custom_command(OUTPUT ${_abs_FILE}_new
@@ -397,14 +420,14 @@ MACRO(QT4_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
                             DEPENDS ${_my_sources} VERBATIM)
                     list(APPEND _my_tsfiles ${_abs_FILE})
                     set(${outputFiles} ${${outputFiles}} ${_abs_FILE}_new) #add output file for custom command to outputFiles list
-            endif()
+            ENDIF()
     endforeach()
 
     set(${tsFiles} ${${tsFiles}} ${_my_tsfiles}) #add translation files (*.ts) to tsFiles list
 
     foreach(_ts_file ${_my_tsfiles})
             #message(STATUS "update ${_ts_file}")
-            if(_my_sources)
+            IF(_my_sources)
                     # make a .pro file to call lupdate on, so we don't make our commands too
                     # long for some systems
                     get_filename_component(_ts_name ${_ts_file} NAME_WE)
@@ -420,7 +443,7 @@ MACRO(QT4_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
                             set(_pro_includes "${_pro_includes} \"${_abs_include}\"")
                     endforeach()
                     file(WRITE ${_ts_pro} "SOURCES = ${_pro_srcs}\nINCLUDEPATH = ${_pro_includes}\n")
-            endif()
+            ENDIF()
             add_custom_command(OUTPUT ${_ts_file}_update
                     COMMAND ${QT_LUPDATE_EXECUTABLE}
                     ARGS ${_lupdate_options} ${_ts_pro} ${_my_dirs} -locations relative -no-ui-lines -ts ${_ts_file}
@@ -450,15 +473,15 @@ MACRO(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
     foreach (_file ${_lupdate_files})
             get_filename_component(_ext ${_file} EXT)
             get_filename_component(_abs_FILE ${_file} ABSOLUTE)
-            if(_ext MATCHES "ts")
+            IF(_ext MATCHES "ts")
                     list(APPEND _my_tsfiles ${_abs_FILE})
-            else()
-                    if(NOT _ext)
+            ELSE()
+                    IF(NOT _ext)
                             list(APPEND _my_dirs ${_abs_FILE})
-                    else()
+                    ELSE()
                             list(APPEND _my_sources ${_abs_FILE})
-                    endif()
-            endif()
+                    ENDIF()
+            ENDIF()
     endforeach()
 
     #message(STATUS "native ts ${_my_tsfiles}")
@@ -468,9 +491,9 @@ MACRO(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
             #message(STATUS "scan ${_tsFile}")
             get_filename_component(_ext ${_tsFile} EXT)
             get_filename_component(_abs_FILE ${_tsFile} ABSOLUTE)
-            if(EXISTS ${_abs_FILE})
+            IF(EXISTS ${_abs_FILE})
                     list(APPEND _my_tsfiles ${_abs_FILE})
-            else()
+            ELSE()
                     #message(STATUS "...ist aber nicht da")
                     #create new ts file
                     add_custom_command(OUTPUT ${_abs_FILE}_new
@@ -479,14 +502,14 @@ MACRO(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
                             DEPENDS ${_my_sources} VERBATIM)
                     list(APPEND _my_tsfiles ${_abs_FILE})
                     set(${outputFiles} ${${outputFiles}} ${_abs_FILE}_new) #add output file for custom command to outputFiles list
-            endif()
+            ENDIF()
     endforeach()
 
     set(${tsFiles} ${${tsFiles}} ${_my_tsfiles}) #add translation files (*.ts) to tsFiles list
 
     foreach(_ts_file ${_my_tsfiles})
             #message(STATUS "update ${_ts_file}")
-            if(_my_sources)
+            IF(_my_sources)
                     # make a .pro file to call lupdate on, so we don't make our commands too
                     # long for some systems
                     get_filename_component(_ts_name ${_ts_file} NAME_WE)
@@ -502,7 +525,7 @@ MACRO(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
                             set(_pro_includes "${_pro_includes} \"${_abs_include}\"")
                     endforeach()
                     file(WRITE ${_ts_pro} "SOURCES = ${_pro_srcs}\nINCLUDEPATH = ${_pro_includes}\n")
-            endif()
+            ENDIF()
             add_custom_command(OUTPUT ${_ts_file}_update
                     COMMAND ${Qt5_LUPDATE_EXECUTABLE}
                     ARGS ${_lupdate_options} ${_ts_pro} ${_my_dirs} -locations relative -no-ui-lines -ts ${_ts_file}
@@ -553,7 +576,7 @@ ENDMACRO()
 
 #this macro only generates the moc-file but does not compile it, since it is included in another source file.
 #this comes from the ctkCommon project
-#Creates a rule to run moc on infile and create outfile. Use this if for some reason QT5_WRAP_CPP() 
+#Creates a rule to run moc on infile and create outfile. Use this IF for some reason QT5_WRAP_CPP() 
 #isn't appropriate, e.g. because you need a custom filename for the moc file or something similar.
 macro(QT4_GENERATE_MOCS)
   foreach(file ${ARGN})
@@ -562,20 +585,20 @@ macro(QT4_GENERATE_MOCS)
 
     get_filename_component(source_name ${file} NAME_WE)
     get_filename_component(source_ext ${file} EXT)
-    if(${source_ext} MATCHES "\\.[hH]")
-      if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${source_name}.cpp)
+    IF(${source_ext} MATCHES "\\.[hH]")
+      IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${source_name}.cpp)
         set(source_ext .cpp)
-      elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${source_name}.cxx)
+      ELSEIF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${source_name}.cxx)
         set(source_ext .cxx)
-      endif()
-    endif()
+      ENDIF()
+    ENDIF()
     set_property(SOURCE ${source_name}${source_ext} APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${moc_file})
   endforeach()
 endmacro()
 
 #this macro only generates the moc-file but does not compile it, since it is included in another source file.
 #this comes from the ctkCommon project
-#Creates a rule to run moc on infile and create outfile. Use this if for some reason QT5_WRAP_CPP() 
+#Creates a rule to run moc on infile and create outfile. Use this IF for some reason QT5_WRAP_CPP() 
 #isn't appropriate, e.g. because you need a custom filename for the moc file or something similar.
 macro(QT5_GENERATE_MOCS)
   foreach(file ${ARGN})
@@ -584,13 +607,13 @@ macro(QT5_GENERATE_MOCS)
 
     get_filename_component(source_name ${file} NAME_WE)
     get_filename_component(source_ext ${file} EXT)
-    if(${source_ext} MATCHES "\\.[hH]")
-      if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${source_name}.cpp)
+    IF(${source_ext} MATCHES "\\.[hH]")
+      IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${source_name}.cpp)
         set(source_ext .cpp)
-      elseif(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${source_name}.cxx)
+      ELSEIF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${source_name}.cxx)
         set(source_ext .cxx)
-      endif()
-    endif()
+      ENDIF()
+    ENDIF()
     set_property(SOURCE ${source_name}${source_ext} APPEND PROPERTY OBJECT_DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${moc_file})
   endforeach()
 endmacro()
@@ -700,11 +723,11 @@ MACRO (ADD_OUTPUTLIBRARY_TO_SDK_LIB target sources destinations)
         message(SEND_ERROR "ITOM_SDK_DIR is not indicated")
     ENDIF()
     
-    if ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+    IF ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
       SET(SDK_PLATFORM "x86")
-    else ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+    ELSE ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
       SET(SDK_PLATFORM "x64")
-    endif ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+    ENDIF ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
     
     IF(MSVC10)
         SET(SDK_COMPILER "vc10")
@@ -712,8 +735,18 @@ MACRO (ADD_OUTPUTLIBRARY_TO_SDK_LIB target sources destinations)
         SET(SDK_COMPILER "vc9")
     ELSEIF(MSVC8)
         SET(SDK_COMPILER "vc8")
+    ELSEIF(MSVC)
+        SET(SDK_COMPILER "vc${MSVC_VERSION}")
     ELSEIF(CMAKE_COMPILER_IS_GNUCXX)
-    SET(SDK_COMPILER "gnucxx")
+        SET(SDK_COMPILER "gnucxx")
+    ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        SET(SDK_COMPILER "clang")
+    ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        SET(SDK_COMPILER "gnucxx")
+    ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+        SET(SDK_COMPILER "intel")
+    ELSEIF(APPLE)
+        SET(SDK_COMPILER "osx_default")
     ELSE(MSVC10)
         SET(SDK_COMPILER "unknown")
     ENDIF(MSVC10)
@@ -734,11 +767,11 @@ MACRO (ADD_LIBRARY_TO_APPDIR_AND_SDK target sources destinations)
         message(SEND_ERROR "ITOM_APP_DIR is not indicated")
     ENDIF()
 
-    if ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+    IF ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
       SET(SDK_PLATFORM "x86")
-    else ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+    ELSE ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
       SET(SDK_PLATFORM "x64")
-    endif ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
+    ENDIF ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
 
     IF(MSVC10)
         SET(SDK_COMPILER "vc10")
@@ -750,6 +783,14 @@ MACRO (ADD_LIBRARY_TO_APPDIR_AND_SDK target sources destinations)
         SET(SDK_COMPILER "vc${MSVC_VERSION}")
     ELSEIF(CMAKE_COMPILER_IS_GNUCXX)
         SET(SDK_COMPILER "gnucxx")
+    ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        SET(SDK_COMPILER "clang")
+    ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+        SET(SDK_COMPILER "gnucxx")
+    ELSEIF(CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+        SET(SDK_COMPILER "intel")
+    ELSEIF(APPLE)
+        SET(SDK_COMPILER "osx_default")
     ELSE(MSVC10)
         SET(SDK_COMPILER "unknown")
     ENDIF(MSVC10)
@@ -787,7 +828,7 @@ MACRO (POST_BUILD_COPY_FILES target sources destinations)
     
     SET (destPathes "")
     foreach(dest ${${destinations}})
-        #if dest is a full name to a file:
+        #IF dest is a full name to a file:
         #GET_FILENAME_COMPONENT(destPath ${dest} PATH)
         #LIST(APPEND destPathes ${destPath})
         LIST(APPEND destPathes ${dest})
@@ -831,7 +872,7 @@ MACRO (POST_BUILD_COPY_FILE_TO_LIB_FOLDER target sources)
     #message(STATUS "sources LEN: ${len1}")
     #message(STATUS "destinations LEN: ${len2}")
     
-    #create lib folder (for safety only, if it does not exist some cmake versions do not copy the files in the 
+    #create lib folder (for safety only, IF it does not exist some cmake versions do not copy the files in the 
     #desired way using copy_if_different below
     ADD_CUSTOM_COMMAND(TARGET ${target} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory
@@ -906,10 +947,10 @@ MACRO(COPY_DIRECTORY_IF_CHANGED in_dir out_dir target pattern recurse)
     #message("Copying directory ${in_dir}")
     FILE(${recurse} in_file_list ${in_dir}/${pattern})
     FOREACH(in_file ${in_file_list})
-        if(NOT ${in_file} MATCHES ".*svn.*")
+        IF(NOT ${in_file} MATCHES ".*svn.*")
             STRING(REGEX REPLACE ${in_dir} ${out_dir} out_file ${in_file}) 
             COPY_FILE_IF_CHANGED(${in_file} ${out_file} ${target})
-        endif(NOT ${in_file} MATCHES ".*svn.*")
+        ENDIF(NOT ${in_file} MATCHES ".*svn.*")
     ENDFOREACH(in_file)     
 ENDMACRO(COPY_DIRECTORY_IF_CHANGED)
 
@@ -921,3 +962,60 @@ MACRO(PLUGIN_DOCUMENTATION target main_document) #main_document without .rst at 
     SET(PLUGIN_DOC_MAIN ${main_document})
     configure_file(${ITOM_SDK_DIR}/docs/pluginDoc/plugin_doc_config.cfg.in ${CMAKE_CURRENT_BINARY_DIR}/docs/plugin_doc_config.cfg)
 ENDMACRO(PLUGIN_DOCUMENTATION)
+
+
+# OSX ONLY: Copy files from source directory to destination directory in app bundle, substituting any
+# variables (RECURSIVE). Create destination directory if it does not exist. destDir append ../abc.app/MacOS.
+IF(APPLE)
+    MACRO(COPY_TO_BUNDLE target srcDir destDir)
+        FILE(GLOB_RECURSE templateFiles RELATIVE ${srcDir} ${srcDir}/*)
+        FOREACH(templateFile ${templateFiles})
+            set(srcTemplatePath ${srcDir}/${templateFile})
+            IF(NOT IS_DIRECTORY ${srcTemplatePath})
+                add_custom_command(TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${srcTemplatePath}" "$<TARGET_FILE_DIR:${target_name}>/${destDir}/${templateFile}")
+            ENDIF(NOT IS_DIRECTORY ${srcTemplatePath})
+        ENDFOREACH(templateFile)
+    ENDMACRO(COPY_TO_BUNDLE)
+ENDIF(APPLE)
+
+# OSX ONLY: Copy files from source directory to destination directory in app bundle, substituting any
+# variables (RECURSIVE). Create destination directory if it does not exist. destDir append ../abc.app/MacOS.
+IF(APPLE)
+    MACRO(COPY_TO_BUNDLE_NONREC target srcDir destDir)
+        FILE(GLOB templateFiles RELATIVE ${srcDir} ${srcDir}/*)
+        FOREACH(templateFile ${templateFiles})
+            set(srcTemplatePath ${srcDir}/${templateFile})
+            IF(NOT IS_DIRECTORY ${srcTemplatePath})
+                add_custom_command(TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${srcTemplatePath}" "$<TARGET_FILE_DIR:${target_name}>/${destDir}/${templateFile}")
+            ENDIF(NOT IS_DIRECTORY ${srcTemplatePath})
+        ENDFOREACH(templateFile)
+    ENDMACRO(COPY_TO_BUNDLE_NONREC)
+ENDIF(APPLE)
+
+# OSX ONLY: Copy files of certain type from source directory to destination directory in app bundle, substituting any
+# variables (RECURSIVE). Create destination directory if it does not exist. destDir append ../abc.app/MacOS
+IF(APPLE)
+    MACRO(COPY_TYPE_TO_BUNDLE target srcDir destDir type)
+        FILE(GLOB_RECURSE templateFiles RELATIVE ${srcDir} ${srcDir}/*${type})
+        FOREACH(templateFile ${templateFiles})
+            set(srcTemplatePath ${srcDir}/${templateFile})
+            IF(NOT IS_DIRECTORY ${srcTemplatePath})
+                add_custom_command(TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${srcTemplatePath}" "$<TARGET_FILE_DIR:${target_name}>/${destDir}/${templateFile}")
+            ENDIF(NOT IS_DIRECTORY ${srcTemplatePath})
+        ENDFOREACH(templateFile)
+    ENDMACRO(COPY_TYPE_TO_BUNDLE)
+ENDIF(APPLE)
+
+# OSX ONLY: Copy files of certain type from source directory to destination directory in app bundle, substituting any
+# variables (NON-RECURSIVE). Create destination directory if it does not exist. destDir append ../abc.app/MacOS
+IF(APPLE)
+    MACRO(COPY_TYPE_TO_BUNDLE_NONREC target srcDir destDir type)
+        FILE(GLOB templateFiles RELATIVE ${srcDir} ${srcDir}/*${type})
+        FOREACH(templateFile ${templateFiles})
+            set(srcTemplatePath ${srcDir}/${templateFile})
+            IF(NOT IS_DIRECTORY ${srcTemplatePath})
+                add_custom_command(TARGET ${target} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${srcTemplatePath}" "$<TARGET_FILE_DIR:${target_name}>/${destDir}/${templateFile}")
+            ENDIF(NOT IS_DIRECTORY ${srcTemplatePath})
+        ENDFOREACH(templateFile)
+    ENDMACRO(COPY_TYPE_TO_BUNDLE_NONREC)
+ENDIF(APPLE)

@@ -26,6 +26,7 @@
 /*if you add any include to this file you will DIE an immediate, horrible, painful death*/
 
 #include <string>
+#include <exception>
 //#ifndef Q_MOC_RUN
 //    #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API
 //    #define NO_IMPORT_ARRAY
@@ -38,9 +39,13 @@
 #ifndef Q_MOC_RUN
     //python
     // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-    #if (defined _DEBUG) && (!defined linux)
+    #if (defined _DEBUG) && (defined WIN32)
         #undef _DEBUG
         #if (defined linux) | (defined CMAKE)
+            #include "Python.h"
+            #include "node.h"
+            #include "numpy/arrayobject.h"
+        #elif (defined __APPLE__) | (defined CMAKE)
             #include "Python.h"
             #include "node.h"
             #include "numpy/arrayobject.h"
@@ -52,6 +57,10 @@
         #define _DEBUG
     #else
     #ifdef linux
+        #include "Python.h"
+        #include "node.h"
+        #include "numpy/arrayobject.h"
+    #elif (defined __APPLE__)
         #include "Python.h"
         #include "node.h"
         #include "numpy/arrayobject.h"
@@ -67,16 +76,7 @@
 
 #include "pythonNpDataObject.h"
 #include "pythonItom.h"
-
-/*
-#ifdef linux
-    #include "frameobject.h"
-    #include "traceback.h"
-#else
-    #include "include/frameobject.h" //!< for traceback
-    #include "include/traceback.h"
-#endif
-*/
+#include "pythonProxy.h"
 
 #include "../models/breakPointModel.h"
 #include "../../common/sharedStructuresQt.h"
@@ -88,6 +88,7 @@
 #include <qqueue.h>
 #include <qset.h>
 #include <qpointer.h>
+#include <qatomic.h>
 
 
 /* definition and macros */
@@ -101,6 +102,28 @@ class QTimer;
 
 namespace ito
 {
+
+class FuncWeakRef
+{
+public:
+    FuncWeakRef();
+    FuncWeakRef(PythonProxy::PyProxy *proxyObject, PyObject *argTuple = NULL);
+    FuncWeakRef(const FuncWeakRef &rhs);
+    ~FuncWeakRef();
+    FuncWeakRef& operator =(FuncWeakRef rhs);
+
+    PythonProxy::PyProxy* getProxyObject() const { return m_proxyObject; } //borrowed reference
+    PyObject* getArguments() const { return m_argument; } //borrowed reference
+    bool isValid() const { return (m_proxyObject != NULL); }
+
+    void setHandle(const size_t &handle);
+    size_t getHandle() const { return m_handle; }
+private:
+    PythonProxy::PyProxy *m_proxyObject;
+    PyObject *m_argument;
+    size_t m_handle;
+};
+
 
 class PythonEngine : public QObject
 {
@@ -137,6 +160,8 @@ public:
 
     QList<int> parseAndSplitCommandInMainComponents(const char *str, QByteArray &encoding) const; //can be directly called from different thread
 
+	static bool isInterruptQueued();
+
 protected:
     //RetVal syntaxCheck(char* pythonFileName);       // syntaxCheck for file with filename pythonFileName
     ito::RetVal runPyFile(const QString &pythonFileName);         // run file pythonFileName
@@ -148,7 +173,13 @@ protected:
 
     ito::RetVal modifyTracebackDepth(int NrOfLevelsToPopAtFront = -1, bool showTraceback = true);
 
+    PyObject* setPyErrFromException(const std::exception &exc);
+
+#if QT_VERSION >= 0x050000
+    void connectNotify(const QMetaMethod &signal);
+#else
     void connectNotify(const char* signal);
+#endif
 
 private:
     static PythonEngine *getInstanceInternal();
@@ -185,6 +216,9 @@ private:
 
     ito::RetVal autoReloaderCheck();
 
+    static int queuedInterrupt(void *state); 
+	
+
     //member variables
     bool m_started;
     //QString m_itomMemberClasses;
@@ -218,12 +252,15 @@ private:
 
     QSet<ito::PyWorkspaceContainer*> m_mainWorkspaceContainer;
     QSet<ito::PyWorkspaceContainer*> m_localWorkspaceContainer;
-    QHash<QString, QPair<PyObject*,PyObject*> > m_pyFuncWeakRefHashes; //!< hash table containing weak reference to callable python methods or functions and as second, optional PyObject* an tuple, passed as argument to that function. These functions are for example executed by menu-clicks in the main window.
-    int m_pyFuncWeakRefHashesAutoInc;
+    QHash<size_t, FuncWeakRef> m_pyFuncWeakRefHashes; //!< hash table containing weak reference to callable python methods or functions and as second, optional PyObject* an tuple, passed as argument to that function. These functions are for example executed by menu-clicks in the main window.
+    size_t m_pyFuncWeakRefAutoInc;
+
+    QString pythonPathPrefix; //!< absolute path to the python executable
+
     bool m_executeInternalPythonCodeInDebugMode; //!< if true, button events, user interface connections to python methods... will be executed by debugger
     PyMethodDef* PythonAdditionalModuleITOM;
 
-    // decides if itom is automatically included in every source file before it´s handed to the syntax checker
+    // decides if itom is automatically included in every source file before it is handed to the syntax checker
     bool m_includeItom;
 
     struct AutoReload
@@ -250,8 +287,11 @@ private:
     //other static members
     static QMutex instatiated;
     static QMutex instancePtrProtection;
+    static QString fctHashPrefix;
 
     static PythonEngine* instance;
+
+    QAtomicInt m_interruptCounter; //protects that a python interrupt can only be placed if there is no interrupt event queued yet.
 
     // friend class
     friend class ito::PythonItom;
@@ -261,10 +301,6 @@ signals:
     void pythonStateChanged(tPythonTransitions pyTransition);
     void pythonModifyLocalDict(PyObject* localDict, ItomSharedSemaphore* semaphore);
     void pythonModifyGlobalDict(PyObject* globalDict, ItomSharedSemaphore* semaphore);
-    void pythonAddToolbarButton(QString toolbarName, QString buttonName, QString buttonIconFilename, QString pythonCode);
-    void pythonRemoveToolbarButton(QString toolbarName, QString buttonName);
-    void pythonAddMenuElement(int typeID, QString key, QString name, QString code, QString icon);
-    void pythonRemoveMenuElement(QString key);
     void pythonCurrentDirChanged();
     void updateCallStack(QStringList filenames, IntList lines, QStringList methods);
     void deleteCallStack();
@@ -282,7 +318,7 @@ public slots:
     void pythonDebugFile(QString filename);
     void pythonRunStringOrFunction(QString cmdOrFctHash);
     void pythonDebugStringOrFunction(QString cmdOrFctHash);
-    void pythonInterruptExecution() const;
+    void pythonInterruptExecution();
     void pythonDebugCommand(tPythonDbgCmd cmd);
 
     void setAutoReloader(bool enabled, bool checkFile, bool checkCmd, bool checkFct);

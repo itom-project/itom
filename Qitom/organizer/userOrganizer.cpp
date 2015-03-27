@@ -22,7 +22,7 @@
 
 #include "AppManagement.h"
 #include "userOrganizer.h"
-#include "./models/UserModel.h"
+
 #include "./ui/dialogSelectUser.h"
 
 #include <qsettings.h>
@@ -44,9 +44,24 @@ namespace ito
 
 //! userOrganizer implementation
 //----------------------------------------------------------------------------------------------------------------------------------
-UserOrganizer::UserOrganizer(void) : QObject(), m_userRole(2), m_userName("ito"), m_features(allFeatures), m_settingsFile("") 
+UserOrganizer::UserOrganizer(void) :
+    QObject(),
+    // 09/02/15 ck changed default role to developer
+    m_userRole(userRoleDeveloper),
+    m_features(~UserFeatures(0)),
+    m_settingsFile(""),
+    m_userModel(new UserModel())
 {
     AppManagement::setUserOrganizer(this);
+
+    m_strConstStdUser = tr("Standard User");
+    m_userName = m_strConstStdUser;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+UserOrganizer::~UserOrganizer(void)
+{
+    DELETE_AND_SET_NULL(m_userModel);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -87,96 +102,60 @@ RetVal UserOrganizer::closeInstance(void)
     \param defUserName
     \return RetVal
 */
-ito::RetVal UserOrganizer::loadSettings(const QString defUserName)
+ito::RetVal UserOrganizer::loadSettings(const QString &defUserName)
 {
-    QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, "itomSettings");
-    QSettings::setDefaultFormat(QSettings::IniFormat);
-    UserModel curUserModel;
+    ito::RetVal retval = scanSettingFilesAndLoadModel();
 
-    QString settingsFile;
     QDir appDir(QCoreApplication::applicationDirPath());
     if (!appDir.cd("itomSettings"))
     {
         appDir.mkdir("itomSettings");
         appDir.cd("itomSettings");
     }
-    QStringList iniList = appDir.entryList(QStringList("itom_*.ini"));
 
-    foreach(QString iniFile, iniList) 
+    QString settingsFile;
+
+    if (m_userModel->rowCount() > 1) 
     {
-        QSettings settings(QDir::cleanPath(appDir.absoluteFilePath(iniFile)), QSettings::IniFormat);
+        bool foundDefUser = false;
 
-        settings.beginGroup("ITOMIniFile");
-        if (settings.contains("name"))
+        DialogSelectUser userDialog(m_userModel);
+
+        // User(name) variable is not necessarily OS dependend. So this will give us the best chance to find the actual user name http://stackoverflow.com/questions/26552517/get-system-username-in-qt
+        QString curSysUser = qgetenv("USERNAME");
+        if (curSysUser.isEmpty())
+            curSysUser = qgetenv("USER");
+
+        if (defUserName.isEmpty())
         {
-            qDebug() << "found user ini file: " << iniFile;
-            curUserModel.addUser(UserInfoStruct(QString(settings.value("name").toString()), iniFile.mid(5, iniFile.length() - 9), QDir::cleanPath(appDir.absoluteFilePath(iniFile)), QString(settings.value("role").toString())));
+            userDialog.selectUser(curSysUser);
         }
-        settings.endGroup();
-    }
-
-    if (curUserModel.rowCount() > 0) 
-    {
-        char foundDefUser = 0;
-
-        DialogSelectUser userDialog;
-        userDialog.ui.userList->setModel(&curUserModel);
-        userDialog.DialogInit(&curUserModel);
-#if linux
-        QString curSysUser(qgetenv("USER")); ///for MAc or Linux
-#else
-        QString curSysUser(qgetenv("USERNAME")); //for windows
-#endif
-
-        for (int curIdx = 0; curIdx < curUserModel.rowCount(); curIdx++)
+        else
         {
-            QModelIndex midx = curUserModel.index(curIdx, 1);
-            if (midx.isValid())
-            {
-                QString curUid(midx.data().toString());
-                if (!defUserName.isEmpty())
-                {
-                    if (curUid == defUserName)
-                    {
-                        QModelIndex actIdx = curUserModel.index(curIdx, 0);
-                        userDialog.ui.userList->setCurrentIndex(actIdx);
-                        foundDefUser = 1;
-                    }
-                }
-                else
-                {
-                    if (curUid == curSysUser)
-                    {
-                        QModelIndex actIdx = curUserModel.index(curIdx, 0);
-                        userDialog.ui.userList->setCurrentIndex(actIdx);
-                    }
-                }
-            }
+            foundDefUser = userDialog.selectUser(defUserName);
         }
 
-        if (foundDefUser == 0)
+        if (!foundDefUser)
         {
-            int ret = userDialog.exec();
-            if (ret == 0)
+            if (userDialog.exec() == QDialog::Rejected)
             {
                 return ito::retError;
             }
 
-            QModelIndex curIdx = userDialog.ui.userList->currentIndex();
-            QModelIndex fIdx = curUserModel.index(curIdx.row(), 3);
-            settingsFile = QString(fIdx.data().toString());
+            QModelIndex curIdx = userDialog.selectedIndex();
+            QModelIndex fIdx = m_userModel->index(curIdx.row(), 3);
+            settingsFile = fIdx.data().toString();
         }
         else
         {
             settingsFile = QString("itom_").append(defUserName).append(".ini");
         }
-        qDebug() << "settingsFile path: " << settingsFile;
-        setSettingsFile(settingsFile);
-        QSettings settings(settingsFile, QSettings::IniFormat);
-        setUserName(settings.value("ITOMIniFile/name").toString());
-        setUserRole(settings.value("ITOMIniFile/role").toString());
 
-        setUiFlags((userFeatures)getFlagsFromFile());
+        qDebug() << "settingsFile path: " << settingsFile;
+        m_settingsFile = settingsFile;
+
+        QString uid;
+        retval += readUserDataFromFile(settingsFile, m_userName, uid, m_features, m_userRole);
     }
     else
     {
@@ -198,67 +177,207 @@ ito::RetVal UserOrganizer::loadSettings(const QString defUserName)
         }
 
         qDebug() << "settingsFile path: " << settingsFile;
-        setSettingsFile(settingsFile);
-        setUserRole("developer");
-        setUiFlags((userFeatures)allFeatures);
+        m_settingsFile = settingsFile;
+        m_userName = m_strConstStdUser;
+//        m_userRole = userRoleAdministrator;
+        // 09/02/15 ck changed default role to developer
+        m_userRole = userRoleDeveloper;
+        m_features = ~UserFeatures();
     }
 
     return ito::retOk;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-//! shortdesc
-/*! longdesc
-
-    \param fileName
-    \return int
-*/
-int UserOrganizer::getFlagsFromFile(QString fileName)
+//----------------------------------------------------------------------------------------------------------
+ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
 {
-    QString uid = getUserID(fileName);
-    QCryptographicHash nameHash(QCryptographicHash::Sha1);
-    nameHash.addData(uid.toLatin1().data(), uid.length());
+    ito::RetVal retval;
+    m_userModel->removeAllUsers();
 
-    QSettings settings(fileName, QSettings::IniFormat);
-    settings.beginGroup("ITOMIniFile");
-    QByteArray fileFlags = settings.value("flags").toByteArray();
-    settings.endGroup();
+    QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, "itomSettings");
+    QSettings::setDefaultFormat(QSettings::IniFormat);
 
-    QByteArray res;
-    for (int n = 0; n < nameHash.result().length(); n++)
+    QString settingsFile;
+    QDir appDir(QCoreApplication::applicationDirPath());
+    if (!appDir.cd("itomSettings"))
     {
-        res.append(fileFlags.at(n) ^ nameHash.result().at(n));
+        appDir.mkdir("itomSettings");
+        appDir.cd("itomSettings");
     }
 
-    return res.toInt();
+    QStringList iniList = appDir.entryList(QStringList("itom_*.ini"));
+    bool userExists;
+    QString absfile;
+
+    foreach(QString iniFile, iniList) 
+    {
+        absfile = QDir::cleanPath(appDir.absoluteFilePath(iniFile));
+        QSettings settings(absfile, QSettings::IniFormat);
+
+        settings.beginGroup("ITOMIniFile");
+        userExists = settings.contains("name");
+        settings.endGroup();
+
+        if (userExists)
+        {
+            qDebug() << "found user ini file: " << iniFile;
+            UserInfoStruct uis;
+            uis.iniFile = absfile;
+            uis.standardUser = false;
+            if (readUserDataFromFile(absfile, uis.name, uis.id, uis.features, uis.role) == ito::retOk)
+            {
+                m_userModel->addUser(uis);
+            }
+        }
+    }
+
+    // 09/02/15 ck changed default role to developer
+    UserInfoStruct uis(m_strConstStdUser, "itom.ini", QDir::cleanPath(appDir.absoluteFilePath("itom.ini")), userRoleDeveloper, ~UserFeatures(), true);
+    m_userModel->addUser(uis);
+
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! shortdesc
-/*! longdesc
-
-    \param flags
-    \param iniFile
-*/
-void UserOrganizer::writeFlagsToFile(int flags, QString iniFile)
+ito::RetVal UserOrganizer::readUserDataFromFile(const QString &filename, QString &username, QString &uid, UserFeatures &features, UserRole &role)
 {
-    QSettings settings(iniFile, QSettings::IniFormat);
-    QString uid = getUserID(iniFile);
-    settings.beginGroup("ITOMIniFile");
-    QCryptographicHash nameHash(QCryptographicHash::Sha1);
-    nameHash.addData(uid.toLatin1().data(), uid.length());
+    ito::RetVal retval;
+    QFileInfo fi(filename);
 
-    QByteArray fileFlags;
-    QByteArray qbaFlags = QByteArray::number(flags);
-    for (int n = 0; n < nameHash.result().length(); n++)
+    if (fi.exists())
     {
-        if (n >= qbaFlags.length())
-            fileFlags.append(nameHash.result().at(n));
+        QSettings settings(filename, QSettings::IniFormat);
+        settings.beginGroup("ITOMIniFile");
+
+        //username
+        username = settings.value("name", m_strConstStdUser).toString();
+
+        //uid
+        uid = getUserID(filename);
+
+        //user type
+        // 09/02/15 ck changed default role to developer
+        QString roleStr = settings.value("role", "developer").toString().toLower();
+        if (roleStr == "developer")
+        {
+            role = userRoleDeveloper;
+        }
+        else if (roleStr == "administrator")
+        {
+            role = userRoleAdministrator;
+        }
         else
-            fileFlags.append(qbaFlags.at(n) ^ nameHash.result().at(n));
+        {
+            role = userRoleBasic;
+        }
+
+        //features        
+        QByteArray featureSha1;
+        QCryptographicHash nameHash(QCryptographicHash::Sha1);
+        nameHash.addData(uid.toLatin1().data(), uid.length());
+
+        if (settings.contains("userFeatures"))
+        {
+            featureSha1 = settings.value("userFeatures").toByteArray();
+        }
+        else
+        {
+            //compatibility to old, deprecated setting keyword 'flags'
+            featureSha1 = settings.value("flags").toByteArray();
+        }
+        settings.endGroup();
+
+        if (featureSha1.count() == 0)
+        {
+            //if no flags or userFeatures are given, all features are permitted
+            features = ~UserFeatures();
+        }
+        else
+        {
+            QByteArray res;
+            QByteArray nameHash_ = nameHash.result();
+            for (int n = 0; n < nameHash_.length(); n++)
+            {
+                res.append(featureSha1[n] ^ nameHash_[n]);
+            }
+            features = UserFeatures(res.toInt());
+
+        }
     }
-    settings.setValue("flags", fileFlags);
-    settings.endGroup();
+    else
+    {
+        retval += ito::RetVal::format(ito::retError, 0, "file '%s' does not exist", filename.toLatin1().data());
+    }
+    
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal UserOrganizer::writeUserDataToFile(const QString &username, const QString &uid, const UserFeatures &features, const UserRole &role)
+{
+    ito::RetVal retval;
+    QString filename;
+
+    QDir appDir(QCoreApplication::applicationDirPath());
+    if (!appDir.cd("itomSettings"))
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("itomSettings directory not found, aborting!").toLatin1().data());
+    }
+    else
+    {
+        filename = QDir::cleanPath(appDir.absoluteFilePath(QString("itom_").append(uid).append(".ini")));
+        QFileInfo fi(filename);
+
+        if (fi.exists() == false)
+        {
+            QFile stdIniFile(QDir::cleanPath(appDir.absoluteFilePath("itomDefault.ini")));
+            if (!stdIniFile.copy(filename))
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("Could not copy standard itom ini file!").toLatin1().data());
+            }
+        }
+    }
+
+    if (!retval.containsError())
+    {
+        QSettings settings(filename, QSettings::IniFormat);
+        settings.beginGroup("ITOMIniFile");
+
+        settings.setValue("name", username);
+
+        switch (role)
+        {
+        case userRoleDeveloper:
+            settings.setValue("role", "developer");
+            break;
+        case userRoleAdministrator:
+            settings.setValue("role", "administrator");
+            break;
+        default:
+            settings.setValue("role", "user");
+            break;
+        }
+
+        QCryptographicHash nameHash(QCryptographicHash::Sha1);
+        nameHash.addData(uid.toLatin1().data(), uid.length());
+
+        QByteArray fileFlags;
+        QByteArray qbaFlags = QByteArray::number((int)(features));
+        for (int n = 0; n < nameHash.result().length(); n++)
+        {
+            if (n >= qbaFlags.length())
+                fileFlags.append(nameHash.result().at(n));
+            else
+                fileFlags.append(qbaFlags.at(n) ^ nameHash.result().at(n));
+        }
+        settings.setValue("userFeatures", fileFlags);
+
+        settings.endGroup();
+    }
+
+    retval += scanSettingFilesAndLoadModel();
+
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -270,8 +389,7 @@ void UserOrganizer::writeFlagsToFile(int flags, QString iniFile)
 QString UserOrganizer::getUserID(void) const
 {
     QString fname = QFileInfo(m_settingsFile).baseName();
-    fname = fname.right(fname.length() - 5);
-    return fname;
+    return fname.right(fname.length() - 5);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -281,11 +399,10 @@ QString UserOrganizer::getUserID(void) const
     \param inifile
     \return QString
 */
-QString UserOrganizer::getUserID(QString inifile) const
+QString UserOrganizer::getUserID(const QString &iniFile) const
 {
-    QString fname = QFileInfo(inifile).baseName();
-    fname = fname.right(fname.length() - 5);
-    return fname;
+    QString fname = QFileInfo(iniFile).baseName();
+    return fname.right(fname.length() - 5);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

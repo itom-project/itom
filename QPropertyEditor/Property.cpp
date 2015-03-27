@@ -26,6 +26,7 @@
 #include "ColorCombo.h"
 #include "BooleanCombo.h"
 #include "FontEditor.h"
+#include "stringListEditor.h"
 
 #include <qmetaobject.h>
 #include <qspinbox.h>
@@ -47,6 +48,32 @@ QVariant Property::value(int /*role = Qt::UserRole*/) const
         return m_propertyObject->property(qPrintable(objectName()));
     else
         return QVariant();
+}
+
+QString Property::displayValue(int role /*= Qt::UserRole*/) const
+{
+    QVariant v = value(role);
+    if (v.type() == QVariant::StringList)
+    {
+        QStringList stringlist = v.toStringList();
+        switch (stringlist.count())
+        {
+        case 0:
+            return "[]";
+        case 1:
+            return QString("[%1]").arg(stringlist[0]);
+        case 2:
+            return QString("[%1; %2]").arg(stringlist[0]).arg(stringlist[1]);
+        case 3:
+            return QString("[%1; %2; %3]").arg(stringlist[0]).arg(stringlist[1]).arg(stringlist[2]);
+        default:
+            return QString("[%1; %2; %3; ...]").arg(stringlist[0]).arg(stringlist[1]).arg(stringlist[2]);
+        }
+    }
+    else
+    {
+        return v.toString();
+    }
 }
 
 void Property::setValue(const QVariant &value)
@@ -109,6 +136,10 @@ QWidget* Property::createEditor(QWidget *parent, const QStyleOptionViewItem& /*o
             editor = new FontEditor(parent);
             connect(editor, SIGNAL(fontChanged(QFont)), this, SLOT(setValue(QFont)));
             break;
+        case QVariant::StringList:
+            editor = new StringListEditor(parent);
+            connect(editor, SIGNAL(stringListChanged(QStringList)), this, SLOT(setValue(QStringList)));
+            break;
         default:
             return editor;
     }
@@ -140,6 +171,9 @@ bool Property::setEditorData(QWidget *editor, const QVariant &data)
         case QVariant::Font:
             static_cast<FontEditor*>(editor)->setValue(data.value<QFont>());
             return true;
+        case QVariant::StringList:
+            static_cast<StringListEditor*>(editor)->setValue(data.toStringList());
+            return true;
         default:
             return false;
     }
@@ -162,6 +196,8 @@ QVariant Property::editorData(QWidget *editor)
             return QVariant(static_cast<QDoubleSpinBox*>(editor)->value());
         case QVariant::Font:
             return QVariant(static_cast<FontEditor*>(editor)->value());
+        case QVariant::StringList:
+            return QVariant(static_cast<StringListEditor*>(editor)->value());
         default:
             return QVariant();
     }
@@ -201,6 +237,11 @@ void Property::setValue(bool value)
 }
 
 void Property::setValue(QFont value)
+{
+    setValue(QVariant(value));
+}
+
+void Property::setValue(QStringList value)
 {
     setValue(QVariant(value));
 }

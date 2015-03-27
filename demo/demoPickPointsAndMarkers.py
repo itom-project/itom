@@ -19,8 +19,8 @@ pickedPoints.data()
 '''the marker syntax may change in some future releases'''
 markers = dataObject([2,3],'float32', data = [10.1, 20.2, 30.3, 7, 100, 500])
 [nr,h] = plot(obj, "itom2dqwtplot")
-h["title"] = "Showcase: plot marker"
-h.call("plotMarkers", markers, "b+10", "setName") #'setName' is the name for this set of markers (optional)
+h["title"] = "Showcase: plot the currently selected points"
+h.call("plotMarkers", pickedPoints, "b+10", "setName") #'setName' is the name for this set of markers (optional)
 
 
 #the second argument of plotMarkers is a style-string (this may change)
@@ -42,7 +42,7 @@ h["title"] = "Showcase: paint 4 ellipses"
 
 pickedPoints = dataObject()
 #this command let the user pick maximum 4 points (earlier break with space, esc aborts the selection)
-h.drawAndPickElements(105, pickedPoints, 4)
+h.drawAndPickElements(plotItem.PrimitiveEllipse, pickedPoints, 4)
 
 print("selected points")
 pickedPoints.data()

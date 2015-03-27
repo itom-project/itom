@@ -87,10 +87,16 @@ MainWindow::MainWindow() :
     m_pythonBusy(false),
     m_pythonDebugMode(false),
     m_pythonInWaitingMode(false),
-    m_isFullscreen(false)
+    m_isFullscreen(false),
+    m_userDefinedActionCounter(0)
 {
     //qDebug() << "mainWindow. Thread: " << QThread::currentThreadId ();
+#ifdef __APPLE__
+    // Setting high res icon for OS X
+    QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/q_itoM1024"));
+#else
     QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/curAppIcon.png"));
+#endif
 
     qDebug("build main window");
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
@@ -109,12 +115,12 @@ MainWindow::MainWindow() :
     setCorner(Qt::TopRightCorner, Qt::RightDockWidgetArea);
     setCorner(Qt::BottomRightCorner, Qt::RightDockWidgetArea);
 
-
     //content
     m_contentLayout = new QVBoxLayout;
 
+    // user
     ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
-    if (uOrg->hasFeature(featConsole))
+    if (uOrg->hasFeature(featConsoleRead) || uOrg->hasFeature(featConsoleReadWrite))
     {
         qDebug(".. before loading console widget");
         //console (central widget):
@@ -231,14 +237,7 @@ MainWindow::MainWindow() :
     // connections
     if (pyEngine != NULL)
     {
-        //connect(pyEngine, SIGNAL(pythonModifyGlobalDict(PyObject*,ItomSharedSemaphore*)), m_globalWorkspaceDock, SLOT(loadPythonDictionary(PyObject *,ItomSharedSemaphore*)));
-        //connect(pyEngine, SIGNAL(pythonModifyLocalDict(PyObject*,ItomSharedSemaphore*)), m_localWorkspaceDock, SLOT(loadPythonDictionary(PyObject *,ItomSharedSemaphore*)));
         connect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
-        connect(pyEngine, SIGNAL(pythonAddToolbarButton(QString, QString, QString, QString)), this, SLOT(pythonAddToolbarButton(QString, QString, QString, QString)));
-        connect(pyEngine, SIGNAL(pythonRemoveToolbarButton(QString, QString)), this, SLOT(pythonRemoveToolbarButton(QString, QString)));
-
-        connect(pyEngine, SIGNAL(pythonAddMenuElement(int,QString,QString,QString,QString)), this, SLOT(pythonAddMenuElement(int, QString, QString, QString, QString)));
-        connect(pyEngine, SIGNAL(pythonRemoveMenuElement(QString)), this, SLOT(pythonRemoveMenuElement(QString)));
 
         connect(pyEngine, SIGNAL(pythonCurrentDirChanged()), this, SLOT(currentDirectoryChanged()));
         connect(this, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
@@ -343,20 +342,38 @@ MainWindow::MainWindow() :
 */
 MainWindow::~MainWindow()
 {
-    if (m_fileSystemDock) m_fileSystemDock->saveState("itomFileSystemDockWidget");
-    if (m_helpDock) m_helpDock->saveState("itomHelpDockWidget");
-    if (m_globalWorkspaceDock) m_globalWorkspaceDock->saveState("itomGlobalWorkspaceDockWidget");
-    if (m_localWorkspaceDock) m_localWorkspaceDock->saveState("itomLocalWorkspaceDockWidget");
-    if (m_pAIManagerWidget) m_pAIManagerWidget->saveState("itomPluginsDockWidget");
+    if (m_fileSystemDock)
+    {
+        m_fileSystemDock->saveState("itomFileSystemDockWidget");
+    }
+    if (m_helpDock)
+    {
+        m_helpDock->saveState("itomHelpDockWidget");
+    }
+    if (m_globalWorkspaceDock)
+    {
+        m_globalWorkspaceDock->saveState("itomGlobalWorkspaceDockWidget");
+    }
+    if (m_localWorkspaceDock)
+    {
+        m_localWorkspaceDock->saveState("itomLocalWorkspaceDockWidget");
+    }
+    if (m_pAIManagerWidget)
+    {
+        m_pAIManagerWidget->saveState("itomPluginsDockWidget");
+    }
 
     QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
-    settings->beginGroup("Python");
-    settings->setValue("pyReloadEnabled", m_actions["py_autoReloadEnabled"]->isChecked());
-    settings->setValue("pyReloadCheckFile", m_actions["py_autoReloadFile"]->isChecked());
-    settings->setValue("pyReloadCheckCmd", m_actions["py_autoReloadCmd"]->isChecked());
-    settings->setValue("pyReloadCheckFct", m_actions["py_autoReloadFunc"]->isChecked());
-    settings->endGroup();
+    if (m_actions["py_autoReloadEnabled"])
+    {
+        settings->beginGroup("Python");
+        settings->setValue("pyReloadEnabled", m_actions["py_autoReloadEnabled"]->isChecked());
+        settings->setValue("pyReloadCheckFile", m_actions["py_autoReloadFile"]->isChecked());
+        settings->setValue("pyReloadCheckCmd", m_actions["py_autoReloadCmd"]->isChecked());
+        settings->setValue("pyReloadCheckFct", m_actions["py_autoReloadFunc"]->isChecked());
+        settings->endGroup();
+    }
 
     settings->beginGroup("MainWindow");
     settings->setValue("maximized", isMaximized());
@@ -375,8 +392,6 @@ MainWindow::~MainWindow()
 
     if (pyEngine != NULL)
     {
-        //disconnect(pyEngine, SIGNAL(pythonModifyGlobalDict(PyObject*,ItomSharedSemaphore*)), m_globalWorkspaceDock, SLOT(loadPythonDictionary(PyObject *,ItomSharedSemaphore*)));
-        //disconnect(pyEngine, SIGNAL(pythonModifyLocalDict(PyObject*,ItomSharedSemaphore*)), m_localWorkspaceDock, SLOT(loadPythonDictionary(PyObject *,ItomSharedSemaphore*)));
         disconnect(pyEngine, SIGNAL(pythonStateChanged(tPythonTransitions)), this, SLOT(pythonStateChanged(tPythonTransitions)));
         disconnect(this, SIGNAL(pythonDebugCommand(tPythonDbgCmd)), pyEngine, SLOT(pythonDebugCommand(tPythonDbgCmd)));
     }
@@ -574,11 +589,14 @@ void MainWindow::createActions()
     m_actions["exit"] = new QAction(tr("Exit"), this);
     connect(m_actions["exit"], SIGNAL(triggered()), this, SLOT(mnuExitApplication()));
 
-    if (uOrg->hasFeature(featUserManag))
+    if (uOrg->hasFeature(featProperties))
     {
         m_actions["properties"] = new QAction(QIcon(":/application/icons/adBlockAction.png"), tr("Properties..."), this);
         connect(m_actions["properties"] , SIGNAL(triggered()), this, SLOT(mnuShowProperties()));
+    }
 
+    if (uOrg->hasFeature(featUserManag))
+    {
         m_actions["usermanagement"] = new QAction(QIcon(":/misc/icons/User.png"), tr("User Management..."), this);
         connect(m_actions["usermanagement"] , SIGNAL(triggered()), this, SLOT(mnuShowUserManagement()));
     }
@@ -763,7 +781,12 @@ void MainWindow::createMenus()
     //linux: in some linux distributions, the menu bar did not appear if it is displayed
     //on top of the desktop. Therefore, native menu bars (as provided by the OS) are disabled here.
     //see: qt-project.org/forums/viewthread/7445
+#ifndef __APPLE__
     menuBar()->setNativeMenuBar(false);
+#else // __APPLE__
+    // OS X: without the native menu bar option, the menu bar is displayed within the window which might be irritating.
+    menuBar()->setNativeMenuBar(true);
+#endif // __APPLE__
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -984,6 +1007,12 @@ void MainWindow::mnuOpenFile()
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuShowAssistant()
 {
+#ifdef __APPLE__
+    QString appName = "Assistant";
+#else
+    QString appName = "assistant";
+#endif
+    
     ito::RetVal retval;
     QString collectionFile;
 
@@ -1014,7 +1043,7 @@ void MainWindow::mnuShowAssistant()
         if (po)
         {
             bool existingProcess = false;
-            QProcess *process = po->getProcess("assistant", true, existingProcess, true);
+            QProcess *process = po->getProcess(appName, true, existingProcess, true);
 
             if (existingProcess && process->state() == QProcess::Running)
             {
@@ -1031,7 +1060,7 @@ void MainWindow::mnuShowAssistant()
                 args << QLatin1String(collectionFile.toLatin1().data());
                 args << QLatin1String("-enableRemoteControl");
 
-                QString app = ProcessOrganizer::getAbsQtToolPath("assistant");
+                QString app = ProcessOrganizer::getAbsQtToolPath(appName);
 
                 process->start(app, args);
 
@@ -1130,8 +1159,15 @@ void MainWindow::setStatusText(QString message, int timeout)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::pythonAddToolbarButton(QString toolbarName, QString buttonName, QString buttonIconFilename, QString pythonCode)
+/*
+An existing button with the same name (text) will not be deleted but a new button is added. This is because the possibly related
+python methods or functions cannot be deleted from this method. However, each button has its unique buttonHandle that can be used
+to explicitely delete the button.
+*/
+ito::RetVal MainWindow::addToolbarButton(const QString &toolbarName, const QString &buttonName, const QString &buttonIconFilename, const QString &pythonCode, QSharedPointer<size_t> buttonHandle, ItomSharedSemaphore *waitCond /*= NULL*/)
 {
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval;
     QMap<QString, QToolBar*>::const_iterator it = m_userDefinedToolBars.constFind(toolbarName);
     QToolBar *toolbar = NULL;
     QAction *action = NULL;
@@ -1145,295 +1181,289 @@ void MainWindow::pythonAddToolbarButton(QString toolbarName, QString buttonName,
     {
         toolbar = *it;
 
-        //check if this action already exists, if so delete it first
-        foreach(action, (*it)->actions())
-        {
-            if (action->data() == buttonName)
-            {
-                (*it)->removeAction(action);
-                DELETE_AND_SET_NULL(action);
-                break;
-            }
-        }
+        ////check if this action already exists, if so delete it first
+        //foreach(action, (*it)->actions())
+        //{
+        //    if (action->text() == buttonName)
+        //    {
+        //        (*it)->removeAction(action);
+        //        DELETE_AND_SET_NULL(action);
+        //        break;
+        //    }
+        //}
     }
 
-    //check icon
-    QDir basePath;
-    bool iconFound = false;
-    int i = 0;
-    QIcon icon(buttonIconFilename);
-
-    if (buttonIconFilename != "" && icon.isNull())
-    {
-        while (!iconFound && i < 1000)
-        {
-            switch(i)
-            {
-            case 0:
-                basePath = QDir::current();
-                break;
-            case 1:
-                basePath = QCoreApplication::applicationDirPath();
-                break;
-            case 2:
-                basePath = QCoreApplication::applicationDirPath();
-                basePath.cd("Qitom");
-                break;
-            default:
-                i = 1000;
-                break;
-            }
-
-            i++;
-
-            if (basePath.exists())
-            {
-                if (basePath.exists(buttonIconFilename))
-                {
-                    icon = QIcon(basePath.absoluteFilePath(buttonIconFilename));
-                    iconFound = true;
-                }
-            }
-        }
-    }
-
-    if (icon.isNull() || icon.availableSizes().size() == 0)
-    {
-        icon = QIcon("");
-    }
-
+    QIcon icon = IOHelper::searchIcon(buttonIconFilename, IOHelper::SFAll);
     action = new QAction(icon, buttonName, toolbar);
-    action->setData(buttonName);
+    action->setProperty("itom__buttonHandle", ++m_userDefinedActionCounter);
     action->setToolTip(buttonName);
+
     connect(action, SIGNAL(triggered()), m_userDefinedSignalMapper, SLOT(map()));
     m_userDefinedSignalMapper->setMapping(action, pythonCode);
     toolbar->addAction(action);
+
+    *buttonHandle = m_userDefinedActionCounter;
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::pythonRemoveToolbarButton(QString toolbarName, QString buttonName)
+ito::RetVal MainWindow::removeToolbarButton(const QString &toolbarName, const QString &buttonName, QSharedPointer<size_t> buttonHandle, bool showMessage /*= true*/, ItomSharedSemaphore *waitCond /*= NULL*/)
 {
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval;
     QMap<QString, QToolBar*>::iterator it = m_userDefinedToolBars.find(toolbarName);
     QAction* tempAction;
+    bool found = false;
+    *buttonHandle = (size_t)NULL;
 
     if (it != m_userDefinedToolBars.end())
     {
         foreach(tempAction, (*it)->actions())
         {
-            if (tempAction->data() == buttonName)
+            if (tempAction->text() == buttonName)
+            {
+                (*it)->removeAction(tempAction);
+                *buttonHandle = (size_t)(tempAction->property("itom__buttonHandle").toUInt()); //0 if invalid
+                DELETE_AND_SET_NULL(tempAction);
+                found = true;
+                break;
+            }
+        }
+        
+        if ((*it)->actions().size() == 0) //remove this toolbar
+        {
+            QString tmpName = it.key();
+            removeToolBar(*it);
+            m_userDefinedToolBars.remove(tmpName);
+        }
+
+        if (!found)
+        {
+            retval += ito::RetVal::format(ito::retError, 0, "The button '%s' of toolbar '%s' could not be found.", buttonName.toLatin1().data(), toolbarName.toLatin1().data());
+        }
+    }
+    else
+    {
+        retval += ito::RetVal::format(ito::retError, 0, "The toolbar '%s' could not be found.", toolbarName.toLatin1().data());
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+
+    if (showMessage && retval.containsWarningOrError())
+    {
+        QMessageBox msgBox;
+        msgBox.setText(tr(retval.errorMessage()));
+        msgBox.exec();
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal MainWindow::removeToolbarButton(const size_t buttonHandle, bool showMessage /*= true*/, ItomSharedSemaphore *waitCond /*= NULL*/)
+{
+    //buttonHandle is the pointer-address to the QAction of the button
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval;
+    QMap<QString, QToolBar*>::iterator it = m_userDefinedToolBars.begin();
+    QAction* tempAction;
+
+    bool found = false;
+
+    for (it = m_userDefinedToolBars.begin(); it != m_userDefinedToolBars.end() && !found; ++it)
+    {
+        foreach (tempAction, (*it)->actions())
+        {
+            if ((size_t)(tempAction->property("itom__buttonHandle").toUInt()) == buttonHandle)
             {
                 (*it)->removeAction(tempAction);
                 DELETE_AND_SET_NULL(tempAction);
+                found = true;
                 break;
             }
         }
 
-        if ((*it)->actions().size() == 0) //remove this toolbar
+        if (found && (*it)->actions().size() == 0) //remove this toolbar
         {
             removeToolBar(*it);
             m_userDefinedToolBars.remove(it.key());
         }
     }
-    else
+
+    if (!found)
+    {
+        retval += ito::RetVal::format(ito::retError, 0, "The button (%i) could not be found.", buttonHandle);
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+
+    if (showMessage && retval.containsWarningOrError())
     {
         QMessageBox msgBox;
-        msgBox.setText(tr("The toolbar '") + toolbarName + tr("' could not be found"));
+        msgBox.setText(tr(retval.errorMessage()));
         msgBox.exec();
     }
+
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::pythonAddMenuElement(int typeID, QString key, QString name, QString code, QString buttonIconFilename)
+ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QString &name, const QString &code, const QString &buttonIconFilename, QSharedPointer<size_t> menuHandle, bool showMessage /*= true*/, ItomSharedSemaphore *waitCond /*= NULL*/)
 {
+    ItomSharedSemaphoreLocker locker(waitCond);
+    RetVal retValue(retOk);
+
     //key is a slash-splitted value: e.g. rootKey/parentKey/nextParentKey/.../myKey
     QStringList keys = key.split("/");
-    QString tempKey = "";
+    QString current_key;
     QAction *act;
-    QMenu *parentMnu = NULL;
-    //QMenu *mnu;
-    RetVal retValue(retOk);
-    QList<QAction*> actionList;
+    QMenu *parent_menu = NULL;
+    QMap<QString, QMenu*>::iterator root_it;
+    bool found = false;
 
     //check icon
-    QIcon icon(buttonIconFilename);
-    QDir basePath;
-    bool iconFound = false;
-    int i = 0;
+    QIcon icon = IOHelper::searchIcon(buttonIconFilename, IOHelper::SFAll);
 
-    if (buttonIconFilename != "" && icon.isNull())
+    //some sanity checks
+    if (keys.size() == 1 && typeID != 2)
     {
-        while (!iconFound && i < 1000)
-        {
-            switch(i)
-            {
-            case 0:
-                basePath = QDir::current();
-                break;
-            case 1:
-                basePath = QCoreApplication::applicationDirPath();
-                break;
-            case 2:
-                basePath = QCoreApplication::applicationDirPath();
-                basePath.cd("Qitom");
-                break;
-            default:
-                i = 1000;
-                break;
-            }
-
-            i++;
-
-            if (basePath.exists())
-            {
-                if (basePath.exists(buttonIconFilename))
-                {
-                    icon = QIcon(basePath.absoluteFilePath(buttonIconFilename));
-                    iconFound = true;
-                }
-            }
-        }
+        retValue += ito::RetVal(ito::retError, 0, tr("one single menu element must be of type MENU [2]").toLatin1().data());
     }
-
-    if (icon.isNull() || icon.availableSizes().size() == 0)
+    else if (keys.size() == 0)
     {
-        icon = QIcon("");
+        retValue += ito::RetVal(ito::retError, 0, tr("key must not be empty.").toLatin1().data());
     }
-
-    //check root element
-    if (keys.size() >= 1)
+    else if (typeID < 0 || typeID > 2)
     {
-        if (keys.size() == 1) //single element, must be type MENU
-        {
-            if (typeID != 2)
-            {
-                retValue += ito::RetVal(ito::retError, 0, tr("one single menu element must be of type MENU [2]").toLatin1().data());
-            }
-        }
-
-        tempKey = keys[0];
-        keys.pop_front();
-        if (!retValue.containsError())
-        {
-            if (m_userDefinedRootMenus.contains(tempKey))
-            {
-                parentMnu = m_userDefinedRootMenus[tempKey];
-            }
-            else
-            {
-                if (keys.size() == 0)
-                {
-                    parentMnu = menuBar()->addMenu(name);
-                }
-                else
-                {
-                    parentMnu = menuBar()->addMenu(tempKey);
-                }
-                m_userDefinedRootMenus[tempKey] = parentMnu;
-            }
-        }
+        retValue += ito::RetVal(ito::retError, 0, tr("invalid menu item type.").toLatin1().data());
     }
     else
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("no menu element is indicated").toLatin1().data());
-    }
-
-    //check further elements
-    while (keys.size() > 0 && !retValue.containsError())
-    {
-        actionList = parentMnu->actions();
-        tempKey = keys[0];
-        keys.pop_front();
-        act = NULL;
-
-        //search for tempKey in actionList
-        foreach(QAction* a, actionList)
+        //check first level entry (is more special than all other ones since it is register in the m_userDefinedRootMenus map
+        current_key = keys.takeFirst();
+        root_it = m_userDefinedRootMenus.find(current_key);
+        
+        if (root_it != m_userDefinedRootMenus.end())
         {
-            if (a->data().toString() == tempKey)
-            {
-                act = a;
-                break;
-            }
+            parent_menu = root_it.value();
+            *menuHandle = (size_t)parent_menu->menuAction()->property("itom__menuHandle").toUInt();
+        }
+        else //exist new root menu item
+        {
+            parent_menu = menuBar()->addMenu(keys.size() == 0 ? name : current_key); //only the last item gets 'name' as visible name, all the others get their key component
+            parent_menu->menuAction()->setData(current_key);
+            parent_menu->menuAction()->setIconText(current_key);
+            parent_menu->menuAction()->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
+            *menuHandle = m_userDefinedActionCounter;
+            m_userDefinedRootMenus[current_key] = parent_menu;
         }
 
-        if (act) //element already exists
+        //now parent_menu is fixed and we can now recursively create the menu item tree until the last item
+        while (parent_menu && keys.size() > 0 && !retValue.containsError())
         {
-            if (keys.size() > 0) //not the last element
+            current_key = keys.takeFirst();
+
+            if (keys.size() > 0) //must be a tree item (menu item, since not the last one)
             {
-                if (act->menu() == NULL) //item is no menu, but has to be a menu
+                //check if parent_menu contains a child-action that is a submenu with the same current_key
+                //if so, use this, else create a new sub-menu
+                found = false;
+                foreach(QAction* a, parent_menu->actions())
                 {
-                    retValue += RetVal::format(retError, 0, tr("The menu item '%s' does already exist but is no menu type").toLatin1().data(), act->iconText().toLatin1().data());
+                    if (a->menu() && a->data().toString() == current_key)
+                    {
+                        //existing one, use it
+                        found = true;
+                        parent_menu = a->menu();
+                        *menuHandle = (size_t)a->property("itom__menuHandle").toUInt();
+                        break;
+                    }
                 }
-                else
+
+                if (!found)
                 {
-                    parentMnu = act->menu();
+                    parent_menu = parent_menu->addMenu(icon,current_key);
+                    parent_menu->menuAction()->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
+                    parent_menu->menuAction()->setIconText(current_key);
+                    parent_menu->menuAction()->setData(current_key);
+                    *menuHandle = m_userDefinedActionCounter;
                 }
             }
             else
             {
-                retValue += RetVal(retError, 0, tr("menu item already exists.").toLatin1().data());
-            }
-        }
-        else //element has to be created
-        {
-            if (keys.size() > 0) //not the last element, create menu
-            {      
-                parentMnu = parentMnu->addMenu(tempKey);
-                parentMnu->menuAction()->setIconText(tempKey);
-                parentMnu->menuAction()->setData(QVariant(tempKey));
-            }
-            else
-            {
-                switch(typeID)
+                //append a menu, separator or button to parent_menu and returns its menuHandle.
+                if (typeID == 0) //BUTTON
                 {
-                case 0: //BUTTON
-                    act = parentMnu->addAction(icon,name);
+                    act = parent_menu->addAction(icon,name);
+                    act->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
                     act->setIconText(name);
-                    act->setData(QVariant(tempKey));
+                    act->setData(current_key);
                     connect(act, SIGNAL(triggered()), m_userDefinedSignalMapper, SLOT(map()));
                     m_userDefinedSignalMapper->setMapping(act, code);
-                    break;
-                case 1: //SEPARATOR
-                    act = parentMnu->addSeparator();
-                    act->setIconText(name);
-                    act->setData(QVariant(tempKey));
-                    break;
-                case 2: //MENU
-                    parentMnu = parentMnu->addMenu(icon,name);
-                    parentMnu->menuAction()->setIconText(name);
-                    parentMnu->menuAction()->setData(QVariant(tempKey));
-
-                    /*act = parentMnu->addAction(icon,name);
-                    act->setIconText(name);
-                    act->setData(QVariant(tempKey));
-                    act->setMenu(new QMenu(name));
-                    parentMnu = act->menu();*/
-                    break;
-                default:
-                    retValue += RetVal(retError, 0, tr("Invalid typeID.").toLatin1().data());
-                    break;
+                    *menuHandle = m_userDefinedActionCounter;
                 }
+                else if (typeID == 2 /*MENU*/)
+                {
+                    parent_menu = parent_menu->addMenu(icon,name);
+                    parent_menu->menuAction()->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
+                    parent_menu->menuAction()->setIconText(name);
+                    parent_menu->menuAction()->setData(current_key);
+                    *menuHandle = m_userDefinedActionCounter;
+                }
+                else // if (typeID == 1) //SEPARATOR
+                {
+                    act = parent_menu->addSeparator();
+                    act->setProperty("itom__menuHandle", ++m_userDefinedActionCounter);
+                    act->setIconText(name);
+                    act->setData(current_key);
+                    *menuHandle = m_userDefinedActionCounter;
+                } 
             }
         }
     }
 
-    if (retValue.containsError())
+    if (waitCond)
+    {
+        waitCond->returnValue = retValue;
+        waitCond->release();
+    }
+
+    if (showMessage && retValue.containsError())
     {
         QMessageBox::critical(this, tr("Add menu element"), retValue.errorMessage());
     }
-    else if (retValue.containsWarning())
+    else if (showMessage && retValue.containsWarning())
     {
         QMessageBox::warning(this, tr("Add menu element"), retValue.errorMessage());
     }
+
+    return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void MainWindow::pythonRemoveMenuElement(QString key)
+ito::RetVal MainWindow::removeMenuElement(const QString &key, QSharedPointer<QVector<size_t> > removedMenuHandles, bool showMessage /*= true*/, ItomSharedSemaphore *waitCond /*= NULL*/)
 {
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval;
     QStringList keys = key.split("/");
     QString tempKey;
     QMenu *parentMenu = NULL;
     QAction *actToDelete = NULL;
-    QList<QAction*> actionList;
     QMap<QString, QMenu*>::iterator it;
 
     if (keys.size() == 1)
@@ -1443,8 +1473,14 @@ void MainWindow::pythonRemoveMenuElement(QString key)
         it = m_userDefinedRootMenus.find(tempKey);
         if (it != m_userDefinedRootMenus.end())
         {
+            removedMenuHandles->append( (size_t)(it.value()->menuAction()->property("itom__menuHandle").toUInt() ) );
+            getMenuHandlesRecursively(it.value(), removedMenuHandles);
             (*it)->deleteLater();
             it = m_userDefinedRootMenus.erase(it);
+        }
+        else
+        {
+            retval += ito::RetVal::format(ito::retError, 0, "A user-defined menu with the key sequence '%s' could not be found", key.toLatin1().data());
         }
     }
     else if (keys.size() > 1)
@@ -1463,8 +1499,7 @@ void MainWindow::pythonRemoveMenuElement(QString key)
             keys.pop_front();
             actToDelete = NULL;
 
-            actionList = parentMenu->actions();
-            foreach(QAction *a, actionList)
+            foreach(QAction *a, parentMenu->actions())
             {
                 if (a->data().toString() == tempKey)
                 {
@@ -1477,14 +1512,143 @@ void MainWindow::pythonRemoveMenuElement(QString key)
 
         if (keys.size() == 0 && actToDelete)
         {
-            actToDelete->deleteLater();
+            removedMenuHandles->append( (size_t)(actToDelete->property("itom__menuHandle").toUInt()) );
+            getMenuHandlesRecursively(actToDelete->menu(), removedMenuHandles);
+
+            if (actToDelete->menu()) //this action belongs to a QMenu -> delete the QMenu
+            {
+                actToDelete->menu()->deleteLater();
+            }
+            else //this action is a real action -> directly delete it
+            {
+                actToDelete->deleteLater();
+            }
         }
         else
         {
-            QMessageBox::warning(this, tr("Remove menu element"), QString(tr("A user-defined menu with the key sequence '%1' could not be found")).arg(key));
+            retval += ito::RetVal::format(ito::retError, 0, "A user-defined menu with the key sequence '%s' could not be found", key.toLatin1().data());
         }
     }
 
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+
+    if (showMessage && retval.containsWarningOrError())
+    {
+        QMessageBox::warning(this, tr("Remove menu element"), tr(retval.errorMessage()));
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal MainWindow::removeMenuElement(const size_t menuHandle, QSharedPointer<QVector<size_t> > removedMenuHandles, bool showMessage /*= true*/, ItomSharedSemaphore *waitCond /*= NULL*/)
+{
+    ItomSharedSemaphoreLocker locker(waitCond);
+    ito::RetVal retval;
+    QString tempKey;
+    // QMenu *parentMenu = NULL; // unused
+    QAction *actToDelete = NULL;
+    bool found = false;
+    QMap<QString, QMenu*>::iterator it = m_userDefinedRootMenus.begin();
+
+    while (it != m_userDefinedRootMenus.end() && !found)
+    {
+        if ( (size_t)it.value()->menuAction()->property("itom__menuHandle").toUInt() == menuHandle)
+        {
+            found = true;
+            removedMenuHandles->append(menuHandle);
+            getMenuHandlesRecursively(it.value(), removedMenuHandles);
+            it.value()->deleteLater();
+            it = m_userDefinedRootMenus.erase(it);
+        }
+
+        if (!found)
+        {
+            actToDelete = searchActionRecursively(menuHandle, it.value());
+            if (actToDelete)
+            {
+                found = true;
+                removedMenuHandles->append( (size_t)(actToDelete->property("itom__menuHandle").toUInt()) );
+                getMenuHandlesRecursively(actToDelete->menu(), removedMenuHandles);
+                
+                if (actToDelete->menu()) //this action belongs to a QMenu -> delete the QMenu
+                {
+                    actToDelete->menu()->deleteLater();
+                }
+                else //this action is a real action -> directly delete it
+                {
+                    actToDelete->deleteLater();
+                }
+            }
+        }
+
+        ++it;
+    }
+
+    if (!found)
+    {
+        retval += ito::RetVal::format(ito::retError, 0, "A user-defined menu with the handle '%i' could not be found", menuHandle);
+    }
+
+    if (waitCond)
+    {
+        waitCond->returnValue = retval;
+        waitCond->release();
+    }
+
+    if (showMessage && retval.containsWarningOrError())
+    {
+        QMessageBox::warning(this, tr("Remove menu element"), tr(retval.errorMessage()));
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::getMenuHandlesRecursively(const QMenu *parent, QSharedPointer<QVector<size_t> > menuHandles)
+{
+    if (parent)
+    {
+        foreach (const QAction *a, parent->actions())
+        {
+            if (a)
+            {
+                menuHandles->append( (size_t)a->property("itom__menuHandle").toUInt() );
+                getMenuHandlesRecursively(a->menu(), menuHandles);
+            }
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QAction* MainWindow::searchActionRecursively(const size_t menuHandle, const QMenu *parent)
+{
+    if (!parent)
+    {
+        return NULL;
+    }
+
+    QAction *a2;
+
+    foreach (QAction *a, parent->actions())
+    {
+        if ((size_t)a->property("itom__menuHandle").toUInt() == menuHandle)
+        {
+            return a;
+        }
+
+        a2 = searchActionRecursively(menuHandle, a->menu());
+        if (a2)
+        {
+            return a2;
+        }
+    }
+
+    return NULL;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1557,15 +1721,21 @@ void MainWindow::userDefinedActionTriggered(const QString &pythonCode)
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuShowDesigner()
 {
+#ifdef __APPLE__
+    QString appName = "Designer";
+#else
+    QString appName = "designer";
+#endif
+    
     ProcessOrganizer *po = qobject_cast<ProcessOrganizer*>(AppManagement::getProcessOrganizer());
     if (po)
     {
         bool existingProcess = false;
-        QProcess *process = po->getProcess("designer", true, existingProcess, false);
+        QProcess *process = po->getProcess(appName, true, existingProcess, false);
 
         if (existingProcess && process->state() == QProcess::Running)
         {
-            //assistant is already loaded. try to activate it by sending the activateIdentifier command without arguments (try-and-error to find this way to activate it)
+            //designer is already loaded. try to activate it by sending the activateIdentifier command without arguments (try-and-error to find this way to activate it)
             QByteArray ba("activateIdentifier \n");
             process->write(ba);
         }
@@ -1574,22 +1744,33 @@ void MainWindow::mnuShowDesigner()
             QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
             QString appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
             env.insert("QT_PLUGIN_PATH", appPath);
-#if linux
+            
+#ifndef WIN32
+	        QString pathEnv = env.value("PATH");
+            pathEnv.prepend(appPath + ":");
+            env.insert("PATH", pathEnv);
 #else
-            QString pathEnv = env.value("Path");
+            QString pathEnv = env.value("path");
             pathEnv.prepend(appPath + ";");
-            env.insert("Path", pathEnv);
+            env.insert("path", pathEnv);
 #endif
+            
+#ifdef __APPLE__
+            env.insert("PATH", env.value("PATH") + ":" + env.value("HOME") + "/Applications");
+            env.insert("PATH", env.value("PATH") + ":/Applications");
+#endif // __APPLE__
+            
             process->setProcessEnvironment(env);
-
+            
             connect(process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(designerError(QProcess::ProcessError)));
 
-            po->clearStandardOutputBuffer("designer");
+            po->clearStandardOutputBuffer(appName);
 
             QStringList arguments;
             arguments << "-server"/* << filename*/;
-            QString app = ProcessOrganizer::getAbsQtToolPath( "designer" );
-            process->start(app); //, arguments);
+            QString app = ProcessOrganizer::getAbsQtToolPath(appName);
+            //qDebug() << app << arguments;
+            process->start(app, arguments); //the arguments stringlist must be given here, else the process cannot be started in a setup environment!
         }
     }
 }
@@ -1618,12 +1799,21 @@ void MainWindow::mnuScriptStop()
 {
     if (pythonDebugMode() && pythonInWaitingMode())
     {
-        emit(pythonDebugCommand(ito::pyDbgQuit));
+        PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+        if (pyeng)
+        {
+            pyeng->pythonInterruptExecution();
+        }
+//        emit(pythonDebugCommand(ito::pyDbgQuit));
         raise();
     }
-    else if (PythonEngine::getInstance())
+    else
     {
-        PythonEngine::getInstance()->pythonInterruptExecution();
+        PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+        if (pyeng)
+        {
+            pyeng->pythonInterruptExecution();
+        }
     }
 }
 

@@ -4,17 +4,17 @@ line plots (1D)
 
 "Itom1DQwtPlot" is the basic line plot for plotting 'dataObjects' with shape [1xM] based on the Qwt library.
 All DataTypes are accepted. To plot complex objects, it is possible to select between the following modes: "absolut", "phase", "real" and "imaginary".
-RGBA-Values are currently interpreted as Gray-Values using RGBA as gray.
+RGBA-values are currently interpreted as grey-values using RGBA as grey.
 
 The plot allows value and min/max-picking via place-able marker.
 
 The plot supports geometric element and marker interaction via **drawAndPickElements(...)** and **call("userInteractionStart",...)**. See section :ref:`primitives` for a short introduction.
 
-The plot does not support z-stack sectioning at the momtent. 
+The plot does not support z-stack sectioning at the moment. 
 
 You can also use the "matplotlib"-backend to plot slices or xy-coordinates. See section :ref:`pymod-matplotlib` for more information about how to use "matplotlib".
 
-The plot-canvas can be exported to vector and bitmap-graphics via button or menu entry or it can be exported to clipBoard via ctrl-c or a plublic slot.
+The plot-canvas can be exported to vector and bitmap-graphics via button or menu entry or it can be exported to clipBoard via ctrl-c or a public slot.
 
 Properties
 ---------------
@@ -45,11 +45,9 @@ Properties
 
 **colorMap** : *QString*, Color map (string) that should be used to colorize a non-color data object.
 
-**zAxisInterval** : *QPointF*, Sets the visible range of the displayed z-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].
+**yAxisInterval** : If member *auto* of *autoInterval* is False, the visible range of the displayed y-axis is set to the given range (in coordinates of the data object); else the range is automatically determined and set [default].
 
-**yAxisInterval** : *QPointF*, Sets the visible range of the displayed y-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].
-
-**xAxisInterval** : *QPointF*, Sets the visible range of the displayed x-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].
+**xAxisInterval** : If member *auto* of *autoInterval* is False, the visible range of the displayed x-axis is set to the given range (in coordinates of the data object); else the range is automatically determined and set [default].
 
 **camera** : *ito::AddInDataIO*, Use this property to set a camera/grabber to this plot (live image).
 
@@ -69,7 +67,7 @@ Signals
 
  *counts, int*: Number of plotted elements
 
- *aborted, bool*: Flag showing if draw function was cancled during plotting
+ *aborted, bool*: Flag showing if draw function was cancelled during plotting
  
  
 **plotItemsDeleted()**: 
@@ -131,7 +129,7 @@ Slots
  
  This slot is called to visualize markers and python-based plotting of geometric elements within this plot. See section :ref:`primitives` for a short introduction.
  
- *coords, ito::DataObject*: an initilized dataObject with a column per element and a set of rows describing its geometric features
+ *coords, ito::DataObject*: an initialized dataObject with a column per element and a set of rows describing its geometric features
  
  *style, QString*: Style for plotted markers, for geometric elements it is ignored
  
@@ -140,15 +138,15 @@ Slots
 
 **ito::RetVal setLinePlot( double x0, double y0, double x1, double y1 [, int linePlotIdx = -1])**:
 
- this can be invoked by python to trigger a lineplot, inherited from *class AbstractDObjFigure*
+ this can be invoked by python to trigger a line plot, inherited from *class AbstractDObjFigure*
 
- *x0, double*: first position of linePlot in x-Direction
+ *x0, double*: first position of line plot in x-Direction
  
- *y0, double*: first position of linePlot in y-Direction
+ *y0, double*: first position of line plot in y-Direction
  
- *x1, double*: second position of linePlot in x-Direction
+ *x1, double*: second position of line plot in x-Direction
  
- *y1, double*: second position of linePlot in x-Direction
+ *y1, double*: second position of line plot in x-Direction
  
 
 **ito::RetVal setSource( ito::DataObject source, ItomSharedSemaphore* )**

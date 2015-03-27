@@ -1,5 +1,7 @@
 .. include:: ../include/global.inc
 
+.. _gui-mainwindow:
+
 Main Window
 ============
 
@@ -38,6 +40,8 @@ In the command line you can use every python command, only character inputs are 
     
     clc
     clear
+    
+To clear the command line from an ordinary script, use the command :py:meth:`itom.clc`.
 
 Instead of typing all commands in the console, write your entire python scripts in the :doc:`editor`.
 

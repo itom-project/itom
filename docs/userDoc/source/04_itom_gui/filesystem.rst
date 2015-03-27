@@ -1,5 +1,7 @@
 .. include:: ../include/global.inc
 
+.. _gui-filesystem:
+
 File System
 *************
 
@@ -9,7 +11,7 @@ The file system toolbox gives you access to the file system of your harddrive.
     :scale: 100%
     :align: center
 
-Below the toolbar, a breakcrumb menu allows to see the current path, where a click to any parent folder changes the current path to that folder. The current path is also printed at the right
+Below the toolbar, a breadcrumb menu allows seeing the current path, where a click to any parent folder changes the current path to that folder. The current path is also printed at the right
 side of |itom|'s statusbar and also corresponds to the current, active directory of python. The filter below the file system, contains file filters to all file formats that are recognized by |itom|,
 either by a direct way (Python files, itom data collection, ...) or by algorithms implemented in any algorithm plugins. However you can also type your own filters in order to filter the file system
 tree.

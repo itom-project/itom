@@ -687,7 +687,6 @@ QSharedPointer<ito::Param> FigureWidget::getParamByInvoke(ito::AddInBase* addIn,
 //----------------------------------------------------------------------------------------------------------------------------------------
 RetVal FigureWidget::changeCurrentSubplot(int newIndex)
 {
-    qDebug() << "new current action " << newIndex;
     QWidget *widget = NULL;
     int idx;
     ito::AbstractFigure *figWidget = NULL;

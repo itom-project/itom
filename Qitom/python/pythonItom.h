@@ -30,7 +30,7 @@
 
     //python
     // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-    #if (defined _DEBUG) && (!defined linux)
+    #if (defined _DEBUG) && (defined WIN32)
         #undef _DEBUG
         #include "Python.h"
         #define _DEBUG
@@ -46,6 +46,8 @@
 
 namespace ito 
 {
+
+class FuncWeakRef; //forward declaration
 
 class PythonItom
 {
@@ -63,10 +65,6 @@ public:
 
     static PyObject* PyPlotImage(PyObject *pSelf, PyObject *pArgs, PyObject *pKwds);
     static PyObject* PyLiveImage(PyObject *pSelf, PyObject *pArgs, PyObject *pKwds);
-    //static PyObject* PyLiveLine(PyObject *pSelf, PyObject *pArgs, PyObject *pKwds);
-    /*static PyObject* PyCloseFigure(PyObject *pSelf, PyObject *pArgs);
-    static PyObject* PySetFigParam(PyObject *pSelf, PyObject *pArgs);
-    static PyObject* PyGetFigParam(PyObject *pSelf, PyObject *pArgs);*/
 
     static PyObject* PyFilter(PyObject *pSelf, PyObject *pArgs, PyObject *kwds);
     static PyObject* PyFilterHelp(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
@@ -114,6 +112,10 @@ public:
     static PyObject* getCurrentPath(PyObject* pSelf);
     static PyObject* setCurrentPath(PyObject* pSelf, PyObject* pArgs);
 
+    static PyObject* PyGetPalette(PyObject* pSelf, PyObject* pArgs);
+    static PyObject* PySetPalette(PyObject* pSelf, PyObject* pArgs);
+    static PyObject* PyGetPaletteList(PyObject* pSelf, PyObject* pArgs);
+
     static PyObject* compressData(PyObject* pSelf, PyObject* pArgs);
     static PyObject* uncompressData(PyObject* pSelf, PyObject* pArgs);
 
@@ -126,6 +128,10 @@ public:
 
 protected:
     static QHash<size_t, QString> m_gcTrackerList; //!< list with objects currently tracked by python garbage collector.
+
+    static ito::FuncWeakRef* hashButtonOrMenuCode(PyObject *code, PyObject *argtuple, ito::RetVal &retval, QString &codeString);
+    static ito::RetVal unhashButtonOrMenuCode(const size_t &funcID);
+    static ito::RetVal unhashButtonOrMenuCode(const ito::FuncWeakRef *funcWeakRef);
 };
 
 } //end namespace ito

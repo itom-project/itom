@@ -26,28 +26,12 @@
 #include "../global.h"
 #include <qobject.h>
 
+#include "models/UserModel.h"
+
 namespace ito
 {
 
-enum userTypes {
-    userTypeBasic = 0,
-    userTypeAdministrator = 1,
-    userTypeDeveloper = 2
-};    
-
-enum userFeatures {
-    featDeveloper   =   1,
-    featFileSystem  =   2,
-    featUserManag   =   4,
-    featPlugins     =   8,
-    featConsole     =   16,
-    featConsoleRW   =   32
-};
-
-#define allFeatures ((userFeatures) (featDeveloper | featFileSystem | featUserManag | featPlugins | featConsole | featConsoleRW))
-
-
-class UserOrganizer : QObject
+class UserOrganizer : public QObject
 {
     Q_OBJECT
 
@@ -55,48 +39,44 @@ class UserOrganizer : QObject
         static UserOrganizer * getInstance(void);
         static RetVal closeInstance(void);
 
-        inline void setUserName(const QString userName) { m_userName = userName; }
         inline const QString getUserName() const { return m_userName; }
-        inline void setUserRole(const int role) { m_userRole = role; }
-        void setUserRole(const QString role) 
-        { 
-            if (role == "developer")
-            {
-                m_userRole = 2;
-            }
-            else if (role == "admin")
-            {
-                m_userRole = 1;
-            }
-            else
-            {
-                m_userRole = 0;
-            }
-        }
         inline int getUserRole() const { return m_userRole; }
         QString getUserID(void) const;
-        QString getUserID(QString inifile) const;
-        int getFlagsFromFile(QString fileName);
-        inline int getFlagsFromFile(void) { return getFlagsFromFile(m_settingsFile); }
-        inline void writeFlagsToFile(int flags) { writeFlagsToFile(flags, m_settingsFile); }
-        void writeFlagsToFile(int flags, QString file);
-        void setUiFlags(userFeatures flags) { m_features = flags; }
-        userFeatures getUiFlags(void) const { return m_features; }
-        void setSettingsFile(QString &settingsFile) { m_settingsFile = settingsFile; }
-        inline QString getSettingsFile() const { return m_settingsFile; };
-        ito::RetVal loadSettings(const QString defUserName);
-        char hasFeature(userFeatures feature) { return (m_features & feature) > 0; }
 
-private:
+        inline UserModel* getUserModel() const { return m_userModel; }
+        
+
+        ito::RetVal readUserDataFromFile(const QString &filename, QString &username, QString &uid, UserFeatures &features, UserRole &role);
+        ito::RetVal writeUserDataToFile(const QString &username, const QString &uid, const UserFeatures &features, const UserRole &role);
+
+        UserFeatures getUserFeatures(void) const { return m_features; }
+
+        inline QString getSettingsFile() const { return m_settingsFile; };
+        ito::RetVal loadSettings(const QString &defUserName);
+        
+        bool hasFeature(UserFeature feature)
+        {
+            return m_features.testFlag(feature);
+        }
+
+    private:
         UserOrganizer(void);
         UserOrganizer(UserOrganizer  &/*copyConstr*/) : QObject() {}
-        ~UserOrganizer(void) {};
+        ~UserOrganizer(void);
         static UserOrganizer *m_pUserOrganizer;
 
-        int m_userRole;  /*< type of user: 0: "dumb" user, 1: admin user, 2: developer */
+        QString getUserID(const QString &iniFile) const;
+        ito::RetVal scanSettingFilesAndLoadModel();
+
+        UserRole m_userRole;  /*< type of user: 0: "dumb" user, 1: admin user, 2: developer */
         QString m_userName;  /*< id of current user */
-        userFeatures m_features; /*< switch for enabeling and disabeling functions of itom */
+        UserFeatures m_features; /*< switch for enabeling and disabeling functions of itom */
         QString m_settingsFile;
+
+        QString m_strConstStdUser;
+
+        UserModel *m_userModel;
+        
 };
 
 } // namespace ito

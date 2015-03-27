@@ -862,11 +862,15 @@ namespace ito {
                     }
                     double min = drm->getMin();
                     double max = drm->getMax();
-                    double range = max - min;
+                    double range = values[1] - values[0];
                     double rangeStep = drm->getSizeStepSize();
                     double step = drm->getStepSize();
 
-                    if (values[0] < min || values[0] > values[1] || values[1] > max)
+                    if (values[0] > values[1])
+                    {
+                        return ito::RetVal(ito::retError, 0, QObject::tr("The first value of the given double interval [%1,%2] is bigger than the second value.").arg(values[0]).arg(values[1]).toLatin1().data());
+                    }
+                    else if (values[0] < min || values[1] > max)
                     {
                         return ito::RetVal(ito::retError, 0, QObject::tr("The given double array [v1=%1,v2=%2] is considered to be an interval but does not fit to v1=[%3,v2], v2=[v1,%4]").arg(values[0]).arg(values[1]).arg(min).arg(max).toLatin1().data());
                     }

@@ -147,12 +147,16 @@ void AbstractDockWidget::init()
 
     m_pWindow->setWindowFlags(modifyFlags(m_pWindow->windowFlags(), Qt::Widget, Qt::Window));
     
+    //m_pWindow->menuBar()->setNativeMenuBar(true);
     //linux: in some linux distributions, the menu bar did not appear if it is displayed
     //on top of the desktop. Therefore, native menu bars (as provided by the OS) are disabled here.
     //see: qt-project.org/forums/viewthread/7445
+#ifndef __APPLE__
     m_pWindow->menuBar()->setNativeMenuBar(false);
-
-    //m_pWindow->menuBar()->setNativeMenuBar(true);
+#else // __APPLE__
+    // OS X: without the native menu bar option, the menu bar is displayed within the window which might be irritating.
+    m_pWindow->menuBar()->setNativeMenuBar(true);
+#endif // __APPLE__
     
     setWidget(m_pWindow);
 
@@ -579,6 +583,12 @@ RetVal AbstractDockWidget::addToolBar(QToolBar *tb, const QString &key, Qt::Tool
     t.tb = tb;
     m_toolbars.append(t);
 
+#ifdef __APPLE__
+    // Bug fix: Issue #35
+    // OS X hides windows/ dialog after adding a toolbar
+    m_pWindow->show();
+#endif // __APPLE__
+    
     return retOk;
 }
 
@@ -740,9 +750,18 @@ void AbstractDockWidget::dockWidget()
     {
         m_lastUndockedSize = m_pWindow->geometry();
     }
-    
-    m_pWindow->menuBar()->setNativeMenuBar(false); //linux: remove menu bar from native menu bar of OS (since the menu sometimes replaces the menu of main window)
 
+    //m_pWindow->menuBar()->setNativeMenuBar(true);
+    //linux: in some linux distributions, the menu bar did not appear if it is displayed
+    //on top of the desktop. Therefore, native menu bars (as provided by the OS) are disabled here.
+    //see: qt-project.org/forums/viewthread/7445
+#ifndef __APPLE__
+    m_pWindow->menuBar()->setNativeMenuBar(false);
+#else // __APPLE__
+    // OS X: without the native menu bar option, the menu bar is displayed within the window which might be irritating.
+    m_pWindow->menuBar()->setNativeMenuBar(true);
+#endif // __APPLE__
+    
     m_docked = true;
     
     setWindowFlags(modifyFlags(windowFlags(), Qt::Widget, Qt::Window));
@@ -795,12 +814,17 @@ void AbstractDockWidget::undockWidget()
 
     if (m_floatingStyle == floatingWindow)
     {
+        //m_pWindow->menuBar()->setNativeMenuBar(true);
         //linux: in some linux distributions, the menu bar did not appear if it is displayed
         //on top of the desktop. Therefore, native menu bars (as provided by the OS) are disabled here.
         //see: qt-project.org/forums/viewthread/7445
+#ifndef __APPLE__
         m_pWindow->menuBar()->setNativeMenuBar(false);
+#else // __APPLE__
+        // OS X: without the native menu bar option, the menu bar is displayed within the window which might be irritating.
+        m_pWindow->menuBar()->setNativeMenuBar(true);
+#endif // __APPLE__
 
-        //m_pWindow->menuBar()->setNativeMenuBar(true);
         m_pWindow->menuBar()->show();
         if (m_actDock) m_actDock->setVisible(true);
         if (m_actUndock) m_actUndock->setVisible(false);

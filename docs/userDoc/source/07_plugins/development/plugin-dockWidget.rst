@@ -10,6 +10,7 @@ Optional dock widget (toolbox) for hardware plugins
 Every hardware plugin (actuator, dataIO) can provide one toolbox (alternatively called *dockWidget*) that can be docked into the main window of |itom| and provide fast access to commonly used parameters and settings of the plugin. An example for the toolbox of a USB camera device of the plugin *MSMediaFoundation* looks like:
 
 .. figure:: images/dockWidget.png
+    :align: left
 
 Usually, the toolbox can be opened by the menu or context menu of the plugin toolbox of |itom|. Alternatively, the plugin classes in Python provide the methods:
 
@@ -42,6 +43,7 @@ Then create a new form of type **Widget** (you are asked this when clicking the 
 The following image shows the example of the toolbox from the **MSMediaFoundation** plugin where the double sliders from the **itomWidgets** component is used.
 
 .. figure:: images/dockWidgetQtDesigner.png
+    :align: left
 
 Don't forget to give all widgets a suitable object name and configure their properties as far as you can do this at that moment. The final configuration is done later in the C++ class and can therefore be adjusted at runtime, e.g. depending on the specific device. One last thing to remember is to give the overall widget a suitable object name as well (like **DockWidgetMSMediaFoundation** in the example). Then save the **ui**-file in the source folder of your plugin. In the example the filename is **dockWidgetMSMediaFoundation.ui**. 
 
@@ -217,6 +219,7 @@ Usually, the toolboxes of actuators should contain methods to relatively move si
 Once the start button is clicked, a stop button can appear whose click signal forces the interrupt of the plugin. The following image shows the ui-file of the plugin **DummyMotor**:
 
 .. figure:: images/dockWidgetActuator.png
+    :align: left
 
 In difference to the implementation given above, you need to learn
 

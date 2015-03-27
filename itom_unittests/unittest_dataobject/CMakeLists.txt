@@ -61,6 +61,7 @@ set(unittest_dataobject_HEADERS
 )
 
 set(unittest_dataobject_SOURCES 
+	${CMAKE_CURRENT_SOURCE_DIR}/assignTest.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/addressTest.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/adjustROI_func_test.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/at_func_test1.cpp

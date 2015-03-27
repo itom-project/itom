@@ -46,7 +46,9 @@ These are the steps you need to execute if you want to generate and build |itom|
 2. Start **CMake GUI**.
     
    .. figure:: images/cmake/cmake_start.png
-       :scale: 70%
+        :scale: 70%
+        :align: left
+
     
    Use the **browse source...** button in order to select the location of the itom source code, e.g. *D:/gititom/sources/itom*. Use **browse build...** to indicate the build 
    directory for itom, e.g. *D:/gititom/build/itom*. If this directory does not exist, it will be created during the configuration. 
@@ -55,6 +57,7 @@ These are the steps you need to execute if you want to generate and build |itom|
    
    .. figure:: images/cmake/cmake_generator.png
        :scale: 70%
+       :align: left
    
    If you compile using Visual Studio, choose **Visual Studio 10** or **Visual Studio 10 Win64**. For the **QtCreator** choose **MinGW Makefiles** on Windows or **Unix Makefiles** on Linux machines. 
    Accept your choice by clicking **Finish**. 

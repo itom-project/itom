@@ -6,7 +6,7 @@
 ==============================================
 
 The plot-widgets itom1DQwtPlot and itom2DQwtPlot supports plotting of geometric primitives by user interaction and script language.
-This section will give a short introduction about ploting, read- /write-functions and the correspondig plots and the internal geometric element structure.
+This section will give a short introduction about plotting, read- /write-functions and the corresponding plots and the internal geometric element structure.
 
 At last the evaluateGeomtrics-plugin for direct evaluation of geometric elements is introduced.
 
@@ -19,23 +19,25 @@ The red X ("clear button") will delete all geometric elements within the plot ei
 
 .. figure:: images/drawInto2DToolbarIcons.png
     :scale: 50%
+    :align: left
 
-At the moment "itom" only supports "point", "line", "rectanlge" and "ellipse" but further items, e.g. "circle" and "polygons", are in preparation. 
+At the moment "itom" only supports "point", "line", "rectangle" and "ellipse" but further items, e.g. "circle" and "polygons", are in preparation. 
 To draw an item simply click into the image space and left-click the mouse. 
 In case of elements with at least more than a marker, you can now set the size of the element by setting the second point by left-clicking again.
 During plotting a green lined geometric element appears. After finishing the element color turns to the first inverse 
-color of the current color palette with handles (diamonds or sqares) colored with the second inverse color of the current palette.
+color of the current color palette with handles (diamonds or squares) colored with the second inverse color of the current palette.
     
 .. figure:: images/drawInto2D.png
     :scale: 50%
+    :align: left
 
-After creation the geometric elements can be editied by left-clicking one of the element handles  which becomes high-lighted (squares) and moving the mouse.
-By pressing the "ctrl"-button during mouse-movement the element resize behavior will be changed depending on the element type. 
+After creation the geometric elements can be edited by left-clicking one of the element handles  which becomes high-lighted (squares) and moving the mouse.
+By pressing the "ctrl"-button during mouse-movement the element resize behaviour will be changed depending on the element type. 
 Lines will be changed to horizontal or vertical alignment.
 Rectangles and ellipses will be become squares or circles according to plot coordinates (x/y-space) and not pixel coordinates. 
 To avoid confusion with plot aspect, a button for fixed axis aspect ratio ("1:1") was added to the plot bar.
 
-Scipt based pick and plot from / to a QWT-widget
+Script based pick and plot from / to a Qwt-widget
 ---------------------------------------------------------
 
 To allow more complex user interaction with scripts, e.g. script based element picking, the plot functionality can be started by script either blocking or non-blocking.
@@ -94,7 +96,7 @@ For the differernt definitions of the geometric elements see section "Indexing o
 Implemented Functions, Signals and Slots
 ----------------------------------------------
 
-The Qwt-plot widgets functions had to be updated. The Qwt-Widgets got the folling properties, respectivly setter- / getter-functions related to plotting:
+The Qwt-plot widgets functions had to be updated. The Qwt-Widgets got the following properties, respectively setter- / getter-functions related to plotting:
 
 *  "geometricElementsCount",    get the number of geometric elements in this plot, READONLY
 *  "keepAspectRatio",           enable or disable a fixed aspect ratio of 1:1 for the plot canvas.
@@ -104,7 +106,7 @@ The Qwt-plot widgets functions had to be updated. The Qwt-Widgets got the follin
 In complete theses the functionality of the drawing interface, the following slots have been added to the widgets:
 
 *  "plotMarkers"                Add markers and geometric elements to plot according to dataObject and style type. For geometric "style is not used", type in "b".
-*  "userInteractionStart"       Start a non-blocking user interaction for "multipointpick" ord geometric elements with element count.
+*  "userInteractionStart"       Start a non-blocking user interaction for "multipointpick" or geometric elements with element count.
 *  "clearGeometricElements"     Delete all existing geometric elements within the plot
 
 To register changes in the plot elements and finished user interactions, the following signals where implemented:
@@ -113,7 +115,7 @@ To register changes in the plot elements and finished user interactions, the fol
 *  "plotItemChanged",           Emitted, when a geometric element was changed and changing is finished. Not fully Python-Compatible.
 *  "plotItemDeleted",           Emitted, when a specific plot item is deleted
 *  "plotItemsDeleted",          Emitted, when all plot items are deleted
-*  "plotItemsFinished",         Emmited, when the plotting function is finished, similar to userInteractionDone
+*  "plotItemsFinished",         Emitted, when the plotting function is finished, similar to userInteractionDone
 
 For the blocking connection the plotItem-class got the additional function drawAndPickElements(type, dataObject, count), see py:class:`~itom.plotItem`. 
 
@@ -124,11 +126,11 @@ The definition of the geometric elements depends on the implementation. The "plo
 The structure a dataObject with 8 rows and n columns where n depends on the number of elements. 
 Points are defined by their location, while ellipses and rectangles are defined by their diagonal edges.
 
-The "geometricElements"-property uses geometric elements in a more mathematical oriantated description. The dataObject stucture is defined as "float32" with n by 11 elements.
+The "geometricElements"-property uses geometric elements in a more mathematical orientated description. The dataObject structure is defined as "float32" with n by 11 elements.
 Most setter functions also support "float32" elements. Each of the n rows corresponds to an elements (except polygon-shapes). The indexing follows the geometricPrimitive-struct in c++.
 
-The geometricPrimitive is a struct within the c-Stuctur of the programm designed for exchanging the geometric elements from plots to other elements.
-The structur can be used rowise as dataObject or float32-lists
+The geometricPrimitive is a struct within the c-Stuctur of the program designed for exchanging the geometric elements from plots to other elements.
+The structure can be used row-wise as dataObject or float32-lists
 
 At the moment only tPoint, tLine, tEllipse and tRectangle are supported.
 
@@ -145,7 +147,7 @@ The cells contain:
 5. First coordinate with z value
     
 
-All other values depends on the primitiv type and may change between each type.
+All other values depends on the primitive type and may change between each type.
 
 * A point is defined as idx, flags, centerX0, centerY0, centerZ0
 * A line is defined as idx, flags, x0, y0, z0, x1, y1, z1
@@ -166,7 +168,7 @@ All other values depends on the primitiv type and may change between each type.
 Evaluation of Geometric Elements 
 ----------------------------------------------
 
-The evaluateGeomtrics-widget is designed to load geometric definition stored in a float32 dataObject with a column-size of >10 elments and a row for each geometric element to display.
+The evaluateGeomtrics-widget is designed to load geometric definition stored in a float32 dataObject with a column-size of >10 elements and a row for each geometric element to display.
 Further more it allows the evaluation of geometric relations between the geometric primitives. See section :ref:`listCustomDesignerWidgets` for the widget description.
 
 

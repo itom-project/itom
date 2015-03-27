@@ -131,15 +131,15 @@ QString PythonQtConversion::PyObjGetString(PyObject* val, bool strict, bool& ok)
     ok = true;
     if (PyBytes_Check(val))
     {
-        r = QString(PyObjGetBytes(val, strict, ok));
+        r = QString::fromUtf8(PyObjGetBytes(val, strict, ok));
     }
     else if (PyUnicode_Check(val))
     {
-        PyObject *repr2 = PyUnicodeToPyByteObject(val);
-        if (repr2 != NULL)
+        PyObject *latin1repr = PyUnicode_AsLatin1String(val); //we need to have a latin1-decoded string, since we assume to have latin1 in the QString conversion below.
+        if (latin1repr != NULL)
         {
-            r = QString(PyObjGetBytes(repr2, strict, ok));
-            Py_XDECREF(repr2);
+            r = QString::fromLatin1(PyObjGetBytes(latin1repr, strict, ok));
+            Py_XDECREF(latin1repr);
         }
     } 
     else if (!strict) 
@@ -175,7 +175,7 @@ QString PythonQtConversion::PyObjGetString(PyObject* val, bool strict, bool& ok)
     \param ok (ByRef) is set to true if conversion succeeded.
     \return resulting QString
 */
-std::string PythonQtConversion::PyObjGetStdString(PyObject* val, bool strict, bool& ok) 
+std::string PythonQtConversion::PyObjGetStdStringAsLatin1(PyObject* val, bool strict, bool& ok) 
 {
     std::string r;
     ok = true;
@@ -185,11 +185,11 @@ std::string PythonQtConversion::PyObjGetStdString(PyObject* val, bool strict, bo
     }
     else if (PyUnicode_Check(val))
     {
-        PyObject *repr2 = PyUnicodeToPyByteObject(val);
-        if (repr2 != NULL)
+        PyObject *latin1repr = PyUnicode_AsLatin1String(val); //we need to have a latin1-decoded string, since we assume to have latin1 in the QString conversion below.
+        if (latin1repr != NULL)
         {
-            r = std::string(PyObjGetBytes(repr2, strict, ok));
-            Py_XDECREF(repr2);
+            r = std::string(PyObjGetBytes(latin1repr, strict, ok));
+            Py_XDECREF(latin1repr);
         }
     } 
     else if (!strict) 
@@ -198,7 +198,7 @@ std::string PythonQtConversion::PyObjGetStdString(PyObject* val, bool strict, bo
         PyObject* str =  PyObject_Str(val);
         if (str) 
         {
-            r = PyObjGetStdString(str, strict, ok);
+            r = PyObjGetStdStringAsLatin1(str, strict, ok);
             Py_DECREF(str);
         } 
         else 
@@ -233,7 +233,8 @@ QByteArray PythonQtConversion::PyObjGetBytes(PyObject* val, bool strict, bool& o
     if (PyBytes_Check(val)) 
     {
         Py_ssize_t size = PyBytes_GET_SIZE(val);
-        r = QByteArray(PyBytes_AS_STRING(val), size);
+		const char *b = PyBytes_AS_STRING(val);
+        r = QByteArray(b, size);
     } 
     else if (strict)
     {
@@ -978,15 +979,18 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 #if ITOM_POINTCLOUDLIBRARY > 0
         else if (Py_TYPE(val) == &ito::PythonPCL::PyPointCloudType)
         {
-            type = QMetaType::type("ito::PCLPointCloud");
+            //type = QMetaType::type("ito::PCLPointCloud");
+            type = QMetaType::type("QSharedPointer<ito::PCLPointCloud>");
         }
         else if (Py_TYPE(val) == &ito::PythonPCL::PyPointType)
         {
-            type = QMetaType::type("ito::PCLPoint");
+            //type = QMetaType::type("ito::PCLPoint");
+            type = QMetaType::type("QSharedPointer<ito::PCLPoint>");
         }
         else if (Py_TYPE(val) == &ito::PythonPCL::PyPolygonMeshType)
         {
-            type = QMetaType::type("ito::PCLPolygonMesh");
+            //type = QMetaType::type("ito::PCLPolygonMesh");
+            type = QMetaType::type("QSharedPointer<ito::PCLPolygonMesh>");
         }
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
         else if ((Py_TYPE(val) == &ito::PythonDataObject::PyDataObjectType) || PyArray_Check(val))
@@ -1297,6 +1301,33 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             if (ok)
             {
                 v = qVariantFromValue<ito::PCLPointCloud >(pcl);
+            }
+        }
+        else if (type == QMetaType::type("QSharedPointer<ito::PCLPointCloud>"))
+        {
+            if (PyPointCloud_Check(val))
+            {
+                ito::PythonPCL::PyPointCloud* pyPlc = (ito::PythonPCL::PyPointCloud*)val;
+                if (pyPlc && pyPlc->data)
+                {
+                    if (pyPlc->data == NULL)
+                    {
+                        v = QVariant();
+                    }
+                    else
+                    {
+                        QSharedPointer<ito::PCLPointCloud> value(new ito::PCLPointCloud(*pyPlc->data));
+                        v = qVariantFromValue<QSharedPointer<ito::PCLPointCloud> >(value);
+                    }
+                }
+                else
+                {
+                    v = QVariant();
+                }
+            }
+            else
+            {
+                v = QVariant();
             }
         }
         else if (type == QMetaType::type("ito::PCLPoint"))
@@ -2127,6 +2158,19 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                     #endif
                 }
             }
+            else if (type == QMetaType::type("QSharedPointer<ito::PCLPointCloud>"))
+            {
+                ito::PythonPCL::PyPointCloud* pyPlc = (ito::PythonPCL::PyPointCloud*)val;
+                if (pyPlc && pyPlc->data)
+                {
+                    QSharedPointer<ito::PCLPointCloud> sharedBuffer = ito::PythonSharedPointerGuard::createPythonSharedPointer<ito::PCLPointCloud>(pyPlc->data, val);
+                    #if QT_VERSION >= 0x050000
+                    *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&sharedBuffer));
+                    #else
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&sharedBuffer));
+                    #endif
+                }
+            }
             else if (type == QMetaType::type("ito::PCLPoint"))
             {
                 bool ok;
@@ -2633,6 +2677,21 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
         {
             return PCLPointCloudToPyObject(*((ito::PCLPointCloud*)data));
         }
+        else if (strcmp(name, "QSharedPointer<ito::PCLPointCloud>") == 0)
+        {
+            QSharedPointer<ito::PCLPointCloud> *sharedPtr = (QSharedPointer<ito::PCLPointCloud>*)data;
+            if (sharedPtr == NULL)
+            {
+                PyErr_SetString(PyExc_TypeError, "The given QSharedPointer is NULL");
+                return NULL;
+            }
+            if (sharedPtr->data() == NULL)
+            {
+                Py_RETURN_NONE;
+                //return PyErr_SetString(PyExc_TypeError, "Internal dataObject of QSharedPointer is NULL");
+            }
+            return PCLPointCloudToPyObject(*(sharedPtr->data()));
+        }
         else if (strcmp(name, "ito::PCLPoint") == 0)
         {
             return PCLPointToPyObject(*((ito::PCLPoint*)data));
@@ -2675,6 +2734,16 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             for (Py_ssize_t i = 0; i < temp2->size(); ++i)
             {
                 PyTuple_SetItem(temp, i, PyLong_FromDouble(temp2->at(i)));
+            }
+            return temp;
+        }
+        else if (strcmp(name, "QVector<float>") == 0)
+        {
+            QVector<float> *temp2 = (QVector<float>*)data;
+            PyObject *temp = PyTuple_New(temp2->size());
+            for (Py_ssize_t i = 0; i < temp2->size(); ++i)
+            {
+                PyTuple_SetItem(temp, i, PyFloat_FromDouble(temp2->at(i)));
             }
             return temp;
         }
@@ -2773,7 +2842,7 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
     case latin_1:
     case iso_8859_1:
         return PyUnicode_AsLatin1String(unicode);
-#if defined(WIN) || defined(WIN32) || defined(_WIN64) || defined(_WINDOWS)
+#if defined(WIN) || defined(WIN32) || defined(_WIN64)
     case mbcs:
         return PyUnicode_AsMBCSString(unicode);
 #endif
@@ -2843,13 +2912,13 @@ MethodDescription::MethodDescription(QMetaMethod &method) :
     m_argTypes(NULL)
 {
     m_methodIndex = method.methodIndex();
-    #if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000
     m_signature = method.methodSignature();
     QByteArray sig(method.methodSignature());
-    #else
+#else
     m_signature = QByteArray(method.signature());
     QByteArray sig(method.signature());
-    #endif
+#endif
     
     int beginArgs = sig.indexOf("(");
     m_name = sig.left(beginArgs);

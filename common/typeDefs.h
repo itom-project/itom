@@ -33,8 +33,14 @@
 #include <exception>      // std::exception
 #include <string.h>
 #include <stdexcept>
-#ifdef linux
+#ifndef WIN32
   #include <unistd.h>    // neede for usleep
+#endif
+
+#ifdef _MSC_VER
+	#if (_MSC_VER >= 1800)
+		#include <algorithm>
+	#endif
 #endif
 
 // WARNING it is very EVIL to include ANY QT STUFF here!!!
@@ -203,7 +209,7 @@ namespace ito
 
     #define GLOBAL_LOG_LEVEL tLogLevel(logAll)
 
-#ifdef linux
+#ifndef WIN32
     #define _strdup strdup
     #define _itoa itoa
     #define _snprintf snprintf

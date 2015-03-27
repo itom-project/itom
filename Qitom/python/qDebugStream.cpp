@@ -24,6 +24,7 @@
 
 namespace ito {
 
+//------------------------------------------------------------------------------------------------------------------------
 //! constructor
 /*!
     initializes this instance and stores actual content of stream in m_old_buf
@@ -42,6 +43,7 @@ QDebugStream::QDebugStream(std::ostream &stream, tMsgType type, QString lineBrea
     line_break = lineBreak;
 }
 
+//------------------------------------------------------------------------------------------------------------------------
 //! destructor
 /*!
     destroys this instance and the stream observation and emits remaining string in the buffer.
@@ -52,11 +54,13 @@ QDebugStream::~QDebugStream()
     // output anything that is left
     if (!m_string.empty())
     {
-        emit flushStream(QString(m_string.c_str()),msg_type); //the c_str will be converted into QString using the codec set by QTextCodec::setCodecForCStrings(textCodec) in MainApplication
+        QString str = QString::fromLatin1(m_string.c_str()); //Python stdout and stderr streams as well as std::cout streams in itom and plugins are encoded with latin1.
+        emit flushStream(str,msg_type); //the c_str will be converted into QString using the codec set by QTextCodec::setCodecForCStrings(textCodec) in MainApplication
     }
     m_stream.rdbuf(m_old_buf);
 }
 
+//------------------------------------------------------------------------------------------------------------------------
 //! method invoked if new content has been added to stream
 std::streamsize QDebugStream::xsputn(const char *p, std::streamsize n)
 {
@@ -69,12 +73,32 @@ std::streamsize QDebugStream::xsputn(const char *p, std::streamsize n)
         if (pos != std::string::npos)
         {
             std::string tmp(m_string.begin(), m_string.begin() + pos);
-            emit flushStream(QString(tmp.c_str()).append(line_break), msg_type); //the c_str will be converted into QString using the codec set by QTextCodec::setCodecForCStrings(textCodec) in MainApplication
+            QString str = QString::fromLatin1(tmp.c_str()); //Python stdout and stderr streams as well as std::cout streams in itom and plugins are encoded with latin1.
+
+            emit flushStream(QString(str).append(line_break), msg_type); //the c_str will be converted into QString using the codec set by QTextCodec::setCodecForCStrings(textCodec) in MainApplication
             m_string.erase(m_string.begin(), m_string.begin() + pos + 1);
         }
     }
 
     return n;
+}
+
+//------------------------------------------------------------------------------------------------------------------------
+//! this method overwrites a corresponding method in basic_streambuf class and is invoked, if buffer risks to overflow
+std::basic_streambuf<char>::int_type QDebugStream::overflow(int_type v)
+{
+    if (v == '\n')
+    {
+        QString str = QString::fromLatin1(m_string.c_str()); //Python stdout and stderr streams as well as std::cout streams in itom and plugins are encoded with latin1.
+        emit flushStream(str, msg_type);
+        m_string.erase(m_string.begin(), m_string.end());
+    }
+    else
+    {
+        m_string += v;
+    }
+
+    return v;
 }
 
 } //end namespace ito

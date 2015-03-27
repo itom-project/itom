@@ -47,27 +47,27 @@
 namespace ito
 {
 
-#if (defined WIN32 || defined WIN64)
-class CPUID {
-  ito::uint32 regs[4];
+#ifdef WIN32
+    class CPUID {
+      ito::uint32 regs[4];
 
-public:
-  void load(unsigned i) {
-#ifdef WIN64
-    asm volatile
-      ("cpuid" : "=a" (regs[0]), "=b" (regs[1]), "=c" (regs[2]), "=d" (regs[3])
-       : "a" (i), "c" (0));
-    // ECX is set to zero for CPUID function 4    
-#else
-    __cpuid((ito::int32 *)regs, (ito::int32)i);
-#endif
-  }
+    public:
+      void load(unsigned i) {
+    #ifndef _MSC_VER
+        asm volatile
+          ("cpuid" : "=a" (regs[0]), "=b" (regs[1]), "=c" (regs[2]), "=d" (regs[3])
+           : "a" (i), "c" (0));
+        // ECX is set to zero for CPUID function 4    
+    #else
+        __cpuid((ito::int32 *)regs, (ito::int32)i); //Microsoft specific for x86 and x64
+    #endif
+      }
 
-  const ito::uint32 &EAX() const {return regs[0];}
-  const ito::uint32 &EBX() const {return regs[1];}
-  const ito::uint32 &ECX() const {return regs[2];}
-  const ito::uint32 &EDX() const {return regs[3];}
-};
+      const ito::uint32 &EAX() const {return regs[0];}
+      const ito::uint32 &EBX() const {return regs[1];}
+      const ito::uint32 &ECX() const {return regs[2];}
+      const ito::uint32 &EDX() const {return regs[3];}
+    };
 #endif
 
 /*!
@@ -182,7 +182,7 @@ void MainApplication::setupApplication()
     QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
     //add further folders to path-variable
-#if (defined WIN32 || defined WIN64)
+
     //you can add further pathes to the application-internal PATH variable by adding the following lines to the ini-file:
     /*[Application]
     searchPathes\size=1 ->add here the number of pathes
@@ -200,6 +200,7 @@ void MainApplication::setupApplication()
     settings->endArray();
     settings->endGroup();
 
+#ifdef WIN32
     if (pathes.length() > 0)
     {
         QString p = pathes.join(";");
@@ -207,7 +208,17 @@ void MainApplication::setupApplication()
         QByteArray newpath = "path=" + p.toLatin1() + ";" + oldpath; //set libDir at the beginning of the path-variable
         _putenv(newpath.data());
     }
+#else // (defined linux) && (defined _APPLE_)
+    if (pathes.length() > 0)
+    {
+        QString p = pathes.join(":");
+        QByteArray oldpath = getenv("PATH");
+        QByteArray newpath = p.toLatin1() + ":" + oldpath; //set libDir at the beginning of the path-variable
+        setenv("PATH", newpath.data(), 1);
+    }
+#endif
 
+#ifdef WIN32
     //This check is done since the KMP_AFFINITY feature of OpenMP
     //is only available on Intel CPUs and lead to a severe warning
     //on other CPUs.
@@ -223,10 +234,10 @@ void MainApplication::setupApplication()
     {
         _putenv_s("KMP_AFFINITY","none");
     }
-    
-    //std::cout << "CPU vendor = " << vendor.data() << endl; 
-    
+#else
+    // \todo check for Intel/AMD and set KMP_AFFINITY if not Intel
 #endif
+
 
     settings->beginGroup("Language");
     QString language = settings->value("language", "en").toString();
@@ -269,6 +280,12 @@ void MainApplication::setupApplication()
     {
         textCodec = QTextCodec::codecForName("ISO 8859-1"); //latin1 is default
     }
+    if (!textCodec)
+    {
+        textCodec = QTextCodec::codecForLocale();
+    }
+
+    AppManagement::setScriptTextCodec(textCodec);
 
     // None of these two is available in Qt5 and according to
     // Qt docu it should not have been used anyway. So 
@@ -391,7 +408,7 @@ void MainApplication::setupApplication()
         m_splashScreen->showMessage(tr("load ui organizer..."), Qt::AlignRight | Qt::AlignBottom);
         QCoreApplication::processEvents();
 
-        m_uiOrganizer = new UiOrganizer();
+        m_uiOrganizer = new UiOrganizer(retValue);
         AppManagement::setUiOrganizer(qobject_cast<QObject*>(m_uiOrganizer));
 
         m_splashScreen->showMessage(tr("scan and load designer widgets..."), Qt::AlignRight | Qt::AlignBottom);

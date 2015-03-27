@@ -20,10 +20,6 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-//#if (defined WIN32 || defined WIN64)
-//    #include <QtCore/qt_windows.h>
-//#endif
-
 #include "mainApplication.h"
 #include "main.h"
 #include "organizer/userOrganizer.h"
@@ -43,15 +39,30 @@
 #include <qdir.h>
 #include <qmutex.h>
 
-
 //#include "benchmarks.h"
+
+//DOXYGEN FORMAT
+//! brief description
+/*!
+    long description
+
+    \param name description
+    \return description
+    \sa (see also) keywords (comma-separated)
+*/
 
 QTextStream *messageStream = NULL;
 QMutex msgOutputProtection;
 
+//! Message handler that redirects qDebug, qWarning and qFatal streams to the global messageStream
+/*!
+    This method is only registered for this redirection, if the global messageStream is related to the file itomlog.txt.
+
+    The redirection is enabled via args passed to the main function.
+*/
+#if QT_VERSION < 0x050000
 void myMessageOutput(QtMsgType type, const char *msg)
 {
-
     msgOutputProtection.lock();
 
     switch (type) {
@@ -72,17 +83,32 @@ void myMessageOutput(QtMsgType type, const char *msg)
     messageStream->flush();
     msgOutputProtection.unlock();
 }
+#else
+void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+//    myMessageOutput(type, msg.toLatin1().data());
+    msgOutputProtection.lock();
 
+    switch (type) 
+    {
+        case QtDebugMsg:
+            (*messageStream) << "[qDebug    " <<  QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << " File: " << context.file << " Line: " << context.line << " Function: " << context.function << "\r\n";
+            break;
+        case QtWarningMsg:
+            (*messageStream) << "[qWarning  " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << " File: " << context.file << " Line: " << context.line << " Function: " << context.function << "\r\n";
+            break;
+        case QtCriticalMsg:
+            (*messageStream) << "[qCritical " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << " File: " << context.file << " Line: " << context.line << " Function: " << context.function << "\r\n";
+            break;
+        case QtFatalMsg:
+            (*messageStream) << "[qFatal    " << QDateTime::currentDateTime().toString("dd.MM.yy hh:mm:ss") << "] - " << msg << " File: " << context.file << " Line: " << context.line << " Function: " << context.function << "\r\n";
+            abort();
+    }
 
-//DOXYGEN FORMAT
-//! brief description
-/*!
-    long description
-
-    \param name description
-    \return description
-    \sa (see also) keywords (comma-separated)
-*/
+    messageStream->flush();
+    msgOutputProtection.unlock();
+}
+#endif
 
 //! OpenCV error handler
 /*!
@@ -122,21 +148,59 @@ int main(int argc, char *argv[])
 
     //startBenchmarks();
     
+    //parse arguments passed to the executable
+    /*
+        possible arguments are:
 
-    QFile logfile("itomlog.txt");
-    logfile.open(QIODevice::WriteOnly);
-    messageStream = new QTextStream(&logfile);
-    //qInstallMsgHandler(myMessageOutput);  //uncomment that line if you want to print all debug-information (qDebug, qWarning...) to file itomlog.txt
+        log : writes all messages sent via qDebug, qWarning... to the logfile itomlog.txt
+               in the itom application directory.
+        name=anyUsername : tries to start itom with the given username (different setting file)
+    */
+    QStringList args;
+    for (int i = 0; i < argc; ++i)
+    {
+        args << argv[i];
+    }
 
-    
+    //it is possible to redirect all Qt messages sent via qDebug, qWarning... to the logfile itomlog.txt.
+    //This option is enabled via the argument log passed to the executable.
+    QFile logfile;
+    if (args.contains("log", Qt::CaseInsensitive))
+    {
+        logfile.setFileName("itomlog.txt");
+        logfile.open(QIODevice::WriteOnly);
+        messageStream = new QTextStream(&logfile);
+#if QT_VERSION < 0x050000
+        qInstallMsgHandler(myMessageOutput);  //uncomment that line if you want to print all debug-information (qDebug, qWarning...) to file itomlog.txt
+#else
+        qInstallMessageHandler(myMessageOutput);
+#endif
+    }    
 
 #if defined _DEBUG
+    //in debug mode uncaught exceptions as well as uncaught cv::Exceptions will be parsed and also passed to qWarning and qFatal.
     cv::redirectError(itomCvError);
-    QItomApplication a(argc, argv);       //uncomment that line and comment the next line if you want to catch exceptions propagated through the Qt-event system.
+    QItomApplication a(argc, argv);
 #else
+    //in release an uncaught exception will exit the application.
     QApplication a(argc, argv);
 #endif
 
+    //itom modifies its local environment variables like PATH such that plugin libraries, python... that are loaded later
+    //benefit from necessary pathes that are then guaranteed to be found.
+    /*
+        These things are done:
+
+        * Prepend the subfolder 'lib' of the itom application directory to the PATH environment variable.
+             Plugins can place further required 3rd party libraries inside of this folder that is then
+             searched during the load of any plugins.
+        * Prepend the subfolder 'designer' of the itom application directory to the PATH environment variable.
+             This subfolder contains designer plugins that can then be loaded by the QtDesigner started via itom.
+        * Create the environment variable MPLCONFIGDIR whose value is the absolute path to the subfolder 'itom-packages/mpl_itom'.
+             If you use the python package matplotlib, you can place a modified matplotlib config file there that is then
+             used for matplotlib configurations. For instance it is recommended to modify the backend variable in this file,
+             such that matplotlib renders its content inside of an itom widget per default.
+    */
     //parse lib path:
     QDir appLibPath = QDir(a.applicationDirPath());
     if(appLibPath.exists("lib"))
@@ -149,8 +213,10 @@ int main(int argc, char *argv[])
         appLibPath.cd("lib");
     }
     QString libDir = QDir::cleanPath(appLibPath.filePath(""));
+    libDir = QDir::toNativeSeparators( libDir );
 
     //and designer path
+    appLibPath = QDir(a.applicationDirPath());
     if(appLibPath.exists("designer"))
     {
         appLibPath.cd("designer");
@@ -162,9 +228,22 @@ int main(int argc, char *argv[])
     }
     QString designerDir = QDir::cleanPath(appLibPath.filePath(""));
 
-    libDir = QDir::toNativeSeparators( libDir );
+    //search for mpl_itom path in itom-packages
+    appLibPath = QDir(a.applicationDirPath());
+    if(appLibPath.exists("itom-packages"))
+    {
+        appLibPath.cd("itom-packages");
+        appLibPath.cd("mpl_itom");
+    }
+    else
+    {
+        appLibPath.cdUp();
+        appLibPath.cd("itom-packages");
+        appLibPath.cd("mpl_itom");
+    }
+    QString mpl_itomDir = QDir::cleanPath(appLibPath.filePath(""));
 
-#if (defined WIN32 || defined WIN64)
+#ifdef WIN32
     char *oldpath = getenv("path");
     char pathSep[] = ";";
 #else
@@ -173,7 +252,7 @@ int main(int argc, char *argv[])
 #endif
     char *newpath = (char*)malloc(strlen(oldpath) + libDir.size() + designerDir.size() + 11);
     newpath[0] = 0;
-#if (defined WIN32 || defined WIN64)
+#ifdef WIN32
     strcat(newpath, "path=");
 #else
 #endif
@@ -182,49 +261,66 @@ int main(int argc, char *argv[])
     strcat(newpath, designerDir.toLatin1().data());
     strcat(newpath, pathSep);
     strcat(newpath, oldpath);
-#if (defined WIN32 || defined WIN64)
+#ifdef WIN32
     _putenv(newpath);
+
+    //this is for the matplotlib config file that is adapted for itom.
+    mpl_itomDir = QString("MPLCONFIGDIR=%1").arg(mpl_itomDir);
+    _putenv(mpl_itomDir.toLatin1().data());
 #else
     setenv("PATH", newpath, 1);
+    setenv("MPLCONFIGDIR", mpl_itomDir.toLatin1().data(), 1);
 #endif
     free(newpath);
 
+    //itom has an user management. If you pass the string name=[anyUsername] to the executable,
+    //another setting file than the default file itom.ini will be loaded for this session of itom.
+    //Therefore all settings files in the folder itomSettings matching itom_*.ini are checked for 
+    //a group
+    //
+    //[ITOMIniFile]
+    //name = anyUsername
+    //
+    //and if found, the setting file is used.
     QString defUserName;
-    for (int nA = 0; nA < argc; nA++)
+    foreach (const QString &arg, args)
     {
-        char *pNameFound = NULL;
-
-        pNameFound = strstr(argv[nA], "name=");
-        if (pNameFound)
+        if (arg.startsWith("name="))
         {
-            defUserName = QString(((char*)argv[nA] + 6));
+            defUserName = arg.mid(5);
             break;
         }
     }
 
-    int ret = 0;
-
+    //now the main things for loading itom are done:
+    /*
+        1. create MainApplication
+        2. load the default or user defined setting file (*.ini)
+        3. setupApplication()
+        4. start the application's main loop
+        5. finalizeApplication() if itom is closed
+    */
+    int ret;
     MainApplication m(MainApplication::standard);
     if (ito::UserOrganizer::getInstance()->loadSettings(defUserName) != 0)
     {
-        qDebug("load program aborted by user");
-        ret = 0;
-        goto end;
+        ret = 0; 
+        qDebug("load program aborted, possibly unknown username (check argument name=...)");
     }
+    else
+    {
+        m.setupApplication();
 
-    m.setupApplication();
+        qDebug("starting main event loop");
 
-    qDebug("starting main event loop");
+        ret = m.exec();
 
-    ret = m.exec();
+        qDebug("application exited. call finalize");
 
-    qDebug("application exited. call finalize");
+        m.finalizeApplication();
 
-    m.finalizeApplication();
-
-    qDebug("finalize done");
-
-end:
+        qDebug("finalize done");
+    }
 
     ito::UserOrganizer::closeInstance();
 
@@ -233,9 +329,13 @@ end:
     #else
     qInstallMsgHandler(0);
     #endif
-    delete messageStream;
-    messageStream = NULL;
-    logfile.close();
+
+    //close possible logfile
+    DELETE_AND_SET_NULL(messageStream);
+    if (logfile.fileName().isEmpty() == false)
+    {
+        logfile.close();
+    }
 
     return ret;
 }

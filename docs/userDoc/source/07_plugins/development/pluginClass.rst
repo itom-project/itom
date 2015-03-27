@@ -33,6 +33,7 @@ The basic scheme of the live-cycle of any plugin is depicted in the following fi
 .. _plugin-plugincall-scheme1:
 
 .. figure:: images/pluginBase1_824.png
+    :align: left
 
 At startup of |itom|, one single instance (singleton) of each plugin interface class is created and managed by the **AddInManager**. Later, an instance of the real plugin can be requested, for instance in a python-script or by
 a C-function call. The arguments to this request are two vectors of mandatory and optional parameters (instances of class **ParamBase**), that are passed to the initialization of the plugin. The default state of these vectors is

@@ -21,17 +21,22 @@
 *********************************************************************** */
 
 #include "dialogSelectUser.h"
-
 #include "../AppManagement.h"
+#include "../organizer/userOrganizer.h"
 
 namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-DialogSelectUser::DialogSelectUser(QWidget *parent) :
+DialogSelectUser::DialogSelectUser(UserModel *model, QWidget *parent) :
     QDialog(parent),
-    m_userModel(NULL)
+    m_userModel(model)
 {
     ui.setupUi(this);
+
+    ui.userList->setModel(m_userModel);
+
+    QItemSelectionModel *selModel = ui.userList->selectionModel();
+    QObject::connect(selModel, SIGNAL(currentChanged (const QModelIndex &, const QModelIndex &)), this, SLOT(userListCurrentChanged(const QModelIndex &, const QModelIndex &)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -40,47 +45,113 @@ DialogSelectUser::~DialogSelectUser()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogSelectUser::DialogInit(UserModel *model)
+bool DialogSelectUser::selectUser(const QString &id)
 {
-    m_userModel = model;
-    QItemSelectionModel *selModel = ui.userList->selectionModel();
-    QObject::connect(selModel, SIGNAL(currentChanged (const QModelIndex &, const QModelIndex &)), this, SLOT(userListCurrentChanged(const QModelIndex &, const QModelIndex &))); 
+    for (int curIdx = 0; curIdx < m_userModel->rowCount(); curIdx++)
+    {
+        QModelIndex midx = m_userModel->index(curIdx, 1); //id
+        if (midx.isValid())
+        {
+            if (QString::compare(id, midx.data().toString(), Qt::CaseInsensitive) == 0)
+            {
+                QModelIndex actIdx = m_userModel->index(curIdx, 0);
+                ui.userList->setCurrentIndex(actIdx);
+                return true;
+            }
+        }
+    }
+
+    ui.userList->setCurrentIndex(m_userModel->index(0,0));
+    return false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogSelectUser::userListCurrentChanged(const QModelIndex &current, const QModelIndex &previous)
 {
+    bool userExists = false;
+
+    ui.permissionList->clear();
+
     if (m_userModel)
     {
         QModelIndex curIdx = ui.userList->currentIndex();
         if (curIdx.isValid())
         {
-            QModelIndex midx = m_userModel->index(curIdx.row(), 0);
-            ui.lineEdit_name->setText(midx.data().toString());
-            midx = m_userModel->index(curIdx.row(), 2);
-            ui.lineEdit_role->setText(midx.data().toString());
-            midx = m_userModel->index(curIdx.row(), 3);
-            ui.lineEdit_iniFile->setText(midx.data().toString());
+            userExists = true;
+            int curRow = curIdx.row();
+
+            ui.lineEdit_name->setText(m_userModel->index(curRow, UserModel::umiName).data().toString());
+            ui.lineEdit_id->setText(m_userModel->index(curRow, UserModel::umiId).data().toString());
+            ui.lineEdit_iniFile->setText(m_userModel->index(curRow, UserModel::umiIniFile).data().toString());
+
+            ito::UserRole role = m_userModel->index(curRow, UserModel::umiRole).data().value<ito::UserRole>();
+            UserFeatures features = m_userModel->index(curRow, UserModel::umiFeatures).data().value<UserFeatures>();
+            
+            ui.permissionList->addItem(tr("Role") + ": " + m_userModel->getRoleName(role));
+            
+            if (features & featDeveloper)
+            {
+                ui.permissionList->addItem(m_userModel->getFeatureName(featDeveloper));
+            }
+
+            if (features & featFileSystem)
+            {
+                ui.permissionList->addItem(m_userModel->getFeatureName(featFileSystem));
+            }
+
+            if (features & featUserManag)
+            {
+                ui.permissionList->addItem(m_userModel->getFeatureName(featUserManag));
+            }
+
+            if (features & featPlugins)
+            {
+                ui.permissionList->addItem(m_userModel->getFeatureName(featPlugins));
+            }
+
+            if (features & featProperties)
+            {
+                ui.permissionList->addItem(m_userModel->getFeatureName(featProperties));
+            }
+
+            if ((features & featConsoleReadWrite))
+            {
+                ui.permissionList->addItem(m_userModel->getFeatureName(featConsoleReadWrite));
+            }
+            else if (features & featConsoleRead)
+            {
+                ui.permissionList->addItem(m_userModel->getFeatureName(featConsoleRead));
+            }
         }
+    }
+
+    if (!userExists)
+    {
+        ui.lineEdit_name->setText("");
+        ui.lineEdit_id->setText("");
+        ui.lineEdit_iniFile->setText("");
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogSelectUser::on_userList_doubleClicked(const QModelIndex current)
 {
-    if (m_userModel)
-    {
-        QModelIndex curIdx = ui.userList->currentIndex();
-        if (curIdx.isValid())
-        {
-            QModelIndex midx = m_userModel->index(curIdx.row(), 0);
-            ui.lineEdit_name->setText(midx.data().toString());
-            midx = m_userModel->index(curIdx.row(), 2);
-            ui.lineEdit_role->setText(midx.data().toString());
-            midx = m_userModel->index(curIdx.row(), 3);
-            ui.lineEdit_iniFile->setText(midx.data().toString());
-        }
-    }
     this->accept();
-    return;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogSelectUser::on_buttonBox_clicked(QAbstractButton* btn)
+{
+    QDialogButtonBox::ButtonRole role = ui.buttonBox->buttonRole(btn);
+
+    if (role == QDialogButtonBox::AcceptRole)
+    {
+        accept(); //AcceptRole
+    }
+    else
+    {
+        reject(); //close dialog with reject
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

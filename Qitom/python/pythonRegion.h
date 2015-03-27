@@ -30,7 +30,7 @@
 
     //python
     // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-    #if (defined _DEBUG) && (!defined linux)
+    #if (defined _DEBUG) && (defined WIN32)
         #undef _DEBUG
         #include "Python.h" 
         #define _DEBUG
@@ -79,7 +79,7 @@ public:
     static PyObject* PyRegion_united(PyRegion *self, PyObject *args, PyObject *kwds);
     static PyObject* PyRegion_xored(PyRegion *self, PyObject *args, PyObject *kwds);
 
-    static PyObject* PyRegion_createMask(PyRegion *self);
+    static PyObject* PyRegion_createMask(PyRegion *self, PyObject *args, PyObject *kwds);
 
     //-------------------------------------------------------------------------------------------------
     // pickling

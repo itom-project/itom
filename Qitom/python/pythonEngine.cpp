@@ -63,11 +63,13 @@
 
 #include <QtCore/qmath.h>
 
+#include "../organizer/paletteOrganizer.h"
+
 #if ITOM_PYTHONMATLAB == 1
 #include "pythonMatlab.h"
 #endif
 
-#if linux
+#ifndef WIN32
 #include <langinfo.h>
 #endif
 
@@ -77,8 +79,64 @@ namespace ito
 QMutex PythonEngine::instatiated;
 QMutex PythonEngine::instancePtrProtection;
 PythonEngine* PythonEngine::instance = NULL;
+QString PythonEngine::fctHashPrefix = ":::itomfcthash:::";
 
 using namespace ito;
+
+//----------------------------------------------------------------------------------------------------------------------------------
+FuncWeakRef::FuncWeakRef() : m_proxyObject(NULL), m_argument(NULL), m_handle(0) 
+{
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+FuncWeakRef::FuncWeakRef(PythonProxy::PyProxy *proxyObject, PyObject *argTuple /*= NULL*/) :
+    m_proxyObject(proxyObject),
+    m_argument(argTuple),
+    m_handle(0)
+{
+    Py_XINCREF(m_proxyObject);
+    Py_XINCREF(m_argument);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+FuncWeakRef::FuncWeakRef(const FuncWeakRef &rhs) :
+    m_proxyObject(rhs.m_proxyObject),
+    m_argument(rhs.m_argument),
+    m_handle(0)
+{
+    Py_XINCREF(m_proxyObject);
+    Py_XINCREF(m_argument);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+FuncWeakRef::~FuncWeakRef()
+{
+    Py_XDECREF(m_proxyObject);
+    Py_XDECREF(m_argument);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+FuncWeakRef& FuncWeakRef::operator =(FuncWeakRef rhs)
+{
+    PythonProxy::PyProxy *t1 = m_proxyObject;
+    PyObject *t2 = m_argument;
+
+    m_proxyObject = rhs.m_proxyObject;
+    m_argument = rhs.m_argument;
+    Py_XINCREF(m_proxyObject);
+    Py_XINCREF(m_argument);
+
+    Py_XDECREF(t1);
+    Py_XDECREF(t2);
+
+    return *this;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FuncWeakRef::setHandle(const size_t &handle)
+{
+    m_handle = handle;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //public
@@ -110,13 +168,14 @@ PythonEngine::PythonEngine() :
     itomDbgInstance(NULL),
     itomModule(NULL),
     itomFunctions(NULL),
+    m_pyFuncWeakRefAutoInc(0),
     m_pyModGC(NULL),
     m_pyModSyntaxCheck(NULL),
-    m_pyFuncWeakRefHashesAutoInc(0),
     m_executeInternalPythonCodeInDebugMode(false),
     dictUnicode(NULL)
 {
     qRegisterMetaType<tPythonDbgCmd>("tPythonDbgCmd");
+    qRegisterMetaType<size_t>("size_t");
     qRegisterMetaType<tPythonTransitions>("tPythonTransitions");
     qRegisterMetaType<BreakPointItem>("BreakPointItem");
     qRegisterMetaType<ItomSharedSemaphore*>("ItomSharedSemaphore*");
@@ -137,6 +196,8 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<QSharedPointer<double> >("QSharedPointer<double>");
     qRegisterMetaType<QSharedPointer<bool> >("QSharedPointer<bool>");
     qRegisterMetaType<QSharedPointer<char> >("QSharedPointer<char>");
+    qRegisterMetaType<QSharedPointer<size_t> >("QSharedPointer<size_t>");
+    qRegisterMetaType<QSharedPointer<QVector<size_t> > >("QSharedPointer<QVector<size_t> >");
     qRegisterMetaType<QSharedPointer<QString> >("QSharedPointer<QString>");
     qRegisterMetaType<QSharedPointer<QByteArray> >("QSharedPointer<QByteArray>");
     qRegisterMetaType<QSharedPointer<QStringList> >("QSharedPointer<QStringList>");
@@ -163,11 +224,16 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud&");
     qRegisterMetaType<ito::PCLPolygonMesh >("ito::PCLPolygonMesh&");
     qRegisterMetaType<ito::PCLPoint >("ito::PCLPoint");
+    qRegisterMetaType<QSharedPointer<ito::PCLPointCloud> >("QSharedPointer<ito::PCLPointCloud>");
+    qRegisterMetaType<QSharedPointer<ito::PCLPolygonMesh> >("QSharedPointer<ito::PCLPolygonMesh>");
+    qRegisterMetaType<QSharedPointer<ito::PCLPoint> >("QSharedPointer<ito::PCLPoint>");
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
     qRegisterMetaType<ito::PyWorkspaceContainer*>("PyWorkspaceContainer*");
     qRegisterMetaType<ito::PyWorkspaceItem*>("PyWorkspaceItem*");
     qRegisterMetaType<ito::PythonQObjectMarshal>("ito::PythonQObjectMarshal");
     qRegisterMetaType<Qt::CursorShape>("Qt::CursorShape");
+    qRegisterMetaType<ito::ItomPaletteBase>("ito::ItomPaletteBase");
+    qRegisterMetaType<QSharedPointer<ito::ItomPaletteBase> >("QSharedPointer<ito::ItomPaletteBase>");
 
     m_autoReload.modAutoReload = NULL;
     m_autoReload.classAutoReload = NULL;
@@ -186,7 +252,6 @@ PythonEngine::PythonEngine() :
     locker.unlock();
 
     connect(AppManagement::getMainApplication(), SIGNAL(propertiesChanged()), this, SLOT(propertiesChanged()));
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -205,7 +270,6 @@ PythonEngine::~PythonEngine()
     QMutexLocker locker(&PythonEngine::instancePtrProtection);
     PythonEngine::instance = NULL;
     locker.unlock();
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -269,9 +333,10 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("error importing sys in start python engine\n").toLatin1().data());
             if ((tretVal = runString("import itom")) != ito::retOk)
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("error importing itom in start python engine\n").toLatin1().data());
-            if ((tretVal = runString("sys.stdout = itom.pythonStream(1)")) != ito::retOk)
+            //the streams __stdout__ and __stderr__, pointing to the original streams at startup are None, but need to have a valid value for instance when using pip.
+            if ((tretVal = runString("sys.stdout = sys.__stdout__ = itom.pythonStream(1)")) != ito::retOk)
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("error redirecting stdout in start python engine\n").toLatin1().data());
-            if ((tretVal = runString("sys.stderr = itom.pythonStream(2)")) != ito::retOk)
+            if ((tretVal = runString("sys.stderr = sys.__stderr__ = itom.pythonStream(2)")) != ito::retOk)
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("error redirecting stderr in start python engine\n").toLatin1().data());
 
 
@@ -286,7 +351,6 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 Py_INCREF(&ito::PythonDataObject::PyDataObjectType);
                 PyModule_AddObject(itomModule, "dataObject", (PyObject *)&ito::PythonDataObject::PyDataObjectType);
             }
-
 
             ito::PythonDataObject::PyDataObjectIterType.tp_base =0;
             ito::PythonDataObject::PyDataObjectIterType.tp_free = PyObject_Free;
@@ -429,6 +493,16 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 #if ITOM_PYTHONMATLAB == 1
             PyImport_AppendInittab("matlab", &PyInit_matlab);
 #endif
+            PyObject *python_path_prefix = PySys_GetObject("exec_prefix"); //borrowed reference
+            if (python_path_prefix)
+            {
+                bool ok;
+                pythonPathPrefix = PythonQtConversion::PyObjGetString(python_path_prefix, true, ok);
+                if (!ok)
+                {
+                    pythonPathPrefix = QString();
+                }
+            }
 
             //try to add folder "itom-package" to sys.path
             PyObject *syspath = PySys_GetObject("path"); //borrowed reference
@@ -580,6 +654,32 @@ void PythonEngine::propertiesChanged()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyObject* PythonEngine::setPyErrFromException(const std::exception &exc)
+{
+    const std::exception *p_exc = &exc;
+    const cv::Exception *p_cvexc = NULL;
+
+    if ((p_cvexc = dynamic_cast<const cv::Exception*>(p_exc)) != NULL)
+    {
+        const char* errorStr = cvErrorStr(p_cvexc->code);
+        return PyErr_Format(PyExc_RuntimeError, "OpenCV Error: %s (%s) in %s, file %s, line %d",
+            errorStr, p_cvexc->err.c_str(), p_cvexc->func.size() > 0 ?
+            p_cvexc->func.c_str() : "unknown function", p_cvexc->file.c_str(), p_cvexc->line );
+    }
+    else
+    {
+        if (exc.what())
+        {
+            return PyErr_Format(PyExc_RuntimeError, "The exception '%s' has been thrown", exc.what());
+        }
+        else
+        {
+            return PyErr_Format(PyExc_RuntimeError, "The exception '<unknown>' has been thrown"); 
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::scanAndRunAutostartFolder(QString currentDirAfterScan /*= QString()*/)
 {
     //store current directory
@@ -656,12 +756,10 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
         m_autoReload.checkStringExec = false;
 
 		//delete all remaining weak references in m_pyFuncWeakRefHashes (if available)
-		QHash<QString, QPair<PyObject*,PyObject*> >::iterator it = m_pyFuncWeakRefHashes.begin();
+		QHash<size_t, FuncWeakRef>::iterator it = m_pyFuncWeakRefHashes.begin();
 		while(it != m_pyFuncWeakRefHashes.end())
 		{
-			Py_XDECREF(it->first);
-			Py_XDECREF(it->second);
-			it= m_pyFuncWeakRefHashes.erase(it);
+			it = m_pyFuncWeakRefHashes.erase(it);
 		}
 
         Py_XDECREF(itomDbgInstance);
@@ -723,8 +821,6 @@ ito::RetVal PythonEngine::pythonAddBuiltinMethods()
 {
     //nach: http://code.activestate.com/recipes/54352-defining-python-class-methods-in-c/
 
-
-
     ////!< insert all dynamic function calls to PythonAdditionalModuleITOM, which must be "alive" until Py_Finalize()
     //int numberOfDynamicElements = 1;
     //PythonAdditionalModuleITOM = new PyMethodDef[numberOfDynamicElements];
@@ -732,7 +828,6 @@ ito::RetVal PythonEngine::pythonAddBuiltinMethods()
     //PythonAdditionalModuleITOM[0].ml_flags = METH_VARARGS;
     //PythonAdditionalModuleITOM[0].ml_meth = PythonEngine::pythonInterfaceWrapper;
     //PythonAdditionalModuleITOM[0].ml_name = "general";
-
 
     //addMethodToModule(&PythonAdditionalModuleITOM[0]);
 
@@ -744,10 +839,7 @@ ito::RetVal PythonEngine::pythonAddBuiltinMethods()
     PythonAdditionalModuleITOM[0].ml_meth = PythonEngine::PyNullMethod;
     PythonAdditionalModuleITOM[0].ml_name = "smoothingFilter";
 
-
     addMethodToModule(&PythonAdditionalModuleITOM[0]);*/
-
-
 
     return RetVal(retOk);
 }
@@ -764,7 +856,6 @@ ito::RetVal PythonEngine::addMethodToModule(PyMethodDef *def)
     func = PyCFunction_NewEx(def , PyBytes_FromString(def->ml_name) , PyBytes_FromString("itom"));
     PyDict_SetItemString(moduleDict , def->ml_name , func);
     //PyDict_SetItemString(moduleDict, def->ml_name, Py_None);
-
 
     Py_XDECREF(func);
     func = NULL;
@@ -819,7 +910,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
 	if (codec)
 	{
 		QList<QByteArray> aliases;
-#ifndef linux
+#ifdef WIN32
 		if (codec->name() == "System" || codec->name() == "system")
 		{
 			aliases << "ISO-8859-1"; //with Qt4 and Windows, the default codec is called System and is then mapped to ISO-8859-1
@@ -834,7 +925,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
 				encodingType = PythonQtConversion::utf_8;
 				encodingName = "utf_8";
 			}
-			else if (qtCodecName == "ISO-8859-1" || qtCodecName == "latin1")
+			else if (qtCodecName == "ISO-8859-1" || qtCodecName == "latin1" || qtCodecName == "cp1252" || qtCodecName == "windows-1252")
 			{
 				encodingType = PythonQtConversion::latin_1;
 				encodingName = "latin_1";
@@ -1088,6 +1179,7 @@ ito::RetVal PythonEngine::runString(const QString &command)
     }
     else
     {
+        m_interruptCounter = 0;
         if (m_autoReload.enabled && m_autoReload.checkStringExec)
         {
             PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "pre_run_cell", "");
@@ -1098,14 +1190,21 @@ ito::RetVal PythonEngine::runString(const QString &command)
             Py_XDECREF(result);
         }
 
-        //input to PyRun_String must be UTF8
-        if (command.contains('\n')) //multi-line commands must have the Py_file_input flag
+        try
         {
-            result = PyRun_String(command.toUtf8().data(), Py_file_input /*Py_single_input*/ , mainDict, localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
+            //input to PyRun_String must be UTF8
+            if (command.contains('\n')) //multi-line commands must have the Py_file_input flag
+            {
+                result = PyRun_String(command.toUtf8().data(), Py_file_input /*Py_single_input*/ , mainDict, localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
+            }
+            else //this command is a single line command, then Py_single_input must be set, such that the output of any command is printed in the next line, else this output is supressed (if no print command is executed)
+            {
+                result = PyRun_String(command.toUtf8().data(), Py_single_input, mainDict , localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
+            }
         }
-        else //this command is a single line command, then Py_single_input must be set, such that the output of any command is printed in the next line, else this output is supressed (if no print command is executed)
+        catch(std::exception &exc)
         {
-            result = PyRun_String(command.toUtf8().data(), Py_single_input, mainDict , localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
+            result = setPyErrFromException(exc);
         }
 
         if (result == NULL)
@@ -1133,7 +1232,6 @@ ito::RetVal PythonEngine::runString(const QString &command)
             Py_XDECREF(result);
         }
 
-
         Py_XDECREF(result);
     }
 
@@ -1160,6 +1258,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
         emit pythonCurrentDirChanged();
     }
 
+    m_interruptCounter = 0;
     PyGILState_STATE gstate = PyGILState_Ensure();
 
     if (method == 1)
@@ -1254,7 +1353,6 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
     }
     else if (method == 2)
     {
-
         if (itomDbgInstance == NULL)
         {
             return RetVal(retError);
@@ -1263,15 +1361,22 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
         {
             if (m_autoReload.enabled && m_autoReload.checkFileExec)
             {
-                PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "pre_run_cell", "");
-                if (!result)
+                PyObject *result2 = PyObject_CallMethod(m_autoReload.classAutoReload, "pre_run_cell", "");
+                if (!result2)
                 {
                     PyErr_Print();
                 }
-                Py_XDECREF(result);
+                Py_XDECREF(result2);
             }
 
-            result = PyObject_CallMethod(itomDbgInstance, "runScript", "s", pythonFileName.toUtf8().data()); //"s" requires UTF8 encoded char*
+            try
+            {
+                result = PyObject_CallMethod(itomDbgInstance, "runScript", "s", pythonFileName.toUtf8().data()); //"s" requires UTF8 encoded char*
+            }
+            catch(std::exception &exc)
+            {
+                result = setPyErrFromException(exc);
+            }
 
             if (result == NULL)
             {
@@ -1299,12 +1404,12 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
 
             if (m_autoReload.enabled && m_autoReload.checkFileExec)
             {
-                PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "post_execute_hook", "");
-                if (!result)
+                PyObject *result2 = PyObject_CallMethod(m_autoReload.classAutoReload, "post_execute_hook", "");
+                if (!result2)
                 {
                     PyErr_Print();
                 }
-                Py_XDECREF(result);
+                Py_XDECREF(result2);
             }
 
             Py_XDECREF(result);
@@ -1320,7 +1425,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
 ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple)
 {
     RetVal retValue = RetVal(retOk);
-
+    m_interruptCounter = 0;
     PyGILState_STATE gstate = PyGILState_Ensure();
 
     if (m_autoReload.enabled && m_autoReload.checkFctExec)
@@ -1333,7 +1438,16 @@ ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple)
         Py_XDECREF(result);
     }
 
-    PyObject *ret = PyObject_CallObject(callable, argTuple);
+    PyObject *ret;
+    try
+    {
+        ret = PyObject_CallObject(callable, argTuple);
+    }
+    catch(std::exception &exc)
+    {
+        ret = setPyErrFromException(exc);
+    }
+
     if (ret == NULL)
     {
         PyErr_Print();
@@ -1362,7 +1476,7 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple)
 {
     PyObject* result = NULL;
     RetVal retValue = RetVal(retOk);
-
+    m_interruptCounter = 0;
     if (itomDbgInstance == NULL)
     {
         return RetVal(retError);
@@ -1414,7 +1528,14 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple)
             Py_XDECREF(result);
         }
 
-        result = PyObject_CallMethod(itomDbgInstance, "debugFunction", "OO", callable, argTuple);
+        try
+        {
+            result = PyObject_CallMethod(itomDbgInstance, "debugFunction", "OO", callable, argTuple);
+        }
+        catch(std::exception &exc)
+        {
+            result = setPyErrFromException(exc);
+        }
 
         clearDbgCmdLoop();
 
@@ -1472,7 +1593,7 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
 
     QString desiredPath = QFileInfo(pythonFileName).canonicalPath();
     QString currentDir = QDir::current().canonicalPath();
-
+    m_interruptCounter = 0;
     if (desiredPath != currentDir)
     {
         QDir::setCurrent(desiredPath);
@@ -1530,7 +1651,14 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
             Py_XDECREF(result);
         }
 
-        result = PyObject_CallMethod(itomDbgInstance, "debugScript", "s", pythonFileName.toUtf8().data()); //"s" requires utf-8 encoded string
+        try
+        {
+            result = PyObject_CallMethod(itomDbgInstance, "debugScript", "s", pythonFileName.toUtf8().data()); //"s" requires utf-8 encoded string
+        }
+        catch(std::exception &exc)
+        {
+            result = setPyErrFromException(exc);
+        }
 
         clearDbgCmdLoop();
 
@@ -1586,7 +1714,7 @@ ito::RetVal PythonEngine::debugString(const QString &command)
 {
     PyObject* result = NULL;
     RetVal retValue = RetVal(retOk);
-
+    m_interruptCounter = 0;
     if (itomDbgInstance == NULL)
     {
         return RetVal(retError);
@@ -1638,7 +1766,14 @@ ito::RetVal PythonEngine::debugString(const QString &command)
             Py_XDECREF(result);
         }
 
-        result = PyObject_CallMethod(itomDbgInstance, "debugString", "s", command.toUtf8().data()); //command must be UTF8
+        try
+        {
+            result = PyObject_CallMethod(itomDbgInstance, "debugString", "s", command.toUtf8().data()); //command must be UTF8
+        }
+        catch(std::exception &exc)
+        {
+            result = setPyErrFromException(exc);
+        }
 
         clearDbgCmdLoop();
 
@@ -2239,25 +2374,28 @@ void PythonEngine::pythonDebugFunction(PyObject *callable, PyObject *argTuple)
 //do not execute this method from another thread, only execute it within python-thread since this method is not thread safe
 void PythonEngine::pythonRunFunction(PyObject *callable, PyObject *argTuple)
 {
+    m_interruptCounter = 0;
     switch (pythonState)
     {
-    case pyStateIdle:
-        pythonStateTransition(pyTransBeginRun);
-        runFunction(callable, argTuple);
-        emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
-        pythonStateTransition(pyTransEndRun);
+        case pyStateIdle:
+            pythonStateTransition(pyTransBeginRun);
+            runFunction(callable, argTuple);
+            emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+            pythonStateTransition(pyTransEndRun);
         break;
-    case pyStateRunning:
-    case pyStateDebugging:
-    case pyStateDebuggingWaitingButBusy: //functions (from signal-calls) can be executed whenever another python method is executed (only possible if another method executing python code is calling processEvents. processEvents stops until this "runFunction" has been terminated
-        runFunction(callable, argTuple);
-        emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+
+        case pyStateRunning:
+        case pyStateDebugging:
+        case pyStateDebuggingWaitingButBusy: //functions (from signal-calls) can be executed whenever another python method is executed (only possible if another method executing python code is calling processEvents. processEvents stops until this "runFunction" has been terminated
+            runFunction(callable, argTuple);
+            emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
         break;
-    case pyStateDebuggingWaiting:
-        pythonStateTransition(pyTransDebugExecCmdBegin);
-        runFunction(callable, argTuple);
-        emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
-        pythonStateTransition(pyTransDebugExecCmdEnd);
+
+        case pyStateDebuggingWaiting:
+            pythonStateTransition(pyTransDebugExecCmdBegin);
+            runFunction(callable, argTuple);
+            emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+            pythonStateTransition(pyTransDebugExecCmdEnd);
         break;
     }
 }
@@ -2265,17 +2403,26 @@ void PythonEngine::pythonRunFunction(PyObject *callable, PyObject *argTuple)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonRunStringOrFunction(QString cmdOrFctHash)
 {
-    static QString prefix = ":::itomfcthash:::";
-    QString hashValue;
-
-    if (cmdOrFctHash.startsWith(prefix))
+    size_t hashValue;
+    m_interruptCounter = 0;
+    if (cmdOrFctHash.startsWith(PythonEngine::fctHashPrefix))
     {
-        hashValue = cmdOrFctHash.mid(prefix.length());
-        QHash<QString, QPair<PyObject*,PyObject*> >::iterator it = this->m_pyFuncWeakRefHashes.find(hashValue);
+        bool success;
+
+        QString cmdOrFctHashCropped = cmdOrFctHash.mid(PythonEngine::fctHashPrefix.length());
+        hashValue = cmdOrFctHashCropped.toUInt(&success);
+        
+        if (!success)
+        {
+            std::cerr << "The command '" << cmdOrFctHashCropped.toLatin1().data() << "' seems to be a hashed function or method, but no handle value can be extracted (size_t required)\n" << std::endl;
+            return;
+        }
+
+        QHash<size_t, FuncWeakRef>::iterator it = m_pyFuncWeakRefHashes.find(hashValue);
         if (it != m_pyFuncWeakRefHashes.end())
         {
-            PyObject *callable = it->first; //PyWeakref_GetObject(*it); //borrowed reference
-            PyObject *argTuple = it->second;
+            PyObject *callable = (PyObject*)(it->getProxyObject()); //borrowed reference
+            PyObject *argTuple = it->getArguments(); //borrowed reference
             if (argTuple)
             {
                 Py_INCREF(argTuple);
@@ -2293,15 +2440,14 @@ void PythonEngine::pythonRunStringOrFunction(QString cmdOrFctHash)
             }
             else
             {
-                std::cerr << "The method associated with the key '" << hashValue.toLatin1().data() << "' does not exist any more\n" << std::endl;
+                std::cerr << "The method associated with the key '" << cmdOrFctHashCropped.toLatin1().data() << "' does not exist any more\n" << std::endl;
             }
             Py_XDECREF(argTuple);    
         }
         else
         {
-            std::cerr << "No action associated with key '" << hashValue.toLatin1().data() << "' could be found in internal hash table\n" << std::endl;
+            std::cerr << "No action associated with key '" << cmdOrFctHashCropped.toLatin1().data() << "' could be found in internal hash table\n" << std::endl;
         }
-        
     }
     else
     {
@@ -2312,17 +2458,26 @@ void PythonEngine::pythonRunStringOrFunction(QString cmdOrFctHash)
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::pythonDebugStringOrFunction(QString cmdOrFctHash)
 {
-    static QString prefix = ":::itomfcthash:::";
-    QString hashValue;
-
-    if (cmdOrFctHash.startsWith(prefix))
+    size_t hashValue;
+    m_interruptCounter = 0;
+    if (cmdOrFctHash.startsWith(PythonEngine::fctHashPrefix))
     {
-        hashValue = cmdOrFctHash.mid(prefix.length());
-        QHash<QString, QPair<PyObject*,PyObject*> >::iterator it = this->m_pyFuncWeakRefHashes.find(hashValue);
+        bool success;
+
+        QString cmdOrFctHashCropped = cmdOrFctHash.mid(PythonEngine::fctHashPrefix.length());
+        hashValue = cmdOrFctHashCropped.toUInt(&success);
+        
+        if (!success)
+        {
+            std::cerr << "The command '" << cmdOrFctHashCropped.toLatin1().data() << "' seems to be a hashed function or method, but no handle value can be extracted (size_t required)\n" << std::endl;
+            return;
+        }
+
+        QHash<size_t, FuncWeakRef>::iterator it = m_pyFuncWeakRefHashes.find(hashValue);
         if (it != m_pyFuncWeakRefHashes.end())
         {
-            PyObject *callable = it->first; //PyWeakref_GetObject(*it); //borrowed reference
-            PyObject *argTuple = it->second;
+            PyObject *callable = (PyObject*)(it->getProxyObject()); //borrowed reference
+            PyObject *argTuple = it->getArguments(); //borrowed reference
             if (argTuple)
             {
                 Py_INCREF(argTuple);
@@ -2331,21 +2486,22 @@ void PythonEngine::pythonDebugStringOrFunction(QString cmdOrFctHash)
             {
                 argTuple = PyTuple_New(0); //new ref
             }
+
             if (callable)
             {
                 Py_INCREF(callable);
                 pythonDebugFunction(callable, argTuple);
+                Py_XDECREF(callable);
             }
             else
             {
-                std::cerr << "The method associated with the key " << hashValue.toLatin1().data() << " does not exist any more\n" << std::endl;
+                std::cerr << "The method associated with the key '" << cmdOrFctHashCropped.toLatin1().data() << "' does not exist any more\n" << std::endl;
             }
-            Py_XDECREF(argTuple);
-            Py_XDECREF(callable);
+            Py_XDECREF(argTuple);    
         }
         else
         {
-            std::cerr << "No action associated with key '" << hashValue.toLatin1().data() << "' could be found in internal hash table\n" << std::endl;
+            std::cerr << "No action associated with key '" << cmdOrFctHashCropped.toLatin1().data() << "' could be found in internal hash table\n" << std::endl;
         }
         
     }
@@ -2597,7 +2753,13 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
     int i=0;
     float f=0.0;
     PyObject *tempObj = NULL;
+    PyObject *number = NULL;
+
+    char itemKeyType, itemType;
+    QByteArray itemName;
+    QByteArray itemKey;
     bool ok;
+
     if (items.count() > 0 && items[0] == "") items.removeFirst();
 
     if (globalNotLocal)
@@ -2611,22 +2773,42 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
 
     while(items.count() > 0 && obj)
     {
+        itemName = items[0].toLatin1();
+
+        if (itemName.size() < 4) //every item has the form "as:name" where a,s... are values of the enumeration PyWorkspaceContainer:WorkspaceItemType
+        {
+            return NULL;
+        }
+        else
+        {
+            itemKey = itemName.mid(3);
+            itemType = itemName.at(0);
+            itemKeyType = itemName.at(1); //keyword is a number of a string
+        }
+
         if (PyDict_Check(obj))
         {
-            tempObj = PyDict_GetItemString(obj, items[0].toLatin1().data());
-            if (tempObj == NULL) //maybe key is a number
+            if (itemKeyType == 's') //string
             {
-                i = items[0].toInt(&ok);
+                tempObj = PyDict_GetItemString(obj, itemKey); //borrowed
+            }
+            else if (itemKeyType == 'n') //number
+            {
+                i = itemKey.toInt(&ok);
                 if (ok)
                 {
-                    tempObj = PyDict_GetItem(obj, PyLong_FromLong(i));
+                    number = PyLong_FromLong(i);
+                    tempObj = PyDict_GetItem(obj, number); //borrowed
+                    Py_XDECREF(number);
                 }
-                if (!ok || obj == NULL)
+                if (!ok || tempObj == NULL)
                 {
                     f = items[0].toFloat(&ok); //here, often, a rounding problem occurres... (this could not be fixed until now)
                     if (ok)
                     {
-                        tempObj = PyDict_GetItem(obj, PyFloat_FromDouble(f));
+                        number = PyFloat_FromDouble(i);
+                        tempObj = PyDict_GetItem(obj, number); //borrowed
+                        Py_XDECREF(number);
                     }
                 }
             }
@@ -2634,14 +2816,14 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
         }
         else if (PyList_Check(obj))
         {
-            i = items[0].toInt(&ok);
-            if (!ok || i<0 || i>=PyList_Size(obj)) return NULL; //error
+            i = itemKey.toInt(&ok);
+            if (!ok || i < 0 || i >= PyList_Size(obj)) return NULL; //error
             obj = PyList_GET_ITEM(obj,i);
         }
         else if (PyTuple_Check(obj))
         {
-            i = items[0].toInt(&ok);
-            if (!ok || i<0 || i>=PyTuple_Size(obj)) return NULL; //error
+            i = itemKey.toInt(&ok);
+            if (!ok || i < 0 || i >= PyTuple_Size(obj)) return NULL; //error
             obj = PyTuple_GET_ITEM(obj,i);
         }
         else if (PyObject_HasAttr(obj, dictUnicode))
@@ -2649,20 +2831,27 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
             PyObject *temp = PyObject_GetAttr(obj, dictUnicode);
             if (temp)
             {
-                tempObj = PyDict_GetItemString(temp, items[0].toLatin1().data());
-                if (tempObj == NULL) //maybe key is a number
+                if (itemKeyType == 's') //string
                 {
-                    i = items[0].toInt(&ok);
+                    tempObj = PyDict_GetItemString(obj, itemKey); //borrowed
+                }
+                else if (itemKeyType == 'n') //number
+                {
+                    i = itemKey.toInt(&ok);
                     if (ok)
                     {
-                        tempObj = PyDict_GetItem(temp, PyLong_FromLong(i));
+                        number = PyLong_FromLong(i);
+                        tempObj = PyDict_GetItem(obj, number); //borrowed
+                        Py_XDECREF(number);
                     }
-                    if (!ok || obj == NULL)
+                    if (!ok || tempObj == NULL)
                     {
                         f = items[0].toFloat(&ok); //here, often, a rounding problem occurres... (this could not be fixed until now)
                         if (ok)
                         {
-                            tempObj = PyDict_GetItem(temp, PyFloat_FromDouble(f));
+                            number = PyFloat_FromDouble(i);
+                            tempObj = PyDict_GetItem(obj, number); //borrowed
+                            Py_XDECREF(number);
                         }
                     }
                 }
@@ -2745,6 +2934,7 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObject* globalDict, PyObject* localDict)
 {
+    //if localDict is equal to globalDict, the localDict is the current global dict (currently debugging at top level) -> it is sufficient to only show the global dict and delete the local dict
     //qDebug() << "python emitPythonDictionary. Thread: " << QThread::currentThreadId ();
     if (emitGlobal && m_mainWorkspaceContainer.count() > 0)
     {
@@ -2770,7 +2960,7 @@ void PythonEngine::emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObjec
 
     if (emitLocal && m_localWorkspaceContainer.count() > 0)
     {
-        if (localDict != NULL)
+        if (localDict != NULL && localDict != globalDict)
         {
             foreach (ito::PyWorkspaceContainer* cont, m_localWorkspaceContainer)
             {
@@ -2858,44 +3048,73 @@ void PythonEngine::pythonGenericSlot(PyObject* callable, PyObject *argumentTuple
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::pythonInterruptExecution() const
+int PythonEngine::queuedInterrupt(void * state) 
+{ 
+    // ok this is REALLY ugly, BUT if we want to break python constructs like:
+    // while 1:
+    //      try:
+    //          a = 1
+    //      except:
+    //          pass
+    //
+    // we have to raise an except while exception handling. Therefore
+    // we accumulate some keyboards interrupts and force their
+    // excecution afterwards with setInterrupt ...
+    // Anyway deeper nested try - except constructs we cannot terminate this way
+//    while ((*(ito::tPythonState *)state) == pyStateRunning)
+    {
+        PyErr_SetNone(PyExc_KeyboardInterrupt);
+        PyErr_SetNone(PyExc_KeyboardInterrupt);
+        PyErr_SetInterrupt();
+    }
+    PythonEngine::getInstanceInternal()->m_interruptCounter.deref();
+    PyErr_Clear();
+
+    return -1; 
+} 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ bool PythonEngine::isInterruptQueued()
+{
+	ito::PythonEngine *pyEng = PythonEngine::getInstanceInternal();
+	if (pyEng)
+	{
+#if QT_VERSION > 0x050000
+		return (pyEng->m_interruptCounter.load() > 0);
+#else
+        return ((int)(pyEng->m_interruptCounter) > 0);
+#endif
+	}
+	return false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PythonEngine::pythonInterruptExecution()
 {
 //    PyGILState_STATE gstate;
 //    gstate = PyGILState_Ensure();
 
-    /* Perform Python actions here. */
-    //PyErr_SetString(PyExc_KeyboardInterrupt, "User Interrupt");
-    PyErr_SetInterrupt();
-    /* evaluate result or handle exception */
+    // only queue the interrupt event if not yet done.
+    // ==operator(int) of QAtomicInt does not exist for all versions of Qt5. testAndSetRelaxed returns true, if the value was 0 (and assigns one to it)
+    if (m_interruptCounter.testAndSetRelaxed(0, 1)) 
+    {
+        if (isPythonDebugging() && isPythonDebuggingAndWaiting())
+        {
+            dbgCmdMutex.lock();
+            debugCommandQueue.insert(0, ito::pyDbgQuit);
+            dbgCmdMutex.unlock();
+        }
+        else
+        {
+            Py_AddPendingCall(&PythonEngine::queuedInterrupt, &pythonState);
+        }
+    }
 
-    /* Release the thread. No Python API allowed beyond this point. */
+    // Release the thread. No Python API allowed beyond this point.
 //    PyGILState_Release(gstate);
 
     qDebug("PyErr_SetInterrupt() in pythonThread");
 };
-
-////----------------------------------------------------------------------------------------------------------------------------------
-//PyObject* PythonEngine::checkForTimeoutHelper(ItomSharedSemaphore* semaphore, int timeout, PyObject *retValueOk)
-//{
-//    if (semaphore && semaphore->wait(timeout))
-//    {
-//        ItomSharedSemaphore::deleteSemaphore(semaphore);
-//        semaphore = NULL;
-//        Py_INCREF(retValueOk);
-//        return retValueOk;
-//    }
-//    else
-//    {
-//        ItomSharedSemaphore::deleteSemaphore(semaphore);
-//        semaphore = NULL;
-//        if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
-//        {
-//            return PyErr_Occurred();
-//        }
-//        PyErr_SetString(PyExc_RuntimeError, "timeout in ItomSharedSemaphore");
-//        return NULL;
-//    }
-//}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -3019,7 +3238,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             }
             else
             {
-                pyEngine->emitPythonDictionary(true,false,globalDict,NULL);
+                pyEngine->emitPythonDictionary(true,true,globalDict,NULL);
             }
         }
 
@@ -3077,6 +3296,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             {
                 PyErr_Print();
             }
+            PythonEngine::getInstanceInternal()->m_interruptCounter.deref();
             break;
         }
     }
@@ -3099,7 +3319,6 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
 
     return Py_BuildValue("i", 1);
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 bool PythonEngine::renameVariable(bool globalNotLocal, QString oldKey, QString newKey, ItomSharedSemaphore *semaphore)
@@ -3884,7 +4103,6 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
         }
     }
 
-
     return retVal;
 }
 
@@ -4278,7 +4496,6 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
             }
         }
 
-
         if (oldState == pyStateIdle)
         {
             pythonStateTransition(pyTransEndRun);
@@ -4427,15 +4644,19 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+#if QT_VERSION >= 0x050000
+void PythonEngine::connectNotify(const QMetaMethod &signal)
+{
+     if (signal == QMetaMethod::fromSignal(&PythonEngine::pythonAutoReloadChanged))
+#else
 void PythonEngine::connectNotify(const char* signal)
 {
      if (QLatin1String(signal) == SIGNAL(pythonAutoReloadChanged(bool,bool,bool,bool)))
+#endif
      {
         emit pythonAutoReloadChanged(m_autoReload.enabled, m_autoReload.checkFileExec, m_autoReload.checkStringExec, m_autoReload.checkFctExec);
      }
 }
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

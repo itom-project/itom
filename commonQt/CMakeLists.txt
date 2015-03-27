@@ -3,6 +3,12 @@ project(${target_name})
   
 cmake_minimum_required(VERSION 2.8)
 
+IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
+    if(POLICY CMP0042)
+        cmake_policy(SET CMP0042 OLD)
+    ENDIF(POLICY CMP0042)
+ENDIF()
+
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
@@ -11,7 +17,7 @@ OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte ch
 OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
  
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
- 
+      
 include("../ItomBuildMacros.cmake")
 
 IF(BUILD_ITOMLIBS_SHARED)
@@ -86,9 +92,10 @@ set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInConfigDialog.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperActuator.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperGrabber.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperActuator.h #deprecated
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperGrabber.h #deprecated
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperCommon.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/pluginThreadCtrl.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedFunctionsQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresGraphics.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.h
@@ -109,9 +116,10 @@ set(itomCommonQt_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInInterface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInConfigDialog.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperActuator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperGrabber.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperActuator.cpp #deprecated
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperGrabber.cpp #deprecated
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperCommon.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/pluginThreadCtrl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedFunctionsQt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresPrimitives.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresQt.cpp

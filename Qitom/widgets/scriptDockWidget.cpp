@@ -282,24 +282,27 @@ void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
 // public Slot invoked by requestModelRebuild from EditorWidget or by tabchange etc.
 void ScriptDockWidget::updateClassesBox(ScriptEditorWidget *editor)
 { 
-    QString lastClass;
-    QString lastMethod;
-    ClassNavigatorItem *lastClassItem = (ClassNavigatorItem*)(m_classBox->itemData(m_classBox->currentIndex(), Qt::UserRole).value<void*>());
-    ClassNavigatorItem *lastMethodItem = (ClassNavigatorItem*)(m_methodBox->itemData(m_methodBox->currentIndex(), Qt::UserRole).value<void*>());
-    if (lastClassItem)
+    if (m_ClassNavigatorEnabled && editor)
     {
-        lastClass = lastClassItem->m_name;
-    }
-    if (lastMethodItem)
-    {
-        lastMethod = lastMethodItem->m_name;
-    }
+        
+        /*ClassNavigatorItem *lastClassItem = (ClassNavigatorItem*)(m_classBox->itemData(m_classBox->currentIndex(), Qt::UserRole).value<void*>());
+        ClassNavigatorItem *lastMethodItem = (ClassNavigatorItem*)(m_methodBox->itemData(m_methodBox->currentIndex(), Qt::UserRole).value<void*>());
+        if (lastClassItem)
+        {
+            lastClass = lastClassItem->m_name;
+        }
+        if (lastMethodItem)
+        {
+            lastMethod = lastMethodItem->m_name;
+        }*/
 
-
-    if (m_ClassNavigatorEnabled)
-    {
         if (m_tab->currentIndex() == m_tab->indexOf(editor))
         {
+            QString lastClass = editor->getCurrentClass();
+            QString lastMethod = editor->getCurrentMethod();
+
+            ClassNavigatorItem *lastMethodItem = NULL;
+
             m_methodBox->setEnabled(false);
             m_classBox->setEnabled(false);
             disconnect(m_classBox, SIGNAL(activated (QString)), this, SLOT(classChosen(QString)));
@@ -331,16 +334,12 @@ void ScriptDockWidget::updateClassesBox(ScriptEditorWidget *editor)
                 bool lastClassFound = false;
                 for (int i = 0; i < m_classBox->count(); ++i)
                 {
-                    lastClassItem = (ClassNavigatorItem*)(m_classBox->itemData(i, Qt::UserRole).value<void*>());
-                    if (lastClassItem)
+                    if (m_classBox->itemText(i) == lastClass)
                     {
-                        if (lastClassItem->m_name == lastClass)
-                        {
-                            m_classBox->setCurrentIndex(i);
-                            classChosen(""); // This empty cal avoids the jump to the position
-                            lastClassFound = true;
-                            break;
-                        }
+                        m_classBox->setCurrentIndex(i);
+                        classChosen(""); // This empty cal avoids the jump to the position
+                        lastClassFound = true;
+                        break;
                     }
                 }
                 /*int iMethod = m_methodBox->findText(lastMethod);*/
@@ -362,7 +361,7 @@ void ScriptDockWidget::updateClassesBox(ScriptEditorWidget *editor)
             }
             else
             {
-                // Otherwise choose global skope
+                // Otherwise choose global scope
                 classChosen("");
             }
         }
@@ -379,12 +378,23 @@ void ScriptDockWidget::classChosen(const QString &text)
     ClassNavigatorItem *classItem = (ClassNavigatorItem*)(m_classBox->itemData(m_classBox->currentIndex(), Qt::UserRole).value<void*>());
     if (classItem)
     {
+        ClassNavigatorItem *methodItem = (ClassNavigatorItem*)(m_methodBox->itemData(m_classBox->currentIndex(), Qt::UserRole).value<void*>());
+        QString method = methodItem ? methodItem->m_name : "";
+        QString className = m_classBox->currentText();
+
         m_methodBox->setEnabled(false);
         disconnect(m_methodBox, SIGNAL(activated (QString)), this, SLOT(methodChosen(QString)));
         m_methodBox->clear();
-        if (text != "" && classItem->m_lineno >= 0 && classItem->m_internalType != ClassNavigatorItem::typePyRoot)
+        if (text != "")
         {
-            this->getCurrentEditor()->setCursorPosAndEnsureVisibleWithSelection(classItem->m_lineno, classItem->m_name);
+            if (classItem->m_lineno >= 0 && classItem->m_internalType != ClassNavigatorItem::typePyRoot)
+            {
+                this->getCurrentEditor()->setCursorPosAndEnsureVisibleWithSelection(classItem->m_lineno, className, method);
+            }
+            else
+            {
+                this->getCurrentEditor()->setCursorPosAndEnsureVisibleWithSelection(-1, className, method);
+            }
         }
         fillMethodBox(classItem);
         connect(m_methodBox, SIGNAL(activated (QString)), this, SLOT(methodChosen(QString)));
@@ -401,7 +411,9 @@ void ScriptDockWidget::methodChosen(const QString &text)
     {
         if (methodItem->m_lineno >= 0)
         {
-            this->getCurrentEditor()->setCursorPosAndEnsureVisibleWithSelection(methodItem->m_lineno, methodItem->m_name);
+            QString className = m_classBox->currentText();
+
+            this->getCurrentEditor()->setCursorPosAndEnsureVisibleWithSelection(methodItem->m_lineno, className,  methodItem->m_name);
         }
     }
 }
@@ -848,13 +860,31 @@ void ScriptDockWidget::currentTabChanged(int index)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! slot connected to each ScriptEditorWidget instance. Invoked if any content in any script changed.
 /*!
-    calls slot currentTabChanged with active tab index as parameter.
+    calls slot currentTabChanged with tab index of scriptEditorWidget that sent the signal or
+    the active tab index if no sender is available.
 
     \sa currentTabChanged
 */
 void ScriptDockWidget::scriptModificationChanged(bool /*changed*/)
 {
-    currentTabChanged(m_actTabIndex);
+    //in case of save-all or other commands that change other scripts than the active on, this slot
+    //needs to know the sender of the signal:
+    const QObject *senderObject = sender();
+
+    if (senderObject)
+    {
+        for (int i = 0; i < m_tab->count(); ++i)
+        {
+            if (qobject_cast<QObject*>(getEditorByIndex(i)) == senderObject)
+            {
+                currentTabChanged(i);
+            }
+        }
+    }
+    else
+    {    
+        currentTabChanged(m_actTabIndex);
+    }
     updateEditorActions();
 }
 
@@ -1018,8 +1048,11 @@ void ScriptDockWidget::tabContextMenuEvent(QContextMenuEvent * event)
     for (int i = 0; i < m_tab->count(); i++)
     {
         tabRectangle = m_tab->getTabBar()->tabRect(i);
+        int eventX = event->pos().x();
+//qDebug() << "tabRectangle: " << tabRectangle << ", event->pos(): " << event->pos() << ", m_tab->pos():" << m_tab->pos() << ", m_tab->getTabBar()->pos(): " << m_tab->getTabBar()->pos();
 
-        if (tabRectangle.contains(event->pos()-m_tab->pos()-m_tab->getTabBar()->pos()))
+//        if (tabRectangle.contains(event->pos() - m_tab->pos() - m_tab->getTabBar()->pos()))
+        if (tabRectangle.x() <= eventX && (tabRectangle.x() + tabRectangle.width()) >= eventX)
         {
             m_tab->setCurrentIndex(i);
             m_actTabIndex = i;
@@ -1102,7 +1135,7 @@ void ScriptDockWidget::updatePythonActions()
     bool busy2 = busy1 && pythonDebugMode() && pythonInWaitingMode();
 
     m_scriptRunAction->setEnabled(!busy1);
-    m_scriptRunSelectionAction->setEnabled(lineFrom != -1 && (!pyEngine->isPythonBusy() || pyEngine->isPythonDebuggingAndWaiting()));
+    m_scriptRunSelectionAction->setEnabled(lineFrom != -1 && pyEngine && (!pyEngine->isPythonBusy() || pyEngine->isPythonDebuggingAndWaiting()));
     m_scriptDebugAction->setEnabled(!busy1);
     m_scriptStopAction->setEnabled(busy1);
     m_scriptContinueAction->setEnabled(busy2);
@@ -1689,9 +1722,9 @@ void ScriptDockWidget::mnuSaveAllScripts()
 {
     ScriptEditorWidget *sew;
     RetVal retValue(retOk);
-    for (int i = 0; i < m_tab->count() && !retValue.containsError(); i++)
+    for (int i = 0; i < m_tab->count() && !retValue.containsError(); ++i)
     {
-        sew = getEditorByIndex(m_actTabIndex);
+        sew = getEditorByIndex(i);
         if (sew != NULL)
         {
             retValue += sew->saveFile(false);
@@ -1858,12 +1891,21 @@ void ScriptDockWidget::mnuScriptStop()
 {
     if (pythonDebugMode() && pythonInWaitingMode())
     {
-        emit (pythonDebugCommand(ito::pyDbgQuit));
+//        emit (pythonDebugCommand(ito::pyDbgQuit));
         //activateWindow(); (if you uncomment this line,the script window will always dissappear in the background - that's a little bit crazy, therefore don't activate it here)
+        PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+        if (pyeng)
+        {
+            pyeng->pythonInterruptExecution();
+        }
     }
-    else if (PythonEngine::getInstance())
+    else
     {
-        PythonEngine::getInstance()->pythonInterruptExecution();
+        PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+        if (pyeng)
+        {
+            pyeng->pythonInterruptExecution();
+        }
     }
 }
 

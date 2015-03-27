@@ -32,13 +32,15 @@
 #include "PointCloud/pclVersion.h"
 #include "DataObject/dataobjVersion.h"
 
+#include <QSysInfo>
+
 #if ITOM_POINTCLOUDLIBRARY > 0
 #include <pcl/pcl_config.h>
 #endif
 
 //python
 // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-#if (defined _DEBUG) && (!defined linux)
+#if (defined _DEBUG) && (defined WIN32)
     #undef _DEBUG
     #include "patchlevel.h"
     #define _DEBUG
@@ -76,14 +78,55 @@ QMap<QString, QString> ito::getItomVersionMap()
 
     //itom_SysType
 #if (defined linux)
-    items["itom_SysType"] = "Q_OS_LINUX";
-#elif (defined Q_OS_WIN32)
-    #if (defined Q_OS_WIN64)
-        items["itom_SysType"] = "Windows 64-Bit";
+    items["itom_SysType"] = "Linux (Unix)";
+#elif (defined WIN32)
+
+    switch( QSysInfo::WindowsVersion )
+    {
+        case QSysInfo::WV_NT:           items["itom_SysType"] = "Windows NT";           break;
+        case QSysInfo::WV_2000:         items["itom_SysType"] = "Windows 2000";         break;
+        case QSysInfo::WV_XP:           items["itom_SysType"] = "Windows XP";           break;
+        case QSysInfo::WV_2003:         items["itom_SysType"] = "Windows Server 2003";  break;
+        case QSysInfo::WV_VISTA:        items["itom_SysType"] = "Windows Vista";        break;
+        case QSysInfo::WV_WINDOWS7:     items["itom_SysType"] = "Windows 7";            break;
+#if QT_VERSION > 0x040802
+        case QSysInfo::WV_WINDOWS8:     items["itom_SysType"] = "Windows 8";            break;
+#endif
+#if QT_VERSION >= 0x050000
+        case QSysInfo::WV_WINDOWS8_1:   items["itom_SysType"] = "Windows 8.1";          break;
+#endif
+#if QT_VERSION >= 0x050200
+        case QSysInfo::WV_WINDOWS8_1+1: items["itom_SysType"] = "Windows 10";           break;
+#endif
+        default:                        items["itom_SysType"] = "Windows";              break;
+    }
+    #if (defined _WIN64)
+        items["itom_SysType"].append(" 64-Bit");
     #else
-        items["itom_SysType"] = "Windows 32-Bit";
+        items["itom_SysType"].append(" 32-Bit");
     #endif
-    #if (defined _DEBUG) && (!defined linux)
+    #if (defined _DEBUG)
+        items["itom_SysType"].append(" DEBUG");
+    #endif
+#elif (defined Q_OS_MACX)
+    switch( QSysInfo::MacintoshVersion )
+    {
+        case QSysInfo::MV_9:        items["itom_SysType"] = "Mac OS 9";         break;
+        case QSysInfo::MV_10_0:     items["itom_SysType"] = "Mac OS X 10.0";    break;
+        case QSysInfo::MV_10_1:     items["itom_SysType"] = "Mac OS X 10.1";    break;
+        case QSysInfo::MV_10_2:     items["itom_SysType"] = "Mac OS X 10.2";    break;
+        case QSysInfo::MV_10_3:     items["itom_SysType"] = "Mac OS X 10.3";    break;
+        case QSysInfo::MV_10_4:     items["itom_SysType"] = "Mac OS X 10.4";    break;
+        case QSysInfo::MV_10_5:     items["itom_SysType"] = "Mac OS X 10.5";    break;
+        case QSysInfo::MV_10_6:     items["itom_SysType"] = "Mac OS X 10.6";    break;
+        case QSysInfo::MV_10_7:     items["itom_SysType"] = "OS X 10.7";        break;
+        case QSysInfo::MV_10_8:     items["itom_SysType"] = "OS X 10.8";        break;
+        case QSysInfo::MV_10_9:     items["itom_SysType"] = "OS X 10.9";        break;
+        case QSysInfo::MV_10_9+1:   items["itom_SysType"] = "OS X 10.10";       break;
+        case QSysInfo::MV_10_9+2:   items["itom_SysType"] = "OS X 10.11";       break;
+        default:                    items["itom_SysType"] = "OS X";             break;
+    }
+    #if (defined _DEBUG)
         items["itom_SysType"].append(" DEBUG");
     #endif
 #else

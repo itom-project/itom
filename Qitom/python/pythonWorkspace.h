@@ -33,9 +33,12 @@
 
     //python
     // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
-    #if (defined _DEBUG) && (!defined linux)
+    #if (defined _DEBUG) && (defined WIN32)
         #undef _DEBUG
         #if (defined linux) | (defined CMAKE)
+            #include "Python.h"
+            #include "numpy/arrayobject.h"
+        #elif (defined __APPLE__) | (defined CMAKE)
             #include "Python.h"
             #include "numpy/arrayobject.h"
         #else
@@ -45,6 +48,9 @@
         #define _DEBUG
     #else
         #ifdef linux
+            #include "Python.h"
+            #include "numpy/arrayobject.h"
+        #elif (defined __APPLE__)
             #include "Python.h"
             #include "numpy/arrayobject.h"
         #else
@@ -61,6 +67,13 @@
 #include <qmutex.h>
 #include <qset.h>
 #include <qstringlist.h>
+
+#define PY_LIST 'l'
+#define PY_MAPPING 'm'
+#define PY_ATTR 'a'
+#define PY_DICT 'd'
+#define PY_NUMBER 'n'
+#define PY_STRING 's'
 
 namespace ito
 {
@@ -79,6 +92,7 @@ public:
     enum childState { stateNoChilds = 0x00, stateChilds = 0x01};
 
     QString m_name;
+    QString m_key;
     QString m_type;
     QString m_value;
     QString m_extendedValue;
@@ -99,7 +113,7 @@ public:
     ~PyWorkspaceContainer();
 
     void clear();
-    void loadDictionary(PyObject *obj, QString fullNameParentItem = "");
+    void loadDictionary(PyObject *obj, const QString &fullNameParentItem = "");
 
     inline bool isGlobalWorkspace() const { return m_globalNotLocal; }
     inline bool isRoot(PyWorkspaceItem *item) const { return item == &m_rootItem; }
@@ -114,7 +128,7 @@ public:
     PyWorkspaceItem m_rootItem;
 
 private:
-    void loadDictionaryRec(PyObject *obj, QString fullNameParentItem, PyWorkspaceItem *parentItem, QStringList &deletedKeys);
+    void loadDictionaryRec(PyObject *obj, const QString &fullNameParentItem, PyWorkspaceItem *parentItem, QStringList &deletedKeys);
     void parseSinglePyObject(PyWorkspaceItem *item, PyObject *value, QString &fullName, QStringList &deletedKeys, int &m_compatibleParamBaseType);
 
     QSet<QByteArray> m_blackListType;

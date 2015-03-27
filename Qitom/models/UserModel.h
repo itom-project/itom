@@ -27,46 +27,88 @@
 
 namespace ito 
 {
-    /*!
-        \class UserInfo
-        \brief holds the relevant user information
-    */
-    struct UserInfoStruct
-    {
-        UserInfoStruct(QString sname, QString sid, QString siniFile, QString srole) : name(sname), id(sid), iniFile(siniFile), role(srole) {}
-        QString name;
-        QString id;
-        QString iniFile;
-        QString role;
-    };
 
-    /** @class UserModel
-    *   @brief class for for visualizing the available users
-    *   
-    *   The UserModel is used in the initially shown user list. It contains the userId (which is the user name part of the ini-file name),
-    *   the plain text user name and the ini-file.
-    */
-    class UserModel : public QAbstractItemModel
-    {
-        Q_OBJECT
+enum UserRole
+{
+    userRoleBasic = 0,
+    userRoleAdministrator = 1,
+    userRoleDeveloper = 2
+};   
 
-        public:
-            UserModel(/*const QString &data, QObject *parent = 0*/);
-            ~UserModel();
+enum UserFeature
+{
+    featDeveloper           =   1,
+    featFileSystem          =   2,
+    featUserManag           =   4,
+    featPlugins             =   8,
+    featConsoleRead         =   16,
+    featConsoleReadWrite    =   32,
+    featProperties          =   64
+};
 
-            QVariant data(const QModelIndex &index, int role) const;
-            QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-            QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
-            QModelIndex parent(const QModelIndex &index) const;
-            int rowCount(const QModelIndex &parent = QModelIndex()) const;
-            int columnCount(const QModelIndex &parent = QModelIndex()) const;
-            int addUser(const UserInfoStruct &newUser);
+Q_DECLARE_FLAGS(UserFeatures, UserFeature)
 
-        private:
-            QList<QString> m_headers;               //!<  string list of names of column headers
-            QList<QVariant> m_alignment;            //!<  list of alignments for the corresponding headers
-            QList<UserInfoStruct> m_userInfo;     //!<  list with user information
-    };
+/*!
+    \class UserInfo
+    \brief holds the relevant user information
+*/
+struct UserInfoStruct
+{
+    UserInfoStruct() {};
+    UserInfoStruct(const QString &sname, const QString &suid, const QString siniFile, UserRole srole, UserFeatures sfeatures, bool sStandardUser) : name(sname), id(suid), iniFile(siniFile), role(srole), features(sfeatures), standardUser(sStandardUser) {}
+    QString name;
+    QString id;
+    QString iniFile;
+    UserRole role;
+    UserFeatures features;
+    bool standardUser;
+};
+
+/** @class UserModel
+*   @brief class for for visualizing the available users
+*   
+*   The UserModel is used in the initially shown user list. It contains the userId (which is the user name part of the ini-file name),
+*   the plain text user name and the ini-file.
+*/
+class UserModel : public QAbstractItemModel
+{
+    Q_OBJECT
+
+    public:
+        UserModel(/*const QString &data, QObject *parent = 0*/);
+        ~UserModel();
+
+        enum UserModelIndex
+        {
+            umiName = 0,
+            umiId = 1,
+            umiRole = 2,
+            umiIniFile = 3,
+            umiFeatures = 4
+        };
+
+        QString getRoleName(const UserRole &role) const;
+        QString getFeatureName(const UserFeature &feature) const;
+
+        QVariant data(const QModelIndex &index, int role) const;
+        QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+        QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
+        QModelIndex parent(const QModelIndex &index) const;
+        int rowCount(const QModelIndex &parent = QModelIndex()) const;
+        int columnCount(const QModelIndex &parent = QModelIndex()) const;
+        int addUser(const UserInfoStruct &newUser);
+        void removeAllUsers();
+        bool removeUser(const QModelIndex &index);
+
+    private:
+        QList<QString> m_headers;               //!<  string list of names of column headers
+        QList<QVariant> m_alignment;            //!<  list of alignments for the corresponding headers
+        QList<UserInfoStruct> m_userInfo;     //!<  list with user information
+};
 }
+
+Q_DECLARE_METATYPE(ito::UserRole);
+Q_DECLARE_METATYPE(ito::UserFeatures);
+Q_DECLARE_METATYPE(ito::UserFeature);
 
 #endif //USERMODEL_H

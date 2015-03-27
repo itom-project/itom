@@ -348,22 +348,36 @@ table.citation td {
 
 /*---------------------------------------Von Martin -------------------------------------------*/
 /*--------------------------------------------------------------------------------------------------------*/
+
 /*Parameters, Returns, etc - Spalte*/
 col.field-name{ 
     background-color: #F6E3CE;
     overflow: hidden;
-	width: 115px;
+    width: 115px;
     border-left: 2px solid #000000;
 }
 
 /*class.itom ... Ueberschrift*/
-dl.class dt{
-   font-size: 19px; 
+dl.class > dt{
+   font-size: 12pt; 
+   border-bottom: dotted thin #e0e0e0;
 }
 
 /*Das Wort "class" in der Klassenueberschrift*/
-dl.class dt em.property{
-	font-size: 1.05em  
+dl.class > dt > em{
+    font-size: 12pt;  
+}
+
+dl.class > dt > tt.descname {
+    background-color:;
+    font-size: 16pt;
+    font-weight: bold;
+}
+
+tt > span.pre {
+    font-size: 10pt;
+    font-weight: bold;
+    font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
 }
 
 
@@ -380,19 +394,59 @@ dl.attribute{
 }
 
 /*Hinterlegung des Attributeheaders*/
-dl.attribute dt{
- 	background-color: #E6E6E6;
-  font-size: 13px;
-  padding-left: 7px;
+dl.attribute > dt{
+    background-color: #E6E6E6;
+    font-size: 13px;
+    padding-left: 7px;
 }
 
 /*Hinterlegung des static- und Mehodenheaders*/
 dl.method dt, dl.staticmethod dt, dl.function dt{
- 	background-color: #E6E6E6; 
-  border-top: 1px solid #000000; /*#B40404*/
-  font-size: 13px;
-  padding-left: 7px;
+    background-color: #E6E6E6; 
+    border-top: 0px solid #000000;
+    font-size: 13px;
+    padding-left: 7px;
+    margin-top: 15x;
+}
+
+dl.method, dl.staticmethod, dl.function > dt > tt {
+    font-family: monospace;
 }
 
 /*---------------------------------------Von Martin-ENDE--------------------------------------*/
 /*--------------------------------------------------------------------------------------------------------*/
+
+/* -- breathe specific styles ----------------------------------------------- */
+
+/* So enum value descriptions are displayed inline to the item */
+.breatheenumvalues li tt + p {
+    display: inline;
+}
+
+/* So parameter descriptions are displayed inline to the item */
+.breatheparameterlist li tt + p {
+    display: inline;
+}
+
+p.breathe-sectiondef-title {
+    border-bottom: dotted thin #e0e0e0;
+    font-weight: bold;
+    margin-top: 30px;
+}
+
+dl.enum > dt {
+    background-color: #E6E6E6; 
+    border-top: 0px solid #000000;
+    font-weight: bold;
+    font-size: 16px;
+    padding-left: 7px;
+    font-family: monospace;
+}
+
+dl.function > dt > tt.descname {
+    background-color: #E6E6E6; 
+    border-top: 0px solid #000000;
+    font-size: 16px;
+    font-family: monospace;
+    font-weight: bold;
+}

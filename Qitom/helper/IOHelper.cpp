@@ -239,7 +239,7 @@ end:
 
             if (eng->isPythonBusy() && !eng->isPythonDebuggingAndWaiting())
             {
-                return RetVal(retError, 2, tr("variables cannot be imported since python is busy right now").toLatin1().data());
+                return RetVal(retError, 2, tr("variables cannot be exported since python is busy right now").toLatin1().data());
             }
 
             QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -566,8 +566,7 @@ end:
                 QString appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
                 env.insert("QT_PLUGIN_PATH", appPath);
 
-#if linux
-#else
+#ifdef WIN32
                 QString pathEnv = env.value("Path");
                 pathEnv.prepend(appPath + ";");
                 env.insert("Path", pathEnv);
@@ -595,11 +594,14 @@ end:
             QString appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
             env.insert("QT_PLUGIN_PATH", appPath);
 
-#if linux
+#ifndef WIN32
+            QString pathEnv = env.value("PATH");
+            pathEnv.prepend(appPath + ":");
+            env.insert("PATH", pathEnv);
 #else
-                QString pathEnv = env.value("Path");
-                pathEnv.prepend(appPath + ";");
-                env.insert("Path", pathEnv);
+            QString pathEnv = env.value("Path");
+            pathEnv.prepend(appPath + ";");
+            env.insert("Path", pathEnv);
 #endif
 
             process->setProcessEnvironment(env);
@@ -1095,6 +1097,83 @@ end:
         }
         path.insert(path.indexOf(QDir::separator(),0)+1, "...");
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ QIcon IOHelper::searchIcon(const QString &filename, SearchFolders searchFolders /*= SFAll*/, const QIcon &fallbackIcon /*= QIcon()*/)
+{
+    QIcon icon;
+    bool found = false;
+    QDir dir;
+
+    if (searchFolders & SFResources)
+    {
+        if (filename.startsWith(":"))
+        {
+            icon = QIcon(filename);
+            if (icon.isNull() == false && icon.availableSizes().size() > 0)
+            {
+                found = true;
+            }
+        }
+    }
+
+    if (!found && (searchFolders & SFDirect))
+    {
+        icon = QIcon(filename);
+        if (icon.isNull() == false && icon.availableSizes().size() > 0)
+        {
+            found = true;
+        }
+    }
+
+    if (!found && (searchFolders & SFCurrent))
+    {
+        dir = QDir::current();
+        if (!filename.isEmpty() && dir.exists() && dir.exists(filename))
+        {
+            icon = QIcon(dir.absoluteFilePath(filename));
+            if (icon.isNull() == false && icon.availableSizes().size() > 0)
+            {
+                found = true;
+            }
+        }
+    }
+
+    if (!found && (searchFolders & SFAppDir))
+    {
+        dir = QCoreApplication::applicationDirPath();
+        if (!filename.isEmpty() && dir.exists() && dir.exists(filename))
+        {
+            icon = QIcon(dir.absoluteFilePath(filename));
+            if (icon.isNull() == false && icon.availableSizes().size() > 0)
+            {
+                found = true;
+            }
+        }
+    }
+
+    if (!found && (searchFolders & SFAppDirQItom))
+    {
+        dir = QCoreApplication::applicationDirPath();
+        dir.cd("Qitom");
+        if (!filename.isEmpty() && dir.exists() && dir.exists(filename))
+        {
+            icon = QIcon(dir.absoluteFilePath(filename));
+            if (icon.isNull() == false && icon.availableSizes().size() > 0)
+            {
+                found = true;
+            }
+        }
+    }
+
+    //nothing valid found, return to fallback icon
+    if (!found || icon.isNull() == true || icon.availableSizes().size() == 0)
+    {
+        icon = fallbackIcon;
+    }
+
+    return icon;
 }
 
 } //end namespace ito

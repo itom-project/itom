@@ -330,7 +330,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
     // needed for breadcrumb and for list of children in algorithms
     QString linkNav;
 
-    if (type != 6)
+    if (type != typeCategory)
     {
         // Standard html-Template laden
         // -------------------------------------
@@ -348,9 +348,13 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
         {
             QString linkPath;
             for (int j = 0; j <= i; j++)
+            {
                 linkPath.append(splittedLink.mid(0, i + 1)[j] + ".");
+            }
             if (linkPath.right(1) == ".")
+            {
                 linkPath = linkPath.left(linkPath.length() - 1);
+            }
             linkNav.insert(0, ">> <a id=\"HiLink\" href=\"itom://algorithm.html#" + linkPath.toLatin1().toPercentEncoding("",".") + "\">" + splittedLink[i] + "</a>");
         }
         docString.replace("%BREADCRUMB%", linkNav);
@@ -367,15 +371,16 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
         }
         else if (start == -1 || end == -1) //one part is missing
         {
-        retval += ito::RetVal(ito::retError, 0, tr("Template Error: Parameters section is only defined by either the start or end tag.").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, tr("Template Error: Parameters section is only defined by either the start or end tag.").toLatin1().data());
         }
         else if (start > end) //one part is missing
         {
-        retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of parameters section comes before start tag.").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of parameters section comes before start tag.").toLatin1().data());
         }
         else
         {
             parameterSection = docString.mid(start, end + QString("<!--%PARAMETERS_END%-->").size() - start);
+            parameterSection.replace("<!--%PARAMETERS_CAPTION%-->", tr("Parameters")); 
             docString.remove(start, end + QString("<!--%PARAMETERS_END%-->").size() - start);
         }
 
@@ -392,15 +397,16 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
         }
         else if (start == -1 || end == -1) //one part is missing
         {
-        retval += ito::RetVal(ito::retError, 0, tr("Template Error: Returns section is only defined by either the start or end tag.").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, tr("Template Error: Returns section is only defined by either the start or end tag.").toLatin1().data());
         }
         else if (start > end) //one part is missing
         {
-        retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of returns section comes before start tag.").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of returns section comes before start tag.").toLatin1().data());
         }
         else
         {
             returnsSection = docString.mid(start, end + QString("<!--%RETURNS_END%-->").size() - start);
+            returnsSection.replace("<!--%RETURNS_CAPTION%-->", tr("Returns")); 
             docString.remove(start, end + QString("<!--%RETURNS_END%-->").size() - start);
         }
 
@@ -417,15 +423,17 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
         }
         else if (start == -1 || end == -1) //one part is missing
         {
-        retval += ito::RetVal(ito::retError, 0, tr("Template Error: Returns section is only defined by either the start or end tag.").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, tr("Template Error: Returns section is only defined by either the start or end tag.").toLatin1().data());
         }
         else if (start > end) //one part is missing
         {
-        retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of returns section comes before start tag.").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, tr("Template Error: End tag of returns section comes before start tag.").toLatin1().data());
         }
         else
         {
             exampleSection = docString.mid(start, end + QString("<!--%EXAMPLE_END%-->").size() - start);
+            exampleSection.replace("<!--%EXAMPLE_CAPTION%-->", tr("Example"));
+            exampleSection.replace("<!--%EXAMPLELINK_CAPTION%-->", tr("Copy example to clipboard"));
             docString.remove(start, end + QString("<!--%EXAMPLE_END%-->").size() - start);
         }
 
@@ -455,6 +463,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                         {
                             parseParamVector("PARAMMAND", params->paramsMand, parameterSection);
                             parseParamVector("PARAMOPT", params->paramsOpt, parameterSection);
+                            parameterSection.replace("<!--%PARAMOPT_CAPTION%-->", tr("optional"));
                         }
 
                         // Return-Section
@@ -506,6 +515,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                         {
                             parseParamVector("PARAMMAND", params->paramsMand, parameterSection);
                             parseParamVector("PARAMOPT", params->paramsOpt, parameterSection);
+                            parameterSection.replace("<!--%PARAMOPT_CAPTION%-->", tr("optional"));
                         }
 
                         //remove returns section (Widgets can´t return something)
@@ -637,6 +647,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                             {
                                 parseParamVector("PARAMMAND", *paramsMand, parameterSection);
                                 parseParamVector("PARAMOPT" , *paramsOpt, parameterSection);
+                                parameterSection.replace("<!--%PARAMOPT_CAPTION%-->", tr("optional"));
                             }
 
                             //remove returns section (Widgets can´t return something)
@@ -881,7 +892,14 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             const ito::IntMeta *pMeta = dynamic_cast<const ito::IntMeta*>(param.getMeta());
             if (pMeta)
             {
-                meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<int>());
+                if (pMeta->getStepSize() == 1)
+                {
+                    meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<int>());
+                }
+                else
+                {
+                    meta = tr("Range: [%1:%2:%3], Default: %4").arg(minText(pMeta->getMin())).arg(pMeta->getStepSize()).arg(maxText(pMeta->getMax())).arg(param.getVal<int>());
+                }
             }
             else
             {
@@ -895,7 +913,14 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             const ito::CharMeta *pMeta = dynamic_cast<const ito::CharMeta*>(param.getMeta());
             if (pMeta)
             {
-                meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<char>());
+                if (pMeta->getStepSize() == 1)
+                {
+                    meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<char>());
+                }
+                else
+                {
+                    meta = tr("Range: [%1:%2:%3], Default: %4").arg(minText(pMeta->getMin())).arg(pMeta->getStepSize()).arg(maxText(pMeta->getMax())).arg(param.getVal<char>());
+                }
             }
             else
             {
@@ -907,10 +932,16 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
         {
             type = "double";
             const ito::DoubleMeta *pMeta = dynamic_cast<const ito::DoubleMeta*>(param.getMeta());
-            if (param.getMeta() != NULL)
+            if (pMeta)
             {
-                
-                meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<double>());
+                if (pMeta->getStepSize() == 0.0)
+                {
+                    meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<double>());
+                }
+                else
+                {
+                    meta = tr("Range: [%1:%2:%3], Default: %4").arg(minText(pMeta->getMin())).arg(pMeta->getStepSize()).arg(maxText(pMeta->getMax())).arg(param.getVal<double>());
+                }
             }
             else
             {
@@ -990,17 +1021,47 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
         break;
     case ito::ParamBase::CharArray & ito::paramTypeMask:
         {
-            type = "char-list";
+            type = "list of characters";
+            if (param.getMeta() && param.getMeta()->getType() == ito::ParamMeta::rttiCharArrayMeta)
+            {
+                ito::CharArrayMeta *m = (ito::CharArrayMeta*)(param.getMeta());
+            }
         }
         break;
     case ito::ParamBase::IntArray & ito::paramTypeMask:
         {
-            type = "integer-list";
+            const ito::ParamMeta *m = param.getMeta();
+            
+            if ((m && m->getType() == ito::ParamMeta::rttiIntArrayMeta) || !m)
+            {
+                type = "list of integers";
+            }
+            else if (m && m->getType() == ito::ParamMeta::rttiIntervalMeta)
+            {
+                type = "interval [first, last] (integers)";
+            }
+            else if (m && m->getType() == ito::ParamMeta::rttiRangeMeta)
+            {
+                type = "range [first, last] (integers)";
+            }
+            else if (m && m->getType() == ito::ParamMeta::rttiRectMeta)
+            {
+                type = "rectangle [left, top, width, height] (integers)";
+            }
         }
         break;
     case ito::ParamBase::DoubleArray & ito::paramTypeMask:
         {
-            type = "double-list";
+            const ito::ParamMeta *m = param.getMeta();
+
+            if ((m && m->getType() == ito::ParamMeta::rttiDoubleArrayMeta) || !m)
+            {
+                type = "list of float64";
+            }
+            else if (m && m->getType() == ito::ParamMeta::rttiDoubleIntervalMeta)
+            {
+                type = "interval [first, last] (float64)";
+            }
         }
         break;
     case ito::ParamBase::DObjPtr & ito::paramTypeMask:
@@ -1121,7 +1182,7 @@ QString HelpTreeDockWidget::minText(int minimum) const
 */
 QString HelpTreeDockWidget::minText(double minimum) const
 {
-    if (std::abs(minimum - std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon())
+    if (std::abs(minimum + std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon())
     {
         return "-inf";
     }
@@ -1295,14 +1356,13 @@ void HelpTreeDockWidget::propertiesChanged()
 //! Creates the model (tree) from the given data. 
 /*! The function is recursiv. It always calles itself with the rest of the list that is not in the tree yet.
 
-    \param model main model of the Widget
     \param parent parent that might have children. This function is going to find them and add them from the list.
     \param parentPath absolute path of the parent
     \param items list of all sql items that are not processed yet
     \param iconGallery Gallery with icons for classes, modules etc.
     
 */
-/*static*/ void HelpTreeDockWidget::createItemRek(QStandardItemModel* model, QStandardItem& parent, const QString parentPath, QList<SqlItem> &items, const QMap<int,QIcon> *iconGallery)
+/*static*/ void HelpTreeDockWidget::createItemRek(QStandardItem& parent, const QString &parentPath, QList<SqlItem> &items, const QMap<int,QIcon> *iconGallery)
 {
     SqlItem firstItem;
     int m_urPath = Qt::UserRole + 1;
@@ -1324,13 +1384,13 @@ void HelpTreeDockWidget::propertiesChanged()
             }
             else
             { // Kein Link Normales Bild
-                node->setIcon((*iconGallery)[firstItem.type]); //Don't load icons here from file since operations on QPixmap are not allowed in another thread
+                node->setIcon(iconGallery->value(firstItem.type)); //Don't load icons here from file since operations on QPixmap are not allowed in another thread
             }
             node->setEditable(false);
             node->setData(firstItem.path, m_urPath);
             node->setData(1, m_urType);
             node->setToolTip(firstItem.path);
-            createItemRek(model, *node, firstItem.path, items, iconGallery);
+            createItemRek(*node, firstItem.path, items, iconGallery);
             parent.appendRow(node);
         }
         else if (firstItem.prefix.indexOf(parentPath) == 0) //parentPath is the first part of path
@@ -1349,7 +1409,7 @@ void HelpTreeDockWidget::propertiesChanged()
             node->setEditable(false);
             node->setData(firstItem.prefix, m_urPath); 
             node->setData(1, m_urType); //typ 1 = docstring wird aus sql gelesen
-            createItemRek(model, *node, firstItem.prefix, items, iconGallery);  
+            createItemRek(*node, firstItem.prefix, items, iconGallery);  
             parent.appendRow(node);
         }
         else
@@ -1364,14 +1424,13 @@ void HelpTreeDockWidget::propertiesChanged()
 /*! This function openes a sql database that contains all the static help informations. All these informations are written into a list.
     createItemRek creates the model from this list.
 
-    \param filter not used anymore
     \param file the path of the sql database
     \param items this parameter is  filled with a list of SqlItems (struct from the header file)
     \return ito::RetVal
 
     \sa createItemRek
 */
-/*static*/ ito::RetVal HelpTreeDockWidget::readSQL(/*QList<QSqlDatabase> &DBList,*/ const QString &filter, const QString &file, QList<SqlItem> &items)
+/*static*/ ito::RetVal HelpTreeDockWidget::readSQL(const QString &file, QList<SqlItem> &items)
 {
     ito::RetVal retval = ito::retOk;
     QFile f(file);
@@ -1518,11 +1577,11 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
             sqlList.clear();
             QString temp;
             temp = path+'/'+includedDBs.at(i);
-            retval = readSQL(/*DBList,*/ "", temp, sqlList);
+            retval = readSQL(temp, sqlList);
             QCoreApplication::processEvents();
             if (!retval.containsWarningOrError())
             {
-                createItemRek(mainModel, *(mainModel->invisibleRootItem()), "", sqlList, iconGallery);
+                createItemRek(*(mainModel->invisibleRootItem()), "", sqlList, iconGallery);
             }
             else
             {/* The Database named: m_pIncludedDBs[i] is not available anymore!!! show Error*/}
@@ -1788,7 +1847,7 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
     \param modelIndex that was clicked. If it´s empty, it´s a call from a link or from extern
     \param fromLink if true, a link called that slot
 */
-void HelpTreeDockWidget::showPluginInfo(QString name, int type, const QModelIndex modelIndex, bool fromLink)
+void HelpTreeDockWidget::showPluginInfo(const QString &name, int type, const QModelIndex &modelIndex, bool fromLink)
 {
     // Check if it´s a click by the back or forward button
     if (modelIndex.isValid())
@@ -1875,7 +1934,7 @@ void HelpTreeDockWidget::showPluginInfo(QString name, int type, const QModelInde
     \param current item whose children are searched
     \return QModelIndex
 */
-QModelIndex HelpTreeDockWidget::findIndexByPath(const int type, QStringList path, QStandardItem* current)
+QModelIndex HelpTreeDockWidget::findIndexByPath(const int type, QStringList path, const QStandardItem* current)
 {
     QStandardItem *temp;
     int counts;
@@ -2011,10 +2070,7 @@ void HelpTreeDockWidget::on_splitter_splitterMoved (int pos, int index)
     {
         m_percWidthUn = pos / width * 100;
     }
-    if (m_percWidthVi < m_percWidthUn)
-    {
-        m_percWidthVi = m_percWidthUn + 10;
-    }
+
     if (m_percWidthVi == 0)
     {
         m_percWidthVi = 30;

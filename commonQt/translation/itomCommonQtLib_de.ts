@@ -4,9 +4,9 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../common/sources/helperActuator.cpp" line="+81"/>
-        <location filename="../../common/sources/helperGrabber.cpp" line="+78"/>
-        <location line="+298"/>
+        <location filename="../../common/sources/helperActuator.cpp" line="+84"/>
+        <location filename="../../common/sources/helperGrabber.cpp" line="+81"/>
+        <location line="+287"/>
         <location line="+20"/>
         <location line="+20"/>
         <source>timeout while getting numaxis parameter</source>
@@ -20,7 +20,7 @@
     <message>
         <location line="+9"/>
         <location line="+179"/>
-        <location filename="../../common/sources/helperGrabber.cpp" line="-271"/>
+        <location filename="../../common/sources/helperGrabber.cpp" line="-262"/>
         <source>Timeout while Waiting for Semaphore</source>
         <translation type="unfinished">Zeitüberschreitunng beim Warten auf Semaphore</translation>
     </message>
@@ -32,6 +32,7 @@
     <message>
         <location line="+31"/>
         <location line="+38"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="+516"/>
         <source>Error during setPosRel: Vectors differ in size</source>
         <translation type="unfinished">Fehler während &quot;setPosRel&quot;: Vektoren unterschiedlicher Größe</translation>
     </message>
@@ -68,7 +69,7 @@
         <translation type="unfinished">Parameter &apos;%1&apos; wurde im übergebenen Parametervektor nicht gefunden</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+84"/>
         <location line="+125"/>
         <source>name of requested parameter is empty.</source>
         <translation type="unfinished">Der Name des erwarteten Parameters ist leer.</translation>
@@ -410,8 +411,8 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractDObjFigure.h" line="+70"/>
-        <location filename="../../plot/AbstractDObjPCLFigure.h" line="+77"/>
+        <location filename="../../plot/AbstractDObjFigure.h" line="+73"/>
+        <location filename="../../plot/AbstractDObjPCLFigure.h" line="+80"/>
         <location line="+2"/>
         <location line="+2"/>
         <source>Source data for plot</source>
@@ -485,6 +486,18 @@ Type conflict for %1</source>
         <source>unknown channel in setUpdatePending</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="-364"/>
+        <location line="+15"/>
+        <location line="+5"/>
+        <source>Timeout while waiting for answer from camera.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+380"/>
+        <source>Error during setPosAbs: Vectors differ in size</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ito::AbstractAddInConfigDialog</name>
@@ -527,12 +540,12 @@ Type conflict for %1</source>
         <translation type="unfinished">Slot &apos;setParamVector&apos; konnte nicht aufgerufen werden, da dieser nicht existiert.</translation>
     </message>
     <message>
-        <location line="+55"/>
+        <location line="+51"/>
         <source>Timeout while waiting for answer from plugin instance.</source>
         <translation type="unfinished">Zeitüberschreitung beim Warten auf Antwort der Plugin-Instanz.</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+13"/>
         <source>Error while execution</source>
         <translation type="unfinished">Fehler beim Ausführen</translation>
     </message>
@@ -552,15 +565,15 @@ Type conflict for %1</source>
     <message>
         <location line="+5"/>
         <location line="+49"/>
-        <location line="+114"/>
+        <location line="+107"/>
         <location line="+59"/>
         <location line="+50"/>
-        <location line="+46"/>
+        <location line="+47"/>
         <source>pointer to plugin is invalid.</source>
         <translation type="unfinished">Der Pointer des Plugins ist ungültig.</translation>
     </message>
     <message>
-        <location line="-312"/>
+        <location line="-306"/>
         <location line="+49"/>
         <source>Error while setting parameter</source>
         <translation type="unfinished">Fehler beim Parametersetzen</translation>
@@ -577,12 +590,12 @@ Type conflict for %1</source>
         <translation type="unfinished">Slot &apos;setParamVector&apos; konnte nicht aufgerufen werden, da dieser nicht existiert.</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+45"/>
         <source>Timeout while waiting for answer from plugin instance.</source>
         <translation type="unfinished">Zeitüberschreitung beim Warten auf Antwort der Plugin-Instanz.</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+13"/>
         <source>Error while execution</source>
         <translation type="unfinished">Fehler beim Ausführen</translation>
     </message>
@@ -632,7 +645,7 @@ Type conflict for %1</source>
         <translation type="unfinished">Warnung beim Aufruf von &apos;requestStatusAndPosition&apos;</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+21"/>
         <source>setActuatorInterrupt can only be called for actuator plugins</source>
         <translation type="unfinished">&apos;setActuatorInterrupt&apos; kann nur für Aktuator-Plugins aufgerufen werden</translation>
     </message>
@@ -667,22 +680,9 @@ Type conflict for %1</source>
     </message>
 </context>
 <context>
-    <name>ito::AddInActuator</name>
-    <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="+707"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../common/addInInterface.h" line="+1075"/>
+        <location filename="../../common/addInInterface.h" line="+1080"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -697,7 +697,7 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="+117"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="+861"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished"></translation>
     </message>
@@ -712,10 +712,10 @@ Type conflict for %1</source>
     <message>
         <location line="+29"/>
         <source>Toolbox</source>
-        <translation type="unfinished">Symbolleiste</translation>
+        <translation>Toolbox</translation>
     </message>
     <message>
-        <location line="+165"/>
+        <location line="+166"/>
         <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
         <translation type="unfinished"></translation>
     </message>
@@ -723,17 +723,7 @@ Type conflict for %1</source>
 <context>
     <name>ito::AddInDataIO</name>
     <message>
-        <location line="+13"/>
-        <source>Constructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Destructor must be overwritten</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+14"/>
+        <location line="+35"/>
         <source>listener does not have a slot </source>
         <translation type="unfinished"></translation>
     </message>
