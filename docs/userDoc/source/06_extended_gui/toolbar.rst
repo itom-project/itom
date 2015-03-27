@@ -135,6 +135,7 @@ a children respectively, called *Button2* and *Button3*.
 
 .. figure:: images/menu.png
     :scale: 70%
+    :align: left
 
 .. note::
     
@@ -169,6 +170,7 @@ the |itom| application. All icons, that are included in these resources are list
 
 .. figure:: images/iconBrowser.png
     :scale: 70%
+    :align: left
 
 The icon browser is accessible in any script window by its menu **edit >> icon browser** (or Ctrl+B). If you found your desired icon, double click
 on the entry in order to copy the appropriate string to the clipboard and paste it afterwards into your script. Resource locations always start witha colon (:) sign.

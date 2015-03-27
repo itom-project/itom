@@ -32,6 +32,7 @@ The result of both examples looks like this:
 
 .. figure:: images/plot1d.png
     :scale: 70%
+    :align: left
 
 Equivalent to the one-dimensional case, the following example shows how to simply plot a two-dimensional data object also using the command
 :py:meth:`~itom.plot`.
@@ -45,6 +46,7 @@ Then, you obtain a figure that looks like this:
 
 .. figure:: images/plot2d.png
     :scale: 70%
+    :align: left
 
 If you not only work with data objects but also with numpy you can also pass numpy arrays to the :py:meth:`~itom.plot` command. An implicit shallow
 copy in terms of a :py:class:`itom.dataObject` is then created and passed to the plots.
@@ -78,6 +80,7 @@ You can also show the live image of any camera using the GUI. Right-click on the
 
 .. figure:: images/liveImageGUI.png
     :scale: 70%
+    :align: left
 
 Properties of plots
 -----------------------------

@@ -15,6 +15,7 @@ Most possible types of class ito::Param have their respective meta information s
 
 .. _plugin-paramMeta-scheme:
 .. figure:: images/paramMeta.png
+    :align: left
 
 The base class of all kind of meta information classes is the class :ref:`ito::ParamMeta <classParamMeta>`. Any instance of class :ref:`ito::ParamMeta <classParamMeta>` can
 contain a pointer to an instance of this base class. If you know the type of parameter (e.g. char, string or int), you can savely cast this :ref:`ito::ParamMeta <classParamMeta>`

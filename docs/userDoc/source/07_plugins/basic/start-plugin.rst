@@ -22,6 +22,7 @@ All valid plugins are listed in the plugin toolbox of |itom|
 
 .. figure:: ../images/pluginToolbox.png
     :scale: 70%
+    :align: left
 
 Script-based startup
 ~~~~~~~~~~~~~~~~~~~~~

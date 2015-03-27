@@ -27,7 +27,8 @@ The GUI
 If you open |itom| for the first time, the main graphical user interface will look like the following screenshot:
 
 .. figure:: images/itom_layout.png
-    :width: 70%
+    :scale: 70%
+    :align: left
     
 The main components are highlighted with different colors and numbers. These components are:
 
@@ -52,7 +53,8 @@ Connect to a hardware plugin using the GUI
 In the following example, we will connect to such a virtual actuator, move single axes and finally close the actuator. This is all done by the graphical user interface of |itom|. Later we will learn, how to do this by the help of script commands. For this example, you need to have the hardware plugin **DummyMotor** which should be listed in the plugin toolbox as child of the **actuators** group.
 
 .. figure:: images/openDummyMotor1.png
-    :width: 70 %
+    :scale: 70 %
+    :align: left
 
 Every entry in this toolbox corresponds to one library file (Windows: *.dll, Linux: *.so), located in any subfolder of the **plugins** subfolder of your |itom| installation path. If the library could be loaded, you can connect to one or multiple instances of its represented hardware (e.g. you can connect to various motors of the same type that are connected to the computer). If you don't find the desired library in the :ref:`plugins toolbox <gui-plugins>`, you either don't have the library in the plugins subfolder or the library could not be loaded. This can have various reasons. See the **loaded plugins...** dialog in the menu **file** to check why the plugin could not be loaded.
 
@@ -62,6 +64,7 @@ Usually, you have to pass multiple mandatory or optional parameters when connect
 
 .. figure:: images/openDummyMotor3.png
     :scale: 70%
+    :align: left
     
 This dialog is automatically configured depending on the needs of the specific plugin. The tab **mandatory parameters** lists all parameters that you have to pass, the tab **optional parameters** all optional ones. If one tab is disabled, no parameters are required in this section. In case of the dummy motor, no mandatory parameters are required. However, you may change the number of virtual axes or set the internal name of the motor instance.
 
@@ -73,6 +76,7 @@ Now, you can work with this motor instance. The necessary functions are either a
 
 .. figure:: images/openDummyMotor4.png
     :scale: 70%
+    :align: left
 
 * **Configuration Dialog**: This opens a modal configuration dialog to configure the actuator or camera instance.
 * **Show Plugin Toolbox**: Every plugin can provide a toolbox that is integrated in the main window of |itom| and usually provides commonly used features of the plugin (e.g. the motor movement)
@@ -83,6 +87,7 @@ The individual (but optional) **Configuration Dialog** of every plugin allows ch
 
 .. figure:: images/dummyMotorDialog.png
     :scale: 70%
+    :align: left
 
 As long as this window is opened, |itom| is blocked for further user input. The configuration dialog is assumed to only contain parameters or functions that are rarely used.
 
@@ -90,6 +95,7 @@ In the next step, we want to move the virtual stage. For this purpose, plugins c
 
 .. figure:: images/dummyMotorWidget.png
     :scale: 70%
+    :align: left
     
 Toolboxes are always non-blocking items that can be arbitrarily placed in the main window and usually contain often used methods and functions. In case of the dummy motor, you can use the toolbox to relatively or absolutely move one or multiple axes. During the movement, related axes are marked with a yellow background color. In case of an error, the background turns to red. The dummy motor instance simulates the movements using a speed value, that is adjustable via the configuration dialog.
 
@@ -138,6 +144,7 @@ How did we know what to write there? Select **Info...** from the context menu of
 
 .. figure:: images/dummyGrabberHelp.png
     :scale: 70%
+    :align: left
     
 .. note::
     
@@ -273,11 +280,13 @@ Therefore we select the **DummyGrabber** within the **Plugins-Browser** (GUI No.
 
 .. figure:: images/openDummyGrabber1.png
     :scale: 70%
+    :align: left
 
 The window with initialisation parameters of the plugIn opens. Select the tab **optional parameters** and insert maxXSize = 800, maxYSize = 600, bpp == 8. 
 
 .. figure:: images/openDummyGrabber2.png
     :scale: 70%
+    :align: left
 
 Than check **Access instance with python** and type 'camera' into the field **variable name**. Press ok. Now you can proceed with step 2 but since you already set the grabber parameters you can also proceed with step 4.   
 
@@ -330,6 +339,7 @@ You can see a detailed description of the filter "cvMedianBlur". An alternative 
 
 .. figure:: images/filterHelp.png
     :scale: 70%
+    :align: left
     
 This help gives you information about the purpose of the filter and its mandatory and optional parameters that are required to apply the filter. At the bottom of the help page, you see an examplary Python string that shows how to call the filter (only mandatory parameters are included in this example). Click **Copy example to clipboard** in order to simply paste the example into your script or the command line.
 
