@@ -727,5 +727,9 @@ if(MSVC)
     
 ENDIF (MSVC)
 
+# Copying scripts for OS X build process
+IF(APPLE)
+    FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../osx_install_dependencies.sh DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/..)
+ENDIF(APPLE)
 
 
