@@ -181,6 +181,7 @@ private slots:
     void mnuScriptStepOut();
     void mnuPyReloadModules();
     void mnuShowLoadedPlugins();
+    void mnuPyPipManager();
 
     void mnuPyAutoReloadTriggered(bool checked);
 

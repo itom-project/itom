@@ -38,6 +38,7 @@
 #include "../ui/dialogReloadModule.h"
 #include "../ui/dialogLoadedPlugins.h"
 #include "../ui/widgetInfoBox.h"
+#include "../ui/dialogPipManager.h"
 
 #include "../helper/versionHelper.h"
 
@@ -676,6 +677,9 @@ void MainWindow::createActions()
         a = m_actions["py_autoReloadFunc"] = new QAction(tr("autoreload before events and function calls"), this);
         a->setCheckable(true);
         connect(a, SIGNAL(triggered(bool)), this, SLOT(mnuPyAutoReloadTriggered(bool)));
+
+        a = m_actions["py_packageManager"] = new QAction(tr("Package Manager..."), this);
+        connect(a, SIGNAL(triggered()), this, SLOT(mnuPyPipManager()));
     }
 }
 
@@ -766,6 +770,8 @@ void MainWindow::createMenus()
         m_pMenuReloadModule->addAction(m_actions["py_autoReloadFunc"]);
         m_pMenuReloadModule->addSeparator();
         m_pMenuReloadModule->addAction(m_actions["python_reloadModules"]);
+
+        m_pMenuPython->addAction(m_actions["py_packageManager"]);
     }
 
     m_pMenuHelp = menuBar()->addMenu(tr("Help"));
@@ -1655,6 +1661,14 @@ QAction* MainWindow::searchActionRecursively(const size_t menuHandle, const QMen
 void MainWindow::pythonRunSelection(QString selectionText)
 {
     m_console->pythonRunSelection(selectionText);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::mnuPyPipManager()
+{
+    DialogPipManager *dpm = new DialogPipManager(this);
+    dpm->exec();
+    DELETE_AND_SET_NULL(dpm);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

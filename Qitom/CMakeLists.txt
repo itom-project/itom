@@ -103,6 +103,7 @@ INCLUDE_DIRECTORIES(
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
     ../DataObject/
     ../PointCloud/
+	../itomWidgets
 )
 
 LINK_DIRECTORIES(
@@ -148,6 +149,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/addInManager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/algoInterfaceValidator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/designerWidgetOrganizer.h
@@ -202,6 +204,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/itomSpinBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.h
@@ -266,6 +269,7 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManager.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetInfoBox.ui
@@ -320,6 +324,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/addInManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/algoInterfaceValidator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/designerWidgetOrganizer.cpp
@@ -371,6 +376,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.cpp
@@ -554,7 +560,7 @@ IF(APPLE)
     SET_SOURCE_FILES_PROPERTIES(${target_icon_path} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
     # Add executable for OS X
-    ADD_EXECUTABLE(${target_name} MACOSX_BUNDLE ${target_icon_path} ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENCENDY} )
+    ADD_EXECUTABLE(${target_name} MACOSX_BUNDLE ${target_icon_path} ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENDENCY} )
 
     # SET_SOURCE_FILES_PROPERTIES(
     #     ${CMAKE_BINARY_DIR}/../itoDebugger.py
@@ -582,7 +588,7 @@ IF(APPLE)
     COPY_TO_BUNDLE(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../demo" "../demo")
 ELSE(APPLE)
     # Executable for WINDOWS and LINUX
-    ADD_EXECUTABLE(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENCENDY} )
+    ADD_EXECUTABLE(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENDENCY} )
 
     # Set binary file names for  WINDOWS and LINUX
     set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
@@ -637,12 +643,12 @@ ENDIF(BUILD_WITH_PCL)
 
 IF (QT5_FOUND)
 	if (WIN32)
-		TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib ${PYMATLAB_LIBRARIES} shell32)
+		TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets ${PYMATLAB_LIBRARIES} shell32)
 	else (WIN32)
-		TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib ${PYMATLAB_LIBRARIES})
+		TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets ${PYMATLAB_LIBRARIES})
 	endif (WIN32)
 ELSE (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib ${PYMATLAB_LIBRARIES})
+    TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets ${PYMATLAB_LIBRARIES})
 ENDIF (QT5_FOUND)
  
 BUILD_PARALLEL_LINUX(${target_name})
