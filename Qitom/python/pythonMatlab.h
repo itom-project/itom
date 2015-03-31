@@ -62,7 +62,7 @@
     #endif
     #define _DEBUG
 #else
-    #ifdef (defined linux)
+    #if (defined linux)
         #include "Python.h"
         #include "numpy/arrayobject.h"
     #elif (defined __APPLE__)
