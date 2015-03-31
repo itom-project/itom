@@ -149,8 +149,8 @@ public:
     ito::RetVal checkForPyExceptions();
     void printPythonErrorWithoutTraceback();
 
-    void pythonDebugFunction(PyObject *callable, PyObject *argTuple);
-    void pythonRunFunction(PyObject *callable, PyObject *argTuple);
+    void pythonDebugFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);
+    void pythonRunFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);
 
     inline PyObject *getGlobalDictionary()  const { return globalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
 
@@ -168,8 +168,8 @@ protected:
     ito::RetVal debugFile(const QString &pythonFileName);         // debug file pythonFileName
     ito::RetVal runString(const QString &command);          // run string command
     ito::RetVal debugString(const QString &command);        // debug string command
-    ito::RetVal debugFunction(PyObject *callable, PyObject *argTuple);
-    ito::RetVal runFunction(PyObject *callable, PyObject *argTuple);
+    ito::RetVal debugFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);
+    ito::RetVal runFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);
 
     ito::RetVal modifyTracebackDepth(int NrOfLevelsToPopAtFront = -1, bool showTraceback = true);
 

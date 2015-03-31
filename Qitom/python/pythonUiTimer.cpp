@@ -50,7 +50,8 @@ void TimerCallback::timeout()
         qDebug("python is not available any more");
         return;
     }
-//    PyGILState_STATE state = PyGILState_Ensure();
+
+    PyGILState_STATE state = PyGILState_Ensure();
 
     bool debug = false;
     if(pyEngine)
@@ -58,20 +59,6 @@ void TimerCallback::timeout()
         debug = pyEngine->execInternalCodeByDebugger();
     }
 
-//    PyObject *argTuple = PyTuple_New(m_argTypeList.size());
-//    PyObject *temp = NULL;
-
-    //arguments[0] is return argument
-/*
-    for(int i=0;i<m_argTypeList.size();i++)
-    {
-        temp = PythonQtConversion::ConvertQtValueToPythonInternal(m_argTypeList[i],arguments[i+1]); //new reference
-        if(temp)
-        {
-            PyTuple_SetItem(argTuple,i,temp); //steals reference
-        }
-    }
-*/
     if(m_boundedMethod == false)
     {
         PyObject *func = PyWeakref_GetObject(m_function);
@@ -79,11 +66,11 @@ void TimerCallback::timeout()
         {
             if(debug)
             {
-                pyEngine->pythonDebugFunction(func, m_callbackArgs);
+                pyEngine->pythonDebugFunction(func, m_callbackArgs, true);
             }
             else
             {
-                pyEngine->pythonRunFunction(func, m_callbackArgs);
+                pyEngine->pythonRunFunction(func, m_callbackArgs, true);
             }
         }
         else
@@ -111,19 +98,18 @@ void TimerCallback::timeout()
 
             if(debug)
             {
-                pyEngine->pythonDebugFunction(method, m_callbackArgs);
+                pyEngine->pythonDebugFunction(method, m_callbackArgs, true);
             }
             else
             {
-                pyEngine->pythonRunFunction(method, m_callbackArgs);
+                pyEngine->pythonRunFunction(method, m_callbackArgs, true);
             }
 
             Py_XDECREF(method);
         }
     }
 
-   /* if (m_callbackArgs)
-        Py_DECREF(m_callbackArgs);*/
+    PyGILState_Release(state);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

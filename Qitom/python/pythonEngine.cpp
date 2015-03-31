@@ -1427,11 +1427,15 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple)
+ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple, bool gilExternal /*= false*/)
 {
     RetVal retValue = RetVal(retOk);
     m_interruptCounter = 0;
-    PyGILState_STATE gstate = PyGILState_Ensure();
+    PyGILState_STATE gstate;
+    if (!gilExternal)
+    {
+        gstate = PyGILState_Ensure();
+    }
 
     if (m_autoReload.enabled && m_autoReload.checkFctExec)
     {
@@ -1471,13 +1475,16 @@ ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple)
         Py_XDECREF(result);
     }
 
-    PyGILState_Release(gstate);
+    if (!gilExternal)
+    {
+        PyGILState_Release(gstate);
+    }
 
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple)
+ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, bool gilExternal /*= false*/)
 {
     PyObject* result = NULL;
     RetVal retValue = RetVal(retOk);
@@ -1488,7 +1495,11 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple)
     }
     else
     {
-        PyGILState_STATE gstate = PyGILState_Ensure();
+        PyGILState_STATE gstate;
+        if (!gilExternal)
+        {
+            gstate = PyGILState_Ensure();
+        }
 
         //!< first, clear all existing breakpoints
         result = PyObject_CallMethod(itomDbgInstance, "clear_all_breaks", "");
@@ -1496,6 +1507,12 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple)
         {
             std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toLatin1().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
+
+            if (!gilExternal)
+            {
+                PyGILState_Release(gstate);
+            }
+
             return RetVal(retError);
         }
 
@@ -1514,6 +1531,11 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple)
 
                 if (retValue.containsError())
                 {
+                    if (!gilExternal)
+                    {
+                        PyGILState_Release(gstate);
+                    }
+
                     return retValue;
                 }
             }
@@ -1584,7 +1606,10 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple)
         shutdownBreakPointDebugConnections();
         bpModel->resetAllPyBpNumbers();
 
-        PyGILState_Release(gstate);
+        if (!gilExternal)
+        {
+            PyGILState_Release(gstate);
+        }
     }
 
     return retValue;
@@ -2348,13 +2373,13 @@ void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::pythonDebugFunction(PyObject *callable, PyObject *argTuple)
+void PythonEngine::pythonDebugFunction(PyObject *callable, PyObject *argTuple, bool gilExternal /*= false*/)
 {
     switch (pythonState)
     {
     case pyStateIdle:
         pythonStateTransition(pyTransBeginDebug);
-        debugFunction(callable,argTuple);
+        debugFunction(callable, argTuple, gilExternal);
         emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
         pythonStateTransition(pyTransEndDebug);
         break;
@@ -2367,7 +2392,7 @@ void PythonEngine::pythonDebugFunction(PyObject *callable, PyObject *argTuple)
     case pyStateDebuggingWaitingButBusy:
         pythonStateTransition(pyTransDebugExecCmdBegin);
         std::cout << "Function will be executed instead of debugged since another debug session is currently running.\n" << std::endl;
-        pythonRunFunction(callable, argTuple);
+        pythonRunFunction(callable, argTuple, gilExternal);
         pythonStateTransition(pyTransDebugExecCmdEnd);
         // no command execution allowed if running or debugging without being in waiting mode
         //qDebug() << "it is now allowed to debug a python function or method in mode pyStateRunning, pyStateDebugging, pyStateDebuggingWaiting or pyStateDebuggingWaitingButBusy";
@@ -2377,14 +2402,14 @@ void PythonEngine::pythonDebugFunction(PyObject *callable, PyObject *argTuple)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //do not execute this method from another thread, only execute it within python-thread since this method is not thread safe
-void PythonEngine::pythonRunFunction(PyObject *callable, PyObject *argTuple)
+void PythonEngine::pythonRunFunction(PyObject *callable, PyObject *argTuple, bool gilExternal /*= false*/)
 {
     m_interruptCounter = 0;
     switch (pythonState)
     {
         case pyStateIdle:
             pythonStateTransition(pyTransBeginRun);
-            runFunction(callable, argTuple);
+            runFunction(callable, argTuple, gilExternal);
             emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
             pythonStateTransition(pyTransEndRun);
         break;
@@ -2392,13 +2417,13 @@ void PythonEngine::pythonRunFunction(PyObject *callable, PyObject *argTuple)
         case pyStateRunning:
         case pyStateDebugging:
         case pyStateDebuggingWaitingButBusy: //functions (from signal-calls) can be executed whenever another python method is executed (only possible if another method executing python code is calling processEvents. processEvents stops until this "runFunction" has been terminated
-            runFunction(callable, argTuple);
+            runFunction(callable, argTuple, gilExternal);
             emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
         break;
 
         case pyStateDebuggingWaiting:
             pythonStateTransition(pyTransDebugExecCmdBegin);
-            runFunction(callable, argTuple);
+            runFunction(callable, argTuple, gilExternal);
             emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
             pythonStateTransition(pyTransDebugExecCmdEnd);
         break;

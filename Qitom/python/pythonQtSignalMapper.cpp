@@ -207,7 +207,8 @@ void PythonQtSignalTarget::call(void ** arguments) const
         qDebug("python is not available any more");
         return;
     }
-//    PyGILState_STATE state = PyGILState_Ensure();
+
+    PyGILState_STATE state = PyGILState_Ensure();
 
     bool debug = false;
     if (pyEngine)
@@ -246,11 +247,11 @@ void PythonQtSignalTarget::call(void ** arguments) const
             {
                 if (debug)
                 {
-                    pyEngine->pythonDebugFunction(func, argTuple);
+                    pyEngine->pythonDebugFunction(func, argTuple, true);
                 }
                 else
                 {
-                    pyEngine->pythonRunFunction(func, argTuple);
+                    pyEngine->pythonRunFunction(func, argTuple, true);
                 }
             }
             else
@@ -277,11 +278,11 @@ void PythonQtSignalTarget::call(void ** arguments) const
 
                 if (debug)
                 {
-                    pyEngine->pythonDebugFunction(method, argTuple);
+                    pyEngine->pythonDebugFunction(method, argTuple, true);
                 }
                 else
                 {
-                    pyEngine->pythonRunFunction(method, argTuple);
+                    pyEngine->pythonRunFunction(method, argTuple, true);
                 }
 
                 Py_XDECREF(method);
@@ -291,7 +292,7 @@ void PythonQtSignalTarget::call(void ** arguments) const
 
     Py_DECREF(argTuple);
 
-//    PyGILState_Release(state);
+    PyGILState_Release(state);
 }
 
 } //end namespace ito
