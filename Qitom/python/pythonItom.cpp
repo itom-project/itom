@@ -3351,19 +3351,22 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
         return NULL;
     }
 
-    params = PyTuple_GetSlice(pArgs, 1, PyTuple_Size(pArgs));
+    params = PyTuple_GetSlice(pArgs, 1, PyTuple_Size(pArgs)); //new reference
 
     //parses python-parameters with respect to the default values given py (*it).paramsMand and (*it).paramsOpt and returns default-initialized ParamBase-Vectors paramsMand and paramsOpt.
     ret += parseInitParams(&(filterParams->paramsMand), &(filterParams->paramsOpt), params, kwds, paramsMandBase, paramsOptBase);
     //makes deep copy from default-output parameters (*it).paramsOut and returns it in paramsOut (ParamBase-Vector)
     ret += copyParamVector(&(filterParams->paramsOut), paramsOutBase);
 
+    Py_DECREF(params);
+
     if (ret.containsError())
     {
         PyErr_SetString(PyExc_RuntimeError, "error while parsing parameters.");
         return NULL;
     }
-    Py_DECREF(params);
+
+    Py_BEGIN_ALLOW_THREADS //from here, python can do something else... (we assume that the filter might be a longer operation)
 
     try
     {
@@ -3408,6 +3411,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
 #endif
     }
     
+    Py_END_ALLOW_THREADS //now we want to get back the GIL from Python
 
     if (!PythonCommon::transformRetValToPyException(ret))
     {
