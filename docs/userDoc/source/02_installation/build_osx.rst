@@ -69,6 +69,10 @@ Recommended Pyton packages:
 * **sphinx**
 * **frosted**
 
+.. note::
+    
+    You will find the script *osx_install_dependencies.sh* in the source directory. This script allows to install all dependencies in one rush. To use it run the command *sh osx_install_dependencies.sh* in a Terminal.
+
 To install all in one rush run the follwing list of commands. This might take a whole lot of time (we might talk about hours).
 
 .. code-block:: bash
