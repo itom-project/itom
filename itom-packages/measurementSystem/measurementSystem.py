@@ -11,8 +11,6 @@ from datetime import datetime
 import json
 import itom
 
-reloadModules = 1
-
 class InstrumentType():
     '''
     Structure providing information about the instrument type.
@@ -43,10 +41,10 @@ class ProbingSystemType():
 
 class MeasurementSystemBase():
     '''
-    This class contains the frontend for the microscopic fringe projection system based on a 
+    This class contains the front-end for the microscopic fringe projection system based on a 
     slm illumination.
     
-    This system has been developped by Institut fuer Technische Optik (ITO), Universitaet Stuttgart
+    This system has been developed by Institut fuer Technische Optik (ITO), Universitaet Stuttgart
     '''
     
     tFeatureType = ItomEnum("FeatureType", ("unknown","SUR","PRF","PCL"))
@@ -134,6 +132,7 @@ class MeasurementSystemBase():
         dObj.axisDescriptions = axisDescriptions
         dObj.valueUnit = valueUnit
         dObj.valueDescription = valueDescription
+        
     #---------------------------------------------------------------------------------------------------------------------------------------
     def setParam(self, paramDict):
         '''
@@ -145,8 +144,8 @@ class MeasurementSystemBase():
     def getSystemCapabilities(self):
         '''
         overwrite this method to return your system capability as dictionary with the following entries:
-        - 'field2D' : {'available':True or False, 'size':(sizex,sizey), 'scale':(scalex,scaley <in mm/px>, 'bitdepth':<8 or 16>)
-        - 'field25D' : {'available':True or False, 'size':(sizex,sizey), 'scale':(scalex,scaley <in mm/px>, 'bitdepth':<32 or 64>)
+        - 'field2D' : {'available':True or False, 'size':(sizex,sizey), 'scale':(scalex,scaley) or scale <in mm/px>, 'bitdepth':<8 or 16>)
+        - 'field25D' : {'available':True or False, 'size':(sizex,sizey), 'scale':(scalex,scaley) or scale <in mm/px>, 'bitdepth':<32 or 64>)
         - 'field3D' : {'available':True or False}
         ...
         '''
@@ -170,13 +169,13 @@ class MeasurementSystemBase():
         performs one single 2,5D-measurement
         @param args is an infinite number of further parameters, accessible as tuple.
         @return dictionary with the following mandatory and optional values:
-            - 'topologyMap' : dataObject [mand] is the mandatory topology image (or disparity image)
+            - 'topologyMap' : dataObject [mand] is the mandatory topology image
             - 'intensityMap' : dataObject [opt] is the optional intensity image (or modulation image)
             - <user defined> : you can add further elements to the dictionary
         '''
         raise RuntimeError("System has no implementation for a 2.5D measurement")
-    #---------------------------------------------------------------------------------------------------------------------------------------
     
+    #---------------------------------------------------------------------------------------------------------------------------------------
     def measurementField3D(self, *args, **kwds):
         '''
         performs one single 3D-measurement
@@ -198,12 +197,18 @@ class MeasurementSystemBase():
         '''
         return []
     
-    def getSinglePoint3DCoordsFrom25D(self, mPx, nPx, disparityValue):
+    #---------------------------------------------------------------------------------------------------------------------------------------
+    def getSinglePoint3DCoordsFrom25D(self, mPx, nPx, height):
         '''
-        this method returns the 3D-coordinates in the sensor's coordinate system for one single value in the disparity map.
-        Overwrite this method, if your disparity value together with its pixel position cannot be simply transformed into
+        this method returns the 3D-coordinates in the sensor's coordinate system for one single value in the topology map.
+        Overwrite this method, if your height value together with its pixel position cannot be simply transformed into
         a real 3D coordinate (e.g. microscopic fringe projection)
         '''
         cap = self.getSystemCapabilites()["field25D"]
-        [sx,sy] = cap["scale"]
-        return [sx*nPx, sy*mPx, disparityValue]
+        scales = cap["scale"]
+        if type(scales) is list or type(scales) is tuple:
+            [sx,sy] = scales
+        else:
+            [sx,sy] = [scales, scales]
+            
+        return [sx*nPx, sy*mPx, height]
