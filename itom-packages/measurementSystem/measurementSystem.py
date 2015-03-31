@@ -161,7 +161,7 @@ class MeasurementSystemBase():
             - 'intensityMap' : dataObject [mand] is the mandatory intensity image (or modulation image)
             - <user defined> : you can add further elements to the dictionary
         '''
-        raise RuntimeError("System has no implementation for a 2D scaled snapshots")
+        raise RuntimeError("System has no implementation for a 2D scaled snapshot")
         
     #---------------------------------------------------------------------------------------------------------------------------------------
     def measurementField25D(self, *args, **kwds):
