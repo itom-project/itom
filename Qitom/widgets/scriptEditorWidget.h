@@ -226,7 +226,8 @@ private:
     QString m_currentClass;
     QString m_currentMethod;
 
-    int buildClassTree(ClassNavigatorItem *parent, int parentDepth, int lineNumber);
+    int buildClassTree(ClassNavigatorItem *parent, int parentDepth, int lineNumber, int singleIndentation = -1);
+    int getIndentationLength(const QString &str) const;
 
 signals:
     void pythonRunFile(QString filename);
