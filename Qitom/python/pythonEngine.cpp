@@ -1021,36 +1021,41 @@ ito::RetVal PythonEngine::stringEncodingChanged()
 //----------------------------------------------------------------------------------------------------------------------------------
 QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const char *str, QByteArray &encoding) const
 {
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
     //see http://docs.python.org/devguide/compiler.html
     _node *n = PyParser_SimpleParseString(str, Py_file_input); 
     _node *n2 = n;
-    if (n==NULL)
-    {
-        return QList<int>();
-    }
-
-    if (TYPE(n) == 335) //encoding declaration, this is one level higher
-    {
-        n2 = CHILD(n,0);
-        encoding = n->n_str;
-    }
-    else
-    {
-        encoding = QByteArray();
-    }
-
     QList<int> ret;
-    _node *temp;
-    for (int i = 0 ; i < NCH(n2) ; i++)
+
+    if (n != NULL)
     {
-        temp = CHILD(n2,i);
-        if (TYPE(temp) != 4 && TYPE(temp) != 0) //include of graminit.h leads to error if included in header-file, type 0 and 4 seems to be empty line and end of file or something else
+        if (TYPE(n) == 335) //encoding declaration, this is one level higher
         {
-            ret.append(temp->n_lineno);
+            n2 = CHILD(n,0);
+            encoding = n->n_str;
         }
+        else
+        {
+            encoding = QByteArray();
+        }
+
+    
+        _node *temp;
+        for (int i = 0 ; i < NCH(n2) ; i++)
+        {
+            temp = CHILD(n2,i);
+            if (TYPE(temp) != 4 && TYPE(temp) != 0) //include of graminit.h leads to error if included in header-file, type 0 and 4 seems to be empty line and end of file or something else
+            {
+                ret.append(temp->n_lineno);
+            }
+        }
+
+        PyNode_Free(n);
     }
 
-    PyNode_Free(n);
+    PyGILState_Release(gstate);
+
     return ret;
 }
 
