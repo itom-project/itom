@@ -2958,39 +2958,22 @@ PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObje
     }
 
     bool ok;
-    if (!captionObj)
-    {
-        PyErr_SetString(PyExc_TypeError, "caption must be a string.");
-        return NULL;
-    }
 
-    caption = PythonQtConversion::PyObjGetString(captionObj, true, ok);
+    caption = captionObj ? PythonQtConversion::PyObjGetString(captionObj, true, ok) : "";
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "caption must be a string.");
         return NULL;
     }
 
-    if (!directoryObj)
-    {
-        PyErr_SetString(PyExc_TypeError, "directory must be a string.");
-        return NULL;
-    }
-
-    directory = PythonQtConversion::PyObjGetString(directoryObj, true, ok);
+    directory = directoryObj ? PythonQtConversion::PyObjGetString(directoryObj, true, ok) : "";
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "directory must be a string.");
         return NULL;
     }
 
-    if (!filtersObj)
-    {
-        PyErr_SetString(PyExc_TypeError, "filters must be a string.");
-        return NULL;
-    }
-
-    filters = PythonQtConversion::PyObjGetString(filtersObj, true, ok);
+    filters = filtersObj ? PythonQtConversion::PyObjGetString(filtersObj, true, ok) : "";
     if (!ok)
     {
         PyErr_SetString(PyExc_TypeError, "filters must be a string.");
