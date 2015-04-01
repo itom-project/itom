@@ -143,7 +143,7 @@ IF (BUILD_SHARED_LIBS)
         DOC "Xerces library dynamic linking debug"
     )
 
-    FIND_FILE(XERCESC_BINARY NAMES xerces-c_3_1 xerces-c_3_1.dll xerces-c_3_1D xerces-c_3_1D.dll xerces-c_3_1D${XERCES_LIB_POSTFIX} xerces-c_3_1D${XERCES_LIB_POSTFIX}.dll xerces-c_3_1${XERCES_LIB_POSTFIX} xerces-c_3_1${XERCES_LIB_POSTFIX}.dll
+    FIND_FILE(XERCESC_BINARY NAMES xerces-c_3_1 xerces-c_3_1.dll xerces-c_3_1${XERCES_LIB_POSTFIX} xerces-c_3_1${XERCES_LIB_POSTFIX}.dll
         PATHS
         $ENV{XERCESC_LIBRARY_DIR}
         "${XERCESC_LIBRARY_DIR}"
@@ -199,7 +199,7 @@ ELSE (BUILD_SHARED_LIBS)
         DOC "Xerces library static linking debug"
     )
  
-    FIND_FILE(XERCESC_BINARY NAMES xerces-c_3_1 xerces-c_3_1.dll xerces-c_3_1D xerces-c_3_1D.dll xerces-c_3_1D${XERCES_LIB_POSTFIX} xerces-c_3_1D${XERCES_LIB_POSTFIX}.dll xerces-c_3_1${XERCES_LIB_POSTFIX} xerces-c_3_1${XERCES_LIB_POSTFIX}.dll
+    FIND_FILE(XERCESC_BINARY NAMES xerces-c_3_1 xerces-c_3_1.dll xerces-c_3_1${XERCES_LIB_POSTFIX} xerces-c_3_1${XERCES_LIB_POSTFIX}.dll
         PATHS
         $ENV{XERCESC_LIBRARY_DIR}
         "${XERCESC_LIBRARY_DIR}"
