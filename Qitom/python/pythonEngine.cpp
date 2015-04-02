@@ -293,6 +293,10 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 
             PyImport_AppendInittab("itomDbgWrapper", &PythonEngine::PyInitItomDbg);  //!< add all static, known function calls to python-module itomdbg
 
+#if ITOM_PYTHONMATLAB == 1
+            PyImport_AppendInittab("matlab", &PyInit_matlab);
+#endif
+
             Py_Initialize();                                                        //!< must be called after any PyImport_AppendInittab-call
             PyEval_InitThreads();                                                   //!< prepare Python multithreading
 
@@ -490,9 +494,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             }
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
 
-#if ITOM_PYTHONMATLAB == 1
-            PyImport_AppendInittab("matlab", &PyInit_matlab);
-#endif
+
             PyObject *python_path_prefix = PySys_GetObject("exec_prefix"); //borrowed reference
             if (python_path_prefix)
             {
