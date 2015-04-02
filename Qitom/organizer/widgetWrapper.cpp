@@ -134,7 +134,7 @@ void WidgetWrapper::initMethodHash()
         qTableWidget << buildMethodDescription(QMetaObject::normalizedSignature("setVerticalHeaderLabels(QStringList)"), "void", 6002, ok );
         qTableWidget << buildMethodDescription(QMetaObject::normalizedSignature("getItem(int,int)"), "QVariant", 6003, ok );
         qTableWidget << buildMethodDescription(QMetaObject::normalizedSignature("setItem(int,int,QVariant)"), "void", 6004, ok );
-        qTableWidget << buildMethodDescription(QMetaObject::normalizedSignature("currentColumn()"), "int", 6006, ok );
+        qTableWidget << buildMethodDescription(QMetaObject::normalizedSignature("currentColumn()"), "int", 6005, ok );
         qTableWidget << buildMethodDescription(QMetaObject::normalizedSignature("currentRow()"), "int", 6006, ok );
         methodHash["QTableWidget"] = qTableWidget;
 
@@ -467,14 +467,12 @@ bool WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                 }
             case 6005: //currentColumn
                 {
-                    int col = object2->currentColumn();
-                    (*reinterpret_cast<int*>(_a[0])) = col;
+                    (*reinterpret_cast<int*>(_a[0])) = object2->currentColumn();
                     return true;
                 }
             case 6006: //currentRow
                 {
-                    int col = object2->currentRow();
-                    (*reinterpret_cast<int*>(_a[0])) = col;
+                    (*reinterpret_cast<int*>(_a[0])) = object2->currentRow();
                     return true;
                 }
             }

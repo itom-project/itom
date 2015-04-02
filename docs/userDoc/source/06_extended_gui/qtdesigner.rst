@@ -470,6 +470,8 @@ QTableWidget            void setHorizontalHeaderLabels(QStringList)
 QTableWidget            void setVerticalHeaderLabels(QStringList)
 QTableWidget            QVariant getItem(int,int)
 QTableWidget            void setItem(int,int,QVariant)
+QTableWidget            int currentColumn() *returns index of selected column*
+QTableWidget            int currentRow() *returns index of selected row*
 QTableView              uiItem horizontalHeader()
 QTableView              uiItem verticalHeader()
 ======================= ============================================================================================================================
