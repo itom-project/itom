@@ -26,6 +26,8 @@
 #include "../../common/addInInterface.h"
 #include "../../common/sharedStructures.h"
 
+#include "../models/pipManager.h"
+
 #include <qdialog.h>
 #include <qvector.h>
 
@@ -39,16 +41,18 @@ class DialogPipManager : public QDialog
 
 public:
     DialogPipManager(QWidget *parent = NULL );
-    ~DialogPipManager() {};
+    ~DialogPipManager();
 
 protected:
 
 private:
-
+    PipManager *m_pPipManager;
     Ui::DialogPipManager ui;
+    QString logHtml;
 
 private slots:
-
+    void pipVersion(const QString &version);
+    void outputReceived(const QString &text, bool isError);
 };
 
 } //end namespace ito

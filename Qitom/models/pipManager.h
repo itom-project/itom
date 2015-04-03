@@ -44,6 +44,15 @@ struct PythonPackage
     QString m_newVersion;
 };
 
+struct PipGeneralOptions
+{
+    PipGeneralOptions() : isolated(false), logPath(""), proxy(""), timeout(15) {}
+    bool isolated;          //if true, --isolated is added to pip calls
+    QString logPath;        //if != "" --log <logPath> is added to pip calls
+    QString proxy;          //if != "" --proxy <proxy> is added to pip calls
+    int timeout;            //if >= 0 --timeout <sec> is added to pip calls where timeout denotes the number of seconds
+};
+
 
 class PipManager : public QAbstractItemModel
 {
@@ -62,6 +71,8 @@ class PipManager : public QAbstractItemModel
             idxStatus = 4
         };
 
+        enum Task {taskInvalid, taskCheckAvailable, taskListPackages, taskInstallWhl, taskInstallGeneral, taskUninstall};
+
         QVariant data(const QModelIndex &index, int role) const;
         QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
         QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
@@ -72,17 +83,35 @@ class PipManager : public QAbstractItemModel
         void startPipProcess();
         bool isPipStarted() const;
 
+        void checkPipAvailable(const PipGeneralOptions &options = PipGeneralOptions());
+        void finalizeTask();
+
 
     private:
+        QStringList parseGeneralOptions(const PipGeneralOptions &options) const;
+        void clearBuffers();
+
         QList<QString> m_headers;               //!<  string list of names of column headers
         QList<QVariant> m_alignment;            //!<  list of alignments for the corresponding headers
         QList<PythonPackage> m_pythonPackages;  //!<  list with installed python packages
         QProcess m_pipProcess;
+        bool m_pipAvailable;
+        QByteArray m_standardOutputBuffer;
+        QByteArray m_standardErrorBuffer;
+        Task m_currentTask;
+    
+    private slots:
+        void processError(QProcess::ProcessError error);
+        void processFinished(int exitCode, QProcess::ExitStatus exitStatus);
+        void processReadyReadStandardError();
+        void processReadyReadStandardOutput();
 
     signals:
         void pipManagerBusy();
-        void output(const QString &text, bool isError);
+        void outputAvailable(const QString &text, bool isError);
+        void pipVersion(const QString &version);
 };
+
 }
 
 #endif //PIPMANAGER_H

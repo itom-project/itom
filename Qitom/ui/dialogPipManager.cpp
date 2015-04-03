@@ -24,12 +24,49 @@
 
 #include <qmessagebox.h>
 
+#include "../global.h"
+
 namespace ito {
 
 DialogPipManager::DialogPipManager(QWidget *parent ) :
-    QDialog(parent)
+    QDialog(parent),
+    m_pPipManager(NULL)
 {
     ui.setupUi(this);
+
+    m_pPipManager = new PipManager(this);
+    connect(m_pPipManager, SIGNAL(pipVersion(QString)), this, SLOT(pipVersion(QString)));
+    connect(m_pPipManager, SIGNAL(outputAvailable(QString,bool)), this, SLOT(outputReceived(QString,bool)));
+
+    m_pPipManager->checkPipAvailable();
+}
+
+//------------------------------------------------------------
+DialogPipManager::~DialogPipManager()
+{
+    DELETE_AND_SET_NULL(m_pPipManager);
+}
+
+//------------------------------------------------------------
+void DialogPipManager::pipVersion(const QString &version)
+{
+    ui.lblPipVersion->setText(version);
+}
+
+//------------------------------------------------------------
+void DialogPipManager::outputReceived(const QString &text, bool isError)
+{
+    if (isError)
+    {
+        logHtml += QString("<p style='color:#ff0000;'>%1</p>").arg(text);
+    }
+    else
+    {
+        logHtml += QString("<p style='color:#000000;'>%1</p>").arg(text);
+    }
+    QString output;
+    output = QString("<html><head></head><body style='font-size:8pt; font-weight:400; font-style:normal;'>%1</body></html>").arg(logHtml);
+    ui.txtLog->setHtml(output);
 }
 
 } //end namespace ito
