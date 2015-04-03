@@ -19,6 +19,7 @@ The red X ("clear button") will delete all geometric elements within the plot ei
 
 .. figure:: images/drawInto2DToolbarIcons.png
     :scale: 50%
+    :align: left
 
 At the moment "itom" only supports "point", "line", "rectangle" and "ellipse" but further items, e.g. "circle" and "polygons", are in preparation. 
 To draw an item simply click into the image space and left-click the mouse. 
@@ -28,6 +29,7 @@ color of the current color palette with handles (diamonds or squares) colored wi
     
 .. figure:: images/drawInto2D.png
     :scale: 50%
+    :align: left
 
 After creation the geometric elements can be edited by left-clicking one of the element handles  which becomes high-lighted (squares) and moving the mouse.
 By pressing the "ctrl"-button during mouse-movement the element resize behaviour will be changed depending on the element type. 

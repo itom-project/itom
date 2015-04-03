@@ -223,6 +223,7 @@ int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
         Py_XDECREF(self->callbackFunc->m_callbackArgs);
         PyErr_SetString(PyExc_TypeError, "given method reference is not callable.");
         delete self->callbackFunc;
+        self->callbackFunc = NULL;
         return -1;
     }
 

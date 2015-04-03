@@ -10,6 +10,7 @@ Optional configuration dialog for hardware plugins
 Every hardware plugin (actuator, dataIO) can provide one configuration dialog that can be shown as a modal dialog (if shown, the remaining application is blocked until the dialog is closed). Using this dialog the user can configure the plugin's instance without need of scripting. An example for the configuration dialog of a USB camera device of the plugin *MSMediaFoundation* looks like:
 
 .. figure:: images/configurationDialog.png
+    :align: left
 
 In difference to the optional :ref:`toolboxes <plugin-class-dockWidget>`, the parameter is not directly changed once the user changes the value of any widget, but the configuration dialog should provide an OK, cancel and optional apply button. By clicking OK, all currently changed values are applied and sent to the plugin via multiple calls to **setParam**. Apply has the same behaviour but the dialog is not closed. By clicking cancel or closing the dialog, no changes are applied.
 
@@ -40,6 +41,7 @@ The base design of the config dialog is done in **Qt Designer**. The user is ref
 
 .. figure:: images/configDialogQtDesigner.png
     :scale: 80%
+    :align: left
 
 it is convenient to realize the OK, Cancel and Apply buttons as widget **QDialogButtonBox**. Click the Ok, Cancel and Apply items of the **standardButtons** property in order to show the desired buttons. It is also allowed to use single buttons for the same behaviour. However, in the following, the dialog button box is used.
     

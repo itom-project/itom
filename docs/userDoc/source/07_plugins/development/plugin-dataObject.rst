@@ -41,6 +41,7 @@ Let's take an example of a 3x2x5 data object. It can be imagined as shown in the
     :height: 369
     :width: 812
     :scale: 100
+    :align: left
 
 As we can see in this figure, each plane is of a type **cv::Mat** class from **OpenCV** library which we know. The internal index of a specific plane can safely be retrieved using the method **seekMat()**. Usually the i-th plane has got the index *i*, however in case of data objects representing a subpart or region of interest of another data object, the i-th plane with respect to the current region of interest can in reality have a bigger index than *i*. The pointers to all planes are stored in one linear vector, represented by the array member **m_data**. It is accessible via **get_mdata()** and is of type **int***. However, it can directly and safely be type-casted to **cv:Mat*** or **cv::Mat_<Type>**.
 Please read the section `Direct Access to the underlying cv::Mat`_ to understand this concept in detail with a working example.

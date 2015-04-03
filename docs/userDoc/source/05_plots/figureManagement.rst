@@ -62,6 +62,7 @@ The result looks like this:
 
 .. figure:: images/figureSubplots.png
     :scale: 70%
+    :align: left
 
 The currently depicted toolbar is provided by the active subplot, marked by a border. You can switch the active subplot by choosing your desired one in the figure's menu *subplot*.
 In order to get the instance of :py:class:`itom.plotItem` of any sublot, use the following command:

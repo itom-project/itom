@@ -8,12 +8,14 @@ Script-Editor
 The script editor is one of the main windows of |itom| and allows creating, modifying and executing one or several python scripts.
 
 .. image:: images/scripteditor.png
+    :align: left
 
 Every script editor window can display one or multiple script files that are separated in different tabs at the bottom of the window.
 Click a tab to show the corresponding script in the center of the window. You can close, save, reorder or (un-)dock every single tab
 by its context menu.
 
 .. image:: images/scripteditor-tab-context.png
+    :align: left
 
 The content of the current script file is displayed in the center of the script editor window. Use this text editor to write or modify a script
 that can then be run or debugged. The menus of the script editor window provide many possibilities to edit and finally run or debug the script. The most important
@@ -43,6 +45,7 @@ Run or debug the script
 In order to run or debug the script, use the functions given in the **script** menu.
 
 .. image:: images/editor_run_debug.png
+    :align: left
 
 These are:
 

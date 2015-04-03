@@ -56,8 +56,9 @@ Then execute the following steps:
 1. Download and unpack one or both archives into the same folder. You should then have the following folder structure:
     
     .. figure:: images/all-in-one-build/unzip-archives.png
-       :scale: 100%
-    
+        :scale: 100%
+        :align: left
+
     * __install__
     * 3rdParty
     * 3rdPartyPCL (if you unpack the ..._PCLAddOn.zip as well
@@ -68,8 +69,9 @@ Then execute the following steps:
 2. Go to the **__install__** folder
     
     .. figure:: images/all-in-one-build/things-to-install.png
-       :scale: 100%
-    
+        :scale: 100%
+        :align: left
+
     If not yet available, install
     
     * Git 1.9.4
@@ -88,8 +90,9 @@ Then execute the following steps:
     This script leads you through the remaining installation process using a menu guided approach:
     
     .. figure:: images/all-in-one-build/setup_py_screenshot.png
-       :scale: 100%
-       
+        :scale: 100%
+        :align: left
+
     Type any number (1-9) after the question **your input?** and press return to start the corresponding installation step. You can also execute the first six steps using the
     overall command number 7. Press 9 to quit the setup. You can continue with other steps by call **setup.py** again. Once you executed one step, an **(OK)** after the number
     shows you that the step already has been executed. An **(??)** means that no further information about a possible execution can be shown. The single step should normally be

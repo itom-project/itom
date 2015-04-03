@@ -5177,17 +5177,25 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
         singlePointIdx = new unsigned int[dims];
         PyObject* elem = NULL;
         int temp1;
+        int axisSize;
 
         for (Py_ssize_t i = 0; i < length && !error; i++)
         {
             elem = PyTuple_GetItem(key, i);
+            axisSize = self->dataObject->getSize(i);
 
             //check type of elem, must be int or stride
             if (PyLong_Check(elem))
             {
                 temp1 = PyLong_AsLong(elem);
 
-                if (temp1 >= 0 && temp1 < static_cast<long>(self->dataObject->getSize(i))) //temp1 is still the virtual order, therefore check agains the getSize-method which considers the transpose-flag
+                //index -1 will be the last element, -2 the element before the last...
+                if (temp1 < 0)
+                {
+                    temp1 = axisSize + temp1;
+                }
+
+                if (temp1 >= 0 && temp1 < axisSize) //temp1 is still the virtual order, therefore check agains the getSize-method which considers the transpose-flag
                 {
                     ranges[i].start = temp1;
                     ranges[i].end = temp1 + 1;
@@ -5197,7 +5205,7 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
                 {
                     singlePointIdx[i] = 0;
                     error = true;
-                    PyErr_SetString(PyExc_IndexError, "length of key-tuple exceeds dimension of data object");
+                    PyErr_Format(PyExc_IndexError, "index %i is out of bounds for axis %i with size %i", PyLong_AsLong(elem), i, axisSize);
                 }
             }
             else if (PySlice_Check(elem))
@@ -5205,7 +5213,7 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
                 singlePoint = false;
 
                 Py_ssize_t start, stop, step, slicelength;
-                if (PySlice_GetIndicesEx(elem, self->dataObject->getSize(i), &start, &stop, &step, &slicelength) == 0)
+                if (PySlice_GetIndicesEx(elem, axisSize, &start, &stop, &step, &slicelength) == 0)
                 {
                     if (slicelength < 1)
                     {
@@ -5362,17 +5370,25 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
 
         PyObject* elem = NULL;
         int temp1;
+        int axisSize;
 
         for (Py_ssize_t i = 0; i < length && !error; i++)
         {
             elem = PyTuple_GetItem(key, i);
+            axisSize = self->dataObject->getSize(i);
 
             //check type of elem, must be int or stride
             if (PyLong_Check(elem))
             {
                 temp1 = PyLong_AsLong(elem);
 
-                if (temp1 >= 0 && temp1 < static_cast<long>(self->dataObject->getSize(i)))
+                //index -1 will be the last element, -2 the element before the last...
+                if (temp1 < 0)
+                {
+                    temp1 = axisSize + temp1;
+                }
+
+                if (temp1 >= 0 && temp1 < axisSize)
                 {
                     ranges[i].start = temp1;
                     ranges[i].end = temp1+1;
@@ -5381,14 +5397,14 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 else
                 {
                     error = true;
-                    PyErr_SetString(PyExc_TypeError, "length of key-tuple exceeds dimension of data object");
+                    PyErr_Format(PyExc_IndexError, "index %i is out of bounds for axis %i with size %i", PyLong_AsLong(elem), i, axisSize);
                 }
             }
             else if (PySlice_Check(elem))
             {
                 containsSlices = true;
                 Py_ssize_t start, stop, step, slicelength;
-                if (PySlice_GetIndicesEx(elem, self->dataObject->getSize(i), &start, &stop, &step, &slicelength) == 0)
+                if (PySlice_GetIndicesEx(elem, axisSize, &start, &stop, &step, &slicelength) == 0)
                 {
                     if (step != 1)
                     {

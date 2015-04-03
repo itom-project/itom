@@ -89,7 +89,9 @@ QMap<QString, QString> ito::getItomVersionMap()
         case QSysInfo::WV_2003:         items["itom_SysType"] = "Windows Server 2003";  break;
         case QSysInfo::WV_VISTA:        items["itom_SysType"] = "Windows Vista";        break;
         case QSysInfo::WV_WINDOWS7:     items["itom_SysType"] = "Windows 7";            break;
+#if QT_VERSION > 0x040802
         case QSysInfo::WV_WINDOWS8:     items["itom_SysType"] = "Windows 8";            break;
+#endif
 #if QT_VERSION >= 0x050000
         case QSysInfo::WV_WINDOWS8_1:   items["itom_SysType"] = "Windows 8.1";          break;
 #endif

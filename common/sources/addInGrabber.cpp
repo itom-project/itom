@@ -208,9 +208,9 @@ namespace ito
             {
                 *externalDataObject = ito::DataObject(futureHeight,futureWidth,futureType);
             }
-            else if (externalDataObject->calcNumMats () > 1)
+            else if (externalDataObject->calcNumMats () != 1)
             {
-                return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more than 1 plane. It must be of right size and type or a uninitilized image.").toLatin1().data());            
+                return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object has more or less than 1 plane. It must be of right size and type or an uninitilized image.").toLatin1().data());            
             }
             else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
             {

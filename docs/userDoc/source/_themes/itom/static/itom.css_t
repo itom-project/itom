@@ -23,6 +23,11 @@ body {
     border-width: 0px;
 }
 
+div.figure {
+    width: 100%;
+    margin-bottom: 8px;
+}
+
 /*Parameters, Returns, etc - Spalte*/
 col.field-name{ 
     background-color: #F6E3CE;

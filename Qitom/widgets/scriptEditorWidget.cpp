@@ -2105,42 +2105,22 @@ void ScriptEditorWidget::fileSysWatcherFileChanged(const QString &path) //this s
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ItomQsciPrinter::formatPage(QPainter &painter, bool drawing, QRect &area, int pagenr)
-{
-    QString filename = this->docName();
-    QString date = QDateTime::currentDateTime().toString(Qt::LocalDate);
-    QString page = QString::number(pagenr);
-    int width = area.width();
-    int dateWidth = painter.fontMetrics().width(date);
-    filename = painter.fontMetrics().elidedText( filename, Qt::ElideMiddle, 0.8 * (width - dateWidth) );
-        
-    painter.save();
-    painter.setFont( QFont("Helvetica", 10, QFont::Normal, false) );
-    painter.setPen(QColor(Qt::black)); 
-    if (drawing)
-    {
-        //painter.drawText(area.right() - painter.fontMetrics().width(header), area.top() + painter.fontMetrics().ascent(), header);
-        painter.drawText(area.left() - 25, area.top() + painter.fontMetrics().ascent(), filename);
-        painter.drawText(area.right() + 25 - painter.fontMetrics().width(date), area.top() + painter.fontMetrics().ascent(), date);
-        painter.drawText((area.left() + area.right())*0.5, area.bottom() - painter.fontMetrics().ascent(), page);
-    }
-    area.setTop(area.top() + painter.fontMetrics().height() + 30);
-    area.setBottom(area.bottom() - painter.fontMetrics().height() - 50);
-    painter.restore();
-}
-
-
-
-
-//----------------------------------------------------------------------------------------------------------------------------------
 // Class-Navigator
 //----------------------------------------------------------------------------------------------------------------------------------
-int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDepth, int lineNumber)
+int ScriptEditorWidget::getIndentationLength(const QString &str) const
+{
+    QString temp = str;
+    temp.replace('\t', "    ");
+    return temp.size();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDepth, int lineNumber, int singleIndentation /*= -1*/)
 {
     int i = lineNumber;
     int depth = parentDepth;
+    int indent;
     // read from settings
-    int tabLength = 4;
     QString line = "";
     QString decoLine;   // @-Decorato(@)r Line in previous line of a function
     
@@ -2154,8 +2134,8 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
 
     // regular expresseion for decorator
     QRegExp decorator("^(\\s*)(@)(\\S+)\\s*(#?.*)");
-    int size = this->lines();
-    while(i < size)
+
+    while(i < lines())
     {
         decoLine = this->text(i-1);
         line = this->text(i);
@@ -2163,11 +2143,16 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
         // CLASS
         if (classes.indexIn(line) != -1)
         {
-            if (classes.cap(1).length() >= depth*tabLength)
+            indent = getIndentationLength(classes.cap(1));
+            if (singleIndentation <= 0)
+            {
+                singleIndentation = indent;
+            }
+
+            if (indent >= depth * singleIndentation)
             { 
                 ClassNavigatorItem *classt = new ClassNavigatorItem();
                 // Line indented => Subclass of parent
-                ++depth;
                 classt->m_name = classes.cap(3);
                 // classt->m_args = classes.cap(4); // normally not needed
                 classt->setInternalType(ClassNavigatorItem::typePyClass);
@@ -2175,8 +2160,7 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
                 classt->m_lineno = i;
                 parent->m_member.append(classt);
                 ++i;
-                i = buildClassTree(classt, depth, i);
-                --depth;
+                i = buildClassTree(classt, depth + 1, i, singleIndentation);
                 continue;
             }
             else 
@@ -2187,6 +2171,11 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
         // METHOD
         else if (methods.indexIn(line) != -1)
         {
+            indent = getIndentationLength(methods.cap(1));
+            if (singleIndentation <= 0)
+            {
+                singleIndentation = indent;
+            }
             // Methode
             //checken ob line-1 == @decorator besitzt
             ClassNavigatorItem *meth = new ClassNavigatorItem();
@@ -2201,21 +2190,8 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
             {
                 meth->m_priv = false;
             }
-            // Check for indentation:
-            //if (methods.cap(1).length() == 0)
-            //{// No indentation => Global Method
-            //    if (parent->m_internalType == ClassNavigatorItem::typePyRoot)
-            //    {
-            //        meth->setInternalType(ClassNavigatorItem::typePyGlobal);
-            //        parent->m_member.append(meth);
-            //    }
-            //    else
-            //    {
-            //        DELETE_AND_SET_NULL(meth);
-            //        return i;
-            //    }
-            //}            
-            if (methods.cap(1).length() == depth*tabLength)
+          
+            if (indent >= depth * singleIndentation)
             {// Child des parents
                 if (decorator.indexIn(decoLine) != -1)
                 {
@@ -2241,8 +2217,7 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
                 ++i;
                 continue;
             }
-            
-            else if (methods.cap(1).length() < depth*tabLength)
+            else
             {// Negativ indentation => it must be a child of a parental class
                 DELETE_AND_SET_NULL(meth);
                 return i;
@@ -2275,7 +2250,7 @@ ClassNavigatorItem* ScriptEditorWidget::getPythonNavigatorRoot()
         rootElement->setInternalType(ClassNavigatorItem::typePyRoot);
 
         // create Class-Tree
-        buildClassTree(rootElement, 0, 0);
+        buildClassTree(rootElement, 0, 0, -1);
 
         // send rootItem to DockWidget
         return rootElement;
@@ -2323,7 +2298,30 @@ ClassNavigatorItem* ScriptEditorWidget::getPythonNavigatorRoot()
 //}
 
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
+void ItomQsciPrinter::formatPage(QPainter &painter, bool drawing, QRect &area, int pagenr)
+{
+    QString filename = this->docName();
+    QString date = QDateTime::currentDateTime().toString(Qt::LocalDate);
+    QString page = QString::number(pagenr);
+    int width = area.width();
+    int dateWidth = painter.fontMetrics().width(date);
+    filename = painter.fontMetrics().elidedText( filename, Qt::ElideMiddle, 0.8 * (width - dateWidth) );
+        
+    painter.save();
+    painter.setFont( QFont("Helvetica", 10, QFont::Normal, false) );
+    painter.setPen(QColor(Qt::black)); 
+    if (drawing)
+    {
+        //painter.drawText(area.right() - painter.fontMetrics().width(header), area.top() + painter.fontMetrics().ascent(), header);
+        painter.drawText(area.left() - 25, area.top() + painter.fontMetrics().ascent(), filename);
+        painter.drawText(area.right() + 25 - painter.fontMetrics().width(date), area.top() + painter.fontMetrics().ascent(), date);
+        painter.drawText((area.left() + area.right())*0.5, area.bottom() - painter.fontMetrics().ascent(), page);
+    }
+    area.setTop(area.top() + painter.fontMetrics().height() + 30);
+    area.setBottom(area.bottom() - painter.fontMetrics().height() - 50);
+    painter.restore();
+}
 
 
 
