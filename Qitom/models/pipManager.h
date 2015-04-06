@@ -51,6 +51,7 @@ struct PipGeneralOptions
     QString logPath;        //if != "" --log <logPath> is added to pip calls
     QString proxy;          //if != "" --proxy <proxy> is added to pip calls
     int timeout;            //if >= 0 --timeout <sec> is added to pip calls where timeout denotes the number of seconds
+    int retries;            //if > 0 --retries <retries> is added to pip calls where retries denotes the number of tries if one command failed.
 };
 
 
@@ -71,7 +72,7 @@ class PipManager : public QAbstractItemModel
             idxStatus = 4
         };
 
-        enum Task {taskInvalid, taskCheckAvailable, taskListPackages, taskInstallWhl, taskInstallGeneral, taskUninstall};
+        enum Task {taskNo, taskCheckAvailable, taskListPackages1, taskListPackages2, taskCheckUpdates, taskInstallWhl, taskInstallGeneral, taskUninstall};
 
         QVariant data(const QModelIndex &index, int role) const;
         QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
@@ -84,7 +85,12 @@ class PipManager : public QAbstractItemModel
         bool isPipStarted() const;
 
         void checkPipAvailable(const PipGeneralOptions &options = PipGeneralOptions());
+        void listAvailablePackages(const PipGeneralOptions &options = PipGeneralOptions());
+        void listAvailablePackages2(const QStringList &names);
+        void checkPackageUpdates(const PipGeneralOptions &options = PipGeneralOptions());
         void finalizeTask();
+
+        void interruptPipProcess();
 
 
     private:
@@ -99,6 +105,7 @@ class PipManager : public QAbstractItemModel
         QByteArray m_standardOutputBuffer;
         QByteArray m_standardErrorBuffer;
         Task m_currentTask;
+        PipGeneralOptions m_generalOptionsCache;
     
     private slots:
         void processError(QProcess::ProcessError error);
@@ -108,8 +115,10 @@ class PipManager : public QAbstractItemModel
 
     signals:
         void pipManagerBusy();
-        void outputAvailable(const QString &text, bool isError);
+        void outputAvailable(const QString &text, bool success);
         void pipVersion(const QString &version);
+        void pipRequestStarted(const PipManager::Task &task, const QString &text);
+        void pipRequestFinished(const PipManager::Task &task, const QString &text, bool success);
 };
 
 }

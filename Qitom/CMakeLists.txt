@@ -205,6 +205,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManagerInstall.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/itomSpinBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.h
@@ -270,6 +271,7 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManager.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManagerInstall.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetInfoBox.ui
@@ -377,6 +379,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManagerInstall.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.cpp

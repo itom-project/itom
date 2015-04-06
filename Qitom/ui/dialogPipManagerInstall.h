@@ -20,49 +20,35 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef DIALOGPIPMANAGER_H
-#define DIALOGPIPMANAGER_H
+#ifndef DIALOGPIPMANAGERINSTALL_H
+#define DIALOGPIPMANAGERINSTALL_H
 
 #include "../../common/addInInterface.h"
 #include "../../common/sharedStructures.h"
-
-#include "../models/pipManager.h"
 
 #include <qdialog.h>
 #include <qvector.h>
 #include <qevent.h>
 
-#include "ui_dialogPipManager.h"
+#include "ui_dialogPipManagerInstall.h"
 
 namespace ito {
 
-class DialogPipManager : public QDialog 
+class DialogPipManagerInstall : public QDialog 
 {
     Q_OBJECT
 
 public:
-    DialogPipManager(QWidget *parent = NULL );
-    ~DialogPipManager();
+    DialogPipManagerInstall(QWidget *parent = NULL );
+    ~DialogPipManagerInstall();
 
-protected:
-    void closeEvent(QCloseEvent *e);
-    PipGeneralOptions createOptions() const;
+    void getResult(int &type, QString &packageName, bool &upgrade, bool &installDeps, QString &findLinks, bool &ignoreIndex);
 
 private:
-    PipManager *m_pPipManager;
-    Ui::DialogPipManager ui;
-    QString logHtml;
-    PipManager::Task m_currentTask;
-    int m_lastLogEntry; //-1: nothing yet, 0: standard text, 1: error text
+    Ui::DialogPipManagerInstall ui;
 
-private slots:
-    void pipVersion(const QString &version);
-    void outputReceived(const QString &text, bool success);
-    void pipRequestStarted(const PipManager::Task &task, const QString &text);
-    void pipRequestFinished(const PipManager::Task &task, const QString &text, bool success);
-    void on_btnReload_clicked();
-    void on_btnCheckForUpdates_clicked();
-    void on_btnInstall_clicked();
+protected:
+    
 };
 
 } //end namespace ito

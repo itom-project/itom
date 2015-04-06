@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>628</width>
-    <height>682</height>
+    <width>799</width>
+    <height>650</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,11 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
-       <widget class="QTableView" name="tablePackages"/>
+       <widget class="QTreeView" name="tablePackages">
+        <property name="itemsExpandable">
+         <bool>true</bool>
+        </property>
+       </widget>
       </item>
       <item>
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -54,6 +58,13 @@
            </size>
           </property>
          </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="btnCheckForUpdates">
+          <property name="text">
+           <string>Check for updates</string>
+          </property>
+         </widget>
         </item>
         <item>
          <widget class="QPushButton" name="btnReload">
@@ -111,10 +122,10 @@ p, li { white-space: pre-wrap; }
       <bool>true</bool>
      </property>
      <property name="checked">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
      <property name="collapsed">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="collapsedHeight">
       <number>16</number>
@@ -174,13 +185,36 @@ p, li { white-space: pre-wrap; }
         </property>
        </widget>
       </item>
-      <item row="3" column="0" colspan="2">
+      <item row="5" column="0" colspan="2">
        <widget class="QCheckBox" name="checkIsolated">
         <property name="toolTip">
          <string>Run pip in an isolated mode, ignoring environment variables and user configuration.</string>
         </property>
         <property name="text">
          <string>Run pip in an isolated mode</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Retries:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QSpinBox" name="spinRetries">
+        <property name="toolTip">
+         <string>socket timeout (default: 15 s)</string>
+        </property>
+        <property name="keyboardTracking">
+         <bool>false</bool>
+        </property>
+        <property name="suffix">
+         <string/>
+        </property>
+        <property name="value">
+         <number>5</number>
         </property>
        </widget>
       </item>

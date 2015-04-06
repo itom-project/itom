@@ -33,9 +33,10 @@ using namespace ito;
 */
 PipManager::PipManager(QObject *parent /*= 0*/) :
     QAbstractItemModel(parent),
-    m_currentTask(taskInvalid)
+    m_currentTask(taskNo),
+    m_pipAvailable(false)
 {
-    m_headers << tr("Name") << tr("Version") << tr("Location") << tr("Requires") << tr("Status");
+    m_headers << tr("Name") << tr("Version") << tr("Location") << tr("Requires") << tr("Updates");
     m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft);
 
     connect(&m_pipProcess, SIGNAL(error(QProcess::ProcessError)), this, SLOT(processError(QProcess::ProcessError)));
@@ -129,7 +130,7 @@ QVariant PipManager::data(const QModelIndex &index, int role) const
                     }
                     else if (package.m_status == PythonPackage::Outdated)
                     {
-                        return tr("new version %s available").arg(package.m_newVersion);
+                        return tr("new version %1 available").arg(package.m_newVersion);
                     }
                     else
                     {
@@ -183,9 +184,9 @@ bool PipManager::isPipStarted() const
 //----------------------------------------------------------------------------------------------------------------------------------
 void PipManager::checkPipAvailable(const PipGeneralOptions &options /*= PipGeneralOptions()*/)
 {
-    if (m_currentTask == taskInvalid)
+    if (m_currentTask == taskNo)
     {
-        emit outputAvailable("Check connection to pip and get version...", false);
+        emit pipRequestStarted(taskCheckAvailable, "Check connection to pip and get version...\n");
         clearBuffers();
         m_currentTask = taskCheckAvailable;
 
@@ -197,20 +198,93 @@ void PipManager::checkPipAvailable(const PipGeneralOptions &options /*= PipGener
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipGeneralOptions()*/)
+{
+    if (m_pipAvailable == false)
+    {
+        emit outputAvailable("pip is not available\n", false);
+        return;
+    }
+
+    //list consists of two steps:
+    //1. get package names using freeze
+    //2. get more information using show package1 package2 ...
+    if (m_currentTask == taskNo)
+    {
+        emit pipRequestStarted(taskListPackages1, "Get list of installed packages... (step 1)\n");
+        clearBuffers();
+        m_currentTask = taskListPackages1;
+        m_generalOptionsCache = options;
+
+        QStringList arguments;
+        arguments << "-m" << "pip" << "freeze";
+        arguments << parseGeneralOptions(options);
+        m_pipProcess.start(PYTHONEXE, arguments);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PipManager::listAvailablePackages2(const QStringList &names)
+{
+    if (m_pipAvailable == false)
+    {
+        emit outputAvailable("pip is not available\n", false);
+        return;
+    }
+
+    //list consists of two steps:
+    //1. get package names using freeze
+    //2. get more information using show package1 package2 ...
+    if (m_currentTask == taskNo)
+    {
+        emit pipRequestStarted(taskListPackages2, "Get list of installed packages... (step 2)\n");
+        clearBuffers();
+        m_currentTask = taskListPackages2;
+
+        QStringList arguments;
+        arguments << "-m" << "pip" << "show" << names;
+        arguments << parseGeneralOptions(m_generalOptionsCache);
+        m_pipProcess.start(PYTHONEXE, arguments);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PipManager::checkPackageUpdates(const PipGeneralOptions &options /*= PipGeneralOptions()*/)
+{
+    if (m_pipAvailable == false)
+    {
+        emit outputAvailable("pip is not available\n", false);
+        return;
+    }
+
+    if (m_currentTask == taskNo)
+    {
+        emit pipRequestStarted(taskCheckUpdates, "Check online (pypi.python.org) if newer versions of packages are available...\n");
+        clearBuffers();
+        m_currentTask = taskCheckUpdates;
+
+        QStringList arguments;
+        arguments << "-m" << "pip" << "list" << "--outdated";
+        arguments << parseGeneralOptions(options);
+        m_pipProcess.start(PYTHONEXE, arguments);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void PipManager::processError(QProcess::ProcessError error)
 {
-    if (m_currentTask != taskInvalid)
+    if (m_currentTask != taskNo)
     {
         switch (error)
         {
         case QProcess::FailedToStart:
-            emit outputAvailable(tr("Could not start python pip"), true);
+            emit outputAvailable(tr("Could not start python pip\n"), false);
             break;
         case QProcess::ReadError:
-            emit outputAvailable(tr("An error occurred when attempting to read from the process."), true);
+            emit outputAvailable(tr("An error occurred when attempting to read from the process.\n"), false);
             break;
         default:
-            emit outputAvailable(tr("other error"), true);
+            emit outputAvailable(tr("other error"), false);
             break;
         }
     }
@@ -223,10 +297,23 @@ void PipManager::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     if (exitStatus == QProcess::CrashExit)
     {
-        emit outputAvailable(tr("Python pip crashed during execution"), true);
-    }
+        Task temp = m_currentTask;
+        m_currentTask = taskNo;
 
-    finalizeTask();
+        emit pipRequestFinished(temp, tr("Python pip crashed during execution\n"), false);
+
+        if (temp != taskNo)
+        {
+            processReadyReadStandardError();
+            processReadyReadStandardOutput();
+        }
+
+        clearBuffers();
+    }
+    else
+    {
+        finalizeTask();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -236,7 +323,7 @@ void PipManager::processReadyReadStandardError()
     if (str.length() > 0)
     {
         m_standardErrorBuffer += str;
-        emit outputAvailable(str, true);
+        emit outputAvailable(str, false);
     }
 }
 
@@ -247,14 +334,17 @@ void PipManager::processReadyReadStandardOutput()
     if (str.length() > 0)
     {
         m_standardOutputBuffer += str;
-        emit outputAvailable(str, false);
+        emit outputAvailable(str, true);
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PipManager::finalizeTask()
 {
-    if (m_currentTask != taskInvalid)
+    Task temp = m_currentTask;
+    m_currentTask = taskNo;
+
+    if (temp != taskNo)
     {
         processReadyReadStandardError();
         processReadyReadStandardOutput();
@@ -262,21 +352,109 @@ void PipManager::finalizeTask()
         QString error = m_standardErrorBuffer;
         QString output = m_standardOutputBuffer;
 
-        if (m_currentTask == taskCheckAvailable)
+        if (temp == taskCheckAvailable)
         {
             QRegExp reg("pip (.*) from(.*)");
             if (reg.indexIn(output) != -1)
             {
                 emit pipVersion(reg.cap(1));
                 m_pipAvailable = true;
+                emit pipRequestFinished(temp, "", true);
             }
             else
             {
                 m_pipAvailable = false;
+                emit pipRequestFinished(temp, "Package pip is not available. Install Python pip first (see https://pip.pypa.io/en/latest/installing.html).\n", false);
+            }
+        }
+        else if (temp == taskListPackages1)
+        {
+            if (error != "")
+            {
+                emit pipRequestFinished(temp, "Error obtaining list of packages (freeze)\n", false);
+            }
+            else
+            {
+                QStringList packages_out;
+                int idx;
+                QStringList packages = output.split("\n");
+                foreach (const QString &p, packages)
+                {
+                    idx = p.indexOf("==");
+                    if (idx != -1)
+                    {
+                        packages_out.append(p.left(idx));
+                    }
+                }
+
+                if (packages_out.length() > 0)
+                {
+                    listAvailablePackages2(packages_out);
+                }
+            }
+        }
+        else if (temp == taskListPackages2)
+        {
+            if (error != "")
+            {
+                emit pipRequestFinished(temp, "Error obtaining list of packages (show)\n", false);
+            }
+            else
+            {
+                beginResetModel();
+                m_pythonPackages.clear();
+                QRegExp package("Name: (\\S+)\\nVersion: (\\S*)\\nLocation: (\\S*)\\nRequires: ([\\S, ]*)");
+                int pos = 0;
+
+                while ((pos = package.indexIn(output, pos)) != -1)
+                {
+                    m_pythonPackages << PythonPackage(package.cap(1), package.cap(2), package.cap(3), package.cap(4));
+                    pos += package.matchedLength();
+                }
+
+
+                endResetModel();
+                emit pipRequestFinished(temp, "List of packages obtained.\n", true);
+            }
+        }
+        else if (temp == taskCheckUpdates)
+        {
+            if (error != "")
+            {
+                emit pipRequestFinished(temp, "Error obtaining list of outdated packages (list)\n", false);
+            }
+            else
+            {
+                QRegExp rx("(\\S+) \\(Current: (\\S)+ Latest: (\\S+)\\)");
+                int pos = 0;
+                QMap<QString,QString> outdated;
+
+                while ((pos = rx.indexIn(output, pos)) != -1)
+                {
+                    outdated[rx.cap(1)] = rx.cap(3);
+                    pos += rx.matchedLength();
+                }
+
+                for (int i = 0; i < m_pythonPackages.length(); ++i)
+                {
+                    if (outdated.contains(m_pythonPackages[i].m_name))
+                    {
+                        m_pythonPackages[i].m_newVersion = outdated[m_pythonPackages[i].m_name];
+                        m_pythonPackages[i].m_status = PythonPackage::Outdated;
+                    }
+                    else
+                    {
+                        m_pythonPackages[i].m_status = PythonPackage::Uptodate;
+                    }
+                }
+
+                emit dataChanged(createIndex(0,4), createIndex(m_pythonPackages.length()-1, 4));
+
+                emit pipRequestFinished(temp, "Packages checked.\n", true);
             }
         }
     }
-    m_currentTask = taskInvalid;
+
     clearBuffers();
 }
 
@@ -304,6 +482,11 @@ QStringList PipManager::parseGeneralOptions(const PipGeneralOptions &options) co
     {
         output << "--timeout" << QString("%1").arg(options.timeout);
     }
+
+    if (options.retries > 0)
+    {
+        output << "--retries" << QString("%1").arg(options.retries);
+    }
     
     return output;
 }
@@ -313,4 +496,13 @@ void PipManager::clearBuffers()
 {
     m_standardOutputBuffer.clear();
     m_standardErrorBuffer.clear();
+}
+
+//-----------------------------------------------------------------------------------------
+void PipManager::interruptPipProcess()
+{
+    if (m_pipProcess.state() == QProcess::Running || m_pipProcess.state() == QProcess::Starting)
+    {
+        m_pipProcess.kill();
+    }
 }
