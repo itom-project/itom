@@ -54,22 +54,7 @@ PipManager::PipManager(QObject *parent /*= 0*/) :
     const PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (pyeng)
     {
-        m_pythonPath = pyeng->getPythonPathPrefix();
-
-        if (m_pythonPath != "")
-        {
-            QDir pythonPath(m_pythonPath);
-            if (pythonPath.exists())
-            {
-#ifdef WIN32
-                m_pythonPath = pythonPath.absoluteFilePath("python.exe");
-#endif
-            }
-            else
-            {
-                m_pythonPath = "";
-            }
-        }
+        m_pythonPath = pyeng->getPythonExecutable(); 
     }
 }
 

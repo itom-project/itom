@@ -494,17 +494,55 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             }
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
 
-
+#if defined WIN32
+            //on windows, sys.executable returns the path of qitom.exe. The absolute path to python.exe is given by sys.exec_prefix
             PyObject *python_path_prefix = PySys_GetObject("exec_prefix"); //borrowed reference
             if (python_path_prefix)
             {
                 bool ok;
-                m_pythonPathPrefix = PythonQtConversion::PyObjGetString(python_path_prefix, true, ok);
-                if (!ok)
+                m_pythonExecutable = PythonQtConversion::PyObjGetString(python_path_prefix, true, ok);
+                if (ok)
                 {
-                    m_pythonPathPrefix = QString();
+                    QDir pythonPath(m_pythonExecutable);
+                    if (pythonPath.exists())
+                    {
+                        m_pythonExecutable = pythonPath.absoluteFilePath("python.exe");
+                    }
+                    else
+                    {
+                        m_pythonExecutable = QString();
+                    }
+                }
+                else
+                {
+                    m_pythonExecutable = QString();
                 }
             }
+#elif defined linux
+            //on linux, sys.executable returns the absolute path to the python application, even in an embedded mode.
+            PyObject *python_executable = PySys_GetObject("executable"); //borrowed reference
+            if (python_executable)
+            {
+                bool ok;
+                m_pythonExecutable = PythonQtConversion::PyObjGetString(python_path_prefix, true, ok);
+                if (!ok)
+                {
+                    m_pythonExecutable = QString();
+                }
+            }
+#else //APPLE
+            //on apple, sys.executable returns the absolute path to the python application, even in an embedded mode. (TODO: Check this assumption)
+            PyObject *python_executable = PySys_GetObject("executable"); //borrowed reference
+            if (python_executable)
+            {
+                bool ok;
+                m_pythonExecutable = PythonQtConversion::PyObjGetString(python_path_prefix, true, ok);
+                if (!ok)
+                {
+                    m_pythonExecutable = QString();
+                }
+            }
+#endif
 
             //try to add folder "itom-package" to sys.path
             PyObject *syspath = PySys_GetObject("path"); //borrowed reference

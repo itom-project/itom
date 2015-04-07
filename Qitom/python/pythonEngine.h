@@ -151,7 +151,7 @@ public:
     inline PyObject *getGlobalDictionary()  const { return globalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
     inline bool pySyntaxCheckAvailable() const { return (m_pyModSyntaxCheck != NULL); }
     QList<int> parseAndSplitCommandInMainComponents(const char *str, QByteArray &encoding) const; //can be directly called from different thread
-    QString getPythonPathPrefix() const { return m_pythonPathPrefix; }
+    QString getPythonExecutable() const { return m_pythonExecutable; }
 
 	static bool isInterruptQueued();
     static const PythonEngine *getInstance();
@@ -249,7 +249,7 @@ private:
     QHash<size_t, FuncWeakRef> m_pyFuncWeakRefHashes; //!< hash table containing weak reference to callable python methods or functions and as second, optional PyObject* an tuple, passed as argument to that function. These functions are for example executed by menu-clicks in the main window.
     size_t m_pyFuncWeakRefAutoInc;
 
-    QString m_pythonPathPrefix; //!< absolute path to the python executable
+    QString m_pythonExecutable; //!< absolute path to the python executable
 
     bool m_executeInternalPythonCodeInDebugMode; //!< if true, button events, user interface connections to python methods... will be executed by debugger
     PyMethodDef* PythonAdditionalModuleITOM;
