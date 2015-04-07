@@ -633,7 +633,7 @@ void PipManager::finalizeTask()
             }
             else
             {
-                QRegExp rx("(\\S+) \\(Current: (\\S)+ Latest: (\\S+) (\\[\\S+\\])\\)");
+                QRegExp rx("(\\S+) \\(Current: (\\S)+ Latest: (\\S+)( \\[\\S+\\])?\\)");
                 int pos = 0;
                 QMap<QString,QString> outdated;
 
