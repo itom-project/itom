@@ -524,7 +524,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             if (python_executable)
             {
                 bool ok;
-                m_pythonExecutable = PythonQtConversion::PyObjGetString(python_path_prefix, true, ok);
+                m_pythonExecutable = PythonQtConversion::PyObjGetString(python_executable, true, ok);
                 if (!ok)
                 {
                     m_pythonExecutable = QString();
@@ -536,7 +536,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             if (python_executable)
             {
                 bool ok;
-                m_pythonExecutable = PythonQtConversion::PyObjGetString(python_path_prefix, true, ok);
+                m_pythonExecutable = PythonQtConversion::PyObjGetString(python_executable, true, ok);
                 if (!ok)
                 {
                     m_pythonExecutable = QString();

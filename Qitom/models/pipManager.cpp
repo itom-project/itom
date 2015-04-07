@@ -367,7 +367,7 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
         arguments << parseGeneralOptions(options);
 
         arguments << installSettings.packageName;
-        m_pipProcess.start(m_pythonPath, arguments);
+        m_pipProcess.start("m_pythonPath", arguments);
     }
 }
 
@@ -539,7 +539,7 @@ void PipManager::finalizeTask()
                 m_pythonPackages.clear();
 
                 QStringList lines = output.split("\r\n");
-                if (lines.length() == 0)
+                if (lines.length() == 1) //nothing found (e.g. older pip or linux)
                 {
                     lines = output.split("\n");
                 }
@@ -621,10 +621,21 @@ void PipManager::finalizeTask()
                 QRegExp rx("(\\S+) \\(Current: (\\S)+ Latest: (\\S+)( \\[\\S+\\])?\\)");
                 int pos = 0;
                 QMap<QString,QString> outdated;
+		QMap<QString,QString> unknown;
 
                 while ((pos = rx.indexIn(output, pos)) != -1)
                 {
                     outdated[rx.cap(1)] = rx.cap(3);
+                    pos += rx.matchedLength();
+                }
+                
+                //check for unknown (that could not been fetched)
+                pos = 0;
+		rx.setPattern("Could not find any downloads that satisfy the requirement (\\S+)");
+		
+		while ((pos = rx.indexIn(output, pos)) != -1)
+                {
+                    unknown[rx.cap(1)] = rx.cap(3);
                     pos += rx.matchedLength();
                 }
 
@@ -635,6 +646,10 @@ void PipManager::finalizeTask()
                         m_pythonPackages[i].m_newVersion = outdated[m_pythonPackages[i].m_name];
                         m_pythonPackages[i].m_status = PythonPackage::Outdated;
                     }
+                    else if (unknown.contains(m_pythonPackages[i].m_name))
+		    {
+		      m_pythonPackages[i].m_status = PythonPackage::Unknown;
+		    }
                     else
                     {
                         m_pythonPackages[i].m_status = PythonPackage::Uptodate;
