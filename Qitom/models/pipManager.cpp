@@ -25,7 +25,8 @@
 
 #include "pipManager.h"
 
-#include "../appManagement.h"
+#include "../../common/sharedStructures.h"
+#include "../AppManagement.h"
 #include <qdir.h>
 
 namespace ito 
@@ -40,9 +41,9 @@ PipManager::PipManager(QObject *parent /*= 0*/) :
     QAbstractItemModel(parent),
     m_currentTask(taskNo),
     m_pipAvailable(false),
-    m_hasRetriesFlag(false)
+    m_pipVersion(0x000000)
 {
-    m_headers << tr("Name") << tr("Version") << tr("Location") << tr("Requires") << tr("Updates");
+    m_headers << tr("Name") << tr("Version") << tr("Location") << tr("Requires") << tr("Updates") << tr("Summary") << tr("Homepage") << tr("License");
     m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft);
 
     connect(&m_pipProcess, SIGNAL(error(QProcess::ProcessError)), this, SLOT(processError(QProcess::ProcessError)));
@@ -136,20 +137,20 @@ QVariant PipManager::data(const QModelIndex &index, int role) const
         return QVariant();
     }
  
-    if(role == Qt::DisplayRole)
+    if(role == Qt::DisplayRole || role == Qt::ToolTipRole)
     {
         const PythonPackage &package = m_pythonPackages[index.row()];
         switch (index.column())
         {
-            case idxName:
+            case 0:
                 return package.m_name;
-            case idxVersion:
+            case 1:
                 return package.m_version;
-            case idxLocation:
+            case 2:
                 return package.m_location;
-            case idxRequires:
+            case 3:
                 return package.m_requires;
-            case idxStatus:
+            case 4:
                 {
                     if (package.m_status == PythonPackage::Uptodate)
                     {
@@ -164,6 +165,12 @@ QVariant PipManager::data(const QModelIndex &index, int role) const
                         return tr("unknown");
                     }
                 }
+            case 5:
+                return package.m_summary;
+            case 6:
+                return package.m_homepage;
+            case 7:
+                return package.m_license;
             default:
                 return QVariant();
         }
@@ -247,7 +254,7 @@ void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipG
 
 
     //list consists of two steps:
-    //1. get package names using freeze
+    //1. get package names using list
     //2. get more information using show package1 package2 ...
     if (m_currentTask == taskNo)
     {
@@ -257,7 +264,7 @@ void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipG
         m_generalOptionsCache = options;
 
         QStringList arguments;
-        arguments << "-m" << "pip" << "freeze";
+        arguments << "-m" << "pip" << "list";
         arguments << parseGeneralOptions(options);
         m_pipProcess.start(m_pythonPath, arguments);
     }
@@ -494,15 +501,11 @@ void PipManager::finalizeTask()
 
         if (temp == taskCheckAvailable)
         {
-            QRegExp reg("pip (.*) from(.*)");
+            QRegExp reg("pip ((\\d+)\\.(\\d+)\\.(\\d+)) from(.*)");
             if (reg.indexIn(output) != -1)
             {
+                m_pipVersion = CREATEVERSION(reg.cap(2).toInt(), reg.cap(3).toInt(), reg.cap(4).toInt());
                 QString version = reg.cap(1);
-                QStringList versionSplit = version.split(".");
-                if (versionSplit[0].toInt() >= 6)
-                {
-                    m_hasRetriesFlag = true;
-                }
                 emit pipVersion(version);
                 m_pipAvailable = true;
                 emit pipRequestFinished(temp, "", true);
@@ -526,7 +529,7 @@ void PipManager::finalizeTask()
                 QStringList packages = output.split("\n");
                 foreach (const QString &p, packages)
                 {
-                    idx = p.indexOf("==");
+                    idx = p.indexOf(" (");
                     if (idx != -1)
                     {
                         packages_out.append(p.left(idx));
@@ -549,15 +552,74 @@ void PipManager::finalizeTask()
             {
                 beginResetModel();
                 m_pythonPackages.clear();
-                QRegExp package("Name: (\\S+)\\r?\\nVersion: (\\S*)\\r?\\nLocation: (\\S*)\\r?\\nRequires: ([\\S, ]*)");
-                int pos = 0;
 
-                while ((pos = package.indexIn(output, pos)) != -1)
+                QStringList lines = output.split("\r\n");
+                if (lines.length() == 0)
                 {
-                    m_pythonPackages << PythonPackage(package.cap(1), package.cap(2), package.cap(3), package.cap(4));
-                    pos += package.matchedLength();
+                    lines = output.split("\n");
                 }
 
+                PythonPackage package;
+                bool package_started = false;
+                int pos;
+                QString key, value;
+                QStringList keys;
+                keys << "Name" << "Version" << "Summary" << "Home-page" << "License" << "Location" << "Requires";
+
+                foreach (const QString &line, lines)
+                {
+                    if (line == "---")
+                    {
+                        if (package_started)
+                        {
+                            m_pythonPackages << package;
+                        }
+
+                        package_started = true;
+                        package = PythonPackage(); //start new, empty package structure
+                    }
+                    else if (line != "")
+                    {
+                        //check if line consists of key: value
+                        pos = line.indexOf(": ");
+                        if (pos != -1)
+                        {
+                            key = line.left(pos);
+                            value = line.mid(pos+2);
+
+                            switch (keys.indexOf(key))
+                            {
+                            case 0: //Name
+                                package.m_name = value;
+                                break;
+                            case 1: //Version
+                                package.m_version = value;
+                                break;
+                            case 2: //Summary
+                                package.m_summary = value;
+                                break;
+                            case 3: //Home-page
+                                package.m_homepage = value;
+                                break;
+                            case 4: //License
+                                package.m_license = value;
+                                break;
+                            case 5: //Location
+                                package.m_location = value;
+                                break;
+                            case 6: //Requires
+                                package.m_requires = value;
+                                break;
+                            }
+
+                        }
+                    }
+                }
+
+                if (package_started)
+                {
+                    m_pythonPackages << package;
+                }
 
                 endResetModel();
                 emit pipRequestFinished(temp, "List of packages obtained.\n", true);
@@ -571,7 +633,7 @@ void PipManager::finalizeTask()
             }
             else
             {
-                QRegExp rx("(\\S+) \\(Current: (\\S)+ Latest: (\\S+)\\)");
+                QRegExp rx("(\\S+) \\(Current: (\\S)+ Latest: (\\S+) (\\[\\S+\\])\\)");
                 int pos = 0;
                 QMap<QString,QString> outdated;
 
@@ -651,7 +713,7 @@ QStringList PipManager::parseGeneralOptions(const PipGeneralOptions &options, bo
         output << "--timeout" << QString("%1").arg(options.timeout);
     }
 
-    if (options.retries > 0 && !ignoreRetries && m_hasRetriesFlag)
+    if (options.retries > 0 && !ignoreRetries && MAJORVERSION(m_pipVersion) >= 6)
     {
         output << "--retries" << QString("%1").arg(options.retries);
     }

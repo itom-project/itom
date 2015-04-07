@@ -32,7 +32,7 @@ namespace ito
 struct PythonPackage
 {
     enum Status {Unknown, Uptodate, Outdated};
-    PythonPackage() {};
+    PythonPackage() : m_status(Unknown) {};
     PythonPackage(const QString &name, const QString &version, const QString &location, const QString &requires) : 
         m_name(name), m_version(version), m_location(location), m_requires(requires), m_status(Unknown), m_newVersion("") 
     {}
@@ -42,6 +42,9 @@ struct PythonPackage
     QString m_requires;
     Status  m_status;
     QString m_newVersion;
+    QString m_summary;
+    QString m_homepage;
+    QString m_license;
 };
 
 struct PipGeneralOptions
@@ -74,15 +77,6 @@ class PipManager : public QAbstractItemModel
         PipManager(QObject *parent = 0);
         ~PipManager();
 
-        enum pipModelIndex
-        {
-            idxName = 0,
-            idxVersion = 1,
-            idxLocation = 2,
-            idxRequires = 3,
-            idxStatus = 4
-        };
-
         enum Task {taskNo, taskCheckAvailable, taskListPackages1, taskListPackages2, taskCheckUpdates, taskInstall, taskUninstall};
 
         QVariant data(const QModelIndex &index, int role) const;
@@ -94,6 +88,7 @@ class PipManager : public QAbstractItemModel
 
         void startPipProcess();
         bool isPipStarted() const;
+        inline int getPipVersion() const { return m_pipVersion; }
 
         void checkPipAvailable(const PipGeneralOptions &options = PipGeneralOptions());
         void listAvailablePackages(const PipGeneralOptions &options = PipGeneralOptions());
@@ -122,7 +117,7 @@ class PipManager : public QAbstractItemModel
         Task m_currentTask;
         PipGeneralOptions m_generalOptionsCache;
         QString m_pythonPath;
-        bool m_hasRetriesFlag;
+        int m_pipVersion; //form 0x060100 for 6.1.0
     
     private slots:
         void processError(QProcess::ProcessError error);
