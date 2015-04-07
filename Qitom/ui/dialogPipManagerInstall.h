@@ -43,7 +43,7 @@ public:
     DialogPipManagerInstall(QWidget *parent = NULL );
     ~DialogPipManagerInstall();
 
-    void getResult(int &type, QString &packageName, bool &upgrade, bool &installDeps, QString &findLinks, bool &ignoreIndex);
+    void getResult(int &type, QString &packageName, bool &upgrade, bool &installDeps, QString &findLinks, bool &ignoreIndex, bool &runAsSudo);
 
 private:
     Ui::DialogPipManagerInstall ui;

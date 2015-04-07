@@ -38,6 +38,10 @@ DialogPipManagerInstall::DialogPipManagerInstall(QWidget *parent ) :
     ui.setupUi(this);
 
     on_radioWhl_clicked(true);
+
+#if WIN32
+    ui.checkRunSudo->setVisible(false);
+#endif
 }
 
 //--------------------------------------------------------------------------------
@@ -46,7 +50,7 @@ DialogPipManagerInstall::~DialogPipManagerInstall()
 }
 
 //--------------------------------------------------------------------------------
-void DialogPipManagerInstall::getResult(int &type, QString &packageName, bool &upgrade, bool &installDeps, QString &findLinks, bool &ignoreIndex)
+void DialogPipManagerInstall::getResult(int &type, QString &packageName, bool &upgrade, bool &installDeps, QString &findLinks, bool &ignoreIndex, bool &runAsSudo)
 {
     if (ui.radioWhl->isChecked())
     {
@@ -66,6 +70,7 @@ void DialogPipManagerInstall::getResult(int &type, QString &packageName, bool &u
     installDeps = ui.checkInstallDeps->isChecked();
     findLinks = (ui.checkFindLinks->isChecked()) ? ui.txtFindLinks->text() : "";
     ignoreIndex = ui.checkNoIndex->isChecked();
+    runAsSudo = ui.checkRunSudo->isChecked();
 
 }
 

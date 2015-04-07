@@ -65,6 +65,7 @@ private slots:
     void on_btnCheckForUpdates_clicked();
     void on_btnInstall_clicked();
     void on_btnUninstall_clicked();
+    void on_btnSudoUninstall_clicked();
 };
 
 } //end namespace ito

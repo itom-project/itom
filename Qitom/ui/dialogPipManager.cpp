@@ -52,6 +52,10 @@ DialogPipManager::DialogPipManager(QWidget *parent ) :
 
     ui.tablePackages->setModel(m_pPipManager);
     ui.groupPipSettings->setCollapsed(true);
+
+#if WIN32
+    ui.btnSudoUninstall->setVisible(false);
+#endif
 }
 
 //--------------------------------------------------------------------------------
@@ -137,6 +141,7 @@ void DialogPipManager::pipRequestStarted(const PipManager::Task &task, const QSt
 
     ui.btnInstall->setEnabled(false);
     ui.btnUninstall->setEnabled(false);
+    ui.btnSudoUninstall->setEnabled(false);
     ui.btnReload->setEnabled(false);
     ui.btnOk->setEnabled(false);
     ui.btnCheckForUpdates->setEnabled(false);
@@ -158,6 +163,7 @@ void DialogPipManager::pipRequestFinished(const PipManager::Task &task, const QS
 
     ui.btnInstall->setEnabled(true);
     ui.btnUninstall->setEnabled(m_pPipManager->rowCount() > 0);
+    ui.btnSudoUninstall->setEnabled(m_pPipManager->rowCount() > 0);
     ui.btnReload->setEnabled(true);
     ui.btnOk->setEnabled(true);
     ui.btnCheckForUpdates->setEnabled(true);
@@ -204,7 +210,7 @@ void DialogPipManager::on_btnInstall_clicked()
     if (dpmi->exec() == QDialog::Accepted)
     {
         PipInstall install;
-        dpmi->getResult(*((int*)&install.type), install.packageName, install.upgrade, install.installDeps, install.findLinks, install.ignoreIndex);
+        dpmi->getResult(*((int*)&install.type), install.packageName, install.upgrade, install.installDeps, install.findLinks, install.ignoreIndex, install.runAsSudo);
 
         m_pPipManager->installPackage(install, createOptions());
     }
@@ -238,7 +244,38 @@ void DialogPipManager::on_btnUninstall_clicked()
 
         if (doIt)
         {
-            m_pPipManager->uninstallPackage(packageName, createOptions());
+            m_pPipManager->uninstallPackage(packageName, false, createOptions());
+        }
+    }
+}
+
+//---------------------------------------------------------------------------------
+void DialogPipManager::on_btnSudoUninstall_clicked()
+{
+    QModelIndex mi = ui.tablePackages->currentIndex();
+    if (mi.isValid())
+    {
+        QString packageName = m_pPipManager->data(m_pPipManager->index(mi.row(), 0), Qt::DisplayRole).toString();
+        bool doIt = false;
+
+        if (m_pPipManager->isPackageInUseByOther(mi))
+        {
+            if (QMessageBox::warning(this, tr("Uninstall package"), tr("The package '%1' is used by at least one other package. Do you really want to uninstall it?").arg(packageName), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::Yes)
+            {
+                doIt = true;
+            }
+        }
+        else
+        {
+            if (QMessageBox::information(this, tr("Uninstall package"), tr("Do you really want to uninstall the package '%1'?").arg(packageName), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
+            {
+                doIt = true;
+            }
+        }
+
+        if (doIt)
+        {
+            m_pPipManager->uninstallPackage(packageName, true, createOptions());
         }
     }
 }

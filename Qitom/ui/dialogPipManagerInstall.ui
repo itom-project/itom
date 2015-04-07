@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>485</width>
-    <height>339</height>
+    <height>364</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -140,6 +140,13 @@
        <widget class="QCheckBox" name="checkNoIndex">
         <property name="text">
          <string>Ignore Python package index (pypi.python.org/simple). Only look at find-links URLs.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkRunSudo">
+        <property name="text">
+         <string>Run install with sudo rights (linux only)</string>
         </property>
        </widget>
       </item>

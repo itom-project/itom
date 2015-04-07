@@ -367,12 +367,21 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
         arguments << parseGeneralOptions(options);
 
         arguments << installSettings.packageName;
-        m_pipProcess.start("m_pythonPath", arguments);
+
+        if (installSettings.runAsSudo)
+        {
+            arguments.push_front(m_pythonPath);
+            m_pipProcess.start("pkexec", arguments);
+        }
+        else
+        {
+            m_pipProcess.start(m_pythonPath, arguments);
+        }
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PipManager::uninstallPackage(const QString &packageName, const PipGeneralOptions &options /*= PipGeneralOptions()*/)
+void PipManager::uninstallPackage(const QString &packageName, bool runAsSudo, const PipGeneralOptions &options /*= PipGeneralOptions()*/)
 {
     if (m_pythonPath == "")
     {
@@ -398,7 +407,16 @@ void PipManager::uninstallPackage(const QString &packageName, const PipGeneralOp
         arguments << parseGeneralOptions(options);
 
         arguments << packageName;
-        m_pipProcess.start(m_pythonPath, arguments);
+
+        if (runAsSudo)
+        {
+            arguments.push_front(m_pythonPath);
+            m_pipProcess.start("pkexec", arguments);
+        }
+        else
+        {
+            m_pipProcess.start(m_pythonPath, arguments);
+        }
     }
 }
 

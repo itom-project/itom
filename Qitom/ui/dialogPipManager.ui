@@ -47,6 +47,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="btnSudoUninstall">
+          <property name="text">
+           <string>Sudo Uninstall</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <spacer name="verticalSpacer">
           <property name="orientation">
            <enum>Qt::Vertical</enum>

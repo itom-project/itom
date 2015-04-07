@@ -66,6 +66,7 @@ struct PipInstall
     bool installDeps;
     QString findLinks;
     bool ignoreIndex;
+    bool runAsSudo;
 };
 
 
@@ -95,7 +96,7 @@ class PipManager : public QAbstractItemModel
         void listAvailablePackages2(const QStringList &names);
         void checkPackageUpdates(const PipGeneralOptions &options = PipGeneralOptions());
         void installPackage(const PipInstall &installSettings, const PipGeneralOptions &options = PipGeneralOptions());
-        void uninstallPackage(const QString &packageName, const PipGeneralOptions &options = PipGeneralOptions());
+        void uninstallPackage(const QString &packageName, bool runAsSudo, const PipGeneralOptions &options = PipGeneralOptions());
         void finalizeTask();
 
         void interruptPipProcess();
