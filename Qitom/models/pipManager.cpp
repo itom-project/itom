@@ -20,11 +20,16 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+//import this before any qobject stuff
+#include "../python/pythonEngine.h"
+
 #include "pipManager.h"
 
-using namespace ito;
+#include "../appManagement.h"
+#include <qdir.h>
 
-#define PYTHONEXE "C:/Python32/python.exe"
+namespace ito 
+{
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** constructor
@@ -34,7 +39,8 @@ using namespace ito;
 PipManager::PipManager(QObject *parent /*= 0*/) :
     QAbstractItemModel(parent),
     m_currentTask(taskNo),
-    m_pipAvailable(false)
+    m_pipAvailable(false),
+    m_hasRetriesFlag(false)
 {
     m_headers << tr("Name") << tr("Version") << tr("Location") << tr("Requires") << tr("Updates");
     m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft);
@@ -43,6 +49,27 @@ PipManager::PipManager(QObject *parent /*= 0*/) :
     connect(&m_pipProcess, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(processFinished(int,QProcess::ExitStatus)));
     connect(&m_pipProcess, SIGNAL(readyReadStandardError()), this, SLOT(processReadyReadStandardError()));
     connect(&m_pipProcess, SIGNAL(readyReadStandardOutput()), this, SLOT(processReadyReadStandardOutput()));
+
+    const PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    if (pyeng)
+    {
+        m_pythonPath = pyeng->getPythonPathPrefix();
+
+        if (m_pythonPath != "")
+        {
+            QDir pythonPath(m_pythonPath);
+            if (pythonPath.exists())
+            {
+#ifdef WIN32
+                m_pythonPath = pythonPath.absoluteFilePath("python.exe");
+#endif
+            }
+            else
+            {
+                m_pythonPath = "";
+            }
+        }
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -184,6 +211,12 @@ bool PipManager::isPipStarted() const
 //----------------------------------------------------------------------------------------------------------------------------------
 void PipManager::checkPipAvailable(const PipGeneralOptions &options /*= PipGeneralOptions()*/)
 {
+    if (m_pythonPath == "")
+    {
+        emit outputAvailable("Python is not available\n", false);
+        return;
+    }
+
     if (m_currentTask == taskNo)
     {
         emit pipRequestStarted(taskCheckAvailable, "Check connection to pip and get version...\n");
@@ -192,26 +225,33 @@ void PipManager::checkPipAvailable(const PipGeneralOptions &options /*= PipGener
 
         QStringList arguments;
         arguments << "-m" << "pip" << "-V";
-        arguments << parseGeneralOptions(options);
-        m_pipProcess.start(PYTHONEXE, arguments);
+        arguments << parseGeneralOptions(options, true);
+        m_pipProcess.start(m_pythonPath, arguments);
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipGeneralOptions()*/)
 {
+    if (m_pythonPath == "")
+    {
+        emit outputAvailable("Python is not available\n", false);
+        return;
+    }
+
     if (m_pipAvailable == false)
     {
         emit outputAvailable("pip is not available\n", false);
         return;
     }
 
+
     //list consists of two steps:
     //1. get package names using freeze
     //2. get more information using show package1 package2 ...
     if (m_currentTask == taskNo)
     {
-        emit pipRequestStarted(taskListPackages1, "Get list of installed packages... (step 1)\n");
+        emit pipRequestStarted(taskListPackages1, "Get list of installed packages... (step 1)\n", true);
         clearBuffers();
         m_currentTask = taskListPackages1;
         m_generalOptionsCache = options;
@@ -219,13 +259,19 @@ void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipG
         QStringList arguments;
         arguments << "-m" << "pip" << "freeze";
         arguments << parseGeneralOptions(options);
-        m_pipProcess.start(PYTHONEXE, arguments);
+        m_pipProcess.start(m_pythonPath, arguments);
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PipManager::listAvailablePackages2(const QStringList &names)
 {
+    if (m_pythonPath == "")
+    {
+        emit outputAvailable("Python is not available\n", false);
+        return;
+    }
+
     if (m_pipAvailable == false)
     {
         emit outputAvailable("pip is not available\n", false);
@@ -237,20 +283,26 @@ void PipManager::listAvailablePackages2(const QStringList &names)
     //2. get more information using show package1 package2 ...
     if (m_currentTask == taskNo)
     {
-        emit pipRequestStarted(taskListPackages2, "Get list of installed packages... (step 2)\n");
+        emit pipRequestStarted(taskListPackages2, "Get list of installed packages... (step 2)\n", true);
         clearBuffers();
         m_currentTask = taskListPackages2;
 
         QStringList arguments;
         arguments << "-m" << "pip" << "show" << names;
         arguments << parseGeneralOptions(m_generalOptionsCache);
-        m_pipProcess.start(PYTHONEXE, arguments);
+        m_pipProcess.start(m_pythonPath, arguments);
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PipManager::checkPackageUpdates(const PipGeneralOptions &options /*= PipGeneralOptions()*/)
 {
+    if (m_pythonPath == "")
+    {
+        emit outputAvailable("Python is not available\n", false);
+        return;
+    }
+
     if (m_pipAvailable == false)
     {
         emit outputAvailable("pip is not available\n", false);
@@ -266,7 +318,95 @@ void PipManager::checkPackageUpdates(const PipGeneralOptions &options /*= PipGen
         QStringList arguments;
         arguments << "-m" << "pip" << "list" << "--outdated";
         arguments << parseGeneralOptions(options);
-        m_pipProcess.start(PYTHONEXE, arguments);
+        m_pipProcess.start(m_pythonPath, arguments);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PipManager::installPackage(const PipInstall &installSettings, const PipGeneralOptions &options /*= PipGeneralOptions()*/)
+{
+    if (m_pythonPath == "")
+    {
+        emit outputAvailable("Python is not available\n", false);
+        return;
+    }
+
+    if (m_pipAvailable == false)
+    {
+        emit outputAvailable("pip is not available\n", false);
+        return;
+    }
+
+    if (m_currentTask == taskNo)
+    {
+        emit pipRequestStarted(taskInstall, "Install package...\n");
+        clearBuffers();
+        m_currentTask = taskInstall;
+
+        QStringList arguments;
+        arguments << "-m" << "pip" << "install";
+
+        if (installSettings.upgrade)
+        {
+            arguments << "--upgrade";
+        }
+        if (!installSettings.installDeps)
+        {
+            arguments << "--no-deps";
+        }
+        if (installSettings.ignoreIndex)
+        {
+            arguments << "--no-index";
+        }
+        if (installSettings.findLinks != "")
+        {
+            arguments << "--find-links" << installSettings.findLinks;
+        }
+
+        if (installSettings.type == PipInstall::typeWhl)
+        {
+            arguments << "--use-wheel";
+        }
+        else
+        {
+            arguments << "--no-use-wheel";
+        }
+
+        arguments << parseGeneralOptions(options);
+
+        arguments << installSettings.packageName;
+        m_pipProcess.start(m_pythonPath, arguments);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void PipManager::uninstallPackage(const QString &packageName, const PipGeneralOptions &options /*= PipGeneralOptions()*/)
+{
+    if (m_pythonPath == "")
+    {
+        emit outputAvailable("Python is not available\n", false);
+        return;
+    }
+
+    if (m_pipAvailable == false)
+    {
+        emit outputAvailable("pip is not available\n", false);
+        return;
+    }
+
+    if (m_currentTask == taskNo)
+    {
+        emit pipRequestStarted(taskUninstall, QString("Uninstall package %1...\n").arg(packageName));
+        clearBuffers();
+        m_currentTask = taskUninstall;
+
+        QStringList arguments;
+        arguments << "-m" << "pip" << "uninstall" << "--yes";
+
+        arguments << parseGeneralOptions(options);
+
+        arguments << packageName;
+        m_pipProcess.start(m_pythonPath, arguments);
     }
 }
 
@@ -357,7 +497,13 @@ void PipManager::finalizeTask()
             QRegExp reg("pip (.*) from(.*)");
             if (reg.indexIn(output) != -1)
             {
-                emit pipVersion(reg.cap(1));
+                QString version = reg.cap(1);
+                QStringList versionSplit = version.split(".");
+                if (versionSplit[0].toInt() >= 6)
+                {
+                    m_hasRetriesFlag = true;
+                }
+                emit pipVersion(version);
                 m_pipAvailable = true;
                 emit pipRequestFinished(temp, "", true);
             }
@@ -403,7 +549,7 @@ void PipManager::finalizeTask()
             {
                 beginResetModel();
                 m_pythonPackages.clear();
-                QRegExp package("Name: (\\S+)\\nVersion: (\\S*)\\nLocation: (\\S*)\\nRequires: ([\\S, ]*)");
+                QRegExp package("Name: (\\S+)\\r?\\nVersion: (\\S*)\\r?\\nLocation: (\\S*)\\r?\\nRequires: ([\\S, ]*)");
                 int pos = 0;
 
                 while ((pos = package.indexIn(output, pos)) != -1)
@@ -453,13 +599,35 @@ void PipManager::finalizeTask()
                 emit pipRequestFinished(temp, "Packages checked.\n", true);
             }
         }
+        else if (temp == taskInstall)
+        {
+            if (error != "")
+            {
+                emit pipRequestFinished(temp, "Error installing package\n", false);
+            }
+            else
+            {
+                listAvailablePackages();
+            }
+        }
+        else if (temp == taskUninstall)
+        {
+            if (error != "")
+            {
+                emit pipRequestFinished(temp, "Error uninstalling package\n", false);
+            }
+            else
+            {
+                listAvailablePackages();
+            }
+        }
     }
 
     clearBuffers();
 }
 
 //-----------------------------------------------------------------------------------------
-QStringList PipManager::parseGeneralOptions(const PipGeneralOptions &options) const
+QStringList PipManager::parseGeneralOptions(const PipGeneralOptions &options, bool ignoreRetries /*= false*/) const
 {
     QStringList output;
 
@@ -483,7 +651,7 @@ QStringList PipManager::parseGeneralOptions(const PipGeneralOptions &options) co
         output << "--timeout" << QString("%1").arg(options.timeout);
     }
 
-    if (options.retries > 0)
+    if (options.retries > 0 && !ignoreRetries && m_hasRetriesFlag)
     {
         output << "--retries" << QString("%1").arg(options.retries);
     }
@@ -506,3 +674,27 @@ void PipManager::interruptPipProcess()
         m_pipProcess.kill();
     }
 }
+
+//-----------------------------------------------------------------------------------------
+bool PipManager::isPackageInUseByOther(const QModelIndex &index)
+{
+    if (!index.isValid() || index.row() < 0 || index.row() >= m_pythonPackages.size())
+    {
+        return false;
+    }
+
+    QString other = m_pythonPackages[index.row()].m_name;
+    QStringList requires;
+    foreach (const PythonPackage &pp, m_pythonPackages)
+    {
+        requires = pp.m_requires.split(", ");
+        if (requires.contains(other, Qt::CaseInsensitive))
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+} //end namespace ito

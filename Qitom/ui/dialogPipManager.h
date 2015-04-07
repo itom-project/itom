@@ -54,15 +54,17 @@ private:
     QString logHtml;
     PipManager::Task m_currentTask;
     int m_lastLogEntry; //-1: nothing yet, 0: standard text, 1: error text
+    bool m_outputSilent;
 
 private slots:
     void pipVersion(const QString &version);
     void outputReceived(const QString &text, bool success);
-    void pipRequestStarted(const PipManager::Task &task, const QString &text);
+    void pipRequestStarted(const PipManager::Task &task, const QString &text, bool outputSilent);
     void pipRequestFinished(const PipManager::Task &task, const QString &text, bool success);
     void on_btnReload_clicked();
     void on_btnCheckForUpdates_clicked();
     void on_btnInstall_clicked();
+    void on_btnUninstall_clicked();
 };
 
 } //end namespace ito

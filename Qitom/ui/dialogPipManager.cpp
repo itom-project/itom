@@ -36,7 +36,8 @@ namespace ito {
 DialogPipManager::DialogPipManager(QWidget *parent ) :
     QDialog(parent),
     m_pPipManager(NULL),
-    m_lastLogEntry(-1)
+    m_lastLogEntry(-1),
+    m_outputSilent(false)
 {
     ui.setupUi(this);
 
@@ -44,7 +45,7 @@ DialogPipManager::DialogPipManager(QWidget *parent ) :
 
     connect(m_pPipManager, SIGNAL(pipVersion(QString)), this, SLOT(pipVersion(QString)));
     connect(m_pPipManager, SIGNAL(outputAvailable(QString,bool)), this, SLOT(outputReceived(QString,bool)));
-    connect(m_pPipManager, SIGNAL(pipRequestStarted(PipManager::Task,QString)), this, SLOT(pipRequestStarted(PipManager::Task,QString)));
+    connect(m_pPipManager, SIGNAL(pipRequestStarted(PipManager::Task,QString,bool)), this, SLOT(pipRequestStarted(PipManager::Task,QString,bool)));
     connect(m_pPipManager, SIGNAL(pipRequestFinished(PipManager::Task,QString,bool)), this, SLOT(pipRequestFinished(PipManager::Task,QString,bool)));
 
     m_pPipManager->checkPipAvailable(createOptions());
@@ -85,20 +86,23 @@ void DialogPipManager::outputReceived(const QString &text, bool success)
 
     if (success)
     {
-        switch (m_lastLogEntry)
+        if (!m_outputSilent)
         {
-        case -1:
-            logHtml = QString("<p style='color:#000000;'>%1").arg(text_html);
-            break;
-        case 0:
-            logHtml += text_html;
-            break;
-        default:
-            logHtml += QString("</p><p style='color:#000000;'>%1").arg(text_html);
-            break;
-        }
+            switch (m_lastLogEntry)
+            {
+            case -1:
+                logHtml = QString("<p style='color:#000000;'>%1").arg(text_html);
+                break;
+            case 0:
+                logHtml += text_html;
+                break;
+            default:
+                logHtml += QString("</p><p style='color:#000000;'>%1").arg(text_html);
+                break;
+            }
 
-        m_lastLogEntry = 0;
+            m_lastLogEntry = 0;
+        }
     }
     else
     {
@@ -125,11 +129,14 @@ void DialogPipManager::outputReceived(const QString &text, bool success)
 }
 
 //--------------------------------------------------------------------------------
-void DialogPipManager::pipRequestStarted(const PipManager::Task &task, const QString &text)
+void DialogPipManager::pipRequestStarted(const PipManager::Task &task, const QString &text, bool outputSilent)
 {
     outputReceived(text, true);
 
+    m_outputSilent = outputSilent;
+
     ui.btnInstall->setEnabled(false);
+    ui.btnUninstall->setEnabled(false);
     ui.btnReload->setEnabled(false);
     ui.btnOk->setEnabled(false);
     ui.btnCheckForUpdates->setEnabled(false);
@@ -140,6 +147,8 @@ void DialogPipManager::pipRequestStarted(const PipManager::Task &task, const QSt
 //--------------------------------------------------------------------------------
 void DialogPipManager::pipRequestFinished(const PipManager::Task &task, const QString &text, bool success)
 {
+    m_outputSilent = false;
+
     if (text != "")
     {
         outputReceived(text, success);
@@ -148,6 +157,7 @@ void DialogPipManager::pipRequestFinished(const PipManager::Task &task, const QS
     m_currentTask = PipManager::taskNo;
 
     ui.btnInstall->setEnabled(true);
+    ui.btnUninstall->setEnabled(m_pPipManager->rowCount() > 0);
     ui.btnReload->setEnabled(true);
     ui.btnOk->setEnabled(true);
     ui.btnCheckForUpdates->setEnabled(true);
@@ -193,10 +203,44 @@ void DialogPipManager::on_btnInstall_clicked()
     DialogPipManagerInstall *dpmi = new DialogPipManagerInstall(this);
     if (dpmi->exec() == QDialog::Accepted)
     {
+        PipInstall install;
+        dpmi->getResult(*((int*)&install.type), install.packageName, install.upgrade, install.installDeps, install.findLinks, install.ignoreIndex);
 
+        m_pPipManager->installPackage(install, createOptions());
     }
 
     DELETE_AND_SET_NULL(dpmi);
+}
+
+//---------------------------------------------------------------------------------
+void DialogPipManager::on_btnUninstall_clicked()
+{
+    QModelIndex mi = ui.tablePackages->currentIndex();
+    if (mi.isValid())
+    {
+        QString packageName = m_pPipManager->data(m_pPipManager->index(mi.row(), 0), Qt::DisplayRole).toString();
+        bool doIt = false;
+
+        if (m_pPipManager->isPackageInUseByOther(mi))
+        {
+            if (QMessageBox::warning(this, tr("Uninstall package"), tr("The package '%1' is used by at least one other package. Do you really want to uninstall it?").arg(packageName), QMessageBox::Yes | QMessageBox::No, QMessageBox::No) == QMessageBox::Yes)
+            {
+                doIt = true;
+            }
+        }
+        else
+        {
+            if (QMessageBox::information(this, tr("Uninstall package"), tr("Do you really want to uninstall the package '%1'?").arg(packageName), QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes) == QMessageBox::Yes)
+            {
+                doIt = true;
+            }
+        }
+
+        if (doIt)
+        {
+            m_pPipManager->uninstallPackage(packageName, createOptions());
+        }
+    }
 }
 
 } //end namespace ito

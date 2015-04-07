@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>485</width>
-    <height>347</height>
+    <height>339</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,7 +23,7 @@
       <item>
        <widget class="QRadioButton" name="radioWhl">
         <property name="text">
-         <string>Install from Wheel file (whl)</string>
+         <string>Install from Wheel archive (whl)</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -33,12 +33,12 @@
       <item>
        <widget class="QRadioButton" name="radioTarGz">
         <property name="text">
-         <string>Install from tar.gz file</string>
+         <string>Install from tar.gz archive</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="radioTarGz_2">
+       <widget class="QRadioButton" name="radioSearchIndex">
         <property name="text">
          <string>Search Python package index for package name, download and install it</string>
         </property>
@@ -175,29 +175,13 @@
  <connections>
   <connection>
    <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>DialogPipManagerInstall</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>438</x>
-     <y>384</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
    <signal>rejected()</signal>
    <receiver>DialogPipManagerInstall</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>506</x>
-     <y>390</y>
+     <x>475</x>
+     <y>337</y>
     </hint>
     <hint type="destinationlabel">
      <x>286</x>
@@ -212,12 +196,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>114</x>
-     <y>308</y>
+     <x>89</x>
+     <y>254</y>
     </hint>
     <hint type="destinationlabel">
-     <x>178</x>
-     <y>308</y>
+     <x>274</x>
+     <y>256</y>
     </hint>
    </hints>
   </connection>
@@ -228,12 +212,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>93</x>
-     <y>308</y>
+     <x>89</x>
+     <y>254</y>
     </hint>
     <hint type="destinationlabel">
-     <x>500</x>
-     <y>314</y>
+     <x>464</x>
+     <y>255</y>
     </hint>
    </hints>
   </connection>

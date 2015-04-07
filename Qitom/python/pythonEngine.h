@@ -136,7 +136,6 @@ public:
     Q_INVOKABLE void pythonSetup(ito::RetVal *retValue);               //setup
     Q_INVOKABLE ito::RetVal scanAndRunAutostartFolder(QString currentDirAfterScan = QString() );
     Q_INVOKABLE ito::RetVal pythonShutdown(ItomSharedSemaphore *aimWait = NULL);            //shutdown
-
     Q_INVOKABLE ito::RetVal stringEncodingChanged();
 
     inline ito::BreakPointModel *getBreakPointModel() const { return bpModel; }
@@ -145,22 +144,17 @@ public:
     inline bool isPythonDebuggingAndWaiting() const { return pythonState == ito::pyStateDebuggingWaiting; }
     inline bool execInternalCodeByDebugger() const  { return m_executeInternalPythonCodeInDebugMode; }
     inline void setExecInternalCodeByDebugger(bool value) { m_executeInternalPythonCodeInDebugMode = value; }
-
     ito::RetVal checkForPyExceptions();
     void printPythonErrorWithoutTraceback();
-
     void pythonDebugFunction(PyObject *callable, PyObject *argTuple);
     void pythonRunFunction(PyObject *callable, PyObject *argTuple);
-
     inline PyObject *getGlobalDictionary()  const { return globalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
-
     inline bool pySyntaxCheckAvailable() const { return (m_pyModSyntaxCheck != NULL); }
-
-    static const PythonEngine *getInstance();
-
     QList<int> parseAndSplitCommandInMainComponents(const char *str, QByteArray &encoding) const; //can be directly called from different thread
+    QString getPythonPathPrefix() const { return m_pythonPathPrefix; }
 
 	static bool isInterruptQueued();
+    static const PythonEngine *getInstance();
 
 protected:
     //RetVal syntaxCheck(char* pythonFileName);       // syntaxCheck for file with filename pythonFileName
@@ -255,7 +249,7 @@ private:
     QHash<size_t, FuncWeakRef> m_pyFuncWeakRefHashes; //!< hash table containing weak reference to callable python methods or functions and as second, optional PyObject* an tuple, passed as argument to that function. These functions are for example executed by menu-clicks in the main window.
     size_t m_pyFuncWeakRefAutoInc;
 
-    QString pythonPathPrefix; //!< absolute path to the python executable
+    QString m_pythonPathPrefix; //!< absolute path to the python executable
 
     bool m_executeInternalPythonCodeInDebugMode; //!< if true, button events, user interface connections to python methods... will be executed by debugger
     PyMethodDef* PythonAdditionalModuleITOM;

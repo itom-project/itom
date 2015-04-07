@@ -24,14 +24,20 @@
 
 #include "../global.h"
 
+#include <qfiledialog.h>
+#include <qmessagebox.h>
+
 
 namespace ito {
 
 //--------------------------------------------------------------------------------
 DialogPipManagerInstall::DialogPipManagerInstall(QWidget *parent ) :
-    QDialog(parent)
+    QDialog(parent),
+    m_selectedType(typeWhl)
 {
     ui.setupUi(this);
+
+    on_radioWhl_clicked(true);
 }
 
 //--------------------------------------------------------------------------------
@@ -44,15 +50,15 @@ void DialogPipManagerInstall::getResult(int &type, QString &packageName, bool &u
 {
     if (ui.radioWhl->isChecked())
     {
-        type = 0;
+        type = typeWhl;
     }
     else if (ui.radioTarGz->isChecked())
     {
-        type = 1;
+        type = typeTarGz;
     }
     else
     {
-        type = 2;
+        type = typeSearchIndex;
     }
 
     packageName = ui.txtPackage->text();
@@ -61,6 +67,76 @@ void DialogPipManagerInstall::getResult(int &type, QString &packageName, bool &u
     findLinks = (ui.checkFindLinks->isChecked()) ? ui.txtFindLinks->text() : "";
     ignoreIndex = ui.checkNoIndex->isChecked();
 
+}
+
+
+//--------------------------------------------------------------------------------
+void DialogPipManagerInstall::on_btnPackage_clicked()
+{
+    static QString btnPackageDirectory;
+    QString filter = (m_selectedType == typeWhl) ? "Python Wheel (*.whl)" : "Python tar.gz archive (*.tar.gz)";
+    QString name = QFileDialog::getOpenFileName(this, tr("Select package archive"), btnPackageDirectory, filter);
+    if (name != "")
+    {
+        btnPackageDirectory = QDir(name).absolutePath();
+        ui.txtPackage->setText(name);
+    }
+}
+
+//--------------------------------------------------------------------------------
+void DialogPipManagerInstall::on_btnFindLinks_clicked()
+{
+    static QString btnFindLinksDirectory;
+    QString directory = QFileDialog::getExistingDirectory(this, tr("Select directory"), btnFindLinksDirectory);
+    if (directory != "")
+    {
+        btnFindLinksDirectory = directory;
+        ui.txtFindLinks->setText(directory);
+    }
+}
+
+//--------------------------------------------------------------------------------
+void DialogPipManagerInstall::on_radioWhl_clicked(bool checked)
+{
+    m_selectedType = typeWhl;
+    ui.btnPackage->setEnabled(true);
+    ui.txtPackage->setText("");
+    ui.txtPackage->setPlaceholderText(tr("choose whl archive..."));
+    ui.txtPackage->setReadOnly(true);
+}
+
+//--------------------------------------------------------------------------------
+void DialogPipManagerInstall::on_radioTarGz_clicked(bool checked)
+{
+    m_selectedType = typeTarGz;
+    ui.btnPackage->setEnabled(true);
+    ui.txtPackage->setText("");
+    ui.txtPackage->setPlaceholderText(tr("choose tar.gz archive..."));
+    ui.txtPackage->setReadOnly(true);
+}
+
+//--------------------------------------------------------------------------------
+void DialogPipManagerInstall::on_radioSearchIndex_clicked(bool checked)
+{
+    m_selectedType = typeSearchIndex;
+    ui.btnPackage->setEnabled(false);
+    ui.txtPackage->setText("");
+    ui.txtPackage->setReadOnly(false);
+    ui.txtPackage->setPlaceholderText(tr("package-name"));
+    ui.txtPackage->setFocus();
+}
+
+//--------------------------------------------------------------------------------
+void DialogPipManagerInstall::on_buttonBox_accepted()
+{
+    if (ui.txtPackage->text() != "")
+    {
+        this->accept();
+    }
+    else
+    {
+        QMessageBox::warning(this, tr("Missing package"), tr("You need to indicate a package"));
+    }
 }
 
 } //end namespace ito

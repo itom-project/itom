@@ -499,10 +499,10 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             if (python_path_prefix)
             {
                 bool ok;
-                pythonPathPrefix = PythonQtConversion::PyObjGetString(python_path_prefix, true, ok);
+                m_pythonPathPrefix = PythonQtConversion::PyObjGetString(python_path_prefix, true, ok);
                 if (!ok)
                 {
-                    pythonPathPrefix = QString();
+                    m_pythonPathPrefix = QString();
                 }
             }
 

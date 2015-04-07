@@ -46,12 +46,23 @@ struct PythonPackage
 
 struct PipGeneralOptions
 {
-    PipGeneralOptions() : isolated(false), logPath(""), proxy(""), timeout(15) {}
+    PipGeneralOptions() : isolated(false), logPath(""), proxy(""), timeout(15), retries(5) {}
     bool isolated;          //if true, --isolated is added to pip calls
     QString logPath;        //if != "" --log <logPath> is added to pip calls
     QString proxy;          //if != "" --proxy <proxy> is added to pip calls
     int timeout;            //if >= 0 --timeout <sec> is added to pip calls where timeout denotes the number of seconds
     int retries;            //if > 0 --retries <retries> is added to pip calls where retries denotes the number of tries if one command failed.
+};
+
+struct PipInstall
+{
+    enum Type { typeWhl = 0, typeTarGz = 1, typeSearchIndex = 2}; //these are the same types than in DialogPipManager
+    Type type;
+    QString packageName;
+    bool upgrade;
+    bool installDeps;
+    QString findLinks;
+    bool ignoreIndex;
 };
 
 
@@ -72,7 +83,7 @@ class PipManager : public QAbstractItemModel
             idxStatus = 4
         };
 
-        enum Task {taskNo, taskCheckAvailable, taskListPackages1, taskListPackages2, taskCheckUpdates, taskInstallWhl, taskInstallGeneral, taskUninstall};
+        enum Task {taskNo, taskCheckAvailable, taskListPackages1, taskListPackages2, taskCheckUpdates, taskInstall, taskUninstall};
 
         QVariant data(const QModelIndex &index, int role) const;
         QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
@@ -88,13 +99,17 @@ class PipManager : public QAbstractItemModel
         void listAvailablePackages(const PipGeneralOptions &options = PipGeneralOptions());
         void listAvailablePackages2(const QStringList &names);
         void checkPackageUpdates(const PipGeneralOptions &options = PipGeneralOptions());
+        void installPackage(const PipInstall &installSettings, const PipGeneralOptions &options = PipGeneralOptions());
+        void uninstallPackage(const QString &packageName, const PipGeneralOptions &options = PipGeneralOptions());
         void finalizeTask();
 
         void interruptPipProcess();
 
+        bool isPackageInUseByOther(const QModelIndex &index);
+
 
     private:
-        QStringList parseGeneralOptions(const PipGeneralOptions &options) const;
+        QStringList parseGeneralOptions(const PipGeneralOptions &options, bool ignoreRetries = false) const;
         void clearBuffers();
 
         QList<QString> m_headers;               //!<  string list of names of column headers
@@ -106,6 +121,8 @@ class PipManager : public QAbstractItemModel
         QByteArray m_standardErrorBuffer;
         Task m_currentTask;
         PipGeneralOptions m_generalOptionsCache;
+        QString m_pythonPath;
+        bool m_hasRetriesFlag;
     
     private slots:
         void processError(QProcess::ProcessError error);
@@ -117,7 +134,7 @@ class PipManager : public QAbstractItemModel
         void pipManagerBusy();
         void outputAvailable(const QString &text, bool success);
         void pipVersion(const QString &version);
-        void pipRequestStarted(const PipManager::Task &task, const QString &text);
+        void pipRequestStarted(const PipManager::Task &task, const QString &text, bool outputSilent = false);
         void pipRequestFinished(const PipManager::Task &task, const QString &text, bool success);
 };
 

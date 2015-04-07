@@ -39,6 +39,7 @@ class DialogPipManagerInstall : public QDialog
     Q_OBJECT
 
 public:
+    enum Type { typeWhl = 0, typeTarGz = 1, typeSearchIndex = 2};
     DialogPipManagerInstall(QWidget *parent = NULL );
     ~DialogPipManagerInstall();
 
@@ -46,8 +47,17 @@ public:
 
 private:
     Ui::DialogPipManagerInstall ui;
+    Type m_selectedType;
 
 protected:
+
+private slots:
+    void on_btnPackage_clicked();
+    void on_btnFindLinks_clicked();
+    void on_radioWhl_clicked(bool checked);
+    void on_radioTarGz_clicked(bool checked);
+    void on_radioSearchIndex_clicked(bool checked);
+    void on_buttonBox_accepted();
     
 };
 
