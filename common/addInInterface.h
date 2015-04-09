@@ -610,14 +610,17 @@ namespace ito
             //! method to set a parameter. The actual value is always passed as ito::ParamBase (must be overwritten). See also \ref getParam
             virtual ito::RetVal setParam(QSharedPointer<ito::ParamBase> val, ItomSharedSemaphore *waitCond = NULL) = 0;
 
-            // doc in source-file
+            //! method for setting various parameters (can be used instead of multiple calls to setParam, this can safe multiple invocations)
             ito::RetVal setParamVector(const QVector<QSharedPointer<ito::ParamBase> > values, ItomSharedSemaphore *waitCond = NULL);
 
-            // doc in source-file
+            //! method for getting various parameters (can be used instead of multiple calls to getParam, this can safe multiple invocations)
             ito::RetVal getParamVector(const QVector<QSharedPointer<ito::Param> > values, ItomSharedSemaphore *waitCond = NULL);
 
-            // doc in source-file
+            //! overwrite this function if you registered exec funcs. Once the exec function is called, this method is executed.
             virtual ito::RetVal execFunc(const QString funcName, QSharedPointer<QVector<ito::ParamBase> > paramsMand, QSharedPointer<QVector<ito::ParamBase> > paramsOpt, QSharedPointer<QVector<ito::ParamBase> > paramsOut, ItomSharedSemaphore *waitCond = NULL);
+
+            //! method invoked by AddInManager if the plugin should be pulled back to the main thread of itom. (not for direct use in plugins)
+            ito::RetVal moveBackToApplicationThread(ItomSharedSemaphore *waitCond = NULL);
        
         private slots:
             //! immediately emits the signal parametersChanged

@@ -1351,7 +1351,19 @@ namespace ito
             //Therefore pull it to the main thread, if necessary.
             if (!aib->getCallInitInNewThread())
             {
-                (*addIn)->moveToThread(QThread::currentThread());
+                ItomSharedSemaphoreLocker moveToThreadLocker(new ItomSharedSemaphore());
+                if (QMetaObject::invokeMethod(*addIn, "moveBackToApplicationThread", Q_ARG(ItomSharedSemaphore*, moveToThreadLocker.getSemaphore())))
+                {
+                    if (moveToThreadLocker->wait(AppManagement::timeouts.pluginInitClose) == false)
+                    {
+                        retval += ito::RetVal(ito::retWarning, 0, "timeout while pulling plugin back to main thread.");
+                    }
+                }
+                else
+                {
+                    moveToThreadLocker->deleteSemaphore();
+                    retval += ito::RetVal(ito::retWarning, 0, "error invoking method 'moveBackToApplicationThread' of plugin.");
+                }
             }
 
             waitCond = new ItomSharedSemaphore();
@@ -1372,7 +1384,19 @@ namespace ito
 
                 if (aib->getCallInitInNewThread())
                 {
-                    (*addIn)->moveToThread(QThread::currentThread());
+                    ItomSharedSemaphoreLocker moveToThreadLocker(new ItomSharedSemaphore());
+                    if (QMetaObject::invokeMethod(*addIn, "moveBackToApplicationThread", Q_ARG(ItomSharedSemaphore*, moveToThreadLocker.getSemaphore())))
+                    {
+                        if (moveToThreadLocker->wait(AppManagement::timeouts.pluginInitClose) == false)
+                        {
+                            retval += ito::RetVal(ito::retWarning, 0, "timeout while pulling plugin back to main thread.");
+                        }
+                    }
+                    else
+                    {
+                        moveToThreadLocker->deleteSemaphore();
+                        retval += ito::RetVal(ito::retWarning, 0, "error invoking method 'moveBackToApplicationThread' of plugin.");
+                    }
                 }
             
                 if (aib->getAutoSavePolicy() == ito::autoSaveAlways)

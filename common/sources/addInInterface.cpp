@@ -437,6 +437,34 @@ namespace ito
         return ito::RetVal(ito::retWarning,0, tr("Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method").toLatin1().data());
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! method invoked by AddInManager if the plugin should be pulled back to the main thread of itom.
+    /*!
+        Do not invoke this method in any other case. It should only be invoked by AddInManager of the itom core.
+        After having moved the thread to the main thread of itom, the plugin's thread m_pThread can be closed and
+        deleted. However this cannot be done in this method, since a thread can only be killed and closed by another
+        thread. Therefore, this is done in the destructor of the AddIn.
+
+        Qt does not allow pushing an object from the object's thread to the caller's thread. Only the object
+        itself can move its thread to another thread.
+    */
+    ito::RetVal AddInBase::moveBackToApplicationThread(ItomSharedSemaphore *waitCond /*= NULL*/)
+    {
+        ItomSharedSemaphoreLocker locker(waitCond);
+
+        if (m_pThread) //only push this plugin to the main thread, if it currently lives in a second thread.
+        {
+            moveToThread(QCoreApplication::instance()->thread());
+        }
+
+        if (waitCond)
+        {
+            waitCond->returnValue = retOk;
+            waitCond->release();
+        }
+        return retOk;
+    }
+
 
 
     //----------------------------------------------------------------------------------------------------------------------------------
