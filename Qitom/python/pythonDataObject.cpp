@@ -44,8 +44,6 @@ void PythonDataObject::PyDataObject_dealloc(PyDataObject* self)
 {
     if (self->dataObject != NULL)
     {
-        self->dataObject->lockWrite(); //will be unlocked automatically
-        self->dataObject->unlock();
         DELETE_AND_SET_NULL(self->dataObject);
     }
 
@@ -213,12 +211,9 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
     {
         PyDataObject* tempObject = (PyDataObject*)(copyObject);
         DELETE_AND_SET_NULL(self->dataObject);
-        tempObject->dataObject->lockRead(); //lock
         self->dataObject = new ito::DataObject(*tempObject->dataObject);
-        self->dataObject->unlock();
         Py_XINCREF(tempObject->base);
         self->base = tempObject->base;
-        tempObject->dataObject->unlock(); //unlock
         retValue += RetVal(retOk);
         done = true;
     }
@@ -1157,9 +1152,7 @@ PyObject* PythonDataObject::PyDataObj_GetContinuous(PyDataObject *self, void * /
     }
     else
     {
-        self->dataObject->lockRead();
         bool cont = self->dataObject->getContinuous();
-        self->dataObject->unlock();
 
         if (cont)
         {
@@ -1193,8 +1186,6 @@ PyObject* PythonDataObject::PyDataObj_GetShape(PyDataObject *self, void * /*clos
         return NULL;
     }
 
-    self->dataObject->lockRead();
-
     int dims = self->dataObject->getDims();
     PyObject* retList = NULL;
     int desiredDim = 0;
@@ -1206,7 +1197,6 @@ PyObject* PythonDataObject::PyDataObj_GetShape(PyDataObject *self, void * /*clos
         PyTuple_SetItem(retList, i, PyLong_FromLong(self->dataObject->getSize(i)));
     }
 
-    self->dataObject->unlock();
     return retList;
 }
 
@@ -2850,9 +2840,6 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
             return NULL;
         }
 
-        self->dataObject->lockRead();
-        otherDataObj->dataObject->lockRead();
-
         try
         {
             switch (cmp_op)
@@ -2867,14 +2854,9 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
         }
         catch(cv::Exception exc)
         {
-            self->dataObject->unlock();
-            otherDataObj->dataObject->unlock();
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             return NULL;
         }
-
-        self->dataObject->unlock();
-        otherDataObj->dataObject->unlock();
 
         resultObject = createEmptyPyDataObject();
         resultObject->dataObject = new ito::DataObject(resDataObj); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
@@ -2885,8 +2867,6 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
         double value = PyFloat_AsDouble(other);
         if (!PyErr_Occurred())
         {
-            self->dataObject->lockRead();
-
             try
             {
                 switch (cmp_op)
@@ -2901,12 +2881,9 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
             }
             catch(cv::Exception exc)
             {
-                self->dataObject->unlock();
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                 return NULL;
             }
-
-            self->dataObject->unlock();
 
             resultObject = createEmptyPyDataObject();
             resultObject->dataObject = new ito::DataObject(resDataObj); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
@@ -3023,9 +3000,6 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    if (dobj1) dobj1->dataObject->lockRead();
-    if (dobj2) dobj2->dataObject->lockRead();
-
     try
     {
         if (dobj2)
@@ -3042,13 +3016,8 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        if (dobj1) dobj1->dataObject->unlock();
-        if (dobj2) dobj2->dataObject->unlock();
         return NULL;
     }
-
-    if (dobj1) dobj1->dataObject->unlock();
-    if (dobj2) dobj2->dataObject->unlock();
 
     if(doneScalar)
     {
@@ -3112,9 +3081,6 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    if (dobj1) dobj1->dataObject->lockRead();
-    if (dobj2) dobj2->dataObject->lockRead();
-
     try
     {
         if (dobj1 && dobj2)
@@ -3136,13 +3102,8 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        if (dobj1) dobj1->dataObject->unlock();
-        if (dobj2) dobj2->dataObject->unlock();
         return NULL;
     }
-
-    if (dobj1) dobj1->dataObject->unlock();
-    if (dobj2) dobj2->dataObject->unlock();
 
     if(doneScalar)
     {
@@ -3175,9 +3136,6 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
 
         PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-        dobj1->dataObject->lockRead();
-        dobj2->dataObject->lockRead();
-
         try
         {
             retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * *(dobj2->dataObject));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
@@ -3186,13 +3144,9 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
         {
             Py_DECREF(retObj);
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());         
-            dobj1->dataObject->unlock();
-            dobj2->dataObject->unlock();
             return NULL;
         }
 
-        dobj1->dataObject->unlock();
-        dobj2->dataObject->unlock();
         if(retObj) retObj->dataObject->addToProtocol("Multiplication of two dataObjects.");
         return (PyObject*)retObj;
     }
@@ -3208,8 +3162,6 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
 
         PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-        dobj1->dataObject->lockRead();
-
         try
         {
             retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * factor);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
@@ -3218,11 +3170,8 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
         {
             Py_DECREF(retObj);
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str()); 
-            dobj1->dataObject->unlock();
             return NULL;
         }
-
-        dobj1->dataObject->unlock();
 
         char buf[PROTOCOL_STR_LENGTH] = {0};
         sprintf_s(buf, PROTOCOL_STR_LENGTH, "Multiplied dataObject scalar with %g.", factor);
@@ -3243,8 +3192,6 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
 
         PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-        dobj2->dataObject->lockRead();
-
         try
         {
             retObj->dataObject = new ito::DataObject(*(dobj2->dataObject) * factor);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
@@ -3253,11 +3200,8 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
         {
             Py_DECREF(retObj);
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-            dobj2->dataObject->unlock();
             return NULL;
         }
-
-        dobj2->dataObject->unlock();
 
         char buf[PROTOCOL_STR_LENGTH] = {0};
         sprintf_s(buf, PROTOCOL_STR_LENGTH, "Multiplied dataObject scalar with %g.", factor);
@@ -3306,8 +3250,6 @@ PyObject* PythonDataObject::PyDataObj_nbDivide(PyObject* o1, PyObject* o2)
 
         PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-        dobj1->dataObject->lockRead();
-
         try
         {
             retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * (1.0/factor));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
@@ -3316,11 +3258,8 @@ PyObject* PythonDataObject::PyDataObj_nbDivide(PyObject* o1, PyObject* o2)
         {
             Py_DECREF(retObj);
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str()); 
-            dobj1->dataObject->unlock();
             return NULL;
         }
-
-        dobj1->dataObject->unlock();
 
         char buf[PROTOCOL_STR_LENGTH] = {0};
         sprintf_s(buf, PROTOCOL_STR_LENGTH, "Multiplied dataObject scalar with 1/%g.", factor);
@@ -3367,9 +3306,6 @@ PyObject* PythonDataObject::PyDataObj_nbPower(PyObject* o1, PyObject* o2, PyObje
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    dobj1->dataObject->lockRead();
-    dobj2->dataObject->lockRead();
-
     try
     {
         retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) ^ *(dobj2->dataObject));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
@@ -3378,13 +3314,8 @@ PyObject* PythonDataObject::PyDataObj_nbPower(PyObject* o1, PyObject* o2, PyObje
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        dobj1->dataObject->unlock();
-        dobj2->dataObject->unlock();
         return NULL;
     }
-
-    dobj1->dataObject->unlock();
-    dobj2->dataObject->unlock();
 
     if(retObj) retObj->dataObject->addToProtocol("Created by dataObject0 ** dataObject1");
 
@@ -3403,8 +3334,6 @@ PyObject* PythonDataObject::PyDataObj_nbNegative(PyObject* o1)
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    dobj1->dataObject->lockRead();
-
     try
     {
         retObj->dataObject = new ito::DataObject((*(dobj1->dataObject) * -1.0));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
@@ -3413,11 +3342,8 @@ PyObject* PythonDataObject::PyDataObj_nbNegative(PyObject* o1)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        dobj1->dataObject->unlock();
         return NULL;
     }
-
-    dobj1->dataObject->unlock();
 
     if(retObj) retObj->dataObject->addToProtocol("Created by scalar multiplication of dataObject with -1.0.");
 
@@ -3436,8 +3362,6 @@ PyObject* PythonDataObject::PyDataObj_nbPositive(PyObject* o1)
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    dobj1->dataObject->lockRead();
-
     try
     {
         retObj->dataObject = new ito::DataObject(*(dobj1->dataObject));
@@ -3451,11 +3375,8 @@ PyObject* PythonDataObject::PyDataObj_nbPositive(PyObject* o1)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        dobj1->dataObject->unlock();
         return NULL;
     }
-
-    dobj1->dataObject->unlock();
 
     if(retObj) retObj->dataObject->addToProtocol("Created by python function positive.");
 
@@ -3474,8 +3395,6 @@ PyObject* PythonDataObject::PyDataObj_nbAbsolute(PyObject* o1)
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    dobj1->dataObject->lockRead();
-
     try
     {
         retObj->dataObject = new ito::DataObject(ito::abs(*(dobj1->dataObject)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
@@ -3484,11 +3403,9 @@ PyObject* PythonDataObject::PyDataObj_nbAbsolute(PyObject* o1)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        dobj1->dataObject->unlock();
         return NULL;
     }
 
-    dobj1->dataObject->unlock();
     retObj->dataObject->addToProtocol("Absolute values of calculated via abs(dataObject).");
     return (PyObject*)retObj;
 }
@@ -3521,8 +3438,6 @@ PyObject* PythonDataObject::PyDataObj_nbLshift(PyObject* o1, PyObject* o2)
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    dobj1->dataObject->lockRead();
-
     try
     {
         retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) << static_cast<unsigned int>(shift));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
@@ -3531,11 +3446,8 @@ PyObject* PythonDataObject::PyDataObj_nbLshift(PyObject* o1, PyObject* o2)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        dobj1->dataObject->unlock();
         return NULL;
     }
-
-    dobj1->dataObject->unlock();
     
     char buf[PROTOCOL_STR_LENGTH] = {0};
     sprintf_s(buf, PROTOCOL_STR_LENGTH, "Left shift by %i on dataObject.", shift);
@@ -3568,8 +3480,6 @@ PyObject* PythonDataObject::PyDataObj_nbRshift(PyObject* o1, PyObject* o2)
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    dobj1->dataObject->lockRead();
-
     try
     {
         retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) >> static_cast<unsigned int>(shift));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
@@ -3578,11 +3488,8 @@ PyObject* PythonDataObject::PyDataObj_nbRshift(PyObject* o1, PyObject* o2)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        dobj1->dataObject->unlock();
         return NULL;
     }
-
-    dobj1->dataObject->unlock();
 
     char buf[PROTOCOL_STR_LENGTH] = {0};
     sprintf_s(buf, PROTOCOL_STR_LENGTH, "Right shift by %i on dataObject.", shift);
@@ -3604,9 +3511,6 @@ PyObject* PythonDataObject::PyDataObj_nbAnd(PyObject* o1, PyObject* o2)
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    dobj1->dataObject->lockRead();
-    dobj2->dataObject->lockRead();
-
     try
     {
         retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) & *(dobj2->dataObject)); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
@@ -3615,13 +3519,9 @@ PyObject* PythonDataObject::PyDataObj_nbAnd(PyObject* o1, PyObject* o2)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        dobj1->dataObject->unlock();
-        dobj2->dataObject->unlock();
         return NULL;
     }
 
-    dobj1->dataObject->unlock();
-    dobj2->dataObject->unlock();
     if(retObj) retObj->dataObject->addToProtocol("By elementwise AND comparison of two dataObjects.");
     return (PyObject*)retObj;
 }
@@ -3639,9 +3539,6 @@ PyObject* PythonDataObject::PyDataObj_nbXor(PyObject* o1, PyObject* o2)
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    dobj1->dataObject->lockRead();
-    dobj2->dataObject->lockRead();
-
     try
     {
         retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) ^ *(dobj2->dataObject)); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
@@ -3650,13 +3547,9 @@ PyObject* PythonDataObject::PyDataObj_nbXor(PyObject* o1, PyObject* o2)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        dobj1->dataObject->unlock();
-        dobj2->dataObject->unlock();
         return NULL;
     }
 
-    dobj1->dataObject->unlock();
-    dobj2->dataObject->unlock();
     if(retObj) retObj->dataObject->addToProtocol("By elementwise XOR comparison of two dataObjects.");
     return (PyObject*)retObj;
 }
@@ -3674,9 +3567,6 @@ PyObject* PythonDataObject::PyDataObj_nbOr(PyObject* o1, PyObject* o2)
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    dobj1->dataObject->lockRead();
-    dobj2->dataObject->lockRead();
-
     try
     {
         retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) | *(dobj2->dataObject)); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
@@ -3685,13 +3575,9 @@ PyObject* PythonDataObject::PyDataObj_nbOr(PyObject* o1, PyObject* o2)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        dobj1->dataObject->unlock();
-        dobj2->dataObject->unlock();
         return NULL;
     }
 
-    dobj1->dataObject->unlock();
-    dobj2->dataObject->unlock();
     if(retObj) retObj->dataObject->addToProtocol("By elementwise OR comparison of two dataObjects.");
     return (PyObject*)retObj;
 }
@@ -3710,9 +3596,6 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2)
     {
         PyDataObject *dobj2 = (PyDataObject*)(o2);
 
-        dobj1->dataObject->lockWrite();
-        dobj2->dataObject->lockRead();
-
         try
         {
             *(dobj1->dataObject) += *(dobj2->dataObject);
@@ -3720,20 +3603,14 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2)
         catch(cv::Exception exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-            dobj1->dataObject->unlock();
-            dobj2->dataObject->unlock();
             return NULL;
         }
 
-        dobj1->dataObject->unlock();
-        dobj2->dataObject->unlock();
         dobj1->dataObject->addToProtocol("Inplace addition of two dataObjects");
     }
     else if (PyFloat_Check(o2) || PyLong_Check(o2))
     {
         double val = PyFloat_AsDouble(o2);
-
-        dobj1->dataObject->lockWrite();
 
         try
         {
@@ -3742,11 +3619,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2)
         catch(cv::Exception exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-            dobj1->dataObject->unlock();
             return NULL;
         }
-
-        dobj1->dataObject->unlock();
 
         char buf[PROTOCOL_STR_LENGTH] = {0};
         sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar addition of %g.", val);
@@ -3778,9 +3652,6 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
     {
         PyDataObject *dobj2 = (PyDataObject*)(o2);
 
-        dobj1->dataObject->lockWrite();
-        dobj2->dataObject->lockRead();
-
         try
         {
             *(dobj1->dataObject) -= *(dobj2->dataObject);
@@ -3788,20 +3659,14 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
         catch(cv::Exception exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-            dobj1->dataObject->unlock();
-            dobj2->dataObject->unlock();
             return NULL;
         }
 
-        dobj1->dataObject->unlock();
-        dobj2->dataObject->unlock();
         dobj1->dataObject->addToProtocol("Inplace substraction of two dataObjects.");
     }
     else if (PyFloat_Check(o2) || PyLong_Check(o2))
     {
         double val = PyFloat_AsDouble(o2);
-
-        dobj1->dataObject->lockWrite();
 
         try
         {
@@ -3810,11 +3675,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
         catch(cv::Exception exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-            dobj1->dataObject->unlock();
             return NULL;
         }
-
-        dobj1->dataObject->unlock();
 
         char buf[PROTOCOL_STR_LENGTH] = {0};
         sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar substraction of %g.", val);
@@ -3850,9 +3712,6 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* 
     {
         PyDataObject *dobj2 = (PyDataObject*)(o2);
 
-        dobj1->dataObject->lockWrite();
-        dobj2->dataObject->lockRead();
-
         try
         {
             *(dobj1->dataObject) *= *(dobj2->dataObject);
@@ -3860,13 +3719,9 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* 
         catch(cv::Exception exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-            dobj1->dataObject->unlock();
-            dobj2->dataObject->unlock();
             return NULL;
         }
 
-        dobj1->dataObject->unlock();
-        dobj2->dataObject->unlock();
         dobj1->dataObject->addToProtocol("Inplace multiplication of two dataObjects");
     }
     else
@@ -3878,7 +3733,6 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* 
             return NULL;
         }
 
-        dobj1->dataObject->lockWrite();
         try
         {
             *(dobj1->dataObject) *= factor;
@@ -3886,11 +3740,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* 
         catch(cv::Exception exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-            dobj1->dataObject->unlock();
             return NULL;
         }
-
-        dobj1->dataObject->unlock();
 
         char buf[PROTOCOL_STR_LENGTH] = {0};
         sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar multiplication of %g.", factor);
@@ -3932,7 +3783,6 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceTrueDivide(PyObject* o1, PyObject
             return NULL;
         }
 
-        dobj1->dataObject->lockWrite();
         try
         {
             *(dobj1->dataObject) *= (1.0 / factor);
@@ -3940,11 +3790,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceTrueDivide(PyObject* o1, PyObject
         catch(cv::Exception exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-            dobj1->dataObject->unlock();
             return NULL;
         }
-
-        dobj1->dataObject->unlock();
 
         char buf[PROTOCOL_STR_LENGTH] = {0};
         sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar devision of %g.", factor);
@@ -3991,9 +3838,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceLshift(PyObject* o1, PyObject* o2
 
     Py_INCREF(o1);
 
-    dobj1->dataObject->lockWrite();
     *(dobj1->dataObject) <<= static_cast<unsigned int>(shift);
-    dobj1->dataObject->unlock();
 
     char buf[PROTOCOL_STR_LENGTH] = {0};
     sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace left shift by %i.", shift);
@@ -4023,9 +3868,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceRshift(PyObject* o1, PyObject* o2
     }
 
     Py_INCREF(o1);
-    dobj1->dataObject->lockWrite();
     *(dobj1->dataObject) >>= static_cast<unsigned int>(shift);
-    dobj1->dataObject->unlock();
 
     char buf[PROTOCOL_STR_LENGTH] = {0};
     sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace right shift by %i.", shift);
@@ -4046,9 +3889,6 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAnd(PyObject* o1, PyObject* o2)
     PyDataObject *dobj1 = (PyDataObject*)(o1);
     PyDataObject *dobj2 = (PyDataObject*)(o2);
 
-    dobj1->dataObject->lockWrite();
-    dobj2->dataObject->lockRead();
-
     try
     {
         *(dobj1->dataObject) &= *(dobj2->dataObject);
@@ -4056,13 +3896,8 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAnd(PyObject* o1, PyObject* o2)
     catch(cv::Exception exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        dobj1->dataObject->unlock();
-        dobj2->dataObject->unlock();
         return NULL;
     }
-
-    dobj1->dataObject->unlock();
-    dobj2->dataObject->unlock();
 
     dobj1->dataObject->addToProtocol("Inplace elementwise AND comparison with second dataObject.");
 
@@ -4081,9 +3916,6 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceXor(PyObject* o1, PyObject* o2)
     PyDataObject *dobj1 = (PyDataObject*)(o1);
     PyDataObject *dobj2 = (PyDataObject*)(o2);
 
-    dobj1->dataObject->lockWrite();
-    dobj2->dataObject->lockRead();
-
     try
     {
         *(dobj1->dataObject) ^= *(dobj2->dataObject);
@@ -4091,13 +3923,9 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceXor(PyObject* o1, PyObject* o2)
     catch(cv::Exception exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        dobj1->dataObject->unlock();
-        dobj2->dataObject->unlock();
         return NULL;
     }
 
-    dobj1->dataObject->unlock();
-    dobj2->dataObject->unlock();
     dobj1->dataObject->addToProtocol("Inplace elementwise XOR comparison with second dataObject.");
     Py_INCREF(o1);
     return (PyObject*)o1;
@@ -4114,9 +3942,6 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceOr(PyObject* o1, PyObject* o2)
     PyDataObject *dobj1 = (PyDataObject*)(o1);
     PyDataObject *dobj2 = (PyDataObject*)(o2);
 
-    dobj1->dataObject->lockWrite();
-    dobj2->dataObject->lockRead();
-
     try
     {
         *(dobj1->dataObject) |= *(dobj2->dataObject);
@@ -4124,13 +3949,9 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceOr(PyObject* o1, PyObject* o2)
     catch(cv::Exception exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        dobj1->dataObject->unlock();
-        dobj2->dataObject->unlock();
         return NULL;
     }
 
-    dobj1->dataObject->unlock();
-    dobj2->dataObject->unlock();
     dobj1->dataObject->addToProtocol("Inplace elementwise OR comparison with second dataObject.");
     Py_INCREF(o1);
     return (PyObject*)o1;
@@ -4173,7 +3994,6 @@ PyObject* PythonDataObject::PyDataObject_repr(PyDataObject *self)
     }
     else
     {
-        self->dataObject->lockRead();
         ito::DataObject *dObj = self->dataObject;
         dims = dObj->getDims();
         switch(dims)
@@ -4188,7 +4008,6 @@ PyObject* PythonDataObject::PyDataObject_repr(PyDataObject *self)
             result = PyUnicode_FromFormat("DataObject('%s', %i dims, continuous: %i, owndata: %i)", typeNumberToName(dObj->getType()), dObj->getDims(), dObj->getContinuous(), dObj->getOwnData());
             break;
         }
-        self->dataObject->unlock();
     }
     return result;
 };
@@ -4201,7 +4020,6 @@ Notes \n\
 When calling this method, the complete content of the dataObject is printed to the standard output stream.");
 PyObject* PythonDataObject::PyDataObject_data(PyDataObject *self)
 {
-    self->dataObject->lockRead();
     try
     {
         std::cout << *(self->dataObject);
@@ -4209,10 +4027,8 @@ PyObject* PythonDataObject::PyDataObject_data(PyDataObject *self)
     catch(cv::Exception exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        self->dataObject->unlock();
         return NULL;
     }
-    self->dataObject->unlock();
     Py_RETURN_NONE;
 }
 
@@ -4236,7 +4052,6 @@ PyObject* PythonDataObject::PyDataObject_conj(PyDataObject *self)
         PyErr_SetString(PyExc_ValueError, "data object is NULL");
         return NULL;
     }
-    self->dataObject->lockWrite();
     try
     {
         self->dataObject->conj();
@@ -4244,10 +4059,8 @@ PyObject* PythonDataObject::PyDataObject_conj(PyDataObject *self)
     catch(cv::Exception exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        self->dataObject->unlock();
         return NULL;
     }
-    self->dataObject->unlock();
     Py_RETURN_NONE;
 }
 
@@ -4277,7 +4090,6 @@ PyObject* PythonDataObject::PyDataObject_conjugate(PyDataObject *self)
     }
         
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-    self->dataObject->lockWrite();
     
     retObj->dataObject = new ito::DataObject();
     try
@@ -4289,7 +4101,6 @@ PyObject* PythonDataObject::PyDataObject_conjugate(PyDataObject *self)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        self->dataObject->unlock();
         return NULL;
     }
 
@@ -4297,8 +4108,6 @@ PyObject* PythonDataObject::PyDataObject_conjugate(PyDataObject *self)
     {
         PyDataObject_SetBase(retObj, (PyObject*)self);
     }
-
-    self->dataObject->unlock();
 
     return (PyObject*)retObj;
 }
@@ -4323,20 +4132,16 @@ PyObject* PythonDataObject::PyDataObject_adj(PyDataObject *self)
         PyErr_SetString(PyExc_ValueError, "data object is NULL");
         return NULL;
     }
-    self->dataObject->lockWrite();
 
     try
     {
         ito::DataObject *newDataObj = new ito::DataObject(self->dataObject->adj());
-        self->dataObject->unlock();
         delete self->dataObject;
         self->dataObject = newDataObj;
     }
     catch(cv::Exception exc)
     {
-        self->dataObject->unlock();
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        self->dataObject->unlock();
         return NULL;
     }
     
@@ -4373,7 +4178,6 @@ PyObject* PythonDataObject::PyDataObject_adjugate(PyDataObject *self)
     }
     
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-    self->dataObject->lockRead();
     
     try
     {
@@ -4383,7 +4187,6 @@ PyObject* PythonDataObject::PyDataObject_adjugate(PyDataObject *self)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        self->dataObject->unlock();
         return NULL;
     }
 
@@ -4391,8 +4194,6 @@ PyObject* PythonDataObject::PyDataObject_adjugate(PyDataObject *self)
     {
         PyDataObject_SetBase(retObj, (PyObject*)self);
     }
-
-    self->dataObject->unlock();
 
     if(retObj) retObj->dataObject->addToProtocol("Created by calculation of adjugate value from a dataObject.");
 
@@ -4418,7 +4219,6 @@ PyObject* PythonDataObject::PyDataObject_trans(PyDataObject *self)
     }
     
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-    self->dataObject->lockRead();
     
     try
     {
@@ -4428,7 +4228,6 @@ PyObject* PythonDataObject::PyDataObject_trans(PyDataObject *self)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        self->dataObject->unlock();
         return NULL;
     }
 
@@ -4436,8 +4235,6 @@ PyObject* PythonDataObject::PyDataObject_trans(PyDataObject *self)
     {
         PyDataObject_SetBase(retObj, (PyObject*)self);
     }
-
-    self->dataObject->unlock();
 
     if(retObj) retObj->dataObject->addToProtocol("Created by transponation of a dataObject.");
 
@@ -4471,15 +4268,12 @@ PyObject* PythonDataObject::PyDataObject_makeContinuous(PyDataObject *self)
     }
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-    self->dataObject->lockWrite();
     retObj->dataObject = new ito::DataObject(ito::makeContinuous(*(self->dataObject)));
 
     if (!retObj->dataObject->getOwnData())
     {
         PyDataObject_SetBase(retObj, (PyObject*)self);
     }
-
-    self->dataObject->unlock();
 
     if(retObj) retObj->dataObject->addToProtocol("Made dataObject continuous.");
 
@@ -4571,8 +4365,6 @@ PyObject* PythonDataObject::PyDataObject_copy(PyDataObject *self, PyObject* args
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
     retObj->dataObject = new ito::DataObject();
 
-    self->dataObject->lockRead();
-
     try
     {
         if (regionOnly)
@@ -4588,11 +4380,8 @@ PyObject* PythonDataObject::PyDataObject_copy(PyDataObject *self, PyObject* args
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        self->dataObject->unlock();
         return NULL;
     }
-
-    self->dataObject->unlock();
 
     if (regionOnly)
     {
@@ -4632,9 +4421,6 @@ PyObject* PythonDataObject::PyDataObject_mul(PyDataObject *self, PyObject *args)
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
     PyDataObject* obj2 = (PyDataObject*)pyDataObject;
 
-    self->dataObject->lockRead();
-    obj2->dataObject->lockRead();
-
     try
     {
         retObj->dataObject = new ito::DataObject((*(self->dataObject)).mul(*(obj2->dataObject)));  //new dataObject should always be the owner of its data, therefore base of resultObject remains None
@@ -4643,13 +4429,8 @@ PyObject* PythonDataObject::PyDataObject_mul(PyDataObject *self, PyObject *args)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        self->dataObject->unlock();
-        obj2->dataObject->unlock();
         return NULL;
     }
-
-    self->dataObject->unlock();
-    obj2->dataObject->unlock();
 
     if(retObj) retObj->dataObject->addToProtocol("Created by elementwise multiplication of two dataObjects.");
 
@@ -4682,9 +4463,6 @@ PyObject* PythonDataObject::PyDataObject_div(PyDataObject *self, PyObject *args)
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
     PyDataObject* obj2 = (PyDataObject*)pyDataObject;
 
-    self->dataObject->lockRead();
-    obj2->dataObject->lockRead();
-
     try
     {
         retObj->dataObject = new ito::DataObject((*(self->dataObject)).div(*(obj2->dataObject)));//new dataObject should always be the owner of its data, therefore base of resultObject remains None
@@ -4693,13 +4471,8 @@ PyObject* PythonDataObject::PyDataObject_div(PyDataObject *self, PyObject *args)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        self->dataObject->unlock();
-        obj2->dataObject->unlock();
         return NULL;
     }
-
-    self->dataObject->unlock();
-    obj2->dataObject->unlock();
 
     if(retObj) retObj->dataObject->addToProtocol("Created by elementwise division of two dataObjects.");
 
@@ -4763,7 +4536,6 @@ PyObject* PythonDataObject::PyDataObject_astype(PyDataObject *self, PyObject* ar
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
     retObj->dataObject = new ito::DataObject();
 
-    self->dataObject->lockRead();
     try
     {
         self->dataObject->convertTo(*(retObj->dataObject), typeno);
@@ -4774,8 +4546,6 @@ PyObject* PythonDataObject::PyDataObject_astype(PyDataObject *self, PyObject* ar
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
         return NULL;
     }
-
-    self->dataObject->unlock();
 
     if (!retObj->dataObject->getOwnData())
     {
@@ -4842,7 +4612,6 @@ PyObject* PythonDataObject::PyDataObject_normalize(PyDataObject *self, PyObject*
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
     ito::DataObject dataObj;
 
-    self->dataObject->lockRead();
     double smin, smax;
     ito::uint32 loc1[] = {0,0,0};
     ito::uint32 loc2[] = {0,0,0};
@@ -4862,8 +4631,6 @@ PyObject* PythonDataObject::PyDataObject_normalize(PyDataObject *self, PyObject*
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
         return NULL;
     }
-
-    self->dataObject->unlock();
 
     retObj->dataObject = new ito::DataObject(dataObj);
 
@@ -4902,13 +4669,11 @@ PyObject* PythonDataObject::PyDataObject_locateROI(PyDataObject *self)
         PyErr_SetString(PyExc_ValueError, "data object is NULL");
         return NULL;
     }
-    self->dataObject->lockRead();
     int dims = self->dataObject->getDims();
     int *osize = new int[dims];
     int *offsets = new int[dims];
 
     self->dataObject->locateROI(osize, offsets);
-    self->dataObject->unlock();
 
     PyObject *osize_obj = PyList_New(dims);
     PyObject *offsets_obj = PyList_New(dims);
@@ -4970,8 +4735,6 @@ PyObject* PythonDataObject::PyDataObject_adjustROI(PyDataObject *self, PyObject*
         return NULL;
     }
 
-    self->dataObject->lockWrite();
-
 
     if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &offsets))
     {
@@ -5027,8 +4790,6 @@ PyObject* PythonDataObject::PyDataObject_adjustROI(PyDataObject *self, PyObject*
         DELETE_AND_SET_NULL_ARRAY(offsetVector);
     }
 
-    self->dataObject->unlock();
-
     Py_DECREF(offsets);
 
     if (error)
@@ -5060,25 +4821,16 @@ This method is equal to numpy.squeeze");
 PyObject* PythonDataObject::PyDataObject_squeeze(PyDataObject *self, PyObject* /*args*/)
 {
     if (self->dataObject == NULL) return NULL;
-    bool unlocked = false;
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-
-    self->dataObject->lockRead();
     
     try
     {
         ito::DataObject resObj = self->dataObject->squeeze();
-        self->dataObject->unlock();
-        unlocked = true;
         retObj->dataObject = new ito::DataObject(resObj);
     }
     catch(cv::Exception exc)
     {
-        if (!unlocked)
-        {
-            self->dataObject->unlock();
-        }
         retObj->dataObject = NULL;
 
         Py_DECREF(retObj);
@@ -5101,8 +4853,6 @@ int PythonDataObject::PyDataObj_mappingLength(PyDataObject* self)
 {
     if (self->dataObject == NULL) return 0;
 
-    self->dataObject->lockRead();
-
     int dims = self->dataObject->getDims();
     int count = dims > 0 ? 1 : 0;
 
@@ -5110,8 +4860,6 @@ int PythonDataObject::PyDataObj_mappingLength(PyDataObject* self)
     {
         count *= self->dataObject->getSize(i); //independent on transpose flag
     }
-
-    self->dataObject->unlock();
 
     return count;
 }
@@ -5127,8 +4875,6 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
         return NULL;
     }
 
-    self->dataObject->lockRead();
-
     int dims = self->dataObject->getDims();
     ito::Range *ranges = NULL;
     unsigned int *singlePointIdx = NULL;
@@ -5138,12 +4884,10 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
 
     if (dims <= 0)
     {
-        self->dataObject->unlock();
         Py_RETURN_NONE;
     }
     else if (dims == 1)
     {
-        self->dataObject->unlock();
         PyErr_SetString(PyExc_TypeError, "data object dimension must not be one, but two instead");
         return NULL;
     }
@@ -5167,7 +4911,6 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
         if (PyTuple_Size(key) != dims)
         {
             Py_DECREF(key);
-            self->dataObject->unlock();
             PyErr_SetString(PyExc_TypeError, "length of key-tuple does not fit to dimension of data object");
             return NULL;
         }
@@ -5260,7 +5003,6 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
                     PyDataObject_SetBase(retObj2, (PyObject*)self);
                 }
 
-                retObj2->dataObject->unlock();
                 retObj = (PyObject*)retObj2;
             }
             catch(cv::Exception exc)
@@ -5286,7 +5028,6 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
                     PyDataObject_SetBase(retObj2, (PyObject*)self);
                 }
 
-                retObj2->dataObject->unlock();
                 retObj = (PyObject*)retObj2;
             }
             catch(cv::Exception exc)
@@ -5297,8 +5038,6 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
             }
         }
     }
-
-    self->dataObject->unlock();
 
     DELETE_AND_SET_NULL_ARRAY(ranges);
     DELETE_AND_SET_NULL_ARRAY(singlePointIdx);
@@ -5319,8 +5058,6 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
         return -1;
     }
 
-    self->dataObject->lockRead();
-
     int dims = self->dataObject->getDims();
     ito::Range *ranges = NULL;
     unsigned int *idx = NULL; //redundant to range, if only single indizes are addressed
@@ -5328,7 +5065,6 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
 
     if (dims <= 0)
     {
-        self->dataObject->unlock();
         PyErr_SetString(PyExc_TypeError, "empty data object.");
         return -1;
     }
@@ -5352,7 +5088,6 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
         if (PyTuple_Size(key) != dims)
         {
             Py_DECREF(key);
-            self->dataObject->unlock();
             PyErr_SetString(PyExc_TypeError, "length of key-tuple does not fit to dimension of data object");
             return -1;
         }
@@ -5449,9 +5184,6 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
             }
         }
 
-        dataObj.unlock();
-        dataObj.lockWrite(); //dataObj is a shallow copy of dataObject and is in readLock, right now. This lock must be switched to writeLock (usually unlock and lockWrite should be done in one "protected" step)
-
         //no parse value and assign it to dataObj
         if (!error)
         {
@@ -5513,9 +5245,6 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
             }
         }
 
-        self->dataObject->unlock(); //self->dataObject is not used any more (unlocked from readLock)
-        dataObj.unlock();
-
     }
     else if (mask)
     {
@@ -5553,14 +5282,10 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 error = true;
                 PyErr_SetString(PyExc_TypeError, "assign value has no of the following types: integer, floating point, complex");
             }
-
-            self->dataObject->unlock();
         }
 
         if (!error && fromType != ito::tInt8)
         {
-
-            self->dataObject->lockWrite();
 
             try
             {
@@ -5607,8 +5332,6 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                 error = true;
             }
-
-            self->dataObject->unlock();
         }
     }
     else //contains no slices and key is no mask
@@ -5642,10 +5365,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 try
                 {
                     dataObj = self->dataObject->at(ranges); //dataObj in readLock
-                    dataObj.unlock();
-                    dataObj.lockWrite();
                     ((PyDataObject*)value)->dataObject->deepCopyPartial(dataObj);
-                    dataObj.unlock();
                 }
                 catch(cv::Exception exc)
                 {
@@ -5666,13 +5386,10 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 PyErr_SetString(PyExc_TypeError, "assign value has no of the following types: integer, floating point, complex, dataObject");
             }
 
-            self->dataObject->unlock();
         }
 
         if (!error && fromType != ito::tInt8)
         {
-
-            self->dataObject->lockWrite();
 
             try
             {
@@ -5719,8 +5436,6 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                 error = true;
             }
-
-            self->dataObject->unlock();
         }
     }
 
@@ -5976,8 +5691,6 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
         return NULL;
     }
 
-    selfDO->lockRead();
-
     /*if (selfDO->isT())
     {
         selfDO->unlock();
@@ -5989,7 +5702,6 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
 
     inter = new PyArrayInterface;
     if (inter==NULL) {
-        selfDO->unlock();
         return PyErr_NoMemory();
     }
 
@@ -6000,7 +5712,6 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
     {
         PyErr_SetString(PyExc_TypeError, "data object is empty.");
         DELETE_AND_SET_NULL(inter)
-        selfDO->unlock();
         return NULL;
     }
 
@@ -6008,7 +5719,6 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
     if (ret.containsError())
     {
         DELETE_AND_SET_NULL(inter)
-        selfDO->unlock();
         if (ret.errorMessage())
         {
             PythonCommon::transformRetValToPyException(ret, PyExc_TypeError);
@@ -6057,8 +5767,6 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
         }
     }
 
-    selfDO->unlock();
-
     //don't icrement SELF here, since the receiver of the capsule (e.g. numpy-method) will increment the refcount of then PyDataObject SELF by itself.
     return PyCapsule_New((void*)inter, NULL, &PyDataObj_Capsule_Destructor);
 }
@@ -6084,8 +5792,6 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
         PyErr_SetString(PyExc_RuntimeError, "the dataObject cannot be directly converted into a numpy array since it is not continuous.");
         return NULL;
     }
-
-    selfDO->lockRead();
 
     /*if (selfDO->isT())
     {
@@ -6122,7 +5828,6 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
     RetVal ret = parseTypeNumber(selfDO->getType(), typekind, itemsize);
     if (ret.containsError())
     {
-        selfDO->unlock();
         if (ret.errorMessage())
         {
             PythonCommon::transformRetValToPyException(ret, PyExc_TypeError);
@@ -6208,8 +5913,6 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
         Py_XDECREF(strides);
     }
 
-    selfDO->unlock();
-
     //don't icrement SELF here, since the receiver of the capsule (e.g. numpy-method) will increment the refcount of then PyDataObject SELF by itself.
     return retDict;
 }
@@ -6240,8 +5943,6 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject *self, PyObject *args)
 
     ito::DataObject* selfDO = self->dataObject;
 
-    selfDO->lockRead();
-
     /*if (selfDO->isT())
     {
         selfDO->unlock();
@@ -6254,7 +5955,6 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject *self, PyObject *args)
     if (selfDO->getContinuous()/* == true*/)
     {
         newArray = (PyArrayObject*)PyArray_FromStructInterface((PyObject*)self);
-        selfDO->unlock();
     }
     else
     {
@@ -6268,7 +5968,6 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject *self, PyObject *args)
         {
             continuousObject = NULL;
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-            selfDO->unlock();
             return NULL;
         }
 
@@ -6276,7 +5975,6 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject *self, PyObject *args)
         newDO->dataObject = continuousObject;
 
         PyDataObject_SetBase(newDO, self->base);
-        selfDO->unlock();
 
         newArray = (PyArrayObject*)PyArray_FromStructInterface((PyObject*)newDO);
         Py_DECREF(newDO);
@@ -6311,8 +6009,6 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
         PyErr_SetString(PyExc_NotImplementedError, "data object is NULL");
         return NULL;
     }
-
-    self->dataObject->lockRead();
 
     int dims = self->dataObject->getDims();
 
@@ -6360,7 +6056,6 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
             if (PyByteArray_Resize(byteArray, sizeV * sizeU * elemSize) != 0)
             {
                 //err, message already set
-                self->dataObject->unlock();
                 Py_XDECREF(byteArray);
                 Py_XDECREF(dataTuple);
                 Py_XDECREF(sizeList);
@@ -6373,7 +6068,6 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
             {
                 if (memcpy((void*)startingPoint, (void*)(tempMat->ptr(row)), sizeV * elemSize) == NULL)
                 {
-                    self->dataObject->unlock();
                     Py_XDECREF(byteArray);
                     Py_XDECREF(dataTuple);
                     Py_XDECREF(sizeList);
@@ -6400,7 +6094,6 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
             if (!byteArray /* || _PyBytes_Resize(&byteArray, sizeV * sizeU * elemSize) != 0 */)
             {
                 //err, message already set
-                self->dataObject->unlock();
                 Py_XDECREF(byteArray);
                 Py_XDECREF(dataTuple);
                 Py_XDECREF(sizeList);
@@ -6413,7 +6106,6 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
             {
                 if (memcpy((void*)startingPoint, (void*)(tempMat->ptr(row)), sizeV * elemSize) == NULL)
                 {
-                    self->dataObject->unlock();
                     Py_XDECREF(byteArray);
                     Py_XDECREF(dataTuple);
                     Py_XDECREF(sizeList);
@@ -6526,8 +6218,6 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
     Py_DECREF(sizeList);
     Py_DECREF(stateTuple);
 
-    self->dataObject->unlock();
-
     return tempOut;
 
     //PyErr_SetString(PyExc_NotImplementedError, "pickling for dataObject not possible");
@@ -6606,13 +6296,10 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
         return NULL;
     }
 
-    self->dataObject->lockWrite();
-
     int vectorLength = self->dataObject->calcNumMats();
 
     if (PyTuple_Size(dataTuple) != vectorLength)
     {
-        self->dataObject->unlock();
         //Py_XDECREF(dataTuple);
         //Py_XDECREF(tagTuple);
         PyErr_SetString(PyExc_NotImplementedError, "unpickling for dataObject failed since data dimensions does not fit");
@@ -6783,8 +6470,6 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
         //tempTag = PyTuple_GetItem(tagTuple,9);
     }
 
-    self->dataObject->unlock();
-
     //Py_XDECREF(dataTuple);
     //Py_XDECREF(tagTuple);
 
@@ -6814,8 +6499,6 @@ PyObject* PythonDataObject::PyDataObject_abs(PyDataObject *self)
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    d->lockRead();
-
     try
     {
         retObj->dataObject = new ito::DataObject(ito::abs(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
@@ -6824,11 +6507,9 @@ PyObject* PythonDataObject::PyDataObject_abs(PyDataObject *self)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        d->unlock();
         return NULL;
     }
 
-    d->unlock();
     retObj->dataObject->addToProtocol("Absolute values of calculated via abs().");
     return (PyObject*)retObj;
     
@@ -6856,8 +6537,6 @@ PyObject* PythonDataObject::PyDataObject_arg(PyDataObject *self)
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    d->lockRead();
-
     try
     {
         retObj->dataObject = new ito::DataObject(ito::arg(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
@@ -6866,11 +6545,9 @@ PyObject* PythonDataObject::PyDataObject_arg(PyDataObject *self)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        d->unlock();
         return NULL;
     }
 
-    d->unlock();
     retObj->dataObject->addToProtocol("Extracted phase/argument of a complex dataObject via arg().");
     return (PyObject*)retObj;
     
@@ -6898,8 +6575,6 @@ PyObject* PythonDataObject::PyDataObject_real(PyDataObject *self)
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    d->lockRead();
-
     try
     {
         retObj->dataObject = new ito::DataObject(ito::real(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
@@ -6908,11 +6583,8 @@ PyObject* PythonDataObject::PyDataObject_real(PyDataObject *self)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        d->unlock();
         return NULL;
     }
-
-    d->unlock();
 
     retObj->dataObject->addToProtocol("Extracted real part of a complex dataObject via real().");
 
@@ -6942,8 +6614,6 @@ PyObject* PythonDataObject::PyDataObject_imag(PyDataObject *self)
 
     PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    d->lockRead();
-
     try
     {
         retObj->dataObject = new ito::DataObject(ito::imag(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
@@ -6952,11 +6622,8 @@ PyObject* PythonDataObject::PyDataObject_imag(PyDataObject *self)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        d->unlock();
         return NULL;
     }
-
-    d->unlock();
 
     retObj->dataObject->addToProtocol("Extracted imaginary part of a complex dataObject via imag().");
 
