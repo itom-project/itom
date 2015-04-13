@@ -152,6 +152,7 @@ public:
     inline bool pySyntaxCheckAvailable() const { return (m_pyModSyntaxCheck != NULL); }
     QList<int> parseAndSplitCommandInMainComponents(const char *str, QByteArray &encoding) const; //can be directly called from different thread
     QString getPythonExecutable() const { return m_pythonExecutable; }
+    Qt::HANDLE getPythonThreadId() const { return m_pythonThreadId; }
 
 	static bool isInterruptQueued();
     static const PythonEngine *getInstance();
@@ -211,6 +212,8 @@ private:
     ito::RetVal autoReloaderCheck();
 
     static int queuedInterrupt(void *state); 
+
+    PyObject* getAndCheckIdentifier(const QString &identifier, ito::RetVal &retval) const;
 	
 
     //member variables
@@ -241,6 +244,8 @@ private:
     PyObject *m_pyModGC;
     PyObject *m_pyModSyntaxCheck;
     //PyObject *itomReturnException; //!< if this exception is thrown, the execution of the main application is stopped
+
+    Qt::HANDLE m_pythonThreadId;
 
     PyObject *dictUnicode;
 
@@ -346,8 +351,8 @@ public slots:
     void workspaceGetChildNode(PyWorkspaceContainer *container, QString fullNameParentItem);
     void workspaceGetValueInformation(PyWorkspaceContainer *container, QString fullItemName, QSharedPointer<QString> extendedValue, ItomSharedSemaphore *semaphore = NULL);
 
-    void putParamsToWorkspace(bool globalNotLocal, QStringList names, QVector<SharedParamBasePointer > values, ItomSharedSemaphore *semaphore = NULL);
-    void getParamsFromWorkspace(bool globalNotLocal, QStringList names, QVector<int> paramBaseTypes, QSharedPointer<SharedParamBasePointerVector > values, ItomSharedSemaphore *semaphore = NULL);
+    ito::RetVal putParamsToWorkspace(bool globalNotLocal, const QStringList &names, const QVector<SharedParamBasePointer > &values, ItomSharedSemaphore *semaphore = NULL);
+    ito::RetVal getParamsFromWorkspace(bool globalNotLocal, const QStringList &names, QVector<int> &paramBaseTypes, QSharedPointer<SharedParamBasePointerVector > &values, ItomSharedSemaphore *semaphore = NULL);
 
 private slots:
 

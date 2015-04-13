@@ -20,6 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#include "../python/pythonEngine.h"
 #include "../organizer/addInManager.h"
 #include "../helper/paramHelper.h"
 #include "apiFunctions.h"
@@ -65,6 +66,8 @@ namespace ito
         (void*)&ParamHelper::validateIntArrayMeta,        /* [26] */
         (void*)&ParamHelper::validateCharArrayMeta,       /* [27] */
         (void*)&ParamHelper::validateDoubleArrayMeta,     /* [28] */
+        (void*)&ApiFunctions::sendParamToPyWorkspaceThreadSafe,      /* [29] */
+        (void*)&ApiFunctions::sendParamsToPyWorkspaceThreadSafe,     /* [30] */
         NULL
     };
 
@@ -509,7 +512,7 @@ QString ApiFunctions::getCurrentWorkingDir(void)
     return QDir::cleanPath(QDir::currentPath());
 }
 
-
+//------------------------------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ApiFunctions::mshowConfigurationDialog(ito::AddInBase *plugin, ito::AbstractAddInConfigDialog *configDialogInstance)
 {
     ito::RetVal retval;
@@ -541,6 +544,46 @@ ito::RetVal ApiFunctions::mshowConfigurationDialog(ito::AddInBase *plugin, ito::
     configDialogInstance->deleteLater();
 
     return ito::retOk;
+}
+
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal ApiFunctions::sendParamToPyWorkspaceThreadSafe(const QString &varname, const QSharedPointer<ito::ParamBase> &value)
+{
+    return sendParamsToPyWorkspaceThreadSafe(QStringList(varname), QVector<QSharedPointer<ito::ParamBase> >(1, value));
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal ApiFunctions::sendParamsToPyWorkspaceThreadSafe(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values)
+{
+    ito::RetVal retval;
+    PythonEngine *pyEng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    if (pyEng)
+    {
+        if (QThread::currentThreadId() == pyEng->getPythonThreadId())
+        {
+            retval += pyEng->putParamsToWorkspace(true, varnames, values, NULL);
+        }
+        else
+        {
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            QMetaObject::invokeMethod(pyEng, "putParamsToWorkspace", Q_ARG(bool,true), Q_ARG(QStringList,varnames), Q_ARG(QVector<SharedParamBasePointer >, values), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            if (locker->wait(AppManagement::timeouts.pluginGeneral))
+            {
+                retval += locker->returnValue;
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, "timeout while sending variables to python workspace. Python is maybe busy. Try it later again.");
+            }
+        }
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, "Python is not available.");
+    }
+
+    return retval;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -172,7 +172,8 @@ PythonEngine::PythonEngine() :
     m_pyModGC(NULL),
     m_pyModSyntaxCheck(NULL),
     m_executeInternalPythonCodeInDebugMode(false),
-    dictUnicode(NULL)
+    dictUnicode(NULL),
+    m_pythonThreadId(0)
 {
     qRegisterMetaType<tPythonDbgCmd>("tPythonDbgCmd");
     qRegisterMetaType<size_t>("size_t");
@@ -279,7 +280,9 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
     PyObject *itomDbgDict = NULL;
 //    bool numpyAvailable = true;
 
-    qDebug() << "python in thread: " << QThread::currentThreadId ();
+    m_pythonThreadId = QThread::currentThreadId ();
+    qDebug() << "python in thread: " << m_pythonThreadId;
+
     readSettings();
 
     RetVal tretVal(retOk);
@@ -3692,7 +3695,7 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::putParamsToWorkspace(bool globalNotLocal, QStringList names, QVector<SharedParamBasePointer > values, ItomSharedSemaphore *semaphore)
+ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStringList &names, const QVector<SharedParamBasePointer > &values, ItomSharedSemaphore *semaphore)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
     tPythonState oldState = pythonState;
@@ -3709,7 +3712,7 @@ void PythonEngine::putParamsToWorkspace(bool globalNotLocal, QStringList names, 
     }
     else if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("It is not allowed to load matlab variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("It is not allowed to put variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
@@ -3739,10 +3742,12 @@ void PythonEngine::putParamsToWorkspace(bool globalNotLocal, QStringList names, 
         else
         {
             PyObject *existingItem = NULL;
+            PyObject *varname = NULL;
 
-            for (int i=0; i<names.size();i++)
+            for (int i = 0; (i < names.size()) && (!retVal.containsError()); i++)
             {
-                existingItem = PyDict_GetItemString(destinationDict, names[i].toLatin1().data()); //borrowed ref
+                varname = getAndCheckIdentifier(names[i], retVal); //new ref
+                existingItem = varname ? PyDict_GetItem(destinationDict, varname) : NULL; //borrowed ref
 
                 if (existingItem)
                 {
@@ -3768,16 +3773,21 @@ void PythonEngine::putParamsToWorkspace(bool globalNotLocal, QStringList names, 
                     }
                 }
 
-                value = PythonParamConversion::ParamBaseToPyObject(*(values[i]));
-                if (value == NULL)
+                if (varname)
                 {
-                    retVal += ito::RetVal::format(ito::retError, 0, tr("error while transforming value '%s' to PyObject*.").toLatin1().data(), names[i].toLatin1().data());
+                    value = PythonParamConversion::ParamBaseToPyObject(*(values[i]));
+                    if (value == NULL)
+                    {
+                        retVal += ito::RetVal::format(ito::retError, 0, tr("error while transforming value '%s' to PyObject*.").toLatin1().data(), names[i].toLatin1().data());
+                    }
+                    else
+                    {
+                        PyDict_SetItem(destinationDict, varname, value); //existing is automatically decremented
+                        Py_XDECREF(value);
+                    }
                 }
-                else
-                {
-                    PyDict_SetItemString(destinationDict, names[i].toLatin1().data(), value); //existing is automatically decremented
-                    Py_XDECREF(value);
-                }
+                
+                Py_XDECREF(varname);
             }
 
             if (semaphore != NULL) 
@@ -3812,10 +3822,12 @@ void PythonEngine::putParamsToWorkspace(bool globalNotLocal, QStringList names, 
         semaphore->returnValue = retVal;
         semaphore->release();
     }
+
+    return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::getParamsFromWorkspace(bool globalNotLocal, QStringList names, QVector<int> paramBaseTypes, QSharedPointer<SharedParamBasePointerVector > values, ItomSharedSemaphore *semaphore)
+ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStringList &names, QVector<int> &paramBaseTypes, QSharedPointer<SharedParamBasePointerVector > &values, ItomSharedSemaphore *semaphore)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
     tPythonState oldState = pythonState;
@@ -3834,7 +3846,7 @@ void PythonEngine::getParamsFromWorkspace(bool globalNotLocal, QStringList names
     }
     else if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("it is not allowed to load matlab variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("it is not allowed to load variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
@@ -3920,6 +3932,8 @@ void PythonEngine::getParamsFromWorkspace(bool globalNotLocal, QStringList names
         semaphore->returnValue = retVal;
         semaphore->release();
     }
+
+    return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3932,8 +3946,6 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
     PyObject* dict = NULL;
     PyObject* value = NULL;
     bool globalNotLocal = true; //may also be accessed by parameter, if desired
-    QByteArray ba = varname.toLatin1();
-    const char* varname2 = ba.data();
 
     if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
@@ -3971,16 +3983,11 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
         }
         else
         {
-            //if (!PyUnicode_IsIdentifier(PyUnicode_FromString(varname2)))
-            if (!PyUnicode_IsIdentifier(PyUnicode_DecodeLatin1(varname2, strlen(varname2), NULL)))
+            PyObject *pyVarname = getAndCheckIdentifier(varname, retVal); //new reference
+
+            if (pyVarname)
             {
-                PyErr_Clear();
-                QString ErrStr = tr("variable name '%1' is no valid python variable name.").arg(varname);
-                retVal += RetVal(retError, 0, ErrStr.toLatin1().data());
-            }
-            else
-            {
-                if (PyDict_GetItemString(dict, varname2) != NULL)
+                if (PyDict_GetItem(dict, pyVarname) != NULL)
                 {
                     QString ErrStr = tr("variable name '%1' already exists in dictionary").arg(varname);
                     retVal += RetVal(retError, 0, ErrStr.toLatin1().data());
@@ -4026,7 +4033,7 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
 
                     if (!retVal.containsError())
                     {
-                        PyDict_SetItemString(dict, varname2, value); //increments reference of value
+                        PyDict_SetItem(dict, pyVarname, value); //increments reference of value
                         Py_XDECREF(value);
                         if (PyErr_Occurred())
                         {
@@ -4036,6 +4043,8 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
                     }
                 }
             }
+
+            Py_XDECREF(pyVarname);
         }
 
         if (semaphore != NULL) //release semaphore now, since the following emit command will be a blocking connection, too.
@@ -4064,6 +4073,30 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
     }
 
     return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! get the unicode object from identifier and checks if it is a valid python identifier (variable name). This returns a new reference of the unicode object or NULL with a corresponding error message (python error flag is cleared)
+PyObject* PythonEngine::getAndCheckIdentifier(const QString &identifier, ito::RetVal &retval) const
+{
+    QByteArray ba = identifier.toLatin1();
+    PyObject *obj = PyUnicode_DecodeLatin1(ba.data(), ba.size(), NULL);
+    if (obj)
+    {
+        if (!PyUnicode_IsIdentifier(obj))
+        {
+            Py_DECREF(obj);
+            obj = NULL;
+            retval += ito::RetVal::format(ito::retError, 0, "string '%s' is no valid python identifier", ba.data());
+        }
+    }
+    else
+    {
+        PyErr_Clear();
+        retval += ito::RetVal::format(ito::retError, 0, "string '%s' cannot be interpreted as unicode", ba.data());
+    }
+
+    return obj;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -356,6 +356,37 @@ namespace ito
     #define apiShowConfigurationDialog \
         (* (ito::RetVal (*)(ito::AddInBase *plugin, ito::AbstractAddInConfigDialog *configDialogInstance)) ito::ITOM_API_FUNCS[22])
 
+
+    //! sends the given ParamBase value to the global python workspace
+    /*!
+        This methods sends the given ParamBase value to the global python workspace using the indicated variable name. Existing
+        values with the same name will be overwritten, unless they cover functions, methods, classes or types.
+
+        Invalid variable name will also result in an error.
+
+        \param varname is the variable name (must be a valid python variable name)
+        \param value is the ParamBase value
+
+        \return ito::retOk on success, else ito::retError
+    */
+    #define apiSendParamToPyWorkspace \
+        (* (ito::RetVal (*)(const QString &varname, const QSharedPointer<ito::ParamBase> &value)) ito::ITOM_API_FUNCS[29])
+
+    //! sends the given ParamBase value to the global python workspace
+    /*!
+        This methods sends the given ParamBase values to the global python workspace using the indicated variable names. Existing
+        values with the same name will be overwritten, unless they cover functions, methods, classes or types.
+
+        Invalid variable names will also result in an error.
+
+        \param varnames are the variable name (must be valid python variable names)
+        \param values are the ParamBase values
+
+        \return ito::retOk on success, else ito::retError
+    */
+    #define apiSendParamsToPyWorkspace \
+        (* (ito::RetVal (*)(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values)) ito::ITOM_API_FUNCS[30])
+
     /** \} */
 
 

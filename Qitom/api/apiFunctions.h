@@ -36,19 +36,44 @@ namespace ito
             ApiFunctions();
             ~ApiFunctions();
 
+            //! function called by apiFilterGetFunc
             static ito::RetVal mfilterGetFunc(const QString &name, ito::AddInAlgo::FilterDef *&FilterDef);
+
+            //! function called by apiFilterCall
             static ito::RetVal mfilterCall(const QString &name, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+
+            //! function called by apiFilterParamBase
             static ito::RetVal mfilterParamBase(const QString &name, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut);
+
+            //! function called by apiFilterParam
             static ito::RetVal mfilterParam(const QString &name, QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
+            //! function called by apiAddInGetInitParams
             static ito::RetVal maddInGetInitParams(const QString &name, const int pluginType, int *pluginNum, QVector<ito::Param> *&paramsMand, QVector<ito::Param> *&paramsOpt);
+
+            //! function called by apiAddInOpenActuator
             static ito::RetVal maddInOpenActuator(const QString &name, const int pluginNum, const bool autoLoadParams, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::AddInActuator *&actuator);
+
+            //! function called by apiAddInOpenDataIO
             static ito::RetVal maddInOpenDataIO(const QString &name, const int pluginNum, const bool autoLoadParams, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::AddInDataIO *&dataIO);
 
+            //! function called by apiCreateFromDataObject
             static ito::DataObject* mcreateFromDataObject(const ito::DataObject *dObj, int nrDims, ito::tDataType type, int *sizeLimits = NULL, ito::RetVal *retval = NULL);
+
+            //! function called by apiCreateFromNamedDataObject
             static ito::DataObject* mcreateFromNamedDataObject(const ito::DataObject *dObj, int nrDims, ito::tDataType type, const char *name = NULL, int *sizeLimits = NULL, ito::RetVal *retval = NULL);
+
+            //! function called by apiGetCurrentWorkingDir
             static QString getCurrentWorkingDir(void);
 
+            //! function called by apiShowConfigurationDialog
             static ito::RetVal mshowConfigurationDialog(ito::AddInBase *plugin, ito::AbstractAddInConfigDialog *configDialogInstance);
+            
+            //! function called by apiSendParamToPyWorkspace
+            static ito::RetVal sendParamToPyWorkspaceThreadSafe(const QString &varname, const QSharedPointer<ito::ParamBase> &value);
+
+            //! function called by apiSendParamsToPyWorkspace
+            static ito::RetVal sendParamsToPyWorkspaceThreadSafe(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values);
 
         private:
             int m_loadFPointer;
