@@ -449,6 +449,16 @@ void RangeWidget::setValues(int newMinimumValue, int newMaximumValue)
   d->BlockSliderUpdate = wasBlocking;
   this->setSliderValues();
 
+  if (d->equal(d->Slider->minimumValue(), d->MinimumSpinBox->value()) == false)
+  {
+      d->MinimumSpinBox->setValue(d->Slider->minimumValue());
+  }
+
+  if (d->equal(d->Slider->maximumValue(), d->MaximumSpinBox->value()) == false)
+  {
+      d->MaximumSpinBox->setValue(d->Slider->maximumValue());
+  }
+
   Q_ASSERT(d->equal(d->Slider->minimumValue(), d->MinimumSpinBox->value()));
   Q_ASSERT(d->equal(d->Slider->maximumValue(), d->MaximumSpinBox->value()));
   // restore the prop
