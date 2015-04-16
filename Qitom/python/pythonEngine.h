@@ -352,7 +352,7 @@ public slots:
     void workspaceGetValueInformation(PyWorkspaceContainer *container, QString fullItemName, QSharedPointer<QString> extendedValue, ItomSharedSemaphore *semaphore = NULL);
 
     ito::RetVal putParamsToWorkspace(bool globalNotLocal, const QStringList &names, const QVector<SharedParamBasePointer > &values, ItomSharedSemaphore *semaphore = NULL);
-    ito::RetVal getParamsFromWorkspace(bool globalNotLocal, const QStringList &names, QVector<int> &paramBaseTypes, QSharedPointer<SharedParamBasePointerVector > &values, ItomSharedSemaphore *semaphore = NULL);
+    ito::RetVal getParamsFromWorkspace(bool globalNotLocal, const QStringList &names, QVector<int> paramBaseTypes, QSharedPointer<SharedParamBasePointerVector > values, ItomSharedSemaphore *semaphore = NULL);
 
 private slots:
 
