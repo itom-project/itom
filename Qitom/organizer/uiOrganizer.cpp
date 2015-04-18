@@ -2216,7 +2216,6 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, QSharedPointer<QByteArr
 
     return retValue;
 }
-
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::getObjectInfo(const QString &classname, ito::UiOrganizer::tQMapArg *objInfo, ItomSharedSemaphore *semaphore)
 {
@@ -2511,7 +2510,33 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
 
     return retValue;
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::getObjectID(const QObject *obj, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    RetVal retValue(retOk);
 
+    *objectID = 0;
+
+    QHash<unsigned int, QPointer<QObject> >::iterator elem = m_objectList.begin();
+    while (elem != m_objectList.end())
+    {
+        if(elem.value() == obj)
+        {
+            *objectID = elem.key();
+            break;
+        }
+        ++elem;
+    }
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retValue;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
+
+    return retValue;
+}
 ////----------------------------------------------------------------------------------------------------------------------------------
 ////----------------------------------------------------------------------------------------------------------------------------------
 //RetVal UiOrganizer::plotImage(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> plotHandle, QString plotClassName /*= ""*/, ItomSharedSemaphore *semaphore)

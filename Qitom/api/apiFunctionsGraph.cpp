@@ -51,6 +51,7 @@ namespace ito
         (void*)&singleApiFunctionsGraph.mgetColorBarIdxFromName,/* [9] */
         (void*)&singleApiFunctionsGraph.mgetFigureSetting,      /* [10] */
         (void*)&singleApiFunctionsGraph.mgetPluginWidget,       /* [11] */
+        (void*)&singleApiFunctionsGraph.mgetFigrueUIDByHandle,  /* [12] */
         NULL
     };
 
@@ -159,8 +160,10 @@ ito::RetVal apiFunctionsGraph::mgetFigure(const QString &figCategoryName, const 
     {
         if(UID > 0)
         {
+            
             *figure = qobject_cast<QWidget*>(uiOrg->getPluginReference(UID));
-            if(*figure && parent)
+
+            if(*figure && parent && !(*figure)->parent())
             {
                 (*figure)->setParent( parent );
             }
@@ -418,6 +421,27 @@ ito::RetVal apiFunctionsGraph::mgetPluginWidget(char* algoWidgetFunc, QVector<it
     else
     {
         retval += ito::RetVal(ito::retError, 0, QObject::tr("UI-Organizer is not available!").toLatin1().data());
+    }
+
+    return retval;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal apiFunctionsGraph::mgetFigrueUIDByHandle(QObject *figure, ito::uint32 &UID)
+{
+    ito::RetVal retval;
+    UiOrganizer *uiOrg = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
+    if(uiOrg)
+    {
+        QSharedPointer<unsigned int > uid(new unsigned int) ;
+        *uid = 0;
+        uiOrg->getObjectID(figure, uid);
+        UID = *uid;
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError,0,"uiOrganizer is not available");
     }
 
     return retval;

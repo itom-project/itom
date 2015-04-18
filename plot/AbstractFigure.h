@@ -180,6 +180,20 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
         inline void mnuShowProperties(bool checked) { if (m_propertyDock) { m_propertyDock->setVisible(checked); } }
 
     public slots:
+
+        int getPlotID() 
+        { 
+            if(!ito::ITOM_API_FUNCS_GRAPH) return 0;
+            //return getUniqueID();
+            ito::uint32 thisID = 0;
+            ito::RetVal retval = apiGetFigureIDbyHanlde(this, thisID);
+
+            if(retval.containsError())
+            {
+                return 0;
+            }
+            return thisID; 
+        }
         void refreshPlot() { update(); }
 };
 

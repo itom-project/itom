@@ -98,6 +98,8 @@ namespace ito
     #define apiGetPluginWidget \
         (*(ito::RetVal (*)(void *, QVector<ito::ParamBase> *, QVector<ito::ParamBase> *, QPointer<QWidget>*)) ito::ITOM_API_FUNCS_GRAPH[11])
 
+    #define apiGetFigureIDbyHanlde \
+        (*(ito::RetVal (*)(QObject *, ito::uint32 &)) ito::ITOM_API_FUNCS_GRAPH[12])
     /** \} */
 
     /*#if defined(ITOM_IMPORT_PLOTAPI)
