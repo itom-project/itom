@@ -22,17 +22,35 @@ set to be default for this type of plot (static, line plot). The defaults can be
 
 If you have various plot plugins available that can handle that type of data object, you can also force the plot command to use your
 specific plugin, which is defined by its class name (see itom's :ref:`property dialog <gui-propertydialog>` for the class name). 
-If the class name cannot be found or if it is not able to plot the type of data object, itom falls back to the default plot plugin:
+If the class name cannot be found or if it is not able to plot the type of data object, itom falls back to the default plot plugin (and prints a warning into the console):
 
 .. code-block:: python
     
-    plot(data1d, "Itom1DQwtPlot") #case insensitive plot class name
+    plot(data1d, "itom1DQwtPlot") #case insensitive plot class name
 
-The result of both examples looks like this:
+The result of both examples looks like this (if no other default plot class has been chosen for 1D static plots):
 
 .. figure:: images/plot1d.png
     :scale: 70%
     :align: left
+    
+In the following sections, you will see that any plot has various properties that can be set in the property dialog or using square brackets in Python. However, you can also
+pass various properties to the :py:meth:`~itom.plot` command such that your customized plot is displayed.
+
+.. code-block:: python
+    
+    plot(data1d, properties={"title":"my user defined title","lineWidth":3, \
+         "lineStyle":"DashLine","legendPosition":"Bottom", \
+         "legendTitles":"my curve"})
+         
+Then, the plot looks like thies:
+
+.. figure:: images/plot1d_with_properties.png
+    :scale: 70%
+    :align: left
+    
+Passing a dictionary with various properties works with all types of plots. However, the list of available properties might change and can be obtained either using the Python
+command :py:meth:`~uiItem.info` or displaying the properties toolbox of the plot. For more information see also :ref:`PlotsProperties` below.
 
 Equivalent to the one-dimensional case, the following example shows how to simply plot a two-dimensional data object also using the command
 :py:meth:`~itom.plot`.
@@ -82,6 +100,8 @@ You can also show the live image of any camera using the GUI. Right-click on the
     :scale: 70%
     :align: left
 
+.. _PlotsProperties:
+    
 Properties of plots
 -----------------------------
 
