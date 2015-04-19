@@ -174,7 +174,7 @@ PyObject* PythonFigure::PyFigure_repr(PyFigure *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigurePlot_doc,"plot(data, [areaIndex, className]) -> plots a dataObject in the current or given area of this figure\n\
+PyDoc_STRVAR(pyFigurePlot_doc,"plot(data, [areaIndex, className, properties]) -> plots a dataObject in the current or given area of this figure\n\
 Plot an existing dataObject in not dockable, not blocking window. \n\
 The style of the plot will depend on the object dimensions.\n\
 If x-dim or y-dim are equal to 1, plot will be a lineplot else a 2D-plot.\n\
@@ -184,19 +184,21 @@ Parameters\n\
 data : {DataObject} \n\
     Is the data object whose region of interest will be plotted.\n\
 areaIndex: {int}, optional \n\
-    \n\
+    Area number where the plot should be put if subplots have been created\n\
 className : {str}, optional \n\
     class name of desired plot (if not indicated default plot will be used (see application settings) \n\
-");
+properties : {dict}, optional \n\
+    optional dictionary of properties that will be directly applied to the plot widget.");
 PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *kwds)
 {
-    const char *kwlist[] = {"data", "areaIndex", "className", NULL};
+    const char *kwlist[] = {"data", "areaIndex", "className", "properties", NULL};
     PyObject *data = NULL;
+    PyObject *propDict = NULL;
     int areaIndex = self->currentSubplotIdx;
     char* className = NULL;
     bool ok = false;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|is", const_cast<char**>(kwlist), &data, &areaIndex, &className))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|isO!", const_cast<char**>(kwlist), &data, &areaIndex, &className, &PyDict_Type, &propDict))
     {
         return NULL;
     }
@@ -249,6 +251,29 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
     QSharedPointer<unsigned int> objectID(new unsigned int);
     QVariantMap properties;
 
+    if (propDict)
+    {
+        PyObject *key, *value;
+        Py_ssize_t pos = 0;
+        QVariant valueV;
+        QString keyS;
+
+        while (PyDict_Next(propDict, &pos, &key, &value)) //key and value are borrowed
+        {
+            keyS = PythonQtConversion::PyObjGetString(key,true,ok);
+            valueV = PythonQtConversion::PyObjToQVariant(value);
+            if(valueV.isValid())
+            {
+                properties[keyS] = valueV;
+            }
+            else
+            {
+                PyErr_SetString(PyExc_RuntimeError, "at least one property value could not be parsed to QVariant.");
+                return NULL;
+            }
+        }
+    }
+
     QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(QSharedPointer<uint>, self->guardedFigHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
 
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
@@ -281,7 +306,7 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigureLiveImage_doc,"liveImage(cam, [areaIndex, className]) -> shows a camera live image in the current or given area of this figure\n\
+PyDoc_STRVAR(pyFigureLiveImage_doc,"liveImage(cam, [areaIndex, className, properties]) -> shows a camera live image in the current or given area of this figure\n\
 Creates a plot-image (2D) and automatically grabs images into this window.\n\
 This function is not blocking.\n\
 \n\
@@ -290,19 +315,21 @@ Parameters\n\
 cam : {dataIO-Instance} \n\
     Camera grabber device from which images are acquired.\n\
 areaIndex: {int}, optional \n\
-    \n\
+    Area number where the plot should be put if subplots have been created\n\
 className : {str}, optional \n\
     class name of desired plot (if not indicated default plot will be used (see application settings) \n\
-");
+properties : {dict}, optional \n\
+    optional dictionary of properties that will be directly applied to the plot widget.");
 /*static*/ PyObject* PythonFigure::PyFigure_liveImage(PyFigure *self, PyObject *args, PyObject *kwds)
 {
-    const char *kwlist[] = {"cam", "areaIndex", "className", NULL};
+    const char *kwlist[] = {"cam", "areaIndex", "className", "properties", NULL};
     PythonPlugins::PyDataIOPlugin *cam = NULL;
     int areaIndex = self->currentSubplotIdx;
     char* className = NULL;
+    PyObject* propDict = NULL;
     bool ok = true;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|is", const_cast<char**>(kwlist), &PythonPlugins::PyDataIOPluginType, &cam, &areaIndex, &className))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|isO!", const_cast<char**>(kwlist), &PythonPlugins::PyDataIOPluginType, &cam, &areaIndex, &className, &PyDict_Type, &propDict))
     {
         return NULL;
     }
@@ -325,6 +352,28 @@ className : {str}, optional \n\
     }
     QSharedPointer<unsigned int> objectID(new unsigned int);
     QVariantMap properties;
+    
+    if (propDict)
+    {
+        PyObject *key, *value;
+        Py_ssize_t pos = 0;
+        QVariant valueV;
+        QString keyS;
+        while (PyDict_Next(propDict, &pos, &key, &value)) 
+        {
+            keyS = PythonQtConversion::PyObjGetString(key,true,ok);
+            valueV = PythonQtConversion::PyObjToQVariant(value);
+            if(valueV.isValid())
+            {
+                properties[keyS] = valueV;
+            }
+            else
+            {
+                PyErr_SetString(PyExc_RuntimeError, "at least one property value could not be parsed to QVariant.");
+                return NULL;
+            }
+        }
+    }
 
     QMetaObject::invokeMethod(uiOrg, "figureLiveImage", Q_ARG(AddInDataIO*, cam->dataIOObj), Q_ARG(QSharedPointer<uint>, self->guardedFigHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
