@@ -186,7 +186,7 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
             if(!ito::ITOM_API_FUNCS_GRAPH) return 0;
             //return getUniqueID();
             ito::uint32 thisID = 0;
-            ito::RetVal retval = apiGetFigureIDbyHanlde(this, thisID);
+            ito::RetVal retval = apiGetFigureIDbyHandle(this, thisID);
 
             if(retval.containsError())
             {
