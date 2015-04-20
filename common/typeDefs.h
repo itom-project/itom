@@ -225,8 +225,6 @@ namespace ito
     #define strcpy_s(dest,len,source) strcpy(dest,source);
 #endif
 
-    
-
 } // namespace ito
 
 #endif

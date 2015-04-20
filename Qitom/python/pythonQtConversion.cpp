@@ -23,6 +23,7 @@
 #include "pythonQtConversion.h"
 
 #include "pythonUi.h"
+#include "pythonPlotItem.h"
 #include "pythonCommon.h"
 #include "pythonRgba.h"
 #include "pythonAutoInterval.h"
@@ -1013,6 +1014,14 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         {
             type = QMetaType::type("ito::AutoInterval");
         }
+        else if (Py_TYPE(val) == &ito::PythonPlotItem::PyPlotItemType)
+        {
+            type = QMetaType::type("ito::ItomPlotHandle");
+        }
+        else if (Py_TYPE(val) == &ito::PythonUi::PyUiItemType)
+        {
+            type = QMetaType::type("ito::ItomPlotHandle");
+        }
     }
 
     // special type request:
@@ -1379,6 +1388,39 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             if (ai)
             {
                 v = qVariantFromValue<ito::AutoInterval>(ai->interval);
+            }
+            else
+            {
+                v = QVariant();
+            }
+        }
+        else if (type == QMetaType::type("ito::ItomPlotHandle"))
+        {
+            if(PyPlotItem_Check(val))
+            {
+                ito::PythonPlotItem::PyPlotItem *plot = (ito::PythonPlotItem::PyPlotItem*)val;
+                if (plot)
+                {
+                    ito::ItomPlotHandle myHandle(plot->uiItem.objName, plot->uiItem.widgetClassName, plot->uiItem.objectID);
+                    v = qVariantFromValue<ito::ItomPlotHandle>(myHandle);
+                }
+                else
+                {
+                    v = QVariant();
+                }
+            }
+            else if PyUiItem_Check(val)
+            {
+                ito::PythonUi::PyUiItem *ui = (ito::PythonUi::PyUiItem*)val;
+                if (ui)
+                {
+                    ito::ItomPlotHandle myHandle(ui->objName, ui->widgetClassName, ui->objectID);
+                    v = qVariantFromValue<ito::ItomPlotHandle>(myHandle);
+                }
+                else
+                {
+                    v = QVariant();
+                }
             }
             else
             {
@@ -2666,6 +2708,31 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             ito::PythonAutoInterval::PyAutoInterval *ai = ito::PythonAutoInterval::createEmptyPyAutoInterval();
             ai->interval = *v;
             return (PyObject*)ai;
+
+        }
+        if (strcmp(name, "ito::ItomPlotHandle") == 0)
+        {
+            ito::ItomPlotHandle *v = (ito::ItomPlotHandle*)data;
+            //ito::PythonUi::PyUiItem *ui = (ito::PythonUi::PyUiItem*) ito::PythonUi::PyUiItem_new(&ito::PythonUi::PyUiItemType, NULL, NULL);
+            ito::PythonPlotItem::PyPlotItem *plotItem = (ito::PythonPlotItem::PyPlotItem*) ito::PythonPlotItem::PyPlotItem_new(&ito::PythonUi::PyUiItemType, NULL, NULL);
+            //ui->objectID = v->getObjectID();
+            //DELETE_AND_SET_NULL_ARRAY(ui->objName);
+            //ui->objName = new char[v->getObjName().length()+1];
+            //strcpy_s(ui->objName, v->getObjName().length()+1, v->getObjName().data());
+            //DELETE_AND_SET_NULL_ARRAY(ui->widgetClassName);
+            //ui->widgetClassName = new char[v->getWidgetClassName().length()+1];
+            //strcpy_s(ui->widgetClassName, v->getWidgetClassName().length()+1, v->getWidgetClassName().data());
+            //return (PyObject*)ui;
+            plotItem->uiItem.objectID = v->getObjectID();
+
+            DELETE_AND_SET_NULL_ARRAY(plotItem->uiItem.objName);
+            plotItem->uiItem.objName = new char[v->getObjName().length()+1];
+            strcpy_s(plotItem->uiItem.objName, v->getObjName().length()+1, v->getObjName().data());
+            DELETE_AND_SET_NULL_ARRAY(plotItem->uiItem.widgetClassName);
+            plotItem->uiItem.widgetClassName = new char[v->getWidgetClassName().length()+1];
+            strcpy_s(plotItem->uiItem.widgetClassName, v->getWidgetClassName().length()+1, v->getWidgetClassName().data());
+
+            return (PyObject*)plotItem;
 
         }
         if (strcmp(name, "ito::DataObject") == 0)

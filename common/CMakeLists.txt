@@ -56,6 +56,7 @@ set(itomCommon_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/color.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helperColor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interval.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/itomPlotHandle.h
 )
 
 set(itomCommon_SOURCES 
