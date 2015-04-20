@@ -68,6 +68,7 @@ namespace ito
         (void*)&ParamHelper::validateDoubleArrayMeta,     /* [28] */
         (void*)&ApiFunctions::sendParamToPyWorkspaceThreadSafe,      /* [29] */
         (void*)&ApiFunctions::sendParamsToPyWorkspaceThreadSafe,     /* [30] */
+        (void*)&ApiFunctions::maddInClose,                /* [31] */
         NULL
     };
 
@@ -400,7 +401,6 @@ ito::RetVal ApiFunctions::maddInOpenActuator(const QString &name, const int plug
 
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
     QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(int, pluginNum), Q_ARG(QString, name), Q_ARG(ito::AddInActuator**, &actuator), Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(bool, autoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond));
-    //retval = AIM->initAddIn(pluginNum, pluginName, &self->actuatorObj, paramsMand, paramsOpt, enableAutoLoadParams);
     waitCond->wait(-1);
     retval += waitCond->returnValue;
     waitCond->deleteSemaphore();
@@ -422,9 +422,27 @@ ito::RetVal ApiFunctions::maddInOpenDataIO(const QString &name, const int plugin
 
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
     QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(int, pluginNum), Q_ARG(QString, name), Q_ARG(ito::AddInDataIO**, &dataIO), Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(bool, autoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond));
-    //retval = AIM->initAddIn(pluginNum, pluginName, &self->actuatorObj, paramsMand, paramsOpt, enableAutoLoadParams);
     waitCond->wait(-1);
     retval += waitCond->returnValue;
+    waitCond->deleteSemaphore();
+    waitCond = NULL;
+
+    return retval;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ApiFunctions::maddInClose(ito::AddInBase *instance)
+{
+    ito::RetVal retval(ito::retOk);
+
+    ito::AddInManager *AIM = ito::AddInManager::getInstance();
+    if (!AIM)
+    {
+        return ito::RetVal(ito::retError, 0, QObject::tr("Fatal error! Could not get addInManager instance!").toLatin1().data());
+    }
+
+    ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
+    QMetaObject::invokeMethod(AIM, "closeAddIn", Q_ARG(ito::AddInBase*, instance), Q_ARG(ItomSharedSemaphore*, waitCond));
     waitCond->deleteSemaphore();
     waitCond = NULL;
 

@@ -95,10 +95,18 @@ namespace ito
         (*(ito::RetVal (*)(const QString &name, const int, int *, QVector<ito::Param> *&, QVector<ito::Param> *&)) ito::ITOM_API_FUNCS[4])
 
     #define apiAddInOpenActuator \
-        (*(ito::RetVal (*)(const QString &name, const int, const bool, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt)) ito::ITOM_API_FUNCS[5])
+        (*(ito::RetVal (*)(const QString &name, const int, const bool, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::AddInActuator *&instance)) ito::ITOM_API_FUNCS[5])
 
     #define apiAddInOpenDataIO \
-        (*(ito::RetVal (*)(const QString &name, const int, const bool, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt)) ito::ITOM_API_FUNCS[6])
+        (*(ito::RetVal (*)(const QString &name, const int, const bool, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::AddInDataIO *&instance)) ito::ITOM_API_FUNCS[6])
+
+    //! decrements reference of given plugin instance. If the reference drops to zero, the instance is savely closed and deleted.
+    /*!
+        This method does not wait for the plugin to be closed since this might cause deadlocks if called from the close method or destructor of another plugin.
+        The AddIn manager will close the given instance as soon as possible.
+    */
+    #define apiAddInClose \
+        (*(ito::RetVal (*)(ito::AddInBase *instance)) ito::ITOM_API_FUNCS[31])
 
     //! validates a zero-terminated string with respect to given ito::StringMeta instance.
     /*!

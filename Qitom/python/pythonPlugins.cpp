@@ -1123,7 +1123,7 @@ void PythonPlugins::PyActuatorPlugin_dealloc(PyActuatorPlugin* self)
 
             ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
             
-            if (QMetaObject::invokeMethod(aim, "closeAddIn", Q_ARG(ito::AddInBase**, (ito::AddInBase**)&self->actuatorObj), Q_ARG(ItomSharedSemaphore*, waitCond)))
+            if (QMetaObject::invokeMethod(aim, "closeAddIn", Q_ARG(ito::AddInBase*, (ito::AddInBase*)self->actuatorObj), Q_ARG(ItomSharedSemaphore*, waitCond)))
             {
                 waitCond->wait(-1);
                 retval += waitCond->returnValue;
@@ -2407,7 +2407,7 @@ void PythonPlugins::PyDataIOPlugin_dealloc(PyDataIOPlugin* self)
 
             ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
 
-            if (QMetaObject::invokeMethod(aim, "closeAddIn", Q_ARG(ito::AddInBase**, (ito::AddInBase**)&self->dataIOObj), Q_ARG(ItomSharedSemaphore*, waitCond)))
+            if (QMetaObject::invokeMethod(aim, "closeAddIn", Q_ARG(ito::AddInBase*, (ito::AddInBase*)self->dataIOObj), Q_ARG(ItomSharedSemaphore*, waitCond)))
             {
                 waitCond->wait(-1);
                 retval += waitCond->returnValue;
@@ -3929,7 +3929,7 @@ void PythonPlugins::PyAlgoPlugin_dealloc(PyAlgoPlugin* self)
             ito::RetVal retval(ito::retOk);
 
             ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-            QMetaObject::invokeMethod(aim, "closeAddIn", Q_ARG(ito::AddInBase**, (ito::AddInBase**)&self->algoObj), Q_ARG(ItomSharedSemaphore*, waitCond));
+            QMetaObject::invokeMethod(aim, "closeAddIn", Q_ARG(ito::AddInBase*, (ito::AddInBase*)self->algoObj), Q_ARG(ItomSharedSemaphore*, waitCond));
             waitCond->wait(-1);
             retval += waitCond->returnValue;
             waitCond->deleteSemaphore();
