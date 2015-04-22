@@ -249,7 +249,7 @@ void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipG
         m_generalOptionsCache = options;
 
         QStringList arguments;
-        arguments << "-m" << "pip" << "list";
+        arguments << "-m" << "pip" << "list"; //here the pip version check is done
         arguments << parseGeneralOptions(options);
         m_pipProcess.start(m_pythonPath, arguments);
     }
@@ -281,7 +281,7 @@ void PipManager::listAvailablePackages2(const QStringList &names)
 
         QStringList arguments;
         arguments << "-m" << "pip" << "show" << names;
-        arguments << parseGeneralOptions(m_generalOptionsCache);
+        arguments << parseGeneralOptions(m_generalOptionsCache) << "--disable-pip-version-check"; //version has already been checked in listAvailablePackages. This is sufficient.
         m_pipProcess.start(m_pythonPath, arguments);
     }
 }
@@ -308,7 +308,7 @@ void PipManager::checkPackageUpdates(const PipGeneralOptions &options /*= PipGen
         m_currentTask = taskCheckUpdates;
 
         QStringList arguments;
-        arguments << "-m" << "pip" << "list" << "--outdated";
+        arguments << "-m" << "pip" << "list" << "--outdated" << "--disable-pip-version-check"; //version has already been checked in listAvailablePackages. This is sufficient.
         arguments << parseGeneralOptions(options);
         m_pipProcess.start(m_pythonPath, arguments);
     }
@@ -364,7 +364,7 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
             arguments << "--no-use-wheel";
         }
 
-        arguments << parseGeneralOptions(options);
+        arguments << parseGeneralOptions(options) << "--disable-pip-version-check"; //version has already been checked in listAvailablePackages. This is sufficient.
 
         arguments << installSettings.packageName;
 
@@ -402,7 +402,7 @@ void PipManager::uninstallPackage(const QString &packageName, bool runAsSudo, co
         m_currentTask = taskUninstall;
 
         QStringList arguments;
-        arguments << "-m" << "pip" << "uninstall" << "--yes";
+        arguments << "-m" << "pip" << "uninstall" << "--yes" << "--disable-pip-version-check"; //version has already been checked in listAvailablePackages. This is sufficient.
 
         arguments << parseGeneralOptions(options);
 
@@ -521,9 +521,9 @@ void PipManager::finalizeTask()
         }
         else if (temp == taskListPackages1)
         {
-            if (error != "")
+            if (error != "" && output == "")
             {
-                emit pipRequestFinished(temp, "Error obtaining list of packages (freeze)\n", false);
+                emit pipRequestFinished(temp, "Error obtaining list of packages (list)\n", false);
             }
             else
             {
@@ -547,7 +547,7 @@ void PipManager::finalizeTask()
         }
         else if (temp == taskListPackages2)
         {
-            if (error != "")
+            if (error != "" && output == "")
             {
                 emit pipRequestFinished(temp, "Error obtaining list of packages (show)\n", false);
             }
@@ -630,7 +630,7 @@ void PipManager::finalizeTask()
         }
         else if (temp == taskCheckUpdates)
         {
-            if (error != "")
+            if (error != "" && output == "")
             {
                 emit pipRequestFinished(temp, "Error obtaining list of outdated packages (list)\n", false);
             }
@@ -681,7 +681,7 @@ void PipManager::finalizeTask()
         }
         else if (temp == taskInstall)
         {
-            if (error != "")
+            if (error != "" && output == "")
             {
                 emit pipRequestFinished(temp, "Error installing package\n", false);
             }
@@ -692,7 +692,7 @@ void PipManager::finalizeTask()
         }
         else if (temp == taskUninstall)
         {
-            if (error != "")
+            if (error != "" && output == "")
             {
                 emit pipRequestFinished(temp, "Error uninstalling package\n", false);
             }

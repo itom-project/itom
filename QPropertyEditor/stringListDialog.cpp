@@ -46,12 +46,21 @@ StringListDialog::StringListDialog(const QStringList &stringList, QWidget *paren
     ui.newListItemButton->setIcon(plusIcon);
     ui.deleteListItemButton->setIcon(minusIcon);
 
-    ui.listWidget->addItems(stringList);
+    foreach(const QString &stringItem, stringList)
+    {
+        QListWidgetItem *item = new QListWidgetItem(stringItem);
+        item->setFlags(item->flags() | Qt::ItemIsEditable);
+        ui.listWidget->addItem(item);
+    }
 
     if (ui.listWidget->count() > 0)
+    {
         ui.listWidget->setCurrentRow(0);
+    }
     else
+    {
         updateEditor();
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -181,4 +190,10 @@ void StringListDialog::updateEditor()
     ui.moveListItemUpButton->setEnabled(moveRowUpEnabled);
     ui.moveListItemDownButton->setEnabled(moveRowDownEnabled);
     ui.deleteListItemButton->setEnabled(currentItemEnabled);
+}
+
+//-------------------------------------------------------------------------------------
+void StringListDialog::on_listWidget_itemDoubleClicked(QListWidgetItem *item)
+{
+    ui.listWidget->editItem(item);
 }
