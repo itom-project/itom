@@ -146,12 +146,8 @@ for a bug and a bookmark in one line. Please note, that one line can also contai
 
 .. note::
     
-    You can automatically download and install **frosted** using the tool **pip** from python (part of python 3.4 or later, for older version of pythons see https://pip.pypa.io/en/latest/installing.html
-    to install **pip**. The executable of **pip** (pip.exe) is located in the **scripts** subfolder of your Python installation. Open a command line and browse to this folder. Then execute::
-        
-        pip install frosted
-        
-    to install **frosted** and restart |itom|. Try to call::
+    You can automatically download and install **frosted** using the :ref:`python package manager <gui-pipmanager>` of |itom| accessible via the *Script* menu of the main window.
+    Click *install* in the manager and search the python package index for the package **frosted**. Try to call::
         
         import frosted
         
