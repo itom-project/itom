@@ -105,7 +105,7 @@ class PipManager : public QAbstractItemModel
 
 
     private:
-        QStringList parseGeneralOptions(const PipGeneralOptions &options, bool ignoreRetries = false) const;
+        QStringList parseGeneralOptions(const PipGeneralOptions &options, bool ignoreRetries = false, bool ignoreVersionCheck = true) const;
         void clearBuffers();
 
         QList<QString> m_headers;               //!<  string list of names of column headers

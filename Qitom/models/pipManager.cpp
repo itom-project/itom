@@ -250,7 +250,7 @@ void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipG
 
         QStringList arguments;
         arguments << "-m" << "pip" << "list"; //here the pip version check is done
-        arguments << parseGeneralOptions(options);
+        arguments << parseGeneralOptions(options, false, false);
         m_pipProcess.start(m_pythonPath, arguments);
     }
 }
@@ -281,7 +281,7 @@ void PipManager::listAvailablePackages2(const QStringList &names)
 
         QStringList arguments;
         arguments << "-m" << "pip" << "show" << names;
-        arguments << parseGeneralOptions(m_generalOptionsCache) << "--disable-pip-version-check"; //version has already been checked in listAvailablePackages. This is sufficient.
+        arguments << parseGeneralOptions(m_generalOptionsCache, false, true); //version has already been checked in listAvailablePackages. This is sufficient.
         m_pipProcess.start(m_pythonPath, arguments);
     }
 }
@@ -308,8 +308,8 @@ void PipManager::checkPackageUpdates(const PipGeneralOptions &options /*= PipGen
         m_currentTask = taskCheckUpdates;
 
         QStringList arguments;
-        arguments << "-m" << "pip" << "list" << "--outdated" << "--disable-pip-version-check"; //version has already been checked in listAvailablePackages. This is sufficient.
-        arguments << parseGeneralOptions(options);
+        arguments << "-m" << "pip" << "list" << "--outdated"; //version has already been checked in listAvailablePackages. This is sufficient.
+        arguments << parseGeneralOptions(options, false, true);
         m_pipProcess.start(m_pythonPath, arguments);
     }
 }
@@ -364,7 +364,7 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
             arguments << "--no-use-wheel";
         }
 
-        arguments << parseGeneralOptions(options) << "--disable-pip-version-check"; //version has already been checked in listAvailablePackages. This is sufficient.
+        arguments << parseGeneralOptions(options, false, true); //version has already been checked in listAvailablePackages. This is sufficient.
 
         arguments << installSettings.packageName;
 
@@ -402,9 +402,9 @@ void PipManager::uninstallPackage(const QString &packageName, bool runAsSudo, co
         m_currentTask = taskUninstall;
 
         QStringList arguments;
-        arguments << "-m" << "pip" << "uninstall" << "--yes" << "--disable-pip-version-check"; //version has already been checked in listAvailablePackages. This is sufficient.
+        arguments << "-m" << "pip" << "uninstall" << "--yes"; //version has already been checked in listAvailablePackages. This is sufficient.
 
-        arguments << parseGeneralOptions(options);
+        arguments << parseGeneralOptions(options, false, true);
 
         arguments << packageName;
 
@@ -707,7 +707,7 @@ void PipManager::finalizeTask()
 }
 
 //-----------------------------------------------------------------------------------------
-QStringList PipManager::parseGeneralOptions(const PipGeneralOptions &options, bool ignoreRetries /*= false*/) const
+QStringList PipManager::parseGeneralOptions(const PipGeneralOptions &options, bool ignoreRetries /*= false*/, bool ignoreVersionCheck /*= true*/) const
 {
     QStringList output;
 
@@ -734,6 +734,11 @@ QStringList PipManager::parseGeneralOptions(const PipGeneralOptions &options, bo
     if (options.retries > 0 && !ignoreRetries && MAJORVERSION(m_pipVersion) >= 6)
     {
         output << "--retries" << QString("%1").arg(options.retries);
+    }
+
+    if (ignoreVersionCheck && MAJORVERSION(m_pipVersion) >= 6)
+    {
+        output << "--disable-pip-version-check";
     }
     
     return output;
