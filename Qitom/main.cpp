@@ -301,7 +301,7 @@ int main(int argc, char *argv[])
         5. finalizeApplication() if itom is closed
     */
     int ret;
-    MainApplication m(MainApplication::standard);
+    ito::MainApplication m(ito::MainApplication::standard);
     if (ito::UserOrganizer::getInstance()->loadSettings(defUserName) != 0)
     {
         ret = 0; 

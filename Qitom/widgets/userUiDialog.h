@@ -38,7 +38,8 @@
 #include <qstringlist.h>
 #include <qmetaobject.h>
 
-using namespace ito;
+namespace ito
+{
 
 class UserUiDialog : public QDialog
 {
@@ -78,5 +79,7 @@ public slots:
 private slots:
     void dialogButtonClicked ( QAbstractButton * button );
 };
+
+} //end namespace ito
 
 #endif
