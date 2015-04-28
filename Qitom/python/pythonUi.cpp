@@ -37,7 +37,7 @@
 #include <qmessagebox.h>
 #include <qmetaobject.h>
 
-QHash<QByteArray, QSharedPointer<MethodDescriptionList> > ito::PythonUi::methodDescriptionListStorage;
+QHash<QByteArray, QSharedPointer<ito::MethodDescriptionList> > ito::PythonUi::methodDescriptionListStorage;
 
 namespace ito
 {
@@ -1465,7 +1465,7 @@ bool PythonUi::loadMethodDescriptionList(PyUiItem *self)
     if(self->methodList == NULL)
     {
         QByteArray className(self->widgetClassName);
-        QHash<QByteArray, QSharedPointer<MethodDescriptionList> >::const_iterator it = methodDescriptionListStorage.constFind( className );
+        QHash<QByteArray, QSharedPointer<ito::MethodDescriptionList> >::const_iterator it = methodDescriptionListStorage.constFind( className );
         if(it != methodDescriptionListStorage.constEnd())
         {
             self->methodList = it->data();

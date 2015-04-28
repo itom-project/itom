@@ -193,7 +193,7 @@ public:
     #define PyUi_Check(op) PyObject_TypeCheck(op, &ito::PythonUi::PyUiType)
 
 private:
-    static QHash<QByteArray, QSharedPointer<MethodDescriptionList> > methodDescriptionListStorage; //key is a widget-className, every PyUiItem which needs a methodDescriptionList gets it from this storage or if not available from UiOrganizer and puts it then to this storage
+    static QHash<QByteArray, QSharedPointer<ito::MethodDescriptionList> > methodDescriptionListStorage; //key is a widget-className, every PyUiItem which needs a methodDescriptionList gets it from this storage or if not available from UiOrganizer and puts it then to this storage
 };
 
 }; //end namespace ito
