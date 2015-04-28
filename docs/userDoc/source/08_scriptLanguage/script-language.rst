@@ -64,6 +64,8 @@ Other recommended packages are:
 * **PIL** is the python image library
 * **sphinx** for creating this documentation
 
+See :ref:`python package manager <gui-pipmanager>` for more information about getting packages.
+
 .. _script-language-reload-modules:
 
 Reload modified modules

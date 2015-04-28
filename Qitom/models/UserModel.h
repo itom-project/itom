@@ -105,10 +105,12 @@ class UserModel : public QAbstractItemModel
         QList<QVariant> m_alignment;            //!<  list of alignments for the corresponding headers
         QList<UserInfoStruct> m_userInfo;     //!<  list with user information
 };
-}
+} //end namespace ito
 
 Q_DECLARE_METATYPE(ito::UserRole);
 Q_DECLARE_METATYPE(ito::UserFeatures);
 Q_DECLARE_METATYPE(ito::UserFeature);
+
+
 
 #endif //USERMODEL_H
