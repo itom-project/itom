@@ -865,7 +865,7 @@ DataObject::~DataObject(void)
     \param planeIndex is the zero-based index of the requested plane within the current ROI of the data object
     \return pointer to the cv::Mat plane or NULL if planeIndex is out of range
     \sa seekMat
-    \sa get_mdata
+    \sa get_mdata, getContinuousCvPlaneMat
 */
 cv::Mat* DataObject::getCvPlaneMat(const int planeIndex)
 {
@@ -878,6 +878,7 @@ cv::Mat* DataObject::getCvPlaneMat(const int planeIndex)
     return NULL;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! returns the pointer to the underlying cv::Mat that represents the plane with given planeIndex of the entire data object.
 /*!
     This command is equivalent to get_mdata()[seekMat(planeIndex)] but checks for out-of-range errors.
@@ -885,7 +886,7 @@ cv::Mat* DataObject::getCvPlaneMat(const int planeIndex)
     \param planeIndex is the zero-based index of the requested plane within the current ROI of the data object
     \return pointer to the cv::Mat plane or NULL if planeIndex is out of range
     \sa seekMat
-    \sa get_mdata
+    \sa get_mdata, getContinuousCvPlaneMat
 */
 const cv::Mat* DataObject::getCvPlaneMat(const int planeIndex) const
 {
@@ -896,6 +897,35 @@ const cv::Mat* DataObject::getCvPlaneMat(const int planeIndex) const
         return (const cv::Mat*)(m_data[seekMat(planeIndex, numMats)]);
     }
     return NULL;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! returns a shallow or deep copy of a cv::Mat plane with given index. If the current plane is not continuous (due to a roi), a cloned, continuous matrix is returned, else a shallow copy.
+/*!
+    \param planeIndex is the zero-based index of the requested plane within the current ROI of the data object
+    \return shallow copy or clone of desired plane, depending if the plane is continuous (no roi set in plane dimensions) or not.
+    \sa seekMat
+    \sa get_mdata, getCvPlaneMat
+*/
+const cv::Mat DataObject::getContinuousCvPlaneMat(const int planeIndex) const
+{
+    int numMats = getNumPlanes();
+
+    if (planeIndex >= 0 && planeIndex < numMats)
+    {
+        const cv::Mat* mat = (const cv::Mat*)(m_data[seekMat(planeIndex, numMats)]);
+
+        if (mat->isContinuous())
+        {
+            return *mat;
+        }
+        else
+        {
+            return mat->clone();
+        }
+    }
+
+    return cv::Mat();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

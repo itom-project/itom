@@ -837,6 +837,9 @@ namespace ito {
         
         //! returns pointer to cv::Mat plane with given index considering a possible roi.
         const cv::Mat* getCvPlaneMat(const int planeIndex) const;
+
+        //! returns a shallow or deep copy of a cv::Mat plane with given index. If the current plane is not continuous (due to a roi), a cloned, continuous matrix is returned, else a shallow copy.
+        const cv::Mat getContinuousCvPlaneMat(const int planeIndex) const;
         
         //! returns array of pointers to cv::_Mat-matrices (planes) of the data object.
         /*!
