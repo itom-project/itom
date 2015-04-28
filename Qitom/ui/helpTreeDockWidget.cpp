@@ -1800,35 +1800,58 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
 {
     QStringList result;
     QByteArray examplePrefix = "example:";
-    QString t = link.toString();
+    //QString t = link.toString();
+    //QUrl::fromPercentEncoding(link.fragment().toLatin1())
 
     if (link.scheme() == "itom")
     {
         if (link.host() == "widget.html")
         {
             result.append("widget");
-            result.append(link.fragment());
+            #if QT_VERSION < 0x050000
+                result.append(link.fragment());
+            #else
+                result.append(QUrl::fromPercentEncoding(link.fragment().toLatin1()));
+            #endif
+            
         }
         else if (link.host() == "algorithm.html")
         {
             result.append("algorithm");
-            result.append(link.fragment());
+            #if QT_VERSION < 0x050000
+                result.append(link.fragment());
+            #else
+                result.append(QUrl::fromPercentEncoding(link.fragment().toLatin1()));
+            #endif
+            
         }
         else
         {
             result.append("itom");
-            result.append(link.host());
+            #if QT_VERSION < 0x050000
+                result.append(link.host());
+            #else
+                result.append(QUrl::fromPercentEncoding(link.host().toLatin1()));
+            #endif
         }
     }
     else if (link.scheme() == "mailto")
     {
         result.append("mailto");
-        result.append(link.path());
+        #if QT_VERSION < 0x050000
+            result.append(link.path());
+        #else
+            result.append(QUrl::fromPercentEncoding(link.path().toLatin1()));
+        #endif
     }
     else if (link.scheme() == "example")
     {
         result.append("example");
-        result.append(link.fragment());
+        #if QT_VERSION < 0x050000
+            result.append(link.fragment());
+        #else
+            result.append(QUrl::fromPercentEncoding(link.fragment().toLatin1()));
+        #endif
     }
     else
     {
