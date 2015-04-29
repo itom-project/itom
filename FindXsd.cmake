@@ -9,6 +9,12 @@ IF (XSD_INCLUDE_DIR AND XSD_EXECUTABLE)
 SET(XSD_FIND_QUIETLY TRUE)
 ENDIF (XSD_INCLUDE_DIR AND XSD_EXECUTABLE)
 
+IF (BUILD_TARGET64)
+    set(POSTFIX, "64")
+ELSE (BUILD_TARGET64)
+    set(POSTFIX, "")
+ENDIF (BUILD_TARGET64)
+
 SET (XSD_POSSIBLE_ROOT_DIRS
   "$ENV{XSDDIR}"
   "$ENV{XSDDIR}"
@@ -17,8 +23,17 @@ SET (XSD_POSSIBLE_ROOT_DIRS
   "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3"
   "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3"
   "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3"
+  "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3/bin"
+  "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3/bin"
+  "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/bin"
+  "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0"
+  "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 4.0"
+  "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0"
+  "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0/bin$POSTFIX"
+  "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 4.0/bin$POSTFIX"
+  "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/bin$POSTFIX"
   ${CMAKE_SOURCE_DIR}/../xsd/libxsd
- "$ENV{PATH}"
+  "$ENV{PATH}"
   )
 
  FIND_PATH(XSD_ROOT_DIR 
@@ -49,6 +64,9 @@ FIND_PATH(XSD_INCLUDE_DIR xsd/cxx/parser/elements.hxx
   "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3/include"
   "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3/include"
   "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/include"
+  "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0/include"
+  "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 4.0/include"
+  "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/include"  
   ${CMAKE_SOURCE_DIR}/../xsd/libxsd
   "${XSD_ROOT_DIR}/include"
   "${XSD_ROOT_DIR}/libxsd"
@@ -63,8 +81,11 @@ FIND_PROGRAM(XSD_EXECUTABLE
   "$ENV{ProgramFiles}/CodeSynthesis XSD 3.3/bin"
   "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 3.3/bin"
   "$ENV{ProgramW6432}/CodeSynthesis XSD 3.3/bin"
+  "$ENV{ProgramFiles}/CodeSynthesis XSD 4.0/bin$POSTFIX"
+  "$ENV{ProgramFiles(x86)}/CodeSynthesis XSD 4.0/bin$POSTFIX"
+  "$ENV{ProgramW6432}/CodeSynthesis XSD 4.0/bin$POSTFIX"  
   "$ENV{PATH}"
-  "$ENV{XSDDIR}/bin"
+  "$ENV{XSDDIR}/bin$POSTFIX"
 )
 
 IF (NOT XSD_INCLUDE_DIR)
@@ -101,13 +122,13 @@ if (NOT XSD_EXECUTABLE)
     UNSET(XSD_EXECUTABLE CACHE)
 endif (NOT XSD_EXECUTABLE)
 
-IF (NOT ((XSD_VERMAJ GREATER 2) AND (XSD_VERMIN GREATER 2)))
+IF ((NOT (XSD_VERMAJ GREATER 3)) AND (NOT ((XSD_VERMAJ GREATER 2) AND (XSD_VERMIN GREATER 2))))
     SET(XSD_INCLUDE_DIR )
     UNSET(XSD_INCLUDE_DIR CACHE)
     IF(XSD_FIND_REQUIRED)
         message (FATAL_ERROR "XSD version number mismatch")
     ENDIF()
-ENDIF (NOT ((XSD_VERMAJ GREATER 2) AND (XSD_VERMIN GREATER 2)))
+ENDIF ((NOT (XSD_VERMAJ GREATER 3)) AND (NOT ((XSD_VERMAJ GREATER 2) AND (XSD_VERMIN GREATER 2))))
 
 #
 # General CMake package configuration.
