@@ -1094,6 +1094,7 @@ namespace ito {
         DataObject adj() const;
         DataObject trans() const;
         
+        // element-wise multiplication 
         DataObject mul(const DataObject &mat2, const double scale = 1.0) const;
         DataObject div(const DataObject &mat2, const double scale = 1.0) const;
         DataObject squeeze() const;

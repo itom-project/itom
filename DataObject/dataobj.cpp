@@ -6002,35 +6002,38 @@ template<typename _Tp> RetVal MulFunc(const DataObject *src1, const DataObject *
 typedef RetVal (*tMulFunc)(const DataObject *src1, const DataObject *src2, DataObject *res, const double scale);
 MAKEFUNCLIST(MulFunc)
 
-//!
-/*
-    \todo think about the definition (operator * ...)
+//! high-level method which does a element-wise multiplication of elements in this matrix with elements in the second matrix.
+/*!
+    The result is returned as new data object with the same type and size than this object. The axis scale, offset, description and
+    unit values are copied from this object. Tags are copied from this object, too.
+    Optionally the multiplication can be scaled by a scaling factor, which is set to one by default.
+
+    \param &mat2 is the second source matrix
+    \param scale is the scaling factor (default: 1.0)
+    \return result matrix
+    \sa DivFunc
 */
 DataObject DataObject::mul(const DataObject &mat2, const double scale) const
 {
-    //if ((m_size != mat2.m_size) || (m_type != mat2.m_type))
-    //{
-    //    cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-    //}
-
     if ((m_size != mat2.m_size) || (m_type != mat2.m_type))
     {
         // Added this to allow 1x1x1xMxN addition with 2D-Objects
         if(!(this->getNumPlanes() == mat2.getNumPlanes() && 
                 mat2.getNumPlanes() == 1 && 
-                this->getSize(this->getDims() - 1) == mat2.getSize(mat2.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == mat2.getSize(mat2.getDims() - 2))
+                this->getSize(m_dims - 1) == mat2.getSize(mat2.getDims() - 1) &&
+                this->getSize(m_dims - 2) == mat2.getSize(mat2.getDims() - 2))
             )
         {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));     
+            cv::error(cv::Exception(CV_StsAssert,"both data objects differ in size or type","", __FILE__, __LINE__));     
         }
     }
 
     unsigned char continuous = 0;
     DataObject result(m_dims,m_size,m_type,continuous);    
-    //int64 start = cv::getCPUTickCount();
+    copyAxisTagsTo(result);
+    copyTagMapTo(result);
+
     fListMulFunc[m_type](this, &mat2, &result, scale);
-    //start = cv::getCPUTickCount() -start;
 
     return result;
 }
@@ -6047,10 +6050,9 @@ DataObject DataObject::mul(const DataObject &mat2, const double scale) const
     \param *src1 is the first source matrix
     \param *src2 is the second source matrix
     \param *res is the result matrix, which must have the same size than the source matrices
-    \param double scale is the scaling factor (default: 1.0)
     \return retOk
 */
-template<typename _Tp> RetVal DivFunc(const DataObject *src1, const DataObject *src2, DataObject *res, const double /*scale*/)
+template<typename _Tp> RetVal DivFunc(const DataObject *src1, const DataObject *src2, DataObject *res)
 {
     //the transpose flag of this matrix already is evaluated if src2 is not transposed
    int numMats = src1->getNumPlanes();
@@ -6130,10 +6132,9 @@ template<typename _Tp> RetVal DivFunc(const DataObject *src1, const DataObject *
     \param *src1 is the first source matrix
     \param *src2 is the second source matrix
     \param *res is the result matrix, which must have the same size than the source matrices
-    \param double scale is the scaling factor (default: 1.0)
     \return retOk
 */
-template<> RetVal DivFunc<Rgba32>(const DataObject *src1, const DataObject *src2, DataObject *res, const double /*scale*/)
+template<> RetVal DivFunc<Rgba32>(const DataObject *src1, const DataObject *src2, DataObject *res)
 {
     //the transpose flag of this matrix already is evaluated if src2 is not transposed
    int numMats = src1->getNumPlanes();
@@ -6175,44 +6176,40 @@ template<> RetVal DivFunc<Rgba32>(const DataObject *src1, const DataObject *src2
    return 0;
 }
 
-typedef RetVal (*tDivFunc)(const DataObject *src1, const DataObject *src2, DataObject *res, const double scale);
+typedef RetVal (*tDivFunc)(const DataObject *src1, const DataObject *src2, DataObject *res);
 MAKEFUNCLIST(DivFunc)
 
 //! high-level method which does a element-wise division of elements in this matrix by elements in second source matrix.
 /*!
-    The result is stored in a result matrix which is returned. Optionally the division can be scaled by a scaling factor, which is set to one by default.
+    The result is returned as new data object with the same type and size than this object. The axis scale, offset, description and
+    unit values are copied from this object. Tags are copied from this object, too.
 
     \param &mat2 is the second source matrix
     \param scale is the scaling factor (default: 1.0)
     \return result matrix
     \sa DivFunc
 */
-DataObject DataObject::div(const DataObject &mat2, const double scale) const
+DataObject DataObject::div(const DataObject &mat2, const double /*scale*/) const
 {
-    //if ((m_size != mat2.m_size) || (m_type != mat2.m_type))
-    //{
-    //    cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-    //}
-
     if ((m_size != mat2.m_size) || (m_type != mat2.m_type))
     {
         // Added this to allow 1x1x1xMxN addition with 2D-Objects
         if(!(this->getNumPlanes() == mat2.getNumPlanes() && 
                 mat2.getNumPlanes() == 1 && 
-                this->getSize(this->getDims() - 1) == mat2.getSize(mat2.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == mat2.getSize(mat2.getDims() - 2))
+                getSize(m_dims - 1) == mat2.getSize(mat2.getDims() - 1) &&
+                getSize(m_dims - 2) == mat2.getSize(mat2.getDims() - 2))
             )
         {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));     
+            cv::error(cv::Exception(CV_StsAssert,"both data objects differ in size or type","", __FILE__, __LINE__));     
         }
     }
 
-    DataObject result;
-    this->copyTo(result, 1); 
+    unsigned char continuous = 0;
+    DataObject result(m_dims,m_size,m_type,continuous);    
+    copyAxisTagsTo(result);
+    copyTagMapTo(result);
                      
-    //int64 start = cv::getCPUTickCount();
-    fListDivFunc[m_type](this, &mat2, &result, scale);
-    //start = cv::getCPUTickCount() -start;
+    fListDivFunc[m_type](this, &mat2, &result);
 
     return result;
 }
