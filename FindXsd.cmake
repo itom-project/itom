@@ -3,6 +3,10 @@
 # path will be in XSD_EXECUTABLE. Look in the usual locations, as well as in
 # the 'bin' directory in the path given in the XSD_ROOT environment variable.
 # 
+IF ((CMAKE_MAJOR_VERSION GREATER 2) AND (CMAKE_MAJOR_VERSION LESS 4) AND (CMAKE_MINOR_VERSION GREATER 1))
+	MESSAGE(STATUS "policy")
+	cmake_policy(SET CMP0053 OLD)
+ENDIF ((CMAKE_MAJOR_VERSION GREATER 2) AND (CMAKE_MAJOR_VERSION LESS 4) AND (CMAKE_MINOR_VERSION GREATER 1))
 
 IF (XSD_INCLUDE_DIR AND XSD_EXECUTABLE)
 # in cache already
