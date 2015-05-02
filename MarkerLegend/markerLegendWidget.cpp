@@ -26,6 +26,7 @@
 *********************************************************************** */
 
 #include "markerLegendWidget.h"
+//#include "../common/sharedStructuresPrimitives.h"
 //---------------------------------------------------------------------------------------------------------
 MarkerLegend::MarkerLegend(QWidget* parent /*= NULL*/) : QTreeWidget(this)
 {
@@ -42,14 +43,90 @@ MarkerLegend::MarkerLegend(QWidget* parent /*= NULL*/) : QTreeWidget(this)
 //---------------------------------------------------------------------------------------------------------
 void MarkerLegend::updatePicker(int index, QVector< float > position)
 {
+    QTreeWidgetItem *pickerEntries = topLevelItem(0);
+    QTreeWidgetItem* myChild = NULL;
+    for(int idx = 0; idx < pickerEntries->childCount(); idx++)
+    {
+        if(pickerEntries->child(idx)->data(0, Qt::UserRole).toInt() == index) 
+        {
+            myChild = pickerEntries->child(idx);
+            break;
+        }
     
+    }
+
+    if(myChild)
+    {
+        for(int pos = 0; pos < position.size(); pos++)
+        {
+            myChild->setData(pos + 1, Qt::DisplayRole , QString::number(position[pos]));
+            myChild->setData(pos + 1, Qt::UserRole, position[pos]);
+        }
+    }
+    else
+    {
+        myChild = new QTreeWidgetItem(this, 0);
+        myChild->setData(0, Qt::DisplayRole , QString::number(index));
+        myChild->setData(0, Qt::UserRole, index);
+
+        for(int pos = 0; pos < position.size(); pos++)
+        {
+            myChild->setData(pos + 1, Qt::DisplayRole , QString::number(position[pos]));
+            myChild->setData(pos + 1, Qt::UserRole, position[pos]);
+        }
+
+        pickerEntries->addChild(myChild);
+    }
 
     return;
 }
 //---------------------------------------------------------------------------------------------------------
 void MarkerLegend::updatePickers(QVector< int > indices, QVector< QVector< float > > positions)
 {
+    QTreeWidgetItem *pickerEntries = topLevelItem(0);
+
+    if(indices.size() != positions.size())
+    {
+        qDebug("Could not update pickers, indices and positions missmatch");
+        return;
+    }
+
+    for( int curSearchIndex = 0; curSearchIndex < indices.size(); curSearchIndex++)
+    {
+        QTreeWidgetItem* myChild = NULL;
+        for(int idx = 0; idx < pickerEntries->childCount(); idx++)
+        {
+            if(pickerEntries->child(idx)->data(0, Qt::UserRole).toInt() == indices[curSearchIndex]) 
+            {
+                myChild = pickerEntries->child(idx);
+                break;
+            }
     
+        }
+
+        if(myChild)
+        {
+            for(int pos = 0; pos < positions[curSearchIndex].size(); pos++)
+            {
+                myChild->setData(pos + 1, Qt::DisplayRole , QString::number(positions[curSearchIndex][pos]));
+                myChild->setData(pos + 1, Qt::UserRole, positions[curSearchIndex][pos]);
+            }
+        }
+        else
+        {
+            myChild = new QTreeWidgetItem(this, 0);
+            myChild->setData(0, Qt::DisplayRole , QString::number(indices[curSearchIndex]));
+            myChild->setData(0, Qt::UserRole, indices[curSearchIndex]);
+
+            for(int pos = 0; pos < positions[curSearchIndex].size(); pos++)
+            {
+                myChild->setData(pos + 1, Qt::DisplayRole , QString::number(positions[curSearchIndex][pos]));
+                myChild->setData(pos + 1, Qt::UserRole, positions[curSearchIndex][pos]);
+            }
+
+            pickerEntries->addChild(myChild);
+        }
+    }
 
     return;
 }

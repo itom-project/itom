@@ -26,12 +26,14 @@
 *********************************************************************** */
 
 #include "sharedStructuresPrimitives.h"
-
+#include <iostream>
+#ifdef USE_DEPRECIATED_ITOM_GEOMETRIC_ELEMS
 namespace ito
 {
     //----------------------------------------------------------------------------------------------------------------------------------
     PrimitiveContainer::PrimitiveContainer(ito::DataObject primitives)
     {
+        std::cout << "PrimitiveContainer class is depreciated and will be removed within the next version of itom" << std::endl;
         int newSize = 64;
         int cols = 11;
 
@@ -233,3 +235,310 @@ namespace ito
         return ito::retOk;
     }
 }
+#else
+namespace ito
+{
+    //----------------------------------------------------------------------------------------------------------------------------------
+    PrimitiveBase::PrimitiveBase()
+    {
+        memset(cells, 0, sizeof(float32)*PRIM_ELEMENTLENGTH);
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    PrimitiveBase::PrimitiveBase(const PrimitiveBase &rhs)
+    {
+        memcpy(cells, rhs.cells, sizeof(float32)*PRIM_ELEMENTLENGTH);
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    PrimitiveBase::PrimitiveBase(const GeometricPrimitive &rhs)
+    {
+        memcpy(cells, rhs.cells, sizeof(float32)*PRIM_ELEMENTLENGTH);
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    float32 PrimitiveBase::distanceTo(const GeometricPrimitive &comperator, const bool plaine /*= false*/) const
+    {
+        switch(getType())
+        {
+            default:
+            case tNoType:
+            case tMultiPointPick:
+            case tPolygon:
+                return std::numeric_limits<float32>::quiet_NaN();
+
+            case tPoint:
+                switch(extractType(comperator))
+                {
+                    default:
+                    case tNoType:
+                    case tMultiPointPick:
+                    case tPolygon:
+                        return std::numeric_limits<float32>::quiet_NaN();
+
+                    case tPoint:
+                    {
+                        ito::float32 res = pow(comperator.cells[2] - cells[2], 2) - pow(comperator.cells[3] - cells[3], 2);
+                        if(!plaine) res += pow(comperator.cells[4] - cells[4], 2);
+                        return sqrt(res);
+                    }
+
+                    case tLine:
+                    break;
+
+                    case tRectangle:
+                    break;
+
+                    case tSquare:
+                    break;
+
+                    case tEllipse:
+                    break;
+
+                    case tCircle:
+                    break;
+                }
+            break;
+
+            case tLine:
+                switch(extractType(comperator))
+                {
+                    default:
+                    case tNoType:
+                    case tMultiPointPick:
+                    case tPolygon:
+                        return std::numeric_limits<float32>::quiet_NaN();
+                    break;
+
+                    case tPoint:
+
+                    break;
+
+                    case tLine:
+                    break;
+
+                    case tRectangle:
+                    break;
+
+                    case tSquare:
+                    break;
+
+                    case tEllipse:
+                    break;
+
+                    case tCircle:
+                    break;
+                }
+            break;
+
+            case tRectangle:
+                switch(extractType(comperator))
+                {
+                    default:
+                    case tNoType:
+                    case tMultiPointPick:
+                    case tPolygon:
+                        return std::numeric_limits<float32>::quiet_NaN();
+                    break;
+
+                    case tPoint:
+
+                    break;
+
+                    case tLine:
+                    break;
+
+                    case tRectangle:
+                    break;
+
+                    case tSquare:
+                    break;
+
+                    case tEllipse:
+                    break;
+
+                    case tCircle:
+                    break;
+                }
+            break;
+
+            case tSquare:
+                switch(extractType(comperator))
+                {
+                    default:
+                    case tNoType:
+                    case tMultiPointPick:
+                    case tPolygon:
+                        return std::numeric_limits<float32>::quiet_NaN();
+                    break;
+
+                    case tPoint:
+
+                    break;
+
+                    case tLine:
+                    break;
+
+                    case tRectangle:
+                    break;
+
+                    case tSquare:
+                    break;
+
+                    case tEllipse:
+                    break;
+
+                    case tCircle:
+                    break;
+                }
+            break;
+
+            case tEllipse:
+                switch(extractType(comperator))
+                {
+                    default:
+                    case tNoType:
+                    case tMultiPointPick:
+                    case tPolygon:
+                        return std::numeric_limits<float32>::quiet_NaN();
+                    break;
+
+                    case tPoint:
+
+                    break;
+
+                    case tLine:
+                    break;
+
+                    case tRectangle:
+                    break;
+
+                    case tSquare:
+                    break;
+
+                    case tEllipse:
+                    break;
+
+                    case tCircle:
+                    break;
+                }
+            break;
+
+            case tCircle:
+                switch(extractType(comperator))
+                {
+                    default:
+                    case tNoType:
+                    case tMultiPointPick:
+                    case tPolygon:
+                        return std::numeric_limits<float32>::quiet_NaN();
+                    break;
+
+                    case tPoint:
+
+                    break;
+
+                    case tLine:
+                    break;
+
+                    case tRectangle:
+                    break;
+
+                    case tSquare:
+                    break;
+
+                    case tEllipse:
+                    break;
+
+                    case tCircle:
+                    break;
+                }
+            break;
+        }
+        return std::numeric_limits<float32>::quiet_NaN();
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    float32 PrimitiveBase::distanceToCenters(const GeometricPrimitive &comperator, const bool plaine /*= false*/) const
+    {
+        switch(getType())
+        {
+            default:
+            case tNoType:
+            case tMultiPointPick:
+            case tPolygon:
+                return std::numeric_limits<float32>::quiet_NaN();
+
+            case tCircle:
+            case tEllipse:
+            case tSquare:
+            case tPoint:
+            {
+                switch(PrimitiveBase::extractType(comperator))
+                {
+                    default:
+                    case tNoType:
+                    case tMultiPointPick:
+                    case tPolygon:
+                        return std::numeric_limits<float32>::quiet_NaN();
+
+                    case tLine:
+                        std::cout << "Not implemented yet" << std::endl;
+                    return std::numeric_limits<float32>::quiet_NaN();
+                    
+                    case tRectangle:
+                    {                      
+                        ito::float32 res = pow(cells[2] - (comperator.cells[2] + comperator.cells[5]) / 2.0f, 2) - pow(cells[3] - (comperator.cells[3] + comperator.cells[6]) / 2.0f, 2);
+                        if(!plaine) res += pow(cells[4] - (comperator.cells[4] + comperator.cells[7]) / 2.0f, 2);
+                        return sqrt(res);
+                    }
+
+                    case tPoint:
+                    case tEllipse:
+                    case tCircle:
+                    case tSquare:
+                    {
+                        ito::float32 res = pow(comperator.cells[2] - cells[2], 2) - pow(comperator.cells[3] - cells[3], 2);
+                        if(!plaine) res += pow(comperator.cells[4] - cells[4], 2);
+                        return sqrt(res);
+                    }
+                }
+            }
+
+            case tLine:
+            return std::numeric_limits<float32>::quiet_NaN();
+
+            case tRectangle:
+            {
+                switch(PrimitiveBase::extractType(comperator))
+                {
+                    default:
+                    case tNoType:
+                    case tMultiPointPick:
+                    case tPolygon:
+                        return std::numeric_limits<float32>::quiet_NaN();
+                    break;
+
+                    case tLine:
+                        std::cout << "Not implemented yet" << std::endl;
+                    return std::numeric_limits<float32>::quiet_NaN();
+                    
+                    case tRectangle:
+                    {                      
+                        ito::float32 res = pow((comperator.cells[2] + comperator.cells[4]) / 2.0f - (cells[2] + cells[5]) / 2.0f, 2) - pow((comperator.cells[3] + comperator.cells[6]) / 2.0f - (cells[3] + cells[6]) / 2.0f, 2);
+                        if(!plaine) res += pow((comperator.cells[4] + comperator.cells[7]) / 2.0f - (cells[4] + cells[7]) / 2.0f, 2);
+                        return sqrt(res);
+                    }
+
+                    case tPoint:
+                    case tEllipse:
+                    case tCircle:
+                    case tSquare:
+                    {
+                        ito::float32 res = pow(comperator.cells[2] - (cells[2] + cells[5]) / 2.0f, 2) - pow(comperator.cells[3] - (cells[3] + cells[6]) / 2.0f, 2);
+                        if(!plaine) res += pow(comperator.cells[4] - (cells[4] + cells[7]) / 2.0f, 2);
+                        return sqrt(res);
+                    }
+                }
+            }    
+        }
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+}
+#endif
