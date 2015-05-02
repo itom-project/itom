@@ -126,18 +126,18 @@ void UserInteractionWatcher::userInteractionDone(int type, bool aborted, QPolygo
 {
     int dims = 2; //m_dObjPtr ? m_dObjPtr->getDims() : 2;
     
-    switch(type & ito::PrimitiveContainer::tTypeMask)
+    switch(type & ito::tTypeMask)
     {
-        case ito::PrimitiveContainer::tSquare:
-        case ito::PrimitiveContainer::tCircle:
-        case ito::PrimitiveContainer::tPolygon:
+        case ito::tSquare:
+        case ito::tCircle:
+        case ito::tPolygon:
         default:
         {
             *m_coords = ito::DataObject();
             break;
         }
-        case ito::PrimitiveContainer::tMultiPointPick:
-        case ito::PrimitiveContainer::tPoint:
+        case ito::tMultiPointPick:
+        case ito::tPoint:
         {
             if (aborted)
             {
@@ -163,9 +163,9 @@ void UserInteractionWatcher::userInteractionDone(int type, bool aborted, QPolygo
             *m_coords = output;
             break;
         }
-        case ito::PrimitiveContainer::tLine:
-        case ito::PrimitiveContainer::tRectangle:
-        case ito::PrimitiveContainer::tEllipse:
+        case ito::tLine:
+        case ito::tRectangle:
+        case ito::tEllipse:
         {
             if (aborted)
             {
