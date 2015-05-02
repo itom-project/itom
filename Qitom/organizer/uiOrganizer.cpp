@@ -3209,7 +3209,7 @@ RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<ito::
         }
         else
         {
-            UserInteractionWatcher *watcher = new UserInteractionWatcher(widget, ito::PrimitiveContainer::tMultiPointPick, maxNrPoints, coords, semaphore, this);
+            UserInteractionWatcher *watcher = new UserInteractionWatcher(widget, ito::tMultiPointPick, maxNrPoints, coords, semaphore, this);
             connect(watcher, SIGNAL(finished()), this, SLOT(watcherThreadFinished()));
             QThread *watcherThread = new QThread();
             watcher->moveToThread(watcherThread);
