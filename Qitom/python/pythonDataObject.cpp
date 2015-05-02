@@ -4398,6 +4398,9 @@ PyObject* PythonDataObject::PyDataObject_copy(PyDataObject *self, PyObject* args
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyDataObjectMul_doc, "mul(obj) -> a.mul(b) returns element wise multiplication of a*b\n\
 \n\
+All meta information (axis scales, offsets, descriptions, units, tags...) of the resulting object \
+are copied from this data object. \n\
+\n\
 Parameters  \n\
 ------------\n\
 obj : {dataObject} \n\
@@ -4406,7 +4409,9 @@ obj : {dataObject} \n\
 Returns \n\
 -------- \n\
 c : {dataObject} \n\
-    Resulting multiplied data object.");
+    Resulting multiplied data object. \n\
+\n\
+For a mathematical multiplication see the *-operator.");
 PyObject* PythonDataObject::PyDataObject_mul(PyDataObject *self, PyObject *args)
 {
     if (self->dataObject == NULL) return 0;
@@ -4423,7 +4428,7 @@ PyObject* PythonDataObject::PyDataObject_mul(PyDataObject *self, PyObject *args)
 
     try
     {
-        retObj->dataObject = new ito::DataObject((*(self->dataObject)).mul(*(obj2->dataObject)));  //new dataObject should always be the owner of its data, therefore base of resultObject remains None
+        retObj->dataObject = new ito::DataObject(self->dataObject->mul(*(obj2->dataObject)));  //new dataObject should always be the owner of its data, therefore base of resultObject remains None
     }
     catch(cv::Exception exc)
     {
@@ -4439,6 +4444,9 @@ PyObject* PythonDataObject::PyDataObject_mul(PyDataObject *self, PyObject *args)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyDataObjectDiv_doc, "div(obj) -> a.div(b) return result of element wise division of a./b \n\
+\n\
+All meta information (axis scales, offsets, descriptions, units, tags...) of the resulting object \
+are copied from this data object. \n\
 \n\
 Parameters  \n\
 ------------\n\
