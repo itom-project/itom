@@ -29,13 +29,17 @@
 #define SHAREDSTRUCTURESPRIMITIVES_H
 
 #include "typeDefs.h"
-#include "../DataObject/dataobj.h"
+#ifdef USE_DEPRECIATED_ITOM_GEOMETRIC_ELEMS
+    #include "../DataObject/dataobj.h"
+#else
+#include "../common/commonGlobal.h"
+#endif
 
 #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 
 #define PRIM_ELEMENTLENGTH 11 /** \brief number of elements within the geometricPrimitives */
 
-
+#ifdef USE_DEPRECIATED_ITOM_GEOMETRIC_ELEMS
 /** \struct geometricPrimitives
 *   \brief This union was defined for adressing geometricPrimitives.
     \detail The union geometricPrimitives contains an array called cells with the size of PRIM_ELEMENTLENGTH.
@@ -183,10 +187,9 @@ namespace ito
         };
 
 /** \cond HIDDEN_SYMBOLS */
+
         PrimitiveContainer(DataObject primitives = DataObject());
         ~PrimitiveContainer();
-
-
 
         inline int getNumberOfRows() const {return m_primitives.getSize(0);};
         inline int getNumberOfElements(const int type) const;
@@ -209,12 +212,168 @@ namespace ito
 
         ito::DataObject m_primitives;
         cv::Mat * m_internalMat;
+
+
 /** \endcond */
 
     };
 
 
 }
+#else
+
+namespace ito
+{
+
+    enum tPrimitive
+    {
+        tNoType           =   0,            /**! NoType for pick*/
+        tMultiPointPick   =   6,            /**! Multi point pick*/
+        tPoint            =   101,          /**! Element is tPoint or order to pick points*/
+        tLine             =   102,          /**! Element is tLine or order to pick lines*/
+        tRectangle        =   103,          /**! Element is tRectangle or order to pick rectangles*/
+        tSquare           =   104,          /**! Element is tSquare or order to pick squares*/
+        tEllipse          =   105,          /**! Element is tEllipse or order to pick ellipses*/
+        tCircle           =   106,          /**! Element is tCircle or order to pick circles*/
+        tPolygon          =   110,          /**! Element is tPolygon or order to pick polygon*/
+        tMoveLock         =   0x00010000,   /**! Element is readOnly */
+        tRotateLock       =   0x00020000,   /**! Element can not be moved */
+        tResizeLock       =   0x00040000,   /**! Element can not be moved */
+        tTypeMask         =   0x0000FFFF,   /**! Mask for the type space */
+        tFlagMask         =   0xFFFF0000    /**! Mask for the flag space */
+    };
+
+    struct GeometricPrimitive
+    {
+        /*
+            struct point
+            {
+                ito::float32 idx;
+                ito::float32 flags;
+                ito::float32 x0;
+                ito::float32 y0;
+                ito::float32 z0;
+            };
+
+            struct line
+            {
+                ito::float32 idx;
+                ito::float32 flags;
+                ito::float32 x0;
+                ito::float32 y0;
+                ito::float32 z0;
+                ito::float32 x1;
+                ito::float32 y1;
+                ito::float32 z1;
+            };
+
+            struct elipse
+            {
+                ito::float32 idx;
+                ito::float32 flags;
+                ito::float32 centerX;
+                ito::float32 centerY;
+                ito::float32 centerZ;
+                ito::float32 r1;
+                ito::float32 r2;
+                ito::float32 alpha;
+            };
+
+            struct circle
+            {
+                ito::float32 idx;
+                ito::float32 flags;
+                ito::float32 centerX;
+                ito::float32 centerY;
+                ito::float32 centerZ;
+                ito::float32 r1;
+            };
+
+            struct retangle
+            {
+                ito::float32 idx;
+                ito::float32 flags;
+                ito::float32 x0;
+                ito::float32 y0;
+                ito::float32 z0;
+                ito::float32 x1;
+                ito::float32 y1;
+                ito::float32 z1;
+                ito::float32 alpha;
+            };
+
+            struct square
+            {
+                ito::float32 idx;
+                ito::float32 flags;
+                ito::float32 centerX;
+                ito::float32 centerY;
+                ito::float32 centerZ;
+                ito::float32 a;
+                ito::float32 alpha;
+            };
+
+            struct polygoneElement
+            {
+                ito::float32 idx;
+                ito::float32 flags;
+                ito::float32 x0;
+                ito::float32 y0;
+                ito::float32 z0;
+                ito::float32 directionX;
+                ito::float32 directionY;
+                ito::float32 directionZ;
+                ito::float32 pointIdx;
+                ito::float32 pointNumber;
+            };
+        */
+        float32 cells[PRIM_ELEMENTLENGTH];
+    };
+
+    class ITOMCOMMONQT_EXPORT PrimitiveBase
+    {
+    public:
+        PrimitiveBase();
+        PrimitiveBase(const PrimitiveBase &rhs);
+        PrimitiveBase(const GeometricPrimitive &rhs);
+
+        inline int getIndex() const {return (int)(cells[0]);}
+        inline int getFlags() const {return ((int)(cells[1])) & tFlagMask;}
+        inline int getType() const {return ((int)(cells[1])) & tTypeMask;}
+        inline int getTypeAndFlags() const {return (int)(cells[1]);}
+
+        static int extractType(const GeometricPrimitive &comperator) {return ((int)(comperator.cells[1])) & tTypeMask;}
+        static int extractFlags(const GeometricPrimitive &comperator) {return ((int)(comperator.cells[1])) & tFlagMask;}
+
+        float32 distanceTo(const GeometricPrimitive &comperator, const bool plaine = false) const;
+        float32 distanceToCenters(const GeometricPrimitive &comperator, const bool plaine = false) const;
+
+    protected:
+
+        float32 cells[PRIM_ELEMENTLENGTH];
+    };
+
+    class ITOMCOMMONQT_EXPORT GeometricPrimitivePoint : protected PrimitiveBase
+    {
+        inline float32 x() const {return cells[2];}
+        inline float32 y() const {return cells[3];}
+        inline float32 z() const {return cells[4];}
+    };
+
+    class ITOMCOMMONQT_EXPORT GeometricPrimitiveLine : protected PrimitiveBase
+    {
+        inline float32 x0() const {return cells[2];}
+        inline float32 y0() const {return cells[3];}
+        inline float32 z0() const {return cells[4];}
+        inline float32 x1() const {return cells[5];}
+        inline float32 y1() const {return cells[6];}
+        inline float32 z1() const {return cells[7];}
+
+        float32 length(const bool plaine = false) const;
+    };
+}
+
+#endif
 
 #endif //#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)
 
