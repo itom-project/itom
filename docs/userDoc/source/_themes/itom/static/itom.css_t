@@ -300,6 +300,8 @@ div.admonition.seealso{
     border: 1px solid #86989B;
     background-color: #f7f7f7;
     padding: 0;
+    float: none;
+    clear: both;
 }
 
 div.admonition p, div.warning p {
@@ -356,28 +358,55 @@ h1 {
     color: #0c3762;
     border-bottom: dotted thin #e0e0e0;
     margin-top: 30px;
+    -webkit-margin-after: 0.67em;
+    -webkit-margin-before: 0.67em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
 }
 
 h2 {
-    font-size: 1.5em;
+    font-size: 1.6em;
     font-weight: normal;
     color: #0c3762;
     border-bottom: dotted thin #e0e0e0;
     margin-top: 30px;
+    -webkit-margin-after: 1.5em;
+    -webkit-margin-before: 2em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
 }
 
 h3 {
-    font-size: 1.2em;
+    font-size: 1.4em;
     font-weight: normal;
     color: #0c3762;
     margin-top: 30px;
+    -webkit-margin-after: 0.83px;
+    -webkit-margin-before: 0.83em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
 }
 
 h4 {
-    font-size: 1.0em;
+    font-size: 1.2em;
     font-weight: normal;
     color: #0c3762;
-    margin-top: 30px;
+    margin-top: 20px;
+    -webkit-margin-after: 0px;
+    -webkit-margin-before: 2em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+}
+
+h5 {
+    font-size: 1.1em;
+    font-weight: normal;
+    color: #0c3762;
+    margin-top: 10px;
+    -webkit-margin-after: 0px;
+    -webkit-margin-before: 2em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
 }
 
 p {
@@ -388,9 +417,9 @@ p.last {
     margin-bottom: 0;
 }
 
-ol {
+/*ol {
     padding-left: 20px;
-}
+}*/
 
 ul {
     padding-left: 5px;
@@ -398,7 +427,8 @@ ul {
 }
 
 li {
-    line-height: 1.3;
+    padding-left: 5px;
+    margin-top: 3px;
 }
 
 /*div.content ul > li {
@@ -430,16 +460,6 @@ td {
 /*Groesse aller Links*/
 /*Vorsicht, da relativ und manche Boxen dadurch extrem grosse Links*/
 
-
-pre {
-    border-color: #0c3762;
-    border-style: dotted;
-    border-width: thin;
-    margin: 0 0 12px 0;
-    padding: 0.8em;
-    background-color: #f0f0f0;
-}
-
 hr {
     border-top: 1px solid #ccc;
     border-bottom: 0;
@@ -449,9 +469,37 @@ hr {
     margin-top: 20px;
 }
 
+/* -- Code Blocks -----------------------------------------------*/
+
+td.code pre {
+    border-color: #0c3762;
+    border-style: dotted;
+    border-width: thin;
+    margin: 0 0 12px 0;
+    padding: 5px 5px;
+    background-color: #f0f0f0;
+    font-size: 0.9em;
+}
+
+td.linenos pre {
+    padding: 5px 0px;
+    margin: 0 0 12px 0;
+    border: 0;
+    background-color: transparent;
+    color: #aaa;
+    font-size: 0.9em;
+}
+
+table.highlighttable {
+    margin-left: 0.5em;
+}
+
+table.highlighttable td {
+    padding: 0 0.5em 0 0.5em;
+}
 
 
-/* printer only pretty stuff */
+/* -- printer only pretty stuff -----------------------------------------------*/
 @media print {
     .noprint {
         display: none;

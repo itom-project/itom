@@ -56,7 +56,7 @@ In the following example, we will connect to such a virtual actuator, move singl
     :scale: 70 %
     :align: left
 
-Every entry in this toolbox corresponds to one library file (Windows: *.dll, Linux: *.so), located in any subfolder of the **plugins** subfolder of your |itom| installation path. If the library could be loaded, you can connect to one or multiple instances of its represented hardware (e.g. you can connect to various motors of the same type that are connected to the computer). If you don't find the desired library in the :ref:`plugins toolbox <gui-plugins>`, you either don't have the library in the plugins subfolder or the library could not be loaded. This can have various reasons. See the **loaded plugins...** dialog in the menu **file** to check why the plugin could not be loaded.
+Every entry in this toolbox corresponds to one library file (Windows: \*.dll, Linux: \*.so), located in any subfolder of the **plugins** subfolder of your |itom| installation path. If the library could be loaded, you can connect to one or multiple instances of its represented hardware (e.g. you can connect to various motors of the same type that are connected to the computer). If you don't find the desired library in the :ref:`plugins toolbox <gui-plugins>`, you either don't have the library in the plugins subfolder or the library could not be loaded. This can have various reasons. See the **loaded plugins...** dialog in the menu **file** to check why the plugin could not be loaded.
 
 Here, we want to create one instance of the **DummyMotor** plugin which simulates a motor stage with up to 10 axes. In order to create an instance, choose **New Instance...** from the context menu of the corresponding **DummyMotor** library entry (see figure above).
 
@@ -145,7 +145,7 @@ How did we know what to write there? Select **Info...** from the context menu of
 .. figure:: images/dummyGrabberHelp.png
     :scale: 70%
     :align: left
-    
+
 .. note::
     
     If you don't see the help page, go to the properties dialog of |itom| (menu **File >> Properties**) and select the checkbox **Show DataIO and Actuator** in the tab **General >> Help Viewer**.
@@ -282,7 +282,11 @@ Therefore we select the **DummyGrabber** within the **Plugins-Browser** (GUI No.
     :scale: 70%
     :align: left
 
-The window with initialisation parameters of the plugIn opens. Select the tab **optional parameters** and insert maxXSize = 800, maxYSize = 600, bpp == 8. 
+The window with initialisation parameters of the plugIn opens. Select the tab **optional parameters** and insert 
+
+* maxXSize = 800
+* maxYSize = 600 
+* bpp = 8
 
 .. figure:: images/openDummyGrabber2.png
     :scale: 70%
