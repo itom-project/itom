@@ -4113,7 +4113,7 @@ PyObject* PythonDataObject::PyDataObject_conjugate(PyDataObject *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectAdj_doc, "adj() -> Adjugate all elements (inline)\n\
+PyDoc_STRVAR(pyDataObjectAdj_doc, "adj() -> Adjugate all elements\n\
 \n\
 Every plane (spanned by the last two axes) is transposed and every element is replaced by its complex conjugate value. \n\
 \n\
