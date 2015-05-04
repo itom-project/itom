@@ -89,7 +89,7 @@ dl.method dt, dl.staticmethod dt, dl.function dt{
 }
 
 dl.method, dl.staticmethod, dl.function > dt > tt {
-    font-family: monospace;
+    font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
 }
 
 div.footer {
@@ -471,6 +471,10 @@ hr {
 
 /* -- Code Blocks -----------------------------------------------*/
 
+code {
+	font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
+}
+
 td.code pre {
     border-color: #0c3762;
     border-style: dotted;
@@ -599,13 +603,13 @@ dl.enum > dt {
     font-weight: bold;
     font-size: 16px;
     padding-left: 7px;
-    font-family: monospace;
+    font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
 }
 
 dl.function > dt > tt.descname {
     background-color: #E6E6E6; 
     border-top: 0px solid #000000;
     font-size: 16px;
-    font-family: monospace;
+    font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
     font-weight: bold;
 }

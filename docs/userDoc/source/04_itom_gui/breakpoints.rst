@@ -8,7 +8,7 @@ Breakpoints
 As you already learned in the section :ref:`debugging python scripts <gui-editor-run-debug-script>`, it is possible to set and configure breakpoints in all scripts.
 Once the python interpreter is executed in debug mode, it will stop at any defined breakpoint.
 
-.. image:: images/breakpoints.png
+.. figure:: images/breakpoints.png
     :scale: 100%
     :align: center
 
