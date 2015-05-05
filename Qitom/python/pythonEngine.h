@@ -136,7 +136,6 @@ public:
     Q_INVOKABLE void pythonSetup(ito::RetVal *retValue);               //setup
     Q_INVOKABLE ito::RetVal scanAndRunAutostartFolder(QString currentDirAfterScan = QString() );
     Q_INVOKABLE ito::RetVal pythonShutdown(ItomSharedSemaphore *aimWait = NULL);            //shutdown
-
     Q_INVOKABLE ito::RetVal stringEncodingChanged();
 
     inline ito::BreakPointModel *getBreakPointModel() const { return bpModel; }
@@ -145,7 +144,6 @@ public:
     inline bool isPythonDebuggingAndWaiting() const { return pythonState == ito::pyStateDebuggingWaiting; }
     inline bool execInternalCodeByDebugger() const  { return m_executeInternalPythonCodeInDebugMode; }
     inline void setExecInternalCodeByDebugger(bool value) { m_executeInternalPythonCodeInDebugMode = value; }
-
     ito::RetVal checkForPyExceptions();
     void printPythonErrorWithoutTraceback();
 
@@ -153,14 +151,13 @@ public:
     void pythonRunFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);
 
     inline PyObject *getGlobalDictionary()  const { return globalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
-
     inline bool pySyntaxCheckAvailable() const { return (m_pyModSyntaxCheck != NULL); }
-
-    static const PythonEngine *getInstance();
-
     QList<int> parseAndSplitCommandInMainComponents(const char *str, QByteArray &encoding) const; //can be directly called from different thread
+    QString getPythonExecutable() const { return m_pythonExecutable; }
+    Qt::HANDLE getPythonThreadId() const { return m_pythonThreadId; }
 
 	static bool isInterruptQueued();
+    static const PythonEngine *getInstance();
 
 protected:
     //RetVal syntaxCheck(char* pythonFileName);       // syntaxCheck for file with filename pythonFileName
@@ -217,6 +214,8 @@ private:
     ito::RetVal autoReloaderCheck();
 
     static int queuedInterrupt(void *state); 
+
+    PyObject* getAndCheckIdentifier(const QString &identifier, ito::RetVal &retval) const;
 	
 
     //member variables
@@ -248,6 +247,8 @@ private:
     PyObject *m_pyModSyntaxCheck;
     //PyObject *itomReturnException; //!< if this exception is thrown, the execution of the main application is stopped
 
+    Qt::HANDLE m_pythonThreadId;
+
     PyObject *dictUnicode;
 
     QSet<ito::PyWorkspaceContainer*> m_mainWorkspaceContainer;
@@ -255,7 +256,7 @@ private:
     QHash<size_t, FuncWeakRef> m_pyFuncWeakRefHashes; //!< hash table containing weak reference to callable python methods or functions and as second, optional PyObject* an tuple, passed as argument to that function. These functions are for example executed by menu-clicks in the main window.
     size_t m_pyFuncWeakRefAutoInc;
 
-    QString pythonPathPrefix; //!< absolute path to the python executable
+    QString m_pythonExecutable; //!< absolute path to the python executable
 
     bool m_executeInternalPythonCodeInDebugMode; //!< if true, button events, user interface connections to python methods... will be executed by debugger
     PyMethodDef* PythonAdditionalModuleITOM;
@@ -352,8 +353,8 @@ public slots:
     void workspaceGetChildNode(PyWorkspaceContainer *container, QString fullNameParentItem);
     void workspaceGetValueInformation(PyWorkspaceContainer *container, QString fullItemName, QSharedPointer<QString> extendedValue, ItomSharedSemaphore *semaphore = NULL);
 
-    void putParamsToWorkspace(bool globalNotLocal, QStringList names, QVector<SharedParamBasePointer > values, ItomSharedSemaphore *semaphore = NULL);
-    void getParamsFromWorkspace(bool globalNotLocal, QStringList names, QVector<int> paramBaseTypes, QSharedPointer<SharedParamBasePointerVector > values, ItomSharedSemaphore *semaphore = NULL);
+    ito::RetVal putParamsToWorkspace(bool globalNotLocal, const QStringList &names, const QVector<SharedParamBasePointer > &values, ItomSharedSemaphore *semaphore = NULL);
+    ito::RetVal getParamsFromWorkspace(bool globalNotLocal, const QStringList &names, QVector<int> paramBaseTypes, QSharedPointer<SharedParamBasePointerVector > values, ItomSharedSemaphore *semaphore = NULL);
 
 private slots:
 

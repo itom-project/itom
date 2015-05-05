@@ -470,7 +470,7 @@ void AIManagerWidget::CloseInstance(const QModelIndex index)
             }
 
             ito::AddInManager *aim = ito::AddInManager::getInstance();
-            ito::RetVal retValue = aim->closeAddIn(&ais,NULL);
+            ito::RetVal retValue = aim->closeAddIn(ais,NULL);
 
             if (retValue.containsWarning())
             {

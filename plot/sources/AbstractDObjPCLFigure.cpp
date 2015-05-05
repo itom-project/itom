@@ -124,12 +124,8 @@ void AbstractDObjPclFigure::setDataObject(QSharedPointer<ito::DataObject> source
         if (m_dataPointerDObj["dataObject"].data() != source.data())
         {
             oldSource = m_dataPointerDObj["dataObject"];
-            if (oldSource)
-                oldSource->lockWrite();
             // sometimes crash here when replacing the source
             m_dataPointerDObj["dataObject"] = source;
-            if (oldSource)
-                oldSource->unlock();
         }  
     }
     else

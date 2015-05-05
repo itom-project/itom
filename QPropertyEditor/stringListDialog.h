@@ -32,6 +32,8 @@
 
 #include <qdialog.h>
 
+class QListWidgetItem;
+
 class StringListDialog: public QDialog
 {
     Q_OBJECT
@@ -51,6 +53,7 @@ private slots:
     void on_moveListItemUpButton_clicked();
     void on_moveListItemDownButton_clicked();
     void on_listWidget_currentRowChanged();
+    void on_listWidget_itemDoubleClicked(QListWidgetItem *item);
 
 protected:
     virtual void setItemData(int role, const QVariant &v);

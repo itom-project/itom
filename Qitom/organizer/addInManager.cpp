@@ -743,53 +743,57 @@ namespace ito
     */
     const RetVal AddInManager::getInitParams(const QString &name, const int pluginType, int *pluginNum, QVector<ito::Param> *&paramsMand, QVector<ito::Param> *&paramsOpt)
     {
-        ito::RetVal ret = ito::RetVal(ito::retError, 0, QObject::tr("plugin not found").toLatin1().data());
+        ito::RetVal ret;
+        *pluginNum = -1;
 
-        switch(pluginType)
+        if (pluginType & ito::typeActuator)
         {
-// TODO: Sinnvolle Fehlermeldung falls Gerät nicht in der Liste gefunden wird!
-            case ito::typeActuator:
-                for (int n=0; n < m_addInListAct.size(); n++)
+            for (int n=0; n < m_addInListAct.size(); n++)
+            {
+                if (QString::compare(m_addInListAct[n]->objectName(), name, Qt::CaseInsensitive) == 0)
                 {
-                    if (QString::compare(m_addInListAct[n]->objectName(), name, Qt::CaseInsensitive) == 0)
-                    {
-                        *pluginNum = n;
-                        paramsMand = (qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[n]))->getInitParamsMand();
-                        paramsOpt = (qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[n]))->getInitParamsOpt();
-                        ret = ito::retOk;
-                        break;
-                    }
+                    *pluginNum = n;
+                    paramsMand = (qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[n]))->getInitParamsMand();
+                    paramsOpt = (qobject_cast<ito::AddInInterfaceBase *>(m_addInListAct[n]))->getInitParamsOpt();
+                    ret = ito::retOk;
+                    break;
                 }
-            break;
-
-            case ito::typeDataIO:
-                for (int n=0; n < m_addInListDataIO.size(); n++)
+            }
+        }
+        else if (pluginType & ito::typeDataIO)
+        {
+            for (int n=0; n < m_addInListDataIO.size(); n++)
+            {
+                if (QString::compare(m_addInListDataIO[n]->objectName(), name, Qt::CaseInsensitive) == 0)
                 {
-                    if (QString::compare(m_addInListDataIO[n]->objectName(), name, Qt::CaseInsensitive) == 0)
-                    {
-                        *pluginNum = n;
-                        paramsMand = (qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[n]))->getInitParamsMand();
-                        paramsOpt = (qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[n]))->getInitParamsOpt();
-                        ret = ito::retOk;
-                        break;
-                    }
+                    *pluginNum = n;
+                    paramsMand = (qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[n]))->getInitParamsMand();
+                    paramsOpt = (qobject_cast<ito::AddInInterfaceBase *>(m_addInListDataIO[n]))->getInitParamsOpt();
+                    ret = ito::retOk;
+                    break;
                 }
-            break;
-
-            case ito::typeAlgo:
-                for (int n=0; n < m_addInListAlgo.size(); n++)
+            }
+        }
+        else if (pluginType & ito::typeAlgo)
+        {
+            for (int n=0; n < m_addInListAlgo.size(); n++)
+            {
+                if (QString::compare(m_addInListAlgo[n]->objectName(), name, Qt::CaseInsensitive) == 0)
                 {
-                    if (QString::compare(m_addInListAlgo[n]->objectName(), name, Qt::CaseInsensitive) == 0)
-                    {
-                        *pluginNum = n;
-                        ret = ito::retOk;
-                        break;
-                    }
+                    *pluginNum = n;
+                    ret = ito::retOk;
+                    break;
                 }
-            break;
+            }
+        }
+        else
+        {
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("invalid plugin type. Only typeDataIO, typeActuator or typeAlgo are allowed.").toLatin1().data());
+        }
 
-            default:
-            break;
+        if (*pluginNum < 0)
+        {
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("Plugin '%1' not found in list of given type").arg(name).toLatin1().data());
         }
 
         return ret;
@@ -1072,7 +1076,7 @@ namespace ito
                     if (*addIn != NULL)
                     {
                         m_plugInModel.insertInstance(aib, false); //end insert, since closeAddIn will call beginRemoveRows...
-                        retval += closeAddIn(reinterpret_cast<ito::AddInBase**>(addIn));
+                        retval += closeAddIn(reinterpret_cast<ito::AddInBase*>(*addIn));
                     }
                     *addIn = NULL;
                 }
@@ -1213,7 +1217,7 @@ namespace ito
                     if (*addIn != NULL)
                     {
                         m_plugInModel.insertInstance(aib, false); //end insert, since closeAddIn will call beginRemoveRows...
-                        retval += closeAddIn(reinterpret_cast<ito::AddInBase**>(addIn));
+                        retval += closeAddIn(reinterpret_cast<ito::AddInBase*>(*addIn));
                     }
                     *addIn = NULL;
                 }
@@ -1299,7 +1303,7 @@ namespace ito
             {
                 if (*addIn != NULL)
                 {
-                    retval += closeAddIn(reinterpret_cast<ito::AddInBase**>(addIn));
+                    retval += closeAddIn(reinterpret_cast<ito::AddInBase*>(*addIn));
                 }
                 *addIn = NULL;
             }
@@ -1336,30 +1340,42 @@ namespace ito
     *
     *   At first the close method of the plugin class is invoked. Then the \ref closeInst method of the addInInterfaceBase is called.
     */
-    ito::RetVal AddInManager::closeAddIn(AddInBase **addIn, ItomSharedSemaphore *aimWait)
+    ito::RetVal AddInManager::closeAddIn(AddInBase *addIn, ItomSharedSemaphore *aimWait)
     {
         ItomSharedSemaphoreLocker locker(aimWait);
         ito::RetVal retval = ito::retOk;
         ItomSharedSemaphore *waitCond = NULL;
         bool timeout = false;
 
-        ito::AddInInterfaceBase *aib = (*addIn)->getBasePlugin();
+        ito::AddInInterfaceBase *aib = addIn->getBasePlugin();
 
-        if (aib->getRef(*addIn) <= 0) //this instance holds the last reference of the plugin. close it now.
+        if (aib->getRef(addIn) <= 0) //this instance holds the last reference of the plugin. close it now.
         {
             //we always promised that if the init-method is called in the main thread, the close method is called in the main thread, too.
             //Therefore pull it to the main thread, if necessary.
             if (!aib->getCallInitInNewThread())
             {
-                (*addIn)->moveToThread(QThread::currentThread());
+                ItomSharedSemaphoreLocker moveToThreadLocker(new ItomSharedSemaphore());
+                if (QMetaObject::invokeMethod(addIn, "moveBackToApplicationThread", Q_ARG(ItomSharedSemaphore*, moveToThreadLocker.getSemaphore())))
+                {
+                    if (moveToThreadLocker->wait(AppManagement::timeouts.pluginInitClose) == false)
+                    {
+                        retval += ito::RetVal(ito::retWarning, 0, "timeout while pulling plugin back to main thread.");
+                    }
+                }
+                else
+                {
+                    moveToThreadLocker->deleteSemaphore();
+                    retval += ito::RetVal(ito::retWarning, 0, "error invoking method 'moveBackToApplicationThread' of plugin.");
+                }
             }
 
             waitCond = new ItomSharedSemaphore();
-            QMetaObject::invokeMethod(*addIn, "close", Q_ARG(ItomSharedSemaphore*, waitCond));
+            QMetaObject::invokeMethod(addIn, "close", Q_ARG(ItomSharedSemaphore*, waitCond));
 
             while (waitCond->wait(AppManagement::timeouts.pluginInitClose) == false && !timeout)
             {
-                if ((*addIn)->isAlive() == 0)
+                if (addIn->isAlive() == 0)
                 {
                     timeout = true;
                     retval += ito::RetVal(ito::retError, 0, "timeout while closing plugin");
@@ -1372,20 +1388,32 @@ namespace ito
 
                 if (aib->getCallInitInNewThread())
                 {
-                    (*addIn)->moveToThread(QThread::currentThread());
+                    ItomSharedSemaphoreLocker moveToThreadLocker(new ItomSharedSemaphore());
+                    if (QMetaObject::invokeMethod(addIn, "moveBackToApplicationThread", Q_ARG(ItomSharedSemaphore*, moveToThreadLocker.getSemaphore())))
+                    {
+                        if (moveToThreadLocker->wait(AppManagement::timeouts.pluginInitClose) == false)
+                        {
+                            retval += ito::RetVal(ito::retWarning, 0, "timeout while pulling plugin back to main thread.");
+                        }
+                    }
+                    else
+                    {
+                        moveToThreadLocker->deleteSemaphore();
+                        retval += ito::RetVal(ito::retWarning, 0, "error invoking method 'moveBackToApplicationThread' of plugin.");
+                    }
                 }
             
                 if (aib->getAutoSavePolicy() == ito::autoSaveAlways)
                 {
-                    retval += saveParamVals(*addIn);
+                    retval += saveParamVals(addIn);
                 }
 
-                m_plugInModel.deleteInstance((*addIn)->getBasePlugin(), (*addIn), true); //begin remove
+                m_plugInModel.deleteInstance(addIn->getBasePlugin(), addIn, true); //begin remove
 
-                retval += decRefParamPlugins(*addIn);
-                retval += aib->closeInst(addIn);
+                retval += decRefParamPlugins(addIn);
+                retval += aib->closeInst(&addIn);
 
-                m_plugInModel.deleteInstance((*addIn)->getBasePlugin(), (*addIn), false); //end remove
+                m_plugInModel.deleteInstance(addIn->getBasePlugin(), addIn, false); //end remove
             }
             else
             {
@@ -1401,7 +1429,7 @@ namespace ito
         }
         else
         {
-            aib->decRef(*addIn);
+            aib->decRef(addIn);
         }
 
         if (aimWait)
@@ -1440,7 +1468,7 @@ namespace ito
         if (aib->getRef(*addIn) <= 0) //this instance holds the last reference of the plugin, therefore it is closed now
         {
             ito::RetVal retval(ito::retOk);
-            retval += closeAddIn(addIn);
+            retval += closeAddIn(*addIn);
             return retval;
         }
         else //at least one other instance is holding a reference of the plugin. just decrement the reference counter
@@ -1690,7 +1718,7 @@ namespace ito
                 addInInstance = (addInInstancesCpy[0]);
                 if (addInInstance)
                 {
-                    retval += closeAddIn(&addInInstance, NULL);
+                    retval += closeAddIn(addInInstance, NULL);
                 }
                 addInInstancesCpy.removeFirst();
             }
@@ -1705,7 +1733,7 @@ namespace ito
                 addInInstance = (addInInstancesCpy[0]);
                 if (addInInstance)
                 {
-                    retval += closeAddIn(&addInInstance, NULL);
+                    retval += closeAddIn(addInInstance, NULL);
                 }
                 addInInstancesCpy.removeFirst();
             }
@@ -1811,7 +1839,7 @@ namespace ito
                 for (int n = 0; n < instList.length(); n++)
                 {
                     algo = (ito::AddInAlgo*)instList.at(n);
-                    closeAddIn((ito::AddInBase**)&algo);
+                    closeAddIn((ito::AddInBase*)algo);
                 }
                 m_addInListAlgo.removeAt(pluginNum);
             break;
@@ -1980,7 +2008,7 @@ namespace ito
             }
             else if (aib->isInitialized()) //plugin finished init-method (late, but finally it did finish ;)), we can kill it now
             {
-                retval += closeAddIn(&aib, NULL);
+                retval += closeAddIn(aib, NULL);
                 it = m_deadPlugins.erase(it);
             }
             else

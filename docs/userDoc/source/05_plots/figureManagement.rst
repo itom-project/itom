@@ -2,7 +2,7 @@ Figure Management
 *****************
 
 Technically, every plot widget, hence the plot containing the axes and the content, is represented as an instance of :py:class:`~itom.plotItem`.
-If you show the plot in its own window, this window is called figure and represented as an instance of :py:class:`~itom.figure`.
+If you show the plot in its own window, this window is called figure and is represented as an instance of :py:class:`~itom.figure`.
 Every figure is also able to show various sub-plots arranged in a regular grid of *m* rows and *n* columns. Plots, integrated in an user-defined
 interface, are directly integrated there without being part of a special figure.
 

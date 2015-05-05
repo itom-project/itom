@@ -23,7 +23,8 @@
 #include "UserModel.h"
 #include <qicon.h>
 
-using namespace ito;
+namespace ito
+{
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** constructor
@@ -259,3 +260,5 @@ QString UserModel::getFeatureName(const UserFeature &feature) const
 
     return "";
 }
+
+} //end namespace ito

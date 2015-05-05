@@ -7,15 +7,17 @@ Script-Editor
 
 The script editor is one of the main windows of |itom| and allows creating, modifying and executing one or several python scripts.
 
-.. image:: images/scripteditor.png
-    :align: left
+.. figure:: images/scripteditor.png
+	:scale: 100%
+	:align: left
 
 Every script editor window can display one or multiple script files that are separated in different tabs at the bottom of the window.
 Click a tab to show the corresponding script in the center of the window. You can close, save, reorder or (un-)dock every single tab
 by its context menu.
 
-.. image:: images/scripteditor-tab-context.png
-    :align: left
+.. figure:: images/scripteditor-tab-context.png
+	:scale: 100%
+	:align: left
 
 The content of the current script file is displayed in the center of the script editor window. Use this text editor to write or modify a script
 that can then be run or debugged. The menus of the script editor window provide many possibilities to edit and finally run or debug the script. The most important
@@ -44,8 +46,9 @@ Run or debug the script
 
 In order to run or debug the script, use the functions given in the **script** menu.
 
-.. image:: images/editor_run_debug.png
-    :align: left
+.. figure:: images/editor_run_debug.png
+	:scale: 100%
+	:align: left
 
 These are:
 
@@ -71,7 +74,9 @@ Breakpoints are red or gray points in the right side of the margin of a script w
 A breakpoint is added to a specific line by clicking the margin at the right side of the line numbers. You cannot add a breakpoint to a commented or empty line.
 If you clear or comment a line that already contains a breakpoint, the script debugger will fail with a corresponding error message.
 
-.. image:: images/editor-breakpoints.png
+.. figure:: images/editor-breakpoints.png
+	:scale: 100%
+	:align: left
 
 There are three different types of breakpoints:
 
@@ -79,7 +84,9 @@ There are three different types of breakpoints:
 * Gray point: Disabled breakpoint. This breakpoint is currently inactive. You can enable or disable a breakpoint by clicking it or via its context menu.
 * Red point with white cross: Special breakpoint. Right click on a breakpoint and choose **edit breakpoint** to set further settings to the breakpoints behaviour.
 
-.. image:: images/editor-edit-breakpoints.png
+.. figure:: images/editor-edit-breakpoints.png
+	:scale: 100%
+	:align: left
 
 The **edit breakpoint** dialog allows configuring the following properties of a breakpoint:
 
@@ -119,7 +126,9 @@ Direction class and method navigator
 
 Above every script, there are two combo boxes that are part of a class and method navigator. If these combo boxes are not available, you need to enable this navigator in the property dialog, :ref:`tab general <gui-prop-py-general>`. After a configurable number of seconds after the last change in the script, it is analyzed and the combo boxes are adapted with respect to the current structure of the script.
 
-.. image:: images/editor-class-navigator.png
+.. figure:: images/editor-class-navigator.png
+	:scale: 100%
+	:align: left
 
 The left combobox displays all classes and the global namespace of the script. By clicking on any class name, the cursor jumps to the class and the name is highlighted. The right combobox shows the sub-items that belong
 to the chosen class or namespace.
@@ -139,19 +148,17 @@ You need to have this package installed in order to benefit from this service. I
 If **frosted** is installed, the syntax and style check can be dis- or enabled and configured via the :ref:`property dialog of itom <gui-prop-py-styles>`. Syntax bugs or other
 hints, warnings or errors detected by **frosted** will be displayed via a bug symbol in the left margin of the script editor window:
 
-.. image:: images/editor-syntax-check.png
+.. figure:: images/editor-syntax-check.png
+	:scale: 100%
+	:align: left
 
 The tooltip text of every bug icon displays the reason for the bug. Since the bug icon is displayed in the same margin column than the bookmarks, there is also a combined icon
 for a bug and a bookmark in one line. Please note, that one line can also contain multiple syntax hints, they are displayed in multiple lines in the tooltip text.
 
 .. note::
     
-    You can automatically download and install **frosted** using the tool **pip** from python (part of python 3.4 or later, for older version of pythons see https://pip.pypa.io/en/latest/installing.html
-    to install **pip**. The executable of **pip** (pip.exe) is located in the **scripts** subfolder of your Python installation. Open a command line and browse to this folder. Then execute::
-        
-        pip install frosted
-        
-    to install **frosted** and restart |itom|. Try to call::
+    You can automatically download and install **frosted** using the :ref:`python package manager <gui-pipmanager>` of |itom| accessible via the *Script* menu of the main window.
+    Click *install* in the manager and search the python package index for the package **frosted**. Try to call::
         
         import frosted
         
@@ -166,7 +173,9 @@ Icon-Browser
 To help adding icons to user defined buttons, menus or user interfaces, the icon browser of the script editor window shows a list of icons that come with |itom| or loaded plugins.
 The icon browser is opened via the menu **edit >> icon browser...** of any script editor window or the keyboard shortcut **Ctrl + B**.
 
-.. image:: images/editorIconBrowser.png
+.. figure:: images/editorIconBrowser.png
+	:scale: 100%
+	:align: left
 
 These icons can directly be used inside of any script by their *virtual icon path*. If you choose a specific icon, you have the following options via the buttons on the right side:
 

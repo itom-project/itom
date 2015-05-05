@@ -13,4 +13,5 @@ This chapter describes the main functionalities, windows and dialogs that are pr
    mainWindow.rst
    editor.rst
    propertyDialog.rst
+   pipManager.rst
    

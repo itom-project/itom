@@ -35,6 +35,9 @@
 #include <iostream>
 #include <qdir.h>
 
+namespace ito
+{
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 UserUiDialog::UserUiDialog(const QString &filename, tButtonBarType buttonBarType, const StringMap &dialogButtons, RetVal &retValue, QWidget * parent, Qt::WindowFlags f) :
@@ -246,3 +249,5 @@ const QMetaObject* UserUiDialog::getMetaObjectByWidgetName(QString name) const
     }
     return mo;
 }
+
+} //end namespace ito

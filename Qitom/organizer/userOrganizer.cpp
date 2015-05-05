@@ -30,19 +30,19 @@
 #include <qdebug.h>
 #include <QCryptographicHash>
 
+
+
+namespace ito 
+{
+
 /*!
-    \class userOrganizer
+    \class UserOrganizer
     \brief class handling users and their rights
 */
 
 //! global variable reference used to store AddInManager reference, as the AIM is singleton this variable is principally only
 //! accessed by the class itself. Its value is return also by the getReference \ref AddInManager::method of AIM
-ito::UserOrganizer* ito::UserOrganizer::m_pUserOrganizer = NULL;
-
-namespace ito 
-{
-
-//! userOrganizer implementation
+UserOrganizer* UserOrganizer::m_pUserOrganizer = NULL;
 //----------------------------------------------------------------------------------------------------------------------------------
 UserOrganizer::UserOrganizer(void) :
     QObject(),

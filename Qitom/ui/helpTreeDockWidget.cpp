@@ -1800,19 +1800,27 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
 {
     QStringList result;
     QByteArray examplePrefix = "example:";
-    QString t = link.toString();
 
     if (link.scheme() == "itom")
     {
         if (link.host() == "widget.html")
         {
             result.append("widget");
+#if QT_VERSION < 0x050000
             result.append(link.fragment());
+#else
+            result.append(QUrl::fromPercentEncoding(link.fragment().toLatin1()));
+#endif     
         }
         else if (link.host() == "algorithm.html")
         {
             result.append("algorithm");
+#if QT_VERSION < 0x050000
             result.append(link.fragment());
+#else
+            result.append(QUrl::fromPercentEncoding(link.fragment().toLatin1()));
+#endif
+            
         }
         else
         {
@@ -1828,7 +1836,11 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
     else if (link.scheme() == "example")
     {
         result.append("example");
+#if QT_VERSION < 0x050000
         result.append(link.fragment());
+#else
+        result.append(QUrl::fromPercentEncoding(link.fragment().toLatin1()));
+#endif
     }
     else
     {

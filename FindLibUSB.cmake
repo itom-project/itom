@@ -14,6 +14,8 @@
 include ( CheckLibraryExists )
 include ( CheckIncludeFile )
 
+OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
+
 find_package ( PkgConfig )
 if ( PKG_CONFIG_FOUND )
   pkg_check_modules ( PKGCONFIG_LIBUSB libusb>=1.0 )
@@ -67,11 +69,11 @@ else ( PKGCONFIG_LIBUSB_FOUND )
         # LibUSB-Win32 binary distribution contains several libs.
         # Use the lib that got compiled with the same compiler.
         if ( MSVC )
-            if ( WIN32 )
-            set ( LibUSB_LIBRARY_PATH_SUFFIX MS32/static )
-            else ( WIN32 )
-            set ( LibUSB_LIBRARY_PATH_SUFFIX MS64/static )
-            endif ( WIN32 )          
+            if (BUILD_TARGET64)
+                set ( LibUSB_LIBRARY_PATH_SUFFIX MS64/static )
+            else (BUILD_TARGET64)
+                set ( LibUSB_LIBRARY_PATH_SUFFIX MS32/static )
+            endif (BUILD_TARGET64)         
         elseif ( BORLAND )
             set ( LibUSB_LIBRARY_PATH_SUFFIX lib/bcc )
         elseif ( CMAKE_COMPILER_IS_GNUCC )

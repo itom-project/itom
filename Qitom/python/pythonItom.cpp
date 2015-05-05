@@ -281,7 +281,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
         QVariant valueV;
         QString keyS;
 
-        while (PyDict_Next(propDict, &pos, &key, &value)) 
+        while (PyDict_Next(propDict, &pos, &key, &value)) //key and value are borrowed
         {
             keyS = PythonQtConversion::PyObjGetString(key,true,ok);
             valueV = PythonQtConversion::PyObjToQVariant(value);
@@ -292,7 +292,6 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
             else
             {
                 PyErr_SetString(PyExc_RuntimeError, "at least one property value could not be parsed to QVariant.");
-                Py_DECREF(propDict);
                 return NULL;
             }
         }
@@ -446,7 +445,6 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 
     QVariantMap properties;
     
-
     if (propDict)
     {
         PyObject *key, *value;
@@ -464,7 +462,6 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
             else
             {
                 PyErr_SetString(PyExc_RuntimeError, "at least one property value could not be parsed to QVariant.");
-                Py_DECREF(propDict);
                 return NULL;
             }
         }

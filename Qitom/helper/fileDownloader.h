@@ -7,6 +7,9 @@
 #include <qnetworkrequest.h>
 #include <qnetworkreply.h>
 #include <qurl.h>
+
+namespace ito
+{
      
 class FileDownloader : public QObject
 {
@@ -50,5 +53,7 @@ private:
     int m_nrOfAllowedRedirects;
      
 };
+
+} //end namespace ito
      
 #endif // FILEDOWNLOADER_H

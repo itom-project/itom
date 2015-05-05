@@ -89,18 +89,9 @@ void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source)
         if (m_dataPointer["source"].data() != source.data())
         {
             QSharedPointer<ito::DataObject> oldSource = m_dataPointer["source"]; //possible backup for previous source, this backup must be alive until updateParam with the new one has been completely propagated
-            if (oldSource)
-            {
-                oldSource->lockWrite();
-            }
 
             // sometimes crash here when replacing the source
             m_dataPointer["source"] = source;
-
-            if (oldSource)
-            {
-                oldSource->unlock();
-            }
         }  
     }
     else
@@ -196,9 +187,7 @@ void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source, ItomS
                 QSharedPointer<ito::DataObject> oldSource = m_dataPointer["source"];
                 if (oldSource.data())
                 {
-                    oldSource->lockWrite();
                     m_dataPointer["source"] = source;
-                    oldSource->unlock();
                 }
                 else
                 {
