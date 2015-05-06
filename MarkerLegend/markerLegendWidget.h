@@ -58,12 +58,12 @@ class relation
     tRelationType type;
 };
 
-class MARKERLEGEND_EXPORT MarkerLegend : public QTreeWidget
+class MARKERLEGEND_EXPORT MarkerLegendWidget : public QTreeWidget
 {
     Q_OBJECT
         
     public:        
-        MarkerLegend(QWidget* parent = NULL);
+        MarkerLegendWidget(QWidget* parent = NULL);
 
     private:
         QHash< int, relation> m_relationHash;

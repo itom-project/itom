@@ -28,7 +28,7 @@
 #include "markerLegendWidget.h"
 //#include "../common/sharedStructuresPrimitives.h"
 //---------------------------------------------------------------------------------------------------------
-MarkerLegend::MarkerLegend(QWidget* parent /*= NULL*/) : QTreeWidget(this)
+MarkerLegendWidget::MarkerLegendWidget(QWidget* parent /*= NULL*/) : QTreeWidget(parent)
 {
     
     setSelectionBehavior( QAbstractItemView::SelectRows );
@@ -41,7 +41,7 @@ MarkerLegend::MarkerLegend(QWidget* parent /*= NULL*/) : QTreeWidget(this)
     insertTopLevelItem(2, new QTreeWidgetItem(this, QStringList("Plot Children")));
 }
 //---------------------------------------------------------------------------------------------------------
-void MarkerLegend::updatePicker(int index, QVector< float > position)
+void MarkerLegendWidget::updatePicker(int index, QVector< float > position)
 {
     QTreeWidgetItem *pickerEntries = topLevelItem(0);
     QTreeWidgetItem* myChild = NULL;
@@ -81,7 +81,7 @@ void MarkerLegend::updatePicker(int index, QVector< float > position)
     return;
 }
 //---------------------------------------------------------------------------------------------------------
-void MarkerLegend::updatePickers(QVector< int > indices, QVector< QVector< float > > positions)
+void MarkerLegendWidget::updatePickers(QVector< int > indices, QVector< QVector< float > > positions)
 {
     QTreeWidgetItem *pickerEntries = topLevelItem(0);
 
@@ -131,56 +131,56 @@ void MarkerLegend::updatePickers(QVector< int > indices, QVector< QVector< float
     return;
 }
 //---------------------------------------------------------------------------------------------------------
-void MarkerLegend::updateGeometry(int index, QPair< int, QVector< float > > element)
+void MarkerLegendWidget::updateGeometry(int index, QPair< int, QVector< float > > element)
 {
 
 
     return;
 }
 //---------------------------------------------------------------------------------------------------------
-void MarkerLegend::updateGeometries(QVector< int > index, QVector< QPair <int,  QVector< float > > > elements)
+void MarkerLegendWidget::updateGeometries(QVector< int > index, QVector< QPair <int,  QVector< float > > > elements)
 {
 
 
     return;
 }
 //---------------------------------------------------------------------------------------------------------
-void MarkerLegend::updateLinePlot(int type, QVector<QPointF > positions)
+void MarkerLegendWidget::updateLinePlot(int type, QVector<QPointF > positions)
 {
 
 
     return;
 }
 //---------------------------------------------------------------------------------------------------------
-void MarkerLegend::removePicker(int index)
+void MarkerLegendWidget::removePicker(int index)
 {
 
 
     return;
 }
 //---------------------------------------------------------------------------------------------------------
-void MarkerLegend::removePickers()
+void MarkerLegendWidget::removePickers()
 {
 
 
     return;
 }
 //---------------------------------------------------------------------------------------------------------
-void MarkerLegend::removeGeometry(int index)
+void MarkerLegendWidget::removeGeometry(int index)
 {
 
 
     return;
 }
 //---------------------------------------------------------------------------------------------------------
-void MarkerLegend::removeGeometries()
+void MarkerLegendWidget::removeGeometries()
 {
 
 
     return;
 }
 //---------------------------------------------------------------------------------------------------------
-void MarkerLegend::removeLinePlot()
+void MarkerLegendWidget::removeLinePlot()
 {
 
 
