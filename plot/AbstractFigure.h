@@ -49,6 +49,7 @@
 #endif
 
 class QPropertyEditorWidget; //forward declaration
+class MarkerLegendWidget; //forward declaration
 
 #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 
@@ -129,6 +130,7 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
         virtual bool getContextMenuEnabled() const = 0;
 
         virtual QDockWidget *getPropertyDockWidget() const { return m_propertyDock; }
+        virtual QDockWidget *getMarkerLegendDockWidget() const { return m_markerLegendDock; }
 
         QList<QMenu*> getMenus() const;
         QList<AbstractFigure::ToolBarItem> getToolbars() const;
@@ -172,12 +174,22 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
         QPropertyEditorWidget *m_propertyEditorWidget;
         QObject *m_propertyObservedObject;
 
+        QDockWidget *m_markerLegendDock;
+        MarkerLegendWidget *m_markerLegendWidget;
+
     signals:
         
     private slots:
 
         inline void mnuShowToolbar(bool /*checked*/) { setToolbarVisible(true); }
         inline void mnuShowProperties(bool checked) { if (m_propertyDock) { m_propertyDock->setVisible(checked); } }
+        inline void mnuShowMarkerLegend(bool checked) 
+        { 
+            if (m_markerLegendDock) 
+            { 
+                m_markerLegendDock->setVisible(checked); 
+            } 
+        }
 
     public slots:
 

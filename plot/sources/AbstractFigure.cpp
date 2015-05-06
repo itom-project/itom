@@ -47,6 +47,7 @@
 #include "../../common/addInInterface.h"
 #include "../../common/apiFunctionsInc.h"
 #include "QPropertyEditor/QPropertyEditorWidget.h"
+#include "MarkerLegend/markerLegendWidget.h"
 
 namespace ito 
 {
@@ -64,6 +65,8 @@ AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windo
     m_windowMode(windowMode),
     m_propertyDock(NULL),
     m_propertyEditorWidget(NULL),
+    m_markerLegendDock(NULL),
+    m_markerLegendWidget(NULL),
     m_propertyObservedObject(NULL)
 {
     //itom_PLOTAPI = NULL;
@@ -104,6 +107,11 @@ AbstractFigure::~AbstractFigure()
     {
         m_propertyDock->deleteLater();
     }
+
+    if (m_markerLegendDock)
+    {
+        m_markerLegendDock->deleteLater();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -140,6 +148,13 @@ RetVal AbstractFigure::initialize()
         }
     }
 
+    m_markerLegendDock = new QDockWidget("MarkerLegend", this);
+    m_markerLegendDock->setVisible(false);
+    m_markerLegendDock->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable);
+
+    m_markerLegendWidget = new MarkerLegendWidget(m_markerLegendDock);
+    m_markerLegendDock->setWidget(m_markerLegendWidget);
+
     m_propertyDock = new QDockWidget(tr("Properties"), this);
     m_propertyDock->setVisible(false);
     m_propertyDock->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable);
@@ -152,15 +167,20 @@ RetVal AbstractFigure::initialize()
         case AbstractFigure::ModeInItomFigure:
             /*default if figure is used for plotting data in itom, may also be part of a subfigure area.
             Then, the created DockWidget should be used by the outer window and managed/displayed by it */
+            addDockWidget(Qt::RightDockWidgetArea, m_markerLegendDock);
             break;
         case AbstractFigure::ModeStandaloneInUi:
             /*figure is contained in an user interface. Then the dock widget is dock with floating mode (default) */
             addDockWidget(Qt::RightDockWidgetArea, m_propertyDock);
             m_propertyDock->setFloating(true);
+
+            addDockWidget(Qt::RightDockWidgetArea, m_markerLegendDock);
+            m_markerLegendDock->setFloating(true);
             break;
 
         case AbstractFigure::ModeStandaloneWindow:
             addDockWidget(Qt::RightDockWidgetArea, m_propertyDock);
+            addDockWidget(Qt::RightDockWidgetArea, m_markerLegendDock);
             break;
     }
 
