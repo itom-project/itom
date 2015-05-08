@@ -1964,23 +1964,39 @@ PointCloud.");
                 return NULL;
             }
             
-            retval += ito::dObjHelper::verify3DDataObject(XYZ.data(), "XYZ", 3, 3, 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
-            
-            if (PythonCommon::transformRetValToPyException(retval) == false)
+            ito::RetVal tmpRetval = ito::dObjHelper::verify3DDataObject(XYZ.data(), "XYZ", 3, 3, 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
+            if (tmpRetval.containsWarningOrError())
             {
-                return NULL;
+                ito::RetVal tmpRetval = ito::dObjHelper::verify2DDataObject(XYZ.data(), "XYZ", 1, std::numeric_limits<int>::max(), 3, 3, ito::tFloat32);
+                if (PythonCommon::transformRetValToPyException(retval) == false)
+                {
+                    return NULL;
+                }
+
+                ito::Range ranges[2] = { ito::Range::all(), ito::Range(0,0) };
+
+                ranges[1] = ito::Range(0,1);
+                X = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
+
+                ranges[1] = ito::Range(1,2);
+                Y = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()) );
+
+                ranges[1] = ito::Range(2,3);
+                Z = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
             }
+            else
+            {
+                ito::Range ranges[3] = { ito::Range(0,0), ito::Range::all(), ito::Range::all() };
 
-            ito::Range ranges[3] = { ito::Range(0,0), ito::Range::all(), ito::Range::all() };
+                ranges[0] = ito::Range(0,1);
+                X = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
 
-            ranges[0] = ito::Range(0,1);
-            X = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
+                ranges[0] = ito::Range(1,2);
+                Y = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()) );
 
-            ranges[0] = ito::Range(1,2);
-            Y = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()) );
-
-            ranges[0] = ito::Range(2,3);
-            Z = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
+                ranges[0] = ito::Range(2,3);
+                Z = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
+            }
         }
     }
     else
@@ -2069,23 +2085,39 @@ PointCloud.");
                 return NULL;
             }
             
-            retval += ito::dObjHelper::verify3DDataObject(XYZ.data(), "XYZ", 3, 3, 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
-            
-            if (PythonCommon::transformRetValToPyException(retval) == false)
+            ito::RetVal tmpRetval = ito::dObjHelper::verify3DDataObject(XYZ.data(), "XYZ", 3, 3, 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
+            if (tmpRetval.containsWarningOrError())
             {
-                return NULL;
+                ito::RetVal tmpRetval = ito::dObjHelper::verify2DDataObject(XYZ.data(), "XYZ", 1, std::numeric_limits<int>::max(), 3, 3, ito::tFloat32);
+                if (PythonCommon::transformRetValToPyException(retval) == false)
+                {
+                    return NULL;
+                }
+
+                ito::Range ranges[2] = { ito::Range::all(), ito::Range(0,0) };
+
+                ranges[1] = ito::Range(0,1);
+                X = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
+
+                ranges[1] = ito::Range(1,2);
+                Y = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()) );
+
+                ranges[1] = ito::Range(2,3);
+                Z = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
             }
+            else
+            {
+                ito::Range ranges[3] = { ito::Range(0,0), ito::Range::all(), ito::Range::all() };
 
-            ito::Range ranges[3] = { ito::Range(0,0), ito::Range::all(), ito::Range::all() };
+                ranges[0] = ito::Range(0,1);
+                X = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
 
-            ranges[0] = ito::Range(0,1);
-            X = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()) );
+                ranges[0] = ito::Range(1,2);
+                Y = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()) );
 
-            ranges[0] = ito::Range(1,2);
-            Y = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()) );
-
-            ranges[0] = ito::Range(2,3);
-            Z = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()) );
+                ranges[0] = ito::Range(2,3);
+                Z = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
+            }
 
             I = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objI, false, ok));
             if (!ok)
