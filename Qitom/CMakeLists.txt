@@ -691,8 +691,31 @@ FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../docs/userDoc/source/ext       DESTINATI
 
 #FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/itom_sdk.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include)
 
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h ITOM_VERSIONS_TMP REGEX "^.*static const char\\* ito_AddInInterface_CurrentVersion[ \t]+=+.*$")
-string(REGEX REPLACE ".*static const char\\* ito_AddInInterface_CurrentVersion[ \t]+=[ \t]+.([a-zA-Z0-9\\./]+).*" "\\1" ITOM_VERSION_STRING_WITH_API ${ITOM_VERSIONS_TMP})
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_MAJOR [0-9]+$")
+if (ITOM_VERSION_TMP)
+    string(REGEX REPLACE "^.*#define ITOM_ADDININTERFACE_MAJOR ([0-9]+)$" "\\1" ITOM_VERSION_MAJOR ${ITOM_VERSION_TMP})
+else (ITOM_VERSION_TMP)
+    message(WARNING "#define ITOM_ADDININTERFACE_MAJOR in addInInterface.h missing. Can not detect version of itom SDK")
+    set(ITOM_VERSION_MAJOR "?")
+endif (ITOM_VERSION_TMP)
+
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_MINOR [0-9]+$")
+if (ITOM_VERSION_TMP)
+    string(REGEX REPLACE "^.*#define ITOM_ADDININTERFACE_MINOR ([0-9]+)$" "\\1" ITOM_VERSION_MINOR ${ITOM_VERSION_TMP})
+else (ITOM_VERSION_TMP)
+    message(WARNING "#define ITOM_ADDININTERFACE_MINOR in addInInterface.h missing. Can not detect version of itom SDK")
+    set(ITOM_VERSION_MINOR "?")
+endif (ITOM_VERSION_TMP)
+
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_PATCH [0-9]+$")
+if (ITOM_VERSION_TMP)
+    string(REGEX REPLACE "^.*#define ITOM_ADDININTERFACE_PATCH ([0-9]+)$" "\\1" ITOM_VERSION_PATCH ${ITOM_VERSION_TMP})
+else (ITOM_VERSION_TMP)
+    message(WARNING "#define ITOM_ADDININTERFACE_PATCH in addInInterface.h missing. Can not detect version of itom SDK")
+    set(ITOM_VERSION_PATCH "?")
+endif (ITOM_VERSION_TMP)
+
+SET(ITOM_VERSION_STRING_WITH_API "ito.AddIn.InterfaceBase/${ITOM_VERSION_MAJOR}.${ITOM_VERSION_MINOR}.${ITOM_VERSION_PATCH}")
 
 CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/itom_sdk.h.in ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/itom_sdk.h)
 

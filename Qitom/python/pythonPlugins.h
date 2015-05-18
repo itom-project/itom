@@ -95,6 +95,7 @@ class PythonPlugins
        static PyObject *PyActuatorPlugin_getParamListInfo(PyActuatorPlugin *self,  PyObject *args);
        static PyObject* PyActuatorPlugin_getExecFuncsInfo(PyActuatorPlugin* self, PyObject *args, PyObject *kwds);
        static PyObject *PyActuatorPlugin_getParam(PyActuatorPlugin *self, PyObject *args);
+       static PyObject *PyActuatorPlugin_getParamInfo(PyActuatorPlugin *self, PyObject *args);
        static PyObject *PyActuatorPlugin_setParam(PyActuatorPlugin *self, PyObject *args);
        static PyObject *PyActuatorPlugin_getType(PyActuatorPlugin *self);
        static PyObject *PyActuatorPlugin_execFunc(PyActuatorPlugin *self, PyObject *args, PyObject *kwds);
@@ -117,28 +118,10 @@ class PythonPlugins
        static PyModuleDef  PyActuatorPluginModule;
 
        static void paramBaseVectorDeleter(QVector<ito::ParamBase> *obj)
-        {
-            delete obj;
-        }
+       {
+           delete obj;
+       }
 
-
-       // pending for deletion
-/*
-       // Actuator axis
-       static void PyActuatorAxis_dealloc(PyActuatorAxis *self);
-       static PyObject *PyActuatorAxis_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
-       static int PyActuatorAxis_init(PyActuatorAxis *self, PyObject *args, PyObject *kwds);
-
-       static PyObject *PyActuatorAxis_getStatus(PyActuatorAxis *self, PyObject *args);
-       static PyObject *PyActuatorAxis_getPos(PyActuatorAxis *self, PyObject *args);
-       static PyObject *PyActuatorAxis_setPosAbs(PyActuatorAxis *self, PyObject *args);
-       static PyObject *PyActuatorAxis_setPosRel(PyActuatorAxis *self, PyObject *args);
-      
-       static PyMemberDef  PyActuatorAxis_members[];
-       static PyMethodDef  PyActuatorAxis_methods[];
-       static PyTypeObject PyActuatorAxisType;
-       static PyModuleDef  PyActuatorAxisModule;
-*/
        //DataIO
        static void PyDataIOPlugin_dealloc(PyDataIOPlugin *self);
        static PyObject *PyDataIOPlugin_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
@@ -150,6 +133,7 @@ class PythonPlugins
        static PyObject* PyDataIOPlugin_getParamListInfo(PyDataIOPlugin* self,  PyObject *args);
        static PyObject* PyDataIOPlugin_getExecFuncsInfo(PyDataIOPlugin* self, PyObject *args, PyObject *kwds);
        static PyObject *PyDataIOPlugin_getParam(PyDataIOPlugin *self, PyObject *args);
+       static PyObject *PyDataIOPlugin_getParamInfo(PyDataIOPlugin *self, PyObject *args);
        static PyObject *PyDataIOPlugin_setParam(PyDataIOPlugin *self, PyObject *args);
        static PyObject *PyDataIOPlugin_getType(PyDataIOPlugin *self);
        static PyObject *PyDataIOPlugin_execFunc(PyDataIOPlugin *self, PyObject *args, PyObject *kwds);
@@ -174,24 +158,6 @@ class PythonPlugins
        static PyModuleDef  PyDataIOPluginModule;
        static void PyDataIOPlugin_addTpDict(PyObject *tp_dict);
 
-#if 0 //algo plugins do not exist as instances, they only contain static methods, callable by itom.filter
-       // Algo
-       static void PyAlgoPlugin_dealloc(PyAlgoPlugin *self);
-       static PyObject *PyAlgoPlugin_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
-       static int PyAlgoPlugin_init(PyAlgoPlugin *self, PyObject *args, PyObject *kwds);
-       static PyObject *PyAlgoPlugin_name(PyAlgoPlugin *self);
-       static PyObject *PyAlgoPlugin_getParamList(PyAlgoPlugin *self);
-       static PyObject *PyAlgoPlugin_getParamListInfo(PyAlgoPlugin *self, PyObject *args);
-       static PyObject* PyAlgoPlugin_getExecFuncsInfo(PyAlgoPlugin* self, PyObject *args, PyObject *kwds);
-       static PyObject *PyAlgoPlugin_getParam(PyAlgoPlugin *self, PyObject *args);
-       static PyObject *PyAlgoPlugin_setParam(PyAlgoPlugin *self, PyObject *args);
-       static PyObject *PyAlgoPlugin_getType(PyAlgoPlugin *self);
-
-       static PyMemberDef  PyAlgoPlugin_members[];
-       static PyMethodDef  PyAlgoPlugin_methods[];
-       static PyTypeObject PyAlgoPluginType;
-       static PyModuleDef  PyAlgoPluginModule;
-#endif
 };
 
 } //end namespace ito

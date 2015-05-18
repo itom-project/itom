@@ -76,7 +76,7 @@ BEGIN
             VALUE   "OriginalFilename", PLUGIN_NAME ".dll\0"
 #endif
             VALUE   "ProductName",      ITOM_APP_NAME "\0"
-            VALUE   "ProductVersion",   "itom version " ITOM_VERSION_STRING " (" INTERFACE_VERSION ")\0"
+            VALUE   "ProductVersion",   "itom with sdk version "  INTERFACE_VERSION "\0"
         END
     END
 END

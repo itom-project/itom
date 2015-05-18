@@ -10,12 +10,9 @@ toolBarRoughnesStatistics = roughnessToolBar("toolBarRoughnesStatistics")
 
 from abstractObjToolbar.abstractObjToolbar import abstractObjInteractionToolBar
 import itom
-reloadModules = 1
 
-if not (itom.pluginLoaded("M++Filter")):
-    raise RuntimeError("M++Filter-plugin not available. Loading roughness toolbar canceld")
 if not (itom.pluginLoaded("FittingFilters")):
-    raise RuntimeError("FittingFilters-plugin not available. Loading roughness toolbar canceld")
+    raise RuntimeError("FittingFilters-plugin not available. Loading roughness toolbar cancelled")
 
 class surfaceAnalysisTools(abstractObjInteractionToolBar):
     '''

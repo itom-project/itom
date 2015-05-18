@@ -513,7 +513,7 @@ ito::RetVal ParamInputParser::getDoubleValue(ito::ParamBase &param, const ito::P
 
     if (!retVal.containsError())
     {
-        param.setVal<int>(box->value());
+        param.setVal<double>(box->value());
     }
     return retVal;
 }

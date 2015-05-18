@@ -15,7 +15,7 @@ There are three types of message boxes that you can show via a script command. T
 
 .. figure:: images/messageBoxes.png
     :align: center
-    :scale: 70%
+    :scale: 90%
     
     Appearance of the different message boxes on a Windows 7 operating system. From left to right: *Information*, *Warning*, *Question*, *Critical*
 
@@ -60,7 +60,7 @@ ui.MsgBoxNoButton           0
 =========================== ============
 
 For an **or**-combination, use the bar-operator (**|**). The parameter *defaultButton* only accepts one button value of buttons, listed in the parameter *button*. The specific button then becomes the default button that is selectable by simply pressing the return-key. Additionally, you
-can let the message box be a child of any other instance of class :py:class`~itom.ui`. This is useful, if you want to make the message box modal with
+can let the message box be a child of any other instance of class :py:class:`~itom.ui`. This is useful, if you want to make the message box modal with
 respect to any :ref:`user defined dialog <qtdesigner>` and not with respect to the main window of |itom|.
 
 The return value is a tuple containing two values. The first is the value of the button that has been pressed to close the message box with respect to the enumeration values stated above. The second value is the text of the pressed button (e.g. "Ok").
@@ -78,7 +78,7 @@ An example for a question message box is:
 Input boxes
 =================================
 
-The class :py:class`~itom.ui` also contains another group of static methods, that can be used in order to show modal input boxes. These are:
+The class :py:class:`~itom.ui` also contains another group of static methods, that can be used in order to show modal input boxes. These are:
 
 Integer input box
 -----------------------------

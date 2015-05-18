@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -30,5 +30,8 @@
 #define ITOM_VERSION_STRING "${ITOM_VERSION_STRING}"
 #define INTERFACE_VERSION   "${ITOM_VERSION_STRING_WITH_API}"
 #define ITOM_APP_NAME       "itom - ito measurement software"
+
+#define CREATE_VERSION(major,minor,patch) ((major<<16)|(major<<8)|(patch))
+#define CREATE_VERSION_STRING(major,minor,patch) #major"."#minor"."patch
 
 #endif

@@ -10,7 +10,7 @@ This section will give a short introduction about plotting, read- /write-functio
 
 At last the evaluateGeomtrics-plugin for direct evaluation of geometric elements is introduced.
 
-Drawing items into a QWT-Plot
+Drawing items into a Qwt-Plot
 ----------------------------------------------
 
 The plot functionality can be accessed by three different ways. The first way is the GUI based approach by which the user presses the 
@@ -117,7 +117,19 @@ To register changes in the plot elements and finished user interactions, the fol
 *  "plotItemsDeleted",          Emitted, when all plot items are deleted
 *  "plotItemsFinished",         Emitted, when the plotting function is finished, similar to userInteractionDone
 
-For the blocking connection the plotItem-class got the additional function drawAndPickElements(type, dataObject, count), see py:class:`~itom.plotItem`. 
+For the blocking connection the plotItem-class got the additional function drawAndPickElements(type, dataObject, count), see :py:class:`~itom.plotItem`. 
+
+.. note::
+    
+    If the plot is embedded in a graphical user interface, the python based access to the plot via its object name returns an instance of :py:class:`~itom.uiItem`. 
+    However, you can cast this instance to :py:class:`~itom.plotItem` using a python cast operator:
+    
+    .. code-block:: python
+        
+        import itom
+        plot = itom.plotItem(myGui.plotObjectName)
+        
+    If *myGui.plotObjectName* is not an instance of :py:class:`~itom.plotItem` a runtime error is thrown. This cast is only available for itom > 1.4.0.
 
 Indexing for Geometric Elements
 ----------------------------------------------
