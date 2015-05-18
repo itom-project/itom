@@ -20,13 +20,13 @@ Content:
    plotItem.rst
    itom_GUI.rst
    dataObject.rst
-   npDataObject.rst 
    point.rst
    pointCloud.rst
    polygonMesh.rst
    region.rst
    rgba.rst
    autoInterval.rst
+   timer.rst
 
 For an alphabetic index see:
 
