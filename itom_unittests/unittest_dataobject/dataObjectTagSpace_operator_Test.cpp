@@ -10,18 +10,18 @@
 #include "commonChannel.h"
 
 /*! \class dataObjectTag_Test
-	\brief Test for DataObjectTag class and functions for all itom data types
+    \brief Test for DataObjectTag class and functions for all itom data types
 
-	This test class checks functionality of different fuctions on data objects Tags.
+    This test class checks functionality of different fuctions on data objects Tags.
 */
 
 template <typename _Tp> class dataObjectTagSpace_operator_Test : public ::testing::Test 
-	{ 
+    { 
 public:
 
-	virtual void SetUp(void)
-	{
-		//Creating 1,2 and 3 dimension DataObjects for this Perticular Test class.
+    virtual void SetUp(void)
+    {
+        //Creating 1,2 and 3 dimension DataObjects for this Perticular Test class.
 
         rotMat[0] =  4.0;
         rotMat[1] =  3.0;
@@ -33,10 +33,10 @@ public:
         rotMat[7] = 7.0;
         rotMat[8] = 35.0;
 
-		mat1_2d = ito::DataObject(3,4,ito::getDataType( (const _Tp *) NULL ));
+        mat1_2d = ito::DataObject(3,4,ito::getDataType( (const _Tp *) NULL ));
         mat1_2d.setTag("testTag1", "test");
-	    mat1_2d.setTag("testTag2", 0.0);
-	    mat1_2d.setTag("testTag3", 1.0);
+        mat1_2d.setTag("testTag2", 0.0);
+        mat1_2d.setTag("testTag3", 1.0);
         
         mat1_2d.setAxisDescription(0, "y");
         mat1_2d.setAxisDescription(1, "x");
@@ -57,8 +57,8 @@ public:
 
         mat2_2d = ito::DataObject(3,3,ito::getDataType( (const _Tp *) NULL ));
         mat2_2d.setTag("testTag1", "test");
-	    mat2_2d.setTag("testTag2", 0.0);
-	    mat2_2d.setTag("testTag3", 1.0);
+        mat2_2d.setTag("testTag2", 0.0);
+        mat2_2d.setTag("testTag3", 1.0);
         mat2_2d.setAxisDescription(0, "y");
         mat2_2d.setAxisDescription(1, "x");
 
@@ -76,8 +76,8 @@ public:
 
         mat1_3d = ito::DataObject(3,3,3,ito::getDataType( (const _Tp *) NULL ));
         mat1_3d.setTag("testTag1", "test");
-	    mat1_3d.setTag("testTag2", 0.0);
-	    mat1_3d.setTag("testTag3", 1.0);
+        mat1_3d.setTag("testTag2", 0.0);
+        mat1_3d.setTag("testTag3", 1.0);
         
         mat1_3d.setAxisDescription(0, "z");
         mat1_3d.setAxisDescription(1, "y");
@@ -101,8 +101,8 @@ public:
 
         mat2_3d = ito::DataObject(1,3,3,ito::getDataType( (const _Tp *) NULL ));
         mat2_3d.setTag("testTag1", "test");
-	    mat2_3d.setTag("testTag2", 0.0);
-	    mat2_3d.setTag("testTag3", 1.0);
+        mat2_3d.setTag("testTag2", 0.0);
+        mat2_3d.setTag("testTag3", 1.0);
         
         mat2_3d.setAxisDescription(0, "z");
         mat2_3d.setAxisDescription(1, "y");
@@ -122,38 +122,38 @@ public:
         mat2_3d.setValueUnit("mm");
         mat2_3d.setValueDescription("val");
         mat2_3d.setXYRotationalMatrix(rotMat[0], rotMat[1], rotMat[2], rotMat[3], rotMat[4], rotMat[5], rotMat[6], rotMat[7], rotMat[8]);
-	}
+    }
     virtual void validTagSpace(const ito::DataObject &base, const ito::DataObject &temp)
     {
         double rotTempMat[9];
-	    bool vop1;
-	    bool vop2;
-	    bool vop3;
-	    std::string key1 = temp.getTagKey(0,vop1);
-	    std::string key2 = temp.getTagKey(1,vop2);
-	    std::string key3 = temp.getTagKey(2,vop3);
-	    EXPECT_EQ(key1,"testTag1");						//checks if the key1 is same as the one assigned by "setTag" function.
-	    EXPECT_EQ(key2,"testTag2");						//checks if the key2 is same as the one assigned by "setTag" function.
-	    EXPECT_EQ(key3,"testTag3");						//checks if the key3 is same as the one assigned by "setTag" function.
-	    EXPECT_TRUE(vop1);								//checks if the above operation is valid for 1st Tag 
-	    EXPECT_TRUE(vop2);								//checks if the above operation is valid for 2nd Tag 
-	    EXPECT_TRUE(vop3);								//checks if the above operation is valid for 3rd Tag
+        bool vop1;
+        bool vop2;
+        bool vop3;
+        std::string key1 = temp.getTagKey(0,vop1);
+        std::string key2 = temp.getTagKey(1,vop2);
+        std::string key3 = temp.getTagKey(2,vop3);
+        EXPECT_EQ(key1,"testTag1");                        //checks if the key1 is same as the one assigned by "setTag" function.
+        EXPECT_EQ(key2,"testTag2");                        //checks if the key2 is same as the one assigned by "setTag" function.
+        EXPECT_EQ(key3,"testTag3");                        //checks if the key3 is same as the one assigned by "setTag" function.
+        EXPECT_TRUE(vop1);                                //checks if the above operation is valid for 1st Tag 
+        EXPECT_TRUE(vop2);                                //checks if the above operation is valid for 2nd Tag 
+        EXPECT_TRUE(vop3);                                //checks if the above operation is valid for 3rd Tag
 
         ito::DataObjectTagType tag1 = temp.getTag("testTag1", vop1);
         ito::DataObjectTagType tag2 = temp.getTag("testTag2", vop2);
         ito::DataObjectTagType tag3 = temp.getTag("testTag3", vop3);
 
-        EXPECT_EQ(tag1.getType(), ito::DataObjectTagType::typeString);	
+        EXPECT_EQ(tag1.getType(), ito::DataObjectTagType::typeString);    
         EXPECT_EQ(tag2.getType(), ito::DataObjectTagType::typeDouble);
         EXPECT_EQ(tag3.getType(), ito::DataObjectTagType::typeDouble);
 
-        EXPECT_EQ(tag1.getVal_ToString(), "test");						//checks if the key1 is same as the one assigned by "setTag" function.
-	    EXPECT_DOUBLE_EQ(tag2.getVal_ToDouble(), 0.0);						//checks if the key2 is same as the one assigned by "setTag" function.
-	    EXPECT_DOUBLE_EQ(tag3.getVal_ToDouble(), 1.0);						//checks if the key3 is same as the one assigned by "setTag" function.
+        EXPECT_EQ(tag1.getVal_ToString(), "test");                        //checks if the key1 is same as the one assigned by "setTag" function.
+        EXPECT_DOUBLE_EQ(tag2.getVal_ToDouble(), 0.0);                        //checks if the key2 is same as the one assigned by "setTag" function.
+        EXPECT_DOUBLE_EQ(tag3.getVal_ToDouble(), 1.0);                        //checks if the key3 is same as the one assigned by "setTag" function.
 
-	    EXPECT_TRUE(vop1);								//checks if the above operation is valid for 1st Tag 
-	    EXPECT_TRUE(vop2);								//checks if the above operation is valid for 2nd Tag 
-	    EXPECT_TRUE(vop3);								//checks if the above operation is valid for 3rd Tag
+        EXPECT_TRUE(vop1);                                //checks if the above operation is valid for 1st Tag 
+        EXPECT_TRUE(vop2);                                //checks if the above operation is valid for 2nd Tag 
+        EXPECT_TRUE(vop3);                                //checks if the above operation is valid for 3rd Tag
 
         EXPECT_EQ(base.getValueUnit(),          temp.getValueUnit());
         EXPECT_EQ(base.getValueDescription(),   temp.getValueDescription());
@@ -166,9 +166,9 @@ public:
     }
     virtual void validAxisTags(const ito::DataObject &base, const ito::DataObject &temp, bool invertLastDims = false)
     {
-	    bool vop1;
-	    bool vop2;
-	    bool vop3;
+        bool vop1;
+        bool vop2;
+        bool vop3;
 
         if(invertLastDims)
         {
@@ -243,13 +243,13 @@ public:
         }   
     }
 
-	virtual void TearDown(void){}
-	typedef _Tp valueType;
+    virtual void TearDown(void){}
+    typedef _Tp valueType;
 
-	ito::DataObject mat1_2d;
-	ito::DataObject mat2_2d;
+    ito::DataObject mat1_2d;
+    ito::DataObject mat2_2d;
 
-	ito::DataObject mat1_3d;
+    ito::DataObject mat1_3d;
     ito::DataObject mat2_3d;
 
     double rotMat[9];
@@ -261,7 +261,7 @@ TYPED_TEST_CASE(dataObjectTagSpace_operator_Test,ItomDataAllTypes);
 
 //tagSpace_copyTo_Test
 /*!
-	This test checks functionality of "copyTo" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "copyTo" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_copyTo_Test)
 {
@@ -279,7 +279,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_copyTo_Test)
 
 //tagSpace_copyTagSpaces_Test
 /*!
-	This test checks functionality of "copyTagMap" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "copyTagMap" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_copyTagSpaces_Test)
 {
@@ -308,7 +308,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_copyTagSpaces_Test)
 
 //tagSpace_convertTo_Test
 /*!
-	This test checks functionality of "converTo"/astype of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "converTo"/astype of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_convertTo_Test)
 {
@@ -327,7 +327,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_convertTo_Test)
 
 //tagSpace_copySallow_Test
 /*!
-	This test checks functionality of "shallow copy" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "shallow copy" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_copySallow_Test)
 {
@@ -344,7 +344,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_copySallow_Test)
 
 //tagSpace_assignedScalar_Test
 /*!
-	This test checks functionality of "operator assignScalar" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "operator assignScalar" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_assignedScalar_Test)
 {
@@ -361,7 +361,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_assignedScalar_Test)
 
 //tagSpace_add_Test
 /*!
-	This test checks functionality of "addScalar" and "add" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "addScalar" and "add" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_add_Test)
 {
@@ -390,7 +390,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_add_Test)
 
 //tagSpace_sub_Test
 /*!
-	This test checks functionality of "subScalar" and "sub" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "subScalar" and "sub" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_sub_Test)
 {
@@ -419,7 +419,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_sub_Test)
 
 //tagSpace_mul_Test
 /*!
-	This test checks functionality of "mulScalar" and "mul" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "mulScalar" and "mul" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_mul_Test)
 {
@@ -473,7 +473,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_mul_Test)
 
 //tagSpace_div_Test
 /*!
-	This test checks functionality of "divFunc" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "divFunc" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_div_Test)
 {
@@ -499,7 +499,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_div_Test)
 
 //tagSpace_comp_Test
 /*!
-	This test checks functionality of "elementwise comparision" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "elementwise comparision" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_comp_Test)
 {
@@ -541,7 +541,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_comp_Test)
 
 //tagSpace_shift_Test
 /*!
-	This test checks functionality of "subScalar" and "sub" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "subScalar" and "sub" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_shift_Test)
 {
@@ -591,7 +591,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_shift_Test)
 
 //tagSpace_bitwiseCompare_Test
 /*!
-	This test checks functionality of "subScalar" and "sub" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "subScalar" and "sub" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_bitwiseCompare_Test)
 {
@@ -662,7 +662,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_bitwiseCompare_Test)
 
 //tagSpace_conj_Test
 /*!
-	This test checks functionality of "conj" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "conj" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_conj_Test)
 {
@@ -683,7 +683,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_conj_Test)
 
 //tagSpace_adj_Test
 /*!
-	This test checks functionality of "adj" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "adj" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_adj_Test)
 {
@@ -705,7 +705,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_adj_Test)
 
 //tagSpace_adj_Test
 /*!
-	This test checks functionality of "trans" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "trans" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_trans_Test)
 {
@@ -722,7 +722,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_trans_Test)
 
 //tagSpace_squeeze_Test
 /*!
-	This test checks functionality of "suqeeze" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "suqeeze" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_squeeze_Test)
 {
@@ -738,7 +738,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_squeeze_Test)
 
 //tagSpace_toGray_Test
 /*!
-	This test checks functionality of "toGray" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "toGray" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_toGray_Test)
 {
@@ -763,7 +763,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_toGray_Test)
 
 //tagSpace_makeContinous_Test
 /*!
-	This test checks functionality of "makeContinous_Test" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "makeContinous_Test" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_makeContinous_Test)
 {
@@ -782,7 +782,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_makeContinous_Test)
 
 //tagSpace_real_Test
 /*!
-	This test checks functionality of "real" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "real" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_real_Test)
 {
@@ -805,7 +805,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_real_Test)
 
 //tagSpace_imag_Test
 /*!
-	This test checks functionality of "imag" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "imag" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_imag_Test)
 {
@@ -828,7 +828,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_imag_Test)
 
 //tagSpace_arg_Test
 /*!
-	This test checks functionality of "arg" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "arg" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_arg_Test)
 {
@@ -851,7 +851,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_arg_Test)
 
 //tagSpace_abs_Test
 /*!
-	This test checks functionality of "arg" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "arg" of a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_abs_Test)
 {

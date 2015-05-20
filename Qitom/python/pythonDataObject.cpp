@@ -2897,7 +2897,7 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
     else
     {
         PyErr_SetString(PyExc_TypeError, "second argument of comparison operator is no data object or real, scalar value.");
-		return NULL;
+        return NULL;
     }
 }
 

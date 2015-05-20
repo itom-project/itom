@@ -476,15 +476,15 @@ QModelIndex PlugInModel::index(int row, int column, const QModelIndex &parent) c
 */
 QVariant PlugInModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-	if (role == Qt::DisplayRole && orientation == Qt::Horizontal)
-	{
-		if (section >= 0 && section < m_headers.size())
-		{
-			return m_headers.at(section);
-		}
-		return QVariant();
-	}
-	return QVariant();
+    if (role == Qt::DisplayRole && orientation == Qt::Horizontal)
+    {
+        if (section >= 0 && section < m_headers.size())
+        {
+            return m_headers.at(section);
+        }
+        return QVariant();
+    }
+    return QVariant();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

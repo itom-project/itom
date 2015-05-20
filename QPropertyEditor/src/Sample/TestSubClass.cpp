@@ -14,7 +14,7 @@
 
 TestSubClass::TestSubClass(QObject* parent /*= 0*/) : TestClass(parent)
 {
-	
+    
 }
 
 

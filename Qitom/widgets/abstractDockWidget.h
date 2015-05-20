@@ -298,8 +298,8 @@ namespace ito
             virtual void createStatusBar() = 0;
             virtual void updateActions() {}
             virtual void updatePythonActions() = 0;
-	    
-	    Qt::WindowFlags modifyFlags(const Qt::WindowFlags &flags, const Qt::WindowFlags &setFlags, const Qt::WindowFlags &unsetFlags);
+        
+        Qt::WindowFlags modifyFlags(const Qt::WindowFlags &flags, const Qt::WindowFlags &setFlags, const Qt::WindowFlags &unsetFlags);
 
             virtual void windowStateChanged( bool /*windowNotToolbox*/ ) {}
 

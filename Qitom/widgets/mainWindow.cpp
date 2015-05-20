@@ -1760,7 +1760,7 @@ void MainWindow::mnuShowDesigner()
             env.insert("QT_PLUGIN_PATH", appPath);
             
 #ifndef WIN32
-	        QString pathEnv = env.value("PATH");
+            QString pathEnv = env.value("PATH");
             pathEnv.prepend(appPath + ":");
             env.insert("PATH", pathEnv);
 #else

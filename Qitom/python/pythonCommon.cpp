@@ -1886,8 +1886,8 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
 //------------------------------------------------------------------------------------------------------------------------------------------
 bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &objName, const tErrMsg &errorMSG, PyObject *exceptionIfError)
 {
-	QByteArray msgSpecified;
-	QByteArray msgUnspecified;
+    QByteArray msgSpecified;
+    QByteArray msgUnspecified;
 
     if (retVal.containsError())
     {

@@ -21,7 +21,7 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
-       <widget class="QTreeView" name="tablePackages">
+       <widget class="ito::QTreeViewItom" name="tablePackages">
         <property name="itemsExpandable">
          <bool>true</bool>
         </property>
@@ -74,6 +74,13 @@
          </widget>
         </item>
         <item>
+         <widget class="QPushButton" name="btnUpdate">
+          <property name="text">
+           <string>Update...</string>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="btnReload">
           <property name="text">
            <string>Reload</string>
@@ -91,7 +98,16 @@
       <string>Log</string>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <property name="margin">
+      <property name="leftMargin">
+       <number>3</number>
+      </property>
+      <property name="topMargin">
+       <number>3</number>
+      </property>
+      <property name="rightMargin">
+       <number>3</number>
+      </property>
+      <property name="bottomMargin">
        <number>3</number>
       </property>
       <item>
@@ -260,6 +276,11 @@ p, li { white-space: pre-wrap; }
    <extends>QGroupBox</extends>
    <header>collapsibleGroupBox.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ito::QTreeViewItom</class>
+   <extends>QTreeView</extends>
+   <header>widgets/itomQWidgets.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
