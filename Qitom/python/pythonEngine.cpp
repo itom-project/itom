@@ -278,7 +278,6 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 {
     PyObject *itomDbgClass = NULL;
     PyObject *itomDbgDict = NULL;
-//    bool numpyAvailable = true;
 
     m_pythonThreadId = QThread::currentThreadId ();
     qDebug() << "python in thread: " << m_pythonThreadId;
@@ -321,7 +320,6 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 
             if (_import_array() < 0)
             {
-//                numpyAvailable = false;
                 PyErr_Print();
                 PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.");
                 (*retValue) += RetVal(retError, 0, "numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.\n");
