@@ -910,21 +910,21 @@ void AIManagerWidget::mnuShowLiveImage()
 
             ito::RetVal retval = uiOrg->figureLiveImage((ito::AddInDataIO*)ais, figHandle, objectID, 0, 0, defaultPlotClassName, QVariantMap(), NULL);
 
-			if (retval.containsError())
-			{
-				QMessageBox msgBox;
-				msgBox.setText(retval.errorMessage());
-				msgBox.setIcon(QMessageBox::Warning);
-				msgBox.exec();
-		    }
-			else if (retval.containsWarning())
-			{
-				QMessageBox msgBox;
-				msgBox.setText(retval.errorMessage());
-				msgBox.setIcon(QMessageBox::Warning);
-				msgBox.exec();
-		    }
-		}
+            if (retval.containsError())
+            {
+                QMessageBox msgBox;
+                msgBox.setText(retval.errorMessage());
+                msgBox.setIcon(QMessageBox::Warning);
+                msgBox.exec();
+            }
+            else if (retval.containsWarning())
+            {
+                QMessageBox msgBox;
+                msgBox.setText(retval.errorMessage());
+                msgBox.setIcon(QMessageBox::Warning);
+                msgBox.exec();
+            }
+        }
         else
         {
             QMessageBox msgBox;

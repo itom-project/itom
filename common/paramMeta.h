@@ -514,7 +514,7 @@ namespace ito
 
     /*!
     \class IntervalMeta
-    \brief Meta-information for Param of type IntArrayMeta that represent an interval (minimum, maximum).
+    \brief Meta-information for Param of type IntArrayMeta that represent an interval [minimum, maximum).
     
     An object of this class can be used to parametrize a parameter whose type is ito::ParamBase::IntArray. 
     This meta information class indicates that the corresponding integer array parameter is interpreted as an interval, hence, only an array
@@ -563,7 +563,7 @@ namespace ito
 
     /*!
     \class RangeMeta
-    \brief Meta-information for Param of type IntArrayMeta that represent a range (left, right).
+    \brief Meta-information for Param of type IntArrayMeta that represent a range [minVal, maxVal].
     
     An object of this class can be used to parametrize a parameter whose type is ito::ParamBase::IntArray. 
     This meta information class indicates that the corresponding integer array parameter is interpreted as a range, hence, only an array

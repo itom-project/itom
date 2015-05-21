@@ -365,12 +365,12 @@ PyTypeObject PythonUiDialog::PyUiTimerType = {
         0,                         /* tp_as_buffer */
         Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
         pyUiTimerInit_doc /*"dataObject objects"*/,           /* tp_doc */
-        0,		               /* tp_traverse */
-        0,		               /* tp_clear */
+        0,                       /* tp_traverse */
+        0,                       /* tp_clear */
         0,            /* tp_richcompare */
-        0,		               /* tp_weaklistoffset */
-        0,		               /* tp_iter */
-        0,		               /* tp_iternext */
+        0,                       /* tp_weaklistoffset */
+        0,                       /* tp_iter */
+        0,                       /* tp_iternext */
         PyUiTimer_methods,             /* tp_methods */
         PyUiTimer_members,             /* tp_members */
         PyUiTimer_getseters,            /* tp_getset */
@@ -1766,12 +1766,12 @@ PyTypeObject PythonUiDialog::PyUiDialogType = {
         0,                         /* tp_as_buffer */
         Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
         pyUiDialogInit_doc /*"dataObject objects"*/,           /* tp_doc */
-        0,		               /* tp_traverse */
-        0,		               /* tp_clear */
+        0,                       /* tp_traverse */
+        0,                       /* tp_clear */
         0,            /* tp_richcompare */
-        offsetof(PyUiDialog, weakreflist),		               /* tp_weaklistoffset */
-        0,		               /* tp_iter */
-        0,		               /* tp_iternext */
+        offsetof(PyUiDialog, weakreflist),                       /* tp_weaklistoffset */
+        0,                       /* tp_iter */
+        0,                       /* tp_iternext */
         PyUiDialog_methods,             /* tp_methods */
         PyUiDialog_members,             /* tp_members */
         PyUiDialog_getseters,            /* tp_getset */
@@ -1832,14 +1832,14 @@ void PythonUiDialog::PyUiDialog_addTpDict(PyObject *tp_dict)
 // -------------------------------------------------------------------------------------------------------------------------
 void PyUiDialogMetaObject::PyMetaObject_dealloc(PyMetaObject* self)
 {
-	if (self->dialog)
-		Py_XDECREF(self->dialog);
-	if (self->objName)
-		DELETE_AND_SET_NULL_ARRAY(self->objName);
-	if (self->methodList)
-		DELETE_AND_SET_NULL(self->methodList);
-	if (self->methodListHash)
-		DELETE_AND_SET_NULL(self->methodListHash);
+    if (self->dialog)
+        Py_XDECREF(self->dialog);
+    if (self->objName)
+        DELETE_AND_SET_NULL_ARRAY(self->objName);
+    if (self->methodList)
+        DELETE_AND_SET_NULL(self->methodList);
+    if (self->methodListHash)
+        DELETE_AND_SET_NULL(self->methodListHash);
 
     //clear weak reference to this object
     if (self->weakreflist != NULL)
@@ -2737,12 +2737,12 @@ PyTypeObject PyUiDialogMetaObject::PyMetaObjectType = {
         0,                         /* tp_as_buffer */
         Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
         pyMetaObjectInit_doc /*"dataObject objects"*/,           /* tp_doc */
-        0,		               /* tp_traverse */
-        0,		               /* tp_clear */
+        0,                       /* tp_traverse */
+        0,                       /* tp_clear */
         0,            /* tp_richcompare */
-        offsetof(PyMetaObject, weakreflist),	/* tp_weaklistoffset */
-        0,		               /* tp_iter */
-        0,		               /* tp_iternext */
+        offsetof(PyMetaObject, weakreflist),    /* tp_weaklistoffset */
+        0,                       /* tp_iter */
+        0,                       /* tp_iternext */
         PyMetaObject_methods,             /* tp_methods */
         PyMetaObject_members,             /* tp_members */
         PyMetaObject_getseters,            /* tp_getset */

@@ -32,39 +32,39 @@
 Property::Property(const QString& name /*= QString()*/, QObject* propertyObject /*= 0*/, QObject* parent /*= 0*/) : QObject(parent), 
 m_propertyObject(propertyObject)
 {
-	setObjectName(name);
+    setObjectName(name);
 }
 
 QVariant Property::value(int /*role = Qt::UserRole*/) const
 {
-	if (m_propertyObject)
-		return m_propertyObject->property(qPrintable(objectName()));
-	else
-		return QVariant();
+    if (m_propertyObject)
+        return m_propertyObject->property(qPrintable(objectName()));
+    else
+        return QVariant();
 }
 
 void Property::setValue(const QVariant &value)
 {
-	if (m_propertyObject)
-		m_propertyObject->setProperty(qPrintable(objectName()), value);
+    if (m_propertyObject)
+        m_propertyObject->setProperty(qPrintable(objectName()), value);
 }
 
 bool Property::isReadOnly()
 {
-	if( m_propertyObject->dynamicPropertyNames().contains( objectName().toLocal8Bit() ) )
-		return false;
-	if (m_propertyObject && m_propertyObject->metaObject()->property(m_propertyObject->metaObject()->indexOfProperty(qPrintable(objectName()))).isWritable())
-		return false;
-	else
-		return true;
+    if( m_propertyObject->dynamicPropertyNames().contains( objectName().toLocal8Bit() ) )
+        return false;
+    if (m_propertyObject && m_propertyObject->metaObject()->property(m_propertyObject->metaObject()->indexOfProperty(qPrintable(objectName()))).isWritable())
+        return false;
+    else
+        return true;
 }
 
 QWidget* Property::createEditor(QWidget *parent, const QStyleOptionViewItem& /*option*/)
 {
     //TODO: QMetaType::Float not in enumerated type
-	QWidget* editor = 0;
-	switch(value().type())
-	{
+    QWidget* editor = 0;
+    switch(value().type())
+    {
         case QVariant::Bool:
             editor = new BooleanCombo(parent);
             connect(editor, SIGNAL(boolChanged(bool)), this, SLOT(setValue(bool)));
@@ -85,21 +85,21 @@ QWidget* Property::createEditor(QWidget *parent, const QStyleOptionViewItem& /*o
             editor = new QDoubleSpinBox(parent);
             editor->setProperty("minimum", -INT_MAX);
             editor->setProperty("maximum", INT_MAX);
-			editor->setProperty("decimals", 4);
+            editor->setProperty("decimals", 4);
             ((QAbstractSpinBox*)editor)->setKeyboardTracking(false);
             connect(editor, SIGNAL(valueChanged(double)), this, SLOT(setValue(double)));
             break;
         default:
             return editor;
-	}
-	return editor;
+    }
+    return editor;
 }
 
 bool Property::setEditorData(QWidget *editor, const QVariant &data)
 {
     //TODO: QMetaType::Float not in enumerated type
-	switch(value().type())
-	{
+    switch(value().type())
+    {
         case QVariant::Color:
             static_cast<ColorCombo*>(editor)->setColor(data.value<QColor>());
             return true;
@@ -119,15 +119,15 @@ bool Property::setEditorData(QWidget *editor, const QVariant &data)
             return true;
         default:
             return false;
-	}
-	return false;
+    }
+    return false;
 }
 
 QVariant Property::editorData(QWidget *editor)
 {
     //TODO: QMetaType::Float not in enumerated type
-	switch(value().type())
-	{
+    switch(value().type())
+    {
         case QVariant::Color:
             return QVariant::fromValue(static_cast<ColorCombo*>(editor)->color());
         case QVariant::Bool:
@@ -140,30 +140,30 @@ QVariant Property::editorData(QWidget *editor)
             break;
         default:
             return QVariant();
-	}
+    }
 }
 
 Property* Property::findPropertyObject(QObject* propertyObject)
 {
-	if (m_propertyObject == propertyObject)
-		return this;
-	for (int i=0; i<children().size(); ++i)
-	{
-		Property* child = static_cast<Property*>(children()[i])->findPropertyObject(propertyObject);
-		if (child)
-			return child;
-	}
-	return 0;
+    if (m_propertyObject == propertyObject)
+        return this;
+    for (int i=0; i<children().size(); ++i)
+    {
+        Property* child = static_cast<Property*>(children()[i])->findPropertyObject(propertyObject);
+        if (child)
+            return child;
+    }
+    return 0;
 }
 
 void Property::setValue(double value)
 {
-	setValue(QVariant(value));
+    setValue(QVariant(value));
 }
 
 void Property::setValue(int value)
 {
-	setValue(QVariant(value));
+    setValue(QVariant(value));
 }
 
 void Property::setValue(QColor value)

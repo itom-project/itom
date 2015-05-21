@@ -1137,5 +1137,5 @@ void RangeSlider::setLimitsFromIntervalMeta(const ito::IntervalMeta &intervalMet
     setMinimum(d->bound(0, intervalMeta.getMin() + d->m_PositionStepSize, d->m_PositionStepSize, intervalMeta.getMin()));
     setMaximum(d->bound(minimum(), intervalMeta.getMax() + d->m_PositionStepSize + offset, d->m_PositionStepSize, intervalMeta.getMax() + offset) - offset);
     d->m_MinimumRange = d->boundUnsigned(0, intervalMeta.getSizeMin() + d->m_StepSizeRange, d->m_StepSizeRange, intervalMeta.getSizeMin());
-    setMaximumRange( std::min(intervalMeta.getMax()-intervalMeta.getMin(),intervalMeta.getSizeMax()) ); //using setMaximumRange in order to finally adapt the current values to allowed values
+    setMaximumRange( std::min(intervalMeta.getMax() - intervalMeta.getMin() + offset,intervalMeta.getSizeMax()) ); //using setMaximumRange in order to finally adapt the current values to allowed values
 }

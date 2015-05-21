@@ -317,8 +317,8 @@ private:
     static PyObject* parseObjAsFloat32Array(PyObject *obj, npy_intp mRequired, npy_intp &n, float32 **elemRows);
     static PyObject* parseObjAsUInt8Array(PyObject *obj, npy_intp mRequired, npy_intp &n, uint8_t **elemRows);
 
-	static void PythonPCL_SetString(PyObject *exception, const char *string);
-	static void PythonPCL_SetString(PyObject *exception, const std::string &string);
+    static void PythonPCL_SetString(PyObject *exception, const char *string);
+    static void PythonPCL_SetString(PyObject *exception, const std::string &string);
 
 };
 

@@ -16,21 +16,21 @@
 
 class TestSubClass : public TestClass
 {
-	Q_OBJECT
-	Q_CLASSINFO("TestSubClass", "Sub Class Specific");
+    Q_OBJECT
+    Q_CLASSINFO("TestSubClass", "Sub Class Specific");
 
-	Q_PROPERTY(QString Date READ date WRITE setDate DESIGNABLE true USER true)
-	Q_CLASSINFO("Date", "inputMask=0000-00-00;");
+    Q_PROPERTY(QString Date READ date WRITE setDate DESIGNABLE true USER true)
+    Q_CLASSINFO("Date", "inputMask=0000-00-00;");
 
 public:
-	TestSubClass(QObject* parent = 0);
-	virtual ~TestSubClass();
+    TestSubClass(QObject* parent = 0);
+    virtual ~TestSubClass();
 
-	QString date() const {return m_date;}
-	void setDate(const QString& date) {m_date = date;}
+    QString date() const {return m_date;}
+    void setDate(const QString& date) {m_date = date;}
 
 private:
-	QString m_date;
+    QString m_date;
 
 };
 #endif

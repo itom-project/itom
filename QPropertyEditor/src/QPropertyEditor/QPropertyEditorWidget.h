@@ -55,62 +55,62 @@ class Property;
  */
 class QPropertyEditorWidget : public QTreeView
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
 
-	/**
-	 * A typedef for a callback used to create user defined properties for custom datatypes
-	 */
-	typedef Property* (*UserTypeCB)(const QString& name, QObject* propertyObject, Property* parent);
+    /**
+     * A typedef for a callback used to create user defined properties for custom datatypes
+     */
+    typedef Property* (*UserTypeCB)(const QString& name, QObject* propertyObject, Property* parent);
 
-	/**
-	 * \brief Constructor 
-	 *
-	 * Creates a new editor widget based on QTreeView
-	 * @param parent optional parent widget
-	 */
-	QPropertyEditorWidget(QWidget* parent = 0);
-	
-	/// Destructor
-	virtual ~QPropertyEditorWidget();
+    /**
+     * \brief Constructor 
+     *
+     * Creates a new editor widget based on QTreeView
+     * @param parent optional parent widget
+     */
+    QPropertyEditorWidget(QWidget* parent = 0);
+    
+    /// Destructor
+    virtual ~QPropertyEditorWidget();
 
-	/**
-	 * Adds the user properties of the given class to the QPropertyModel associated with this view
-	 * 
-	 * @param propertyObject the class inherited from QObject that contains user properties that should be 
-	 *        managed by the QPropertyModel associated with this view
-	 */
-	void addObject(QObject* propertyObject);
+    /**
+     * Adds the user properties of the given class to the QPropertyModel associated with this view
+     * 
+     * @param propertyObject the class inherited from QObject that contains user properties that should be 
+     *        managed by the QPropertyModel associated with this view
+     */
+    void addObject(QObject* propertyObject);
 
-	/**
-	 * Similar to the addObject() method this method adds the properties of the given class to the QPropertyModel
-	 * associated with this view. But in contrast to addObject() it will clear the model before, removing all
-	 * previously added objects.
-	 * 
-	 * @param propertyObject  the class inherited from QObject that contains user properties that should be 
-	 *        managed by the QPropertyModel associated with this view
-	 */
-	void setObject(QObject* propertyObject);
+    /**
+     * Similar to the addObject() method this method adds the properties of the given class to the QPropertyModel
+     * associated with this view. But in contrast to addObject() it will clear the model before, removing all
+     * previously added objects.
+     * 
+     * @param propertyObject  the class inherited from QObject that contains user properties that should be 
+     *        managed by the QPropertyModel associated with this view
+     */
+    void setObject(QObject* propertyObject);
 
-	/**
-	 * Updates the view for the given object. This can be usefull if a property was changed programmatically instead
-	 * of using the view. In this case the view normally will display the new property values only after the user clicked
-	 * on it. To overcome this problem you can call updateObject with the object whose property was changed.
-	 */
-	void updateObject(QObject* propertyObject);
+    /**
+     * Updates the view for the given object. This can be usefull if a property was changed programmatically instead
+     * of using the view. In this case the view normally will display the new property values only after the user clicked
+     * on it. To overcome this problem you can call updateObject with the object whose property was changed.
+     */
+    void updateObject(QObject* propertyObject);
 
-	/**
-	 * If you define custom datatypes outside of this library the QPropertyModel will check if you
-	 * also defined a callback that is responsible to create custom property classes inherited from Property to handle 
-	 * these datatypes. With this method you can register such a callback that will create custom properties for custom datatypes.
-	 */
-	void registerCustomPropertyCB(UserTypeCB callback);
+    /**
+     * If you define custom datatypes outside of this library the QPropertyModel will check if you
+     * also defined a callback that is responsible to create custom property classes inherited from Property to handle 
+     * these datatypes. With this method you can register such a callback that will create custom properties for custom datatypes.
+     */
+    void registerCustomPropertyCB(UserTypeCB callback);
 
-	/**
-	 * You can register more than one callback. If one of those callbacks are not used any longer, you can unregister
-	 * it with this method
-	 */
-	void unregisterCustomPropertyCB(UserTypeCB callback);
+    /**
+     * You can register more than one callback. If one of those callbacks are not used any longer, you can unregister
+     * it with this method
+     */
+    void unregisterCustomPropertyCB(UserTypeCB callback);
 
     void setSorted(bool value);
 
@@ -121,8 +121,8 @@ protected:
     void keyPressEvent(QKeyEvent *event);
 
 private:
-	/// The Model for this view
-	QPropertyModel*			m_model;
+    /// The Model for this view
+    QPropertyModel*            m_model;
 
     bool m_sorted;
 

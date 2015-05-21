@@ -12,9 +12,9 @@
 
 
 /*! \class AddressTest
-	\brief Address test for all data types declared as "ItomDataAllTypes"
+    \brief Address test for all data types declared as "ItomDataAllTypes"
 
-	This is a basic test class for any matrix of any data type. This test class confirms if the different parameters of already declared matrices are alright.
+    This is a basic test class for any matrix of any data type. This test class confirms if the different parameters of already declared matrices are alright.
 */
 template <typename _Tp> class AddressTest : public ::testing::Test 
 { 
@@ -37,8 +37,6 @@ public:
 
         matrix1x1x1 = ito::DataObject(1,1,1,ito::getDataType( (const _Tp *) NULL ));
         matrix1x1x1.at<_Tp>(0,0,0) = 111;
-	   
-
     };
 
     virtual void TearDown(void) {};
@@ -47,8 +45,7 @@ public:
     ito::DataObject matrix1x2;
     ito::DataObject matrix2x2;
     ito::DataObject matrix1x1x1;
-	
-	
+    
    // ito::DataObject matrix2x1x2;
 
     typedef _Tp valueType;
@@ -56,7 +53,7 @@ public:
 
 //checkValues
 /*!
-	This test class declares and defines different possible multi dimensional matrices and tests if the values of different elements in matrices are unchanged.
+    This test class declares and defines different possible multi dimensional matrices and tests if the values of different elements in matrices are unchanged.
 */
 TYPED_TEST_CASE(AddressTest, ItomDataAllTypes);
 
@@ -80,7 +77,7 @@ TYPED_TEST(AddressTest, checkValues)
 
 //checkDim
 /*!
-	This test checks if the dimensions of different predefined matrices are unchanged using "getDims" method.
+    This test checks if the dimensions of different predefined matrices are unchanged using "getDims" method.
 */
 TYPED_TEST(AddressTest, checkDim)
 {

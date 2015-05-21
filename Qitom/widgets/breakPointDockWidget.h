@@ -28,6 +28,7 @@
 #include <qwidget.h>
 #include <qaction.h>
 #include <qtoolbar.h>
+#include <qitemselectionmodel.h>
 
 #include "itomQWidgets.h"
 
@@ -77,7 +78,7 @@ namespace ito
             void mnuEnOrDisAbleBrakpoint();
             void mnuEnOrDisAbleAllBrakpoints();
             void treeViewContextMenuRequested(const QPoint &pos);
-            void treeViewSelectionChanged();
+            void treeViewSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
             void actualizeTree(const QModelIndex &parent, int start, int end);
 
     };

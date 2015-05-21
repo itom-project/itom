@@ -25,22 +25,22 @@ class TestSubClass;
  */
 class SampleApp : public QMainWindow, protected Ui_SampleApp
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	/**
-	 * Constructor
-	 * @param parent optional parent widget this window will be child of
-	 * @param flags optional window flags
-	 */
-	SampleApp(QWidget* parent = 0, Qt::WFlags flags = 0);
+    /**
+     * Constructor
+     * @param parent optional parent widget this window will be child of
+     * @param flags optional window flags
+     */
+    SampleApp(QWidget* parent = 0, Qt::WFlags flags = 0);
 
-	/// Destructor
-	virtual ~SampleApp();
+    /// Destructor
+    virtual ~SampleApp();
 
 private:
-	/// Testclass with some properties
-	TestClass*		m_testClass;
-	/// Another test class inherited from TestClass to show the hierarchy managment of the QPropertyEditor
-	TestSubClass*	m_testSubClass;
+    /// Testclass with some properties
+    TestClass*        m_testClass;
+    /// Another test class inherited from TestClass to show the hierarchy managment of the QPropertyEditor
+    TestSubClass*    m_testSubClass;
 };
 #endif

@@ -1,5 +1,5 @@
 #open camera
-cam = dataIO("OpenCVGrabber")
+cam = dataIO("MSMediaFoundation", colorMode = "gray")
 
 #start camera
 cam.startDevice()

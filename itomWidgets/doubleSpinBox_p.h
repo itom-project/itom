@@ -64,7 +64,7 @@ public:
   virtual double valueFromText(const QString &text) const;
   virtual QString textFromValue(double value) const;
   virtual int decimalsFromText(const QString &text) const;
-  virtual QValidator::State	validate(QString& input, int& pos)const;
+  virtual QValidator::State validate(QString& input, int& pos)const;
 
   /// Expose publicly QAbstractSpinBox::initStyleOption()
   void initStyleOptionSpinBox(QStyleOptionSpinBox* option);

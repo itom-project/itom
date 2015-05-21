@@ -65,7 +65,7 @@ namespace ito
     {
         public:
 
-			enum tErrMsg
+            enum tErrMsg
             {
                 noMsg = 0,
                 loadPlugin = 1,

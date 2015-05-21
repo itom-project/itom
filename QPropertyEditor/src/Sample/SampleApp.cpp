@@ -17,13 +17,13 @@
 
 SampleApp::SampleApp(QWidget* parent /*= 0*/, Qt::WFlags flags /*= 0*/) : QMainWindow(parent, flags)
 {
-	setupUi(this);
-	CustomTypes::registerTypes();
-	m_propertyEditor->registerCustomPropertyCB(CustomTypes::createCustomProperty);
-	m_testClass = new TestClass(this);
-	m_propertyEditor->addObject(m_testClass);
-	m_testSubClass = new TestSubClass(this);
-	m_propertyEditor->addObject(m_testSubClass);
+    setupUi(this);
+    CustomTypes::registerTypes();
+    m_propertyEditor->registerCustomPropertyCB(CustomTypes::createCustomProperty);
+    m_testClass = new TestClass(this);
+    m_propertyEditor->addObject(m_testClass);
+    m_testSubClass = new TestSubClass(this);
+    m_propertyEditor->addObject(m_testSubClass);
 }
 
 
