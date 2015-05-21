@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>286</width>
-    <height>118</height>
+    <width>259</width>
+    <height>113</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Simple Counter</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
@@ -47,7 +47,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>286</width>
+     <width>259</width>
      <height>21</height>
     </rect>
    </property>

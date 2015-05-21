@@ -77,36 +77,36 @@ subplotIdx: {???}\n\
 int PythonPlotItem::PyPlotItem_init(PyPlotItem *self, PyObject *args, PyObject *kwds)
 {
     PythonFigure::PyFigure *figure = NULL;
-	PythonUi::PyUiItem *uiItem = NULL;
+    PythonUi::PyUiItem *uiItem = NULL;
     unsigned int subplotIndex = 0;
     ito::RetVal retval;
     unsigned int objectID = 0;
-	
+    
 
     const char *kwlist1[] = {"figure", "subplotIdx", NULL};
     const char *kwlist2[] = {"figure", "objectID", NULL};
-	const char *kwlist3[] = {"uiItem", NULL};
+    const char *kwlist3[] = {"uiItem", NULL};
 
     if(!PyArg_ParseTupleAndKeywords(args, kwds, "O!|I", const_cast<char**>(kwlist1), &PythonFigure::PyFigureType, &figure, &subplotIndex))
     {
         PyErr_Clear();
         if(!PyArg_ParseTupleAndKeywords(args,kwds,"|O!I", const_cast<char**>(kwlist2), &PythonFigure::PyFigureType, &figure, &objectID))
         {
-			PyErr_Clear();
-			if(!PyArg_ParseTupleAndKeywords(args,kwds,"O!", const_cast<char**>(kwlist3), &PythonUi::PyUiItemType, &uiItem))
-			{
-				return -1;
-			}
+            PyErr_Clear();
+            if(!PyArg_ParseTupleAndKeywords(args,kwds,"O!", const_cast<char**>(kwlist3), &PythonUi::PyUiItemType, &uiItem))
+            {
+                return -1;
+            }
         }
-		else
-		{
-			if (objectID == 0 && figure == NULL)
-			{
-				//this avoid a crash if plotItem is instantiated without any arguments
-				PyErr_SetString(PyExc_RuntimeError, "PlotItem requires an existing figure as argument and / or a valid subplotIdx or objectID");
-				return -1;
-			}
-		}
+        else
+        {
+            if (objectID == 0 && figure == NULL)
+            {
+                //this avoid a crash if plotItem is instantiated without any arguments
+                PyErr_SetString(PyExc_RuntimeError, "PlotItem requires an existing figure as argument and / or a valid subplotIdx or objectID");
+                return -1;
+            }
+        }
     }
 
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -116,76 +116,76 @@ int PythonPlotItem::PyPlotItem_init(PyPlotItem *self, PyObject *args, PyObject *
         return -1;
     }
 
-	if (uiItem)
-	{
-		ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-		QSharedPointer<uint> isFigureItem(new uint);
-		QMetaObject::invokeMethod(uiOrga, "isFigureItem", Q_ARG(uint, uiItem->objectID), Q_ARG(QSharedPointer<uint>, isFigureItem), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    if (uiItem)
+    {
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QSharedPointer<uint> isFigureItem(new uint);
+        QMetaObject::invokeMethod(uiOrga, "isFigureItem", Q_ARG(uint, uiItem->objectID), Q_ARG(QSharedPointer<uint>, isFigureItem), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
-		locker->wait(-1);
-		
-		if ((*isFigureItem) > 0)
-		{
-			//copy uiItem to member uiItem
-			Py_XINCREF(uiItem->baseItem);
-			self->uiItem.baseItem = uiItem->baseItem;
-			DELETE_AND_SET_NULL_ARRAY(self->uiItem.objName);
-			self->uiItem.objName = _strdup(uiItem->objName);
-			DELETE_AND_SET_NULL_ARRAY(self->uiItem.widgetClassName);
-			self->uiItem.widgetClassName = _strdup(uiItem->widgetClassName);
-			self->uiItem.objectID = uiItem->objectID;
-		}
-		else
-		{
-			PyErr_SetString(PyExc_RuntimeError, "given uiItem cannot be cast to plotItem (no valid plot detected).");
-			return -1;
-		}
-	}
-	else
-	{
-		QSharedPointer<unsigned int> objectIDShared(new unsigned int);
-		QSharedPointer<QByteArray> widgetClassName(new QByteArray());
-		QSharedPointer<QByteArray> objectName(new QByteArray());
+        locker->wait(-1);
+        
+        if ((*isFigureItem) > 0)
+        {
+            //copy uiItem to member uiItem
+            Py_XINCREF(uiItem->baseItem);
+            self->uiItem.baseItem = uiItem->baseItem;
+            DELETE_AND_SET_NULL_ARRAY(self->uiItem.objName);
+            self->uiItem.objName = _strdup(uiItem->objName);
+            DELETE_AND_SET_NULL_ARRAY(self->uiItem.widgetClassName);
+            self->uiItem.widgetClassName = _strdup(uiItem->widgetClassName);
+            self->uiItem.objectID = uiItem->objectID;
+        }
+        else
+        {
+            PyErr_SetString(PyExc_RuntimeError, "given uiItem cannot be cast to plotItem (no valid plot detected).");
+            return -1;
+        }
+    }
+    else
+    {
+        QSharedPointer<unsigned int> objectIDShared(new unsigned int);
+        QSharedPointer<QByteArray> widgetClassName(new QByteArray());
+        QSharedPointer<QByteArray> objectName(new QByteArray());
 
-		if(objectID == 0)
-		{
-			ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-			QMetaObject::invokeMethod(uiOrga, "getSubplot", Q_ARG(QSharedPointer<uint>, figure->guardedFigHandle), Q_ARG(uint, subplotIndex), Q_ARG(QSharedPointer<uint>, objectIDShared), Q_ARG(QSharedPointer<QByteArray>, objectName), Q_ARG(QSharedPointer<QByteArray>, widgetClassName), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        if(objectID == 0)
+        {
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            QMetaObject::invokeMethod(uiOrga, "getSubplot", Q_ARG(QSharedPointer<uint>, figure->guardedFigHandle), Q_ARG(uint, subplotIndex), Q_ARG(QSharedPointer<uint>, objectIDShared), Q_ARG(QSharedPointer<QByteArray>, objectName), Q_ARG(QSharedPointer<QByteArray>, widgetClassName), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
 
-			locker.getSemaphore()->wait(-1);
-			retval += locker.getSemaphore()->returnValue;
+            locker.getSemaphore()->wait(-1);
+            retval += locker.getSemaphore()->returnValue;
 
-			if(!PythonCommon::transformRetValToPyException(retval))
-			{
-				return -1;
-			}
+            if(!PythonCommon::transformRetValToPyException(retval))
+            {
+                return -1;
+            }
 
-			objectID = *objectIDShared;
-		}
-		else
-		{
-			ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-			QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, objectID), Q_ARG(QSharedPointer<QByteArray>, objectName), Q_ARG(QSharedPointer<QByteArray>, widgetClassName), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+            objectID = *objectIDShared;
+        }
+        else
+        {
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, objectID), Q_ARG(QSharedPointer<QByteArray>, objectName), Q_ARG(QSharedPointer<QByteArray>, widgetClassName), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
 
-			locker.getSemaphore()->wait(-1);
-			retval += locker.getSemaphore()->returnValue;
+            locker.getSemaphore()->wait(-1);
+            retval += locker.getSemaphore()->returnValue;
 
-			if(!PythonCommon::transformRetValToPyException(retval))
-			{
-				return -1;
-			}
-		}
+            if(!PythonCommon::transformRetValToPyException(retval))
+            {
+                return -1;
+            }
+        }
 
-		Py_XINCREF(figure);
-		self->uiItem.baseItem = (PyObject*)figure;
-		DELETE_AND_SET_NULL_ARRAY(self->uiItem.objName);
-		self->uiItem.objName = new char[objectName->size()+1];
-		strcpy_s(self->uiItem.objName, objectName->size()+1, objectName->data() );
-		DELETE_AND_SET_NULL_ARRAY(self->uiItem.widgetClassName);
-		self->uiItem.widgetClassName = new char[widgetClassName->size()+1];
-		strcpy_s(self->uiItem.widgetClassName, widgetClassName->size()+1, widgetClassName->data() );
-		self->uiItem.objectID = objectID;
-	}
+        Py_XINCREF(figure);
+        self->uiItem.baseItem = (PyObject*)figure;
+        DELETE_AND_SET_NULL_ARRAY(self->uiItem.objName);
+        self->uiItem.objName = new char[objectName->size()+1];
+        strcpy_s(self->uiItem.objName, objectName->size()+1, objectName->data() );
+        DELETE_AND_SET_NULL_ARRAY(self->uiItem.widgetClassName);
+        self->uiItem.widgetClassName = new char[widgetClassName->size()+1];
+        strcpy_s(self->uiItem.widgetClassName, widgetClassName->size()+1, widgetClassName->data() );
+        self->uiItem.objectID = objectID;
+    }
 
     return 0;
 }
@@ -247,7 +247,7 @@ maxNrPoints: {int}, optional \n\
             {
                 retval += ito::RetVal(ito::retError,0,"pick points operation interrupted by user");
                 QMetaObject::invokeMethod(uiOrga, "figurePickPointsInterrupt", Q_ARG(uint, self->uiItem.objectID)); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
-				finished = locker.getSemaphore()->wait(2000);
+                finished = locker.getSemaphore()->wait(2000);
             }
             else
             {
@@ -339,7 +339,7 @@ maxNrElements: {int}, optional \n\
             {
                 retval += ito::RetVal(ito::retError,0,"draw points operation interrupted by user");
                 QMetaObject::invokeMethod(uiOrga, "figurePickPointsInterrupt", Q_ARG(uint, self->uiItem.objectID)); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
-				finished = locker.getSemaphore()->wait(2000);
+                finished = locker.getSemaphore()->wait(2000);
             }
             else
             {

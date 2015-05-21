@@ -1,4 +1,6 @@
-﻿.. include:: /include/global.inc
+﻿.
+
+.. include:: /include/global.inc
 
 Python tutorial
 **********************************
@@ -31,10 +33,10 @@ The goal of this tutorial is to give prospective itom users a quick overview abo
 The following resources have been used:
 
 * `Python-Kurs (v3) <http://www.python-kurs.eu/python3_kurs.php>`_ (German)
-* `Python Course (v3) <http://www.python-kurs.eu/python3_course.php>`_ (English)
-* `Official Python v3.3.0 documentation <http://docs.python.org/3/>`_
+* `Python Course (v3) <http://www.python-course.eu/python3_course.php>`_ (English)
+* `Official Python 3 documentation <http://docs.python.org/3/>`_
 * `Moving from Python 2 to Python 3 (Cheatsheet) <http://ptgmedia.pearsoncmg.com/imprint_downloads/informit/promotions/python/python2python3.pdf>`_
-* `Dive into Python (v2) <http://www.diveintopython.net/toc/index.html>`_
+* `Dive into Python (v3) <http://www.diveinto.org/python3/>`_
 * `Learn Python The Hard Way (be careful: Python 2) <http://learnpythonthehardway.org/book/>`_
 * `Python Tutorial on javas2s.com (v2) <http://www.java2s.com/Tutorial/Python/CatalogPython.htm>`_
 * `Python examples (example source code) on javas2s.com (v2) <http://www.java2s.com/Code/Python/CatalogPython.htm>`_

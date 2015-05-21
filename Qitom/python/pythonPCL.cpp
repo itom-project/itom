@@ -67,14 +67,14 @@ namespace ito
 //fix since PCL 1.8.0 changed its definition for the detailed error messages of their exception class from std::string to const char*
 /*static*/ void PythonPCL::PythonPCL_SetString(PyObject *exception, const char *string)
 {
-	PyErr_SetString(exception, string);
+    PyErr_SetString(exception, string);
 }
 
 //------------------------------------------------------------------------------------------------------
 //fix since PCL 1.8.0 changed its definition for the detailed error messages of their exception class from std::string to const char*
 /*static*/ void PythonPCL::PythonPCL_SetString(PyObject *exception, const std::string &string)
 {
-	PyErr_SetString(exception, string.c_str());
+    PyErr_SetString(exception, string.c_str());
 }
 
 //------------------------------------------------------------------------------------------------------
@@ -173,32 +173,32 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
         {
         case ito::pclInvalid:
             self->data = new ito::PCLPointCloud(ito::pclInvalid);
-		break;
-			
+        break;
+            
         case ito::pclXYZ:
             self->data = new ito::PCLPointCloud(ito::pclXYZ);
-		break;
-		
+        break;
+        
         case ito::pclXYZI:
             self->data = new ito::PCLPointCloud(ito::pclXYZI);
-		break;
-		
+        break;
+        
         case ito::pclXYZRGBA:
             self->data = new ito::PCLPointCloud(ito::pclXYZRGBA);
-		break;
-		
+        break;
+        
         case ito::pclXYZNormal:
             self->data = new ito::PCLPointCloud(ito::pclXYZNormal);
-		break;
-		
+        break;
+        
         case ito::pclXYZINormal:
             self->data = new ito::PCLPointCloud(ito::pclXYZINormal);
-		break;
-		
+        break;
+        
         case ito::pclXYZRGBNormal:
             self->data = new ito::PCLPointCloud(ito::pclXYZRGBNormal);
-		break;
-		
+        break;
+        
         default:
             PyErr_SetString(PyExc_TypeError, "The point cloud type is unknown");
             return -1;
@@ -407,8 +407,8 @@ PyObject* PythonPCL::PyPointCloud_GetType(PyPointCloud *self, void * /*closure*/
         type = self->data->getType();
     }
     catch(pcl::PCLException exc)
-	{
-		PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
+    {
+        PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
     }
 
@@ -474,7 +474,7 @@ PyObject* PythonPCL::PyPointCloud_GetSize(PyPointCloud *self, void * /*closure*/
     }
     catch(pcl::PCLException exc)
     {
-		PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
+        PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
     }
 
     return Py_BuildValue("i", size);
@@ -505,7 +505,7 @@ PyObject* PythonPCL::PyPointCloud_GetHeight(PyPointCloud *self, void * /*closure
     }
     catch(pcl::PCLException exc)
     {
-		PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
+        PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
     }
 
@@ -537,7 +537,7 @@ PyObject* PythonPCL::PyPointCloud_GetWidth(PyPointCloud *self, void * /*closure*
     }
     catch(pcl::PCLException exc)
     {
-		PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
+        PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
     }
 
@@ -566,7 +566,7 @@ PyObject* PythonPCL::PyPointCloud_GetEmpty(PyPointCloud *self, void * /*closure*
     }
     catch(pcl::PCLException exc)
     {
-		PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
+        PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
     }
 
@@ -596,7 +596,7 @@ PyObject* PythonPCL::PyPointCloud_GetOrganized(PyPointCloud *self, void * /*clos
     }
     catch(pcl::PCLException exc)
     {
-		PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
+        PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
     }
 
@@ -626,7 +626,7 @@ PyObject* PythonPCL::PyPointCloud_GetDense(PyPointCloud *self, void * /*closure*
     }
     catch(pcl::PCLException exc)
     {
-		PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
+        PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
     }
 
@@ -651,7 +651,7 @@ int PythonPCL::PyPointCloud_SetDense(PyPointCloud *self, PyObject *value, void *
         }
         catch(pcl::PCLException exc)
         {
-			PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
+            PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
             return -1;
         }
     }
@@ -667,7 +667,7 @@ int PythonPCL::PyPointCloud_SetDense(PyPointCloud *self, PyObject *value, void *
     }
     catch(pcl::PCLException exc)
     {
-		PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
+        PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return -1;
     }
 
@@ -696,7 +696,7 @@ PyObject* PythonPCL::PyPointCloud_GetFields(PyPointCloud *self, void * /*closure
     }
     catch(pcl::PCLException exc)
     {
-		PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
+        PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
     }
 
@@ -1154,7 +1154,7 @@ PyObject* PythonPCL::PyPointCloud_clear(PyPointCloud *self)
     }
     catch(pcl::PCLException exc)
     {
-		PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
+        PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
     }
 
@@ -1202,7 +1202,7 @@ PyObject* PythonPCL::PyPointCloud_seqConcat(PyPointCloud *self, PyObject *rhs) /
             }
             catch(pcl::PCLException exc)
             {
-				PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
+                PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
                 return NULL;
             }
             return (PyObject*)result;
@@ -1236,7 +1236,7 @@ PyObject* PythonPCL::PyPointCloud_seqRepeat(PyPointCloud *self, Py_ssize_t size)
             }
             catch(pcl::PCLException exc)
             {
-				PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
+                PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
                 return NULL;
             }
             
@@ -1273,7 +1273,7 @@ PyObject* PythonPCL::PyPointCloud_seqItem(PyPointCloud *self, Py_ssize_t size) /
             }
             catch(pcl::PCLException exc)
             {
-				PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
+                PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
                 return NULL;
             }
         }
@@ -1321,7 +1321,7 @@ int PythonPCL::PyPointCloud_seqAssItem(PyPointCloud *self, Py_ssize_t size, PyOb
         }
         catch (pcl::PCLException exc)
         {
-			PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
+            PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
             return -1;
         }
     }
@@ -1347,7 +1347,7 @@ PyObject* PythonPCL::PyPointCloud_seqInplaceConcat(PyPointCloud *self, PyObject 
         }
         catch(pcl::PCLException exc)
         {
-			PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
+            PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
             return NULL;
         }
         
@@ -1590,7 +1590,7 @@ PyObject* PythonPCL::PyPointCloud_insert(PyPointCloud *self, PyObject *args)
         }
         catch(pcl::PCLException exc)
         {
-			PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
+            PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
             return NULL;
         }
     }
@@ -1617,7 +1617,7 @@ PyObject* PythonPCL::PyPointCloud_insert(PyPointCloud *self, PyObject *args)
             catch(pcl::PCLException exc)
             {
                 Py_DECREF(sequence);
-				PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
+                PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
                 return NULL;
             }
         }
@@ -1964,23 +1964,39 @@ PointCloud.");
                 return NULL;
             }
             
-            retval += ito::dObjHelper::verify3DDataObject(XYZ.data(), "XYZ", 3, 3, 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
-            
-            if (PythonCommon::transformRetValToPyException(retval) == false)
+            ito::RetVal tmpRetval = ito::dObjHelper::verify3DDataObject(XYZ.data(), "XYZ", 3, 3, 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
+            if (tmpRetval.containsWarningOrError())
             {
-                return NULL;
+                ito::RetVal tmpRetval = ito::dObjHelper::verify2DDataObject(XYZ.data(), "XYZ", 1, std::numeric_limits<int>::max(), 3, 3, ito::tFloat32);
+                if (PythonCommon::transformRetValToPyException(retval) == false)
+                {
+                    return NULL;
+                }
+
+                ito::Range ranges[2] = { ito::Range::all(), ito::Range(0,0) };
+
+                ranges[1] = ito::Range(0,1);
+                X = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
+
+                ranges[1] = ito::Range(1,2);
+                Y = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()) );
+
+                ranges[1] = ito::Range(2,3);
+                Z = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
             }
+            else
+            {
+                ito::Range ranges[3] = { ito::Range(0,0), ito::Range::all(), ito::Range::all() };
 
-            ito::Range ranges[3] = { ito::Range(0,0), ito::Range::all(), ito::Range::all() };
+                ranges[0] = ito::Range(0,1);
+                X = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
 
-            ranges[0] = ito::Range(0,1);
-            X = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
+                ranges[0] = ito::Range(1,2);
+                Y = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()) );
 
-            ranges[0] = ito::Range(1,2);
-            Y = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()) );
-
-            ranges[0] = ito::Range(2,3);
-            Z = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
+                ranges[0] = ito::Range(2,3);
+                Z = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
+            }
         }
     }
     else
@@ -2069,23 +2085,39 @@ PointCloud.");
                 return NULL;
             }
             
-            retval += ito::dObjHelper::verify3DDataObject(XYZ.data(), "XYZ", 3, 3, 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
-            
-            if (PythonCommon::transformRetValToPyException(retval) == false)
+            ito::RetVal tmpRetval = ito::dObjHelper::verify3DDataObject(XYZ.data(), "XYZ", 3, 3, 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
+            if (tmpRetval.containsWarningOrError())
             {
-                return NULL;
+                ito::RetVal tmpRetval = ito::dObjHelper::verify2DDataObject(XYZ.data(), "XYZ", 1, std::numeric_limits<int>::max(), 3, 3, ito::tFloat32);
+                if (PythonCommon::transformRetValToPyException(retval) == false)
+                {
+                    return NULL;
+                }
+
+                ito::Range ranges[2] = { ito::Range::all(), ito::Range(0,0) };
+
+                ranges[1] = ito::Range(0,1);
+                X = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
+
+                ranges[1] = ito::Range(1,2);
+                Y = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()) );
+
+                ranges[1] = ito::Range(2,3);
+                Z = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
             }
+            else
+            {
+                ito::Range ranges[3] = { ito::Range(0,0), ito::Range::all(), ito::Range::all() };
 
-            ito::Range ranges[3] = { ito::Range(0,0), ito::Range::all(), ito::Range::all() };
+                ranges[0] = ito::Range(0,1);
+                X = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
 
-            ranges[0] = ito::Range(0,1);
-            X = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()) );
+                ranges[0] = ito::Range(1,2);
+                Y = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()) );
 
-            ranges[0] = ito::Range(1,2);
-            Y = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()) );
-
-            ranges[0] = ito::Range(2,3);
-            Z = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()) );
+                ranges[0] = ito::Range(2,3);
+                Z = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
+            }
 
             I = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objI, false, ok));
             if (!ok)

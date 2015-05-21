@@ -60,7 +60,7 @@ class QTreeViewItom : public QTreeView
     Q_OBJECT
 
 public:
-    QTreeViewItom ( QWidget * parent = 0 ) : QTreeView(parent) {}
+    QTreeViewItom(QWidget * parent = 0) : QTreeView(parent) {}
     ~QTreeViewItom () {}
 
     QModelIndexList selectedIndexes() const
@@ -76,15 +76,15 @@ public:
         return retList;
     }
 
-protected slots:
-    virtual void selectionChanged ( const QItemSelection & selected, const QItemSelection & deselected )
+protected:
+    virtual void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
     {
         QTreeView::selectionChanged(selected, deselected);
-        emit selectedItemsChanged();
+        emit selectedItemsChanged(selected, deselected);
     }
 
 signals:
-    void selectedItemsChanged();
+    void selectedItemsChanged(const QItemSelection &selected, const QItemSelection &deselected);
 };
 
 } //end namespace ito

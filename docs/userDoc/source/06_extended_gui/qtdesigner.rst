@@ -529,6 +529,23 @@ is obtained by setting any breakpoint into the specific line and toggling the bu
 
 .. figure:: images_userGUI/runPyCodeInDebug.png
     :align: left
+    
+Access the status bar of a main window
+=======================================
+
+If one wants to access and modify the content of the status bar of a main window, the following steps need to be done:
+
+Let's assume the main window is accessible via Python by the variable name **gui**, then
+
+.. code-block:: python
+    
+    statusbar = gui.call("statusBar")
+
+returns an instance of :py:class:`~itom.uiItem` representing the status bar widget (Qt class QStatusBar). Check the Qt help to see that QStatusBar has the following slots (among others):
+
+* **clearMessage()** clears the current text of the status bar
+* **showMessage(const QString &message)** displays *message* in the status bar
+* **showMessage(const QString &message, int timeout)** displays *message* in the status bar and hides it after the *timeout* given in milliseconds.
 
 Hints and limitations
 ==========================================

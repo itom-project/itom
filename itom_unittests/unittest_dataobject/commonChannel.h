@@ -6,7 +6,7 @@
 //#include "test_global.h"
 //commonChannel
 /*!
-	This Header File consists of declaration of all userdefined datatypes used for all Test cases.
+    This Header File consists of declaration of all userdefined datatypes used for all Test cases.
 */
 
 typedef ::testing::Types<ito::uint8, ito::int8, ito::uint16, ito::int16,/* ito::uint32,*/ ito::int32, ito::float32, ito::float64 > ItomRealDataTypes;

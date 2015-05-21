@@ -1822,8 +1822,7 @@ namespace dObjHelper
             if(ito::dObjHelper::isFinite<float64>(newScale) && ito::dObjHelper::isNotZero<float64>(newScale))
             {
                 newScale = 1/newScale / dObjIO->getSize(curDim);
-                axisUnit = invertUnit(dObjIO->getAxisUnit(curDim, test));				
-                dObjIO->setAxisUnit(curDim, axisUnit);				
+                axisUnit = invertUnit(dObjIO->getAxisUnit(curDim, test));                dObjIO->setAxisUnit(curDim, axisUnit);
             }
             else
             {

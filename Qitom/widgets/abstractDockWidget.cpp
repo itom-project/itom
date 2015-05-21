@@ -842,10 +842,10 @@ void AbstractDockWidget::undockWidget()
         m_pWindow->setWindowFlags(modifyFlags(m_pWindow->windowFlags(), Qt::Window, Qt::Widget));
 
         if (m_docked_old && !m_lastUndockedSize.isEmpty())
-	{
+    {
             m_pWindow->setGeometry(m_lastUndockedSize);
 #if linux //also fixes the bug in lxde such that title bar is out of window, since frameGeometry is bigger than geometry
-	    m_pWindow->move(m_pWindow->geometry().topLeft() - m_pWindow->pos());
+        m_pWindow->move(m_pWindow->geometry().topLeft() - m_pWindow->pos());
 #endif
         }
 
@@ -862,19 +862,19 @@ void AbstractDockWidget::undockWidget()
 
         m_pWindow->show();
         m_pWindow->raise();
-	
+    
 #if linux
-	//in LXDE the window is sometimes positioned out of the window such that
-	//the title bar is not visible any more. Therefore it is center in the
-	//center of the current main window.
-	if (m_lastUndockedSize.isEmpty())
-	{
-	  QDesktopWidget *dw = QApplication::desktop();
-	  QRect overallRect = dw->availableGeometry(-1);
-	  QPoint centerPoint = overallRect.center();
-	  m_pWindow->adjustSize();
-	  m_pWindow->move(centerPoint - m_pWindow->rect().center());
-	}
+    //in LXDE the window is sometimes positioned out of the window such that
+    //the title bar is not visible any more. Therefore it is center in the
+    //center of the current main window.
+    if (m_lastUndockedSize.isEmpty())
+    {
+      QDesktopWidget *dw = QApplication::desktop();
+      QRect overallRect = dw->availableGeometry(-1);
+      QPoint centerPoint = overallRect.center();
+      m_pWindow->adjustSize();
+      m_pWindow->move(centerPoint - m_pWindow->rect().center());
+    }
 #endif
 
         toggleViewAction()->setVisible(false);

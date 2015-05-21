@@ -14,14 +14,14 @@
 
 
 /*! \class 
-	\brief 
+    \brief 
 */
 template <typename _Tp> class rgbaOperatorTests : public ::testing::Test 
-	{ 
+    { 
 public:
-	
-	virtual void SetUp(void)
-	{
+    
+    virtual void SetUp(void)
+    {
         valWhite            = _Tp(255);
         valBlackTransparent = _Tp::zeros();
         valRED              = ito::Rgba32(255,255,0,0);
@@ -31,10 +31,10 @@ public:
         valOneGray          = _Tp(1);
         valDarkGray         = _Tp(64);
         valGray             = _Tp(128);
-	};
+    };
  
-	virtual void TearDown(void) {};
-	typedef _Tp valueType;	
+    virtual void TearDown(void) {};
+    typedef _Tp valueType;    
 
     _Tp valWhite;
     _Tp valBlackTransparent;
@@ -46,50 +46,50 @@ public:
     _Tp valDarkGray;
     _Tp valGray;
 
-	};
-	
+    };
+    
 TYPED_TEST_CASE(rgbaOperatorTests, ItomColorAllTypes);
 
 /*!
-	
+    
 */
 TYPED_TEST(rgbaOperatorTests, testMultiplication)
 {
-	valueType tempVal = valDarkGray * valBlackTransparent; // Multiplication off zero with white must be zeros;
+    valueType tempVal = valDarkGray * valBlackTransparent; // Multiplication off zero with white must be zeros;
     EXPECT_EQ(tempVal, valBlackTransparent);
 
     // Multiplication off white with zero must be zeros;
-	tempVal = valBlackTransparent * valDarkGray;
+    tempVal = valBlackTransparent * valDarkGray;
     EXPECT_EQ(tempVal, valBlackTransparent);
-	tempVal = valBlackTransparent; 
+    tempVal = valBlackTransparent; 
     tempVal *= valDarkGray; 
     EXPECT_EQ(tempVal, valBlackTransparent);
    
     // Multiplication off ones with white must be ones;
-	tempVal = valDarkGray * valWhite;
+    tempVal = valDarkGray * valWhite;
     EXPECT_EQ(tempVal, valDarkGray);
-	tempVal = valDarkGray; 
+    tempVal = valDarkGray; 
     tempVal *= valWhite;
     EXPECT_EQ(tempVal, valDarkGray);
 
     // Multiplication off gray128 with white must be gray128;
-	tempVal = valGray * valWhite;
+    tempVal = valGray * valWhite;
     EXPECT_EQ(tempVal, valGray);
-	tempVal = valGray; 
+    tempVal = valGray; 
     tempVal *= valWhite;
     EXPECT_EQ(tempVal, valGray);
 
     // Multiplication off white with white must be white;
-	tempVal = valWhite * valWhite;
+    tempVal = valWhite * valWhite;
     EXPECT_EQ(tempVal, valWhite);
-	tempVal = valWhite; 
+    tempVal = valWhite; 
     tempVal *= valWhite;
     EXPECT_EQ(tempVal, valWhite);
 
     // Multiplication off white with white must be white;
-	tempVal = valGray * valGray;
+    tempVal = valGray * valGray;
     EXPECT_EQ(tempVal, valDarkGray);
-	tempVal = valGray; 
+    tempVal = valGray; 
     tempVal *= valGray;
     EXPECT_EQ(tempVal, valDarkGray);
 }
@@ -97,37 +97,37 @@ TYPED_TEST(rgbaOperatorTests, testMultiplication)
 TYPED_TEST(rgbaOperatorTests, testAddition)
 {
 
-	valueType tempVal = valDarkGray + valBlackTransparent; // Addition off zeros to value must be value;
+    valueType tempVal = valDarkGray + valBlackTransparent; // Addition off zeros to value must be value;
     EXPECT_EQ(tempVal, valDarkGray);
     tempVal = valDarkGray;
     tempVal += valBlackTransparent; // Addition off zeros to value must be value;
     EXPECT_EQ(tempVal, valDarkGray);
 
-	tempVal = valBlackTransparent + valDarkGray; // Addition off value to zeros must be value;
+    tempVal = valBlackTransparent + valDarkGray; // Addition off value to zeros must be value;
     EXPECT_EQ(tempVal, valDarkGray);
-	tempVal = valBlackTransparent;
+    tempVal = valBlackTransparent;
     tempVal += valDarkGray; // Addition off value to zeros must be value;
     EXPECT_EQ(tempVal, valDarkGray);
 
-	tempVal = valWhite + valDarkGray; // Addition off any value to white must be white;
+    tempVal = valWhite + valDarkGray; // Addition off any value to white must be white;
     EXPECT_EQ(tempVal, valWhite);
-	tempVal = valWhite;
+    tempVal = valWhite;
     tempVal += valDarkGray; // Addition off any value to white must be white;
     EXPECT_EQ(tempVal, valWhite);
 
-	tempVal = valDarkGray + valWhite; // Addition off white to any value must be white;
+    tempVal = valDarkGray + valWhite; // Addition off white to any value must be white;
     EXPECT_EQ(tempVal, valWhite);
-	tempVal = valDarkGray;
+    tempVal = valDarkGray;
     tempVal +=  valWhite; // Addition off white to any value must be white;
     EXPECT_EQ(tempVal, valWhite);
 
-	tempVal = valDarkGray + valDarkGray; // Addition off white to any value must be white;
+    tempVal = valDarkGray + valDarkGray; // Addition off white to any value must be white;
     EXPECT_EQ(tempVal, valGray);
-	tempVal = valDarkGray;
+    tempVal = valDarkGray;
     tempVal += valDarkGray; // Addition off white to any value must be white;
     EXPECT_EQ(tempVal, valGray);
 
-	tempVal = valGray + valGray; // Addition off white to any value must be white;
+    tempVal = valGray + valGray; // Addition off white to any value must be white;
     EXPECT_EQ(tempVal, valWhite);
     EXPECT_NE(tempVal, valBlackTransparent);
 }
@@ -136,17 +136,17 @@ TYPED_TEST(rgbaOperatorTests, testSubstraction)
 {
     
     // Addition off zeros to value must be value;
-	valueType tempVal = valDarkGray - valBlackTransparent; 
+    valueType tempVal = valDarkGray - valBlackTransparent; 
     EXPECT_EQ(tempVal, valDarkGray);
-	tempVal = valDarkGray;
+    tempVal = valDarkGray;
     tempVal -= valBlackTransparent;
     EXPECT_EQ(tempVal, valDarkGray);
 
 
     // Addition off value to zeros must be value;
-	tempVal = valBlackTransparent - valDarkGray; 
+    tempVal = valBlackTransparent - valDarkGray; 
     EXPECT_EQ(tempVal, valBlackTransparent);
-	tempVal = valBlackTransparent;
+    tempVal = valBlackTransparent;
     tempVal -= valDarkGray;
     EXPECT_EQ(tempVal, valBlackTransparent);
 
@@ -158,14 +158,14 @@ TYPED_TEST(rgbaOperatorTests, testSubstraction)
     EXPECT_EQ(tempVal, valBlackTransparent);
 
     // Addition off white to any value must be white;
-	tempVal = valGray - valDarkGray;
+    tempVal = valGray - valDarkGray;
     if(typeid(valueType) == typeid(ito::Rgba32))
     {
         (*(reinterpret_cast<ito::Rgba32* >(&tempVal))).alpha() = 255;
     }
     EXPECT_EQ(tempVal, valDarkGray);
 
-	tempVal = valGray;
+    tempVal = valGray;
     tempVal -= valDarkGray;
     if(typeid(valueType) == typeid(ito::Rgba32))
     {
@@ -179,34 +179,34 @@ TYPED_TEST(rgbaOperatorTests, testDividation)
     EXPECT_ANY_THROW(valDarkGray / valBlackTransparent);
 
 
-	valueType tempVal = valBlackTransparent /  valWhite; // Multiplication off zero with white must be zeros;
+    valueType tempVal = valBlackTransparent /  valWhite; // Multiplication off zero with white must be zeros;
     EXPECT_EQ(tempVal, valBlackTransparent);
 
-	tempVal = valBlackTransparent;
+    tempVal = valBlackTransparent;
     tempVal /=  valWhite; // Multiplication off zero with white must be zeros;
     EXPECT_EQ(tempVal, valBlackTransparent);
 
 
-	tempVal = valWhite / valWhite; // Multiplication off white with zero must be zeros;
+    tempVal = valWhite / valWhite; // Multiplication off white with zero must be zeros;
     EXPECT_EQ(tempVal, valWhite);
 
-	tempVal = valWhite;
+    tempVal = valWhite;
     tempVal /= valWhite; // Multiplication off white with zero must be zeros;
     EXPECT_EQ(tempVal, valWhite);
 
-	tempVal = valWhite / valDarkGray; // Multiplication off white with zero must be zeros;
+    tempVal = valWhite / valDarkGray; // Multiplication off white with zero must be zeros;
     EXPECT_EQ(tempVal, valWhite);
-	tempVal = valWhite;
+    tempVal = valWhite;
     tempVal /= valDarkGray; // Multiplication off white with zero must be zeros;
     EXPECT_EQ(tempVal, valWhite);
    
-	tempVal = valDarkGray / valWhite; // Multiplication off white with zero must be zeros;
+    tempVal = valDarkGray / valWhite; // Multiplication off white with zero must be zeros;
     EXPECT_EQ(tempVal, valDarkGray);
-	tempVal = valDarkGray;
+    tempVal = valDarkGray;
     tempVal /= valWhite; // Multiplication off white with zero must be zeros;
     EXPECT_EQ(tempVal, valDarkGray);
 
-	tempVal = valDarkGray / valGray; // Multiplication off white with zero must be zeros;
+    tempVal = valDarkGray / valGray; // Multiplication off white with zero must be zeros;
 
     if(typeid(valueType) == typeid(ito::Rgba32))
     {
@@ -220,7 +220,7 @@ TYPED_TEST(rgbaOperatorTests, testDividation)
         EXPECT_EQ(tempVal, valueType(127));
     }
 
-	tempVal = valDarkGray;
+    tempVal = valDarkGray;
     tempVal /= valGray; // Multiplication off white with zero must be zeros;
 
     if(typeid(valueType) == typeid(ito::Rgba32))
@@ -454,25 +454,25 @@ TYPED_TEST(rgbaOperatorTests, testBoolEqual)
 }
 
 /*! \class 
-	\brief 
+    \brief 
 */
 template <typename _Tp> class rgbaChannalTests : public ::testing::Test 
-	{ 
+    { 
 public:
-	
-	virtual void SetUp(void)
-	{
+    
+    virtual void SetUp(void)
+    {
 
-	};
+    };
  
-	virtual void TearDown(void) {};
-	typedef _Tp valueType;	
+    virtual void TearDown(void) {};
+    typedef _Tp valueType;    
 
-	};
+    };
 
 TYPED_TEST_CASE(rgbaChannalTests, ItomAllChannelTypes);
 /*!
-	
+    
 */
 TYPED_TEST(rgbaChannalTests, testChannelSpecificOperators)
 {

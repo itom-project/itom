@@ -1,4 +1,6 @@
-﻿.. include:: ../../include/global.inc
+﻿.
+
+.. include:: ../../include/global.inc
 
 Variables and names 
 --------------------

@@ -11,7 +11,7 @@ When opening this file in |itom|, a yellow array shows the current position of t
 
 The corresponding call stack is then visible in the toolbox, like depicted below:
 
-.. image:: images/callstack.png
+.. figure:: images/callstack.png
     :scale: 100%
     :align: center
     

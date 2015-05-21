@@ -216,5 +216,16 @@ Some of the known remaining caveats are:
 * C extension modules cannot be reloaded, and so cannot be autoreloaded.
 
     (taken from http://ipython.org/ipython-doc/dev/config/extensions/autoreload.html)
-    
+
+Tutorials, documentations about Python 3
+=============================================
+
+See the following sources for more information, tutorials and documentations about Python 3 and Numpy:
+
+* `Python-Kurs (v3) <http://www.python-kurs.eu/python3_kurs.php>`_ (German)
+* `Python Course (v3) <http://www.python-course.eu/python3_course.php>`_ (English)
+* `Official Python 3 documentation <http://docs.python.org/3/>`_
+* `Moving from Python 2 to Python 3 (Cheatsheet) <http://ptgmedia.pearsoncmg.com/imprint_downloads/informit/promotions/python/python2python3.pdf>`_
+* `Dive into Python (v3) <http://www.diveinto.org/python3/>`_
+* `Numpy for Matlab users <http://wiki.scipy.org/NumPy_for_Matlab_Users>`_
     

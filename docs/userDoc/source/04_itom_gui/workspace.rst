@@ -5,7 +5,7 @@
 Global and Local Workspace
 ***************************
 
-.. image:: images/dockGlobalVariables.png
+.. figure:: images/dockGlobalVariables.png
     :scale: 100%
     :align: center
 

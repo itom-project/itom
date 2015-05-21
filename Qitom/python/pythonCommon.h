@@ -46,6 +46,7 @@ namespace ito
     ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam, ito::ParamBase &outParam, int *set);
     //!< This function is used to print out parameters to a dictionary and the itom-console
     PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addInfos, const int num, bool printToStdStream = true);
+    PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta);
     void errOutInitParams(const QVector<ito::Param> *params, const int num, const QString reason);
     ito::RetVal parseInitParams(QVector<ito::Param> *initParamListMand, QVector<ito::Param> *initParamListOpt, PyObject *args, PyObject *kwds);
     ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, const QVector<ito::Param> *defaultParamListOpt, PyObject *args, PyObject *kwds, QVector<ito::ParamBase> &paramListMandOut, QVector<ito::ParamBase> &paramListOptOut);
@@ -64,7 +65,7 @@ namespace ito
     {
         public:
 
-			enum tErrMsg
+            enum tErrMsg
             {
                 noMsg = 0,
                 loadPlugin = 1,
@@ -78,14 +79,6 @@ namespace ito
             static bool transformRetValToPyException(ito::RetVal &retVal, PyObject *exceptionIfError = PyExc_RuntimeError);
             static bool setReturnValueMessage(ito::RetVal &retVal, const QString &objName, const tErrMsg &errorMSG, PyObject *exceptionIfError = PyExc_RuntimeError);
             static bool setReturnValueMessage(ito::RetVal &retVal, const char *objName, const tErrMsg &errorMSG, PyObject *exceptionIfError = PyExc_RuntimeError);
-            //static bool setLoadPluginReturnValueMessage(ito::RetVal &retval, QString &pluginName);
-            //static bool setLoadPluginReturnValueMessage(ito::RetVal &retval, const char *pluginName);
-            //static bool setReturnValueMessage(ito::RetVal &retval, QString &functionName);
-            //static bool setReturnValueMessage(ito::RetVal &retval, const char *functionName);
-
-
-            
-
     };
 
 } //end namespace ito

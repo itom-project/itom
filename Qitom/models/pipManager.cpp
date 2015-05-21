@@ -639,7 +639,7 @@ void PipManager::finalizeTask()
                 QRegExp rx("(\\S+) \\(Current: (\\S)+ Latest: (\\S+)( \\[\\S+\\])?\\)");
                 int pos = 0;
                 QMap<QString,QString> outdated;
-		QMap<QString,QString> unknown;
+        QMap<QString,QString> unknown;
 
                 while ((pos = rx.indexIn(output, pos)) != -1)
                 {
@@ -649,9 +649,9 @@ void PipManager::finalizeTask()
                 
                 //check for unknown (that could not been fetched)
                 pos = 0;
-		rx.setPattern("Could not find any downloads that satisfy the requirement (\\S+)");
-		
-		while ((pos = rx.indexIn(output, pos)) != -1)
+        rx.setPattern("Could not find any downloads that satisfy the requirement (\\S+)");
+        
+        while ((pos = rx.indexIn(output, pos)) != -1)
                 {
                     unknown[rx.cap(1)] = rx.cap(3);
                     pos += rx.matchedLength();
@@ -665,9 +665,9 @@ void PipManager::finalizeTask()
                         m_pythonPackages[i].m_status = PythonPackage::Outdated;
                     }
                     else if (unknown.contains(m_pythonPackages[i].m_name))
-		    {
-		      m_pythonPackages[i].m_status = PythonPackage::Unknown;
-		    }
+            {
+              m_pythonPackages[i].m_status = PythonPackage::Unknown;
+            }
                     else
                     {
                         m_pythonPackages[i].m_status = PythonPackage::Uptodate;

@@ -266,16 +266,21 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
     values["description"] = QStringList();
     values["readwrite"] = QStringList();
     bool readonly;
+    const ito::ParamMeta *meta = NULL;
 
     PyObject *pVector = PyTuple_New( params->size() ); // new reference
 
     for (int n = 0; n < params->size(); n++)
     {
-        if ((*params)[n].getType() != 0)
+        const ito::Param &p = params->at(n);
+        meta = p.getMeta();
+        ito::ParamMeta::MetaRtti metaType = meta ? meta->getType() : ito::ParamMeta::rttiUnknown;
+
+        if (p.getType() != 0)
         {
             p_pyLine = PyDict_New();    // new reference
 
-            if (params->at(n).getFlags() & ito::ParamBase::Readonly)
+            if (p.getFlags() & ito::ParamBase::Readonly)
             {
                 values["readwrite"].append("r");
                 readonly = true;
@@ -286,7 +291,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                 readonly = false;
             }
 
-            switch(((*params)[n]).getType())
+            switch(p.getType())
             {
                 case ito::ParamBase::Char & ito::paramTypeMask:
                     type = ("int (char)");
@@ -309,11 +314,31 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                 break;
 
                 case ito::ParamBase::IntArray & ito::paramTypeMask:
-                    type = ("int seq. (int*)");
+                    switch (metaType)
+                    {
+                    case ito::ParamMeta::rttiIntervalMeta:
+                        type = "int interval [v1,v2]";
+                        break;
+                    case ito::ParamMeta::rttiRangeMeta:
+                        type = "int range [v1,v2)";
+                        break;
+                    case ito::ParamMeta::rttiRectMeta:
+                        type = "int rect [x0,y0,width,height]";
+                        break;
+                    default:
+                        type = ("int seq. (int*)");
+                    }
                 break;
 
                 case ito::ParamBase::DoubleArray & ito::paramTypeMask:
-                    type = ("float seq. (double*)");
+                    switch (metaType)
+                    {
+                    case ito::ParamMeta::rttiDoubleIntervalMeta:
+                        type = "float interval [v1,v2]";
+                        break;
+                    default:
+                        type = ("float seq. (double*)");
+                    }
                 break;
 
                 case ((ito::ParamBase::Pointer|ito::ParamBase::HWRef) & ito::paramTypeMask):
@@ -348,9 +373,9 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
             values["type"].append(type);
             temp = QString::number(n+1) + ".";
             values["number"].append(temp);
-            values["name"].append(((*params)[n]).getName());
+            values["name"].append(p.getName());
 
-            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(((*params)[n]).getName());
+            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(p.getName());
             PyDict_SetItemString(p_pyLine, "name", item);
             Py_DECREF(item);
 
@@ -367,7 +392,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
             if (addInfos)
             {
                 char* tempinfobuf = NULL;
-                tempinfobuf = const_cast<char*>(((*params)[n]).getInfo());
+                tempinfobuf = const_cast<char*>(p.getInfo());
                 if (tempinfobuf)
                 {
                     temp = QString(tempinfobuf);
@@ -378,12 +403,12 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                     values["description"].append("<no description>");
                 }
 
-                switch(((*params)[n]).getType())
+                switch(p.getType())
                 {
                     case ito::ParamBase::Char & ito::paramTypeMask:
                     case ito::ParamBase::Int & ito::paramTypeMask:
                         {
-                        const ito::IntMeta *intMeta = static_cast<const ito::IntMeta*>((*params)[n].getMeta());
+                        const ito::IntMeta *intMeta = static_cast<const ito::IntMeta*>(meta);
                         int mi, ma, step;
                         if (intMeta)
                         {
@@ -393,7 +418,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                         }
                         else
                         {
-                            const ito::CharMeta *charMeta = static_cast<const ito::CharMeta*>((*params)[n].getMeta());
+                            const ito::CharMeta *charMeta = static_cast<const ito::CharMeta*>(meta);
                             if (charMeta)
                             {
                                 mi = static_cast<int>(charMeta->getMin());
@@ -407,7 +432,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                                 step = 1;
                             }
                         }
-                        int va =  ((*params)[n]).getVal<int>();
+                        int va =  p.getVal<int>();
 
                         if (mi == std::numeric_limits<int>::min() && ma == std::numeric_limits<int>::max() && step == 1)
                         {
@@ -423,24 +448,19 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                         }
                         values["values"].append(temp);
 
-                        item = PyLong_FromLong(mi);
-                        PyDict_SetItemString(p_pyLine, "min", item);
-                        Py_DECREF(item);
-                        item = PyLong_FromLong(ma);
-                        PyDict_SetItemString(p_pyLine, "max", item);
-                        Py_DECREF(item);
                         item = PyLong_FromLong(va);
                         PyDict_SetItemString(p_pyLine, "value", item);
                         Py_DECREF(item);
-                        item = PyLong_FromLong(step);
-                        PyDict_SetItemString(p_pyLine, "step", item);
+
+                        item = parseParamMetaAsDict(meta);
+                        PyDict_Merge(p_pyLine, item, 1);
                         Py_DECREF(item);
                         }
                     break;
 
                     case ito::ParamBase::Double & ito::paramTypeMask:
                         {
-                        const ito::DoubleMeta *dblMeta = static_cast<const ito::DoubleMeta*>((*params)[n].getMeta());
+                        const ito::DoubleMeta *dblMeta = static_cast<const ito::DoubleMeta*>(meta);
                         double mi, ma, step;
                         if (dblMeta)
                         {
@@ -454,7 +474,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                             mi = -ma;
                             step = 0.0;
                         }
-                        double va =  ((*params)[n]).getVal<double>();
+                        double va = p.getVal<double>();
 
                         if (qAbs(ma - std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon() && qAbs(mi + std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon() && step == 0.0)
                         {
@@ -470,35 +490,19 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                         }
                         values["values"].append(temp);
 
-                        item = PyFloat_FromDouble(mi);
-                        PyDict_SetItemString(p_pyLine, "min", item);
-                        Py_DECREF(item);
-
-                        item = PyFloat_FromDouble(ma);
-                        PyDict_SetItemString(p_pyLine, "max", item);
-                        Py_DECREF(item);
-
                         item = PyFloat_FromDouble(va);
                         PyDict_SetItemString(p_pyLine, "value", item);
                         Py_DECREF(item);
 
-                        if (step != 0.0)
-                        {
-                            item = PyFloat_FromDouble(step);
-                        }
-                        else
-                        {
-                            Py_INCREF(Py_None);
-                            item = Py_None;
-                        }
-                        PyDict_SetItemString(p_pyLine, "step", item);
+                        item = parseParamMetaAsDict(meta);
+                        PyDict_Merge(p_pyLine, item, 1);
                         Py_DECREF(item);
                         }
                     break;
 
                     case (ito::ParamBase::String & ito::paramTypeMask):
                     {
-                        char* tempbuf = ((*params)[n]).getVal<char*>();
+                        char* tempbuf = p.getVal<char*>();
                         if (tempbuf == NULL)
                         {
                             item = PyUnicode_FromString("");
@@ -529,8 +533,8 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
 
                     case ito::ParamBase::CharArray & ito::paramTypeMask:
                     {
-                        int len = params->at(n).getLen();
-                        char *ptr = params->at(n).getVal<char*>();
+                        int len = p.getLen();
+                        char *ptr = p.getVal<char*>();
                         switch (len)
                         {
                         case 0:
@@ -557,13 +561,17 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                             values["values"].append(temp);
                             break;
                         }
+
+                        item = parseParamMetaAsDict(meta);
+                        PyDict_Merge(p_pyLine, item, 1);
+                        Py_DECREF(item);
                     }
                     break;
 
                     case ito::ParamBase::IntArray & ito::paramTypeMask:
                     {
-                        int len = params->at(n).getLen();
-                        int *ptr = params->at(n).getVal<int*>();
+                        int len = p.getLen();
+                        int *ptr = p.getVal<int*>();
                         switch (len)
                         {
                         case 0:
@@ -590,13 +598,17 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                             values["values"].append(temp);
                             break;
                         }
+
+                        item = parseParamMetaAsDict(meta);
+                        PyDict_Merge(p_pyLine, item, 1);
+                        Py_DECREF(item);
                     }
                     break;
 
                     case ito::ParamBase::DoubleArray & ito::paramTypeMask:
                     {
-                        int len = params->at(n).getLen();
-                        double *ptr = params->at(n).getVal<double*>();
+                        int len = p.getLen();
+                        double *ptr = p.getVal<double*>();
                         switch (len)
                         {
                         case 0:
@@ -623,6 +635,10 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                             values["values"].append(temp);
                             break;
                         }
+
+                        item = parseParamMetaAsDict(meta);
+                        PyDict_Merge(p_pyLine, item, 1);
+                        Py_DECREF(item);
                     }
                     break;
 
@@ -633,17 +649,25 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                     case (ito::ParamBase::PointPtr & ito::paramTypeMask):
                     case (ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask):
                         values["values"].append("<Object-Pointer>");
+
+                        item = parseParamMetaAsDict(meta);
+                        PyDict_Merge(p_pyLine, item, 1);
+                        Py_DECREF(item);
                     break;
 
                     default:
                         values["values"].append("<unknown>");
+
+                        item = parseParamMetaAsDict(meta);
+                        PyDict_Merge(p_pyLine, item, 1);
+                        Py_DECREF(item);
                     break;
 
                 }
             }
-            if (((*params)[n]).getInfo())
+            if (p.getInfo())
             {
-                item = PythonQtConversion::QByteArrayToPyUnicodeSecure(((*params)[n]).getInfo());
+                item = PythonQtConversion::QByteArrayToPyUnicodeSecure(p.getInfo());
                 PyDict_SetItemString(p_pyLine, "info", item);
                 Py_DECREF(item);
             }
@@ -713,7 +737,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
     }
     output.append("\n");
 
-    for (int i=0;i<values["number"].length();i++)
+    for (int i = 0; i < values["number"].length(); i++)
     {
         if (asErr)
         {
@@ -1481,91 +1505,389 @@ bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *e
 
     return true;
 }
-/*
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
-bool PythonCommon::setLoadPluginReturnValueMessage(ito::RetVal &retval, QString &pluginName)
+PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
 {
-    if (retval.containsError())
+    if (meta)
     {
-        QString errMSG(retval.errorMessage());
-        if (!errMSG.isEmpty())
+        PyObject *dict = PyDict_New();
+        PyObject *temp = NULL;
+        switch (meta->getType())
         {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with error message: \n%s", pluginName.toUtf8().data(), errMSG.toUtf8().data());
-        }
-        else
-        {
-            PyErr_Format(PyExc_RuntimeError, "Could not load plugin: %s with unspecified error.", pluginName.toUtf8().data());
-        }
-        return false;
-    }
+        case ito::ParamMeta::rttiCharMeta:
+            {
+                const ito::CharMeta *cm = static_cast<const ito::CharMeta*>(meta);
+                temp = PyUnicode_FromString("char meta");
+                PyDict_SetItemString(dict, "metaTypeStr", temp);
+                Py_DECREF(temp);
 
-    if (retval.containsWarning())
+                temp = PyLong_FromLong(cm->getMin());
+                PyDict_SetItemString(dict, "min", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getMax());
+                PyDict_SetItemString(dict, "max", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getStepSize());
+                PyDict_SetItemString(dict, "step", temp);
+                Py_DECREF(temp);
+            }
+            break;
+        case ito::ParamMeta::rttiIntMeta:
+            {
+                const ito::IntMeta *cm = static_cast<const ito::IntMeta*>(meta);
+                temp = PyUnicode_FromString("int meta");
+                PyDict_SetItemString(dict, "metaTypeStr", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getMin());
+                PyDict_SetItemString(dict, "min", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getMax());
+                PyDict_SetItemString(dict, "max", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getStepSize());
+                PyDict_SetItemString(dict, "step", temp);
+                Py_DECREF(temp);
+            }
+            break;
+        case ito::ParamMeta::rttiDoubleMeta:
+            {
+                const ito::DoubleMeta *cm = static_cast<const ito::DoubleMeta*>(meta);
+                temp = PyUnicode_FromString("float meta");
+                PyDict_SetItemString(dict, "metaTypeStr", temp);
+                Py_DECREF(temp);
+
+                temp = PyFloat_FromDouble(cm->getMin());
+                PyDict_SetItemString(dict, "min", temp);
+                Py_DECREF(temp);
+
+                temp = PyFloat_FromDouble(cm->getMax());
+                PyDict_SetItemString(dict, "max", temp);
+                Py_DECREF(temp);
+
+                if (ito::isZeroValue(cm->getStepSize(), std::numeric_limits<double>::epsilon()))
+                {
+                    PyDict_SetItemString(dict, "step", Py_None);
+                }
+                else
+                {
+                    temp = PyFloat_FromDouble(cm->getStepSize());
+                    PyDict_SetItemString(dict, "step", temp);
+                    Py_DECREF(temp);
+                }
+            }
+            break;
+        case ito::ParamMeta::rttiStringMeta:
+            {
+                const ito::StringMeta *cm = static_cast<const ito::StringMeta*>(meta);
+                temp = PyUnicode_FromString("string meta");
+                PyDict_SetItemString(dict, "metaTypeStr", temp);
+                Py_DECREF(temp);
+
+                switch (cm->getStringType())
+                {
+                case ito::StringMeta::String:
+                    temp = PyUnicode_FromString("String");
+                    break;
+                case ito::StringMeta::Wildcard:
+                    temp = PyUnicode_FromString("Wildcard");
+                    break;
+                case ito::StringMeta::RegExp:
+                    temp = PyUnicode_FromString("RegExp");
+                    break;
+                }
+                PyDict_SetItemString(dict, "stringType", temp);
+                Py_DECREF(temp);
+
+                temp = PyTuple_New(cm->getLen());
+                for (int i = 0 ; i < cm->getLen(); ++i)
+                {
+                    PyTuple_SetItem(temp, i, PyUnicode_FromString(cm->getString(i))); //steals reference
+                }
+                PyDict_SetItemString(dict, "allowedItems", temp);
+                Py_DECREF(temp);
+            }
+            break;
+        case ito::ParamMeta::rttiHWMeta:
+            {
+                const ito::HWMeta *cm = static_cast<const ito::HWMeta*>(meta);
+                temp = PyUnicode_FromString("hardware plugin meta");
+                PyDict_SetItemString(dict, "metaTypeStr", temp);
+                Py_DECREF(temp);
+
+                temp = PyUnicode_FromString(cm->getHWAddInName().data());
+                PyDict_SetItemString(dict, "requiredPluginName", temp);
+                Py_DECREF(temp);
+            }
+            break;
+        case ito::ParamMeta::rttiDObjMeta:
+            {
+                const ito::DObjMeta *cm = static_cast<const ito::DObjMeta*>(meta);
+                temp = PyUnicode_FromString("data object meta");
+                PyDict_SetItemString(dict, "metaTypeStr", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getMinDim());
+                PyDict_SetItemString(dict, "dimMin", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getMaxDim());
+                PyDict_SetItemString(dict, "dimMax", temp);
+                Py_DECREF(temp);
+            }
+            break;
+        case ito::ParamMeta::rttiIntArrayMeta:
+            {
+                const ito::IntArrayMeta *cm = static_cast<const ito::IntArrayMeta*>(meta);
+                temp = PyUnicode_FromString("int sequence meta");
+                PyDict_SetItemString(dict, "metaTypeStr", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getMin());
+                PyDict_SetItemString(dict, "min", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getMax());
+                PyDict_SetItemString(dict, "max", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getStepSize());
+                PyDict_SetItemString(dict, "step", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getNumMin());
+                PyDict_SetItemString(dict, "numMin", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getNumMax());
+                PyDict_SetItemString(dict, "numMax", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getNumStepSize());
+                PyDict_SetItemString(dict, "numStep", temp);
+                Py_DECREF(temp);
+            }
+            break;
+        case ito::ParamMeta::rttiDoubleArrayMeta:
+            {
+                const ito::DoubleArrayMeta *cm = static_cast<const ito::DoubleArrayMeta*>(meta);
+                temp = PyUnicode_FromString("float sequence meta");
+                PyDict_SetItemString(dict, "metaTypeStr", temp);
+                Py_DECREF(temp);
+
+                temp = PyFloat_FromDouble(cm->getMin());
+                PyDict_SetItemString(dict, "min", temp);
+                Py_DECREF(temp);
+
+                temp = PyFloat_FromDouble(cm->getMax());
+                PyDict_SetItemString(dict, "max", temp);
+                Py_DECREF(temp);
+
+                temp = PyFloat_FromDouble(cm->getStepSize());
+                PyDict_SetItemString(dict, "step", temp);
+                Py_DECREF(temp);
+
+                temp = PyFloat_FromDouble(cm->getNumMin());
+                PyDict_SetItemString(dict, "numMin", temp);
+                Py_DECREF(temp);
+
+                temp = PyFloat_FromDouble(cm->getNumMax());
+                PyDict_SetItemString(dict, "numMax", temp);
+                Py_DECREF(temp);
+
+                temp = PyFloat_FromDouble(cm->getNumStepSize());
+                PyDict_SetItemString(dict, "numStep", temp);
+                Py_DECREF(temp);
+            }
+            break;
+        case ito::ParamMeta::rttiCharArrayMeta:
+            {
+                const ito::CharArrayMeta *cm = static_cast<const ito::CharArrayMeta*>(meta);
+                temp = PyUnicode_FromString("char sequence meta");
+                PyDict_SetItemString(dict, "metaTypeStr", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getMin());
+                PyDict_SetItemString(dict, "min", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getMax());
+                PyDict_SetItemString(dict, "max", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getStepSize());
+                PyDict_SetItemString(dict, "step", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getNumMin());
+                PyDict_SetItemString(dict, "numMin", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getNumMax());
+                PyDict_SetItemString(dict, "numMax", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getNumStepSize());
+                PyDict_SetItemString(dict, "numStep", temp);
+                Py_DECREF(temp);
+            }
+            break;
+        case ito::ParamMeta::rttiIntervalMeta:
+            {
+                const ito::IntervalMeta *cm = static_cast<const ito::IntervalMeta*>(meta);
+                temp = PyUnicode_FromString("integer interval meta");
+                PyDict_SetItemString(dict, "metaTypeStr", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getMin());
+                PyDict_SetItemString(dict, "min", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getMax());
+                PyDict_SetItemString(dict, "max", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getStepSize());
+                PyDict_SetItemString(dict, "step", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getSizeMin());
+                PyDict_SetItemString(dict, "sizeMin", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getSizeMax());
+                PyDict_SetItemString(dict, "sizeMax", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getSizeStepSize());
+                PyDict_SetItemString(dict, "sizeStep", temp);
+                Py_DECREF(temp);
+            }
+            break;
+        case ito::ParamMeta::rttiDoubleIntervalMeta:
+            {
+                const ito::DoubleIntervalMeta *cm = static_cast<const ito::DoubleIntervalMeta*>(meta);
+                temp = PyUnicode_FromString("float interval meta");
+                PyDict_SetItemString(dict, "metaTypeStr", temp);
+                Py_DECREF(temp);
+
+                temp = PyFloat_FromDouble(cm->getMin());
+                PyDict_SetItemString(dict, "min", temp);
+                Py_DECREF(temp);
+
+                temp = PyFloat_FromDouble(cm->getMax());
+                PyDict_SetItemString(dict, "max", temp);
+                Py_DECREF(temp);
+
+                if (ito::isZeroValue(cm->getStepSize(), std::numeric_limits<double>::epsilon()))
+                {
+                    PyDict_SetItemString(dict, "step", Py_None);
+                }
+                else
+                {
+                    temp = PyFloat_FromDouble(cm->getStepSize());
+                    PyDict_SetItemString(dict, "step", temp);
+                    Py_DECREF(temp);
+                }
+
+                temp = PyFloat_FromDouble(cm->getSizeMin());
+                PyDict_SetItemString(dict, "sizeMin", temp);
+                Py_DECREF(temp);
+
+                temp = PyFloat_FromDouble(cm->getSizeMax());
+                PyDict_SetItemString(dict, "sizeMax", temp);
+                Py_DECREF(temp);
+
+                if (ito::isZeroValue(cm->getSizeStepSize(), std::numeric_limits<double>::epsilon()))
+                {
+                    PyDict_SetItemString(dict, "sizeStep", Py_None);
+                }
+                else
+                {
+                    temp = PyFloat_FromDouble(cm->getSizeStepSize());
+                    PyDict_SetItemString(dict, "sizeStep", temp);
+                    Py_DECREF(temp);
+                }
+            }
+            break;
+        case ito::ParamMeta::rttiRangeMeta:
+            {
+                const ito::RangeMeta *cm = static_cast<const ito::RangeMeta*>(meta);
+                temp = PyUnicode_FromString("integer range meta");
+                PyDict_SetItemString(dict, "metaTypeStr", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getMin());
+                PyDict_SetItemString(dict, "min", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getMax());
+                PyDict_SetItemString(dict, "max", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getStepSize());
+                PyDict_SetItemString(dict, "step", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getSizeMin());
+                PyDict_SetItemString(dict, "sizeMin", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getSizeMax());
+                PyDict_SetItemString(dict, "sizeMax", temp);
+                Py_DECREF(temp);
+
+                temp = PyLong_FromLong(cm->getSizeStepSize());
+                PyDict_SetItemString(dict, "sizeStep", temp);
+                Py_DECREF(temp);
+            }
+            break;
+        case ito::ParamMeta::rttiRectMeta:
+            {
+                const ito::RectMeta *cm = static_cast<const ito::RectMeta*>(meta);
+                temp = PyUnicode_FromString("integer rect meta");
+                PyDict_SetItemString(dict, "metaTypeStr", temp);
+                Py_DECREF(temp);
+
+                temp = parseParamMetaAsDict(&cm->getWidthRangeMeta());
+                PyDict_SetItemString(dict, "widthMeta", temp);
+                Py_DECREF(temp);
+
+                temp = parseParamMetaAsDict(&cm->getHeightRangeMeta());
+                PyDict_SetItemString(dict, "heightMeta", temp);
+                Py_DECREF(temp);
+            }
+            break;
+        default:
+            temp = PyUnicode_FromString("unknown meta");
+            PyDict_SetItemString(dict, "metaTypeStr", temp);
+            Py_DECREF(temp);
+            break;
+        }
+
+        temp = PyLong_FromLong(meta->getType());
+        PyDict_SetItemString(dict, "metaType", temp);
+        Py_DECREF(temp);
+
+        return dict;
+    }
+    else
     {
-        std::cerr << "Warning while loading plugin: " << pluginName.toLatin1().data() << "\n" << std::endl;
-
-        if (retval.hasErrorMessage())
-        {
-            std::cerr << " Message: " << retval.errorMessage() << "\n" << std::endl;
-        }
-        else
-        {
-            std::cerr << " Message: No warning message indicated.\n" << std::endl;
-        }
+        return PyDict_New();
     }
-    return true;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-bool PythonCommon::setLoadPluginReturnValueMessage(ito::RetVal &retval, const char *pluginName)
-{
-    QString pName(pluginName);
-    return PythonCommon::setLoadPluginReturnValueMessage(retval, pName);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-bool PythonCommon::setReturnValueMessage(ito::RetVal &retval, QString &functionName)
-{
-    if (retval.containsError())
-    {
-        QByteArray name = functionName.toUtf8();
-        QString msg(retval.errorMessage());
-        if (!msg.isEmpty())
-        {
-            PyErr_Format(PyExc_RuntimeError, "Error invoking function %s with error message: \n%s", name.data(), msg.toUtf8().data());
-        }
-        else
-        {
-            PyErr_Format(PyExc_RuntimeError, "Error invoking function %s.", name.data());
-        }
-        return false;
-    }
-
-    if (retval.containsWarning())
-    {
-        std::cerr << "Warning invoking " << functionName.toLatin1().data() << "\n" << std::endl;
-        if (retval.hasErrorMessage())
-        {
-            std::cerr << " Message: " << retval.errorMessage() << "\n" << std::endl;
-        }
-        else
-        {
-            std::cerr << " Message: No warning message indicated.\n" << std::endl;
-        }
-    }
-    return true;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-bool PythonCommon::setReturnValueMessage(ito::RetVal &retval, const char *functionName)
-{
-    QString fName(functionName);
-    return PythonCommon::setReturnValueMessage(retval, fName);
-}*/
-
+//------------------------------------------------------------------------------------------------------------------------------------------
 bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &objName, const tErrMsg &errorMSG, PyObject *exceptionIfError)
 {
-	QByteArray msgSpecified;
-	QByteArray msgUnspecified;
+    QByteArray msgSpecified;
+    QByteArray msgUnspecified;
 
     if (retVal.containsError())
     {
@@ -1645,6 +1967,7 @@ bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &obj
     }
     return true;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal,const char *objName, const tErrMsg &errorMSG, PyObject *exceptionIfError)
 {

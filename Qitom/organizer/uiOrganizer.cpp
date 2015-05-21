@@ -3303,7 +3303,7 @@ RetVal UiOrganizer::isFigureItem(unsigned int objectID,  QSharedPointer<unsigned
     else
     {
         retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toLatin1().data());
-		*isFigureItem = 0;
+        *isFigureItem = 0;
     }
 
     if (semaphore)

@@ -1,5 +1,5 @@
-ui-elements (GUI)
-=================
+ui-elements (ui, uiItem)
+=========================
 
 .. currentmodule:: itom
 
@@ -16,13 +16,5 @@ ui-Class
 
 .. autoclass:: itom.ui
     :show-inheritance:
-    :member-order: groupwise
-    :members:
-
-    
-timer-Class
-------------------
-
-.. autoclass:: itom.timer
     :member-order: groupwise
     :members:

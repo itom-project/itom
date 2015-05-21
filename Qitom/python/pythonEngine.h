@@ -154,7 +154,7 @@ public:
     QString getPythonExecutable() const { return m_pythonExecutable; }
     Qt::HANDLE getPythonThreadId() const { return m_pythonThreadId; }
 
-	static bool isInterruptQueued();
+    static bool isInterruptQueued();
     static const PythonEngine *getInstance();
 
 protected:
@@ -214,7 +214,7 @@ private:
     static int queuedInterrupt(void *state); 
 
     PyObject* getAndCheckIdentifier(const QString &identifier, ito::RetVal &retval) const;
-	
+    
 
     //member variables
     bool m_started;

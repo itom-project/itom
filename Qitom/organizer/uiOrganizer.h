@@ -434,7 +434,7 @@ public slots:
     RetVal figurePickPoints(unsigned int objectID, QSharedPointer<ito::DataObject> coords, int maxNrPoints, ItomSharedSemaphore *semaphore);
     RetVal figureDrawGeometricElements(unsigned int objectID, QSharedPointer<ito::DataObject> coords, int elementType, int maxNrElements, ItomSharedSemaphore *semaphore);
     RetVal figurePickPointsInterrupt(unsigned int objectID);
-	RetVal isFigureItem(unsigned int objectID,  QSharedPointer<unsigned int> isFigureItem, ItomSharedSemaphore *semaphore);
+    RetVal isFigureItem(unsigned int objectID,  QSharedPointer<unsigned int> isFigureItem, ItomSharedSemaphore *semaphore);
 
     
 

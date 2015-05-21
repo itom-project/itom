@@ -47,6 +47,7 @@ DialogPipManager::DialogPipManager(QWidget *parent ) :
     connect(m_pPipManager, SIGNAL(outputAvailable(QString,bool)), this, SLOT(outputReceived(QString,bool)));
     connect(m_pPipManager, SIGNAL(pipRequestStarted(PipManager::Task,QString,bool)), this, SLOT(pipRequestStarted(PipManager::Task,QString,bool)));
     connect(m_pPipManager, SIGNAL(pipRequestFinished(PipManager::Task,QString,bool)), this, SLOT(pipRequestFinished(PipManager::Task,QString,bool)));
+    connect(ui.tablePackages, SIGNAL(selectedItemsChanged(QItemSelection,QItemSelection)), this, SLOT(treeViewSelectionChanged(QItemSelection,QItemSelection)));
 
     m_pPipManager->checkPipAvailable(createOptions());
 
@@ -140,6 +141,7 @@ void DialogPipManager::pipRequestStarted(const PipManager::Task &task, const QSt
     m_outputSilent = outputSilent;
 
     ui.btnInstall->setEnabled(false);
+    ui.btnUpdate->setEnabled(false);
     ui.btnUninstall->setEnabled(false);
     ui.btnSudoUninstall->setEnabled(false);
     ui.btnReload->setEnabled(false);
@@ -219,6 +221,21 @@ void DialogPipManager::on_btnInstall_clicked()
 }
 
 //---------------------------------------------------------------------------------
+void DialogPipManager::on_btnUpdate_clicked()
+{
+    DialogPipManagerInstall *dpmi = new DialogPipManagerInstall(this);
+    if (dpmi->exec() == QDialog::Accepted)
+    {
+        PipInstall install;
+        dpmi->getResult(*((int*)&install.type), install.packageName, install.upgrade, install.installDeps, install.findLinks, install.ignoreIndex, install.runAsSudo);
+
+        m_pPipManager->installPackage(install, createOptions());
+    }
+
+    DELETE_AND_SET_NULL(dpmi);
+}
+
+//---------------------------------------------------------------------------------
 void DialogPipManager::on_btnUninstall_clicked()
 {
     QModelIndex mi = ui.tablePackages->currentIndex();
@@ -278,6 +295,12 @@ void DialogPipManager::on_btnSudoUninstall_clicked()
             m_pPipManager->uninstallPackage(packageName, true, createOptions());
         }
     }
+}
+
+//---------------------------------------------------------------------------------
+void DialogPipManager::treeViewSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
+{
+    ui.btnUpdate->setEnabled(selected.count() > 0 /*&& m_pPipManager->rowCount() > 0*/);
 }
 
 } //end namespace ito

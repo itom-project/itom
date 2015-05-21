@@ -334,6 +334,7 @@ QWidget* ParamInputParser::renderTypeChar(const ito::Param &param, int /*virtual
 QWidget* ParamInputParser::renderTypeDouble(const ito::Param &param, int /*virtualIndex*/, QWidget *parent)
 {
     QDoubleSpinBox *box = new QDoubleSpinBox(parent);
+    box->setDecimals(4);
     
     const ito::DoubleMeta *meta = static_cast<const ito::DoubleMeta*>(param.getMeta());
     if (meta)
@@ -513,7 +514,7 @@ ito::RetVal ParamInputParser::getDoubleValue(ito::ParamBase &param, const ito::P
 
     if (!retVal.containsError())
     {
-        param.setVal<int>(box->value());
+        param.setVal<double>(box->value());
     }
     return retVal;
 }

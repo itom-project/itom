@@ -1,4 +1,6 @@
-﻿.. include:: ../../include/global.inc
+﻿.
+
+.. include:: ../../include/global.inc
 
 Dictionaries, Lists and Tuples
 -------------------------------
@@ -197,13 +199,16 @@ If it helps, you can think of it this way: reading the list from left to right, 
     # Slicing works if one or both of the slice indices is negative.
     print(li[1:-1])
     
-    # Lists are zero-based, so li[0:3] returns the first three elements of the list, starting at li[0], up to but not including li[3].
+    # Lists are zero-based, so li[0:3] returns the first three elements of the list, 
+    # starting at li[0], up to but not including li[3].
     print(li[0:3])
     
-    # If the left slice index is 0, you can leave it out, and 0 is implied. So li[:3] is the same as li[0:3]
+    # If the left slice index is 0, you can leave it out, and 0 is implied. So li[:3] 
+    # is the same as li[0:3]
     print(li[:3])
     
-    # Similarly, if the right slice index is the length of the list, you can leave it out. So li[3:] is the same as li[3:5], because this list has five elements.
+    # Similarly, if the right slice index is the length of the list, you can leave it 
+    # out. So li[3:] is the same as li[3:5], because this list has five elements.
     print(li[3:])
     
     # If both slice indices are left out, all elements of the list are included.
@@ -236,11 +241,13 @@ Adding Elements to Lists
     li.append("new")
     print(li)
     
-    # insert inserts a single element into a list. The numeric argument is the index of the first element that gets bumped out of position.
+    # insert inserts a single element into a list. The numeric argument is the index of the 
+    # first element that gets bumped out of position.
     li.insert(2, "new")
     print(li)
     
-    # Lists can be concatenated with extend. Note that you do not call extend with multiple arguments; you call it with one argument, a list. In this case, that list has two elements.
+    # Lists can be concatenated with extend. Note that you do not call extend with multiple 
+    # arguments; you call it with one argument, a list. In this case, that list has two elements.
     li.extend(["two", "elements"])
     print(li)
 
@@ -263,7 +270,8 @@ Lists have two methods, :py:func:`extend` and :py:func:`append`, that look like 
     # extend method
     li = ['a', 'b', 'c']
     
-    # li is extended with a list of another three elements ('d', 'e', and 'f'), so you now have a list of six elements.
+    # li is extended with a list of another three elements ('d', 'e', and 'f'), so you 
+    # now have a list of six elements.
     li.extend(['d', 'e', 'f']) 
     print(li)
     print(len(li))
@@ -273,7 +281,8 @@ Lists have two methods, :py:func:`extend` and :py:func:`append`, that look like 
     li = ['a', 'b', 'c']
     
     # append method is called with a single argument, which is a list of three elements
-    # Now the list contains four elements because the last element appended is itself a list. Lists can contain any type of data, including other lists.
+    # Now the list contains four elements because the last element appended is itself a 
+    # list. Lists can contain any type of data, including other lists.
     li.append(['d', 'e', 'f']) 
     print(li)
     print(len(li))
@@ -305,7 +314,8 @@ Searching Lists
     print(li.index("new"))
     
     # If the value is not found in the list, Python raises an exception.
-    # To test whether a value is in the list, use in, which returns True if the value is found or False if it is not.
+    # To test whether a value is in the list, use in, which returns True if the value is 
+    # found or False if it is not.
     print(li.index("c"))
 
 ::
@@ -370,7 +380,8 @@ Lists can also be concatenated with the ``+`` operator. ``list = list + otherlis
     li += ['two']
     print(li)
     
-    # The * operator works on lists as a repeater: li = [1, 2] * 3 is equivalent to li = [1, 2] + [1, 2] + [1, 2], which concatenates three lists into one.
+    # The * operator works on lists as a repeater: li = [1, 2] * 3 is equivalent to 
+    # li = [1, 2] + [1, 2] + [1, 2], which concatenates three lists into one.
     li = [1, 2] * 3
     print(li)
 
