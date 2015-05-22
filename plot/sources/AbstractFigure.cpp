@@ -64,7 +64,8 @@ AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windo
     m_windowMode(windowMode),
     m_propertyDock(NULL),
     m_propertyEditorWidget(NULL),
-    m_propertyObservedObject(NULL)
+    m_propertyObservedObject(NULL),
+    m_lineCutType(tNoChildPlot)
 {
     //itom_PLOTAPI = NULL;
     //importItomPlotApi(NULL);

@@ -88,6 +88,15 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
             tPointCloudLib = 0x02
         };
 
+        enum tChildPlotStates
+        {
+            tNoChildPlot            = 0x00,
+            tExternChild            = 0x01,
+            tOwnChild               = 0x02,
+            tUninitilizedExtern     = 0x10,
+            tVisibleOnInit          = 0x20
+        };
+
         int getCompilerFeatures(void) const 
         {
             int retval = tOpenCV;
@@ -163,6 +172,8 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
         void **m_apiFunctionsBasePtr;
         
         bool m_toolbarsVisible;
+
+        ito::uint8 m_lineCutType;
 
     private:
         QList<QMenu*> m_menus;
