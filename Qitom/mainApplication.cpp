@@ -31,6 +31,7 @@
 #include "organizer/userOrganizer.h"
 #include "widgets/scriptDockWidget.h"
 #include "./ui/dialogSelectUser.h"
+#include "ui/dialogPipManager.h"
 
 #include <qsettings.h>
 #include <qstringlist.h>
@@ -692,6 +693,13 @@ int MainApplication::exec()
     {
         return QApplication::instance()->exec();
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int MainApplication::execPipManagerOnly()
+{
+    ito::DialogPipManager manager(NULL, true);
+    return manager.exec();
 }
 
 } //end namespace ito
