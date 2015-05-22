@@ -9,7 +9,7 @@ import sys
 reloadModules = 1
 
 class EmbeddedPlots(ItomUi):
-    def __init__(self, systemPath = None):
+    def __init__(self, systemPath = None, interpreteAsZ = False):
         self.startDir = os.getcwd()
         self.upDating = True
         self.measureType = 0
@@ -25,7 +25,10 @@ class EmbeddedPlots(ItomUi):
         ItomUi.__init__(self, uiFile, ui.TYPEWINDOW, childOfMainWindow=True)
         
         try:
-            self.gui.twoDPlot["staticLineCutID"] = self.gui.oneDPlot
+            if interpreteAsZ:
+                self.gui.twoDPlot["staticZSliceID"] = self.gui.oneDPlot
+            else:
+                self.gui.twoDPlot["staticLineCutID"] = self.gui.oneDPlot
         except:
             pass
         self.gui.oneDPlot["visible"] = False
@@ -50,15 +53,22 @@ class EmbeddedPlots(ItomUi):
     
 
 if(__name__ == '__main__'):
-    prot = EmbeddedPlots(None)
+    modeID = 1 # use 0 for lateral slice example or 1 for zSlice example
+    prot = EmbeddedPlots(None, modeID is 1)
     try:
         topo
         prot.init(topo, intensity)
     except:
-        tempInt = dataObject.randN([5, 100, 100], 'uint16')
-        tempData = dataObject.randN([5, 100, 100], 'float32') * 0.002
-        for i in range(0, tempInt.shape[0]):
-            tempData[i, :, :] += i - tempInt.shape[0] / 2
-            tempData[i, :, 50:100] += tempInt.shape[0] / 4
-        prot.init(tempData, tempInt)
+        
+        if modeID == 1:
+            tempData = dataObject.randN([10, 50, 50], 'float32')
+            for i in range(0, tempData.shape[0]):
+                tempData[i, :, :] += i - tempData.shape[0] / 20
+                tempData[i, :, 25:50] += tempData.shape[0] / 4
+        else:
+            tempData = dataObject.randN([3, 100, 100], 'float32') * 0.002
+            for i in range(0, tempData.shape[0]):
+                tempData[i, :, :] += i - tempData.shape[0] / 2
+                tempData[i, :, 50:100] += tempData.shape[0] / 4
+        prot.init(tempData)
     prot.show()

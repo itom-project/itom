@@ -174,6 +174,8 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
         bool m_toolbarsVisible;
 
         ito::uint8 m_lineCutType;
+        ito::uint8 m_zSliceType;
+        ito::uint8 m_zoomCutType;
 
     private:
         QList<QMenu*> m_menus;
