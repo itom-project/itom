@@ -226,20 +226,31 @@ RetVal AbstractNode::updateChannels(QList<QString> paramNames)
     QString thisName;
     QList<ito::Channel *> channelList;
 
+    // We ither through all channels and check if they are outputs from this node and are within the list
     foreach (thisChannel, m_pChannels)
     {
-        if ((thisChannel->isSender(this)) && (copyParamNames.contains(thisChannel->getSenderParamName())))
+        // CHANGE / CHECK TODO by Wolfram Lyda on 22.05.2015 to avoid missing update if multiple chanels are attached to same output parameter
+        // Changed copyParamNames to paramNames
+        if ((thisChannel->isSender(this)) && (paramNames.contains(thisChannel->getSenderParamName())))
         {
+            // If they are in the list, we trigger an update and remove them from the temp list
             channelList.append(thisChannel);
+            // If we have at least one chanel with this param, we remove its name from the copied list to check wether all params were found
             copyParamNames.removeOne(thisChannel->getSenderParamName());
             retval += setUpdatePending(thisChannel->getUniqueID());
         }
     }
+    
     if (retval.containsError()) 
+    {
         return retval;
+    }
     if (copyParamNames.length() != 0)
-        return ito::RetVal(ito::retError, 0, QObject::tr("parameters in list could not be found in channels, in updateChannels").toLatin1().data());
-
+    {
+        // even if we have not found every parameter in the channel list, we should update the rest anyway!
+        retval += ito::RetVal(ito::retWarning, 0, QObject::tr("Not all parameters in list could not be found in channels, in updateChannels").toLatin1().data());
+        //return ito::RetVal(ito::retError, 0, QObject::tr("parameters in list could not be found in channels, in updateChannels").toLatin1().data());
+    }
     foreach (thisChannel, channelList)
     {
         ito::Param *partnerParam = thisChannel->getPartnerParam(this);
