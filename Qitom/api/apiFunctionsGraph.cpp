@@ -51,7 +51,8 @@ namespace ito
         (void*)&singleApiFunctionsGraph.mgetColorBarIdxFromName,/* [9] */
         (void*)&singleApiFunctionsGraph.mgetFigureSetting,      /* [10] */
         (void*)&singleApiFunctionsGraph.mgetPluginWidget,       /* [11] */
-        (void*)&singleApiFunctionsGraph.mgetFigrueUIDByHandle,  /* [12] */
+        (void*)&singleApiFunctionsGraph.mgetFigureUIDByHandle,  /* [12] */
+        (void*)&singleApiFunctionsGraph.mgetPlotHandleByID,     /* [13] */
         NULL
     };
 
@@ -427,7 +428,7 @@ ito::RetVal apiFunctionsGraph::mgetPluginWidget(char* algoWidgetFunc, QVector<it
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal apiFunctionsGraph::mgetFigrueUIDByHandle(QObject *figure, ito::uint32 &UID)
+ito::RetVal apiFunctionsGraph::mgetFigureUIDByHandle(QObject *figure, ito::uint32 &figureUID)
 {
     ito::RetVal retval;
     UiOrganizer *uiOrg = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
@@ -437,7 +438,35 @@ ito::RetVal apiFunctionsGraph::mgetFigrueUIDByHandle(QObject *figure, ito::uint3
         QSharedPointer<unsigned int > uid(new unsigned int) ;
         *uid = 0;
         uiOrg->getObjectID(figure, uid);
-        UID = *uid;
+        figureUID = *uid;
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError,0,"uiOrganizer is not available");
+    }
+
+    return retval;
+}
+
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal apiFunctionsGraph::mgetPlotHandleByID(const ito::uint32 &figureUID, ito::ItomPlotHandle &plotHandle)
+{
+    ito::RetVal retval;
+    UiOrganizer *uiOrg = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
+    if(uiOrg)
+    {
+        QObject *obj = uiOrg->getPluginReference(figureUID);
+
+        if (obj)
+        {
+            plotHandle = ito::ItomPlotHandle(obj->objectName().toLatin1().data(), obj->metaObject()->className(), figureUID);
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError,0,"plot widget does not exist.");
+        }
     }
     else
     {

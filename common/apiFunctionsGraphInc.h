@@ -100,6 +100,9 @@ namespace ito
 
     #define apiGetFigureIDbyHandle \
         (*(ito::RetVal (*)(QObject *, ito::uint32 &)) ito::ITOM_API_FUNCS_GRAPH[12])
+
+    #define apiGetItomPlotHandleByID \
+        (*(ito::RetVal (*)(const ito::uint32 &, ito::ItomPlotHandle &)) ito::ITOM_API_FUNCS_GRAPH[13])
     /** \} */
 
     /*#if defined(ITOM_IMPORT_PLOTAPI)

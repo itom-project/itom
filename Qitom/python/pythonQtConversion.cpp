@@ -2713,26 +2713,26 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
         if (strcmp(name, "ito::ItomPlotHandle") == 0)
         {
             ito::ItomPlotHandle *v = (ito::ItomPlotHandle*)data;
-            //ito::PythonUi::PyUiItem *ui = (ito::PythonUi::PyUiItem*) ito::PythonUi::PyUiItem_new(&ito::PythonUi::PyUiItemType, NULL, NULL);
-            ito::PythonPlotItem::PyPlotItem *plotItem = (ito::PythonPlotItem::PyPlotItem*) ito::PythonPlotItem::PyPlotItem_new(&ito::PythonUi::PyUiItemType, NULL, NULL);
-            //ui->objectID = v->getObjectID();
-            //DELETE_AND_SET_NULL_ARRAY(ui->objName);
-            //ui->objName = new char[v->getObjName().length()+1];
-            //strcpy_s(ui->objName, v->getObjName().length()+1, v->getObjName().data());
-            //DELETE_AND_SET_NULL_ARRAY(ui->widgetClassName);
-            //ui->widgetClassName = new char[v->getWidgetClassName().length()+1];
-            //strcpy_s(ui->widgetClassName, v->getWidgetClassName().length()+1, v->getWidgetClassName().data());
-            //return (PyObject*)ui;
-            plotItem->uiItem.objectID = v->getObjectID();
 
-            DELETE_AND_SET_NULL_ARRAY(plotItem->uiItem.objName);
-            plotItem->uiItem.objName = new char[v->getObjName().length()+1];
-            strcpy_s(plotItem->uiItem.objName, v->getObjName().length()+1, v->getObjName().data());
-            DELETE_AND_SET_NULL_ARRAY(plotItem->uiItem.widgetClassName);
-            plotItem->uiItem.widgetClassName = new char[v->getWidgetClassName().length()+1];
-            strcpy_s(plotItem->uiItem.widgetClassName, v->getWidgetClassName().length()+1, v->getWidgetClassName().data());
+            if (v->getObjectID() > 0)
+            {
+                ito::PythonPlotItem::PyPlotItem *plotItem = (ito::PythonPlotItem::PyPlotItem*) ito::PythonPlotItem::PyPlotItem_new(&ito::PythonUi::PyUiItemType, NULL, NULL);
+                plotItem->uiItem.objectID = v->getObjectID();
 
-            return (PyObject*)plotItem;
+                DELETE_AND_SET_NULL_ARRAY(plotItem->uiItem.objName);
+                plotItem->uiItem.objName = new char[v->getObjName().length()+1];
+                strcpy_s(plotItem->uiItem.objName, v->getObjName().length()+1, v->getObjName().data());
+                DELETE_AND_SET_NULL_ARRAY(plotItem->uiItem.widgetClassName);
+                plotItem->uiItem.widgetClassName = new char[v->getWidgetClassName().length()+1];
+                strcpy_s(plotItem->uiItem.widgetClassName, v->getWidgetClassName().length()+1, v->getWidgetClassName().data());
+
+                return (PyObject*)plotItem;
+            }
+            else
+            {
+                //invalid plot handle
+                Py_RETURN_NONE;
+            }
 
         }
         if (strcmp(name, "ito::DataObject") == 0)
