@@ -91,7 +91,7 @@ At first, let us denote several issues that may happen due to the caching mechan
     import mod2
     
     print("version 1")
-    print(mod2.func2())
+    mod2.func2()
     
 .. code-block:: python
     
@@ -100,7 +100,7 @@ At first, let us denote several issues that may happen due to the caching mechan
     
     def func2():
         print("func2, version 1")
-        print(mod3.func3())
+        mod3.func3()
     
 .. code-block:: python
     
