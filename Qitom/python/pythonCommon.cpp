@@ -797,7 +797,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
 */
 void errOutInitParams(const QVector<ito::Param> *params, const int num, const QString reason)
 {
-    PyErr_Print();
+    PyErr_PrintEx(0);
     std::cerr << "\n";
     std::cerr << reason.toLatin1().data() << "\n";
     if (params)
@@ -810,7 +810,7 @@ void errOutInitParams(const QVector<ito::Param> *params, const int num, const QS
         std::cerr << "Plugin does not accept parameters!" << "\n";
     }
     std::cerr << "\n";
-    PyErr_Print();
+    PyErr_PrintEx(0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -1281,7 +1281,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                     }
                     else
                     {
-                        PyErr_Print();
+                        PyErr_PrintEx(0);
                         v = QVariant();
                     }
 

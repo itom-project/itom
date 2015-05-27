@@ -66,6 +66,11 @@ of *MyClass* is not called (no text *MyClass destroyed* is printed out). However
 the class is destroyed and the text appears. This is due to the fact, that the last exception that has been raised is still in memory and holds a reference to the passed argument, here, the
 instance *m* of class *MyClass*.
 
+.. note::
+    
+    This behaviour changes in itom version > 1.4.0. Then, the last exception is not stored any more in the variables :data:`sys.last_type`,
+   :data:`sys.last_value` and :data:`sys.last_traceback`.
+
 Nevertheless, it might happen, that the object referenced by a variable (like a camera) is not immediately destroyed even if the last referencing variable is deleted. In |Python| objects are not directly deleted if they are not used any more, but they are only marked for deletion. Then, regularly, a garbage collector is executed that finally deletes all values marked for deletion. The reason is that deleting objects might be complicated and it is therefore better to execute this if the interpreter is idle or many objects have been marked. In order to directly force the garbage collector to delete marked objects, use:
 
 .. code-block:: python

@@ -3248,7 +3248,7 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
                                         {
                                             Py_XDECREF(result);
                                             Py_XDECREF(scipyIoModule);
-                                            PyErr_Print();
+                                            PyErr_PrintEx(0);
                                             PyErr_SetString(PyExc_RuntimeError, "error while parsing imported dataObject or npDataObject.");
                                             return NULL;
                                         }
