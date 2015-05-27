@@ -82,6 +82,7 @@ class itoDebugger(bdb.Bdb):
         self.stack = []
         self.curindex = 0
         self.curframe = None
+        self.curframe_locals = None
         #print("self.curframe has been reset")
         self.tb_lineno.clear()
 
