@@ -2279,7 +2279,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
         QStringList slot;
         QString className;
 
-        QMap<QByteArray, QByteArray> propInfoMap;
+        QMap<QByteArray, QByteArray> propInfoMap, signalInfoMap, slotInfoMap;
 
         const QMetaObject *mo = obj->metaObject();
         className = mo->className();
@@ -2310,12 +2310,12 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                     else if (strstr(ci.name(), "signal://") == ci.name())
                     {
                         QByteArray prop = QByteArray(&(ci.name()[9]));
-                        propInfoMap[prop] = ci.value();
+                        signalInfoMap[prop] = ci.value();
                     }
                     else if (strstr(ci.name(), "slot://") == ci.name())
                     {
                         QByteArray prop = QByteArray(&(ci.name()[7]));
-                        propInfoMap[prop] = ci.value();
+                        slotInfoMap[prop] = ci.value();
                     }
                     else
                     {
@@ -2364,18 +2364,22 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                     if (i >= mo->methodOffset())
                     {
 #if QT_VERSION >= 0x050000
-                        signal.append(meth.methodSignature());
                         QString str1("signal_");
                         str1.append(meth.name());
                         QString str2(meth.methodSignature());
-                        if (propInfoMap.contains(meth.name()) && !propInfoMap[meth.name()].isEmpty())
+                        if (signalInfoMap.contains(meth.name()) && !signalInfoMap[meth.name()].isEmpty())
                         {
                             str2.append(" -> ");
-                            str2.append(propInfoMap[meth.name()]);
+                            str2.append(signalInfoMap[meth.name()]);
+                            signal.append(QString("%1 : %2").arg(meth.methodSignature()).arg(signalInfoMap[meth.name()].data()));
                         }
+                        else
+                        {
+                            signal.append(meth.methodSignature());
+                        }
+
                         tmpPropMap.insert(str1, str2);
 #else
-                        signal.append(meth.signature());
                         QString str1("signal_");
 
                         QString methName = meth.signature();
@@ -2383,11 +2387,17 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                         str1.append(methName);
 
                         QString str2(meth.signature());
-                        if (propInfoMap.contains(methName.toLatin1()) && !propInfoMap[methName.toLatin1()].isEmpty())
+                        if (signalInfoMap.contains(methName.toLatin1()) && !signalInfoMap[methName.toLatin1()].isEmpty())
                         {
                             str2.append(" -> ");
-                            str2.append(propInfoMap[methName.toLatin1()]);
+                            str2.append(signalInfoMap[methName.toLatin1()]);
+                            signal.append(QString("%1 : %2").arg(meth.signature()).arg(signalInfoMap[methName.toLatin1()].data()));
                         }
+                        else
+                        {
+                            signal.append(meth.signature());
+                        }
+
                         tmpPropMap.insert(str1, str2);
 #endif
                     }
@@ -2397,29 +2407,36 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                     if (i >= mo->methodOffset())
                     {
 #if (QT_VERSION >= 0x050000)
-                            slot.append(meth.methodSignature());
                             QString str1("slot_");
                             str1.append(meth.name());
                             QString str2(meth.methodSignature());
-                            if (propInfoMap.contains(meth.name()) && !propInfoMap[meth.name()].isEmpty())
+                            if (slotInfoMap.contains(meth.name()) && !slotInfoMap[meth.name()].isEmpty())
                             {
                                 str2.append(" -> ");
-                                str2.append(propInfoMap[meth.name()]);
+                                str2.append(slotInfoMap[meth.name()]);
+                                slot.append(QString("%1 : %2").arg(meth.methodSignature()).arg(slotInfoMap[meth.name()].data()));
+                            }
+                            else
+                            {
+                                slot.append(meth.methodSignature());
                             }
                             tmpPropMap.insert(str1, str2);
 #else
-                            
-                            slot.append(meth.signature());
                             QString str1("slot_");
 
                             QString methName = meth.signature();
                             methName.chop(methName.length() - methName.indexOf('('));
                             str1.append(methName);
                             QString str2(meth.signature());
-                            if (propInfoMap.contains(methName.toLatin1()) && !propInfoMap[methName.toLatin1()].isEmpty())
+                            if (slotInfoMap.contains(methName.toLatin1()) && !slotInfoMap[methName.toLatin1()].isEmpty())
                             {
                                 str2.append(" -> ");
-                                str2.append(propInfoMap[methName.toLatin1()]);
+                                str2.append(slotInfoMap[methName.toLatin1()]);
+                                slot.append(QString("%1 : %2").arg(meth.signature()).arg(slotInfoMap[methName.toLatin1()].data()));
+                            }
+                            else
+                            {
+                                slot.append(meth.signature());
                             }
                             tmpPropMap.insert(str1, str2);
 #endif
