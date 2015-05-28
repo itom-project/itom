@@ -2371,7 +2371,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                         {
                             str2.append(" -> ");
                             str2.append(signalInfoMap[meth.name()]);
-                            signal.append(QString("%1 : %2").arg(meth.methodSignature()).arg(signalInfoMap[meth.name()].data()));
+                            signal.append(QString("%1 : %2").arg(meth.methodSignature().data()).arg(signalInfoMap[meth.name()].data()));
                         }
                         else
                         {
@@ -2414,7 +2414,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
                             {
                                 str2.append(" -> ");
                                 str2.append(slotInfoMap[meth.name()]);
-                                slot.append(QString("%1 : %2").arg(meth.methodSignature()).arg(slotInfoMap[meth.name()].data()));
+                                slot.append(QString("%1 : %2").arg(meth.methodSignature().data()).arg(slotInfoMap[meth.name()].data()));
                             }
                             else
                             {
