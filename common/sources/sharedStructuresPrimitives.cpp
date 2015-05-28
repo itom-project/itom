@@ -26,10 +26,13 @@
 *********************************************************************** */
 
 #include "sharedStructuresPrimitives.h"
+#include "DataObject/dataObjectFuncs.h"
 #include <iostream>
 
 namespace ito
 {
+
+
     //----------------------------------------------------------------------------------------------------------------------------------
     PrimitiveBase::PrimitiveBase()
     {
@@ -46,290 +49,248 @@ namespace ito
         memcpy(cells, rhs.cells, sizeof(float32)*PRIM_ELEMENTLENGTH);
     }
     //----------------------------------------------------------------------------------------------------------------------------------
-    float32 PrimitiveBase::distanceTo(const GeometricPrimitive &comperator, const bool plaine /*= false*/) const
+    void PrimitiveBase::setIndex( const int idx ) 
     {
-        switch(getType())
-        {
-            default:
-            case tNoType:
-            case tMultiPointPick:
-            case tPolygon:
-                return std::numeric_limits<float32>::quiet_NaN();
-
-            case tPoint:
-                switch(extractType(comperator))
-                {
-                    default:
-                    case tNoType:
-                    case tMultiPointPick:
-                    case tPolygon:
-                        return std::numeric_limits<float32>::quiet_NaN();
-
-                    case tPoint:
-                    {
-                        ito::float32 res = pow(comperator.cells[2] - cells[2], 2) - pow(comperator.cells[3] - cells[3], 2);
-                        if(!plaine) res += pow(comperator.cells[4] - cells[4], 2);
-                        return sqrt(res);
-                    }
-
-                    case tLine:
-                    break;
-
-                    case tRectangle:
-                    break;
-
-                    case tSquare:
-                    break;
-
-                    case tEllipse:
-                    break;
-
-                    case tCircle:
-                    break;
-                }
-            break;
-
-            case tLine:
-                switch(extractType(comperator))
-                {
-                    default:
-                    case tNoType:
-                    case tMultiPointPick:
-                    case tPolygon:
-                        return std::numeric_limits<float32>::quiet_NaN();
-                    break;
-
-                    case tPoint:
-
-                    break;
-
-                    case tLine:
-                    break;
-
-                    case tRectangle:
-                    break;
-
-                    case tSquare:
-                    break;
-
-                    case tEllipse:
-                    break;
-
-                    case tCircle:
-                    break;
-                }
-            break;
-
-            case tRectangle:
-                switch(extractType(comperator))
-                {
-                    default:
-                    case tNoType:
-                    case tMultiPointPick:
-                    case tPolygon:
-                        return std::numeric_limits<float32>::quiet_NaN();
-                    break;
-
-                    case tPoint:
-
-                    break;
-
-                    case tLine:
-                    break;
-
-                    case tRectangle:
-                    break;
-
-                    case tSquare:
-                    break;
-
-                    case tEllipse:
-                    break;
-
-                    case tCircle:
-                    break;
-                }
-            break;
-
-            case tSquare:
-                switch(extractType(comperator))
-                {
-                    default:
-                    case tNoType:
-                    case tMultiPointPick:
-                    case tPolygon:
-                        return std::numeric_limits<float32>::quiet_NaN();
-                    break;
-
-                    case tPoint:
-
-                    break;
-
-                    case tLine:
-                    break;
-
-                    case tRectangle:
-                    break;
-
-                    case tSquare:
-                    break;
-
-                    case tEllipse:
-                    break;
-
-                    case tCircle:
-                    break;
-                }
-            break;
-
-            case tEllipse:
-                switch(extractType(comperator))
-                {
-                    default:
-                    case tNoType:
-                    case tMultiPointPick:
-                    case tPolygon:
-                        return std::numeric_limits<float32>::quiet_NaN();
-                    break;
-
-                    case tPoint:
-
-                    break;
-
-                    case tLine:
-                    break;
-
-                    case tRectangle:
-                    break;
-
-                    case tSquare:
-                    break;
-
-                    case tEllipse:
-                    break;
-
-                    case tCircle:
-                    break;
-                }
-            break;
-
-            case tCircle:
-                switch(extractType(comperator))
-                {
-                    default:
-                    case tNoType:
-                    case tMultiPointPick:
-                    case tPolygon:
-                        return std::numeric_limits<float32>::quiet_NaN();
-                    break;
-
-                    case tPoint:
-
-                    break;
-
-                    case tLine:
-                    break;
-
-                    case tRectangle:
-                    break;
-
-                    case tSquare:
-                    break;
-
-                    case tEllipse:
-                    break;
-
-                    case tCircle:
-                    break;
-                }
-            break;
-        }
-        return std::numeric_limits<float32>::quiet_NaN();
+        cells[0] = (float32)idx;
+    } 
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void PrimitiveBase::setFlags( const int flags ) 
+    {
+        cells[1] = ( float32 )( ( ( (int)(cells[1]) ) & tTypeMask ) | ( flags & tFlagMask ));
     }
     //----------------------------------------------------------------------------------------------------------------------------------
-    float32 PrimitiveBase::distanceToCenters(const GeometricPrimitive &comperator, const bool plaine /*= false*/) const
+    void PrimitiveBase::setType( const int type ) 
     {
-        switch(getType())
+        cells[1] = ( float32 )( ( ( (int)(cells[1]) ) & tFlagMask ) | ( type & tTypeMask ));
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void PrimitiveBase::setTypeAndFlags( const int val ) 
+    {
+        cells[1] = (float32)val;
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    float32* PrimitiveBase::ptr_data() 
+    {
+        return cells;
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    float32* PrimitiveBase::ptr_geo()
+    {
+        return &(cells[2]);
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    float32 PrimitiveBase::distanceLineToPoint(const PrimitiveBase &line, const PrimitiveBase &point, const bool plaine /*= false*/)
+    {
+
+        float32 cSq = pow(point.cells[2] - line.cells[2], 2) + pow(point.cells[3] - line.cells[3], 2);
+        float32 bSq = pow(line.cells[5] - line.cells[2], 2) + pow(line.cells[6] - line.cells[3], 2);
+        if(!plaine)
         {
-            default:
-            case tNoType:
-            case tMultiPointPick:
-            case tPolygon:
-                return std::numeric_limits<float32>::quiet_NaN();
-
-            case tCircle:
-            case tEllipse:
-            case tSquare:
-            case tPoint:
-            {
-                switch(PrimitiveBase::extractType(comperator))
-                {
-                    default:
-                    case tNoType:
-                    case tMultiPointPick:
-                    case tPolygon:
-                        return std::numeric_limits<float32>::quiet_NaN();
-
-                    case tLine:
-                        std::cout << "Not implemented yet" << std::endl;
-                    return std::numeric_limits<float32>::quiet_NaN();
-                    
-                    case tRectangle:
-                    {                      
-                        ito::float32 res = pow(cells[2] - (comperator.cells[2] + comperator.cells[5]) / 2.0f, 2) - pow(cells[3] - (comperator.cells[3] + comperator.cells[6]) / 2.0f, 2);
-                        if(!plaine) res += pow(cells[4] - (comperator.cells[4] + comperator.cells[7]) / 2.0f, 2);
-                        return sqrt(res);
-                    }
-
-                    case tPoint:
-                    case tEllipse:
-                    case tCircle:
-                    case tSquare:
-                    {
-                        ito::float32 res = pow(comperator.cells[2] - cells[2], 2) - pow(comperator.cells[3] - cells[3], 2);
-                        if(!plaine) res += pow(comperator.cells[4] - cells[4], 2);
-                        return sqrt(res);
-                    }
-                }
-            }
-
-            case tLine:
+            cSq += pow(point.cells[4] - line.cells[4], 2);
+            bSq += pow(line.cells[7] - line.cells[4], 2);
+        }
+        if(cSq - bSq < 0)
+        {
             return std::numeric_limits<float32>::quiet_NaN();
+        }
+        return sqrt(cSq - bSq);
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    float32 PrimitiveBase::distanceLineToPointRAW(const float32 *line, const float32 *point, const bool plaine /*= false*/)
+    {
 
-            case tRectangle:
-            {
-                switch(PrimitiveBase::extractType(comperator))
-                {
-                    default:
-                    case tNoType:
-                    case tMultiPointPick:
-                    case tPolygon:
-                        return std::numeric_limits<float32>::quiet_NaN();
-                    break;
-
-                    case tLine:
-                        std::cout << "Not implemented yet" << std::endl;
-                    return std::numeric_limits<float32>::quiet_NaN();
-                    
-                    case tRectangle:
-                    {                      
-                        ito::float32 res = pow((comperator.cells[2] + comperator.cells[4]) / 2.0f - (cells[2] + cells[5]) / 2.0f, 2) - pow((comperator.cells[3] + comperator.cells[6]) / 2.0f - (cells[3] + cells[6]) / 2.0f, 2);
-                        if(!plaine) res += pow((comperator.cells[4] + comperator.cells[7]) / 2.0f - (cells[4] + cells[7]) / 2.0f, 2);
-                        return sqrt(res);
-                    }
-
-                    case tPoint:
-                    case tEllipse:
-                    case tCircle:
-                    case tSquare:
-                    {
-                        ito::float32 res = pow(comperator.cells[2] - (cells[2] + cells[5]) / 2.0f, 2) - pow(comperator.cells[3] - (cells[3] + cells[6]) / 2.0f, 2);
-                        if(!plaine) res += pow(comperator.cells[4] - (cells[4] + cells[7]) / 2.0f, 2);
-                        return sqrt(res);
-                    }
-                }
-            }    
+        float32 cSq = pow(point[0] - line[0], 2) + pow(point[1] - line[1], 2);
+        float32 bSq = pow(line[0] - line[0], 2) + pow(line[3] - line[1], 2);
+        if(!plaine)
+        {
+            cSq += pow(point[2] - line[2], 2);
+            bSq += pow(line[5] - line[2], 2);
+        }
+        if(cSq - bSq < 0)
+        {
+            return std::numeric_limits<float32>::quiet_NaN();
+        }
+        return sqrt(cSq - bSq);
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    float32 PrimitiveBase::distanceRectCenterToLine(const PrimitiveBase &rect, const PrimitiveBase &line, const bool plaine /*= false*/)
+    {
+        GeometricPrimitive point;
+        memset(point.cells, 0, sizeof(float32)*PRIM_ELEMENTLENGTH);
+        point.cells[2] = (rect.cells[2] + rect.cells[5]) / 2.0f;
+        point.cells[3] = (rect.cells[3] + rect.cells[6]) / 2.0f;
+        point.cells[4] = (rect.cells[4] + rect.cells[7]) / 2.0f;
+        return distanceLineToPoint(line, point, plaine);
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    float32 PrimitiveBase::distancePointToPoint(const PrimitiveBase &point1, const PrimitiveBase &point2, const bool plaine /*= false*/)
+    {
+        float32 res = pow(point1.cells[2] - point2.cells[2], 2) - pow(point1.cells[3] - point2.cells[3], 2);
+        if(!plaine) res += pow(point1.cells[4] - point2.cells[4], 2);
+        return sqrt(res);
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    float32 PrimitiveBase::distancePointToPointRAW(const float32* point1, const float32* point2, const bool plaine /*= false*/)
+    {
+        float32 res = pow(point1[0] - point2[0], 2) - pow(point1[1] - point2[1], 2);
+        if(!plaine) res += pow(point1[3] - point2[3], 2);
+        return sqrt(res);
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    float32 PrimitiveBase::distanceRectCenterToPoint(const PrimitiveBase &rect, const PrimitiveBase &point, const bool plaine /*= false*/)
+    {
+        GeometricPrimitive centerPoint;
+        memset(centerPoint.cells, 0, sizeof(float32)*PRIM_ELEMENTLENGTH);
+        centerPoint.cells[2] = (rect.cells[2] + rect.cells[5]) / 2.0f;
+        centerPoint.cells[3] = (rect.cells[3] + rect.cells[6]) / 2.0f;
+        centerPoint.cells[4] = (rect.cells[4] + rect.cells[7]) / 2.0f;
+        return distancePointToPoint(centerPoint, point, plaine);
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void PrimitiveBase::normalVector(float32 direction[3]) const
+    {
+        direction[0] = 0;
+        direction[1] = 0;
+        direction[2] = 1;
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void GeometricPrimitivePoint::normalVector(float32 direction[3]) const
+    {
+        direction[0] = 0;
+        direction[1] = 0;
+        direction[2] = 1;
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    float32 GeometricPrimitiveLine::length(const bool plaine /*= false*/) const
+    {
+        ito::float32 dir[3] = {0.0f,0.0f,1.0f};
+        directionVector(dir);
+        if(plaine)
+        {
+            return vectorLength2D(dir);
+        }
+        else
+        {
+            return vectorLength(dir);
         }
     }
     //----------------------------------------------------------------------------------------------------------------------------------
+    void GeometricPrimitiveLine::normalVector(float32 direction[3]) const
+    {
+        ito::float32 base[3] = {0.0f,1.0f,0.0f};
+        ito::float32 dir[3] = {1.0f,0.0f,0.0f};
+        ito::float32 len = 1.0;
+        directionVector(dir);
+        vectorDotMul(dir, base, direction);
+
+        if((len = vectorLength(direction)) < 0.001 )
+        {
+            base[0] = 1.0f;
+            base[1] = 0.0f;
+            base[2] = 0.0f;
+            vectorDotMul(dir, base, direction);
+            len = vectorLength(direction);           
+        }
+        if(ito::dObjHelper::isNotZero(len))
+        {
+            vectorScale(direction, 1.0f/len);
+        }
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void GeometricPrimitiveCircle::normalVector(float32 direction[3]) const
+    {
+        direction[0] = 0.0f;
+        direction[1] = 0.0f;
+        direction[2] = 1.0f;
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void GeometricPrimitiveEllipse::normalVector(float32 direction[3]) const
+    {
+        direction[0] = 0.0f;
+        direction[1] = 0.0f;
+        direction[2] = 1.0f;
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void GeometricPrimitiveSquare::normalVector(float32 direction[3]) const
+    {
+        direction[0] = 0.0f;
+        direction[1] = 0.0f;
+        direction[2] = 1.0f;
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void GeometricPrimitiveSquare::topLeft(float32 direction[3]) const
+    {
+        
+
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void GeometricPrimitiveSquare::topRight(float32 direction[3]) const
+    {
+    
+
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void GeometricPrimitiveSquare::bottomLeft(float32 direction[3]) const
+    {
+    
+
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void GeometricPrimitiveSquare::bottomRight(float32 direction[3]) const
+    {
+    
+
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void GeometricPrimitiveRectangle::normalVector(float32 direction[3]) const
+    {
+        ito::float32 len = 1.0;
+        if(ito::dObjHelper::isNotZero(alpha()))
+        {
+#if _DEBUG
+            throw std::invalid_argument("Calculation for alpha != 0 not implemented yet");
+#endif
+            direction[0] = 0.0f;
+            direction[1] = 0.0f;
+            direction[2] = 1.0f;
+        }
+        else // if alpha is 0, the plane can be defined by dx/dz and dy/dz
+        {
+
+            float32 dir[3] = { cells[5] - cells[2], 0, cells[7] - cells[4]};
+            float32 dir2[3] = { 0, cells[6] - cells[3], cells[7] - cells[4]};
+
+            vectorDotMul(dir, dir2, direction);     
+            len = vectorLength(direction); 
+        }
+
+        if(ito::dObjHelper::isNotZero(len))
+        {
+            vectorScale(direction, 1.0f/len);
+        }
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void GeometricPrimitiveRectangle::topLeft(float32 direction[3]) const
+    {
+    
+
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void GeometricPrimitiveRectangle::topRight(float32 direction[3]) const
+    {
+    
+
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void GeometricPrimitiveRectangle::bottomLeft(float32 direction[3]) const
+    {
+    
+
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void GeometricPrimitiveRectangle::bottomRight(float32 direction[3]) const
+    {
+    
+
+    }
 }

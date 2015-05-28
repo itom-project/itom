@@ -224,6 +224,35 @@ namespace ito
 
 namespace ito
 {
+    inline void vectorDotMul(const float32 *v1,const  float32* v2, float32* res)
+    {
+        res[0] = v1[1]*v2[2] - v1[2]*v2[1];
+        res[1] = v1[2]*v2[0] - v1[1]*v2[2];
+        res[2] = v1[0]*v2[1] - v1[1]*v2[0];
+    }    
+    //----------------------------------------------------------------------------------------------------------------------------------
+    inline float32 vectorScalarMul(const float32 *v1,const float32* v2)
+    {
+        return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    inline float32 vectorLength(const float32 *v1)
+    {
+        return sqrt(pow(v1[0],2) + pow(v1[1],2) + pow(v1[2],2));
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    inline float32 vectorLength2D(const float32 *v1)
+    {
+        return sqrt(pow(v1[0],2) + pow(v1[1],2));
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    inline void vectorScale(float32 *v1, const float32 norm)
+    {
+        v1[0] *= norm;
+        v1[1] *= norm;
+        v1[2] *= norm;
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
 
     enum tPrimitive
     {
@@ -337,6 +366,11 @@ namespace ito
         PrimitiveBase(const PrimitiveBase &rhs);
         PrimitiveBase(const GeometricPrimitive &rhs);
 
+        void setIndex( const int idx );
+        void setFlags( const int flags );
+        void setType( const int type );
+        void setTypeAndFlags( const int val );
+
         inline int getIndex() const {return (int)(cells[0]);}
         inline int getFlags() const {return ((int)(cells[1])) & tFlagMask;}
         inline int getType() const {return ((int)(cells[1])) & tTypeMask;}
@@ -345,8 +379,16 @@ namespace ito
         static int extractType(const GeometricPrimitive &comperator) {return ((int)(comperator.cells[1])) & tTypeMask;}
         static int extractFlags(const GeometricPrimitive &comperator) {return ((int)(comperator.cells[1])) & tFlagMask;}
 
-        float32 distanceTo(const GeometricPrimitive &comperator, const bool plaine = false) const;
-        float32 distanceToCenters(const GeometricPrimitive &comperator, const bool plaine = false) const;
+        float32* ptr_data();
+        float32* ptr_geo();
+        virtual void normalVector(float32 direction[3]) const;
+
+        static float32 distanceLineToPoint(const PrimitiveBase &line, const PrimitiveBase &point, const bool plaine = false);
+        static float32 distancePointToPoint(const PrimitiveBase &point1, const PrimitiveBase &point2, const bool plaine = false);
+        static float32 distanceLineToPointRAW(const float32* line, const float32* point, const bool plaine = false);
+        static float32 distancePointToPointRAW(const float32* point1, const float32* point2, const bool plaine = false);
+        static float32 distanceRectCenterToPoint(const PrimitiveBase &rect, const PrimitiveBase &point, const bool plaine = false);
+        static float32 distanceRectCenterToLine(const PrimitiveBase &rect, const PrimitiveBase &line, const bool plaine = false);
 
     protected:
 
@@ -358,6 +400,12 @@ namespace ito
         inline float32 x() const {return cells[2];}
         inline float32 y() const {return cells[3];}
         inline float32 z() const {return cells[4];}
+        inline void basePointVector(float32 direction[3]) const
+        {
+            memcpy(direction, cells, 3*sizeof(float32));
+        }
+
+        void normalVector(float32 direction[3]) const;
     };
 
     class ITOMCOMMONQT_EXPORT GeometricPrimitiveLine : protected PrimitiveBase
@@ -369,7 +417,97 @@ namespace ito
         inline float32 y1() const {return cells[6];}
         inline float32 z1() const {return cells[7];}
 
+        inline void basePointVector(float32 direction[3]) const
+        {
+            memcpy(direction, cells, 3*sizeof(float32));
+        }
+        inline bool directionVector(float32 direction[3]) const
+        {
+            direction[0] = cells[5] - cells[2];
+            direction[1] = cells[6] - cells[3];
+            direction[2] = cells[7] - cells[4]; 
+            return true;
+        }
+
         float32 length(const bool plaine = false) const;
+        void normalVector(float32 direction[3]) const;
+    };
+
+    class ITOMCOMMONQT_EXPORT GeometricPrimitiveCircle : protected PrimitiveBase
+    {
+        inline float32 x() const {return cells[2];}
+        inline float32 y() const {return cells[3];}
+        inline float32 z() const {return cells[4];}
+        inline float32 radius() const {return cells[5];}
+
+        inline void basePointVector(float32 direction[3]) const
+        {
+            memcpy(direction, cells, 3*sizeof(float32));
+        }
+        void normalVector(float32 direction[3]) const;
+    };
+
+    class ITOMCOMMONQT_EXPORT GeometricPrimitiveEllipse : protected PrimitiveBase
+    {
+        inline float32 x() const {return cells[2];}
+        inline float32 y() const {return cells[3];}
+        inline float32 z() const {return cells[4];}
+        inline float32 radiusA() const {return cells[5];}
+        inline float32 radiusB() const {return cells[6];}
+        inline float32 radiusMean() const {return (cells[6] + cells[5]) / 2.0f;}
+        inline float32 alpha() const {return cells[7];}
+
+        inline void basePointVector(float32 direction[3]) const
+        {
+            memcpy(direction, cells, 3*sizeof(float32));
+        }
+        void normalVector(float32 direction[3]) const;
+    };
+
+    class ITOMCOMMONQT_EXPORT GeometricPrimitiveSquare: protected PrimitiveBase
+    {
+        inline float32 x() const {return cells[2];}
+        inline float32 y() const {return cells[3];}
+        inline float32 z() const {return cells[4];}
+        inline float32 side() const {return cells[5];}
+        inline float32 alpha() const{return cells[6];}
+
+        inline void basePointVector(float32 direction[3]) const
+        {
+            memcpy(direction, cells, 3*sizeof(float32));
+        }
+
+        void normalVector(float32 direction[3]) const;
+
+        void topLeft(float32 direction[3]) const;
+        void topRight(float32 direction[3]) const;
+        void bottomLeft(float32 direction[3]) const;
+        void bottomRight(float32 direction[3]) const;
+    };
+
+    class ITOMCOMMONQT_EXPORT GeometricPrimitiveRectangle: protected PrimitiveBase
+    {
+        inline float32 x() const {return (cells[2] + cells[5]) / 2.0f;}
+        inline float32 y() const {return (cells[3] + cells[6]) / 2.0f;}
+        inline float32 z() const {return (cells[4] + cells[7]) / 2.0f;}
+        inline float32 alpha() const{return cells[8];}
+        
+        inline float32 sideX() const {return fabs(cells[2] - cells[5]);}
+        inline float32 sideY() const {return fabs(cells[3] - cells[6]);}
+
+        inline void basePointVector(float32 direction[3]) const
+        {
+            direction[0] = (cells[2] + cells[5]) / 2.0f;
+            direction[1] = (cells[3] + cells[6]) / 2.0f;
+            direction[2] = (cells[4] + cells[7]) / 2.0f;
+        }
+
+        void normalVector(float32 direction[3]) const;
+
+        void topLeft(float32 direction[3]) const;
+        void topRight(float32 direction[3]) const;
+        void bottomLeft(float32 direction[3]) const;
+        void bottomRight(float32 direction[3]) const;
     };
 }
 
