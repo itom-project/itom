@@ -52,16 +52,16 @@ bool DialogSelectUser::selectUser(const QString &id)
         QModelIndex midx = m_userModel->index(curIdx, 1); //id
         if (midx.isValid())
         {
-            if (QString::compare(id, midx.data().toString(), Qt::CaseInsensitive) == 0)
+            if (id == m_userModel->index(curIdx, UserModel::umiName).data().toString())
             {
                 QModelIndex actIdx = m_userModel->index(curIdx, 0);
                 ui.userList->setCurrentIndex(actIdx);
                 return true;
             }
-        }
+        }			
     }
 
-    ui.userList->setCurrentIndex(m_userModel->index(0,0));
+	ui.userList->setCurrentIndex(m_userModel->index(0,0));
     return false;
 }
 
