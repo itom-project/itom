@@ -39,7 +39,7 @@ public:
     ScriptEditorOrganizer( bool dockAvailable);
     ~ScriptEditorOrganizer();
 
-    RetVal saveAllScripts(bool askFirst = true, bool ignoreNewScripts = false);
+    RetVal saveAllScripts(bool askFirst = true, bool ignoreNewScripts = false, int *saveScriptState = NULL);
     RetVal closeAllScripts(bool saveFirst);
 
     void saveScriptState();

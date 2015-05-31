@@ -375,14 +375,15 @@ void ScriptEditorOrganizer::removeScriptDockWidget(ScriptDockWidget* widget)
 /*!
     \param askFirst true if user can decide whether to save the script or not
     \param ignoreNewScripts true if scripts which do not have a filename should be ignored
+    \param saveScriptState is the possibility to remember this action for the next time: NULL -> don't show a checkbox to remember this, else: pointer to value: 0: show message box and let user decide, 1: automatically save all changed files, 2: do not save unchanged files
     \return retOk if everything done, else retError (e.g. user cancellation)
 */
-RetVal ScriptEditorOrganizer::saveAllScripts(bool askFirst, bool ignoreNewScripts)
+RetVal ScriptEditorOrganizer::saveAllScripts(bool askFirst, bool ignoreNewScripts, int *saveScriptState /*= NULL*/)
 {
     RetVal retValue(retOk);
     QList<ScriptDockWidget*>::iterator it;
 
-    if (askFirst)
+    if (askFirst && (saveScriptState == NULL || *saveScriptState == 0))
     {
         QStringList unsavedFileNames;
         QMessageBox msgBox;
@@ -400,25 +401,53 @@ RetVal ScriptEditorOrganizer::saveAllScripts(bool askFirst, bool ignoreNewScript
             msgBox.setInformativeText(unsavedFileNames.join("\n"));
             msgBox.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
             msgBox.setDefaultButton(QMessageBox::Save);
+
+            if (saveScriptState)
+            {
+                QCheckBox *cb = new QCheckBox();
+                cb->setText(tr("remember selection for the next time (can be reverted in property dialog)"));
+                cb->setChecked(false);
+                msgBox.setCheckBox(cb);
+            }
+
             int ret = msgBox.exec();
 
             if (ret & QMessageBox::Cancel)
             {
+                //cancel
                 return RetVal(retError);
             }
             else if (ret & QMessageBox::Discard)
             {
+                //discard
+                if (saveScriptState && msgBox.checkBox()->isChecked())
+                {
+                    *saveScriptState = 2; //not never save for the next time
+                }
+
                 return RetVal(retOk);
+            }
+            else
+            {
+                //ok
+
+                if (saveScriptState && msgBox.checkBox()->isChecked())
+                {
+                    *saveScriptState = 1; //always save for the next time
+                }
             }
         }
     }
 
-    m_scriptStackMutex.lock();
-    for (it = scriptDockElements.begin(); it != scriptDockElements.end(); ++it)
+    if (saveScriptState == NULL || *saveScriptState != 2)
     {
-        retValue += (*it)->saveAllScripts(false, ignoreNewScripts);
+        m_scriptStackMutex.lock();
+        for (it = scriptDockElements.begin(); it != scriptDockElements.end(); ++it)
+        {
+            retValue += (*it)->saveAllScripts(false, ignoreNewScripts);
+        }
+        m_scriptStackMutex.unlock();
     }
-    m_scriptStackMutex.unlock();
 
     return retValue;
 }
@@ -803,10 +832,26 @@ void ScriptEditorOrganizer::pythonRunFileRequested(QString filename)
 {
     RetVal retValue(retOk);
 
-    retValue += this->saveAllScripts(true, true);
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("Python");
+    // Save script state before execution (0: ask user, 1: always save, 2: never save)
+    int saveState = settings.value("saveScriptStateBeforeExecution", 0).toInt();
+    settings.endGroup();
+
+    int newSaveState = saveState;
+
+    retValue += this->saveAllScripts(true, true, &newSaveState);
 
     if (!retValue.containsError())
     {
+        if (newSaveState != saveState)
+        {
+            settings.beginGroup("Python");
+            // Save script state before execution (0: ask user, 1: always save, 2: never save)
+            settings.setValue("saveScriptStateBeforeExecution", newSaveState);
+            settings.endGroup();
+        }
+
         emit(pythonRunFile(filename));
     }
 }
@@ -822,10 +867,26 @@ void ScriptEditorOrganizer::pythonDebugFileRequested(QString filename)
 {
     RetVal retValue(retOk);
 
-    retValue += this->saveAllScripts(true, true);
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("Python");
+    // Save script state before execution (0: ask user, 1: always save, 2: never save)
+    int saveState = settings.value("saveScriptStateBeforeExecution", 0).toInt();
+    settings.endGroup();
+
+    int newSaveState = saveState;
+
+    retValue += this->saveAllScripts(true, true, &newSaveState);
 
     if (!retValue.containsError())
     {
+        if (newSaveState != saveState)
+        {
+            settings.beginGroup("Python");
+            // Save script state before execution (0: ask user, 1: always save, 2: never save)
+            settings.setValue("saveScriptStateBeforeExecution", newSaveState);
+            settings.endGroup();
+        }
+
         emit(pythonDebugFile(filename));
     }
 }
