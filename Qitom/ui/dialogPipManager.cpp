@@ -229,14 +229,16 @@ void DialogPipManager::installOrUpdatePackage()
         PipInstall install;
         dpmi->getResult(*((int*)&install.type), install.packageName, install.upgrade, install.installDeps, install.findLinks, install.ignoreIndex, install.runAsSudo);
 
-        if (!m_standalone && (install.packageName.startsWith("numpy-", Qt::CaseInsensitive) == 0 || install.packageName.compare("numpy", Qt::CaseInsensitive) == 0))
+        if (!m_standalone && \
+            ((install.type == ito::PipInstall::typeWhl && install.packageName.indexOf("numpy-", 0, Qt::CaseInsensitive) >= 0) \
+            || (install.type != ito::PipInstall::typeWhl && install.packageName.compare("numpy", Qt::CaseInsensitive) == 0)))
         {
              QMessageBox msgBox(this);
              msgBox.setWindowTitle("Pip Manager");
              msgBox.setIcon(QMessageBox::Warning);
              msgBox.setText("Warning installing Numpy if itom is already running.");
              msgBox.setInformativeText(QString("If you try to install / upgrade Numpy if itom is already running, \
-a file access error might occure, since itom already uses parts of Numpy. \n\n\
+a file access error might occur, since itom already uses parts of Numpy. \n\n\
 Click ignore if you want to try to continue the installation or click OK in order to stop the \
 installation. \n\n\
 In the latter case, the file 'restart_itom_with_pip_manager.txt' is created in the directory '%1', \
