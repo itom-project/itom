@@ -277,11 +277,12 @@ is done in the method **init** of your plugin. A exemplary implemention is as fo
         AlgoWidgetDef *widget = NULL;
         
         //publish your filter-methods here, example:
-        filter = new FilterDef(filter1, filter1Params, tr("description"), ito::catNone, ito::iNotSpecified, "");
+        filter = new FilterDef(WLIfilter, WLIfilterParams, tr("description").toLatin1().data(), ito::AddInAlgo::catNone, ito::AddInAlgo::iNotSpecified);
         m_filterList.insert("filterName", filter);
         
+        
         //publish your dialogs, main-windows, widgets... here, example:
-        widget = new AlgoWidgetDef(widget1, widget1Params, tr("description"), ito::AddInAlgo::catNone, ito::AddInAlgo::iNotSpecified, "");
+        widget = new AlgoWidgetDef(widget1, widget1Params, tr("description").toLatin1().data(), ito::AddInAlgo::catNone, ito::AddInAlgo::iNotSpecified);
         m_algoWidgetList.insert("widgetName", widget);
         
         if (waitCond) 
