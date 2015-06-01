@@ -123,7 +123,7 @@ These default-parameter methods have the following implementation:
         paramsMand->append(param);
         param = ito::Param("mand2", ito::ParamBase::String | ito::ParamBase::In, NULL, tr("description").toLatin1().data());
         paramsMand->append(param);
-        param = ito::Param("opt1",ito::ParamBase::Double | ito::ParamBase::In,0.0, tr("description").toLatin1().data());
+        param = ito::Param("opt1",ito::ParamBase::Double | ito::ParamBase::In, 0.0, 1.0, 0.0, tr("description").toLatin1().data());
         paramsOpt->append(param);
         
         param = ito::Param("return1", ito::ParamBase::Int | ito::ParamBase::Out, NULL, tr("description").toLatin1().data());
@@ -176,31 +176,31 @@ itsself. The implementation might follow this scheme:
     ito::RetVal MyAlgoPlugin::filter1(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)
     {
         ito::RetVal retval = ito::retOk;
-        
+
         //1. Section. Getting typed in or in/out parameters from paramsMand and paramsOpt
         //  Make sure that you access only parameters, that have been defined in the corresponding parameter-method.
         //  The order and type is important.
-        
+
         //possibility 1 (index-based access):
         const ito::DataObject *dObj = (*paramsMand)[0].getVal<const ito::DataObject*>();
         const char *filename = (*paramsMand)[1].getVal<char*>(); //don't delete this pointer (borrowed)
         double opt1 = (*paramsOpt)[0].getVal<double>();
-        
+
         //possibility 2 (name-based access):
-        const ito::DataObject *dObj =  (const ito::DataObject*)ito::getParamByName(paramsMand, "mand1", &retval)->getVal<void*>();
-        const char *filename = ito::getParamByName(paramsMand, "mand2", &retval)->getVal<char*>();
-        double opt1 = ito::getParamByName(paramsOpt, "opt1", &retval)->getVal<double>();
-        
+        const ito::DataObject *dObj2 =  (const ito::DataObject*)ito::getParamByName(paramsMand, "mand1", &retval)->getVal<void*>();
+        const char *filename2 = ito::getParamByName(paramsMand, "mand2", &retval)->getVal<char*>();
+        double opt2 = ito::getParamByName(paramsOpt, "opt1", &retval)->getVal<double>();
+
         //2. Section. Algorithm.
         //  include here your algorithm. make sure, that you only change values of pointer-based parameters
         //  that you have defined with the flags In|Out.
-        
+
         //3. Section. Optionally put results into the paramsOut-vector
         //  Make sure that you defined the corresponding parameter with right type in the corresponding parameter-method.
         //  The implementation in the next lines is only one example and has not be defined before. Be aware of that.
         (*paramsOut)[0].setVal<int>(2);
         (*paramsOut)[1].setVal<char*>("we are done");
-        
+
         return retval;
     }
     
