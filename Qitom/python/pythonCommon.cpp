@@ -1489,7 +1489,7 @@ bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *e
         }
         else
         {
-            msg = QString(retVal.errorMessage()).toUtf8();
+            msg = QString::fromLatin1(temp).toUtf8();
         }
 
         if (retVal.containsError())
