@@ -187,7 +187,7 @@ itsself. The implementation might follow this scheme:
         double opt1 = (*paramsOpt)[0].getVal<double>();
         
         //possibility 2 (name-based access):
-        const ito::DataObjec *dObj =  (const ito::DataObject*)ito::getParamByName(paramsMand, "mand1", &retval)->getVal<void*>();
+        const ito::DataObject *dObj =  (const ito::DataObject*)ito::getParamByName(paramsMand, "mand1", &retval)->getVal<void*>();
         const char *filename = ito::getParamByName(paramsMand, "mand2", &retval)->getVal<char*>();
         double opt1 = ito::getParamByName(paramsOpt, "opt1", &retval)->getVal<double>();
         
