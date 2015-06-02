@@ -795,11 +795,19 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
 *   occured is marked with an arrow. Except the error all parameters necessary and optional including their type are written
 *   to the console.
 */
-void errOutInitParams(const QVector<ito::Param> *params, const int num, const QString reason)
+void errOutInitParams(const QVector<ito::Param> *params, const int num, const char *reason)
 {
     PyErr_PrintEx(0);
     std::cerr << "\n";
-    std::cerr << reason.toLatin1().data() << "\n";
+    if (reason)
+    {
+        std::cerr << reason << "\n";
+    }
+    else
+    {
+        std::cerr << "unknown error\n";
+    }
+
     if (params)
     {
         PyObject* dummy = PrntOutParams(params, true, false, num);

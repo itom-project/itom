@@ -1108,7 +1108,7 @@ PyObject* PythonItom::PyPlotLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
 
     foreach (const FigurePlugin &f, plugins)
     {
-        if (QString::compare(f.classname, QString::fromLatin1(plotName), Qt::CaseInsensitive) == 0)
+        if (QString::compare(f.classname, QLatin1String(plotName), Qt::CaseInsensitive) == 0)
         {
             Py_RETURN_TRUE;
         }
@@ -1205,7 +1205,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
         FigurePlugin fig;
         foreach (fig, plugins)
         {
-            if (QString::compare(fig.classname, QString::fromLatin1(plotName), Qt::CaseInsensitive) == 0)
+            if (QString::compare(fig.classname, QLatin1String(plotName), Qt::CaseInsensitive) == 0)
             {
                 found = true;
                 break;

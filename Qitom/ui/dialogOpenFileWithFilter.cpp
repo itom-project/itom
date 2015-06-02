@@ -33,6 +33,7 @@
 
 namespace ito {
 
+//------------------------------------------------------------------------------------------------------------
 DialogOpenFileWithFilter::DialogOpenFileWithFilter(const QString &filename, const ito::AddInAlgo::FilterDef *filter, QVector<ito::ParamBase> &autoMand, QVector<ito::ParamBase> &autoOut, QVector<ito::Param> &userMand, QVector<ito::Param> &userOpt, ito::RetVal &retValue, QWidget *parent)
     : AbstractFilterDialog(autoMand, autoOut, parent),
     m_pMandParser(NULL),
@@ -117,6 +118,7 @@ DialogOpenFileWithFilter::DialogOpenFileWithFilter(const QString &filename, cons
     }
 }
 
+//------------------------------------------------------------------------------------------------------------
 void DialogOpenFileWithFilter::on_buttonBox_accepted()
 {
     ito::RetVal retValue;
@@ -138,6 +140,7 @@ void DialogOpenFileWithFilter::on_buttonBox_accepted()
     }
 }
 
+//------------------------------------------------------------------------------------------------------------
 void DialogOpenFileWithFilter::on_tabWidget_currentChanged(int index)
 {
     if(index == 0)
@@ -172,7 +175,7 @@ void DialogOpenFileWithFilter::on_cmdReload_clicked()
 }
 
 
-
+//------------------------------------------------------------------------------------------------------------
 ito::RetVal DialogOpenFileWithFilter::executeFilter()
 {
     ito::RetVal retVal;
@@ -213,12 +216,13 @@ ito::RetVal DialogOpenFileWithFilter::executeFilter()
     if(retVal.containsError())
     {
         QString text = tr("An error occurred while loading the file.");
-        if(retVal.hasErrorMessage()) text.append( "\n" ).append(retVal.errorMessage());
+        if(retVal.hasErrorMessage()) text.append( "\n" ).append(QLatin1String(retVal.errorMessage()));
         QMessageBox::critical( this, tr("Error while loading file"), text);
     }
     return retVal;
 }
 
+//------------------------------------------------------------------------------------------------------------
 void DialogOpenFileWithFilter::filterCallFinished()
 {
     ito::RetVal retValue =  filterCall.result();
@@ -229,7 +233,7 @@ void DialogOpenFileWithFilter::filterCallFinished()
     {
         ui.treePreview->clear();
         QString text = tr("An error occurred while loading the file.");
-        if(retValue.hasErrorMessage()) text.append( "\n" ).append(retValue.errorMessage());
+        if(retValue.hasErrorMessage()) text.append( "\n" ).append(QLatin1String(retValue.errorMessage()));
         QMessageBox::critical( this, tr("Error while loading file"), text);
         m_acceptedClicked = false;
 
@@ -257,6 +261,7 @@ void DialogOpenFileWithFilter::filterCallFinished()
     ui.buttonBox->setEnabled(true);
 }
 
+//------------------------------------------------------------------------------------------------------------
 void DialogOpenFileWithFilter::closeEvent(QCloseEvent *e)
 {
     if(filterCall.isRunning())

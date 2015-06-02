@@ -5727,7 +5727,7 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
     if (ret.containsError())
     {
         DELETE_AND_SET_NULL(inter)
-        if (ret.errorMessage())
+        if (ret.hasErrorMessage())
         {
             PythonCommon::transformRetValToPyException(ret, PyExc_TypeError);
             return NULL;
@@ -5836,7 +5836,7 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
     RetVal ret = parseTypeNumber(selfDO->getType(), typekind, itemsize);
     if (ret.containsError())
     {
-        if (ret.errorMessage())
+        if (ret.hasErrorMessage())
         {
             PythonCommon::transformRetValToPyException(ret, PyExc_TypeError);
             return NULL;

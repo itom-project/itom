@@ -871,7 +871,7 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
         msgBox.setText(tr("Error while opening user interface from plugin."));
         if (retValue.hasErrorMessage())
         {
-            msgBox.setDetailedText(retValue.errorMessage());
+            msgBox.setDetailedText(QLatin1String(retValue.errorMessage()));
         }
         msgBox.setIcon(QMessageBox::Critical);
         msgBox.exec();
@@ -881,7 +881,7 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
         msgBox.setText(tr("Warning while opening user interface from plugin."));
         if (retValue.hasErrorMessage())
         {
-            msgBox.setDetailedText(retValue.errorMessage());
+            msgBox.setDetailedText(QLatin1String(retValue.errorMessage()));
         }
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
@@ -913,14 +913,14 @@ void AIManagerWidget::mnuShowLiveImage()
             if (retval.containsError())
             {
                 QMessageBox msgBox;
-                msgBox.setText(retval.errorMessage());
+                msgBox.setText(QLatin1String(retval.errorMessage()));
                 msgBox.setIcon(QMessageBox::Warning);
                 msgBox.exec();
             }
             else if (retval.containsWarning())
             {
                 QMessageBox msgBox;
-                msgBox.setText(retval.errorMessage());
+                msgBox.setText(QLatin1String(retval.errorMessage()));
                 msgBox.setIcon(QMessageBox::Warning);
                 msgBox.exec();
             }

@@ -121,7 +121,7 @@ bool DialogUserManagementEdit::saveUser()
         ito::RetVal retval = uio->writeUserDataToFile(username, uid, flags, role); 
         if (retval.containsError())
         {
-            QMessageBox::critical(this, tr("Error"), tr(retval.errorMessage()), QMessageBox::Ok);
+            QMessageBox::critical(this, tr("Error"), QLatin1String(retval.errorMessage()), QMessageBox::Ok);
             return false;
         }
     }

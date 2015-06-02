@@ -1083,7 +1083,7 @@ void MainWindow::mnuShowAssistant()
     {
         QString title;
         QString text;
-        if (retval.hasErrorMessage()) text = QString("\n%1").arg(retval.errorMessage());
+        if (retval.hasErrorMessage()) text = QString("\n%1").arg(QLatin1String(retval.errorMessage()));
         if (retval.containsError())
         {
             text.prepend(tr("Error when preparing help or showing assistant."));
@@ -1269,7 +1269,7 @@ ito::RetVal MainWindow::removeToolbarButton(const QString &toolbarName, const QS
     if (showMessage && retval.containsWarningOrError())
     {
         QMessageBox msgBox;
-        msgBox.setText(tr(retval.errorMessage()));
+        msgBox.setText(QLatin1String(retval.errorMessage()));
         msgBox.exec();
     }
 
@@ -1321,7 +1321,7 @@ ito::RetVal MainWindow::removeToolbarButton(const size_t buttonHandle, bool show
     if (showMessage && retval.containsWarningOrError())
     {
         QMessageBox msgBox;
-        msgBox.setText(tr(retval.errorMessage()));
+        msgBox.setText(QLatin1String(retval.errorMessage()));
         msgBox.exec();
     }
 
@@ -1451,11 +1451,11 @@ ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QSt
 
     if (showMessage && retValue.containsError())
     {
-        QMessageBox::critical(this, tr("Add menu element"), retValue.errorMessage());
+        QMessageBox::critical(this, tr("Add menu element"), QLatin1String(retValue.errorMessage()));
     }
     else if (showMessage && retValue.containsWarning())
     {
-        QMessageBox::warning(this, tr("Add menu element"), retValue.errorMessage());
+        QMessageBox::warning(this, tr("Add menu element"), QLatin1String(retValue.errorMessage()));
     }
 
     return retValue;
@@ -1544,7 +1544,7 @@ ito::RetVal MainWindow::removeMenuElement(const QString &key, QSharedPointer<QVe
 
     if (showMessage && retval.containsWarningOrError())
     {
-        QMessageBox::warning(this, tr("Remove menu element"), tr(retval.errorMessage()));
+        QMessageBox::warning(this, tr("Remove menu element"), QLatin1String(retval.errorMessage()));
     }
 
     return retval;
@@ -1608,7 +1608,7 @@ ito::RetVal MainWindow::removeMenuElement(const size_t menuHandle, QSharedPointe
 
     if (showMessage && retval.containsWarningOrError())
     {
-        QMessageBox::warning(this, tr("Remove menu element"), tr(retval.errorMessage()));
+        QMessageBox::warning(this, tr("Remove menu element"), QLatin1String(retval.errorMessage()));
     }
 
     return retval;

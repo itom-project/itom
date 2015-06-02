@@ -1041,7 +1041,7 @@ PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
     }
     else if(retValue.containsWarning())
     {
-        std::cout << "Warning while getting property infos with message: " << QObject::tr(retValue.errorMessage()).toLatin1().data() << std::endl;
+        std::cout << "Warning while getting property infos with message: " << retValue.errorMessage() << std::endl;
     }
     
     QStringList stringList = retPropMap->keys();
@@ -3081,15 +3081,6 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
         PyErr_SetString(PyExc_RuntimeError, QObject::tr("Could not get parameters for plugin widget '%1'").arg(algoWidgetName).toUtf8().data());
         return NULL;
     }
-
-/*
-    
-    retVal = def->m_paramFunc(&paramsMand, &paramsOpt);
-    if (retVal.containsWarningOrError())
-    {
-        PyErr_SetString(PyExc_RuntimeError, QObject::tr("Could not load default parameter set for loading plugin widget. Error-Message: \n%s\n").toLatin1(), QObject::tr(retVal.errorMessage()).toLatin1().data());
-        return NULL;
-    }*/
 
     params = PyTuple_GetSlice(args, 1, PyTuple_Size(args));
     if(parseInitParams(&(filterParams->paramsMand), &(filterParams->paramsOpt), params, kwds, paramsMandBase, paramsOptBase) != ito::retOk)

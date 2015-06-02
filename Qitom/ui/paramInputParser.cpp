@@ -195,7 +195,7 @@ bool ParamInputParser::validateInput(bool mandatoryValues, ito::RetVal &retValue
                 QString text = QString(tr("The parameter '%1' is invalid.")).arg(param.getName());
                 if (retValue.hasErrorMessage())
                 {
-                    text.append("\n\n").append(retValue.errorMessage());
+                    text.append("\n\n").append(QLatin1String(retValue.errorMessage()));
                 }
                 QMessageBox::critical(parent, tr("Invalid input"), text);
             }
