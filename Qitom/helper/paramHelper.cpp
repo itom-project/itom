@@ -467,7 +467,6 @@ namespace ito {
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal ParamHelper::validateStringMeta(const ito::StringMeta *meta, const char* value, bool mandatory)
     {
-        QString pattern;
         if (meta && meta->getLen() > 0 && value)
         {
             bool found = false;
@@ -487,9 +486,8 @@ namespace ito {
 
             for (int i = 0; i < meta->getLen(); i++)
             {
-                pattern = meta->getString(i);
-                reg.setPattern(pattern);
-                if (reg.indexIn(value, 0) > -1)
+                reg.setPattern(QLatin1String(meta->getString(i)));
+                if (reg.indexIn(QLatin1String(value), 0) > -1)
                 {
                     found = true;
                     break;
@@ -656,7 +654,7 @@ namespace ito {
             {
                 return ito::RetVal(ito::retError, 0, QObject::tr("AddIn does not fit to minimum required type(s).").toLatin1().data()); 
             }
-            if (!(meta->getHWAddInName().empty()) && QString::compare(meta->getHWAddInName().data(), value->getBasePlugin()->objectName(), Qt::CaseInsensitive) != 0)
+            if (!(meta->getHWAddInName().empty()) && QString::compare(QLatin1String(meta->getHWAddInName().data()), value->getBasePlugin()->objectName(), Qt::CaseInsensitive) != 0)
             {
                 return ito::RetVal::format(ito::retError, 0, QObject::tr("AddIn must be of the following plugin: '%s'.").toLatin1().data(), meta->getHWAddInName().data());
             }
@@ -1195,7 +1193,7 @@ namespace ito {
                 }
                 else if (sourceType & ito::ParamBase::String)
                 {
-                    int val = QString(source.getVal<char*>()).toInt(&ok2);
+                    int val = QByteArray(source.getVal<char*>()).toInt(&ok2);
                     if (ok2)
                     {
                         return ito::ParamBase(source.getName(), destType, val);
@@ -1212,7 +1210,7 @@ namespace ito {
                 }
                 else if (sourceType & ito::ParamBase::String)
                 {
-                    char val = QString(source.getVal<char*>()).toShort(&ok2);
+                    char val = QByteArray(source.getVal<char*>()).toShort(&ok2);
                     if (ok2)
                     {
                         return ito::ParamBase(source.getName(), destType, val);
@@ -1229,7 +1227,7 @@ namespace ito {
                 }
                 else if (sourceType & ito::ParamBase::String)
                 {
-                    double val = QString(source.getVal<char*>()).toDouble(&ok2);
+                    double val = QByteArray(source.getVal<char*>()).toDouble(&ok2);
                     if (ok2)
                     {
                         return ito::ParamBase(source.getName(), destType, val);
@@ -1394,7 +1392,7 @@ namespace ito {
 
         for (int i = 0; i < values.size(); ++i)
         {
-            name = values[i]->getName();
+            name = QLatin1String(values[i]->getName());
 
             if (paramMap.contains( name ))
             {
