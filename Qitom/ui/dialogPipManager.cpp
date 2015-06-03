@@ -222,7 +222,7 @@ void DialogPipManager::on_btnInstall_clicked()
 //---------------------------------------------------------------------------------
 void DialogPipManager::on_btnUpdate_clicked()
 {
-    installOrUpdatePackage()
+    installOrUpdatePackage();
 }
 //---------------------------------------------------------------------------------
 void DialogPipManager::installOrUpdatePackage()
