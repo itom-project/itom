@@ -1930,7 +1930,7 @@ bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &obj
 
         if (retVal.hasErrorMessage())
         {
-            PyErr_Format(exceptionIfError, msgSpecified.data(), objName.toUtf8().data(), retVal.errorMessage());
+            PyErr_Format(exceptionIfError, msgSpecified.data(), objName.toUtf8().data(), QString::fromLatin1(retVal.errorMessage()).toUtf8().data());
         }
         else
         {
