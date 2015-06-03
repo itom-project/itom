@@ -206,6 +206,11 @@ void DialogPipManager::on_btnReload_clicked()
 void DialogPipManager::on_btnCheckForUpdates_clicked()
 {
     m_pPipManager->checkPackageUpdates(createOptions());
+
+    // TODO!!!
+    QModelIndex mi = ui.tablePackages->currentIndex();
+    bool updatedAvailabe = m_pPipManager->data(mi, Qt::UserRole + 1).toBool();
+    ui.btnUpdate->setEnabled(updatedAvailabe);
 }
 
 //---------------------------------------------------------------------------------
@@ -217,9 +222,8 @@ void DialogPipManager::on_btnInstall_clicked()
 //---------------------------------------------------------------------------------
 void DialogPipManager::on_btnUpdate_clicked()
 {
-    installOrUpdatePackage();
+    installOrUpdatePackage()
 }
-
 //---------------------------------------------------------------------------------
 void DialogPipManager::installOrUpdatePackage()
 {
@@ -340,7 +344,16 @@ void DialogPipManager::on_btnSudoUninstall_clicked()
 //---------------------------------------------------------------------------------
 void DialogPipManager::treeViewSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
 {
-    ui.btnUpdate->setEnabled(selected.count() > 0 /*&& m_pPipManager->rowCount() > 0*/);
+    bool updatedAvailabe = false;
+
+    foreach (const QModelIndex &mi, selected.indexes())
+    {
+        if (mi.column() == 0)
+        {
+            updatedAvailabe = m_pPipManager->data(mi, Qt::UserRole + 1).toBool();
+        }
+    }
+    ui.btnUpdate->setEnabled(updatedAvailabe);
 }
 
 } //end namespace ito

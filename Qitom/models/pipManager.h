@@ -69,7 +69,6 @@ struct PipInstall
     bool runAsSudo;
 };
 
-
 class PipManager : public QAbstractItemModel
 {
     Q_OBJECT

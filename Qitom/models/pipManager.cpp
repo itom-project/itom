@@ -219,6 +219,11 @@ QVariant PipManager::data(const QModelIndex &index, int role) const
                 return QVariant();
         }
     }
+    else if (role == Qt::UserRole + 1)
+    {
+        const PythonPackage &package = m_pythonPackages[index.row()];
+        return (package.m_status == PythonPackage::Outdated);
+    }
     
     return QVariant();
 }
