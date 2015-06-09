@@ -541,10 +541,6 @@ void MainWindow::removeAbstractDock(AbstractDockWidget* dockWidget)
 */
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    //QSettings settings;
-     //settings.setValue("geometry", saveGeometry());
-     //settings.setValue("windowState", saveState());
-
     emit(mainWindowCloseRequest());
     event->ignore(); //!< if mainWindowCloseRequest is handled and accepted by mainApplication, MainWindow will be destroyed
 }
