@@ -332,7 +332,7 @@ template<typename _Tp> ito::RetVal readXYZData(const cv::Mat *x, const cv::Mat *
 
             for (int j = 0; j < x->cols; j++)
             {
-                if (!(pcl_isfinite(zRow[j]) || pcl_isfinite(yRow[j]) || pcl_isfinite(xRow[j])))
+                if ((pcl_isfinite(zRow[j]) && pcl_isfinite(yRow[j]) && pcl_isfinite(xRow[j])))
                 {
                     point.x = xRow[j];
                     point.y = yRow[j];
@@ -400,7 +400,7 @@ template<typename _Tp> ito::RetVal readXYZIData(const cv::Mat *x, const cv::Mat 
 
             for (int j = 0; j < x->cols; j++)
             {
-                if (!(pcl_isfinite(zRow[j]) || pcl_isfinite(yRow[j]) || pcl_isfinite(xRow[j])))
+                if ((pcl_isfinite(zRow[j]) && pcl_isfinite(yRow[j]) && pcl_isfinite(xRow[j])))
                 {
                     point.x = xRow[j];
                     point.y = yRow[j];
@@ -473,7 +473,7 @@ template<typename _Tp> ito::RetVal readXYZRGBAData(const cv::Mat *x, const cv::M
 
             for (int j = 0; j < x->cols; j++)
             {
-                if (!(pcl_isfinite(zRow[j]) || pcl_isfinite(yRow[j]) || pcl_isfinite(xRow[j])))
+                if ((pcl_isfinite(zRow[j]) && pcl_isfinite(yRow[j]) && pcl_isfinite(xRow[j])))
                 {
                     point.x = xRow[j];
                     point.y = yRow[j];
@@ -756,7 +756,7 @@ template<typename _TpM, typename _TpI> void fromDataObj(const cv::Mat *mapDisp, 
 
             for (int j = 0; j < width; j++)
             {
-                if (!(pcl_isfinite(zRow[j])))
+                if (pcl_isfinite(zRow[j]))
                 {
                     point.x = firstX + j * stepX;
                     point.y = firstY + i * stepY;
@@ -815,7 +815,7 @@ template<typename _TpM, typename _TpI> void fromDataObj(const cv::Mat *mapDisp, 
 
 
 //------------------------------------------------------------------------------------------------------------------------------
-template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const ito::float32 firstX, const ito::float32 stepX, const ito::float32 firstY, const ito::float32 stepY, const bool deleteNaNorInf, ito::PCLPointCloud &out, bool &isDense)
+template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const ito::float32 firstX, const ito::float32 stepX, const ito::float32 firstY, const ito::float32 stepY, const bool deleteNaNorInf, ito::PCLPointCloud &out, const bool isDense)
 {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
     pcl::PointXYZ point;
@@ -827,9 +827,9 @@ template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const i
     {
         out = ito::PCLPointCloud(ito::pclXYZ);
         cloud = out.toPointXYZ();
+        cloud->is_dense = isDense;
         out.reserve(width * height);
         size_t counter = 0;
-        cloud->is_dense = true;
 
         for (int i = 0; i < height; i++)
         {
@@ -837,7 +837,7 @@ template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const i
 
             for (int j = 0; j < width; j++)
             {
-                if (!(pcl_isfinite(zRow[j])))
+                if (pcl_isfinite(zRow[j]))
                 {
                     point.x = firstX + j * stepX;
                     point.y = firstY + i * stepY;
@@ -858,6 +858,7 @@ template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const i
     {
         out = ito::PCLPointCloud(width, height, ito::pclXYZ, ito::PCLPoint(point));
         cloud = out.toPointXYZ();
+        cloud->is_dense = isDense;
 
         #if (USEOMP)
         #pragma omp parallel num_threads(NTHREADS)
@@ -876,7 +877,7 @@ template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const i
 
                 if (!pcl_isfinite(point.z))
                 {
-                    isDense = false;
+                    cloud->is_dense = false;
                 }
 
                 //cloud->at(j,i) = point;
@@ -888,7 +889,7 @@ template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const i
         }
         #endif
 
-        cloud->is_dense = isDense;
+//        cloud->is_dense = isDense;
     }
 
     return ito::retOk;
