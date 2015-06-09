@@ -372,7 +372,7 @@ namespace ito
             void setDockSize(int newWidth, int newHeight);
 
             void dockWidget();
-            void undockWidget();
+            void undockWidget(bool show_it = true);
 
         private slots:
             void mnuStayOnTop(bool checked);
