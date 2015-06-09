@@ -331,7 +331,7 @@ int main(int argc, char *argv[])
             QFile file(tmp.absoluteFilePath("restart_itom_with_pip_manager.txt"));
             if (!file.remove())
             {
-                qDebug("the file %s could not be deleted. Please delete it manually", tmp.absoluteFilePath("restart_itom_with_pip_manager.txt"));
+                qDebug("the file %s could not be deleted. Please delete it manually", tmp.absoluteFilePath("restart_itom_with_pip_manager.txt").toLatin1().data());
             }
         }
     }
