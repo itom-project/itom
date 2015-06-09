@@ -1047,6 +1047,7 @@ void AbstractDockWidget::raiseAndActivate()
     {
         activateWindow();
         QDockWidget::show();
+        QDockWidget::raise();
     }
     else if (m_floatingStyle == floatingWindow)
     {
