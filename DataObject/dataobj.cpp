@@ -7265,7 +7265,7 @@ template<typename _Tp> ito::RetVal DataObject::linspace(const _Tp start, const _
 //!<  Function to set the offset of the specified axis, return 1 if axis does not exist
 int DataObject::setAxisOffset(const unsigned int axisNum, const double offset)
 {
-    if (!m_pDataObjectTags)
+    if (!m_pDataObjectTags || m_dims < 1)
         return 1; // error
 
     if (axisNum >= m_pDataObjectTags->m_axisOffsets.size())
@@ -7284,7 +7284,7 @@ int DataObject::setAxisOffset(const unsigned int axisNum, const double offset)
 //!<  Function to set the scale of the specified axis, return 1 if axis does not exist or scale is 0.0.
 int DataObject::setAxisScale(const unsigned int axisNum, const double scale)
 {
-    if (!m_pDataObjectTags) return 1; //error
+    if (!m_pDataObjectTags || m_dims < 1) return 1; //error
 
     if (axisNum >= m_pDataObjectTags->m_axisScales.size()) return 1; //error
     if (fabs(scale) < std::numeric_limits<double>::epsilon()) return 1;
@@ -7302,7 +7302,7 @@ int DataObject::setAxisScale(const unsigned int axisNum, const double scale)
 //!<  Function to set the unit (string value) of the specified axis, return 1 if axis does not exist
 int DataObject::setAxisUnit(const unsigned int axisNum, const std::string &unit)
 {
-    if (!m_pDataObjectTags) return 1; //error
+    if (!m_pDataObjectTags || m_dims < 1) return 1; //error
 
     if (axisNum >= m_pDataObjectTags->m_axisUnit.size()) return 1; //error
                        
@@ -7317,7 +7317,7 @@ int DataObject::setAxisUnit(const unsigned int axisNum, const std::string &unit)
 //!<  Function to set the description (string value) of the specified axis, return 1 if axis does not exist
 int DataObject::setAxisDescription(const unsigned int axisNum, const std::string &description)
 {
-    if (!m_pDataObjectTags) return 1; //error
+    if (!m_pDataObjectTags || m_dims < 1) return 1; //error
 
     if (axisNum >= m_pDataObjectTags->m_axisDescription.size()) return 1; //error          
     else
@@ -7331,7 +7331,7 @@ int DataObject::setAxisDescription(const unsigned int axisNum, const std::string
 //!<  Function to set the string value of the specified tag, if the tag do not exist, it will be added automatically, return 1 if tagspace does not exist
 int DataObject::setTag(const std::string &key, const DataObjectTagType &value)
 {
-    if(!m_pDataObjectTags) return 1; //error
+    if(!m_pDataObjectTags || m_dims < 1) return 1; //error
     m_pDataObjectTags->m_tags[key] = value;
     return 0;
 }
@@ -7340,7 +7340,7 @@ int DataObject::setTag(const std::string &key, const DataObjectTagType &value)
 //!<  Function to check whether tag exist or not
 bool DataObject::existTag(const std::string &key) const
 {
-    if(!m_pDataObjectTags) return false; //Tag does not existtemplate
+    if(!m_pDataObjectTags || m_dims < 1) return false; //Tag does not existtemplate
     std::map<std::string, DataObjectTagType>::iterator it = m_pDataObjectTags->m_tags.find(key);
     return (it != m_pDataObjectTags->m_tags.end());
 }
@@ -7349,7 +7349,7 @@ bool DataObject::existTag(const std::string &key) const
 //!<  Function deletes specified tag. If tag do not exist, return value is 1 else returnvalue is 0
 bool DataObject::deleteTag(const std::string &key)
 {
-    if(!m_pDataObjectTags) return false; //tag not deleted
+    if(!m_pDataObjectTags || m_dims < 1) return false; //tag not deleted
     std::map<std::string, DataObjectTagType>::iterator it = m_pDataObjectTags->m_tags.find(key);
     if(it == m_pDataObjectTags->m_tags.end()) return false;
     m_pDataObjectTags->m_tags.erase(it);
@@ -7368,7 +7368,7 @@ bool DataObject::deleteAllTags()
 //!<  Function adds value to the protocol-tag. If this object is an ROI, the ROI-coordinates are added. If string do not end with an \n, \n is added.
 int DataObject::addToProtocol(const std::string &value)
 {
-    if(!m_pDataObjectTags) return 1; //error
+    if(!m_pDataObjectTags || m_dims < 1) return 1; //error
     /* Check if object is only an ROI */
     bool isROI = false;
     ByteArray newcontent; // Start with an empty sting
@@ -7516,7 +7516,7 @@ DObjConstIterator DataObject::constEnd() const
 // Function return the offset of the values stored within the dataOject
 double DataObject::getValueOffset() const
 {
-    if(!m_pDataObjectTags) return 0.0; // default
+    if(!m_pDataObjectTags || m_dims < 1) return 0.0; // default
     return m_pDataObjectTags->m_valueOffset;
 }
 
@@ -7524,7 +7524,7 @@ double DataObject::getValueOffset() const
 // Function return the scaling of values stored within the dataOject
 double DataObject::getValueScale() const
 {
-    if(!m_pDataObjectTags) return 1.0; // default
+    if(!m_pDataObjectTags || m_dims < 1) return 1.0; // default
     return m_pDataObjectTags->m_valueScale;
 }
 
@@ -7532,7 +7532,7 @@ double DataObject::getValueScale() const
 // Function return the unit description for the values stored within the dataOject
 const std::string DataObject::getValueUnit() const
 {
-    if(!m_pDataObjectTags) return std::string(); //default
+    if(!m_pDataObjectTags || m_dims < 1) return std::string(); //default
     return m_pDataObjectTags->m_valueUnit;
 }
 
@@ -7540,7 +7540,7 @@ const std::string DataObject::getValueUnit() const
 // Function return the description for the values stored within the dataOject, if tagspace does not exist, NULL is returned.
 std::string DataObject::getValueDescription() const
 {
-    if(!m_pDataObjectTags) return std::string(); //default
+    if(!m_pDataObjectTags || m_dims < 1) return std::string(); //default
     return m_pDataObjectTags->m_valueDescription;
 }
 
@@ -7611,7 +7611,7 @@ std::string DataObject::getAxisDescription(const int axisNum, bool &validOperati
 DataObjectTagType DataObject::getTag(const std::string &key, bool &validOperation) const
 {
     validOperation = false;
-    if(!m_pDataObjectTags)
+    if(!m_pDataObjectTags || m_dims < 1)
     {
         return DataObjectTagType(); //error
     }
@@ -7627,7 +7627,7 @@ DataObjectTagType DataObject::getTag(const std::string &key, bool &validOperatio
 //----------------------------------------------------------------------------------------------------------------------------------
 bool DataObject::getTagByIndex(const int tagNumber, std::string &key, DataObjectTagType &value) const
 {
-    if(!m_pDataObjectTags)
+    if(!m_pDataObjectTags || m_dims < 1)
     {
         key = std::string();
         value = "";
@@ -7655,7 +7655,7 @@ bool DataObject::getTagByIndex(const int tagNumber, std::string &key, DataObject
 //!<  Function returns the string-value for 'key' identified by int tagNumber. If key in the TagMap do not exist NULL is returned
 std::string DataObject::getTagKey(const int tagNumber, bool &validOperation) const
 {
-    if(!m_pDataObjectTags)
+    if(!m_pDataObjectTags || m_dims < 1)
     {
         validOperation = false;
         return std::string(""); //error
@@ -7678,7 +7678,7 @@ std::string DataObject::getTagKey(const int tagNumber, bool &validOperation) con
 //!< Function returns the number of elements in the Tags-Maps
 int DataObject::getTagListSize() const
 {
-    if(!m_pDataObjectTags) return 0; //error
+    if(!m_pDataObjectTags || m_dims < 1) return 0; //error
     return static_cast<int>(m_pDataObjectTags->m_tags.size());
 }
 
@@ -7686,7 +7686,7 @@ int DataObject::getTagListSize() const
 //!<  Function to set the string-value of the value unit, return 1 if values does not exist
 int DataObject::setValueUnit(const std::string &unit)
 {
-    if(!m_pDataObjectTags) return 1;    //error
+    if(!m_pDataObjectTags || m_dims < 1) return 1;    //error
     m_pDataObjectTags->m_valueUnit = unit;
     return 0;
 }
@@ -7695,7 +7695,7 @@ int DataObject::setValueUnit(const std::string &unit)
 //!<  Function to set the string-value of the value description, return 1 if values does not exist
 int DataObject::setValueDescription(const std::string &description)
 {
-    if(!m_pDataObjectTags) return 1;    //error
+    if(!m_pDataObjectTags || m_dims < 1) return 1;    //error
     m_pDataObjectTags->m_valueDescription = description;
     return 0;
 }
@@ -7703,7 +7703,7 @@ int DataObject::setValueDescription(const std::string &description)
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal DataObject::getXYRotationalMatrix(double &r11, double &r12, double &r13, double &r21, double &r22, double &r23, double &r31, double &r32, double &r33) const
 {
-    if(!m_pDataObjectTags) return RetVal(retError, 0, "Tagspace not initialized"); // error
+    if(!m_pDataObjectTags || m_dims < 1) return RetVal(retError, 0, "Tagspace not initialized"); // error
     r11 = m_pDataObjectTags->m_rotMatrix[0];
     r12 = m_pDataObjectTags->m_rotMatrix[1];
     r13 = m_pDataObjectTags->m_rotMatrix[2];
@@ -7719,7 +7719,7 @@ RetVal DataObject::getXYRotationalMatrix(double &r11, double &r12, double &r13, 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal DataObject::setXYRotationalMatrix(double r11, double r12, double r13, double r21, double r22, double r23, double r31, double r32, double r33)
 {
-    if(!m_pDataObjectTags) return RetVal(retError, 0, "Tagspace not initialized"); // error
+    if(!m_pDataObjectTags || m_dims < 1) return RetVal(retError, 0, "Tagspace not initialized"); // error
     m_pDataObjectTags->m_rotMatrix[0] = r11;
     m_pDataObjectTags->m_rotMatrix[1] = r12;
     m_pDataObjectTags->m_rotMatrix[2] = r13;
