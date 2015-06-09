@@ -424,10 +424,6 @@ void ScriptDockWidget::showClassNavigator(bool show)
     m_classMenuBar->setVisible(show);
 }
 
-
-
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
 QList<ito::ScriptEditorStorage> ScriptDockWidget::saveScriptState() const
 {

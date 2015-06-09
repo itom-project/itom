@@ -163,7 +163,9 @@ namespace ito
             bool isVisible() const;
 
             void saveState(const QString &iniName) const;
-            void restoreState(const QString &iniName) const;
+            void restoreState(const QString &iniName);
+
+            void synchronizeTopLevelState();
 
         public Q_SLOTS:
             void setEnabled(bool);
@@ -286,8 +288,6 @@ namespace ito
                 }
             };
 
-            //void showEvent(QShowEvent * event);
-
             void init();
 
             virtual void closeEvent(QCloseEvent *event);
@@ -299,7 +299,7 @@ namespace ito
             virtual void updateActions() {}
             virtual void updatePythonActions() = 0;
         
-        Qt::WindowFlags modifyFlags(const Qt::WindowFlags &flags, const Qt::WindowFlags &setFlags, const Qt::WindowFlags &unsetFlags);
+            Qt::WindowFlags modifyFlags(const Qt::WindowFlags &flags, const Qt::WindowFlags &setFlags, const Qt::WindowFlags &unsetFlags);
 
             virtual void windowStateChanged( bool /*windowNotToolbox*/ ) {}
 
@@ -372,14 +372,13 @@ namespace ito
             void setDockSize(int newWidth, int newHeight);
 
             void dockWidget();
-            void undockWidget();
+            void undockWidget(bool show_it = true);
 
         private slots:
             void mnuStayOnTop(bool checked);
             void mnuStayOnTopOfApp(bool checked);
 
             void returnToOldMinMaxSizes();
-    
     };
 
 } //end namespace ito
