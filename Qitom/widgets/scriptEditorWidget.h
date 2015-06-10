@@ -266,6 +266,8 @@ public slots:
     void menuDebugScript();
     void menuStopScript();
 
+    void menuInsertCodec();
+
     void pythonStateChanged(tPythonTransitions pyTransition);
     void pythonDebugPositionChanged(QString filename, int lineno);
 

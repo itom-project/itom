@@ -143,6 +143,7 @@ private:
     ShortcutAction *m_bookmarkPrevious;
     ShortcutAction *m_bookmarkClearAll;
     ShortcutAction *m_lastFileAct;
+    ShortcutAction *m_insertCodecAct;
 
     QMenu *m_tabContextMenu;
     QMenu *m_fileMenu;
@@ -244,6 +245,7 @@ private slots:
     void mnuClearAllBookmarks();
     void mnuGotoNextBookmark();
     void mnuGotoPreviousBookmark();
+    void mnuInsertCodec();
 
     void menuLastFilesAboutToShow();
     void lastFileOpen(const QString &path);

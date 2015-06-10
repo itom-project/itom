@@ -1294,6 +1294,9 @@ void ScriptDockWidget::createActions()
     m_bookmarkClearAll = new ShortcutAction(QIcon(":/bookmark/icons/bookmarkClearAll.png"), tr("&clear all bookmarks"), this);
     m_bookmarkClearAll->connectTrigger(this, SLOT(mnuClearAllBookmarks()));
 
+    m_insertCodecAct = new ShortcutAction(tr("&insert codec..."), this);
+    m_insertCodecAct->connectTrigger(this, SLOT(mnuInsertCodec()));
+
     updatePythonActions();
     updateTabContextActions();
     updateEditorActions();
@@ -1432,6 +1435,7 @@ void ScriptDockWidget::createMenus()
     m_editMenu->addAction(m_replaceTextExprAction->action());
     m_editMenu->addAction(m_gotoAction->action());
     m_editMenu->addAction(m_openIconBrowser->action());
+    m_editMenu->addAction(m_insertCodecAct->action());
     m_editMenu->addSeparator();
     m_bookmark = m_editMenu->addMenu(QIcon(":/bookmark/icons/bookmark.png"), tr("bookmark"));
     m_bookmark->addAction(m_bookmarkToggle->action());
@@ -2075,6 +2079,16 @@ void ScriptDockWidget::mnuGotoPreviousBookmark()
     {
         sew->menuGotoPreviousBookmark();
         updateEditorActions();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::mnuInsertCodec()
+{
+    ScriptEditorWidget *sew = getCurrentEditor();
+    if (sew != NULL)
+    {
+        sew->menuInsertCodec();
     }
 }
 
