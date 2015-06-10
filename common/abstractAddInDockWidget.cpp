@@ -90,10 +90,10 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameter(QSharedPointer<ito::Para
     if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
     {
         QMessageBox msgBox;
-        msgBox.setText(tr("Error while setting parameter").toLatin1().data());
-        if (retval.errorMessage())
+        msgBox.setText(tr("Error while setting parameter"));
+        if (retval.hasErrorMessage())
         {
-            msgBox.setInformativeText(retval.errorMessage());
+            msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
         }
         msgBox.setIcon(QMessageBox::Critical);
         msgBox.exec();
@@ -101,10 +101,10 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameter(QSharedPointer<ito::Para
     else if (retval.containsWarning() && (msgLevel & msgLevelWarningOnly))
     {
         QMessageBox msgBox;
-        msgBox.setText(tr("Warning while setting parameter").toLatin1().data());
-        if (retval.errorMessage())
+        msgBox.setText(tr("Warning while setting parameter"));
+        if (retval.hasErrorMessage())
         {
-            msgBox.setInformativeText(retval.errorMessage());
+            msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
         }
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
@@ -139,10 +139,10 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameters(const QVector<QSharedPo
     if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
     {
         QMessageBox msgBox;
-        msgBox.setText(tr("Error while setting parameter").toLatin1().data());
-        if (retval.errorMessage())
+        msgBox.setText(tr("Error while setting parameter"));
+        if (retval.hasErrorMessage())
         {
-            msgBox.setInformativeText(retval.errorMessage());
+            msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
         }
         msgBox.setIcon(QMessageBox::Critical);
         msgBox.exec();
@@ -150,10 +150,10 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameters(const QVector<QSharedPo
     else if (retval.containsWarning() && (msgLevel & msgLevelWarningOnly))
     {
         QMessageBox msgBox;
-        msgBox.setText(tr("Warning while setting parameter").toLatin1().data());
-        if (retval.errorMessage())
+        msgBox.setText(tr("Warning while setting parameter"));
+        if (retval.hasErrorMessage())
         {
-            msgBox.setInformativeText(retval.errorMessage());
+            msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
         }
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
@@ -186,10 +186,10 @@ ito::RetVal AbstractAddInDockWidget::observeInvocation(ItomSharedSemaphore *wait
         if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
         {
             QMessageBox msgBox;
-            msgBox.setText(tr("Error while execution").toLatin1().data());
-            if (retval.errorMessage())
+            msgBox.setText(tr("Error while execution"));
+            if (retval.hasErrorMessage())
             {
-                msgBox.setInformativeText(retval.errorMessage());
+                msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
             }
             msgBox.setIcon(QMessageBox::Critical);
             msgBox.exec();
@@ -197,10 +197,10 @@ ito::RetVal AbstractAddInDockWidget::observeInvocation(ItomSharedSemaphore *wait
         else if (retval.containsWarning() && (msgLevel & msgLevelWarningOnly))
         {
             QMessageBox msgBox;
-            msgBox.setText(tr("Warning while execution").toLatin1().data());
-            if (retval.errorMessage())
+            msgBox.setText(tr("Warning while execution"));
+            if (retval.hasErrorMessage())
             {
-                msgBox.setInformativeText(retval.errorMessage());
+                msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
             }
             msgBox.setIcon(QMessageBox::Warning);
             msgBox.exec();
@@ -234,7 +234,7 @@ ito::RetVal AbstractAddInDockWidget::setActuatorPosition(QVector<int> axes, QVec
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, tr("slot '%1' could not be invoked since it does not exist.").arg(funcName.data()).toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, tr("slot '%1' could not be invoked since it does not exist.").arg(QLatin1String(funcName)).toLatin1().data());
             }
         }
     }
@@ -246,10 +246,10 @@ ito::RetVal AbstractAddInDockWidget::setActuatorPosition(QVector<int> axes, QVec
     if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
     {
         QMessageBox msgBox;
-        msgBox.setText(tr("Error while calling %1").arg(funcName.data()).toLatin1().data());
-        if (retval.errorMessage())
+        msgBox.setText(tr("Error while calling %1").arg(QLatin1String(funcName)));
+        if (retval.hasErrorMessage())
         {
-            msgBox.setInformativeText(retval.errorMessage());
+            msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
         }
         msgBox.setIcon(QMessageBox::Critical);
         msgBox.exec();
@@ -257,10 +257,10 @@ ito::RetVal AbstractAddInDockWidget::setActuatorPosition(QVector<int> axes, QVec
     else if (retval.containsWarning() && (msgLevel & msgLevelWarningOnly))
     {
         QMessageBox msgBox;
-        msgBox.setText(tr("Warning while calling %1").arg(funcName.data()).toLatin1().data());
-        if (retval.errorMessage())
+        msgBox.setText(tr("Warning while calling %1").arg(QLatin1String(funcName)));
+        if (retval.hasErrorMessage())
         {
-            msgBox.setInformativeText(retval.errorMessage());
+            msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
         }
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
@@ -293,7 +293,7 @@ ito::RetVal AbstractAddInDockWidget::setActuatorPosition(int axis, double positi
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, tr("slot '%1' could not be invoked since it does not exist.").arg(funcName.data()).toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, tr("slot '%1' could not be invoked since it does not exist.").arg(QLatin1String(funcName)).toLatin1().data());
             }
         }
     }
@@ -305,10 +305,10 @@ ito::RetVal AbstractAddInDockWidget::setActuatorPosition(int axis, double positi
     if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
     {
         QMessageBox msgBox;
-        msgBox.setText(tr("Error while calling %1").arg(funcName.data()).toLatin1().data());
-        if (retval.errorMessage())
+        msgBox.setText(tr("Error while calling %1").arg(QLatin1String(funcName)));
+        if (retval.hasErrorMessage())
         {
-            msgBox.setInformativeText(retval.errorMessage());
+            msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
         }
         msgBox.setIcon(QMessageBox::Critical);
         msgBox.exec();
@@ -316,10 +316,10 @@ ito::RetVal AbstractAddInDockWidget::setActuatorPosition(int axis, double positi
     else if (retval.containsWarning() && (msgLevel & msgLevelWarningOnly))
     {
         QMessageBox msgBox;
-        msgBox.setText(tr("Warning while calling %1").arg(funcName.data()).toLatin1().data());
-        if (retval.errorMessage())
+        msgBox.setText(tr("Warning while calling %1").arg(QLatin1String(funcName)));
+        if (retval.hasErrorMessage())
         {
-            msgBox.setInformativeText(retval.errorMessage());
+            msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
         }
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
@@ -355,10 +355,10 @@ ito::RetVal AbstractAddInDockWidget::requestActuatorStatusAndPositions(bool send
     if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
     {
         QMessageBox msgBox;
-        msgBox.setText(tr("Error while calling 'requestStatusAndPosition'").toLatin1().data());
-        if (retval.errorMessage())
+        msgBox.setText(tr("Error while calling 'requestStatusAndPosition'"));
+        if (retval.hasErrorMessage())
         {
-            msgBox.setInformativeText(retval.errorMessage());
+            msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
         }
         msgBox.setIcon(QMessageBox::Critical);
         msgBox.exec();
@@ -366,10 +366,10 @@ ito::RetVal AbstractAddInDockWidget::requestActuatorStatusAndPositions(bool send
     else if (retval.containsWarning() && (msgLevel & msgLevelWarningOnly))
     {
         QMessageBox msgBox;
-        msgBox.setText(tr("Warning while calling 'requestStatusAndPosition'").toLatin1().data());
-        if (retval.errorMessage())
+        msgBox.setText(tr("Warning while calling 'requestStatusAndPosition'"));
+        if (retval.hasErrorMessage())
         {
-            msgBox.setInformativeText(retval.errorMessage());
+            msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
         }
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();

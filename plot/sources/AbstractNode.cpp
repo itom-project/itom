@@ -100,7 +100,7 @@ RetVal AbstractNode::updateParam(ito::ParamBase *input, int isSource /*=0*/)
     ito::RetVal retval = ito::retOk;
     Channel *thisChannel = NULL;
 
-    if (!m_pInput.contains(input->getName()))
+    if (!m_pInput.contains(QLatin1String(input->getName())))
     {
         return ito::RetVal(ito::retError, 0, QObject::tr("Parameter: does not exist in updateParam").toLatin1().data()); //Todo: add parameter name in error string
     }
@@ -132,9 +132,9 @@ RetVal AbstractNode::updateParam(ito::ParamBase *input, int isSource /*=0*/)
     }
 
     // only copy parameter if the update is not called with the parameter of this node, otherwise arrays inside the parameter will be deleted
-    if (m_pInput[input->getName()] != input)
+    if (m_pInput[QLatin1String(input->getName())] != input)
     {
-        retval += m_pInput.value(input->getName())->copyValueFrom(input); 
+        retval += m_pInput.value(QLatin1String(input->getName()))->copyValueFrom(input); 
     }
 
     if (retval.containsError())

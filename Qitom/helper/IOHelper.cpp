@@ -755,7 +755,7 @@ end:
                     {
                         QString title;
                         QString text;
-                        if (retval.hasErrorMessage()) text = QString("\n%1").arg(retval.errorMessage());
+                        if (retval.hasErrorMessage()) text = QString("\n%1").arg(QLatin1String(retval.errorMessage()));
                         if (retval.containsError())
                         {
                             text.prepend(tr("An error occured while importing the loaded file into the python workspace."));

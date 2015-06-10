@@ -82,7 +82,30 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param> &params)
         m_lblInfo = new QLabel(parent);
         m_lblInfo->setMaximumSize(24,24);
         m_lblInfo->setPixmap(m_iconInfo.pixmap(16,16));
-        m_lblInfo->setToolTip(param.getInfo());
+
+        QString info = QLatin1String(param.getInfo());
+        if (info == "")
+        {
+            m_lblInfo->setToolTip(tr("[no description]"));
+        }
+        else if (info.length() < 120)
+        {
+            m_lblInfo->setToolTip(info);
+        }
+        else
+        {
+            //try to split string into parts of around 120 characters and replace separatring spaces by \n to have a multi-line tool tip text
+            int l = 119;
+            while (l < info.length())
+            {
+                if ((l = info.indexOf(" ", l)) >= 0)
+                {
+                    info.replace(l, 1, '\n');
+                    l += 120;
+                }
+            }
+            m_lblInfo->setToolTip(info);
+        }
 
         m_lblName = new QLabel(QString(param.getName()).append(":"), parent);
         m_lblType = new QLabel(parent);
@@ -195,7 +218,7 @@ bool ParamInputParser::validateInput(bool mandatoryValues, ito::RetVal &retValue
                 QString text = QString(tr("The parameter '%1' is invalid.")).arg(param.getName());
                 if (retValue.hasErrorMessage())
                 {
-                    text.append("\n\n").append(retValue.errorMessage());
+                    text.append("\n\n").append(QLatin1String(retValue.errorMessage()));
                 }
                 QMessageBox::critical(parent, tr("Invalid input"), text);
             }

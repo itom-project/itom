@@ -89,7 +89,7 @@ void TimerCallback::timeout()
         else
         {
             PyErr_SetString(PyExc_RuntimeError, "The python slot method is not longer available");
-            PyErr_Print();
+            PyErr_PrintEx(0);
             PyErr_Clear();
         }
     }
@@ -101,7 +101,7 @@ void TimerCallback::timeout()
         if((func == NULL) || (func == Py_None) || (inst == Py_None))
         {
             PyErr_SetString(PyExc_RuntimeError, "The python slot method is not longer available");
-            PyErr_Print();
+            PyErr_PrintEx(0);
             PyErr_Clear();
         }
         else

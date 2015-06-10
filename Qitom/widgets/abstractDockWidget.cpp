@@ -109,9 +109,11 @@ AbstractDockWidget::AbstractDockWidget(bool docked, bool isDockAvailable, tFloat
     setWindowTitle(title);
 
     m_actStayOnTop = new QAction(QIcon(""), tr("stay on top"), this);
+    m_actStayOnTop->setToolTip(tr("stay on top of all visible windows"));
     m_actStayOnTop->setCheckable(true);
     connect(m_actStayOnTop, SIGNAL(triggered(bool)), this, SLOT(mnuStayOnTop(bool)));
     m_actStayOnTopOfApp = new QAction(tr("stay on top of main window"), this);
+    m_actStayOnTopOfApp->setToolTip(tr("stay on top of main window of itom"));
     m_actStayOnTopOfApp->setCheckable(true);
     connect(m_actStayOnTopOfApp, SIGNAL(triggered(bool)), this, SLOT(mnuStayOnTopOfApp(bool)));
     
@@ -383,19 +385,71 @@ void AbstractDockWidget::saveState(const QString &iniName) const
     {
         QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
         settings.beginGroup(iniName);
-        settings.setValue("state", this->m_pWindow->saveState());
+        settings.setValue("state", m_pWindow->saveState());
+        settings.setValue("docked", docked());
+        if (m_floatingStyle == floatingWindow)
+        {
+            settings.setValue("geometry", m_pWindow->saveGeometry());
+            if (!docked())
+            {
+                settings.setValue("visible", isVisible());
+            }
+            else
+            {
+                settings.setValue("visible", QVariant()); //invalidate setting 'visible' since it is always false if docked (saveState is called in destructor, where visible is already false)
+            }
+        }
         settings.endGroup();
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void AbstractDockWidget::restoreState(const QString &iniName) const
+void AbstractDockWidget::restoreState(const QString &iniName)
 {
     if (objectName() != "")
     {
         QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
         settings.beginGroup(iniName);
+
         m_pWindow->restoreState(settings.value("state").toByteArray());
+        if (m_floatingStyle == floatingWindow)
+        {
+            QVariant docked = settings.value("docked");
+            if (docked.isValid())
+            {
+                if (docked.toBool())
+                {
+                    if (!m_docked)
+                    {
+                        dockWidget();
+                    }
+                }
+                else
+                {
+                    if (m_docked)
+                    {
+                        undockWidget();
+                    }
+                }
+            }
+
+            QVariant visible = settings.value("visible");
+            if (visible.isValid())
+            {
+                setVisible(visible.toBool());
+            }
+
+            m_pWindow->restoreGeometry(settings.value("geometry").toByteArray());
+            //see also bug-report https://bugreports.qt.io/browse/QTBUG-21371 (fixed in >= Qt 5.3.0). 
+        }
+        else
+        {
+            QVariant docked = settings.value("docked");
+            if (docked.isValid())
+            {
+                setFloating(!docked.toBool());
+            }
+        }
         settings.endGroup();
     }
 }
@@ -672,7 +726,7 @@ QToolBar* AbstractDockWidget::getToolBar(QString key) const
 /*!
     In this abstract class, the event is always accepted.
 
-    \note Please overwritte this method by derived class in order to realize desired behaviour.
+    \note Please overwrite this method by derived class in order to realize desired behaviour.
 
     \param event Event of type QCloseEvent
 */
@@ -807,7 +861,7 @@ void AbstractDockWidget::dockWidget()
     If m_floatingStyle is equal to floatingWindow, then this widget is transformed into a single window
     with its own toolbar and menubar. All Icons are increased in size in order to have the single-window-look.
 */
-void AbstractDockWidget::undockWidget()
+void AbstractDockWidget::undockWidget(bool show_it /*= true*/)
 {
     bool m_docked_old = m_docked;
     m_docked = false;
@@ -842,14 +896,14 @@ void AbstractDockWidget::undockWidget()
         m_pWindow->setWindowFlags(modifyFlags(m_pWindow->windowFlags(), Qt::Window, Qt::Widget));
 
         if (m_docked_old && !m_lastUndockedSize.isEmpty())
-    {
+        {
             m_pWindow->setGeometry(m_lastUndockedSize);
 #if linux //also fixes the bug in lxde such that title bar is out of window, since frameGeometry is bigger than geometry
-        m_pWindow->move(m_pWindow->geometry().topLeft() - m_pWindow->pos());
+            m_pWindow->move(m_pWindow->geometry().topLeft() - m_pWindow->pos());
 #endif
         }
 
-        if (m_docked_old)
+        if (m_docked_old && show_it)
         {
             show();
         }
@@ -860,8 +914,11 @@ void AbstractDockWidget::undockWidget()
         setFloating(true);
         QDockWidget::hide();
 
-        m_pWindow->show();
-        m_pWindow->raise();
+        if (show_it)
+        {
+            m_pWindow->show();
+            m_pWindow->raise();
+        }
     
 #if linux
     //in LXDE the window is sometimes positioned out of the window such that
@@ -904,20 +961,6 @@ void AbstractDockWidget::undockWidget()
             it->tb->setIconSize(QSize(16, 16));
         }
     }
-
-    /*QMap<QString, QToolBar*>::iterator it;
-
-    for (it = m_toolBars.begin() ; it != m_toolBars.end(); ++it)
-    {
-        if (m_floatingStyle == floatingWindow)
-        {
-            (*it)->setIconSize(QSize(style()->pixelMetric(QStyle::PM_ToolBarIconSize), style()->pixelMetric(QStyle::PM_ToolBarIconSize)));
-        }
-        else
-        {
-            (*it)->setIconSize(QSize(16, 16));
-        }
-    }*/
 
     if (m_dockToolbar)
     {
@@ -1004,6 +1047,7 @@ void AbstractDockWidget::raiseAndActivate()
     {
         activateWindow();
         QDockWidget::show();
+        QDockWidget::raise();
     }
     else if (m_floatingStyle == floatingWindow)
     {
@@ -1011,6 +1055,7 @@ void AbstractDockWidget::raiseAndActivate()
         m_pWindow->setWindowState( (m_pWindow->windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
         m_pWindow->raise(); //for MacOS
         m_pWindow->activateWindow(); //for Windows
+        m_pWindow->show();
     }
     else
     {
@@ -1088,6 +1133,21 @@ Qt::WindowFlags AbstractDockWidget::modifyFlags(const Qt::WindowFlags &flags, co
   out |= setFlags;
   out &= (~unsetFlags);
   return out;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! synchronizes the top level state of the dock widget with the floating settings of this abstract dock widget
+/*!
+    If the floating style is floating window and the dock widget has been set as floated dock widget (e.g. by a restoreState method call)
+    the dock widget is in the top level state, however it does not correspond to the desired undocked, main window style.
+    This is synchronized and corrected by this function.
+*/
+void AbstractDockWidget::synchronizeTopLevelState()
+{
+    if (m_floatingStyle == floatingWindow && m_docked == true && isFloating())
+    {
+        undockWidget(false);
+    }
 }
 
 } //end namespace ito

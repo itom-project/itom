@@ -1604,13 +1604,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_calib(PyActuatorPlugin* self, PyObject
     {
         return NULL;
     }
-    /*
-    if (ret != ito::retOk)
-    {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking calib with error message: \n%s\n").toLatin1(), QObject::tr(ret.errorMessage()).toLatin1().data());
-        return NULL;
-    }
-    */
+
     Py_RETURN_NONE;
 }
 
@@ -1725,13 +1719,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setOrigin(PyActuatorPlugin* self, PyOb
     {
         return NULL;
     }
-    /*
-    if (ret != ito::retOk)
-    {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking setOrigin with error message: \n%s\n").toLatin1(), QObject::tr(ret.errorMessage()).toLatin1().data());
-        return NULL;
-    }
-    */
+
     Py_RETURN_NONE;
 }
 
@@ -1968,13 +1956,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getPos(PyActuatorPlugin* self, PyObjec
     {
         return NULL;
     }
-    /*
-    if (ret != ito::retOk)
-    {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking getPos with error message: \n%s\n").toLatin1(), QObject::tr(ret.errorMessage()).toLatin1().data());
-        return NULL;
-    }
-    */
+
     return result;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2338,13 +2320,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosRel(PyActuatorPlugin* self, PyOb
     {
         return NULL;
     }
-    /*
-    if (ret != ito::retOk)
-    {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking setPos with error message: \n%s\n").toLatin1(), QObject::tr(ret.errorMessage()).toLatin1().data());
-        return NULL;
-    }
-    */
+
     Py_RETURN_NONE;
 }
 
@@ -3613,13 +3589,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_enableAutoGrabbing(PyDataIOPlugin *self,
     {
         return NULL;
     }
-    /*
-    if (ret != ito::retOk)
-    {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error while enabling the auto grabbing functionality: \n%s\n").toLatin1(), QObject::tr(ret.errorMessage()).toLatin1().data());
-        return NULL;
-    }
-    */
+
     Py_RETURN_NONE;
 }
 

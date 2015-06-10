@@ -795,11 +795,19 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
 *   occured is marked with an arrow. Except the error all parameters necessary and optional including their type are written
 *   to the console.
 */
-void errOutInitParams(const QVector<ito::Param> *params, const int num, const QString reason)
+void errOutInitParams(const QVector<ito::Param> *params, const int num, const char *reason)
 {
-    PyErr_Print();
+    PyErr_PrintEx(0);
     std::cerr << "\n";
-    std::cerr << reason.toLatin1().data() << "\n";
+    if (reason)
+    {
+        std::cerr << reason << "\n";
+    }
+    else
+    {
+        std::cerr << "unknown error\n";
+    }
+
     if (params)
     {
         PyObject* dummy = PrntOutParams(params, true, false, num);
@@ -810,7 +818,7 @@ void errOutInitParams(const QVector<ito::Param> *params, const int num, const QS
         std::cerr << "Plugin does not accept parameters!" << "\n";
     }
     std::cerr << "\n";
-    PyErr_Print();
+    PyErr_PrintEx(0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1489,7 +1497,7 @@ bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *e
         }
         else
         {
-            msg = QString(retVal.errorMessage()).toUtf8();
+            msg = QString::fromLatin1(temp).toUtf8();
         }
 
         if (retVal.containsError())
@@ -1922,7 +1930,7 @@ bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &obj
 
         if (retVal.hasErrorMessage())
         {
-            PyErr_Format(exceptionIfError, msgSpecified.data(), objName.toUtf8().data(), retVal.errorMessage());
+            PyErr_Format(exceptionIfError, msgSpecified.data(), objName.toUtf8().data(), QString::fromLatin1(retVal.errorMessage()).toUtf8().data());
         }
         else
         {

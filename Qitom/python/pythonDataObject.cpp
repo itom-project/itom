@@ -224,7 +224,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
     // it doesn't seem to have an effect here, so we need to do it again in this place :-/
  //   if (_import_array() < 0)
     //{
-    //    PyErr_Print();
+    //    PyErr_PrintEx(0);
     //    PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import");
     //    return -1;
     //}
@@ -426,7 +426,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                         dimListItem = PySequence_GetItem(dimList,i); //new reference
                         if (!PyArg_Parse(dimListItem , "I" , &tempSizes /*&sizes[i]*/)) //borrowed ref
                         {
-                            PyErr_Print();
+                            PyErr_PrintEx(0);
                             PyErr_Clear();
                             PyErr_Format(PyExc_TypeError,"Size of %d. dimension is no integer number", i+1);
                             retValue += RetVal(retError);
@@ -1059,7 +1059,7 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(PyObject *args, PyObject *kwd
                 {
                     if (!PyArg_Parse(PyList_GetItem(dimList,i) , "I" , &tempSizes)) //borrowed ref
                     {
-                        PyErr_Print();
+                        PyErr_PrintEx(0);
                         PyErr_Clear();
                         PyErr_Format(PyExc_TypeError,"Element %d of dimension-list is no integer number", i+1);
                         retValue += RetVal(retError);
@@ -5727,7 +5727,7 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
     if (ret.containsError())
     {
         DELETE_AND_SET_NULL(inter)
-        if (ret.errorMessage())
+        if (ret.hasErrorMessage())
         {
             PythonCommon::transformRetValToPyException(ret, PyExc_TypeError);
             return NULL;
@@ -5836,7 +5836,7 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
     RetVal ret = parseTypeNumber(selfDO->getType(), typekind, itemsize);
     if (ret.containsError())
     {
-        if (ret.errorMessage())
+        if (ret.hasErrorMessage())
         {
             PythonCommon::transformRetValToPyException(ret, PyExc_TypeError);
             return NULL;

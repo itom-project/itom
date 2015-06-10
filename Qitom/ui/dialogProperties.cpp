@@ -33,6 +33,7 @@
 #include "widgetPropEditorGeneral.h"
 #include "widgetPropGeneralLanguage.h"
 #include "widgetPropPythonStartup.h"
+#include "widgetPropPythonGeneral.h"
 #include "widgetPropConsoleWrap.h"
 #include "widgetPropConsoleLastCommand.h"
 #include "widgetPropFigurePlugins.h"
@@ -154,6 +155,7 @@ void DialogProperties::initPages()
     m_pages["01_console/lineWrap"] = PropertyPage(tr("Line Wrap"), tr("Console - Line Wrap"), "01_console/lineWrap", new WidgetPropConsoleWrap(), QIcon(":/application/icons/editSmartIndent.png"));
     m_pages["01_console/commandHistory"] = PropertyPage(tr("Command History"), tr("Console - Command History"), "01_console/commandHistory", new WidgetPropConsoleLastCommand(), QIcon(":/application/icons/editSmartIndent.png"));
     m_pages["03_python"] = PropertyPage(tr("Python"), tr("Python - please choose subpage"), "03_python", NULL, QIcon(":/application/icons/preferences-python.png"));
+    m_pages["03_python/general"] = PropertyPage(tr("General"), tr("Python - general"), "03_python/general", new WidgetPropPythonGeneral(), QIcon(":/application/icons/preferences-python.png"));
     m_pages["03_python/startup"] = PropertyPage(tr("Startup"), tr("Python - startups"), "03_python/startup", new WidgetPropPythonStartup(), QIcon(":/application/icons/preferences-python.png"));
     m_pages["00_general"] = PropertyPage(tr("General"), tr("General - please choose subpage"), "00_general", NULL, QIcon(":/application/icons/itomicon/curAppIcon.png"));
     m_pages["00_general/language"] = PropertyPage(tr("Language"), tr("General - language"), "00_general/language", new WidgetPropGeneralLanguage(), QIcon(":/application/icons/itomicon/curAppIcon.png"));

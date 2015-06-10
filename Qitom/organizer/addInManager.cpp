@@ -633,7 +633,7 @@ namespace ito
                                 algoInst->rejectFilter(it.key() );
                                 if (validRet.hasErrorMessage())
                                 {
-                                    message = "Filter " + it.key() + " rejected. The filter parameters could not be loaded: " + QString(validRet.errorMessage());
+                                    message = "Filter " + it.key() + " rejected. The filter parameters could not be loaded: " + QLatin1String(validRet.errorMessage());
                                 }
                                 else
                                 {
@@ -648,7 +648,7 @@ namespace ito
                             algoInst->rejectFilter(it.key());
                             if (validRet.hasErrorMessage())
                             {
-                                message = "Filter " + it.key() + " rejected. It does not correspond to the algorithm interface: " + QString(validRet.errorMessage());
+                                message = "Filter " + it.key() + " rejected. It does not correspond to the algorithm interface: " + QLatin1String(validRet.errorMessage());
                             }
                             else
                             {
@@ -708,7 +708,7 @@ namespace ito
                             algoInst->rejectAlgoWidget(jt.key());
                             if (validRet.hasErrorMessage())
                             {
-                                message = "Widget " + jt.key() + " rejected. It does not correspond to the algorithm interface: " + QString(validRet.errorMessage());
+                                message = "Widget " + jt.key() + " rejected. It does not correspond to the algorithm interface: " + QLatin1String(validRet.errorMessage());
                             }
                             else
                             {

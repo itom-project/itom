@@ -1925,6 +1925,8 @@ PyObject* PythonPCL::PyPointCloud_SetState(PyPointCloud *self, PyObject *args)
 //---------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPointCloudFromXYZ_doc,"fromXYZ(X,Y,Z | XYZ) -> creates a point cloud from three X,Y,Z data objects or from one 3xMxN data object\n\
 \n\
+The created point cloud is not organized (height=1) and dense, if no NaN or Inf values are within the point cloud (deleteNaN:true results in a dense point cloud) \n\
+\n\
 Parameters \n\
 ----------- \n\
 X,Y,Z : {MxN data objects} \n\
@@ -1933,7 +1935,7 @@ XYZ : {3xMxN data object} \n\
     OR: 3xMxN data object, such that the first plane is X, the second is Y and the third is Z\n\
 deleteNaN : {bool} \n\
     default = false\n\
-    if True all NaN values are skipped, hence, the resulting point cloud is not dense (organized) any more\n\
+    if True all NaN values are skipped, hence, the resulting point cloud is not dense any more\n\
 \n\
 Returns \n\
 ------- \n\
@@ -2042,6 +2044,8 @@ PointCloud.");
 //---------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPointCloudFromXYZI_doc,"fromXYZI(X,Y,Z,I | XYZ,I) -> creates a point cloud from four X,Y,Z,I data objects or from one 3xMxN data object and one intensity data object\n\
 \n\
+The created point cloud is not organized (height=1) and dense, if no NaN or Inf values are within the point cloud (deleteNaN:true results in a dense point cloud) \n\
+\n\
 Parameters \n\
 ----------- \n\
 X,Y,Z,I : {MxN data objects} \n\
@@ -2049,11 +2053,11 @@ X,Y,Z,I : {MxN data objects} \n\
 OR \n\
 XYZ : {3xMxN data object} \n\
     3xMxN data object, such that the first plane is X, the second is Y and the third is Z\n\
-    I : {MxN data object} \n\
+I : {MxN data object} \n\
     MxN data object with the same size than the single X,Y or Z planes \n\
 deleteNaN : {bool} \n\
     default = false\n\
-    if True all NaN values are skipped, hence, the resulting point cloud is not dense (organized) any more\n\
+    if True all NaN values are skipped, hence, the resulting point cloud is not dense any more\n\
 \n\
 Returns \n\
 ------- \n\
@@ -2175,6 +2179,143 @@ PointCloud.");
 }
 
 //---------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCloudFromXYZRGBA_doc,"fromXYZRGBA(X,Y,Z,color | XYZ,color) -> creates a point cloud from four X,Y,Z,color data objects or from one 3xMxN data object and one coloured data object\n\
+\n\
+The created point cloud is not organized (height=1) and dense, if no NaN or Inf values are within the point cloud (deleteNaN:true results in a dense point cloud) \n\
+\n\
+Parameters \n\
+----------- \n\
+X,Y,Z,color : {MxN data objects} \n\
+    Four 2D data objects with the same size. X,Y,Z must have the same type, color must be rgba32.\n\
+OR \n\
+XYZ : {3xMxN data object} \n\
+    3xMxN data object, such that the first plane is X, the second is Y and the third is Z\n\
+color : {MxN data object} \n\
+    MxN data object with the same size than the single X,Y or Z planes, type: rgba32 \n\
+deleteNaN : {bool} \n\
+    default = false\n\
+    if True all NaN or Inf values are skipped, hence, the resulting point cloud does not contain this values\n\
+\n\
+Returns \n\
+------- \n\
+PointCloud.");
+/*static*/ PyObject* PythonPCL::PyPointCloud_fromXYZRGBA(PyPointCloud * /*self*/, PyObject *args)
+{
+    PyObject *objX = NULL;
+    PyObject *objY = NULL;
+    PyObject *objZ = NULL;
+    PyObject *objColor = NULL;
+    bool deleteNaN = false;
+
+    QSharedPointer<ito::DataObject> X, Y, Z, XYZ, color;
+    bool ok = true;
+    ito::RetVal retval = ito::retOk;
+
+    if (!PyArg_ParseTuple(args,"OOOO|b", &objX, &objY, &objZ, &objColor, &deleteNaN))
+    {
+        if (!PyArg_ParseTuple(args, "OO|b", &objX, &objColor, &deleteNaN))
+        {
+            return NULL;
+        }
+        else
+        {
+            XYZ = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok));
+            if (!ok)
+            {
+                PyErr_SetString(PyExc_RuntimeError, "XYZ argument could not be converted to a data object");
+                return NULL;
+            }
+            
+            ito::RetVal tmpRetval = ito::dObjHelper::verify3DDataObject(XYZ.data(), "XYZ", 3, 3, 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
+            if (tmpRetval.containsWarningOrError())
+            {
+                ito::RetVal tmpRetval = ito::dObjHelper::verify2DDataObject(XYZ.data(), "XYZ", 1, std::numeric_limits<int>::max(), 3, 3, ito::tFloat32);
+                if (PythonCommon::transformRetValToPyException(retval) == false)
+                {
+                    return NULL;
+                }
+
+                ito::Range ranges[2] = { ito::Range::all(), ito::Range(0,0) };
+
+                ranges[1] = ito::Range(0,1);
+                X = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
+
+                ranges[1] = ito::Range(1,2);
+                Y = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()) );
+
+                ranges[1] = ito::Range(2,3);
+                Z = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
+            }
+            else
+            {
+                ito::Range ranges[3] = { ito::Range(0,0), ito::Range::all(), ito::Range::all() };
+
+                ranges[0] = ito::Range(0,1);
+                X = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
+
+                ranges[0] = ito::Range(1,2);
+                Y = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()) );
+
+                ranges[0] = ito::Range(2,3);
+                Z = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
+            }
+
+            color = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objColor, false, ok));
+            if (!ok)
+            {
+                PyErr_SetString(PyExc_RuntimeError, "color argument could not be converted to a data object");
+                return NULL;
+            }
+        }
+    }
+    else
+    {
+        X = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok));
+        if (!ok)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "X argument could not be converted to a data object");
+            return NULL;
+        }
+
+        Y = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objY, false, ok));
+        if (!ok)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "Y argument could not be converted to a data object");
+            return NULL;
+        }
+
+        Z = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objZ, false, ok));
+        if (!ok)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "Z argument could not be converted to a data object");
+            return NULL;
+        }
+
+        color = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objColor, false, ok));
+        if (!ok)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "color argument could not be converted to a data object");
+            return NULL;
+        }
+    }
+
+    PyPointCloud *cloud = createEmptyPyPointCloud();
+    cloud->data = new ito::PCLPointCloud(ito::pclInvalid);
+    retval += ito::pclHelper::pointCloudFromXYZRGBA(X.data(), Y.data(), Z.data(), color.data(), *(cloud->data), deleteNaN);
+
+    if (PythonCommon::transformRetValToPyException(retval) == false)
+    {
+        Py_XDECREF(cloud);
+        cloud = NULL;
+        return NULL;
+    }
+    else
+    {
+        return (PyObject*)cloud;
+    }
+}
+
+//---------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPointCloudFromDisparity_doc,"fromDisparity(disparity [,intensity] [,deleteNaN]) -> creates a point cloud from a given disparity dataObject.\n\
 \n\
 Creates a point cloud from the 2.5D data set given by the disparity dataObject. The x and y-components of each point are taken from the regular grid \n\
@@ -2187,7 +2328,7 @@ disparity : {MxN data object, float32} \n\
 intensity : {MxN data object, float32}, optional \n\
     If given, an XYZI-point cloud is created whose intensity values are determined by this dataObject (cannot be used together with 'color')\n\
 deleteNaN : {bool}, optional \n\
-    If true (default: false), NaN-values (z) in the disparity map will not be copied into the point cloud.\n\
+    If true (default: false), NaN or Inf-values (z) in the disparity map will not be copied into the point cloud (the point cloud is not organized any more).\n\
 color : {MxN data object, rgba32}, optional \n\
     If given, a XYZRGBA-point cloud is created whose color values are determined by this dataObject (cannot be used together with 'intensity')\n\
 \n\
@@ -2315,6 +2456,7 @@ PyMethodDef PythonPCL::PyPointCloud_methods[] = {
     
     {"fromXYZ",       (PyCFunction)PyPointCloud_fromXYZ, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZ_doc},
     {"fromXYZI",      (PyCFunction)PyPointCloud_fromXYZI, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZI_doc},
+    {"fromXYZRGBA",   (PyCFunction)PyPointCloud_fromXYZRGBA, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZRGBA_doc},
     {"fromDisparity", (PyCFunction)PyPointCloud_fromDisparity, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromDisparity_doc},
 
     {"copy",          (PyCFunction)PyPointCloud_copy, METH_NOARGS, pyPointCloudCopy_doc},
@@ -4095,6 +4237,64 @@ polygons : {array-like, MxN} \n\
     }
 }
 
+
+//------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPolygonMeshFromOrganizedCloud_docs,"fromOrganizedCloud(cloud) -> creates a polygon mesh from an organized cloud using triangles. \n\
+\n\
+The polygons are created as triangles. Triangles are also created for non-finite points. \n\
+\n\
+Parameters \n\
+----------- \n\
+cloud : {pointCloud} \n\
+    the input point cloud (must be organized, see attribute organized of a cloud)"); 
+/*static*/ PyObject* PythonPCL::PyPolygonMesh_FromOrganizedCloud(PyObject * /*self*/, PyObject *args, PyObject *kwds)
+{
+    PyPointCloud *cloud = NULL;
+    const char *kwlist[] = {"cloud", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", const_cast<char**>(kwlist), &PythonPCL::PyPointCloudType, &cloud))
+    {
+        return NULL;
+    }
+
+    if (cloud->data->isOrganized() == false)
+    {
+        PyErr_SetString(PyExc_RuntimeError,"given cloud must be organized (e.g. creating from disparity map without NaN or Inf values)");
+        return NULL;
+    }
+
+    std::vector<pcl::Vertices> p;
+    uint32_t h = cloud->data->height();
+    uint32_t w = cloud->data->width();
+    p.resize((h - 1) * (w - 1) * 2);
+    pcl::Vertices v;
+    v.vertices.resize(3);
+    uint32_t i = 0;
+
+    for (uint32_t r = 0; r < (w-1); ++r)
+    {
+        for (uint32_t c = 0; c < (h-1); ++c)
+        {
+            //points: p1 - p2
+            //         |    |
+            //        p3 - p4
+            //triangles: p1,p3,p2 and p3,p4,p2
+            v.vertices[0] = r * w + c;
+            v.vertices[1] = (r+1)*w + c;
+            v.vertices[2] = v.vertices[0] + 1;
+            p[i++] = v;
+            v.vertices[0] += w;
+            v.vertices[1] += 1;
+            //v.vertices[2] is the same than above
+            p[i++] = v;
+        }
+    }
+
+    PyPolygonMesh *mesh = PythonPCL::createEmptyPyPolygonMesh();
+    mesh->polygonMesh = new ito::PCLPolygonMesh(*(cloud->data), p);
+    return (PyObject*)mesh;
+}
+
 //------------------------------------------------------------------------------------------------------
 /*static*/ PyObject* PythonPCL::PyPolygonMesh_getNrOfPolygons(PyPolygonMesh *self, void * /*closure*/)
 {
@@ -4131,6 +4331,7 @@ PyMethodDef PythonPCL::PyPolygonMesh_methods[] = {
     {"getCloud", (PyCFunction)PyPolygonMesh_getCloud, METH_VARARGS, pyPolygonMeshGetCloud_docs},
     {"getPolygons", (PyCFunction)PyPolygonMesh_getPolygons, METH_VARARGS, pyPolygonMeshGetPolygons_docs},
     {"fromCloudAndPolygons", (PyCFunction)PyPolygonMesh_FromCloudAndPolygons, METH_VARARGS | METH_KEYWORDS | METH_STATIC, pyPolygonMeshFromCloudAndPolygons_docs},
+    {"fromOrganizedCloud", (PyCFunction)PyPolygonMesh_FromOrganizedCloud, METH_VARARGS | METH_KEYWORDS | METH_STATIC, pyPolygonMeshFromOrganizedCloud_docs},
     {NULL}  /* Sentinel */
 };
 

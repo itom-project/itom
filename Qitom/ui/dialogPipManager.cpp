@@ -206,6 +206,11 @@ void DialogPipManager::on_btnReload_clicked()
 void DialogPipManager::on_btnCheckForUpdates_clicked()
 {
     m_pPipManager->checkPackageUpdates(createOptions());
+
+    // TODO!!!
+    QModelIndex mi = ui.tablePackages->currentIndex();
+    bool updatedAvailabe = m_pPipManager->data(mi, Qt::UserRole + 1).toBool();
+    ui.btnUpdate->setEnabled(updatedAvailabe);
 }
 
 //---------------------------------------------------------------------------------
@@ -219,7 +224,6 @@ void DialogPipManager::on_btnUpdate_clicked()
 {
     installOrUpdatePackage();
 }
-
 //---------------------------------------------------------------------------------
 void DialogPipManager::installOrUpdatePackage()
 {
@@ -229,14 +233,16 @@ void DialogPipManager::installOrUpdatePackage()
         PipInstall install;
         dpmi->getResult(*((int*)&install.type), install.packageName, install.upgrade, install.installDeps, install.findLinks, install.ignoreIndex, install.runAsSudo);
 
-        if (!m_standalone && (install.packageName.startsWith("numpy-", Qt::CaseInsensitive) == 0 || install.packageName.compare("numpy", Qt::CaseInsensitive) == 0))
+        if (!m_standalone && \
+            ((install.type == ito::PipInstall::typeWhl && install.packageName.indexOf("numpy-", 0, Qt::CaseInsensitive) >= 0) \
+            || (install.type != ito::PipInstall::typeWhl && install.packageName.compare("numpy", Qt::CaseInsensitive) == 0)))
         {
              QMessageBox msgBox(this);
              msgBox.setWindowTitle("Pip Manager");
              msgBox.setIcon(QMessageBox::Warning);
              msgBox.setText("Warning installing Numpy if itom is already running.");
              msgBox.setInformativeText(QString("If you try to install / upgrade Numpy if itom is already running, \
-a file access error might occure, since itom already uses parts of Numpy. \n\n\
+a file access error might occur, since itom already uses parts of Numpy. \n\n\
 Click ignore if you want to try to continue the installation or click OK in order to stop the \
 installation. \n\n\
 In the latter case, the file 'restart_itom_with_pip_manager.txt' is created in the directory '%1', \
@@ -338,7 +344,16 @@ void DialogPipManager::on_btnSudoUninstall_clicked()
 //---------------------------------------------------------------------------------
 void DialogPipManager::treeViewSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
 {
-    ui.btnUpdate->setEnabled(selected.count() > 0 /*&& m_pPipManager->rowCount() > 0*/);
+    bool updatedAvailabe = false;
+
+    foreach (const QModelIndex &mi, selected.indexes())
+    {
+        if (mi.column() == 0)
+        {
+            updatedAvailabe = m_pPipManager->data(mi, Qt::UserRole + 1).toBool();
+        }
+    }
+    ui.btnUpdate->setEnabled(updatedAvailabe);
 }
 
 } //end namespace ito

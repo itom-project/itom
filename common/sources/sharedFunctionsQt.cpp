@@ -177,7 +177,7 @@ namespace ito
             }
             else
             {
-                unitOut.replace("µ", "u");
+                unitOut.replace(QLatin1String("µ"), QLatin1String("u"));
             }
         }
         return retVal;
@@ -783,7 +783,7 @@ namespace ito
                 {
                     if (ret.containsWarning())
                     {
-                        msg = QObject::tr("%1\nAutosave parameter %2 not found").arg(ret.errorMessage()).arg(name);
+                        msg = QObject::tr("%1\nAutosave parameter %2 not found").arg(QLatin1String(ret.errorMessage())).arg(name);
                     }
                     else
                     {
@@ -814,7 +814,7 @@ namespace ito
             {
                 if (ret.containsWarning())
                 {
-                    msg = QObject::tr("%1\nObsolete parameter %2").arg(ret.errorMessage()).arg(name);
+                    msg = QObject::tr("%1\nObsolete parameter %2").arg(QLatin1String(ret.errorMessage())).arg(name);
                 }
                 else
                 {
@@ -827,7 +827,7 @@ namespace ito
             {
                 if (ret.containsWarning())
                 {
-                    msg = QObject::tr("%1\nParameter %2 not autosave").arg(ret.errorMessage()).arg(name);
+                    msg = QObject::tr("%1\nParameter %2 not autosave").arg(QLatin1String(ret.errorMessage())).arg(name);
                 }
                 else
                 {
@@ -870,7 +870,7 @@ namespace ito
                 {
                     if (ret.containsWarning())
                     {
-                        msg = QObject::tr("%1\nType conflict for %2").arg(ret.errorMessage()).arg(name);
+                        msg = QObject::tr("%1\nType conflict for %2").arg(QLatin1String(ret.errorMessage())).arg(name);
                     }
                     else
                     {
