@@ -33,7 +33,10 @@ extern "C++" {
 #endif
 
 #include "defines.h"
+#include "../common/typeDefs.h"
 
+#include <qvector3d.h>
+#include <qvector4d.h>
 #if QT_VERSION < 0x050000
 #include <qtreewidget.h>
 #include <qhash.h>
@@ -68,12 +71,14 @@ class MARKERLEGEND_EXPORT MarkerLegendWidget : public QTreeWidget
     private:
         QHash< int, relation> m_relationHash;
 
+        bool m_onlyTwoDims;
+
     public slots:
-        void updatePicker(int index, QVector<float>  position);
-        void updatePickers(QVector<int> indices, QVector< QVector<float> > positions);
-        void updateGeometry(int index, QPair< int, QVector<float> > element);
-        void updateGeometries(QVector<int> index, QVector< QPair <int,  QVector<float> > > elements);
-        void updateLinePlot(int type, QVector<QPointF > positions);
+        void updatePicker(const int index, const QVector3D position);
+        void updatePickers(const QVector<int> indices, const QVector< QVector3D> positions);
+        void updateGeometry(const int index, const ito::GeometricPrimitive element);
+        void updateGeometries(const QVector< ito::GeometricPrimitive > elements);
+        void updateLinePlot(const int type, const QVector4D positionAndDirection);
 
         void removePicker(int index);
         void removePickers();

@@ -30,18 +30,20 @@
 //---------------------------------------------------------------------------------------------------------
 MarkerLegendWidget::MarkerLegendWidget(QWidget* parent /*= NULL*/) : QTreeWidget(parent)
 {
-    
+    m_onlyTwoDims = true;
     setSelectionBehavior( QAbstractItemView::SelectRows );
     setAlternatingRowColors(true);
 
     clear();
+
+    this->setColumnCount(2);
 
     insertTopLevelItem(0, new QTreeWidgetItem(this, QStringList("Picker")));
     insertTopLevelItem(1, new QTreeWidgetItem(this, QStringList("Geometric Elements")));
     insertTopLevelItem(2, new QTreeWidgetItem(this, QStringList("Plot Children")));
 }
 //---------------------------------------------------------------------------------------------------------
-void MarkerLegendWidget::updatePicker(int index, QVector< float > position)
+void MarkerLegendWidget::updatePicker(const int index, const QVector3D position)
 {
     QTreeWidgetItem *pickerEntries = topLevelItem(0);
     QTreeWidgetItem* myChild = NULL;
@@ -55,33 +57,32 @@ void MarkerLegendWidget::updatePicker(int index, QVector< float > position)
     
     }
 
-    if(myChild)
+    if(!myChild)
     {
-        for(int pos = 0; pos < position.size(); pos++)
-        {
-            myChild->setData(pos + 1, Qt::DisplayRole , QString::number(position[pos]));
-            myChild->setData(pos + 1, Qt::UserRole, position[pos]);
-        }
-    }
-    else
-    {
-        myChild = new QTreeWidgetItem(this, 0);
+        myChild = new QTreeWidgetItem();
         myChild->setData(0, Qt::DisplayRole , QString::number(index));
         myChild->setData(0, Qt::UserRole, index);
 
-        for(int pos = 0; pos < position.size(); pos++)
-        {
-            myChild->setData(pos + 1, Qt::DisplayRole , QString::number(position[pos]));
-            myChild->setData(pos + 1, Qt::UserRole, position[pos]);
-        }
-
         pickerEntries->addChild(myChild);
+    }
+
+    if(myChild)
+    {
+        if(m_onlyTwoDims)
+        {
+            myChild->setData(1, Qt::DisplayRole , QString("%1, %2").arg(QString::number(position.x()), QString::number(position.y())));
+        }
+        else
+        {
+            myChild->setData(1, Qt::DisplayRole , QString("%1, %2, %3").arg(QString::number(position.x()), QString::number(position.y()), QString::number(position.z())));
+        }
+        myChild->setData(1, Qt::UserRole, position);
     }
 
     return;
 }
 //---------------------------------------------------------------------------------------------------------
-void MarkerLegendWidget::updatePickers(QVector< int > indices, QVector< QVector< float > > positions)
+void MarkerLegendWidget::updatePickers(const QVector< int > indices, const QVector< QVector3D> positions)
 {
     QTreeWidgetItem *pickerEntries = topLevelItem(0);
 
@@ -104,85 +105,159 @@ void MarkerLegendWidget::updatePickers(QVector< int > indices, QVector< QVector<
     
         }
 
-        if(myChild)
+
+        if(!myChild)
         {
-            for(int pos = 0; pos < positions[curSearchIndex].size(); pos++)
-            {
-                myChild->setData(pos + 1, Qt::DisplayRole , QString::number(positions[curSearchIndex][pos]));
-                myChild->setData(pos + 1, Qt::UserRole, positions[curSearchIndex][pos]);
-            }
-        }
-        else
-        {
-            myChild = new QTreeWidgetItem(this, 0);
+            myChild = new QTreeWidgetItem();
             myChild->setData(0, Qt::DisplayRole , QString::number(indices[curSearchIndex]));
             myChild->setData(0, Qt::UserRole, indices[curSearchIndex]);
 
-            for(int pos = 0; pos < positions[curSearchIndex].size(); pos++)
-            {
-                myChild->setData(pos + 1, Qt::DisplayRole , QString::number(positions[curSearchIndex][pos]));
-                myChild->setData(pos + 1, Qt::UserRole, positions[curSearchIndex][pos]);
-            }
-
             pickerEntries->addChild(myChild);
+        }
+
+        if(myChild)
+        {
+            if(m_onlyTwoDims)
+            {
+                myChild->setData(1, Qt::DisplayRole , QString("%1, %2").arg(QString::number(positions[curSearchIndex].x()), QString::number(positions[curSearchIndex].y())));
+            }
+            else
+            {
+                myChild->setData(1, Qt::DisplayRole , QString("%1, %2, %3").arg(QString::number(positions[curSearchIndex].x()), QString::number(positions[curSearchIndex].y()), QString::number(positions[curSearchIndex].z())));
+            }
+            myChild->setData(1, Qt::UserRole, positions[curSearchIndex]);
         }
     }
 
     return;
 }
 //---------------------------------------------------------------------------------------------------------
-void MarkerLegendWidget::updateGeometry(int index, QPair< int, QVector< float > > element)
+void MarkerLegendWidget::updateGeometry(const int index, const ito::GeometricPrimitive element)
 {
 
 
     return;
 }
 //---------------------------------------------------------------------------------------------------------
-void MarkerLegendWidget::updateGeometries(QVector< int > index, QVector< QPair <int,  QVector< float > > > elements)
+void MarkerLegendWidget::updateGeometries(const QVector< ito::GeometricPrimitive > elements)
 {
-
 
     return;
 }
 //---------------------------------------------------------------------------------------------------------
-void MarkerLegendWidget::updateLinePlot(int type, QVector<QPointF > positions)
+void MarkerLegendWidget::updateLinePlot(const int type, const QVector4D positionAndDirection)
 {
+    QTreeWidgetItem *lineEntries = topLevelItem(1);
+    QTreeWidgetItem* myChild = NULL;
+    /*
+    for(int idx = 0; idx < lineEntries->childCount(); idx++)
+    {
+        if(lineEntries->child(idx)->data(0, Qt::UserRole).toInt() == index) 
+        {
+            myChild = lineEntries->child(idx);
+            break;
+        }
+    
+    }
 
+    if(!myChild)
+*/
+    if(lineEntries->childCount() == 0)
+    {
+        myChild = new QTreeWidgetItem();
+        myChild->setData(0, Qt::DisplayRole , type == ito::tGeoLine ? "xy-Line" : type == ito::tGeoPoint ? "zSlice" : "Slice");
+        myChild->setData(0, Qt::UserRole, type);
+
+        lineEntries->addChild(myChild);
+    }
+
+    if(myChild)
+    {
+        if(type == ito::tGeoPoint)
+        {
+            myChild->setData(1, Qt::DisplayRole , QString("%1, %2").arg(QString::number(positionAndDirection.x()), QString::number(positionAndDirection.y())));
+        }
+        else
+        {
+            myChild->setData(1, Qt::DisplayRole , QString("%1, %2 to %3, %4").arg(  QString::number(positionAndDirection.x()), 
+                                                                                    QString::number(positionAndDirection.y()), 
+                                                                                    QString::number(positionAndDirection.z()), 
+                                                                                    QString::number(positionAndDirection.w())));
+        }
+        myChild->setData(1, Qt::UserRole, positionAndDirection);
+    }
+
+    return;
 
     return;
 }
 //---------------------------------------------------------------------------------------------------------
 void MarkerLegendWidget::removePicker(int index)
 {
-
+    QTreeWidgetItem *pickerEntries = topLevelItem(0);
+    QTreeWidgetItem* myChild = NULL;
+    for(int idx = 0; idx < pickerEntries->childCount(); idx++)
+    {
+        if(pickerEntries->child(idx)->data(0, Qt::UserRole).toInt() == index) 
+        {
+            myChild = pickerEntries->child(idx);
+            pickerEntries->removeChild(myChild);
+            break;
+        }
+    }
 
     return;
 }
 //---------------------------------------------------------------------------------------------------------
 void MarkerLegendWidget::removePickers()
 {
-
+    QTreeWidgetItem *pickerEntries = topLevelItem(0);
+    QTreeWidgetItem* myChild = NULL;
+    while (pickerEntries->childCount() > 0)
+    {
+        pickerEntries->removeChild(pickerEntries->child(pickerEntries->childCount()-1));
+    }
 
     return;
 }
 //---------------------------------------------------------------------------------------------------------
 void MarkerLegendWidget::removeGeometry(int index)
 {
-
+    QTreeWidgetItem *geoEntries = topLevelItem(1);
+    QTreeWidgetItem* myChild = NULL;
+    for(int idx = 0; idx < geoEntries->childCount(); idx++)
+    {
+        if(geoEntries->child(idx)->data(0, Qt::UserRole).toInt() == index) 
+        {
+            myChild = geoEntries->child(idx);
+            geoEntries->removeChild(myChild);
+            break;
+        }
+    }
 
     return;
 }
 //---------------------------------------------------------------------------------------------------------
 void MarkerLegendWidget::removeGeometries()
 {
-
+    QTreeWidgetItem *geoEntries = topLevelItem(1);
+    QTreeWidgetItem* myChild = NULL;
+    while (geoEntries->childCount() > 0)
+    {
+        geoEntries->removeChild(geoEntries->child(geoEntries->childCount()-1));
+    }
 
     return;
 }
 //---------------------------------------------------------------------------------------------------------
 void MarkerLegendWidget::removeLinePlot()
 {
-
+    QTreeWidgetItem *lineEntries = topLevelItem(2);
+    QTreeWidgetItem* myChild = NULL;
+    while (lineEntries->childCount() > 0)
+    {
+        lineEntries->removeChild(lineEntries->child(lineEntries->childCount()-1));
+    }
 
     return;
 }

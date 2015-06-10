@@ -303,19 +303,19 @@ maxNrElements: {int}, optional \n\
     }
 
     
-    switch(elementType & ito::tTypeMask)
+    switch(elementType & ito::tGeoTypeMask)
     {
-        case ito::tSquare:
-        case ito::tCircle:
-        case ito::tPolygon:
+        case ito::tGeoSquare:
+        case ito::tGeoCircle:
+        case ito::tGeoPolygon:
             PyErr_SetString(PyExc_RuntimeError, "Drawing of element type currently not supported");
             return NULL;
 
         case ito::tMultiPointPick:
-        case ito::tPoint:
-        case ito::tLine:
-        case ito::tRectangle:
-        case ito::tEllipse:
+        case ito::tGeoPoint:
+        case ito::tGeoLine:
+        case ito::tGeoRectangle:
+        case ito::tGeoEllipse:
             break;
     }
 
@@ -438,31 +438,31 @@ void PythonPlotItem::PyPlotItem_addTpDict(PyObject *tp_dict)
     PyDict_SetItemString(tp_dict, "PrimitiveMultiPointPick", value);
     Py_DECREF(value);
 
-    value = Py_BuildValue("i",ito::tPoint);
+    value = Py_BuildValue("i",ito::tGeoPoint);
     PyDict_SetItemString(tp_dict, "PrimitivePoint", value);
     Py_DECREF(value);
 
-    value = Py_BuildValue("i",ito::tLine);
+    value = Py_BuildValue("i",ito::tGeoLine);
     PyDict_SetItemString(tp_dict, "PrimitiveLine", value);
     Py_DECREF(value);
 
-    value = Py_BuildValue("i",ito::tRectangle);
+    value = Py_BuildValue("i",ito::tGeoRectangle);
     PyDict_SetItemString(tp_dict, "PrimitiveRectangle", value);
     Py_DECREF(value);
 
-    value = Py_BuildValue("i",ito::tSquare);
+    value = Py_BuildValue("i",ito::tGeoSquare);
     PyDict_SetItemString(tp_dict, "PrimitiveSquare", value);
     Py_DECREF(value);
 
-    value = Py_BuildValue("i",ito::tEllipse);
+    value = Py_BuildValue("i",ito::tGeoEllipse);
     PyDict_SetItemString(tp_dict, "PrimitiveEllipse", value);
     Py_DECREF(value);
 
-    value = Py_BuildValue("i",ito::tCircle);
+    value = Py_BuildValue("i",ito::tGeoCircle);
     PyDict_SetItemString(tp_dict, "PrimitiveCircle", value);
     Py_DECREF(value);
 
-    value = Py_BuildValue("i",ito::tPolygon);
+    value = Py_BuildValue("i",ito::tGeoPolygon);
     PyDict_SetItemString(tp_dict, "PrimitivePolygon", value);
     Py_DECREF(value);
 }

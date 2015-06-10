@@ -29,6 +29,13 @@
 #include "DataObject/dataObjectFuncs.h"
 #include <iostream>
 
+#ifdef _USE_MATH_DEFINES
+    #include <math.h>
+#else
+    #define _USE_MATH_DEFINES
+    #include <math.h>
+    #undef _USE_MATH_DEFINES
+#endif
 namespace ito
 {
 
@@ -56,12 +63,12 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     void PrimitiveBase::setFlags( const int flags ) 
     {
-        cells[1] = ( float32 )( ( ( (int)(cells[1]) ) & tTypeMask ) | ( flags & tFlagMask ));
+        cells[1] = ( float32 )( ( ( (int)(cells[1]) ) & tGeoTypeMask ) | ( flags & tGeoFlagMask ));
     }
     //----------------------------------------------------------------------------------------------------------------------------------
     void PrimitiveBase::setType( const int type ) 
     {
-        cells[1] = ( float32 )( ( ( (int)(cells[1]) ) & tFlagMask ) | ( type & tTypeMask ));
+        cells[1] = ( float32 )( ( ( (int)(cells[1]) ) & tGeoFlagMask ) | ( type & tGeoTypeMask ));
     }
     //----------------------------------------------------------------------------------------------------------------------------------
     void PrimitiveBase::setTypeAndFlags( const int val ) 
@@ -154,6 +161,11 @@ namespace ito
         direction[2] = 1;
     }
     //----------------------------------------------------------------------------------------------------------------------------------
+    float32 PrimitiveBase::area() const
+    {
+        return 0.0f;
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
     void GeometricPrimitivePoint::normalVector(float32 direction[3]) const
     {
         direction[0] = 0;
@@ -181,14 +193,14 @@ namespace ito
         ito::float32 dir[3] = {1.0f,0.0f,0.0f};
         ito::float32 len = 1.0;
         directionVector(dir);
-        vectorDotMul(dir, base, direction);
+        vectorCross(dir, base, direction);
 
         if((len = vectorLength(direction)) < 0.001 )
         {
             base[0] = 1.0f;
             base[1] = 0.0f;
             base[2] = 0.0f;
-            vectorDotMul(dir, base, direction);
+            vectorCross(dir, base, direction);
             len = vectorLength(direction);           
         }
         if(ito::dObjHelper::isNotZero(len))
@@ -204,11 +216,21 @@ namespace ito
         direction[2] = 1.0f;
     }
     //----------------------------------------------------------------------------------------------------------------------------------
+    float32 GeometricPrimitiveCircle::area() const
+    {
+        return (float32)(M_PI * pow(cells[5], 2)); 
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
     void GeometricPrimitiveEllipse::normalVector(float32 direction[3]) const
     {
         direction[0] = 0.0f;
         direction[1] = 0.0f;
         direction[2] = 1.0f;
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    float32 GeometricPrimitiveEllipse::area() const
+    {
+        return (float32)(M_PI * (cells[5] / 2.0 * cells[6] / 2.0)); 
     }
     //----------------------------------------------------------------------------------------------------------------------------------
     void GeometricPrimitiveSquare::normalVector(float32 direction[3]) const
@@ -220,26 +242,51 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     void GeometricPrimitiveSquare::topLeft(float32 direction[3]) const
     {
-        
+#if _DEBUG
+        throw std::invalid_argument("Calculation for alpha != 0 not implemented yet");
+#endif
+        direction[0] = 0.0f;
+        direction[1] = 0.0f;
+        direction[2] = 1.0f;           
 
     }
     //----------------------------------------------------------------------------------------------------------------------------------
     void GeometricPrimitiveSquare::topRight(float32 direction[3]) const
     {
-    
+#if _DEBUG
+        throw std::invalid_argument("Calculation for alpha != 0 not implemented yet");
+#endif
+        direction[0] = 0.0f;
+        direction[1] = 0.0f;
+        direction[2] = 1.0f;       
 
     }
     //----------------------------------------------------------------------------------------------------------------------------------
     void GeometricPrimitiveSquare::bottomLeft(float32 direction[3]) const
     {
-    
+#if _DEBUG
+        throw std::invalid_argument("Calculation for alpha != 0 not implemented yet");
+#endif
+        direction[0] = 0.0f;
+        direction[1] = 0.0f;
+        direction[2] = 1.0f;       
 
     }
     //----------------------------------------------------------------------------------------------------------------------------------
     void GeometricPrimitiveSquare::bottomRight(float32 direction[3]) const
     {
-    
+#if _DEBUG
+        throw std::invalid_argument("Calculation for alpha != 0 not implemented yet");
+#endif
+        direction[0] = 0.0f;
+        direction[1] = 0.0f;
+        direction[2] = 1.0f;       
 
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    float32 GeometricPrimitiveSquare::area() const
+    {
+        return cells[5] * cells[5]; 
     }
     //----------------------------------------------------------------------------------------------------------------------------------
     void GeometricPrimitiveRectangle::normalVector(float32 direction[3]) const
@@ -260,7 +307,7 @@ namespace ito
             float32 dir[3] = { cells[5] - cells[2], 0, cells[7] - cells[4]};
             float32 dir2[3] = { 0, cells[6] - cells[3], cells[7] - cells[4]};
 
-            vectorDotMul(dir, dir2, direction);     
+            vectorCross(dir, dir2, direction);     
             len = vectorLength(direction); 
         }
 
@@ -272,25 +319,64 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     void GeometricPrimitiveRectangle::topLeft(float32 direction[3]) const
     {
-    
+#if _DEBUG
+        throw std::invalid_argument("Calculation for alpha != 0 not implemented yet");
+#endif
+        direction[0] = 0.0f;
+        direction[1] = 0.0f;
+        direction[2] = 1.0f;   
 
     }
     //----------------------------------------------------------------------------------------------------------------------------------
     void GeometricPrimitiveRectangle::topRight(float32 direction[3]) const
     {
-    
+#if _DEBUG
+        throw std::invalid_argument("Calculation for alpha != 0 not implemented yet");
+#endif
+        direction[0] = 0.0f;
+        direction[1] = 0.0f;
+        direction[2] = 1.0f;       
 
     }
     //----------------------------------------------------------------------------------------------------------------------------------
     void GeometricPrimitiveRectangle::bottomLeft(float32 direction[3]) const
     {
-    
+#if _DEBUG
+        throw std::invalid_argument("Calculation for alpha != 0 not implemented yet");
+#endif
+        direction[0] = 0.0f;
+        direction[1] = 0.0f;
+        direction[2] = 1.0f;       
 
     }
     //----------------------------------------------------------------------------------------------------------------------------------
     void GeometricPrimitiveRectangle::bottomRight(float32 direction[3]) const
     {
-    
+#if _DEBUG
+        throw std::invalid_argument("Calculation for alpha != 0 not implemented yet");
+#endif
+        direction[0] = 0.0f;
+        direction[1] = 0.0f;
+        direction[2] = 1.0f;       
 
+    }
+    //----------------------------------------------------------------------------------------------------------------------------------
+    float32 GeometricPrimitiveRectangle::area() const
+    {
+        if(ito::dObjHelper::isNotZero(alpha()))
+        {
+#if _DEBUG
+            throw std::invalid_argument("Calculation for alpha != 0 not implemented yet");
+#endif
+            return 0.0f;
+        }
+        else // if alpha is 0, the plane can be defined by dx/dz and dy/dz
+        {
+
+            float32 dir[3] = { cells[5] - cells[2], 0, cells[7] - cells[4]};
+            float32 dir2[3] = { 0, cells[6] - cells[3], cells[7] - cells[4]};
+  
+            return vectorLength(dir) * vectorLength(dir2); 
+        }
     }
 }

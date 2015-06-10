@@ -522,7 +522,11 @@ void AbstractFigure::setToolbarVisible(bool visible)
     m_toolbarsVisible = visible;
     updatePropertyDock();
 }
-
+//----------------------------------------------------------------------------------------------------------------------------------
+QObject* AbstractFigure::legendDock() 
+{
+    return (QObject*) m_markerLegendWidget;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 bool AbstractFigure::getToolbarVisible() const 
 { 

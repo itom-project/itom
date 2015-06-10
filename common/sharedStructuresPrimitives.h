@@ -37,9 +37,9 @@
 
 #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 
-#define PRIM_ELEMENTLENGTH 11 /** \brief number of elements within the geometricPrimitives */
-
 #ifdef USE_DEPRECIATED_ITOM_GEOMETRIC_ELEMS
+
+#define PRIM_ELEMENTLENGTH 11 /** \brief number of elements within the geometricPrimitives */
 /** \struct geometricPrimitives
 *   \brief This union was defined for adressing geometricPrimitives.
     \detail The union geometricPrimitives contains an array called cells with the size of PRIM_ELEMENTLENGTH.
@@ -224,14 +224,14 @@ namespace ito
 
 namespace ito
 {
-    inline void vectorDotMul(const float32 *v1,const  float32* v2, float32* res)
+    inline void vectorCross(const float32 *v1,const  float32* v2, float32* res)
     {
         res[0] = v1[1]*v2[2] - v1[2]*v2[1];
         res[1] = v1[2]*v2[0] - v1[1]*v2[2];
         res[2] = v1[0]*v2[1] - v1[1]*v2[0];
     }    
     //----------------------------------------------------------------------------------------------------------------------------------
-    inline float32 vectorScalarMul(const float32 *v1,const float32* v2)
+    inline float32 vectorDot(const float32 *v1,const float32* v2)
     {
         return v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
     }
@@ -254,110 +254,7 @@ namespace ito
     }
     //----------------------------------------------------------------------------------------------------------------------------------
 
-    enum tPrimitive
-    {
-        tNoType           =   0,            /**! NoType for pick*/
-        tMultiPointPick   =   6,            /**! Multi point pick*/
-        tPoint            =   101,          /**! Element is tPoint or order to pick points*/
-        tLine             =   102,          /**! Element is tLine or order to pick lines*/
-        tRectangle        =   103,          /**! Element is tRectangle or order to pick rectangles*/
-        tSquare           =   104,          /**! Element is tSquare or order to pick squares*/
-        tEllipse          =   105,          /**! Element is tEllipse or order to pick ellipses*/
-        tCircle           =   106,          /**! Element is tCircle or order to pick circles*/
-        tPolygon          =   110,          /**! Element is tPolygon or order to pick polygon*/
-        tMoveLock         =   0x00010000,   /**! Element is readOnly */
-        tRotateLock       =   0x00020000,   /**! Element can not be moved */
-        tResizeLock       =   0x00040000,   /**! Element can not be moved */
-        tTypeMask         =   0x0000FFFF,   /**! Mask for the type space */
-        tFlagMask         =   0xFFFF0000    /**! Mask for the flag space */
-    };
 
-    struct GeometricPrimitive
-    {
-        /*
-            struct point
-            {
-                ito::float32 idx;
-                ito::float32 flags;
-                ito::float32 x0;
-                ito::float32 y0;
-                ito::float32 z0;
-            };
-
-            struct line
-            {
-                ito::float32 idx;
-                ito::float32 flags;
-                ito::float32 x0;
-                ito::float32 y0;
-                ito::float32 z0;
-                ito::float32 x1;
-                ito::float32 y1;
-                ito::float32 z1;
-            };
-
-            struct elipse
-            {
-                ito::float32 idx;
-                ito::float32 flags;
-                ito::float32 centerX;
-                ito::float32 centerY;
-                ito::float32 centerZ;
-                ito::float32 r1;
-                ito::float32 r2;
-                ito::float32 alpha;
-            };
-
-            struct circle
-            {
-                ito::float32 idx;
-                ito::float32 flags;
-                ito::float32 centerX;
-                ito::float32 centerY;
-                ito::float32 centerZ;
-                ito::float32 r1;
-            };
-
-            struct retangle
-            {
-                ito::float32 idx;
-                ito::float32 flags;
-                ito::float32 x0;
-                ito::float32 y0;
-                ito::float32 z0;
-                ito::float32 x1;
-                ito::float32 y1;
-                ito::float32 z1;
-                ito::float32 alpha;
-            };
-
-            struct square
-            {
-                ito::float32 idx;
-                ito::float32 flags;
-                ito::float32 centerX;
-                ito::float32 centerY;
-                ito::float32 centerZ;
-                ito::float32 a;
-                ito::float32 alpha;
-            };
-
-            struct polygoneElement
-            {
-                ito::float32 idx;
-                ito::float32 flags;
-                ito::float32 x0;
-                ito::float32 y0;
-                ito::float32 z0;
-                ito::float32 directionX;
-                ito::float32 directionY;
-                ito::float32 directionZ;
-                ito::float32 pointIdx;
-                ito::float32 pointNumber;
-            };
-        */
-        float32 cells[PRIM_ELEMENTLENGTH];
-    };
 
     class ITOMCOMMONQT_EXPORT PrimitiveBase
     {
@@ -372,16 +269,17 @@ namespace ito
         void setTypeAndFlags( const int val );
 
         inline int getIndex() const {return (int)(cells[0]);}
-        inline int getFlags() const {return ((int)(cells[1])) & tFlagMask;}
-        inline int getType() const {return ((int)(cells[1])) & tTypeMask;}
+        inline int getFlags() const {return ((int)(cells[1])) & tGeoFlagMask;}
+        inline int getType() const {return ((int)(cells[1])) & tGeoTypeMask;}
         inline int getTypeAndFlags() const {return (int)(cells[1]);}
 
-        static int extractType(const GeometricPrimitive &comperator) {return ((int)(comperator.cells[1])) & tTypeMask;}
-        static int extractFlags(const GeometricPrimitive &comperator) {return ((int)(comperator.cells[1])) & tFlagMask;}
+        static int extractType(const GeometricPrimitive &comperator) {return ((int)(comperator.cells[1])) & tGeoTypeMask;}
+        static int extractFlags(const GeometricPrimitive &comperator) {return ((int)(comperator.cells[1])) & tGeoFlagMask;}
 
         float32* ptr_data();
         float32* ptr_geo();
         virtual void normalVector(float32 direction[3]) const;
+        virtual float32 area() const;
 
         static float32 distanceLineToPoint(const PrimitiveBase &line, const PrimitiveBase &point, const bool plaine = false);
         static float32 distancePointToPoint(const PrimitiveBase &point1, const PrimitiveBase &point2, const bool plaine = false);
@@ -445,6 +343,7 @@ namespace ito
             memcpy(direction, cells, 3*sizeof(float32));
         }
         void normalVector(float32 direction[3]) const;
+        float32 area() const;
     };
 
     class ITOMCOMMONQT_EXPORT GeometricPrimitiveEllipse : protected PrimitiveBase
@@ -462,6 +361,7 @@ namespace ito
             memcpy(direction, cells, 3*sizeof(float32));
         }
         void normalVector(float32 direction[3]) const;
+        float32 area() const;
     };
 
     class ITOMCOMMONQT_EXPORT GeometricPrimitiveSquare: protected PrimitiveBase
@@ -483,6 +383,7 @@ namespace ito
         void topRight(float32 direction[3]) const;
         void bottomLeft(float32 direction[3]) const;
         void bottomRight(float32 direction[3]) const;
+        float32 area() const;
     };
 
     class ITOMCOMMONQT_EXPORT GeometricPrimitiveRectangle: protected PrimitiveBase
@@ -508,6 +409,7 @@ namespace ito
         void topRight(float32 direction[3]) const;
         void bottomLeft(float32 direction[3]) const;
         void bottomRight(float32 direction[3]) const;
+        float32 area() const;
     };
 }
 

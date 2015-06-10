@@ -126,18 +126,18 @@ void UserInteractionWatcher::userInteractionDone(int type, bool aborted, QPolygo
 {
     int dims = 2; //m_dObjPtr ? m_dObjPtr->getDims() : 2;
     
-    switch(type & ito::tTypeMask)
+    switch(type & ito::tGeoTypeMask)
     {
-        case ito::tSquare:
-        case ito::tCircle:
-        case ito::tPolygon:
+        case ito::tGeoSquare:
+        case ito::tGeoCircle:
+        case ito::tGeoPolygon:
         default:
         {
             *m_coords = ito::DataObject();
             break;
         }
         case ito::tMultiPointPick:
-        case ito::tPoint:
+        case ito::tGeoPoint:
         {
             if (aborted)
             {
@@ -163,9 +163,9 @@ void UserInteractionWatcher::userInteractionDone(int type, bool aborted, QPolygo
             *m_coords = output;
             break;
         }
-        case ito::tLine:
-        case ito::tRectangle:
-        case ito::tEllipse:
+        case ito::tGeoLine:
+        case ito::tGeoRectangle:
+        case ito::tGeoEllipse:
         {
             if (aborted)
             {

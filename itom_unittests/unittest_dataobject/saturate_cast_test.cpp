@@ -287,15 +287,15 @@ TYPED_TEST_CASE(SaturateTestFloat_UInt, ItomUIntDataTypes);
 
 TYPED_TEST(SaturateTestFloat_UInt, saturate_cast_Test)
 {
-    ito::float32 float_var1 = -5.0;
-    ito::float32 float_var2 = -4.9;
-    ito::float32 float_var3 = -4.1;
-    ito::float32 float_var4 = 0;
-    ito::float32 float_var5 = 4.1;
-    ito::float32 float_var6 = 4.9;
-    ito::float32 float_var7 = 5.0;
-    ito::float32 float_var8 = 258;        //!< declaring float32 type variable with value greater than maximum value for uint8 type variable for test purpose
-    ito::float32 float_var9 = 65538;    //!< declaring float32 type variable with value greater than maximum value for uint16 type variable for test purpose
+    ito::float32 float_var1 = -5.0f;
+    ito::float32 float_var2 = -4.9f;
+    ito::float32 float_var3 = -4.1f;
+    ito::float32 float_var4 = 0.0f;
+    ito::float32 float_var5 = 4.1f;
+    ito::float32 float_var6 = 4.9f;
+    ito::float32 float_var7 = 5.0f;
+    ito::float32 float_var8 = 258.0f;        //!< declaring float32 type variable with value greater than maximum value for uint8 type variable for test purpose
+    ito::float32 float_var9 = 65538.0f;    //!< declaring float32 type variable with value greater than maximum value for uint16 type variable for test purpose
 
     ito::float32 float32_inf = std::numeric_limits<ito::float32>::infinity();            //!< a float32 variable with a special value infinity()
     ito::float64 float64_inf = std::numeric_limits<ito::float64>::infinity();            //!< a float64 point variable with a special value infinity()
