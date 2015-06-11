@@ -1980,6 +1980,71 @@ RetVal UiOrganizer::getChildObject3(unsigned int parentObjectID, const QString &
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+RetVal getObjectChildrenInfoRecursive(const QObject *obj, bool recursive, QSharedPointer<QStringList> &objectNames, QSharedPointer<QStringList> &classNames)
+{
+    ito::RetVal retval;
+
+    if (obj)
+    {
+        QList<QObject*> children = obj->children();
+
+        foreach (const QObject* child, children)
+        {
+            if (child->inherits("QWidget") || child->inherits("QLayout"))
+            {
+                if (child->objectName() != "")
+                {
+                    objectNames->append(child->objectName());
+                    classNames->append(child->metaObject()->className());
+
+                    if (recursive)
+                    {
+                        retval += getObjectChildrenInfoRecursive(child, recursive, objectNames, classNames);
+                    }
+                }
+            }
+        }
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::getObjectChildrenInfo(unsigned int objectID, bool recursive, QSharedPointer<QStringList> objectNames, QSharedPointer<QStringList> classNames, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    RetVal retValue(retOk);
+    objectNames->clear();
+    classNames->clear();
+
+    if (m_objectList.contains(objectID))
+    {
+        QObject* ptr = m_objectList[objectID].data();
+
+        if (ptr)
+        {
+            retValue += getObjectChildrenInfoRecursive(ptr, recursive, objectNames, classNames);
+        }
+        else
+        {
+            retValue += RetVal(retError, errorUiHandleInvalid, tr("The object ID is invalid.").toLatin1().data());
+        }
+    }
+    else
+    {
+        retValue += RetVal(retError, errorUiHandleInvalid, tr("The given object ID is unknown.").toLatin1().data());
+    }
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retValue;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::getSignalIndex(unsigned int objectID, const QString &signalSignature, QSharedPointer<int> signalIndex, QSharedPointer<QObject*> objPtr, QSharedPointer<IntList> argTypes, ItomSharedSemaphore *semaphore)
 {
     *signalIndex = -1;
