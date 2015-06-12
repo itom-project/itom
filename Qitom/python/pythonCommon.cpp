@@ -1492,7 +1492,6 @@ bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *e
         const char *temp = retVal.errorMessage();
         if (temp == NULL)
         {
-            //msg = QObject::tr("- unknown message -").toUtf8();
             msg = QString("- unknown message -").toUtf8();
         }
         else

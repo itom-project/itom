@@ -247,9 +247,7 @@ void WorkspaceDockWidget::mnuExportItem()
         if (retValue.containsError())
         {
             const char *errorMsg = retValue.errorMessage();
-            QString message = QString();
-            if (errorMsg) message =errorMsg;
-            //std::cerr << "error while exporting variables. reason: " << message.toLatin1().data() << "\n" << std::endl;
+            QString message = errorMsg ? QLatin1String(errorMsg) : QString();
             QMessageBox::critical(this, tr("Export data"), tr("Error while exporting variables:\n%1").arg(message));
         }
     }
