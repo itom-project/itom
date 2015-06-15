@@ -83,7 +83,6 @@ class itoDebugger(bdb.Bdb):
         self.curindex = 0
         self.curframe = None
         self.curframe_locals = None
-        #print("self.curframe has been reset")
         self.tb_lineno.clear()
 
     def setup(self, f, tb):
@@ -112,8 +111,6 @@ class itoDebugger(bdb.Bdb):
             while temp_frame:
                 count = count +1
                 temp_frame = temp_frame.f_back
-            
-            #print("stack size is %d" % count)
             
             if count >= self.minStackIndexToDebug :
                 return True
@@ -211,11 +208,6 @@ class itoDebugger(bdb.Bdb):
     # General interaction function
     def _cmdloop(self,  frame):
         if(self._wait_for_first_stop == False):
-            #t = frame
-            #while(not t is None):
-            #    text = "stop in {0}, line {1}, globals_id {2}".format(t.f_code.co_filename,t.f_lineno,id(t.f_globals))
-            #    print(text)
-            #    t = t.f_back
             itomDbgWrapper.pyDbgCommandLoop(self, frame)
         elif(self.get_break(self.canonic(frame.f_code.co_filename),  frame.f_lineno)):
             self._wait_for_first_stop = False
@@ -647,13 +639,12 @@ class itoDebugger(bdb.Bdb):
         
         self.reset()
         try:
-            compiledCode = compile(codeString, "<string>", "exec")
-            self.runeval( compiledCode )
-            #self.runeval(codeString)
+            compiledCode = compile(codeString, "<string>", mode = "single") #mode = 'single' forces statements that evaluate to something other than None will be printed
+            self.runeval(compiledCode)
+        finally: 
             self.clear_all_breaks()
             self.reset()
-            #print("fertig mit debuggen.")
-        finally:    
+            
             if(tempFilename != ""):
                 __main__.__dict__.update({"__file__" : tempFilename})
             else:
@@ -689,7 +680,6 @@ class itoDebugger(bdb.Bdb):
                 self.runcall(fctPointer,*args,**kwargs)
             self.clear_all_breaks()
             self.reset()
-            #print("fertig mit debuggen.")
         finally:    
             if(tempFilename != ""):
                 __main__.__dict__.update({"__file__" : tempFilename})
@@ -726,7 +716,6 @@ class itoDebugger(bdb.Bdb):
             self.run(statement,  __main__.__dict__)
             self.clear_all_breaks()
             self.reset()
-            #print("fertig mit debuggen.")
         finally:    
             if(tempFilename != ""):
                 __main__.__dict__.update({"__file__" : tempFilename})
