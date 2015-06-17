@@ -251,7 +251,7 @@ class FigureCanvasItom( FigureCanvasBase ):
         
         if d: 
             if not self._timer:
-                self._timer = timer(1, self.idle_draw) #auto-start, todo: reduce interval to 0 once the itom.timer constructor allows this!
+                self._timer = timer(0, self.idle_draw) #auto-start, continuous mode
             else:
                 self._timer.start()
             #print("singleShot draw_idle timer")
