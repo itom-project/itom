@@ -115,7 +115,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
 
     m_pWidgetFindWord = new WidgetFindWord(this);
     connect(m_pWidgetFindWord, SIGNAL(findNext(QString,bool,bool,bool,bool,bool,bool)), this, SLOT(findTextExpr(QString,bool,bool,bool,bool,bool,bool)));
-    connect(m_pWidgetFindWord, SIGNAL(hideSearchBar()), this, SLOT(mnuFindTextExpr()));
+    connect(m_pWidgetFindWord, SIGNAL(hideSearchBar()), this, SLOT(findWordWidgetFinished()));
    
     // Layoutbox
     m_pVBox = new QVBoxLayout();
@@ -1940,17 +1940,9 @@ void ScriptDockWidget::mnuScriptStepOut()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptDockWidget::mnuFindTextExpr()
 {
-//    if (!m_pWidgetFindWord->isVisible()) 
-//    {
-        m_pWidgetFindWord->show();
-        m_pWidgetFindWord->setCursorToTextField();
-        m_findTextExprAction->action()->setChecked(true);
-/*    }
-    else
-    {
-        m_pWidgetFindWord->hide();
-        m_findTextExprAction->action()->setChecked(false);
-    }*/
+    m_pWidgetFindWord->show();
+    m_pWidgetFindWord->setCursorToTextField();
+    m_findTextExprAction->action()->setChecked(true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2245,6 +2237,18 @@ void ScriptDockWidget::insertIconBrowserText(QString iconLink)
 void ScriptDockWidget::editorMarginChanged()
 {
     updateEditorActions();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::findWordWidgetFinished()
+{
+    m_pWidgetFindWord->hide();
+
+    ScriptEditorWidget* sew = getCurrentEditor();
+    if (sew != NULL)
+    {
+        sew->setFocus();
+    }
 }
 
 } //end namespace ito
