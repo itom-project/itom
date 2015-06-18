@@ -30,25 +30,25 @@
 
 class ColorCombo : public QComboBox
 {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	ColorCombo(QWidget* parent = 0);
-	virtual ~ColorCombo();
+    ColorCombo(QWidget* parent = 0);
+    virtual ~ColorCombo();
 
     QColor color() const;
     void setColor(QColor c);
 
 signals:
     /** slot that is being called by the editor widget */
-	void colorChanged(QColor c);
+    void colorChanged(QColor c);
 
 private slots:
-	void currentChanged(int index);	
+    void currentChanged(int index);    
 
 
 
 private:
-	QColor	m_init;
+    QColor    m_init;
 
 };
 #endif

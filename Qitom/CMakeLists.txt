@@ -1,5 +1,5 @@
 SET (target_name qitom)
-   
+       
 project(${target_name})
  
 cmake_minimum_required(VERSION 2.8.7)
@@ -103,6 +103,7 @@ INCLUDE_DIRECTORIES(
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
     ../DataObject/
     ../PointCloud/
+	../itomWidgets
 )
 
 LINK_DIRECTORIES(
@@ -148,6 +149,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/addInManager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/algoInterfaceValidator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/designerWidgetOrganizer.h
@@ -202,6 +204,8 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManagerInstall.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/itomSpinBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.h
@@ -218,6 +222,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralApplication.h    
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralLanguage.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropHelpDock.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonGeneral.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonStartup.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractPyScintillaWidget.h
@@ -266,6 +271,8 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManager.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManagerInstall.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetInfoBox.ui
@@ -281,6 +288,7 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralLanguage.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropHelpDock.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonStartup.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonGeneral.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/uiDebugViewer.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/uiMainWindow.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.ui
@@ -320,6 +328,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/addInManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/algoInterfaceValidator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/designerWidgetOrganizer.cpp
@@ -371,6 +380,8 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManagerInstall.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.cpp
@@ -385,6 +396,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralApplication.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralLanguage.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropHelpDock.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonStartup.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractPyScintillaWidget.cpp
@@ -554,7 +566,7 @@ IF(APPLE)
     SET_SOURCE_FILES_PROPERTIES(${target_icon_path} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
     # Add executable for OS X
-    ADD_EXECUTABLE(${target_name} MACOSX_BUNDLE ${target_icon_path} ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENCENDY} )
+    ADD_EXECUTABLE(${target_name} MACOSX_BUNDLE ${target_icon_path} ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENDENCY} )
 
     # SET_SOURCE_FILES_PROPERTIES(
     #     ${CMAKE_BINARY_DIR}/../itoDebugger.py
@@ -582,7 +594,7 @@ IF(APPLE)
     COPY_TO_BUNDLE(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../demo" "../demo")
 ELSE(APPLE)
     # Executable for WINDOWS and LINUX
-    ADD_EXECUTABLE(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENCENDY} )
+    ADD_EXECUTABLE(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENDENCY} )
 
     # Set binary file names for  WINDOWS and LINUX
     set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
@@ -637,12 +649,12 @@ ENDIF(BUILD_WITH_PCL)
 
 IF (QT5_FOUND)
 	if (WIN32)
-		TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib ${PYMATLAB_LIBRARIES} shell32)
+		TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets ${PYMATLAB_LIBRARIES} shell32)
 	else (WIN32)
-		TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib ${PYMATLAB_LIBRARIES})
+		TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets ${PYMATLAB_LIBRARIES})
 	endif (WIN32)
 ELSE (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib ${PYMATLAB_LIBRARIES})
+    TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets ${PYMATLAB_LIBRARIES})
 ENDIF (QT5_FOUND)
  
 BUILD_PARALLEL_LINUX(${target_name})
@@ -682,8 +694,31 @@ FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../docs/userDoc/source/ext       DESTINATI
 
 #FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/itom_sdk.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include)
 
-file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h ITOM_VERSIONS_TMP REGEX "^.*static const char\\* ito_AddInInterface_CurrentVersion[ \t]+=+.*$")
-string(REGEX REPLACE ".*static const char\\* ito_AddInInterface_CurrentVersion[ \t]+=[ \t]+.([a-zA-Z0-9\\./]+).*" "\\1" ITOM_VERSION_STRING_WITH_API ${ITOM_VERSIONS_TMP})
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_MAJOR [0-9]+$")
+if (ITOM_VERSION_TMP)
+    string(REGEX REPLACE "^.*#define ITOM_ADDININTERFACE_MAJOR ([0-9]+)$" "\\1" ITOM_VERSION_MAJOR ${ITOM_VERSION_TMP})
+else (ITOM_VERSION_TMP)
+    message(WARNING "#define ITOM_ADDININTERFACE_MAJOR in addInInterface.h missing. Can not detect version of itom SDK")
+    set(ITOM_VERSION_MAJOR "?")
+endif (ITOM_VERSION_TMP)
+
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_MINOR [0-9]+$")
+if (ITOM_VERSION_TMP)
+    string(REGEX REPLACE "^.*#define ITOM_ADDININTERFACE_MINOR ([0-9]+)$" "\\1" ITOM_VERSION_MINOR ${ITOM_VERSION_TMP})
+else (ITOM_VERSION_TMP)
+    message(WARNING "#define ITOM_ADDININTERFACE_MINOR in addInInterface.h missing. Can not detect version of itom SDK")
+    set(ITOM_VERSION_MINOR "?")
+endif (ITOM_VERSION_TMP)
+
+file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_PATCH [0-9]+$")
+if (ITOM_VERSION_TMP)
+    string(REGEX REPLACE "^.*#define ITOM_ADDININTERFACE_PATCH ([0-9]+)$" "\\1" ITOM_VERSION_PATCH ${ITOM_VERSION_TMP})
+else (ITOM_VERSION_TMP)
+    message(WARNING "#define ITOM_ADDININTERFACE_PATCH in addInInterface.h missing. Can not detect version of itom SDK")
+    set(ITOM_VERSION_PATCH "?")
+endif (ITOM_VERSION_TMP)
+
+SET(ITOM_VERSION_STRING_WITH_API "ito.AddIn.InterfaceBase/${ITOM_VERSION_MAJOR}.${ITOM_VERSION_MINOR}.${ITOM_VERSION_PATCH}")
 
 CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/itom_sdk.h.in ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/itom_sdk.h)
 

@@ -48,10 +48,8 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
     m_breakPointView->setContextMenuPolicy(Qt::CustomContextMenu);
 
     connect(m_breakPointView, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(doubleClicked(const QModelIndex &)));
-
     connect(m_breakPointView, SIGNAL(customContextMenuRequested(const QPoint &)), this, SLOT(treeViewContextMenuRequested(const QPoint &)));
-    
-    connect(m_breakPointView, SIGNAL(selectedItemsChanged()), this, SLOT(treeViewSelectionChanged()));
+    connect(m_breakPointView, SIGNAL(selectedItemsChanged(QItemSelection,QItemSelection)), this, SLOT(treeViewSelectionChanged(QItemSelection,QItemSelection)));
     
     m_breakPointView->setTextElideMode(Qt::ElideLeft);
     m_breakPointView->sortByColumn(0);
@@ -141,7 +139,7 @@ void BreakPointDockWidget::treeViewContextMenuRequested(const QPoint &pos)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void BreakPointDockWidget::treeViewSelectionChanged()
+void BreakPointDockWidget::treeViewSelectionChanged(const QItemSelection &/*selected*/, const QItemSelection &/*deselected*/)
 {
     updateActions();
 }

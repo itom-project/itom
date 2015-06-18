@@ -110,6 +110,7 @@ public:
 
     static PyObject* PyUiItem_info(PyUiItem *self, PyObject *args);
     static PyObject* PyUiItem_exists(PyUiItem *self);
+    static PyObject* PyUiItem_children(PyUiItem *self, PyObject *args, PyObject *kwds);
 
     //-------------------------------------------------------------------------------------------------
     // helpers
@@ -193,7 +194,7 @@ public:
     #define PyUi_Check(op) PyObject_TypeCheck(op, &ito::PythonUi::PyUiType)
 
 private:
-    static QHash<QByteArray, QSharedPointer<MethodDescriptionList> > methodDescriptionListStorage; //key is a widget-className, every PyUiItem which needs a methodDescriptionList gets it from this storage or if not available from UiOrganizer and puts it then to this storage
+    static QHash<QByteArray, QSharedPointer<ito::MethodDescriptionList> > methodDescriptionListStorage; //key is a widget-className, every PyUiItem which needs a methodDescriptionList gets it from this storage or if not available from UiOrganizer and puts it then to this storage
 };
 
 }; //end namespace ito

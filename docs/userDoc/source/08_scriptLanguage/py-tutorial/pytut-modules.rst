@@ -1,4 +1,6 @@
-﻿.. include:: ../../include/global.inc
+﻿.
+
+.. include:: ../../include/global.inc
 
 Modules
 -------------------------------
@@ -11,8 +13,10 @@ Modules
 Import Modules
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Reload Modules in ITOM
+Reload Modules in |itom|
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+see :ref:`here <script-language-reload-modules>` to get more information about reloading modules in |itom|.
 
 path Variablen
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -20,16 +24,11 @@ path Variablen
 itom-packages Folder
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-
-
-
-
-
 .. _tut-modules:
 
 If you quit from the Python interpreter and enter it again, the definitions you
 have made (functions and variables) are lost. Therefore, if you want to write a
-somewhat longer program, you are better off using a text editor to prepare the
+somewhat longer program, you are better off using the script editor to prepare the
 input for the interpreter and running it with that file as input instead.  This
 is known as creating a *script*.  As your program gets longer, you may want to
 split it into several files for easier maintenance.  You may also want to use a
@@ -147,12 +146,9 @@ use it to save typing in interactive sessions.
 Executing modules as scripts
 ----------------------------
 
-When you run a Python module with ::
-
-   python fibo.py <arguments>
-
+When you run a Python module by executing the corresponding python script 
 the code in the module will be executed, just as if you imported it, but with
-the ``__name__`` set to ``"__main__"``.  That means that by adding this code at
+the variable ``__name__`` set to ``"__main__"``.  That means that by adding this code at
 the end of your module::
 
    if __name__ == "__main__":
@@ -182,9 +178,9 @@ The Module Search Path
 
 .. index:: triple: module; search; path
 
-When a module named :mod:`spam` is imported, the interpreter first searches for
+When a module named **spam** is imported, the interpreter first searches for
 a built-in module with that name. If not found, it then searches for a file
-named :file:`spam.py` in a list of directories given by the variable
+named *spam.py* in a list of directories given by the variable
 :data:`sys.path`.  :data:`sys.path` is initialized from these locations:
 
 * the directory containing the input script (or the current directory).
@@ -192,15 +188,21 @@ named :file:`spam.py` in a list of directories given by the variable
   shell variable :envvar:`PATH`).
 * the installation-dependent default.
 
-After initialization, Python programs can modify :data:`sys.path`.  The
-directory containing the script being run is placed at the beginning of the
+After initialization, Python programs can modify :data:`sys.path`:
+
+.. code-blocks:: python
+    
+    import sys
+    sys.path.append("C:/myNewPath")
+    
+The directory containing the script being run is placed at the beginning of the
 search path, ahead of the standard library path. This means that scripts in that
 directory will be loaded instead of modules of the same name in the library
-directory. This is an error unless the replacement is intended.  See section
+directory. This is an error unless the replacement is intended. See section
 :ref:`tut-standardmodules` for more information.
 
-.. %
-    Do we need stuff on zip files etc. ? DUBOIS
+Per default, the directory **itom-packages** (sub-directory of |itom| installation
+directory, is always part of the :data:`sys.path` variable.
 
 "Compiled" Python files
 -----------------------
@@ -208,7 +210,7 @@ directory. This is an error unless the replacement is intended.  See section
 As an important speed-up of the start-up time for short programs that use a lot
 of standard modules, if a file called :file:`spam.pyc` exists in the directory
 where :file:`spam.py` is found, this is assumed to contain an
-already-"byte-compiled" version of the module :mod:`spam`. The modification time
+already-"byte-compiled" version of the module **spam**. The modification time
 of the version of :file:`spam.py` used to create :file:`spam.pyc` is recorded in
 :file:`spam.pyc`, and the :file:`.pyc` file is ignored if these don't match.
 

@@ -417,6 +417,7 @@ public slots:
         return getObjectInfo(getWeakObjectReference(objectID), type, propMap, semaphore);
     }
     RetVal getObjectInfo(unsigned int objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);
+    RetVal getObjectChildrenInfo(unsigned int objectID, bool recursive, QSharedPointer<QStringList> objectNames, QSharedPointer<QStringList> classNames, ItomSharedSemaphore *semaphore = NULL);
 
     RetVal connectWithKeyboardInterrupt(unsigned int objectID, const QString &signalSignature, ItomSharedSemaphore *semaphore = NULL);
     RetVal getMethodDescriptions(unsigned int objectID, QSharedPointer<MethodDescriptionList> methodList, ItomSharedSemaphore *semaphore = NULL);
@@ -432,7 +433,7 @@ public slots:
     RetVal figurePickPoints(unsigned int objectID, QSharedPointer<ito::DataObject> coords, int maxNrPoints, ItomSharedSemaphore *semaphore);
     RetVal figureDrawGeometricElements(unsigned int objectID, QSharedPointer<ito::DataObject> coords, int elementType, int maxNrElements, ItomSharedSemaphore *semaphore);
     RetVal figurePickPointsInterrupt(unsigned int objectID);
-	RetVal isFigureItem(unsigned int objectID,  QSharedPointer<unsigned int> isFigureItem, ItomSharedSemaphore *semaphore);
+    RetVal isFigureItem(unsigned int objectID,  QSharedPointer<unsigned int> isFigureItem, ItomSharedSemaphore *semaphore);
 
     void figureDestroyed(QObject *obj)
     {

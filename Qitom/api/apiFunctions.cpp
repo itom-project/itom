@@ -20,6 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#include "../python/pythonEngine.h"
 #include "../organizer/addInManager.h"
 #include "../helper/paramHelper.h"
 #include "apiFunctions.h"
@@ -65,6 +66,9 @@ namespace ito
         (void*)&ParamHelper::validateIntArrayMeta,        /* [26] */
         (void*)&ParamHelper::validateCharArrayMeta,       /* [27] */
         (void*)&ParamHelper::validateDoubleArrayMeta,     /* [28] */
+        (void*)&ApiFunctions::sendParamToPyWorkspaceThreadSafe,      /* [29] */
+        (void*)&ApiFunctions::sendParamsToPyWorkspaceThreadSafe,     /* [30] */
+        (void*)&ApiFunctions::maddInClose,                /* [31] */
         NULL
     };
 
@@ -397,7 +401,6 @@ ito::RetVal ApiFunctions::maddInOpenActuator(const QString &name, const int plug
 
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
     QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(int, pluginNum), Q_ARG(QString, name), Q_ARG(ito::AddInActuator**, &actuator), Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(bool, autoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond));
-    //retval = AIM->initAddIn(pluginNum, pluginName, &self->actuatorObj, paramsMand, paramsOpt, enableAutoLoadParams);
     waitCond->wait(-1);
     retval += waitCond->returnValue;
     waitCond->deleteSemaphore();
@@ -419,9 +422,27 @@ ito::RetVal ApiFunctions::maddInOpenDataIO(const QString &name, const int plugin
 
     ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
     QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(int, pluginNum), Q_ARG(QString, name), Q_ARG(ito::AddInDataIO**, &dataIO), Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(bool, autoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond));
-    //retval = AIM->initAddIn(pluginNum, pluginName, &self->actuatorObj, paramsMand, paramsOpt, enableAutoLoadParams);
     waitCond->wait(-1);
     retval += waitCond->returnValue;
+    waitCond->deleteSemaphore();
+    waitCond = NULL;
+
+    return retval;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ApiFunctions::maddInClose(ito::AddInBase *instance)
+{
+    ito::RetVal retval(ito::retOk);
+
+    ito::AddInManager *AIM = ito::AddInManager::getInstance();
+    if (!AIM)
+    {
+        return ito::RetVal(ito::retError, 0, QObject::tr("Fatal error! Could not get addInManager instance!").toLatin1().data());
+    }
+
+    ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
+    QMetaObject::invokeMethod(AIM, "closeAddIn", Q_ARG(ito::AddInBase*, instance), Q_ARG(ItomSharedSemaphore*, waitCond));
     waitCond->deleteSemaphore();
     waitCond = NULL;
 
@@ -509,7 +530,7 @@ QString ApiFunctions::getCurrentWorkingDir(void)
     return QDir::cleanPath(QDir::currentPath());
 }
 
-
+//------------------------------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ApiFunctions::mshowConfigurationDialog(ito::AddInBase *plugin, ito::AbstractAddInConfigDialog *configDialogInstance)
 {
     ito::RetVal retval;
@@ -541,6 +562,46 @@ ito::RetVal ApiFunctions::mshowConfigurationDialog(ito::AddInBase *plugin, ito::
     configDialogInstance->deleteLater();
 
     return ito::retOk;
+}
+
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal ApiFunctions::sendParamToPyWorkspaceThreadSafe(const QString &varname, const QSharedPointer<ito::ParamBase> &value)
+{
+    return sendParamsToPyWorkspaceThreadSafe(QStringList(varname), QVector<QSharedPointer<ito::ParamBase> >(1, value));
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal ApiFunctions::sendParamsToPyWorkspaceThreadSafe(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values)
+{
+    ito::RetVal retval;
+    PythonEngine *pyEng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    if (pyEng)
+    {
+        if (QThread::currentThreadId() == pyEng->getPythonThreadId())
+        {
+            retval += pyEng->putParamsToWorkspace(true, varnames, values, NULL);
+        }
+        else
+        {
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            QMetaObject::invokeMethod(pyEng, "putParamsToWorkspace", Q_ARG(bool,true), Q_ARG(QStringList,varnames), Q_ARG(QVector<SharedParamBasePointer >, values), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            if (locker->wait(AppManagement::timeouts.pluginGeneral))
+            {
+                retval += locker->returnValue;
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, "timeout while sending variables to python workspace. Python is maybe busy. Try it later again.");
+            }
+        }
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, "Python is not available.");
+    }
+
+    return retval;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------

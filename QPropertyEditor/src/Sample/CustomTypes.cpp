@@ -18,22 +18,22 @@
 
 namespace CustomTypes
 {
-	void registerTypes()
-	{
-		static bool registered = false;
-		if (!registered)
-		{
-			qRegisterMetaType<Vec3f>("Vec3f");
-			registered = true;
-		}
-	}
+    void registerTypes()
+    {
+        static bool registered = false;
+        if (!registered)
+        {
+            qRegisterMetaType<Vec3f>("Vec3f");
+            registered = true;
+        }
+    }
 
-	Property* createCustomProperty(const QString& name, QObject* propertyObject, Property* parent)
-	{
-		int userType = propertyObject->property(qPrintable(name)).userType();
-		if (userType == QMetaType::type("Vec3f"))
-			return new Vec3fProperty(name, propertyObject, parent);
-		else
-			return new Property(name, propertyObject, parent);
-	}
+    Property* createCustomProperty(const QString& name, QObject* propertyObject, Property* parent)
+    {
+        int userType = propertyObject->property(qPrintable(name)).userType();
+        if (userType == QMetaType::type("Vec3f"))
+            return new Vec3fProperty(name, propertyObject, parent);
+        else
+            return new Property(name, propertyObject, parent);
+    }
 }

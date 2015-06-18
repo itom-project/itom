@@ -358,9 +358,9 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
     QString fullName("empty item");
     QByteArray type;
 
-	if (item)
+    if (item)
     {
-		fullName = item->data(0, Qt::UserRole+1).toString();
+        fullName = item->data(0, Qt::UserRole+1).toString();
         type = item->data(0, Qt::UserRole + 3).toByteArray();
         ito::PyWorkspaceItem* item2 = m_workspaceContainer->getItemByFullName( fullName );
         extendedValue = item2->m_extendedValue;

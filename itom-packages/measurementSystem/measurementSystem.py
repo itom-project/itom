@@ -41,10 +41,10 @@ class ProbingSystemType():
 
 class MeasurementSystemBase():
     '''
-    This class contains the front-end for the microscopic fringe projection system based on a 
-    slm illumination.
+    This class is a base class for any 1d, 2d, 2.5d or 3d measurement system.
     
-    This system has been developed by Institut fuer Technische Optik (ITO), Universitaet Stuttgart
+    Let your system class inherit from this class and implement the functions to let your
+    system be compatible to other generic interfaces that can access such systems.
     '''
     
     tFeatureType = ItomEnum("FeatureType", ("unknown","SUR","PRF","PCL"))

@@ -156,7 +156,7 @@ end:
             QMessageBox msgBox(parent);
             if (retval.hasErrorMessage())
             {
-                QString errStr = retval.errorMessage();
+                QString errStr = QLatin1String(retval.errorMessage());
                 msgBox.setText(errStr);
             }
             else
@@ -755,7 +755,7 @@ end:
                     {
                         QString title;
                         QString text;
-                        if (retval.hasErrorMessage()) text = QString("\n%1").arg(retval.errorMessage());
+                        if (retval.hasErrorMessage()) text = QString("\n%1").arg(QLatin1String(retval.errorMessage()));
                         if (retval.containsError())
                         {
                             text.prepend(tr("An error occured while importing the loaded file into the python workspace."));

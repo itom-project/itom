@@ -403,24 +403,24 @@ ito::RetVal MyGrabber::retrieveData(ito::DataObject *externalDataObject)
             if (m_data.getType() == ito::tUInt8)
             {
                 if (copyExternal)
-				{
-					retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*) bufferPtr, bufferWidth, bufferHeight);
-				}
+                {
+                    retValue += externalDataObject->copyFromData2D<ito::uint8>((ito::uint8*) bufferPtr, bufferWidth, bufferHeight);
+                }
                 if (!copyExternal || hasListeners)
-				{
-					retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*) bufferPtr, bufferWidth, bufferHeight);
-				}
+                {
+                    retValue += m_data.copyFromData2D<ito::uint8>((ito::uint8*) bufferPtr, bufferWidth, bufferHeight);
+                }
             }
             else if (m_data.getType() == ito::tUInt16)
             {
                 if (copyExternal)
-				{
-					retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);
-				}
+                {
+                    retValue += externalDataObject->copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);
+                }
                 if (!copyExternal || hasListeners)
-				{
-					retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);            
-				}
+                {
+                    retValue += m_data.copyFromData2D<ito::uint16>((ito::uint16*) bufferPtr, bufferWidth, bufferHeight);            
+                }
             }
             else
             {

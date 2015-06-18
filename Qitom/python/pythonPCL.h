@@ -159,6 +159,7 @@ public:
     //-------------------------------------------------------------------------------------------------
     static PyObject *PyPointCloud_fromXYZ(PyPointCloud *self, PyObject *args);
     static PyObject *PyPointCloud_fromXYZI(PyPointCloud *self, PyObject *args);
+    static PyObject *PyPointCloud_fromXYZRGBA(PyPointCloud *self, PyObject *args);
     static PyObject *PyPointCloud_fromDisparity(PyPointCloud *self, PyObject *args, PyObject *kwds);
 
     //-------------------------------------------------------------------------------------------------
@@ -293,6 +294,7 @@ public:
     // static methods
     //-------------------------------------------------------------------------------------------------
     static PyObject* PyPolygonMesh_FromCloudAndPolygons(PyObject *self, PyObject *args, PyObject *kwds);
+    static PyObject* PyPolygonMesh_FromOrganizedCloud(PyObject * self, PyObject *args, PyObject *kwds);
 
     //-------------------------------------------------------------------------------------------------
     // getter / setter
@@ -316,6 +318,9 @@ public:
 private:
     static PyObject* parseObjAsFloat32Array(PyObject *obj, npy_intp mRequired, npy_intp &n, float32 **elemRows);
     static PyObject* parseObjAsUInt8Array(PyObject *obj, npy_intp mRequired, npy_intp &n, uint8_t **elemRows);
+
+    static void PythonPCL_SetString(PyObject *exception, const char *string);
+    static void PythonPCL_SetString(PyObject *exception, const std::string &string);
 
 };
 

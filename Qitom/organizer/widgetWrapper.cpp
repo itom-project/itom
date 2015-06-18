@@ -89,8 +89,8 @@ void WidgetWrapper::initMethodHash()
 {
     if(!initialized)
     {
-	    bool ok;
-		
+        bool ok;
+        
         //QWidget
         MethodDescriptionList qWidgetList;
         qWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("resize(int,int)"), "void", 1001, ok );

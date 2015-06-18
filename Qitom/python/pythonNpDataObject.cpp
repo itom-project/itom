@@ -679,7 +679,7 @@ PyObject* PythonNpDataObject::PyNpDataObj_SetState(PyNpDataObject *self, PyObjec
     if(!PyArg_ParseTuple(args, "O!", &PyTuple_Type, &baseDump))
     {
         Py_XDECREF(ndarray);
-        PyErr_Print();
+        PyErr_PrintEx(0);
         return NULL;
     }
 
@@ -716,7 +716,7 @@ PyObject* PythonNpDataObject::PyNpDataObj_SetState(PyNpDataObject *self, PyObjec
         Py_XDECREF(baseState);
         Py_XDECREF(baseResult);
         Py_XDECREF(ndarray);
-        PyErr_Print();
+        PyErr_PrintEx(0);
         return NULL;
     }
 

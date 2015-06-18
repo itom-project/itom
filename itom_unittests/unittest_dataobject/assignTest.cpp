@@ -12,9 +12,9 @@
 
 
 /*! \class AddressTest
-	\brief Address test for all data types declared as "ItomDataAllTypes"
+    \brief Address test for all data types declared as "ItomDataAllTypes"
 
-	This is a basic test class for any matrix of any data type. This test class confirms if the different parameters of already declared matrices are alright.
+    This is a basic test class for any matrix of any data type. This test class confirms if the different parameters of already declared matrices are alright.
 */
 template <typename _Tp> class AssignTest : public ::testing::Test 
 { 

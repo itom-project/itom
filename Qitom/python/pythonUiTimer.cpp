@@ -76,7 +76,7 @@ void TimerCallback::timeout()
         else
         {
             PyErr_SetString(PyExc_RuntimeError, "The python slot method is not longer available");
-            PyErr_Print();
+            PyErr_PrintEx(0);
             PyErr_Clear();
         }
     }
@@ -88,7 +88,7 @@ void TimerCallback::timeout()
         if((func == NULL) || (func == Py_None) || (inst == Py_None))
         {
             PyErr_SetString(PyExc_RuntimeError, "The python slot method is not longer available");
-            PyErr_Print();
+            PyErr_PrintEx(0);
             PyErr_Clear();
         }
         else
@@ -140,22 +140,24 @@ PyObject* PythonTimer::PyTimer_new(PyTypeObject *type, PyObject * /*args*/, PyOb
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyTimerInit_doc,"timer(interval, callbackFunc, [argTuple]) -> new callback timer \n\
+PyDoc_STRVAR(PyTimerInit_doc,"timer(interval, callbackFunc [, argTuple, singleShot]) -> new callback timer \n\
 \n\
 Creates a timer object that continuously calls a python callback function or method with a certain interval. The timer is active after construction and \n\
 stops when this instance is destroyed or stop() is called. \n\
 \n\
 Parameters \n\
 ----------- \n\
-interval : {double} \n\
+interval : {int} \n\
     time out interval in ms \n\
 callbackFunc: {function, method} \n\
     Python function that should be called when timer event raises \n\
 argTuple: {tuple}, optional \n\
-    tuple of parameters passed as arguments to the callback function");
+    tuple of parameters passed as arguments to the callback function \n\
+singleShot: {bool}, optional \n\
+    defines if this timer only fires one time after its start (True) or continuously (False, default)");
 int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
 {
-    const char *kwlist[] = {"interval", "callbackFunc", "argTuple", NULL};
+    const char *kwlist[] = {"interval", "callbackFunc", "argTuple", "singleShot", NULL};
 
     if(args == NULL || PyTuple_Size(args) == 0) //empty constructor
     {
@@ -164,15 +166,16 @@ int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
 
     PyObject *tempObj = NULL;
     self->callbackFunc = new TimerCallback();
-    double timeOut = -1;
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "dO|O!", const_cast<char**>(kwlist), &timeOut, &tempObj, &PyTuple_Type, &self->callbackFunc->m_callbackArgs))
+    int timeOut = -1;
+    unsigned char singleShot = 0;
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "iO|O!b", const_cast<char**>(kwlist), &timeOut, &tempObj, &PyTuple_Type, &self->callbackFunc->m_callbackArgs, &singleShot))
     {
         return -1;
     }
 
-    if (timeOut < 1)
+    if (timeOut < 0)
     {
-        PyErr_SetString(PyExc_TypeError, "minimum timeout is 1ms.");
+        PyErr_SetString(PyExc_TypeError, "minimum timeout is 0 ms (immediate fire).");
         DELETE_AND_SET_NULL(self->callbackFunc);
         return -1;
     }
@@ -208,23 +211,27 @@ int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
     {
         Py_XDECREF(self->callbackFunc->m_callbackArgs);
         PyErr_SetString(PyExc_TypeError, "given method reference is not callable.");
-        delete self->callbackFunc;
-        self->callbackFunc = NULL;
+        DELETE_AND_SET_NULL(self->callbackFunc);
         return -1;
     }
 
     self->timer = new QTimer();
     self->timer->setInterval(timeOut);
-    #if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050000
     QMetaObject::Connection conn = QObject::connect(self->timer, SIGNAL(timeout()), self->callbackFunc, SLOT(timeout()));
-    #else
+#else
     int conn = QObject::connect(self->timer, SIGNAL(timeout()), self->callbackFunc, SLOT(timeout()));
-    #endif
+#endif
     if (!conn)
     {
+        DELETE_AND_SET_NULL(self->timer);
+        Py_XDECREF(self->callbackFunc->m_callbackArgs);
+        PyErr_SetString(PyExc_TypeError, "error connecting timeout signal/slot");
+        DELETE_AND_SET_NULL(self->callbackFunc);
         return -1;
     }
 
+    self->timer->setSingleShot(singleShot > 0);
     self->timer->start();
     return 0;
 }
@@ -239,7 +246,14 @@ PyObject* PythonTimer::PyTimer_repr(PyTimer *self)
     }
     else
     {
-        result = PyUnicode_FromFormat("timer(interval %i ms)", self->timer->interval());
+        if (self->timer->isSingleShot())
+        {
+            result = PyUnicode_FromFormat("timer(interval %i ms, single shot)", self->timer->interval());
+        }
+        else
+        {
+            result = PyUnicode_FromFormat("timer(interval %i ms)", self->timer->interval());
+        }
     }
     return result;
 }
@@ -305,9 +319,9 @@ PyObject* PythonTimer::PyTimer_setInterval(PyTimer *self, PyObject *args)
     int timeout; 
     if(!PyArg_ParseTuple(args, "i", &timeout))
     {
-        PyErr_SetString(PyExc_RuntimeError, "Parameter modal must be a boolean value");
         return NULL;
     } 
+
     if (self->timer) self->timer->setInterval(timeout);
     Py_RETURN_NONE;
 }

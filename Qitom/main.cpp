@@ -155,6 +155,7 @@ int main(int argc, char *argv[])
         log : writes all messages sent via qDebug, qWarning... to the logfile itomlog.txt
                in the itom application directory.
         name=anyUsername : tries to start itom with the given username (different setting file)
+        pipManager : only opens the Python Pip Manager to update packages like Numpy. Numpy cannot be updated if itom is running since Numpy is used and files are blocked.
     */
     QStringList args;
     for (int i = 0; i < argc; ++i)
@@ -292,6 +293,12 @@ int main(int argc, char *argv[])
         }
     }
 
+    QDir tmp(QDir::tempPath());
+    if (tmp.exists("restart_itom_with_pip_manager.txt"))
+    {
+        args.append("pipManager");
+    }
+
     //now the main things for loading itom are done:
     /*
         1. create MainApplication
@@ -301,11 +308,32 @@ int main(int argc, char *argv[])
         5. finalizeApplication() if itom is closed
     */
     int ret;
-    MainApplication m(MainApplication::standard);
-    if (ito::UserOrganizer::getInstance()->loadSettings(defUserName) != 0)
+    ito::MainApplication m(ito::MainApplication::standard);
+    if (ito::UserOrganizer::getInstance()->loadSettings(defUserName) != ito::retOk)
     {
         ret = 0; 
         qDebug("load program aborted, possibly unknown username (check argument name=...)");
+    }
+    else if (args.contains("pipManager"))
+    {
+        if (ito::UserOrganizer::getInstance()->hasFeature(ito::featDeveloper))
+        {
+            ret = m.execPipManagerOnly();
+        }
+        else
+        {
+            ret = 0; 
+            qDebug("chosen user has no rights to start the Python Pip Manager");
+        }
+
+        if (tmp.exists("restart_itom_with_pip_manager.txt"))
+        {
+            QFile file(tmp.absoluteFilePath("restart_itom_with_pip_manager.txt"));
+            if (!file.remove())
+            {
+                qDebug("the file %s could not be deleted. Please delete it manually", tmp.absoluteFilePath("restart_itom_with_pip_manager.txt").toLatin1().data());
+            }
+        }
     }
     else
     {

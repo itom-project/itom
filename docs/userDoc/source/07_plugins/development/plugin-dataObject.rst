@@ -37,7 +37,7 @@ DataObject can be declared in different possible ways with different dimensions 
 
 Let's take an example of a 3x2x5 data object. It can be imagined as shown in the figure below.
 
-.. image:: images/DataObject.png
+.. figure:: images/DataObject.png
     :height: 369
     :width: 812
     :scale: 100

@@ -248,6 +248,36 @@ PyObject * getParamListInfo(ito::AddInBase *aib, PyObject *args)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/** returns a dictionary with all meta information of one parameter
+*   @param [in] aib     the plugin for which the parameter names are requested
+*   @param [in] args    1 Item-Vector with bool request for additional dictionary return
+*   @return     python list of python tuple with the parameters' names, min, max, current value, (infostring)
+*/
+PyObject * getParamInfo(ito::AddInBase *aib, PyObject *args)
+{
+    PyObject *result = NULL;
+    char *name = "";
+
+    if (!PyArg_ParseTuple(args, "s", &name))
+    {
+        return NULL;
+    }
+
+    QMap<QString, ito::Param> *paramList = NULL;
+    aib->getParamList(&paramList);
+
+    if (paramList->contains(name))
+    {
+        const ito::Param &p = (*paramList)[name];
+        return parseParamMetaAsDict(p.getMeta());
+    }
+    else
+    {
+        return PyErr_Format(PyExc_ValueError, "parameter '%s' does not exist", name);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyObject* plugin_showConfiguration(ito::AddInBase *aib)
 {
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
@@ -840,6 +870,8 @@ See Also \n\
 ---------- \n\
 getParam, setParam, getParamList");
 
+PyDoc_STRVAR(pyPluginGetParamInfo_doc, "getParamInfo(name) -> returns dictionary with meta information of parameter 'name'.");
+
 PyDoc_STRVAR(pyPluginGetParam_doc, "getParam(name) -> current value of the plugin parameter 'name'.\n\
 \n\
 Returns the current value of the internal plugin parameter with 'name'. The type of the returned value depends on the \n\
@@ -1123,7 +1155,7 @@ void PythonPlugins::PyActuatorPlugin_dealloc(PyActuatorPlugin* self)
 
             ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
             
-            if (QMetaObject::invokeMethod(aim, "closeAddIn", Q_ARG(ito::AddInBase**, (ito::AddInBase**)&self->actuatorObj), Q_ARG(ItomSharedSemaphore*, waitCond)))
+            if (QMetaObject::invokeMethod(aim, "closeAddIn", Q_ARG(ito::AddInBase*, (ito::AddInBase*)self->actuatorObj), Q_ARG(ItomSharedSemaphore*, waitCond)))
             {
                 waitCond->wait(-1);
                 retval += waitCond->returnValue;
@@ -1447,6 +1479,19 @@ PyObject* PythonPlugins::PyActuatorPlugin_setParam(PyActuatorPlugin* self, PyObj
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/** returns dictionary with meta information about desired parameter
+*   @param [in] self    the actuator object (python)
+*   @param [in] args    the parameter name
+*   @return             an error if the parameter wasn't found
+*
+*   The getParamInfo method of the plugin is invoked
+*/
+PyObject* PythonPlugins::PyActuatorPlugin_getParamInfo(PyActuatorPlugin* self, PyObject * args)
+{
+    return getParamInfo(self->actuatorObj, args);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyActuatorCalib_doc, "calib(axis[, axis1, ...]) -> starts calibration or homing of given axes (0-based).\n\
 \n\
 Most actuators have the possibility to calibrate or home certain axes. Use this command to start the calibration. \n\
@@ -1559,13 +1604,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_calib(PyActuatorPlugin* self, PyObject
     {
         return NULL;
     }
-    /*
-    if (ret != ito::retOk)
-    {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking calib with error message: \n%s\n").toLatin1(), QObject::tr(ret.errorMessage()).toLatin1().data());
-        return NULL;
-    }
-    */
+
     Py_RETURN_NONE;
 }
 
@@ -1680,13 +1719,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setOrigin(PyActuatorPlugin* self, PyOb
     {
         return NULL;
     }
-    /*
-    if (ret != ito::retOk)
-    {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking setOrigin with error message: \n%s\n").toLatin1(), QObject::tr(ret.errorMessage()).toLatin1().data());
-        return NULL;
-    }
-    */
+
     Py_RETURN_NONE;
 }
 
@@ -1923,13 +1956,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getPos(PyActuatorPlugin* self, PyObjec
     {
         return NULL;
     }
-    /*
-    if (ret != ito::retOk)
-    {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking getPos with error message: \n%s\n").toLatin1(), QObject::tr(ret.errorMessage()).toLatin1().data());
-        return NULL;
-    }
-    */
+
     return result;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2293,19 +2320,14 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosRel(PyActuatorPlugin* self, PyOb
     {
         return NULL;
     }
-    /*
-    if (ret != ito::retOk)
-    {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking setPos with error message: \n%s\n").toLatin1(), QObject::tr(ret.errorMessage()).toLatin1().data());
-        return NULL;
-    }
-    */
+
     Py_RETURN_NONE;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyMethodDef PythonPlugins::PyActuatorPlugin_methods[] = {
    {"getParamList", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParamList, METH_NOARGS, pyPluginGetParamList_doc},
+   {"getParamInfo", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParamInfo, METH_VARARGS, pyPluginGetParamInfo_doc},
    {"getParamListInfo", (PyCFunction)PythonPlugins::PyActuatorPlugin_getParamListInfo, METH_VARARGS, pyPluginGetParamListInfo_doc},
    {"getExecFuncsInfo", (PyCFunction)PythonPlugins::PyActuatorPlugin_getExecFuncsInfo, METH_VARARGS | METH_KEYWORDS, pyPlugInGetExecFuncsInfo_doc},
    {"name", (PyCFunction)PythonPlugins::PyActuatorPlugin_name, METH_NOARGS, pyPluginName_doc},
@@ -2407,7 +2429,7 @@ void PythonPlugins::PyDataIOPlugin_dealloc(PyDataIOPlugin* self)
 
             ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
 
-            if (QMetaObject::invokeMethod(aim, "closeAddIn", Q_ARG(ito::AddInBase**, (ito::AddInBase**)&self->dataIOObj), Q_ARG(ItomSharedSemaphore*, waitCond)))
+            if (QMetaObject::invokeMethod(aim, "closeAddIn", Q_ARG(ito::AddInBase*, (ito::AddInBase*)self->dataIOObj), Q_ARG(ItomSharedSemaphore*, waitCond)))
             {
                 waitCond->wait(-1);
                 retval += waitCond->returnValue;
@@ -2720,6 +2742,19 @@ PyObject* PythonPlugins::PyDataIOPlugin_getParam(PyDataIOPlugin *self, PyObject 
 PyObject* PythonPlugins::PyDataIOPlugin_setParam(PyDataIOPlugin *self, PyObject *args)
 {
     return setParam(self->dataIOObj, args);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/** returns dictionary with meta information about desired parameter
+*   @param [in] self    the actuator object (python)
+*   @param [in] args    the parameter name
+*   @return             an error if the parameter wasn't found
+*
+*   The getParamInfo method of the plugin is invoked
+*/
+PyObject* PythonPlugins::PyDataIOPlugin_getParamInfo(PyDataIOPlugin* self, PyObject * args)
+{
+    return getParamInfo(self->dataIOObj, args);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3554,13 +3589,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_enableAutoGrabbing(PyDataIOPlugin *self,
     {
         return NULL;
     }
-    /*
-    if (ret != ito::retOk)
-    {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error while enabling the auto grabbing functionality: \n%s\n").toLatin1(), QObject::tr(ret.errorMessage()).toLatin1().data());
-        return NULL;
-    }
-    */
+
     Py_RETURN_NONE;
 }
 
@@ -3816,6 +3845,7 @@ PyMemberDef PythonPlugins::PyDataIOPlugin_members[] = {
 //----------------------------------------------------------------------------------------------------------------------------------
 PyMethodDef PythonPlugins::PyDataIOPlugin_methods[] = {
    {"getParamList", (PyCFunction)PythonPlugins::PyDataIOPlugin_getParamList, METH_NOARGS, pyPluginGetParamList_doc},
+   {"getParamInfo", (PyCFunction)PythonPlugins::PyDataIOPlugin_getParamInfo, METH_VARARGS, pyPluginGetParamInfo_doc},
    {"getParamListInfo", (PyCFunction)PythonPlugins::PyDataIOPlugin_getParamListInfo, METH_VARARGS, pyPluginGetParamListInfo_doc},
    {"getExecFuncsInfo", (PyCFunction)PythonPlugins::PyDataIOPlugin_getExecFuncsInfo, METH_VARARGS | METH_KEYWORDS, pyPlugInGetExecFuncsInfo_doc},
    {"name", (PyCFunction)PythonPlugins::PyDataIOPlugin_name, METH_NOARGS, pyPluginName_doc},
@@ -3900,396 +3930,6 @@ PyTypeObject PythonPlugins::PyDataIOPluginType = {
     Py_DECREF(value);
     
 }
-
-#if 0 //algo plugins do not exist as instances, they only contain static methods, callable by itom.filter
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//----------------------------------------------------------------------------------------------------------------------------------
-/** desctructor for algo object in python
-*   @param [in] self
-*
-*   Destructs an algo object (plugin), i.e. deletes the according python variable and invokes
-*   the closeAddIn function. The object itself is only deleted if the object's reference
-*   counter is zero.
-*/
-void PythonPlugins::PyAlgoPlugin_dealloc(PyAlgoPlugin* self)
-{
-    ito::RetVal retval = 0;
-
-    if (self->algoObj)
-    {
-        ito::AddInInterfaceBase *aib = self->algoObj->getBasePlugin();
-        if (!aib)
-        {
-            PyErr_SetString(PyExc_RuntimeError, "error closing plugin");
-        }
-        else
-        {
-            ito::AddInManager *aim = ito::AddInManager::getInstance();
-            ito::RetVal retval(ito::retOk);
-
-            ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-            QMetaObject::invokeMethod(aim, "closeAddIn", Q_ARG(ito::AddInBase**, (ito::AddInBase**)&self->algoObj), Q_ARG(ItomSharedSemaphore*, waitCond));
-            waitCond->wait(-1);
-            retval += waitCond->returnValue;
-            waitCond->deleteSemaphore();
-            waitCond = NULL;
-
-//            retval = aim->closeAddIn((ito::AddInBase**)&self->algoObj);
-            
-            PythonCommon::transformRetValToPyException(retval);
-        }
-    }
-
-    Py_TYPE(self)->tp_free((PyObject*)self);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/** constructor for algo object in python
-*   @param [in] type
-*   @return     new python algo object
-*
-*   Creates a new pythonAlgo object. The actual algo object (itom) is only created later.
-*/
-PyObject* PythonPlugins::PyAlgoPlugin_new(PyTypeObject *type, PyObject * /*args*/, PyObject * /*kwds*/)
-{
-    PyAlgoPlugin *self = NULL;
-
-    self = (PyAlgoPlugin *)type->tp_alloc(type, 0);
-    if (self != NULL)
-    {
-        self->algoObj = NULL;
-        self->base = NULL;
-    }
-
-    return (PyObject *)self;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/** constructor for algo object
-*   @param [in] self    the according algo object
-*   @param [in] args    unnamed arguments passed to the constructor in python
-*   @return             -1 in case an error occured, else 0
-*
-*   The algo passed must be a valid algo object.
-*/
-int PythonPlugins::PyAlgoPlugin_init(PyAlgoPlugin *self, PyObject *args, PyObject *kwds)
-{
-    self->algoObj = NULL;
-
-    int length = PyTuple_Size(args);
-
-    if (length == 0)
-    {
-        PyErr_SetString(PyExc_ValueError, "no plugin specified");
-        return -1;
-    }
-    else if (length == 1) //!< copy constructor or name only
-    {
-        PyAlgoPlugin* copyPlugin = NULL;
-
-        if (PyArg_ParseTuple(args, "O!", &PyAlgoPluginType, &copyPlugin))
-        {
-            //try to increment reference of copyPlugin->algoObj
-            if (copyPlugin->algoObj)
-            {
-                copyPlugin->algoObj->getBasePlugin()->incRef(copyPlugin->algoObj);
-            }
-
-            self->algoObj = copyPlugin->algoObj;
-            self->base = copyPlugin->base;
-
-            return 0;
-        }
-    }
-
-    PyErr_Clear();
-    QVector<ito::Param> *paramsMand = NULL;
-    QVector<ito::Param> *paramsOpt = NULL;
-    ito::RetVal retval = 0;
-    int pluginNum = -1;
-    PyObject *pnameObj = NULL;
-    PyObject *params = NULL;
-    QString pluginName = NULL;
-    QVector<ito::ParamBase> paramsMandCpy;
-    QVector<ito::ParamBase> paramsOptCpy;
-
-    ito::AddInManager *AIM = ito::AddInManager::getInstance();
-    if (!AIM)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "no addin-manager found");
-        return -1;
-    }
-
-    pnameObj = PyTuple_GetItem(args, 0);
-    if (PyUnicode_Check(pnameObj))
-    {
-        bool ok = false;
-        pluginName = PythonQtConversion::PyObjGetString(pnameObj,false,ok);
-    }
-    else
-    {
-        PyErr_SetString(PyExc_TypeError, "invalid parameters");
-        return -1;
-    }
-
-    retval = AIM->getInitParams(pluginName, ito::typeAlgo, &pluginNum, paramsMand, paramsOpt);
-    if (retval.containsWarningOrError())
-    {
-        PythonCommon::setLoadPluginReturnValueMessage(retval, pluginName);
-        return -1;
-    }
-
-
-    bool enableAutoLoadParams = false;
-    retval = findAndDeleteReservedInitKeyWords(kwds, &enableAutoLoadParams);
-    if (retval.containsWarningOrError())
-    {
-        PythonCommon::setLoadPluginReturnValueMessage(retval, pluginName);
-        return -1;
-    }
-
-    params = PyTuple_GetSlice(args, 1, PyTuple_Size(args));
-
-    //retval += copyParamVector(paramsMand, paramsMandCpy);
-    //retval += copyParamVector(paramsOpt, paramsOptCpy);
-
-    if (!retval.containsError())
-    {
-
-        if (parseInitParams(paramsMand, paramsOpt, params, kwds, paramsMandCpy, paramsOptCpy) != ito::retOk)
-        {
-            PyErr_SetString(PyExc_RuntimeError, "error while parsing parameters.");
-            return -1;
-        }
-        Py_DECREF(params);
-
-        ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
-        QMetaObject::invokeMethod(AIM, "initAddIn", Q_ARG(int, pluginNum), Q_ARG(QString, pluginName), Q_ARG(ito::AddInAlgo**, &self->algoObj), Q_ARG(QVector<ito::ParamBase>*, &paramsMandCpy), Q_ARG(QVector<ito::ParamBase>*, &paramsOptCpy), Q_ARG(bool, enableAutoLoadParams), Q_ARG(ItomSharedSemaphore*, waitCond));
-        waitCond->wait(-1);
-        retval += waitCond->returnValue;
-        waitCond->deleteSemaphore();
-        waitCond = NULL;
-
-        paramsMandCpy.clear();
-        paramsOptCpy.clear();
-    }
-
-    if (!SetLoadPluginReturnValueMessage(retval, pluginName))
-    {
-        return -1;
-    }
-
-    return 0;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-PyMemberDef PythonPlugins::PyAlgoPlugin_members[] = {
-    {NULL}  /* Sentinel */
-};
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/** Returns the plugin's name
-*   @param [in] self    the plugin object
-*   @return             the name of the plugin
-*
-*                       Queries the name of a plugin by invoking a getParam on the plugin for the name parameter
-*/
-PyObject* PythonPlugins::PyAlgoPlugin_name(PyAlgoPlugin* self)
-{
-    return getName(self->algoObj);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyAlgoPlugin_getParamList_doc, "getParamList() -> returns list of available parameters.");
-/** returns the list of available parameters
-*   @param [in] self    the algo object (python)
-*   @return             a string with all available parameters for this algorithm
-*
-*   All parameters of the plugin are shown. This can be useful as there are only few standard parameters
-*   for an algorithm. The majority is depending on the actual hardware and accordingly is different for each
-*   plugin.
-*/
-PyObject* PythonPlugins::PyAlgoPlugin_getParamList(PyAlgoPlugin* self)
-{
-    ito::AddInBase *aib = self->algoObj;
-    return getParamList(aib);
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyAlgoPlugin_getParamListInfo_doc, "getParamListInfo([detailLevel]) -> plots informations about plugin parameters. \n\
-\n\
-Parameters \n\
------------ \n\
-detailLevel : {dict}, optional \n\
-    if dictionary == 1, function returns an Py_Dictionary with parameters \n\
-    Default value is 0.\n\
-\n\
-Returns \n\
-------- \n\
-Returns none or a PyDictionary depending on the value of detailLevel.\n\
-\n\
-Notes \n\
------ \n\
-\n\
-Generates an online help for available parameters and additional informations of the plugin.");  
-
-/** returns the list of available parameters and additional information about the plugin
-*   @param [in] self    the algo object (python)
-*   @return             a string with all available parameters for this algo
-*
-*   All parameters of the plugin are shown with additional information as min, max and infostring.
-*   This can be useful as there are only few standard parameters for an actuator. The majority is
-*   depending on the actual hardware and accordingly is different for each plugin.
-*/
-PyObject* PythonPlugins::PyAlgoPlugin_getParamListInfo(PyAlgoPlugin* self, PyObject *args)
-{
-    ito::AddInBase *aib = self->algoObj;
-
-    return getParamListInfo(aib, args);
-}
-
-/** returns the list of available parameters and additional information about the plugin ExecFunctions
-*   @param [in] self    the algorithm object (python)
-*   @return             a dictionary with all available parameters for this actuator
-*
-*   All ExecFunctions of the plugin are shown or one specific ExecFunctions with additional information as min, max and infostring is shown.
-*   This can be useful as there are only few standard parameters for an dataIO. The majority is
-*   depending on the actual hardware and accordingly is different for each plugin.
-*
-*   This function os obsolet because currently no algo has an living instance in python
-*/
-PyObject* PythonPlugins::PyAlgoPlugin_getExecFuncsInfo(PyAlgoPlugin* self, PyObject *args, PyObject *kwds)
-{
-    ito::AddInBase *aib = self->algoObj;
-    return getExecFuncsInfo(aib, args, kwds);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/** return a parameter value
-*   @param [in] self        the addIn whoes parameter is requested
-*   @param [in] args        the parameter name
-*   @return     python object with the parameter value on success (parameter exists), NULL otherwise
-*
-*   The function tries to retrieve the value of the parameter with the name given in args. If the parameter does not exist
-*   NULL is returned. To actually retrieve the value the getParam function of the plugin is invoked.
-*/
-PyObject* PythonPlugins::PyAlgoPlugin_getParam(PyAlgoPlugin *self, PyObject *args)
-{
-    return getParam(self->algoObj, args);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/** set a parameter to a new value
-*   @param [in] self    the algo object (python)
-*   @param [in] args    the parameter name and new value
-*   @return             an error if the parameter wasn't found or the passed value is out of the limits
-*
-*   The setParam method of the plugin is invoked and the parameter is set to the new value in case the passed value
-*   is within the limits. This method effects only parameters of a "whole" algo plugin - not single parameters of a
-*   destinct filter.
-*/
-PyObject* PythonPlugins::PyAlgoPlugin_setParam(PyAlgoPlugin *self, PyObject *args)
-{
-    return setParam(self->algoObj, args);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyAlgoPlugin_getType_doc, "getType() -> returns AlgoPlugin type");
-/** returns the type of the Algo object
-*   @param [in] self    the Algo object (python)
-*   @return             a string with the type
-*
-*   This method simply returns the type of the Algo object
-*/
-PyObject* PythonPlugins::PyAlgoPlugin_getType(PyAlgoPlugin *self)
-{
-    PyObject *result = NULL;
-    if (self == NULL || self->algoObj == NULL)
-    {
-        PyErr_SetString(PyExc_RuntimeError,"empty Algo plugin");
-        return NULL;
-    }
-    else
-    {
-        ito::AddInInterfaceBase *aib = self->algoObj->getBasePlugin();
-        if (aib)
-        {
-            result = PyLong_FromLong(aib->getType());
-        }
-        else
-        {
-            PyErr_SetString(PyExc_RuntimeError,"interface of plugin is NULL");
-            return NULL;
-        }
-    }
-    
-    return result; 
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-PyMethodDef PythonPlugins::PyAlgoPlugin_methods[] = {
-   {"getParamList", (PyCFunction)PythonPlugins::PyAlgoPlugin_getParamList, METH_NOARGS, pyPluginGetParamList_doc},
-   {"getParamListInfo", (PyCFunction)PythonPlugins::PyAlgoPlugin_getParamListInfo, METH_VARARGS, PyAlgoPlugin_getParamListInfo_doc},
-   {"getExecFuncsInfo", (PyCFunction)PythonPlugins::PyAlgoPlugin_getExecFuncsInfo, METH_VARARGS | METH_KEYWORDS, pyPlugInGetExecFuncsInfo_doc},
-   {"name", (PyCFunction)PythonPlugins::PyAlgoPlugin_name, METH_NOARGS, "name() -> returns name of algorithm plugin"},
-   {"getParam", (PyCFunction)PythonPlugins::PyAlgoPlugin_getParam, METH_VARARGS, "getParam(name) -> returns value of given parameter"},
-   {"setParam", (PyCFunction)PythonPlugins::PyAlgoPlugin_setParam, METH_VARARGS, "setParam(name,value) -> sets value of given parameter"},
-   {"getType", (PyCFunction)PythonPlugins::PyAlgoPlugin_getType, METH_NOARGS, PyAlgoPlugin_getType_doc},
-   {NULL}  /* Sentinel */
-};
-
-//----------------------------------------------------------------------------------------------------------------------------------
-PyModuleDef PythonPlugins::PyAlgoPluginModule = {
-   PyModuleDef_HEAD_INIT,
-   "algorithmPlugin",
-   QObject::tr("Itom AlgorithmPlugin type in python").toLatin1().data(),
-   -1,
-   NULL, NULL, NULL, NULL, NULL
-};
-
-//----------------------------------------------------------------------------------------------------------------------------------
-PyTypeObject PythonPlugins::PyAlgoPluginType = {
-   PyVarObject_HEAD_INIT(NULL, 0)
-   "itom.algo",             /* tp_name */
-   sizeof(PyAlgoPlugin),             /* tp_basicsize */
-   0,                         /* tp_itemsize */
-   (destructor)PyAlgoPlugin_dealloc, /* tp_dealloc */
-   0,                         /* tp_print */
-   0,                         /* tp_getattr */
-   0,                         /* tp_setattr */
-   0,                         /* tp_reserved */
-   0,                         /* tp_repr */
-   0,                         /* tp_as_number */
-   0,                         /* tp_as_sequence */
-   0,                         /* tp_as_mapping */
-   0,                         /* tp_hash  */
-   0,                         /* tp_call */
-   0,                         /* tp_str */
-   0,                         /* tp_getattro */
-   0,                         /* tp_setattro */
-   0,                         /* tp_as_buffer */
-   Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
-   "algo plugins",           /* tp_doc */
-   0,                       /* tp_traverse */
-   0,                       /* tp_clear */
-   0,                       /* tp_richcompare */
-   0,                       /* tp_weaklistoffset */
-   0,                       /* tp_iter */
-   0,                       /* tp_iternext */
-   PyAlgoPlugin_methods,             /* tp_methods */
-   PyAlgoPlugin_members,             /* tp_members */
-   0,                         /* tp_getset */
-   0,                         /* tp_base */
-   0,                         /* tp_dict */
-   0,                         /* tp_descr_get */
-   0,                         /* tp_descr_set */
-   0,                         /* tp_dictoffset */
-   (initproc)PythonPlugins::PyAlgoPlugin_init,      /* tp_init */
-   0,                         /* tp_alloc */
-   PyAlgoPlugin_new /*PyType_GenericNew*/ /*PythonStream_new,*/                 /* tp_new */
-};
-
-#endif 
 
 } //end namespace ito
 

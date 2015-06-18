@@ -7,7 +7,7 @@ File System
 
 The file system toolbox gives you access to the file system of your harddrive.
 
-.. image:: images/dockFileSystem.png
+.. figure:: images/dockFileSystem.png
     :scale: 100%
     :align: center
 

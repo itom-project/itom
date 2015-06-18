@@ -43,6 +43,7 @@
 #include <qpainter.h>
 #include <qmimedata.h>
 #include <qtextcodec.h>
+#include <qinputdialog.h>
 
 namespace ito 
 {
@@ -307,6 +308,8 @@ RetVal ScriptEditorWidget::initMenus()
     editorMenu->addAction(bookmarkMenuActions["nextBM"]);
     editorMenu->addAction(bookmarkMenuActions["prevBM"]);
     editorMenu->addAction(bookmarkMenuActions["clearAllBM"]);
+    editorMenu->addSeparator();
+    editorMenuActions["insertCodec"] = editorMenu->addAction(tr("&insert codec..."), this, SLOT(menuInsertCodec()));
 
     //this->addAction(editorMenuActions["save"]);
 
@@ -448,6 +451,8 @@ RetVal ScriptEditorWidget::preShowContextMenuEditor()
     editorMenuActions["runSelection"]->setEnabled(lineFrom != -1 && pyEngine && (!pythonBusy || pyEngine->isPythonDebuggingAndWaiting()));
     editorMenuActions["debugScript"]->setEnabled(!pythonBusy);
     editorMenuActions["stopScript"]->setEnabled(pythonBusy);
+
+    editorMenuActions["insertCodec"]->setEnabled(!pythonBusy);
 
     bookmarkMenuActions["toggleBM"]->setEnabled(true);
     bookmarkMenuActions["nextBM"]->setEnabled(!bookmarkErrorHandles.empty());
@@ -951,12 +956,29 @@ void ScriptEditorWidget::menuStopScript()
     {
         if (eng->isPythonDebugging() && eng->isPythonDebuggingAndWaiting())
         {
-//            QMetaObject::invokeMethod(eng, "pythonDebugCommand", Q_ARG(tPythonDbgCmd, pyDbgQuit));
             eng->pythonInterruptExecution();
         }
         else
         {
             eng->pythonInterruptExecution();
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::menuInsertCodec()
+{
+    QStringList items;
+    bool ok;
+    items << "ascii (English, us-ascii)" << "latin1 (West Europe, iso-8859-1)" << "iso-8859-15 (Western Europe)" << "utf8 (all languages)";
+    QString codec = QInputDialog::getItem(this, tr("insert codec"), tr("Choose an encoding of the file which is added to the first line of the script"), items, 2, true, &ok);
+
+    if (codec != "" && ok)
+    {
+        items = codec.split(" ");
+        if (items.size() > 0)
+        {
+            setText(QString("# coding=%1\n%2").arg(items[0]).arg(text()));
         }
     }
 }

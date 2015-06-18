@@ -37,7 +37,7 @@
 #include <qmessagebox.h>
 #include <qmetaobject.h>
 
-QHash<QByteArray, QSharedPointer<MethodDescriptionList> > ito::PythonUi::methodDescriptionListStorage;
+QHash<QByteArray, QSharedPointer<ito::MethodDescriptionList> > ito::PythonUi::methodDescriptionListStorage;
 
 namespace ito
 {
@@ -1041,7 +1041,7 @@ PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
     }
     else if(retValue.containsWarning())
     {
-        std::cout << "Warning while getting property infos with message: " << QObject::tr(retValue.errorMessage()).toLatin1().data() << std::endl;
+        std::cout << "Warning while getting property infos with message: " << retValue.errorMessage() << std::endl;
     }
     
     QStringList stringList = retPropMap->keys();
@@ -1459,13 +1459,76 @@ PyDoc_STRVAR(PyUiItemExists_doc,"exists() -> returns true if widget still exists
     Py_RETURN_FALSE;
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyUiItemChildren_doc,"children([recursive = False]) -> returns dict with widget-based child items of this uiItem. \n\
+\n\
+Each key -> value pair is object-name -> class-name). Objects with no object-name are omitted. \n\
+\n\
+Parameters \n\
+----------- \n\
+recursive : {bool} \n\
+    True: all objects including sub-widgets of widgets are returned, False: only children of this uiItem are returned (default)");
+/*static*/ PyObject* PythonUi::PyUiItem_children(PyUiItem *self, PyObject *args, PyObject *kwds)
+{
+    const char *kwlist[] = {"recursive", NULL};
+    unsigned char recursive = 0;
+
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "|b", const_cast<char**>(kwlist), &recursive))
+    {
+        return NULL;
+    }
+
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    if(uiOrga == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
+        return NULL;
+    }
+
+    if(self->objectID <= 0)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No valid objectID is assigned to this uiItem-instance");
+        return NULL;
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    ito::RetVal retValue = retOk;
+    QSharedPointer< QStringList > objectNames(new QStringList() );
+    QSharedPointer< QStringList > classNames(new QStringList() );
+
+    //!> we need this as otherwise the Q_ARG macro does not recognize our templated QMap
+    QMetaObject::invokeMethod(uiOrga, "getObjectChildrenInfo", Q_ARG(uint, self->objectID), Q_ARG(bool, recursive > 0), Q_ARG(QSharedPointer<QStringList>,objectNames), Q_ARG(QSharedPointer<QStringList>,classNames), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    
+    if(!locker.getSemaphore()->wait(PLUGINWAIT))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "timeout while getting information");
+        return NULL;
+    }
+
+    retValue += locker.getSemaphore()->returnValue;
+    if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    PyObject *dict = PyDict_New();
+    PyObject *value = NULL;
+    
+    for (int i = 0; i < objectNames->size(); ++i)
+    {
+        value = PythonQtConversion::QStringToPyObject(classNames->at(i));
+        PyDict_SetItemString(dict, objectNames->at(i).toUtf8().data(), value);
+        Py_DECREF(value);
+    }
+
+    return dict;
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 bool PythonUi::loadMethodDescriptionList(PyUiItem *self)
 {
     if(self->methodList == NULL)
     {
         QByteArray className(self->widgetClassName);
-        QHash<QByteArray, QSharedPointer<MethodDescriptionList> >::const_iterator it = methodDescriptionListStorage.constFind( className );
+        QHash<QByteArray, QSharedPointer<ito::MethodDescriptionList> >::const_iterator it = methodDescriptionListStorage.constFind( className );
         if(it != methodDescriptionListStorage.constEnd())
         {
             self->methodList = it->data();
@@ -1597,6 +1660,7 @@ PyMethodDef PythonUi::PyUiItem_methods[] = {
         {"invokeKeyboardInterrupt", (PyCFunction)PyUiItem_connectKeyboardInterrupt, METH_VARARGS, PyUiItemConnectKeyboardInterrupt_doc},
         {"info", (PyCFunction)PyUiItem_info, METH_VARARGS, PyUiItemInfo_doc},
         {"exists", (PyCFunction)PyUiItem_exists, METH_NOARGS, PyUiItemExists_doc},
+        {"children", (PyCFunction)PyUiItem_children, METH_KEYWORDS | METH_VARARGS, PyUiItemChildren_doc},
         {NULL}  /* Sentinel */
 };
 
@@ -3081,15 +3145,6 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
         PyErr_SetString(PyExc_RuntimeError, QObject::tr("Could not get parameters for plugin widget '%1'").arg(algoWidgetName).toUtf8().data());
         return NULL;
     }
-
-/*
-    
-    retVal = def->m_paramFunc(&paramsMand, &paramsOpt);
-    if (retVal.containsWarningOrError())
-    {
-        PyErr_SetString(PyExc_RuntimeError, QObject::tr("Could not load default parameter set for loading plugin widget. Error-Message: \n%s\n").toLatin1(), QObject::tr(retVal.errorMessage()).toLatin1().data());
-        return NULL;
-    }*/
 
     params = PyTuple_GetSlice(args, 1, PyTuple_Size(args));
     if(parseInitParams(&(filterParams->paramsMand), &(filterParams->paramsOpt), params, kwds, paramsMandBase, paramsOptBase) != ito::retOk)

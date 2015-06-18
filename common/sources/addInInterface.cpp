@@ -268,11 +268,11 @@ namespace ito
     {
         if (m_dockWidget == NULL)
         {
-            m_dockWidget = new QDockWidget(title + " - " + tr("Toolbox"));
+            m_dockWidget = new QDockWidget(title + QLatin1String(" - ") + tr("Toolbox"));
             connect(m_dockWidget, SIGNAL(destroyed()), this, SLOT(dockWidgetDestroyed())); //this signal is established in order to check if the docking widget already has been deleted while destruction of mainWindows
             connect(m_dockWidget, SIGNAL(visibilityChanged(bool)), this, SLOT(dockWidgetVisibilityChanged(bool)));
         }
-        m_dockWidget->setObjectName(title.simplified() + "_dockWidget#" + QString::number(m_uniqueID));
+        m_dockWidget->setObjectName(title.simplified() + QLatin1String("_dockWidget#") + QString::number(m_uniqueID));
         m_dockWidget->setFeatures(features);
         m_dockWidget->setAllowedAreas(allowedAreas);
 
@@ -327,7 +327,7 @@ namespace ito
                 //mandatory parameters can be of every type, but their flags must be In Or In|Out (NOT Out)
                 if ((p.getFlags() & ito::ParamBase::Out) && !(p.getFlags() & ito::ParamBase::In))
                 {
-                    QString err = QString("Mandatory parameter '%1' cannot be defined as Out-Parameter").arg(p.getName());
+                    QString err = QString("Mandatory parameter '%1' cannot be defined as Out-Parameter").arg(QLatin1String(p.getName()));
                     retValue += ito::RetVal(ito::retError,0,err.toLatin1().data());
                     //throw std::logic_error(err.toLatin1().data());
                     break;
@@ -338,7 +338,7 @@ namespace ito
                 //optional parameters can be of every type, but their flags must be In Or In|Out (NOT Out)
                 if ((p.getFlags() & ito::ParamBase::Out) && !(p.getFlags() & ito::ParamBase::In))
                 {
-                    QString err = QString("Optional parameter '%1' cannot be defined as Out-Parameter").arg(p.getName());
+                    QString err = QString("Optional parameter '%1' cannot be defined as Out-Parameter").arg(QLatin1String(p.getName()));
                     retValue += ito::RetVal(ito::retError,0,err.toLatin1().data());
                     //throw std::logic_error(err.toLatin1().data());
                     break;
@@ -349,14 +349,14 @@ namespace ito
                 //output parameters must have flag Out and not In, only types Int(Array),Char(Array),Double(Array) or String are allowed
                 if ((p.getFlags() & ito::ParamBase::In) || !(p.getFlags() & ito::ParamBase::Out))
                 {
-                    QString err = QString("Output parameter '%1' must be defined as Out-Parameter").arg(p.getName());
+                    QString err = QString("Output parameter '%1' must be defined as Out-Parameter").arg(QLatin1String(p.getName()));
                     retValue += ito::RetVal(ito::retError,0,err.toLatin1().data());
                     //throw std::logic_error(err.toLatin1().data());
                     break;
                 }
                 if ((p.getType() & (ito::ParamBase::Int | ito::ParamBase::Char | ito::ParamBase::Double)) == 0)
                 {
-                    QString err = QString("Output parameter '%1' must be of type Int(-Array), Char(-Array), Double(-Array) or String.").arg(p.getName());
+                    QString err = QString("Output parameter '%1' must be of type Int(-Array), Char(-Array), Double(-Array) or String.").arg(QLatin1String(p.getName()));
                     retValue += ito::RetVal(ito::retError,0,err.toLatin1().data());
                     //throw std::logic_error(err.toLatin1().data());
                     break;
@@ -435,6 +435,34 @@ namespace ito
     const ito::RetVal AddInBase::showConfDialog(void)
     {
         return ito::RetVal(ito::retWarning,0, tr("Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method").toLatin1().data());
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! method invoked by AddInManager if the plugin should be pulled back to the main thread of itom.
+    /*!
+        Do not invoke this method in any other case. It should only be invoked by AddInManager of the itom core.
+        After having moved the thread to the main thread of itom, the plugin's thread m_pThread can be closed and
+        deleted. However this cannot be done in this method, since a thread can only be killed and closed by another
+        thread. Therefore, this is done in the destructor of the AddIn.
+
+        Qt does not allow pushing an object from the object's thread to the caller's thread. Only the object
+        itself can move its thread to another thread.
+    */
+    ito::RetVal AddInBase::moveBackToApplicationThread(ItomSharedSemaphore *waitCond /*= NULL*/)
+    {
+        ItomSharedSemaphoreLocker locker(waitCond);
+
+        if (m_pThread) //only push this plugin to the main thread, if it currently lives in a second thread.
+        {
+            moveToThread(QCoreApplication::instance()->thread());
+        }
+
+        if (waitCond)
+        {
+            waitCond->returnValue = retOk;
+            waitCond->release();
+        }
+        return retOk;
     }
 
 

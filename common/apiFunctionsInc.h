@@ -90,15 +90,62 @@ namespace ito
 
     #define apiFilterParamBase \
         (*(ito::RetVal (*)(const QString &name, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)) ito::ITOM_API_FUNCS[3])
+    
+    //! checks if a specific plugin is available and returns its default mandatory and optional parameter set for the initialization
+    /*!
+        This method checks if a specific plugin from a given plugin type is available. If so, retOk is returned and the arguments
+        pluginIdx, paramsMand and paramsOpt are filled with valid values. Else, retError is returned.
 
+        \param name is the plugin name
+        \param pluginType is the base type of the plugin (ito::tPluginType, e.g. ito::typeDataIO, ito::typeActuator...)
+        \param pluginIdx is the index of the found plugin that can be passed apiAddInOpenDataIO, apiAddInActuator
+        \param paramsMand are the templates for the mandatory parameters for initializing the plugin. Please copy all values to QVector<ito::ParamBase> before editing the values and passing them to the initialization.
+        \param paramsOpt are the templates for the optional parameters for initializing the plugin. Please copy all values to QVector<ito::ParamBase> before editing the values and passing them to the initialization.
+    */
     #define apiAddInGetInitParams \
-        (*(ito::RetVal (*)(const QString &name, const int, int *, QVector<ito::Param> *&, QVector<ito::Param> *&)) ito::ITOM_API_FUNCS[4])
+        (*(ito::RetVal (*)(const QString &pluginName, const int pluginType, int *pluginIdx, QVector<ito::Param> *&paramsMand, QVector<ito::Param> *&paramsOpt)) ito::ITOM_API_FUNCS[4])
 
+    //! opens an instance of specific actuator plugin.
+    /*!
+        This method let itom create an instance of a specific plugin (given by pluginName AND pluginIdx) and sets instance to the pointer of the newly created plugin.
+
+        \param pluginName is the name of the plugin to open
+        \param pluginIdx is the index of the plugin to open in its internal index list (obtained by apiAddInGetInitParams)
+        \param autoLoadParams indicates if plugin parameters from last session should be automatically loaded at restart (only if m_autoLoadPolicy is set to autoLoadKeywordDefined in plugin). If unsure, set it to false.
+        \param paramsMand are the mandatory parameters passed to the initialization method of the plugin (get their templates from apiAddInGetInitParams)
+        \param paramsOpt are the optional parameters (similiar to paramsMand)
+        \param instance is the pointer to ito::AddActuator that contains the instance of the recently opened plugin (if successfully opened)
+        \return ito::RetVal (retOk if plugin instance could be loaded, else retError)
+
+        If you want to have a thread-safe and easier approach to other plugins, consider to use the helper class ActuatorThreadCtrl.
+    */
     #define apiAddInOpenActuator \
-        (*(ito::RetVal (*)(const QString &name, const int, const bool, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt)) ito::ITOM_API_FUNCS[5])
+        (*(ito::RetVal (*)(const QString &pluginName, const int pluginIdx, const bool autoLoadParams, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::AddInActuator *&instance)) ito::ITOM_API_FUNCS[5])
 
+    //! opens an instance of specific dataIO plugin.
+    /*!
+        This method let itom create an instance of a specific plugin (given by pluginName AND pluginIdx) and sets instance to the pointer of the newly created plugin.
+
+        \param pluginName is the name of the plugin to open
+        \param pluginIdx is the index of the plugin to open in its internal index list (obtained by apiAddInGetInitParams)
+        \param autoLoadParams indicates if plugin parameters from last session should be automatically loaded at restart (only if m_autoLoadPolicy is set to autoLoadKeywordDefined in plugin). If unsure, set it to false.
+        \param paramsMand are the mandatory parameters passed to the initialization method of the plugin (get their templates from apiAddInGetInitParams)
+        \param paramsOpt are the optional parameters (similiar to paramsMand)
+        \param instance is the pointer to ito::AddInDataIO that contains the instance of the recently opened plugin (if successfully opened)
+        \return ito::RetVal (retOk if plugin instance could be loaded, else retError)
+
+        If you want to have a thread-safe and easier approach to other plugins, consider to use the helper class DataIOThreadCtrl.
+    */
     #define apiAddInOpenDataIO \
-        (*(ito::RetVal (*)(const QString &name, const int, const bool, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt)) ito::ITOM_API_FUNCS[6])
+        (*(ito::RetVal (*)(const QString &pluginName, const int pluginIdx, const bool autoLoadParams, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ito::AddInDataIO *&instance)) ito::ITOM_API_FUNCS[6])
+
+    //! decrements reference of given plugin instance. If the reference drops to zero, the instance is savely closed and deleted.
+    /*!
+        This method does not wait for the plugin to be closed since this might cause deadlocks if called from the close method or destructor of another plugin.
+        The AddIn manager will close the given instance as soon as possible.
+    */
+    #define apiAddInClose \
+        (*(ito::RetVal (*)(ito::AddInBase *instance)) ito::ITOM_API_FUNCS[31])
 
     //! validates a zero-terminated string with respect to given ito::StringMeta instance.
     /*!
@@ -355,6 +402,37 @@ namespace ito
     */
     #define apiShowConfigurationDialog \
         (* (ito::RetVal (*)(ito::AddInBase *plugin, ito::AbstractAddInConfigDialog *configDialogInstance)) ito::ITOM_API_FUNCS[22])
+
+
+    //! sends the given ParamBase value to the global python workspace
+    /*!
+        This methods sends the given ParamBase value to the global python workspace using the indicated variable name. Existing
+        values with the same name will be overwritten, unless they cover functions, methods, classes or types.
+
+        Invalid variable name will also result in an error.
+
+        \param varname is the variable name (must be a valid python variable name)
+        \param value is the ParamBase value
+
+        \return ito::retOk on success, else ito::retError
+    */
+    #define apiSendParamToPyWorkspace \
+        (* (ito::RetVal (*)(const QString &varname, const QSharedPointer<ito::ParamBase> &value)) ito::ITOM_API_FUNCS[29])
+
+    //! sends the given ParamBase value to the global python workspace
+    /*!
+        This methods sends the given ParamBase values to the global python workspace using the indicated variable names. Existing
+        values with the same name will be overwritten, unless they cover functions, methods, classes or types.
+
+        Invalid variable names will also result in an error.
+
+        \param varnames are the variable name (must be valid python variable names)
+        \param values are the ParamBase values
+
+        \return ito::retOk on success, else ito::retError
+    */
+    #define apiSendParamsToPyWorkspace \
+        (* (ito::RetVal (*)(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values)) ito::ITOM_API_FUNCS[30])
 
     /** \} */
 

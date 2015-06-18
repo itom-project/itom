@@ -3,7 +3,7 @@
 Command History
 ***************************
 
-.. image:: images/commandHistory.png
+.. figure:: images/commandHistory.png
     :scale: 100%
     :align: center
 

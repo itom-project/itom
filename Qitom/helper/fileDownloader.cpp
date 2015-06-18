@@ -4,6 +4,9 @@
 #include <qdebug.h>
 #include <qnetworkcookiejar.h>
 
+namespace ito
+{
+
 //-------------------------------------------------------------------------------------
 FileDownloader::FileDownloader(QUrl Url, int nrOfAllowedRedirects /*= 0*/, QObject *parent) :
     QObject(parent),
@@ -211,4 +214,5 @@ int FileDownloader::checkRedirect(QString &errorMsg)
     }
 }
 
+} //end namespace ito
 
