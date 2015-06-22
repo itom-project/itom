@@ -169,13 +169,6 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
             *set = 1;
             outParam.setVal<void *>((void*)(((PythonPlugins::PyActuatorPlugin *)pyObj)->actuatorObj));
         }
-#if 0 //algo plugins do not exist as instances, they only contain static methods, callable by itom.filter
-        else if (Py_TYPE(pyObj) == &PythonPlugins::PyAlgoPluginType)
-        {
-            *set = 1;
-            outParam.setVal<void *>((void*)(((PythonPlugins::PyAlgoPlugin *)pyObj)->algoObj));
-        }
-#endif
         else
         {
             return ito::retError;

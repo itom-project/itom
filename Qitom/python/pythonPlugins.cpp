@@ -112,13 +112,6 @@ int parseParams(PyObject *args, int length, char **&cargs, char *&cargt)
          cargt[n] = 'o';
          cargs[n] = (char*)(((PythonPlugins::PyActuatorPlugin *)tempPyObj)->actuatorObj);
       }
-#if 0 //algo plugins do not exist as instances, they only contain static methods, callable by itom.filter
-      else if (Py_TYPE(tempPyObj) == &PythonPlugins::PyAlgoPluginType)
-      {
-         cargt[n] = 'o';
-         cargs[n] = (char*)(((PythonPlugins::PyAlgoPlugin *)tempPyObj)->algoObj);
-      }
-#endif
       else
       {
           PyErr_Format(PyExc_TypeError, "type of parameter %i cannot be parsed: %s", n+1, tempPyObj->ob_type->tp_name);

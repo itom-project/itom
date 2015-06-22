@@ -73,16 +73,6 @@ class PythonPlugins
            PyObject* base;
        }
        PyDataIOPlugin;
-
-#if 0 //algo plugins do not exist as instances, they only contain static methods, callable by itom.filter
-       typedef struct
-       {
-           PyObject_HEAD
-           ito::AddInAlgo *algoObj;
-           PyObject* base;
-       }
-       PyAlgoPlugin;
-#endif
        
        // Actuator
        static void PyActuatorPlugin_dealloc(PyActuatorPlugin *self);

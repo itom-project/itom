@@ -388,25 +388,6 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 PyModule_AddObject(itomModule, "dataIO", (PyObject *)&PythonPlugins::PyDataIOPluginType);
             }
 
-#if 0 //algo plugins do not exist as instances, they only contain static methods, callable by itom.filter
-            if (PyType_Ready(&PythonPlugins::PyAlgoPluginType) >= 0)
-            {
-                Py_INCREF(&PythonPlugins::PyAlgoPluginType);
-                PyModule_AddObject(itomModule, "algo", (PyObject *)&PythonPlugins::PyAlgoPluginType);
-            }
-#endif
-
-//#if ITOM_NPDATAOBJECT //right now, npDataObject exists but raises a python exception if ITOM_NPDATAOBJECT is not defined
-            PythonNpDataObject::PyNpDataObjectType.tp_base = &PyArray_Type;
-            PythonNpDataObject::PyNpDataObjectType.tp_free = PyObject_Free;
-            PythonNpDataObject::PyNpDataObjectType.tp_alloc = PyType_GenericAlloc;
-            if (PyType_Ready(&PythonNpDataObject::PyNpDataObjectType) >= 0)
-            {
-                Py_INCREF(&PythonNpDataObject::PyNpDataObjectType);
-                PyModule_AddObject(itomModule, "npDataObject", (PyObject *)&PythonNpDataObject::PyNpDataObjectType);
-            }
-//#endif //ITOM_NPDATAOBJECT
-
             if (PyType_Ready(&PythonTimer::PyTimerType) >= 0)
             {
                 Py_INCREF(&PythonTimer::PyTimerType);
