@@ -4004,15 +4004,13 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
                 {
                     if (instance->getBasePlugin()->getType() & ito::typeDataIO)
                     {
-                        PythonPlugins::PyDataIOPlugin *dataIOPlugin;
-                        dataIOPlugin = PyObject_New(PythonPlugins::PyDataIOPlugin, &PythonPlugins::PyDataIOPluginType); //new ref
+                        PythonPlugins::PyDataIOPlugin *dataIOPlugin = (PythonPlugins::PyDataIOPlugin*)PythonPlugins::PyDataIOPluginType.tp_new(&PythonPlugins::PyDataIOPluginType,NULL,NULL); //new ref
                         if (dataIOPlugin == NULL)
                         {
                             retVal += RetVal(retError, 0, tr("No instance of python class dataIO could be created").toLatin1().data());
                         }
                         else
                         {
-                            dataIOPlugin->base = NULL;
                             instance->getBasePlugin()->incRef(instance);
                             dataIOPlugin->dataIOObj = (ito::AddInDataIO*)instance;
                             value = (PyObject*)dataIOPlugin;
@@ -4020,15 +4018,13 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
                     }
                     else if (instance->getBasePlugin()->getType() & ito::typeActuator)
                     {
-                        PythonPlugins::PyActuatorPlugin *actuatorPlugin;
-                        actuatorPlugin = PyObject_New(PythonPlugins::PyActuatorPlugin, &PythonPlugins::PyActuatorPluginType); //new ref
+                        PythonPlugins::PyActuatorPlugin *actuatorPlugin = (PythonPlugins::PyActuatorPlugin*)PythonPlugins::PyActuatorPluginType.tp_new(&PythonPlugins::PyActuatorPluginType,NULL,NULL); //new ref
                         if (actuatorPlugin == NULL)
                         {
                             retVal += RetVal(retError, 0, tr("No instance of python class actuator could be created").toLatin1().data());
                         }
                         else
                         {
-                            actuatorPlugin->base = NULL;
                             instance->getBasePlugin()->incRef(instance);
                             actuatorPlugin->actuatorObj = (ito::AddInActuator*)instance;
                             value = (PyObject*)actuatorPlugin;

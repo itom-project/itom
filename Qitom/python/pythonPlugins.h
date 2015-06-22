@@ -63,6 +63,7 @@ class PythonPlugins
            PyObject_HEAD
            ito::AddInActuator *actuatorObj;
            PyObject* base;
+           PyObject *weakreflist; /* List of weak references */
        }
        PyActuatorPlugin;
 
@@ -71,6 +72,7 @@ class PythonPlugins
            PyObject_HEAD
            ito::AddInDataIO *dataIOObj;
            PyObject* base;
+           PyObject *weakreflist; /* List of weak references */
        }
        PyDataIOPlugin;
        

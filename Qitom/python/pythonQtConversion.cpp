@@ -1248,7 +1248,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             else if (PyArray_Check(val))
             {
                 //try to create a dataObject (Python object) from given numpy array
-                PyObject *pyDataObj = PythonDataObject::PyDataObjectType.tp_new(&PythonDataObject::PyDataObjectType,NULL,NULL); //PyObject_New(PythonDataObject::PyDataObject, &PythonDataObject::PyDataObjectType); //new ref
+                PyObject *pyDataObj = PythonDataObject::PyDataObjectType.tp_new(&PythonDataObject::PyDataObjectType,NULL,NULL);  //new ref
                 if (pyDataObj)
                 {
                     PyObject *args = Py_BuildValue("(O)", val);
