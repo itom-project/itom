@@ -1133,6 +1133,11 @@ PyObject* setParam(ito::AddInBase *addInObj, PyObject *args)
 */
 void PythonPlugins::PyActuatorPlugin_dealloc(PyActuatorPlugin* self)
 {
+    if (self->weakreflist != NULL)
+    {
+        PyObject_ClearWeakRefs((PyObject *) self);
+    }
+
     if (self->actuatorObj)
     {
         ito::AddInInterfaceBase *aib = self->actuatorObj->getBasePlugin();
@@ -1184,6 +1189,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_new(PyTypeObject *type, PyObject* /*ar
    {
       self->actuatorObj = NULL;
       self->base = NULL;
+      self->weakreflist = NULL;
    }
 
    return (PyObject *)self;
@@ -2373,12 +2379,12 @@ PyTypeObject PythonPlugins::PyActuatorPluginType = {
    0,                                       /* tp_as_buffer */
    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,   /* tp_flags */
    pyActuatorInit_doc,                      /* tp_doc */
-   0,                                        /* tp_traverse */
-   0,                                        /* tp_clear */
-   0,                                        /* tp_richcompare */
-   0,                                        /* tp_weaklistoffset */
-   0,                                        /* tp_iter */
-   0,                                        /* tp_iternext */
+   0,                                       /* tp_traverse */
+   0,                                       /* tp_clear */
+   0,                                       /* tp_richcompare */
+   offsetof(PyActuatorPlugin, weakreflist), /* tp_weaklistoffset */
+   0,                                       /* tp_iter */
+   0,                                       /* tp_iternext */
    PyActuatorPlugin_methods,                /* tp_methods */
    PyActuatorPlugin_members,                /* tp_members */
    0,                                       /* tp_getset */
@@ -2407,6 +2413,11 @@ PyTypeObject PythonPlugins::PyActuatorPluginType = {
 */
 void PythonPlugins::PyDataIOPlugin_dealloc(PyDataIOPlugin* self)
 {
+    if (self->weakreflist != NULL)
+    {
+        PyObject_ClearWeakRefs((PyObject *) self);
+    }
+
     if (self->dataIOObj)
     {
         ito::AddInInterfaceBase *aib = self->dataIOObj->getBasePlugin();
@@ -2461,6 +2472,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_new(PyTypeObject *type, PyObject * /*arg
     {
         self->dataIOObj = NULL;
         self->base = NULL;
+        self->weakreflist = NULL;
     }
 
     return (PyObject *)self;
@@ -3897,7 +3909,7 @@ PyTypeObject PythonPlugins::PyDataIOPluginType = {
    0,                                    /* tp_traverse */
    0,                                    /* tp_clear */
    0,                                    /* tp_richcompare */
-   0,                                    /* tp_weaklistoffset */
+   offsetof(PyDataIOPlugin, weakreflist),/* tp_weaklistoffset */
    0,                                    /* tp_iter */
    0,                                    /* tp_iternext */
    PyDataIOPlugin_methods,              /* tp_methods */
