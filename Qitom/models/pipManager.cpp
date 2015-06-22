@@ -22,6 +22,7 @@
 
 //import this before any qobject stuff
 #include "../python/pythonEngine.h"
+#include "../python/pythonQtConversion.h"
 
 #include "pipManager.h"
 
@@ -55,6 +56,64 @@ PipManager::PipManager(QObject *parent /*= 0*/) :
     if (pyeng)
     {
         m_pythonPath = pyeng->getPythonExecutable(); 
+    }
+    else
+    {
+        //Pip Manager has been started as standalone application to update packages like Numpy that cannot be updated if itom is running and the Python Engine has been entirely started.
+        Py_Initialize();
+        if (Py_IsInitialized())
+        {
+#if defined WIN32
+            //on windows, sys.executable returns the path of qitom.exe. The absolute path to python.exe is given by sys.exec_prefix
+            PyObject *python_path_prefix = PySys_GetObject("exec_prefix"); //borrowed reference
+            if (python_path_prefix)
+            {
+                bool ok;
+                m_pythonPath = PythonQtConversion::PyObjGetString(python_path_prefix, true, ok);
+                if (ok)
+                {
+                    QDir pythonPath(m_pythonPath);
+                    if (pythonPath.exists())
+                    {
+                        m_pythonPath = pythonPath.absoluteFilePath("python.exe");
+                    }
+                    else
+                    {
+                        m_pythonPath = QString();
+                    }
+                }
+                else
+                {
+                    m_pythonPath = QString();
+                }
+            }
+#elif defined linux
+            //on linux, sys.executable returns the absolute path to the python application, even in an embedded mode.
+            PyObject *python_executable = PySys_GetObject("executable"); //borrowed reference
+            if (python_executable)
+            {
+                bool ok;
+                m_pythonPath = PythonQtConversion::PyObjGetString(python_executable, true, ok);
+                if (!ok)
+                {
+                    m_pythonPath = QString();
+                }
+            }
+#else //APPLE
+            //on apple, sys.executable returns the absolute path to the python application, even in an embedded mode. (TODO: Check this assumption)
+            PyObject *python_executable = PySys_GetObject("executable"); //borrowed reference
+            if (python_executable)
+            {
+                bool ok;
+                m_pythonPath = PythonQtConversion::PyObjGetString(python_executable, true, ok);
+                if (!ok)
+                {
+                    m_pythonPath = QString();
+                }
+            }
+#endif
+        Py_Finalize();
+        }
     }
 }
 
@@ -159,6 +218,11 @@ QVariant PipManager::data(const QModelIndex &index, int role) const
             default:
                 return QVariant();
         }
+    }
+    else if (role == Qt::UserRole + 1)
+    {
+        const PythonPackage &package = m_pythonPackages[index.row()];
+        return (package.m_status == PythonPackage::Outdated);
     }
     
     return QVariant();

@@ -1,7 +1,7 @@
 project(itom)      
 #trigger update on 2014.07.02@14:16
 cmake_minimum_required(VERSION 2.8)
-    
+            
 if(APPLE)
     OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
     SET(CMAKE_OSX_ARCHITECTURES "x86_64")
@@ -117,7 +117,6 @@ ELSEIF(MSVC13)
 ENDIF(MSVC10)
 
 #ADD a batch file for itom-release
-CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/itom.bat.in ${CMAKE_CURRENT_BINARY_DIR}/itom.bat )
 CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/COPYING.txt ${CMAKE_CURRENT_BINARY_DIR}/COPYING.txt )
 
 CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/itom_sdk.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/SDK/itom_sdk.cmake )

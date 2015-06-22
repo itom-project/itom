@@ -24,6 +24,8 @@
 
 #include <qmessagebox.h>
 #include <qscrollbar.h>
+#include <qdir.h>
+
 
 #include "../global.h"
 
@@ -33,11 +35,12 @@
 namespace ito {
 
 //--------------------------------------------------------------------------------
-DialogPipManager::DialogPipManager(QWidget *parent ) :
+DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /*= false*/) :
     QDialog(parent),
     m_pPipManager(NULL),
     m_lastLogEntry(-1),
-    m_outputSilent(false)
+    m_outputSilent(false),
+    m_standalone(standalone)
 {
     ui.setupUi(this);
 
@@ -203,25 +206,26 @@ void DialogPipManager::on_btnReload_clicked()
 void DialogPipManager::on_btnCheckForUpdates_clicked()
 {
     m_pPipManager->checkPackageUpdates(createOptions());
+
+    // TODO!!!
+    QModelIndex mi = ui.tablePackages->currentIndex();
+    bool updatedAvailabe = m_pPipManager->data(mi, Qt::UserRole + 1).toBool();
+    ui.btnUpdate->setEnabled(updatedAvailabe);
 }
 
 //---------------------------------------------------------------------------------
 void DialogPipManager::on_btnInstall_clicked()
 {
-    DialogPipManagerInstall *dpmi = new DialogPipManagerInstall(this);
-    if (dpmi->exec() == QDialog::Accepted)
-    {
-        PipInstall install;
-        dpmi->getResult(*((int*)&install.type), install.packageName, install.upgrade, install.installDeps, install.findLinks, install.ignoreIndex, install.runAsSudo);
-
-        m_pPipManager->installPackage(install, createOptions());
-    }
-
-    DELETE_AND_SET_NULL(dpmi);
+    installOrUpdatePackage();
 }
 
 //---------------------------------------------------------------------------------
 void DialogPipManager::on_btnUpdate_clicked()
+{
+    installOrUpdatePackage();
+}
+//---------------------------------------------------------------------------------
+void DialogPipManager::installOrUpdatePackage()
 {
     DialogPipManagerInstall *dpmi = new DialogPipManagerInstall(this);
     if (dpmi->exec() == QDialog::Accepted)
@@ -229,7 +233,47 @@ void DialogPipManager::on_btnUpdate_clicked()
         PipInstall install;
         dpmi->getResult(*((int*)&install.type), install.packageName, install.upgrade, install.installDeps, install.findLinks, install.ignoreIndex, install.runAsSudo);
 
-        m_pPipManager->installPackage(install, createOptions());
+        if (!m_standalone && \
+            ((install.type == ito::PipInstall::typeWhl && install.packageName.indexOf("numpy-", 0, Qt::CaseInsensitive) >= 0) \
+            || (install.type != ito::PipInstall::typeWhl && install.packageName.compare("numpy", Qt::CaseInsensitive) == 0)))
+        {
+             QMessageBox msgBox(this);
+             msgBox.setWindowTitle("Pip Manager");
+             msgBox.setIcon(QMessageBox::Warning);
+             msgBox.setText("Warning installing Numpy if itom is already running.");
+             msgBox.setInformativeText(QString("If you try to install / upgrade Numpy if itom is already running, \
+a file access error might occur, since itom already uses parts of Numpy. \n\n\
+Click ignore if you want to try to continue the installation or click OK in order to stop the \
+installation. \n\n\
+In the latter case, the file 'restart_itom_with_pip_manager.txt' is created in the directory '%1', \
+such that the pip manager is started one time as standalone application once you restart itom. \
+Then, close all instances of itom or other software accessing Numpy, restart itom and try \
+to upgrade Numpy.").arg(QDir::tempPath()));
+             msgBox.setStandardButtons(QMessageBox::Ignore | QMessageBox::Ok);
+             msgBox.setDefaultButton(QMessageBox::Ok);
+             int ret = msgBox.exec();
+
+             if (ret == QMessageBox::Ok)
+             {
+                 QDir tmp(QDir::tempPath());
+                 if (!tmp.exists("restart_itom_with_pip_manager.txt"))
+                 {
+                     QFile file(tmp.absoluteFilePath("restart_itom_with_pip_manager.txt"));
+                     if (file.open(QIODevice::ReadWrite))
+                     {
+                         file.close();
+                     }
+                 }
+             }
+             else
+             {
+                 m_pPipManager->installPackage(install, createOptions());
+             }
+        }
+        else
+        {
+            m_pPipManager->installPackage(install, createOptions());
+        }
     }
 
     DELETE_AND_SET_NULL(dpmi);
@@ -300,7 +344,16 @@ void DialogPipManager::on_btnSudoUninstall_clicked()
 //---------------------------------------------------------------------------------
 void DialogPipManager::treeViewSelectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
 {
-    ui.btnUpdate->setEnabled(selected.count() > 0 /*&& m_pPipManager->rowCount() > 0*/);
+    bool updatedAvailabe = false;
+
+    foreach (const QModelIndex &mi, selected.indexes())
+    {
+        if (mi.column() == 0)
+        {
+            updatedAvailabe = m_pPipManager->data(mi, Qt::UserRole + 1).toBool();
+        }
+    }
+    ui.btnUpdate->setEnabled(updatedAvailabe);
 }
 
 } //end namespace ito

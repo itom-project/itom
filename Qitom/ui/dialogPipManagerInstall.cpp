@@ -71,9 +71,7 @@ void DialogPipManagerInstall::getResult(int &type, QString &packageName, bool &u
     findLinks = (ui.checkFindLinks->isChecked()) ? ui.txtFindLinks->text() : "";
     ignoreIndex = ui.checkNoIndex->isChecked();
     runAsSudo = ui.checkRunSudo->isChecked();
-
 }
-
 
 //--------------------------------------------------------------------------------
 void DialogPipManagerInstall::on_btnPackage_clicked()

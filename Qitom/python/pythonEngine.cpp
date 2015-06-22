@@ -278,7 +278,6 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 {
     PyObject *itomDbgClass = NULL;
     PyObject *itomDbgDict = NULL;
-//    bool numpyAvailable = true;
 
     m_pythonThreadId = QThread::currentThreadId ();
     qDebug() << "python in thread: " << m_pythonThreadId;
@@ -321,8 +320,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 
             if (_import_array() < 0)
             {
-//                numpyAvailable = false;
-                PyErr_Print();
+                PyErr_PrintEx(0);
                 PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.");
                 (*retValue) += RetVal(retError, 0, "numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.\n");
                 return;
@@ -389,25 +387,6 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 PythonPlugins::PyDataIOPlugin_addTpDict(PythonPlugins::PyDataIOPluginType.tp_dict);
                 PyModule_AddObject(itomModule, "dataIO", (PyObject *)&PythonPlugins::PyDataIOPluginType);
             }
-
-#if 0 //algo plugins do not exist as instances, they only contain static methods, callable by itom.filter
-            if (PyType_Ready(&PythonPlugins::PyAlgoPluginType) >= 0)
-            {
-                Py_INCREF(&PythonPlugins::PyAlgoPluginType);
-                PyModule_AddObject(itomModule, "algo", (PyObject *)&PythonPlugins::PyAlgoPluginType);
-            }
-#endif
-
-//#if ITOM_NPDATAOBJECT //right now, npDataObject exists but raises a python exception if ITOM_NPDATAOBJECT is not defined
-            PythonNpDataObject::PyNpDataObjectType.tp_base = &PyArray_Type;
-            PythonNpDataObject::PyNpDataObjectType.tp_free = PyObject_Free;
-            PythonNpDataObject::PyNpDataObjectType.tp_alloc = PyType_GenericAlloc;
-            if (PyType_Ready(&PythonNpDataObject::PyNpDataObjectType) >= 0)
-            {
-                Py_INCREF(&PythonNpDataObject::PyNpDataObjectType);
-                PyModule_AddObject(itomModule, "npDataObject", (PyObject *)&PythonNpDataObject::PyNpDataObjectType);
-            }
-//#endif //ITOM_NPDATAOBJECT
 
             if (PyType_Ready(&PythonTimer::PyTimerType) >= 0)
             {
@@ -578,7 +557,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             else
             {
                 std::cerr << "could not get variable sys.path" <<std::endl;
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
 
             //PyImport_AppendInittab("itomDbgWrapper",&PythonEngine::PyInitItomDbg); //!< add all static, known function calls to python-module itomDbgWrapper
@@ -595,7 +574,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             {
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoFunctions could not be loaded.").toLatin1().data());
                 std::cerr << "the module itoFunctions could not be loaded." << std::endl;
-                PyErr_Print();
+                PyErr_PrintEx(0);
                 PyErr_Clear();
             }
 
@@ -605,7 +584,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             {
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoDebugger could not be loaded.").toLatin1().data());
                 std::cerr << "the module itoDebugger could not be loaded." <<std::endl;
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
             else
             {
@@ -615,7 +594,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 if (itomDbgClass == NULL)
                 {
                     (*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoDebugger could not be loaded.").toLatin1().data());
-                    PyErr_Print();
+                    PyErr_PrintEx(0);
                     //printPythonError(PySys_GetObject("stderr"));
                 }
                 else
@@ -630,7 +609,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             {
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("the module 'autoreload' could not be loaded.").toLatin1().data());
                 std::cerr << "the module 'autoreload' could not be loaded." <<std::endl;
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
 
             PyThreadState *pts = PyGILState_GetThisThreadState(); //wichtige Zeile
@@ -826,7 +805,7 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
         {
             if (PyErr_Occurred())
             {
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
             PyErr_Clear();
             Py_Finalize();
@@ -1067,10 +1046,11 @@ QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const char *str, Q
     PyGILState_STATE gstate = PyGILState_Ensure();
 
     //see http://docs.python.org/devguide/compiler.html
-    _node *n = PyParser_SimpleParseString(str, Py_file_input); 
+    _node *n = PyParser_SimpleParseString(str, Py_file_input);
     _node *n2 = n;
-    if (n==NULL)
+    if (n == NULL)
     {
+        //here: error indicator is set.
         return QList<int>();
     }
 
@@ -1118,7 +1098,7 @@ void PythonEngine::setAutoReloader(bool enabled, bool checkFile, bool checkCmd, 
                 if (dictItem == NULL)
                 {
                     std::cerr << "The class 'ItomAutoreloader' could not be found" << std::endl;
-                    PyErr_Print();
+                    PyErr_PrintEx(0);
                 }
                 else
                 {
@@ -1136,7 +1116,7 @@ void PythonEngine::setAutoReloader(bool enabled, bool checkFile, bool checkCmd, 
                 PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "autoreload", "s", "2");
                 if (!result)
                 {
-                    PyErr_Print();
+                    PyErr_PrintEx(0);
                     m_autoReload.enabled = false;
                 }
                 Py_XDECREF(result);
@@ -1155,7 +1135,7 @@ void PythonEngine::setAutoReloader(bool enabled, bool checkFile, bool checkCmd, 
                 PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "autoreload", "s", "0");
                 if (!result)
                 {
-                    PyErr_Print();
+                    PyErr_PrintEx(0);
                 }
                 Py_XDECREF(result);
             }
@@ -1185,14 +1165,14 @@ ito::RetVal PythonEngine::autoReloaderCheck()
             PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "autoreload", "");
             if (!result)
             {
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
             Py_XDECREF(result);
             
             result = PyObject_CallMethod(m_autoReload.classAutoReload, "post_execute_hook", "");
             if (!result)
             {
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
             Py_XDECREF(result);
 
@@ -1214,6 +1194,9 @@ ito::RetVal PythonEngine::autoReloaderCheck()
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::runString(const QString &command)
 {
+    //command must be a single-line command. A single-line command only means, that it must only consist of one block (e.g. an if-loop including its content is also a single-line command)
+    //if it is not single line, Py_single_input below must be replaced.
+
     RetVal retValue = RetVal(retOk);
     PyGILState_STATE gstate = PyGILState_Ensure();
 
@@ -1226,6 +1209,13 @@ ito::RetVal PythonEngine::runString(const QString &command)
         std::cerr << "main dictionary is empty. python probably not started" << std::endl;
         retValue += RetVal(retError, 1, tr("main dictionary is empty").toLatin1().data());
     }
+    else if (PyErr_Occurred() == PyExc_SyntaxError)
+    {
+        PyErr_PrintEx(0);
+        //check if already a syntax error has been raised (come from previous call to parseAndSplitCommandInMainComponents)
+        retValue += RetVal(retError, 2, tr("syntax error").toLatin1().data());
+        PyErr_Clear();
+    }
     else
     {
         m_interruptCounter = 0;
@@ -1234,22 +1224,26 @@ ito::RetVal PythonEngine::runString(const QString &command)
             PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "pre_run_cell", "");
             if (!result)
             {
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
             Py_XDECREF(result);
         }
 
         try
         {
-            //input to PyRun_String must be UTF8
-            if (command.contains('\n')) //multi-line commands must have the Py_file_input flag
-            {
-                result = PyRun_String(command.toUtf8().data(), Py_file_input /*Py_single_input*/ , mainDict, localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
-            }
-            else //this command is a single line command, then Py_single_input must be set, such that the output of any command is printed in the next line, else this output is supressed (if no print command is executed)
-            {
-                result = PyRun_String(command.toUtf8().data(), Py_single_input, mainDict , localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
-            }
+            //Py_single_input for single-line commands forces the result (if != PyNone) to be immediately printed to the command line, which is a desired behaviour.
+            //Py_single_input forces inputs that evaluate to something different than None will be printed.
+            result = PyRun_String(command.toUtf8().data(), Py_single_input, mainDict, localDict);
+
+            ////input to PyRun_String must be UTF8
+            //if (command.contains('\n')) //multi-line commands must have the Py_file_input flag
+            //{
+            //    result = PyRun_String(command.toUtf8().data(), Py_single_input, mainDict, localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
+            //}
+            //else //this command is a single line command, then Py_single_input must be set, such that the output of any command is printed in the next line, else this output is supressed (if no print command is executed)
+            //{
+            //    result = PyRun_String(command.toUtf8().data(), Py_single_input /*was in 2015: Py_single_input*/, mainDict , localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
+            //}
         }
         catch(std::exception &exc)
         {
@@ -1265,7 +1259,7 @@ ito::RetVal PythonEngine::runString(const QString &command)
             }
             else
             {
-                PyErr_Print();
+                PyErr_PrintEx(0);
                 retValue += RetVal(retError, 2, tr("error while evaluating python string.").toLatin1().data());
             }
             PyErr_Clear();
@@ -1276,7 +1270,7 @@ ito::RetVal PythonEngine::runString(const QString &command)
             PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "post_execute_hook", "");
             if (!result)
             {
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
             Py_XDECREF(result);
         }
@@ -1332,7 +1326,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                     PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "pre_run_cell", "");
                     if (!result)
                     {
-                        PyErr_Print();
+                        PyErr_PrintEx(0);
                     }
                     Py_XDECREF(result);
                 }
@@ -1350,7 +1344,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                         PyObject *oldTBLimit = PySys_GetObject("tracebacklimit");
 
                         modifyTracebackDepth(2, true);
-                        PyErr_Print();
+                        PyErr_PrintEx(0);
 
                         if (oldTBLimit != NULL)
                         {
@@ -1374,7 +1368,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                         }
                         else
                         {
-                            PyErr_Print();
+                            PyErr_PrintEx(0);
                             retValue += RetVal(retError);
                         }
                         PyErr_Clear();
@@ -1389,7 +1383,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                     PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "post_execute_hook", "");
                     if (!result)
                     {
-                        PyErr_Print();
+                        PyErr_PrintEx(0);
                     }
                     Py_XDECREF(result);
                 }
@@ -1413,7 +1407,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                 PyObject *result2 = PyObject_CallMethod(m_autoReload.classAutoReload, "pre_run_cell", "");
                 if (!result2)
                 {
-                    PyErr_Print();
+                    PyErr_PrintEx(0);
                 }
                 Py_XDECREF(result2);
             }
@@ -1439,7 +1433,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                     PyObject *oldTBLimit = PySys_GetObject("tracebacklimit");
 
                     modifyTracebackDepth(2, true);
-                    PyErr_Print();
+                    PyErr_PrintEx(0);
 
                     if (oldTBLimit != NULL)
                     {
@@ -1456,7 +1450,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                 PyObject *result2 = PyObject_CallMethod(m_autoReload.classAutoReload, "post_execute_hook", "");
                 if (!result2)
                 {
-                    PyErr_Print();
+                    PyErr_PrintEx(0);
                 }
                 Py_XDECREF(result2);
             }
@@ -1486,7 +1480,7 @@ ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple, bo
         PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "pre_run_cell", "");
         if (!result)
         {
-            PyErr_Print();
+            PyErr_PrintEx(0);
         }
         Py_XDECREF(result);
     }
@@ -1503,7 +1497,7 @@ ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple, bo
 
     if (ret == NULL)
     {
-        PyErr_Print();
+        PyErr_PrintEx(0);
         retValue += RetVal(retError);
     }
 
@@ -1514,7 +1508,7 @@ ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple, bo
         PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "post_execute_hook", "");
         if (!result)
         {
-            PyErr_Print();
+            PyErr_PrintEx(0);
         }
         Py_XDECREF(result);
     }
@@ -1594,7 +1588,7 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, 
             PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "pre_run_cell", "");
             if (!result)
             {
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
             Py_XDECREF(result);
         }
@@ -1622,7 +1616,7 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, 
                 PyObject *oldTBLimit = PySys_GetObject("tracebacklimit");
 
                 modifyTracebackDepth(3, true);
-                PyErr_Print();
+                PyErr_PrintEx(0);
 
                 if (oldTBLimit != NULL)
                 {
@@ -1638,7 +1632,7 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, 
             PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "post_execute_hook", "");
             if (!result)
             {
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
             Py_XDECREF(result);
         }
@@ -1720,7 +1714,7 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
             PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "pre_run_cell", "");
             if (!result)
             {
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
             Py_XDECREF(result);
         }
@@ -1748,7 +1742,7 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
                 PyObject *oldTBLimit = PySys_GetObject("tracebacklimit");
 
                 modifyTracebackDepth(3, true);
-                PyErr_Print();
+                PyErr_PrintEx(0);
 
                 if (oldTBLimit != NULL)
                 {
@@ -1764,7 +1758,7 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
             PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "post_execute_hook", "");
             if (!result)
             {
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
             Py_XDECREF(result);
         }
@@ -1786,12 +1780,22 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::debugString(const QString &command)
 {
+    //command must be a single-line command. A single-line command only means, that it must only consist of one block (e.g. an if-loop including its content is also a single-line command)
+    //if it is not single line, Py_single_input below must be replaced.
+
     PyObject* result = NULL;
     RetVal retValue = RetVal(retOk);
     m_interruptCounter = 0;
     if (itomDbgInstance == NULL)
     {
         return RetVal(retError);
+    }
+    else if (PyErr_Occurred() == PyExc_SyntaxError)
+    {
+        PyErr_PrintEx(0);
+        //check if already a syntax error has been raised (come from previous call to parseAndSplitCommandInMainComponents)
+        retValue += RetVal(retError, 2, tr("syntax error").toLatin1().data());
+        PyErr_Clear();
     }
     else
     {
@@ -1816,12 +1820,15 @@ ito::RetVal PythonEngine::debugString(const QString &command)
         {
             if ((*it).pythonDbgBpNumber==-1)
             {
-                retValue += pythonAddBreakpoint((*it).filename, (*it).lineno, (*it).enabled, (*it).temporary, (*it).condition, (*it).ignoreCount, pyBpNumber);
-                bpModel->setPyBpNumber(*it,pyBpNumber);
+                retValue += pythonAddBreakpoint(it->filename, it->lineno, it->enabled, it->temporary, it->condition, it->ignoreCount, pyBpNumber);
 
                 if (retValue.containsError())
                 {
                     return retValue;
+                }
+                else
+                {
+                    bpModel->setPyBpNumber(*it,pyBpNumber);
                 }
             }
             row++;
@@ -1835,13 +1842,14 @@ ito::RetVal PythonEngine::debugString(const QString &command)
             PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "pre_run_cell", "");
             if (!result)
             {
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
             Py_XDECREF(result);
         }
 
         try
         {
+            //the result of all commands that return something else than None is printed. This can be changed in itoDebugger by chosing compile(...,'exec') instead of 'single'
             result = PyObject_CallMethod(itomDbgInstance, "debugString", "s", command.toUtf8().data()); //command must be UTF8
         }
         catch(std::exception &exc)
@@ -1863,7 +1871,7 @@ ito::RetVal PythonEngine::debugString(const QString &command)
                 PyObject *oldTBLimit = PySys_GetObject("tracebacklimit");
 
                 modifyTracebackDepth(3, true);
-                PyErr_Print();
+                PyErr_PrintEx(0);
 
                 if (oldTBLimit != NULL)
                 {
@@ -1879,7 +1887,7 @@ ito::RetVal PythonEngine::debugString(const QString &command)
             PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "post_execute_hook", "");
             if (!result)
             {
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
             Py_XDECREF(result);
         }
@@ -1978,7 +1986,7 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
         else if (!result)
         {
             std::cerr << "Error when calling the syntax check module of python\n" << std::endl;
-            PyErr_Print();
+            PyErr_PrintEx(0);
         }
 
         Py_XDECREF(result);
@@ -3117,7 +3125,7 @@ void PythonEngine::pythonGenericSlot(PyObject* callable, PyObject *argumentTuple
     result = PyObject_CallObject(callable, argumentTuple);
     if (result == NULL)
     {
-        PyErr_Print();
+        PyErr_PrintEx(0);
     }
 }
 
@@ -3298,7 +3306,7 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
     {
         if (!PyObject_CallMethod(self, "set_continue", ""))
         {
-            PyErr_Print();
+            PyErr_PrintEx(0);
         }
     }
     else //proceed the normal debug turnus
@@ -3344,31 +3352,31 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
         case ito::pyDbgStep:
             if (!PyObject_CallMethod(self, "set_step", ""))
             {
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
             break;
         case ito::pyDbgContinue:
             if (!PyObject_CallMethod(self, "set_continue", ""))
             {
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
             break;
         case ito::pyDbgStepOver:
             if (!PyObject_CallMethod(self, "set_next", "O", frame))
             {
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
             break;
         case ito::pyDbgStepOut:
             if (!PyObject_CallMethod(self,"set_return", "O", frame))
             {
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
             break;
         case ito::pyDbgQuit:
             if (!PyObject_CallMethod(self,"do_quit", "O", frame)) //!< do_quit instead of set_quit, since one member-variable is set in itoDebugger.py
             {
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
             PythonEngine::getInstanceInternal()->m_interruptCounter.deref();
             break;
@@ -3468,7 +3476,7 @@ bool PythonEngine::renameVariable(bool globalNotLocal, QString oldKey, QString n
                     if (PyErr_Occurred())
                     {
                         retVal = false;
-                        PyErr_Print();
+                        PyErr_PrintEx(0);
                     }
                 }
             }
@@ -3557,7 +3565,7 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, QStringList keys, ItomSha
                 if (PyErr_Occurred())
                 {
                     retVal = false;
-                    PyErr_Print();
+                    PyErr_PrintEx(0);
                     break;
                 }
             }
@@ -4147,7 +4155,7 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
                         if (PyErr_Occurred())
                         {
                             retVal += RetVal(retError, 0, tr("Dictionary is not available").toLatin1().data());
-                            PyErr_Print();
+                            PyErr_PrintEx(0);
                         }
                     }
                 }
@@ -4247,7 +4255,7 @@ ito::RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QS
             if (!result)
             {
                 retValue += RetVal(retError, 0, tr("error while loading the modules").toLatin1().data());
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
             else
             {
@@ -4326,7 +4334,7 @@ ito::RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames,
             if (!result)
             {
                 retValue += RetVal(retError, 0, tr("error while reloading the modules").toLatin1().data());
-                PyErr_Print();
+                PyErr_PrintEx(0);
             }
             else
             {

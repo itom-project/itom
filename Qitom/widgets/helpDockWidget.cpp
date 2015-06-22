@@ -20,8 +20,6 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "../python/pythonEngineInc.h"
-
 #include "../ui/helpTreeDockWidget.h"
 #include "helpDockWidget.h"
 
@@ -53,6 +51,7 @@ HelpDockWidget::HelpDockWidget(const QString &title, const QString &objName, QWi
     m_pHelpWidget = new HelpTreeDockWidget(this, this);
 
     m_pFilterEdit = new QLineEdit(this);
+    m_pFilterEdit->sizePolicy().setHorizontalPolicy(QSizePolicy::MinimumExpanding);
 
     AbstractDockWidget::init();
 
@@ -88,6 +87,15 @@ void HelpDockWidget::createActions()
 //----------------------------------------------------------------------------------------------------------------------------------
 void HelpDockWidget::createMenus()
 {
+    QMenu *winMenu = getMenuBar()->addMenu(tr("&Windows"));
+    if (m_actStayOnTop)
+    {
+        winMenu->addAction(m_actStayOnTop);
+    }
+    if (m_actStayOnTopOfApp)
+    {
+        winMenu->addAction(m_actStayOnTopOfApp);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

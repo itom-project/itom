@@ -115,7 +115,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
 
     m_pWidgetFindWord = new WidgetFindWord(this);
     connect(m_pWidgetFindWord, SIGNAL(findNext(QString,bool,bool,bool,bool,bool,bool)), this, SLOT(findTextExpr(QString,bool,bool,bool,bool,bool,bool)));
-    connect(m_pWidgetFindWord, SIGNAL(hideSearchBar()), this, SLOT(mnuFindTextExpr()));
+    connect(m_pWidgetFindWord, SIGNAL(hideSearchBar()), this, SLOT(findWordWidgetFinished()));
    
     // Layoutbox
     m_pVBox = new QVBoxLayout();
@@ -423,10 +423,6 @@ void ScriptDockWidget::showClassNavigator(bool show)
 {
     m_classMenuBar->setVisible(show);
 }
-
-
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 QList<ito::ScriptEditorStorage> ScriptDockWidget::saveScriptState() const
@@ -1298,6 +1294,9 @@ void ScriptDockWidget::createActions()
     m_bookmarkClearAll = new ShortcutAction(QIcon(":/bookmark/icons/bookmarkClearAll.png"), tr("&clear all bookmarks"), this);
     m_bookmarkClearAll->connectTrigger(this, SLOT(mnuClearAllBookmarks()));
 
+    m_insertCodecAct = new ShortcutAction(tr("&insert codec..."), this);
+    m_insertCodecAct->connectTrigger(this, SLOT(mnuInsertCodec()));
+
     updatePythonActions();
     updateTabContextActions();
     updateEditorActions();
@@ -1436,6 +1435,7 @@ void ScriptDockWidget::createMenus()
     m_editMenu->addAction(m_replaceTextExprAction->action());
     m_editMenu->addAction(m_gotoAction->action());
     m_editMenu->addAction(m_openIconBrowser->action());
+    m_editMenu->addAction(m_insertCodecAct->action());
     m_editMenu->addSeparator();
     m_bookmark = m_editMenu->addMenu(QIcon(":/bookmark/icons/bookmark.png"), tr("bookmark"));
     m_bookmark->addAction(m_bookmarkToggle->action());
@@ -1940,17 +1940,9 @@ void ScriptDockWidget::mnuScriptStepOut()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptDockWidget::mnuFindTextExpr()
 {
-//    if (!m_pWidgetFindWord->isVisible()) 
-//    {
-        m_pWidgetFindWord->show();
-        m_pWidgetFindWord->setCursorToTextField();
-        m_findTextExprAction->action()->setChecked(true);
-/*    }
-    else
-    {
-        m_pWidgetFindWord->hide();
-        m_findTextExprAction->action()->setChecked(false);
-    }*/
+    m_pWidgetFindWord->show();
+    m_pWidgetFindWord->setCursorToTextField();
+    m_findTextExprAction->action()->setChecked(true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2079,6 +2071,16 @@ void ScriptDockWidget::mnuGotoPreviousBookmark()
     {
         sew->menuGotoPreviousBookmark();
         updateEditorActions();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::mnuInsertCodec()
+{
+    ScriptEditorWidget *sew = getCurrentEditor();
+    if (sew != NULL)
+    {
+        sew->menuInsertCodec();
     }
 }
 
@@ -2235,6 +2237,18 @@ void ScriptDockWidget::insertIconBrowserText(QString iconLink)
 void ScriptDockWidget::editorMarginChanged()
 {
     updateEditorActions();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::findWordWidgetFinished()
+{
+    m_pWidgetFindWord->hide();
+
+    ScriptEditorWidget* sew = getCurrentEditor();
+    if (sew != NULL)
+    {
+        sew->setFocus();
+    }
 }
 
 } //end namespace ito

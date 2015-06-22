@@ -55,6 +55,7 @@ class MainApplication : public QObject
         void finalizeApplication();
 
         int exec();
+        int execPipManagerOnly();
 
         inline ScriptEditorOrganizer* getScriptEditorOrganizer() { return m_scriptEditorOrganizer; } /*!< returns member m_scriptEditorOrganizer */
 

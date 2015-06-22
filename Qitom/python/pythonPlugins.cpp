@@ -112,13 +112,6 @@ int parseParams(PyObject *args, int length, char **&cargs, char *&cargt)
          cargt[n] = 'o';
          cargs[n] = (char*)(((PythonPlugins::PyActuatorPlugin *)tempPyObj)->actuatorObj);
       }
-#if 0 //algo plugins do not exist as instances, they only contain static methods, callable by itom.filter
-      else if (Py_TYPE(tempPyObj) == &PythonPlugins::PyAlgoPluginType)
-      {
-         cargt[n] = 'o';
-         cargs[n] = (char*)(((PythonPlugins::PyAlgoPlugin *)tempPyObj)->algoObj);
-      }
-#endif
       else
       {
           PyErr_Format(PyExc_TypeError, "type of parameter %i cannot be parsed: %s", n+1, tempPyObj->ob_type->tp_name);
@@ -1604,13 +1597,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_calib(PyActuatorPlugin* self, PyObject
     {
         return NULL;
     }
-    /*
-    if (ret != ito::retOk)
-    {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking calib with error message: \n%s\n").toLatin1(), QObject::tr(ret.errorMessage()).toLatin1().data());
-        return NULL;
-    }
-    */
+
     Py_RETURN_NONE;
 }
 
@@ -1725,13 +1712,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setOrigin(PyActuatorPlugin* self, PyOb
     {
         return NULL;
     }
-    /*
-    if (ret != ito::retOk)
-    {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking setOrigin with error message: \n%s\n").toLatin1(), QObject::tr(ret.errorMessage()).toLatin1().data());
-        return NULL;
-    }
-    */
+
     Py_RETURN_NONE;
 }
 
@@ -1968,13 +1949,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getPos(PyActuatorPlugin* self, PyObjec
     {
         return NULL;
     }
-    /*
-    if (ret != ito::retOk)
-    {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking getPos with error message: \n%s\n").toLatin1(), QObject::tr(ret.errorMessage()).toLatin1().data());
-        return NULL;
-    }
-    */
+
     return result;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2338,13 +2313,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosRel(PyActuatorPlugin* self, PyOb
     {
         return NULL;
     }
-    /*
-    if (ret != ito::retOk)
-    {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error invoking setPos with error message: \n%s\n").toLatin1(), QObject::tr(ret.errorMessage()).toLatin1().data());
-        return NULL;
-    }
-    */
+
     Py_RETURN_NONE;
 }
 
@@ -3613,13 +3582,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_enableAutoGrabbing(PyDataIOPlugin *self,
     {
         return NULL;
     }
-    /*
-    if (ret != ito::retOk)
-    {
-        PyErr_Format(PyExc_RuntimeError, QObject::tr("error while enabling the auto grabbing functionality: \n%s\n").toLatin1(), QObject::tr(ret.errorMessage()).toLatin1().data());
-        return NULL;
-    }
-    */
+
     Py_RETURN_NONE;
 }
 

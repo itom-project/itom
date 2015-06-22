@@ -231,7 +231,7 @@ void PythonQtSignalTarget::call(void ** arguments) const
         }
         else //error message is set in ConvertQtValueToPythonInternal
         {
-            PyErr_Print();
+            PyErr_PrintEx(0);
             PyErr_Clear();
             argParsingError = true;
             break;
@@ -257,7 +257,7 @@ void PythonQtSignalTarget::call(void ** arguments) const
             else
             {
                 PyErr_SetString(PyExc_RuntimeError, "The python slot method is not longer available");
-                PyErr_Print();
+                PyErr_PrintEx(0);
                 PyErr_Clear();
             }
         }
@@ -269,7 +269,7 @@ void PythonQtSignalTarget::call(void ** arguments) const
             if (func == Py_None || inst == Py_None)
             {
                 PyErr_SetString(PyExc_RuntimeError, "The python slot method is not longer available");
-                PyErr_Print();
+                PyErr_PrintEx(0);
                 PyErr_Clear();
             }
             else

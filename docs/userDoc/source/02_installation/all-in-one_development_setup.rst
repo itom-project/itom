@@ -78,8 +78,15 @@ Then execute the following steps:
     * Python 3.4.2
     * Numpy 1.8.2
     
-    on your computer. This is required for the further installation. Optionally you can install the **Qt-AddOn** for Visual Studio as well as
+    on your computer. This is required for the further installation. Optionally you can install the **Qt-AddIn** for Visual Studio as well as
     **TortoiseGit** from the **optional** folder. This can also be done later.
+    
+    .. info::
+        
+        From Qt5 on, the Visual Studio debugger is sometimes not able to show the value of QString, QVector... in the tool tip text of a variable even if the Qt-AddIn
+        is installed. If this is the case, please uncheck the option "Enable native Edit and Continue" in Visual Studio (menu -> options -> debugging -> Edit and Continue).
+        
+        For more information see http://stackoverflow.com/questions/26780517/qt5-visual-studio-2012-add-in-does-not-allow-debugging-into-qstack-qvector
     
 3. Execute the script **setup.py**
     

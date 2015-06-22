@@ -143,8 +143,6 @@ MainWindow::MainWindow() :
     {
         // FileDir-Dock
         m_fileSystemDock = new FileSystemDockWidget(tr("File System"), "itomFileSystemDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
-//        m_fileSystemDock->setObjectName("itomFileSystemDockWidget");
-        m_fileSystemDock->restoreState("itomFileSystemDockWidget");
         m_fileSystemDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
         connect(m_fileSystemDock, SIGNAL(currentDirChanged()), this, SLOT(currentDirectoryChanged()));
         addDockWidget(Qt::LeftDockWidgetArea, m_fileSystemDock);
@@ -154,26 +152,21 @@ MainWindow::MainWindow() :
     {
         // breakPointDock
         m_breakPointDock = new BreakPointDockWidget(tr("Breakpoints"), "itomBreakPointDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
-//        m_breakPointDock->setObjectName("itomBreakPointDockWidget");
         m_breakPointDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_breakPointDock);
 
         // lastCommandDock
         m_lastCommandDock = new LastCommandDockWidget(tr("Command History"), "itomLastCommandDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
-//        m_lastCommandDock->setObjectName("itomLastCommandDockWidget");
         m_lastCommandDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_lastCommandDock);
         
         // helpDock
-        m_helpDock = new HelpDockWidget(tr("Help"), "itomHelpDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
-//        m_helpDock->setObjectName("itomHelpDockWidget");
-//        m_helpDock->restoreState("itomHelpDockWidget");
+        m_helpDock = new HelpDockWidget(tr("Help"), "itomHelpDockWidget", this, true, true, AbstractDockWidget::floatingWindow);
         m_helpDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_helpDock);
 
         // CallStack-Dock
         m_callStackDock = new CallStackDockWidget(tr("Call Stack"), "itomCallStackDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
-//        m_callStackDock->setObjectName("itomCallStackDockWidget");
         m_callStackDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_callStackDock);
 
@@ -191,16 +184,12 @@ MainWindow::MainWindow() :
 
         // global workspace widget (Python)
         m_globalWorkspaceDock = new WorkspaceDockWidget(tr("Global Variables"), "itomGlobalWorkspaceDockWidget", true, this, true, true, AbstractDockWidget::floatingStandard);
-//        m_globalWorkspaceDock->setObjectName("itomGlobalWorkspaceDockWidget");
-//        m_globalWorkspaceDock->restoreState("itomGlobalWorkspaceDockWidget");
         m_globalWorkspaceDock->setAllowedAreas(Qt::AllDockWidgetAreas);
         addDockWidget(Qt::RightDockWidgetArea, m_globalWorkspaceDock);
         connect(m_globalWorkspaceDock, SIGNAL(setStatusInformation(QString,int)), this, SLOT(setStatusText(QString, int)));
 
         // local workspace widget (Python)
         m_localWorkspaceDock = new WorkspaceDockWidget(tr("Local Variables"), "itomLocalWorkspaceDockWidget", false, this, true, true, AbstractDockWidget::floatingStandard);
-//        m_localWorkspaceDock->setObjectName("itomLocalWorkspaceDockWidget");
-//        m_localWorkspaceDock->restoreState("itomLocalWorkspaceDockWidget");
         m_localWorkspaceDock->setAllowedAreas(Qt::AllDockWidgetAreas);
         addDockWidget(Qt::RightDockWidgetArea, m_localWorkspaceDock);
         connect(m_localWorkspaceDock, SIGNAL(setStatusInformation(QString, int)), this, SLOT(setStatusText(QString, int)));
@@ -214,10 +203,7 @@ MainWindow::MainWindow() :
     if (uOrg->hasFeature(featPlugins))
     {
         // AddIn-Manager
-//        m_pAIManagerWidget = new AIManagerWidget();
         m_pAIManagerWidget = new AIManagerWidget(tr("Plugins"), "itomPluginsDockWidget", this, true, true, AbstractDockWidget::floatingStandard, AbstractDockWidget::movingEnabled);
-//        m_pAIManagerWidget->setObjectName("itomPluginsDockWidget");
-//        m_pAIManagerWidget->restoreState("itomPluginsDockWidget");
         qDebug(".. plugin manager widget loaded");
 
         addDockWidget(Qt::RightDockWidgetArea, m_pAIManagerWidget);
@@ -323,6 +309,18 @@ MainWindow::MainWindow() :
 
     settings.endGroup();
 
+    //if restore state set some dock widgets inherited from abstractDockWidget to a top level state, it must be converted to a windows style using the following method:
+    if (m_fileSystemDock)
+    {
+        m_fileSystemDock->restoreState("itomFileSystemDockWidget");
+    }
+
+    if (m_helpDock) 
+    {
+        m_helpDock->synchronizeTopLevelState();
+        m_helpDock->restoreState("itomHelpDockWidget");
+    }
+
     setGeometry(geometry);
     m_geometryNormalState = geometry; //geometry in normal state
 
@@ -330,6 +328,8 @@ MainWindow::MainWindow() :
     {
         showMaximized();
     }
+
+
 
     qDebug(".. main window build done");
 
@@ -541,10 +541,6 @@ void MainWindow::removeAbstractDock(AbstractDockWidget* dockWidget)
 */
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    //QSettings settings;
-     //settings.setValue("geometry", saveGeometry());
-     //settings.setValue("windowState", saveState());
-
     emit(mainWindowCloseRequest());
     event->ignore(); //!< if mainWindowCloseRequest is handled and accepted by mainApplication, MainWindow will be destroyed
 }
@@ -1083,7 +1079,7 @@ void MainWindow::mnuShowAssistant()
     {
         QString title;
         QString text;
-        if (retval.hasErrorMessage()) text = QString("\n%1").arg(retval.errorMessage());
+        if (retval.hasErrorMessage()) text = QString("\n%1").arg(QLatin1String(retval.errorMessage()));
         if (retval.containsError())
         {
             text.prepend(tr("Error when preparing help or showing assistant."));
@@ -1102,8 +1098,9 @@ void MainWindow::mnuShowScriptReference()
 {
     if (m_helpDock)
     {
-        m_helpDock->setVisible(true);
-        m_helpDock->raise();
+        m_helpDock->raiseAndActivate();
+        /*m_helpDock->setVisible(true);
+        m_helpDock->raise();*/
     }
 }
 
@@ -1269,7 +1266,7 @@ ito::RetVal MainWindow::removeToolbarButton(const QString &toolbarName, const QS
     if (showMessage && retval.containsWarningOrError())
     {
         QMessageBox msgBox;
-        msgBox.setText(tr(retval.errorMessage()));
+        msgBox.setText(QLatin1String(retval.errorMessage()));
         msgBox.exec();
     }
 
@@ -1321,7 +1318,7 @@ ito::RetVal MainWindow::removeToolbarButton(const size_t buttonHandle, bool show
     if (showMessage && retval.containsWarningOrError())
     {
         QMessageBox msgBox;
-        msgBox.setText(tr(retval.errorMessage()));
+        msgBox.setText(QLatin1String(retval.errorMessage()));
         msgBox.exec();
     }
 
@@ -1451,11 +1448,11 @@ ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QSt
 
     if (showMessage && retValue.containsError())
     {
-        QMessageBox::critical(this, tr("Add menu element"), retValue.errorMessage());
+        QMessageBox::critical(this, tr("Add menu element"), QLatin1String(retValue.errorMessage()));
     }
     else if (showMessage && retValue.containsWarning())
     {
-        QMessageBox::warning(this, tr("Add menu element"), retValue.errorMessage());
+        QMessageBox::warning(this, tr("Add menu element"), QLatin1String(retValue.errorMessage()));
     }
 
     return retValue;
@@ -1544,7 +1541,7 @@ ito::RetVal MainWindow::removeMenuElement(const QString &key, QSharedPointer<QVe
 
     if (showMessage && retval.containsWarningOrError())
     {
-        QMessageBox::warning(this, tr("Remove menu element"), tr(retval.errorMessage()));
+        QMessageBox::warning(this, tr("Remove menu element"), QLatin1String(retval.errorMessage()));
     }
 
     return retval;
@@ -1608,7 +1605,7 @@ ito::RetVal MainWindow::removeMenuElement(const size_t menuHandle, QSharedPointe
 
     if (showMessage && retval.containsWarningOrError())
     {
-        QMessageBox::warning(this, tr("Remove menu element"), tr(retval.errorMessage()));
+        QMessageBox::warning(this, tr("Remove menu element"), QLatin1String(retval.errorMessage()));
     }
 
     return retval;

@@ -98,15 +98,15 @@ ito::RetVal AbstractAddInConfigDialog::setPluginParameter(QSharedPointer<ito::Pa
         QMessageBox msgBox;
         if (param->getName())
         {
-            msgBox.setText(tr("Error while setting parameter '%1'").arg(param->getName()).toLatin1().data());
+            msgBox.setText(tr("Error while setting parameter '%1'").arg(QLatin1String(param->getName())));
         }
         else
         {
-            msgBox.setText(tr("Error while setting parameter").toLatin1().data());
+            msgBox.setText(tr("Error while setting parameter"));
         }
-        if (retval.errorMessage())
+        if (retval.hasErrorMessage())
         {
-            msgBox.setInformativeText(retval.errorMessage());
+            msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
         }
         msgBox.setIcon(QMessageBox::Critical);
         msgBox.exec();
@@ -116,15 +116,15 @@ ito::RetVal AbstractAddInConfigDialog::setPluginParameter(QSharedPointer<ito::Pa
         QMessageBox msgBox;
         if (param->getName())
         {
-            msgBox.setText(tr("Warning while setting parameter '%1'").arg(param->getName()).toLatin1().data());
+            msgBox.setText(tr("Warning while setting parameter '%1'").arg(QLatin1String(param->getName())));
         }
         else
         {
-            msgBox.setText(tr("Warning while setting parameter").toLatin1().data());
+            msgBox.setText(tr("Warning while setting parameter"));
         }
-        if (retval.errorMessage())
+        if (retval.hasErrorMessage())
         {
-            msgBox.setInformativeText(retval.errorMessage());
+            msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
         }
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
@@ -164,10 +164,10 @@ ito::RetVal AbstractAddInConfigDialog::setPluginParameters(const QVector<QShared
     if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
     {
         QMessageBox msgBox;
-        msgBox.setText(tr("Error while setting parameter").toLatin1().data());
-        if (retval.errorMessage())
+        msgBox.setText(tr("Error while setting parameter"));
+        if (retval.hasErrorMessage())
         {
-            msgBox.setInformativeText(retval.errorMessage());
+            msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
         }
         msgBox.setIcon(QMessageBox::Critical);
         msgBox.exec();
@@ -175,10 +175,10 @@ ito::RetVal AbstractAddInConfigDialog::setPluginParameters(const QVector<QShared
     else if (retval.containsWarning() && (msgLevel & msgLevelWarningOnly))
     {
         QMessageBox msgBox;
-        msgBox.setText(tr("Warning while setting parameter").toLatin1().data());
-        if (retval.errorMessage())
+        msgBox.setText(tr("Warning while setting parameter"));
+        if (retval.hasErrorMessage())
         {
-            msgBox.setInformativeText(retval.errorMessage());
+            msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
         }
         msgBox.setIcon(QMessageBox::Warning);
         msgBox.exec();
@@ -212,10 +212,10 @@ ito::RetVal AbstractAddInConfigDialog::observeInvocation(ItomSharedSemaphore *wa
         if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
         {
             QMessageBox msgBox;
-            msgBox.setText(tr("Error while execution").toLatin1().data());
-            if (retval.errorMessage())
+            msgBox.setText(tr("Error while execution"));
+            if (retval.hasErrorMessage())
             {
-                msgBox.setInformativeText(retval.errorMessage());
+                msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
             }
             msgBox.setIcon(QMessageBox::Critical);
             msgBox.exec();
@@ -223,10 +223,10 @@ ito::RetVal AbstractAddInConfigDialog::observeInvocation(ItomSharedSemaphore *wa
         else if (retval.containsWarning() && (msgLevel & msgLevelWarningOnly))
         {
             QMessageBox msgBox;
-            msgBox.setText(tr("Warning while execution").toLatin1().data());
-            if (retval.errorMessage())
+            msgBox.setText(tr("Warning while execution"));
+            if (retval.hasErrorMessage())
             {
-                msgBox.setInformativeText(retval.errorMessage());
+                msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
             }
             msgBox.setIcon(QMessageBox::Warning);
             msgBox.exec();

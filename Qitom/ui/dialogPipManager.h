@@ -41,12 +41,14 @@ class DialogPipManager : public QDialog
     Q_OBJECT
 
 public:
-    DialogPipManager(QWidget *parent = NULL );
+    DialogPipManager(QWidget *parent = NULL, bool standalone = false);
     ~DialogPipManager();
 
 protected:
     void closeEvent(QCloseEvent *e);
     PipGeneralOptions createOptions() const;
+
+    void installOrUpdatePackage();
 
 private:
     PipManager *m_pPipManager;
@@ -55,6 +57,7 @@ private:
     PipManager::Task m_currentTask;
     int m_lastLogEntry; //-1: nothing yet, 0: standard text, 1: error text
     bool m_outputSilent;
+    bool m_standalone;
 
 private slots:
     void pipVersion(const QString &version);

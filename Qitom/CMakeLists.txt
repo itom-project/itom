@@ -13,7 +13,6 @@ OPTION(PREFER_GIT "If ON GIT will be prefered, else use SVN." ON)
 OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
 OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
-OPTION(BUILD_WITH_NPDATAOBJECT "Build with the python class itom.npDataObject. This is deprecated and will be removed in coming versions since it is incompatible with Numpy 1.7 or higher" OFF)
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 include("../ItomBuildMacros.cmake")  
@@ -39,10 +38,6 @@ add_definitions(${Qt5Widgets_DEFINITIONS})
 IF (BUILD_UNICODE) 
     ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 ENDIF (BUILD_UNICODE)
-
-IF (BUILD_WITH_NPDATAOBJECT)
-    ADD_DEFINITIONS(-DITOM_NPDATAOBJECT -D_ITOM_NPDATAOBJECT)
-ENDIF (BUILD_WITH_NPDATAOBJECT)
 
 IF (BUILD_WITH_PCL)
     ADD_DEFINITIONS(-DUSEPCL -D_USEPCL)
@@ -222,6 +217,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralApplication.h    
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralLanguage.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropHelpDock.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonGeneral.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonStartup.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractPyScintillaWidget.h
@@ -287,6 +283,7 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralLanguage.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropHelpDock.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonStartup.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonGeneral.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/uiDebugViewer.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/uiMainWindow.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.ui
@@ -394,6 +391,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralApplication.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralLanguage.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropHelpDock.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonStartup.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractPyScintillaWidget.cpp

@@ -6,6 +6,7 @@ itom.actuator.calib(axis[, axis1, ...]) -> starts calibration or homing of given
 itom.actuator.exec(funcName [, param1, ...]) -> invoke the function 'funcName' registered as execFunc within the plugin.
 itom.actuator.getExecFuncsInfo([funcName [, detailLevel]]) -> plots a list of available execFuncs or a detailed description of the specified execFunc.
 itom.actuator.getParam(name) -> current value of the plugin parameter 'name'.
+itom.actuator.getParamInfo(name) -> returns dictionary with meta information of parameter 'name'.
 itom.actuator.getParamList() -> returns a list of the names of the internal parameters of the plugin
 itom.actuator.getParamListInfo([detailLevel]) -> prints detailed information about all plugin parameters.
 itom.actuator.getPos(axis[, axis1, ...]) -> returns the actual positions of the given axes (in mm or degree).
@@ -42,6 +43,7 @@ itom.dataIO.exec(funcName [, param1, ...]) -> invoke the function 'funcName' reg
 itom.dataIO.getAutoGrabbing() -> return the status of the auto grabbing flag.
 itom.dataIO.getExecFuncsInfo([funcName [, detailLevel]]) -> plots a list of available execFuncs or a detailed description of the specified execFunc.
 itom.dataIO.getParam(name) -> current value of the plugin parameter 'name'.
+itom.dataIO.getParamInfo(name) -> returns dictionary with meta information of parameter 'name'.
 itom.dataIO.getParamList() -> returns a list of the names of the internal parameters of the plugin
 itom.dataIO.getParamListInfo([detailLevel]) -> prints detailed information about all plugin parameters.
 itom.dataIO.getType() -> returns dataIO type
@@ -58,7 +60,7 @@ itom.dataIO.stopDevice([count=1]) -> stops the given dataIO-plugin.
 itom.dataObject([dims [, dtype='uint8'[, continuous = 0][, data = valueOrSequence]]]) -> constructor to get a new dataObject.
 itom.dataObject.abs() -> return a new data object with the absolute values of the source
 itom.dataObject.addToProtocol(newLine) -> Appends a protocol line to the protocol.
-itom.dataObject.adj() -> Adjugate all elements (inline)
+itom.dataObject.adj() -> Adjugate all elements
 itom.dataObject.adjugate() -> returns the plane-wise adjugated array of this dataObject.
 itom.dataObject.adjustROI(offsetList) -> adjust the size and position of the region of interest of this data object
 itom.dataObject.arg() -> return a new data object with the argument values of the source
@@ -119,8 +121,8 @@ itom.figure.close(handle|'all') -> static method to close any specific or all op
 itom.figure.docked
 itom.figure.handle
 itom.figure.hide() -> hides figure without deleting it
-itom.figure.liveImage(cam, [areaIndex, className]) -> shows a camera live image in the current or given area of this figure
-itom.figure.plot(data, [areaIndex, className]) -> plots a dataObject in the current or given area of this figure
+itom.figure.liveImage(cam, [areaIndex, className, properties]) -> shows a camera live image in the current or given area of this figure
+itom.figure.plot(data, [areaIndex, className, properties]) -> plots a dataObject in the current or given area of this figure
 itom.figure.show() -> shows figure
 itom.figure.subplot(index) -> returns plotItem of desired subplot
 itom.filter(name [, furtherParameters, ...]) -> invoke a filter (or algorithm) function from an algorithm-plugin.
@@ -185,6 +187,7 @@ itom.pointCloud.fields
 itom.pointCloud.fromDisparity(disparity [,intensity] [,deleteNaN]) -> creates a point cloud from a given disparity dataObject.
 itom.pointCloud.fromXYZ(X,Y,Z | XYZ) -> creates a point cloud from three X,Y,Z data objects or from one 3xMxN data object
 itom.pointCloud.fromXYZI(X,Y,Z,I | XYZ,I) -> creates a point cloud from four X,Y,Z,I data objects or from one 3xMxN data object and one intensity data object
+itom.pointCloud.fromXYZRGBA(X,Y,Z,color | XYZ,color) -> creates a point cloud from four X,Y,Z,color data objects or from one 3xMxN data object and one coloured data object
 itom.pointCloud.height
 itom.pointCloud.insert(index, values) -> inserts a single point or a sequence of points before position given by index
 itom.pointCloud.name
@@ -196,6 +199,7 @@ itom.pointCloud.width
 itom.polygonMesh([mesh, polygons]) -> creates a polygon mesh.
 itom.polygonMesh.data
 itom.polygonMesh.fromCloudAndPolygons(cloud, polygons) -> creates a polygon mesh from cloud and polygons.
+itom.polygonMesh.fromOrganizedCloud(cloud) -> creates a polygon mesh from an organized cloud using triangles.
 itom.polygonMesh.getCloud(pointType = point.PointInvalid) -> returns the point cloud of this polygon mesh converted to the desired type.
 itom.polygonMesh.getPolygons() ->
 itom.polygonMesh.name

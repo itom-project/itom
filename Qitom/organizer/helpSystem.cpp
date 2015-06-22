@@ -851,11 +851,7 @@ QString HelpSystem::modifyTocs(const QString &in, const QString &hrefPrefix, QSt
         tocs += in.mid(end,start-end); //from last end
         end = in.indexOf("\"",start);
         href = in.mid(start, end -  start);
-#ifndef WIN32
         href.prepend(hrefPrefix + "/");
-#else
-        href.prepend(hrefPrefix + "\\");
-#endif
         if (mainFile.isEmpty())
         {
             mainFile = href;
@@ -892,11 +888,7 @@ QString HelpSystem::modifyKeywords(const QString &in, const QString &hrefPrefix)
         keywords += in.mid(end,start-end); //from last end
         end = in.indexOf("\"",start);
         href = in.mid(start, end -  start);
-#ifndef WIN32
         href.prepend(hrefPrefix + "/");
-#else
-        href.prepend(hrefPrefix + "\\");
-#endif
         keywords += href;
     }
 

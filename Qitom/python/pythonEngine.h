@@ -32,9 +32,7 @@
 //    #define NO_IMPORT_ARRAY
 //#endif
 
-#ifndef ITOM_NPDATAOBJECT
-    #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION //see comment in pythonNpDataObject.cpp
-#endif
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION //see comment in pythonNpDataObject.cpp
 
 #ifndef Q_MOC_RUN
     //python

@@ -776,7 +776,7 @@ void FileSystemDockWidget::newDirSelected(const QString& text)
         {
             QMessageBox msgBox;
             msgBox.setIcon(QMessageBox::Warning);
-            msgBox.setText(retValue.errorMessage());
+            msgBox.setText(QLatin1String(retValue.errorMessage()));
             msgBox.exec();
         }
     }

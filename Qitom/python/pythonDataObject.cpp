@@ -224,7 +224,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
     // it doesn't seem to have an effect here, so we need to do it again in this place :-/
  //   if (_import_array() < 0)
     //{
-    //    PyErr_Print();
+    //    PyErr_PrintEx(0);
     //    PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import");
     //    return -1;
     //}
@@ -358,27 +358,14 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
 
                     }
 
-                    //valgrind: mismatched delete
-//                    DELETE_AND_SET_NULL(sizes);
-//                    DELETE_AND_SET_NULL(steps);
                     DELETE_AND_SET_NULL_ARRAY(sizes);
                     DELETE_AND_SET_NULL_ARRAY(steps);
-
-                    int retCode = copyNpDataObjTags2DataObj(copyObject, self->dataObject);
 
                     //Py_XINCREF(copyObject); (we don't have to increment reference of ndArray here, since this is already done in the steps above, where the flags c_contiguous and the type is checked)
                     self->base = (PyObject*)ndArray;
                     done = true;
 
-                    if (retCode != 0)
-                    {
-                        retValue += RetVal(retError);
-                        PyErr_SetString(PyExc_TypeError,"error while copying tags from npDataObject to this dataObject.");
-                    }
-                    else
-                    {
-                        retValue += RetVal(retOk);
-                    }
+                    retValue += RetVal(retOk);
                 }
             }
         }
@@ -426,7 +413,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                         dimListItem = PySequence_GetItem(dimList,i); //new reference
                         if (!PyArg_Parse(dimListItem , "I" , &tempSizes /*&sizes[i]*/)) //borrowed ref
                         {
-                            PyErr_Print();
+                            PyErr_PrintEx(0);
                             PyErr_Clear();
                             PyErr_Format(PyExc_TypeError,"Size of %d. dimension is no integer number", i+1);
                             retValue += RetVal(retError);
@@ -739,235 +726,6 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int PythonDataObject::copyNpDataObjTags2DataObj(PyObject* npDataObject, DataObject* dataObj)
-{
-    if (dataObj == NULL)
-    {
-        return -1;
-    }
-
-#if ITOM_NPDATAOBJECT
-
-    if (npDataObject->ob_type != &PythonNpDataObject::PyNpDataObjectType) //if no npDataObject (numpy-array e.g.) no tags are available, therefore quit here
-    {
-        return 0;
-    }
-    PythonNpDataObject::PyNpDataObject* npDO = (PythonNpDataObject::PyNpDataObject*)npDataObject;
-    if (npDO == NULL)
-    {
-        return 0; //no error (same than above)
-    }
-
-    PyObject *key, *value;
-    PyObject *temp;
-    Py_ssize_t pos = 0;
-    std::string tempString;
-    std::string tempKey;
-    int retCode;
-    bool error = false;
-
-        //    PyObject* tags;             //PyDictObject
-        //PyObject* axisScales;       //PyListObject
-        //PyObject* axisOffsets;      //PyListObject
-        //PyObject* axisDescriptions; //PyListObject
-        //PyObject* axisUnits;        //PyListObject
-        //PyObject* valueUnit;        //PyUnicode
-
-    //1. copy tags-dict
-    while (PyDict_Next(npDO->tags, &pos, &key, &value))
-    {
-        retCode = parsePyObject2StdString(key, tempKey);
-        if (retCode == 0)
-        {
-            if (PyFloat_Check(value)||PyLong_Check(value))
-            {
-                dataObj->setTag(tempKey, PyFloat_AsDouble(value));
-            }
-            else
-            {
-                retCode = parsePyObject2StdString(value, tempString);
-                if (retCode == 0)
-                {
-                    dataObj->setTag(tempKey, tempString);
-                }
-                else
-                {
-                    error = true;
-                }
-            }
-        }
-        else
-        {
-            error = true;
-        }
-    }
-
-    //2. copy axisScales
-    if (PySequence_Check(npDO->axisScales))
-    {
-        for (Py_ssize_t i = 0; i<PySequence_Size(npDO->axisScales); i++)
-        {
-            temp = PySequence_GetItem(npDO->axisScales,i); //new reference
-            if (PyFloat_Check(temp))
-            {
-                dataObj->setAxisScale(i, PyFloat_AsDouble(temp));
-            }
-            else
-            {
-                error = true;
-            }
-            Py_XDECREF(temp);
-        }
-    }
-
-    //3. copy axisOffsets
-    if (PySequence_Check(npDO->axisOffsets))
-    {
-        for (Py_ssize_t i = 0; i<PySequence_Size(npDO->axisOffsets); i++)
-        {
-            temp = PySequence_GetItem(npDO->axisOffsets,i); //new reference
-            if (PyFloat_Check(temp))
-            {
-                dataObj->setAxisOffset(i, PyFloat_AsDouble(temp));
-            }
-            else
-            {
-                error = true;
-            }
-            Py_XDECREF(temp);
-        }
-    }
-
-    //4. copy axisDescriptions
-    if (PySequence_Check(npDO->axisDescriptions))
-    {
-        for (Py_ssize_t i = 0; i<PySequence_Size(npDO->axisDescriptions); i++)
-        {
-            temp = PySequence_GetItem(npDO->axisDescriptions,i); //new reference
-            retCode = parsePyObject2StdString(temp, tempString);
-            if (retCode == 0)
-            {
-                dataObj->setAxisDescription(i, tempString);
-            }
-            else
-            {
-                error = true;
-            }
-            Py_XDECREF(temp);
-        }
-    }
-
-    //5. copy axisUnits
-    if (PySequence_Check(npDO->axisUnits))
-    {
-        for (Py_ssize_t i = 0; i<PySequence_Size(npDO->axisUnits); i++)
-        {
-            temp = PySequence_GetItem(npDO->axisUnits,i); //new referene
-            retCode = parsePyObject2StdString(temp, tempString);
-            if (retCode == 0)
-            {
-                dataObj->setAxisUnit(i, tempString);
-            }
-            else
-            {
-                error = true;
-            }
-            Py_XDECREF(temp);
-        }
-    }
-
-    //6. copy valueUnit
-    retCode = parsePyObject2StdString(npDO->valueUnit, tempString);
-    if (retCode == 0)
-    {
-        dataObj->setValueUnit(tempString);
-    }
-    else
-    {
-        error = true;
-    }
-
-    //7. copy valueDescription
-    retCode = parsePyObject2StdString(npDO->valueDescription, tempString);
-    if (retCode == 0)
-    {    //Beim Dokumentieren ausversehen verändert. Stimmt die folgende Zeile???
-        dataObj->setValueDescription(tempString);
-    }
-    else
-    {
-        error = true;
-    }
-
-    //8. valueOffset (ignored)
-    //9. valueScale (ignored)
-    return error ? -1 : 0;
-
-#else
-    return 0; //no npDataObject -> do nothing
-#endif
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-#if ITOM_NPDATAOBJECT
-int PythonDataObject::parsePyObject2StdString(PyObject* pyObj, std::string &str)
-{
-    PyObject* temp = NULL;
-
-    if (pyObj == NULL) return -1;
-    if (PyBytes_Check(pyObj))
-    {
-        str = PyBytes_AsString(pyObj);
-    }
-    else if (PyUnicode_Check(pyObj))
-    {
-        bool ok = false;
-        str = PythonQtConversion::PyObjGetBytes(pyObj, false, ok).data(); //PyBytes_AsString(temp2);
-        //Py_XDECREF(temp);
-        if (!ok) 
-        {
-            PyErr_Clear();
-            return -1;
-        }
-/*
-        temp = PyUnicode_AsASCIIString(pyObj);
-        if (temp == NULL)
-        {
-            PyErr_Clear();
-            return -1;
-        }
-        str = PyBytes_AsString(temp);
-        Py_XDECREF(temp);*/
-    }
-    else
-    {
-        temp = PyObject_Str(pyObj);
-        if (temp == NULL)
-        {
-            PyErr_Clear();
-            return -1;
-        }
-        /*temp2 = PyUnicode_AsASCIIString(temp);
-        Py_XDECREF(temp);
-        if (temp2 == NULL)
-        {
-            PyErr_Clear();
-            return -1;
-        }*/
-
-        bool ok = false;
-        str = PythonQtConversion::PyObjGetBytes(temp,false,ok).data(); //PyBytes_AsString(temp2);
-        Py_XDECREF(temp);
-        if (!ok) 
-        {
-            PyErr_Clear();
-            return -1;
-        }
-    }
-    return 0;
-}
-#endif
-
-//----------------------------------------------------------------------------------------------------------------------------------
 PythonDataObject::PyDataObjectTypes PythonDataObject::PyDataObject_types[] = {
     {"int8", tInt8},
     {"uint8", tUInt8},
@@ -1059,7 +817,7 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(PyObject *args, PyObject *kwd
                 {
                     if (!PyArg_Parse(PyList_GetItem(dimList,i) , "I" , &tempSizes)) //borrowed ref
                     {
-                        PyErr_Print();
+                        PyErr_PrintEx(0);
                         PyErr_Clear();
                         PyErr_Format(PyExc_TypeError,"Element %d of dimension-list is no integer number", i+1);
                         retValue += RetVal(retError);
@@ -5727,7 +5485,7 @@ PyObject* PythonDataObject::PyDataObj_Array_StructGet(PyDataObject *self)
     if (ret.containsError())
     {
         DELETE_AND_SET_NULL(inter)
-        if (ret.errorMessage())
+        if (ret.hasErrorMessage())
         {
             PythonCommon::transformRetValToPyException(ret, PyExc_TypeError);
             return NULL;
@@ -5836,7 +5594,7 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
     RetVal ret = parseTypeNumber(selfDO->getType(), typekind, itemsize);
     if (ret.containsError())
     {
-        if (ret.errorMessage())
+        if (ret.hasErrorMessage())
         {
             PythonCommon::transformRetValToPyException(ret, PyExc_TypeError);
             return NULL;
