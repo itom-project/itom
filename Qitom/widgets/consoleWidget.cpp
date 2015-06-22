@@ -919,7 +919,6 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
         QStringList temp;
         QByteArray encoding;
         singleLine = buffer.join("\n");
-        
         //if lines is empty, a syntax error occurred in the file and the python error indicator is set.
         //This will be checked in subsequent call of run-string or debug-string method.
         if (lines.length() == 0 || (encoding.length() > 0 && lines.length() == 1)) //probably error while execution, execute it in one block

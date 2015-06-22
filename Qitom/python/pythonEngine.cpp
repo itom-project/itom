@@ -1046,9 +1046,9 @@ QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const char *str, Q
     PyGILState_STATE gstate = PyGILState_Ensure();
 
     //see http://docs.python.org/devguide/compiler.html
-    _node *n = PyParser_SimpleParseString(str, Py_file_input);
+    _node *n = PyParser_SimpleParseString(str, Py_file_input); 
     _node *n2 = n;
-    if (n == NULL)
+    if (n==NULL)
     {
         //here: error indicator is set.
         return QList<int>();
@@ -1075,9 +1075,9 @@ QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const char *str, Q
         }
  
     }
-	
-	PyNode_Free(n);
-	
+    
+    PyNode_Free(n);
+    
     PyGILState_Release(gstate);
 
     return ret;
@@ -4161,7 +4161,7 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
                 }
             }
 
-			Py_XDECREF(pyVarname);
+            Py_XDECREF(pyVarname);
 
             PyGILState_Release(gstate);
         }
@@ -4469,7 +4469,7 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
     if (pickleModule == NULL)
     {
         retval += checkForPyExceptions();
-		PyGILState_Release(gstate);
+        PyGILState_Release(gstate);
         return retval;
     }
 
@@ -4478,7 +4478,7 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
     if (builtinsModule == NULL)
     {
         retval += checkForPyExceptions();
-		PyGILState_Release(gstate);
+        PyGILState_Release(gstate);
         return retval;
     }
 
@@ -4546,7 +4546,7 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
 
     Py_XDECREF(fileHandle);
 
-	PyGILState_Release(gstate);
+    PyGILState_Release(gstate);
 
     return retval;
 }
@@ -4799,3 +4799,4 @@ PyObject* PythonEngine::PyInitItomDbg(void)
 }
 
 } //end namespace ito
+
