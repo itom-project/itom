@@ -1005,6 +1005,10 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         {
             type = QMetaType::type("QPointer<ito::AddInDataIO>");
         }
+        else if (Py_TYPE(val) == &ito::PythonRgba::PyRgbaType)
+        {
+            type = QVariant::Color;
+        }
         else if(PySequence_Check(val))
         {
             type = QVariant::List;
@@ -1208,6 +1212,20 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         QDate date(PyDateTime_GET_YEAR(o), PyDateTime_GET_MONTH(o), PyDateTime_GET_DAY(o));
         QTime time(PyDateTime_DATE_GET_HOUR(o), PyDateTime_DATE_GET_MINUTE(o), PyDateTime_DATE_GET_SECOND(o), PyDateTime_DATE_GET_MICROSECOND(o));
         v = QDateTime(date, time);
+    }
+    break;
+
+    case QVariant::Color:
+    {
+        if (PyRgba_Check(val))
+        {
+            ito::PythonRgba::PyRgba *rgba = (ito::PythonRgba::PyRgba*)val;
+            v = QColor(rgba->rgba.r, rgba->rgba.g, rgba->rgba.b, rgba->rgba.a);
+        }
+        else
+        {
+            v = QVariant();
+        }
     }
     break;
 
@@ -1547,6 +1565,16 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             }
         }
     } //end item.type() == QVariant::String
+    else if (destType == QVariant::Color)
+    {
+        bool ok2;
+        uint value = item.toUInt(&ok2);
+        if (ok2)
+        {
+            result = QColor((value & 0xff0000) >> 16, (value & 0x00ff00) >> 8, value & 0x0000ff);
+            ok = true;
+        }
+    }
     
 
     if (!ok && !retval.containsError()) //not yet converted, try to convert it using QVariant internal conversion method
@@ -2618,10 +2646,10 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             QColor* color = (QColor*)data;
             if (rgba)
             {
-                rgba->rgba.argb() = (ito::uint32)color->value();
-                //rgba->b = color->blue();
-                //rgba->g = color->green();
-                //rgba->a = color->alpha();
+                rgba->rgba.r = color->red();
+                rgba->rgba.b = color->blue();
+                rgba->rgba.g = color->green();
+                rgba->rgba.a = color->alpha();
             }
             return (PyObject*)rgba;
         }
