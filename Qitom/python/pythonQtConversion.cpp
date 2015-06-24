@@ -25,6 +25,7 @@
 #include "pythonUi.h"
 #include "pythonCommon.h"
 #include "pythonRgba.h"
+#include "pythonFont.h"
 #include "pythonAutoInterval.h"
 
 #include <qstringlist.h>
@@ -963,6 +964,10 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         {
             type = QVariant::Region;
         }
+        else if (Py_TYPE(val) == &ito::PythonFont::PyFontType)
+        {
+            type = QVariant::Font;
+        }
         else if (PyDateTime_Check(val)) //must be checked before PyDate_Check since PyDateTime is derived from PyDate
         {
             type = QVariant::DateTime;
@@ -1188,6 +1193,16 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         if (pyReg && pyReg->r)
         {
             v = *(pyReg->r);
+        }
+    }
+    break;
+
+    case QVariant::Font:
+    {
+        ito::PythonFont::PyFont *pyFont = (ito::PythonFont::PyFont*)val;
+        if (pyFont && pyFont->font)
+        {
+            v = *(pyFont->font);
         }
     }
     break;
@@ -1740,6 +1755,10 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
         {
             type = QMetaType::QRegion;
         }
+        else if (PyFont_Check(val))
+        {
+            type = QMetaType::QFont;
+        }
         else if (PyRgba_Check(val))
         {
             type = QMetaType::QColor;
@@ -2058,6 +2077,21 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&r));
                 #else
                 *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&r));
+                #endif
+            }
+            break;
+        }
+
+        case QMetaType::QFont:
+        {
+            ito::PythonFont::PyFont *font = (ito::PythonFont::PyFont*)val;
+            if (font && font->font)
+            {
+                QFont f = *(font->font);
+                #if QT_VERSION >= 0x050000
+                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&f));
+                #else
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&f));
                 #endif
             }
             break;
@@ -2639,6 +2673,10 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
     case QMetaType::QRegion:
         {
             return ito::PythonRegion::createPyRegion(*((QRegion*)data));
+        }
+    case QMetaType::QFont:
+        {
+            return ito::PythonFont::createPyFont(*((QFont*)data));
         }
     case QMetaType::QColor:
         {

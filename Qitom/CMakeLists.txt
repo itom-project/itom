@@ -178,6 +178,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythontParamConversion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUi.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonRgba.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFont.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUiTimer.h
@@ -354,6 +355,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythontParamConversion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUi.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonRgba.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFont.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUiTimer.cpp
