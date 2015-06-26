@@ -320,6 +320,7 @@ Enumeration       integer with value or string with key (setter only)
 QTime             datetime.time object
 QDate             datetime.date object
 QDateTime         datetime.datetime object
+QFont             :py:class:`~itom.font`
 ================= ===========================================================================
 
 If a property or other arguments in |Qt| require other datatypes, it is possibly to implement a converter for them. It only becomes a little bit more difficult for pointers to

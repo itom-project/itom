@@ -26,9 +26,7 @@
 /* includes */
 #include <string>
 
-#ifndef ITOM_NPDATAOBJECT
-    #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION //see comment in pythonNpDataObject.cpp
-#endif
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 
 #ifndef Q_MOC_RUN
     #define PY_ARRAY_UNIQUE_SYMBOL itom_ARRAY_API //see numpy help ::array api :: Miscellaneous :: Importing the api (this line must before including global.h)
@@ -107,11 +105,6 @@ class PythonDataObject
         static void PyDataObject_dealloc(PyDataObject *self);
         static PyObject *PyDataObject_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
         static int PyDataObject_init(PyDataObject *self, PyObject *args, PyObject *kwds);
-
-        static int copyNpDataObjTags2DataObj(PyObject* npDataObject, DataObject* dataObj);
-#if ITOM_NPDATAOBJECT //parsePyObject2StdString is deprecated and only used in old npDataObject. Replace it by PythonQtConversion::PyObjToStdString
-        static int parsePyObject2StdString(PyObject* pyObj, std::string &str);
-#endif
 
         //-------------------------------------------------------------------------------------------------
         // general members

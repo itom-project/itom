@@ -169,13 +169,6 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
             *set = 1;
             outParam.setVal<void *>((void*)(((PythonPlugins::PyActuatorPlugin *)pyObj)->actuatorObj));
         }
-#if 0 //algo plugins do not exist as instances, they only contain static methods, callable by itom.filter
-        else if (Py_TYPE(pyObj) == &PythonPlugins::PyAlgoPluginType)
-        {
-            *set = 1;
-            outParam.setVal<void *>((void*)(((PythonPlugins::PyAlgoPlugin *)pyObj)->algoObj));
-        }
-#endif
         else
         {
             return ito::retError;
@@ -1492,7 +1485,6 @@ bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *e
         const char *temp = retVal.errorMessage();
         if (temp == NULL)
         {
-            //msg = QObject::tr("- unknown message -").toUtf8();
             msg = QString("- unknown message -").toUtf8();
         }
         else

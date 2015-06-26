@@ -25,6 +25,7 @@
 
 #include <qwidget.h>
 #include <qstring.h>
+#include <qevent.h>
 
 #include "ui_widgetFindWord.h"
 
@@ -40,6 +41,9 @@ public:
     ~WidgetFindWord();
 
     void setCursorToTextField();
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
 
 private:
     

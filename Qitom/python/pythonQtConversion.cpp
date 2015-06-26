@@ -26,6 +26,7 @@
 #include "pythonPlotItem.h"
 #include "pythonCommon.h"
 #include "pythonRgba.h"
+#include "pythonFont.h"
 #include "pythonAutoInterval.h"
 
 #include <qstringlist.h>
@@ -964,6 +965,10 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         {
             type = QVariant::Region;
         }
+        else if (Py_TYPE(val) == &ito::PythonFont::PyFontType)
+        {
+            type = QVariant::Font;
+        }
         else if (PyDateTime_Check(val)) //must be checked before PyDate_Check since PyDateTime is derived from PyDate
         {
             type = QVariant::DateTime;
@@ -1005,6 +1010,10 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         else if (Py_TYPE(val) == &ito::PythonPlugins::PyDataIOPluginType)
         {
             type = QMetaType::type("QPointer<ito::AddInDataIO>");
+        }
+        else if (Py_TYPE(val) == &ito::PythonRgba::PyRgbaType)
+        {
+            type = QVariant::Color;
         }
         else if(PySequence_Check(val))
         {
@@ -1197,6 +1206,16 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
     }
     break;
 
+    case QVariant::Font:
+    {
+        ito::PythonFont::PyFont *pyFont = (ito::PythonFont::PyFont*)val;
+        if (pyFont && pyFont->font)
+        {
+            v = *(pyFont->font);
+        }
+    }
+    break;
+
     case QVariant::Time:
     {
         PyDateTime_Time *o = (PyDateTime_Time*)val;
@@ -1217,6 +1236,20 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         QDate date(PyDateTime_GET_YEAR(o), PyDateTime_GET_MONTH(o), PyDateTime_GET_DAY(o));
         QTime time(PyDateTime_DATE_GET_HOUR(o), PyDateTime_DATE_GET_MINUTE(o), PyDateTime_DATE_GET_SECOND(o), PyDateTime_DATE_GET_MICROSECOND(o));
         v = QDateTime(date, time);
+    }
+    break;
+
+    case QVariant::Color:
+    {
+        if (PyRgba_Check(val))
+        {
+            ito::PythonRgba::PyRgba *rgba = (ito::PythonRgba::PyRgba*)val;
+            v = QColor(rgba->rgba.r, rgba->rgba.g, rgba->rgba.b, rgba->rgba.a);
+        }
+        else
+        {
+            v = QVariant();
+        }
     }
     break;
 
@@ -1257,7 +1290,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             else if (PyArray_Check(val))
             {
                 //try to create a dataObject (Python object) from given numpy array
-                PyObject *pyDataObj = PythonDataObject::PyDataObjectType.tp_new(&PythonDataObject::PyDataObjectType,NULL,NULL); //PyObject_New(PythonDataObject::PyDataObject, &PythonDataObject::PyDataObjectType); //new ref
+                PyObject *pyDataObj = PythonDataObject::PyDataObjectType.tp_new(&PythonDataObject::PyDataObjectType,NULL,NULL);  //new ref
                 if (pyDataObj)
                 {
                     PyObject *args = Py_BuildValue("(O)", val);
@@ -1589,6 +1622,16 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             }
         }
     } //end item.type() == QVariant::String
+    else if (destType == QVariant::Color)
+    {
+        bool ok2;
+        uint value = item.toUInt(&ok2);
+        if (ok2)
+        {
+            result = QColor((value & 0xff0000) >> 16, (value & 0x00ff00) >> 8, value & 0x0000ff);
+            ok = true;
+        }
+    }
     
 
     if (!ok && !retval.containsError()) //not yet converted, try to convert it using QVariant internal conversion method
@@ -1753,6 +1796,10 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
         else if (PyRegion_Check(val))
         {
             type = QMetaType::QRegion;
+        }
+        else if (PyFont_Check(val))
+        {
+            type = QMetaType::QFont;
         }
         else if (PyRgba_Check(val))
         {
@@ -2072,6 +2119,21 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&r));
                 #else
                 *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&r));
+                #endif
+            }
+            break;
+        }
+
+        case QMetaType::QFont:
+        {
+            ito::PythonFont::PyFont *font = (ito::PythonFont::PyFont*)val;
+            if (font && font->font)
+            {
+                QFont f = *(font->font);
+                #if QT_VERSION >= 0x050000
+                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&f));
+                #else
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&f));
                 #endif
             }
             break;
@@ -2654,16 +2716,20 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
         {
             return ito::PythonRegion::createPyRegion(*((QRegion*)data));
         }
+    case QMetaType::QFont:
+        {
+            return ito::PythonFont::createPyFont(*((QFont*)data));
+        }
     case QMetaType::QColor:
         {
             ito::PythonRgba::PyRgba *rgba = ito::PythonRgba::createEmptyPyRgba();
             QColor* color = (QColor*)data;
             if (rgba)
             {
-                rgba->rgba.argb() = (ito::uint32)color->value();
-                //rgba->b = color->blue();
-                //rgba->g = color->green();
-                //rgba->a = color->alpha();
+                rgba->rgba.r = color->red();
+                rgba->rgba.b = color->blue();
+                rgba->rgba.g = color->green();
+                rgba->rgba.a = color->alpha();
             }
             return (PyObject*)rgba;
         }

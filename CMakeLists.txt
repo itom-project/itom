@@ -1,7 +1,7 @@
 project(itom)      
 #trigger update on 2014.07.02@14:16
 cmake_minimum_required(VERSION 2.8)
-      
+            
 if(APPLE)
     OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
     SET(CMAKE_OSX_ARCHITECTURES "x86_64")
@@ -20,7 +20,7 @@ if (BUILD_TARGET64)
 else (BUILD_TARGET64)
    set(CMAKE_SIZEOF_VOID_P 4)
 endif (BUILD_TARGET64) 
-  
+     
 ADD_SUBDIRECTORY(DataObject) 
      
 IF(BUILD_WITH_PCL)

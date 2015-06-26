@@ -251,7 +251,7 @@ class FigureCanvasItom( FigureCanvasBase ):
         
         if d: 
             if not self._timer:
-                self._timer = timer(1, self.idle_draw) #auto-start, todo: reduce interval to 0 once the itom.timer constructor allows this!
+                self._timer = timer(0, self.idle_draw) #auto-start, continuous mode
             else:
                 self._timer.start()
             #print("singleShot draw_idle timer")
@@ -559,13 +559,13 @@ class NavigationToolbar2Itom( NavigationToolbar2 ):
             filters.append(filter)
         filters = ';;'.join(filters)
         
-        fname = ui.getSaveFileName("Choose a filename to save to", start, filters, selectedFilterIndex)
+        fname = ui.getSaveFileName("Choose a filename to save to", start, filters, selectedFilterIndex, parent = self.itomUI())
         
         if fname:
             try:
                 self.canvas.print_figure( str(fname) )
             except Exception as e:
-                ui.msgCritical("Error saving file", str(e))
+                ui.msgCritical("Error saving file", str(e), parent = self.itomUI())
     
     def set_history_buttons(self):
         can_backward = (self._views._pos > 0)

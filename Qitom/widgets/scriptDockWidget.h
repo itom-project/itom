@@ -255,6 +255,7 @@ private slots:
     void methodChosen(const QString &text);
 
     void loadSettings();
+    void findWordWidgetFinished();
 
 public slots:
     void editorMarginChanged();

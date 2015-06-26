@@ -3856,7 +3856,7 @@ DataObject DataObject::operator + (const DataObject &rhs)
         if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
                 rhs.getNumPlanes() == 1 && 
                 this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
@@ -3942,7 +3942,7 @@ DataObject & DataObject::operator -= (const DataObject &rhs)
         if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
                 rhs.getNumPlanes() == 1 && 
                 this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
@@ -3978,7 +3978,7 @@ DataObject DataObject::operator - (const DataObject &rhs)
         if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
                 rhs.getNumPlanes() == 1 && 
                 this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
@@ -4956,7 +4956,7 @@ DataObject & DataObject::operator &= (const DataObject & rhs)
         if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
                 rhs.getNumPlanes() == 1 && 
                 this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
@@ -4992,7 +4992,7 @@ DataObject DataObject::operator & (const DataObject & rhs)
         if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
                 rhs.getNumPlanes() == 1 && 
                 this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
@@ -5115,7 +5115,7 @@ DataObject & DataObject::operator |= (const DataObject & rhs)
         if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
                 rhs.getNumPlanes() == 1 && 
                 this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
@@ -5151,7 +5151,7 @@ DataObject DataObject::operator | (const DataObject & rhs)
         if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
                 rhs.getNumPlanes() == 1 && 
                 this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
@@ -5274,7 +5274,7 @@ DataObject & DataObject::operator ^= (const DataObject & rhs)
         if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
                 rhs.getNumPlanes() == 1 && 
                 this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
@@ -5305,7 +5305,7 @@ DataObject DataObject::operator ^ (const DataObject & rhs)
         if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
                 rhs.getNumPlanes() == 1 && 
                 this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
@@ -6021,7 +6021,7 @@ DataObject DataObject::mul(const DataObject &mat2, const double scale) const
         if(!(this->getNumPlanes() == mat2.getNumPlanes() && 
                 mat2.getNumPlanes() == 1 && 
                 this->getSize(m_dims - 1) == mat2.getSize(mat2.getDims() - 1) &&
-                this->getSize(m_dims - 2) == mat2.getSize(mat2.getDims() - 2))
+                this->getSize(m_dims - 2) == mat2.getSize(mat2.getDims() - 2) || (m_type != mat2.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"both data objects differ in size or type","", __FILE__, __LINE__));     
@@ -6197,7 +6197,7 @@ DataObject DataObject::div(const DataObject &mat2, const double /*scale*/) const
         if(!(this->getNumPlanes() == mat2.getNumPlanes() && 
                 mat2.getNumPlanes() == 1 && 
                 getSize(m_dims - 1) == mat2.getSize(mat2.getDims() - 1) &&
-                getSize(m_dims - 2) == mat2.getSize(mat2.getDims() - 2))
+                getSize(m_dims - 2) == mat2.getSize(mat2.getDims() - 2) || (m_type != mat2.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"both data objects differ in size or type","", __FILE__, __LINE__));     

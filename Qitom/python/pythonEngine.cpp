@@ -42,6 +42,7 @@
 #include "pythontParamConversion.h"
 #include "pythonRegion.h"
 #include "pythonRgba.h"
+#include "pythonFont.h"
 #include "pythonAutoInterval.h"
 
 #include "../organizer/addInManager.h"
@@ -389,25 +390,6 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 PyModule_AddObject(itomModule, "dataIO", (PyObject *)&PythonPlugins::PyDataIOPluginType);
             }
 
-#if 0 //algo plugins do not exist as instances, they only contain static methods, callable by itom.filter
-            if (PyType_Ready(&PythonPlugins::PyAlgoPluginType) >= 0)
-            {
-                Py_INCREF(&PythonPlugins::PyAlgoPluginType);
-                PyModule_AddObject(itomModule, "algo", (PyObject *)&PythonPlugins::PyAlgoPluginType);
-            }
-#endif
-
-//#if ITOM_NPDATAOBJECT //right now, npDataObject exists but raises a python exception if ITOM_NPDATAOBJECT is not defined
-            PythonNpDataObject::PyNpDataObjectType.tp_base = &PyArray_Type;
-            PythonNpDataObject::PyNpDataObjectType.tp_free = PyObject_Free;
-            PythonNpDataObject::PyNpDataObjectType.tp_alloc = PyType_GenericAlloc;
-            if (PyType_Ready(&PythonNpDataObject::PyNpDataObjectType) >= 0)
-            {
-                Py_INCREF(&PythonNpDataObject::PyNpDataObjectType);
-                PyModule_AddObject(itomModule, "npDataObject", (PyObject *)&PythonNpDataObject::PyNpDataObjectType);
-            }
-//#endif //ITOM_NPDATAOBJECT
-
             if (PyType_Ready(&PythonTimer::PyTimerType) >= 0)
             {
                 Py_INCREF(&PythonTimer::PyTimerType);
@@ -457,6 +439,13 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 Py_INCREF(&PythonRegion::PyRegionType);
                 PythonRegion::PyRegion_addTpDict(PythonRegion::PyRegionType.tp_dict);
                 PyModule_AddObject(itomModule, "region", (PyObject *)&PythonRegion::PyRegionType);
+            }
+
+            if (PyType_Ready(&PythonFont::PyFontType) >= 0)
+            {
+                Py_INCREF(&PythonFont::PyFontType);
+                PythonFont::PyFont_addTpDict(PythonFont::PyFontType.tp_dict);
+                PyModule_AddObject(itomModule, "font", (PyObject *)&PythonFont::PyFontType);
             }
 
             if (PyType_Ready(&PythonRgba::PyRgbaType) >= 0)
@@ -1058,10 +1047,11 @@ ito::RetVal PythonEngine::stringEncodingChanged()
 QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const char *str, QByteArray &encoding) const
 {
     //see http://docs.python.org/devguide/compiler.html
-    _node *n = PyParser_SimpleParseString(str, Py_file_input); 
+    _node *n = PyParser_SimpleParseString(str, Py_file_input);
     _node *n2 = n;
-    if (n==NULL)
+    if (n == NULL)
     {
+        //here: error indicator is set.
         return QList<int>();
     }
 
@@ -1193,6 +1183,9 @@ ito::RetVal PythonEngine::autoReloaderCheck()
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::runString(const QString &command)
 {
+    //command must be a single-line command. A single-line command only means, that it must only consist of one block (e.g. an if-loop including its content is also a single-line command)
+    //if it is not single line, Py_single_input below must be replaced.
+
     RetVal retValue = RetVal(retOk);
 
     PyObject *mainDict = getGlobalDictionary();
@@ -1203,6 +1196,13 @@ ito::RetVal PythonEngine::runString(const QString &command)
     {
         std::cerr << "main dictionary is empty. python probably not started" << std::endl;
         retValue += RetVal(retError, 1, tr("main dictionary is empty").toLatin1().data());
+    }
+    else if (PyErr_Occurred() == PyExc_SyntaxError)
+    {
+        PyErr_PrintEx(0);
+        //check if already a syntax error has been raised (come from previous call to parseAndSplitCommandInMainComponents)
+        retValue += RetVal(retError, 2, tr("syntax error").toLatin1().data());
+        PyErr_Clear();
     }
     else
     {
@@ -1219,15 +1219,19 @@ ito::RetVal PythonEngine::runString(const QString &command)
 
         try
         {
-            //input to PyRun_String must be UTF8
-            if (command.contains('\n')) //multi-line commands must have the Py_file_input flag
-            {
-                result = PyRun_String(command.toUtf8().data(), Py_file_input /*Py_single_input*/ , mainDict, localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
-            }
-            else //this command is a single line command, then Py_single_input must be set, such that the output of any command is printed in the next line, else this output is supressed (if no print command is executed)
-            {
-                result = PyRun_String(command.toUtf8().data(), Py_single_input, mainDict , localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
-            }
+            //Py_single_input for single-line commands forces the result (if != PyNone) to be immediately printed to the command line, which is a desired behaviour.
+            //Py_single_input forces inputs that evaluate to something different than None will be printed.
+            result = PyRun_String(command.toUtf8().data(), Py_single_input, mainDict, localDict);
+
+            ////input to PyRun_String must be UTF8
+            //if (command.contains('\n')) //multi-line commands must have the Py_file_input flag
+            //{
+            //    result = PyRun_String(command.toUtf8().data(), Py_single_input, mainDict, localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
+            //}
+            //else //this command is a single line command, then Py_single_input must be set, such that the output of any command is printed in the next line, else this output is supressed (if no print command is executed)
+            //{
+            //    result = PyRun_String(command.toUtf8().data(), Py_single_input /*was in 2015: Py_single_input*/, mainDict , localDict); //Py_file_input is used such that multi-line commands (separated by \n) are evaluated
+            //}
         }
         catch(std::exception &exc)
         {
@@ -1721,12 +1725,22 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::debugString(const QString &command)
 {
+    //command must be a single-line command. A single-line command only means, that it must only consist of one block (e.g. an if-loop including its content is also a single-line command)
+    //if it is not single line, Py_single_input below must be replaced.
+
     PyObject* result = NULL;
     RetVal retValue = RetVal(retOk);
     m_interruptCounter = 0;
     if (itomDbgInstance == NULL)
     {
         return RetVal(retError);
+    }
+    else if (PyErr_Occurred() == PyExc_SyntaxError)
+    {
+        PyErr_PrintEx(0);
+        //check if already a syntax error has been raised (come from previous call to parseAndSplitCommandInMainComponents)
+        retValue += RetVal(retError, 2, tr("syntax error").toLatin1().data());
+        PyErr_Clear();
     }
     else
     {
@@ -1749,12 +1763,15 @@ ito::RetVal PythonEngine::debugString(const QString &command)
         {
             if ((*it).pythonDbgBpNumber==-1)
             {
-                retValue += pythonAddBreakpoint((*it).filename, (*it).lineno, (*it).enabled, (*it).temporary, (*it).condition, (*it).ignoreCount, pyBpNumber);
-                bpModel->setPyBpNumber(*it,pyBpNumber);
+                retValue += pythonAddBreakpoint(it->filename, it->lineno, it->enabled, it->temporary, it->condition, it->ignoreCount, pyBpNumber);
 
                 if (retValue.containsError())
                 {
                     return retValue;
+                }
+                else
+                {
+                    bpModel->setPyBpNumber(*it,pyBpNumber);
                 }
             }
             row++;
@@ -1775,6 +1792,7 @@ ito::RetVal PythonEngine::debugString(const QString &command)
 
         try
         {
+            //the result of all commands that return something else than None is printed. This can be changed in itoDebugger by chosing compile(...,'exec') instead of 'single'
             result = PyObject_CallMethod(itomDbgInstance, "debugString", "s", command.toUtf8().data()); //command must be UTF8
         }
         catch(std::exception &exc)
@@ -3995,15 +4013,13 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
                 {
                     if (instance->getBasePlugin()->getType() & ito::typeDataIO)
                     {
-                        PythonPlugins::PyDataIOPlugin *dataIOPlugin;
-                        dataIOPlugin = PyObject_New(PythonPlugins::PyDataIOPlugin, &PythonPlugins::PyDataIOPluginType); //new ref
+                        PythonPlugins::PyDataIOPlugin *dataIOPlugin = (PythonPlugins::PyDataIOPlugin*)PythonPlugins::PyDataIOPluginType.tp_new(&PythonPlugins::PyDataIOPluginType,NULL,NULL); //new ref
                         if (dataIOPlugin == NULL)
                         {
                             retVal += RetVal(retError, 0, tr("No instance of python class dataIO could be created").toLatin1().data());
                         }
                         else
                         {
-                            dataIOPlugin->base = NULL;
                             instance->getBasePlugin()->incRef(instance);
                             dataIOPlugin->dataIOObj = (ito::AddInDataIO*)instance;
                             value = (PyObject*)dataIOPlugin;
@@ -4011,15 +4027,13 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
                     }
                     else if (instance->getBasePlugin()->getType() & ito::typeActuator)
                     {
-                        PythonPlugins::PyActuatorPlugin *actuatorPlugin;
-                        actuatorPlugin = PyObject_New(PythonPlugins::PyActuatorPlugin, &PythonPlugins::PyActuatorPluginType); //new ref
+                        PythonPlugins::PyActuatorPlugin *actuatorPlugin = (PythonPlugins::PyActuatorPlugin*)PythonPlugins::PyActuatorPluginType.tp_new(&PythonPlugins::PyActuatorPluginType,NULL,NULL); //new ref
                         if (actuatorPlugin == NULL)
                         {
                             retVal += RetVal(retError, 0, tr("No instance of python class actuator could be created").toLatin1().data());
                         }
                         else
                         {
-                            actuatorPlugin->base = NULL;
                             instance->getBasePlugin()->incRef(instance);
                             actuatorPlugin->actuatorObj = (ito::AddInActuator*)instance;
                             value = (PyObject*)actuatorPlugin;
