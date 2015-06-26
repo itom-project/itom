@@ -28,23 +28,20 @@
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="Itom2dQwtPlot" name="twoDPlot">
-     <property name="toolbarVisible">
+     <property name="toolbarVisible" stdset="0">
       <bool>true</bool>
      </property>
-     <property name="contextMenuEnabled">
+     <property name="contextMenuEnabled" stdset="0">
       <bool>true</bool>
      </property>
-     <property name="title">
+     <property name="title" stdset="0">
       <string/>
      </property>
-     <property name="colorBarVisible">
+     <property name="colorBarVisible" stdset="0">
       <bool>true</bool>
      </property>
      <property name="keepAspectRatio" stdset="0">
       <bool>true</bool>
-     </property>
-     <property name="geometryModMode" stdset="0">
-      <enum>Itom2DQwt::tModifyPoints</enum>
      </property>
     </widget>
    </item>
@@ -85,7 +82,8 @@
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;This ui-file is part or an demonstration how to use embedded static line plots in itom in a single GUI.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;This ui-file is part or an demonstration how to use embedded static line plots in itom in a single GUI. The z-slicing tool will display its line output in a 1d line plot below the 2d plot (becomes visible then). The line cut tool will open a new 1d line plot.&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;The demo was developed by Wolfram Lyda, twip optical solutions GmbH, Stuttgart.&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;This files come without warenty and are used on own risk.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
@@ -101,11 +99,13 @@ p, li { white-space: pre-wrap; }
    <class>Itom1DQwtPlot</class>
    <extends>QMainWindow</extends>
    <header>itom1DQwtPlot.h</header>
+   <container>1</container>
   </customwidget>
   <customwidget>
    <class>Itom2dQwtPlot</class>
    <extends>QMainWindow</extends>
    <header>itom2dqwtplot.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

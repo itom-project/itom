@@ -24,13 +24,10 @@ class EmbeddedPlots(ItomUi):
         uiFile = os.path.abspath(uiFile)
         ItomUi.__init__(self, uiFile, ui.TYPEWINDOW, childOfMainWindow=True)
         
-        try:
-            if interpreteAsZ:
-                self.gui.twoDPlot["staticZSliceID"] = self.gui.oneDPlot
-            else:
-                self.gui.twoDPlot["staticLineCutID"] = self.gui.oneDPlot
-        except:
-            pass
+        if interpreteAsZ:
+            self.gui.twoDPlot["zSlicePlotItem"] = self.gui.oneDPlot
+        else:
+            self.gui.twoDPlot["lineCutPlotItem"] = self.gui.oneDPlot
         self.gui.oneDPlot["visible"] = False
         
     def init(self, newTopo, newIntensity = None):
