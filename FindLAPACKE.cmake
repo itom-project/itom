@@ -27,7 +27,7 @@ set(LAPACKE_LIBRARIES "")
 #Remove the cache value
 set(LAPACKE_RUNTIME_LIBRARIES "" CACHE STRING "" FORCE)
 	
-set(LAPACKE_COMPONENTS blas lapack lapacke gfortran-3 gcc_s_seh-1 quadmath-0 tmglib winpthread-1) #blas must be first, since it should be added first to the linker
+set(LAPACKE_COMPONENTS blas lapack lapacke gfortran-3 gcc_s_seh-1 gcc_s_dw2-1 quadmath-0 tmglib winpthread-1) #blas must be first, since it should be added first to the linker
 SET(LAPACKE_FOUND true)
 ## Loop over each components
 foreach(__LIB ${LAPACKE_COMPONENTS})
