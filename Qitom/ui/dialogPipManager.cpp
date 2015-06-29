@@ -211,6 +211,16 @@ void DialogPipManager::on_btnCheckForUpdates_clicked()
     QModelIndex mi = ui.tablePackages->currentIndex();
     bool updatedAvailabe = m_pPipManager->data(mi, Qt::UserRole + 1).toBool();
     ui.btnUpdate->setEnabled(updatedAvailabe);
+    
+    /*
+    foreach (const QModelIndex &mi, selected.indexes())
+    {
+        if (mi.column() == 0)
+        {
+            updatedAvailabe = m_pPipManager->data(mi, Qt::UserRole + 1).toBool();
+        }
+    }
+    */
 }
 
 //---------------------------------------------------------------------------------

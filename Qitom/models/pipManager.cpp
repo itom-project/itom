@@ -129,6 +129,7 @@ PipManager::~PipManager()
         m_pipProcess.waitForFinished(2000);
     }
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /** return parent element
 *   @param [in] index   the element's index for which the parent should be returned
@@ -262,7 +263,6 @@ bool PipManager::isPipStarted() const
 {
     return m_pipProcess.pid() != 0;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PipManager::checkPipAvailable(const PipGeneralOptions &options /*= PipGeneralOptions()*/)
