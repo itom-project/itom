@@ -202,6 +202,7 @@ Source: "{#SourceDirItomBuild}\plugins\PI_GCS2\*.*"; DestDir: "{app}\plugins\PI_
 Source: "{#SourceDirItomBuild}\plugins\PIPiezoCtrl\*.*"; DestDir: "{app}\plugins\PIPiezoCtrl"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\QCam\*.*"; DestDir: "{app}\plugins\QCam"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\SerialIO\*.*"; DestDir: "{app}\plugins\SerialIO"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\Standa8SMC4USB\*.*"; DestDir: "{app}\plugins\Standa8SMC4USB"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\SuperlumBS\*.*"; DestDir: "{app}\plugins\SuperlumBS"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\ThorlabsCCS\*.*"; DestDir: "{app}\plugins\ThorlabsCCS"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\USBMotion3XIII\*.*"; DestDir: "{app}\plugins\USBMotion3XIII"; Flags: promptifolder recursesubdirs
