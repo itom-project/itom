@@ -118,7 +118,7 @@ namespace ito
         int type;
         QString name;
         QVector<QPair<double, QColor> > colorStops;
-        QVector<ito::uint32> colorVector256;
+        QVector<ito::uint32> colorVector256; //corresponds to QVector<QRgb>
         QColor inverseColorOne;
         QColor inverseColorTwo;
         QColor invalidColor;
