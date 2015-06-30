@@ -111,7 +111,7 @@ Source: "{#SourceDirItomBuild}\SDK\*.*"; DestDir: "{app}\SDK"; Flags: promptifol
 Source: "{#SourceDirItomBuild}\SDK\include\*.*"; DestDir: "{app}\SDK\include"; Flags: promptifolder recursesubdirs; Components: SDK
 Source: "{#SourceDirItomBuild}\SDK\docs\*.*"; DestDir: "{app}\SDK\docs"; Flags: promptifolder recursesubdirs; Components: SDK
 Source: "{#SourceDirItomBuild}\SDK\pluginTemplates\*.*"; DestDir: "{app}\SDK\pluginTemplates"; Flags: promptifolder recursesubdirs; Components: SDK
-Source: "{#SourceDirItomBuild}\SDK\lib\vc10_x86\*.*"; DestDir: "{app}\SDK\lib\vc10_x86"; Flags: promptifolder; Components: SDK
+Source: "{#SourceDirItomBuild}\SDK\lib\vc10_x64\*.*"; DestDir: "{app}\SDK\lib\vc10_x64"; Flags: promptifolder; Components: SDK
 
 ; DesignerPlugins
 Source: "{#SourceDirItomBuild}\designer\dataObjectTable.dll"; DestDir: "{app}\designer"; Flags: promptifolder
@@ -129,7 +129,7 @@ Source: "{#SourceDirItomBuild}\designer\vtk3dVisualizer.dll"; DestDir: "{app}\de
 Source: "{#SourceDirItomBuild}\designer\translation\*.qm"; DestDir: "{app}\designer\translation"; Flags: promptifolder recursesubdirs
 
 ; Plugins
-Source: "{#SourceDirItomBuild}\plugins\AerotechA3200\*.*"; DestDir: "{app}\plugins\AerotechA3200"; Flags: promptifolder recursesubdirs
+; Source: "{#SourceDirItomBuild}\plugins\AerotechA3200\*.*"; DestDir: "{app}\plugins\AerotechA3200"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\AerotechEnsemble\*.*"; DestDir: "{app}\plugins\AerotechEnsemble"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\AndorSDK3\*.*"; DestDir: "{app}\plugins\AndorSDK3"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\AvantesAvaSpec\*.*"; DestDir: "{app}\plugins\AvantesAvaSpec"; Flags: promptifolder recursesubdirs
@@ -137,7 +137,7 @@ Source: "{#SourceDirItomBuild}\plugins\AVTVimba\*.*"; DestDir: "{app}\plugins\AV
 Source: "{#SourceDirItomBuild}\plugins\BasicFilters\*.*"; DestDir: "{app}\plugins\BasicFilters"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\BasicGPLFilters\*.*"; DestDir: "{app}\plugins\BasicGPLFilters"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\cmu1394\*.*"; DestDir: "{app}\plugins\cmu1394"; Flags: promptifolder recursesubdirs
-Source: "{#SourceDirItomBuild}\plugins\CommonVisionBlox\*.*"; DestDir: "{app}\plugins\CommonVisionBlox"; Flags: promptifolder recursesubdirs
+; Source: "{#SourceDirItomBuild}\plugins\CommonVisionBlox\*.*"; DestDir: "{app}\plugins\CommonVisionBlox"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\dataobjectarithmetic\*.*"; DestDir: "{app}\plugins\dataobjectarithmetic"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\DataObjectIO\*.*"; DestDir: "{app}\plugins\DataObjectIO"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\plugins\demoAlgorithms\*.*"; DestDir: "{app}\plugins\demoAlgorithms"; Flags: promptifolder recursesubdirs
@@ -185,33 +185,33 @@ Source: "{#SourceDirOpenCV}\opencv_features2d${OpenCV_LIB_VERSION}.dll"; DestDir
 Source: "{#SourceDirOpenCV}\opencv_flann${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 ; Libs Plugins
 Source: "{#SourceDirItomBuild}\lib\1394camera.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\lib\AeroBasic.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\AeroBasic64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\atcl_bitflow.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\atcore.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\atdevregcam.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\lib\EnsembleC.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\lib\EnsembleCore.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\EnsembleC64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\EnsembleCore64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\FlyCapture2_v100.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\lib\iso5436-2-xml.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\iso5436-2-xml64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\libblas.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\libfftw3-3.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\lib\libgcc_s_dw2-1.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\lib\libgfortran-3.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+; Source: "{#SourceDirItomBuild}\lib\libgcc_s_dw2-1.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+; Source: "{#SourceDirItomBuild}\lib\libgfortran-3.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\libiomp5md.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\liblapack.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\liblapacke.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\lib\libquadmath-0.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+; Source: "{#SourceDirItomBuild}\lib\libquadmath-0.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\libximc.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\lib\m3api.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\lib\PI_GCS2_DLL.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\m3apiX64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\PI_GCS2_DLL_x64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\SC2_Cam.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\lib\SVGigE.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\lib\SVGigETLFilter.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\lib\SVGigETLWinsock.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\SVGigE.x64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\SVGigETLFilter.x64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\SVGigETLWinsock.x64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\VimbaC.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\VimbaCPP.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\xerces-c_3_1_vc100.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\lib\xiApi.NET.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\xiApi.NETX64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\iso5436_2.xsd"; DestDir: "{app}\lib"; Flags: promptifolder
 ; Libs PCL
 Source: "{#SourceDirPCL}\bin\pcl_features_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
