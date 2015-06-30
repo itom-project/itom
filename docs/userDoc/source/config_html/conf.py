@@ -325,4 +325,4 @@ breathe_default_project = "itom"
 todo_include_todos = True
 
 
-intersphinx_mapping = {'python': ('http://docs.python.org/3.3', None)}
+intersphinx_mapping = {'python': ('http://docs.python.org/3.4', None)}
