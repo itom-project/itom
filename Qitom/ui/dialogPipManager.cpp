@@ -177,6 +177,16 @@ void DialogPipManager::pipRequestFinished(const PipManager::Task &task, const QS
     {
         m_pPipManager->listAvailablePackages(createOptions());
     }
+    else if (task == PipManager::taskCheckUpdates && success)
+    {
+        QModelIndex mi = ui.tablePackages->currentIndex();
+        QItemSelection ItemSelection(mi, mi);
+        ui.tablePackages->selectedItemsChanged(ItemSelection, ItemSelection);
+
+/*        QModelIndex mi = ui.tablePackages->currentIndex();
+        bool updatedAvailabe = m_pPipManager->data(mi, Qt::UserRole + 1).toBool();
+        ui.btnUpdate->setEnabled(updatedAvailabe);*/
+    }
 }
 
 //--------------------------------------------------------------------------------
@@ -206,21 +216,6 @@ void DialogPipManager::on_btnReload_clicked()
 void DialogPipManager::on_btnCheckForUpdates_clicked()
 {
     m_pPipManager->checkPackageUpdates(createOptions());
-
-    // TODO!!!
-    QModelIndex mi = ui.tablePackages->currentIndex();
-    bool updatedAvailabe = m_pPipManager->data(mi, Qt::UserRole + 1).toBool();
-    ui.btnUpdate->setEnabled(updatedAvailabe);
-    
-    /*
-    foreach (const QModelIndex &mi, selected.indexes())
-    {
-        if (mi.column() == 0)
-        {
-            updatedAvailabe = m_pPipManager->data(mi, Qt::UserRole + 1).toBool();
-        }
-    }
-    */
 }
 
 //---------------------------------------------------------------------------------
@@ -237,7 +232,16 @@ void DialogPipManager::on_btnUpdate_clicked()
 //---------------------------------------------------------------------------------
 void DialogPipManager::installOrUpdatePackage()
 {
-    DialogPipManagerInstall *dpmi = new DialogPipManagerInstall(this);
+    const QModelIndex &mi = ui.tablePackages->currentIndex();
+    
+    QString package = "";
+    if (m_pPipManager->data(mi, Qt::UserRole + 1).toBool())
+    {
+        QModelIndex miCol0 = m_pPipManager->index(mi.row(), 0);
+        package = m_pPipManager->data(miCol0, 0).toString();
+    }
+
+    DialogPipManagerInstall *dpmi = new DialogPipManagerInstall(this, package);
     if (dpmi->exec() == QDialog::Accepted)
     {
         PipInstall install;
@@ -248,10 +252,10 @@ void DialogPipManager::installOrUpdatePackage()
             || (install.type != ito::PipInstall::typeWhl && install.packageName.compare("numpy", Qt::CaseInsensitive) == 0)))
         {
              QMessageBox msgBox(this);
-             msgBox.setWindowTitle("Pip Manager");
+             msgBox.setWindowTitle(tr("Pip Manager"));
              msgBox.setIcon(QMessageBox::Warning);
-             msgBox.setText("Warning installing Numpy if itom is already running.");
-             msgBox.setInformativeText(QString("If you try to install / upgrade Numpy if itom is already running, \
+             msgBox.setText(tr("Warning installing Numpy if itom is already running."));
+             msgBox.setInformativeText(tr("If you try to install / upgrade Numpy if itom is already running, \
 a file access error might occur, since itom already uses parts of Numpy. \n\n\
 Click ignore if you want to try to continue the installation or click OK in order to stop the \
 installation. \n\n\
