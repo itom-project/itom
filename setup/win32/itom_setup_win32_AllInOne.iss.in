@@ -55,7 +55,7 @@ Name: "{app}\SDK"; Permissions: everyone-modify
 ; EXEs
 Source: "{#SourceRedistributable}\vcredist_x86.exe"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\python-3.4.2.msi"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\numpy-1.9.2rc1+mkl-cp34-none-win32.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\numpy-1.9.2+mkl-cp34-none-win32.whl"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\scipy-0.15.1-cp34-none-win32.whl"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\six-1.9.0-py2.py3-none-any.whl"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\pyparsing-2.0.3-py3-none-any.whl"; DestDir: "{tmp}"
@@ -70,7 +70,7 @@ Source: "{#SourceDirPython}\frosted-1.4.1-py2.py3-none-any.whl"; DestDir: "{tmp}
 [Run]
 Filename: "{tmp}\vcredist_x86.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2010 Redistributable Package (x86)..."; Components: CREDPACK;
 Filename: "{tmp}\python-3.4.2.msi"; Flags: shellexec waituntilterminated; StatusMsg: "Phyton 3.4..."; Components: PYTHON
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\numpy-1.9.2rc1+mkl-cp34-none-win32.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "NumPy..."; Components: NUMPY
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\numpy-1.9.2+mkl-cp34-none-win32.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "NumPy..."; Components: NUMPY
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\scipy-0.15.1-cp34-none-win32.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "SciPy..."; Components: SCIPY
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\six-1.9.0-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "Six..."; Components: SIX
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\pyparsing-2.0.3-py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "PyParsing..."; Components: PYPARSING
@@ -83,7 +83,7 @@ Filename: "{app}\{#ExeName}"; Flags: nowait postinstall skipifsilent; Descriptio
 
 [InstallDelete]
 Type: files; Name: "{tmp}\python-3.4.2.msi"
-Type: files; Name: "{tmp}\numpy-1.9.2rc1+mkl-cp34-none-win32.whl"
+Type: files; Name: "{tmp}\numpy-1.9.2+mkl-cp34-none-win32.whl"
 Type: files; Name: "{tmp}\scipy-0.15.1-cp34-none-win32.whl"
 Type: files; Name: "{tmp}\six-1.9.0-py2.py3-none-any.whl"
 Type: files; Name: "{tmp}\pyparsing-2.0.3-py3-none-any.whl"
@@ -102,7 +102,7 @@ Name: "Install"; Description: "Installation"; Flags: iscustom
 Name: "Main"; Description: "{#Name}"; Types: Install; Flags: checkablealone fixed
 Name: "CREDPACK"; Description: "Microsoft Visual C++ 2010 Redistributable Package (x86)"; Types: Install; Flags: checkablealone fixed; Check: NeedInstallRP10({#DSetupMode})
 Name: "PYTHON"; Description: "Python 3.4.3"; Types: Install; Flags: checkablealone
-Name: "NUMPY"; Description: "numpy-1.9.2rc1+mkl-cp34-none-win32"; Types: Install; Flags: checkablealone
+Name: "NUMPY"; Description: "numpy-1.9.2+mkl-cp34-none-win32"; Types: Install; Flags: checkablealone
 Name: "SCIPY"; Description: "scipy-0.15.1-cp34-none-win32"; Types: Install; Flags: checkablealone
 Name: "SIX"; Description: "six-1.9.0-py2.py3-none-any"; Types: Install; Flags: checkablealone
 Name: "PYPARSING"; Description: "pyparsing-2.0.3-py3-none-any"; Types: Install; Flags: checkablealone
