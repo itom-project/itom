@@ -62,11 +62,10 @@ Source: "{#SourceDirQT}\..\plugins\imageformats\qtga.dll"; DestDir: "{app}\image
 Source: "{#SourceDirQT}\..\plugins\imageformats\qtiff.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
 Source: "{#SourceDirQT}\..\plugins\imageformats\qwbmp.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
 Source: "{#SourceDirQT}\..\plugins\imageformats\qwebp.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
-Source: "{#SourceDirQT}\..\plugins\platforms\qminimal.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
-Source: "{#SourceDirQT}\..\plugins\platforms\qoffscreen.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
-Source: "{#SourceDirQT}\..\plugins\platforms\qwindows.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
-Source: "{#SourceDirQT}\..\plugins\printsupport\windowsprintersupport.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
-Source: "{#SourceDirQT}\..\plugins\imageformats\qtiff.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\plugins\platforms\qminimal.dll"; DestDir: "{app}\platforms"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\plugins\platforms\qoffscreen.dll"; DestDir: "{app}\platforms"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\plugins\platforms\qwindows.dll"; DestDir: "{app}\platforms"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\plugins\printsupport\windowsprintersupport.dll"; DestDir: "{app}\printsupport"; Flags: promptifolder
 ;Source: "{#SourceDirQT}\..\plugins\sqldrivers\qsqlite4.dll"; DestDir: "{app}\sqldrivers"; Flags: promptifolder
 
 ; Python-Scripts
