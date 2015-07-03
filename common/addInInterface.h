@@ -350,67 +350,13 @@ namespace ito
             };
 
             //! method to retrieve a parameter from the parameter map (m_params)
-            /*!
-                returns parameter from m_params vector. If the parameter could not be found or if the given name is invalid an invalid Param is returned.
-                If you provide the nameCheckOk-pointer, you will return a boolean value describing whether your name matched the possible regular expression.
-
-                The parameter name, that is search can have the following form:
-
-                - Name (where Name consists of numbers, characters (a-z) or the symbols _-)
-                - Name[Idx] (where Idx is a fixed-point number
-                - Name[Idx]:suffix (where suffix is any string - suffix is ignored by this method)
-                - Name:suffix
-
-                \warn until now, the Idx is ignored by this method.
-
-                \param name is the name of the parameter
-                \param nameCheckOk returns true if name corresponds to the necessary syntax, else false
-                \return Param as copy of the internal m_params-map or empty Param, if name could not be resolved or found
-            */
-            const Param getParamRec(const QString name, bool *nameCheckOk = NULL) const
-            {
-                QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$");
-                if (rx.indexIn(name) == -1)
-                {
-                    if (nameCheckOk)
-                    {
-                        *nameCheckOk = false;
-                    }
-                    return Param();
-                }
-                else
-                {
-                    QStringList pname = rx.capturedTexts();
-                    if (pname.length() > 1)
-                    {
-                        if (nameCheckOk)
-                        {
-                            *nameCheckOk = true;
-                        }
-                        ito::Param tempParam = m_params.value(pname[1]);
-                        if (pname[2].length())
-                        {
-                        }
-                        if (pname[4].length())
-                        {
-                        }
-                        return tempParam; //returns default constructor if value not available in m_params. Default constructor has member isValid() => false
-                    }
-                }
-                return Param();
-            }
+            const Param getParamRec(const QString name, bool *nameCheckOk = NULL) const;
 
             //! returns the interface of this instance. \sa AddInInterfaceBase
             inline AddInInterfaceBase* getBasePlugin(void) const { return m_pBasePlugin; }
 
             //! creates new thread for the class instance and moves this instance to the new thread
-            inline ito::RetVal MoveToThread(void)
-            {
-                m_pThread = new QThread();
-                moveToThread(m_pThread);
-                m_pThread->start();
-                return retOk;
-            }
+            ito::RetVal MoveToThread(void);
 
             //! returns a map with the parameters of this plugin.
             /*
@@ -451,7 +397,7 @@ namespace ito
             /*
                 The reference counter is zero-based, hence, the value zero means that one reference is pointing to this instance
             */
-            inline int getRefCount(void) 
+            inline int getRefCount(void) const
             { 
                 return m_refCount; 
             }
@@ -501,7 +447,7 @@ namespace ito
             }
             
             //! returns in a thread-safe way the status of the m_initialized-member variable. This variable should be set to true at the end of the init-method.
-            bool isInitialized(void) 
+            bool isInitialized(void) const
             { 
 //                QMutexLocker locker(&m_atomicMutex);
                 return m_initialized;
@@ -546,16 +492,10 @@ namespace ito
             //! sets the interface of this instance to base. \sa AddInInterfaceBase
             inline void setBasePlugin(AddInInterfaceBase *base) { m_pBasePlugin = base; }
 
-            QThread *m_pThread;                                    //!< the instance's thread
-            AddInInterfaceBase *m_pBasePlugin;                    //!< the AddInInterfaceBase instance of this plugin
             QMap<QString, Param> m_params;                        //!< map of the available parameters
             
             QString m_identifier;                               //!< unique identifier (serial number, com-port...)
-            int m_refCount;                                        //!< reference counter, used to avoid early deletes (0 means that one instance is holding one reference, 1 that two participants hold the reference...)
-            int m_createdByGUI;                                    //!< 1 if this instance has firstly been created by GUI, 0: this instance has been created by c++ or python
-            QVector<ito::AddInBase::AddInRef *> m_hwDecList;    //!< list of hardware that was passed to the plugin on initialisation and whose refcounter was incremented
-            QMap<QString, ExecFuncParams> m_execFuncList;        //!< map with registered additional functions. funcExec-name -> (default mandParams, default optParams, default outParams, infoString)
-        
+            
         private:
             Q_DISABLE_COPY (AddInBase)
 
@@ -574,6 +514,14 @@ namespace ito
                 m_refCount--;
                 m_refCountMutex.unlock();
             }
+
+            QThread *m_pThread;                                    //!< the instance's thread
+            AddInInterfaceBase *m_pBasePlugin;                    //!< the AddInInterfaceBase instance of this plugin
+
+            int m_refCount;                                        //!< reference counter, used to avoid early deletes (0 means that one instance is holding one reference, 1 that two participants hold the reference...)
+            int m_createdByGUI;                                    //!< 1 if this instance has firstly been created by GUI, 0: this instance has been created by c++ or python
+            QVector<ito::AddInBase::AddInRef *> m_hwDecList;    //!< list of hardware that was passed to the plugin on initialisation and whose refcounter was incremented
+            QMap<QString, ExecFuncParams> m_execFuncList;        //!< map with registered additional functions. funcExec-name -> (default mandParams, default optParams, default outParams, infoString)
 
             int m_uniqueID;                    //!< uniqueID (automatically given by constructor of AddInBase with auto-incremented value)
             
@@ -688,7 +636,7 @@ namespace ito
             Q_DISABLE_COPY (AddInDataIO)
 
         protected:
-            virtual ~AddInDataIO() = 0; //TODO:remove the pure virtual implementation -> requires changed interface-number
+            virtual ~AddInDataIO();
             AddInDataIO();
 
             void runStatusChanged(bool deviceStarted);
@@ -757,16 +705,8 @@ namespace ito
             QMutex m_interruptMutex;            /*!< mutex providing a thread-safe handling of the interrupt flag (internal use only) */
 
         protected:
-            virtual ~AddInActuator() = 0; //TODO:remove the pure virtual implementation -> requires changed interface-number
+            virtual ~AddInActuator();
             AddInActuator();
-
-            //remove the following five methods due to an incompatibility with qt5. The number of connected signals to statusChanged
-            //and targetChanged will not be count any more, but the respective signals are always emitted.
-            virtual void connectNotify (const char * signal);
-            virtual void disconnectNotify (const char * signal);
-            int nrOfStatusChangedConnections() const { return m_nrOfStatusChangedConnections; }  /*!< returns number of signal-slot connections to the signal "actuatorStatusChanged" */
-            int nrOfTargetChangedConnections() const { return m_nrOfTargetChangedConnections; }  /*!< returns number of signal-slot connections to the signal "targetChanged" */
-            int nrOfConnections() const { return m_nrOfStatusChangedConnections + m_nrOfTargetChangedConnections; }  /*!< total number of signal-slot connections to the signals "actuatorStatusChanged" and "targetChanged" */
 
             QVector<int>    m_currentStatus;  /*!< vector (same length than number of axes) containing the status of every axis. The status is a combination of enumeration ito::tActuatorStatus. */
             QVector<double> m_currentPos;  /*!< vector (same length than number of axes) containing the current position (mm or degree) of every axis. The current position should be updated with a reasonable frequency (depending on the actuator and situation)*/
@@ -1154,6 +1094,7 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/1.2.1", //outdated on 2014-10-06 due to changes in APIs, retVal.h and itomWidgets-project. The next version 1.3.0 is the version for the setup 1.3.0.
     "ito.AddIn.InterfaceBase/1.3.0", //outdated on 2014-10-27 due to insertion of ito::AutoInterval object and addition of further ito::ParamMeta classes.
     "ito.AddIn.InterfaceBase/1.3.1", //outdated on 2015-03-01 due to rework on data object
+    "ito.AddIn.InterfaceBase/1.4.0", //outdated on 2015-07-03 due to removal of lock mechanism in data object, add of embedded line plots, qt5 incompatiblity changes and some refinements in addInInterface
     NULL
 };
 
@@ -1161,11 +1102,11 @@ static const char* ito_AddInInterface_OldVersions[] = {
 #define CREATE_ADDININTERFACE_VERSION_STR(major,minor,patch) "ito.AddIn.InterfaceBase/"#major"."#minor"."#patch
 #define CREATE_ADDININTERFACE_VERSION(major,minor,patch) ((major<<16)|(minor<<8)|(patch))
 
-#define ITOM_ADDININTERFACE_MAJOR 1
-#define ITOM_ADDININTERFACE_MINOR 4
+#define ITOM_ADDININTERFACE_MAJOR 2
+#define ITOM_ADDININTERFACE_MINOR 0
 #define ITOM_ADDININTERFACE_PATCH 0
 #define ITOM_ADDININTERFACE_VERSION CREATE_ADDININTERFACE_VERSION(ITOM_ADDININTERFACE_MAJOR,ITOM_ADDININTERFACE_MINOR,ITOM_ADDININTERFACE_PATCH)
-static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_VERSION_STR(1,4,0); //results in "ito.AddIn.InterfaceBase/x.x.x"; (the numbers 1,3,1 can not be replaced by the macros above. Does not work properly)
+static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_VERSION_STR(2,0,0); //results in "ito.AddIn.InterfaceBase/x.x.x"; (the numbers 1,3,1 can not be replaced by the macros above. Does not work properly)
 
 
 

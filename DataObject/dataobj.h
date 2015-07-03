@@ -224,7 +224,6 @@ namespace ito {
     class DataObjectTags;
     class DataObjectTagType;
     class DataObjectTagsPrivate;
-    class ReadWriteLock;
     
     
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -486,7 +485,7 @@ namespace ito {
     template<typename _Tp> RetVal AssignScalarFunc(const DataObject *src, const ito::tDataType type, const void *scalar);
     template<typename _Tp> RetVal MakeContinuousFunc(const DataObject &dObj, DataObject &resDObj);
     template<typename _Tp> RetVal EvaluateTransposeFlagFunc(DataObject *dObj);
-    template<typename _Tp> RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel);
+    //template<typename _Tp> RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel);
     template<typename _Tp> std::ostream& coutFunc(std::ostream& out, const DataObject& dObj);
     
     // more friends due to change of std::vector to int ** for m_data ...
@@ -602,9 +601,7 @@ namespace ito {
         MROI    m_roi;                               /*!< vector containing the offset to the starting point of the ROI for each dimension, is used for detecting and adjusting the ROI */
         MSize   m_size;                              /*!< vector containing the "virtual" size of each dimension considering the ROI */
         uchar  **m_data;                             /*!< vector with references to each matrix-plane. array of char pointers */
-        ReadWriteLock      *m_objSharedDataLock;     /*!< readWriteLock for data block, this lock is shared within every instance which is using the same data. */
         DataObjectTagsPrivate *m_pDataObjectTags;    /*!< class containing the object metadata */
-        ReadWriteLock       *m_objHeaderLock;        /*!< readWriteLock for this instance of dataObject. */
         static const int m_sizeofs;
         
         int mdata_realloc(const int size);
@@ -615,7 +612,7 @@ namespace ito {
         RetVal copyFromData2DInternal(const uchar* src, const int sizeOfElem, const int sizeX, const int x0, const int y0, const int width, const int height);
         
         //! Forward declaration: Default values are not allowed for friend functions, adding a non-friend function with default argument instead \deprecated Will be deleted once the interface number is incremented due to further changes
-        template<typename _Tp> RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel = 0);
+        //template<typename _Tp> RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel = 0);
 
         //low-level, templated methods
         //most low-level methods are marked "friend" such that they can access private members of their data object parameters
@@ -630,7 +627,7 @@ namespace ito {
         template<typename _Tp> friend RetVal AssignScalarFunc(const DataObject *src, const ito::tDataType type, const void *scalar);
         template<typename _Tp> friend RetVal MakeContinuousFunc(const DataObject &dObj, DataObject &resDObj);
         template<typename _Tp> friend RetVal EvaluateTransposeFlagFunc(DataObject *dObj);
-        template<typename _Tp> friend RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel); //!< \deprecated Will be deleted once the interface number is incremented due to further changes
+        //template<typename _Tp> friend RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel); //!< \deprecated Will be deleted once the interface number is incremented due to further changes
         template<typename _Tp> friend std::ostream& coutFunc(std::ostream& out, const DataObject& dObj);
         
         // more friends due to change of std::vector to int ** for m_data ...
@@ -949,29 +946,6 @@ namespace ito {
             }
             return total;
         }
-        
-        //! locks this dataObject (all header information) and the underlying data block for a read operation
-        /*!
-         \remark During the copy-constructor, operator=, eye, zero and ones method, the readWriteLock for the data block
-         will be set to writeLock if any of the participating dataObjects are in writeLock mode. Then the number of readers
-         will be decremented first. The lock of the dataObject, hence the lock for all header information, which are not
-         shared, remains at its level.
-         
-         \sa ReadWriteLock
-         */
-        void lockRead();
-        
-        //! locks this dataObject (all header information) and the underlying data block for a write operation
-        /*!
-         \sa ReadWriteLock
-         */
-        void lockWrite();
-        
-        //! unlocks any lock. If lock is writeLock, lock is set to idle, if lock is readLock, then the number of readers is decremented and lock is freed if no more readers are available
-        /*!
-         \sa ReadWriteLock
-         */
-        void unlock();
         
         RetVal copyTo(DataObject &rhs, unsigned char regionOnly = 0) const;   /*!< deeply copies the data of this data object to the given rhs-dataObject, whose existing data will be deleted first. */
         RetVal convertTo(DataObject &rhs, const int type, const double alpha=1, const double beta=0 ) const; /*!< Convertes an array to another data type with optional scaling (alpha * value + beta) */
