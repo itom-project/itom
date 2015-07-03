@@ -20,7 +20,9 @@ if (BUILD_TARGET64)
 else (BUILD_TARGET64)
    set(CMAKE_SIZEOF_VOID_P 4)
 endif (BUILD_TARGET64) 
-     
+
+SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
+      
 ADD_SUBDIRECTORY(DataObject) 
      
 IF(BUILD_WITH_PCL)
@@ -51,18 +53,27 @@ message(STATUS "")
 message(STATUS "CMAKE_CURRENT_BINARY_DIR: ${CMAKE_CURRENT_BINARY_DIR}")
 message(STATUS "")
 
-
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen/itom_doxygen.dox.in ${CMAKE_CURRENT_BINARY_DIR}/docs/doxygen/itom_doxygen.dox )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/create_doc.py.in ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/create_doc.py )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/userDoc/modify_doc.py.in ${CMAKE_CURRENT_BINARY_DIR}/docs/userDoc/modify_doc.py )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/pythonSqlDb/PythonAPI_SqlCreator.py ${CMAKE_CURRENT_BINARY_DIR}/docs/pythonSqlDb/PythonAPI_SqlCreator.py )
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/docs/pluginDoc DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/docs)
 
+################################################################################################################ 
+#CONFIGURE AND PREPARE THE INNO SETUP FILES (require location of Qt, therefore find_package_qt must be called)
+include("ItomBuildMacros.cmake")  
+FIND_PACKAGE_QT(ON Core)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32_AllInOne.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32_AllInOne.iss )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32_common_files.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32_common_files.iss )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32_code.iss )
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64_AllInOne.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64_AllInOne.iss )
-  
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64_common_files.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64_common_files.iss )
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64_code.iss )
+################################################################################################################ 
+
 IF(WIN32)
     SET(CHMSource "${CMAKE_CURRENT_SOURCE_DIR}/docs/itom_doc.chm")
     SET(CHMDest "${CMAKE_CURRENT_BINARY_DIR}/docs")

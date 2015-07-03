@@ -292,6 +292,7 @@ ItomPalette ItomPaletteBase::getPalette()
 QVector<ito::uint32> ItomPaletteBase::get256Colors(bool includeAlpha) const
 {
     QVector<ito::uint32> colors(256);
+    //colors are defined like QRgb
     
     int curIdx = 0;
     float pos = 0.0;
@@ -310,16 +311,16 @@ QVector<ito::uint32> ItomPaletteBase::get256Colors(bool includeAlpha) const
 
         colors[0] = ((unsigned int)m_colorStops[curIdx].second.blue());
         colors[0] += ((unsigned int)m_colorStops[curIdx].second.green()) << 8;
-        colors[0] += ((unsigned int)m_colorStops[curIdx].second.red()) <<16;
+        colors[0] += ((unsigned int)m_colorStops[curIdx].second.red()) << 16;
 
         colors[255] = ((unsigned int)m_colorStops[m_colorStops.size()-1].second.blue());
         colors[255] += ((unsigned int)m_colorStops[m_colorStops.size()-1].second.green()) << 8;
-        colors[255] += ((unsigned int)m_colorStops[m_colorStops.size()-1].second.red()) <<16;
+        colors[255] += ((unsigned int)m_colorStops[m_colorStops.size()-1].second.red()) << 16;
 
         if(includeAlpha)
         {
-            colors[0] += ((unsigned int)m_colorStops[curIdx].second.alpha()) <<24;
-            colors[255] += ((unsigned int)m_colorStops[m_colorStops.size()-1].second.alpha()) <<24;
+            colors[0] += ((unsigned int)m_colorStops[curIdx].second.alpha()) << 24;
+            colors[255] += ((unsigned int)m_colorStops[m_colorStops.size()-1].second.alpha()) << 24;
         }
 
         for(int i = 1; i < 255; i++)
