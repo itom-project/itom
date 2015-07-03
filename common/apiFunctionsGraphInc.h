@@ -98,10 +98,10 @@ namespace ito
         (*(ito::RetVal (*)(void *, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QPointer<QWidget>*widget)) ito::ITOM_API_FUNCS_GRAPH[11])
 
     #define apiGetFigureIDbyHandle \
-        (*(ito::RetVal (*)(QObject *, ito::uint32 &)) ito::ITOM_API_FUNCS_GRAPH[12])
+        (*(ito::RetVal (*)(QObject *figure, ito::uint32 &figureUID)) ito::ITOM_API_FUNCS_GRAPH[12])
 
     #define apiGetItomPlotHandleByID \
-        (*(ito::RetVal (*)(const ito::uint32 &, ito::ItomPlotHandle &)) ito::ITOM_API_FUNCS_GRAPH[13])
+        (*(ito::RetVal (*)(const ito::uint32 &figureUID, ito::ItomPlotHandle &plotHandle)) ito::ITOM_API_FUNCS_GRAPH[13])
     /** \} */
 
     /*#if defined(ITOM_IMPORT_PLOTAPI)
