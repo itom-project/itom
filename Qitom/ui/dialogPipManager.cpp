@@ -181,11 +181,7 @@ void DialogPipManager::pipRequestFinished(const PipManager::Task &task, const QS
     {
         QModelIndex mi = ui.tablePackages->currentIndex();
         QItemSelection ItemSelection(mi, mi);
-        ui.tablePackages->selectedItemsChanged(ItemSelection, ItemSelection);
-
-/*        QModelIndex mi = ui.tablePackages->currentIndex();
-        bool updatedAvailabe = m_pPipManager->data(mi, Qt::UserRole + 1).toBool();
-        ui.btnUpdate->setEnabled(updatedAvailabe);*/
+        treeViewSelectionChanged(ItemSelection, ItemSelection);
     }
 }
 
