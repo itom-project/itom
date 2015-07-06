@@ -53,6 +53,7 @@
 #include <qmainwindow.h>
 #include <QtUiTools/quiloader.h>
 #include <qthread.h>
+#include <qtranslator.h>
 
 namespace ito
 {
@@ -362,6 +363,7 @@ private:
     //moved the uiLoader object to here from loadDesignerPluginWidget and createNewDialog methods as according
     //to valgrind it causes memory leaks. So better have only one instance created and maintain mem leaks low ;-)
     QUiLoader m_uiLoader;
+    QHash<QString, QTranslator*> m_transFiles;
 
 signals:
 

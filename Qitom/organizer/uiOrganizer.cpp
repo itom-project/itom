@@ -54,6 +54,7 @@
 #include <qcoreapplication.h>
 #include <qmainwindow.h>
 
+
 namespace ito
 {
 
@@ -142,6 +143,13 @@ UiOrganizer::~UiOrganizer()
     m_dialogList.clear();
     m_objectList.clear();
 
+    QHash<QString, QTranslator*>::const_iterator qtransIter = m_transFiles.constBegin();
+    while (qtransIter != m_transFiles.constEnd())
+    {
+        delete qtransIter.value();
+        ++qtransIter;
+    }
+    m_transFiles.clear();
 
     if (m_garbageCollectorTimer > 0)
     {
@@ -578,6 +586,37 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
             file.open(QFile::ReadOnly);
             QFileInfo fileinfo(filename);
             QDir workingDirectory = fileinfo.absoluteDir();
+
+            //load translation file
+            QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+            QStringList startupScripts;
+
+            settings.beginGroup("Language");
+            QString language = settings.value("language", "en").toString();
+            QByteArray codec =  settings.value("codec", "UTF-8" ).toByteArray();
+            settings.endGroup();
+
+            QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
+            QString languageStr = local.name().left(local.name().indexOf("_", 0, Qt::CaseInsensitive));
+            QFile qmFile(fileinfo.path() + "/" + fileinfo.baseName() + "_" + languageStr + ".qm");
+            
+            if (m_transFiles.contains(qmFile.fileName()))
+            {
+                delete m_transFiles.value(qmFile.fileName());
+                m_transFiles.remove(qmFile.fileName());
+            }
+            QTranslator *qtrans = new QTranslator();
+            bool couldLoad = qtrans->load(fileinfo.baseName() + "_" + languageStr, fileinfo.path());
+            if (couldLoad)
+            {
+                QCoreApplication::instance()->installTranslator(qtrans);
+                m_transFiles.insert(qmFile.fileName(), qtrans);
+            }
+            else
+            {
+                delete qtrans;
+            }
+
             m_uiLoader.setWorkingDirectory(workingDirectory);
             wid = m_uiLoader.load(&file, mainWin);
             file.close();
