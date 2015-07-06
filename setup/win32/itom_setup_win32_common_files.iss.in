@@ -85,6 +85,7 @@ Source: "{#SourceDirQT}\..\translations\qt_??.qm"; DestDir: "{app}\translation";
 ; EXEs
 Source: "{#SourceDirQT}\assistant.exe"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\designer.exe"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\linguist.exe"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\uic.exe"; DestDir: "{app}"; Flags: promptifolder
 
 ; Default INI
