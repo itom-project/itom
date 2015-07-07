@@ -444,23 +444,32 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
             }
             else
             {
-                getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-
-                if (lineFrom == -1)
-                {
-                    getCursorPosition(&lineFrom, &indexFrom);
-                }
-
-                if (lineFrom <= startLineBeginCmd)
-                {
-                    acceptEvent = true;
-                    forwardEvent = false;
-                    useCmdListCommand(1);
-                }
-                else
+                Qt::KeyboardModifiers modifiers = event->modifiers();
+                if (modifiers ==  Qt::ShiftModifier || modifiers ==  Qt::ControlModifier)
                 {
                     acceptEvent = true;
                     forwardEvent = true;
+                }
+                else
+                {
+                    getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+
+                    if (lineFrom == -1)
+                    {
+                        getCursorPosition(&lineFrom, &indexFrom);
+                    }
+
+                    if (lineFrom <= startLineBeginCmd)
+                    {
+                        acceptEvent = true;
+                        forwardEvent = false;
+                        useCmdListCommand(1);
+                    }
+                    else
+                    {
+                        acceptEvent = true;
+                        forwardEvent = true;
+                    }
                 }
             }
             break;
@@ -473,23 +482,32 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
             }
             else
             {
-                getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-
-                if (lineFrom == -1)
-                {
-                    getCursorPosition(&lineFrom, &indexFrom);
-                }
-
-                if (lineFrom == lines() - 1 || lineFrom < startLineBeginCmd)
-                {
-                    acceptEvent = true;
-                    forwardEvent = false;
-                    useCmdListCommand(-1);
-                }
-                else
+                Qt::KeyboardModifiers modifiers = event->modifiers();
+                if (modifiers ==  Qt::ShiftModifier || modifiers ==  Qt::ControlModifier)
                 {
                     acceptEvent = true;
                     forwardEvent = true;
+                }
+                else
+                {
+                    getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+
+                    if (lineFrom == -1)
+                    {
+                        getCursorPosition(&lineFrom, &indexFrom);
+                    }
+
+                    if (lineFrom == lines() - 1 || lineFrom < startLineBeginCmd)
+                    {
+                        acceptEvent = true;
+                        forwardEvent = false;
+                        useCmdListCommand(-1);
+                    }
+                    else
+                    {
+                        acceptEvent = true;
+                        forwardEvent = true;
+                    }
                 }
             }
             break;
