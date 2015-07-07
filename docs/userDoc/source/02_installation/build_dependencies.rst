@@ -170,6 +170,10 @@ project settings are not ready for a multi-configuration build in **Visual Studi
     
     (see also: http://www.mantidproject.org/Debugging_MantidPlot)
     
+    * If there is an error saying that the environment variable QTDIR is missing, type::
+        
+        SET QTDIR=path-to-the-bin-directory-of-qt           (do not add bin to the path itself)
+    
     * If you had a previous installation of QScintilla, delete the directory **%QTDIR%\\include\\Qsci** as well as the files called **qscintilla2.dll** and **qscintilla2d.dll** in the directory **%QTDIR%\\bin**
     * Execute the following commands from the command-line::
         
