@@ -445,7 +445,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
             else
             {
                 Qt::KeyboardModifiers modifiers = event->modifiers();
-                if (modifiers ==  Qt::ShiftModifier || modifiers ==  Qt::ControlModifier)
+                if ((modifiers &  Qt::ShiftModifier) || (modifiers &  Qt::ControlModifier))
                 {
                     acceptEvent = true;
                     forwardEvent = true;
@@ -483,7 +483,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
             else
             {
                 Qt::KeyboardModifiers modifiers = event->modifiers();
-                if (modifiers ==  Qt::ShiftModifier || modifiers ==  Qt::ControlModifier)
+                if ((modifiers &  Qt::ShiftModifier) || (modifiers &  Qt::ControlModifier))
                 {
                     acceptEvent = true;
                     forwardEvent = true;
