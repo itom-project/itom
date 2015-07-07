@@ -587,30 +587,28 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
             QFileInfo fileinfo(filename);
             QDir workingDirectory = fileinfo.absoluteDir();
 
-            //load translation file
+            //try to load translation file with the same basename than the ui-file and the suffix .qm. After the basename the location string can be added using _ as delimiter.
             QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-            QStringList startupScripts;
 
             settings.beginGroup("Language");
             QString language = settings.value("language", "en").toString();
-            QByteArray codec =  settings.value("codec", "UTF-8" ).toByteArray();
             settings.endGroup();
 
             QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
-            QString languageStr = local.name().left(local.name().indexOf("_", 0, Qt::CaseInsensitive));
-            QFile qmFile(fileinfo.path() + "/" + fileinfo.baseName() + "_" + languageStr + ".qm");
-            
-            if (m_transFiles.contains(qmFile.fileName()))
-            {
-                delete m_transFiles.value(qmFile.fileName());
-                m_transFiles.remove(qmFile.fileName());
-            }
+
             QTranslator *qtrans = new QTranslator();
-            bool couldLoad = qtrans->load(fileinfo.baseName() + "_" + languageStr, fileinfo.path());
+            bool couldLoad = qtrans->load(local, fileinfo.baseName(), "_", fileinfo.path());
             if (couldLoad)
             {
+                QString canonicalFilePath = fileinfo.canonicalFilePath();
+                if (m_transFiles.contains(canonicalFilePath))
+                {
+                    delete m_transFiles.value(canonicalFilePath);
+                    m_transFiles.remove(canonicalFilePath);
+                }
+
                 QCoreApplication::instance()->installTranslator(qtrans);
-                m_transFiles.insert(qmFile.fileName(), qtrans);
+                m_transFiles.insert(canonicalFilePath, qtrans);
             }
             else
             {
