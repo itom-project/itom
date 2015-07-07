@@ -289,6 +289,7 @@ Designer Plugins
 
 (more than 95 commits in designerPlugins repository)
 
+* itom1dqwtplot, itom2dqwtplot: property unitLabelStyle added to chose how the labels print unit information
 * line cut slices and z-stack slices can now also be displayed in a previously indicated line-plot widget (properties lineCutPlotItem and zSlicePlotItem)
 * various styles possible for labels containing units (with respect to current standards)
 * Qt4/Qt5 string encoding problems fixed (latin1 / utf8)
