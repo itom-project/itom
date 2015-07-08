@@ -215,18 +215,20 @@ PyObject * getParamListInfo(ito::AddInBase *aib, PyObject *args)
         return NULL;
     }
 
-   if (paramList)
-   {
-      std::cout << "Plugin parameters are:\n";
+    if (paramList)
+    {
+        if (output == 0)
+            std::cout << "Plugin parameters are:\n";
 
-      QVector<ito::Param> parameter = paramList->values().toVector();
-      result = PrntOutParams(&parameter, false, true, -1);
-   }
-   else
-   {
-       result = PyDict_New();
-       std::cout << " \nPlugin does not accept parameters! \n";
-   }
+        QVector<ito::Param> parameter = paramList->values().toVector();
+        result = PrntOutParams(&parameter, false, true, -1, output == 0);
+    }
+    else
+    {
+        result = PyDict_New();
+        if (output == 0)
+            std::cout << " \nPlugin does not accept parameters! \n";
+    }
 
    //std::cout << "\n";
 
@@ -852,7 +854,7 @@ Additionally, the column R/W indicates if this parameter is writable or read-onl
 Parameters \n\
 ----------- \n\
 detailLevel : {dict}, optional \n\
-    if `detailLevel == 1`, function returns a dictionary with parameters, else None is returned [default]\n\
+    if `detailLevel == 1`, function returns a dictionary with parameters, else None is returned and the output is printed in a readable form to the console [default]\n\
 \n\
 Returns \n\
 ------- \n\
@@ -861,7 +863,7 @@ out : {None, dict} \n\
 \n\
 See Also \n\
 ---------- \n\
-getParam, setParam, getParamList");
+getParam, setParam, getParamInfo, getParamList");
 
 PyDoc_STRVAR(pyPluginGetParamInfo_doc, "getParamInfo(name) -> returns dictionary with meta information of parameter 'name'.");
 

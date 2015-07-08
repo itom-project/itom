@@ -291,19 +291,19 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                 break;
 
                 case ito::ParamBase::Int & ito::paramTypeMask:
-                    type = ("int (int)");
+                    type = ("int");
                 break;
 
                 case ito::ParamBase::Double & ito::paramTypeMask:
-                    type = ("float (double)");
+                    type = ("float");
                 break;
 
                 case ito::ParamBase::String & ito::paramTypeMask:
-                    type = ("str (char*)");
+                    type = ("str");
                 break;
 
                 case ito::ParamBase::CharArray & ito::paramTypeMask:
-                    type = ("int seq. (char*)");
+                    type = ("seq. of int (char)");
                 break;
 
                 case ito::ParamBase::IntArray & ito::paramTypeMask:
@@ -319,7 +319,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                         type = "int rect [x0,y0,width,height]";
                         break;
                     default:
-                        type = ("int seq. (int*)");
+                        type = ("seq. of int");
                     }
                 break;
 
@@ -330,7 +330,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                         type = "float interval [v1,v2]";
                         break;
                     default:
-                        type = ("float seq. (double*)");
+                        type = ("seq. of float");
                     }
                 break;
 
