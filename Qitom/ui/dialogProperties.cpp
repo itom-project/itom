@@ -157,10 +157,10 @@ void DialogProperties::initPages()
     m_pages["03_python"] = PropertyPage(tr("Python"), tr("Python - please choose subpage"), "03_python", NULL, QIcon(":/application/icons/preferences-python.png"));
     m_pages["03_python/general"] = PropertyPage(tr("General"), tr("Python - general"), "03_python/general", new WidgetPropPythonGeneral(), QIcon(":/application/icons/preferences-python.png"));
     m_pages["03_python/startup"] = PropertyPage(tr("Startup"), tr("Python - startups"), "03_python/startup", new WidgetPropPythonStartup(), QIcon(":/application/icons/preferences-python.png"));
-    m_pages["00_general"] = PropertyPage(tr("General"), tr("General - please choose subpage"), "00_general", NULL, QIcon(":/application/icons/itomicon/curAppIcon.png"));
-    m_pages["00_general/language"] = PropertyPage(tr("Language"), tr("General - language"), "00_general/language", new WidgetPropGeneralLanguage(), QIcon(":/application/icons/itomicon/curAppIcon.png"));
-    m_pages["00_general/application"] = PropertyPage(tr("Application"), tr("General - application"), "00_general/application", new WidgetPropGeneralApplication(), QIcon(":/application/icons/itomicon/curAppIcon.png"));
-    m_pages["00_general/helpViewer"]  = PropertyPage(tr("Help Viewer"), tr("General - Help Viewer"), "00_general/helpViewer" , new WidgetPropHelpDock(), QIcon(":/application/icons/itomicon/curAppIcon.png"));
+    m_pages["00_general"] = PropertyPage(tr("General"), tr("General - please choose subpage"), "00_general", NULL, QIcon(":/application/icons/itomicon/itomIcon32"));
+    m_pages["00_general/language"] = PropertyPage(tr("Language"), tr("General - language"), "00_general/language", new WidgetPropGeneralLanguage(), QIcon(":/application/icons/itomicon/itomIcon32"));
+    m_pages["00_general/application"] = PropertyPage(tr("Application"), tr("General - application"), "00_general/application", new WidgetPropGeneralApplication(), QIcon(":/application/icons/itomicon/itomIcon32"));
+    m_pages["00_general/helpViewer"]  = PropertyPage(tr("Help Viewer"), tr("General - Help Viewer"), "00_general/helpViewer" , new WidgetPropHelpDock(), QIcon(":/application/icons/itomicon/itomIcon32"));
     m_pages["05_plots"] = PropertyPage(tr("Plots and Figures"), tr("Plots and Figures - please choose subpage"), "05_plots", NULL, QIcon(":/plots/icons/itom_icons/3d.png"));
     m_pages["05_plots/defaults"] = PropertyPage(tr("Default Plots"), tr("Plots and Figures - Defaults"), "05_plots/defaults", new WidgetPropFigurePlugins(), QIcon(":/plots/icons/itom_icons/2d.png"));
     PropertyPage page;

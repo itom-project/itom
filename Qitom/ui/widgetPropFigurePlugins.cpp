@@ -79,7 +79,7 @@ void WidgetPropFigurePlugins::init()
 
         foreach (const FigurePlugin &f, plugins)
         {
-            i = new QStandardItem(QIcon(":/application/icons/itomicon/q_itoM32.png") /*f.icon*/, f.classname);
+            i = new QStandardItem(QIcon(":/application/icons/itomicon/itomIcon32") /*f.icon*/, f.classname);
             m_loadedFiguresModel->setItem(row,0,i);
 
             sl = dwo->getPlotInputTypes(f.plotDataTypes);

@@ -157,7 +157,7 @@ void MainApplication::setupApplication()
 
     registerMetaObjects();
 
-    QPixmap pixmap(":/application/icons/itomicon/splashScreen.png");
+    QPixmap pixmap(":/application/icons/itomicon/splashScreen2.png");
 
 #if QT_POINTER_SIZE == 8
     QString text = QString(tr("Version %1\n%2")).arg(ITOM_VERSION_STR).arg(tr("64 bit (x64)"));
@@ -171,8 +171,8 @@ void MainApplication::setupApplication()
     QPainter p;
     p.begin(&pixmap);
     p.setPen(Qt::black);
-    QRectF rect(311,115,200,100); //position of the version text within the image
-    p.drawText(rect, Qt::AlignRight, text);
+    QRectF rect(250 /*311*/,217 /*115*/,200,100); //position of the version text within the image
+    p.drawText(rect, Qt::AlignLeft, text);
     p.end();
 
     m_splashScreen = new QSplashScreen(pixmap);
