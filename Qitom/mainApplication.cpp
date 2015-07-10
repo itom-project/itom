@@ -526,8 +526,8 @@ void MainApplication::setupApplication()
     qDebug("..load settings done");
     qDebug("MainApplication::setupApplication .. done");
 
-    std::cout << "\n    Welcome to itom program!\n\n";
-    std::cout << "    Please report bugs under:\n        https://bitbucket.org/itom/itom/issues\n    Cheers your itom team\n" << std::endl;
+    //std::cout << "\n    Welcome to itom program!\n\n";
+    //std::cout << "    Please report bugs under:\n        https://bitbucket.org/itom/itom/issues\n    Cheers your itom team\n" << std::endl;
 
     if (m_mainWin)
     {
