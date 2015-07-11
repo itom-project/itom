@@ -1,7 +1,7 @@
 project(itom)     
 #trigger update on 2014.07.02@14:16
 cmake_minimum_required(VERSION 2.8)
-            
+  
 if(APPLE)
     OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." ON) 
     SET(CMAKE_OSX_ARCHITECTURES "x86_64")
@@ -24,7 +24,7 @@ endif (BUILD_TARGET64)
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR})
       
 ADD_SUBDIRECTORY(DataObject) 
-     
+
 IF(BUILD_WITH_PCL)
     ADD_SUBDIRECTORY(PointCloud)
     SET(ITOM_SDK_LIB_COMPONENTS_STR "dataobject pointcloud qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets")
