@@ -60,7 +60,6 @@ LINK_DIRECTORIES(
 set(libSrcs
     ${CMAKE_CURRENT_SOURCE_DIR}/dataobjVersion.h
 	${CMAKE_CURRENT_SOURCE_DIR}/dataobj.h
-	${CMAKE_CURRENT_SOURCE_DIR}/readWriteLock.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataobj.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectFuncs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dataObjectFuncs.cpp

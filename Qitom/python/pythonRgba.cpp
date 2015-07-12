@@ -508,34 +508,30 @@ PyObject* PythonRgba::PyRgba_RichCompare(PyRgba *self, PyObject *other, int cmp_
 
 
 PyMethodDef PythonRgba::PyRgba_methods[] = {
-        {"name", (PyCFunction)PythonRgba::PyRgba_name, METH_NOARGS, ""},
-        
-        {"__reduce__", (PyCFunction)PythonRgba::PyRgba_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
-        {"__setstate__", (PyCFunction)PythonRgba::PyRgba_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
-        
-        {NULL}  /* Sentinel */
-    };
+    {"name", (PyCFunction)PythonRgba::PyRgba_name, METH_NOARGS, ""}, 
+    {"__reduce__", (PyCFunction)PythonRgba::PyRgba_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
+    {"__setstate__", (PyCFunction)PythonRgba::PyRgba_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
+    {NULL}  /* Sentinel */
+};
 
 PyMemberDef PythonRgba::PyRgba_members[] = {
-    #ifdef WIN32 //TODO offsetof with member in GCC not possible
-        {"r", T_UBYTE, offsetof(PyRgba, rgba.r), 0, "red"}, 
-        {"g", T_UBYTE, offsetof(PyRgba, rgba.g), 0, "green"}, 
-        {"b", T_UBYTE, offsetof(PyRgba, rgba.b), 0, "blue"}, 
-        {"alpha", T_UBYTE, offsetof(PyRgba, rgba.a), 0, "alpha"}, 
-    #endif
-        {NULL}  /* Sentinel */
-    };
+    //these members did not work under gcc with offsetof(PyRgba, rgba.r). Therefore the sum of two offsets was the tradeof.
+    {"r", T_UBYTE, offsetof(PyRgba, rgba) + offsetof(ito::RgbaBase32, r), 0, "red"}, 
+    {"g", T_UBYTE, offsetof(PyRgba, rgba) + offsetof(ito::RgbaBase32, g), 0, "green"}, 
+    {"b", T_UBYTE, offsetof(PyRgba, rgba) + offsetof(ito::RgbaBase32, b), 0, "blue"}, 
+    {"alpha", T_UBYTE, offsetof(PyRgba, rgba) + offsetof(ito::RgbaBase32, a), 0, "alpha"}, 
+    {NULL}  /* Sentinel */
+};
 
 PyModuleDef PythonRgba::PyRgbaModule = {
-        PyModuleDef_HEAD_INIT,
-        "rgba",
-        "Itom Rgba color type in python",
-        -1,
-        NULL, NULL, NULL, NULL, NULL
-    };
+    PyModuleDef_HEAD_INIT,
+    "rgba",
+    "Itom Rgba color type in python",
+    -1,
+    NULL, NULL, NULL, NULL, NULL
+};
 
 PyGetSetDef PythonRgba::PyRgba_getseters[] = {
-    
     {NULL}  /* Sentinel */
 };
 

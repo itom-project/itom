@@ -67,12 +67,12 @@ namespace ito {
 
 class AbstractFigure;
 
-//void ITOMCOMMONQT_EXPORT initialize(AbstractFigure *fig);
-
 class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNode
 {
     Q_OBJECT
     Q_ENUMS(WindowMode)
+    Q_ENUMS(UnitLabelStyle)
+
     Q_PROPERTY(bool toolbarVisible READ getToolbarVisible WRITE setToolbarVisible DESIGNABLE true USER true)
     Q_PROPERTY(bool contextMenuEnabled READ getContextMenuEnabled WRITE setContextMenuEnabled DESIGNABLE true)
     Q_PROPERTY(bool markerLegendVisible READ getMarkerLegendVisible WRITE setMarkerLegendVisible DESIGNABLE true)
@@ -83,10 +83,11 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
     Q_CLASSINFO("prop://markerLegendVisible", "Toogles the visibility of the marker legend.")
     Q_CLASSINFO("prop://renderMarkerLegend", "If this property is true, the marker legend is included in pixelmaps renderings.")
 
-    Q_CLASSINFO("slot://refreshPlot", "Triggeres an update of the current plot window.")
+    Q_CLASSINFO("slot://refreshPlot", "Triggers an update of the current plot window.")
 
     public:
         enum WindowMode { ModeInItomFigure, ModeStandaloneInUi, ModeStandaloneWindow };
+        
         enum CompilerFeatures 
         { 
             tOpenCV        = 0x01,
@@ -100,6 +101,13 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
             tOwnChild               = 0x02,
             tUninitilizedExtern     = 0x10,
             tVisibleOnInit          = 0x20
+        };
+
+        enum UnitLabelStyle 
+        { 
+            UnitLabelSlash,              // x-axis / m  -> corresponds to DIN461
+            UnitLabelKeywordIn,          // x-axis in m -> corresponds to DIN461
+            UnitLabelSquareBrackets      // x-axis [m]  -> does not correspond to DIN461
         };
 
         int getCompilerFeatures(void) const 

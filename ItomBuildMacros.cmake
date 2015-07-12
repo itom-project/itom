@@ -484,7 +484,26 @@ MACRO(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
     endforeach()
     
     set(${tsFiles} ${${tsFiles}} ${_my_tsfiles}) #add translation files (*.ts) to tsFiles list
-
+    
+    foreach( _lang ${${languages}})
+        set(_tsFile ${CMAKE_CURRENT_SOURCE_DIR}/translation/${target}_${_lang}.ts)
+        #message(STATUS "scan ${_tsFile}")
+        get_filename_component(_ext ${_tsFile} EXT)
+        get_filename_component(_abs_FILE ${_tsFile} ABSOLUTE)
+        IF(EXISTS ${_abs_FILE})
+            list(APPEND _my_tsfiles ${_abs_FILE})
+        ELSE()
+            #message(STATUS "...not exist")
+            #create new ts file
+            add_custom_command(OUTPUT ${_abs_FILE}_new
+                COMMAND ${Qt5_LUPDATE_EXECUTABLE}
+                ARGS ${_lupdate_options} ${_my_dirs} -locations relative -no-ui-lines -target-language ${_lang} -ts ${_abs_FILE}
+                DEPENDS ${_my_sources} VERBATIM)
+            list(APPEND _my_tsfiles ${_abs_FILE})
+            set(${outputFiles} ${${outputFiles}} ${_abs_FILE}_new) #add output file for custom command to outputFiles list
+        ENDIF()
+    endforeach()
+    
     foreach(_ts_file ${_my_tsfiles})
         if(_my_sources)
             # make a list file to call lupdate on, so we don't make our commands too
@@ -503,6 +522,7 @@ MACRO(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
             endforeach()
 
             file(WRITE ${_ts_lst_file} "${_lst_file_srcs}")
+            MESSAGE(STATUS ${_ts_lst_file})
         endif()
         add_custom_command(OUTPUT ${_ts_file}
             COMMAND ${Qt5_LUPDATE_EXECUTABLE}

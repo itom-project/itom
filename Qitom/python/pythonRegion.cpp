@@ -157,11 +157,11 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
     PyObject *result;
     if(self->r == NULL)
     {
-        result = PyUnicode_FromFormat("Region(NULL)");
+        result = PyUnicode_FromFormat("region(NULL)");
     }
     else
     {
-        result = PyUnicode_FromFormat("Region(rects: %i)", self->r->rectCount() );
+        result = PyUnicode_FromFormat("region(rects: %i)", self->r->rectCount() );
     }
     return result;
 }

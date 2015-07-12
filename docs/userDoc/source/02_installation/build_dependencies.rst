@@ -25,7 +25,7 @@ Software packages
 **Optional Software-Packages**
 
 - PointCloudLibrary 1.6 or higher (>= 1.7 recommended, optional)
-- Qt-AddOn for Visual Studio (requires .NET 2.0 framework with SP 1.0)
+- Qt-AddIn for Visual Studio (requires .NET 2.0 framework with SP 1.0)
 - Doxygen (for creating the source code documentation)
 - Python-Packages: SciPy, Distribute, Sphinx (user documentation generation), scikit-image, matplotlib...
 
@@ -144,6 +144,13 @@ Visual Studio, where you cannot install this add-in. The **Qt Visual Studio AddI
     where the executable program *gacutil.exe* is located, then type::
         
         gacutil.exe -i "C:\Program Files (x86)\Common Files\microsoft shared\MSEnv\PublicAssemblies\stdole.dll"
+        
+.. info::
+    
+    From Qt5 on, the Visual Studio debugger is sometimes not able to show the value of QString, QVector... in the tool tip text of a variable even if the Qt-AddIn
+    is installed. If this is the case, please uncheck the option "Enable native Edit and Continue" in Visual Studio (menu -> options -> debugging -> Edit and Continue).
+    
+    For more information see http://stackoverflow.com/questions/26780517/qt5-visual-studio-2012-add-in-does-not-allow-debugging-into-qstack-qvector
 
 **QScintilla2** (mandatory)
 
@@ -162,6 +169,10 @@ project settings are not ready for a multi-configuration build in **Visual Studi
         CONFIG(debug, debug|release){ TARGET = $$join(TARGET,,,d) }
     
     (see also: http://www.mantidproject.org/Debugging_MantidPlot)
+    
+    * If there is an error saying that the environment variable QTDIR is missing, type::
+        
+        SET QTDIR=path-to-the-bin-directory-of-qt           (do not add bin to the path itself)
     
     * If you had a previous installation of QScintilla, delete the directory **%QTDIR%\\include\\Qsci** as well as the files called **qscintilla2.dll** and **qscintilla2d.dll** in the directory **%QTDIR%\\bin**
     * Execute the following commands from the command-line::

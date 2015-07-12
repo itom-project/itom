@@ -31,7 +31,7 @@
 namespace ito {
 
 //--------------------------------------------------------------------------------
-DialogPipManagerInstall::DialogPipManagerInstall(QWidget *parent ) :
+DialogPipManagerInstall::DialogPipManagerInstall(QWidget *parent, QString package) :
     QDialog(parent),
     m_selectedType(typeWhl)
 {
@@ -42,6 +42,21 @@ DialogPipManagerInstall::DialogPipManagerInstall(QWidget *parent ) :
 #if WIN32
     ui.checkRunSudo->setVisible(false);
 #endif
+
+    if (package == "")
+    {
+        setWindowTitle(tr("Install Package"));
+        ui.radioWhl->setChecked(true);
+        ui.checkUpgrade->setChecked(false);
+        ui.txtPackage->setText("");
+    }
+    else
+    {
+        setWindowTitle(tr("Update Package"));
+        ui.radioSearchIndex->setChecked(true);
+        ui.checkUpgrade->setChecked(true);
+        ui.txtPackage->setText(package);
+    }
 }
 
 //--------------------------------------------------------------------------------

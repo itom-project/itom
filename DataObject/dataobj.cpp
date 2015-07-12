@@ -32,10 +32,6 @@
 #include <vector>
 #include <map>
 
-#include "readWriteLock.h"
-
-#define NOREADWRITELOCK 1
-
 namespace ito {
 
 
@@ -710,7 +706,7 @@ DObjIterator DObjIterator::operator ++(int)
 /*!
     no data will be allocated, the number of elements and dimensions is set to zero
 */
-DataObject::DataObject(void) : m_continuous(1), m_owndata(1), m_type(0), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0), m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(void) : m_continuous(1), m_owndata(1), m_type(0), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
 {
 }
 
@@ -723,7 +719,7 @@ DataObject::DataObject(void) : m_continuous(1), m_owndata(1), m_type(0), m_pRefC
     \param type is the data-type of each element (use type of enumeration tDataType)
     \sa create, tDataType
 */
-DataObject::DataObject(const int size, const int type): m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0), m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(const int size, const int type): m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
 {
     int sizes[2] = {1, size};
     this->create(2, sizes, type, 1);
@@ -738,7 +734,7 @@ DataObject::DataObject(const int size, const int type): m_continuous(1), m_ownda
     \param type is the data-type of each element (use type of enumeration tDataType)
     \sa create, tDataType
 */
-DataObject::DataObject(const int sizeY, const int sizeX, const int type): m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0), m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(const int sizeY, const int sizeX, const int type): m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
 {
     int sizes[2] = {sizeY, sizeX};
     this->create(2, sizes, type, 1);
@@ -755,7 +751,7 @@ DataObject::DataObject(const int sizeY, const int sizeX, const int type): m_cont
     \param continuous indicates whether all matrix-planes should continuously lie in memory (1) or not (0) (default: 0)
     \sa create, tDataType
 */
-DataObject::DataObject(const int sizeZ, const int sizeY, const int sizeX, const int type, const unsigned char continuous /*= 0*/) : m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0), m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(const int sizeZ, const int sizeY, const int sizeX, const int type, const unsigned char continuous /*= 0*/) : m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
 {
     int sizes[3] = {sizeZ, sizeY, sizeX};
     this->create(3, sizes, type, m_continuous);
@@ -776,7 +772,7 @@ DataObject::DataObject(const int sizeZ, const int sizeY, const int sizeX, const 
             one element to the next one in the same dimension. Hence, the last element in this vector is equal to the size of one single element (in bytes)
     \sa create, tDataType
 */
-DataObject::DataObject(const int sizeZ, const int sizeY, const int sizeX, const int type, const uchar* continuousDataPtr,  const int* steps /*= NULL*/) : m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0), m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(const int sizeZ, const int sizeY, const int sizeX, const int type, const uchar* continuousDataPtr,  const int* steps /*= NULL*/) : m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
 {
     int sizes[3] = {sizeZ, sizeY, sizeX};
     this->create(3, sizes, type, m_continuous, continuousDataPtr, steps);
@@ -791,7 +787,7 @@ DataObject::DataObject(const int sizeZ, const int sizeY, const int sizeX, const 
     \param continuous indicates whether all matrix-planes should continuously lie in memory (1) or not (0) (default: 0)
     \sa create, tDataType
 */
-DataObject::DataObject(const MSize &sizes, const int type, const unsigned char continuous /*= 0*/) : m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0), m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(const MSize &sizes, const int type, const unsigned char continuous /*= 0*/) : m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
 {
     this->create(sizes.m_p[-1], sizes.operator const int *(), type, m_continuous);
 }
@@ -806,7 +802,7 @@ DataObject::DataObject(const MSize &sizes, const int type, const unsigned char c
     \param continuous indicates whether all matrix-planes should continuously lie in memory (1) or not (0) (default: 0)
     \sa create, tDataType
 */
-DataObject::DataObject(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous /*= 0*/) : m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0), m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous /*= 0*/) : m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
 {
     this->create(dimensions, sizes, type, m_continuous);
 }
@@ -825,12 +821,12 @@ DataObject::DataObject(const unsigned char dimensions, const int *sizes, const i
             one element to the next one in the same dimension. Hence, the last element in this vector is equal to the size of one single element (in bytes)
     \sa create, ito::tDataType
 */
-DataObject::DataObject(const unsigned char dimensions, const int *sizes, const int type, const uchar* continuousDataPtr, const int* steps /*= NULL*/) : m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0), m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(const unsigned char dimensions, const int *sizes, const int type, const uchar* continuousDataPtr, const int* steps /*= NULL*/) : m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
 {
     this->create(dimensions, sizes, type, m_continuous, continuousDataPtr, steps);
 }
 
-DataObject::DataObject(const unsigned char dimensions, const int *sizes, const int type, const cv::Mat* planes, const unsigned int nrOfPlanes) : m_continuous(0), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0), m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(const unsigned char dimensions, const int *sizes, const int type, const cv::Mat* planes, const unsigned int nrOfPlanes) : m_continuous(0), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
 {
     //usually it is dangerous to say that m_owndata is 1 in this case, since we cannot be sure if the given planes are the owner of their data.
     //however, in this case, owndata is unimportant since the created dataObject is always not continuous, therefore owndata will never
@@ -851,8 +847,6 @@ DataObject::DataObject(const unsigned char dimensions, const int *sizes, const i
 DataObject::~DataObject(void)
 {
     freeData();
-    delete m_objHeaderLock;
-    m_objHeaderLock = NULL;
 }
 
 
@@ -1361,7 +1355,6 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
    if (!dObj->m_pRefCount && dimensions > 0)
    {
         dObj->m_pRefCount = new int(0);
-        dObj->m_objSharedDataLock = new ReadWriteLock(dObj->m_objHeaderLock->getLockStatus());
         if(dimensions == 1)
         {
             dObj->m_pDataObjectTags = new DataObjectTagsPrivate(2);
@@ -1597,7 +1590,6 @@ template<typename _Tp> RetVal CreateFuncWithCVPlanes(DataObject *dObj, const uns
         if (!dObj->m_pRefCount)
         {
             dObj->m_pRefCount = new int(0);
-            dObj->m_objSharedDataLock = new ReadWriteLock(dObj->m_objHeaderLock->getLockStatus());
             dObj->m_pDataObjectTags = new DataObjectTagsPrivate(dimensions);
         }
 
@@ -1822,8 +1814,6 @@ template<typename _Tp> RetVal FreeFunc(DataObject *dObj)
         }
         delete dObj->m_pRefCount;
         dObj->m_pRefCount = NULL;
-        delete dObj->m_objSharedDataLock;
-        dObj->m_objSharedDataLock = NULL;
         delete dObj->m_pDataObjectTags;
         dObj->m_pDataObjectTags = NULL;
     }
@@ -1911,8 +1901,6 @@ template<typename _Tp> RetVal SecureFreeFunc(DataObject *dObj)
         {
             if(dObj->m_pRefCount) delete dObj->m_pRefCount;
             dObj->m_pRefCount = NULL;
-            if(dObj->m_objSharedDataLock) delete dObj->m_objSharedDataLock;
-            dObj->m_objSharedDataLock = NULL;
             if(dObj->m_pDataObjectTags) delete dObj->m_pDataObjectTags;
             dObj->m_pDataObjectTags = NULL;
         }
@@ -3111,14 +3099,6 @@ DataObject & DataObject::operator = (const cv::Mat &rhs)
 */
 DataObject & DataObject::operator = (const DataObject &rhs)
 {
-#if _DEBUG
-    if(rhs.m_objSharedDataLock != NULL && rhs.m_objSharedDataLock->getLockStatus() == -1)
-    {
-
-        cv::error(cv::Exception(CV_StsAssert,"data of assigned data object may not be locked for writing","", __FILE__, __LINE__));
-    }
-#endif
-
    if (this == &rhs)
    {
       return *this;
@@ -3136,19 +3116,7 @@ DataObject & DataObject::operator = (const DataObject &rhs)
    {
         CV_XADD((m_pRefCount),1); //++;
 
-        m_objSharedDataLock = rhs.m_objSharedDataLock;
         m_pDataObjectTags = rhs.m_pDataObjectTags;
-
-        int status = m_objHeaderLock->getLockStatus();
-
-        if(status == -1) //this object is in write lock, then increment shared data lock for reading (for writing not possible since rhs also has access to the data)
-        {
-            m_objSharedDataLock->lockRead();
-        }
-        else if(status > 0)
-        {
-            m_objSharedDataLock->lockRead(status);
-        }
 
         try
         {
@@ -3174,16 +3142,10 @@ DataObject & DataObject::operator = (const DataObject &rhs)
 
     \param &copyConstr is the data object, which will be copied
 */
-DataObject::DataObject(const DataObject& copyConstr) : m_pRefCount(0), m_dims(0), m_data(NULL), m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(const DataObject& copyConstr) : m_pRefCount(0), m_dims(0), m_data(NULL)
 {
-    /*if(copyConstr.m_objSharedDataLock->getLockStatus() == -1)
-    {
-        cv::error(cv::Exception(CV_StsAssert,"data of copyConstr may not be locked for writing","", __FILE__, __LINE__));
-    }*/
-
     createHeaderWithROI(copyConstr.m_dims, copyConstr.m_size.m_p, copyConstr.m_osize.m_p, copyConstr.m_roi.m_p);
     m_pRefCount = copyConstr.m_pRefCount;
-    m_objSharedDataLock = copyConstr.m_objSharedDataLock; //copies pointer
     m_pDataObjectTags = copyConstr.m_pDataObjectTags; // Make a shallowCopy of the TagSpace
 
     //header lock for new dataObject is unlocked, therefore does not increment shared data lock, since nobody is decrement this new object
@@ -3214,13 +3176,12 @@ DataObject::DataObject(const DataObject& copyConstr) : m_pRefCount(0), m_dims(0)
 }
 
 //-----------------------------------------------------------------------------------------------------------
-DataObject::DataObject(const DataObject& dObj, bool transposed) : m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(const DataObject& dObj, bool transposed)
 {
     if(!transposed) //shallow copy of dataobject
     {
         createHeaderWithROI(dObj.m_dims, dObj.m_size.m_p, dObj.m_osize.m_p, dObj.m_roi.m_p);
         m_pRefCount = dObj.m_pRefCount;
-        m_objSharedDataLock = dObj.m_objSharedDataLock; //copies pointer
         m_pDataObjectTags = dObj.m_pDataObjectTags; // Make a shallowCopy of the TagSpace
 
         //header lock for new dataObject is unlocked, therefore does not increment shared data lock, since nobody is decrement this new object
@@ -3275,7 +3236,6 @@ DataObject::DataObject(const DataObject& dObj, bool transposed) : m_objHeaderLoc
         if (dims > 0)
         {
             m_pRefCount = new int(0);
-            m_objSharedDataLock = new ReadWriteLock(m_objHeaderLock->getLockStatus());
 
             m_pDataObjectTags = new DataObjectTagsPrivate( *dObj.m_pDataObjectTags ); //deep copy of tags
 
@@ -3291,7 +3251,6 @@ DataObject::DataObject(const DataObject& dObj, bool transposed) : m_objHeaderLoc
         else
         {
             m_pRefCount = NULL;
-            m_objSharedDataLock = NULL;
             m_pDataObjectTags = NULL;
         }
 
@@ -3856,7 +3815,7 @@ DataObject DataObject::operator + (const DataObject &rhs)
         if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
                 rhs.getNumPlanes() == 1 && 
                 this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
@@ -3942,7 +3901,7 @@ DataObject & DataObject::operator -= (const DataObject &rhs)
         if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
                 rhs.getNumPlanes() == 1 && 
                 this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
@@ -3978,7 +3937,7 @@ DataObject DataObject::operator - (const DataObject &rhs)
         if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
                 rhs.getNumPlanes() == 1 && 
                 this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
@@ -4956,7 +4915,7 @@ DataObject & DataObject::operator &= (const DataObject & rhs)
         if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
                 rhs.getNumPlanes() == 1 && 
                 this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
@@ -4992,7 +4951,7 @@ DataObject DataObject::operator & (const DataObject & rhs)
         if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
                 rhs.getNumPlanes() == 1 && 
                 this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
@@ -5115,7 +5074,7 @@ DataObject & DataObject::operator |= (const DataObject & rhs)
         if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
                 rhs.getNumPlanes() == 1 && 
                 this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
@@ -5151,7 +5110,7 @@ DataObject DataObject::operator | (const DataObject & rhs)
         if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
                 rhs.getNumPlanes() == 1 && 
                 this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
@@ -5274,7 +5233,7 @@ DataObject & DataObject::operator ^= (const DataObject & rhs)
         if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
                 rhs.getNumPlanes() == 1 && 
                 this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
@@ -5305,7 +5264,7 @@ DataObject DataObject::operator ^ (const DataObject & rhs)
         if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
                 rhs.getNumPlanes() == 1 && 
                 this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
+                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
@@ -6021,7 +5980,7 @@ DataObject DataObject::mul(const DataObject &mat2, const double scale) const
         if(!(this->getNumPlanes() == mat2.getNumPlanes() && 
                 mat2.getNumPlanes() == 1 && 
                 this->getSize(m_dims - 1) == mat2.getSize(mat2.getDims() - 1) &&
-                this->getSize(m_dims - 2) == mat2.getSize(mat2.getDims() - 2))
+                this->getSize(m_dims - 2) == mat2.getSize(mat2.getDims() - 2) || (m_type != mat2.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"both data objects differ in size or type","", __FILE__, __LINE__));     
@@ -6197,7 +6156,7 @@ DataObject DataObject::div(const DataObject &mat2, const double /*scale*/) const
         if(!(this->getNumPlanes() == mat2.getNumPlanes() && 
                 mat2.getNumPlanes() == 1 && 
                 getSize(m_dims - 1) == mat2.getSize(mat2.getDims() - 1) &&
-                getSize(m_dims - 2) == mat2.getSize(mat2.getDims() - 2))
+                getSize(m_dims - 2) == mat2.getSize(mat2.getDims() - 2) || (m_type != mat2.m_type))
             )
         {
             cv::error(cv::Exception(CV_StsAssert,"both data objects differ in size or type","", __FILE__, __LINE__));     
@@ -7730,33 +7689,6 @@ RetVal DataObject::setXYRotationalMatrix(double r11, double r12, double r13, dou
     m_pDataObjectTags->m_rotMatrix[7] = r32;
     m_pDataObjectTags->m_rotMatrix[8] = r33;
     return retOk;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void DataObject::lockRead()
-{
-#ifndef NOREADWRITELOCK
-    m_objHeaderLock->lockRead();
-    if(m_objSharedDataLock) m_objSharedDataLock->lockRead();
-#endif
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void DataObject::lockWrite()
-{
-#ifndef NOREADWRITELOCK
-    m_objHeaderLock->lockWrite();
-    if(m_objSharedDataLock) m_objSharedDataLock->lockWrite();
-#endif
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void DataObject::unlock()
-{
-#ifndef NOREADWRITELOCK
-    if(m_objSharedDataLock) m_objSharedDataLock->unlock();
-    m_objHeaderLock->unlock();
-#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

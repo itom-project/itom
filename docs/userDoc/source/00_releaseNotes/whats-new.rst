@@ -285,6 +285,31 @@ there is no continuous changelog for these version
 Designer Plugins
 ******************
 
+**Version 2.0.0 (2015-07-xx)**
+
+(more than 95 commits in designerPlugins repository)
+
+* itom1dqwtplot, itom2dqwtplot: property unitLabelStyle added to chose how the labels print unit information
+* line cut slices and z-stack slices can now also be displayed in a previously indicated line-plot widget (properties lineCutPlotItem and zSlicePlotItem)
+* various styles possible for labels containing units (with respect to current standards)
+* Qt4/Qt5 string encoding problems fixed (latin1 / utf8)
+* dataObjectTable: more signals added (clicked, activated, pressed, doubleClicked, entered) to allow better access via python.
+* slider2D: designer plugin added
+* itom1dqwtplot: logarithmic and double-logarithmic scale added for x- and y-axis (base 2, 10 and 16)
+* itom1dqwtplot and itomd2dqwtplot: method *send current view to python workspace* added to put a shallow copy of the currently zoomed region of interest to the python workspace.
+* itom1dqwtplot: histogram-like plots with the properties fill-color and fill-style added
+* itom1dqwtplot: many more style properties for lines
+* itom1dqwtplot and itom2dqwtplot: many fixes concerning resize, rescaling, representation in free and fixed-aspect-ratio mode.
+* itom1dqwtplot: picker can now have labels. Many style properties set.
+* itom2dqwtplot and itom1dqwtplot: Improvements to allow multi layer line plots
+* itom1dqwtplot: color values of rgba-data objects will be displayed with three different colors
+* pre-compiler symbols for windows, mac and linux unified
+* support for Mac OS added (osx)
+* itom2dqwtplot: z-slice can only be started at positions inside of the object
+* vtk3dvisualizer: camera position and view can now be set, commands 'addText' and 'updateText' added, geometry items can now have properties like specular, specularPower, specularColor
+* vtk3dvisualizer: support for Qt4/5 and VTK5/6
+* itom2dqwtplot: non-finite values are displayed as transparent pixels 
+
 **Version 1.4.0 (2015-02-17)**
 
 (more than 50 commits in designerPlugins repository)

@@ -272,14 +272,64 @@ class PluginFilterList(Directive):
                     textlist.append("#. %s" % f)
             else:
                 for f in pluginInfo["filter"]:
-                    t = ".. py:function:: %s(...)" % f
-                    t += "\n    \n    ...\n"
+                    [signature, description, parameters] = self.analyzeFilter(f)
+                    t = ".. py:function:: %s(%s)" % (f, signature)
+                    t += "\n    \n" + self.indent(description) + "\n    \n" + self.indent(parameters) + "\n"
                     textlist.append(t)
         
         text = "\n".join(textlist)
         lines = statemachine.string2lines(text, tab_width, convert_whitespace=True)
         self.state_machine.insert_input(lines, source)
         return []
+        
+    def indent(self, text, nrOfSpaces = 4):
+        texts = text.split("\n")
+        result = []
+        indent = " " * nrOfSpaces
+        for t in texts:
+            result.append(indent + t)
+        return "\n".join(result)
+        
+    def analyzeFilter(self, filterName):
+        data = itom.filterHelp(filterName,True) #returns dictionary with all information about the filter
+        
+        if filterName in data:
+            data = data[filterName]
+            mandParams = []
+            optParams = []
+            outParams = []
+            if "Mandatory Parameters" in data:
+                mandParams = data["Mandatory Parameters"]
+            if "Optional Parameters" in data:
+                optParams = data["Optional Parameters"]
+            if "Output Parameters" in data:
+                outParams = data["Output Parameters"]
+            
+            mandSignature = ", ".join([i["name"] for i in mandParams])
+            optSignature = ", ".join([i["name"] for i in optParams])
+            signature = mandSignature
+            if signature != "" and optSignature != "":
+                signature += "[, " + optSignature + "]"
+            elif optSignature != "":
+                signature = "[" + optSignature + "]"
+            
+            description = data["description"]
+            parameters = []
+            if signature != "":
+                for i in mandParams:
+                    parameters.append(":param %s: %s\n:type %s: %s" % (i["name"], i["info"], i["name"], i["type"]))
+                for i in optParams:
+                    parameters.append(":param %s: %s\n:type %s: %s - optional" % (i["name"], i["info"], i["name"], i["type"]))
+            
+            for i in outParams:
+                parameters.append(":return: %s - %s\n:rtype: %s" % (i["name"], i["info"], i["type"]))
+        else:
+            signature = "???"
+            description = ""
+            parameters = []
+                
+        return [signature, description, "\n".join(parameters)]
+                
     
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -671,6 +721,8 @@ class PlotSignals(Directive):
         lines = statemachine.string2lines(text, tab_width, convert_whitespace=True)
         self.state_machine.insert_input(lines, source)
         return []
+        
+    
 
 def setup(app):
     """Install the plugin.

@@ -70,11 +70,11 @@ DesignerWidgetOrganizer::DesignerWidgetOrganizer(ito::RetVal &retValue)
    ito::PlotDataFormats allFormats = ~(ito::PlotDataFormats(0)); //(~ito::Format_Gray8); // | ito::Format_Gray8; //(ito::PlotDataFormats(0));
 
     m_figureCategories["DObjLiveLine"] = FigureCategory("Data Object, Line Plot, Live", ito::DataObjLine, allFormats, ito::Live | ito::PlotLine, 0, "Itom1DQwtPlot");
-    m_figureCategories["DObjLiveImage"] = FigureCategory("Data Object, 2D Image Plot, Live", ito::DataObjPlane, allFormats, ito::Live | ito::PlotImage, 0, "GraphicViewPlot");
+    m_figureCategories["DObjLiveImage"] = FigureCategory("Data Object, 2D Image Plot, Live", ito::DataObjPlane, allFormats, ito::Live | ito::PlotImage, 0, "Itom2DQwtPlot");
     m_figureCategories["DObjStaticLine"] = FigureCategory("Data Object, Line Plot, Static", ito::DataObjLine, allFormats, ito::Static | ito::PlotLine, 0, "Itom1DQwtPlot");
     m_figureCategories["DObjStaticImage"] = FigureCategory("Data Object, 2D Image Plot, Static", ito::DataObjPlane | ito::DataObjPlaneStack, allFormats, ito::Static | ito::PlotImage, 0, "Itom2DQwtPlot");
     m_figureCategories["DObjStaticGeneralPlot"] = FigureCategory("Data Object, Any Planar Plot, Static", ito::DataObjLine | ito::DataObjPlane | ito::DataObjPlaneStack, allFormats, ito::Static, ito::Plot3D | ito::PlotISO, "Itom2DQwtPlot");
-    m_figureCategories["PerspectivePlot"] = FigureCategory("Data Object, Any Planar Plot, Point Clouds, Polygon Meshes, Static", ito::DataObjPlane | ito::DataObjPlaneStack | ito::PointCloud | ito::PolygonMesh, allFormats, ito::Static | ito::Plot3D | ito::PlotISO, ito::Live | ito::PlotLine, "ItomIsoOGLPlot");
+    m_figureCategories["PerspectivePlot"] = FigureCategory("Data Object, Any Planar Plot, Point Clouds, Polygon Meshes, Static", ito::DataObjPlane | ito::DataObjPlaneStack | ito::PointCloud | ito::PolygonMesh, allFormats, ito::Static | ito::Plot3D | ito::PlotISO, ito::Live | ito::PlotLine, "TwipOGLFigure");
 
     retValue += scanDesignerPlugins();
 }

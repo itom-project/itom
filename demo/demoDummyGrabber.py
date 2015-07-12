@@ -2,12 +2,13 @@
 camera = dataIO("DummyGrabber")
 
 #set ROI
-# x: [100,500] -> width: 401 (borders are included!)
-# y: [50, 350] -> height: 301
-camera.setParam("x0", 100)
-camera.setParam("x1", 500)
-camera.setParam("y0", 50)
-camera.setParam("y1", 350)
+# x: [100,499] -> width: 400 (borders are included!)
+# y: [40, 349] -> height: 310
+camera.setParam("roi", [100, 40, 400, 300])
+# or:
+# camera.setParam("roi[0]", 100)
+# camera.setParam("roi[2]", 400) #...
+
 print("width:", camera.getParam("sizex"))
 print("height:", camera.getParam("sizey"))
 

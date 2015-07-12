@@ -54,6 +54,7 @@
 #include <qcoreapplication.h>
 #include <qmainwindow.h>
 
+
 namespace ito
 {
 
@@ -142,6 +143,13 @@ UiOrganizer::~UiOrganizer()
     m_dialogList.clear();
     m_objectList.clear();
 
+    QHash<QString, QTranslator*>::const_iterator qtransIter = m_transFiles.constBegin();
+    while (qtransIter != m_transFiles.constEnd())
+    {
+        delete qtransIter.value();
+        ++qtransIter;
+    }
+    m_transFiles.clear();
 
     if (m_garbageCollectorTimer > 0)
     {
@@ -578,6 +586,35 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
             file.open(QFile::ReadOnly);
             QFileInfo fileinfo(filename);
             QDir workingDirectory = fileinfo.absoluteDir();
+
+            //try to load translation file with the same basename than the ui-file and the suffix .qm. After the basename the location string can be added using _ as delimiter.
+            QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+
+            settings.beginGroup("Language");
+            QString language = settings.value("language", "en").toString();
+            settings.endGroup();
+
+            QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
+
+            QTranslator *qtrans = new QTranslator();
+            bool couldLoad = qtrans->load(local, fileinfo.baseName(), "_", fileinfo.path());
+            if (couldLoad)
+            {
+                QString canonicalFilePath = fileinfo.canonicalFilePath();
+                if (m_transFiles.contains(canonicalFilePath))
+                {
+                    delete m_transFiles.value(canonicalFilePath);
+                    m_transFiles.remove(canonicalFilePath);
+                }
+
+                QCoreApplication::instance()->installTranslator(qtrans);
+                m_transFiles.insert(canonicalFilePath, qtrans);
+            }
+            else
+            {
+                delete qtrans;
+            }
+
             m_uiLoader.setWorkingDirectory(workingDirectory);
             wid = m_uiLoader.load(&file, mainWin);
             file.close();
@@ -1967,6 +2004,71 @@ RetVal UiOrganizer::getChildObject3(unsigned int parentObjectID, const QString &
     else
     {
         retValue += RetVal(retError, errorUiHandleInvalid, tr("The object ID of the parent widget is unknown.").toLatin1().data());
+    }
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retValue;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal getObjectChildrenInfoRecursive(const QObject *obj, bool recursive, QSharedPointer<QStringList> &objectNames, QSharedPointer<QStringList> &classNames)
+{
+    ito::RetVal retval;
+
+    if (obj)
+    {
+        QList<QObject*> children = obj->children();
+
+        foreach (const QObject* child, children)
+        {
+            if (child->inherits("QWidget") || child->inherits("QLayout"))
+            {
+                if (child->objectName() != "")
+                {
+                    objectNames->append(child->objectName());
+                    classNames->append(child->metaObject()->className());
+
+                    if (recursive)
+                    {
+                        retval += getObjectChildrenInfoRecursive(child, recursive, objectNames, classNames);
+                    }
+                }
+            }
+        }
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::getObjectChildrenInfo(unsigned int objectID, bool recursive, QSharedPointer<QStringList> objectNames, QSharedPointer<QStringList> classNames, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    RetVal retValue(retOk);
+    objectNames->clear();
+    classNames->clear();
+
+    if (m_objectList.contains(objectID))
+    {
+        QObject* ptr = m_objectList[objectID].data();
+
+        if (ptr)
+        {
+            retValue += getObjectChildrenInfoRecursive(ptr, recursive, objectNames, classNames);
+        }
+        else
+        {
+            retValue += RetVal(retError, errorUiHandleInvalid, tr("The object ID is invalid.").toLatin1().data());
+        }
+    }
+    else
+    {
+        retValue += RetVal(retError, errorUiHandleInvalid, tr("The given object ID is unknown.").toLatin1().data());
     }
 
     if (semaphore)

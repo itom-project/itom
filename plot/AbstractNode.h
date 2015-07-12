@@ -218,15 +218,14 @@ class ITOMCOMMONQT_EXPORT AbstractNode
                                                    this can only be done by the node itself. */
         virtual RetVal update(void) = 0; /*!> Calls apply () and updates all children*/
 
-        RetVal updateParam(ito::ParamBase *input, int isSource = 0); /*!> Updates the input param of the associated node and attempts to propagate the update down the node tree. 
+        RetVal updateParam(const ito::ParamBase *input, int isSource = 0); /*!> Updates the input param of the associated node and attempts to propagate the update down the node tree. 
                                                         It DOES NOT/CANNOT, however, ensure that the output parameters of the node are updated correctly, this functionality has to be a part of update(). */
 
-        RetVal updateParam(QHash<QString, ito::ParamBase*> *inputs) //!> this function must ONLY be used for the root of a tree. Sets several input parameters at once
+        RetVal updateParam(const QHash<QString, ito::ParamBase*> *inputs) //!> this function must ONLY be used for the root of a tree. Sets several input parameters at once
         {
-            ito::ParamBase *thisParam;
             ito::RetVal retval = ito::retOk;
 
-            foreach (thisParam, *inputs)
+            foreach (const ito::ParamBase *thisParam, *inputs)
             {
                 retval += updateParam(thisParam);
                 if (retval.containsError())
@@ -247,7 +246,7 @@ class ITOMCOMMONQT_EXPORT AbstractNode
 
         RetVal getUpdateStatus(void) const;
         
-        RetVal updateChannels(QList<QString> paramNames);    
+        RetVal updateChannels(const QList<QString> &paramNames);    
 
         inline bool isConnected() const { return !(m_pChannels.isEmpty()); }
 
@@ -255,9 +254,9 @@ class ITOMCOMMONQT_EXPORT AbstractNode
 
         RetVal setUpdatePending(int uniqueID = -1);
 
-        Channel * getInputChannel(const char *inpParamName);
+        Channel * getInputChannel(const char *inpParamName) const;
 
-        inline ito::Param* getInputParam(const QString paramName) 
+        inline ito::Param* getInputParam(const QString &paramName) const
         { 
             if (m_pInput.contains(paramName))
             {
@@ -266,7 +265,7 @@ class ITOMCOMMONQT_EXPORT AbstractNode
             return NULL;
         }
 
-        inline ito::Param* getOutputParam(const QString paramName) 
+        inline ito::Param* getOutputParam(const QString &paramName) const
         { 
             if (m_pOutput.contains(paramName))
             {

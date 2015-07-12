@@ -35,19 +35,19 @@ WidgetFindWord::WidgetFindWord(QWidget *parent) :
 
     this->hide();
     ui.txtFind->selectAll();
+
+    ui.txtFind->installEventFilter(this);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetFindWord::~WidgetFindWord()
 {
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetFindWord::on_cmdClose_clicked()
 {
     emit hideSearchBar();
-    this->hide();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -113,6 +113,20 @@ void WidgetFindWord::setCursorToTextField()
 {
     ui.txtFind->setFocus();
     ui.txtFind->selectAll();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool WidgetFindWord::eventFilter(QObject *obj, QEvent *event)
+{
+    if (obj == ui.txtFind && event->type() == QEvent::KeyPress)
+    {
+        if (((QKeyEvent*)event)->key() == Qt::Key_Escape)
+        {
+            emit hideSearchBar();
+            return true;
+        }
+    }
+    return false;
 }
 
 } //end namespace ito

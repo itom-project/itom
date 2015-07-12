@@ -3108,20 +3108,7 @@ PyObject* PythonItom::PyMatlabMatDataObjectConverter(PyObject *element)
     PyObject *item = NULL;
     PyObject *newElement = NULL;
 
-#if ITOM_NPDATAOBJECT
-    if (element && Py_TYPE(element) == &PythonNpDataObject::PyNpDataObjectType)
-    {
-        newElement = PythonNpDataObject::PyNpDataObject_getTagDict((PythonNpDataObject::PyNpDataObject*)element, NULL);
-        //Py_INCREF(element);
-        PyDict_SetItemString(newElement, "dataObject", element);
-        item = PyUnicode_FromString("npDataObject");
-        PyDict_SetItemString(newElement, "itomMetaInformation", item);
-        Py_DECREF(item);
-    }
-#else
-    if (0) {}
-#endif
-    else if (element && Py_TYPE(element) == &PythonDataObject::PyDataObjectType)
+    if (element && Py_TYPE(element) == &PythonDataObject::PyDataObjectType)
     {
         newElement = PythonDataObject::PyDataObject_getTagDict((PythonDataObject::PyDataObject*)element, NULL);
         //Py_INCREF(element);

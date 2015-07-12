@@ -169,13 +169,6 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
             *set = 1;
             outParam.setVal<void *>((void*)(((PythonPlugins::PyActuatorPlugin *)pyObj)->actuatorObj));
         }
-#if 0 //algo plugins do not exist as instances, they only contain static methods, callable by itom.filter
-        else if (Py_TYPE(pyObj) == &PythonPlugins::PyAlgoPluginType)
-        {
-            *set = 1;
-            outParam.setVal<void *>((void*)(((PythonPlugins::PyAlgoPlugin *)pyObj)->algoObj));
-        }
-#endif
         else
         {
             return ito::retError;
@@ -298,19 +291,19 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                 break;
 
                 case ito::ParamBase::Int & ito::paramTypeMask:
-                    type = ("int (int)");
+                    type = ("int");
                 break;
 
                 case ito::ParamBase::Double & ito::paramTypeMask:
-                    type = ("float (double)");
+                    type = ("float");
                 break;
 
                 case ito::ParamBase::String & ito::paramTypeMask:
-                    type = ("str (char*)");
+                    type = ("str");
                 break;
 
                 case ito::ParamBase::CharArray & ito::paramTypeMask:
-                    type = ("int seq. (char*)");
+                    type = ("seq. of int (char)");
                 break;
 
                 case ito::ParamBase::IntArray & ito::paramTypeMask:
@@ -326,7 +319,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                         type = "int rect [x0,y0,width,height]";
                         break;
                     default:
-                        type = ("int seq. (int*)");
+                        type = ("seq. of int");
                     }
                 break;
 
@@ -337,7 +330,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                         type = "float interval [v1,v2]";
                         break;
                     default:
-                        type = ("float seq. (double*)");
+                        type = ("seq. of float");
                     }
                 break;
 
@@ -1492,7 +1485,6 @@ bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *e
         const char *temp = retVal.errorMessage();
         if (temp == NULL)
         {
-            //msg = QObject::tr("- unknown message -").toUtf8();
             msg = QString("- unknown message -").toUtf8();
         }
         else

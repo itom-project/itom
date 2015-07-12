@@ -156,7 +156,7 @@ end:
             QMessageBox msgBox(parent);
             if (retval.hasErrorMessage())
             {
-                QString errStr = retval.errorMessage();
+                QString errStr = QLatin1String(retval.errorMessage());
                 msgBox.setText(errStr);
             }
             else
