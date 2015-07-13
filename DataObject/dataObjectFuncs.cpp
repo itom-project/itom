@@ -1822,7 +1822,8 @@ namespace dObjHelper
             if(ito::dObjHelper::isFinite<float64>(newScale) && ito::dObjHelper::isNotZero<float64>(newScale))
             {
                 newScale = 1/newScale / dObjIO->getSize(curDim);
-                axisUnit = invertUnit(dObjIO->getAxisUnit(curDim, test));                dObjIO->setAxisUnit(curDim, axisUnit);
+                axisUnit = invertUnit(dObjIO->getAxisUnit(curDim, test));
+                dObjIO->setAxisUnit(curDim, axisUnit);
             }
             else
             {
@@ -2087,12 +2088,6 @@ namespace dObjHelper
     ito::DataObject squeezeConvertCheck2DDataObject(const ito::DataObject *dObj, const char* name, const ito::Range &sizeY, const ito::Range &sizeX, ito::RetVal &retval, int convertToType, uint8 numberOfAllowedTypes, ...)
     {
         ito::DataObject out;
-
-        //TODO: remove this at the next interface change;
-        if (convertToType == 0)
-        {
-            std::cout << "Warning: behaviour of convertToType in squeezeConvertCheck2DDataObject changed. 0 means a conversion to int8 instead of an unchanged object - like in the version before. Please check your code\n" << std::endl;
-        }
 
         if(dObj == NULL)
         {
