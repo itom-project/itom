@@ -521,7 +521,7 @@ if (UPDATE_TRANSLATIONS)
     add_custom_target (${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
     add_dependencies(${target_name}_prebuild ${target_name}_translation)
     
-    message(FATAL ${TRANSLATIONS_FILES} "---" ${EXISTING_TRANSLATION_FILES})
+#    message(FATAL ${TRANSLATIONS_FILES} "---" ${EXISTING_TRANSLATION_FILES})
     
     if (QT5_FOUND)
         QT5_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${TRANSLATIONS_FILES})
