@@ -83,6 +83,10 @@
         <file>icons/1leftarrow.png</file>
         <file>icons/1rightarrow.png</file>
         <file>icons/1uparrow.png</file>
+        <file>icons/down-32.png</file>
+        <file>icons/up-32.png</file>
+        <file>icons/minus.png</file>
+        <file>icons/plus.png</file>
     </qresource>
     <qresource prefix="/files">
         <file>icons/fileModified.png</file>
