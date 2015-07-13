@@ -165,7 +165,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pTreeView->setDragEnabled(true);
     m_pTreeView->setAcceptDrops(true);
     m_pTreeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
-    connect(m_pTreeView, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(changeDir()));
+    connect(m_pTreeView, SIGNAL(doubleClicked(const QModelIndex&)), this, SLOT(itemDoubleClicked(const QModelIndex&)));
 
     size = settings.beginReadArray("ColWidth");
     for (int i = 0; i < size; ++i) 
@@ -791,6 +791,10 @@ void FileSystemDockWidget::openFile(const QModelIndex& index)
         {
             IOHelper::openGeneralFile(m_pFileSystemModel->filePath(index), true, true, this, SLOT(processError(QProcess::ProcessError)));
         }
+        else
+        {
+            changeBaseDirectory(m_pFileSystemModel->filePath(index));
+        }
     }
 }
 
@@ -1077,26 +1081,23 @@ void FileSystemDockWidget::mnuNewPyFile()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void FileSystemDockWidget::changeDir()
+void FileSystemDockWidget::itemDoubleClicked(const QModelIndex &index)
 {
-    QModelIndexList currents = m_pTreeView->selectedIndexes();
-    QString currentDir = QDir::currentPath();
-    QModelIndex firstInd = currents.takeFirst();
-    Qt::ItemFlags itemFlag = firstInd.flags();
-    if (itemFlag == 47)
+    if (index.isValid() && m_pFileSystemModel->fileInfo(index).isDir())
     {
-        QVariant selectedDir = firstInd.data();
-        QString newDir = currentDir.append("/");
-        newDir = newDir.append(selectedDir.toString());
-        changeBaseDirectory(newDir);
+        QDir currentDir(QDir::currentPath());
+        QString selectedDir = index.data().toString();
+        if (currentDir.exists(selectedDir))
+        {
+            changeBaseDirectory(currentDir.absoluteFilePath(selectedDir));
+        }
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::showInGraphicalShell(const QString & filePath)
 {
-
-    #ifdef Q_WS_MAC
+#ifdef Q_WS_MAC
     QStringList args;
     args << "-e";
     args << "tell application \"Finder\"";
