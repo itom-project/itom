@@ -396,7 +396,7 @@ namespace ito
                     return ito::retOk;
 
                 default:
-                    return ito::retError;
+                    return ito::RetVal(ito::retError, 0, "_Tp parameter of setVal<_Tp> does not match the type of the parameter");
             }
         }
 
@@ -440,7 +440,6 @@ namespace ito
 
                 default:
                     throw std::logic_error("Param::getVal<_Tp>: Non-matching type!");
-                    return (_Tp)0;
             }
         }
     };
@@ -462,7 +461,7 @@ namespace ito
                     return ito::retOk;
 
                 default:
-                    return ito::retError;
+                    return ito::RetVal(ito::retError, 0, "double value passed to setVal<double> does not match the type of the parameter");
             }
         }
 
@@ -479,7 +478,6 @@ namespace ito
 
                 default:
                     throw std::logic_error("Param::getVal<double>: Non-matching type!");
-                    return 0;
             }
         }
     };
@@ -501,7 +499,7 @@ namespace ito
                     return ito::retOk;
 
                 default:
-                    return ito::retError;
+                    return ito::RetVal(ito::retError, 0, "int value passed to setVal<int> does not match the type of the parameter");
             }
         }
 
@@ -542,7 +540,7 @@ namespace ito
                     return ito::retOk;
 
                 default:
-                    return ito::retError;
+                    return ito::RetVal(ito::retError, 0, "char value passed to setVal<char> does not match the type of the parameter");
             }
         }
 
@@ -583,7 +581,7 @@ namespace ito
                     return ito::retOk;
 
                 default:
-                    return ito::retError;
+                    return ito::RetVal(ito::retError, 0, "unsigned char value passed to setVal<unsigned char> does not match the type of the parameter");
             }
         }
 
@@ -600,11 +598,9 @@ namespace ito
 
                 case 0:
                     throw std::invalid_argument("Param::getVal<uchar>: non existent parameter");
-                    return 0;
 
                 default:
                     throw std::logic_error("Param::getVal<uchar>: Non-matching type!");
-                    return 0;
             }
         }
     };
