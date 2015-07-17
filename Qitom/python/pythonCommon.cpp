@@ -667,6 +667,13 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
             
             PyTuple_SetItem(pVector, n, p_pyLine); //steals reference to p_pyLine
         }
+		else
+		{
+			std::cerr << "The plugin parameter at position " << n << " contains neither type or name. This is an invalid parameter. Please check the plugin\n" << std::endl;
+			//this is an error case, params vector contains a type-less element. Check the plugin, this must not happen.
+			Py_INCREF(Py_None);
+			PyTuple_SetItem(pVector, n, Py_None); //steals reference of Py_None
+		}
     }
 
     //now construct final output
