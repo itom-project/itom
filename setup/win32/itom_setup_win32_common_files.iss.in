@@ -193,7 +193,7 @@ Source: "{#SourceDirItomBuild}\lib\atcore.dll"; DestDir: "{app}\lib"; Flags: pro
 Source: "{#SourceDirItomBuild}\lib\atdevregcam.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\EnsembleC.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\EnsembleCore.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirItomBuild}\lib\FlyCapture2_v100.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\FlyCapture2_C_v100.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\iso5436-2-xml.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\libblas.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\libfftw3-3.dll"; DestDir: "{app}\lib"; Flags: promptifolder
