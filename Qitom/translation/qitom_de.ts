@@ -1201,62 +1201,62 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+102"/>
         <source>The given integer array [%1,%2] is considered to be an interval but the first value is bigger than the second one</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Gegebenes Integer-Array [%1, %2] wird als Interval interpretiert, doch ist der erste Wert ist größer als der Zweite</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>The given integer array [%1,%2] is considered to be an interval but does not fit to the limits [%3,%4]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Gegebenes Integer-Array [%1, %2] wird als Interval interpretiert, doch die Werte entsprechen nicht den Grenzwerten [%3, %4]</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>The given integer array [%1,%2] is considered to be a range but the first value is bigger than the second one</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Gegebenes Integer-Array [%1, %2] wird als Range interpretiert, doch ist der erste Wert ist größer als der Zweite</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>The given integer array [%1,%2] is considered to be a range but does not fit to the limits [%3,%4]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Gegebenes Integer-Array [%1, %2] wird als Range interpretiert, doch die Werte entsprechen nicht den Grenzwerten [%3, %4]</translation>
     </message>
     <message>
         <location line="+55"/>
         <source>roi[2] (width) is out of range [%1,%2]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">roi[2] (Breits) liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>roi[2] (width) does not fit to given step size [%1:%2:%3]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">roi[2] (Breits) hat nicht die vorgegebene Schrittgröße [%1:%2:%3]</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>roi[0] (x0) is out of range [%1,%2]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">roi[0] (x0) liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>right side of roi exceeds the maximal limit of %1 (reduce x0 or width)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die rechte Seite des RIO überschreitet den maximalen Grenzwert von %1 (x0 oder Breite reduzieren)</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>roi[0] (x0) does not fit to given step size [%1:%2:%3]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">roi[0] (x0) hat nicht die vorgegebene Schrittgröße [%1:%2:%3]</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>roi[3] (height) is out of range [%1,%2]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">roi[3] (Höhe) liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>roi[3] (height) does not fit to given step size [%1:%2:%3]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">roi[3] (Höhe) hat nicht die vorgegebene Schrittgröße [%1:%2:%3]</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>roi[1] (y0) is out of range [%1,%2]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">roi[1] (y0) liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -1266,7 +1266,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+5"/>
         <source>roi[1] (y0) does not fit to given step size [%1:%2:%3]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">roi[1] (y0) hat nicht die vorgegebene Schrittgröße [%1:%2:%3]</translation>
     </message>
     <message>
         <location line="+191"/>
@@ -1395,7 +1395,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Die Größe der %i. Dimension übersteigt die aktuelle Begrenzung [%i, %i]</translation>
     </message>
     <message>
-        <location filename="../python/pythonCommon.cpp" line="+1195"/>
+        <location filename="../python/pythonCommon.cpp" line="+1202"/>
         <source>Keyword autoLoadParams not of integer type</source>
         <translation type="unfinished">Schlüsselwort autoLoadParams ist nicht vom Typ Integer</translation>
     </message>
@@ -1472,7 +1472,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+56"/>
         <source>Itom ActuatorPlugin type in python</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Itom ActuatorPlugin-Typ in Python</translation>
     </message>
     <message>
         <location line="+974"/>
@@ -1482,7 +1482,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+553"/>
         <source>Itom DataIOPlugin type in python</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Itom DataIOPlugin-Typ in Python</translation>
     </message>
     <message>
         <location filename="../python/pythonUi.cpp" line="+3108"/>
@@ -1597,7 +1597,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../helper/versionHelper.cpp" line="+76"/>
         <source>none</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">nicht</translation>
     </message>
     <message>
         <location line="+80"/>
@@ -1610,23 +1610,25 @@ p, li { white-space: pre-wrap; }
         <location line="+19"/>
         <source>Build from a clean version.
 </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das &apos;Build&apos; ist keine &apos;clean version&apos; von GIT.
+</translation>
     </message>
     <message>
         <location line="-6"/>
         <source>The version contains locally changed code! </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Diese Version beinhaltet lokal geänderten Code! </translation>
     </message>
     <message>
         <location line="+1"/>
         <source>The version contains unversioned files (e.g. from pyCache-files)!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Diese Version beinhaltet nicht versionierte Dateien (z. B. von &apos;pyCache-Dateien)!</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>This version of itom is not under version control (no GIT or SVN)!
 </source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Diese Version von itom ist nicht unter der Versionskontrolle (kein GIT oder SVN)!
+</translation>
     </message>
     <message>
         <location filename="../python/pythonItom.cpp" line="+2464"/>
@@ -1636,7 +1638,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+12"/>
         <source>For menu elements of type &apos;BUTTON&apos; any type of code (String or callable method or function) must be indicated.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Für Menüelemente vom Typ &apos;button&apos; muss jede Art von Code (Sting oder Funktionen/Methoden) erkennbar sein.</translation>
     </message>
     <message>
         <location line="-234"/>
@@ -1646,22 +1648,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+248"/>
         <source>A menu element of type &apos;separator&apos; can not execute some code. Code argument is ignored.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ein Menüelement vom Typ &apos;separator&apos; kann keinen Code ausführen. Der Code wird ignoriert.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>A menu element of type &apos;separator&apos; can not execute any function or method. Code argument is ignored.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ein Menüelement vom Typ &apos;separator&apos; kann keine Funktionen oder Methoden ausführen. Der Code wird ignoriert.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>A menu element of type &apos;menu&apos; can not execute some code. Code argument is ignored.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ein Menüelement vom Typ &apos;menu&apos; kann keinen Code ausführen. Der Code wird ignoriert.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>A menu element of type &apos;menu&apos; can not execute any function or method. Code argument is ignored.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ein Menüelement vom Typ &apos;menu&apos; kann keine Funktionen oder Methoden ausführen. Der Code wird ignoriert.</translation>
     </message>
     <message>
         <location filename="../../plot/AbstractNode.h" line="+210"/>
@@ -1733,18 +1735,22 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../organizer/designerWidgetOrganizer.cpp" line="+186"/>
-        <location filename="../organizer/addInManager.cpp" line="+28"/>
         <source>Unable to load translation file &apos;%1&apos;.</source>
         <translation type="unfinished">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
     </message>
     <message>
         <location line="+11"/>
-        <location filename="../organizer/addInManager.cpp" line="+12"/>
+        <location filename="../organizer/addInManager.cpp" line="+40"/>
         <source>Unable to find translation file.</source>
         <translation type="unfinished">Übersetzungsdatei wurde nicht gefunden.</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="+43"/>
+        <location filename="../organizer/addInManager.cpp" line="-12"/>
+        <source>Unable to load translation file &apos;%1&apos;. Translation file is empty.</source>
+        <translation type="unfinished">Die Übersetzungsdatei &apos;%1&apos; kann nicht geladen werden. Diese Datei ist leer.</translation>
+    </message>
+    <message>
+        <location line="+55"/>
         <source>AddIn with filename &apos;%1&apos; is unknown.</source>
         <translation type="unfinished">AddIn namens &apos;%1&apos; ist unbekannt.</translation>
     </message>
@@ -1827,12 +1833,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+87"/>
         <source>invalid plugin type. Only typeDataIO, typeActuator or typeAlgo are allowed.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ungültiger Plugin-Typ. Nur &apos;typeDataIO&apos;, &apos;typeActuator&apos; und &apos;typeAlgo&apos; sind erlaubt.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Plugin &apos;%1&apos; not found in list of given type</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Plugin &apos;%1&apos; wurde in der übergebenen Liste nicht gefunden</translation>
     </message>
     <message>
         <location line="+24"/>
@@ -4121,13 +4127,13 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+575"/>
+        <location line="+579"/>
         <location line="+13"/>
         <source>delete</source>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-586"/>
+        <location line="-590"/>
         <source>cut</source>
         <translation>Ausschneiden</translation>
     </message>
@@ -4187,7 +4193,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Aktuelles Stammverzeichnis auswählen</translation>
     </message>
     <message>
-        <location line="+224"/>
+        <location line="+228"/>
         <source>the selected items</source>
         <translation type="unfinished">der ausgewählte Eintrag</translation>
     </message>
@@ -4694,19 +4700,19 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::MainApplication</name>
     <message>
-        <location filename="../mainApplication.cpp" line="+163"/>
-        <location line="+2"/>
+        <location filename="../mainApplication.cpp" line="+166"/>
+        <location line="+4"/>
         <source>Version %1
 %2</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-2"/>
+        <location line="-4"/>
         <source>64 bit (x64)</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>32 bit (x86)</source>
         <translation></translation>
     </message>
@@ -4779,7 +4785,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::MainWindow</name>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="+109"/>
+        <location filename="../widgets/mainWindow.cpp" line="+112"/>
         <source>itom</source>
         <translation>itom</translation>
     </message>
@@ -4794,12 +4800,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Dateisystem</translation>
     </message>
     <message>
-        <location line="-38"/>
+        <location line="-40"/>
         <source>itom (x64)</source>
         <translation></translation>
     </message>
     <message>
-        <location line="+62"/>
+        <location line="+64"/>
         <source>Call Stack</source>
         <translation type="unfinished">Aufrufliste</translation>
     </message>
@@ -5694,7 +5700,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <message>
         <location line="+47"/>
         <source>The generation of the python syntax API has been cancelled.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Erstellung der Python-Syntax-API wurde abgebrochen.</translation>
     </message>
     <message>
         <location line="+21"/>
@@ -6360,7 +6366,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <message>
         <location line="+39"/>
         <source>dialog could not be created</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Dialog kann nicht erstellt werden</translation>
     </message>
     <message>
         <location line="+77"/>
@@ -6471,7 +6477,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <message>
         <location line="-1358"/>
         <source>The object ID is invalid.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die ID des Datenobjekts ist ungültig.</translation>
     </message>
     <message>
         <location line="+5"/>
