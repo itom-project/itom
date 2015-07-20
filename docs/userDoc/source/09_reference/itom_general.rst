@@ -51,24 +51,24 @@ Further commands
 ..    :members: DATA, FILE
     
 
-Another possibility to add methods to this page is to use the auto-summary function.
+.. Another possibility to add methods to this page is to use the auto-summary function.
 Since, the default-role property in conf.py  is set to 'autolink' and the auto-summary module is included,
 small pages will be automatically created for each method in the following list and a hyperlink to this site is created:
 
 .. currentmodule:: itom
 
-With method signature:
+.. With method signature:
 
-.. autosummary::
+.. .. autosummary::
     :toctree: generated
     
     itom.widgetHelp
     itom.pluginHelp
     itom.filterHelp
 
-Without method signature:
+.. Without method signature:
     
-.. autosummary::
+.. .. autosummary::
     :toctree: generated
     :nosignatures:
     

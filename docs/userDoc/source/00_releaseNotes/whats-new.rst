@@ -8,7 +8,7 @@ This changelog only contains the most important changes taken from the commit-me
 itom
 ********
 
-**Version 2.0.0 (2015-07-14)**
+**Version 2.0.0 (2015-07-20)**
 
 (more than 290 commits in itom repository)
 
@@ -250,7 +250,7 @@ there is no continuous changelog for these version
 Plugins
 ******************
 
-**Version 2.0.0 (2015-07-14)**
+**Version 2.0.0 (2015-07-20)**
 
 (more than 250 commits in plugins repository)
 
@@ -373,7 +373,7 @@ there is no continuous changelog for these version
 Designer Plugins
 ******************
 
-**Version 2.0.0 (2015-07-14)**
+**Version 2.0.0 (2015-07-20)**
 
 (more than 95 commits in designerPlugins repository)
 
