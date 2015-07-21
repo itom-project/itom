@@ -20,25 +20,39 @@ Source: "{#SourceDirItomBuild}\itomWidgets.dll"; DestDir: "{app}"; Flags: prompt
 Source: "{#SourceDirItomBuild}\pointcloud.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\qpropertyeditor.dll"; DestDir: "{app}"; Flags: promptifolder
 ; DLLs QT
+Source: "{#SourceDirQT}\Qt5OpenGL.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\Qt5Core.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\Qt5Gui.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\Qt5Network.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\Qt5PrintSupport.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\Qt5Sql.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\Qt5Widgets.dll"; DestDir: "{app}"; Flags: promptifolder
-;Source: "{#SourceDirQT}\phonon4.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\icudt54.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\icuin54.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\icuio54.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\icule54.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\iculx54.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\icutu54.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\icuuc54.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\qscintilla2.dll"; DestDir: "{app}"; Flags: promptifolder
 ;Source: "{#SourceDirQT}\QtCLucene4.dll"; DestDir: "{app}"; Flags: promptifolder
 ;Source: "{#SourceDirQT}\QtDeclarative4.dll"; DestDir: "{app}"; Flags: promptifolder
 ;Source: "{#SourceDirQT}\QtGui4.dll"; DestDir: "{app}"; Flags: promptifolder
 ;Source: "{#SourceDirQT}\QtMultimedia4.dll"; DestDir: "{app}"; Flags: promptifolder
-;Source: "{#SourceDirQT}\QtOpenGL4.dll"; DestDir: "{app}"; Flags: promptifolder
 ;Source: "{#SourceDirQT}\QtScript4.dll"; DestDir: "{app}"; Flags: promptifolder
 ;Source: "{#SourceDirQT}\QtScriptTools4.dll"; DestDir: "{app}"; Flags: promptifolder
 ;Source: "{#SourceDirQT}\QtSvg4.dll"; DestDir: "{app}"; Flags: promptifolder
 ;Source: "{#SourceDirQT}\QtXml4.dll"; DestDir: "{app}"; Flags: promptifolder
 ;Source: "{#SourceDirQT}\QtXmlPatterns4.dll"; DestDir: "{app}"; Flags: promptifolder
 ; DLLs QT Assistant
+Source: "{#SourceDirQT}\Qt5CLucene.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\Qt5Help.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5Multimedia.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5MultimediaWidgets.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5Positioning.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5Qml.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5Quick.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5Sensors.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\Qt5WebKit.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\Qt5WebKitWidgets.dll"; DestDir: "{app}"; Flags: promptifolder
 ; DLLs QT Designer
@@ -197,12 +211,12 @@ Source: "{#SourceDirItomBuild}\lib\FlyCapture2_v100.dll"; DestDir: "{app}\lib"; 
 Source: "{#SourceDirItomBuild}\lib\iso5436-2-xml64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\libblas.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\libfftw3-3.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-; Source: "{#SourceDirItomBuild}\lib\libgcc_s_dw2-1.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-; Source: "{#SourceDirItomBuild}\lib\libgfortran-3.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\libgcc_s_seh-1.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\libgfortran-3.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\libiomp5md.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\liblapack.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\liblapacke.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-; Source: "{#SourceDirItomBuild}\lib\libquadmath-0.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\libquadmath-0.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\libximc.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\m3apiX64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\PI_GCS2_DLL_x64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
