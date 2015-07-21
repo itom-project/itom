@@ -183,9 +183,9 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
                         m_Translator.last()->load(translationLocal, translationPath);
                         if (m_Translator.last()->isEmpty())
                         {
-                            message = QObject::tr("Unable to load translation file '%1'.").arg(translationPath + '/' + translationLocal);
+                            message = QObject::tr("Unable to load translation file '%1'. Translation file is empty.").arg(translationPath + '/' + translationLocal);
                             qDebug() << message;
-                            status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
+                            status.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfWarning, message));
                         }
                         else
                         {
