@@ -26,6 +26,7 @@ Source: "{#SourceDirQT}\Qt5Gui.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\Qt5Network.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\Qt5PrintSupport.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\Qt5Sql.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5Svg.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\Qt5Widgets.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\icudt54.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirQT}\icuin54.dll"; DestDir: "{app}"; Flags: promptifolder
@@ -224,6 +225,7 @@ Source: "{#SourceDirItomBuild}\lib\iso5436_2.xsd"; DestDir: "{app}\lib"; Flags: 
 Source: "{#SourceDirPCL}\bin\pcl_features_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirPCL}\bin\pcl_filters_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirPCL}\bin\pcl_io_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_io_ply_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirPCL}\bin\pcl_kdtree_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirPCL}\bin\pcl_octree_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirPCL}\bin\pcl_sample_consensus_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
