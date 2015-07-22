@@ -58,36 +58,38 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
     {
     case ito::ParamBase::Char & ito::paramTypeMask:
     case ito::ParamBase::Int & ito::paramTypeMask:
-        if (PyLong_Check(pyObj))
-        {
-            *set = 1;
-            outParam.setVal<int>(PyLong_AsLong(pyObj));
-        }
-        else if (PyRgba_Check(pyObj))
+        if (PyRgba_Check(pyObj))
         {
             PythonRgba::PyRgba *pyRgba = (PythonRgba::PyRgba*)(pyObj);
             outParam.setVal<int>((int)(pyRgba->rgba.rgba));
         }
         else
         {
-            return ito::retError;
+            bool ok;
+            outParam.setVal<int>(PythonQtConversion::PyObjGetInt(pyObj, false, ok));
+            if (ok)
+            {
+                *set = 1;
+            }
+            else
+            {
+                return ito::RetVal(ito::retError, 0, "value could not be converted to integer");
+            }
         }
     break;
 
     case ito::ParamBase::Double & ito::paramTypeMask:
-        if (PyFloat_Check(pyObj))
         {
-            *set = 1;
-            outParam.setVal<double>(PyFloat_AsDouble(pyObj));
-        }
-        else if (PyErr_Clear(), PyLong_Check(pyObj))
-        {
-            *set = 1;
-            outParam.setVal<double>(PyLong_AsDouble(pyObj));
-        }
-        else
-        {
-            return ito::retError;
+            bool ok;
+            outParam.setVal<double>(PythonQtConversion::PyObjGetDouble(pyObj, false, ok));
+            if (ok)
+            {
+                *set = 1;
+            }
+            else
+            {
+                return ito::RetVal(ito::retError, 0, "value could not be converted to double");
+            }
         }
     break;
 
