@@ -19,7 +19,7 @@ buildernames = ["qthelp"] #["qthelp", "htmlhelp", "latex", "html"]
 
 for cfg in matches:
     print("create plugin documentation for", cfg)
-	try
-		create_plugin_doc.createPluginDoc(cfg, buildernames)
-	except:
-		print("Error", cfg)
+    try:
+        create_plugin_doc.createPluginDoc(cfg, buildernames)
+    except:
+        print("Error", cfg)
