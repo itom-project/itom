@@ -181,7 +181,7 @@ namespace ito
 #if _DEBUG
         if (val < 0.0)
         {
-            throw std::logic_error("stepSize of IntMeta must be >= 0.0");
+            throw std::logic_error("stepSize of DoubleMeta must be >= 0.0");
         }
 #endif
         m_stepSize = val; 

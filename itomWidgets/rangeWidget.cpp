@@ -543,6 +543,8 @@ void RangeWidget::stopChanging()
     {
     return;
     }
+
+  qDebug() << "min" << minimumValue() << "max" << maximumValue();
   d->Changing = false;
   bool emitMinValChanged = qAbs(this->minimumValue() - d->MinimumValueBeforeChange) > (this->singleStep() * 0.000000001);
   bool emitMaxValChanged = qAbs(this->maximumValue() - d->MaximumValueBeforeChange) > (this->singleStep() * 0.000000001);
@@ -840,7 +842,7 @@ void RangeWidget::setStepSizeValue(uint stepSize)
 {
   Q_D(RangeWidget);
   d->Slider->setStepSizePosition(stepSize);
-  if ((uint)(d->MinimumSpinBox->singleStep()) < stepSize)
+  if ((uint)(d->MinimumSpinBox->singleStep()) != stepSize)
   {
       setSingleStep(stepSize);
   }
@@ -912,4 +914,5 @@ void RangeWidget::setLimitsFromIntervalMeta(const ito::IntervalMeta &intervalMet
     Q_D(RangeWidget);
     d->Slider->setLimitsFromIntervalMeta(intervalMeta);
     setStepSizeRange(d->Slider->stepSizeRange()); //in order to possibly adapt the singleStep value
+    setStepSizeValue(d->Slider->stepSizePosition());
 }

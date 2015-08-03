@@ -58,36 +58,38 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
     {
     case ito::ParamBase::Char & ito::paramTypeMask:
     case ito::ParamBase::Int & ito::paramTypeMask:
-        if (PyLong_Check(pyObj))
-        {
-            *set = 1;
-            outParam.setVal<int>(PyLong_AsLong(pyObj));
-        }
-        else if (PyRgba_Check(pyObj))
+        if (PyRgba_Check(pyObj))
         {
             PythonRgba::PyRgba *pyRgba = (PythonRgba::PyRgba*)(pyObj);
             outParam.setVal<int>((int)(pyRgba->rgba.rgba));
         }
         else
         {
-            return ito::retError;
+            bool ok;
+            outParam.setVal<int>(PythonQtConversion::PyObjGetInt(pyObj, false, ok));
+            if (ok)
+            {
+                *set = 1;
+            }
+            else
+            {
+                return ito::RetVal(ito::retError, 0, "value could not be converted to integer");
+            }
         }
     break;
 
     case ito::ParamBase::Double & ito::paramTypeMask:
-        if (PyFloat_Check(pyObj))
         {
-            *set = 1;
-            outParam.setVal<double>(PyFloat_AsDouble(pyObj));
-        }
-        else if (PyErr_Clear(), PyLong_Check(pyObj))
-        {
-            *set = 1;
-            outParam.setVal<double>(PyLong_AsDouble(pyObj));
-        }
-        else
-        {
-            return ito::retError;
+            bool ok;
+            outParam.setVal<double>(PythonQtConversion::PyObjGetDouble(pyObj, false, ok));
+            if (ok)
+            {
+                *set = 1;
+            }
+            else
+            {
+                return ito::RetVal(ito::retError, 0, "value could not be converted to double");
+            }
         }
     break;
 
@@ -667,6 +669,13 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
             
             PyTuple_SetItem(pVector, n, p_pyLine); //steals reference to p_pyLine
         }
+		else
+		{
+			std::cerr << "The plugin parameter at position " << n << " contains neither type or name. This is an invalid parameter. Please check the plugin\n" << std::endl;
+			//this is an error case, params vector contains a type-less element. Check the plugin, this must not happen.
+			Py_INCREF(Py_None);
+			PyTuple_SetItem(pVector, n, Py_None); //steals reference of Py_None
+		}
     }
 
     //now construct final output

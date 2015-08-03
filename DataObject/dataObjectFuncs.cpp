@@ -2093,12 +2093,6 @@ namespace dObjHelper
     {
         ito::DataObject out;
 
-        //TODO: remove this at the next interface change;
-        if (convertToType == 0)
-        {
-            std::cout << "Warning: behaviour of convertToType in squeezeConvertCheck2DDataObject changed. 0 means a conversion to int8 instead of an unchanged object - like in the version before. Please check your code\n" << std::endl;
-        }
-
         if(dObj == NULL)
         {
             retval += ito::RetVal::format(ito::retError, 0, "DataObject '%s': data object is NULL.", name);

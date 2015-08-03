@@ -37,10 +37,10 @@ StringListDialog::StringListDialog(const QStringList &stringList, QWidget *paren
 {
     ui.setupUi(this);
 
-    QIcon upIcon(":/trolltech/styles/commonstyle/images/up-32.png");
-    QIcon downIcon(":/trolltech/styles/commonstyle/images/down-32.png");
-    QIcon minusIcon(":/trolltech/qtgradienteditor/images/minus.png");
-    QIcon plusIcon(":/trolltech/qtgradienteditor/images/plus.png");
+    QIcon upIcon(":/arrows/icons/up-32.png");
+    QIcon downIcon(":/arrows/icons/down-32.png");
+    QIcon minusIcon(":/arrows/icons/minus.png");
+    QIcon plusIcon(":/arrows/icons/plus.png");
     ui.moveListItemUpButton->setIcon(upIcon);
     ui.moveListItemDownButton->setIcon(downIcon);
     ui.newListItemButton->setIcon(plusIcon);

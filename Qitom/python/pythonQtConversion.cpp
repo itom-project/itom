@@ -350,7 +350,19 @@ int PythonQtConversion::PyObjGetInt(PyObject* val, bool strict, bool &ok)
         } 
         else 
         {
-            ok = false;
+            //try to convert to long (e.g. numpy scalars or other objects that have a __int__() method defined
+            int overflow;
+            d = PyLong_AsLongAndOverflow(val, &overflow);
+            if (PyErr_Occurred())
+            {
+                //error during conversion
+                PyErr_Clear();
+                ok = false;
+            }
+            else if (overflow) //1: too big, -1: too small
+            {
+                ok = false;
+            }
         }
     } 
     else 
@@ -401,7 +413,19 @@ qint64 PythonQtConversion::PyObjGetLongLong(PyObject* val, bool strict, bool &ok
         } 
         else 
         {
-            ok = false;
+            //try to convert to long (e.g. numpy scalars or other objects that have a __int__() method defined
+            int overflow;
+            d = PyLong_AsLongAndOverflow(val, &overflow);
+            if (PyErr_Occurred())
+            {
+                //error during conversion
+                PyErr_Clear();
+                ok = false;
+            }
+            else if (overflow) //1: too big, -1: too small
+            {
+                ok = false;
+            }
         }
     } 
     else 
@@ -491,7 +515,7 @@ double PythonQtConversion::PyObjGetDouble(PyObject* val, bool strict, bool &ok)
             {
                 ok = false;
             }
-        } 
+        }
         else if (val == Py_False) 
         {
             d = 0.0;
@@ -502,7 +526,14 @@ double PythonQtConversion::PyObjGetDouble(PyObject* val, bool strict, bool &ok)
         } 
         else 
         {
-            ok = false;
+            //try to convert to float (e.g. numpy scalars or other objects that have a __float__() method defined
+            d = PyFloat_AsDouble(val);
+            if (PyErr_Occurred())
+            {
+                //error during conversion
+                PyErr_Clear();
+                ok = false;
+            }
         }
     } 
     else 

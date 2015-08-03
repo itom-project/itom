@@ -1,16 +1,44 @@
 line plots (1D)
 ******************
 
+In order to plot a 1D line (1 x M or M x 1 DataObject) or multiple lines in a line plot, the designer plugin **Itom1DQwtPlot** is
+the recommended visualization tool. You can either add this class name (*itom1dqwtplot*) to any :py:meth:`~itom.plot` or :py:meth:`~itom.liveImage`
+command in order to force the data to be plotted in this plot type and / or set this plugin to be the default plot for 1D static and live plots.
 
-"Itom1DQwtPlot" is the basic line plot for plotting 'dataObjects' with shape [1xM] based on the Qwt library.
-All DataTypes are accepted. To plot complex objects, it is possible to select between the following modes: "absolut", "phase", "real" and "imaginary".
-RGBA-values are currently interpreted as grey-values using RGBA as grey.
+The latter can be done in the property dialog or itom, tab **Plots and Figures >> Default Plots**. Set there the *default figure plot* to *Itom1DQwtPlot* for the
+categories
+
+* DObjLiveLine
+* DObjStaticLine
+
+.. figure:: images/plot1d_2.png
+    :scale: 70%
+    :align: left
+    
+This plot has been created by the following code snippet:
+
+.. code-block:: python
+    
+    import numpy as np
+    X = np.linspace(0,100)
+    Y = np.sin(X/20)
+    plot(Y, className = 'itom1dqwtplot', \
+        properties = {"title":"sin(X/20)", "valueLabel":"Amplitude"})
+
+If you choose *itom1dqwtplot* as className for the :py:meth:`~itom.plot` command with a 2D data object as argument,
+is it also possible to plot multiple lines. The plot plugin accepts all available data types, including colors and complex values.
+
+Data is plotted as follows:
+
+* Real data types: One or multiple lines are plotted where the horizontal axis corresponds to the grid of the data object considering possible scaling and offset values. The line(s) have different colours. The colour of one line can also be adjusted.
+* Complex types: This is the same than for real data types, however you can choose whether the *absolute*, *phase*, *real* or *imaginary* part of the complex values is plotted.
+* color type: Coloured data objects will be represented by either 3 or 4 lines (red, green and blue, alpha optional) that correspond to the three colour channels or by one line representing the converted gray values.
+
+Using Python or the properties toolbox (View >> properties or via right click on the toolbar), it is possible to adjust many properties like stated below.
 
 The plot allows value and min/max-picking via place-able marker.
 
 The plot supports geometric element and marker interaction via **drawAndPickElements(...)** and **call("userInteractionStart",...)**. See section :ref:`primitives` for a short introduction.
-
-The plot does not support z-stack sectioning at the moment. 
 
 You can also use the "matplotlib"-backend to plot slices or xy-coordinates. See section :ref:`pymod-matplotlib` for more information about how to use "matplotlib".
 
