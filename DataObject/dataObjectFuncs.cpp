@@ -1778,7 +1778,11 @@ namespace dObjHelper
         catch (cv::Exception &exc)
         {
 //            std::string errBuf(exc.err);
+#if (CV_MAJOR_VERSION < 3)
             retval += ito::RetVal(ito::retError, 0, exc.err.data());
+#else
+            retval += ito::RetVal(ito::retError, 0, exc.err.c_str());
+#endif
         }
 
         if((clearInMat == true) && (cvplaneIn != NULL))
