@@ -34,6 +34,7 @@
 #include "widgetPropGeneralLanguage.h"
 #include "widgetPropPythonStartup.h"
 #include "widgetPropPythonGeneral.h"
+#include "widgetPropConsoleGeneral.h"
 #include "widgetPropConsoleWrap.h"
 #include "widgetPropConsoleLastCommand.h"
 #include "widgetPropFigurePlugins.h"
@@ -152,6 +153,7 @@ void DialogProperties::initPages()
     m_pages["04_editor/autocompletion"] = PropertyPage(tr("Auto Completion"), tr("Editor - auto completion"), "04_editor/autocompletion", new WidgetPropEditorAutoCompletion(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/styles"] = PropertyPage(tr("Styles"), tr("Editor - styles"), "04_editor/styles", new WidgetPropEditorStyles(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["01_console"] = PropertyPage(tr("Console"), tr("Console - please choose subpage"), "01_console", NULL, QIcon(":/application/icons/editSmartIndent.png"));
+    m_pages["01_console/general"] = PropertyPage(tr("General"), tr("Console - General"), "01_console/general", new WidgetPropConsoleGeneral(), QIcon(":/application/icons/editSmartIndent.png"));
     m_pages["01_console/lineWrap"] = PropertyPage(tr("Line Wrap"), tr("Console - Line Wrap"), "01_console/lineWrap", new WidgetPropConsoleWrap(), QIcon(":/application/icons/editSmartIndent.png"));
     m_pages["01_console/commandHistory"] = PropertyPage(tr("Command History"), tr("Console - Command History"), "01_console/commandHistory", new WidgetPropConsoleLastCommand(), QIcon(":/application/icons/editSmartIndent.png"));
     m_pages["03_python"] = PropertyPage(tr("Python"), tr("Python - please choose subpage"), "03_python", NULL, QIcon(":/application/icons/preferences-python.png"));

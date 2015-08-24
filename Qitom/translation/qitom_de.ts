@@ -405,7 +405,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>Sudo Uninstall</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Als &apos;Sudo&apos; deinstallieren</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -1313,7 +1313,7 @@ p, li { white-space: pre-wrap; }
         <translation>&apos;Param&apos; ist kein Array</translation>
     </message>
     <message>
-        <location filename="../python/pythonCommon.cpp" line="+229"/>
+        <location filename="../python/pythonCommon.cpp" line="+231"/>
         <location filename="../api/apiFunctions.cpp" line="+154"/>
         <source>Unknown parameter type</source>
         <translation>Unbekannter Parametertyp</translation>
@@ -1734,23 +1734,23 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Plugin &apos;%1&apos; wird gescannt und geladen</translation>
     </message>
     <message>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+186"/>
         <source>Unable to load translation file &apos;%1&apos;.</source>
-        <translation type="unfinished">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
+        <translation type="obsolete">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+197"/>
         <location filename="../organizer/addInManager.cpp" line="+40"/>
         <source>Unable to find translation file.</source>
         <translation type="unfinished">Übersetzungsdatei wurde nicht gefunden.</translation>
     </message>
     <message>
+        <location line="-11"/>
         <location filename="../organizer/addInManager.cpp" line="-12"/>
         <source>Unable to load translation file &apos;%1&apos;. Translation file is empty.</source>
         <translation type="unfinished">Die Übersetzungsdatei &apos;%1&apos; kann nicht geladen werden. Diese Datei ist leer.</translation>
     </message>
     <message>
-        <location line="+55"/>
+        <location filename="../organizer/addInManager.cpp" line="+55"/>
         <source>AddIn with filename &apos;%1&apos; is unknown.</source>
         <translation type="unfinished">AddIn namens &apos;%1&apos; ist unbekannt.</translation>
     </message>
@@ -1988,6 +1988,29 @@ p, li { white-space: pre-wrap; }
         <location line="+10"/>
         <source>Close</source>
         <translation>Schließen</translation>
+    </message>
+</context>
+<context>
+    <name>WidgetPropConsoleGeneral</name>
+    <message>
+        <location filename="../ui/widgetPropConsoleGeneral.ui" line="+14"/>
+        <source>Form</source>
+        <translation type="unfinished">Fenster</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Paste text to console</source>
+        <translation type="unfinished">Text aus der Zwischenablage in die Konsole einfügen</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>If subparts of a code are copied from any script and pasted to the console, it might happen that the whole code block is already globally indentend. The code can then not be executed. Check the following option to let itom remove the global indentation level before pasting it to the console.</source>
+        <translation type="unfinished">Wenn Teile eines Python-Codes in die Konsole eingefügt werden sollen kann es vorkommen, dass der einzufügende Code-Block bereits eingerückt ist und dadurch nicht ausgeführt werden kann. Um von itom den Code-Block automatisch anpassen zu lassen folgende Option auswählen.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Modify text in clipboard before pasting to console. </source>
+        <translation type="unfinished">Text vor dem Einfügen in die Konsole modifizieren.</translation>
     </message>
 </context>
 <context>
@@ -3151,7 +3174,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::ConsoleWidget</name>
     <message>
-        <location filename="../widgets/consoleWidget.cpp" line="+878"/>
+        <location filename="../widgets/consoleWidget.cpp" line="+880"/>
         <source>script execution</source>
         <translation type="unfinished">Skript wird ausgeführt</translation>
     </message>
@@ -3164,7 +3187,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DesignerWidgetOrganizer</name>
     <message>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="-50"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="-39"/>
         <source>could not read interface &apos;ito.AbstractItomDesignerPlugin&apos;</source>
         <translation type="unfinished">Die Schnittstelle &apos;ito.AbstractItomDesignerPlugin&apos; konnte nicht gelesen werden</translation>
     </message>
@@ -3595,7 +3618,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DialogProperties</name>
     <message>
-        <location filename="../ui/dialogProperties.cpp" line="+52"/>
+        <location filename="../ui/dialogProperties.cpp" line="+53"/>
         <source>Properties</source>
         <translation>Optionen</translation>
     </message>
@@ -3611,13 +3634,14 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+9"/>
+        <location line="+6"/>
+        <location line="+4"/>
         <location line="+2"/>
         <source>General</source>
         <translation>Allgemein</translation>
     </message>
     <message>
-        <location line="-11"/>
+        <location line="-12"/>
         <source>Editor - General</source>
         <translation>Editor - Allgemein</translation>
     </message>
@@ -3670,6 +3694,11 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+0"/>
         <source>Console - please choose subpage</source>
         <translation>Konsole - Bitte Unterrubrik auswählen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Console - General</source>
+        <translation type="unfinished">Konsole - Allgemein</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -5634,7 +5663,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <message>
         <location line="+9"/>
         <source>item &apos;%1&apos; does not exist in workspace.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Objekt &apos;%1&apos; existiert nicht im Workspace.</translation>
     </message>
     <message>
         <location line="+69"/>
@@ -5650,44 +5679,44 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <message>
         <location line="-44"/>
         <source>variable name &apos;%1&apos; already exists in dictionary</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Variablenname &apos;%1&apos; existiert bereis im Dictionary</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>No instance of python class dataIO could be created</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es konnte keine Instanz der Klasse &apos;DataID&apos; erstellt werden</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>No instance of python class actuator could be created</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es konnte keine Instanz der Klasse &apos;Motor&apos; erstellt werden</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>AddIn must be of type dataIO or actuator</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">AddIn muss vom Typ &apos;DataIO&apos; oder &apos;Motor&apos; sein</translation>
     </message>
     <message>
         <location line="+81"/>
         <location line="+72"/>
         <source>it is not allowed to get modules if python is currently executed</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es ist nicht möglich Python-Module anzufordern während Python ausgeführt wird</translation>
     </message>
     <message>
         <location line="-56"/>
         <location line="+72"/>
         <source>the script itomFunctions.py is not available</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Skript &apos;itomFunctions.py&apos; ist nicht verfügbar</translation>
     </message>
     <message>
         <location line="-64"/>
         <source>error while loading the modules</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Laden der Module</translation>
     </message>
     <message>
         <location line="+75"/>
         <source>error while reloading the modules</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim erneuten Laden der Module</translation>
     </message>
 </context>
 <context>

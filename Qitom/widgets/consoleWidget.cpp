@@ -29,8 +29,10 @@
 #include <qfile.h>
 #include <qmimedata.h>
 #include <qurl.h>
+#include <qsettings.h>
 #include <qfileinfo.h>
 #include <qregexp.h>
+#include <QClipboard>
 
 #include "../organizer/userOrganizer.h"
 #include "../organizer/scriptEditorOrganizer.h"
@@ -1326,7 +1328,30 @@ void ConsoleWidget::copy()
 void ConsoleWidget::paste()
 {
     moveCursorToValidRegion();
+
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("PyScintilla");
+    bool formatPastCode = settings.value("formatPastCode", "false").toBool();
+    settings.endGroup();
+
+    QClipboard *clipboard = QApplication::clipboard();
+    QString clipboardSave = "";
+
+    if (formatPastCode)
+    {
+        if (clipboard->mimeData()->hasText()) 
+        {
+            clipboardSave = clipboard->text();
+            clipboard->setText(formatPhytonCodePart(clipboard->text()));
+        }
+    }
+
     QsciScintilla::paste();
+
+    if (clipboardSave != "")
+    {
+        clipboard->setText(clipboardSave);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
