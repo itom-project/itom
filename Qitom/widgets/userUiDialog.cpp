@@ -160,7 +160,7 @@ RetVal UserUiDialog::init(QWidget *contentWidget, tButtonBarType buttonBarType, 
             QDialogButtonBox::ButtonRole role = getButtonRole(i.key());
             if (role == QDialogButtonBox::InvalidRole)
             {
-                retValue += RetVal(retWarning, 1004, tr("dialog button role is unknown").toLatin1().data());
+                retValue += RetVal(retWarning, 1004, tr("dialog button role is unknown or not supported").toLatin1().data());
             }
             m_dialogBtnBox->addButton(i.value(), role);
             ++i;
@@ -194,7 +194,7 @@ RetVal UserUiDialog::init(QWidget *contentWidget, tButtonBarType buttonBarType, 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QDialogButtonBox::ButtonRole UserUiDialog::getButtonRole(QString role)
+QDialogButtonBox::ButtonRole UserUiDialog::getButtonRole(const QString &role)
 {
     if (QString::compare(role, "AcceptRole", Qt::CaseInsensitive) == 0)
     {
@@ -216,6 +216,10 @@ QDialogButtonBox::ButtonRole UserUiDialog::getButtonRole(QString role)
     {
         return QDialogButtonBox::ApplyRole;
     }
+    else if (QString::compare(role, "ResetRole", Qt::CaseInsensitive) == 0)
+    {
+        return QDialogButtonBox::ResetRole;
+    }
     else
     {
         return QDialogButtonBox::InvalidRole;
@@ -230,24 +234,15 @@ void UserUiDialog::dialogButtonClicked (QAbstractButton * button)
     switch(role)
     {
     case QDialogButtonBox::AcceptRole:
-        this->accept();
+        this->accept(); //returns 1 (AcceptRole has code 0) (this is like it is to keep backward compatibility in any script)
         break;
     case QDialogButtonBox::RejectRole:
-        this->reject();
+        this->reject(); //returns 0 (RejectRole has code 1) (this is like it is to keep backward compatibility in any script)
+        break;
+    default:
+        this->done(role); //returns the true code of the button role
         break;
     }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-const QMetaObject* UserUiDialog::getMetaObjectByWidgetName(QString name) const
-{
-    QWidget *widget = findChild<QWidget*>(name);
-    const QMetaObject *mo = NULL;
-    if (widget)
-    {
-        mo = widget->metaObject();
-    }
-    return mo;
 }
 
 } //end namespace ito
