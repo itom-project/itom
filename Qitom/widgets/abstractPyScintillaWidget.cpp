@@ -484,38 +484,36 @@ bool AbstractPyScintillaWidget::haveToIndention(QString s)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QString AbstractPyScintillaWidget::formatPhytonCodePart(const QString &text)
+QString AbstractPyScintillaWidget::formatPhytonCodePart(const QString &text, int &rowCount)
 {
     QString res = "";
-    if (text.trimmed() == "")
-    {
-        res = text.trimmed();
-    }
-    else
+    rowCount = 0;
+    if (text.trimmed() != "")
     {
         QString endlineRegExp = "[\n]";
         QString endline = "\n";
 
         QStringList commandList = text.split(QRegExp(endlineRegExp));
-        if (commandList.size() == 1)
+        rowCount = commandList.size();
+        if (rowCount == 1)
         {
             res = text.trimmed();
         }
         else
         {
             int i = 1;
-            while (i < commandList.size() && commandList[i].trimmed() == "")
+            while (i < rowCount && commandList[i].trimmed() == "")
             {
                 ++i;
             }
 
-            if (i < commandList.size())
+            if (i < rowCount)
             {
                 int spaceTabCount1 = getSpaceTabCount(commandList[i]);
                 int spaceTabCount2 = 0;
                 int tmp = 0;
                 i = 2;
-                while (i < commandList.size() && spaceTabCount2 == 0)
+                while (i < rowCount && spaceTabCount2 == 0)
                 {
                     tmp = getSpaceTabCount(commandList[i]);
                     if (tmp != spaceTabCount1)
@@ -568,7 +566,7 @@ QString AbstractPyScintillaWidget::formatPhytonCodePart(const QString &text)
                 }
 
                 res = commandList[0].trimmed() + endline;
-                for (i = 1; i < commandList.size(); ++i)
+                for (i = 1; i < rowCount; ++i)
                 {
                     commandList[i].remove(0, delCount);
                     res += commandList[i] + endline;

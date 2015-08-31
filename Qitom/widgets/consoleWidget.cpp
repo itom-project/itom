@@ -1342,7 +1342,8 @@ void ConsoleWidget::paste()
         if (clipboard->mimeData()->hasText()) 
         {
             clipboardSave = clipboard->text();
-            clipboard->setText(formatPhytonCodePart(clipboard->text()));
+            int rowCount;
+            clipboard->setText(formatPhytonCodePart(clipboard->text(), rowCount));
         }
     }
 
@@ -1398,7 +1399,7 @@ void ConsoleWidget::pythonRunSelection(QString selectionText)
     if (selectionText.length() > 0)
     {
 //        waitForCmdExecutionDone = false;
-
+/*
         // 1. identify the indent typ
         QChar indentTyp = 0;
         if (selectionText[0] == '\t')
@@ -1429,10 +1430,14 @@ void ConsoleWidget::pythonRunSelection(QString selectionText)
         }
 
         selectionText += ConsoleWidget::lineBreak;
+*/
+        int rowCount = 0;
+        selectionText = formatPhytonCodePart(selectionText, rowCount);
 
         insertAt(selectionText, startLineBeginCmd, 2);
 
-        execCommand(startLineBeginCmd, startLineBeginCmd + selectionText.count(ConsoleWidget::lineBreak, Qt::CaseInsensitive) - 1);
+//        execCommand(startLineBeginCmd, startLineBeginCmd + selectionText.count(ConsoleWidget::lineBreak, Qt::CaseInsensitive) - 1);
+        execCommand(startLineBeginCmd, startLineBeginCmd + rowCount - 1);
     }
 }
 
