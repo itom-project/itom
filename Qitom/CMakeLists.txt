@@ -1,5 +1,5 @@
 SET (target_name qitom)
-        
+         
 project(${target_name})
  
 cmake_minimum_required(VERSION 2.8.7)
@@ -16,7 +16,7 @@ OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and it
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 include("../ItomBuildMacros.cmake")  
-      
+       
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools Svg)

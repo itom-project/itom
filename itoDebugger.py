@@ -3,10 +3,7 @@ import itomDbgWrapper #given at runtime by itom-c++-project
 import os
 import re #regular expressions
 import sys
-import bdb
 import dis
-import code
-import signal
 import inspect
 import traceback
 import linecache
@@ -238,7 +235,7 @@ class itoDebugger(bdb.Bdb):
     # The argument is the remaining string on the command line
     # Return true to exit from the command loop
 
-        # To be overridden in derived debuggers
+    # To be overridden in derived debuggers
     def defaultFile(self):
         """Produce a reasonable default."""
         filename = self.curframe.f_code.co_filename
@@ -247,39 +244,59 @@ class itoDebugger(bdb.Bdb):
         return filename
     
     def addNewBreakPoint(self,  filename,  lineno,  enabled,  temporary,  condition,  ignoreCount):
+        """Adds breakpoint to list of breakpoints.
+        
+        Return breakpoint ID (int) or error string (str)
+        """
         if not filename:
             filename = self.defaultFile()
         else:
             filename = self.canonic(filename)
+        
         # Check for reasonable breakpoint
-        line = self.checkline(filename, lineno)
-        if line:
+        try:
+            line = self._checkline(filename, lineno) #may raise an UnicodeDecodeError or IndexError
+        except IndexError as err:
+            return "Cannot add breakpoint: " + str(err)
+        except UnicodeDecodeError as err:
+            return "Cannot add breakpoint: " + str(err)
+        
+        if line > 0:
             # now set the break point
-            err = self.set_break(filename, line, temporary, condition, None)
-            if err:
-                self.error(err)
-                return -1
-            else:
+            err = self.set_break(filename, line, temporary, condition, None) #returns None if ok, else an error string
+            if err is None:
                 bp = self.get_breaks(filename, line)[-1]
                 bp.enabled = enabled
                 bp.ignore = ignoreCount
-                #self.message("Breakpoint %d at %s:%d with cond %s" %
-                #             (bp.number, bp.file, bp.line, bp.cond))
-                return bp.number
+                return int(bp.number)
+            else:
+                return "Cannot add breakpoint (file '%s', line %i): " % (filename, lineno) + str(err)
     
     def editBreakPoint(self,  bpNumber,  filename,  lineno,  enabled,  temporary,  condition,  ignoreCount):
+        """
+        Edit breakpoint given by bpNumber.
+        
+        Return 0 if successful, else str with error information
+        """
         if not filename:
             filename = self.defaultFile()
         else:
             filename = self.canonic(filename) # This better be in canonical form!
-        line = self.checkline(filename,  lineno)
-        if line:
+        
+        # Check for reasonable breakpoint
+        try:
+            line = self._checkline(filename, lineno) #may raise an UnicodeDecodeError or IndexError
+        except IndexError as err:
+            return "Cannot edit breakpoint: " + str(err)
+        except UnicodeDecodeError as err:
+            return "Cannot edit breakpoint: " + str(err)
+            
+        if line > 0:
             #input values are ok, break point can be edited
             try:
                 bp = self.get_bpbynumber(bpNumber)
             except ValueError as err:
-                self.error(err)
-                return -1
+                return "Cannot edit breakpoint: " + str(err)
             else:
                 bp.file = filename
                 bp.line = line
@@ -287,34 +304,31 @@ class itoDebugger(bdb.Bdb):
                 bp.cond = condition
                 bp.enabled = enabled
                 bp.ignore = ignoreCount
-                #self.message("Breakpoint edited %d at %s:%d with cond %s" %
-                #             (bp.number, bp.file, bp.line, bp.cond))
                 return 0
         else:
-            self.error("lineno is not valid.")
-            return -1
+            return "Cannot edit breakpoint (file '%s', line %i): Invalid line number (e.g. blank or comment line)"  % (filename, lineno)
     
-    def clearBreakPoint(self,  bpNumber):
+    def clearBreakPoint(self, bpNumber):
+        """Clears breakpoint with given bpNumber.
+        
+        return 0 if done, else str with error
+        """
         try:
-            bp = self.get_bpbynumber(bpNumber)
+            self.get_bpbynumber(bpNumber) #check if bp-number exists, if not raises a ValueError
         except ValueError as err:
-            self.error(err)
-            return -1
-        else:
-            self.clear_bpbynumber(bpNumber)
-            #self.message('Deleted %s' % bp)
-            return 0
+            return "Cannot clear breakpoint: " + str(err)
+        self.clear_bpbynumber(bpNumber)
+        return 0
 
-    def checkline(self, filename, lineno):
+    def _checkline(self, filename, lineno):
         """Check whether specified line seems to be executable.
 
-        Return `lineno` if it is, 0 if not (e.g. a docstring, comment, blank
+        Return `lineno` if it is or raise an IndexError if not (e.g. a docstring, comment, blank
         line or EOF). Warning: testing is not comprehensive.
         """
         # this method should be callable before starting debugging, so default
         # to "no globals" if there is no current frame
         if hasattr(self, 'curframe') and self.curframe != None:
-            #print('has attr curframe')
             globs = self.curframe.f_globals
         else:
             globs = None
@@ -322,22 +336,19 @@ class itoDebugger(bdb.Bdb):
         linecache.checkcache(filename) #force linecache to check if file has been update since last getline
         #globs = self.curframe.f_globals if hasattr(self, 'curframe') else None
         try:
-            line = linecache.getline(filename, lineno, globs)
+            line = linecache.getline(filename, lineno, globs) #returns line in file or '' if empty line or invalid file or lineno
         except UnicodeDecodeError as E:
-            E.reason = "{0}. File {1}".format(E.reason,filename)
+            E.reason = "{0}. File '{1}', line {2}".format(E.reason,filename,lineno)
             raise #reraise modified error
             
         if(line == ''):
-            print("linecache returned error in filename %s" % filename)
-        if not line:
-            self.message('End of file')
-            return 0
-        line = line.strip()
-        # Don't allow setting breakpoint at a blank line
-        if (not line or (line[0] == '#') or
-             (line[:3] == '"""') or line[:3] == "'''"):
-            self.error("Blank or comment. File: %s, line %d" % (filename, lineno))
-            return 0
+            raise IndexError("Line %d in file '%s' is blank or does not exist" % (lineno, filename))
+        else:
+            line = line.strip()
+            # Don't allow setting breakpoint at a blank line
+            if (not line or (line[0] == '#') or (line[:3] == '"""') or line[:3] == "'''"):
+                raise IndexError("Line %d in file '%s' is blank or is a comment." % (lineno, filename))
+        
         return lineno
 
     def do_where(self, arg):
@@ -392,7 +403,7 @@ class itoDebugger(bdb.Bdb):
     def _getval(self, arg):
         try:
             return eval(arg, self.curframe.f_globals, self.curframe_locals)
-        except:
+        except Exception:
             exc_info = sys.exc_info()[:2]
             self.error(traceback.format_exception_only(*exc_info)[-1].strip())
             raise
@@ -403,7 +414,7 @@ class itoDebugger(bdb.Bdb):
                 return eval(arg, self.curframe.f_globals, self.curframe_locals)
             else:
                 return eval(arg, frame.f_globals, frame.f_locals)
-        except:
+        except Exception:
             exc_info = sys.exc_info()[:2]
             err = traceback.format_exception_only(*exc_info)[-1].strip()
             return _rstr('** raised %s **' % err)
@@ -414,7 +425,7 @@ class itoDebugger(bdb.Bdb):
         """
         try:
             self.message(repr(self._getval(arg)))
-        except:
+        except Exception:
             pass
     # make "print" an alias of "p" since print isn't a Python statement anymore
 
@@ -424,7 +435,7 @@ class itoDebugger(bdb.Bdb):
         """
         try:
             self.message(pprint.pformat(self._getval(arg)))
-        except:
+        except Exception:
             pass
 
     def do_list(self, arg):
@@ -496,7 +507,7 @@ class itoDebugger(bdb.Bdb):
         """
         try:
             obj = self._getval(arg)
-        except:
+        except Exception:
             return
         try:
             lines, lineno = getsourcelines(obj)
@@ -532,7 +543,7 @@ class itoDebugger(bdb.Bdb):
         """
         try:
             value = self._getval(arg)
-        except:
+        except Exception:
             # _getval() already printed the error
             return
         code = None
