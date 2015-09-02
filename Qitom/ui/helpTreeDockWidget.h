@@ -26,6 +26,19 @@ public:
 
     enum itemType {typeSqlItem = 1, typeFilter = 2, typeWidget = 3, typeFPlugin = 4, typeWPlugin = 5, typeCategory = 6, typeDataIO = 7, typeActuator = 8};
 
+    enum iconType 
+    {
+        iconFilter = 100, 
+        iconPluginAlgo = 101,
+        iconPluginFilter = 102,
+        iconWidget = 103,
+        iconPluginDataIO = 104,
+        iconPluginGrabber = 105,
+        iconPluginAdda = 106,
+        iconPluginRawIO = 107,
+        iconPluginActuator = 108
+    };
+
 public slots:
     void navigateBackwards();
     void navigateForwards();
