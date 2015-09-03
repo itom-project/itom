@@ -1342,8 +1342,8 @@ void ConsoleWidget::paste()
         if (clipboard->mimeData()->hasText()) 
         {
             clipboardSave = clipboard->text();
-            int rowCount;
-            clipboard->setText(formatPhytonCodePart(clipboard->text(), rowCount));
+            int lineCount;
+            clipboard->setText(formatPhytonCodePart(clipboard->text(), lineCount));
         }
     }
 
@@ -1431,13 +1431,13 @@ void ConsoleWidget::pythonRunSelection(QString selectionText)
 
         selectionText += ConsoleWidget::lineBreak;
 */
-        int rowCount = 0;
-        selectionText = formatPhytonCodePart(selectionText, rowCount);
+        int lineCount = 0;
+        selectionText = formatPhytonCodePart(selectionText, lineCount);
 
         insertAt(selectionText, startLineBeginCmd, 2);
 
 //        execCommand(startLineBeginCmd, startLineBeginCmd + selectionText.count(ConsoleWidget::lineBreak, Qt::CaseInsensitive) - 1);
-        execCommand(startLineBeginCmd, startLineBeginCmd + rowCount - 1);
+        execCommand(startLineBeginCmd, startLineBeginCmd + lineCount - 1);
     }
 }
 
