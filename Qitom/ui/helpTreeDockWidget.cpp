@@ -46,7 +46,8 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
     m_pMainModel(NULL),
     m_dbPath(qApp->applicationDirPath()+"/help"),
     m_pParent(dock),
-    m_internalCall(false)
+    m_internalCall(false),
+    m_doingExpandAll(false)
 {
     ui.setupUi(this);
 
@@ -1998,16 +1999,20 @@ QModelIndex HelpTreeDockWidget::findIndexByPath(const int type, QStringList path
 // Expand all TreeNodes
 void HelpTreeDockWidget::expandTree()
 {
+    m_doingExpandAll = true;
     ui.treeView->expandAll();
     ui.treeView->resizeColumnToContents(0);
+    m_doingExpandAll = false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Collapse all TreeNodes
 void HelpTreeDockWidget::collapseTree()
 {
+    m_doingExpandAll = true;
     ui.treeView->collapseAll();
     ui.treeView->resizeColumnToContents(0);
+    m_doingExpandAll = false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2176,14 +2181,20 @@ void HelpTreeDockWidget::unshowTreeview()
 // Expand Tree
 void HelpTreeDockWidget::on_treeView_expanded(const QModelIndex &index)
 {
-    ui.treeView->resizeColumnToContents(0);
+    if (!m_doingExpandAll)
+    {
+        ui.treeView->resizeColumnToContents(0);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Collapse Tree
 void HelpTreeDockWidget::on_treeView_collapsed(const QModelIndex &index)
 {
-    ui.treeView->resizeColumnToContents(0);
+    if (!m_doingExpandAll)
+    {
+        ui.treeView->resizeColumnToContents(0);
+    }
 }
 
 } //end namespace ito

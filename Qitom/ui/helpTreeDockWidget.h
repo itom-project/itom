@@ -132,6 +132,7 @@ private:
     bool                     m_autoCollTree;
     bool                     m_forced;
     bool                     m_internalCall;        /*!< If a page is called by the history buttons, this bool prevents from that this page is stored in the historylist again*/
+    bool                     m_doingExpandAll;      /*!< if expand all is executed from somewhere, the slots on_treeView_expanded or on_treeView_collapsed should not be called to avoid crazy never-ending loops in Qt5, debug.*/
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
