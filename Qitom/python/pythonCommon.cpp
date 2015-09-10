@@ -1485,37 +1485,6 @@ PyObject* buildFilterOutputValues(QVector<QVariant> *outVals, ito::RetVal &retVa
 
 }
 
-//------------------------------------------------------------------------------------------------------------------
-bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *exceptionIfError)
-{
-    QByteArray msg;
-    if (retVal.containsWarningOrError())
-    {
-        const char *temp = retVal.errorMessage();
-        if (temp == NULL)
-        {
-            msg = QString("- unknown message -").toUtf8();
-        }
-        else
-        {
-            msg = QString::fromLatin1(temp).toUtf8();
-        }
-
-        if (retVal.containsError())
-        {
-            PyErr_SetString(exceptionIfError, msg.data());
-            return false;
-        }
-        else
-        {
-            std::cout << "Warning: " << msg.data() << "\n" << std::endl;
-        }
-    }
-
-    return true;
-}
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
 {
@@ -1892,8 +1861,47 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
     }
 }
 
+//------------------------------------------------------------------------------------------------------------------
+/* transforms a possible warning or error in retVal into a Python exception or warning
+    
+   returns true if retVal contained no error or if a warning became "only" a warning in Python.
+   returns false if a Python exception was created or if the warning level in Python was set such that the
+          warning contained in retVal also raised a Python exception.
+*/
+bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *exceptionIfError /*= PyExc_RuntimeError*/, PyObject *exceptionIfWarning /*= PyExc_UserWarning*/)
+{
+    QByteArray msg;
+    if (retVal.containsWarningOrError())
+    {
+        const char *temp = retVal.errorMessage();
+        if (temp == NULL)
+        {
+            msg = QString("- unknown message -").toUtf8();
+        }
+        else
+        {
+            msg = QString::fromLatin1(temp).toUtf8();
+        }
+
+        if (retVal.containsError())
+        {
+            PyErr_SetString(exceptionIfError, msg.data());
+            return false;
+        }
+        else
+        {
+            if (PyErr_WarnEx(exceptionIfWarning, msg.data(), 1) == -1)
+            {
+                return false; //warning was turned into a real exception
+            }
+        }
+    }
+
+    return true;
+}
+
 //------------------------------------------------------------------------------------------------------------------------------------------
-bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &objName, const tErrMsg &errorMSG, PyObject *exceptionIfError)
+bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &objName, const tErrMsg &errorMSG, PyObject *exceptionIfError /*= PyExc_RuntimeError*/, PyObject *exceptionIfWarning /*= PyExc_UserWarning*/)
 {
     QByteArray msgSpecified;
     QByteArray msgUnspecified;
@@ -1939,49 +1947,56 @@ bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &obj
         }
         return false;
     }
-
-    if (retVal.containsWarning())
+    else if (retVal.containsWarning())
     {
         switch(errorMSG)
         {
             case PythonCommon::noMsg:
             default:
-                msgSpecified = "Warning : ";
+                msgSpecified = "Warning while %s: \n%s";
+                msgUnspecified = "%s with unspecified warning.";
                 break;
-
             case PythonCommon::loadPlugin:
-                msgSpecified = "Warning while loading plugin: ";
+                msgSpecified = "Warning while loading plugin %s: \n%s";
+                msgUnspecified = "Unspecified warning while loading plugin %s.";
                 break;
-            case PythonCommon::execFunc:
-                msgSpecified = "Warning while invoking exec-function: ";
+            case PythonCommon::runFunc:
+                msgSpecified = "Warning while executing function %s: \n%s";
+                msgUnspecified = "Unspecified warning while executing function %s.";
                 break;
             case PythonCommon::invokeFunc:
-                msgSpecified = "Warning while invoking function: ";
+                msgSpecified = "Warning while invoking function %s: \n%s";
+                msgUnspecified = "Unspecified warning while invoking function %s.";
                 break;
             case PythonCommon::getProperty:
-                msgSpecified = "Warning while getting property info: ";
-                break;   
+                msgSpecified = "Warning while getting property info %s: \n%s";
+                msgUnspecified = "Unspecified warning while getting property info %s.";
+                break;
+            case PythonCommon::execFunc:
+                msgSpecified = "Warning while invoking exec-function %s: \n%s";
+                msgUnspecified = "Unspecified warning invoking exec-function %s.";
+                break;
         }
-
-        std::cerr << msgSpecified.data() << objName.toLatin1().data() << "\n" << std::endl;
 
         if (retVal.hasErrorMessage())
         {
-            std::cerr << " Message: " << retVal.errorMessage() << "\n" << std::endl;
+            PyErr_WarnFormat(exceptionIfWarning, 1, msgSpecified.data(), objName.toUtf8().data(), QString::fromLatin1(retVal.errorMessage()).toUtf8().data());
         }
         else
         {
-            std::cerr << " Message: No warning message indicated.\n" << std::endl;
+            PyErr_WarnFormat(exceptionIfWarning, 1, msgUnspecified.data(), objName.toUtf8().data());
         }
+        return false;
     }
+
     return true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal,const char *objName, const tErrMsg &errorMSG, PyObject *exceptionIfError)
+bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal,const char *objName, const tErrMsg &errorMSG, PyObject *exceptionIfError /*= PyExc_RuntimeError*/, PyObject *exceptionIfWarning /*= PyExc_UserWarning*/)
 {
     QString pName(objName);
-    return PythonCommon::setReturnValueMessage(retVal, pName, errorMSG, exceptionIfError);
+    return PythonCommon::setReturnValueMessage(retVal, pName, errorMSG, exceptionIfError, exceptionIfWarning);
 }
 //------------------------------------------------------------------------------------------------------------------
 } //end namespace ito
