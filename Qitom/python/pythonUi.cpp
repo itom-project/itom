@@ -1032,16 +1032,12 @@ PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
 
     retValue += locker.getSemaphore()->returnValue;
 
-    if(retValue.containsError())
+    if(retValue.containsWarningOrError())
     {
-
-        if(propertyName) PythonCommon::setReturnValueMessage(retValue, propertyName, PythonCommon::getProperty);
-        else PythonCommon::setReturnValueMessage(retValue, "???", PythonCommon::getProperty);
-        return NULL;
-    }
-    else if(retValue.containsWarning())
-    {
-        std::cout << "Warning while getting property infos with message: " << retValue.errorMessage() << std::endl;
+        if (!PythonCommon::setReturnValueMessage(retValue, propertyName ? propertyName : "getPropertyInfo", PythonCommon::getProperty))
+        {
+            return NULL;
+        }
     }
     
     QStringList stringList = retPropMap->keys();

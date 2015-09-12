@@ -8,6 +8,60 @@ This changelog only contains the most important changes taken from the commit-me
 itom
 ********
 
+**Version 2.0.0 (2015-07-20)**
+
+(more than 290 commits in itom repository)
+
+* easier compilation under Windows 8
+* welcome message removed since it bothers upon regular usage.
+* modified icons and splash screen in preparation for upcoming major version 2.0.
+* demo about saving and loading data objects added
+* default plugins for category *DObjLiveImage* changed to *itom2dqwtplot* and *PerspectivePlot* to *twipOGLFigure*
+* script added in plugin help section to automatically parse the parameter section in a plugin's documentation file from a running instance of the plugin
+* some improvements when pressing key up or down in console while also pressing the ctrl or shift buttons
+* plots (e.g. itom1dqwtplot and itom2dqwtplot) can now display axes labels in various ways. Enum *UnitLabelStyle* added.
+* It is now possible to a translation file (qm) to a python-loaded ui file
+* added linguist application to setup to create user defined translations for user-defined GUIs.
+* addin interface incremented to 2.0.0: branch embedded line plot merged, read-write-lock of data object removed, deprecated methods removed, cleanup in AddInBase, AddInActuator and AddInDataIO (things from SDK-change issue on bitbucket)
+* embedded line plot added to allow redirecting a line cut or z-stack in the designer plugin *itom2dqwtplot* to an existing *itom1dqwtplot* that is already contained in an user-defined GUI (demo available)
+* improvements in plugin parameter validator: rectMeta information is now better checked with more precise error messages
+* setup comes now with Numpy 1.9.2 (MKL-version)
+* algorithm plugin auto documentation improved to also show parameters and descriptions of filters
+* :py:class:`itom.font` for wrapping font information. This allows changing *axisFont*, *labelFont*... properties of plots
+* fix to convert between QColor-property and Python (itom.rgba, hex-color, string-color-name) in both directions
+* improved documentation style sheet for Qt5
+* :py:class:`itom.actuator` and :py:class:`itom.dataIO` can now be observed using weak references (python module weakref)
+* deprecated class :py:class:`itom.npDataObject` removed.
+* demoFitData.py added to demo files to show how to fit 2D polygons to data.
+* :py:class:`itom.timer` now accepts an interval of 0ms. The interval must now always be an integer. Further argument singleShot added to constructor in order to allow a single shot timer that only fires once after a start.
+* If "find word" widget in script editor is opened and user presses Esc key, the widget will be closed and the focus set to the parent script again.
+* fix such that running or debugging script snippets in the command line always print the result of every evaluated command (even in multiline commands).
+* bugfixes concerning changed default encoding between Qt4/Qt5. itom's default econding is latin1 (like Qt4). In Qt5 it changed to utf-8.
+* :py:meth:`~itom.uiItem.children` added to get a dictionary with all children of this uiItem (widget), optional: recursive scan of sub-children, too.
+* *insert codec string* feature added to script editor to insert the # coding=... line in any script.
+* help dock widget can now also be undocked as main window (like scripts or plots)
+* let user choose if unsaved files should always/never be saved before script execution or debugging (revertable via property dialog)
+* introduction of Python Package Manager (via module pip). This dialog allows updating and installing python packages and its dependencies from pypi.python.org or wheel files.
+* :py:meth:`~itom.pointCloud.fromXYZRGBA` and :py:meth:`~itom.polygonMesh.fromOrganizedCloud` added.
+* demo about statusbar in main windows added
+* fix in DataObject::mul and DataObject::div: axis tags and tag map from first operand are copied to resulting object. 
+* new api methods *apiSendParamToPyWorkspace* and *apiSendParamsToPyWorkspace* added.
+* removal of unused DataObject::lockRead(), DataObject::unlock(), DataObject::lockWrite() methods.
+* support for Mac OSX, 64bit. The build process is mainly supported by the package *brew*.
+* virtual slots *currentRow* and *currentColumn* added to QTableWidget for accessing these slots via Python.
+* negative indices of dataObject indexing is now allowed and wraps around: obj[-1,-1] accesses the last element.
+* change in ito::dObjHelper::squeezeConvertCheck2DDataObject: parameter convertToType: -1 means no conversion will be done, this was 0 before. However 0 collides with int8.
+* :py:meth:`~itom.dataObject.phyToPix` and :py:meth:`~itom.dataObject.pixToPhys` added
+* :py:meth:`~itom.uiItem.info()` can now print more properties, slots and signals if called with parameter 1 or 2.
+* unifications of OS-dependent macros. For itom, plugins and designerPlugins the following pre-compiler directives are set: WIN32, _WIN32 for all Win-Systems; additionally WIN64, _WIN64 for x64 build; linux, Linux for Linux(Unix) based systems, __APPLE__ for Apple systems.
+* added gitignore with respect to linux,windows,osx,c++,xcode,visualstudio,tortoisegit,cmake,python,ipythonnotebook,qt
+* compare operators with real, scalar operand inserted for data object (support in C++ and Python itom.dataObject).
+* mapping set of data object can now get a mask (e.g. itom.dataObject a; a[b > 0] = 2).
+* setTo-method and at-method with mask parameter added to DataObject. It is then possible to set a scalar value to masked values or to return a new data object that only contains masked values in a 1xM object.
+* bugfix: designer.exe could not be started in setup environment (Windows). This is fixed now.
+* :py:meth:`~itom.region.createMask` can get a bounding rectangle such that the returned mask data object can be adjusted concerning its size and offset.
+* many bugfixes
+
 **Version 1.4.0 (2015-02-17)**
 
 (more than 200 commits in itom repository)
@@ -196,6 +250,40 @@ there is no continuous changelog for these version
 Plugins
 ******************
 
+**Version 2.0.0 (2015-07-20)**
+
+(more than 250 commits in plugins repository)
+
+* **Ximea**: Renewed plugin tested with several xiQ cameras (MQ013, MQ042). More parameters like full-featured triggering, frame_burst, fixed and auto framerate... The parameter trigger_mode2 was renamed to trigger_selector (what it really is). Updated to XIMEA API 4.0.0.5. A software based shading correction was added, too. Meta information added to each captured frame.
+* PointGrey FlyCapture (**PGRFlyCapture**): improved documentation; if a slow data connection (e.g. USB2) is used, some data packages might be lost, therefore we retry to fetch the image if it could not be obtained the first time. All parameters renamed to underscore-separated version. 'roi' parameter added instead of x0,x1,y0,y1. Futher parameters *trigger_polarity* and *packetsize* added. Meta information added to each captured frame.
+* **LibUSB**: Many improvements: Information about all connected devices and their endpoints (if device is readable by libusb) can be printed, different endpoints for reading and writing are adjustable. Improved documentation.
+* **PCOSensicam** plugin added: This plugin supports image acquisition of the Sensicam camera series from PCO.
+* **PCOPixelFly**: bugfixes and modified dock widget as well as configuration dialog. Gain is a two-state variable only (0: default mode, 1: higher infrared sensitivity)
+* **USBMotion3XIII**: some smaller bugfixes in this motion controller plugin
+* motor controller plugin **Standa 8SMC4USB** added.
+* documentation of **AVTVimba** improved
+* version 1.0 of **DummyGrabber** released: many bugfixes, binning, roi change, integration time, frame time, gain and offset are now working and influence the resulting image.
+* plugin **ThorlabsCCS** (spectrometer from Thorlabs): 'roi' parameter added.
+* plugin **AvantesAvaSpec** added to run spectrometers from Avantes only using the **LibUSB** plugin without need of further SDKs or drivers from Avantes.
+* improvements in plugin **OpenCVGrabber**: native setting dialog for DirectShow based cameras can be opened in configuration dialog. This dialog provides more settings. Parameter *roi* added
+* bugfix: avoid crash at shutdown of **glDisplay** in Debug mode, Qt5
+* **libmodbus**: modbus-function read/write coils implemented for uint8 - data objects
+* plugin **CommonVisionBlox** added to control cameras that are accessed via CommonVisionBlox from Stemmer (GenICam based).
+68fb0e0 roi of OpenCVGrabber is now adjustable
+* plugin **PCOCamera** for the general camera SDK from PCO: parameter *roi* added
+* plugin **OpenCVFilters**: some bugfixes, filters *findHomography* added, fixes in **cvFlannBasedMatcher**
+* plugin **FittingFilters** is now compiled with *Lapacke*, filters *polyfitWeighted2DSinglePoints* and *polyval2DSinglePoints* added to FittingFilters to also fit arbitrary sets of x,y,z points.
+* bugfix in centroid1D (**dataobjectarithmetic**) if input object has scale!=1 or offset!=0. Version: 0.0.2
+* modified version 1.0 of **DummyMotor** released (config dialog based on AbstractAddInConfigDialog)
+* fix in remote/local detection of **PIPiezoCtrl**
+* fix in load and save x3p: scale values are fixed. When loading, one can indicate the desired x,y and value units (m, cm, mm, µm, nm). When saving in x3p format, the axis and value units are parsed such that all units are scaled to meter, which is default in x3p. default units m. This is more robust since it is also the default of x3p. Other default units might lead to value multiplications that can cause overflows for certain data types; the user should consider this. z-axis must always be absolute, but can contain a offset (translation vector, z-component). z-scaling is always multiplied to values. simplifications in loading data: x3p data types are directly mapped to one dataObject type (no complex switch cases necessary).
+* filters *calcRadialMean* and *spikeMeanFilter* added to **BasicFilters**
+* plugin **NI-DAQmx**: improvements in NI-DAQmx: device as optional parameter for initialization inserted in order to indicate the name of the device (e.g. Dev1). Tasks can now be restarted.
+* Plugin **PclTools**: filter **pclDistanceToModelDObj** and **saveVTKImageData** added (allows displaying volume plots e.g. in ParaView)
+* Plugin **DataObjectIO**: improvements and enhanced documentation in all save and load filters for image formats (png, tif, jpg, pgm, ...). These filter can now load color and monochrome image formats including possible alpha channels. Many filters improved, fixed and tested. loadNistSDF now supports ascii NIST, ISO (ISO25178-71) or the original BCR standard (used by Zygo NewView as export format)
+* many other bugfixes, especially concerning Qt5
+
+
 **Version 1.4.0 (2015-02-17)**
 
 (more than 170 commits in plugins repository)
@@ -285,7 +373,7 @@ there is no continuous changelog for these version
 Designer Plugins
 ******************
 
-**Version 2.0.0 (2015-07-xx)**
+**Version 2.0.0 (2015-07-20)**
 
 (more than 95 commits in designerPlugins repository)
 

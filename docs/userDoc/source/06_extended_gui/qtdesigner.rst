@@ -147,17 +147,17 @@ key-word of the item corresponds to the role of the button (see enumeration *QDi
 button. Common roles are:
 
 * "AcceptRole": Use this role for an **OK**-button. The dialog is closed and the return value in modal style is 1.
-* "CancelRole": Use this role for a **Cancel**-button. The dialog is also closed but the return value is 0.
+* "RejectRole": Use this role for a **Cancel**-button. The dialog is also closed but the return value is 0.
 
 Finally, the call to :py:class:`itom.ui` must be in the following way, in order to get an auto-generated button bar:
 
 .. code-block:: python
     
     dialog = ui("testWidget.ui", ui.TYPEDIALOG, ui.BUTTONBAR_VERTICAL, \
-        {"AcceptRole":"OK", "CancelRole":"Cancel"})
+        {"AcceptRole":"OK", "RejectRole":"Cancel"})
     #or
     dialog = ui("testWidget.ui", ui.TYPEDIALOG, ui.BUTTONBAR_HORIZONTAL, \
-        {"AcceptRole":"Yes", "CancelRole":"No"})
+        {"AcceptRole":"Yes", "RejectRole":"No"})
 
 .. note::
     
@@ -373,7 +373,7 @@ on the first exemplary dialog (*testWidget.ui*) has been clicked:
 .. code-block:: python
     
     dialog = ui("testWidget.ui", ui.TYPEDIALOG, ui.BUTTONBAR_VERTICAL, \
-        {"AcceptRole":"OK", "CancelRole":"Cancel"})
+        {"AcceptRole":"OK", "RejectRole":"Cancel"})
     
     def showMsg():
         #slot executed in button 'click me' is clicked
@@ -395,7 +395,7 @@ the exemplary code can look as follows:
         
         def __init__(self):
             self.dialog = ui("testWidget.ui", ui.TYPEDIALOG, ui.BUTTONBAR_VERTICAL, \
-                {"AcceptRole":"OK", "CancelRole":"Cancel"})
+                {"AcceptRole":"OK", "RejectRole":"Cancel"})
             self.dialog.btnClickMe.connect("clicked()", self.showMsg)
             self.dialog.show()
         

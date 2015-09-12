@@ -1,5 +1,5 @@
 SET (target_name qitom)
-        
+         
 project(${target_name})
  
 cmake_minimum_required(VERSION 2.8.7)
@@ -16,7 +16,7 @@ OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and it
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 include("../ItomBuildMacros.cmake")  
-      
+       
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools Svg)
@@ -207,6 +207,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetInfoBox.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleLastCommand.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleWrap.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAPI.h
@@ -272,6 +273,7 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetInfoBox.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleLastCommand.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleWrap.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAPI.ui
@@ -382,6 +384,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleLastCommand.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleWrap.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAPI.cpp
@@ -513,13 +516,15 @@ set (TRANSLATIONS_FILES)
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 if (UPDATE_TRANSLATIONS)
     if (QT5_FOUND)
-        QT5_CREATE_TRANSLATION(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+        QT5_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
     else (QT5_FOUND)
         QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
     endif (QT5_FOUND)
     
     add_custom_target (${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
     add_dependencies(${target_name}_prebuild ${target_name}_translation)
+    
+#    message(FATAL ${TRANSLATIONS_FILES} "---" ${EXISTING_TRANSLATION_FILES})
     
     if (QT5_FOUND)
         QT5_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${TRANSLATIONS_FILES})

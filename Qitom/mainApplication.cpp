@@ -159,11 +159,16 @@ void MainApplication::setupApplication()
 
     QPixmap pixmap(":/application/icons/itomicon/splashScreen2.png");
 
-#if QT_POINTER_SIZE == 8
-    QString text = QString(tr("Version %1\n%2")).arg(ITOM_VERSION_STR).arg(tr("64 bit (x64)"));
-#else
-    QString text = QString(tr("Version %1\n%2")).arg(ITOM_VERSION_STR).arg(tr("32 bit (x86)"));
-#endif
+    QString text;
+    
+    if (sizeof(void*) > 4) //was before a check using QT_POINTER_SIZE
+    {
+        text = QString(tr("Version %1\n%2")).arg(ITOM_VERSION_STR).arg(tr("64 bit (x64)"));
+    }
+    else
+    {
+        text = QString(tr("Version %1\n%2")).arg(ITOM_VERSION_STR).arg(tr("32 bit (x86)"));
+    }
 
 #if USING_GIT == 1
     text.append(QString("\nRev. %1").arg(GIT_HASHTAG_ABBREV));

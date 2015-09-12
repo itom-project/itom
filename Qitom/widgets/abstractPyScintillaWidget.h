@@ -63,6 +63,7 @@ protected:
 //    void mouseReleaseEvent(QMouseEvent * event);
 //    void keyReleaseEvent(QKeyEvent * event);
     void checkUserSelectionState();
+    QString formatPhytonCodePart(const QString &text, int &lineCount);
 
     tUserSelectionState m_userSelectionState;
 
@@ -73,8 +74,8 @@ private:
     QStringList m_installedApiFiles;
     bool m_textIndicatorActive;
     int m_textIndicatorNr; //number of indicator which marks all appearances of the currently selected text
-    
-
+    int getSpaceTabCount(const QString &s);
+    bool haveToIndention(QString s);
 
 public slots:
     void selectionChanged();

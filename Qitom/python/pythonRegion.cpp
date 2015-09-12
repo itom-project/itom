@@ -116,6 +116,14 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
     }
     else if(PyErr_Clear(), PyArg_ParseTuple(args,"iiii|i", &x, &y, &w, &h, &t))
     {
+        if (w < 1 || h < 1)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "Width and height of region must be > 0.");
+            return -1;
+        }
+
+        //QRegion has an upper limit for too many internal rectangles. If this limit is reached, a QWarning is emitted
+        //and self->r->rect() returns 0.
         if(t == QRegion::Rectangle)
         {
             DELETE_AND_SET_NULL(self->r);
@@ -125,6 +133,14 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
         {
             DELETE_AND_SET_NULL(self->r);
             self->r = new QRegion(x,y,w,h, QRegion::Ellipse);
+        }
+
+        if (self->r->rectCount() == 0)
+        {
+            delete self->r;
+            self->r = NULL;
+            PyErr_SetString(PyExc_RuntimeError, "Region cannot be created from a huge polygon. Upper limit reached.");
+            return -1;
         }
     }
     else

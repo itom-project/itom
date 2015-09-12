@@ -103,11 +103,14 @@ MainWindow::MainWindow() :
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 
     // general windows settings
-#if QT_POINTER_SIZE == 8
-    setWindowTitle(tr("itom (x64)"));
-#else
-    setWindowTitle(tr("itom"));
-#endif
+    if (sizeof(void*) > 4) //was before a check using QT_POINTER_SIZE
+    {
+        setWindowTitle(tr("itom (x64)"));
+    }
+    else
+    {
+        setWindowTitle(tr("itom"));
+    }
 
     setUnifiedTitleAndToolBarOnMac(true);
 

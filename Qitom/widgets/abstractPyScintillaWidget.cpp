@@ -387,6 +387,202 @@ QString AbstractPyScintillaWidget::getWordAtPosition(const int &line, const int 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! counts the numbers of leading tabs or spaces of a string
+/*!
+    \return number of leading tabs or spaces
+*/
+int AbstractPyScintillaWidget::getSpaceTabCount(const QString &s)
+{
+    int res = 0;
+    if (s.mid(res, 1).indexOf(QRegExp("[\t]")) > -1 || s.mid(res, 1) == " ")
+    {
+        do
+        {
+            ++res;
+        }
+        while (s.mid(res, 1).indexOf(QRegExp("[\t]")) > -1 || s.mid(res, 1) == " ");
+    }
+
+    return res;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! checks if text line contains a colon sign as last valid character (only comments or spaces are allowed after the colon)
+/*!
+    This method is necessary in order to verify if the following text lines must be indented with respect
+    to this line in Python syntax.
+
+    \return true if colon is last valid sign, else false
+*/
+bool AbstractPyScintillaWidget::haveToIndention(QString s)
+{
+    s = s.trimmed();
+    s.replace("'''", "§");
+    s.replace("\"\"\"", "§");
+    int count1 = s.count("§");
+    int count2 = s.count("#");
+
+    if (count1 + count2 > 0)
+    {
+        if (count1 == 0)
+        {
+            s = s.mid(1, s.indexOf("#"));
+        }
+        else if (count2 == 0)
+        {
+            bool comment = (count1 % 2 == 1);
+            if (comment)
+            {
+                s = s.mid(1, s.lastIndexOf("§") - 1);
+                s = s.trimmed();
+                --count1;
+            }
+
+            while (count1 > 0)
+            {
+                int pos1 = s.indexOf("§");
+                int pos2 = pos1 + 1;
+                while (s.mid(pos2, 1) != "§")
+                {
+                    ++pos2;
+                }
+                s = s.mid(0, pos1) + s.mid(pos2 + 1);
+                --count1;
+                --count1;
+            }
+        }
+        else
+        {
+            s = s.mid(1, s.indexOf("#"));
+            s = s.trimmed();
+
+            bool comment = ((count1 & 2) == 1);
+            if (comment)
+            {
+                s = s.mid(1, s.lastIndexOf("§"));
+                s = s.trimmed();
+                --count1;
+            }
+
+            while (count1 > 0)
+            {
+                int pos1 = s.indexOf("§");
+                int pos2 = pos1 + 1;
+                while (s.mid(pos2, 1) != "§")
+                {
+                    ++pos2;
+                }
+                s = s.mid(1, pos1) + s.mid(pos2 + 1);
+                --count1;
+                --count1;
+            }
+        }
+    }
+
+    s = s.trimmed();
+    return s.mid(s.size() - 1, 1) == ":";
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString AbstractPyScintillaWidget::formatPhytonCodePart(const QString &text, int &lineCount)
+{
+    QString res = "";
+    lineCount = 0;
+    if (text.trimmed() != "")
+    {
+        QString endlineRegExp = "[\n]";
+        QString endline = "\n";
+
+        QStringList commandList = text.split(QRegExp(endlineRegExp));
+        lineCount = commandList.size();
+        if (lineCount == 1)
+        {
+            res = text.trimmed();
+        }
+        else
+        {
+            int i = 1;
+            while (i < lineCount && commandList[i].trimmed() == "")
+            {
+                ++i;
+            }
+
+            if (i < lineCount)
+            {
+                int spaceTabCount1 = getSpaceTabCount(commandList[i]);
+                int spaceTabCount2 = 0;
+                int tmp = 0;
+                i = 2;
+                while (i < lineCount && spaceTabCount2 == 0)
+                {
+                    tmp = getSpaceTabCount(commandList[i]);
+                    if (tmp != spaceTabCount1)
+                    {
+                        spaceTabCount2 = tmp;
+                    }
+                    ++i;
+                }
+
+                int delCount = 0;
+                if (haveToIndention(commandList[0]))
+                {
+                    int spaceTabDifCount = 0;
+                    if (spaceTabCount2 != 0)
+                    {
+                        if (spaceTabCount1 > spaceTabCount2)
+                        {
+                            spaceTabDifCount = spaceTabCount1 - spaceTabCount2;
+                        }
+                        else
+                        {
+                            spaceTabDifCount = spaceTabCount2 - spaceTabCount1;
+                        }
+                    }
+                    else
+                    {
+                        if (spaceTabCount1 == 0 || spaceTabCount1 % 4 == 0)
+                        {
+                            spaceTabDifCount = 4;
+                        }
+                        else if (spaceTabCount1 % 3 == 0)
+                        {
+                            spaceTabDifCount = 3;
+                        }
+                        else if (spaceTabCount1 % 2 == 0)
+                        {
+                            spaceTabDifCount = 2;
+                        }
+                        else
+                        {
+                            spaceTabDifCount = 1;
+                        }
+                    }
+
+                    delCount = spaceTabCount1 - spaceTabDifCount;
+                }
+                else
+                {
+                    delCount = spaceTabCount1;
+                }
+
+                res = commandList[0].trimmed() + endline;
+                for (i = 1; i < lineCount; ++i)
+                {
+                    commandList[i].remove(0, delCount);
+                    res += commandList[i] + endline;
+                }
+            }
+            else
+            {
+                res = text.trimmed(); 
+            }
+        }
+    }
+
+    return res;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //bool AbstractPyScintillaWidget::event (QEvent * event)
 //{
 //    if (event->type() == QEvent::ToolTip && !QToolTip::isVisible())

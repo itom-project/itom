@@ -323,37 +323,21 @@ void RangeSliderPrivate::rangeBound(int valLimitMin, int valLimitMax, Handle han
 {
     int offset = (this->m_RangeIncludesLimits ? 1 : 0);
     int range = offset + valMax - valMin;
-    bool rangeOk = (range == bound(m_MinimumRange, m_MaximumRange, m_StepSizeRange, range, false));
 
-    if (rangeOk)
+    //try to fix left boundary and move right one
+    if (handleChangePriority == MaximumHandle || (handleChangePriority == NoHandle && (qAbs(valLimitMin - valMin) < qAbs(valLimitMax - valMax))))
     {
-        //try to fix left boundary and move right one
-        if (handleChangePriority == MaximumHandle || (handleChangePriority == NoHandle && (qAbs(valLimitMin - valMin) < qAbs(valLimitMax - valMax))))
-        {
-            valMin = bound(valLimitMin, valLimitMax, m_PositionStepSize, valMin);
-            valMax = bound(valMin + m_MinimumRange, qMin<qint64>(valLimitMax + offset, (qint64)valMin + (qint64)m_MaximumRange), m_StepSizeRange, valMin + range, false) - offset;
-        }
-        else //try to fix right boundary and move left one
-        {
-            valMax = bound(valLimitMin, valLimitMax + offset, m_PositionStepSize, valMax + offset) - offset;
-            valMin = bound(qMax<qint64>(valLimitMin, (qint64)valMax + offset - (qint64)m_MaximumRange), valMax + offset - m_MinimumRange, m_StepSizeRange, valMax + offset - range, false);
-        }
+        valMin = bound(valLimitMin, valLimitMax - m_MinimumRange, m_PositionStepSize, valMin);
+        qint64 maxRange = bound(m_MinimumRange, valLimitMax - valMin + offset, m_StepSizeRange, m_MaximumRange);
+        range = bound(m_MinimumRange, maxRange, m_StepSizeRange, valMax - valMin + offset, false);
+        valMax = valMin + range - offset;
     }
-    else
+    else //try to fix right boundary and move left one
     {
-        //try to fix left boundary and move right one
-        if (handleChangePriority == MaximumHandle || (handleChangePriority == NoHandle && (qAbs(valLimitMin - valMin) < qAbs(valLimitMax - valMax))))
-        {
-            valMin = bound(valLimitMin, valLimitMax, m_PositionStepSize, valMin);
-            range = bound(m_MinimumRange, m_MaximumRange, m_StepSizeRange, valMax - valMin + offset, false);
-            valMax = bound(valMin + m_MinimumRange, qMin<qint64>(valLimitMax + offset, (qint64)valMin + (qint64)m_MaximumRange), m_StepSizeRange, valMin + range, false) - offset;
-        }
-        else //try to fix right boundary and move left one
-        {
-            valMax = bound(valLimitMin, valLimitMax + offset, m_PositionStepSize, valMax + offset) - offset;
-            range = bound(m_MinimumRange, m_MaximumRange, m_StepSizeRange, valMax - valMin + offset, false);
-            valMin = bound(qMax<qint64>(valLimitMin, (qint64)valMax + (qint64)offset - (qint64)m_MaximumRange), (qint64)valMax + (qint64)offset - (qint64)m_MinimumRange, m_StepSizeRange, valMax + offset - range, false);
-        }
+        valMax = bound(qMin((qint64)valLimitMin + (qint64)m_MinimumRange - (qint64)offset, (qint64)valLimitMax), valLimitMax, m_PositionStepSize, valMax);
+        qint64 maxRange = bound(m_MinimumRange, valMax - valLimitMin + offset, m_StepSizeRange, m_MaximumRange);
+        range = bound(m_MinimumRange, maxRange, m_StepSizeRange, valMax - valMin + offset, false);
+        valMin = valMax - range + offset;
     }
 }
 
@@ -1127,6 +1111,9 @@ bool RangeSlider::event(QEvent* _event)
 void RangeSlider::setLimitsFromIntervalMeta(const ito::IntervalMeta &intervalMeta)
 {
     Q_D(RangeSlider);
+    qDebug() << "before: " << minimum() << maximum() <<  d->m_MinimumRange << maximumRange() << stepSizePosition() << stepSizeRange() << minimumValue() << maximumValue();
+    int m = maximum();
+
     d->m_RangeIncludesLimits = !intervalMeta.isIntervalNotRange();
     int offset = d->m_RangeIncludesLimits ? 1 : 0;
     
@@ -1136,6 +1123,11 @@ void RangeSlider::setLimitsFromIntervalMeta(const ito::IntervalMeta &intervalMet
 
     setMinimum(d->bound(0, intervalMeta.getMin() + d->m_PositionStepSize, d->m_PositionStepSize, intervalMeta.getMin()));
     setMaximum(d->bound(minimum(), intervalMeta.getMax() + d->m_PositionStepSize + offset, d->m_PositionStepSize, intervalMeta.getMax() + offset) - offset);
+
+    int e = m - maximum();
+
     d->m_MinimumRange = d->boundUnsigned(0, intervalMeta.getSizeMin() + d->m_StepSizeRange, d->m_StepSizeRange, intervalMeta.getSizeMin());
     setMaximumRange( std::min(intervalMeta.getMax() - intervalMeta.getMin() + offset,intervalMeta.getSizeMax()) ); //using setMaximumRange in order to finally adapt the current values to allowed values
+
+    qDebug() << "after: " << minimum() << maximum() <<  d->m_MinimumRange << maximumRange() << stepSizePosition() << stepSizeRange() << minimumValue() << maximumValue();
 }

@@ -76,9 +76,9 @@ namespace ito
             
             };
 
-            static bool transformRetValToPyException(ito::RetVal &retVal, PyObject *exceptionIfError = PyExc_RuntimeError);
-            static bool setReturnValueMessage(ito::RetVal &retVal, const QString &objName, const tErrMsg &errorMSG, PyObject *exceptionIfError = PyExc_RuntimeError);
-            static bool setReturnValueMessage(ito::RetVal &retVal, const char *objName, const tErrMsg &errorMSG, PyObject *exceptionIfError = PyExc_RuntimeError);
+            static bool transformRetValToPyException(ito::RetVal &retVal, PyObject *exceptionIfError = PyExc_RuntimeError, PyObject *exceptionIfWarning = PyExc_UserWarning);
+            static bool setReturnValueMessage(ito::RetVal &retVal, const QString &objName, const tErrMsg &errorMSG, PyObject *exceptionIfError = PyExc_RuntimeError, PyObject *exceptionIfWarning = PyExc_UserWarning);
+            static bool setReturnValueMessage(ito::RetVal &retVal, const char *objName, const tErrMsg &errorMSG, PyObject *exceptionIfError = PyExc_RuntimeError, PyObject *exceptionIfWarning = PyExc_UserWarning);
     };
 
 } //end namespace ito

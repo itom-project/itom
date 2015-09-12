@@ -127,6 +127,18 @@ itom.figure.show() -> shows figure
 itom.figure.subplot(index) -> returns plotItem of desired subplot
 itom.filter(name [, furtherParameters, ...]) -> invoke a filter (or algorithm) function from an algorithm-plugin.
 itom.filterHelp([filterName, dictionary = 0, furtherInfos = 0]) -> generates an online help for the given filter(s).
+itom.font(family [, pointSize = 0, weight = -1, italic = false) -> creates a font object.
+itom.font.Black
+itom.font.Bold
+itom.font.DemiBold
+itom.font.Light
+itom.font.Normal
+itom.font.family
+itom.font.italic
+itom.font.pointSize
+itom.font.strikeOut
+itom.font.underline
+itom.font.weight
 itom.gcEndTracking() -> compares the current object list of the garbage collector with the recently saved list.
 itom.gcStartTracking() -> stores the current object list of the garbage collector.
 itom.getAppPath() -> returns absolute path of application base directory.
@@ -141,7 +153,6 @@ itom.loadDataObject(filename, dataObject [, doNotAppendIDO]) -> load a dataObjec
 itom.loadIDC(filename) -> load a pickled idc-file and return the content as dictionary
 itom.loadMatlabMat(filename) -> loads Matlab mat-file by using scipy methods and returns the loaded dictionary.
 itom.newScript() -> opens an empty, new script in the current script window.
-itom.npDataObject(??) [class]
 itom.numeric:: [module]
 itom.openScript(filename) -> open the given script in current script window.
 itom.plot(data, [className, properties]) -> plots a dataObject in a newly created figure
@@ -246,7 +257,7 @@ itom.scriptEditor() -> opens new, empty script editor window (undocked)
 itom.setApplicationCursor([cursorIndex = -1]) -> changes the itom cursor or restores the previously set cursor if -1
 itom.setCurrentPath(newPath) -> set current working directory to given absolute newPath
 itom.setPalette(name, entries) -> set the palette for color bars defined by name.
-itom.timer(interval, callbackFunc, [argTuple]) -> new callback timer
+itom.timer(interval, callbackFunc [, argTuple, singleShot]) -> new callback timer
 itom.timer.isActive() -> returns timer status
 itom.timer.setInterval(interval) -> sets timer interval in [ms]
 itom.timer.start() -> starts timer
@@ -300,6 +311,7 @@ itom.ui.msgWarning(title, text [, buttons, defaultButton, parent]) -> opens a wa
 itom.ui.show([modal=0]) -> shows initialized UI-Dialog
 itom.uiItem(...) -> base class representing any widget of a graphical user interface
 itom.uiItem.call(slotOrPublicMethod [,argument1, argument2, ...]) -> calls any public slot of this widget or any accessible public method.
+itom.uiItem.children([recursive = False]) -> returns dict with widget-based child items of this uiItem.
 itom.uiItem.connect(signalSignature, callableMethod) -> connects the signal of the widget with the given callable python method
 itom.uiItem.disconnect(signalSignature, callableMethod) -> disconnects a connection which must have been established with exactly the same parameters.
 itom.uiItem.exists() -> returns true if widget still exists, else false.

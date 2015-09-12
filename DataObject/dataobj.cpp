@@ -1828,7 +1828,7 @@ template<typename _Tp> RetVal FreeFunc(DataObject *dObj)
     if (dObj->m_continuous && old_m_dims > 2 && dObj->m_owndata)
     {
         dataMat = (cv::Mat_<_Tp> *)dObj->m_data[0];
-        free(dataMat->datastart); //data is wrong, since data-pointer does not point to start in case of ROI
+        free((void*)dataMat->datastart); //data is wrong, since data-pointer does not point to start in case of ROI
         //free(dataMat->data);
     }
 
@@ -1917,7 +1917,7 @@ template<typename _Tp> RetVal SecureFreeFunc(DataObject *dObj)
             dataMat = (cv::Mat_<_Tp> *)dObj->m_data[0];
             if(dataMat && dataMat->datastart)
             {
-                free(dataMat->datastart);
+                free((void*)dataMat->datastart);
             }
         }
 
@@ -7741,8 +7741,12 @@ template<typename _Tp> std::ostream& coutFunc(std::ostream& out, const DataObjec
             }
             std::cout << ":,:]->(";
 
+#if (CV_MAJOR_VERSION < 3)
             std::cout << cv::format(*(dObj.get_mdata()[tMat]) , "numpy" ) << std::endl << std::endl;        
-
+#else
+            std::cout << *(dObj.get_mdata()[tMat]) << std::endl << std::endl;
+//            std::cout << cv::format((cv::InputArray)*(dObj.get_mdata()[tMat]), "numpy") << std::endl << std::endl;
+#endif
             std::cout << ")" << "\n" << std::endl;
         }
 

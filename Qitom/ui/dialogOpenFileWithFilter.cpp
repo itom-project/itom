@@ -219,6 +219,13 @@ ito::RetVal DialogOpenFileWithFilter::executeFilter()
         if(retVal.hasErrorMessage()) text.append( "\n" ).append(QLatin1String(retVal.errorMessage()));
         QMessageBox::critical( this, tr("Error while loading file"), text);
     }
+    else if (retVal.containsWarning())
+    {
+        QString text = tr("A warning occurred while loading the file.");
+        if(retVal.hasErrorMessage()) text.append( "\n" ).append(QLatin1String(retVal.errorMessage()));
+        QMessageBox::warning( this, tr("Warning while loading file"), text);
+    }
+
     return retVal;
 }
 
@@ -245,6 +252,13 @@ void DialogOpenFileWithFilter::filterCallFinished()
     }
     else
     {
+        if (retValue.containsWarning())
+        {
+            QString text = tr("A warning occurred while loading the file.");
+            if(retValue.hasErrorMessage()) text.append( "\n" ).append(QLatin1String(retValue.errorMessage()));
+            QMessageBox::warning( this, tr("Warning while loading file"), text);
+        }
+
         m_filterExecuted = true;
         QList<QTreeWidgetItem*> items = renderAutoMandAndOutResult();
         ui.treePreview->clear();

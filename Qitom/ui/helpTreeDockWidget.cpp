@@ -46,7 +46,8 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
     m_pMainModel(NULL),
     m_dbPath(qApp->applicationDirPath()+"/help"),
     m_pParent(dock),
-    m_internalCall(false)
+    m_internalCall(false),
+    m_doingExpandAll(false)
 {
     ui.setupUi(this);
 
@@ -76,10 +77,7 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
     ui.treeView->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     ui.treeView->setHeaderHidden(true);
 
-    loadIni();
-    m_forced = true;
-    propertiesChanged();
-    //reloadDB();
+    
 
     QStringList iconAliasesName;
     QList<int> iconAliasesNumb;
@@ -92,16 +90,21 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
         i++;
     }
 
-    m_iconGallery[100] = QIcon(":/helpTreeDockWidget/filter");
-    m_iconGallery[101] = QIcon(":/plugins/icons/pluginAlgo.png");
-    m_iconGallery[102] = QIcon(":/plugins/icons/pluginFilter.png");
-    m_iconGallery[103] = QIcon(":/plugins/icons/window.png");
-    m_iconGallery[104] = QIcon(":/helpTreeDockWidget/dataIO");
-    m_iconGallery[105] = QIcon(":/helpTreeDockWidget/pluginGrabber");
-    m_iconGallery[106] = QIcon(":/helpTreeDockWidget/pluginAdda");
-    m_iconGallery[107] = QIcon(":/helpTreeDockWidget/pluginRawIO");
-    m_iconGallery[108] = QIcon(":/helpTreeDockWidget/pluginActuator");
+    m_iconGallery[iconFilter] = QIcon(":/helpTreeDockWidget/filter");
+    m_iconGallery[iconPluginAlgo] = QIcon(":/plugins/icons/pluginAlgo.png");
+    m_iconGallery[iconPluginFilter] = QIcon(":/plugins/icons/pluginFilter.png");
+    m_iconGallery[iconWidget] = QIcon(":/plugins/icons/window.png");
+    m_iconGallery[iconPluginDataIO] = QIcon(":/helpTreeDockWidget/dataIO");
+    m_iconGallery[iconPluginGrabber] = QIcon(":/helpTreeDockWidget/pluginGrabber");
+    m_iconGallery[iconPluginAdda] = QIcon(":/helpTreeDockWidget/pluginAdda");
+    m_iconGallery[iconPluginRawIO] = QIcon(":/helpTreeDockWidget/pluginRawIO");
+    m_iconGallery[iconPluginActuator] = QIcon(":/helpTreeDockWidget/pluginActuator");
     //ui.textBrowser->setLineWrapMode(QTextEdit::NoWrap);
+
+    loadIni();
+    m_forced = true;
+    propertiesChanged();
+    //reloadDB();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -139,7 +142,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
             mainNode->setText("Algorithms");
             mainNode->setData(typeCategory, m_urType);
             mainNode->setData("Algorithms", m_urPath);
-            mainNode->setIcon(iconGallery->value(100));
+            mainNode->setIcon(iconGallery->value(iconFilter));
             QHash<QString, ito::AddInAlgo::FilterDef *>::const_iterator i = filterHashTable->constBegin();
             while (i != filterHashTable->constEnd()) 
             {
@@ -149,7 +152,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                     plugin->setEditable(false);
                     plugin->setData(typeFPlugin, m_urType);
                     plugin->setData(mainNode->text()+"."+plugin->text(), m_urPath);
-                    plugin->setIcon(iconGallery->value(101));
+                    plugin->setIcon(iconGallery->value(iconPluginAlgo));
                     plugin->setToolTip(i.value()->m_pBasePlugin->getFilename() + "; v" + QString::number(i.value()->m_pBasePlugin->getVersion()));
                     plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
                     mainNode->appendRow(plugin);
@@ -159,7 +162,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                 filter->setEditable(false);
                 filter->setData(typeFilter, m_urType);
                 filter->setData(mainNode->text()+"."+i.value()->m_pBasePlugin->objectName()+"."+filter->text(), m_urPath);
-                filter->setIcon(iconGallery->value(102));
+                filter->setIcon(iconGallery->value(iconPluginFilter));
                 filter->setToolTip(i.value()->m_pBasePlugin->getAuthor());
                 QStandardItem *test = plugins[i.value()->m_pBasePlugin->objectName()];
                 test->appendRow(filter);
@@ -174,7 +177,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
             mainNode->setText("Widgets");
             mainNode->setData(typeCategory, m_urType);
             mainNode->setData("Widgets", m_urPath);
-            mainNode->setIcon(iconGallery->value(100));
+            mainNode->setIcon(iconGallery->value(iconWidget));
             QHash<QString, ito::AddInAlgo::AlgoWidgetDef *>::const_iterator i = widgetHashTable->constBegin();
             while (i != widgetHashTable->constEnd()) 
             {
@@ -184,7 +187,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                     plugin->setEditable(false);
                     plugin->setData(typeWPlugin, m_urType);
                     plugin->setData(mainNode->text()+"."+plugin->text(), m_urPath);
-                    plugin->setIcon(iconGallery->value(101));
+                    plugin->setIcon(iconGallery->value(iconPluginAlgo));
                     plugin->setToolTip(i.value()->m_pBasePlugin->getFilename() + "; v" + QString::number(i.value()->m_pBasePlugin->getVersion()));
                     plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
                     mainNode->appendRow(plugin);
@@ -194,7 +197,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                 filter->setEditable(false);
                 filter->setData(typeWidget, m_urType);
                 filter->setData(mainNode->text()+"."+i.value()->m_pBasePlugin->objectName()+"."+filter->text(), m_urPath);
-                filter->setIcon(iconGallery->value(103));
+                filter->setIcon(iconGallery->value(iconWidget));
                 filter->setToolTip(i.value()->m_pBasePlugin->getAuthor());
                 QStandardItem *test = plugins[i.value()->m_pBasePlugin->objectName()];
                 test->appendRow(filter);
@@ -208,28 +211,28 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
             mainNode->setText("DataIO");
             mainNode->setData(typeCategory, m_urType);
             mainNode->setData(mainNode->text(), m_urPath);
-            mainNode->setIcon(iconGallery->value(104));
+            mainNode->setIcon(iconGallery->value(iconPluginDataIO));
 
             // Subcategory Node "Grabber"
             QStandardItem *pluginGrabber = new QStandardItem("Grabber");
             pluginGrabber->setEditable(false);
             pluginGrabber->setData(typeCategory, m_urType);
             pluginGrabber->setData(mainNode->text()+"."+pluginGrabber->text(), m_urPath);
-            pluginGrabber->setIcon(iconGallery->value(105));
+            pluginGrabber->setIcon(iconGallery->value(iconPluginGrabber));
             
             // Subcategory Node "ADDA"
             QStandardItem *pluginAdda = new QStandardItem("ADDA");
             pluginAdda->setEditable(false);
             pluginAdda->setData(typeCategory, m_urType);
             pluginAdda->setData(mainNode->text()+"."+pluginAdda->text(), m_urPath);
-            pluginAdda->setIcon(iconGallery->value(106));
+            pluginAdda->setIcon(iconGallery->value(iconPluginAdda));
             
             // Subcategory Node "Raw IO"
             QStandardItem *pluginRawIO = new QStandardItem("Raw IO");
             pluginRawIO->setEditable(false);
             pluginRawIO->setData(typeCategory, m_urType);
             pluginRawIO->setData(mainNode->text()+"."+pluginRawIO->text(), m_urPath);
-            pluginRawIO->setIcon(iconGallery->value(107));
+            pluginRawIO->setIcon(iconGallery->value(iconPluginRawIO));
 
             const QList<QObject*> *dataIOList = aim->getDataIOList();
             for(int i = 0; i < dataIOList->length(); i++)
@@ -245,21 +248,21 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                     {
                         case 129:
                         {// Grabber
-                            plugin->setIcon(iconGallery->value(105));
+                            plugin->setIcon(iconGallery->value(iconPluginGrabber));
                             plugin->setData(pluginGrabber->data(m_urPath).toString()+"."+plugin->text(), m_urPath);
                             pluginGrabber->appendRow(plugin);
                             break;
                         }
                         case 257:
                         {// ADDA
-                            plugin->setIcon(iconGallery->value(106));
+                            plugin->setIcon(iconGallery->value(iconPluginAdda));
                             plugin->setData(pluginAdda->data(m_urPath).toString()+"."+plugin->text(), m_urPath);
                             pluginAdda->appendRow(plugin);
                             break;
                         }
                         case 513:
                         {// Raw IO
-                            plugin->setIcon(iconGallery->value(107));
+                            plugin->setIcon(iconGallery->value(iconPluginRawIO));
                             plugin->setData(pluginRawIO->data(m_urPath).toString()+"."+plugin->text(), m_urPath);
                             pluginRawIO->appendRow(plugin);
                             break;
@@ -278,7 +281,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
             mainNode->setText("Actuator");
             mainNode->setData(typeCategory, m_urType);
             mainNode->setData(mainNode->text(), m_urPath);
-            mainNode->setIcon(iconGallery->value(108));
+            mainNode->setIcon(iconGallery->value(iconPluginActuator));
             const QList<QObject*> *ActuatorList = aim->getActList();
             for(int i = 0; i < ActuatorList->length(); i++)
             {
@@ -290,7 +293,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                     plugin->setEditable(false);
                     plugin->setData(typeActuator, m_urType);
                     plugin->setData(mainNode->text()+"."+plugin->text(), m_urPath);
-                    plugin->setIcon(iconGallery->value(108));
+                    plugin->setIcon(iconGallery->value(iconPluginActuator));
                     mainNode->appendRow(plugin);             
                 }
             }
@@ -1996,16 +1999,20 @@ QModelIndex HelpTreeDockWidget::findIndexByPath(const int type, QStringList path
 // Expand all TreeNodes
 void HelpTreeDockWidget::expandTree()
 {
+    m_doingExpandAll = true;
     ui.treeView->expandAll();
     ui.treeView->resizeColumnToContents(0);
+    m_doingExpandAll = false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Collapse all TreeNodes
 void HelpTreeDockWidget::collapseTree()
 {
+    m_doingExpandAll = true;
     ui.treeView->collapseAll();
     ui.treeView->resizeColumnToContents(0);
+    m_doingExpandAll = false;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2174,14 +2181,20 @@ void HelpTreeDockWidget::unshowTreeview()
 // Expand Tree
 void HelpTreeDockWidget::on_treeView_expanded(const QModelIndex &index)
 {
-    ui.treeView->resizeColumnToContents(0);
+    if (!m_doingExpandAll)
+    {
+        ui.treeView->resizeColumnToContents(0);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Collapse Tree
 void HelpTreeDockWidget::on_treeView_collapsed(const QModelIndex &index)
 {
-    ui.treeView->resizeColumnToContents(0);
+    if (!m_doingExpandAll)
+    {
+        ui.treeView->resizeColumnToContents(0);
+    }
 }
 
 } //end namespace ito
