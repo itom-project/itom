@@ -1268,11 +1268,11 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
         {
             if (retval.hasErrorMessage() == false)
             {
-                errOutInitParams(defaultParamListOpt, n, "wrong parameter type");
+                errOutInitParams(defaultParamListOpt, n - numMandParams, "wrong parameter type");
             }
             else
             {
-                errOutInitParams(defaultParamListOpt, n, retval.errorMessage());
+                errOutInitParams(defaultParamListOpt, n - numMandParams, retval.errorMessage());
             }
             if (mandPParsed)
             {
