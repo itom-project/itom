@@ -2708,7 +2708,7 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
 
     if(!PyArg_ParseTupleAndKeywords(args, kwds, "OO|iiO!", const_cast<char**>(kwlist), &titleObj, &textObj, &buttons, &defaultButton, &PythonUi::PyUiType, &parentItem))
     {
-        PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), buttons (combination of ui.MsgBox[...]), defaultButton (ui.MsgBox[...])");
+        PyErr_SetString(PyExc_TypeError, "arguments must be title (str), label (str), and optional buttons (combination of ui.MsgBox[...]), defaultButton (ui.MsgBox[...]), parent (any instance of class ui)");
         return NULL;
     }
 
