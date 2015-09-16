@@ -2716,8 +2716,10 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
 {
     PyDataObject *dobj1 = NULL;
     PyDataObject *dobj2 = NULL;
-    double scalar = 0;
+    ito::float64 scalar = 0;
+    ito::complex128 cscalar = 0;
     bool doneScalar = false;
+    bool complexScalar = false;
 
     if (PyDataObject_Check(o1) && PyDataObject_Check(o2))
     {
@@ -2731,9 +2733,14 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
         {
             scalar = PyFloat_AsDouble(o2);
         }
+        else if (PyComplex_Check(o2))
+        {
+            cscalar = ito::complex128(PyComplex_RealAsDouble(o2), PyComplex_ImagAsDouble(o2));
+            complexScalar = true;
+        }
         else
         {
-            PyErr_SetString(PyExc_RuntimeError, "second operand must be a dataObject, integer of float");
+            PyErr_SetString(PyExc_RuntimeError, "second operand must be a dataObject, integer, float or complex");
             return NULL;
         }
     }
@@ -2744,9 +2751,14 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
         {
             scalar = PyFloat_AsDouble(o1);
         }
+        else if (PyComplex_Check(o2))
+        {
+            cscalar = ito::complex128(PyComplex_RealAsDouble(o1), PyComplex_ImagAsDouble(o1));
+            complexScalar = true;
+        }
         else
         {
-            PyErr_SetString(PyExc_RuntimeError, "second operand must be a dataObject, integer of float");
+            PyErr_SetString(PyExc_RuntimeError, "first operand must be a dataObject, integer, float or complex");
             return NULL;
         }
     }
@@ -2764,6 +2776,11 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
         {
             retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) + *(dobj2->dataObject));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         }
+        else if (complexScalar)
+        {
+            doneScalar = true;
+            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) + cscalar);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+        }
         else
         {
             doneScalar = true;
@@ -2780,7 +2797,21 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
     if(doneScalar)
     {
         char buf[PROTOCOL_STR_LENGTH] = {0};
-        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Added %g scalar to dataObject.", scalar);
+        if (complexScalar)
+        {
+            if (cscalar.imag() > 0)
+            {
+                sprintf_s(buf, PROTOCOL_STR_LENGTH, "Added %g+i%g scalar to dataObject.", cscalar.real(), cscalar.imag());
+            }
+            else
+            {
+                sprintf_s(buf, PROTOCOL_STR_LENGTH, "Added %g-i%g scalar to dataObject.", cscalar.real(), -cscalar.imag());
+            }
+        }
+        else
+        {
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Added %g scalar to dataObject.", scalar);
+        }
         if(retObj) retObj->dataObject->addToProtocol(buf);
         
     }
@@ -2797,8 +2828,10 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
 {
     PyDataObject *dobj1 = NULL;
     PyDataObject *dobj2 = NULL;
-    double scalar = 0;
+    ito::float64 scalar = 0;
+    ito::complex128 cscalar = 0;
     bool doneScalar = false;
+    bool complexScalar = false;
 
     if (PyDataObject_Check(o1) && PyDataObject_Check(o2))
     {
@@ -2812,22 +2845,32 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
         {
             scalar = PyFloat_AsDouble(o2);
         }
+        else if (PyComplex_Check(o2))
+        {
+            cscalar = ito::complex128(PyComplex_RealAsDouble(o2), PyComplex_ImagAsDouble(o2));
+            complexScalar = true;
+        }
         else
         {
-            PyErr_SetString(PyExc_RuntimeError, "second operand must be a dataObject, integer of float");
+            PyErr_SetString(PyExc_RuntimeError, "second operand must be a dataObject, integer, float or complex");
             return NULL;
         }
     }
     else if (PyDataObject_Check(o2))
     {
-        dobj2 = (PyDataObject*)o2;
+        dobj1 = (PyDataObject*)o2; //dobj1 is always a dataobject!!! (difference to nbSub)
         if (PyFloat_Check(o1) || PyLong_Check(o1))
         {
             scalar = PyFloat_AsDouble(o1);
         }
+        else if (PyComplex_Check(o2))
+        {
+            cscalar = ito::complex128(PyComplex_RealAsDouble(o1), PyComplex_ImagAsDouble(o1));
+            complexScalar = true;
+        }
         else
         {
-            PyErr_SetString(PyExc_RuntimeError, "second operand must be a dataObject, integer of float");
+            PyErr_SetString(PyExc_RuntimeError, "first operand must be a dataObject, integer, float or complex");
             return NULL;
         }
     }
@@ -2841,19 +2884,19 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
 
     try
     {
-        if (dobj1 && dobj2)
+        if (dobj2)
         {
             retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) - *(dobj2->dataObject));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         }
-        else if (dobj1)
+        else if (complexScalar)
         {
             doneScalar = true;
-            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) - scalar);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) - cscalar);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         }
         else
         {
             doneScalar = true;
-            retObj->dataObject = new ito::DataObject((*(dobj2->dataObject)*(-1.0)) + scalar);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) - scalar);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         }
     }
     catch(cv::Exception exc)
@@ -2866,16 +2909,29 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
     if(doneScalar)
     {
         char buf[PROTOCOL_STR_LENGTH] = {0};
-        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Substracting %g scalar from dataObject or vice versa.", scalar);
-
+        if (complexScalar)
+        {
+            if (cscalar.imag() > 0)
+            {
+                sprintf_s(buf, PROTOCOL_STR_LENGTH, "Subtracted %g+i%g scalar to dataObject.", cscalar.real(), cscalar.imag());
+            }
+            else
+            {
+                sprintf_s(buf, PROTOCOL_STR_LENGTH, "Subtracted %g-i%g scalar to dataObject.", cscalar.real(), -cscalar.imag());
+            }
+        }
+        else
+        {
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Subtracted %g scalar to dataObject.", scalar);
+        }
         if(retObj) retObj->dataObject->addToProtocol(buf);
         
     }
     else
     {
-        if(retObj) retObj->dataObject->addToProtocol("Created by adding two dataObjects.");
+        if(retObj) retObj->dataObject->addToProtocol("Created by subtracting two dataObjects.");
     }
-
+    
     return (PyObject*)retObj;
 }
 
@@ -2910,33 +2966,68 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
     }
     else if (Py_TYPE(o1) == &PyDataObjectType)
     {
-        double factor = PyFloat_AsDouble((PyObject*)o2);
         PyDataObject *dobj1 = (PyDataObject*)(o1);
 
-        if (PyErr_Occurred())
+        if (PyComplex_Check(o2))
         {
-            return NULL;
+            complex128 factor = complex128(PyComplex_RealAsDouble(o2), PyComplex_ImagAsDouble(o2));
+
+            PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+            try
+            {
+                retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * factor);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            }
+            catch(cv::Exception exc)
+            {
+                Py_DECREF(retObj);
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str()); 
+                return NULL;
+            }
+
+            char buf[PROTOCOL_STR_LENGTH] = {0};
+            if (factor.imag() > 0)
+            {
+                sprintf_s(buf, PROTOCOL_STR_LENGTH, "Multiplied dataObject with %g+i%g.", factor.real(), factor.imag());
+            }
+            else
+            {
+                sprintf_s(buf, PROTOCOL_STR_LENGTH, "Multiplied dataObject with %g-i%g.", factor.real(), -factor.imag());
+            }
+
+            if(retObj) retObj->dataObject->addToProtocol(  buf);
+
+            return (PyObject*)retObj;
         }
-
-        PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-
-        try
+        else
         {
-            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * factor);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            double factor = PyFloat_AsDouble((PyObject*)o2);
+        
+            if (PyErr_Occurred())
+            {
+                return NULL;
+            }
+
+            PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+            try
+            {
+                retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * factor);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            }
+            catch(cv::Exception exc)
+            {
+                Py_DECREF(retObj);
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str()); 
+                return NULL;
+            }
+
+            char buf[PROTOCOL_STR_LENGTH] = {0};
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Multiplied dataObject with %g.", factor);
+
+            if(retObj) retObj->dataObject->addToProtocol(  buf);
+
+            return (PyObject*)retObj;
         }
-        catch(cv::Exception exc)
-        {
-            Py_DECREF(retObj);
-            PyErr_SetString(PyExc_TypeError, (exc.err).c_str()); 
-            return NULL;
-        }
-
-        char buf[PROTOCOL_STR_LENGTH] = {0};
-        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Multiplied dataObject scalar with %g.", factor);
-
-        if(retObj) retObj->dataObject->addToProtocol(  buf);
-
-        return (PyObject*)retObj;
     }
     else if (Py_TYPE(o2) == &PyDataObjectType)
     {
@@ -2986,45 +3077,68 @@ PyObject* PythonDataObject::PyDataObj_nbDivide(PyObject* o1, PyObject* o2)
     }
     if (Py_TYPE(o1) == &PyDataObjectType)
     {
-        double factor = PyFloat_AsDouble((PyObject*)o2);
         PyDataObject *dobj1 = (PyDataObject*)(o1);
-/*
-        if(!ito::dObjHelper::isNotZero(factor))
+
+        if (PyComplex_Check(o2))
         {
-            PyErr_SetString(PyExc_RuntimeError, "division by zero not implemented.");
-            return NULL;        
-        }
+            complex128 factor = complex128(PyComplex_RealAsDouble(o2), PyComplex_ImagAsDouble(o2));
 
-        if(!ito::dObjHelper::isFinite(factor))
+            PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+            try
+            {
+                retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * (complex128(1.0,0.0)/factor));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            }
+            catch(cv::Exception exc)
+            {
+                Py_DECREF(retObj);
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str()); 
+                return NULL;
+            }
+
+            char buf[PROTOCOL_STR_LENGTH] = {0};
+            if (factor.imag() > 0)
+            {
+                sprintf_s(buf, PROTOCOL_STR_LENGTH, "Divided dataObject by %g+i%g.", factor.real(), factor.imag());
+            }
+            else
+            {
+                sprintf_s(buf, PROTOCOL_STR_LENGTH, "Divided dataObject by %g-i%g.", factor.real(), -factor.imag());
+            }
+
+            if(retObj) retObj->dataObject->addToProtocol(  buf);
+
+            return (PyObject*)retObj;
+        }
+        else
         {
-             PyErr_SetString(PyExc_RuntimeError, "division by a dataObject not implemented.");
-            return NULL;            
+            double factor = PyFloat_AsDouble((PyObject*)o2);
+        
+            if (PyErr_Occurred())
+            {
+                return NULL;
+            }
+
+            PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+            try
+            {
+                retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * (1.0/factor));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            }
+            catch(cv::Exception exc)
+            {
+                Py_DECREF(retObj);
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str()); 
+                return NULL;
+            }
+
+            char buf[PROTOCOL_STR_LENGTH] = {0};
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Divided dataObject by %g.", factor);
+
+            if(retObj) retObj->dataObject->addToProtocol(buf);
+
+            return (PyObject*)retObj;
         }
-*/
-        if (PyErr_Occurred())
-        {
-            return NULL;
-        }
-
-        PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-
-        try
-        {
-            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * (1.0/factor));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
-        }
-        catch(cv::Exception exc)
-        {
-            Py_DECREF(retObj);
-            PyErr_SetString(PyExc_TypeError, (exc.err).c_str()); 
-            return NULL;
-        }
-
-        char buf[PROTOCOL_STR_LENGTH] = {0};
-        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Multiplied dataObject scalar with 1/%g.", factor);
-
-        if(retObj) retObj->dataObject->addToProtocol(buf);
-
-        return (PyObject*)retObj;
     }
 
     return NULL;
@@ -3386,9 +3500,36 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2)
         dobj1->dataObject->addToProtocol(buf);
         
     }
+    else if (PyComplex_Check(o2))
+    {
+        ito::complex128 val = ito::complex128(PyComplex_RealAsDouble(o2), PyComplex_ImagAsDouble(o2));
+
+        try
+        {
+            *(dobj1->dataObject) += val;
+        }
+        catch(cv::Exception exc)
+        {
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            return NULL;
+        }
+
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        if (val.imag() > 0)
+        {
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar addition of %g+i%g.", val.real(), val.imag());
+        }
+        else
+        {
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar addition of %g-i%g.", val.real(), -val.imag());
+        }
+
+        dobj1->dataObject->addToProtocol(buf);
+        
+    }
     else
     {
-        PyErr_SetString(PyExc_RuntimeError, "the second operand must be either a data object or an integer or floating point value");
+        PyErr_SetString(PyExc_RuntimeError, "the second operand must be either a data object or an integer, floating point or complex value");
         return NULL;
     }
 
@@ -3441,6 +3582,33 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
 
         dobj1->dataObject->addToProtocol(buf);
     }
+    else if (PyComplex_Check(o2))
+    {
+        ito::complex128 val = ito::complex128(PyComplex_RealAsDouble(o2), PyComplex_ImagAsDouble(o2));
+
+        try
+        {
+            *(dobj1->dataObject) -= val;
+        }
+        catch(cv::Exception exc)
+        {
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            return NULL;
+        }
+
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        if (val.imag() > 0)
+        {
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar subtraction of %g+i%g.", val.real(), val.imag());
+        }
+        else
+        {
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar subtraction of %g-i%g.", val.real(), -val.imag());
+        }
+
+        dobj1->dataObject->addToProtocol(buf);
+        
+    }
     else
     {
         PyErr_SetString(PyExc_RuntimeError, "the second operand must be either a data object or an integer or floating point value");
@@ -3484,27 +3652,61 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* 
     }
     else
     {
-        double factor = PyFloat_AsDouble((PyObject*)o2);
-
-        if (PyErr_Occurred())
+        if (PyComplex_Check(o2))
         {
-            return NULL;
-        }
+            ito::complex128 factor(PyComplex_RealAsDouble(o2), PyComplex_ImagAsDouble(o2));
 
-        try
+            if (PyErr_Occurred())
+            {
+                return NULL;
+            }
+
+            try
+            {
+                *(dobj1->dataObject) *= factor;
+            }
+            catch(cv::Exception exc)
+            {
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                return NULL;
+            }
+
+            char buf[PROTOCOL_STR_LENGTH] = {0};
+            if (factor.imag() > 0)
+            {
+                sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar multiplication of %g+i%g.", factor.real(), factor.imag());
+            }
+            else
+            {
+                sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar multiplication of %g-i%g.", factor.real(), -factor.imag());
+            }
+
+            dobj1->dataObject->addToProtocol(buf);
+        }
+        else
         {
-            *(dobj1->dataObject) *= factor;
-        }
-        catch(cv::Exception exc)
-        {
-            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-            return NULL;
-        }
+            double factor = PyFloat_AsDouble(o2);
 
-        char buf[PROTOCOL_STR_LENGTH] = {0};
-        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar multiplication of %g.", factor);
+            if (PyErr_Occurred())
+            {
+                return NULL;
+            }
 
-        dobj1->dataObject->addToProtocol(buf);
+            try
+            {
+                *(dobj1->dataObject) *= factor;
+            }
+            catch(cv::Exception exc)
+            {
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                return NULL;
+            }
+
+            char buf[PROTOCOL_STR_LENGTH] = {0};
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar multiplication of %g.", factor);
+
+            dobj1->dataObject->addToProtocol(buf);
+        }
     }
 
     Py_INCREF(o1);
@@ -3532,9 +3734,35 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceTrueDivide(PyObject* o1, PyObject
         //dobj1->dataObject->addToProtocol("Inplace division of two dataObjects");
         return NULL;
     }
+    else if (PyComplex_Check(o2))
+    {
+        complex128 factor = complex128(PyComplex_RealAsDouble(o2), PyComplex_ImagAsDouble(o2));
+
+        try
+        {
+            *(dobj1->dataObject) *= (complex128(1.0,0.0) / factor);
+        }
+        catch(cv::Exception exc)
+        {
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            return NULL;
+        }
+
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        if (factor.real() > 0)
+        {
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar division by %g+i%g.", factor.real(), factor.imag());
+        }
+        else
+        {
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar division by %g-i%g.", factor.real(), -factor.imag());
+        }
+
+        dobj1->dataObject->addToProtocol(buf);
+    }
     else
     {
-        double factor = PyFloat_AsDouble((PyObject*)o2);
+        double factor = PyFloat_AsDouble(o2);
 
         if (PyErr_Occurred())
         {
@@ -3552,7 +3780,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceTrueDivide(PyObject* o1, PyObject
         }
 
         char buf[PROTOCOL_STR_LENGTH] = {0};
-        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar devision of %g.", factor);
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar division by %g.", factor);
 
         dobj1->dataObject->addToProtocol(buf);
     }

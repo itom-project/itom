@@ -3764,6 +3764,132 @@ template<> RetVal AddScalarFunc<ito::Rgba32>(const DataObject *dObjIn, ito::floa
 typedef RetVal (*tAddScalarFunc)(const DataObject *dObjIn, ito::float64 scalar, DataObject *dObjOut);
 MAKEFUNCLIST(AddScalarFunc);
 
+
+
+template<typename _Tp> RetVal AddComplexScalarFunc(const DataObject *dObjIn, ito::complex128 scalar, DataObject *dObjOut)
+{
+   int srcTmat = 0;
+   int dstTmat = 0;
+   int numMats = dObjIn->getNumPlanes();
+   const cv::Mat **cvSrc = dObjIn->get_mdata();
+   cv::Mat **cvDest = dObjOut->get_mdata();
+
+   if (std::abs(scalar.imag()) < std::numeric_limits<ito::float64>::epsilon())
+   {
+       cv::Scalar s = scalar.real();
+
+        for (int nmat = 0; nmat < numMats; ++nmat)
+        {
+            dstTmat = dObjOut->seekMat(nmat, numMats);
+            srcTmat = dObjIn->seekMat(nmat, numMats);
+            *(cvDest[dstTmat]) = *(cvSrc[srcTmat]) + s;
+        }
+   }
+   else
+   {
+       cv::error(cv::Exception(CV_StsAssert,"The given complex value cannot be converted to a real value. However the data object is real.","", __FILE__, __LINE__));
+   }
+
+   return RetVal(retOk);
+}
+
+template<> RetVal AddComplexScalarFunc<ito::complex64>(const DataObject *dObjIn, ito::complex128 scalar, DataObject *dObjOut)
+{
+    int srcTmat = 0;
+    int dstTmat = 0;
+    int numMats = dObjIn->getNumPlanes();
+    const cv::Mat **cvSrcs = dObjIn->get_mdata();
+    cv::Mat **cvDests = dObjOut->get_mdata();
+    const cv::Mat *cvSrc;
+    cv::Mat *cvDest;
+    const ito::complex64 *srcPtr;
+    ito::complex64 *destPtr;
+    ito::complex64 value = cv::saturate_cast<ito::complex64>(scalar);
+
+    for (int nmat = 0; nmat < numMats; ++nmat)
+    {
+        cvDest = cvDests[dObjOut->seekMat(nmat, numMats)];
+        cvSrc = cvSrcs[dObjIn->seekMat(nmat, numMats)];
+        for (int r = 0; r < cvDest->rows; ++r)
+        {
+            srcPtr = cvSrc->ptr<ito::complex64>(r);
+            destPtr = cvDest->ptr<ito::complex64>(r);
+            for (int c = 0; c < cvDest->cols; ++c)
+            {
+                destPtr[c] = srcPtr[c] + value;
+            }
+        }
+    }
+
+   return RetVal(retOk);
+}
+
+template<> RetVal AddComplexScalarFunc<ito::complex128>(const DataObject *dObjIn, ito::complex128 scalar, DataObject *dObjOut)
+{
+    int srcTmat = 0;
+    int dstTmat = 0;
+    int numMats = dObjIn->getNumPlanes();
+    const cv::Mat **cvSrcs = dObjIn->get_mdata();
+    cv::Mat **cvDests = dObjOut->get_mdata();
+    const cv::Mat *cvSrc;
+    cv::Mat *cvDest;
+    const ito::complex128 *srcPtr;
+    ito::complex128 *destPtr;
+
+    for (int nmat = 0; nmat < numMats; ++nmat)
+    {
+        cvDest = cvDests[dObjOut->seekMat(nmat, numMats)];
+        cvSrc = cvSrcs[dObjIn->seekMat(nmat, numMats)];
+        for (int r = 0; r < cvDest->rows; ++r)
+        {
+            srcPtr = cvSrc->ptr<ito::complex128>(r);
+            destPtr = cvDest->ptr<ito::complex128>(r);
+            for (int c = 0; c < cvDest->cols; ++c)
+            {
+                destPtr[c] = srcPtr[c] + scalar;
+            }
+        }
+    }
+
+   return RetVal(retOk);
+}
+
+template<> RetVal AddComplexScalarFunc<ito::Rgba32>(const DataObject *dObjIn, ito::complex128 scalar, DataObject *dObjOut)
+{
+   int srcTmat = 0;
+   int dstTmat = 0;
+   int numMats = dObjIn->getNumPlanes();
+   const cv::Mat_<ito::Rgba32> **cvSrc = (const cv::Mat_<ito::Rgba32>**)dObjIn->get_mdata();
+   cv::Mat_<ito::Rgba32> **cvDest = (cv::Mat_<ito::Rgba32>**)dObjOut->get_mdata();
+
+   if (std::abs(scalar.imag()) < std::numeric_limits<ito::float64>::epsilon())
+   {
+       cv::Scalar s;
+       ito::int32 sign = scalar.real() < 0.0 ? -1 : 1;
+       ito::uint32 val = fabs(scalar.real()) > 4294967295 ? 0xFFFFFFFF : (ito::uint32)fabs(scalar.real());
+       s[0] = ((ito::uint8*)&val)[0] * sign;
+       s[1] = ((ito::uint8*)&val)[1] * sign;
+       s[2] = ((ito::uint8*)&val)[2] * sign;
+       s[3] = ((ito::uint8*)&val)[3] * sign;
+
+        for (int nmat = 0; nmat < numMats; ++nmat)
+        {
+            dstTmat = dObjOut->seekMat(nmat, numMats);
+            srcTmat = dObjIn->seekMat(nmat, numMats);
+            *(cvDest[dstTmat]) = *(cvSrc[srcTmat]) + s;
+        }
+   }
+   else
+   {
+       cv::error(cv::Exception(CV_StsAssert,"The given complex value cannot be converted to a real value. However the rgba32 data object only supports scalar operations with real scalars.","", __FILE__, __LINE__));
+   }
+
+   return RetVal(retOk);
+}
+
+typedef RetVal (*tAddComplexScalarFunc)(const DataObject *dObjIn, ito::complex128 scalar, DataObject *dObjOut);
+MAKEFUNCLIST(AddComplexScalarFunc);
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! high-level, non-templated arithmetic operator for element-wise addition of values of given data object to this data object
 /*!
@@ -3785,8 +3911,6 @@ DataObject & DataObject::operator += (const DataObject &rhs)
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
             return *this;           
         }
-        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        //return *this;
     }
 
     (fListAddFunc[m_type])(this, &rhs, this);
@@ -3796,6 +3920,12 @@ DataObject & DataObject::operator += (const DataObject &rhs)
 DataObject & DataObject::operator += (const float64 &value)
 {
     (fListAddScalarFunc[m_type])(this, value, this);
+    return *this;
+}
+
+DataObject & DataObject::operator += (const complex128 &value)
+{
+    (fListAddComplexScalarFunc[m_type])(this, value, this);
     return *this;
 }
 
@@ -3821,8 +3951,6 @@ DataObject DataObject::operator + (const DataObject &rhs)
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
             return *this;           
         }
-        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        //return *this;
     }
 
     DataObject result;
@@ -3841,6 +3969,16 @@ DataObject DataObject::operator + (const float64 &value)
     copyTo(result, 1);
 
     (fListAddScalarFunc[m_type])(this, value, &result);
+    return result;
+}
+
+DataObject DataObject::operator + (const complex128 &value)
+{
+    DataObject result;
+    result.m_continuous = this->m_continuous;
+    copyTo(result, 1);
+
+    (fListAddComplexScalarFunc[m_type])(this, value, &result);
     return result;
 }
 
@@ -3878,7 +4016,7 @@ template<typename _Tp> RetVal SubFunc(const DataObject *dObj1, const DataObject 
         *cvDstTmat = *cvSrcTmat1 - *cvSrcTmat2;
     }
  
-   return 0;
+   return retOk;
 }
 
 typedef RetVal (*tSubFunc)(const DataObject *src1, const DataObject *src2, DataObject *dst);
@@ -3907,8 +4045,6 @@ DataObject & DataObject::operator -= (const DataObject &rhs)
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
             return *this;           
         }
-        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        //return *this;
     }
     fListSubFunc[m_type](this, &rhs, this);
 
@@ -3918,6 +4054,12 @@ DataObject & DataObject::operator -= (const DataObject &rhs)
 DataObject & DataObject::operator -= (const float64 &value)
 {
     (fListAddScalarFunc[m_type])(this, -value, this);
+    return *this;
+}
+
+DataObject & DataObject::operator -= (const complex128 &value)
+{
+    (fListAddComplexScalarFunc[m_type])(this, -value, this);
     return *this;
 }
 
@@ -3943,8 +4085,6 @@ DataObject DataObject::operator - (const DataObject &rhs)
             cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
             return *this;           
         }
-        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        //return *this;
     }
 
     DataObject result;
@@ -3963,6 +4103,16 @@ DataObject DataObject::operator - (const float64 &value)
     copyTo(result, 1);
 
     (fListAddScalarFunc[m_type])(this, -value, &result);
+    return result;
+}
+
+DataObject DataObject::operator - (const complex128 &value)
+{
+    DataObject result;
+    result.m_continuous = this->m_continuous;
+    copyTo(result, 1);
+
+    (fListAddComplexScalarFunc[m_type])(this, -value, &result);
     return result;
 }
 
@@ -4001,7 +4151,7 @@ template<typename _Tp> RetVal OpMulFunc(const DataObject *dObj1, const DataObjec
     dObjRes->getSize().m_p[dObjRes->getDims() - 2] = msize.height;
    }
 
-   return 0;
+   return retOk;
 }
 
 typedef RetVal (*tOpMulFunc)(const DataObject *src1, const DataObject *src2, DataObject *dst);
@@ -4069,26 +4219,23 @@ DataObject DataObject::operator * (const DataObject &rhs)
     \param factor
     \return retOk
 */
-template<typename _Tp> RetVal OpScalarMulFunc(DataObject *src, const double &factor)
+template<typename _Tp> RetVal OpScalarMulFunc(DataObject *src, const float64 &factor)
 {
    int numMats = src->getNumPlanes();
    int MatNum = 0;
 
    cv::Mat* tempMat = NULL;
    _Tp* dstPtr = NULL;
-   int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
-   int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
-
 
    for (int nmat = 0; nmat < numMats; nmat++)
    {
        MatNum = src->seekMat(nmat, numMats);
        tempMat = src->get_mdata()[MatNum];
 
-       for (int y = 0; y < sizey; y++)
+       for (int y = 0; y < tempMat->rows; ++y)
        {
            dstPtr = tempMat->ptr<_Tp>(y);
-           for (int x = 0; x < sizex; x++)
+           for (int x = 0; x < tempMat->cols; ++x)
            {
                dstPtr[x] = cv::saturate_cast<_Tp>(dstPtr[x] * factor);
            }
@@ -4098,7 +4245,7 @@ template<typename _Tp> RetVal OpScalarMulFunc(DataObject *src, const double &fac
    return retOk;
 }
 
-template<> RetVal OpScalarMulFunc<ito::complex64>(DataObject *src, const double &factor)
+template<> RetVal OpScalarMulFunc<ito::complex64>(DataObject *src, const float64 &factor)
 {
    int numMats = src->getNumPlanes();
    int MatNum = 0;
@@ -4106,27 +4253,26 @@ template<> RetVal OpScalarMulFunc<ito::complex64>(DataObject *src, const double 
 
    cv::Mat* tempMat = NULL;
    ito::complex64*  dstPtr = NULL;
-   int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
-   int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
+
    for (int nmat = 0; nmat < numMats; nmat++)
    {
        MatNum = src->seekMat(nmat, numMats);
        tempMat = src->get_mdata()[MatNum];
 
-       for (int y = 0; y < sizey; y++)
+       for (int y = 0; y < tempMat->rows; y++)
        {
            dstPtr = tempMat->ptr<ito::complex64>(y);
-           for (int x = 0; x < sizex; x++)
+           for (int x = 0; x < tempMat->cols; x++)
            {
                dstPtr[x] = cv::saturate_cast<ito::complex64>(dstPtr[x] * factor2);
            }
        }
    }
 
-   return 0;
+   return retOk;
 }
 
-template<> RetVal OpScalarMulFunc<ito::complex128>(DataObject *src, const double &factor)
+template<> RetVal OpScalarMulFunc<ito::complex128>(DataObject *src, const float64 &factor)
 {
    int numMats = src->getNumPlanes();
    int MatNum = 0;
@@ -4134,27 +4280,26 @@ template<> RetVal OpScalarMulFunc<ito::complex128>(DataObject *src, const double
 
    cv::Mat * tempMat = NULL;
    ito::complex128* dstPtr = NULL;
-   int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
-   int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
+
    for (int nmat = 0; nmat < numMats; nmat++)
    {
        MatNum = src->seekMat(nmat, numMats);
        tempMat = src->get_mdata()[MatNum];
 
-       for (int y = 0; y < sizey; y++)
+       for (int y = 0; y < tempMat->rows; y++)
        {
            dstPtr = tempMat->ptr<ito::complex128>(y);
-           for (int x = 0; x < sizex; x++)
+           for (int x = 0; x < tempMat->cols; x++)
            {
                dstPtr[x] = cv::saturate_cast<ito::complex128>(dstPtr[x] * factor2);
            }
        }
    }
 
-   return 0;
+   return retOk;
 }
 
-template<> RetVal OpScalarMulFunc<ito::Rgba32>(DataObject *src, const double &factor)
+template<> RetVal OpScalarMulFunc<ito::Rgba32>(DataObject *src, const float64 &factor)
 {
    int numMats = src->getNumPlanes();
    int MatNum = 0;
@@ -4164,37 +4309,177 @@ template<> RetVal OpScalarMulFunc<ito::Rgba32>(DataObject *src, const double &fa
 
    cv::Mat* tempMat = NULL;
    ito::Rgba32* dstPtr = NULL;
-   int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
-   int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
+
    for (int nmat = 0; nmat < numMats; nmat++)
    {
        MatNum = src->seekMat(nmat, numMats);
        tempMat = src->get_mdata()[MatNum];
 
-       for (int y = 0; y < sizey; y++)
+       for (int y = 0; y < tempMat->rows; y++)
        {
            dstPtr = tempMat->ptr<ito::Rgba32>(y);
-           for (int x = 0; x < sizex; x++)
+           for (int x = 0; x < tempMat->cols; x++)
            {
                dstPtr[x] *= factor2;
            }
        }
    }
 
-   return ito::retOk;
+   return retOk;
 }
 
-typedef RetVal (*tOpScalarMulFunc)(DataObject *src, const double &factor);
+typedef RetVal (*tOpScalarMulFunc)(DataObject *src, const float64 &factor);
 MAKEFUNCLIST(OpScalarMulFunc);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! low-level, templated method which multiplies every element of Data Object with a factor
+/*!
+    \param *src
+    \param factor
+    \return retOk
+*/
+template<typename _Tp> RetVal OpScalarComplexMulFunc(DataObject *src, const complex128 &factor)
+{
+    int numMats = src->getNumPlanes();
+    int MatNum = 0;
+
+    cv::Mat* tempMat = NULL;
+    _Tp* dstPtr = NULL;
+
+    if (std::abs(factor.imag()) < std::numeric_limits<ito::float64>::epsilon())
+    {
+        float64 factor2 = factor.real();
+
+        for (int nmat = 0; nmat < numMats; nmat++)
+        {
+            MatNum = src->seekMat(nmat, numMats);
+            tempMat = src->get_mdata()[MatNum];
+
+            for (int y = 0; y < tempMat->rows; ++y)
+            {
+                dstPtr = tempMat->ptr<_Tp>(y);
+                for (int x = 0; x < tempMat->cols; ++x)
+                {
+                    dstPtr[x] = cv::saturate_cast<_Tp>(dstPtr[x] * factor2);
+                }
+            }
+        }
+    }
+    else
+    {
+        cv::error(cv::Exception(CV_StsAssert,"The given complex value cannot be converted to a real value. However the data object is real.","", __FILE__, __LINE__));
+    }
+
+   return retOk;
+}
+
+template<> RetVal OpScalarComplexMulFunc<ito::complex64>(DataObject *src, const complex128 &factor)
+{
+    int numMats = src->getNumPlanes();
+    int MatNum = 0;
+    ito::complex64 factor2 = cv::saturate_cast<complex64>(factor);
+
+    cv::Mat* tempMat = NULL;
+    ito::complex64*  dstPtr = NULL;
+
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
+        MatNum = src->seekMat(nmat, numMats);
+        tempMat = src->get_mdata()[MatNum];
+
+        for (int y = 0; y < tempMat->rows; y++)
+        {
+            dstPtr = tempMat->ptr<ito::complex64>(y);
+            for (int x = 0; x < tempMat->cols; x++)
+            {
+                dstPtr[x] = cv::saturate_cast<ito::complex64>(dstPtr[x] * factor2);
+            }
+        }
+    }
+
+    return retOk;
+}
+
+template<> RetVal OpScalarComplexMulFunc<ito::complex128>(DataObject *src, const complex128 &factor)
+{
+    int numMats = src->getNumPlanes();
+    int MatNum = 0;
+
+    cv::Mat * tempMat = NULL;
+    ito::complex128* dstPtr = NULL;
+
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
+        MatNum = src->seekMat(nmat, numMats);
+        tempMat = src->get_mdata()[MatNum];
+
+        for (int y = 0; y < tempMat->rows; y++)
+        {
+            dstPtr = tempMat->ptr<ito::complex128>(y);
+            for (int x = 0; x < tempMat->cols; x++)
+            {
+                dstPtr[x] = cv::saturate_cast<ito::complex128>(dstPtr[x] * factor);
+            }
+        }
+    }
+
+    return retOk;
+}
+
+template<> RetVal OpScalarComplexMulFunc<ito::Rgba32>(DataObject *src, const complex128 &factor)
+{
+   int numMats = src->getNumPlanes();
+   int MatNum = 0;
+
+    if (std::abs(factor.imag()) < std::numeric_limits<ito::float64>::epsilon())
+    {
+        ito::Rgba32 factor2;
+        factor2 = (factor.real() < 0.0 ? (ito::uint32)0 : (factor.real() > 4294967295 ? (ito::uint32)0xFFFFFFFF : (ito::uint32)(factor.real() + 0.5)));
+
+        cv::Mat* tempMat = NULL;
+        ito::Rgba32* dstPtr = NULL;
+
+        for (int nmat = 0; nmat < numMats; nmat++)
+        {
+            MatNum = src->seekMat(nmat, numMats);
+            tempMat = src->get_mdata()[MatNum];
+
+            for (int y = 0; y < tempMat->rows; y++)
+            {
+                dstPtr = tempMat->ptr<ito::Rgba32>(y);
+                for (int x = 0; x < tempMat->cols; x++)
+                {
+                    dstPtr[x] *= factor2;
+                }
+            }
+        }
+    }
+    else
+    {
+        cv::error(cv::Exception(CV_StsAssert,"The given complex value cannot be converted to a real value. However the rgba32 data object only supports scalar operations with real scalars.","", __FILE__, __LINE__));
+    }
+
+    return retOk;
+}
+
+typedef RetVal (*tOpScalarComplexMulFunc)(DataObject *src, const complex128 &factor);
+MAKEFUNCLIST(OpScalarComplexMulFunc);
 
 //! high-level method which multiplies every element in this data object by a given floating-point factor
 /*!
     \param factor
     \sa OpScalarMulFunc
 */
-DataObject & DataObject::operator *= (const double &factor)
+DataObject & DataObject::operator *= (const float64 &factor)
 {
    fListOpScalarMulFunc[m_type](this, factor);
+
+   return *this;
+}
+
+DataObject & DataObject::operator *= (const complex128 &factor)
+{
+   fListOpScalarComplexMulFunc[m_type](this, factor);
 
    return *this;
 }
@@ -4204,7 +4489,17 @@ DataObject & DataObject::operator *= (const double &factor)
     \param factor
     \sa operator *, OpScalarMulFunc
 */
-DataObject DataObject::operator * (const double &factor)
+DataObject DataObject::operator * (const float64 &factor)
+{
+   DataObject result;
+   result.m_continuous = m_continuous;
+   copyTo(result, 1);
+
+   result *= factor;
+   return result;
+}
+
+DataObject DataObject::operator * (const complex128 &factor)
 {
    DataObject result;
    result.m_continuous = m_continuous;
