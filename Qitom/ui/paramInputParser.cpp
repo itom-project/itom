@@ -96,6 +96,7 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param> &params)
         {
             //try to split string into parts of around 120 characters and replace separatring spaces by \n to have a multi-line tool tip text
             int l = 119;
+            int lLastTry = l;
             while (l < info.length())
             {
                 if ((l = info.indexOf(" ", l)) >= 0)
@@ -103,6 +104,8 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param> &params)
                     info.replace(l, 1, '\n');
                     l += 120;
                 }
+                else
+                    l = lLastTry--;
             }
             m_lblInfo->setToolTip(info);
         }
