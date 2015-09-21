@@ -5,7 +5,6 @@ OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to 
 OPTION(BUILD_OPENCV_SHARED "Use the shared version of OpenCV (default: ON)." ON)
 SET (BUILD_QTVERSION "auto" CACHE STRING "auto: automatically detects Qt4 or Qt5, else use Qt4 or Qt5")
 
-
 IF(BUILD_OPENCV_SHARED)
     SET(OpenCV_STATIC FALSE)
 ELSE(BUILD_OPENCV_SHARED)
@@ -18,11 +17,8 @@ else (BUILD_TARGET64)
     set(CMAKE_SIZEOF_VOID_P 4)
 endif (BUILD_TARGET64)
 
-IF (${CMAKE_MAJOR_VERSION} EQUAL 3)
-    SET(CMAKE_VERSION_GE_030000 "TRUE")
-    SET(CMAKE_VERSION_GT_020811 "TRUE")
-ELSE (${CMAKE_MAJOR_VERSION} EQUAL 3)
-    SET(CMAKE_VERSION_GE_030000 "TRUE")
+IF (${CMAKE_MAJOR_VERSION} LESS 3)
+    SET(CMAKE_VERSION_GE_030000 "FALSE")
     IF (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} STRGREATER 2.7)
         IF (${CMAKE_PATCH_VERSION} GREATER 11)
             MESSAGE (STATUS "CMake > 2.8.11")
@@ -35,7 +31,11 @@ ELSE (${CMAKE_MAJOR_VERSION} EQUAL 3)
         MESSAGE (STATUS "CMake < 2.8")
         SET(CMAKE_VERSION_GT_020811 "FALSE") #CMAKE <= 2.8.10 (changes in FindQt4)
     ENDIF (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} STRGREATER 2.7)
-ENDIF (${CMAKE_MAJOR_VERSION} EQUAL 3)
+ELSE (${CMAKE_MAJOR_VERSION} LESS 3)
+    SET(CMAKE_VERSION_GE_030000 "TRUE")
+    SET(CMAKE_VERSION_GT_020811 "TRUE")
+    MESSAGE (STATUS "CMake >= 3.0")
+ENDIF (${CMAKE_MAJOR_VERSION} LESS 3)
 
 #These are the overall pre-compiler directives for itom and its plugins:
 #
@@ -347,18 +347,11 @@ MACRO (QT4_WRAP_CPP_ITOM outfiles )
     # get include dirs
     QT4_GET_MOC_FLAGS(moc_flags)
     
-    #message(FATAL "${CMAKE_VERSION_GT_020811}")
-    #IF(${CMAKE_VERSION_GT_020811} STREQUAL "TRUE")
-    #    message(FATAL " ja ja")
-    #ENDIF()
-    
     IF((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
         QT4_EXTRACT_OPTIONS(moc_files moc_options moc_target ${ARGN})
     ELSE((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
         QT4_EXTRACT_OPTIONS(moc_files moc_options ${ARGN})
     ENDIF((${CMAKE_VERSION_GT_020811} STREQUAL "TRUE"))
-
-    #MESSAGE(STATUS "${moc_files} QT4_WRAP_CPP_ITOM")
 
     foreach (it ${moc_files})
         GET_FILENAME_COMPONENT(it ${it} ABSOLUTE)
@@ -407,17 +400,13 @@ MACRO(QT4_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
         ENDIF()
     endforeach()
 
-    #message(STATUS "native ts ${_my_tsfiles}")
-
     foreach( _lang ${${languages}})
         set(_tsFile ${CMAKE_CURRENT_SOURCE_DIR}/translation/${target}_${_lang}.ts)
-        #message(STATUS "scan ${_tsFile}")
         get_filename_component(_ext ${_tsFile} EXT)
         get_filename_component(_abs_FILE ${_tsFile} ABSOLUTE)
         IF(EXISTS ${_abs_FILE})
             list(APPEND _my_tsfiles ${_abs_FILE})
         ELSE()
-            #message(STATUS "...not exist")
             #create new ts file
             add_custom_command(OUTPUT ${_abs_FILE}_new
                 COMMAND ${QT_LUPDATE_EXECUTABLE}
@@ -431,7 +420,6 @@ MACRO(QT4_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
     set(${tsFiles} ${${tsFiles}} ${_my_tsfiles}) #add translation files (*.ts) to tsFiles list
 
     foreach(_ts_file ${_my_tsfiles})
-        #message(STATUS "update ${_ts_file}")
         IF(_my_sources)
             # make a .pro file to call lupdate on, so we don't make our commands too
             # long for some systems
@@ -485,7 +473,6 @@ MACRO(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
     
     foreach( _lang ${${languages}})
         set(_tsFile ${CMAKE_CURRENT_SOURCE_DIR}/translation/${target}_${_lang}.ts)
-        #message(STATUS "scan ${_tsFile}")
         get_filename_component(_ext ${_tsFile} EXT)
         get_filename_component(_abs_FILE ${_tsFile} ABSOLUTE)
         
@@ -493,7 +480,6 @@ MACRO(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
         IF(EXISTS ${_abs_FILE})
             list(APPEND _my_tsfiles ${_abs_FILE})
         ELSE()
-            #message(STATUS "...not exist")
             #create new ts file
             add_custom_command(OUTPUT ${_abs_FILE}_new
                 COMMAND ${Qt5_LUPDATE_EXECUTABLE}
@@ -663,7 +649,6 @@ MACRO (ADD_DESIGNERHEADER_TO_COPY_LIST target headerfiles sources destinations)
         message(SEND_ERROR "ITOM_DIR is not indicated")
     ENDIF()
     
-    #MESSAGE(STATUS "header-target: " ${target})
     foreach(_hfile ${${headerfiles}})
         LIST(APPEND ${sources} ${_hfile}) #adds the complete source path including filename of the dll (configuration-dependent) to the list 'sources'
         LIST(APPEND ${destinations} ${ITOM_APP_DIR}/designer/${target})
@@ -733,7 +718,11 @@ MACRO (ADD_OUTPUTLIBRARY_TO_SDK_LIB target sources destinations)
       SET(SDK_PLATFORM "x64")
     ENDIF ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
     
-    IF(MSVC10)
+    IF(MSVC12)
+        SET(SDK_COMPILER "vc12")
+    ELSEIF(MSVC11)
+        SET(SDK_COMPILER "vc11")
+    ELSEIF(MSVC10)
         SET(SDK_COMPILER "vc10")
     ELSEIF(MSVC9)
         SET(SDK_COMPILER "vc9")
@@ -778,7 +767,11 @@ MACRO (ADD_LIBRARY_TO_APPDIR_AND_SDK target sources destinations)
         SET(SDK_PLATFORM "x64")
     ENDIF ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
 
-    IF(MSVC10)
+    IF(MSVC12)
+        SET(SDK_COMPILER "vc12")
+    ELSEIF(MSVC11)
+        SET(SDK_COMPILER "vc11")
+    ELSEIF(MSVC10)
         SET(SDK_COMPILER "vc10")
     ELSEIF(MSVC9)
         SET(SDK_COMPILER "vc9")
