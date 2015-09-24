@@ -1892,7 +1892,7 @@ bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *e
         {
             if (PyErr_WarnEx(exceptionIfWarning, msg.data(), 1) == -1)
             {
-                return false; //warning was turned into a real exception
+                return true; //warning was turned into a real exception, but all in all the script should go on.
             }
         }
     }
@@ -1986,7 +1986,7 @@ bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &obj
         {
             PyErr_WarnFormat(exceptionIfWarning, 1, msgUnspecified.data(), objName.toUtf8().data());
         }
-        return false;
+        return true; //a warning is an exception, however the script does not fail and should go on.
     }
 
     return true;
