@@ -1892,7 +1892,11 @@ bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *e
         {
             if (PyErr_WarnEx(exceptionIfWarning, msg.data(), 1) == -1)
             {
-                return true; //warning was turned into a real exception, but all in all the script should go on.
+                return false; //warning was turned into a real exception, 
+            }
+            else
+            {
+                return true; //warning is a warning, go on with the script
             }
         }
     }
@@ -1978,15 +1982,25 @@ bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &obj
                 break;
         }
 
+        int level;
+
         if (retVal.hasErrorMessage())
         {
-            PyErr_WarnFormat(exceptionIfWarning, 1, msgSpecified.data(), objName.toUtf8().data(), QString::fromLatin1(retVal.errorMessage()).toUtf8().data());
+            level = PyErr_WarnFormat(exceptionIfWarning, 1, msgSpecified.data(), objName.toUtf8().data(), QString::fromLatin1(retVal.errorMessage()).toUtf8().data());
         }
         else
         {
-            PyErr_WarnFormat(exceptionIfWarning, 1, msgUnspecified.data(), objName.toUtf8().data());
+            level = PyErr_WarnFormat(exceptionIfWarning, 1, msgUnspecified.data(), objName.toUtf8().data());
         }
-        return true; //a warning is an exception, however the script does not fail and should go on.
+
+        if (level == -1)
+        {
+            return false; //the warning was turned into an exception due to the settings of the python warning module
+        }
+        else
+        {
+            return true; // the warning is a warning, go on with the script execution
+        }
     }
 
     return true;
