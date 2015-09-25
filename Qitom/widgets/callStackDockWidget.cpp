@@ -102,14 +102,6 @@ CallStackDockWidget::~CallStackDockWidget()
 */
 void CallStackDockWidget::createActions()
 {
-    /*m_actDelete = new ShortcutAction(QIcon(":/workspace/icons/document-close-4.png"), tr("delete item(s)"), this, QKeySequence::Delete, Qt::WidgetWithChildrenShortcut);
-    m_actDelete->connectTrigger(this, SLOT(mnuDeleteItem()));
-    m_actExport = new ShortcutAction(QIcon(":/workspace/icons/document-export.png"), tr("export item(s)"), this);
-    m_actExport->connectTrigger(this, SLOT(mnuExportItem()));
-    m_actImport = new ShortcutAction(QIcon(":/workspace/icons/document-import.png"), tr("import item(s)"), this);
-    m_actImport->connectTrigger(this, SLOT(mnuImportItem()));
-    m_actRename = new ShortcutAction(QIcon(":/workspace/icons/edit-rename.png"), tr("rename item"), this, QKeySequence(tr("F2")), Qt::WidgetWithChildrenShortcut);
-    m_actRename->connectTrigger(this, SLOT(mnuRenameItem()));*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -119,26 +111,11 @@ void CallStackDockWidget::createActions()
 */
 void CallStackDockWidget::createToolBars()
 {
-    /*m_pMainToolBar = new QToolBar(tr("script editor"),this);
-    m_pMainToolBar->setFloatable(false);
-    m_pMainToolBar->setAllowedAreas(Qt::TopToolBarArea);
-    addAndRegisterToolBar(m_pMainToolBar, "mainToolBar");
-
-    m_pMainToolBar->addAction(m_actImport->action());
-    m_pMainToolBar->addAction(m_actExport->action());
-    m_pMainToolBar->addAction(m_actDelete->action());
-    m_pMainToolBar->addAction(m_actRename->action());*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void CallStackDockWidget::createMenus()
 {
-    /*m_pContextMenu = new QMenu(this);
-    m_pContextMenu->addAction(m_actDelete->action());
-    m_pContextMenu->addAction(m_actRename->action());
-    m_pContextMenu->addSeparator();
-    m_pContextMenu->addAction(m_actExport->action());
-    m_pContextMenu->addAction(m_actImport->action());*/
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
