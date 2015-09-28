@@ -20,10 +20,10 @@ public:
     
     virtual void SetUp(void)
     {
-        mat1_2d = ito::DataObject(12,13,ito::getDataType( (const _Tp *) NULL ));
-        mat2_2d = ito::DataObject(10,15,ito::getDataType( (const _Tp *) NULL ));
-        mat1_3d = ito::DataObject(13,12,14,ito::getDataType( (const _Tp *) NULL ));    
-        mat2_3d = ito::DataObject(4,5,5,ito::getDataType( (const _Tp *) NULL ));
+        mat1_2d = ito::DataObject(12,13,ito::getDataType2<_Tp*>());
+        mat2_2d = ito::DataObject(10,15,ito::getDataType2<_Tp*>());
+        mat1_3d = ito::DataObject(13,12,14,ito::getDataType2<_Tp*>());    
+        mat2_3d = ito::DataObject(4,5,5,ito::getDataType2<_Tp*>());
 
 
     };

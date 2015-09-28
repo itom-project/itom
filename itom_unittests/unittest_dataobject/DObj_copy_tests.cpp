@@ -26,35 +26,35 @@ public:
         int *temp_size1 = new int[2];
         temp_size1[0] =10;
         temp_size1[1] =10;
-        dObj1_s = ito::DataObject(0,temp_size1,ito::getDataType( (const _Tp *) NULL ));
-        dObj2_s = ito::DataObject(2,temp_size1,ito::getDataType( (const _Tp *) NULL ));
-        dObj3_s = ito::DataObject(4,5,5,ito::getDataType( (const _Tp *) NULL ));
+        dObj1_s = ito::DataObject(0,temp_size1,ito::getDataType2<_Tp*>());
+        dObj2_s = ito::DataObject(2,temp_size1,ito::getDataType2<_Tp*>());
+        dObj3_s = ito::DataObject(4,5,5,ito::getDataType2<_Tp*>());
         int *temp_size = new int[5];
         temp_size[0] = 10;
         temp_size[1] = 12;
         temp_size[2] = 16;
         temp_size[3] = 18;
         temp_size[4] = 10;
-        dObj4_s = ito::DataObject(5,temp_size,ito::getDataType( (const _Tp *) NULL ));
+        dObj4_s = ito::DataObject(5,temp_size,ito::getDataType2<_Tp*>());
         int *temp_size3 = new int[5];
         temp_size3[0] = 4;
         temp_size3[1] = 5;
         temp_size3[2] = 5;
         temp_size3[3] = 4;
         temp_size3[4] = 3;
-        dObj4_s2 = ito::DataObject(5,temp_size3,ito::getDataType( (const _Tp *) NULL ));
+        dObj4_s2 = ito::DataObject(5,temp_size3,ito::getDataType2<_Tp*>());
         int *temp_size2 = new int[5];
         temp_size2[0] = 1;
         temp_size2[1] = 1;
         temp_size2[2] = 2;
         temp_size2[3] = 1;
         temp_size2[4] = 1;
-        dObj4_s1 = ito::DataObject(5,temp_size2,ito::getDataType( (const _Tp *) NULL ));
+        dObj4_s1 = ito::DataObject(5,temp_size2,ito::getDataType2<_Tp*>());
 
-        dObj1_d = ito::DataObject(0,temp_size1,ito::getDataType( (const _Tp *) NULL ));
-        dObj2_d = ito::DataObject(2,temp_size1,ito::getDataType( (const _Tp *) NULL ));
-        dObj3_d = ito::DataObject(3,3,10,ito::getDataType( (const _Tp *) NULL ));
-        dObj4_d = ito::DataObject(5,temp_size,ito::getDataType( (const _Tp *) NULL ));
+        dObj1_d = ito::DataObject(0,temp_size1,ito::getDataType2<_Tp*>());
+        dObj2_d = ito::DataObject(2,temp_size1,ito::getDataType2<_Tp*>());
+        dObj3_d = ito::DataObject(3,3,10,ito::getDataType2<_Tp*>());
+        dObj4_d = ito::DataObject(5,temp_size,ito::getDataType2<_Tp*>());
 
     };
  

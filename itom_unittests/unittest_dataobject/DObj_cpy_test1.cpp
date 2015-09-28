@@ -7,6 +7,7 @@
 #pragma once
 #include "opencv/cv.h"
 #include "../../DataObject/dataobj.h"
+#include "../../common/typeDefs.h"
 #include "gtest/gtest.h"
 //#include "test_global.h"
 #include "commonChannel.h"
@@ -23,34 +24,51 @@ public:
     
     virtual void SetUp(void)
     {
-        int *temp_size1 = new int[2];
-        temp_size1[0] =10;
-        temp_size1[1] =10;
-        dObj1_s = ito::DataObject(0,temp_size1,ito::getDataType( (const _Tp *) NULL ));
-        dObj2_s = ito::DataObject(2,temp_size1,ito::getDataType( (const _Tp *) NULL ));
-        dObj3_s = ito::DataObject(4,5,5,ito::getDataType( (const _Tp *) NULL ));
-        int *temp_size = new int[5];
-        temp_size[0] = 4;
-        temp_size[1] = 4;
-        temp_size[2] = 4;
-        temp_size[3] = 4;
-        temp_size[4] = 4;
-        dObj4_s = ito::DataObject(5,temp_size,ito::getDataType( (const _Tp *) NULL ));
-        int *temp_size2 = new int[5];
-        temp_size2[0] = 1;
-        temp_size2[1] = 1;
-        temp_size2[2] = 2;
-        temp_size2[3] = 1;
-        temp_size2[4] = 1;
-        dObj4_s1 = ito::DataObject(5,temp_size2,ito::getDataType( (const _Tp *) NULL ));
+        int temp_size1[] = {10,10};
+        int temp_size[] = {4,4,4,4,4};
+        int temp_size2[] = {1,1,2,1,1};
+        int temp_size3[] = {5,1,1};
+        int temp_size4[] = {1,5};
+        int temp_size5[] = {1,4,1,2};
+        int temp_size6[] = {4,2};
 
-        dObj1_d = ito::DataObject(0,temp_size1,ito::getDataType( (const _Tp *) NULL ));
-        dObj2_d = ito::DataObject(2,temp_size1,ito::getDataType( (const _Tp *) NULL ));
-        dObj3_d = ito::DataObject(4,5,5,ito::getDataType( (const _Tp *) NULL ));
-        dObj4_d = ito::DataObject(5,temp_size,ito::getDataType( (const _Tp *) NULL ));
+        ito::tDataType type = ito::getDataType2<_Tp*>();
+
+        dObj1_s = ito::DataObject(0,temp_size1,type);
+        dObj2_s = ito::DataObject(2,temp_size1,type);
+        dObj3_s = ito::DataObject(4,5,5,type);
+        dObj4_s = ito::DataObject(5,temp_size,type);
+        dObj4_s1 = ito::DataObject(5,temp_size2,type);
+        dObj1_d = ito::DataObject(0,temp_size1,type);
+        dObj2_d = ito::DataObject(2,temp_size1,type);
+        dObj3_d = ito::DataObject(4,5,5,type);
+        dObj4_d = ito::DataObject(5,temp_size,type);
+
+
+        dObj5x1x1 = ito::DataObject(3, temp_size3, type);
+        dObj5x1x1.setTo(0);
+
+        dObj1x5 = ito::DataObject(2, temp_size4, type);
+        for (int i = 0; i < 5; ++i)
+        {
+            dObj1x5.at<_Tp>(0,i) = i;
+        }
+
+        dObj1x4x1x2 = ito::DataObject(4, temp_size5, type);
+        dObj1x4x1x2.setTo(0);
+
+        dObj4x2 = ito::DataObject(2, temp_size6, type);
+        for (int r = 0; r < 4; ++r)
+        {
+            for (int c = 0; c < 2; ++c)
+            {
+                dObj4x2.at<_Tp>(r,c) = r*2+c;
+            }
+        }
     };
  
     virtual void TearDown(void) {};
+
     typedef _Tp valueType;    
     ito::DataObject dObj1_s;
     ito::DataObject dObj2_s;
@@ -82,6 +100,11 @@ public:
     ito::DataObject dObj2_dr2;
     ito::DataObject dObj3_dr2;
     ito::DataObject dObj4_dr2;
+
+    ito::DataObject dObj5x1x1;
+    ito::DataObject dObj1x5;
+    ito::DataObject dObj1x4x1x2;
+    ito::DataObject dObj4x2;
     };
     
 TYPED_TEST_CASE(copyTests1, ItomRealDataTypes);
@@ -432,4 +455,45 @@ TYPED_TEST(copyTests1, deepCopyPartial_Test4)
         }
     }
 
+}
+
+
+//deepCopyPartial_Test5
+/*!
+    This test checks that it is possible to copy the content of a 1x5 array to a 5x1x1 array (same type and same size if all one-dimensions are omitted)
+
+*/
+TYPED_TEST(copyTests1, deepCopyPartial_Test5)
+{
+    EXPECT_TRUE(dObj1x5.deepCopyPartial(dObj5x1x1) == ito::retOk);
+    ito::DObjConstIterator it = dObj5x1x1.constBegin();
+    TypeParam counter = 0;
+    while (it != dObj5x1x1.constEnd())
+    {
+        EXPECT_EQ(cv::saturate_cast<TypeParam>(counter), *((TypeParam*)*it));
+        counter++;
+        it++;
+    }
+
+    EXPECT_TRUE(dObj4x2.deepCopyPartial(dObj1x4x1x2) == ito::retOk);
+    it = dObj1x4x1x2.constBegin();
+    counter = 0;
+    while (it != dObj1x4x1x2.constEnd())
+    {
+        EXPECT_EQ(cv::saturate_cast<TypeParam>(counter), *((TypeParam*)*it));
+        counter++;
+        it++;
+    }
+
+    EXPECT_THROW(dObj1x5.deepCopyPartial(dObj1x4x1x2), cv::Exception);
+    EXPECT_THROW(dObj1x5.deepCopyPartial(dObj4x2), cv::Exception);
+
+    EXPECT_THROW(dObj1x4x1x2.deepCopyPartial(dObj1x5), cv::Exception);
+    EXPECT_THROW(dObj1x4x1x2.deepCopyPartial(dObj5x1x1), cv::Exception);
+
+    EXPECT_THROW(dObj4x2.deepCopyPartial(dObj5x1x1), cv::Exception);
+    EXPECT_THROW(dObj4x2.deepCopyPartial(dObj1x5), cv::Exception);
+
+    EXPECT_THROW(dObj5x1x1.deepCopyPartial(dObj1x4x1x2), cv::Exception);
+    EXPECT_THROW(dObj5x1x1.deepCopyPartial(dObj4x2), cv::Exception);
 }

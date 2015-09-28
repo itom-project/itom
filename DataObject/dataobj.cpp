@@ -184,8 +184,11 @@ const uchar* DObjConstIterator::operator [](int i) const
 DObjConstIterator& DObjConstIterator::operator += (int ofs)
 {
     if( !dObj || ofs == 0 )
+    {
         return *this;
-    int ofsb = ofs*elemSize;
+    }
+
+    int ofsb = ofs * elemSize;
     ptr += ofsb;
     if( ptr < sliceStart || sliceEnd <= ptr )
     {
@@ -2293,48 +2296,70 @@ RetVal DataObject::copyTo(DataObject &rhs, unsigned char regionOnly) const
 */
 template<typename _Tp> RetVal DeepCopyPartialFunc(const DataObject &lhs, DataObject &rhs)
 {
-   if (&lhs == &rhs)
-   {
-         return ito::retOk;
-   }
+    if (&lhs == &rhs)
+    {
+            return ito::retOk;
+    }
 
-   const cv::Mat **lhs_mdata = lhs.get_mdata();
-   cv::Mat **rhs_mdata = rhs.get_mdata();
-   const cv::Mat *lhs_mat;
-   cv::Mat *rhs_mat;
+    int lhs_numPlanes = lhs.getNumPlanes();
+    int rhs_numPlanes = rhs.getNumPlanes();
+    int dims = lhs.getDims();
 
-   int sizeX = static_cast<int>(lhs.getSize(lhs.getDims() - 1));
-   int sizeY = static_cast<int>(lhs.getSize(lhs.getDims() - 2));
+    const cv::Mat **lhs_mdata = lhs.get_mdata();
+    cv::Mat **rhs_mdata = rhs.get_mdata();
+    const cv::Mat *lhs_mat;
+    cv::Mat *rhs_mat;
 
-   int lineBytes = sizeX * sizeof(_Tp);
-   int planeBytes = sizeY * sizeX * sizeof(_Tp);
+    if (lhs_numPlanes == rhs_numPlanes) //both planes have the same size, line wise or block wise memcpy is possible
+    {
+        int sizeX = lhs.getSize(dims - 1);
+        int sizeY = lhs.getSize(dims - 2);
 
-   const uchar *lhs_ptr;
-   uchar *rhs_ptr;
+        int lineBytes = sizeX * sizeof(_Tp);
+        int planeBytes = sizeY * lineBytes;
 
-   for (int nMat = 0; nMat < lhs.getNumPlanes(); ++nMat)
-   {
-        lhs_mat = lhs_mdata[lhs.seekMat(nMat)];
-        rhs_mat = rhs_mdata[rhs.seekMat(nMat)];
+        const uchar *lhs_ptr;
+        uchar *rhs_ptr;
 
-        if (lhs_mat->isContinuous() && rhs_mat->isContinuous())
+        for (int nMat = 0; nMat < lhs_numPlanes; ++nMat)
         {
-           memcpy(rhs_mat->data, lhs_mat->data, planeBytes);
-        }
-        else
-        {
-            lhs_ptr = lhs_mat->data;
-            rhs_ptr = rhs_mat->data;
+            lhs_mat = lhs_mdata[lhs.seekMat(nMat, lhs_numPlanes)];
+            rhs_mat = rhs_mdata[rhs.seekMat(nMat, lhs_numPlanes)];
 
-            for (int y = 0; y < sizeY; ++y)
+            if (lhs_mat->isContinuous() && rhs_mat->isContinuous())
             {
-                memcpy(rhs_ptr, lhs_ptr, lineBytes);
-                lhs_ptr += lhs_mat->step[0];
-                rhs_ptr += rhs_mat->step[0];
+                memcpy(rhs_mat->data, lhs_mat->data, planeBytes);
+            }
+            else
+            {
+                lhs_ptr = lhs_mat->data;
+                rhs_ptr = rhs_mat->data;
+
+                for (int y = 0; y < sizeY; ++y)
+                {
+                    memcpy(rhs_ptr, lhs_ptr, lineBytes);
+                    lhs_ptr += lhs_mat->step[0];
+                    rhs_ptr += rhs_mat->step[0];
+                }
             }
         }
-   }
-   return ito::retOk;
+    }
+    else
+    {
+        //the number of planes is not equal, hence each plane has another size (only the type, the sequence of the size of (non-one-size) dimensions is equal)
+        //this can mean a partial copy from a 1x5 object to a 5x1x1 object.
+        DObjConstIterator lhs_it = lhs.constBegin();
+        DObjIterator rhs_it = rhs.begin();
+
+        while (lhs_it != lhs.constEnd())
+        {
+            memcpy(*rhs_it, *lhs_it, sizeof(_Tp));
+            lhs_it++;
+            rhs_it++;
+        }
+    }
+
+    return ito::retOk;
 }
 
 typedef RetVal (*tDeepCopyPartialFunc)(const DataObject &lhs, DataObject &rhs);

@@ -22,7 +22,7 @@ public:
 
     virtual void SetUp(void)
     {
-        matrix = ito::DataObject(5,4,3,ito::getDataType( (const _Tp *) NULL ));
+        matrix = ito::DataObject(5,4,3,ito::getDataType2<_Tp*>());
         mask = ito::DataObject();
         mask.rand(5,4,3,ito::tUInt8, false);
         ito::DataObject z(5,4,3,ito::tUInt8);

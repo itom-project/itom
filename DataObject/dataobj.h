@@ -962,7 +962,7 @@ namespace ito {
         RetVal setTo(const complex128 &value, const DataObject &mask = DataObject());  /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
         RetVal setTo(const ito::Rgba32 &value, const DataObject &mask = DataObject()); /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
         
-        //! copy all values of this data object to the copyTo data object. The copyTo-data object must be allocated and have the same type and size (of its roi) than this data object.
+        //! copy all values of this data object to the copyTo data object. The copyTo-data object must be allocated and have the same type and size (of its roi) than this data object. The compared sequence of sizes only contains dimensions whose size is bigger than one (e.g. it is possible to copy a 5x1 object to a 1x1x5 object)
         RetVal deepCopyPartial(DataObject &copyTo);
         
         //! Returns the matrix iterator and sets it to the first matrix element.

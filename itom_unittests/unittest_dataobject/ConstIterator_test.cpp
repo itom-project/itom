@@ -23,14 +23,14 @@ public:
     
     virtual void SetUp(void)
     {
-        dObj2d = ito::DataObject(21,13,ito::getDataType( (const _Tp *) NULL ));
-        dObj3d = ito::DataObject(5,10,10,ito::getDataType( (const _Tp *) NULL ));
+        dObj2d = ito::DataObject(21,13,ito::getDataType2<_Tp*>());
+        dObj3d = ito::DataObject(5,10,10,ito::getDataType2<_Tp*>());
         int *temp_size = new int[5];
         temp_size[0] = 3;
         temp_size[1] = 4;
         temp_size[2] = 2;
         temp_size[3] = 10;
-        dObj4d = ito::DataObject(4,temp_size,ito::getDataType( (const _Tp *) NULL ));
+        dObj4d = ito::DataObject(4,temp_size,ito::getDataType2<_Tp*>());
     };
  
     virtual void TearDown(void) {};
