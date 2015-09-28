@@ -374,6 +374,18 @@ template<typename _Tp> ito::RetVal readXYZData(const cv::Mat *x, const cv::Mat *
     }
     cloud->resize(counter);
 
+	if (counter == (width * height) && organized)
+	{
+		cloud->width = width;
+		cloud->height = height;
+	}
+	else
+	{
+		cloud->width = counter;
+		cloud->height = 1;
+		organized = false;
+	}
+
     return ito::retOk;
 }
 
@@ -444,6 +456,18 @@ template<typename _Tp> ito::RetVal readXYZIData(const cv::Mat *x, const cv::Mat 
         }
     }
     cloud->resize(counter);
+
+	if (counter == (width * height) && organized)
+	{
+		cloud->width = width;
+		cloud->height = height;
+	}
+	else
+	{
+		cloud->width = counter;
+		cloud->height = 1;
+		organized = false;
+	}
 
     return ito::retOk;
 }
@@ -518,6 +542,18 @@ template<typename _Tp> ito::RetVal readXYZRGBAData(const cv::Mat *x, const cv::M
         }
     }
     cloud->resize(counter);
+
+	if (counter == (width * height) && organized)
+	{
+		cloud->width = width;
+		cloud->height = height;
+	}
+	else
+	{
+		cloud->width = counter;
+		cloud->height = 1;
+		organized = false;
+	}
 
     return ito::retOk;
 }
