@@ -740,9 +740,9 @@ MACRO (ADD_OUTPUTLIBRARY_TO_SDK_LIB target sources destinations)
         SET(SDK_COMPILER "intel")
     ELSEIF(APPLE)
         SET(SDK_COMPILER "osx_default")
-    ELSE(MSVC10)
+    ELSE(MSVC12)
         SET(SDK_COMPILER "unknown")
-    ENDIF(MSVC10)
+    ENDIF(MSVC12)
     
     SET( destination "${ITOM_SDK_DIR}/lib/${SDK_COMPILER}_${SDK_PLATFORM}" )
     
@@ -789,9 +789,9 @@ MACRO (ADD_LIBRARY_TO_APPDIR_AND_SDK target sources destinations)
         SET(SDK_COMPILER "intel")
     ELSEIF(APPLE)
         SET(SDK_COMPILER "osx_default")
-    ELSE(MSVC10)
+    ELSE(MSVC12)
         SET(SDK_COMPILER "unknown")
-    ENDIF(MSVC10)
+    ENDIF(MSVC12)
 
     SET( sdk_destination "${ITOM_SDK_DIR}/lib/${SDK_COMPILER}_${SDK_PLATFORM}" )
 
