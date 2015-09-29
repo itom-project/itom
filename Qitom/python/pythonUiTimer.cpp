@@ -22,17 +22,10 @@
 
 #include "pythonUiTimer.h"
 
-#if (defined linux) | (defined CMAKE)
-    #include "structmember.h"
-#else
-    #include "structmember.h"
-#endif
-
+#include "structmember.h"
 #include "../global.h"
-
 #include "pythonEngineInc.h"
 #include "AppManagement.h"
-
 #include <iostream>
 #include <qvector.h>
 #include <qtimer.h>

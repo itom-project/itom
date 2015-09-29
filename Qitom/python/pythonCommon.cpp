@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -21,8 +21,12 @@
 *********************************************************************** */
 
 #include "pythonCommon.h"
+
 #include "pythonRgba.h"
 #include "pythonQtConversion.h"
+#include "pythonPlugins.h"
+#include "pythonDataObject.h"
+#include "pythonPCL.h"
 
 #include "helper/paramHelper.h"
 
@@ -1378,6 +1382,12 @@ ito::RetVal copyParamVector(const QVector<ito::Param> *paramVecIn, QVector<ito::
     return ito::RetVal(ito::retError, 0, "paramVecIn is NULL");
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+/** makes a deep copy of a vector with values of type Param
+*   
+*   @param [in]     paramVecIn is a pointer to a vector of Param-values
+*   @param [out]    paramVecOut is a reference to a vector which is first cleared and then filled with a deep copy of every element of paramVecIn (casted to ito::ParamBase)
+*/
 ito::RetVal copyParamVector(const QVector<ito::Param> *paramVecIn, QVector<ito::ParamBase> &paramVecOut)
 {
     if (paramVecIn)
@@ -1386,24 +1396,6 @@ ito::RetVal copyParamVector(const QVector<ito::Param> *paramVecIn, QVector<ito::
         for (int i=0;i<paramVecIn->size();i++)
         {
             paramVecOut.append(ito::ParamBase(paramVecIn->value(i)));
-        }
-
-        return ito::retOk;
-    }
-    return ito::RetVal(ito::retError, 0, "paramVecIn is NULL");
-}
-
-
-ito::RetVal createEmptyParamBaseFromParamVector(const QVector<ito::Param> *paramVecIn, QVector<ito::ParamBase> &paramVecOut)
-{
-    if (paramVecIn)
-    {
-//        const ito::Param temp;
-        paramVecOut.clear();
-        for (int i=0;i<paramVecIn->size();i++)
-        {
-//            temp = (paramVecIn->value(i));
-            paramVecOut.append(ito::ParamBase(paramVecIn->value(i).getName(), paramVecIn->value(i).getType()));
         }
 
         return ito::retOk;
@@ -1868,7 +1860,7 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
    returns false if a Python exception was created or if the warning level in Python was set such that the
           warning contained in retVal also raised a Python exception.
 */
-bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *exceptionIfError /*= PyExc_RuntimeError*/, PyObject *exceptionIfWarning /*= PyExc_UserWarning*/)
+bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *exceptionIfError /*= PyExc_RuntimeError*/, PyObject *exceptionIfWarning /*= PyExc_RuntimeWarning*/)
 {
     QByteArray msg;
     if (retVal.containsWarningOrError())
@@ -1905,7 +1897,7 @@ bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *e
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------
-bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &objName, const tErrMsg &errorMSG, PyObject *exceptionIfError /*= PyExc_RuntimeError*/, PyObject *exceptionIfWarning /*= PyExc_UserWarning*/)
+bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &objName, const tErrMsg &errorMSG, PyObject *exceptionIfError /*= PyExc_RuntimeError*/, PyObject *exceptionIfWarning /*= PyExc_RuntimeWarning*/)
 {
     QByteArray msgSpecified;
     QByteArray msgUnspecified;
@@ -2007,7 +1999,7 @@ bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &obj
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal,const char *objName, const tErrMsg &errorMSG, PyObject *exceptionIfError /*= PyExc_RuntimeError*/, PyObject *exceptionIfWarning /*= PyExc_UserWarning*/)
+bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal,const char *objName, const tErrMsg &errorMSG, PyObject *exceptionIfError /*= PyExc_RuntimeError*/, PyObject *exceptionIfWarning /*= PyExc_RuntimeWarning*/)
 {
     QString pName(objName);
     return PythonCommon::setReturnValueMessage(retVal, pName, errorMSG, exceptionIfError, exceptionIfWarning);
