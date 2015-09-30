@@ -211,7 +211,7 @@ RetVal BreakPointModel::addBreakPoint(BreakPointItem bp)
     \param index QModelIndex of breakpoint which should be deleted
     \return retOk in case of success, if QModelIndex not valid retError
 */
-RetVal BreakPointModel::deleteBreakPoint(QModelIndex index)
+RetVal BreakPointModel::deleteBreakPoint(const QModelIndex &index)
 {
     if(index.isValid())
     {
@@ -258,15 +258,16 @@ RetVal BreakPointModel::deleteBreakPoint(QModelIndex index)
     \return retOk in case of total success, if any deletion returned with retError, the total return value will be retError, too.
     \sa deleteBreakPoint
 */
-RetVal BreakPointModel::deleteBreakPoints(QModelIndexList indizes)
+RetVal BreakPointModel::deleteBreakPoints(const QModelIndexList &indizes)
 {
     RetVal retValue(retOk);
 
-    std::sort(indizes.begin(), indizes.end(), &BreakPointModel::compareRow);
+    QModelIndexList indizes_sorted = indizes;
+    std::sort(indizes_sorted.begin(), indizes_sorted.end(), &BreakPointModel::compareRow);
     
-    QModelIndexList::Iterator it;
+    QModelIndexList::ConstIterator it;
 
-    for(it = indizes.begin() ; it != indizes.end() ; ++it)
+    for(it = indizes_sorted.constBegin() ; it != indizes_sorted.constEnd() ; ++it)
     {
         void* k = it->internalPointer();
         if (k != NULL)
@@ -276,6 +277,27 @@ RetVal BreakPointModel::deleteBreakPoints(QModelIndexList indizes)
     }
 
     return retValue;
+}
+
+//-------------------------------------------------------------------------------------------------------
+//! delete all breakpoints
+/*!
+    \param indizes list of QModelIndex
+    \return retOk
+    \sa deleteBreakPoint, deleteBreakPoints
+*/
+RetVal BreakPointModel::deleteAllBreakPoints()
+{
+    beginResetModel();
+    foreach (const BreakPointItem &item, m_breakpoints)
+    {
+        emit(breakPointDeleted(item.filename, item.lineno, item.pythonDbgBpNumber));
+    }
+    m_breakpoints.clear();
+    m_scriptFiles.clear();
+    endResetModel();
+    
+    return retOk;
 }
 
 //-------------------------------------------------------------------------------------------------------
