@@ -51,6 +51,10 @@ AutoInterval::AutoInterval(float min, float max, bool autoInterval)
     m_max(max),
     m_auto(autoInterval)
 {
+    if (m_min > m_max)
+    {
+        std::swap(m_min, m_max);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -63,18 +67,33 @@ void AutoInterval::setRange(float min, float max)
 {
     m_min = min;
     m_max = max;
+
+    if (m_min > m_max)
+    {
+        std::swap(m_min, m_max);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AutoInterval::setMinimum(float min)
 {
     m_min = min;
+
+    if (m_min > m_max)
+    {
+        m_max = m_min;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AutoInterval::setMaximum(float max)
 {
     m_max = max;
+
+    if (m_max < m_min)
+    {
+        m_min = m_max;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
