@@ -3762,13 +3762,13 @@ MAKEFUNCLIST(AddFunc);
 
 template<typename _Tp> RetVal AddScalarFunc(const DataObject *dObjIn, ito::float64 scalar, DataObject *dObjOut)
 {
-   int srcTmat = 0;
-   int dstTmat = 0;
-   int numMats = dObjIn->getNumPlanes();
-   const cv::Mat_<_Tp> *cvSrc = NULL;
-   cv::Mat_<_Tp> *cvDest = NULL;
-   cv::Scalar s = scalar;
-
+    int srcTmat = 0;
+    int dstTmat = 0;
+    int numMats = dObjIn->getNumPlanes();
+    const cv::Mat_<_Tp> *cvSrc = NULL;
+    cv::Mat_<_Tp> *cvDest = NULL;
+    
+    cv::Scalar s = scalar;
     for (int nmat = 0; nmat < numMats; ++nmat)
     {
         dstTmat = dObjOut->seekMat(nmat, numMats);
@@ -3778,7 +3778,7 @@ template<typename _Tp> RetVal AddScalarFunc(const DataObject *dObjIn, ito::float
         *cvDest = *cvSrc + s;
     }
 
-   return RetVal(retOk);
+    return RetVal(retOk);
 }
 
 template<> RetVal AddScalarFunc<ito::Rgba32>(const DataObject *dObjIn, ito::float64 scalar, DataObject *dObjOut)
@@ -3947,19 +3947,7 @@ MAKEFUNCLIST(AddComplexScalarFunc);
 */
 DataObject & DataObject::operator += (const DataObject &rhs)
 {
-    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-    {
-        if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
-             rhs.getNumPlanes() == 1 && 
-             this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-             this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
-           )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-            return *this;           
-        }
-    }
-
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
     (fListAddFunc[m_type])(this, &rhs, this);
     return *this;
 }

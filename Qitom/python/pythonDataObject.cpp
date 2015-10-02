@@ -2858,7 +2858,7 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
     }
     else if (PyDataObject_Check(o2))
     {
-        dobj1 = (PyDataObject*)o2; //dobj1 is always a dataobject!!! (difference to nbSub)
+        dobj2 = (PyDataObject*)o2;
         if (PyFloat_Check(o1) || PyLong_Check(o1))
         {
             scalar = PyFloat_AsDouble(o1);
@@ -2884,19 +2884,41 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
 
     try
     {
-        if (dobj2)
+        if (dobj1 && dobj2)
         {
             retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) - *(dobj2->dataObject));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         }
-        else if (complexScalar)
+        else if (dobj1)
         {
-            doneScalar = true;
-            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) - cscalar);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            if (complexScalar)
+            {
+                doneScalar = true;
+                retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) - cscalar);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            }
+            else
+            {
+                doneScalar = true;
+                retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) - scalar);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            }
         }
         else
         {
-            doneScalar = true;
-            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) - scalar);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            if (complexScalar)
+            {
+                doneScalar = true;
+                //this step is necessary in order to allow e.g. 255 - (uint8dataobject) without buffer overflows.
+                retObj->dataObject = new ito::DataObject(dobj2->dataObject->getSize(), dobj2->dataObject->getType());
+                retObj->dataObject->setTo(complexScalar);
+                *(retObj->dataObject) -= *(dobj2->dataObject); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            }
+            else
+            {
+                doneScalar = true;
+                //this step is necessary in order to allow e.g. 255 - (uint8dataobject) without buffer overflows.
+                retObj->dataObject = new ito::DataObject(dobj2->dataObject->getSize(), dobj2->dataObject->getType());
+                retObj->dataObject->setTo(scalar);
+                *(retObj->dataObject) -= *(dobj2->dataObject); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            }
         }
     }
     catch(cv::Exception exc)
