@@ -531,22 +531,13 @@ namespace ito {
                     return sz.m_p == m_p;
                 }
                 
-                int d = m_p[-1], dsz = sz.m_p[-1];
+                int d = m_p[-1]; 
+                int dsz = sz.m_p[-1];
+
                 if( d != dsz )
                     return false;
-                if( d == 2 )
-                {
-                    return m_p[0] == sz.m_p[0] && m_p[1] == sz.m_p[1];
-                }
-                
-                for( int i = 0; i < d - 2; i++ )
-                {
-                    if( m_p[i] != sz.m_p[i] )
-                    {
-                        return false;
-                    }
-                }
-                return (m_p[d - 2] == sz.m_p[d - 2]) && (m_p[d - 1] == sz.m_p[d - 1]);
+
+                return (memcmp(m_p, sz.m_p, d * sizeof(int)) == 0); //returns true if the size vector (having the same length) is equal
             }
             
             inline bool operator != (const MSize& sz) const { return !(*this == sz); }
@@ -817,6 +808,8 @@ namespace ito {
                     return 1;
                 case 3:
                     return m_size[0];
+                case 4:
+                    return m_size[0] * m_size[1];
                 default:
                 {
                     int numMat = 1;
