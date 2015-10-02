@@ -532,9 +532,7 @@ namespace ito {
                 }
                 
                 int d = m_p[-1]; 
-                int dsz = sz.m_p[-1];
-
-                if( d != dsz )
+                if( d != sz.m_p[-1] )
                     return false;
 
                 return (memcmp(m_p, sz.m_p, d * sizeof(int)) == 0); //returns true if the size vector (having the same length) is equal
@@ -560,22 +558,17 @@ namespace ito {
                 {
                     return rroi.m_p == m_p;
                 }
+
+                int d = m_p[-1]; 
+                if( d != rroi.m_p[-1] )
+                    return false;
+
+                return (memcmp(m_p, rroi.m_p, d * sizeof(int)) == 0); //returns true if the size vector (having the same length) is equal
                 
                 if (m_p[-1] != rroi.m_p[-1])
                 {
                     return false;
                 }
-                
-                int d = m_p[-1];
-                for (int n = 0; n < d - 2; n++)
-                {
-                    if (m_p[n] != rroi.m_p[n])
-                    {
-                        return false;
-                    }
-                }
-                
-                return m_p[d - 2] == rroi.m_p[d - 2] && m_p[d - 1] == rroi.m_p[d - 1];
             }
             
             int *m_p;
