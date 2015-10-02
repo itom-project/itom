@@ -704,6 +704,28 @@ DObjIterator DObjIterator::operator ++(int)
 #define TYPE_OFFSET_RGBA  10
 
 
+#define CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(otherObject) \
+    if (m_type != ##otherObject.m_type) \
+    { \
+        cv::error(cv::Exception(CV_StsUnmatchedFormats, "dataObjects differ in type", "", __FILE__, __LINE__)); \
+    } \
+    else if ((m_dims == ##otherObject.m_dims) && (m_size != ##otherObject.m_size)) \
+    { \
+        cv::error(cv::Exception(CV_StsUnmatchedSizes, "dataObjects differ in size", "", __FILE__, __LINE__)); \
+    } \
+    else if (getNumPlanes() != ##otherObject.getNumPlanes()) \
+    { \
+        /*dataObjects have different numbers of planes.*/ \
+        cv::error(cv::Exception(CV_StsUnmatchedSizes, "dataObjects differ in size (non equal number of planes)", "", __FILE__, __LINE__)); \
+    } \
+    else if (m_dims > 0 && (get_mdata()[0]->size() != ##otherObject.get_mdata()[0]->size())) \
+    { \
+        /*both objects have at least dimension two (same number of planes, and this->m_dims > 0).*/ \
+        /*but the size of both planes (last two dimensions) is not equal.*/ \
+        cv::error(cv::Exception(CV_StsUnmatchedSizes, "dataObjects differ in size (non equal size of each plane)", "", __FILE__, __LINE__)); \
+    }
+
+
 
 //! constructor for empty data object
 /*!
@@ -3964,19 +3986,7 @@ DataObject & DataObject::operator += (const complex128 &value)
 */
 DataObject DataObject::operator + (const DataObject &rhs)
 {
-    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
-                rhs.getNumPlanes() == 1 && 
-                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-            return *this;           
-        }
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
 
     DataObject result;
     result.m_continuous = rhs.m_continuous;
@@ -4058,21 +4068,8 @@ MAKEFUNCLIST(SubFunc);
 */
 DataObject & DataObject::operator -= (const DataObject &rhs)
 {
-    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
-                rhs.getNumPlanes() == 1 && 
-                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-            return *this;           
-        }
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
     fListSubFunc[m_type](this, &rhs, this);
-
     return *this;
 }
 
@@ -4098,19 +4095,7 @@ DataObject & DataObject::operator -= (const complex128 &value)
 */
 DataObject DataObject::operator - (const DataObject &rhs)
 {
-    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
-                rhs.getNumPlanes() == 1 && 
-                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-            return *this;           
-        }
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
 
     DataObject result;
     result.m_continuous = rhs.m_continuous;
@@ -5229,21 +5214,7 @@ DataObject & DataObject::operator &= (const DataObject & rhs)
         return *this;
     }
 
-    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
-                rhs.getNumPlanes() == 1 && 
-                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-            return *this;           
-        }
-        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        //return *this;
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
 
     fListBitAndFunc[m_type](this, &rhs, this);
 
@@ -5265,21 +5236,7 @@ DataObject DataObject::operator & (const DataObject & rhs)
         return *this;
     }
 
-    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
-                rhs.getNumPlanes() == 1 && 
-                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-            return *this;           
-        }
-        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        //return *this;
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
 
     DataObject result;
     result.m_continuous |= rhs.m_continuous;
@@ -5388,21 +5345,7 @@ DataObject & DataObject::operator |= (const DataObject & rhs)
         return *this;
     }
 
-    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
-                rhs.getNumPlanes() == 1 && 
-                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-            return *this;           
-        }
-        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        //return *this;
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
 
     fListBitOrFunc[m_type](this, &rhs, this);
 
@@ -5424,21 +5367,7 @@ DataObject DataObject::operator | (const DataObject & rhs)
         return *this;
     }
 
-    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
-                rhs.getNumPlanes() == 1 && 
-                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-            return *this;           
-        }
-        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        //return *this;
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
 
     DataObject result;
     result.m_continuous |= rhs.m_continuous;
@@ -5547,21 +5476,7 @@ DataObject & DataObject::operator ^= (const DataObject & rhs)
         return *this;
     }
 
-    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
-                rhs.getNumPlanes() == 1 && 
-                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-            return *this;           
-        }
-        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        //return *this;
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
 
     fListBitXorFunc[m_type](this, &rhs, this);
 
@@ -5578,21 +5493,7 @@ DataObject & DataObject::operator ^= (const DataObject & rhs)
 */
 DataObject DataObject::operator ^ (const DataObject & rhs)
 {
-    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
-                rhs.getNumPlanes() == 1 && 
-                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-            return *this;           
-        }
-        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        //return *this;
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
 
     DataObject result;
     result.m_continuous |= rhs.m_continuous;
@@ -6294,18 +6195,7 @@ MAKEFUNCLIST(MulFunc)
 */
 DataObject DataObject::mul(const DataObject &mat2, const double scale) const
 {
-    if ((m_size != mat2.m_size) || (m_type != mat2.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == mat2.getNumPlanes() && 
-                mat2.getNumPlanes() == 1 && 
-                this->getSize(m_dims - 1) == mat2.getSize(mat2.getDims() - 1) &&
-                this->getSize(m_dims - 2) == mat2.getSize(mat2.getDims() - 2) || (m_type != mat2.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"both data objects differ in size or type","", __FILE__, __LINE__));     
-        }
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(mat2)
 
     unsigned char continuous = 0;
     DataObject result(m_dims,m_size,m_type,continuous);    
@@ -6470,18 +6360,7 @@ MAKEFUNCLIST(DivFunc)
 */
 DataObject DataObject::div(const DataObject &mat2, const double /*scale*/) const
 {
-    if ((m_size != mat2.m_size) || (m_type != mat2.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == mat2.getNumPlanes() && 
-                mat2.getNumPlanes() == 1 && 
-                getSize(m_dims - 1) == mat2.getSize(mat2.getDims() - 1) &&
-                getSize(m_dims - 2) == mat2.getSize(mat2.getDims() - 2) || (m_type != mat2.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"both data objects differ in size or type","", __FILE__, __LINE__));     
-        }
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(mat2)
 
     unsigned char continuous = 0;
     DataObject result(m_dims,m_size,m_type,continuous);    
