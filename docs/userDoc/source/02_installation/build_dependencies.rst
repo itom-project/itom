@@ -25,7 +25,7 @@ Software packages
 **Optional Software-Packages**
 
 - PointCloudLibrary 1.6 or higher (>= 1.7 recommended, optional)
-- Qt-AddIn for Visual Studio (requires .NET 2.0 framework with SP 1.0)
+- Qt-AddOn for Visual Studio (requires .NET 2.0 framework with SP 1.0)
 - Doxygen (for creating the source code documentation)
 - Python-Packages: SciPy, Distribute, Sphinx (user documentation generation), scikit-image, matplotlib...
 
@@ -42,6 +42,7 @@ QtCreator directly supports CMakeLists.txt-files. It is also possible to use the
     
     Please consider that you need to install the Service Pack 1 for Visual Studio 2010 Professional when compiling a 64bit version of |itom|. It is even recommended to install the service
     pack for a 32bit compilation.
+    
 
 **CMake** (mandatory)
 
@@ -114,10 +115,10 @@ Create the following environment variables (Windows only - you need to log-off f
     - If ready type::
         
         nmake install
-		
-	- Finally, you can build the documentation (build into the qtbase/doc folder) by typing (see http://qt-project.org/wiki/Building_Qt_Documentation)::
-		
-		nmake docs
+        
+    - Finally, you can build the documentation (build into the qtbase/doc folder) by typing (see http://qt-project.org/wiki/Building_Qt_Documentation)::
+        
+        nmake docs
         
     If you want to restart the entire compilation you need to completely remove any possible older configuration. Then open the appropriate Visual Studio command line and
     execute::
@@ -145,12 +146,12 @@ Visual Studio, where you cannot install this add-in. The **Qt Visual Studio AddI
         
         gacutil.exe -i "C:\Program Files (x86)\Common Files\microsoft shared\MSEnv\PublicAssemblies\stdole.dll"
         
-.. info::
+** note::
     
-    From Qt5 on, the Visual Studio debugger is sometimes not able to show the value of QString, QVector... in the tool tip text of a variable even if the Qt-AddIn
-    is installed. If this is the case, please uncheck the option "Enable native Edit and Continue" in Visual Studio (menu -> options -> debugging -> Edit and Continue).
+    **Visual Studio Express**
     
-    For more information see http://stackoverflow.com/questions/26780517/qt5-visual-studio-2012-add-in-does-not-allow-debugging-into-qstack-qvector
+    You can also use the Express Versions of Visual Studio (e.g. Visual Studo 2013 Express) to compile itom. In order to easily debug the special data structures from Qt (QString,
+    QVector...) you need to do the following steps, since the AddIn is not available in the Express editions: Get the file **qt5.natvis** from https://github.com/qtproject/qt-labs-vstools/blob/master/tools/Qt4EEAddin/qt5.natvis . Copy the file into a folder similar to this one: C:\Users\YourUserName\Documents\Visual Studio 2013\Visualizers, hence the documents folder of the respective user. Restart Visual Studio Express and try debugging itom.
 
 **QScintilla2** (mandatory)
 
@@ -169,10 +170,6 @@ project settings are not ready for a multi-configuration build in **Visual Studi
         CONFIG(debug, debug|release){ TARGET = $$join(TARGET,,,d) }
     
     (see also: http://www.mantidproject.org/Debugging_MantidPlot)
-    
-    * If there is an error saying that the environment variable QTDIR is missing, type::
-        
-        SET QTDIR=path-to-the-bin-directory-of-qt           (do not add bin to the path itself)
     
     * If you had a previous installation of QScintilla, delete the directory **%QTDIR%\\include\\Qsci** as well as the files called **qscintilla2.dll** and **qscintilla2d.dll** in the directory **%QTDIR%\\bin**
     * Execute the following commands from the command-line::
@@ -196,7 +193,7 @@ project settings are not ready for a multi-configuration build in **Visual Studi
 
 .. _install-depend-opencv:
 
-**OpenCV** (mandatory, 2.3 or higher, 2.4.x recommended)
+**OpenCV** (mandatory, 2.3 or higher, 2.4.x recommended, 3.x working as well)
 
 You have different possibilities in order to get the binaries from OpenCV:
 
