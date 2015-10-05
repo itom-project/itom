@@ -33,6 +33,7 @@
 #include <qmetaobject.h>
 #include <qcoreapplication.h>
 #include "abstractAddInDockWidget.h"
+#include "opencv/cv.h"
 
 #if defined _DEBUG  && defined(_MSC_VER) && defined(VISUAL_LEAK_DETECTOR_CMAKE)
     #include "vld.h"
@@ -226,6 +227,14 @@ namespace ito
         m_pThread = new QThread();
         moveToThread(m_pThread);
         m_pThread->start();
+
+		/*set new seed for random generator of OpenCV. 
+		This is required to have real random values for any randn or randu command.
+		The seed must be set in every thread. This is for the main thread.
+		*/
+		cv::theRNG().state = (uint64)cv::getCPUTickCount();
+		/*seed is set*/
+
         return retOk;
     }
 

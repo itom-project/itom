@@ -284,6 +284,13 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
     m_pythonThreadId = QThread::currentThreadId ();
     qDebug() << "python in thread: " << m_pythonThreadId;
 
+	/*set new seed for random generator of OpenCV. 
+	This is required to have real random values for any randn or randu command.
+	The seed must be set in every thread. This is for the main thread.
+	*/
+	cv::theRNG().state = (uint64)cv::getCPUTickCount();
+	/*seed is set*/
+
     readSettings();
 
     RetVal tretVal(retOk);

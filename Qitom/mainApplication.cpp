@@ -32,6 +32,7 @@
 #include "widgets/scriptDockWidget.h"
 #include "./ui/dialogSelectUser.h"
 #include "ui/dialogPipManager.h"
+#include "DataObject/dataobj.h"
 
 #include <qsettings.h>
 #include <qstringlist.h>
@@ -360,6 +361,13 @@ void MainApplication::setupApplication()
     }
 
     DELETE_AND_SET_NULL(settings);
+
+	/*set new seed for random generator of OpenCV. 
+	This is required to have real random values for any randn or randu command.
+	The seed must be set in every thread. This is for the main thread.
+	*/
+	cv::theRNG().state = (uint64)cv::getCPUTickCount();
+	/*seed is set*/
 
     //starting ProcessOrganizer for external processes like QtDesigner, QtAssistant, ...
     m_splashScreen->showMessage(tr("load process organizer..."), Qt::AlignRight | Qt::AlignBottom);
