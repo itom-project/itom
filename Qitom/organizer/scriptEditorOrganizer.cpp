@@ -233,11 +233,15 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
                 {
                     removeScriptDockWidget(sdw);
                 }
+				else
+				{
+					sdw->setCurrentIndex(settings.value("currentIndex", 0).toInt());
+				}
 
                 retval += ret;
             }
 
-            sdw->setCurrentIndex(settings.value("currentIndex", 0).toInt());
+            
         }
     }
 
