@@ -47,6 +47,7 @@
 
 #include "../organizer/addInManager.h"
 #include "common/interval.h"
+#include "../helper/sleeper.h"
 
 #include <qobject.h>
 #include <qcoreapplication.h>
@@ -3316,8 +3317,13 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
 
         while(!pyEngine->DbgCommandsAvailable()) //->isValidDbgCmd())
         {
+            //tests showed that the CPU consumption becomes very high, if
+            //this while loop iterates without a tiny sleep.
+            //The subsequent processEvents however is necessary to t(5get
+            //the next debug command.
+            Sleeper::msleep(50);
+
             QCoreApplication::processEvents();
-            //QCoreApplication::sendPostedEvents(pyEngine,0);
 
             if (PyErr_CheckSignals() == -1) //!< check if key interrupt occurred
             {
