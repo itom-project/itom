@@ -59,8 +59,11 @@ public:
     RetVal saveAllScripts(bool askFirst = true, bool ignoreNewScripts = false, int excludeIndex = -1);
     RetVal closeAllScripts(bool saveFirst = true, bool askFirst = true, bool ignoreNewScripts = false, int excludeIndex = -1);
 
-    inline bool isTabIndexValid(int tabIndex) const { return (tabIndex >= 0 && tabIndex < m_tab->count()); };   /*!<  checks wether given tab-index is valid (true) or not (false) */
-    inline int getTabCount() const { return m_tab->count(); };      /*!<  returns number of tabs */
+    inline bool isTabIndexValid(int tabIndex) const { return (tabIndex >= 0 && tabIndex < m_tab->count()); }   /*!<  checks wether given tab-index is valid (true) or not (false) */
+    inline int getTabCount() const { return m_tab->count(); }      /*!<  returns number of tabs */
+    inline int getCurrentIndex() const { return m_tab->currentIndex(); }
+    void setCurrentIndex(int index);
+
     bool containsNewScripts() const;
 
     RetVal appendEditor(ScriptEditorWidget* editorWidget);         /*!<  appends widget, without creating it (for drag&drop, (un)-docking...) */

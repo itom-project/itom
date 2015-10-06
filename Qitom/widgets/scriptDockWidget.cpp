@@ -2255,4 +2255,10 @@ void ScriptDockWidget::findWordWidgetFinished()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::setCurrentIndex(int index)
+{
+    m_tab->setCurrentIndex(index);
+}
+
 } //end namespace ito
