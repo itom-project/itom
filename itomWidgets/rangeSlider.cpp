@@ -66,7 +66,7 @@ public:
   /// the min and max handles
   Handle handleAtPos(const QPoint& pos, QRect& handleRect)const;
 
-  int bound(int min, int max, int step, int value, bool snapToBoundaries = true) const;
+  qint64 bound(qint64 min, qint64 max, qint64 step, qint64 value, bool snapToBoundaries = true) const;
   uint boundUnsigned(uint min, uint max, uint step, uint value, bool snapToBoundaries = true) const;
   void rangeBound(int valLimitMin, int valLimitMax, Handle handleChangePriority, int &valMin, int &valMax);
 
@@ -223,7 +223,7 @@ RangeSliderPrivate::Handle RangeSliderPrivate::handleAtPos(const QPoint& pos, QR
 }
 
 // --------------------------------------------------------------------------
-int RangeSliderPrivate::bound(int min, int max, int step, int value, bool snapToBoundaries /*= true*/) const
+qint64 RangeSliderPrivate::bound(qint64 min, qint64 max, qint64 step, qint64 value, bool snapToBoundaries /*= true*/) const
 {
     if (step == 1)
     {
@@ -234,7 +234,7 @@ int RangeSliderPrivate::bound(int min, int max, int step, int value, bool snapTo
         value = qBound(min, value, max);
 
         //try to round to nearest value following the step size
-        int remainder = (value - min) % step;
+        qint64 remainder = (value - min) % step;
         if (remainder == 0)
         {
             //value = value;
@@ -328,15 +328,15 @@ void RangeSliderPrivate::rangeBound(int valLimitMin, int valLimitMax, Handle han
     if (handleChangePriority == MaximumHandle || (handleChangePriority == NoHandle && (qAbs(valLimitMin - valMin) < qAbs(valLimitMax - valMax))))
     {
         valMin = bound(valLimitMin, valLimitMax - m_MinimumRange, m_PositionStepSize, valMin);
-        qint64 maxRange = bound(m_MinimumRange, valLimitMax - valMin + offset, m_StepSizeRange, m_MaximumRange);
-        range = bound(m_MinimumRange, maxRange, m_StepSizeRange, valMax - valMin + offset, false);
+        qint64 maxRange = bound((qint64)m_MinimumRange, (qint64)valLimitMax - (qint64)valMin + (qint64)offset, (qint64)m_StepSizeRange, (qint64)m_MaximumRange);
+        range = bound((qint64)m_MinimumRange, (qint64)maxRange, (qint64)m_StepSizeRange, (qint64)valMax - (qint64)valMin + (qint64)offset, false);
         valMax = valMin + range - offset;
     }
     else //try to fix right boundary and move left one
     {
         valMax = bound(qMin((qint64)valLimitMin + (qint64)m_MinimumRange - (qint64)offset, (qint64)valLimitMax), valLimitMax, m_PositionStepSize, valMax);
-        qint64 maxRange = bound(m_MinimumRange, valMax - valLimitMin + offset, m_StepSizeRange, m_MaximumRange);
-        range = bound(m_MinimumRange, maxRange, m_StepSizeRange, valMax - valMin + offset, false);
+        qint64 maxRange = bound((qint64)m_MinimumRange, (qint64)valMax - (qint64)valLimitMin + (qint64)offset, (qint64)m_StepSizeRange, (qint64)m_MaximumRange);
+        range = bound((qint64)m_MinimumRange, (qint64)maxRange, (qint64)m_StepSizeRange, (qint64)valMax - (qint64)valMin + (qint64)offset, false);
         valMin = valMax - range + offset;
     }
 }
