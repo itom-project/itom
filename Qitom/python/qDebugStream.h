@@ -40,7 +40,7 @@ class QDebugStream : public QObject, public std::basic_streambuf<char>
     Q_OBJECT
 
 public:
-    QDebugStream(std::ostream &stream, tMsgType type, QString lineBreak = "\n");
+    QDebugStream(std::ostream &stream, tMsgType type, const QString &lineBreak = "\n");
     ~QDebugStream();
 
 
