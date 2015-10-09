@@ -220,16 +220,6 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
 
     if (!retValue.containsError()) PyErr_Clear();
 
-    // temporary fix for numpy-arrays. This used to live in the python engine, but at the moment
-    // it doesn't seem to have an effect here, so we need to do it again in this place :-/
- //   if (_import_array() < 0)
-    //{
-    //    PyErr_PrintEx(0);
-    //    PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import");
-    //    return -1;
-    //}
-    // end fix
-
     if (!done && PyArg_ParseTuple(args, "O!", &PyArray_Type, &copyObject)) // copyObject is a borrowed reference
     {
         PyArrayObject *ndArray = (PyArrayObject*)copyObject; //reference (from now on, copyObject is only used once when the tags are copied, don't use it for further tasks)
@@ -242,7 +232,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
         if (! (descr->byteorder == '<' || descr->byteorder == '|' || (descr->byteorder == '=' && NPY_NATBYTE == NPY_LITTLE)))
         {
             retValue += RetVal(retError);
-            PyErr_SetString(PyExc_TypeError,"Given ndarray or ndDataObject has wrong byteorder (litte endian desired), which cannot be transformed to dataObject");
+            PyErr_SetString(PyExc_TypeError,"Given numpy array has wrong byteorder (litte endian desired), which cannot be transformed to dataObject");
             done = true;
         }
         else
@@ -257,7 +247,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                 if (ndArray == NULL)
                 {
                     retValue += RetVal(retError);
-                    PyErr_SetString(PyExc_TypeError,"An error occurred while transforming the given ndArray (or ndDataObject) to a c-contiguous array.");
+                    PyErr_SetString(PyExc_TypeError,"An error occurred while transforming the given numpy array to a c-contiguous array.");
                     done = true;
                 }
                 else
@@ -501,7 +491,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
 
                                     if (npArray == NULL)
                                     {
-                                        throw cv::Exception(0, "given data could not entirely transformed to the required data type.","PyDataObject_init",__FILE__,__LINE__);
+                                        throw cv::Exception(0, "given data could not entirely be transformed to the required data type.","PyDataObject_init",__FILE__,__LINE__);
                                     }
                                     else
                                     {
@@ -677,7 +667,6 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                             }
                             catch(cv::Exception exc)
                             {
-                                //PyErr_Format(PyExc_TypeError, "file: %s, line: %d, error: %s", (exc.file).c_str(), exc.line, (exc.err).c_str());
                                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                                 
                                 delete self->dataObject;
@@ -5256,9 +5245,137 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
             }
             else
             {
-                error = true;
-                PyErr_SetString(PyExc_TypeError, "assign value has no of the following types: integer, floating point, complex, rgba (type rgba32 only)");
+                //try to convert the assigned value to a numpy array and then read the values
+                int npTypenum;
+                switch(dataObj.getType())
+                {
+                case ito::tInt8:        npTypenum = NPY_BYTE; break;
+                case ito::tUInt8:       npTypenum = NPY_UBYTE; break;
+                case ito::tInt16:       npTypenum = NPY_SHORT; break;
+                case ito::tUInt16:      npTypenum = NPY_USHORT; break;
+                case ito::tInt32:       npTypenum = NPY_INT; break;
+                case ito::tUInt32:      npTypenum = NPY_UINT; break;
+                case ito::tRGBA32:      npTypenum = NPY_UINT; break;
+                case ito::tFloat32:     npTypenum = NPY_FLOAT; break;
+                case ito::tFloat64:     npTypenum = NPY_DOUBLE; break;
+                case ito::tComplex64:   npTypenum = NPY_CFLOAT; break;
+                case ito::tComplex128:  npTypenum = NPY_CDOUBLE; break;
+                default: npTypenum = -1;
+                }
+
+                if (dataObj.getDims() < 2)
+                {
+                    PyErr_SetString(PyExc_TypeError, "the destination data object is empty.");
+                }
+                else if (npTypenum >= 0)
+                {
+                    int dims = dataObj.getDims();
+                    PyObject *npArray = PyArray_ContiguousFromAny(value, npTypenum, 1, dims);
+
+                    if (npArray)
+                    {
+                        PyArrayObject *npArray_ = (PyArrayObject*)npArray;
+                        int npdims = PyArray_NDIM(npArray_);
+
+                        const npy_intp *npArrayShape = PyArray_SHAPE(npArray_);
+                        int *map_dims_to_npdims = new int[dims];
+
+                        if (dataObj.getTotal() != PyArray_SIZE(npArray_))
+                        {
+                            PyErr_Format(PyExc_ValueError, "size of given data does not fit to size of data object");
+                            error = true;
+                        }
+                        int c = 0;
+
+                        if (!error)
+                        {
+                            //check dimensions
+                            for (int d = 0; d < dims; ++d)
+                            {
+                                if ((c < npdims) && (npArrayShape[c] == dataObj.getSize(d)))
+                                {
+                                    map_dims_to_npdims[d] = c;
+                                    c++;
+                                }
+                                else if (dataObj.getSize(d) == 1) //this dimension is not required in np-array
+                                {
+                                    map_dims_to_npdims[d] = -1; //d.th dimension of dataObj is not available in np-array (squeezed)
+                                }
+                                else
+                                {
+                                    PyErr_Format(PyExc_ValueError, "%i. dimension of given data does not fit to given dimension. %i obtained, %i required", d, npArrayShape[c], dataObj.getSize(d));
+                                    error = true;
+                                }
+                            }
+                        }
+
+                        if (!error)
+                        {
+                            npy_intp *ind = new npy_intp[npdims];
+                            memset(ind, 0, npdims * sizeof(npy_intp));
+                            const void* npPtr = NULL;
+                            int numPlanes = dataObj.getNumPlanes();
+                            cv::Mat *mat;
+
+                            int orgPlaneSize = 1;
+
+                            for (int nDim = 1; nDim < dims - 2; nDim++)
+                            {
+                                orgPlaneSize *= npArrayShape[nDim];
+                            }
+
+                            for (int plane = 0; plane < numPlanes; ++plane)
+                            {
+                                mat = dataObj.getCvPlaneMat(plane);
+
+                                int tMatNum = plane;
+                                int planeSize = orgPlaneSize;
+                                for (int nDim = 0; nDim < dims - 2; nDim++)
+                                {
+                                    if (map_dims_to_npdims[nDim] >= 0)
+                                    {
+                                        ind[map_dims_to_npdims[nDim]] = tMatNum / planeSize;
+                                    }
+                                    tMatNum %= planeSize;
+                                    planeSize /= npArrayShape[nDim + 1];
+                                }
+
+
+                                for (int row = 0; row < mat->rows; ++row)
+                                {
+                                    if (map_dims_to_npdims[dims-2] >= 0)
+                                    {
+                                        ind[dims-2] = row;
+                                    }
+                                    npPtr = PyArray_GetPtr(npArray_, ind);
+                                    memcpy(mat->ptr(row), npPtr, mat->cols * mat->elemSize());
+                                }
+                            }
+
+                            DELETE_AND_SET_NULL_ARRAY(ind);
+                        }
+
+                        DELETE_AND_SET_NULL_ARRAY(map_dims_to_npdims);
+
+                        Py_DECREF(npArray);
+                    }
+                    else
+                    {
+                        //pyerror is already set
+                        error = true;
+                    }
+                }
+                else
+                {
+                    PyErr_SetString(PyExc_TypeError, "assign value has no of the following types: integer, floating point, complex, rgba (type rgba32 only) or data object");
+                    error = true;
+                }
             }
+            /*else
+            {
+                error = true;
+                PyErr_SetString(PyExc_TypeError, "assign value has no of the following types: integer, floating point, complex, rgba (type rgba32 only) or data object");
+            }*/
         }
 
     }
