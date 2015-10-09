@@ -2823,9 +2823,11 @@ void PythonEngine::registerWorkspaceContainer(PyWorkspaceContainer *container, b
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//return new reference of found object that corresponds to fullName in the global or local workspace
 PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QStringList &fullName)
 {
     PyObject *obj = NULL;
+    PyObject *current_obj = NULL;
     QStringList items = fullName; //.split(".");
     int i=0;
     float f=0.0;
@@ -2836,6 +2838,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
     QByteArray itemName;
     QByteArray itemKey;
     bool ok;
+    bool objIsNewRef = false;
 
     if (items.count() > 0 && items[0] == "") items.removeFirst();
 
@@ -2850,6 +2853,8 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
 
     while(items.count() > 0 && obj)
     {
+        current_obj = obj;
+
         itemName = items[0].toLatin1();
 
         if (itemName.size() < 4) //every item has the form "as:name" where a,s... are values of the enumeration PyWorkspaceContainer:WorkspaceItemType
@@ -2889,28 +2894,67 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                     }
                 }
             }
+
             obj = tempObj;
+
+            if (objIsNewRef)
+            {
+                Py_DECREF(current_obj); 
+                objIsNewRef = false; //in the overall if-case, no new obj is a new reference, all borrowed
+            }
         }
         else if (PyList_Check(obj))
         {
             i = itemKey.toInt(&ok);
             if (!ok || i < 0 || i >= PyList_Size(obj)) return NULL; //error
-            obj = PyList_GET_ITEM(obj,i);
+            obj = PyList_GET_ITEM(obj,i); //borrowed
+
+            if (objIsNewRef)
+            {
+                Py_DECREF(current_obj); 
+                objIsNewRef = false; //no new obj is a new reference, all borrowed
+            }
         }
         else if (PyTuple_Check(obj))
         {
             i = itemKey.toInt(&ok);
             if (!ok || i < 0 || i >= PyTuple_Size(obj)) return NULL; //error
-            obj = PyTuple_GET_ITEM(obj,i);
+            obj = PyTuple_GET_ITEM(obj,i); //borrowed
+
+            if (objIsNewRef)
+            {
+                Py_DECREF(current_obj); 
+                objIsNewRef = false; //no new obj is a new reference, all borrowed
+            }
         }
         else if (PyObject_HasAttr(obj, dictUnicode))
         {
-            PyObject *temp = PyObject_GetAttr(obj, dictUnicode);
+            PyObject *temp = PyObject_GetAttr(obj, dictUnicode); //new reference
             if (temp)
             {
                 if (itemKeyType == 's') //string
                 {
                     tempObj = PyDict_GetItemString(obj, itemKey); //borrowed
+                    if (!tempObj)
+                    {
+                        obj = PyObject_GetAttrString(obj, itemKey); //new reference (only for this case, objIsNewRef is true (if nothing failed))
+
+                        if (objIsNewRef)
+                        {
+                            Py_DECREF(current_obj); 
+                        }
+
+                        objIsNewRef = (obj != NULL);
+                    }
+                    else
+                    {
+                        obj = tempObj;
+                        if (objIsNewRef)
+                        {
+                            Py_DECREF(current_obj); 
+                            objIsNewRef = false;  //no new obj is a new reference, all borrowed
+                        }
+                    }
                 }
                 else if (itemKeyType == 'n') //number
                 {
@@ -2931,8 +2975,15 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                             Py_XDECREF(number);
                         }
                     }
+
+                    obj = tempObj;
+                    if (objIsNewRef)
+                    {
+                        Py_DECREF(current_obj); 
+                        objIsNewRef = false;
+                    }
                 }
-                obj = tempObj;
+                
                 Py_DECREF(temp);
             }
             else
@@ -2947,7 +2998,12 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
         items.removeFirst();
     }
 
-    return obj;
+    if (objIsNewRef == false)
+    {
+        Py_XINCREF(obj);
+    }
+
+    return obj; //always new reference
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2959,6 +3015,7 @@ void PythonEngine::workspaceGetChildNode(PyWorkspaceContainer *container, QStrin
     if (obj)
     {
         container->loadDictionary(obj, fullNameParentItem);
+        Py_DECREF(obj);
     }
 }
 
@@ -2995,6 +3052,8 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
             *extendedValue = "unknown";
             Py_XDECREF(repr);
         }
+
+        Py_DECREF(obj);
     }
 
     if (semaphore)
