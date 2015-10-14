@@ -7888,56 +7888,187 @@ template DATAOBJ_EXPORT RetVal DataObject::linspace<uint32>(const uint32, const 
 template DATAOBJ_EXPORT RetVal DataObject::linspace<float32>(const float32, const float32, const float32, const int);
 template DATAOBJ_EXPORT RetVal DataObject::linspace<float64>(const float64, const float64, const float64, const int);
 
-//----------------------------------------------------------------------------------------------------------------------------------
 
+template<typename _Tp> void coutValue(const _Tp* val, char *buf)
+{
+}
+
+template<> void coutValue(const ito::uint8* val, char *buf)
+{
+    sprintf(buf, "%3d", *val);
+}
+
+template<> void coutValue(const ito::int8* val, char *buf)
+{
+    sprintf(buf, "%3d", *val);
+}
+
+template<> void coutValue(const ito::uint16* val, char *buf)
+{
+    sprintf(buf, "%d", *val);
+}
+
+template<> void coutValue(const ito::int16* val, char *buf)
+{
+    sprintf(buf, "%d", *val);
+}
+
+template<> void coutValue(const ito::uint32* val, char *buf)
+{
+    sprintf(buf, "%d", *val);
+}
+
+template<> void coutValue(const ito::int32* val, char *buf)
+{
+    sprintf(buf, "%d", *val);
+}
+
+template<> void coutValue(const ito::float32* val, char *buf)
+{
+    sprintf(buf, "%.8g", *val);
+}
+
+template<> void coutValue(const ito::float64* val, char *buf)
+{
+    sprintf(buf, "%.8g", *val);
+}
+
+template<> void coutValue(const ito::complex64* val, char *buf)
+{
+    if (val->imag() >= 0)
+    {
+        sprintf(buf, "%.8g+%.8gj", val->real(), val->imag());
+    }
+    else
+    {
+        sprintf(buf, "%.8g-%.8gj", val->real(), -val->imag());
+    }
+}
+
+template<> void coutValue(const ito::complex128* val, char *buf)
+{
+    if (val->imag() >= 0)
+    {
+        sprintf(buf, "%.8g+%.8gj", val->real(), val->imag());
+    }
+    else
+    {
+        sprintf(buf, "%.8g-%.8gj", val->real(), -val->imag());
+    }
+}
+
+template<> void coutValue(const ito::Rgba32* val, char *buf)
+{
+    sprintf(buf, "(%d,%d,%d,%d)", val->r, val->g, val->b, val->a);
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> std::ostream& coutPlane(std::ostream& out, const cv::Mat *plane, int firstLineIndent, int otherIndent)
+{
+    char buf[128];
+    const _Tp *ptr;
+    otherIndent = std::min(otherIndent, 127);
+    firstLineIndent = std::min(firstLineIndent, 127);
+
+    for (int r = 0; r < plane->rows; ++r)
+    {
+        if (r == 0)
+        {
+            memset(buf, ' ', sizeof(char) * firstLineIndent);
+            buf[firstLineIndent] = 0;
+            std::cout << buf << "[";
+            buf[0] = 0;
+        }
+        else
+        {
+            memset(buf, ' ', sizeof(char) * otherIndent);
+            buf[otherIndent] = 0;
+        }
+
+        if (plane->cols > 0)
+        {
+            ptr = (const _Tp*)plane->ptr(r);
+            std::cout << buf << "[";
+            for (int c = 0; c < plane->cols - 1; ++c)
+            {
+                coutValue<_Tp>(ptr, buf);
+                ptr++;
+                std::cout << buf << ", ";
+            }
+            coutValue<_Tp>(ptr, buf);
+            std::cout << buf << "]";
+        }
+        else
+        {
+            std::cout << buf << "[]";
+        }
+
+        if (r != plane->rows - 1) //not last row
+        {
+            std::cout << ",\n" << std::endl;
+        }
+        else
+        {
+            std::cout << "]" << std::endl;
+        }
+    }
+
+    return out;
+}
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> std::ostream& coutFunc(std::ostream& out, const DataObject& dObj)
 {
-    //cv::Mat_<_Tp> *cvMat = NULL;
+    static const char* types[] =
+    {
+        "uint8", "int8", "uint16", "int16", "int32", "uint32", "float32", "float64", "complex64", "complex128", "rgba32"
+    };
+
     int numMats = dObj.getNumPlanes();
     int tMat = 0;
+    int dims = dObj.getDims();
 
-    if (dObj.getDims() == 0)
+    if (dims == 0)
     {
-        std::cout << "DataObject()\n" << std::endl;
+        std::cout << "dataObject()\n" << std::endl;
     }
     else
     {
-        std::cout << "DataObject(size=[" << dObj.getSize(0);
-        for (int dim = 1; dim < dObj.getDims(); ++dim)
+        std::cout << "dataObject(size=[" << dObj.getSize(0);
+        for (int dim = 1; dim < dims; ++dim)
         {
             std::cout << "x" << dObj.getSize(dim);
         }
-        std::cout << "]\n" << std::endl;
+        std::cout << "], dtype='" << types[dObj.getType()] << "'\n" << std::endl;
 
-        int *idx = new int[dObj.getDims()];
-         
-
-        for (int nMat = 0; nMat < numMats; nMat++)
+        if (numMats == 1)
         {
-            tMat = dObj.seekMat(nMat, numMats);
-            //std::cout <<  tMat + 1 << "->(";
-
-            dObj.matNumToIdx(tMat, idx);
-            std::cout << "[";
-            for (int i = 0; i < dObj.getDims() - 2; ++i)
-            {
-                std::cout << idx[i] << ",";
-            }
-            std::cout << ":,:]->(";
-
-#if (CV_MAJOR_VERSION < 3)
-            std::cout << cv::format(*(dObj.get_mdata()[tMat]) , "numpy" ) << std::endl << std::endl;        
-#else
-            std::cout << *(dObj.get_mdata()[tMat]) << std::endl << std::endl;
-//            std::cout << cv::format((cv::InputArray)*(dObj.get_mdata()[tMat]), "numpy") << std::endl << std::endl;
-#endif
-            std::cout << ")" << "\n" << std::endl;
+            coutPlane<_Tp>(out, dObj.get_mdata()[tMat], 4, 5);
         }
+        else
+        {
 
-        delete[] idx;
+            int *idx = new int[dims];
+
+            for (int nMat = 0; nMat < numMats; nMat++)
+            {
+                tMat = dObj.seekMat(nMat, numMats);
+
+                dObj.matNumToIdx(tMat, idx);
+                std::cout << "[";
+                for (int i = 0; i < dims - 2; ++i)
+                {
+                    std::cout << idx[i] << ",";
+                }
+                std::cout << ":,:]->(";
+                coutPlane<_Tp>(out, dObj.get_mdata()[tMat], 0, 2*dims+5);
+                std::cout << ")" << "\n" << std::endl;
+            }
+
+            delete[] idx;
+        }
 
         std::cout << ")" << "\n" << std::endl;
     }
