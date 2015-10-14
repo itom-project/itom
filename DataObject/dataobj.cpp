@@ -705,20 +705,20 @@ DObjIterator DObjIterator::operator ++(int)
 
 
 #define CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(otherObject) \
-    if (m_type != ##otherObject.m_type) \
+    if (m_type != otherObject.m_type) \
     { \
         cv::error(cv::Exception(CV_StsUnmatchedFormats, "dataObjects differ in type", "", __FILE__, __LINE__)); \
     } \
-    else if ((m_dims == ##otherObject.m_dims) && (m_size != ##otherObject.m_size)) \
+    else if ((m_dims == otherObject.m_dims) && (m_size != otherObject.m_size)) \
     { \
         cv::error(cv::Exception(CV_StsUnmatchedSizes, "dataObjects differ in size", "", __FILE__, __LINE__)); \
     } \
-    else if (getNumPlanes() != ##otherObject.getNumPlanes()) \
+    else if (getNumPlanes() != otherObject.getNumPlanes()) \
     { \
         /*dataObjects have different numbers of planes.*/ \
         cv::error(cv::Exception(CV_StsUnmatchedSizes, "dataObjects differ in size (non equal number of planes)", "", __FILE__, __LINE__)); \
     } \
-    else if (m_dims > 0 && (get_mdata()[0]->size() != ##otherObject.get_mdata()[0]->size())) \
+    else if (m_dims > 0 && (get_mdata()[0]->size() != otherObject.get_mdata()[0]->size())) \
     { \
         /*both objects have at least dimension two (same number of planes, and this->m_dims > 0).*/ \
         /*but the size of both planes (last two dimensions) is not equal.*/ \
