@@ -3987,7 +3987,7 @@ PyObject* PythonDataObject::PyDataObject_repr(PyDataObject *self)
     int dims;
     if (self->dataObject == NULL)
     {
-        result = PyUnicode_FromFormat("DataObject(empty)");
+        result = PyUnicode_FromFormat("dataObject(empty)");
     }
     else
     {
@@ -3996,13 +3996,13 @@ PyObject* PythonDataObject::PyDataObject_repr(PyDataObject *self)
         switch(dims)
         {
         case 2:
-            result = PyUnicode_FromFormat("DataObject('%s', [%i x %i], continuous: %i, owndata: %i)", typeNumberToName(dObj->getType()), dObj->getSize(0), dObj->getSize(1), dObj->getContinuous(), dObj->getOwnData());
+            result = PyUnicode_FromFormat("dataObject('%s', [%i x %i], continuous: %i, owndata: %i)", typeNumberToName(dObj->getType()), dObj->getSize(0), dObj->getSize(1), dObj->getContinuous(), dObj->getOwnData());
             break;
         case 3:
-            result = PyUnicode_FromFormat("DataObject('%s', [%i x %i x %i], continuous: %i, owndata: %i)", typeNumberToName(dObj->getType()), dObj->getSize(0), dObj->getSize(1), dObj->getSize(2), dObj->getContinuous(), dObj->getOwnData());
+            result = PyUnicode_FromFormat("dataObject('%s', [%i x %i x %i], continuous: %i, owndata: %i)", typeNumberToName(dObj->getType()), dObj->getSize(0), dObj->getSize(1), dObj->getSize(2), dObj->getContinuous(), dObj->getOwnData());
             break;
         default:
-            result = PyUnicode_FromFormat("DataObject('%s', %i dims, continuous: %i, owndata: %i)", typeNumberToName(dObj->getType()), dObj->getDims(), dObj->getContinuous(), dObj->getOwnData());
+            result = PyUnicode_FromFormat("dataObject('%s', %i dims, continuous: %i, owndata: %i)", typeNumberToName(dObj->getType()), dObj->getDims(), dObj->getContinuous(), dObj->getOwnData());
             break;
         }
     }
