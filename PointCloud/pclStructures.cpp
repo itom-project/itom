@@ -941,31 +941,32 @@ const PCLPointCloud PCLPointCloud::operator+ (const PCLPointCloud &rhs)
 
 PCLPointCloud & PCLPointCloud::operator= (const PCLPointCloud &copy)
 {
-    // ToDo perhaps a check of identical object copy is necessary
-    this->setInvalid();
-
-    m_type = copy.getType();
-
-    switch(copy.getType())
+    if (this != &copy)
     {
-        case ito::pclXYZ:
-            m_pcXYZ = copy.m_pcXYZ;
-            break;
-        case ito::pclXYZI:
-            m_pcXYZI = copy.m_pcXYZI;
-            break;
-        case ito::pclXYZRGBA:
-            m_pcXYZRGBA = copy.m_pcXYZRGBA;
-            break;
-        case ito::pclXYZNormal:
-            m_pcXYZNormal = copy.m_pcXYZNormal;
-            break;
-        case ito::pclXYZINormal:
-            m_pcXYZINormal = copy.m_pcXYZINormal;
-            break;
-        case ito::pclXYZRGBNormal:
-            m_pcXYZRGBNormal = copy.m_pcXYZRGBNormal;
-            break;
+        setInvalid();
+        m_type = copy.getType();
+
+        switch(copy.getType())
+        {
+            case ito::pclXYZ:
+                m_pcXYZ = copy.m_pcXYZ;
+                break;
+            case ito::pclXYZI:
+                m_pcXYZI = copy.m_pcXYZI;
+                break;
+            case ito::pclXYZRGBA:
+                m_pcXYZRGBA = copy.m_pcXYZRGBA;
+                break;
+            case ito::pclXYZNormal:
+                m_pcXYZNormal = copy.m_pcXYZNormal;
+                break;
+            case ito::pclXYZINormal:
+                m_pcXYZINormal = copy.m_pcXYZINormal;
+                break;
+            case ito::pclXYZRGBNormal:
+                m_pcXYZRGBNormal = copy.m_pcXYZRGBNormal;
+                break;
+        }
     }
 
     return *this;
