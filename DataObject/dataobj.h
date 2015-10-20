@@ -1207,6 +1207,34 @@ namespace ito {
             int matIndex = seekMat(matNum);
             return ((const cv::Mat*)m_data[matIndex])->ptr(y);
         }
+
+        //! returns pointer to the data in the y-th row in the 2d-matrix plane matNum
+        /*!
+         This is a templated version to return the pointer already casted to the right type,
+         e.g. ito::float64* myPtr = myObj->rowPtr<ito::float64>(0,0).
+         
+         \remark No further error checking (e.g. boundaries)
+         \return data-pointer
+         */
+        template<typename _Tp> inline _Tp* rowPtr(const int matNum, const int y)
+        {
+            int matIndex = seekMat(matNum);
+            return ((cv::Mat*)m_data[matIndex])->ptr<_Tp>(y);
+        }
+        
+        //! returns pointer to the data in the y-th row in the 2d-matrix plane matNum
+        /*!
+         This is a templated version to return the pointer already casted to the right type,
+         e.g. const ito::float64* myPtr = myObj->rowPtr<ito::float64>(0,0).
+         
+         \remark No further error checking (e.g. boundaries)
+         \return data-pointer
+         */
+        template<typename _Tp> inline const _Tp* rowPtr(const int matNum, const int y) const
+        {
+            int matIndex = seekMat(matNum);
+            return ((const cv::Mat*)m_data[matIndex])->ptr<_Tp>(y);
+        }
         
         DataObject row(const int selRow) const;
         DataObject col(const int selCol) const;
