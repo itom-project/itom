@@ -26,6 +26,7 @@
 #include "pythonPlugins.h"
 #include "pythonDataObject.h"
 #include "pythonPCL.h"
+#include "pythonQtConversion.h"
 
 namespace ito
 {
@@ -254,13 +255,13 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, const QString &fullN
                             else if(PyFloat_Check(key))
                             {
                                 keyText = QString::number( PyFloat_AsDouble(key) );
-                                keyKey = ":" + keyText;
+                                keyKey = "xx:" + keyText;
                                 keyKey[0] = keyType[0];
                                 keyKey[1] = PY_NUMBER;
                             }
                             else
                             {
-                                keyText = "<unknown>";
+                                keyText = PythonQtConversion::PyObjGetRepresentation(key); //"<unknown>";
                                 keyKey = "xx:" + keyText;
                                 keyKey[0] = keyType[0];
                                 keyKey[1] = PY_STRING;

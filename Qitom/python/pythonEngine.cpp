@@ -3016,7 +3016,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
             {
                 if (itemKeyType == 's') //string
                 {
-                    tempObj = PyDict_GetItemString(obj, itemKey); //borrowed
+                    tempObj = PyDict_GetItemString(temp, itemKey); //borrowed
                     if (!tempObj)
                     {
                         obj = PyObject_GetAttrString(obj, itemKey); //new reference (only for this case, objIsNewRef is true (if nothing failed))
@@ -3044,7 +3044,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                     if (ok)
                     {
                         number = PyLong_FromLong(i);
-                        tempObj = PyDict_GetItem(obj, number); //borrowed
+                        tempObj = PyDict_GetItem(temp, number); //borrowed
                         Py_XDECREF(number);
                     }
                     if (!ok || tempObj == NULL)
@@ -3053,7 +3053,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                         if (ok)
                         {
                             number = PyFloat_FromDouble(i);
-                            tempObj = PyDict_GetItem(obj, number); //borrowed
+                            tempObj = PyDict_GetItem(temp, number); //borrowed
                             Py_XDECREF(number);
                         }
                     }
