@@ -1063,10 +1063,11 @@ QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const char *str, Q
     PyGILState_STATE gstate = PyGILState_Ensure();
 
     //see http://docs.python.org/devguide/compiler.html
-
+    _node *n = PyParser_SimpleParseString(str, Py_file_input);
     _node *n2 = n;
-
+    if (n == NULL)
     {
+        PyGILState_Release(gstate);
         //here: error indicator is set.
         return QList<int>();
     }
@@ -2158,7 +2159,7 @@ ito::RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const QStri
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::pythonDeleteBreakpoint(const int pyBpNumber)
 {
-    ito::Retval retval;
+    ito::RetVal retval;
     //when calling this method, the Python GIL must already be locked
     PyObject *result = NULL;
     if (itomDbgInstance == NULL)

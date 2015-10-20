@@ -145,7 +145,8 @@ public:
     ito::RetVal checkForPyExceptions();
     void printPythonErrorWithoutTraceback();
     void pythonDebugFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);
-    void pythonRunFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);    inline PyObject *getGlobalDictionary()  const { return globalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
+    void pythonRunFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);    
+    inline PyObject *getGlobalDictionary()  const { return globalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
     inline bool pySyntaxCheckAvailable() const { return (m_pyModSyntaxCheck != NULL); }
     QList<int> parseAndSplitCommandInMainComponents(const char *str, QByteArray &encoding) const; //can be directly called from different thread
     QString getPythonExecutable() const { return m_pythonExecutable; }
