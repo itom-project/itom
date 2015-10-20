@@ -1032,16 +1032,12 @@ PyObject* PythonUi::PyUiItem_getPropertyInfo(PyUiItem *self, PyObject *args)
 
     retValue += locker.getSemaphore()->returnValue;
 
-    if(retValue.containsError())
+    if(retValue.containsWarningOrError())
     {
-
-        if(propertyName) PythonCommon::setReturnValueMessage(retValue, propertyName, PythonCommon::getProperty);
-        else PythonCommon::setReturnValueMessage(retValue, "???", PythonCommon::getProperty);
-        return NULL;
-    }
-    else if(retValue.containsWarning())
-    {
-        std::cout << "Warning while getting property infos with message: " << retValue.errorMessage() << std::endl;
+        if (!PythonCommon::setReturnValueMessage(retValue, propertyName ? propertyName : "getPropertyInfo", PythonCommon::getProperty))
+        {
+            return NULL;
+        }
     }
     
     QStringList stringList = retPropMap->keys();
@@ -2712,7 +2708,7 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
 
     if(!PyArg_ParseTupleAndKeywords(args, kwds, "OO|iiO!", const_cast<char**>(kwlist), &titleObj, &textObj, &buttons, &defaultButton, &PythonUi::PyUiType, &parentItem))
     {
-        PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), buttons (combination of ui.MsgBox[...]), defaultButton (ui.MsgBox[...])");
+        PyErr_SetString(PyExc_TypeError, "arguments must be title (str), label (str), and optional buttons (combination of ui.MsgBox[...]), defaultButton (ui.MsgBox[...]), parent (any instance of class ui)");
         return NULL;
     }
 

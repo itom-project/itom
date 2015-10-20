@@ -167,10 +167,11 @@ void BreakPointDockWidget::mnuDeleteBP()
 //----------------------------------------------------------------------------------------------------------------------------------
 void BreakPointDockWidget::mnuDeleteAllBPs()
 {
-    m_breakPointView->clearSelection();
-    m_breakPointView->expandAll();
-    m_breakPointView->selectAll();
-    mnuDeleteBP();
+    BreakPointModel *model = qobject_cast<BreakPointModel*>(m_breakPointView->model());
+    if (model)
+    {
+        model->deleteAllBreakPoints();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

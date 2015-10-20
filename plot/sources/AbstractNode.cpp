@@ -95,7 +95,7 @@ AbstractNode::~AbstractNode()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal AbstractNode::updateParam(ito::ParamBase *input, int isSource /*=0*/)
+RetVal AbstractNode::updateParam(const ito::ParamBase *input, int isSource /*=0*/)
 {
     ito::RetVal retval = ito::retOk;
     Channel *thisChannel = NULL;
@@ -188,21 +188,6 @@ RetVal AbstractNode::updateParam(ito::ParamBase *input, int isSource /*=0*/)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*
-bool AbstractNode::isRefreshPending()
-{
-    bool temp = m_refreshPending;
-    AbstractNode* node;
-
-    foreach(node,m_pChildren)
-    {
-        temp |= node->isRefreshPending();
-    }
-    return temp;
-}
-*/
-
-//----------------------------------------------------------------------------------------------------------------------------------
 RetVal AbstractNode::getUpdateStatus(void) const
 {
     ito::Channel *thisChannel;
@@ -218,28 +203,40 @@ RetVal AbstractNode::getUpdateStatus(void) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal AbstractNode::updateChannels(QList<QString> paramNames)
+RetVal AbstractNode::updateChannels(const QList<QString> &paramNames)
 {
     ito::RetVal retval = ito::retOk;
     ito::Channel *thisChannel;
     QList<QString> copyParamNames = paramNames;
     QString thisName;
     QList<ito::Channel *> channelList;
+    int nrProcessedChannels = 0;
 
+    // We ither through all channels and check if they are outputs from this node and are within the list
     foreach (thisChannel, m_pChannels)
     {
-        if ((thisChannel->isSender(this)) && (copyParamNames.contains(thisChannel->getSenderParamName())))
+        // CHANGE / CHECK TODO by Wolfram Lyda on 22.05.2015 to avoid missing update if multiple chanels are attached to same output parameter
+        // Changed copyParamNames to paramNames
+        if ((thisChannel->isSender(this)) && (paramNames.contains(thisChannel->getSenderParamName())))
         {
+            // If they are in the list, we trigger an update and remove them from the temp list
             channelList.append(thisChannel);
+            // If we have at least one chanel with this param, we remove its name from the copied list to check wether all params were found
             copyParamNames.removeOne(thisChannel->getSenderParamName());
             retval += setUpdatePending(thisChannel->getUniqueID());
         }
     }
+    
     if (retval.containsError()) 
+    {
         return retval;
+    }
     if (copyParamNames.length() != 0)
-        return ito::RetVal(ito::retError, 0, QObject::tr("parameters in list could not be found in channels, in updateChannels").toLatin1().data());
-
+    {
+        // even if we have not found every parameter in the channel list, we should update the rest anyway!
+        retval += ito::RetVal(ito::retWarning, 0, QObject::tr("Not all parameters in list could not be found in channels, in updateChannels").toLatin1().data());
+        //return ito::RetVal(ito::retError, 0, QObject::tr("parameters in list could not be found in channels, in updateChannels").toLatin1().data());
+    }
     foreach (thisChannel, channelList)
     {
         ito::Param *partnerParam = thisChannel->getPartnerParam(this);
@@ -288,7 +285,7 @@ RetVal AbstractNode::setUpdatePending(int uniqueID /*= -1*/)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-Channel * AbstractNode::getInputChannel(const char *inpParamName)
+Channel* AbstractNode::getInputChannel(const char *inpParamName) const
 {
     Channel *thisChannel;
     foreach(thisChannel, m_pChannels)

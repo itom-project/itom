@@ -56,11 +56,10 @@
         <file>icons/designer4.png</file>
         <file>icons/editSmartIndent.png</file>
         <file>icons/pythonDebug.png</file>
-        <file>icons/itomicon/q_itoM32.png</file>
-        <file>icons/itomicon/q_itoM64.png</file>
+        <file alias="icons/itomicon/itomIcon32">icons/itomicon/itomLogo2_32.png</file>
+        <file alias="icons/itomicon/itomIcon64">icons/itomicon/itomLogo2_64.png</file>
         <file>icons/itomicon/itologo64.png</file>
-        <file>icons/itomicon/curAppIcon.png</file>
-        <file>icons/itomicon/q_itoM1024.png</file>
+        <file alias="icons/itomicon/itomIcon1024">icons/itomicon/itomLogo2_1024.png</file>
         <file>icons/adBlockAction.png</file>
         <file>icons/list.png</file>
         <file>icons/kdb_form.png</file>
@@ -70,7 +69,7 @@
         <file>icons/dialog-warning-4.png</file>
         <file>icons/loader16x16.gif</file>
         <file>icons/loader32x32trans.gif</file>
-        <file>icons/itomicon/splashScreen.png</file>
+        <file>icons/itomicon/splashScreen2.png</file>
         <file>icons/empty.png</file>
         <file>icons/pin.png</file>
         <file>icons/pinChecked.png</file>
@@ -84,6 +83,10 @@
         <file>icons/1leftarrow.png</file>
         <file>icons/1rightarrow.png</file>
         <file>icons/1uparrow.png</file>
+        <file>icons/down-32.png</file>
+        <file>icons/up-32.png</file>
+        <file>icons/minus.png</file>
+        <file>icons/plus.png</file>
     </qresource>
     <qresource prefix="/files">
         <file>icons/fileModified.png</file>

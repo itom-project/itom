@@ -62,42 +62,46 @@ namespace ito
     */
 
     #define apiPaletteGetNumberOfColorBars \
-        (*(ito::RetVal (*)(int &)) ito::ITOM_API_FUNCS_GRAPH[0])
+        (*(ito::RetVal (*)(int &number)) ito::ITOM_API_FUNCS_GRAPH[0])
 
     #define apiPaletteGetColorBarName \
-        (*(ito::RetVal (*)(const QString &, ito::ItomPalette &)) ito::ITOM_API_FUNCS_GRAPH[1])
+        (*(ito::RetVal (*)(const QString &name, ito::ItomPalette &palette)) ito::ITOM_API_FUNCS_GRAPH[1])
 
     #define apiPaletteGetColorBarIdx \
-        (*(ito::RetVal (*)(const int, ito::ItomPalette &)) ito::ITOM_API_FUNCS_GRAPH[2])
+        (*(ito::RetVal (*)(const int index, ito::ItomPalette &palette)) ito::ITOM_API_FUNCS_GRAPH[2])
 
     #define apiGetFigure \
-        (*(ito::RetVal (*)(const QString &, const QString &, ito::uint32 &, QWidget **, QWidget *parent)) ito::ITOM_API_FUNCS_GRAPH[3])
-
+        (*(ito::RetVal (*)(const QString &figCategoryName, const QString &figClassName, ito::uint32 &UID, QWidget **figure, QWidget *parent)) ito::ITOM_API_FUNCS_GRAPH[3])
 
     #define apiGetPluginList \
-        (*(ito::RetVal (*)(const ito::pluginInfo, QHash<QString, ito::pluginInfo> &, const QString)) ito::ITOM_API_FUNCS_GRAPH[4])
+        (*(ito::RetVal (*)(const ito::pluginInfo requirements, QHash<QString, ito::pluginInfo> &pluginList, const QString preference)) ito::ITOM_API_FUNCS_GRAPH[4])
 
     #define apiStartLiveData \
-        (*(ito::RetVal (*)(QObject *, QObject *)) ito::ITOM_API_FUNCS_GRAPH[5])
+        (*(ito::RetVal (*)(QObject *liveDataSource, QObject *liveDataView)) ito::ITOM_API_FUNCS_GRAPH[5])
 
     #define apiStopLiveData \
-        (*(ito::RetVal (*)(QObject *, QObject *)) ito::ITOM_API_FUNCS_GRAPH[6])
+        (*(ito::RetVal (*)(QObject *liveDataSource, QObject *liveDataView)) ito::ITOM_API_FUNCS_GRAPH[6])
 
     #define apiConnectLiveData \
-        (*(ito::RetVal (*)(QObject *, QObject *)) ito::ITOM_API_FUNCS_GRAPH[7])
+        (*(ito::RetVal (*)(QObject *liveDataSource, QObject *liveDataView)) ito::ITOM_API_FUNCS_GRAPH[7])
 
     #define apiDisconnectLiveData \
-        (*(ito::RetVal (*)(QObject *, QObject *)) ito::ITOM_API_FUNCS_GRAPH[8])
+        (*(ito::RetVal (*)(QObject *liveDataSource, QObject *liveDataView)) ito::ITOM_API_FUNCS_GRAPH[8])
 
     #define apiPaletteGetColorBarIdxFromName \
-        (*(ito::RetVal (*)(const QString &, ito::int32 &)) ito::ITOM_API_FUNCS_GRAPH[9])
+        (*(ito::RetVal (*)(const QString &name, ito::int32 &index)) ito::ITOM_API_FUNCS_GRAPH[9])
 
     #define apiGetFigureSetting \
-        (*(QVariant (*)(const QObject *, const QString &, const QVariant &, ito::RetVal *)) ito::ITOM_API_FUNCS_GRAPH[10])
+        (*(QVariant (*)(const QObject *figureClass, const QString &key, const QVariant &defaultValue, ito::RetVal *retval)) ito::ITOM_API_FUNCS_GRAPH[10])
 
     #define apiGetPluginWidget \
-        (*(ito::RetVal (*)(void *, QVector<ito::ParamBase> *, QVector<ito::ParamBase> *, QPointer<QWidget>*)) ito::ITOM_API_FUNCS_GRAPH[11])
+        (*(ito::RetVal (*)(void *, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QPointer<QWidget>*widget)) ito::ITOM_API_FUNCS_GRAPH[11])
 
+    #define apiGetFigureIDbyHandle \
+        (*(ito::RetVal (*)(QObject *figure, ito::uint32 &figureUID)) ito::ITOM_API_FUNCS_GRAPH[12])
+
+    #define apiGetItomPlotHandleByID \
+        (*(ito::RetVal (*)(const ito::uint32 &figureUID, ito::ItomPlotHandle &plotHandle)) ito::ITOM_API_FUNCS_GRAPH[13])
     /** \} */
 
     /*#if defined(ITOM_IMPORT_PLOTAPI)

@@ -103,6 +103,10 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param> &params)
                     info.replace(l, 1, '\n');
                     l += 120;
                 }
+                else
+                {
+                    break;
+                }
             }
             m_lblInfo->setToolTip(info);
         }

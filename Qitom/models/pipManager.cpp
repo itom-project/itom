@@ -129,6 +129,7 @@ PipManager::~PipManager()
         m_pipProcess.waitForFinished(2000);
     }
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 /** return parent element
 *   @param [in] index   the element's index for which the parent should be returned
@@ -262,7 +263,6 @@ bool PipManager::isPipStarted() const
 {
     return m_pipProcess.pid() != 0;
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PipManager::checkPipAvailable(const PipGeneralOptions &options /*= PipGeneralOptions()*/)
@@ -678,7 +678,6 @@ void PipManager::finalizeTask()
                                 package.m_requires = value;
                                 break;
                             }
-
                         }
                     }
                 }
@@ -703,7 +702,7 @@ void PipManager::finalizeTask()
                 QRegExp rx("(\\S+) \\(Current: (\\S)+ Latest: (\\S+)( \\[\\S+\\])?\\)");
                 int pos = 0;
                 QMap<QString,QString> outdated;
-        QMap<QString,QString> unknown;
+                QMap<QString,QString> unknown;
 
                 while ((pos = rx.indexIn(output, pos)) != -1)
                 {
@@ -713,9 +712,9 @@ void PipManager::finalizeTask()
                 
                 //check for unknown (that could not been fetched)
                 pos = 0;
-        rx.setPattern("Could not find any downloads that satisfy the requirement (\\S+)");
+                rx.setPattern("Could not find any downloads that satisfy the requirement (\\S+)");
         
-        while ((pos = rx.indexIn(output, pos)) != -1)
+                while ((pos = rx.indexIn(output, pos)) != -1)
                 {
                     unknown[rx.cap(1)] = rx.cap(3);
                     pos += rx.matchedLength();

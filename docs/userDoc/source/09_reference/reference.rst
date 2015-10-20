@@ -27,6 +27,7 @@ Content:
    rgba.rst
    autoInterval.rst
    timer.rst
+   font.rst
 
 For an alphabetic index see:
 

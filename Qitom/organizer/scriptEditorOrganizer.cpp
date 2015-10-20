@@ -138,6 +138,7 @@ void ScriptEditorOrganizer::saveScriptState()
         
         settings.setValue("objectName", sdw->objectName());
         settings.setValue("docked",sdw->docked());
+        settings.setValue("currentIndex", sdw->getCurrentIndex());
         states = QVariant::fromValue<QList<ito::ScriptEditorStorage> >(sdw->saveScriptState());
         settings.setValue("state", states);
     }
@@ -232,9 +233,15 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
                 {
                     removeScriptDockWidget(sdw);
                 }
+				else
+				{
+					sdw->setCurrentIndex(settings.value("currentIndex", 0).toInt());
+				}
 
                 retval += ret;
             }
+
+            
         }
     }
 

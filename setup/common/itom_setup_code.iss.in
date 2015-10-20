@@ -1,0 +1,87 @@
+[Code]
+function MsiQueryProductState(ProductCode: string): integer;
+  external 'MsiQueryProductStateA@msi.dll stdcall';
+
+const
+  INSTALLSTATE_DEFAULT = 5;
+  INSTALLLEVEL_MAXIMUM = $ffff;
+  INSTALLSTATE_ABSENT = 2;
+  RP86 =    '{196BB40D-1578-3D01-B289-BEFC77A11A1E}';  // Visual C++ 2010 Redistributable Package (x86)
+  RP64 =    '{DA5E371C-6333-3D8A-93A4-6FD5B20BCC6E}';  // Visual C++ 2010 Redistributable Package (x64)
+  RPIA =    '{C1A35166-4301-38E9-BA67-02823AD72A1B}';  // Visual C++ 2010 Redistributable Package (ia64) 
+  RP86SP1 = '{F0C3E5D1-1ADE-321E-8167-68EF0DE699A5}';  // Visual C++ 2010 SP1 Redistributable Package (x86)
+  RP64SP1 = '{1D8E6291-B0D5-35EC-8441-6616F567A0F7}';  // Visual C++ 2010 SP1 Redistributable Package (x64)
+  RPIASP1 = '{88C73C1C-2DE5-3B01-AFB8-B46EF4AB41CD}';  // Visual C++ 2010 SP1 Redistributable Package (ia64)
+
+function IsMsiProductInstalled(const ProductId: string): Boolean;
+begin
+  Result := MsiQueryProductState(ProductId) = INSTALLSTATE_DEFAULT;
+end;
+
+function NeedInstallRP10(SetupMode: Integer): Boolean;
+begin
+  Result := ((SetupMode = 64) and not (IsMsiProductInstalled(RP64) or IsMsiProductInstalled(RP64SP1))) or
+            ((SetupMode = 32) and not (IsMsiProductInstalled(RP86) or IsMsiProductInstalled(RP86SP1)));
+//                IsMsiProductInstalled(RPIA) or IsMsiProductInstalled(RPIASP1));
+end;
+
+procedure DeleteDirAndFiles(const Path, Filename: String; const IsDir, DeleteFiles, DeleteSubdirsAlso: Boolean);
+var  Filter: string;
+begin
+  if DirExists(Path) then begin
+    Filter := Path;
+    if Filename <> '' then begin
+      if Copy(Filter, Length(Filter), 1) <> '\' then  Filter := Filter + '\';
+      Filter := Filter + Filename;
+    end;
+    DelTree(Filter, IsDir, DeleteFiles, DeleteSubdirsAlso);
+  end;
+end;
+
+procedure CurStepChanged(CurStep: TSetupStep);
+var  AppDir, MsgText: string;
+begin
+  if (CurStep = ssInstall) then begin
+    AppDir := ExpandConstant('{app}') + '\';
+    if DirExists(AppDir + 'SDK') or DirExists(AppDir + 'lib') or DirExists(AppDir + 'plugins') or DirExists(AppDir + 'designer') then begin
+      MsgText := 'This selected application directory contains at least one of the folders "designer", "plugins", "help" or "SDK". For a proper installation of the '+
+                 'current itom version these folder should be cleared. Do you want this setup to clear these folders before starting the installation?';
+      if MsgBox(MsgText, mbConfirmation, MB_YESNO) = IDYES then begin
+        DeleteDirAndFiles(AppDir + 'SDK', '', True, True, True);
+        DeleteDirAndFiles(AppDir + 'translation', '', True, True, True);
+        DeleteDirAndFiles(AppDir + 'imageformats', '', True, True, True);
+        DeleteDirAndFiles(AppDir + 'sqldrivers', '', True, True, True);
+        DeleteDirAndFiles(AppDir + 'help', '', True, True, True);
+        DeleteDirAndFiles(AppDir + 'lib', '', True, True, True);
+        DeleteDirAndFiles(AppDir + 'designer', '', True, True, True);
+        DeleteDirAndFiles(AppDir + 'plugins', '', True, True, True);
+        DeleteDirAndFiles(AppDir + 'docs\userDoc\build\qthelp', '', True, True, True);
+        DeleteDirAndFiles(AppDir, '*.dll', False, True, False);
+      end;
+    end;
+  end;
+end;
+
+function GetPythonPath(Value: string): string;
+var  PythonPath: string;
+     Found: Boolean;
+     RootKey: Integer;
+begin
+  Found := True;
+  if IsWin64 then  RootKey := HKEY_LOCAL_MACHINE_64
+  else  RootKey := HKEY_LOCAL_MACHINE;
+  
+  if not RegQueryStringValue(RootKey, 'SOFTWARE\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
+    if not RegQueryStringValue(RootKey, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
+      if not RegQueryStringValue(RootKey, 'SOFTWARE\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
+        if not RegQueryStringValue(RootKey, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
+          MsgBox('Python path was not found in registry!', mbError, MB_OK);
+          Found := False;
+        end; 
+      end;
+    end; 
+  end;
+  
+  if Found then
+    Result := PythonPath;
+end;

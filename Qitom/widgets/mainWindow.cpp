@@ -94,20 +94,23 @@ MainWindow::MainWindow() :
     //qDebug() << "mainWindow. Thread: " << QThread::currentThreadId ();
 #ifdef __APPLE__
     // Setting high res icon for OS X
-    QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/q_itoM1024"));
+    QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/itomIcon1024"));
 #else
-    QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/curAppIcon.png"));
+    QApplication::setWindowIcon(QIcon(":/application/icons/itomicon/itomIcon32"));
 #endif
 
     qDebug("build main window");
     const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 
     // general windows settings
-#if QT_POINTER_SIZE == 8
-    setWindowTitle(tr("itom (x64)"));
-#else
-    setWindowTitle(tr("itom"));
-#endif
+    if (sizeof(void*) > 4) //was before a check using QT_POINTER_SIZE
+    {
+        setWindowTitle(tr("itom (x64)"));
+    }
+    else
+    {
+        setWindowTitle(tr("itom"));
+    }
 
     setUnifiedTitleAndToolBarOnMac(true);
 
@@ -602,7 +605,7 @@ void MainWindow::createActions()
     connect(m_aboutQt, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
     //m_aboutQt->setShortcut(QKeySequence("F3"));
 
-    m_aboutQitom = new QAction(QIcon(":/application/icons/itomicon/q_itoM32.png"), tr("About itom..."), this);
+    m_aboutQitom = new QAction(QIcon(":/application/icons/itomicon/itomIcon32"), tr("About itom..."), this);
     connect(m_aboutQitom, SIGNAL(triggered()), this, SLOT(mnuAboutQitom()));
 
     m_actions["show_loaded_plugins"] = new QAction(QIcon(":/plugins/icons/plugin.png"), tr("Loaded plugins..."), this);

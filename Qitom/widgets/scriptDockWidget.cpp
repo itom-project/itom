@@ -247,6 +247,8 @@ void ScriptDockWidget::fillClassBox(const ClassNavigatorItem *parent, QString pr
             }
         }   
     }
+
+//    m_classBox->model()->sort(0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -276,6 +278,8 @@ void ScriptDockWidget::fillMethodBox(const ClassNavigatorItem *parent)
             m_methodBox->addItem(item->m_icon, QString(item->m_name+"("+item->m_args+")  [classmember]"), itemPointer);
         }
     }
+
+    m_methodBox->model()->sort(0);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2249,6 +2253,12 @@ void ScriptDockWidget::findWordWidgetFinished()
     {
         sew->setFocus();
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::setCurrentIndex(int index)
+{
+    m_tab->setCurrentIndex(index);
 }
 
 } //end namespace ito

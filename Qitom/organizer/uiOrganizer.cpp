@@ -54,6 +54,7 @@
 #include <qcoreapplication.h>
 #include <qmainwindow.h>
 
+
 namespace ito
 {
 
@@ -142,6 +143,13 @@ UiOrganizer::~UiOrganizer()
     m_dialogList.clear();
     m_objectList.clear();
 
+    QHash<QString, QTranslator*>::const_iterator qtransIter = m_transFiles.constBegin();
+    while (qtransIter != m_transFiles.constEnd())
+    {
+        delete qtransIter.value();
+        ++qtransIter;
+    }
+    m_transFiles.clear();
 
     if (m_garbageCollectorTimer > 0)
     {
@@ -578,6 +586,35 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
             file.open(QFile::ReadOnly);
             QFileInfo fileinfo(filename);
             QDir workingDirectory = fileinfo.absoluteDir();
+
+            //try to load translation file with the same basename than the ui-file and the suffix .qm. After the basename the location string can be added using _ as delimiter.
+            QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+
+            settings.beginGroup("Language");
+            QString language = settings.value("language", "en").toString();
+            settings.endGroup();
+
+            QLocale local = QLocale(language); //language can be "language[_territory][.codeset][@modifier]"
+
+            QTranslator *qtrans = new QTranslator();
+            bool couldLoad = qtrans->load(local, fileinfo.baseName(), "_", fileinfo.path());
+            if (couldLoad)
+            {
+                QString canonicalFilePath = fileinfo.canonicalFilePath();
+                if (m_transFiles.contains(canonicalFilePath))
+                {
+                    delete m_transFiles.value(canonicalFilePath);
+                    m_transFiles.remove(canonicalFilePath);
+                }
+
+                QCoreApplication::instance()->installTranslator(qtrans);
+                m_transFiles.insert(canonicalFilePath, qtrans);
+            }
+            else
+            {
+                delete qtrans;
+            }
+
             m_uiLoader.setWorkingDirectory(workingDirectory);
             wid = m_uiLoader.load(&file, mainWin);
             file.close();
@@ -2281,7 +2318,6 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, QSharedPointer<QByteArr
 
     return retValue;
 }
-
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::getObjectInfo(const QString &classname, ito::UiOrganizer::tQMapArg *objInfo, ItomSharedSemaphore *semaphore)
 {
@@ -2593,7 +2629,33 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
 
     return retValue;
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::getObjectID(const QObject *obj, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    RetVal retValue(retOk);
 
+    *objectID = 0;
+
+    QHash<unsigned int, QPointer<QObject> >::iterator elem = m_objectList.begin();
+    while (elem != m_objectList.end())
+    {
+        if(elem.value() == obj)
+        {
+            *objectID = elem.key();
+            break;
+        }
+        ++elem;
+    }
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retValue;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
+
+    return retValue;
+}
 ////----------------------------------------------------------------------------------------------------------------------------------
 ////----------------------------------------------------------------------------------------------------------------------------------
 //RetVal UiOrganizer::plotImage(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> plotHandle, QString plotClassName /*= ""*/, ItomSharedSemaphore *semaphore)

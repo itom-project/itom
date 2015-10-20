@@ -1,6 +1,6 @@
 SET (target_name itomCommonLib)
 project(${target_name}) 
- 
+  
 cmake_minimum_required(VERSION 2.8)
 
 IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
@@ -14,7 +14,7 @@ SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
-
+ 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
        
 include("../ItomBuildMacros.cmake")
@@ -56,6 +56,7 @@ set(itomCommon_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/color.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helperColor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interval.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/itomPlotHandle.h
 )
 
 set(itomCommon_SOURCES 

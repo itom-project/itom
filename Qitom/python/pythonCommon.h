@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2015, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -30,11 +30,20 @@
     #define NPY_1_8_API_VERSION 0x00000008
 #endif
 
-#include "pythonPlugins.h"
-#include "pythonDataObject.h"
-#include "pythonPCL.h"
+#ifndef Q_MOC_RUN
+    /* includes */
+    //python
+    // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
+    #if (defined _DEBUG) && (defined WIN32)
+        #undef _DEBUG
+        #include "Python.h"
+        #define _DEBUG
+    #else
+        #include "Python.h"
+    #endif
+#endif
 
-#include "../common/sharedStructures.h"
+#include "../../common/sharedStructures.h"
 
 #include <qvector.h>
 #include <qvariant.h>
@@ -58,7 +67,6 @@ namespace ito
     //!< This function searches for reserves Keywords (e.g. autoLoadParams) sets the corresponding bool parameter to the right value and than deletes the keyword
     ito::RetVal findAndDeleteReservedInitKeyWords(PyObject *kwds, bool * enableAutoLoadParams);
 
-    //PyObject* transformQVariant2PyObject(QVariant *value, ito::RetVal &retValue);
     PyObject* buildFilterOutputValues(QVector<QVariant> *outVals, ito::RetVal &retValue);
 
     class PythonCommon
@@ -76,9 +84,9 @@ namespace ito
             
             };
 
-            static bool transformRetValToPyException(ito::RetVal &retVal, PyObject *exceptionIfError = PyExc_RuntimeError);
-            static bool setReturnValueMessage(ito::RetVal &retVal, const QString &objName, const tErrMsg &errorMSG, PyObject *exceptionIfError = PyExc_RuntimeError);
-            static bool setReturnValueMessage(ito::RetVal &retVal, const char *objName, const tErrMsg &errorMSG, PyObject *exceptionIfError = PyExc_RuntimeError);
+            static bool transformRetValToPyException(ito::RetVal &retVal, PyObject *exceptionIfError = PyExc_RuntimeError, PyObject *exceptionIfWarning = PyExc_RuntimeWarning);
+            static bool setReturnValueMessage(ito::RetVal &retVal, const QString &objName, const tErrMsg &errorMSG, PyObject *exceptionIfError = PyExc_RuntimeError, PyObject *exceptionIfWarning = PyExc_RuntimeWarning);
+            static bool setReturnValueMessage(ito::RetVal &retVal, const char *objName, const tErrMsg &errorMSG, PyObject *exceptionIfError = PyExc_RuntimeError, PyObject *exceptionIfWarning = PyExc_RuntimeWarning);
     };
 
 } //end namespace ito

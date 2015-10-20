@@ -42,10 +42,12 @@
 #include "pythontParamConversion.h"
 #include "pythonRegion.h"
 #include "pythonRgba.h"
+#include "pythonFont.h"
 #include "pythonAutoInterval.h"
 
 #include "../organizer/addInManager.h"
 #include "common/interval.h"
+#include "../helper/sleeper.h"
 
 #include <qobject.h>
 #include <qcoreapplication.h>
@@ -235,6 +237,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<Qt::CursorShape>("Qt::CursorShape");
     qRegisterMetaType<ito::ItomPaletteBase>("ito::ItomPaletteBase");
     qRegisterMetaType<QSharedPointer<ito::ItomPaletteBase> >("QSharedPointer<ito::ItomPaletteBase>");
+    qRegisterMetaType<ito::ItomPlotHandle>("ito::ItomPlotHandle");
 
     m_autoReload.modAutoReload = NULL;
     m_autoReload.classAutoReload = NULL;
@@ -281,6 +284,13 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 
     m_pythonThreadId = QThread::currentThreadId ();
     qDebug() << "python in thread: " << m_pythonThreadId;
+
+	/*set new seed for random generator of OpenCV. 
+	This is required to have real random values for any randn or randu command.
+	The seed must be set in every thread. This is for the main thread.
+	*/
+	cv::theRNG().state = (uint64)cv::getCPUTickCount();
+	/*seed is set*/
 
     readSettings();
 
@@ -437,6 +447,13 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 Py_INCREF(&PythonRegion::PyRegionType);
                 PythonRegion::PyRegion_addTpDict(PythonRegion::PyRegionType.tp_dict);
                 PyModule_AddObject(itomModule, "region", (PyObject *)&PythonRegion::PyRegionType);
+            }
+
+            if (PyType_Ready(&PythonFont::PyFontType) >= 0)
+            {
+                Py_INCREF(&PythonFont::PyFontType);
+                PythonFont::PyFont_addTpDict(PythonFont::PyFontType.tp_dict);
+                PyModule_AddObject(itomModule, "font", (PyObject *)&PythonFont::PyFontType);
             }
 
             if (PyType_Ready(&PythonRgba::PyRgbaType) >= 0)
@@ -1046,9 +1063,9 @@ QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const char *str, Q
     PyGILState_STATE gstate = PyGILState_Ensure();
 
     //see http://docs.python.org/devguide/compiler.html
-    _node *n = PyParser_SimpleParseString(str, Py_file_input); 
+
     _node *n2 = n;
-    if (n==NULL)
+
     {
         //here: error indicator is set.
         return QList<int>();
@@ -1465,6 +1482,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+
 ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple, bool gilExternal /*= false*/)
 {
     RetVal retValue = RetVal(retOk);
@@ -1522,6 +1540,7 @@ ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple, bo
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+
 ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, bool gilExternal /*= false*/)
 {
     PyObject* result = NULL;
@@ -1559,25 +1578,27 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, 
         QList<BreakPointItem>::iterator it;
         int pyBpNumber;
         QModelIndex modelIndex;
-        int row = 0;
+
+        ito::RetVal retValueTemp;
+
         for (it = bp.begin() ; it != bp.end() ; ++it)
         {
-            if ((*it).pythonDbgBpNumber==-1)
+
+            if (it->pythonDbgBpNumber == -1)
             {
-                retValue += pythonAddBreakpoint((*it).filename, (*it).lineno, (*it).enabled, (*it).temporary, (*it).condition, (*it).ignoreCount, pyBpNumber);
-                bpModel->setPyBpNumber(*it,pyBpNumber);
 
-                if (retValue.containsError())
+                retValueTemp = pythonAddBreakpoint(it->filename, it->lineno, it->enabled, it->temporary, it->condition, it->ignoreCount, pyBpNumber);
+                if (retValueTemp == ito::retOk)
                 {
-                    if (!gilExternal)
-                    {
-                        PyGILState_Release(gstate);
-                    }
-
-                    return retValue;
+                    bpModel->setPyBpNumber(*it,pyBpNumber);
+                }
+                else
+                {
+                    bpModel->setPyBpNumber(*it,-1);
+                    std::cerr << (retValueTemp.hasErrorMessage() ? retValueTemp.errorMessage() : "unspecified error when adding breakpoint to debugger") << "\n" << std::endl;
                 }
             }
-            row++;
+
         }
 
         //!< setup connections for live-changes in breakpoints
@@ -1690,20 +1711,23 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
         QList<BreakPointItem>::iterator it;
         int pyBpNumber;
         QModelIndex modelIndex;
-        int row = 0;
+        ito::RetVal retValueTemp;
+
         for (it = bp.begin() ; it != bp.end() ; ++it)
         {
-            if ((*it).pythonDbgBpNumber==-1)
+            if (it->pythonDbgBpNumber == -1)
             {
-                retValue += pythonAddBreakpoint((*it).filename, (*it).lineno, (*it).enabled, (*it).temporary, (*it).condition, (*it).ignoreCount, pyBpNumber);
-                bpModel->setPyBpNumber(*it,pyBpNumber);
-
-                if (retValue.containsError()) //error occurred, but already printed
+                retValueTemp = pythonAddBreakpoint(it->filename, it->lineno, it->enabled, it->temporary, it->condition, it->ignoreCount, pyBpNumber);
+                if (retValueTemp == ito::retOk)
                 {
-                    return retValue;
+                    bpModel->setPyBpNumber(*it,pyBpNumber);
+                }
+                else
+                {
+                    bpModel->setPyBpNumber(*it,-1);
+                    std::cerr << (retValueTemp.hasErrorMessage() ? retValueTemp.errorMessage() : "unspecified error when adding breakpoint to debugger") << "\n" << std::endl;
                 }
             }
-            row++;
         }
 
         //!< setup connections for live-changes in breakpoints
@@ -1815,23 +1839,23 @@ ito::RetVal PythonEngine::debugString(const QString &command)
         QList<BreakPointItem>::iterator it;
         int pyBpNumber;
         QModelIndex modelIndex;
-        int row = 0;
+        ito::RetVal retValueTemp;
+
         for (it = bp.begin() ; it != bp.end() ; ++it)
         {
-            if ((*it).pythonDbgBpNumber==-1)
+            if (it->pythonDbgBpNumber == -1)
             {
-                retValue += pythonAddBreakpoint(it->filename, it->lineno, it->enabled, it->temporary, it->condition, it->ignoreCount, pyBpNumber);
-
-                if (retValue.containsError())
-                {
-                    return retValue;
-                }
-                else
+                retValueTemp = pythonAddBreakpoint(it->filename, it->lineno, it->enabled, it->temporary, it->condition, it->ignoreCount, pyBpNumber);
+                if (retValueTemp == ito::retOk)
                 {
                     bpModel->setPyBpNumber(*it,pyBpNumber);
                 }
+                else
+                {
+                    bpModel->setPyBpNumber(*it,-1);
+                    std::cerr << (retValueTemp.hasErrorMessage() ? retValueTemp.errorMessage() : "unspecified error when adding breakpoint to debugger") << "\n" << std::endl;
+                }
             }
-            row++;
         }
 
         //!< setup connections for live-changes in breakpoints
@@ -1998,6 +2022,7 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::pythonAddBreakpoint(const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount, int &pyBpNumber)
 {
+    RetVal retval;
     //when calling this method, the Python GIL must already be locked
     PyObject *result = NULL;
 
@@ -2005,7 +2030,7 @@ ito::RetVal PythonEngine::pythonAddBreakpoint(const QString &filename, const int
 
     if (itomDbgInstance == NULL)
     {
-        return RetVal(retError);
+        retval += RetVal(retError, 0, "Debugger not available");
     }
     else
     {
@@ -2023,38 +2048,58 @@ ito::RetVal PythonEngine::pythonAddBreakpoint(const QString &filename, const int
 
         if (result == NULL)
         {
-            Py_XDECREF(result);
-            std::cerr << tr("Error while transmitting breakpoints to itoDebugger.").toLatin1().data() << "\n" << std::endl;
+            //this is an exception case that should not occure under normal circumstances
+            std::cerr << tr("Error while transmitting breakpoints to debugger.").toLatin1().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
-            return RetVal(retError);
+            retval += RetVal(retError, 0, "Exception raised while adding breakpoint in debugger.");
         }
         else
         {
-            long retNumber = PyLong_AsLong(result);
-            if (retNumber == -1)
+            if (PyLong_Check(result))
             {
-                pyBpNumber = -1;
-                Py_XDECREF(result);
-                return RetVal(retError);
+                long retNumber = PyLong_AsLong(result);
+                if (retNumber < 0)
+                {
+                    pyBpNumber = -1;
+                    retval += RetVal::format(retError, 0, "Adding breakpoint to file '%s', line %i failed in Python debugger (invalid breakpoint id).", filename.toLatin1().data(), lineno+1);
+                }
+                else
+                {
+                    //!> retNumber is new pyBpNumber, must now be added to BreakPointModel
+                    pyBpNumber = static_cast<int>(retNumber);
+                }
             }
             else
             {
-                //!> retNumber is new pyBpNumber, must now be added to BreakPointModel
-                pyBpNumber = static_cast<int>(retNumber);
+                bool ok;
+                QByteArray error = PythonQtConversion::PyObjGetString(result, true, ok).toLatin1();
+                if (ok)
+                {
+                    retval += RetVal(retError, 0, error.data());
+                }
+                else
+                {
+                    retval += RetVal::format(retError, 0, "Adding breakpoint to file '%s', line %i in Python debugger returned unknown error string", filename.toLatin1().data(), lineno+1);
+                }
             }
         }
+
+        Py_XDECREF(result);
+        result = NULL;
     }
-    return RetVal(retOk);
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount)
 {
+    RetVal retval;
     //when calling this method, the Python GIL must already be locked
     PyObject *result = NULL;
+
     if (itomDbgInstance == NULL)
     {
-        return RetVal(retError);
+        retval += RetVal(retError, 0, "Debugger not available");
     }
     else if (pyBpNumber >= 0)
     {
@@ -2072,67 +2117,90 @@ ito::RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const QStri
 
         if (result == NULL)
         {
-            Py_XDECREF(result);
-            std::cerr << tr("Error while editing breakpoint in itoDebugger.").toLatin1().data() << "\n" << std::endl;
+            //this is an exception case that should not occure under normal circumstances
+            std::cerr << tr("Error while editing breakpoint in debugger.").toLatin1().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
-            return RetVal(retError);
+            retval += RetVal(retError, 0, "Exception raised while editing breakpoint in debugger.");
+        }
+        else if (PyLong_Check(result))
+        {
+            long val = PyLong_AsLong(result);
+            if (val != 0)
+            {
+                retval += RetVal::format(retError, 0, "Editing breakpoint (file '%s', line %i) in Python debugger returned error code %i", filename.toLatin1().data(), lineno+1, val);
+            }
         }
         else
         {
-            long retNumber = PyLong_AsLong(result);
-            if (retNumber == -1)
+            bool ok;
+            QByteArray error = PythonQtConversion::PyObjGetString(result, true, ok).toLatin1();
+            if (ok)
             {
-                Py_XDECREF(result);
-                return RetVal(retError);
+                retval += RetVal(retError, 0, error.data());
+            }
+            else
+            {
+                retval += RetVal::format(retError, 0, "Editing breakpoint (file '%s', line %i) in Python debugger returned unknown error string", filename.toLatin1().data(), lineno+1);
             }
         }
+
+        Py_XDECREF(result);
+        result = NULL;
     }
     else
     {
-        qDebug() << "Breakpoint in file " << filename << ", line " << lineno << " can not be edited since it could not be registered in python (maybe an commented or blank line)";
+        retval += RetVal::format(retError, 0, "Breakpoint in file '%s', line %i could not be edited since it has no valid Python breakpoint number (maybe a comment or blank line in script)", filename.toLatin1().data(), lineno+1);
     }
 
-    Py_XDECREF(result);
-    return RetVal(retOk);
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::pythonDeleteBreakpoint(const int pyBpNumber)
 {
+    ito::Retval retval;
     //when calling this method, the Python GIL must already be locked
     PyObject *result = NULL;
     if (itomDbgInstance == NULL)
     {
-        return RetVal(retError);
+        retval += RetVal(retError, 0, "Debugger not available");
     }
     else if (pyBpNumber >= 0)
     {
-        result = PyObject_CallMethod(itomDbgInstance, "clearBreakPoint", "i", pyBpNumber);
+        result = PyObject_CallMethod(itomDbgInstance, "clearBreakPoint", "i", pyBpNumber); //returns 0 (int) or str with error message
         if (result == NULL)
         {
-            Py_XDECREF(result);
-            std::cerr << tr("Error while clearing breakpoint in itoDebugger.").toLatin1().data() << "\n" << std::endl;
+            //this is an exception case that should not occure under normal circumstances
+            std::cerr << tr("Error while clearing breakpoint in debugger.").toLatin1().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
-            return RetVal(retError);
+            retval += RetVal(retError, 0, "Exception raised while clearing breakpoint in debugger.");
+        }
+        else if (PyLong_Check(result))
+        {
+            long val = PyLong_AsLong(result);
+            if (val != 0)
+            {
+                retval += RetVal::format(retError, 0, "Deleting breakpoint in Python debugger returned error code %i", val);
+            }
         }
         else
         {
-            long retNumber = PyLong_AsLong(result);
-            if (retNumber == -1)
+            bool ok;
+            QByteArray error = PythonQtConversion::PyObjGetString(result, true, ok).toLatin1();
+            if (ok)
             {
-                Py_XDECREF(result);
-                return RetVal(retError);
+                retval += RetVal(retError, 0, error.data());
             }
-
+            else
+            {
+                retval += RetVal(retError, 0, "Deleting breakpoint in Python debugger returned unknown error string");
+            }
         }
-    }
-    else
-    {
-        qDebug() << "Breakpoint could not be deleted. Its python-internal bp-nr is invalid (maybe an commented or blank line).";
-    }
 
-    Py_XDECREF(result);
-    return RetVal(retOk);
+        Py_XDECREF(result);
+        result = NULL;
+    }
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2762,7 +2830,11 @@ void PythonEngine::breakPointAdded(BreakPointItem bp, int row)
 void PythonEngine::breakPointDeleted(QString /*filename*/, int /*lineNo*/, int pyBpNumber)
 {
     PyGILState_STATE gstate = PyGILState_Ensure();
-    pythonDeleteBreakpoint(pyBpNumber);
+    ito::RetVal ret = pythonDeleteBreakpoint(pyBpNumber);
+    if (ret.containsError())
+    {
+        std::cerr << (ret.hasErrorMessage() ? ret.errorMessage() : "unknown error while deleting breakpoint") << "\n" << std::endl;
+    }
     PyGILState_Release(gstate);
 }
 
@@ -2770,7 +2842,11 @@ void PythonEngine::breakPointDeleted(QString /*filename*/, int /*lineNo*/, int p
 void PythonEngine::breakPointChanged(BreakPointItem /*oldBp*/, ito::BreakPointItem newBp)
 {
     PyGILState_STATE gstate = PyGILState_Ensure();
-    pythonEditBreakpoint(newBp.pythonDbgBpNumber, newBp.filename, newBp.lineno, newBp.enabled, newBp.temporary, newBp.condition, newBp.ignoreCount);
+    ito::RetVal ret = pythonEditBreakpoint(newBp.pythonDbgBpNumber, newBp.filename, newBp.lineno, newBp.enabled, newBp.temporary, newBp.condition, newBp.ignoreCount);
+    if (ret.containsError())
+    {
+        std::cerr << (ret.hasErrorMessage() ? ret.errorMessage() : "unknown error while editing breakpoint") << "\n" << std::endl;
+    }
     PyGILState_Release(gstate);
 }
 
@@ -2828,9 +2904,11 @@ void PythonEngine::registerWorkspaceContainer(PyWorkspaceContainer *container, b
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//return new reference of found object that corresponds to fullName in the global or local workspace
 PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QStringList &fullName)
 {
     PyObject *obj = NULL;
+    PyObject *current_obj = NULL;
     QStringList items = fullName; //.split(".");
     int i=0;
     float f=0.0;
@@ -2841,6 +2919,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
     QByteArray itemName;
     QByteArray itemKey;
     bool ok;
+    bool objIsNewRef = false;
 
     if (items.count() > 0 && items[0] == "") items.removeFirst();
 
@@ -2855,6 +2934,8 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
 
     while(items.count() > 0 && obj)
     {
+        current_obj = obj;
+
         itemName = items[0].toLatin1();
 
         if (itemName.size() < 4) //every item has the form "as:name" where a,s... are values of the enumeration PyWorkspaceContainer:WorkspaceItemType
@@ -2894,28 +2975,67 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                     }
                 }
             }
+
             obj = tempObj;
+
+            if (objIsNewRef)
+            {
+                Py_DECREF(current_obj); 
+                objIsNewRef = false; //in the overall if-case, no new obj is a new reference, all borrowed
+            }
         }
         else if (PyList_Check(obj))
         {
             i = itemKey.toInt(&ok);
             if (!ok || i < 0 || i >= PyList_Size(obj)) return NULL; //error
-            obj = PyList_GET_ITEM(obj,i);
+            obj = PyList_GET_ITEM(obj,i); //borrowed
+
+            if (objIsNewRef)
+            {
+                Py_DECREF(current_obj); 
+                objIsNewRef = false; //no new obj is a new reference, all borrowed
+            }
         }
         else if (PyTuple_Check(obj))
         {
             i = itemKey.toInt(&ok);
             if (!ok || i < 0 || i >= PyTuple_Size(obj)) return NULL; //error
-            obj = PyTuple_GET_ITEM(obj,i);
+            obj = PyTuple_GET_ITEM(obj,i); //borrowed
+
+            if (objIsNewRef)
+            {
+                Py_DECREF(current_obj); 
+                objIsNewRef = false; //no new obj is a new reference, all borrowed
+            }
         }
         else if (PyObject_HasAttr(obj, dictUnicode))
         {
-            PyObject *temp = PyObject_GetAttr(obj, dictUnicode);
+            PyObject *temp = PyObject_GetAttr(obj, dictUnicode); //new reference
             if (temp)
             {
                 if (itemKeyType == 's') //string
                 {
                     tempObj = PyDict_GetItemString(obj, itemKey); //borrowed
+                    if (!tempObj)
+                    {
+                        obj = PyObject_GetAttrString(obj, itemKey); //new reference (only for this case, objIsNewRef is true (if nothing failed))
+
+                        if (objIsNewRef)
+                        {
+                            Py_DECREF(current_obj); 
+                        }
+
+                        objIsNewRef = (obj != NULL);
+                    }
+                    else
+                    {
+                        obj = tempObj;
+                        if (objIsNewRef)
+                        {
+                            Py_DECREF(current_obj); 
+                            objIsNewRef = false;  //no new obj is a new reference, all borrowed
+                        }
+                    }
                 }
                 else if (itemKeyType == 'n') //number
                 {
@@ -2936,8 +3056,15 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                             Py_XDECREF(number);
                         }
                     }
+
+                    obj = tempObj;
+                    if (objIsNewRef)
+                    {
+                        Py_DECREF(current_obj); 
+                        objIsNewRef = false;
+                    }
                 }
-                obj = tempObj;
+                
                 Py_DECREF(temp);
             }
             else
@@ -2952,7 +3079,12 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
         items.removeFirst();
     }
 
-    return obj;
+    if (objIsNewRef == false)
+    {
+        Py_XINCREF(obj);
+    }
+
+    return obj; //always new reference
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2964,6 +3096,7 @@ void PythonEngine::workspaceGetChildNode(PyWorkspaceContainer *container, QStrin
     if (obj)
     {
         container->loadDictionary(obj, fullNameParentItem);
+        Py_DECREF(obj);
     }
 }
 
@@ -3003,6 +3136,7 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
             Py_XDECREF(repr);
         }
 
+        Py_DECREF(obj);
         PyGILState_Release(gstate);
     }
 
@@ -3326,8 +3460,13 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
 
         while(!pyEngine->DbgCommandsAvailable()) //->isValidDbgCmd())
         {
+            //tests showed that the CPU consumption becomes very high, if
+            //this while loop iterates without a tiny sleep.
+            //The subsequent processEvents however is necessary to t(5get
+            //the next debug command.
+            Sleeper::msleep(50);
+
             QCoreApplication::processEvents();
-            //QCoreApplication::sendPostedEvents(pyEngine,0);
 
             if (PyErr_CheckSignals() == -1) //!< check if key interrupt occurred
             {

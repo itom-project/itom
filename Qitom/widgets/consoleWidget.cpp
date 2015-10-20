@@ -29,8 +29,10 @@
 #include <qfile.h>
 #include <qmimedata.h>
 #include <qurl.h>
+#include <qsettings.h>
 #include <qfileinfo.h>
 #include <qregexp.h>
+#include <QClipboard>
 
 #include "../organizer/userOrganizer.h"
 #include "../organizer/scriptEditorOrganizer.h"
@@ -444,23 +446,32 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
             }
             else
             {
-                getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-
-                if (lineFrom == -1)
-                {
-                    getCursorPosition(&lineFrom, &indexFrom);
-                }
-
-                if (lineFrom <= startLineBeginCmd)
-                {
-                    acceptEvent = true;
-                    forwardEvent = false;
-                    useCmdListCommand(1);
-                }
-                else
+                Qt::KeyboardModifiers modifiers = event->modifiers();
+                if ((modifiers &  Qt::ShiftModifier) || (modifiers &  Qt::ControlModifier))
                 {
                     acceptEvent = true;
                     forwardEvent = true;
+                }
+                else
+                {
+                    getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+
+                    if (lineFrom == -1)
+                    {
+                        getCursorPosition(&lineFrom, &indexFrom);
+                    }
+
+                    if (lineFrom <= startLineBeginCmd)
+                    {
+                        acceptEvent = true;
+                        forwardEvent = false;
+                        useCmdListCommand(1);
+                    }
+                    else
+                    {
+                        acceptEvent = true;
+                        forwardEvent = true;
+                    }
                 }
             }
             break;
@@ -473,23 +484,32 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
             }
             else
             {
-                getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-
-                if (lineFrom == -1)
-                {
-                    getCursorPosition(&lineFrom, &indexFrom);
-                }
-
-                if (lineFrom == lines() - 1 || lineFrom < startLineBeginCmd)
-                {
-                    acceptEvent = true;
-                    forwardEvent = false;
-                    useCmdListCommand(-1);
-                }
-                else
+                Qt::KeyboardModifiers modifiers = event->modifiers();
+                if ((modifiers &  Qt::ShiftModifier) || (modifiers &  Qt::ControlModifier))
                 {
                     acceptEvent = true;
                     forwardEvent = true;
+                }
+                else
+                {
+                    getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+
+                    if (lineFrom == -1)
+                    {
+                        getCursorPosition(&lineFrom, &indexFrom);
+                    }
+
+                    if (lineFrom == lines() - 1 || lineFrom < startLineBeginCmd)
+                    {
+                        acceptEvent = true;
+                        forwardEvent = false;
+                        useCmdListCommand(-1);
+                    }
+                    else
+                    {
+                        acceptEvent = true;
+                        forwardEvent = true;
+                    }
                 }
             }
             break;
@@ -1307,7 +1327,31 @@ void ConsoleWidget::copy()
 void ConsoleWidget::paste()
 {
     moveCursorToValidRegion();
+
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("PyScintilla");
+    bool formatPastCode = settings.value("formatPastCode", "false").toBool();
+    settings.endGroup();
+
+    QClipboard *clipboard = QApplication::clipboard();
+    QString clipboardSave = "";
+
+    if (formatPastCode)
+    {
+        if (clipboard->mimeData()->hasText()) 
+        {
+            clipboardSave = clipboard->text();
+            int lineCount;
+            clipboard->setText(formatPhytonCodePart(clipboard->text(), lineCount));
+        }
+    }
+
     QsciScintilla::paste();
+
+    if (clipboardSave != "")
+    {
+        clipboard->setText(clipboardSave);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1354,7 +1398,7 @@ void ConsoleWidget::pythonRunSelection(QString selectionText)
     if (selectionText.length() > 0)
     {
 //        waitForCmdExecutionDone = false;
-
+/*
         // 1. identify the indent typ
         QChar indentTyp = 0;
         if (selectionText[0] == '\t')
@@ -1385,10 +1429,14 @@ void ConsoleWidget::pythonRunSelection(QString selectionText)
         }
 
         selectionText += ConsoleWidget::lineBreak;
+*/
+        int lineCount = 0;
+        selectionText = formatPhytonCodePart(selectionText, lineCount);
 
         insertAt(selectionText, startLineBeginCmd, 2);
 
-        execCommand(startLineBeginCmd, startLineBeginCmd + selectionText.count(ConsoleWidget::lineBreak, Qt::CaseInsensitive) - 1);
+//        execCommand(startLineBeginCmd, startLineBeginCmd + selectionText.count(ConsoleWidget::lineBreak, Qt::CaseInsensitive) - 1);
+        execCommand(startLineBeginCmd, startLineBeginCmd + lineCount - 1);
     }
 }
 

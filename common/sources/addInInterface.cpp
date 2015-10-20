@@ -33,6 +33,7 @@
 #include <qmetaobject.h>
 #include <qcoreapplication.h>
 #include "abstractAddInDockWidget.h"
+#include "opencv/cv.h"
 
 #if defined _DEBUG  && defined(_MSC_VER) && defined(VISUAL_LEAK_DETECTOR_CMAKE)
     #include "vld.h"
@@ -217,6 +218,75 @@ namespace ito
             waitCond->release();
         }
         return retValue;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! creates new thread for the class instance and moves this instance to the new thread
+    ito::RetVal AddInBase::MoveToThread(void)
+    {
+        m_pThread = new QThread();
+        moveToThread(m_pThread);
+        m_pThread->start();
+
+		/*set new seed for random generator of OpenCV. 
+		This is required to have real random values for any randn or randu command.
+		The seed must be set in every thread. This is for the main thread.
+		*/
+		cv::theRNG().state = (uint64)cv::getCPUTickCount();
+		/*seed is set*/
+
+        return retOk;
+    }
+
+    //! method to retrieve a parameter from the parameter map (m_params)
+    /*!
+        returns parameter from m_params vector. If the parameter could not be found or if the given name is invalid an invalid Param is returned.
+        If you provide the nameCheckOk-pointer, you will return a boolean value describing whether your name matched the possible regular expression.
+
+        The parameter name, that is search can have the following form:
+
+        - Name (where Name consists of numbers, characters (a-z) or the symbols _-)
+        - Name[Idx] (where Idx is a fixed-point number
+        - Name[Idx]:suffix (where suffix is any string - suffix is ignored by this method)
+        - Name:suffix
+
+        \warn until now, the Idx is ignored by this method.
+
+        \param name is the name of the parameter
+        \param nameCheckOk returns true if name corresponds to the necessary syntax, else false
+        \return Param as copy of the internal m_params-map or empty Param, if name could not be resolved or found
+    */
+    const Param AddInBase::getParamRec(const QString name, bool *nameCheckOk /*= NULL*/) const
+    {
+        QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$");
+        if (rx.indexIn(name) == -1)
+        {
+            if (nameCheckOk)
+            {
+                *nameCheckOk = false;
+            }
+            return Param();
+        }
+        else
+        {
+            QStringList pname = rx.capturedTexts();
+            if (pname.length() > 1)
+            {
+                if (nameCheckOk)
+                {
+                    *nameCheckOk = true;
+                }
+                ito::Param tempParam = m_params.value(pname[1]);
+                if (pname[2].length())
+                {
+                }
+                if (pname[4].length())
+                {
+                }
+                return tempParam; //returns default constructor if value not available in m_params. Default constructor has member isValid() => false
+            }
+        }
+        return Param();
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -769,58 +839,7 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInActuator::~AddInActuator()
     {
-    }
-
-    //----------------------------------------------------------------------------------------------------------------------------------
-    //! overwritten method from QObject in order to get informed about connected signal-slot connections.
-    /*!
-        This method is called if any signal-slot connection is established. If it is connected to the signal actuatorStatusChanged, the
-        counter m_nrOfStatusChangedConnections is incremented (in order to have the number of connections). The same holds for the signal 
-        targetChanged and counter variable m_nrOfTargetChangedConnections.
-
-        If you want to overwrite this method in your actuator implementation, please call the implementation of AddInActuator in your implementation
-        such that the functionality described above is still working.
-
-        \param [in] signal is the normalized connection string.
-    */
-    void AddInActuator::connectNotify(const char * signal)
-    {
-        //in Qt5, the signature of this protected method changed and hence will not be called in this version.
-        //There, it is no more checked if any signals are connected but the signals are always emitted.
-        /*if (QLatin1String(signal) == SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)))
-        {
-            m_nrOfStatusChangedConnections++;
-        }
-        else if (QLatin1String(signal) == SIGNAL(targetChanged(QVector<double>)))
-        {
-            m_nrOfTargetChangedConnections++;
-        }*/
-    }
-
-    //----------------------------------------------------------------------------------------------------------------------------------
-    //! overwritten method from QObject in order to get informed about disconnected signal-slot connections.
-    /*!
-        This method is called if any signal-slot connection to this instance is destroyed. If it is disconnected from the signal actuatorStatusChanged, the
-        counter m_nrOfStatusChangedConnections is decremented (in order to have the right number of connections). The same holds for the signal 
-        targetChanged and counter variable m_nrOfTargetChangedConnections.
-
-        If you want to overwrite this method in your actuator implementation, please call the implementation of AddInActuator in your implementation
-        such that the functionality described above is still working.
-
-        \param [in] signal is the normalized signal string of the connection which is destroyed.
-    */
-    void AddInActuator::disconnectNotify(const char * signal)
-    {
-        /*if (QLatin1String(signal) == SIGNAL(actuatorStatusChanged(QVector<int>,QVector<double>)))
-        {
-            m_nrOfStatusChangedConnections--;
-        }
-        else if (QLatin1String(signal) == SIGNAL(targetChanged(QVector<double>)))
-        {
-            m_nrOfTargetChangedConnections--;
-        }*/
-    }
-    
+    }   
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //! method emits the actuatorStatusChanged signal if any slot is connected to this signal.

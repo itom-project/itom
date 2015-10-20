@@ -32,10 +32,6 @@
 #include <vector>
 #include <map>
 
-#include "readWriteLock.h"
-
-#define NOREADWRITELOCK 1
-
 namespace ito {
 
 
@@ -188,8 +184,11 @@ const uchar* DObjConstIterator::operator [](int i) const
 DObjConstIterator& DObjConstIterator::operator += (int ofs)
 {
     if( !dObj || ofs == 0 )
+    {
         return *this;
-    int ofsb = ofs*elemSize;
+    }
+
+    int ofsb = ofs * elemSize;
     ptr += ofsb;
     if( ptr < sliceStart || sliceEnd <= ptr )
     {
@@ -705,12 +704,34 @@ DObjIterator DObjIterator::operator ++(int)
 #define TYPE_OFFSET_RGBA  10
 
 
+#define CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(otherObject) \
+    if (m_type != otherObject.m_type) \
+    { \
+        cv::error(cv::Exception(CV_StsUnmatchedFormats, "dataObjects differ in type", "", __FILE__, __LINE__)); \
+    } \
+    else if ((m_dims == otherObject.m_dims) && (m_size != otherObject.m_size)) \
+    { \
+        cv::error(cv::Exception(CV_StsUnmatchedSizes, "dataObjects differ in size", "", __FILE__, __LINE__)); \
+    } \
+    else if (getNumPlanes() != otherObject.getNumPlanes()) \
+    { \
+        /*dataObjects have different numbers of planes.*/ \
+        cv::error(cv::Exception(CV_StsUnmatchedSizes, "dataObjects differ in size (non equal number of planes)", "", __FILE__, __LINE__)); \
+    } \
+    else if (m_dims > 0 && (get_mdata()[0]->size() != otherObject.get_mdata()[0]->size())) \
+    { \
+        /*both objects have at least dimension two (same number of planes, and this->m_dims > 0).*/ \
+        /*but the size of both planes (last two dimensions) is not equal.*/ \
+        cv::error(cv::Exception(CV_StsUnmatchedSizes, "dataObjects differ in size (non equal size of each plane)", "", __FILE__, __LINE__)); \
+    }
+
+
 
 //! constructor for empty data object
 /*!
     no data will be allocated, the number of elements and dimensions is set to zero
 */
-DataObject::DataObject(void) : m_continuous(1), m_owndata(1), m_type(0), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0), m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(void) : m_continuous(1), m_owndata(1), m_type(0), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
 {
 }
 
@@ -723,7 +744,7 @@ DataObject::DataObject(void) : m_continuous(1), m_owndata(1), m_type(0), m_pRefC
     \param type is the data-type of each element (use type of enumeration tDataType)
     \sa create, tDataType
 */
-DataObject::DataObject(const int size, const int type): m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0), m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(const int size, const int type): m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
 {
     int sizes[2] = {1, size};
     this->create(2, sizes, type, 1);
@@ -738,7 +759,7 @@ DataObject::DataObject(const int size, const int type): m_continuous(1), m_ownda
     \param type is the data-type of each element (use type of enumeration tDataType)
     \sa create, tDataType
 */
-DataObject::DataObject(const int sizeY, const int sizeX, const int type): m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0), m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(const int sizeY, const int sizeX, const int type): m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
 {
     int sizes[2] = {sizeY, sizeX};
     this->create(2, sizes, type, 1);
@@ -755,7 +776,7 @@ DataObject::DataObject(const int sizeY, const int sizeX, const int type): m_cont
     \param continuous indicates whether all matrix-planes should continuously lie in memory (1) or not (0) (default: 0)
     \sa create, tDataType
 */
-DataObject::DataObject(const int sizeZ, const int sizeY, const int sizeX, const int type, const unsigned char continuous /*= 0*/) : m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0), m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(const int sizeZ, const int sizeY, const int sizeX, const int type, const unsigned char continuous /*= 0*/) : m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
 {
     int sizes[3] = {sizeZ, sizeY, sizeX};
     this->create(3, sizes, type, m_continuous);
@@ -776,7 +797,7 @@ DataObject::DataObject(const int sizeZ, const int sizeY, const int sizeX, const 
             one element to the next one in the same dimension. Hence, the last element in this vector is equal to the size of one single element (in bytes)
     \sa create, tDataType
 */
-DataObject::DataObject(const int sizeZ, const int sizeY, const int sizeX, const int type, const uchar* continuousDataPtr,  const int* steps /*= NULL*/) : m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0), m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(const int sizeZ, const int sizeY, const int sizeX, const int type, const uchar* continuousDataPtr,  const int* steps /*= NULL*/) : m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
 {
     int sizes[3] = {sizeZ, sizeY, sizeX};
     this->create(3, sizes, type, m_continuous, continuousDataPtr, steps);
@@ -791,7 +812,7 @@ DataObject::DataObject(const int sizeZ, const int sizeY, const int sizeX, const 
     \param continuous indicates whether all matrix-planes should continuously lie in memory (1) or not (0) (default: 0)
     \sa create, tDataType
 */
-DataObject::DataObject(const MSize &sizes, const int type, const unsigned char continuous /*= 0*/) : m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0), m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(const MSize &sizes, const int type, const unsigned char continuous /*= 0*/) : m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
 {
     this->create(sizes.m_p[-1], sizes.operator const int *(), type, m_continuous);
 }
@@ -806,7 +827,7 @@ DataObject::DataObject(const MSize &sizes, const int type, const unsigned char c
     \param continuous indicates whether all matrix-planes should continuously lie in memory (1) or not (0) (default: 0)
     \sa create, tDataType
 */
-DataObject::DataObject(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous /*= 0*/) : m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0), m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(const unsigned char dimensions, const int *sizes, const int type, const unsigned char continuous /*= 0*/) : m_continuous(continuous), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
 {
     this->create(dimensions, sizes, type, m_continuous);
 }
@@ -825,12 +846,12 @@ DataObject::DataObject(const unsigned char dimensions, const int *sizes, const i
             one element to the next one in the same dimension. Hence, the last element in this vector is equal to the size of one single element (in bytes)
     \sa create, ito::tDataType
 */
-DataObject::DataObject(const unsigned char dimensions, const int *sizes, const int type, const uchar* continuousDataPtr, const int* steps /*= NULL*/) : m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0), m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(const unsigned char dimensions, const int *sizes, const int type, const uchar* continuousDataPtr, const int* steps /*= NULL*/) : m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
 {
     this->create(dimensions, sizes, type, m_continuous, continuousDataPtr, steps);
 }
 
-DataObject::DataObject(const unsigned char dimensions, const int *sizes, const int type, const cv::Mat* planes, const unsigned int nrOfPlanes) : m_continuous(0), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_objSharedDataLock(0), m_pDataObjectTags(0), m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(const unsigned char dimensions, const int *sizes, const int type, const cv::Mat* planes, const unsigned int nrOfPlanes) : m_continuous(0), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
 {
     //usually it is dangerous to say that m_owndata is 1 in this case, since we cannot be sure if the given planes are the owner of their data.
     //however, in this case, owndata is unimportant since the created dataObject is always not continuous, therefore owndata will never
@@ -851,8 +872,6 @@ DataObject::DataObject(const unsigned char dimensions, const int *sizes, const i
 DataObject::~DataObject(void)
 {
     freeData();
-    delete m_objHeaderLock;
-    m_objHeaderLock = NULL;
 }
 
 
@@ -1361,7 +1380,6 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
    if (!dObj->m_pRefCount && dimensions > 0)
    {
         dObj->m_pRefCount = new int(0);
-        dObj->m_objSharedDataLock = new ReadWriteLock(dObj->m_objHeaderLock->getLockStatus());
         if(dimensions == 1)
         {
             dObj->m_pDataObjectTags = new DataObjectTagsPrivate(2);
@@ -1597,7 +1615,6 @@ template<typename _Tp> RetVal CreateFuncWithCVPlanes(DataObject *dObj, const uns
         if (!dObj->m_pRefCount)
         {
             dObj->m_pRefCount = new int(0);
-            dObj->m_objSharedDataLock = new ReadWriteLock(dObj->m_objHeaderLock->getLockStatus());
             dObj->m_pDataObjectTags = new DataObjectTagsPrivate(dimensions);
         }
 
@@ -1822,8 +1839,6 @@ template<typename _Tp> RetVal FreeFunc(DataObject *dObj)
         }
         delete dObj->m_pRefCount;
         dObj->m_pRefCount = NULL;
-        delete dObj->m_objSharedDataLock;
-        dObj->m_objSharedDataLock = NULL;
         delete dObj->m_pDataObjectTags;
         dObj->m_pDataObjectTags = NULL;
     }
@@ -1838,7 +1853,7 @@ template<typename _Tp> RetVal FreeFunc(DataObject *dObj)
     if (dObj->m_continuous && old_m_dims > 2 && dObj->m_owndata)
     {
         dataMat = (cv::Mat_<_Tp> *)dObj->m_data[0];
-        free(dataMat->datastart); //data is wrong, since data-pointer does not point to start in case of ROI
+        free((void*)dataMat->datastart); //data is wrong, since data-pointer does not point to start in case of ROI
         //free(dataMat->data);
     }
 
@@ -1911,8 +1926,6 @@ template<typename _Tp> RetVal SecureFreeFunc(DataObject *dObj)
         {
             if(dObj->m_pRefCount) delete dObj->m_pRefCount;
             dObj->m_pRefCount = NULL;
-            if(dObj->m_objSharedDataLock) delete dObj->m_objSharedDataLock;
-            dObj->m_objSharedDataLock = NULL;
             if(dObj->m_pDataObjectTags) delete dObj->m_pDataObjectTags;
             dObj->m_pDataObjectTags = NULL;
         }
@@ -1929,7 +1942,7 @@ template<typename _Tp> RetVal SecureFreeFunc(DataObject *dObj)
             dataMat = (cv::Mat_<_Tp> *)dObj->m_data[0];
             if(dataMat && dataMat->datastart)
             {
-                free(dataMat->datastart);
+                free((void*)dataMat->datastart);
             }
         }
 
@@ -2305,48 +2318,70 @@ RetVal DataObject::copyTo(DataObject &rhs, unsigned char regionOnly) const
 */
 template<typename _Tp> RetVal DeepCopyPartialFunc(const DataObject &lhs, DataObject &rhs)
 {
-   if (&lhs == &rhs)
-   {
-         return ito::retOk;
-   }
+    if (&lhs == &rhs)
+    {
+            return ito::retOk;
+    }
 
-   const cv::Mat **lhs_mdata = lhs.get_mdata();
-   cv::Mat **rhs_mdata = rhs.get_mdata();
-   const cv::Mat *lhs_mat;
-   cv::Mat *rhs_mat;
+    int lhs_numPlanes = lhs.getNumPlanes();
+    int rhs_numPlanes = rhs.getNumPlanes();
+    int dims = lhs.getDims();
 
-   int sizeX = static_cast<int>(lhs.getSize(lhs.getDims() - 1));
-   int sizeY = static_cast<int>(lhs.getSize(lhs.getDims() - 2));
+    const cv::Mat **lhs_mdata = lhs.get_mdata();
+    cv::Mat **rhs_mdata = rhs.get_mdata();
+    const cv::Mat *lhs_mat;
+    cv::Mat *rhs_mat;
 
-   int lineBytes = sizeX * sizeof(_Tp);
-   int planeBytes = sizeY * sizeX * sizeof(_Tp);
+    if (lhs_numPlanes == rhs_numPlanes) //both planes have the same size, line wise or block wise memcpy is possible
+    {
+        int sizeX = lhs.getSize(dims - 1);
+        int sizeY = lhs.getSize(dims - 2);
 
-   const uchar *lhs_ptr;
-   uchar *rhs_ptr;
+        int lineBytes = sizeX * sizeof(_Tp);
+        int planeBytes = sizeY * lineBytes;
 
-   for (int nMat = 0; nMat < lhs.getNumPlanes(); ++nMat)
-   {
-        lhs_mat = lhs_mdata[lhs.seekMat(nMat)];
-        rhs_mat = rhs_mdata[rhs.seekMat(nMat)];
+        const uchar *lhs_ptr;
+        uchar *rhs_ptr;
 
-        if (lhs_mat->isContinuous() && rhs_mat->isContinuous())
+        for (int nMat = 0; nMat < lhs_numPlanes; ++nMat)
         {
-           memcpy(rhs_mat->data, lhs_mat->data, planeBytes);
-        }
-        else
-        {
-            lhs_ptr = lhs_mat->data;
-            rhs_ptr = rhs_mat->data;
+            lhs_mat = lhs_mdata[lhs.seekMat(nMat, lhs_numPlanes)];
+            rhs_mat = rhs_mdata[rhs.seekMat(nMat, lhs_numPlanes)];
 
-            for (int y = 0; y < sizeY; ++y)
+            if (lhs_mat->isContinuous() && rhs_mat->isContinuous())
             {
-                memcpy(rhs_ptr, lhs_ptr, lineBytes);
-                lhs_ptr += lhs_mat->step[0];
-                rhs_ptr += rhs_mat->step[0];
+                memcpy(rhs_mat->data, lhs_mat->data, planeBytes);
+            }
+            else
+            {
+                lhs_ptr = lhs_mat->data;
+                rhs_ptr = rhs_mat->data;
+
+                for (int y = 0; y < sizeY; ++y)
+                {
+                    memcpy(rhs_ptr, lhs_ptr, lineBytes);
+                    lhs_ptr += lhs_mat->step[0];
+                    rhs_ptr += rhs_mat->step[0];
+                }
             }
         }
-   }
-   return ito::retOk;
+    }
+    else
+    {
+        //the number of planes is not equal, hence each plane has another size (only the type, the sequence of the size of (non-one-size) dimensions is equal)
+        //this can mean a partial copy from a 1x5 object to a 5x1x1 object.
+        DObjConstIterator lhs_it = lhs.constBegin();
+        DObjIterator rhs_it = rhs.begin();
+
+        while (lhs_it != lhs.constEnd())
+        {
+            memcpy(*rhs_it, *lhs_it, sizeof(_Tp));
+            lhs_it++;
+            rhs_it++;
+        }
+    }
+
+    return ito::retOk;
 }
 
 typedef RetVal (*tDeepCopyPartialFunc)(const DataObject &lhs, DataObject &rhs);
@@ -3111,14 +3146,6 @@ DataObject & DataObject::operator = (const cv::Mat &rhs)
 */
 DataObject & DataObject::operator = (const DataObject &rhs)
 {
-#if _DEBUG
-    if(rhs.m_objSharedDataLock != NULL && rhs.m_objSharedDataLock->getLockStatus() == -1)
-    {
-
-        cv::error(cv::Exception(CV_StsAssert,"data of assigned data object may not be locked for writing","", __FILE__, __LINE__));
-    }
-#endif
-
    if (this == &rhs)
    {
       return *this;
@@ -3136,19 +3163,7 @@ DataObject & DataObject::operator = (const DataObject &rhs)
    {
         CV_XADD((m_pRefCount),1); //++;
 
-        m_objSharedDataLock = rhs.m_objSharedDataLock;
         m_pDataObjectTags = rhs.m_pDataObjectTags;
-
-        int status = m_objHeaderLock->getLockStatus();
-
-        if(status == -1) //this object is in write lock, then increment shared data lock for reading (for writing not possible since rhs also has access to the data)
-        {
-            m_objSharedDataLock->lockRead();
-        }
-        else if(status > 0)
-        {
-            m_objSharedDataLock->lockRead(status);
-        }
 
         try
         {
@@ -3174,16 +3189,10 @@ DataObject & DataObject::operator = (const DataObject &rhs)
 
     \param &copyConstr is the data object, which will be copied
 */
-DataObject::DataObject(const DataObject& copyConstr) : m_pRefCount(0), m_dims(0), m_data(NULL), m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(const DataObject& copyConstr) : m_pRefCount(0), m_dims(0), m_data(NULL)
 {
-    /*if(copyConstr.m_objSharedDataLock->getLockStatus() == -1)
-    {
-        cv::error(cv::Exception(CV_StsAssert,"data of copyConstr may not be locked for writing","", __FILE__, __LINE__));
-    }*/
-
     createHeaderWithROI(copyConstr.m_dims, copyConstr.m_size.m_p, copyConstr.m_osize.m_p, copyConstr.m_roi.m_p);
     m_pRefCount = copyConstr.m_pRefCount;
-    m_objSharedDataLock = copyConstr.m_objSharedDataLock; //copies pointer
     m_pDataObjectTags = copyConstr.m_pDataObjectTags; // Make a shallowCopy of the TagSpace
 
     //header lock for new dataObject is unlocked, therefore does not increment shared data lock, since nobody is decrement this new object
@@ -3214,13 +3223,12 @@ DataObject::DataObject(const DataObject& copyConstr) : m_pRefCount(0), m_dims(0)
 }
 
 //-----------------------------------------------------------------------------------------------------------
-DataObject::DataObject(const DataObject& dObj, bool transposed) : m_objHeaderLock(new ito::ReadWriteLock())
+DataObject::DataObject(const DataObject& dObj, bool transposed)
 {
     if(!transposed) //shallow copy of dataobject
     {
         createHeaderWithROI(dObj.m_dims, dObj.m_size.m_p, dObj.m_osize.m_p, dObj.m_roi.m_p);
         m_pRefCount = dObj.m_pRefCount;
-        m_objSharedDataLock = dObj.m_objSharedDataLock; //copies pointer
         m_pDataObjectTags = dObj.m_pDataObjectTags; // Make a shallowCopy of the TagSpace
 
         //header lock for new dataObject is unlocked, therefore does not increment shared data lock, since nobody is decrement this new object
@@ -3275,7 +3283,6 @@ DataObject::DataObject(const DataObject& dObj, bool transposed) : m_objHeaderLoc
         if (dims > 0)
         {
             m_pRefCount = new int(0);
-            m_objSharedDataLock = new ReadWriteLock(m_objHeaderLock->getLockStatus());
 
             m_pDataObjectTags = new DataObjectTagsPrivate( *dObj.m_pDataObjectTags ); //deep copy of tags
 
@@ -3291,7 +3298,6 @@ DataObject::DataObject(const DataObject& dObj, bool transposed) : m_objHeaderLoc
         else
         {
             m_pRefCount = NULL;
-            m_objSharedDataLock = NULL;
             m_pDataObjectTags = NULL;
         }
 
@@ -3756,13 +3762,13 @@ MAKEFUNCLIST(AddFunc);
 
 template<typename _Tp> RetVal AddScalarFunc(const DataObject *dObjIn, ito::float64 scalar, DataObject *dObjOut)
 {
-   int srcTmat = 0;
-   int dstTmat = 0;
-   int numMats = dObjIn->getNumPlanes();
-   const cv::Mat_<_Tp> *cvSrc = NULL;
-   cv::Mat_<_Tp> *cvDest = NULL;
-   cv::Scalar s = scalar;
-
+    int srcTmat = 0;
+    int dstTmat = 0;
+    int numMats = dObjIn->getNumPlanes();
+    const cv::Mat_<_Tp> *cvSrc = NULL;
+    cv::Mat_<_Tp> *cvDest = NULL;
+    
+    cv::Scalar s = scalar;
     for (int nmat = 0; nmat < numMats; ++nmat)
     {
         dstTmat = dObjOut->seekMat(nmat, numMats);
@@ -3772,7 +3778,7 @@ template<typename _Tp> RetVal AddScalarFunc(const DataObject *dObjIn, ito::float
         *cvDest = *cvSrc + s;
     }
 
-   return RetVal(retOk);
+    return RetVal(retOk);
 }
 
 template<> RetVal AddScalarFunc<ito::Rgba32>(const DataObject *dObjIn, ito::float64 scalar, DataObject *dObjOut)
@@ -3805,6 +3811,132 @@ template<> RetVal AddScalarFunc<ito::Rgba32>(const DataObject *dObjIn, ito::floa
 typedef RetVal (*tAddScalarFunc)(const DataObject *dObjIn, ito::float64 scalar, DataObject *dObjOut);
 MAKEFUNCLIST(AddScalarFunc);
 
+
+
+template<typename _Tp> RetVal AddComplexScalarFunc(const DataObject *dObjIn, ito::complex128 scalar, DataObject *dObjOut)
+{
+   int srcTmat = 0;
+   int dstTmat = 0;
+   int numMats = dObjIn->getNumPlanes();
+   const cv::Mat **cvSrc = dObjIn->get_mdata();
+   cv::Mat **cvDest = dObjOut->get_mdata();
+
+   if (std::abs(scalar.imag()) < std::numeric_limits<ito::float64>::epsilon())
+   {
+       cv::Scalar s = scalar.real();
+
+        for (int nmat = 0; nmat < numMats; ++nmat)
+        {
+            dstTmat = dObjOut->seekMat(nmat, numMats);
+            srcTmat = dObjIn->seekMat(nmat, numMats);
+            *(cvDest[dstTmat]) = *(cvSrc[srcTmat]) + s;
+        }
+   }
+   else
+   {
+       cv::error(cv::Exception(CV_StsAssert,"The given complex value cannot be converted to a real value. However the data object is real.","", __FILE__, __LINE__));
+   }
+
+   return RetVal(retOk);
+}
+
+template<> RetVal AddComplexScalarFunc<ito::complex64>(const DataObject *dObjIn, ito::complex128 scalar, DataObject *dObjOut)
+{
+    int srcTmat = 0;
+    int dstTmat = 0;
+    int numMats = dObjIn->getNumPlanes();
+    const cv::Mat **cvSrcs = dObjIn->get_mdata();
+    cv::Mat **cvDests = dObjOut->get_mdata();
+    const cv::Mat *cvSrc;
+    cv::Mat *cvDest;
+    const ito::complex64 *srcPtr;
+    ito::complex64 *destPtr;
+    ito::complex64 value = cv::saturate_cast<ito::complex64>(scalar);
+
+    for (int nmat = 0; nmat < numMats; ++nmat)
+    {
+        cvDest = cvDests[dObjOut->seekMat(nmat, numMats)];
+        cvSrc = cvSrcs[dObjIn->seekMat(nmat, numMats)];
+        for (int r = 0; r < cvDest->rows; ++r)
+        {
+            srcPtr = cvSrc->ptr<ito::complex64>(r);
+            destPtr = cvDest->ptr<ito::complex64>(r);
+            for (int c = 0; c < cvDest->cols; ++c)
+            {
+                destPtr[c] = srcPtr[c] + value;
+            }
+        }
+    }
+
+   return RetVal(retOk);
+}
+
+template<> RetVal AddComplexScalarFunc<ito::complex128>(const DataObject *dObjIn, ito::complex128 scalar, DataObject *dObjOut)
+{
+    int srcTmat = 0;
+    int dstTmat = 0;
+    int numMats = dObjIn->getNumPlanes();
+    const cv::Mat **cvSrcs = dObjIn->get_mdata();
+    cv::Mat **cvDests = dObjOut->get_mdata();
+    const cv::Mat *cvSrc;
+    cv::Mat *cvDest;
+    const ito::complex128 *srcPtr;
+    ito::complex128 *destPtr;
+
+    for (int nmat = 0; nmat < numMats; ++nmat)
+    {
+        cvDest = cvDests[dObjOut->seekMat(nmat, numMats)];
+        cvSrc = cvSrcs[dObjIn->seekMat(nmat, numMats)];
+        for (int r = 0; r < cvDest->rows; ++r)
+        {
+            srcPtr = cvSrc->ptr<ito::complex128>(r);
+            destPtr = cvDest->ptr<ito::complex128>(r);
+            for (int c = 0; c < cvDest->cols; ++c)
+            {
+                destPtr[c] = srcPtr[c] + scalar;
+            }
+        }
+    }
+
+   return RetVal(retOk);
+}
+
+template<> RetVal AddComplexScalarFunc<ito::Rgba32>(const DataObject *dObjIn, ito::complex128 scalar, DataObject *dObjOut)
+{
+   int srcTmat = 0;
+   int dstTmat = 0;
+   int numMats = dObjIn->getNumPlanes();
+   const cv::Mat_<ito::Rgba32> **cvSrc = (const cv::Mat_<ito::Rgba32>**)dObjIn->get_mdata();
+   cv::Mat_<ito::Rgba32> **cvDest = (cv::Mat_<ito::Rgba32>**)dObjOut->get_mdata();
+
+   if (std::abs(scalar.imag()) < std::numeric_limits<ito::float64>::epsilon())
+   {
+       cv::Scalar s;
+       ito::int32 sign = scalar.real() < 0.0 ? -1 : 1;
+       ito::uint32 val = fabs(scalar.real()) > 4294967295 ? 0xFFFFFFFF : (ito::uint32)fabs(scalar.real());
+       s[0] = ((ito::uint8*)&val)[0] * sign;
+       s[1] = ((ito::uint8*)&val)[1] * sign;
+       s[2] = ((ito::uint8*)&val)[2] * sign;
+       s[3] = ((ito::uint8*)&val)[3] * sign;
+
+        for (int nmat = 0; nmat < numMats; ++nmat)
+        {
+            dstTmat = dObjOut->seekMat(nmat, numMats);
+            srcTmat = dObjIn->seekMat(nmat, numMats);
+            *(cvDest[dstTmat]) = *(cvSrc[srcTmat]) + s;
+        }
+   }
+   else
+   {
+       cv::error(cv::Exception(CV_StsAssert,"The given complex value cannot be converted to a real value. However the rgba32 data object only supports scalar operations with real scalars.","", __FILE__, __LINE__));
+   }
+
+   return RetVal(retOk);
+}
+
+typedef RetVal (*tAddComplexScalarFunc)(const DataObject *dObjIn, ito::complex128 scalar, DataObject *dObjOut);
+MAKEFUNCLIST(AddComplexScalarFunc);
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! high-level, non-templated arithmetic operator for element-wise addition of values of given data object to this data object
 /*!
@@ -3815,21 +3947,7 @@ MAKEFUNCLIST(AddScalarFunc);
 */
 DataObject & DataObject::operator += (const DataObject &rhs)
 {
-    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-    {
-        if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
-             rhs.getNumPlanes() == 1 && 
-             this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-             this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2))
-           )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-            return *this;           
-        }
-        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        //return *this;
-    }
-
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
     (fListAddFunc[m_type])(this, &rhs, this);
     return *this;
 }
@@ -3837,6 +3955,12 @@ DataObject & DataObject::operator += (const DataObject &rhs)
 DataObject & DataObject::operator += (const float64 &value)
 {
     (fListAddScalarFunc[m_type])(this, value, this);
+    return *this;
+}
+
+DataObject & DataObject::operator += (const complex128 &value)
+{
+    (fListAddComplexScalarFunc[m_type])(this, value, this);
     return *this;
 }
 
@@ -3850,21 +3974,7 @@ DataObject & DataObject::operator += (const float64 &value)
 */
 DataObject DataObject::operator + (const DataObject &rhs)
 {
-    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
-                rhs.getNumPlanes() == 1 && 
-                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-            return *this;           
-        }
-        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        //return *this;
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
 
     DataObject result;
     result.m_continuous = rhs.m_continuous;
@@ -3882,6 +3992,16 @@ DataObject DataObject::operator + (const float64 &value)
     copyTo(result, 1);
 
     (fListAddScalarFunc[m_type])(this, value, &result);
+    return result;
+}
+
+DataObject DataObject::operator + (const complex128 &value)
+{
+    DataObject result;
+    result.m_continuous = this->m_continuous;
+    copyTo(result, 1);
+
+    (fListAddComplexScalarFunc[m_type])(this, value, &result);
     return result;
 }
 
@@ -3919,7 +4039,7 @@ template<typename _Tp> RetVal SubFunc(const DataObject *dObj1, const DataObject 
         *cvDstTmat = *cvSrcTmat1 - *cvSrcTmat2;
     }
  
-   return 0;
+   return retOk;
 }
 
 typedef RetVal (*tSubFunc)(const DataObject *src1, const DataObject *src2, DataObject *dst);
@@ -3936,29 +4056,20 @@ MAKEFUNCLIST(SubFunc);
 */
 DataObject & DataObject::operator -= (const DataObject &rhs)
 {
-    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
-                rhs.getNumPlanes() == 1 && 
-                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-            return *this;           
-        }
-        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        //return *this;
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
     fListSubFunc[m_type](this, &rhs, this);
-
     return *this;
 }
 
 DataObject & DataObject::operator -= (const float64 &value)
 {
     (fListAddScalarFunc[m_type])(this, -value, this);
+    return *this;
+}
+
+DataObject & DataObject::operator -= (const complex128 &value)
+{
+    (fListAddComplexScalarFunc[m_type])(this, -value, this);
     return *this;
 }
 
@@ -3972,21 +4083,7 @@ DataObject & DataObject::operator -= (const float64 &value)
 */
 DataObject DataObject::operator - (const DataObject &rhs)
 {
-    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
-                rhs.getNumPlanes() == 1 && 
-                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-            return *this;           
-        }
-        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        //return *this;
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
 
     DataObject result;
     result.m_continuous = rhs.m_continuous;
@@ -4004,6 +4101,16 @@ DataObject DataObject::operator - (const float64 &value)
     copyTo(result, 1);
 
     (fListAddScalarFunc[m_type])(this, -value, &result);
+    return result;
+}
+
+DataObject DataObject::operator - (const complex128 &value)
+{
+    DataObject result;
+    result.m_continuous = this->m_continuous;
+    copyTo(result, 1);
+
+    (fListAddComplexScalarFunc[m_type])(this, -value, &result);
     return result;
 }
 
@@ -4042,7 +4149,7 @@ template<typename _Tp> RetVal OpMulFunc(const DataObject *dObj1, const DataObjec
     dObjRes->getSize().m_p[dObjRes->getDims() - 2] = msize.height;
    }
 
-   return 0;
+   return retOk;
 }
 
 typedef RetVal (*tOpMulFunc)(const DataObject *src1, const DataObject *src2, DataObject *dst);
@@ -4110,26 +4217,23 @@ DataObject DataObject::operator * (const DataObject &rhs)
     \param factor
     \return retOk
 */
-template<typename _Tp> RetVal OpScalarMulFunc(DataObject *src, const double &factor)
+template<typename _Tp> RetVal OpScalarMulFunc(DataObject *src, const float64 &factor)
 {
    int numMats = src->getNumPlanes();
    int MatNum = 0;
 
    cv::Mat* tempMat = NULL;
    _Tp* dstPtr = NULL;
-   int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
-   int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
-
 
    for (int nmat = 0; nmat < numMats; nmat++)
    {
        MatNum = src->seekMat(nmat, numMats);
        tempMat = src->get_mdata()[MatNum];
 
-       for (int y = 0; y < sizey; y++)
+       for (int y = 0; y < tempMat->rows; ++y)
        {
            dstPtr = tempMat->ptr<_Tp>(y);
-           for (int x = 0; x < sizex; x++)
+           for (int x = 0; x < tempMat->cols; ++x)
            {
                dstPtr[x] = cv::saturate_cast<_Tp>(dstPtr[x] * factor);
            }
@@ -4139,7 +4243,7 @@ template<typename _Tp> RetVal OpScalarMulFunc(DataObject *src, const double &fac
    return retOk;
 }
 
-template<> RetVal OpScalarMulFunc<ito::complex64>(DataObject *src, const double &factor)
+template<> RetVal OpScalarMulFunc<ito::complex64>(DataObject *src, const float64 &factor)
 {
    int numMats = src->getNumPlanes();
    int MatNum = 0;
@@ -4147,27 +4251,26 @@ template<> RetVal OpScalarMulFunc<ito::complex64>(DataObject *src, const double 
 
    cv::Mat* tempMat = NULL;
    ito::complex64*  dstPtr = NULL;
-   int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
-   int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
+
    for (int nmat = 0; nmat < numMats; nmat++)
    {
        MatNum = src->seekMat(nmat, numMats);
        tempMat = src->get_mdata()[MatNum];
 
-       for (int y = 0; y < sizey; y++)
+       for (int y = 0; y < tempMat->rows; y++)
        {
            dstPtr = tempMat->ptr<ito::complex64>(y);
-           for (int x = 0; x < sizex; x++)
+           for (int x = 0; x < tempMat->cols; x++)
            {
                dstPtr[x] = cv::saturate_cast<ito::complex64>(dstPtr[x] * factor2);
            }
        }
    }
 
-   return 0;
+   return retOk;
 }
 
-template<> RetVal OpScalarMulFunc<ito::complex128>(DataObject *src, const double &factor)
+template<> RetVal OpScalarMulFunc<ito::complex128>(DataObject *src, const float64 &factor)
 {
    int numMats = src->getNumPlanes();
    int MatNum = 0;
@@ -4175,27 +4278,26 @@ template<> RetVal OpScalarMulFunc<ito::complex128>(DataObject *src, const double
 
    cv::Mat * tempMat = NULL;
    ito::complex128* dstPtr = NULL;
-   int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
-   int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
+
    for (int nmat = 0; nmat < numMats; nmat++)
    {
        MatNum = src->seekMat(nmat, numMats);
        tempMat = src->get_mdata()[MatNum];
 
-       for (int y = 0; y < sizey; y++)
+       for (int y = 0; y < tempMat->rows; y++)
        {
            dstPtr = tempMat->ptr<ito::complex128>(y);
-           for (int x = 0; x < sizex; x++)
+           for (int x = 0; x < tempMat->cols; x++)
            {
                dstPtr[x] = cv::saturate_cast<ito::complex128>(dstPtr[x] * factor2);
            }
        }
    }
 
-   return 0;
+   return retOk;
 }
 
-template<> RetVal OpScalarMulFunc<ito::Rgba32>(DataObject *src, const double &factor)
+template<> RetVal OpScalarMulFunc<ito::Rgba32>(DataObject *src, const float64 &factor)
 {
    int numMats = src->getNumPlanes();
    int MatNum = 0;
@@ -4205,37 +4307,177 @@ template<> RetVal OpScalarMulFunc<ito::Rgba32>(DataObject *src, const double &fa
 
    cv::Mat* tempMat = NULL;
    ito::Rgba32* dstPtr = NULL;
-   int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
-   int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
+
    for (int nmat = 0; nmat < numMats; nmat++)
    {
        MatNum = src->seekMat(nmat, numMats);
        tempMat = src->get_mdata()[MatNum];
 
-       for (int y = 0; y < sizey; y++)
+       for (int y = 0; y < tempMat->rows; y++)
        {
            dstPtr = tempMat->ptr<ito::Rgba32>(y);
-           for (int x = 0; x < sizex; x++)
+           for (int x = 0; x < tempMat->cols; x++)
            {
                dstPtr[x] *= factor2;
            }
        }
    }
 
-   return ito::retOk;
+   return retOk;
 }
 
-typedef RetVal (*tOpScalarMulFunc)(DataObject *src, const double &factor);
+typedef RetVal (*tOpScalarMulFunc)(DataObject *src, const float64 &factor);
 MAKEFUNCLIST(OpScalarMulFunc);
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! low-level, templated method which multiplies every element of Data Object with a factor
+/*!
+    \param *src
+    \param factor
+    \return retOk
+*/
+template<typename _Tp> RetVal OpScalarComplexMulFunc(DataObject *src, const complex128 &factor)
+{
+    int numMats = src->getNumPlanes();
+    int MatNum = 0;
+
+    cv::Mat* tempMat = NULL;
+    _Tp* dstPtr = NULL;
+
+    if (std::abs(factor.imag()) < std::numeric_limits<ito::float64>::epsilon())
+    {
+        float64 factor2 = factor.real();
+
+        for (int nmat = 0; nmat < numMats; nmat++)
+        {
+            MatNum = src->seekMat(nmat, numMats);
+            tempMat = src->get_mdata()[MatNum];
+
+            for (int y = 0; y < tempMat->rows; ++y)
+            {
+                dstPtr = tempMat->ptr<_Tp>(y);
+                for (int x = 0; x < tempMat->cols; ++x)
+                {
+                    dstPtr[x] = cv::saturate_cast<_Tp>(dstPtr[x] * factor2);
+                }
+            }
+        }
+    }
+    else
+    {
+        cv::error(cv::Exception(CV_StsAssert,"The given complex value cannot be converted to a real value. However the data object is real.","", __FILE__, __LINE__));
+    }
+
+   return retOk;
+}
+
+template<> RetVal OpScalarComplexMulFunc<ito::complex64>(DataObject *src, const complex128 &factor)
+{
+    int numMats = src->getNumPlanes();
+    int MatNum = 0;
+    ito::complex64 factor2 = cv::saturate_cast<complex64>(factor);
+
+    cv::Mat* tempMat = NULL;
+    ito::complex64*  dstPtr = NULL;
+
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
+        MatNum = src->seekMat(nmat, numMats);
+        tempMat = src->get_mdata()[MatNum];
+
+        for (int y = 0; y < tempMat->rows; y++)
+        {
+            dstPtr = tempMat->ptr<ito::complex64>(y);
+            for (int x = 0; x < tempMat->cols; x++)
+            {
+                dstPtr[x] = cv::saturate_cast<ito::complex64>(dstPtr[x] * factor2);
+            }
+        }
+    }
+
+    return retOk;
+}
+
+template<> RetVal OpScalarComplexMulFunc<ito::complex128>(DataObject *src, const complex128 &factor)
+{
+    int numMats = src->getNumPlanes();
+    int MatNum = 0;
+
+    cv::Mat * tempMat = NULL;
+    ito::complex128* dstPtr = NULL;
+
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
+        MatNum = src->seekMat(nmat, numMats);
+        tempMat = src->get_mdata()[MatNum];
+
+        for (int y = 0; y < tempMat->rows; y++)
+        {
+            dstPtr = tempMat->ptr<ito::complex128>(y);
+            for (int x = 0; x < tempMat->cols; x++)
+            {
+                dstPtr[x] = cv::saturate_cast<ito::complex128>(dstPtr[x] * factor);
+            }
+        }
+    }
+
+    return retOk;
+}
+
+template<> RetVal OpScalarComplexMulFunc<ito::Rgba32>(DataObject *src, const complex128 &factor)
+{
+   int numMats = src->getNumPlanes();
+   int MatNum = 0;
+
+    if (std::abs(factor.imag()) < std::numeric_limits<ito::float64>::epsilon())
+    {
+        ito::Rgba32 factor2;
+        factor2 = (factor.real() < 0.0 ? (ito::uint32)0 : (factor.real() > 4294967295 ? (ito::uint32)0xFFFFFFFF : (ito::uint32)(factor.real() + 0.5)));
+
+        cv::Mat* tempMat = NULL;
+        ito::Rgba32* dstPtr = NULL;
+
+        for (int nmat = 0; nmat < numMats; nmat++)
+        {
+            MatNum = src->seekMat(nmat, numMats);
+            tempMat = src->get_mdata()[MatNum];
+
+            for (int y = 0; y < tempMat->rows; y++)
+            {
+                dstPtr = tempMat->ptr<ito::Rgba32>(y);
+                for (int x = 0; x < tempMat->cols; x++)
+                {
+                    dstPtr[x] *= factor2;
+                }
+            }
+        }
+    }
+    else
+    {
+        cv::error(cv::Exception(CV_StsAssert,"The given complex value cannot be converted to a real value. However the rgba32 data object only supports scalar operations with real scalars.","", __FILE__, __LINE__));
+    }
+
+    return retOk;
+}
+
+typedef RetVal (*tOpScalarComplexMulFunc)(DataObject *src, const complex128 &factor);
+MAKEFUNCLIST(OpScalarComplexMulFunc);
 
 //! high-level method which multiplies every element in this data object by a given floating-point factor
 /*!
     \param factor
     \sa OpScalarMulFunc
 */
-DataObject & DataObject::operator *= (const double &factor)
+DataObject & DataObject::operator *= (const float64 &factor)
 {
    fListOpScalarMulFunc[m_type](this, factor);
+
+   return *this;
+}
+
+DataObject & DataObject::operator *= (const complex128 &factor)
+{
+   fListOpScalarComplexMulFunc[m_type](this, factor);
 
    return *this;
 }
@@ -4245,7 +4487,17 @@ DataObject & DataObject::operator *= (const double &factor)
     \param factor
     \sa operator *, OpScalarMulFunc
 */
-DataObject DataObject::operator * (const double &factor)
+DataObject DataObject::operator * (const float64 &factor)
+{
+   DataObject result;
+   result.m_continuous = m_continuous;
+   copyTo(result, 1);
+
+   result *= factor;
+   return result;
+}
+
+DataObject DataObject::operator * (const complex128 &factor)
 {
    DataObject result;
    result.m_continuous = m_continuous;
@@ -4950,21 +5202,7 @@ DataObject & DataObject::operator &= (const DataObject & rhs)
         return *this;
     }
 
-    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
-                rhs.getNumPlanes() == 1 && 
-                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-            return *this;           
-        }
-        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        //return *this;
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
 
     fListBitAndFunc[m_type](this, &rhs, this);
 
@@ -4986,21 +5224,7 @@ DataObject DataObject::operator & (const DataObject & rhs)
         return *this;
     }
 
-    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
-                rhs.getNumPlanes() == 1 && 
-                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-            return *this;           
-        }
-        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        //return *this;
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
 
     DataObject result;
     result.m_continuous |= rhs.m_continuous;
@@ -5109,21 +5333,7 @@ DataObject & DataObject::operator |= (const DataObject & rhs)
         return *this;
     }
 
-    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
-                rhs.getNumPlanes() == 1 && 
-                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-            return *this;           
-        }
-        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        //return *this;
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
 
     fListBitOrFunc[m_type](this, &rhs, this);
 
@@ -5145,21 +5355,7 @@ DataObject DataObject::operator | (const DataObject & rhs)
         return *this;
     }
 
-    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
-                rhs.getNumPlanes() == 1 && 
-                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-            return *this;           
-        }
-        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        //return *this;
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
 
     DataObject result;
     result.m_continuous |= rhs.m_continuous;
@@ -5268,21 +5464,7 @@ DataObject & DataObject::operator ^= (const DataObject & rhs)
         return *this;
     }
 
-    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
-                rhs.getNumPlanes() == 1 && 
-                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-            return *this;           
-        }
-        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        //return *this;
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
 
     fListBitXorFunc[m_type](this, &rhs, this);
 
@@ -5299,21 +5481,7 @@ DataObject & DataObject::operator ^= (const DataObject & rhs)
 */
 DataObject DataObject::operator ^ (const DataObject & rhs)
 {
-    if ((m_size != rhs.m_size) || (m_type != rhs.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == rhs.getNumPlanes() && 
-                rhs.getNumPlanes() == 1 && 
-                this->getSize(this->getDims() - 1) == rhs.getSize(rhs.getDims() - 1) &&
-                this->getSize(this->getDims() - 2) == rhs.getSize(rhs.getDims() - 2) || (m_type != rhs.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-            return *this;           
-        }
-        //cv::error(cv::Exception(CV_StsAssert,"DataObject - operands differ in size or type","", __FILE__, __LINE__));
-        //return *this;
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(rhs)
 
     DataObject result;
     result.m_continuous |= rhs.m_continuous;
@@ -6015,18 +6183,7 @@ MAKEFUNCLIST(MulFunc)
 */
 DataObject DataObject::mul(const DataObject &mat2, const double scale) const
 {
-    if ((m_size != mat2.m_size) || (m_type != mat2.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == mat2.getNumPlanes() && 
-                mat2.getNumPlanes() == 1 && 
-                this->getSize(m_dims - 1) == mat2.getSize(mat2.getDims() - 1) &&
-                this->getSize(m_dims - 2) == mat2.getSize(mat2.getDims() - 2) || (m_type != mat2.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"both data objects differ in size or type","", __FILE__, __LINE__));     
-        }
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(mat2)
 
     unsigned char continuous = 0;
     DataObject result(m_dims,m_size,m_type,continuous);    
@@ -6191,18 +6348,7 @@ MAKEFUNCLIST(DivFunc)
 */
 DataObject DataObject::div(const DataObject &mat2, const double /*scale*/) const
 {
-    if ((m_size != mat2.m_size) || (m_type != mat2.m_type))
-    {
-        // Added this to allow 1x1x1xMxN addition with 2D-Objects
-        if(!(this->getNumPlanes() == mat2.getNumPlanes() && 
-                mat2.getNumPlanes() == 1 && 
-                getSize(m_dims - 1) == mat2.getSize(mat2.getDims() - 1) &&
-                getSize(m_dims - 2) == mat2.getSize(mat2.getDims() - 2) || (m_type != mat2.m_type))
-            )
-        {
-            cv::error(cv::Exception(CV_StsAssert,"both data objects differ in size or type","", __FILE__, __LINE__));     
-        }
-    }
+    CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(mat2)
 
     unsigned char continuous = 0;
     DataObject result(m_dims,m_size,m_type,continuous);    
@@ -7733,33 +7879,6 @@ RetVal DataObject::setXYRotationalMatrix(double r11, double r12, double r13, dou
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DataObject::lockRead()
-{
-#ifndef NOREADWRITELOCK
-    m_objHeaderLock->lockRead();
-    if(m_objSharedDataLock) m_objSharedDataLock->lockRead();
-#endif
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void DataObject::lockWrite()
-{
-#ifndef NOREADWRITELOCK
-    m_objHeaderLock->lockWrite();
-    if(m_objSharedDataLock) m_objSharedDataLock->lockWrite();
-#endif
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void DataObject::unlock()
-{
-#ifndef NOREADWRITELOCK
-    if(m_objSharedDataLock) m_objSharedDataLock->unlock();
-    m_objHeaderLock->unlock();
-#endif
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 template DATAOBJ_EXPORT RetVal DataObject::linspace<int8>(const int8, const int8, const int8, const int);
 template DATAOBJ_EXPORT RetVal DataObject::linspace<uint8>(const uint8, const uint8, const uint8, const int);
 template DATAOBJ_EXPORT RetVal DataObject::linspace<int16>(const int16, const int16, const int16, const int);
@@ -7769,52 +7888,187 @@ template DATAOBJ_EXPORT RetVal DataObject::linspace<uint32>(const uint32, const 
 template DATAOBJ_EXPORT RetVal DataObject::linspace<float32>(const float32, const float32, const float32, const int);
 template DATAOBJ_EXPORT RetVal DataObject::linspace<float64>(const float64, const float64, const float64, const int);
 
-//----------------------------------------------------------------------------------------------------------------------------------
 
+template<typename _Tp> void coutValue(const _Tp* val, char *buf)
+{
+}
+
+template<> void coutValue(const ito::uint8* val, char *buf)
+{
+    sprintf(buf, "%3d", *val);
+}
+
+template<> void coutValue(const ito::int8* val, char *buf)
+{
+    sprintf(buf, "%3d", *val);
+}
+
+template<> void coutValue(const ito::uint16* val, char *buf)
+{
+    sprintf(buf, "%d", *val);
+}
+
+template<> void coutValue(const ito::int16* val, char *buf)
+{
+    sprintf(buf, "%d", *val);
+}
+
+template<> void coutValue(const ito::uint32* val, char *buf)
+{
+    sprintf(buf, "%d", *val);
+}
+
+template<> void coutValue(const ito::int32* val, char *buf)
+{
+    sprintf(buf, "%d", *val);
+}
+
+template<> void coutValue(const ito::float32* val, char *buf)
+{
+    sprintf(buf, "%.8g", *val);
+}
+
+template<> void coutValue(const ito::float64* val, char *buf)
+{
+    sprintf(buf, "%.8g", *val);
+}
+
+template<> void coutValue(const ito::complex64* val, char *buf)
+{
+    if (val->imag() >= 0)
+    {
+        sprintf(buf, "%.8g+%.8gj", val->real(), val->imag());
+    }
+    else
+    {
+        sprintf(buf, "%.8g-%.8gj", val->real(), -val->imag());
+    }
+}
+
+template<> void coutValue(const ito::complex128* val, char *buf)
+{
+    if (val->imag() >= 0)
+    {
+        sprintf(buf, "%.8g+%.8gj", val->real(), val->imag());
+    }
+    else
+    {
+        sprintf(buf, "%.8g-%.8gj", val->real(), -val->imag());
+    }
+}
+
+template<> void coutValue(const ito::Rgba32* val, char *buf)
+{
+    sprintf(buf, "(%d,%d,%d,%d)", val->r, val->g, val->b, val->a);
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> std::ostream& coutPlane(std::ostream& out, const cv::Mat *plane, int firstLineIndent, int otherIndent)
+{
+    char buf[128];
+    const _Tp *ptr;
+    otherIndent = std::min(otherIndent, 127);
+    firstLineIndent = std::min(firstLineIndent, 127);
+
+    for (int r = 0; r < plane->rows; ++r)
+    {
+        if (r == 0)
+        {
+            memset(buf, ' ', sizeof(char) * firstLineIndent);
+            buf[firstLineIndent] = 0;
+            std::cout << buf << "[";
+            buf[0] = 0;
+        }
+        else
+        {
+            memset(buf, ' ', sizeof(char) * otherIndent);
+            buf[otherIndent] = 0;
+        }
+
+        if (plane->cols > 0)
+        {
+            ptr = (const _Tp*)plane->ptr(r);
+            std::cout << buf << "[";
+            for (int c = 0; c < plane->cols - 1; ++c)
+            {
+                coutValue<_Tp>(ptr, buf);
+                ptr++;
+                std::cout << buf << ", ";
+            }
+            coutValue<_Tp>(ptr, buf);
+            std::cout << buf << "]";
+        }
+        else
+        {
+            std::cout << buf << "[]";
+        }
+
+        if (r != plane->rows - 1) //not last row
+        {
+            std::cout << ",\n" << std::endl;
+        }
+        else
+        {
+            std::cout << "]" << std::endl;
+        }
+    }
+
+    return out;
+}
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> std::ostream& coutFunc(std::ostream& out, const DataObject& dObj)
 {
-    //cv::Mat_<_Tp> *cvMat = NULL;
+    static const char* types[] =
+    {
+        "uint8", "int8", "uint16", "int16", "int32", "uint32", "float32", "float64", "complex64", "complex128", "rgba32"
+    };
+
     int numMats = dObj.getNumPlanes();
     int tMat = 0;
+    int dims = dObj.getDims();
 
-    if (dObj.getDims() == 0)
+    if (dims == 0)
     {
-        std::cout << "DataObject()\n" << std::endl;
+        std::cout << "dataObject()\n" << std::endl;
     }
     else
     {
-        std::cout << "DataObject(size=[" << dObj.getSize(0);
-        for (int dim = 1; dim < dObj.getDims(); ++dim)
+        std::cout << "dataObject(size=[" << dObj.getSize(0);
+        for (int dim = 1; dim < dims; ++dim)
         {
             std::cout << "x" << dObj.getSize(dim);
         }
-        std::cout << "]\n" << std::endl;
+        std::cout << "], dtype='" << types[dObj.getType()] << "'\n" << std::endl;
 
-        int *idx = new int[dObj.getDims()];
-         
-
-        for (int nMat = 0; nMat < numMats; nMat++)
+        if (numMats == 1)
         {
-            tMat = dObj.seekMat(nMat, numMats);
-            //std::cout <<  tMat + 1 << "->(";
-
-            dObj.matNumToIdx(tMat, idx);
-            std::cout << "[";
-            for (int i = 0; i < dObj.getDims() - 2; ++i)
-            {
-                std::cout << idx[i] << ",";
-            }
-            std::cout << ":,:]->(";
-
-            std::cout << cv::format(*(dObj.get_mdata()[tMat]) , "numpy" ) << std::endl << std::endl;        
-
-            std::cout << ")" << "\n" << std::endl;
+            coutPlane<_Tp>(out, dObj.get_mdata()[tMat], 4, 5);
         }
+        else
+        {
 
-        delete[] idx;
+            int *idx = new int[dims];
+
+            for (int nMat = 0; nMat < numMats; nMat++)
+            {
+                tMat = dObj.seekMat(nMat, numMats);
+
+                dObj.matNumToIdx(tMat, idx);
+                std::cout << "[";
+                for (int i = 0; i < dims - 2; ++i)
+                {
+                    std::cout << idx[i] << ",";
+                }
+                std::cout << ":,:]->(";
+                coutPlane<_Tp>(out, dObj.get_mdata()[tMat], 0, 2*dims+5);
+                std::cout << ")" << "\n" << std::endl;
+            }
+
+            delete[] idx;
+        }
 
         std::cout << ")" << "\n" << std::endl;
     }

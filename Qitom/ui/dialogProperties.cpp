@@ -34,6 +34,7 @@
 #include "widgetPropGeneralLanguage.h"
 #include "widgetPropPythonStartup.h"
 #include "widgetPropPythonGeneral.h"
+#include "widgetPropConsoleGeneral.h"
 #include "widgetPropConsoleWrap.h"
 #include "widgetPropConsoleLastCommand.h"
 #include "widgetPropFigurePlugins.h"
@@ -152,15 +153,16 @@ void DialogProperties::initPages()
     m_pages["04_editor/autocompletion"] = PropertyPage(tr("Auto Completion"), tr("Editor - auto completion"), "04_editor/autocompletion", new WidgetPropEditorAutoCompletion(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/styles"] = PropertyPage(tr("Styles"), tr("Editor - styles"), "04_editor/styles", new WidgetPropEditorStyles(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["01_console"] = PropertyPage(tr("Console"), tr("Console - please choose subpage"), "01_console", NULL, QIcon(":/application/icons/editSmartIndent.png"));
+    m_pages["01_console/general"] = PropertyPage(tr("General"), tr("Console - General"), "01_console/general", new WidgetPropConsoleGeneral(), QIcon(":/application/icons/editSmartIndent.png"));
     m_pages["01_console/lineWrap"] = PropertyPage(tr("Line Wrap"), tr("Console - Line Wrap"), "01_console/lineWrap", new WidgetPropConsoleWrap(), QIcon(":/application/icons/editSmartIndent.png"));
     m_pages["01_console/commandHistory"] = PropertyPage(tr("Command History"), tr("Console - Command History"), "01_console/commandHistory", new WidgetPropConsoleLastCommand(), QIcon(":/application/icons/editSmartIndent.png"));
     m_pages["03_python"] = PropertyPage(tr("Python"), tr("Python - please choose subpage"), "03_python", NULL, QIcon(":/application/icons/preferences-python.png"));
     m_pages["03_python/general"] = PropertyPage(tr("General"), tr("Python - general"), "03_python/general", new WidgetPropPythonGeneral(), QIcon(":/application/icons/preferences-python.png"));
     m_pages["03_python/startup"] = PropertyPage(tr("Startup"), tr("Python - startups"), "03_python/startup", new WidgetPropPythonStartup(), QIcon(":/application/icons/preferences-python.png"));
-    m_pages["00_general"] = PropertyPage(tr("General"), tr("General - please choose subpage"), "00_general", NULL, QIcon(":/application/icons/itomicon/curAppIcon.png"));
-    m_pages["00_general/language"] = PropertyPage(tr("Language"), tr("General - language"), "00_general/language", new WidgetPropGeneralLanguage(), QIcon(":/application/icons/itomicon/curAppIcon.png"));
-    m_pages["00_general/application"] = PropertyPage(tr("Application"), tr("General - application"), "00_general/application", new WidgetPropGeneralApplication(), QIcon(":/application/icons/itomicon/curAppIcon.png"));
-    m_pages["00_general/helpViewer"]  = PropertyPage(tr("Help Viewer"), tr("General - Help Viewer"), "00_general/helpViewer" , new WidgetPropHelpDock(), QIcon(":/application/icons/itomicon/curAppIcon.png"));
+    m_pages["00_general"] = PropertyPage(tr("General"), tr("General - please choose subpage"), "00_general", NULL, QIcon(":/application/icons/itomicon/itomIcon32"));
+    m_pages["00_general/language"] = PropertyPage(tr("Language"), tr("General - language"), "00_general/language", new WidgetPropGeneralLanguage(), QIcon(":/application/icons/itomicon/itomIcon32"));
+    m_pages["00_general/application"] = PropertyPage(tr("Application"), tr("General - application"), "00_general/application", new WidgetPropGeneralApplication(), QIcon(":/application/icons/itomicon/itomIcon32"));
+    m_pages["00_general/helpViewer"]  = PropertyPage(tr("Help Viewer"), tr("General - Help Viewer"), "00_general/helpViewer" , new WidgetPropHelpDock(), QIcon(":/application/icons/itomicon/itomIcon32"));
     m_pages["05_plots"] = PropertyPage(tr("Plots and Figures"), tr("Plots and Figures - please choose subpage"), "05_plots", NULL, QIcon(":/plots/icons/itom_icons/3d.png"));
     m_pages["05_plots/defaults"] = PropertyPage(tr("Default Plots"), tr("Plots and Figures - Defaults"), "05_plots/defaults", new WidgetPropFigurePlugins(), QIcon(":/plots/icons/itom_icons/2d.png"));
     PropertyPage page;

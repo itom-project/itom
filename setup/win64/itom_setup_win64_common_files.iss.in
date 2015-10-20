@@ -1,0 +1,247 @@
+[Languages]
+Name: "Deutsch"; MessagesFile: "compiler:Languages\German.isl"
+Name: "English"; MessagesFile: "compiler:Default.isl"
+
+[Tasks]
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+
+[Icons]
+Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
+Name: "{commondesktop}\{#Name}"; Filename: "{app}\{#ExeName}"; Tasks: desktopicon
+
+[Files]
+Source: "{#SourceDirItomBuild}\{#ExeName}"; DestDir: "{app}"; Flags: promptifolder
+
+; DLLs
+Source: "{#SourceDirItomBuild}\dataobject.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itomCommonLib.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itomCommonQtLib.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itomWidgets.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\pointcloud.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\qpropertyeditor.dll"; DestDir: "{app}"; Flags: promptifolder
+; DLLs QT
+Source: "{#SourceDirQT}\Qt5OpenGL.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5Core.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5Gui.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5Network.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5PrintSupport.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5Sql.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5Svg.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5Widgets.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\icudt54.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\icuin54.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\icuio54.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\icule54.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\iculx54.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\icutu54.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\icuuc54.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\qscintilla2.dll"; DestDir: "{app}"; Flags: promptifolder
+;Source: "{#SourceDirQT}\QtCLucene4.dll"; DestDir: "{app}"; Flags: promptifolder
+;Source: "{#SourceDirQT}\QtDeclarative4.dll"; DestDir: "{app}"; Flags: promptifolder
+;Source: "{#SourceDirQT}\QtGui4.dll"; DestDir: "{app}"; Flags: promptifolder
+;Source: "{#SourceDirQT}\QtMultimedia4.dll"; DestDir: "{app}"; Flags: promptifolder
+;Source: "{#SourceDirQT}\QtScript4.dll"; DestDir: "{app}"; Flags: promptifolder
+;Source: "{#SourceDirQT}\QtScriptTools4.dll"; DestDir: "{app}"; Flags: promptifolder
+;Source: "{#SourceDirQT}\QtSvg4.dll"; DestDir: "{app}"; Flags: promptifolder
+;Source: "{#SourceDirQT}\QtXml4.dll"; DestDir: "{app}"; Flags: promptifolder
+;Source: "{#SourceDirQT}\QtXmlPatterns4.dll"; DestDir: "{app}"; Flags: promptifolder
+; DLLs QT Assistant
+Source: "{#SourceDirQT}\Qt5CLucene.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5Help.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5Multimedia.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5MultimediaWidgets.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5Positioning.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5Qml.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5Quick.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5Sensors.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5WebKit.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5WebKitWidgets.dll"; DestDir: "{app}"; Flags: promptifolder
+; DLLs QT Designer
+Source: "{#SourceDirQT}\Qt5Designer.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5DesignerComponents.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\Qt5Xml.dll"; DestDir: "{app}"; Flags: promptifolder
+; DLLs QT OpenCV
+Source: "{#SourceDirOpenCV}\opencv_core${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_common_release.dll"; DestDir: "{app}"; Flags: promptifolder
+; DLLs QT Plugins
+Source: "{#SourceDirQT}\..\plugins\iconengines\qsvgicon.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\plugins\imageformats\qdds.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\plugins\imageformats\qgif.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\plugins\imageformats\qicns.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\plugins\imageformats\qico.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\plugins\imageformats\qjp2.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\plugins\imageformats\qjpeg.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\plugins\imageformats\qmng.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\plugins\imageformats\qsvg.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\plugins\imageformats\qtga.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\plugins\imageformats\qtiff.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\plugins\imageformats\qwbmp.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\plugins\imageformats\qwebp.dll"; DestDir: "{app}\imageformats"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\plugins\platforms\qminimal.dll"; DestDir: "{app}\platforms"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\plugins\platforms\qoffscreen.dll"; DestDir: "{app}\platforms"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\plugins\platforms\qwindows.dll"; DestDir: "{app}\platforms"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\plugins\printsupport\windowsprintersupport.dll"; DestDir: "{app}\printsupport"; Flags: promptifolder
+;Source: "{#SourceDirQT}\..\plugins\sqldrivers\qsqlite4.dll"; DestDir: "{app}\sqldrivers"; Flags: promptifolder
+
+; Python-Scripts
+Source: "{#SourceDirItomBuild}\itoDebugger.py"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itoFunctions.py"; DestDir: "{app}"; Flags: promptifolder
+
+; Hilfe
+Source: "{#SourceDirItomBuild}\docs\userDoc\build\qthelp\*.qch"; DestDir: "{app}\docs\userDoc\build\qthelp"; Flags: promptifolder
+Source: "{#SourceDirQT}\assistant.exe"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\qhelpgenerator.exe"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\qcollectiongenerator.exe"; DestDir: "{app}"; Flags: promptifolder
+
+; Sprachen
+Source: "{#SourceDirItomBuild}\translation\*.qm"; DestDir: "{app}\translation"; Flags: promptifolder
+Source: "{#SourceDirQT}\..\translations\qt_??.qm"; DestDir: "{app}\translation"; Flags: promptifolder
+
+; EXEs
+Source: "{#SourceDirQT}\assistant.exe"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\designer.exe"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\linguist.exe"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\lrelease.exe"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\lupdate.exe"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirQT}\uic.exe"; DestDir: "{app}"; Flags: promptifolder  
+
+; Default INI
+Source: "{#SourceDirItomBuild}\itomSettings\itomDefault.ini"; DestDir: "{app}\itomSettings"; Flags: promptifolder  
+
+; Lizenz-Datei
+Source: "{#SourceDirItomSource}\Qitom\COPYING.txt"; DestDir: "{app}"; Flags: promptifolder
+
+; itom-packages
+Source: "{#SourceDirItomBuild}\docs\pluginDoc\template\*.*"; DestDir: "{app}\docs\pluginDoc\template"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\demo\*.*"; DestDir: "{app}\demo"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\itom-packages\*.*"; DestDir: "{app}\itom-packages"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itom-packages\api_generator\*.*"; DestDir: "{app}\itom-packages\api_generator"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itom-packages\abstractObjToolbar\*.*"; DestDir: "{app}\itom-packages\abstractObjToolbar"; Flags: promptifolder
+;Source: "{#SourceDirItomBuild}\itom-packages\autostart\*.*"; DestDir: "{app}\itom-packages\autostart"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itom-packages\camToolbar\*.*"; DestDir: "{app}\itom-packages\camToolbar"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itom-packages\measurementSystem\*.*"; DestDir: "{app}\itom-packages\measurementSystem"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itom-packages\mpl_itom\*.*"; DestDir: "{app}\itom-packages\mpl_itom"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itom-packages\numpy_utils\*.*"; DestDir: "{app}\itom-packages\numpy_utils"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itom-packages\plotToolBar\*.*"; DestDir: "{app}\itom-packages\plotToolBar"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itom-packages\SurfaceCharakteristics\*.*"; DestDir: "{app}\itom-packages\SurfaceCharakteristics"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\SDK\*.*"; DestDir: "{app}\SDK"; Flags: promptifolder; Components: SDK
+Source: "{#SourceDirItomBuild}\SDK\include\*.*"; DestDir: "{app}\SDK\include"; Flags: promptifolder recursesubdirs; Components: SDK
+Source: "{#SourceDirItomBuild}\SDK\docs\*.*"; DestDir: "{app}\SDK\docs"; Flags: promptifolder recursesubdirs; Components: SDK
+Source: "{#SourceDirItomBuild}\SDK\pluginTemplates\*.*"; DestDir: "{app}\SDK\pluginTemplates"; Flags: promptifolder recursesubdirs; Components: SDK
+Source: "{#SourceDirItomBuild}\SDK\lib\vc10_x64\*.*"; DestDir: "{app}\SDK\lib\vc10_x64"; Flags: promptifolder; Components: SDK
+
+; DesignerPlugins
+Source: "{#SourceDirItomBuild}\designer\dataObjectTable.dll"; DestDir: "{app}\designer"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\designer\evaluateGeometrics.dll"; DestDir: "{app}\designer"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\designer\itom1DQwtPlot.dll"; DestDir: "{app}\designer"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\designer\itom2dQwtPlot.dll"; DestDir: "{app}\designer"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\designer\itomGraphicView.dll"; DestDir: "{app}\designer"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\designer\itomIsoGLFigurePlugin.dll"; DestDir: "{app}\designer"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\designer\itomWidgets.dll"; DestDir: "{app}\designer"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\designer\matplotlibPlot.dll"; DestDir: "{app}\designer"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\designer\motorController.dll"; DestDir: "{app}\designer"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\designer\slider2D.dll"; DestDir: "{app}\designer"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\designer\twipOGLPlugin.dll"; DestDir: "{app}\designer"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\designer\vtk3dVisualizer.dll"; DestDir: "{app}\designer"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\designer\translation\*.qm"; DestDir: "{app}\designer\translation"; Flags: promptifolder recursesubdirs
+
+; Plugins
+; Source: "{#SourceDirItomBuild}\plugins\AerotechA3200\*.*"; DestDir: "{app}\plugins\AerotechA3200"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\AerotechEnsemble\*.*"; DestDir: "{app}\plugins\AerotechEnsemble"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\AndorSDK3\*.*"; DestDir: "{app}\plugins\AndorSDK3"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\AvantesAvaSpec\*.*"; DestDir: "{app}\plugins\AvantesAvaSpec"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\AVTVimba\*.*"; DestDir: "{app}\plugins\AVTVimba"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\BasicFilters\*.*"; DestDir: "{app}\plugins\BasicFilters"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\BasicGPLFilters\*.*"; DestDir: "{app}\plugins\BasicGPLFilters"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\cmu1394\*.*"; DestDir: "{app}\plugins\cmu1394"; Flags: promptifolder recursesubdirs
+; Source: "{#SourceDirItomBuild}\plugins\CommonVisionBlox\*.*"; DestDir: "{app}\plugins\CommonVisionBlox"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\dataobjectarithmetic\*.*"; DestDir: "{app}\plugins\dataobjectarithmetic"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\DataObjectIO\*.*"; DestDir: "{app}\plugins\DataObjectIO"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\demoAlgorithms\*.*"; DestDir: "{app}\plugins\demoAlgorithms"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\dispWindow\*.*"; DestDir: "{app}\plugins\dispWindow"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\DummyGrabber\*.*"; DestDir: "{app}\plugins\DummyGrabber"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\DummyMotor\*.*"; DestDir: "{app}\plugins\DummyMotor"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\FFTWfilters\*.*"; DestDir: "{app}\plugins\FFTWfilters"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\FileGrabber\*.*"; DestDir: "{app}\plugins\FileGrabber"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\FireGrabber\*.*"; DestDir: "{app}\plugins\FireGrabber"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\FittingFilters\*.*"; DestDir: "{app}\plugins\FittingFilters"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\FringeProj\*.*"; DestDir: "{app}\plugins\FringeProj"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\glDisplay\*.*"; DestDir: "{app}\plugins\glDisplay"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\GWInstekPSP\*.*"; DestDir: "{app}\plugins\GWInstekPSP"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\IDSuEye\*.*"; DestDir: "{app}\plugins\IDSuEye"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\LeicaMotorFocus\*.*"; DestDir: "{app}\plugins\LeicaMotorFocus"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\LibModBus\*.*"; DestDir: "{app}\plugins\LibModBus"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\LibUSB\*.*"; DestDir: "{app}\plugins\LibUSB"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\MSMediaFoundation\*.*"; DestDir: "{app}\plugins\MSMediaFoundation"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\NewportSMC100\*.*"; DestDir: "{app}\plugins\NewportSMC100"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\NI-DAQmx\*.*"; DestDir: "{app}\plugins\NI-DAQmx"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\OpenCVFilters\*.*"; DestDir: "{app}\plugins\OpenCVFilters"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\OpenCVGrabber\*.*"; DestDir: "{app}\plugins\OpenCVGrabber"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\PclTools\*.*"; DestDir: "{app}\plugins\PclTools"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\PCOCamera\*.*"; DestDir: "{app}\plugins\PCOCamera"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\PCOPixelFly\*.*"; DestDir: "{app}\plugins\PCOPixelFly"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\PCOSensicam\*.*"; DestDir: "{app}\plugins\PCOSensicam"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\PGRFlyCapture\*.*"; DestDir: "{app}\plugins\PGRFlyCapture"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\PI_GCS2\*.*"; DestDir: "{app}\plugins\PI_GCS2"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\PIPiezoCtrl\*.*"; DestDir: "{app}\plugins\PIPiezoCtrl"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\QCam\*.*"; DestDir: "{app}\plugins\QCam"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\SerialIO\*.*"; DestDir: "{app}\plugins\SerialIO"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\Standa8SMC4USB\*.*"; DestDir: "{app}\plugins\Standa8SMC4USB"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\SuperlumBS\*.*"; DestDir: "{app}\plugins\SuperlumBS"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\ThorlabsCCS\*.*"; DestDir: "{app}\plugins\ThorlabsCCS"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\USBMotion3XIII\*.*"; DestDir: "{app}\plugins\USBMotion3XIII"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\Vistek\*.*"; DestDir: "{app}\plugins\Vistek"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\x3pio\*.*"; DestDir: "{app}\plugins\x3pio"; Flags: promptifolder recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\Ximea\*.*"; DestDir: "{app}\plugins\Ximea"; Flags: promptifolder recursesubdirs
+
+; Libs OpenCV
+Source: "{#SourceDirOpenCV}\opencv_calib3d${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirOpenCV}\opencv_highgui${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirOpenCV}\opencv_imgproc${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirOpenCV}\opencv_features2d${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirOpenCV}\opencv_flann${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+; Libs Plugins
+Source: "{#SourceDirItomBuild}\lib\1394camera.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\AeroBasic64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\atcl_bitflow.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\atcore.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\atdevregcam.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\EnsembleC64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\EnsembleCore64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\FlyCapture2_v100.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\iso5436-2-xml64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\libblas.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\libfftw3-3.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\libgcc_s_seh-1.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\libgfortran-3.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\libiomp5md.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\liblapack.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\liblapacke.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\libquadmath-0.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\libwinpthread-1.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\libximc.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\m3apiX64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\PI_GCS2_DLL_x64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\SC2_Cam.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\SVGigE.x64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\SVGigETLFilter.x64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\SVGigETLWinsock.x64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\VimbaC.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\VimbaCPP.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\xerces-c_3_1_vc100.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\xiApi.NETX64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\lib\iso5436_2.xsd"; DestDir: "{app}\lib"; Flags: promptifolder
+; Libs PCL
+Source: "{#SourceDirPCL}\bin\pcl_features_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_filters_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_io_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_io_ply_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_kdtree_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_octree_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_sample_consensus_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_search_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_surface_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_visualization_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+
+; Demo
+Source: "{#SourceDirItomSource}\demo\*.*"; DestDir: "{app}\demo"; Flags: promptifolder recursesubdirs

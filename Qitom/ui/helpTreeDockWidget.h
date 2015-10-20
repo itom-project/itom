@@ -26,6 +26,19 @@ public:
 
     enum itemType {typeSqlItem = 1, typeFilter = 2, typeWidget = 3, typeFPlugin = 4, typeWPlugin = 5, typeCategory = 6, typeDataIO = 7, typeActuator = 8};
 
+    enum iconType 
+    {
+        iconFilter = 100, 
+        iconPluginAlgo = 101,
+        iconPluginFilter = 102,
+        iconWidget = 103,
+        iconPluginDataIO = 104,
+        iconPluginGrabber = 105,
+        iconPluginAdda = 106,
+        iconPluginRawIO = 107,
+        iconPluginActuator = 108
+    };
+
 public slots:
     void navigateBackwards();
     void navigateForwards();
@@ -119,6 +132,7 @@ private:
     bool                     m_autoCollTree;
     bool                     m_forced;
     bool                     m_internalCall;        /*!< If a page is called by the history buttons, this bool prevents from that this page is stored in the historylist again*/
+    bool                     m_doingExpandAll;      /*!< if expand all is executed from somewhere, the slots on_treeView_expanded or on_treeView_collapsed should not be called to avoid crazy never-ending loops in Qt5, debug.*/
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);

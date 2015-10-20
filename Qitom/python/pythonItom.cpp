@@ -1617,7 +1617,6 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
     retval = AIM->getPluginInfo(pluginName, plugtype, pluginNum, version, pTypeString, pAuthor, pDescription, pDetailDescription, pLicense, pAbout);
     if (retval.containsWarningOrError())
     {
-        //PythonCommon::setLoadPluginReturnValueMessage(retval, pluginName);
         PythonCommon::setReturnValueMessage(retval, pluginName, PythonCommon::loadPlugin);
         return NULL;
     }
@@ -3409,15 +3408,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
         }
         else if (paramsOutBase.size() == 1)
         {
-            PyObject* out = PythonParamConversion::ParamBaseToPyObject(paramsOutBase[0]); //new ref
-            if (!PythonCommon::transformRetValToPyException(ret))
-            {
-                return NULL;
-            }
-            else
-            {
-                return out;
-            }
+            return PythonParamConversion::ParamBaseToPyObject(paramsOutBase[0]); //new ref
         }
         else
         {
@@ -3425,6 +3416,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
             PyObject* out = PyTuple_New(paramsOutBase.size());
             PyObject* temp;
             Py_ssize_t i = 0;
+            bool error = false;
 
             foreach(const ito::ParamBase &p, paramsOutBase)
             {
@@ -3436,11 +3428,12 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
                 }
                 else
                 {
+                    error = true;
                     break;
                 }
             }
 
-            if (!PythonCommon::transformRetValToPyException(ret))
+            if (error)
             {
                 Py_DECREF(out);
                 return NULL;
@@ -3496,10 +3489,8 @@ PyObject* PythonItom::PySaveDataObject(PyObject* /*pSelf*/, PyObject* pArgs, PyO
 
     ret += ito::saveDOBJ2XML(elem->dataObject, folderfilename, false, tagAsBin);
 
-    if (ret.containsError())
+    if (!PythonCommon::setReturnValueMessage(ret, "saveDataObject", PythonCommon::runFunc))
     {
-        PythonCommon::setReturnValueMessage(ret, "saveDataObject", PythonCommon::runFunc);
-        //PythonCommon::setReturnValueMessage(ret, "saveDataObject");
         return NULL;
     }
 
@@ -3547,10 +3538,8 @@ PyObject* PythonItom::PyLoadDataObject(PyObject* /*pSelf*/, PyObject* pArgs, PyO
 
     ret += ito::loadXML2DOBJ(elem->dataObject, folderfilename, false, appendEnding);
 
-    if (ret.containsError())
+    if (!PythonCommon::setReturnValueMessage(ret, "loadDataObject", PythonCommon::runFunc))
     {
-        PythonCommon::setReturnValueMessage(ret, "loadDataObject", PythonCommon::runFunc);
-        //PythonCommon::setReturnValueMessage(ret, "loadDataObject");
         return NULL;
     }
 

@@ -224,7 +224,6 @@ namespace ito {
     class DataObjectTags;
     class DataObjectTagType;
     class DataObjectTagsPrivate;
-    class ReadWriteLock;
     
     
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -486,7 +485,7 @@ namespace ito {
     template<typename _Tp> RetVal AssignScalarFunc(const DataObject *src, const ito::tDataType type, const void *scalar);
     template<typename _Tp> RetVal MakeContinuousFunc(const DataObject &dObj, DataObject &resDObj);
     template<typename _Tp> RetVal EvaluateTransposeFlagFunc(DataObject *dObj);
-    template<typename _Tp> RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel);
+    //template<typename _Tp> RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel);
     template<typename _Tp> std::ostream& coutFunc(std::ostream& out, const DataObject& dObj);
     
     // more friends due to change of std::vector to int ** for m_data ...
@@ -532,22 +531,11 @@ namespace ito {
                     return sz.m_p == m_p;
                 }
                 
-                int d = m_p[-1], dsz = sz.m_p[-1];
-                if( d != dsz )
+                int d = m_p[-1]; 
+                if( d != sz.m_p[-1] )
                     return false;
-                if( d == 2 )
-                {
-                    return m_p[0] == sz.m_p[0] && m_p[1] == sz.m_p[1];
-                }
-                
-                for( int i = 0; i < d - 2; i++ )
-                {
-                    if( m_p[i] != sz.m_p[i] )
-                    {
-                        return false;
-                    }
-                }
-                return (m_p[d - 2] == sz.m_p[d - 2]) && (m_p[d - 1] == sz.m_p[d - 1]);
+
+                return (memcmp(m_p, sz.m_p, d * sizeof(int)) == 0); //returns true if the size vector (having the same length) is equal
             }
             
             inline bool operator != (const MSize& sz) const { return !(*this == sz); }
@@ -570,22 +558,17 @@ namespace ito {
                 {
                     return rroi.m_p == m_p;
                 }
+
+                int d = m_p[-1]; 
+                if( d != rroi.m_p[-1] )
+                    return false;
+
+                return (memcmp(m_p, rroi.m_p, d * sizeof(int)) == 0); //returns true if the size vector (having the same length) is equal
                 
                 if (m_p[-1] != rroi.m_p[-1])
                 {
                     return false;
                 }
-                
-                int d = m_p[-1];
-                for (int n = 0; n < d - 2; n++)
-                {
-                    if (m_p[n] != rroi.m_p[n])
-                    {
-                        return false;
-                    }
-                }
-                
-                return m_p[d - 2] == rroi.m_p[d - 2] && m_p[d - 1] == rroi.m_p[d - 1];
             }
             
             int *m_p;
@@ -602,9 +585,7 @@ namespace ito {
         MROI    m_roi;                               /*!< vector containing the offset to the starting point of the ROI for each dimension, is used for detecting and adjusting the ROI */
         MSize   m_size;                              /*!< vector containing the "virtual" size of each dimension considering the ROI */
         uchar  **m_data;                             /*!< vector with references to each matrix-plane. array of char pointers */
-        ReadWriteLock      *m_objSharedDataLock;     /*!< readWriteLock for data block, this lock is shared within every instance which is using the same data. */
         DataObjectTagsPrivate *m_pDataObjectTags;    /*!< class containing the object metadata */
-        ReadWriteLock       *m_objHeaderLock;        /*!< readWriteLock for this instance of dataObject. */
         static const int m_sizeofs;
         
         int mdata_realloc(const int size);
@@ -615,7 +596,7 @@ namespace ito {
         RetVal copyFromData2DInternal(const uchar* src, const int sizeOfElem, const int sizeX, const int x0, const int y0, const int width, const int height);
         
         //! Forward declaration: Default values are not allowed for friend functions, adding a non-friend function with default argument instead \deprecated Will be deleted once the interface number is incremented due to further changes
-        template<typename _Tp> RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel = 0);
+        //template<typename _Tp> RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel = 0);
 
         //low-level, templated methods
         //most low-level methods are marked "friend" such that they can access private members of their data object parameters
@@ -630,7 +611,7 @@ namespace ito {
         template<typename _Tp> friend RetVal AssignScalarFunc(const DataObject *src, const ito::tDataType type, const void *scalar);
         template<typename _Tp> friend RetVal MakeContinuousFunc(const DataObject &dObj, DataObject &resDObj);
         template<typename _Tp> friend RetVal EvaluateTransposeFlagFunc(DataObject *dObj);
-        template<typename _Tp> friend RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel); //!< \deprecated Will be deleted once the interface number is incremented due to further changes
+        //template<typename _Tp> friend RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel); //!< \deprecated Will be deleted once the interface number is incremented due to further changes
         template<typename _Tp> friend std::ostream& coutFunc(std::ostream& out, const DataObject& dObj);
         
         // more friends due to change of std::vector to int ** for m_data ...
@@ -820,6 +801,8 @@ namespace ito {
                     return 1;
                 case 3:
                     return m_size[0];
+                case 4:
+                    return m_size[0] * m_size[1];
                 default:
                 {
                     int numMat = 1;
@@ -950,29 +933,6 @@ namespace ito {
             return total;
         }
         
-        //! locks this dataObject (all header information) and the underlying data block for a read operation
-        /*!
-         \remark During the copy-constructor, operator=, eye, zero and ones method, the readWriteLock for the data block
-         will be set to writeLock if any of the participating dataObjects are in writeLock mode. Then the number of readers
-         will be decremented first. The lock of the dataObject, hence the lock for all header information, which are not
-         shared, remains at its level.
-         
-         \sa ReadWriteLock
-         */
-        void lockRead();
-        
-        //! locks this dataObject (all header information) and the underlying data block for a write operation
-        /*!
-         \sa ReadWriteLock
-         */
-        void lockWrite();
-        
-        //! unlocks any lock. If lock is writeLock, lock is set to idle, if lock is readLock, then the number of readers is decremented and lock is freed if no more readers are available
-        /*!
-         \sa ReadWriteLock
-         */
-        void unlock();
-        
         RetVal copyTo(DataObject &rhs, unsigned char regionOnly = 0) const;   /*!< deeply copies the data of this data object to the given rhs-dataObject, whose existing data will be deleted first. */
         RetVal convertTo(DataObject &rhs, const int type, const double alpha=1, const double beta=0 ) const; /*!< Convertes an array to another data type with optional scaling (alpha * value + beta) */
         
@@ -988,7 +948,7 @@ namespace ito {
         RetVal setTo(const complex128 &value, const DataObject &mask = DataObject());  /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
         RetVal setTo(const ito::Rgba32 &value, const DataObject &mask = DataObject()); /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
         
-        //! copy all values of this data object to the copyTo data object. The copyTo-data object must be allocated and have the same type and size (of its roi) than this data object.
+        //! copy all values of this data object to the copyTo data object. The copyTo-data object must be allocated and have the same type and size (of its roi) than this data object. The compared sequence of sizes only contains dimensions whose size is bigger than one (e.g. it is possible to copy a 5x1 object to a 1x1x5 object)
         RetVal deepCopyPartial(DataObject &copyTo);
         
         //! Returns the matrix iterator and sets it to the first matrix element.
@@ -1020,21 +980,27 @@ namespace ito {
         
         DataObject & operator += (const DataObject &rhs);
         DataObject & operator += (const float64 &value);
+        DataObject & operator += (const complex128 &value);
         
         DataObject operator + (const DataObject &rhs);
         DataObject operator + (const float64 &value);
+        DataObject operator + (const complex128 &value);
         
         DataObject & operator -= (const DataObject &rhs);
         DataObject & operator -= (const float64 &value);
+        DataObject & operator -= (const complex128 &value);
         
         DataObject operator - (const DataObject &rhs);
         DataObject operator - (const float64 &value);
+        DataObject operator - (const complex128 &value);
         
         DataObject & operator *= (const DataObject &rhs);
         DataObject & operator *= (const float64 &factor);
+        DataObject & operator *= (const complex128 &factor);
         
         DataObject operator * (const DataObject &rhs);
         DataObject operator * (const float64 &factor);
+        DataObject operator * (const complex128 &factor);
         
         // Comparison Operators
         DataObject operator < (DataObject &rhs);

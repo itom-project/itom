@@ -40,7 +40,7 @@ class DialogPipManagerInstall : public QDialog
 
 public:
     enum Type { typeWhl = 0, typeTarGz = 1, typeSearchIndex = 2};
-    DialogPipManagerInstall(QWidget *parent = NULL );
+    DialogPipManagerInstall(QWidget *parent = NULL, QString package = "");
     ~DialogPipManagerInstall();
 
     void getResult(int &type, QString &packageName, bool &upgrade, bool &installDeps, QString &findLinks, bool &ignoreIndex, bool &runAsSudo);

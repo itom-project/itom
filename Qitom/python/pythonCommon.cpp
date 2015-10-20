@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -21,8 +21,12 @@
 *********************************************************************** */
 
 #include "pythonCommon.h"
+
 #include "pythonRgba.h"
 #include "pythonQtConversion.h"
+#include "pythonPlugins.h"
+#include "pythonDataObject.h"
+#include "pythonPCL.h"
 
 #include "helper/paramHelper.h"
 
@@ -58,36 +62,38 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
     {
     case ito::ParamBase::Char & ito::paramTypeMask:
     case ito::ParamBase::Int & ito::paramTypeMask:
-        if (PyLong_Check(pyObj))
-        {
-            *set = 1;
-            outParam.setVal<int>(PyLong_AsLong(pyObj));
-        }
-        else if (PyRgba_Check(pyObj))
+        if (PyRgba_Check(pyObj))
         {
             PythonRgba::PyRgba *pyRgba = (PythonRgba::PyRgba*)(pyObj);
             outParam.setVal<int>((int)(pyRgba->rgba.rgba));
         }
         else
         {
-            return ito::retError;
+            bool ok;
+            outParam.setVal<int>(PythonQtConversion::PyObjGetInt(pyObj, false, ok));
+            if (ok)
+            {
+                *set = 1;
+            }
+            else
+            {
+                return ito::RetVal(ito::retError, 0, "value could not be converted to integer");
+            }
         }
     break;
 
     case ito::ParamBase::Double & ito::paramTypeMask:
-        if (PyFloat_Check(pyObj))
         {
-            *set = 1;
-            outParam.setVal<double>(PyFloat_AsDouble(pyObj));
-        }
-        else if (PyErr_Clear(), PyLong_Check(pyObj))
-        {
-            *set = 1;
-            outParam.setVal<double>(PyLong_AsDouble(pyObj));
-        }
-        else
-        {
-            return ito::retError;
+            bool ok;
+            outParam.setVal<double>(PythonQtConversion::PyObjGetDouble(pyObj, false, ok));
+            if (ok)
+            {
+                *set = 1;
+            }
+            else
+            {
+                return ito::RetVal(ito::retError, 0, "value could not be converted to double");
+            }
         }
     break;
 
@@ -291,19 +297,19 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                 break;
 
                 case ito::ParamBase::Int & ito::paramTypeMask:
-                    type = ("int (int)");
+                    type = ("int");
                 break;
 
                 case ito::ParamBase::Double & ito::paramTypeMask:
-                    type = ("float (double)");
+                    type = ("float");
                 break;
 
                 case ito::ParamBase::String & ito::paramTypeMask:
-                    type = ("str (char*)");
+                    type = ("str");
                 break;
 
                 case ito::ParamBase::CharArray & ito::paramTypeMask:
-                    type = ("int seq. (char*)");
+                    type = ("seq. of int (char)");
                 break;
 
                 case ito::ParamBase::IntArray & ito::paramTypeMask:
@@ -319,7 +325,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                         type = "int rect [x0,y0,width,height]";
                         break;
                     default:
-                        type = ("int seq. (int*)");
+                        type = ("seq. of int");
                     }
                 break;
 
@@ -330,7 +336,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                         type = "float interval [v1,v2]";
                         break;
                     default:
-                        type = ("float seq. (double*)");
+                        type = ("seq. of float");
                     }
                 break;
 
@@ -667,6 +673,13 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
             
             PyTuple_SetItem(pVector, n, p_pyLine); //steals reference to p_pyLine
         }
+		else
+		{
+			std::cerr << "The plugin parameter at position " << n << " contains neither type or name. This is an invalid parameter. Please check the plugin\n" << std::endl;
+			//this is an error case, params vector contains a type-less element. Check the plugin, this must not happen.
+			Py_INCREF(Py_None);
+			PyTuple_SetItem(pVector, n, Py_None); //steals reference of Py_None
+		}
     }
 
     //now construct final output
@@ -1259,11 +1272,11 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
         {
             if (retval.hasErrorMessage() == false)
             {
-                errOutInitParams(defaultParamListOpt, n, "wrong parameter type");
+                errOutInitParams(defaultParamListOpt, n - numMandParams, "wrong parameter type");
             }
             else
             {
-                errOutInitParams(defaultParamListOpt, n, retval.errorMessage());
+                errOutInitParams(defaultParamListOpt, n - numMandParams, retval.errorMessage());
             }
             if (mandPParsed)
             {
@@ -1369,6 +1382,12 @@ ito::RetVal copyParamVector(const QVector<ito::Param> *paramVecIn, QVector<ito::
     return ito::RetVal(ito::retError, 0, "paramVecIn is NULL");
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+/** makes a deep copy of a vector with values of type Param
+*   
+*   @param [in]     paramVecIn is a pointer to a vector of Param-values
+*   @param [out]    paramVecOut is a reference to a vector which is first cleared and then filled with a deep copy of every element of paramVecIn (casted to ito::ParamBase)
+*/
 ito::RetVal copyParamVector(const QVector<ito::Param> *paramVecIn, QVector<ito::ParamBase> &paramVecOut)
 {
     if (paramVecIn)
@@ -1377,24 +1396,6 @@ ito::RetVal copyParamVector(const QVector<ito::Param> *paramVecIn, QVector<ito::
         for (int i=0;i<paramVecIn->size();i++)
         {
             paramVecOut.append(ito::ParamBase(paramVecIn->value(i)));
-        }
-
-        return ito::retOk;
-    }
-    return ito::RetVal(ito::retError, 0, "paramVecIn is NULL");
-}
-
-
-ito::RetVal createEmptyParamBaseFromParamVector(const QVector<ito::Param> *paramVecIn, QVector<ito::ParamBase> &paramVecOut)
-{
-    if (paramVecIn)
-    {
-//        const ito::Param temp;
-        paramVecOut.clear();
-        for (int i=0;i<paramVecIn->size();i++)
-        {
-//            temp = (paramVecIn->value(i));
-            paramVecOut.append(ito::ParamBase(paramVecIn->value(i).getName(), paramVecIn->value(i).getType()));
         }
 
         return ito::retOk;
@@ -1475,37 +1476,6 @@ PyObject* buildFilterOutputValues(QVector<QVariant> *outVals, ito::RetVal &retVa
     return tuple;
 
 }
-
-//------------------------------------------------------------------------------------------------------------------
-bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *exceptionIfError)
-{
-    QByteArray msg;
-    if (retVal.containsWarningOrError())
-    {
-        const char *temp = retVal.errorMessage();
-        if (temp == NULL)
-        {
-            msg = QString("- unknown message -").toUtf8();
-        }
-        else
-        {
-            msg = QString::fromLatin1(temp).toUtf8();
-        }
-
-        if (retVal.containsError())
-        {
-            PyErr_SetString(exceptionIfError, msg.data());
-            return false;
-        }
-        else
-        {
-            std::cout << "Warning: " << msg.data() << "\n" << std::endl;
-        }
-    }
-
-    return true;
-}
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
@@ -1883,8 +1853,51 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
     }
 }
 
+//------------------------------------------------------------------------------------------------------------------
+/* transforms a possible warning or error in retVal into a Python exception or warning
+    
+   returns true if retVal contained no error or if a warning became "only" a warning in Python.
+   returns false if a Python exception was created or if the warning level in Python was set such that the
+          warning contained in retVal also raised a Python exception.
+*/
+bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *exceptionIfError /*= PyExc_RuntimeError*/, PyObject *exceptionIfWarning /*= PyExc_RuntimeWarning*/)
+{
+    QByteArray msg;
+    if (retVal.containsWarningOrError())
+    {
+        const char *temp = retVal.errorMessage();
+        if (temp == NULL)
+        {
+            msg = QString("- unknown message -").toUtf8();
+        }
+        else
+        {
+            msg = QString::fromLatin1(temp).toUtf8();
+        }
+
+        if (retVal.containsError())
+        {
+            PyErr_SetString(exceptionIfError, msg.data());
+            return false;
+        }
+        else
+        {
+            if (PyErr_WarnEx(exceptionIfWarning, msg.data(), 1) == -1)
+            {
+                return false; //warning was turned into a real exception, 
+            }
+            else
+            {
+                return true; //warning is a warning, go on with the script
+            }
+        }
+    }
+
+    return true;
+}
+
 //------------------------------------------------------------------------------------------------------------------------------------------
-bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &objName, const tErrMsg &errorMSG, PyObject *exceptionIfError)
+bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &objName, const tErrMsg &errorMSG, PyObject *exceptionIfError /*= PyExc_RuntimeError*/, PyObject *exceptionIfWarning /*= PyExc_RuntimeWarning*/)
 {
     QByteArray msgSpecified;
     QByteArray msgUnspecified;
@@ -1930,49 +1943,66 @@ bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &obj
         }
         return false;
     }
-
-    if (retVal.containsWarning())
+    else if (retVal.containsWarning())
     {
         switch(errorMSG)
         {
             case PythonCommon::noMsg:
             default:
-                msgSpecified = "Warning : ";
+                msgSpecified = "Warning while %s: \n%s";
+                msgUnspecified = "%s with unspecified warning.";
                 break;
-
             case PythonCommon::loadPlugin:
-                msgSpecified = "Warning while loading plugin: ";
+                msgSpecified = "Warning while loading plugin %s: \n%s";
+                msgUnspecified = "Unspecified warning while loading plugin %s.";
                 break;
-            case PythonCommon::execFunc:
-                msgSpecified = "Warning while invoking exec-function: ";
+            case PythonCommon::runFunc:
+                msgSpecified = "Warning while executing function %s: \n%s";
+                msgUnspecified = "Unspecified warning while executing function %s.";
                 break;
             case PythonCommon::invokeFunc:
-                msgSpecified = "Warning while invoking function: ";
+                msgSpecified = "Warning while invoking function %s: \n%s";
+                msgUnspecified = "Unspecified warning while invoking function %s.";
                 break;
             case PythonCommon::getProperty:
-                msgSpecified = "Warning while getting property info: ";
-                break;   
+                msgSpecified = "Warning while getting property info %s: \n%s";
+                msgUnspecified = "Unspecified warning while getting property info %s.";
+                break;
+            case PythonCommon::execFunc:
+                msgSpecified = "Warning while invoking exec-function %s: \n%s";
+                msgUnspecified = "Unspecified warning invoking exec-function %s.";
+                break;
         }
 
-        std::cerr << msgSpecified.data() << objName.toLatin1().data() << "\n" << std::endl;
+        int level;
 
         if (retVal.hasErrorMessage())
         {
-            std::cerr << " Message: " << retVal.errorMessage() << "\n" << std::endl;
+            level = PyErr_WarnFormat(exceptionIfWarning, 1, msgSpecified.data(), objName.toUtf8().data(), QString::fromLatin1(retVal.errorMessage()).toUtf8().data());
         }
         else
         {
-            std::cerr << " Message: No warning message indicated.\n" << std::endl;
+            level = PyErr_WarnFormat(exceptionIfWarning, 1, msgUnspecified.data(), objName.toUtf8().data());
+        }
+
+        if (level == -1)
+        {
+            return false; //the warning was turned into an exception due to the settings of the python warning module
+        }
+        else
+        {
+            return true; // the warning is a warning, go on with the script execution
         }
     }
+
     return true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal,const char *objName, const tErrMsg &errorMSG, PyObject *exceptionIfError)
+bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal,const char *objName, const tErrMsg &errorMSG, PyObject *exceptionIfError /*= PyExc_RuntimeError*/, PyObject *exceptionIfWarning /*= PyExc_RuntimeWarning*/)
 {
     QString pName(objName);
-    return PythonCommon::setReturnValueMessage(retVal, pName, errorMSG, exceptionIfError);
+    return PythonCommon::setReturnValueMessage(retVal, pName, errorMSG, exceptionIfError, exceptionIfWarning);
 }
 //------------------------------------------------------------------------------------------------------------------
 } //end namespace ito

@@ -53,6 +53,7 @@
 #include <qmainwindow.h>
 #include <QtUiTools/quiloader.h>
 #include <qthread.h>
+#include <qtranslator.h>
 
 namespace ito
 {
@@ -362,6 +363,7 @@ private:
     //moved the uiLoader object to here from loadDesignerPluginWidget and createNewDialog methods as according
     //to valgrind it causes memory leaks. So better have only one instance created and maintain mem leaks low ;-)
     QUiLoader m_uiLoader;
+    QHash<QString, QTranslator*> m_transFiles;
 
 signals:
 
@@ -419,6 +421,8 @@ public slots:
     RetVal getObjectInfo(unsigned int objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);
     RetVal getObjectChildrenInfo(unsigned int objectID, bool recursive, QSharedPointer<QStringList> objectNames, QSharedPointer<QStringList> classNames, ItomSharedSemaphore *semaphore = NULL);
 
+    RetVal getObjectID(const QObject *obj, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore = NULL);
+
     RetVal connectWithKeyboardInterrupt(unsigned int objectID, const QString &signalSignature, ItomSharedSemaphore *semaphore = NULL);
     RetVal getMethodDescriptions(unsigned int objectID, QSharedPointer<MethodDescriptionList> methodList, ItomSharedSemaphore *semaphore = NULL);
 
@@ -434,6 +438,8 @@ public slots:
     RetVal figureDrawGeometricElements(unsigned int objectID, QSharedPointer<ito::DataObject> coords, int elementType, int maxNrElements, ItomSharedSemaphore *semaphore);
     RetVal figurePickPointsInterrupt(unsigned int objectID);
     RetVal isFigureItem(unsigned int objectID,  QSharedPointer<unsigned int> isFigureItem, ItomSharedSemaphore *semaphore);
+
+    
 
     void figureDestroyed(QObject *obj)
     {

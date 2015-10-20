@@ -51,6 +51,8 @@ namespace ito
         (void*)&singleApiFunctionsGraph.mgetColorBarIdxFromName,/* [9] */
         (void*)&singleApiFunctionsGraph.mgetFigureSetting,      /* [10] */
         (void*)&singleApiFunctionsGraph.mgetPluginWidget,       /* [11] */
+        (void*)&singleApiFunctionsGraph.mgetFigureUIDByHandle,  /* [12] */
+        (void*)&singleApiFunctionsGraph.mgetPlotHandleByID,     /* [13] */
         NULL
     };
 
@@ -159,8 +161,10 @@ ito::RetVal apiFunctionsGraph::mgetFigure(const QString &figCategoryName, const 
     {
         if(UID > 0)
         {
+            
             *figure = qobject_cast<QWidget*>(uiOrg->getPluginReference(UID));
-            if(*figure && parent)
+
+            if(*figure && parent && !(*figure)->parent())
             {
                 (*figure)->setParent( parent );
             }
@@ -418,6 +422,55 @@ ito::RetVal apiFunctionsGraph::mgetPluginWidget(char* algoWidgetFunc, QVector<it
     else
     {
         retval += ito::RetVal(ito::retError, 0, QObject::tr("UI-Organizer is not available!").toLatin1().data());
+    }
+
+    return retval;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal apiFunctionsGraph::mgetFigureUIDByHandle(QObject *figure, ito::uint32 &figureUID)
+{
+    ito::RetVal retval;
+    UiOrganizer *uiOrg = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
+    if(uiOrg)
+    {
+        QSharedPointer<unsigned int > uid(new unsigned int) ;
+        *uid = 0;
+        uiOrg->getObjectID(figure, uid);
+        figureUID = *uid;
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError,0,"uiOrganizer is not available");
+    }
+
+    return retval;
+}
+
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal apiFunctionsGraph::mgetPlotHandleByID(const ito::uint32 &figureUID, ito::ItomPlotHandle &plotHandle)
+{
+    ito::RetVal retval;
+    UiOrganizer *uiOrg = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
+    if(uiOrg)
+    {
+        QObject *obj = uiOrg->getPluginReference(figureUID);
+
+        if (obj)
+        {
+            plotHandle = ito::ItomPlotHandle(obj->objectName().toLatin1().data(), obj->metaObject()->className(), figureUID);
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError,0,"plot widget does not exist.");
+        }
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError,0,"uiOrganizer is not available");
     }
 
     return retval;

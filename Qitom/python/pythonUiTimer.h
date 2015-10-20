@@ -25,9 +25,9 @@
 
 #include "pythonCommon.h"
 
-#include <qstring.h>
-#include <qvariant.h>
 #include <qobject.h>
+
+class QTimer; //forward declaration
 
 namespace ito 
 {

@@ -81,7 +81,7 @@ This is an overview about the menu structure of itom
 +------------+--------------------+----------------------+-------------------------------------------------------------------------------------+
 |            | Reload modules     |                      | Reload imported python packages (e.g. import numpy)                                 |
 +------------+--------------------+----------------------+-------------------------------------------------------------------------------------+
-+            | Package Manager... |                      | Opens the :ref:`python package manager <gui-pipmanager>` to install python packages |
++            | Package Manager... |                      | :ref:`python package manager <gui-pipmanager>` to install python packages           |
 +------------+--------------------+----------------------+-------------------------------------------------------------------------------------+
 | **Help**   | Assistant          | |mainhelp| F1        | Opens this documentation                                                            |
 +------------+--------------------+----------------------+-------------------------------------------------------------------------------------+

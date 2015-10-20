@@ -23,8 +23,10 @@
 #include "pythonQtConversion.h"
 
 #include "pythonUi.h"
+#include "pythonPlotItem.h"
 #include "pythonCommon.h"
 #include "pythonRgba.h"
+#include "pythonFont.h"
 #include "pythonAutoInterval.h"
 
 #include <qstringlist.h>
@@ -348,7 +350,19 @@ int PythonQtConversion::PyObjGetInt(PyObject* val, bool strict, bool &ok)
         } 
         else 
         {
-            ok = false;
+            //try to convert to long (e.g. numpy scalars or other objects that have a __int__() method defined
+            int overflow;
+            d = PyLong_AsLongAndOverflow(val, &overflow);
+            if (PyErr_Occurred())
+            {
+                //error during conversion
+                PyErr_Clear();
+                ok = false;
+            }
+            else if (overflow) //1: too big, -1: too small
+            {
+                ok = false;
+            }
         }
     } 
     else 
@@ -399,7 +413,19 @@ qint64 PythonQtConversion::PyObjGetLongLong(PyObject* val, bool strict, bool &ok
         } 
         else 
         {
-            ok = false;
+            //try to convert to long (e.g. numpy scalars or other objects that have a __int__() method defined
+            int overflow;
+            d = PyLong_AsLongAndOverflow(val, &overflow);
+            if (PyErr_Occurred())
+            {
+                //error during conversion
+                PyErr_Clear();
+                ok = false;
+            }
+            else if (overflow) //1: too big, -1: too small
+            {
+                ok = false;
+            }
         }
     } 
     else 
@@ -489,7 +515,7 @@ double PythonQtConversion::PyObjGetDouble(PyObject* val, bool strict, bool &ok)
             {
                 ok = false;
             }
-        } 
+        }
         else if (val == Py_False) 
         {
             d = 0.0;
@@ -500,7 +526,14 @@ double PythonQtConversion::PyObjGetDouble(PyObject* val, bool strict, bool &ok)
         } 
         else 
         {
-            ok = false;
+            //try to convert to float (e.g. numpy scalars or other objects that have a __float__() method defined
+            d = PyFloat_AsDouble(val);
+            if (PyErr_Occurred())
+            {
+                //error during conversion
+                PyErr_Clear();
+                ok = false;
+            }
         }
     } 
     else 
@@ -963,6 +996,10 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         {
             type = QVariant::Region;
         }
+        else if (Py_TYPE(val) == &ito::PythonFont::PyFontType)
+        {
+            type = QVariant::Font;
+        }
         else if (PyDateTime_Check(val)) //must be checked before PyDate_Check since PyDateTime is derived from PyDate
         {
             type = QVariant::DateTime;
@@ -1016,6 +1053,14 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         else if (Py_TYPE(val) == &ito::PythonAutoInterval::PyAutoIntervalType)
         {
             type = QMetaType::type("ito::AutoInterval");
+        }
+        else if (Py_TYPE(val) == &ito::PythonPlotItem::PyPlotItemType)
+        {
+            type = QMetaType::type("ito::ItomPlotHandle");
+        }
+        else if (Py_TYPE(val) == &ito::PythonUi::PyUiItemType)
+        {
+            type = QMetaType::type("ito::ItomPlotHandle");
         }
     }
 
@@ -1188,6 +1233,16 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         if (pyReg && pyReg->r)
         {
             v = *(pyReg->r);
+        }
+    }
+    break;
+
+    case QVariant::Font:
+    {
+        ito::PythonFont::PyFont *pyFont = (ito::PythonFont::PyFont*)val;
+        if (pyFont && pyFont->font)
+        {
+            v = *(pyFont->font);
         }
     }
     break;
@@ -1397,6 +1452,39 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             if (ai)
             {
                 v = qVariantFromValue<ito::AutoInterval>(ai->interval);
+            }
+            else
+            {
+                v = QVariant();
+            }
+        }
+        else if (type == QMetaType::type("ito::ItomPlotHandle"))
+        {
+            if(PyPlotItem_Check(val))
+            {
+                ito::PythonPlotItem::PyPlotItem *plot = (ito::PythonPlotItem::PyPlotItem*)val;
+                if (plot)
+                {
+                    ito::ItomPlotHandle myHandle(plot->uiItem.objName, plot->uiItem.widgetClassName, plot->uiItem.objectID);
+                    v = qVariantFromValue<ito::ItomPlotHandle>(myHandle);
+                }
+                else
+                {
+                    v = QVariant();
+                }
+            }
+            else if PyUiItem_Check(val)
+            {
+                ito::PythonUi::PyUiItem *ui = (ito::PythonUi::PyUiItem*)val;
+                if (ui)
+                {
+                    ito::ItomPlotHandle myHandle(ui->objName, ui->widgetClassName, ui->objectID);
+                    v = qVariantFromValue<ito::ItomPlotHandle>(myHandle);
+                }
+                else
+                {
+                    v = QVariant();
+                }
             }
             else
             {
@@ -1740,6 +1828,10 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
         {
             type = QMetaType::QRegion;
         }
+        else if (PyFont_Check(val))
+        {
+            type = QMetaType::QFont;
+        }
         else if (PyRgba_Check(val))
         {
             type = QMetaType::QColor;
@@ -2058,6 +2150,21 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&r));
                 #else
                 *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&r));
+                #endif
+            }
+            break;
+        }
+
+        case QMetaType::QFont:
+        {
+            ito::PythonFont::PyFont *font = (ito::PythonFont::PyFont*)val;
+            if (font && font->font)
+            {
+                QFont f = *(font->font);
+                #if QT_VERSION >= 0x050000
+                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&f));
+                #else
+                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&f));
                 #endif
             }
             break;
@@ -2640,6 +2747,10 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
         {
             return ito::PythonRegion::createPyRegion(*((QRegion*)data));
         }
+    case QMetaType::QFont:
+        {
+            return ito::PythonFont::createPyFont(*((QFont*)data));
+        }
     case QMetaType::QColor:
         {
             ito::PythonRgba::PyRgba *rgba = ito::PythonRgba::createEmptyPyRgba();
@@ -2694,6 +2805,31 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             ito::PythonAutoInterval::PyAutoInterval *ai = ito::PythonAutoInterval::createEmptyPyAutoInterval();
             ai->interval = *v;
             return (PyObject*)ai;
+
+        }
+        if (strcmp(name, "ito::ItomPlotHandle") == 0)
+        {
+            ito::ItomPlotHandle *v = (ito::ItomPlotHandle*)data;
+
+            if (v->getObjectID() > 0)
+            {
+                ito::PythonPlotItem::PyPlotItem *plotItem = (ito::PythonPlotItem::PyPlotItem*) ito::PythonPlotItem::PyPlotItem_new(&ito::PythonUi::PyUiItemType, NULL, NULL);
+                plotItem->uiItem.objectID = v->getObjectID();
+
+                DELETE_AND_SET_NULL_ARRAY(plotItem->uiItem.objName);
+                plotItem->uiItem.objName = new char[v->getObjName().length()+1];
+                strcpy_s(plotItem->uiItem.objName, v->getObjName().length()+1, v->getObjName().data());
+                DELETE_AND_SET_NULL_ARRAY(plotItem->uiItem.widgetClassName);
+                plotItem->uiItem.widgetClassName = new char[v->getWidgetClassName().length()+1];
+                strcpy_s(plotItem->uiItem.widgetClassName, v->getWidgetClassName().length()+1, v->getWidgetClassName().data());
+
+                return (PyObject*)plotItem;
+            }
+            else
+            {
+                //invalid plot handle
+                Py_RETURN_NONE;
+            }
 
         }
         if (strcmp(name, "ito::DataObject") == 0)

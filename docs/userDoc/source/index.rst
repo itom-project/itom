@@ -3,7 +3,7 @@
 |logo| itom documentation for v. |version|
 ##################################################
 
-.. |logo| image:: q_itoM64.png  
+.. |logo| image:: itomLogo2_64.png  
 
 .. toctree::
     :maxdepth: 2

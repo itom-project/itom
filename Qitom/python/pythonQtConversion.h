@@ -31,6 +31,7 @@
 #include "datetime.h"
 
 #include "../global.h"
+#include "../../common/itomPlotHandle.h"
 
 #include "opencv/cv.h"
 #include <qvariant.h>
@@ -49,6 +50,9 @@ Q_DECLARE_METATYPE(ito::PCLPolygonMesh)
 Q_DECLARE_METATYPE(QSharedPointer<ito::DataObject>)
 Q_DECLARE_METATYPE(QPointer<ito::AddInDataIO>)
 Q_DECLARE_METATYPE(QPointer<ito::AddInActuator>)
+
+
+Q_DECLARE_METATYPE(ito::ItomPlotHandle)
 
 namespace ito
 {

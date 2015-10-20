@@ -32,6 +32,7 @@
 #include "widgets/scriptDockWidget.h"
 #include "./ui/dialogSelectUser.h"
 #include "ui/dialogPipManager.h"
+#include "DataObject/dataobj.h"
 
 #include <qsettings.h>
 #include <qstringlist.h>
@@ -157,13 +158,18 @@ void MainApplication::setupApplication()
 
     registerMetaObjects();
 
-    QPixmap pixmap(":/application/icons/itomicon/splashScreen.png");
+    QPixmap pixmap(":/application/icons/itomicon/splashScreen2.png");
 
-#if QT_POINTER_SIZE == 8
-    QString text = QString(tr("Version %1\n%2")).arg(ITOM_VERSION_STR).arg(tr("64 bit (x64)"));
-#else
-    QString text = QString(tr("Version %1\n%2")).arg(ITOM_VERSION_STR).arg(tr("32 bit (x86)"));
-#endif
+    QString text;
+    
+    if (sizeof(void*) > 4) //was before a check using QT_POINTER_SIZE
+    {
+        text = QString(tr("Version %1\n%2")).arg(ITOM_VERSION_STR).arg(tr("64 bit (x64)"));
+    }
+    else
+    {
+        text = QString(tr("Version %1\n%2")).arg(ITOM_VERSION_STR).arg(tr("32 bit (x86)"));
+    }
 
 #if USING_GIT == 1
     text.append(QString("\nRev. %1").arg(GIT_HASHTAG_ABBREV));
@@ -171,8 +177,8 @@ void MainApplication::setupApplication()
     QPainter p;
     p.begin(&pixmap);
     p.setPen(Qt::black);
-    QRectF rect(311,115,200,100); //position of the version text within the image
-    p.drawText(rect, Qt::AlignRight, text);
+    QRectF rect(250 /*311*/,217 /*115*/,200,100); //position of the version text within the image
+    p.drawText(rect, Qt::AlignLeft, text);
     p.end();
 
     m_splashScreen = new QSplashScreen(pixmap);
@@ -356,6 +362,13 @@ void MainApplication::setupApplication()
 
     DELETE_AND_SET_NULL(settings);
 
+	/*set new seed for random generator of OpenCV. 
+	This is required to have real random values for any randn or randu command.
+	The seed must be set in every thread. This is for the main thread.
+	*/
+	cv::theRNG().state = (uint64)cv::getCPUTickCount();
+	/*seed is set*/
+
     //starting ProcessOrganizer for external processes like QtDesigner, QtAssistant, ...
     m_splashScreen->showMessage(tr("load process organizer..."), Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
@@ -526,8 +539,8 @@ void MainApplication::setupApplication()
     qDebug("..load settings done");
     qDebug("MainApplication::setupApplication .. done");
 
-    std::cout << "\n    Welcome to itom program!\n\n";
-    std::cout << "    Please report bugs under:\n        https://bitbucket.org/itom/itom/issues\n    Cheers your itom team\n" << std::endl;
+    //std::cout << "\n    Welcome to itom program!\n\n";
+    //std::cout << "    Please report bugs under:\n        https://bitbucket.org/itom/itom/issues\n    Cheers your itom team\n" << std::endl;
 
     if (m_mainWin)
     {

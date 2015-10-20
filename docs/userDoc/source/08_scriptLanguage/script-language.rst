@@ -43,6 +43,7 @@ More information about the module :py:mod:`itom` can be found under:
     :maxdepth: 3
     
     pymod-itom.rst
+    pymod-load-save-files.rst
     glossary.rst
 
 The full script reference of the module :py:mod:`itom` can be found under :ref:`itom-Script-Reference`.

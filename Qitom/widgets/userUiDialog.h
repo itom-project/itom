@@ -57,16 +57,12 @@ public:
 
     ~UserUiDialog();
 
-    const QMetaObject *getMetaObjectByWidgetName(QString name) const;
-
 protected:
     RetVal init(const QString &filename, tButtonBarType buttonBarType, const StringMap &dialogButtons);
     RetVal init(QWidget *contentWidget, tButtonBarType buttonBarType, const StringMap &dialogButtons);
 
 private:
-    
-
-    QDialogButtonBox::ButtonRole getButtonRole(QString role);
+    QDialogButtonBox::ButtonRole getButtonRole(const QString &role);
 
     QBoxLayout *m_boxLayout;
     QDialogButtonBox *m_dialogBtnBox;

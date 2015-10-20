@@ -135,7 +135,7 @@ namespace ito
             void treeViewContextMenuRequested(const QPoint &pos);
             void setTreeViewHideColumns(const bool &hide);
             void removeActionFromDirList(const int &pos);
-            void changeDir();
+            void itemDoubleClicked(const QModelIndex &index);
 
             void pathAnchorClicked(const QUrl &link);
 

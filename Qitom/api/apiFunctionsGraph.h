@@ -27,6 +27,7 @@
 
 #include "../../common/sharedStructures.h"
 #include "../../common/sharedStructuresGraphics.h"
+#include "../../common/itomPlotHandle.h"
 
 #include <qvariant.h>
 #include <qpointer.h>
@@ -55,6 +56,8 @@ namespace ito
             static QVariant mgetFigureSetting(const QObject *figureClass, const QString &key, const QVariant &defaultValue = QVariant(), ito::RetVal *retval = NULL);
 
             static ito::RetVal mgetPluginWidget(char* algoWidgetFunc, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QPointer<QWidget> *widget);
+            static ito::RetVal mgetFigureUIDByHandle(QObject *figure, ito::uint32 &figureUID);
+            static ito::RetVal mgetPlotHandleByID(const ito::uint32 &figureUID, ito::ItomPlotHandle &plotHandle);
 
         private:
     };

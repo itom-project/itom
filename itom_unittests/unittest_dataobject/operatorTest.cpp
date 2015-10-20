@@ -23,41 +23,41 @@ public:
     virtual void SetUp(void)
     {
      /*!< declaring multi dimensional test data objects */
-        mat1_1d = ito::DataObject(1,1,ito::getDataType( (const _Tp *) NULL ));
-        mat1_2d = ito::DataObject(2,2,ito::getDataType( (const _Tp *) NULL ));
-        mat1_3d = ito::DataObject(3,2,4,ito::getDataType( (const _Tp *) NULL ));
+        mat1_1d = ito::DataObject(1,1,ito::getDataType2<_Tp*>());
+        mat1_2d = ito::DataObject(2,2,ito::getDataType2<_Tp*>());
+        mat1_3d = ito::DataObject(3,2,4,ito::getDataType2<_Tp*>());
 
-        mat2_1d = ito::DataObject(1,1,ito::getDataType( (const _Tp *) NULL ));
-        mat2_2d = ito::DataObject(2,2,ito::getDataType( (const _Tp *) NULL ));
-        mat2_3d = ito::DataObject(3,2,4,ito::getDataType( (const _Tp *) NULL ));
+        mat2_1d = ito::DataObject(1,1,ito::getDataType2<_Tp*>());
+        mat2_2d = ito::DataObject(2,2,ito::getDataType2<_Tp*>());
+        mat2_3d = ito::DataObject(3,2,4,ito::getDataType2<_Tp*>());
         
-        mat3_1d = ito::DataObject(1,1,ito::getDataType( (const _Tp *) NULL ));
-        mat3_2d = ito::DataObject(2,2,ito::getDataType( (const _Tp *) NULL ));
-        mat3_3d = ito::DataObject(3,2,4,ito::getDataType( (const _Tp *) NULL ));
+        mat3_1d = ito::DataObject(1,1,ito::getDataType2<_Tp*>());
+        mat3_2d = ito::DataObject(2,2,ito::getDataType2<_Tp*>());
+        mat3_3d = ito::DataObject(3,2,4,ito::getDataType2<_Tp*>());
 
-        mat4_1d = ito::DataObject(1,1,ito::getDataType( (const _Tp *) NULL ));
-        mat4_2d = ito::DataObject(2,2,ito::getDataType( (const _Tp *) NULL ));
-        mat4_3d = ito::DataObject(3,2,4,ito::getDataType( (const _Tp *) NULL ));
+        mat4_1d = ito::DataObject(1,1,ito::getDataType2<_Tp*>());
+        mat4_2d = ito::DataObject(2,2,ito::getDataType2<_Tp*>());
+        mat4_3d = ito::DataObject(3,2,4,ito::getDataType2<_Tp*>());
 
-        add_mat3_1d = ito::DataObject(1,1,ito::getDataType( (const _Tp *) NULL ));
-        add_mat3_2d = ito::DataObject(4,5,ito::getDataType( (const _Tp *) NULL ));
-        add_mat3_3d = ito::DataObject(3,2,4,ito::getDataType( (const _Tp *) NULL ));
+        add_mat3_1d = ito::DataObject(1,1,ito::getDataType2<_Tp*>());
+        add_mat3_2d = ito::DataObject(4,5,ito::getDataType2<_Tp*>());
+        add_mat3_3d = ito::DataObject(3,2,4,ito::getDataType2<_Tp*>());
 
-        sub_mat3_1d = ito::DataObject(1,1,ito::getDataType( (const _Tp *) NULL ));
-        sub_mat3_2d = ito::DataObject(4,5,ito::getDataType( (const _Tp *) NULL ));
-        sub_mat3_3d = ito::DataObject(3,2,4,ito::getDataType( (const _Tp *) NULL ));
+        sub_mat3_1d = ito::DataObject(1,1,ito::getDataType2<_Tp*>());
+        sub_mat3_2d = ito::DataObject(4,5,ito::getDataType2<_Tp*>());
+        sub_mat3_3d = ito::DataObject(3,2,4,ito::getDataType2<_Tp*>());
 
-        mul_mat3_1d = ito::DataObject(1,1,ito::getDataType( (const _Tp *) NULL ));
-        mul_mat3_2d = ito::DataObject(4,5,ito::getDataType( (const _Tp *) NULL ));
-        mul_mat3_3d = ito::DataObject(3,2,4,ito::getDataType( (const _Tp *) NULL )); 
+        mul_mat3_1d = ito::DataObject(1,1,ito::getDataType2<_Tp*>());
+        mul_mat3_2d = ito::DataObject(4,5,ito::getDataType2<_Tp*>());
+        mul_mat3_3d = ito::DataObject(3,2,4,ito::getDataType2<_Tp*>()); 
 
-        div_mat3_1d = ito::DataObject(1,1,ito::getDataType( (const _Tp *) NULL ));
-        div_mat3_2d = ito::DataObject(4,5,ito::getDataType( (const _Tp *) NULL ));
-        div_mat3_3d = ito::DataObject(3,2,4,ito::getDataType( (const _Tp *) NULL ));
+        div_mat3_1d = ito::DataObject(1,1,ito::getDataType2<_Tp*>());
+        div_mat3_2d = ito::DataObject(4,5,ito::getDataType2<_Tp*>());
+        div_mat3_3d = ito::DataObject(3,2,4,ito::getDataType2<_Tp*>());
         
-        mulCross_mat1_2d = ito::DataObject(2,3,ito::getDataType( (const _Tp *) NULL ));
-        mulCross_mat2_2d = ito::DataObject(3,2,ito::getDataType( (const _Tp *) NULL ));
-        mulCross_mat3_2d = ito::DataObject(2,2,ito::getDataType( (const _Tp *) NULL ));
+        mulCross_mat1_2d = ito::DataObject(2,3,ito::getDataType2<_Tp*>());
+        mulCross_mat2_2d = ito::DataObject(3,2,ito::getDataType2<_Tp*>());
+        mulCross_mat3_2d = ito::DataObject(2,2,ito::getDataType2<_Tp*>());
     };
  
 
@@ -1108,17 +1108,17 @@ template<typename _Tp> class operatorTest_float : public :: testing::Test
 public:
     virtual void SetUp(void)
     {
-        mat1_1d = ito::DataObject(3,ito::getDataType( (const _Tp *) NULL ));
-        mat2_1d = ito::DataObject(3,ito::getDataType( (const _Tp *) NULL ));
-        mat2_1d = ito::DataObject(3,ito::getDataType( (const _Tp *) NULL ));
+        mat1_1d = ito::DataObject(3,ito::getDataType2<_Tp*>());
+        mat2_1d = ito::DataObject(3,ito::getDataType2<_Tp*>());
+        mat2_1d = ito::DataObject(3,ito::getDataType2<_Tp*>());
 
-        mat1_2d = ito::DataObject(3,4,ito::getDataType( (const _Tp *) NULL ));
-        mat2_2d = ito::DataObject(3,4,ito::getDataType( (const _Tp *) NULL ));
-        mat2_2d = ito::DataObject(3,4,ito::getDataType( (const _Tp *) NULL ));
+        mat1_2d = ito::DataObject(3,4,ito::getDataType2<_Tp*>());
+        mat2_2d = ito::DataObject(3,4,ito::getDataType2<_Tp*>());
+        mat2_2d = ito::DataObject(3,4,ito::getDataType2<_Tp*>());
 
-        mat1_3d = ito::DataObject(3,3,3,ito::getDataType( (const _Tp *) NULL ));
-        mat2_3d = ito::DataObject(3,3,3,ito::getDataType( (const _Tp *) NULL ));
-        mat2_3d = ito::DataObject(3,3,3,ito::getDataType( (const _Tp *) NULL ));
+        mat1_3d = ito::DataObject(3,3,3,ito::getDataType2<_Tp*>());
+        mat2_3d = ito::DataObject(3,3,3,ito::getDataType2<_Tp*>());
+        mat2_3d = ito::DataObject(3,3,3,ito::getDataType2<_Tp*>());
     };
     virtual void TearDown(void){};
     typedef _Tp valueType;

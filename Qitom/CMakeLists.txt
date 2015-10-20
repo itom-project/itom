@@ -1,5 +1,5 @@
 SET (target_name qitom)
-       
+         
 project(${target_name})
  
 cmake_minimum_required(VERSION 2.8.7)
@@ -16,7 +16,7 @@ OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and it
 SET(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Adds a postfix for debug-built libraries.")
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 include("../ItomBuildMacros.cmake")  
-    
+       
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools Svg)
@@ -98,7 +98,7 @@ INCLUDE_DIRECTORIES(
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
     ../DataObject/
     ../PointCloud/
-	../itomWidgets
+    ../itomWidgets
 )
 
 LINK_DIRECTORIES(
@@ -138,9 +138,10 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/paramHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/sharedPointerHelper.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/sleeper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.h
-	${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.h
@@ -157,7 +158,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/widgetWrapper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userInteractionWatcher.h
-	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAutoInterval.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAutoInterval.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonCommon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonDataObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonEngine.h
@@ -178,6 +179,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythontParamConversion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUi.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonRgba.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFont.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUiTimer.h
@@ -206,6 +208,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetInfoBox.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleLastCommand.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleWrap.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAPI.h
@@ -271,6 +274,7 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetInfoBox.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleLastCommand.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleWrap.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAPI.ui
@@ -319,7 +323,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/paramHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.cpp    
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.cpp
@@ -336,7 +340,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userInteractionWatcher.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/widgetWrapper.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAutoInterval.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAutoInterval.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonCommon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonDataObject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonEngine.cpp
@@ -354,6 +358,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythontParamConversion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUi.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonRgba.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFont.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUiTimer.cpp
@@ -380,6 +385,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleLastCommand.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleWrap.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAPI.cpp
@@ -511,13 +517,15 @@ set (TRANSLATIONS_FILES)
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 if (UPDATE_TRANSLATIONS)
     if (QT5_FOUND)
-        QT5_CREATE_TRANSLATION(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
+        QT5_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
     else (QT5_FOUND)
         QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
     endif (QT5_FOUND)
     
     add_custom_target (${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
     add_dependencies(${target_name}_prebuild ${target_name}_translation)
+    
+#    message(FATAL ${TRANSLATIONS_FILES} "---" ${EXISTING_TRANSLATION_FILES})
     
     if (QT5_FOUND)
         QT5_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/../translation" ${target_name}_prebuild ${TRANSLATIONS_FILES})
@@ -643,11 +651,11 @@ ENDIF(BUILD_WITH_PCL)
 #TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_WIDGET_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor)
 
 IF (QT5_FOUND)
-	if (WIN32)
-		TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets ${PYMATLAB_LIBRARIES} shell32)
-	else (WIN32)
-		TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets ${PYMATLAB_LIBRARIES})
-	endif (WIN32)
+    if (WIN32)
+        TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets ${PYMATLAB_LIBRARIES} shell32)
+    else (WIN32)
+        TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets ${PYMATLAB_LIBRARIES})
+    endif (WIN32)
 ELSE (QT5_FOUND)
     TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets ${PYMATLAB_LIBRARIES})
 ENDIF (QT5_FOUND)

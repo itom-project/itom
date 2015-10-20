@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -25,6 +25,6 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#define DATAOBJ_VER_STRING  "1.2.1.0"
+#define DATAOBJ_VER_STRING  "1.2.3.0"
 
 
