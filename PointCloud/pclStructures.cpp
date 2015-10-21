@@ -866,6 +866,50 @@ std::string PCLPointCloud::getFieldsList() const
 }
 
 
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> std::vector<pcl::PCLPointField> GetFieldsInfoFunc(const ito::PCLPointCloud *pc)
+{
+   const pcl::PointCloud<_Tp>* temp = getPointCloudPtrInternal<_Tp >(*pc);
+   if(temp)
+   {
+       std::vector<pcl::PCLPointField> fields;
+       pcl::getFields<_Tp>(fields);
+       return fields;
+   }
+   throw pcl::PCLException("shared pointer is NULL",__FILE__, "header", __LINE__);
+}
+
+typedef std::vector<pcl::PCLPointField> (*tGetFieldsInfoFunc)(const ito::PCLPointCloud *pc);
+PCLMAKEFUNCLIST(GetFieldsInfoFunc)
+
+std::vector<pcl::PCLPointField> PCLPointCloud::getFieldsInfo() const
+{
+    int idx = getFuncListIndex();
+    if(idx >= 0)    return fListGetFieldsInfoFunc[idx](this);
+    throw pcl::PCLException("invalid point cloud",__FILE__, "header", __LINE__);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> unsigned char* GenericPointAccessFunc(const ito::PCLPointCloud *pc, size_t &strideBytes)
+{
+   const pcl::PointCloud<_Tp>* temp = getPointCloudPtrInternal<_Tp >(*pc);
+   if(temp)
+   {
+       strideBytes = sizeof(_Tp);
+       return (unsigned char*)(&(temp->points));
+   }
+   throw pcl::PCLException("shared pointer is NULL",__FILE__, "header", __LINE__);
+}
+
+typedef unsigned char* (*tGenericPointAccessFunc)(const ito::PCLPointCloud *pc, size_t &strideBytes);
+PCLMAKEFUNCLIST(GenericPointAccessFunc)
+
+unsigned char* PCLPointCloud::genericPointAccess(size_t &strideBytes) const
+{
+    int idx = getFuncListIndex();
+    if(idx >= 0)    return fListGenericPointAccessFunc[idx](this, strideBytes);
+    return NULL;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> void PcAddFunc(ito::PCLPointCloud *pc1, const ito::PCLPointCloud *pc2, ito::PCLPointCloud *pcRes)

@@ -241,8 +241,9 @@ public:
     };
 
     inline int hasRGB() const { return m_type & (ito::pclXYZRGBNormal | ito::pclXYZRGBA); }
-    inline int hasNormal() const { return m_type & (ito::pclXYZINormal | ito::pclXYZNormal); }
+    inline int hasNormal() const { return m_type & (ito::pclXYZINormal | ito::pclXYZNormal | ito::pclXYZRGBNormal); }
     inline int hasIntensity() const { return m_type & ( ito::pclXYZI | ito::pclXYZINormal ); }
+    inline int hasCurvature() const { return m_type & (ito::pclXYZINormal | ito::pclXYZNormal | ito::pclXYZRGBNormal); }
 
     inline pcl::PointCloud<pcl::PointXYZ>::Ptr toPointXYZ() const                   
     { 
@@ -275,7 +276,6 @@ public:
         throw pcl::PCLException("point cloud has not the desired type PointXYZRGBNormal",__FILE__, "toPointXYZRGBNormal", __LINE__);
     };
 
-    //The following functions have been added without destroying the binary compatibility of older versions (magro11: 12.03.2014)
     inline pcl::PointCloud<pcl::PointXYZ>::ConstPtr toPointXYZConst() const                   
     { 
         if(m_type == ito::pclXYZ) return m_pcXYZ;
@@ -306,7 +306,6 @@ public:
         if(m_type == ito::pclXYZRGBNormal) return m_pcXYZRGBNormal;
         throw pcl::PCLException("point cloud has not the desired type PointXYZRGBNormal",__FILE__, "toPointXYZRGBNormal", __LINE__);
     };
-    //end of inclusion from 12.03.2014
 
     PCLPointCloud & operator+= (const PCLPointCloud &rhs);
     const PCLPointCloud operator+ (const PCLPointCloud &rhs);
@@ -332,6 +331,12 @@ public:
 #endif
 
     std::string getFieldsList() const;
+
+    //! returns vector with information about all fields contained in the specific point cloud (each info struct contains the name, offset, datatype, ... of any field)
+    std::vector<pcl::PCLPointField> getFieldsInfo() const;
+
+    //! returns the pointer to the first point in the current cloud or NULL if the cloud is invalid, strideBytes is the number of bytes to jump from one point to the next one.
+    unsigned char* genericPointAccess(size_t &strideBytes) const;
 
     void push_back(const ito::PCLPoint &pt);
     bool empty() const;

@@ -66,11 +66,6 @@ namespace pclHelper
     ito::RetVal POINTCLOUD_EXPORT dataObj4x4ToEigenAffine3f(const DataObject *in, Eigen::Affine3f &out);
     ito::RetVal POINTCLOUD_EXPORT eigenAffine3fToDataObj4x4(const Eigen::Affine3f *in, DataObject &out);
 
-    //template<typename _Tp, int _Rows, int _Cols> ito::RetVal eigenMatrixToDataObj(const Eigen::Matrix<_Tp,_Rows,_Cols> &mat, DataObject &out);
-
-    //ito::RetVal writeBinary(const std::string &filename, const ito::PCLPointCloud &cloud);
-    //ito::RetVal readBinary(const std::string &filename, ito::PCLPointCloud &cloud);
-
 } //end namespace pclHelper
 
 } //end namespace ito

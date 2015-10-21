@@ -1671,46 +1671,5 @@ ito::RetVal eigenAffine3fToDataObj4x4(const Eigen::Affine3f *in, DataObject &out
     return retval;
 }
 
-
-
-////------------------------------------------------------------------------------------------------------------------------------
-//ito::RetVal writeBinary(const std::string &filename, const ito::PCLPointCloud &cloud)
-//{
-//    pcl::PCDWriter w;
-//    int ret;
-//
-//    switch(cloud.getType())
-//    {
-//    case ito::pclXYZ:
-//        ret = pcl::io::savePCDFile<pcl::PointXYZ>(filename, *cloud.toPointXYZ(), true);
-//        break;
-//    case ito::pclXYZI:
-//        ret = pcl::io::savePCDFile<pcl::PointXYZI>(filename, *cloud.toPointXYZI(), true);
-//        break;
-//    case ito::pclXYZRGBA:
-//        ret = pcl::io::savePCDFile<pcl::PointXYZRGBA>(filename, *cloud.toPointXYZRGBA(), true);
-//        break;
-//    case ito::pclXYZNormal:
-//        ret = pcl::io::savePCDFile<pcl::PointNormal>(filename, *cloud.toPointXYZNormal(), true);
-//        break;
-//    case ito::pclXYZINormal:
-//        ret = pcl::io::savePCDFile<pcl::PointXYZINormal>(filename, *cloud.toPointXYZINormal(), true);
-//        break;
-//    case ito::pclXYZRGBNormal:
-//        ret = pcl::io::savePCDFile<pcl::PointXYZRGBNormal>(filename, *cloud.toPointXYZRGBNormal(), true);
-//        break;
-//    default:
-//        return RetVal(retError,0,"invalid point cloud");
-//    }
-//
-//    return ito::retOk;
-//}
-//
-////------------------------------------------------------------------------------------------------------------------------------
-//ito::RetVal readBinary(const std::string &filename, ito::PCLPointCloud &cloud)
-//{
-//    return ito::retOk;
-//}
-
 } //end namespace pclHelper
 } //end namespace ito

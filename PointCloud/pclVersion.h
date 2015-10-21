@@ -25,4 +25,4 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#define PCL_WRAPPER_VER_STRING  "1.2.1.1"
+#define PCL_WRAPPER_VER_STRING  "1.3.0.0"
