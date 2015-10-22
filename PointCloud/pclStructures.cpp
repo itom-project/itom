@@ -896,7 +896,7 @@ template<typename _Tp> unsigned char* GenericPointAccessFunc(const ito::PCLPoint
    if(temp)
    {
        strideBytes = sizeof(_Tp);
-       return (unsigned char*)(&(temp->points));
+       return (unsigned char*)(temp->points.data());
    }
    throw pcl::PCLException("shared pointer is NULL",__FILE__, "header", __LINE__);
 }
