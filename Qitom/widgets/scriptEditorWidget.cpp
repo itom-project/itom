@@ -258,7 +258,7 @@ void ScriptEditorWidget::loadSettings()
     m_classNavigatorTimer->setInterval(m_classNavigatorInterval);
 
     // Fold Style
-    QString foldStyle = settings.value("foldStyle", "arrows").toString();
+    QString foldStyle = settings.value("foldStyle", "plus_minus").toString();
     if (foldStyle == "") foldStyle = "none";
     switch (foldStyle.toLatin1()[0])
     {
