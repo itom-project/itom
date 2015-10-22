@@ -190,8 +190,6 @@ RetVal ScriptEditorWidget::initEditor()
     setMarginType(3, QsciScintilla::SymbolMargin); //!< breakpoint, syntax error margin
     setMarginType(4, QsciScintilla::SymbolMargin); //!< folding margin
 
-    setFolding(QsciScintilla::PlainFoldStyle, 4);
-
     markBreakPoint = markerDefine(QPixmap(":/breakpoints/icons/itomBreak.png"));
     markCBreakPoint = markerDefine(QPixmap(":/breakpoints/icons/itomcBreak.png"));
     markBreakPointDisabled = markerDefine(QPixmap(":/breakpoints/icons/itomBreakDisabled.png"));
@@ -258,6 +256,26 @@ void ScriptEditorWidget::loadSettings()
     m_classNavigatorInterval = (int)(settings.value("classNavigatorInterval", 2.00).toDouble()*1000);
     m_classNavigatorTimer->stop();
     m_classNavigatorTimer->setInterval(m_classNavigatorInterval);
+
+    // Fold Style
+    QString foldStyle = settings.value("foldStyle", "arrows").toString();
+    if (foldStyle == "") foldStyle = "none";
+    switch (foldStyle.toLatin1()[0])
+    {
+    default:
+    case 'n':
+        setFolding(QsciScintilla::NoFoldStyle, 4);
+        break;
+    case 'p':
+        setFolding(QsciScintilla::PlainFoldStyle, 4);
+        break;
+    case 's':
+        setFolding(foldStyle == "squares" ? QsciScintilla::BoxedFoldStyle : QsciScintilla::BoxedTreeFoldStyle, 4);
+        break;
+    case 'c':
+        setFolding(foldStyle == "circles" ? QsciScintilla::CircledFoldStyle : QsciScintilla::CircledTreeFoldStyle, 4);
+        break;
+    }
 
     settings.endGroup();
 
