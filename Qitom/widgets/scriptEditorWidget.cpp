@@ -327,6 +327,11 @@ RetVal ScriptEditorWidget::initMenus()
     editorMenu->addAction(bookmarkMenuActions["prevBM"]);
     editorMenu->addAction(bookmarkMenuActions["clearAllBM"]);
     editorMenu->addSeparator();
+    QMenu *foldMenu = editorMenu->addMenu("folding");
+    editorMenuActions["foldUnfoldToplevel"] = foldMenu->addAction(tr("fold/unfold &toplevel"), this, SLOT(menuFoldUnfoldToplevel()));
+    editorMenuActions["foldUnfoldAll"] = foldMenu->addAction(tr("fold/unfold &all"), this, SLOT(menuFoldUnfoldAll()));
+    editorMenuActions["unfoldAll"] = foldMenu->addAction(tr("&unfold all"), this, SLOT(menuUnfoldAll()));
+    editorMenu->addSeparator();
     editorMenuActions["insertCodec"] = editorMenu->addAction(tr("&insert codec..."), this, SLOT(menuInsertCodec()));
 
     //this->addAction(editorMenuActions["save"]);
@@ -999,6 +1004,24 @@ void ScriptEditorWidget::menuInsertCodec()
             setText(QString("# coding=%1\n%2").arg(items[0]).arg(text()));
         }
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::menuUnfoldAll()
+{
+    clearFolds();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::menuFoldUnfoldToplevel()
+{
+    foldAll(false);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::menuFoldUnfoldAll()
+{
+    foldAll(true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

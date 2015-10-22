@@ -261,6 +261,10 @@ public slots:
     void menuComment();
     void menuUncomment();
 
+    void menuUnfoldAll();
+    void menuFoldUnfoldToplevel();
+    void menuFoldUnfoldAll();
+
     void menuRunScript();
     void menuRunSelection();
     void menuDebugScript();
