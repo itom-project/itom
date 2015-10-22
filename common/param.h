@@ -167,6 +167,7 @@ namespace ito
         //! when an instance of a plugin class is deleted (closed)
         inline void setAutosave(const uint32 autosave) { m_type = autosave > 0 ? m_type & ~NoAutosave : m_type | NoAutosave; return; }
 
+        //! returns length of array parameters or -1 if no array is given. For string parameter returns length of string or 0 if not given, for number parameters return 1. In all other cases -1.
         int getLen(void) const;
         
             
