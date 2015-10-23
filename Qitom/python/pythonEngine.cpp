@@ -127,7 +127,7 @@ FuncWeakRef& FuncWeakRef::operator =(FuncWeakRef rhs)
     m_argument = rhs.m_argument;
     Py_XINCREF(m_proxyObject);
     Py_XINCREF(m_argument);
-
+    m_handle = rhs.m_handle;
     Py_XDECREF(t1);
     Py_XDECREF(t2);
 
@@ -4424,7 +4424,6 @@ ito::RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QS
         semaphore->returnValue = retValue;
         semaphore->release();
         semaphore->deleteSemaphore();
-        semaphore = NULL;
     }
 
     return retValue;
@@ -4498,7 +4497,6 @@ ito::RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames,
         semaphore->returnValue = retValue;
         semaphore->release();
         semaphore->deleteSemaphore();
-        semaphore = NULL;
     }
 
     return retValue;

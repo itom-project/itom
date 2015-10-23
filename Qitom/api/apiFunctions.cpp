@@ -233,13 +233,6 @@ ito::RetVal apiFParseInitParams(QVector<ito::ParamBase> *initParamListMand, QVec
 }
 
 
-
-//------------------------------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal ApiFunctions::setFPointer()
-{
-    return ito::retOk;
-}
-
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::FilterDef *&FilterDef)
 {

@@ -443,7 +443,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                         {
                             self->dataObject = new ito::DataObject(dimensions, sizes, typeno, continuous);
                         }
-                        catch(cv::Exception exc)
+                        catch(cv::Exception &exc)
                         {
                             PyErr_Format(PyExc_RuntimeError, "failed to create data object: %s", (exc.err).c_str());
                             self->dataObject = NULL;
@@ -665,7 +665,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                                     throw cv::Exception(0, "invalid data value","PyDataObject_init",__FILE__,__LINE__);
                                 }
                             }
-                            catch(cv::Exception exc)
+                            catch(cv::Exception &exc)
                             {
                                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                                 
@@ -2599,7 +2599,7 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
             case Py_GE: resDataObj = *(self->dataObject) >= *(otherDataObj->dataObject); break;
             }
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             return NULL;
@@ -2626,7 +2626,7 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
                 case Py_GE: resDataObj = *(self->dataObject) >= value; break;
                 }
             }
-            catch(cv::Exception exc)
+            catch(cv::Exception &exc)
             {
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                 return NULL;
@@ -2776,7 +2776,7 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
             retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) + scalar);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         }
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -2910,7 +2910,7 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
             }
         }
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -2965,7 +2965,7 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
         {
             retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * *(dobj2->dataObject));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             Py_DECREF(retObj);
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());         
@@ -2989,7 +2989,7 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
             {
                 retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * factor);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
             }
-            catch(cv::Exception exc)
+            catch(cv::Exception &exc)
             {
                 Py_DECREF(retObj);
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str()); 
@@ -3025,7 +3025,7 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
             {
                 retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * factor);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
             }
-            catch(cv::Exception exc)
+            catch(cv::Exception &exc)
             {
                 Py_DECREF(retObj);
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str()); 
@@ -3056,7 +3056,7 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
         {
             retObj->dataObject = new ito::DataObject(*(dobj2->dataObject) * factor);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             Py_DECREF(retObj);
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -3100,7 +3100,7 @@ PyObject* PythonDataObject::PyDataObj_nbDivide(PyObject* o1, PyObject* o2)
             {
                 retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * (complex128(1.0,0.0)/factor));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
             }
-            catch(cv::Exception exc)
+            catch(cv::Exception &exc)
             {
                 Py_DECREF(retObj);
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str()); 
@@ -3136,7 +3136,7 @@ PyObject* PythonDataObject::PyDataObj_nbDivide(PyObject* o1, PyObject* o2)
             {
                 retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * (1.0/factor));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
             }
-            catch(cv::Exception exc)
+            catch(cv::Exception &exc)
             {
                 Py_DECREF(retObj);
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str()); 
@@ -3193,7 +3193,7 @@ PyObject* PythonDataObject::PyDataObj_nbPower(PyObject* o1, PyObject* o2, PyObje
     {
         retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) ^ *(dobj2->dataObject));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -3221,7 +3221,7 @@ PyObject* PythonDataObject::PyDataObj_nbNegative(PyObject* o1)
     {
         retObj->dataObject = new ito::DataObject((*(dobj1->dataObject) * -1.0));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -3254,7 +3254,7 @@ PyObject* PythonDataObject::PyDataObj_nbPositive(PyObject* o1)
             PyDataObject_SetBase(retObj, (PyObject*)o1);
         }
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -3282,7 +3282,7 @@ PyObject* PythonDataObject::PyDataObj_nbAbsolute(PyObject* o1)
     {
         retObj->dataObject = new ito::DataObject(ito::abs(*(dobj1->dataObject)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -3325,7 +3325,7 @@ PyObject* PythonDataObject::PyDataObj_nbLshift(PyObject* o1, PyObject* o2)
     {
         retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) << static_cast<unsigned int>(shift));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -3367,7 +3367,7 @@ PyObject* PythonDataObject::PyDataObj_nbRshift(PyObject* o1, PyObject* o2)
     {
         retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) >> static_cast<unsigned int>(shift));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -3398,7 +3398,7 @@ PyObject* PythonDataObject::PyDataObj_nbAnd(PyObject* o1, PyObject* o2)
     {
         retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) & *(dobj2->dataObject)); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -3426,7 +3426,7 @@ PyObject* PythonDataObject::PyDataObj_nbXor(PyObject* o1, PyObject* o2)
     {
         retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) ^ *(dobj2->dataObject)); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -3454,7 +3454,7 @@ PyObject* PythonDataObject::PyDataObj_nbOr(PyObject* o1, PyObject* o2)
     {
         retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) | *(dobj2->dataObject)); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -3483,7 +3483,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2)
         {
             *(dobj1->dataObject) += *(dobj2->dataObject);
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             return NULL;
@@ -3499,7 +3499,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2)
         {
             *(dobj1->dataObject) += val;
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             return NULL;
@@ -3519,7 +3519,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2)
         {
             *(dobj1->dataObject) += val;
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             return NULL;
@@ -3566,7 +3566,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
         {
             *(dobj1->dataObject) -= *(dobj2->dataObject);
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             return NULL;
@@ -3582,7 +3582,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
         {
             *(dobj1->dataObject) -= val;
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             return NULL;
@@ -3601,7 +3601,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
         {
             *(dobj1->dataObject) -= val;
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             return NULL;
@@ -3653,7 +3653,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* 
         {
             *(dobj1->dataObject) *= *(dobj2->dataObject);
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             return NULL;
@@ -3676,7 +3676,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* 
             {
                 *(dobj1->dataObject) *= factor;
             }
-            catch(cv::Exception exc)
+            catch(cv::Exception &exc)
             {
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                 return NULL;
@@ -3707,7 +3707,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* 
             {
                 *(dobj1->dataObject) *= factor;
             }
-            catch(cv::Exception exc)
+            catch(cv::Exception &exc)
             {
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                 return NULL;
@@ -3753,7 +3753,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceTrueDivide(PyObject* o1, PyObject
         {
             *(dobj1->dataObject) *= (complex128(1.0,0.0) / factor);
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             return NULL;
@@ -3784,7 +3784,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceTrueDivide(PyObject* o1, PyObject
         {
             *(dobj1->dataObject) *= (1.0 / factor);
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             return NULL;
@@ -3890,7 +3890,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAnd(PyObject* o1, PyObject* o2)
     {
         *(dobj1->dataObject) &= *(dobj2->dataObject);
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
         return NULL;
@@ -3917,7 +3917,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceXor(PyObject* o1, PyObject* o2)
     {
         *(dobj1->dataObject) ^= *(dobj2->dataObject);
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
         return NULL;
@@ -3943,7 +3943,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceOr(PyObject* o1, PyObject* o2)
     {
         *(dobj1->dataObject) |= *(dobj2->dataObject);
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
         return NULL;
@@ -4021,7 +4021,7 @@ PyObject* PythonDataObject::PyDataObject_data(PyDataObject *self)
     {
         std::cout << *(self->dataObject);
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
         return NULL;
@@ -4053,7 +4053,7 @@ PyObject* PythonDataObject::PyDataObject_conj(PyDataObject *self)
     {
         self->dataObject->conj();
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
         return NULL;
@@ -4094,7 +4094,7 @@ PyObject* PythonDataObject::PyDataObject_conjugate(PyDataObject *self)
         self->dataObject->copyTo( *(retObj->dataObject), 1);
         retObj->dataObject->conj();
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -4136,7 +4136,7 @@ PyObject* PythonDataObject::PyDataObject_adj(PyDataObject *self)
         delete self->dataObject;
         self->dataObject = newDataObj;
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
         return NULL;
@@ -4180,7 +4180,7 @@ PyObject* PythonDataObject::PyDataObject_adjugate(PyDataObject *self)
     {
         retObj->dataObject = new ito::DataObject(self->dataObject->adj());
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -4221,7 +4221,7 @@ PyObject* PythonDataObject::PyDataObject_trans(PyDataObject *self)
     {
         retObj->dataObject = new ito::DataObject(self->dataObject->trans());
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -4373,7 +4373,7 @@ PyObject* PythonDataObject::PyDataObject_copy(PyDataObject *self, PyObject* args
             self->dataObject->copyTo(*(retObj->dataObject),0);  //self->dataObject should always be the owner of its data, therefore base of resultObject remains None
         }
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -4427,7 +4427,7 @@ PyObject* PythonDataObject::PyDataObject_mul(PyDataObject *self, PyObject *args)
     {
         retObj->dataObject = new ito::DataObject(self->dataObject->mul(*(obj2->dataObject)));  //new dataObject should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -4472,7 +4472,7 @@ PyObject* PythonDataObject::PyDataObject_div(PyDataObject *self, PyObject *args)
     {
         retObj->dataObject = new ito::DataObject((*(self->dataObject)).div(*(obj2->dataObject)));//new dataObject should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -4545,7 +4545,7 @@ PyObject* PythonDataObject::PyDataObject_astype(PyDataObject *self, PyObject* ar
     {
         self->dataObject->convertTo(*(retObj->dataObject), typeno);
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -4630,7 +4630,7 @@ PyObject* PythonDataObject::PyDataObject_normalize(PyDataObject *self, PyObject*
     {
         self->dataObject->convertTo(dataObj, typeno, scale, shift);
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -4786,7 +4786,7 @@ PyObject* PythonDataObject::PyDataObject_adjustROI(PyDataObject *self, PyObject*
         {
             self->dataObject->adjustROI(dims, offsetVector);
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             error = true;
@@ -4834,7 +4834,7 @@ PyObject* PythonDataObject::PyDataObject_squeeze(PyDataObject *self, PyObject* /
         ito::DataObject resObj = self->dataObject->squeeze();
         retObj->dataObject = new ito::DataObject(resObj);
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         retObj->dataObject = NULL;
 
@@ -5010,7 +5010,7 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
 
                 retObj = (PyObject*)retObj2;
             }
-            catch(cv::Exception exc)
+            catch(cv::Exception &exc)
             {
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                 Py_DECREF(retObj2);
@@ -5035,7 +5035,7 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
 
                 retObj = (PyObject*)retObj2;
             }
-            catch(cv::Exception exc)
+            catch(cv::Exception &exc)
             {
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                 Py_DECREF(retObj2);
@@ -5182,7 +5182,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 //self->dataObject in readLock, dataObj will become readLock, too
                 dataObj = self->dataObject->at(ranges); //self->dataObject must not be locked for writing, since dataObj will read it
             }
-            catch(cv::Exception exc)
+            catch(cv::Exception &exc)
             {
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                 error = true;
@@ -5225,7 +5225,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 {
                     ((PyDataObject*)value)->dataObject->deepCopyPartial(dataObj);
                 }
-                catch(cv::Exception exc)
+                catch(cv::Exception &exc)
                 {
                     PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                     error = true;
@@ -5460,7 +5460,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 }
 
             }
-            catch(cv::Exception exc)
+            catch(cv::Exception &exc)
             {
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                 error = true;
@@ -5500,7 +5500,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                     dataObj = self->dataObject->at(ranges); //dataObj in readLock
                     ((PyDataObject*)value)->dataObject->deepCopyPartial(dataObj);
                 }
-                catch(cv::Exception exc)
+                catch(cv::Exception &exc)
                 {
                     PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                     error = true;
@@ -5564,7 +5564,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 }
 
             }
-            catch(cv::Exception exc)
+            catch(cv::Exception &exc)
             {
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                 error = true;
@@ -6097,7 +6097,7 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject *self, PyObject *args)
         {
             continuousObject = new ito::DataObject(ito::makeContinuous(*selfDO));
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             continuousObject = NULL;
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -6636,7 +6636,7 @@ PyObject* PythonDataObject::PyDataObject_abs(PyDataObject *self)
     {
         retObj->dataObject = new ito::DataObject(ito::abs(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -6674,7 +6674,7 @@ PyObject* PythonDataObject::PyDataObject_arg(PyDataObject *self)
     {
         retObj->dataObject = new ito::DataObject(ito::arg(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -6712,7 +6712,7 @@ PyObject* PythonDataObject::PyDataObject_real(PyDataObject *self)
     {
         retObj->dataObject = new ito::DataObject(ito::real(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -6751,7 +6751,7 @@ PyObject* PythonDataObject::PyDataObject_imag(PyDataObject *self)
     {
         retObj->dataObject = new ito::DataObject(ito::imag(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -6807,7 +6807,7 @@ dataObj : {dataObject} \n\
     {
         retObj->dataObject = new ito::DataObject(self->dataObject->toGray(typeno));
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());

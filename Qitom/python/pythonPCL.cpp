@@ -406,7 +406,7 @@ PyObject* PythonPCL::PyPointCloud_GetType(PyPointCloud *self, void * /*closure*/
     {
         type = self->data->getType();
     }
-    catch(pcl::PCLException exc)
+    catch(pcl::PCLException &exc)
     {
         PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
@@ -472,7 +472,7 @@ PyObject* PythonPCL::PyPointCloud_GetSize(PyPointCloud *self, void * /*closure*/
     {
         size = self->data->size();
     }
-    catch(pcl::PCLException exc)
+    catch(pcl::PCLException &exc)
     {
         PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
     }
@@ -503,7 +503,7 @@ PyObject* PythonPCL::PyPointCloud_GetHeight(PyPointCloud *self, void * /*closure
     {
         height = self->data->height();
     }
-    catch(pcl::PCLException exc)
+    catch(pcl::PCLException &exc)
     {
         PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
@@ -535,7 +535,7 @@ PyObject* PythonPCL::PyPointCloud_GetWidth(PyPointCloud *self, void * /*closure*
     {
         width = self->data->width();
     }
-    catch(pcl::PCLException exc)
+    catch(pcl::PCLException &exc)
     {
         PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
@@ -564,7 +564,7 @@ PyObject* PythonPCL::PyPointCloud_GetEmpty(PyPointCloud *self, void * /*closure*
     {
         empty = self->data->empty();
     }
-    catch(pcl::PCLException exc)
+    catch(pcl::PCLException &exc)
     {
         PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
@@ -594,7 +594,7 @@ PyObject* PythonPCL::PyPointCloud_GetOrganized(PyPointCloud *self, void * /*clos
     {
         organized = self->data->isOrganized();
     }
-    catch(pcl::PCLException exc)
+    catch(pcl::PCLException &exc)
     {
         PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
@@ -624,7 +624,7 @@ PyObject* PythonPCL::PyPointCloud_GetDense(PyPointCloud *self, void * /*closure*
     {
         dense = self->data->is_dense();
     }
-    catch(pcl::PCLException exc)
+    catch(pcl::PCLException &exc)
     {
         PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
@@ -649,7 +649,7 @@ int PythonPCL::PyPointCloud_SetDense(PyPointCloud *self, PyObject *value, void *
         {
             self->data->set_dense(dense);
         }
-        catch(pcl::PCLException exc)
+        catch(pcl::PCLException &exc)
         {
             PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
             return -1;
@@ -665,7 +665,7 @@ int PythonPCL::PyPointCloud_SetDense(PyPointCloud *self, PyObject *value, void *
     {
         self->data->set_dense(dense);
     }
-    catch(pcl::PCLException exc)
+    catch(pcl::PCLException &exc)
     {
         PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return -1;
@@ -694,7 +694,7 @@ PyObject* PythonPCL::PyPointCloud_GetFields(PyPointCloud *self, void * /*closure
     {
         names = self->data->getFieldsList();
     }
-    catch(pcl::PCLException exc)
+    catch(pcl::PCLException &exc)
     {
         PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
@@ -1119,7 +1119,7 @@ PyObject* PythonPCL::PyPointCloud_repr(PyPointCloud *self)
         width = self->data->width();
         height = self->data->height();
         }
-        catch(pcl::PCLException exc) {};
+        catch(pcl::PCLException &exc) {};
 
         switch(type)
         {
@@ -1152,7 +1152,7 @@ PyObject* PythonPCL::PyPointCloud_clear(PyPointCloud *self)
     {
         self->data->clear();
     }
-    catch(pcl::PCLException exc)
+    catch(pcl::PCLException &exc)
     {
         PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
@@ -1171,7 +1171,7 @@ Py_ssize_t PythonPCL::PyPointCloud_seqLength(PyPointCloud *self)
         {
             s = self->data->size();
         }
-        catch(pcl::PCLException exc)
+        catch(pcl::PCLException &exc)
         {
             s = 0;
         }
@@ -1200,7 +1200,7 @@ PyObject* PythonPCL::PyPointCloud_seqConcat(PyPointCloud *self, PyObject *rhs) /
             {
                 *result->data = *self->data + *rhs_->data;
             }
-            catch(pcl::PCLException exc)
+            catch(pcl::PCLException &exc)
             {
                 PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
                 return NULL;
@@ -1234,7 +1234,7 @@ PyObject* PythonPCL::PyPointCloud_seqRepeat(PyPointCloud *self, Py_ssize_t size)
                     *result->data += *self->data;
                 }
             }
-            catch(pcl::PCLException exc)
+            catch(pcl::PCLException &exc)
             {
                 PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
                 return NULL;
@@ -1271,7 +1271,7 @@ PyObject* PythonPCL::PyPointCloud_seqItem(PyPointCloud *self, Py_ssize_t size) /
                 result->point = new ito::PCLPoint(self->data->at(size));
                 return (PyObject*)result;
             }
-            catch(pcl::PCLException exc)
+            catch(pcl::PCLException &exc)
             {
                 PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
                 return NULL;
@@ -1345,7 +1345,7 @@ PyObject* PythonPCL::PyPointCloud_seqInplaceConcat(PyPointCloud *self, PyObject 
         {
             *self->data = *self->data + *rhs_->data;
         }
-        catch(pcl::PCLException exc)
+        catch(pcl::PCLException &exc)
         {
             PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
             return NULL;
@@ -1588,7 +1588,7 @@ PyObject* PythonPCL::PyPointCloud_insert(PyPointCloud *self, PyObject *args)
         {
             self->data->insert(start, *(((PyPoint*)points)->point));
         }
-        catch(pcl::PCLException exc)
+        catch(pcl::PCLException &exc)
         {
             PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
             return NULL;
@@ -1614,7 +1614,7 @@ PyObject* PythonPCL::PyPointCloud_insert(PyPointCloud *self, PyObject *args)
             {
                 self->data->insert(start + i, *(((PyPoint*)PySequence_Fast_GET_ITEM(sequence,i))->point));
             }
-            catch(pcl::PCLException exc)
+            catch(pcl::PCLException &exc)
             {
                 Py_DECREF(sequence);
                 PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());

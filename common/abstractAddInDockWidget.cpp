@@ -71,7 +71,6 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameter(QSharedPointer<ito::Para
 
     if (d->m_pPlugin)
     {
-        bool success = false;
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         if (QMetaObject::invokeMethod(d->m_pPlugin, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, param), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
@@ -120,7 +119,6 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameters(const QVector<QSharedPo
 
     if (d->m_pPlugin)
     {
-        bool success = false;
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         if (QMetaObject::invokeMethod(d->m_pPlugin, "setParamVector", Q_ARG(const QVector<QSharedPointer<ito::ParamBase> >, params), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
@@ -166,9 +164,11 @@ ito::RetVal AbstractAddInDockWidget::setPluginParameters(const QVector<QSharedPo
 ito::RetVal AbstractAddInDockWidget::observeInvocation(ItomSharedSemaphore *waitCond, MessageLevel msgLevel) const
 {
     ito::RetVal retval;
-    bool timeout = false;
+    
     if (d->m_pPlugin)
     {
+        bool timeout = false;
+
         while(!timeout && waitCond->waitAndProcessEvents(PLUGINWAIT) == false)
         {
             if (d->m_pPlugin->isAlive() == false)
@@ -225,7 +225,6 @@ ito::RetVal AbstractAddInDockWidget::setActuatorPosition(QVector<int> axes, QVec
         }
         else
         {
-            bool success = false;
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
             if (QMetaObject::invokeMethod(d->m_pPlugin, funcName, Q_ARG(const QVector<int>, axes), Q_ARG(QVector<double>, positions), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
@@ -284,7 +283,6 @@ ito::RetVal AbstractAddInDockWidget::setActuatorPosition(int axis, double positi
         }
         else
         {
-            bool success = false;
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
             if (QMetaObject::invokeMethod(d->m_pPlugin, funcName, Q_ARG(int, axis), Q_ARG(double, position), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))

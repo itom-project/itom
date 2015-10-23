@@ -215,9 +215,6 @@ RetVal HelpSystem::scanPluginQhpFiles(quint16 &checksum)
     QString checksumString;
     QFileInfo fileInfo;
     int i;
-
-    //documentation folder
-    appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
     
     //plugin base folder
     appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());

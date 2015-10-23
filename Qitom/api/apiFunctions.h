@@ -32,7 +32,6 @@ namespace ito
     class ApiFunctions 
     {
         public:
-            ito::RetVal setFPointer(void);
             ApiFunctions();
             ~ApiFunctions();
 

@@ -1385,7 +1385,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
                 std::cout << "\nCLASSINFO:\n";
             }
 
-            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); mapIter++)
+            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
 
                 if (mapIter.key().startsWith("ci_"))
@@ -1416,7 +1416,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
                 std::cout << "\nPROPERTIES:\n";
             }
             
-            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); mapIter++)
+            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
                 if (mapIter.key().startsWith("prop_"))
                 {
@@ -1446,7 +1446,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
                 std::cout << "\nSIGNALS:\n";            
             }
 
-            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); mapIter++)
+            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
                 if (mapIter.key().startsWith("signal_"))
                 {
@@ -1476,7 +1476,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
                 std::cout << "\nSLOTS:\n";  
             }
 
-            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); mapIter++)
+            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
                 if (mapIter.key().startsWith("slot_"))
                 {
@@ -1505,7 +1505,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             {
                 std::cout << "\nINHERITANCE:\n";
             }
-            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); mapIter++)
+            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
                 if (mapIter.key().startsWith("inheritance_"))
                 {
@@ -1967,8 +1967,6 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
     PyObject* key = NULL;
     PyObject* value = NULL;
 
-    int ret = 0;
-
     QMap<QString, QString> versionMap = ito::getItomVersionMap();
     QMapIterator<QString, QString> i(versionMap);
 
@@ -1978,7 +1976,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
 
         key = PythonQtConversion::QStringToPyObject(i.key());
         value = PythonQtConversion::QStringToPyObject(i.value());
-        ret = PyDict_SetItem(myTempDic, key, value);
+        PyDict_SetItem(myTempDic, key, value);
 
         Py_DECREF(key);
         Py_DECREF(value);
@@ -1996,7 +1994,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
         Py_DECREF(value);
     }*/
 
-    ret = PyDict_SetItemString(myDic, "itom", myTempDic);
+    PyDict_SetItemString(myDic, "itom", myTempDic);
     Py_XDECREF(myTempDic);
 
     if (addPlugIns)
@@ -2028,10 +2026,10 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
                     sprintf_s(buf, 7, "%i.%i.%i", first, middle, last);
                     value = PyUnicode_FromString(buf);
 
-                    ret = PyDict_SetItemString(info, "version", value);
-                    ret = PyDict_SetItemString(info, "license", license);
+                    PyDict_SetItemString(info, "version", value);
+                    PyDict_SetItemString(info, "license", license);
 
-                    ret = PyDict_SetItem(myTempDic, key, info);
+                    PyDict_SetItem(myTempDic, key, info);
 
                     Py_DECREF(key);
                     Py_DECREF(value);
@@ -2041,7 +2039,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
             }
         }
 
-        ret = PyDict_SetItemString(myDic, "plugins", myTempDic);
+        PyDict_SetItemString(myDic, "plugins", myTempDic);
         Py_XDECREF(myTempDic);
 
     }
@@ -3355,7 +3353,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     {
         ret = (*(fFunc->m_filterFunc))(&paramsMandBase, &paramsOptBase, &paramsOutBase);
     }
-    catch (cv::Exception exc)
+    catch (cv::Exception &exc)
     {
         const char* errorStr = cvErrorStr(exc.code);
 
@@ -3370,7 +3368,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
         *p = 0;
 #endif
     }
-    catch(std::exception exc)
+    catch(std::exception &exc)
     {
         if (exc.what())
         {

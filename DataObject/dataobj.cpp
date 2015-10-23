@@ -59,6 +59,10 @@ public:
     DataObjectTagsPrivate()
         : m_valueOffset(0.0), m_valueScale(1.0)
     {
+        memset(m_rotMatrix, 0, sizeof(double)*9);
+        m_rotMatrix[0] = 1; // r11
+        m_rotMatrix[4] = 1; // r22
+        m_rotMatrix[8] = 1; // r33
     }
 
     //!< Constructor
@@ -1397,6 +1401,8 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
        cv::error(cv::Exception(CV_BadDataPtr, "data pointer must be empty if matrix is not continuous" ,"", __FILE__, __LINE__));
    }
 
+   dObj->m_owndata = (continuousDataPtr == NULL);
+
    switch (dimensions)
    {
          case 0:
@@ -1455,7 +1461,7 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
             {
                 if (!continuous)
                 {
-                   for (int n = 0; n < numMats; n++)
+                   for (int n = 0; n < numMats; ++n)
                    {
                       dataMat = new cv::Mat_<_Tp>(static_cast<int>(sizes[dimensions - 2]), static_cast<int>(sizes[dimensions - 1]));
                       dObj->m_data[n] = reinterpret_cast<uchar *>(dataMat);
@@ -1483,7 +1489,7 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
                         }
 
                         size_t bytesToAllocate = static_cast<size_t>(numMats) * matSize;
-                        char *dataPtr = (char*)malloc(bytesToAllocate);
+                        char *dataPtr = (char*)malloc(bytesToAllocate); //this continuous data block must be freed if dataObject is destroyed. (done in FreeFunc and SecureFreeFunc)
                         if(dataPtr == NULL)
                         {
                             cv::error(cv::Exception(CV_StsNoMem, ("Failed to allocate memory"),"", __FILE__, __LINE__));
@@ -1520,7 +1526,7 @@ MAKEFUNCLIST(CreateFunc)
     \param *sizes is a vector whose length is equal to dimensions. Each entry indicates the size of the specific dimension. Each matrix-plane is allocated with the size of the last two sizes
     \param type is the desired element data type (see tDataType)
     \param continuous indicates wether the entire array should be allocated in one connected data block in memory (true) or not (default, better for huge matrices)
-    \param *continuousDataPtr is NULL if new data storage should be allocated (then m_owndata is true). Otherwise this pointer points to the starting point of a continuous data block, where this data-object should be refer to (then m_owndata is false)
+    \param *continuousDataPtr is NULL if new data storage should be allocated (then m_owndata is true). Otherwise this pointer points to the starting point of a continuous data block, where this data-object should be refer to (then m_owndata is false). The data is not copied and the dataObject does not take ownership of the external data, hence it must be allocated during the lifetime of the dataObject and deallocated afterwards.
     \param *steps vector with size of dimensions, indicates how many bytes one has to move in order to get to the next element in the same dimension, the step-size for the last element must be set to element-size
     \throws open-cv error in case of error
     \sa CreateFunc
@@ -1537,9 +1543,6 @@ void DataObject::create(const unsigned char dimensions, const int *sizes, const 
     {
         m_continuous = continuous;
     }
-
-    m_owndata = (continuousDataPtr == NULL);
-
 
     if(!m_continuous && continuousDataPtr)
     {
@@ -1854,7 +1857,6 @@ template<typename _Tp> RetVal FreeFunc(DataObject *dObj)
     {
         dataMat = (cv::Mat_<_Tp> *)dObj->m_data[0];
         free((void*)dataMat->datastart); //data is wrong, since data-pointer does not point to start in case of ROI
-        //free(dataMat->data);
     }
 
     //this version of deleting the m_data vector is much faster than the version above (M. Gronle, 13.02.2012)
@@ -2376,8 +2378,8 @@ template<typename _Tp> RetVal DeepCopyPartialFunc(const DataObject &lhs, DataObj
         while (lhs_it != lhs.constEnd())
         {
             memcpy(*rhs_it, *lhs_it, sizeof(_Tp));
-            lhs_it++;
-            rhs_it++;
+            ++lhs_it;
+            ++rhs_it;
         }
     }
 
@@ -3842,8 +3844,6 @@ template<typename _Tp> RetVal AddComplexScalarFunc(const DataObject *dObjIn, ito
 
 template<> RetVal AddComplexScalarFunc<ito::complex64>(const DataObject *dObjIn, ito::complex128 scalar, DataObject *dObjOut)
 {
-    int srcTmat = 0;
-    int dstTmat = 0;
     int numMats = dObjIn->getNumPlanes();
     const cv::Mat **cvSrcs = dObjIn->get_mdata();
     cv::Mat **cvDests = dObjOut->get_mdata();
@@ -3873,8 +3873,6 @@ template<> RetVal AddComplexScalarFunc<ito::complex64>(const DataObject *dObjIn,
 
 template<> RetVal AddComplexScalarFunc<ito::complex128>(const DataObject *dObjIn, ito::complex128 scalar, DataObject *dObjOut)
 {
-    int srcTmat = 0;
-    int dstTmat = 0;
     int numMats = dObjIn->getNumPlanes();
     const cv::Mat **cvSrcs = dObjIn->get_mdata();
     cv::Mat **cvDests = dObjOut->get_mdata();
@@ -5627,7 +5625,6 @@ DataObject DataObject::at(const DataObject &mask) const
     ito::uint8 *dataRow = result.rowPtr(0,0);
     const ito::uint8 *maskRow;
     const ito::uint8 *srcRow;
-    unsigned int c = 0;
     int es = elemSize();
 
     for (int i = 0; i < numPlanes; ++i)
@@ -6319,9 +6316,9 @@ template<> RetVal DivFunc<Rgba32>(const DataObject *src1, const DataObject *src2
 
         for(int i = 0; i < srcMat1->rows; i++)
         {
-            src1RowPtr = (const Rgba32*)srcMat1->ptr(i);
-            src2RowPtr = (const Rgba32*)srcMat2->ptr(i);
-            resRowPtr = (Rgba32*)dstMat->ptr(i);
+            src1RowPtr = srcMat1->ptr<Rgba32>(i);
+            src2RowPtr = srcMat2->ptr<Rgba32>(i);
+            resRowPtr = dstMat->ptr<Rgba32>(i);
 
             for(int j = 0; j < srcMat1->cols; j++)
             {
@@ -7246,7 +7243,6 @@ template<typename _Tp> RetVal MakeContinuousFunc(const DataObject &dObj, DataObj
         else
         {
             int rows = tempMat->rows;
-            int cols = tempMat->cols;
             newMatSize = sizeof(_Tp) * resDObj.m_osize[dims-1]; //only the size of one row in bytes
             const uchar *srcPtr = tempMat->data;
 

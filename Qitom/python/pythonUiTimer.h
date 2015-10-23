@@ -41,7 +41,7 @@ class TimerCallback : public QObject
         PyObject *m_function; //pyFunctionObject
         PyObject *m_boundedInstance; //self if bounded method, else null
         PyObject *m_callbackArgs;
-        int m_boundedMethod;
+        bool m_boundedMethod;
 
     public slots:
         void timeout(); 

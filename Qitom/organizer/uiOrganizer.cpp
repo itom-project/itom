@@ -2952,7 +2952,7 @@ ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, QSharedPoint
             fig = qobject_cast<FigureWidget*>(m_dialogList[*figHandle].container->getUiWidget());
             if (fig)
             {
-                QWidget *destWidget;
+                QWidget *destWidget = NULL;
 #if ITOM_POINTCLOUDLIBRARY > 0
                 if (dataCont.getType() == ito::ParamBase::PointCloudPtr)
                 {
@@ -2966,15 +2966,22 @@ ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, QSharedPoint
 #else
                 if (dataCont.getType() == ito::ParamBase::DObjPtr)
 #endif
-                    retval += fig->plot(dataCont.getDataObject(), areaRow, areaCol, className, &destWidget);
-                else
-                    retval += ito::RetVal(ito::retError, 0, tr("unsupported data type").toLatin1().data());
-                                
-                *objectID = addObjectToList(destWidget);
-
-                if (properties.size() > 0)
                 {
-                    retval += writeProperties(*objectID, properties, NULL);
+                    retval += fig->plot(dataCont.getDataObject(), areaRow, areaCol, className, &destWidget);
+                }
+                else
+                {
+                    retval += ito::RetVal(ito::retError, 0, tr("unsupported data type").toLatin1().data());
+                }
+
+                if (!retval.containsError())
+                {                                
+                    *objectID = addObjectToList(destWidget);
+
+                    if (properties.size() > 0)
+                    {
+                        retval += writeProperties(*objectID, properties, NULL);
+                    }
                 }
             }
             else
@@ -3136,7 +3143,7 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
         }
 
         set = new UiContainer(fig2);
-        unsigned int *handle = new unsigned int;
+        unsigned int *handle = new unsigned int; //will be guarded and destroyed by guardedFigureHandle below
         if (forcedHandle == 0)
         {
             *handle = ++UiOrganizer::autoIncUiDialogCounter;

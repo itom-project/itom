@@ -617,7 +617,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                             }
                         }
                     }
-                    else if (type == typeDataIO)
+                    else /*if (type == typeDataIO)*/
                     {
                         const QList<QObject*> *DataIOList = aim->getDataIOList();
                         for(int i = 0; i < DataIOList->length(); i++)
@@ -630,6 +630,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                             }
                         }
                     }
+
                     if (obj != NULL)
                     {
                         const ito::AddInInterfaceBase *aib = qobject_cast<ito::AddInInterfaceBase*>(obj);

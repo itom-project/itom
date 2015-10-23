@@ -1511,7 +1511,8 @@ PCLPolygonMesh::PCLPolygonMesh(PCLPolygonMesh &mesh, const std::vector<uint32_t>
     }
 }
 
-PCLPolygonMesh::PCLPolygonMesh(const PCLPointCloud &cloud, const std::vector<pcl::Vertices> &polygons)
+PCLPolygonMesh::PCLPolygonMesh(const PCLPointCloud &cloud, const std::vector<pcl::Vertices> &polygons) :
+    m_valid(true)
 {
     m_polygonMesh = pcl::PolygonMesh::Ptr(new pcl::PolygonMesh());
     m_polygonMesh->header = cloud.header();
@@ -1650,7 +1651,6 @@ std::ostream& PCLPolygonMesh::streamOut(std::ostream& out)
         }
 
         out << "\npoints[]:\n" << std::endl;
-        uint32_t rowStep = c->row_step;
         uint32_t counter = 0;
         uint8_t *ptr = &(c->data[0]);
 

@@ -89,10 +89,10 @@ namespace ito
     */
     ito::Param* getParamByName(QVector<ito::Param> *paramVec, const char* name, ito::RetVal *retval)
     {
-        const char *temp;
         if (paramVec)
         {
             ito::Param* data = paramVec->data();
+            const char *temp;
 
             for (int i = 0; i < paramVec->size(); ++i)
             {
@@ -110,10 +110,10 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::ParamBase* getParamByName(QVector<ito::ParamBase> *paramVec, const char* name, ito::RetVal *retval)
     {
-        const char *temp;
         if (paramVec)
         {
             ito::ParamBase* data = paramVec->data();
+            const char *temp;
 
             for (int i = 0; i < paramVec->size(); ++i)
             {
@@ -202,16 +202,16 @@ namespace ito
         index = -1;
         pkey = key;
 
-        QString paramName;
-        bool hasIndex;
-        QString additionalTag;
-
         if (key == "")
         {
             retValue += ito::RetVal(ito::retError, 0, QObject::tr("name of requested parameter is empty.").toLatin1().data());
         }
         else
         {
+            QString paramName;
+            bool hasIndex;
+            QString additionalTag;
+
             retValue += parseParamName(key, paramName, hasIndex, index, additionalTag);
             if (retValue.containsError() || paramName.isEmpty())
             {
@@ -327,16 +327,16 @@ namespace ito
         pkey = key;
         index = -1;
 
-        QString paramName;
-        bool hasIndex;
-        QString additionalTag;
-
         if (key == "")
         {
             retValue += ito::RetVal(ito::retError, 0, QObject::tr("name of requested parameter is empty.").toLatin1().data());
         }
         else
         {
+            QString paramName;
+            bool hasIndex;
+            QString additionalTag;
+
             retValue += parseParamName(key, paramName, hasIndex, index, additionalTag);
             if (retValue.containsError() || paramName.isEmpty())
             {

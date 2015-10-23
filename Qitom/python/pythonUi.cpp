@@ -3144,7 +3144,6 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
 
     params = PyTuple_GetSlice(args, 1, PyTuple_Size(args));
     if(parseInitParams(&(filterParams->paramsMand), &(filterParams->paramsOpt), params, kwds, paramsMandBase, paramsOptBase) != ito::retOk)
-    //if (parseInitParams(&paramsMand, &paramsOpt, params, kwds) != ito::retOk)
     {
         PyErr_SetString(PyExc_RuntimeError, "error while parsing parameters.");
         return NULL;
