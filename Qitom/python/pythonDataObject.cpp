@@ -7495,7 +7495,7 @@ PyTypeObject PythonDataObject::PyDataObjectType = {
         (richcmpfunc)PyDataObject_RichCompare,            /* tp_richcompare */
         0,                       /* tp_weaklistoffset */
         (getiterfunc)PyDataObj_getiter,                       /* tp_iter */
-        0,                       /* tp_iternext */
+        (iternextfunc)PyDataObjectIter_new,                 /* tp_iternext */
         PyDataObject_methods,             /* tp_methods */
         PyDataObject_members,             /* tp_members */
         PyDataObject_getseters,            /* tp_getset */
