@@ -290,6 +290,7 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
                 else
                 {
                     PyErr_SetString(PyExc_TypeError, "indices must be an iteratible object");
+                    return -1;
                 }
             }
         }
