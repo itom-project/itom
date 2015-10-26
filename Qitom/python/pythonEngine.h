@@ -178,7 +178,7 @@ private:
 
     inline PyObject *getLocalDictionary() { return localDictionary; } /*!< returns reference to local dictionary (workspace of method, which is handled right now). Is NULL if no method is executed right now. */
 
-    PyObject *getPyObjectByFullName(bool globalNotLocal, const QStringList &fullName);
+    PyObject *getPyObjectByFullName(bool globalNotLocal, const QStringList &fullName); //Python GIL must be locked when calling this function!
 
     void setGlobalDictionary(PyObject* mainDict = NULL);
     void setLocalDictionary(PyObject* localDict);

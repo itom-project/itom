@@ -74,22 +74,28 @@ PyWorkspaceContainer::~PyWorkspaceContainer()
 //-----------------------------------------------------------------------------------------------------------
 void PyWorkspaceContainer::clear()
 {
+    PyGILState_STATE gstate = PyGILState_Ensure();
     loadDictionary(NULL, "");
+    PyGILState_Release(gstate);
 }
 
 //-----------------------------------------------------------------------------------------------------------
+//Python GIL must be locked when calling this function!
 void PyWorkspaceContainer::loadDictionary(PyObject *obj, const QString &fullNameParentItem)
 {
-    
+#if defined _DEBUG && PY_VERSION_HEX >= 0x030400
+    if (!PyGILState_Check())
+    {
+        std::cerr << "Python GIL must be locked when calling loadDictionaryRec\n" << std::endl;
+        return;
+    }
+#endif
 
     QStringList deleteList;
     
     if(fullNameParentItem == "")
     {
-
-        PyGILState_STATE gstate = PyGILState_Ensure();
         loadDictionaryRec(obj,"",&m_rootItem,deleteList);
-        PyGILState_Release(gstate);
         emit updateAvailable(&m_rootItem, fullNameParentItem, deleteList);
     }
     else
@@ -116,9 +122,7 @@ void PyWorkspaceContainer::loadDictionary(PyObject *obj, const QString &fullName
             }
         }
 
-        PyGILState_STATE gstate = PyGILState_Ensure();
         loadDictionaryRec(obj, fullNameParentItem, parent, deleteList);
-        PyGILState_Release(gstate);
 
         emit updateAvailable(parent, fullNameParentItem, deleteList);
     }
@@ -129,6 +133,14 @@ void PyWorkspaceContainer::loadDictionary(PyObject *obj, const QString &fullName
 //-----------------------------------------------------------------------------------------------------------
 void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, const QString &fullNameParentItem, PyWorkspaceItem *parentItem, QStringList &deletedKeys)
 {
+#if defined _DEBUG && PY_VERSION_HEX >= 0x030400
+    if (!PyGILState_Check())
+    {
+        std::cerr << "Python GIL must be locked when calling loadDictionaryRec\n" << std::endl;
+        return;
+    }
+#endif
+
     //To call this method, the Python GIL must already be locked!
 
     PyObject* keys = NULL;

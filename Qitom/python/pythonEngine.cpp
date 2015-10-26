@@ -2353,10 +2353,16 @@ void PythonEngine::pythonRunString(QString cmd)
     switch (pythonState)
     {
     case pyStateIdle:
+        {
         pythonStateTransition(pyTransBeginRun);
         runString(ba.data());
+
+        PyGILState_STATE gstate = PyGILState_Ensure();
         emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+        PyGILState_Release(gstate);
+
         pythonStateTransition(pyTransEndRun);
+        }
         break;
     case pyStateRunning:
     case pyStateDebugging:
@@ -2380,6 +2386,7 @@ void PythonEngine::pythonRunFile(QString filename)
     switch (pythonState)
     {
     case pyStateIdle:
+        {
         pythonStateTransition(pyTransBeginRun);
         list = filename.split(";");
         foreach (const QString &filenameTemp, list)
@@ -2389,8 +2396,13 @@ void PythonEngine::pythonRunFile(QString filename)
                 runPyFile(filenameTemp);
             }
         }
+
+        PyGILState_STATE gstate = PyGILState_Ensure();
         emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+        PyGILState_Release(gstate);
+        
         pythonStateTransition(pyTransEndRun);
+        }
         break;
     case pyStateRunning:
     case pyStateDebugging:
@@ -2408,10 +2420,16 @@ void PythonEngine::pythonDebugFile(QString filename)
     switch (pythonState)
     {
     case pyStateIdle:
+        {
         pythonStateTransition(pyTransBeginDebug);
         debugFile(filename);
+
+        PyGILState_STATE gstate = PyGILState_Ensure();
         emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+        PyGILState_Release(gstate);
+
         pythonStateTransition(pyTransEndDebug);
+        }
         break;
     case pyStateRunning:
     case pyStateDebugging:
@@ -2435,10 +2453,16 @@ void PythonEngine::pythonDebugString(QString cmd)
     switch (pythonState)
     {
     case pyStateIdle:
+        {
         pythonStateTransition(pyTransBeginDebug);
         debugString(cmd.toLatin1().data());
+
+        PyGILState_STATE gstate = PyGILState_Ensure();
         emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+        PyGILState_Release(gstate);
+
         pythonStateTransition(pyTransEndDebug);
+        }
         break;
     case pyStateRunning:
     case pyStateDebugging:
@@ -2468,14 +2492,18 @@ void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
         {
             pythonStateTransition(pyTransBeginDebug);
             debugString(cmd);
+            PyGILState_STATE gstate = PyGILState_Ensure();
             emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+            PyGILState_Release(gstate);
             pythonStateTransition(pyTransEndDebug);
         }
         else
         {
             pythonStateTransition(pyTransBeginRun);
             runString(cmd);
+            PyGILState_STATE gstate = PyGILState_Ensure();
             emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+            PyGILState_Release(gstate);
             pythonStateTransition(pyTransEndRun);
         }
         break;
@@ -2485,10 +2513,14 @@ void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
         std::cerr << "it is not allowed to run a python string in mode pyStateRunning or pyStateDebugging\n" << std::endl;
         break;
     case pyStateDebuggingWaiting:
+        {
         pythonStateTransition(pyTransDebugExecCmdBegin);
         runString(cmd);
+        PyGILState_STATE gstate = PyGILState_Ensure();
         emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+        PyGILState_Release(gstate);
         pythonStateTransition(pyTransDebugExecCmdEnd);
+        }
         break;
     }
 }
@@ -2501,7 +2533,18 @@ void PythonEngine::pythonDebugFunction(PyObject *callable, PyObject *argTuple, b
     case pyStateIdle:
         pythonStateTransition(pyTransBeginDebug);
         debugFunction(callable, argTuple, gilExternal);
-        emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+
+        if (gilExternal)
+        {
+            emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+        }
+        else
+        {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+            emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+            PyGILState_Release(gstate);
+        }
+
         pythonStateTransition(pyTransEndDebug);
         break;
     case pyStateRunning:
@@ -2531,7 +2574,18 @@ void PythonEngine::pythonRunFunction(PyObject *callable, PyObject *argTuple, boo
         case pyStateIdle:
             pythonStateTransition(pyTransBeginRun);
             runFunction(callable, argTuple, gilExternal);
-            emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+
+            if (gilExternal)
+            {
+                emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+            }
+            else
+            {
+                PyGILState_STATE gstate = PyGILState_Ensure();
+                emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+                PyGILState_Release(gstate);
+            }
+
             pythonStateTransition(pyTransEndRun);
         break;
 
@@ -2539,13 +2593,34 @@ void PythonEngine::pythonRunFunction(PyObject *callable, PyObject *argTuple, boo
         case pyStateDebugging:
         case pyStateDebuggingWaitingButBusy: //functions (from signal-calls) can be executed whenever another python method is executed (only possible if another method executing python code is calling processEvents. processEvents stops until this "runFunction" has been terminated
             runFunction(callable, argTuple, gilExternal);
-            emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+
+            if (gilExternal)
+            {
+                emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+            }
+            else
+            {
+                PyGILState_STATE gstate = PyGILState_Ensure();
+                emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+                PyGILState_Release(gstate);
+            }
         break;
 
         case pyStateDebuggingWaiting:
             pythonStateTransition(pyTransDebugExecCmdBegin);
             runFunction(callable, argTuple, gilExternal);
-            emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+
+            if (gilExternal)
+            {
+                emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+            }
+            else
+            {
+                PyGILState_STATE gstate = PyGILState_Ensure();
+                emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+                PyGILState_Release(gstate);
+            }
+
             pythonStateTransition(pyTransDebugExecCmdEnd);
         break;
     }
@@ -2568,6 +2643,8 @@ void PythonEngine::pythonRunStringOrFunction(QString cmdOrFctHash)
             std::cerr << "The command '" << cmdOrFctHashCropped.toLatin1().data() << "' seems to be a hashed function or method, but no handle value can be extracted (size_t required)\n" << std::endl;
             return;
         }
+
+        PyGILState_STATE gstate = PyGILState_Ensure();
 
         QHash<size_t, FuncWeakRef>::iterator it = m_pyFuncWeakRefHashes.find(hashValue);
         if (it != m_pyFuncWeakRefHashes.end())
@@ -2599,6 +2676,8 @@ void PythonEngine::pythonRunStringOrFunction(QString cmdOrFctHash)
         {
             std::cerr << "No action associated with key '" << cmdOrFctHashCropped.toLatin1().data() << "' could be found in internal hash table\n" << std::endl;
         }
+
+        PyGILState_Release(gstate);
     }
     else
     {
@@ -2623,6 +2702,8 @@ void PythonEngine::pythonDebugStringOrFunction(QString cmdOrFctHash)
             std::cerr << "The command '" << cmdOrFctHashCropped.toLatin1().data() << "' seems to be a hashed function or method, but no handle value can be extracted (size_t required)\n" << std::endl;
             return;
         }
+
+        PyGILState_STATE gstate = PyGILState_Ensure();
 
         QHash<size_t, FuncWeakRef>::iterator it = m_pyFuncWeakRefHashes.find(hashValue);
         if (it != m_pyFuncWeakRefHashes.end())
@@ -2654,6 +2735,8 @@ void PythonEngine::pythonDebugStringOrFunction(QString cmdOrFctHash)
         {
             std::cerr << "No action associated with key '" << cmdOrFctHashCropped.toLatin1().data() << "' could be found in internal hash table\n" << std::endl;
         }
+
+        PyGILState_Release(gstate);
         
     }
     else
@@ -2886,8 +2969,9 @@ void PythonEngine::registerWorkspaceContainer(PyWorkspaceContainer *container, b
             connect(container,SIGNAL(getChildNodes(PyWorkspaceContainer*,QString)),this,SLOT(workspaceGetChildNode(PyWorkspaceContainer*,QString)));
             m_localWorkspaceContainer.insert(container);
         }
-
+        PyGILState_STATE gstate = PyGILState_Ensure();
         emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+        PyGILState_Release(gstate);
     }
     else
     {
@@ -2906,8 +2990,17 @@ void PythonEngine::registerWorkspaceContainer(PyWorkspaceContainer *container, b
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //return new reference of found object that corresponds to fullName in the global or local workspace
+//Python GIL must be locked when calling this function!
 PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QStringList &fullName)
 {
+#if defined _DEBUG && PY_VERSION_HEX >= 0x030400
+    if (!PyGILState_Check())
+    {
+        std::cerr << "Python GIL must be locked when calling getPyObjectByFullName\n" << std::endl;
+        return NULL;
+    }
+#endif
+
     PyObject *obj = NULL;
     PyObject *current_obj = NULL;
     QStringList items = fullName; //.split(".");
@@ -3091,6 +3184,8 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::workspaceGetChildNode(PyWorkspaceContainer *container, QString fullNameParentItem)
 {
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
     QStringList itemNameSplit = fullNameParentItem.split(container->getDelimiter());
     PyObject *obj = getPyObjectByFullName(container->isGlobalWorkspace(), itemNameSplit);
     
@@ -3099,11 +3194,15 @@ void PythonEngine::workspaceGetChildNode(PyWorkspaceContainer *container, QStrin
         container->loadDictionary(obj, fullNameParentItem);
         Py_DECREF(obj);
     }
+
+    PyGILState_Release(gstate);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container, QString fullItemName, QSharedPointer<QString> extendedValue, ItomSharedSemaphore *semaphore)
 {
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
     QStringList itemNameSplit = fullItemName.split(container->getDelimiter());
     PyObject *obj = getPyObjectByFullName(container->isGlobalWorkspace(), itemNameSplit);
 
@@ -3113,8 +3212,6 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
     }
     else
     {
-        PyGILState_STATE gstate = PyGILState_Ensure();
-
         PyObject *repr = PyObject_Repr(obj);
         if (repr == NULL)
         {
@@ -3138,8 +3235,9 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
         }
 
         Py_DECREF(obj);
-        PyGILState_Release(gstate);
     }
+
+    PyGILState_Release(gstate);
 
     if (semaphore)
     {
@@ -3151,6 +3249,14 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObject* globalDict, PyObject* localDict)
 {
+#if defined _DEBUG && PY_VERSION_HEX >= 0x030400
+    if (!PyGILState_Check())
+    {
+        std::cerr << "Python GIL must be locked when calling emitPythonDictionary\n" << std::endl;
+        return;
+    }
+#endif
+
     //if localDict is equal to globalDict, the localDict is the current global dict (currently debugging at top level) -> it is sufficient to only show the global dict and delete the local dict
     //qDebug() << "python emitPythonDictionary. Thread: " << QThread::currentThreadId ();
     if (emitGlobal && m_mainWorkspaceContainer.count() > 0)
@@ -3629,6 +3735,7 @@ bool PythonEngine::renameVariable(bool globalNotLocal, QString oldKey, QString n
             semaphore->release();
         }
 
+        PyGILState_STATE gstate = PyGILState_Ensure();
         if (globalNotLocal)
         {
             emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
@@ -3637,6 +3744,7 @@ bool PythonEngine::renameVariable(bool globalNotLocal, QString oldKey, QString n
         {
             emitPythonDictionary(false, true, NULL, getLocalDictionary());
         }
+        PyGILState_Release(gstate);
 
         if (oldState == pyStateIdle)
         {
@@ -3716,6 +3824,7 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, QStringList keys, ItomSha
 
         if (semaphore != NULL) semaphore->release();
 
+        PyGILState_STATE gstate = PyGILState_Ensure();
         if (globalNotLocal)
         {
             emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
@@ -3724,6 +3833,7 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, QStringList keys, ItomSha
         {
             emitPythonDictionary(false, true, NULL, getLocalDictionary());
         }
+        PyGILState_Release(gstate);
 
 
         if (oldState == pyStateIdle)
@@ -3914,6 +4024,7 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
                 released = true;
             }
 
+            gstate = PyGILState_Ensure();
             if (globalNotLocal)
             {
                 emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
@@ -3922,6 +4033,7 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
             {
                 emitPythonDictionary(false, true, NULL, getLocalDictionary());
             }
+            PyGILState_Release(gstate);
         }
 
         if (oldState == pyStateIdle)
@@ -4049,6 +4161,7 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
                 released = true;
             }
 
+            gstate = PyGILState_Ensure();
             if (globalNotLocal)
             {
                 emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
@@ -4057,6 +4170,7 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
             {
                 emitPythonDictionary(false, true, NULL, getLocalDictionary());
             }
+            PyGILState_Release(gstate);
         }
 
         if (oldState == pyStateIdle)
@@ -4162,6 +4276,7 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
                 released = true;
             }
 
+            gstate = PyGILState_Ensure();
             if (globalNotLocal)
             {
                 emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
@@ -4170,6 +4285,7 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
             {
                 emitPythonDictionary(false, true, NULL, getLocalDictionary());
             }
+            PyGILState_Release(gstate);
         }
 
         if (oldState == pyStateIdle)
@@ -4308,6 +4424,7 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
             semaphore->release();
         }
 
+        PyGILState_STATE gstate = PyGILState_Ensure();
         if (globalNotLocal)
         {
             emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
@@ -4316,6 +4433,7 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
         {
             emitPythonDictionary(false, true, NULL, getLocalDictionary());
         }
+        PyGILState_Release(gstate);
 
         if (oldState == pyStateIdle)
         {
@@ -4526,6 +4644,8 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
 
+        PyGILState_STATE gstate = PyGILState_Ensure();
+
         if (globalNotLocal)
         {
             dict = getGlobalDictionary();
@@ -4565,6 +4685,8 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
             Py_DECREF(exportDict);
             exportDict = NULL;
         }
+
+        PyGILState_Release(gstate);
 
 
         if (oldState == pyStateIdle)
@@ -4733,6 +4855,7 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
                 released = true;
             }
 
+            PyGILState_STATE gstate = PyGILState_Ensure();
             if (globalNotLocal)
             {
                 emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
@@ -4741,6 +4864,7 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
             {
                 emitPythonDictionary(false, true, NULL, getLocalDictionary());
             }
+            PyGILState_Release(gstate);
         }
 
         if (oldState == pyStateIdle)
