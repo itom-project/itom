@@ -3199,7 +3199,7 @@ void PythonEngine::workspaceGetChildNode(PyWorkspaceContainer *container, QStrin
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container, QString fullItemName, QSharedPointer<QString> extendedValue, ItomSharedSemaphore *semaphore)
+void PythonEngine::workspaceGetValueInformation(const PyWorkspaceContainer *container, const QString &fullItemName, QSharedPointer<QString> extendedValue, ItomSharedSemaphore *semaphore)
 {
     PyGILState_STATE gstate = PyGILState_Ensure();
 
