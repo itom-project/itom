@@ -340,8 +340,8 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
         if check == True:
             [line, plane, dir, check] = self.checkIsLineOrPlane(varname, globals())
         
-        if plane == False and line == False:
-            ui.msgCritical("Roughness", "Object is no line or plane", ui.MsgBoxOk)
+            if plane == False and line == False:
+                ui.msgCritical("Roughness", "Object is no line or plane", ui.MsgBoxOk)
             
         if check == True:
             try:
@@ -389,8 +389,8 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
         if check == True:
             [line, plane, dir, check] = self.checkIsLineOrPlane(varname, globals())
         
-        if plane == False and line == False:
-            ui.msgCritical("Roughness", "Object is no line or plane", ui.MsgBoxOk)
+            if plane == False and line == False:
+                ui.msgCritical("Roughness", "Object is no line or plane", ui.MsgBoxOk)
             
         if check == False:
             return check
