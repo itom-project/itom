@@ -3565,8 +3565,12 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             }
         }
 
+        PyThreadState *_save;
+
         while(!pyEngine->DbgCommandsAvailable()) //->isValidDbgCmd())
         {
+            Py_UNBLOCK_THREADS //from here, python can do something else... (e.g. executing another code snippet)
+
             //tests showed that the CPU consumption becomes very high, if
             //this while loop iterates without a tiny sleep.
             //The subsequent processEvents however is necessary to t(5get
@@ -3574,6 +3578,8 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             Sleeper::msleep(50);
 
             QCoreApplication::processEvents();
+
+            Py_BLOCK_THREADS
 
             if (PyErr_CheckSignals() == -1) //!< check if key interrupt occurred
             {
