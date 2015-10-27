@@ -27,7 +27,8 @@
 
 namespace ito {
 
-DialogPluginPicker::DialogPluginPicker(bool allowNewInstances, ito::AddInBase *currentItem, int minimumPluginTypeMask, QString pluginName , QWidget *parent ) :
+//----------------------------------------------------------------------------------------------------------------------------------
+DialogPluginPicker::DialogPluginPicker(bool allowNewInstances, ito::AddInBase *currentItem, int minimumPluginTypeMask, QString pluginName , QWidget *parent) :
     QDialog(parent),
     m_pFilterModel(NULL)
 {
@@ -37,70 +38,96 @@ DialogPluginPicker::DialogPluginPicker(bool allowNewInstances, ito::AddInBase *c
 
     m_pFilterModel = new PickerSortFilterProxyModel(this);
     m_pFilterModel->setSourceModel(aim->getPluginModel());
-    m_pFilterModel->setPluginMinimumMask( minimumPluginTypeMask );
-    m_pFilterModel->setPluginName( pluginName );
+    m_pFilterModel->setPluginMinimumMask(minimumPluginTypeMask);
+    m_pFilterModel->setPluginName(pluginName);
     m_pFilterModel->showPluginsWithoutInstance(false);
 
     ui.cmdNewInstance->setVisible(allowNewInstances);
     ui.cmdNewInstance->setEnabled(false);
     
     ui.treeView->setSortingEnabled(true);
-    ui.treeView->setModel( m_pFilterModel );
+    ui.treeView->setModel(m_pFilterModel);
 
-    ui.treeView->setColumnHidden(1,true);
-    ui.treeView->setColumnHidden(2,true);
-    ui.treeView->setColumnHidden(3,true);
-    ui.treeView->setColumnHidden(4,true);
-    ui.treeView->setColumnHidden(5,true);
-    ui.treeView->setColumnHidden(6,true);
-    ui.treeView->setColumnHidden(7,true);
-
+    ui.treeView->setColumnHidden(1, true);
+    ui.treeView->setColumnHidden(2, true);
+    ui.treeView->setColumnHidden(3, true);
+    ui.treeView->setColumnHidden(4, true);
+    ui.treeView->setColumnHidden(5, true);
+    ui.treeView->setColumnHidden(6, true);
+    ui.treeView->setColumnHidden(7, true);
 
     ui.treeView->sortByColumn(1, Qt::AscendingOrder);
     ui.treeView->expandAll();
 
     connect(ui.checkShowPluginsWithoutInstance, SIGNAL(toggled(bool)), this, SLOT(showPluginsWithoutInstance(bool)));
     connect(ui.treeView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(itemDblClicked(QModelIndex)));
-    connect(ui.treeView, SIGNAL(clicked(QModelIndex)), this, SLOT(itemClicked(QModelIndex)));
     connect(ui.cmdNewInstance, SIGNAL(clicked(bool)), this, SLOT(createNewInstance(bool)));
+    connect(ui.treeView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)), Qt::DirectConnection);
 
     QModelIndex currentIndexSource = aim->getPluginModel()->getIndexByAddIn(currentItem);
-    ui.treeView->setCurrentIndex( m_pFilterModel->mapFromSource(currentIndexSource));
+    ui.treeView->setCurrentIndex(m_pFilterModel->mapFromSource(currentIndexSource));
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogPluginPicker::itemClicked(const QModelIndex &index)
 {
-    ui.cmdNewInstance->setEnabled(index.isValid());
+    bool enabled = false;
+
+    if (index.isValid())
+    {
+        QModelIndex indexMap = m_pFilterModel->mapToSource(index);
+
+        ito::AddInManager *aim = ito::AddInManager::getInstance();
+        ito::PlugInModel *model = aim->getPluginModel();
+
+        int itemType = model->data(indexMap, Qt::UserRole + 3).toInt();
+        if (itemType == ito::PlugInModel::itemInstance)
+        {
+            enabled = true;
+        }
+        else if (itemType == ito::PlugInModel::itemPlugin)
+        {
+            ito::AddInInterfaceBase *aib = (ito::AddInInterfaceBase *)(indexMap.internalPointer());
+            enabled = (aib  && (aib->getType() & ito::typeAlgo) == 0);
+        }
+    }
+
+    ui.cmdNewInstance->setEnabled(enabled);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogPluginPicker::itemDblClicked(const QModelIndex &index)
 {
     itemClicked(index);
     this->accept();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogPluginPicker::showPluginsWithoutInstance(bool checked)
 {
     m_pFilterModel->showPluginsWithoutInstance(checked);
     ui.treeView->expandAll();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::AddInBase* DialogPluginPicker::getSelectedInstance()
 {
     QModelIndex idx = ui.treeView->currentIndex();
     idx = m_pFilterModel->mapToSource(idx);
-    if(idx.isValid())
+    if (idx.isValid())
     {
-        int itemType = m_pFilterModel->sourceModel()->data( idx, Qt::UserRole + 3).toInt();
-        if(itemType == ito::PlugInModel::itemInstance)
+        int itemType = m_pFilterModel->sourceModel()->data(idx, Qt::UserRole + 3).toInt();
+        if (itemType == ito::PlugInModel::itemInstance)
         {
             ito::AddInBase *ais = (ito::AddInBase *)(idx.internalPointer());
             return ais;
         }
     }
+
     return NULL;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogPluginPicker::createNewInstance(bool /*checked*/)
 {
     QModelIndex index = ui.treeView->currentIndex();
@@ -109,14 +136,14 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
     ito::AddInManager *aim = ito::AddInManager::getInstance();
     ito::PlugInModel *model = aim->getPluginModel();
 
-    if(index.isValid())
+    if (index.isValid())
     {
-        int itemType = model->data( index, Qt::UserRole + 3).toInt();
-        if(itemType == ito::PlugInModel::itemInstance)
+        int itemType = model->data(index, Qt::UserRole + 3).toInt();
+        if (itemType == ito::PlugInModel::itemInstance)
         {
             index = index.parent();
         }
-        else if(itemType != ito::PlugInModel::itemPlugin)
+        else if (itemType != ito::PlugInModel::itemPlugin)
         {
             return;
         }
@@ -125,14 +152,14 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
     //here: we assume that index is never a filter or algowidget!!!
     //index is now of type instance.
 
-    if(index.isValid())
+    if (index.isValid())
     {
         ito::AddInInterfaceBase *aib = (ito::AddInInterfaceBase *)(index.internalPointer());
 
-        if(aib  && (aib->getType() & ito::typeAlgo) == 0)
+        if (aib  && (aib->getType() & ito::typeAlgo) == 0)
         {
             DialogNewPluginInstance *dialog = new DialogNewPluginInstance(index, aib, false);
-            if(dialog->exec() == 1) //accepted
+            if (dialog->exec() == 1) //accepted
             {
                 QVector<ito::ParamBase> paramsMandNew, paramsOptNew;
                 QString pythonVarName = dialog->getPythonVariable();
@@ -144,7 +171,7 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
                     
                 DELETE_AND_SET_NULL(dialog);
 
-                if(retValue.containsError())
+                if (retValue.containsError())
                 {
                     QString message = tr("error while creating new instance. \nMessage: %1").arg(QLatin1String(retValue.errorMessage()));
                     QMessageBox::critical(this, tr("Error while creating new instance"), message);
@@ -152,21 +179,21 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
                 }
 
                 int itemNum = aim->getItemIndexInList((void*)aib);
-                if(itemNum < 0)
+                if (itemNum < 0)
                 {
                     return;
                 }
 
-                QApplication::setOverrideCursor ( QCursor(Qt::WaitCursor) );
+                QApplication::setOverrideCursor (QCursor(Qt::WaitCursor));
 
-                if(aib->getType() & ito::typeDataIO)
+                if (aib->getType() & ito::typeDataIO)
                 {
                     ito::AddInDataIO *plugin = NULL;
                     retValue += aim->initAddIn(itemNum, aib->objectName(), &plugin, &paramsMandNew, &paramsOptNew, false, NULL);
                     basePlugin = (ito::AddInBase*)(plugin);
 
                 }
-                else if(aib->getType() & ito::typeActuator)
+                else if (aib->getType() & ito::typeActuator)
                 {
                     ito::AddInActuator *plugin = NULL;
                     retValue += aim->initAddIn(itemNum, aib->objectName(), &plugin, &paramsMandNew, &paramsOptNew, false, NULL);
@@ -175,18 +202,18 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
 
                 QApplication::restoreOverrideCursor();                    
 
-                if(retValue.containsWarning())
+                if (retValue.containsWarning())
                 {
                     QString message = tr("warning while creating new instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                     QMessageBox::warning(this, tr("Warning while creating new instance"), message);
                 }
-                else if(retValue.containsError())
+                else if (retValue.containsError())
                 {
                     QString message = tr("error while creating new instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                     QMessageBox::critical(this, tr("Error while creating new instance"), message);
                 }
 
-                if(basePlugin != NULL)
+                if (basePlugin != NULL)
                 {
                     basePlugin->setCreatedByGUI(1); 
                 }
@@ -194,7 +221,7 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
                 m_pFilterModel->invalidate();
                 ui.treeView->expandAll();
 
-                if(basePlugin != NULL)
+                if (basePlugin != NULL)
                 {
                     QModelIndex currentIndexSource = aim->getPluginModel()->getIndexByAddIn(basePlugin);
                     ui.treeView->setCurrentIndex(m_pFilterModel->mapFromSource(currentIndexSource));
@@ -210,7 +237,12 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
     {
         QMessageBox::information(this, tr("choose plugin"), tr("Please choose plugin you want to create a new instance from"));
     }
+}
 
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogPluginPicker::selectionChanged(const QItemSelection& newSelection, const QItemSelection& oldSelection)
+{
+    itemClicked(ui.treeView->currentIndex());
 }
 
 } //end namespace ito

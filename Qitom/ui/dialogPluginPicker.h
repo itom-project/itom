@@ -118,15 +118,15 @@ public:
 protected:
 
 private:
-
+    void itemClicked(const QModelIndex &index);
     Ui::DialogPluginPicker ui;
     PickerSortFilterProxyModel *m_pFilterModel;
 
 private slots:
-    void itemClicked(const QModelIndex &index);
     void itemDblClicked(const QModelIndex &index);
     void showPluginsWithoutInstance(bool checked); 
     void createNewInstance(bool checked);
+    void selectionChanged(const QItemSelection& newSelection, const QItemSelection& oldSelection);
 
 };
 
