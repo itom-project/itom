@@ -2651,7 +2651,6 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
 //----------------------------------------------------------------------------------------------------------------------------------
 PythonDataObject::PyDataObject* PythonDataObject::createEmptyPyDataObject()
 {
-    //PyDataObject* result = (PyDataObject*)PyType_Type.tp_call((PyObject*)&PyDataObjectType, NULL, NULL);
     PyDataObject* result = (PyDataObject*)PyObject_Call((PyObject*)&PyDataObjectType, NULL, NULL);
     if (result != NULL)
     {
@@ -2663,6 +2662,15 @@ PythonDataObject::PyDataObject* PythonDataObject::createEmptyPyDataObject()
         Py_XDECREF(result);
         return NULL;
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ PyObject* PythonDataObject::createPyDataObjectFromArray(PyObject *npArray) //returns NULL with set Python exception if npArray could not be converted to data object. If everything ok, returns a new reference of the PyDataObject
+{
+    PyObject *args = Py_BuildValue("(O)", npArray);
+    ito::PythonDataObject::PyDataObject *result = (ito::PythonDataObject::PyDataObject*)PyObject_Call((PyObject*)&ito::PythonDataObject::PyDataObjectType, args, NULL); //new reference
+    Py_DECREF(args);
+    return (PyObject*)result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

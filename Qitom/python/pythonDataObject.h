@@ -274,6 +274,7 @@ class PythonDataObject
         static char* typeNumberToName(int typeno);
 
         static PyDataObject* createEmptyPyDataObject();
+        static PyObject* createPyDataObjectFromArray(PyObject *npArray); //returns NULL with set Python exception if npArray could not be converted to data object
 
         static bool checkPyDataObject(int number, PyObject* o1 = NULL, PyObject* o2 = NULL, PyObject* o3 = NULL);
 
