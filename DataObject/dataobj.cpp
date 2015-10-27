@@ -6533,70 +6533,186 @@ RetVal DataObject::copyFromData2DInternal(const uchar* src, const int sizeOfElem
 /*!
     The result is stored in the result matrix. Optionally a scaling and offsetting is possible.
 
-    \param *dObj is the source data object
+    \param *srcObj is the source data object
     \param *resObj is the result data object
     \param alpha is the scaling factor (default 1.0)
-    \param beta is the ofset value (default 0.0)
+    \param beta is the offset value (default 0.0)
     \return 0
     \throws cv::Exception if cast failed
     \sa cv::saturate_cast
 */
-template<typename _Tp, typename _T2> RetVal CastFunc(const DataObject *dObj, DataObject *resObj, double alpha, double beta)
+template<typename _TSrc, typename _TDest> RetVal CastFunc(const DataObject *srcObj, DataObject *resObj, double alpha, double beta)
 {
-   int numMats = dObj->getNumPlanes();
+   int numMats = srcObj->getNumPlanes();
    int resTmat = 0;
    int srcTmat = 0;
 
-   int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
-   int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
-   const cv::Mat_<_Tp> * srcMat = NULL;
-   cv::Mat_<_T2> * dstMat = NULL;
-   const _Tp* srcPtr = NULL;
-   _T2* dstPtr = NULL;
+   int sizex = srcObj->getSize(srcObj->getDims() - 1);
+   int sizey = srcObj->getSize(srcObj->getDims() - 2);
+   const cv::Mat* srcMat = NULL;
+   cv::Mat* dstMat = NULL;
+   const _TSrc* srcPtr = NULL;
+   _TDest* dstPtr = NULL;
 
    if(alpha == 1.0 && beta == 0.0)
    {
-       for (int nmat = 0; nmat < numMats; nmat++)
+       for (int nmat = 0; nmat < numMats; ++nmat)
        {
           resTmat = resObj->seekMat(nmat, numMats);
-          srcTmat = dObj->seekMat(nmat, numMats);
-          srcMat = static_cast<const cv::Mat_<_Tp> *>((dObj->get_mdata())[srcTmat]);
-          dstMat = static_cast<cv::Mat_<_T2> *>((resObj->get_mdata())[resTmat]);
-          for (int y = 0; y < sizey; y++)
+          srcTmat = srcObj->seekMat(nmat, numMats);
+          srcMat = (srcObj->get_mdata())[srcTmat];
+          dstMat = (resObj->get_mdata())[resTmat];
+          for (int y = 0; y < sizey; ++y)
           {
-              dstPtr = (_T2*)dstMat->ptr(y);
-              const _Tp* srcPtr = (const _Tp*)srcMat->ptr(y);
-              for (int x = 0; x < sizex; x++)
+              dstPtr = dstMat->ptr<_TDest>(y);
+              srcPtr = srcMat->ptr<const _TSrc>(y);
+              for (int x = 0; x < sizex; ++x)
               {
-                  dstPtr[x] = cv::saturate_cast<_T2>(srcPtr[x]);
+                  dstPtr[x] = cv::saturate_cast<_TDest>(srcPtr[x]);
               }
           }
        }
    }
    else
    {
-       _Tp alpha2 = cv::saturate_cast<_Tp>(alpha);
-       _Tp beta2 = cv::saturate_cast<_Tp>(beta);
-       for (int nmat = 0; nmat < numMats; nmat++)
+       for (int nmat = 0; nmat < numMats; ++nmat)
        {
           resTmat = resObj->seekMat(nmat, numMats);
-          srcTmat = dObj->seekMat(nmat, numMats);
-          srcMat = static_cast<const cv::Mat_<_Tp> *>((dObj->get_mdata())[srcTmat]);
-          dstMat = static_cast<cv::Mat_<_T2> *>((resObj->get_mdata())[resTmat]);
-          for (int y = 0; y < sizey; y++)
+          srcTmat = srcObj->seekMat(nmat, numMats);
+          srcMat = (srcObj->get_mdata())[srcTmat];
+          dstMat = (resObj->get_mdata())[resTmat];
+          for (int y = 0; y < sizey; ++y)
           {
-              dstPtr = (_T2*)dstMat->ptr(y);
-              srcPtr = (const _Tp*)srcMat->ptr(y);
-              for (int x = 0; x < sizex; x++)
+              dstPtr = dstMat->ptr<_TDest>(y);
+              srcPtr = srcMat->ptr<const _TSrc>(y);
+              for (int x = 0; x < sizex; ++x)
               {
-                  dstPtr[x] = cv::saturate_cast<_T2>(srcPtr[x] * alpha2 + beta2);
+                  dstPtr[x] = cv::saturate_cast<_TDest>(srcPtr[x] * alpha + beta);
               }
           }
        }
    }
 
-   return 0;
+   return ito::retOk;
 }
+
+template<typename _TDest> RetVal CastFuncFromComplex64(const DataObject *srcObj, DataObject *resObj, double alpha, double beta)
+{
+   int numMats = srcObj->getNumPlanes();
+   int resTmat = 0;
+   int srcTmat = 0;
+
+   int sizex = srcObj->getSize(srcObj->getDims() - 1);
+   int sizey = srcObj->getSize(srcObj->getDims() - 2);
+   const cv::Mat* srcMat = NULL;
+   cv::Mat* dstMat = NULL;
+   const ito::complex64* srcPtr = NULL;
+   _TDest* dstPtr = NULL;
+
+   if(alpha == 1.0 && beta == 0.0)
+   {
+       for (int nmat = 0; nmat < numMats; ++nmat)
+       {
+          resTmat = resObj->seekMat(nmat, numMats);
+          srcTmat = srcObj->seekMat(nmat, numMats);
+          srcMat = (srcObj->get_mdata())[srcTmat];
+          dstMat = (resObj->get_mdata())[resTmat];
+          for (int y = 0; y < sizey; ++y)
+          {
+              dstPtr = dstMat->ptr<_TDest>(y);
+              srcPtr = srcMat->ptr<const ito::complex64>(y);
+              for (int x = 0; x < sizex; ++x)
+              {
+                  dstPtr[x] = cv::saturate_cast<_TDest>(srcPtr[x]);
+              }
+          }
+       }
+   }
+   else
+   {
+       ito::complex64 alpha2(cv::saturate_cast<ito::float32>(alpha), 0.0);
+       ito::complex64 beta2(cv::saturate_cast<ito::float32>(beta), 0.0);
+
+       for (int nmat = 0; nmat < numMats; ++nmat)
+       {
+          resTmat = resObj->seekMat(nmat, numMats);
+          srcTmat = srcObj->seekMat(nmat, numMats);
+          srcMat = (srcObj->get_mdata())[srcTmat];
+          dstMat = (resObj->get_mdata())[resTmat];
+          for (int y = 0; y < sizey; ++y)
+          {
+              dstPtr = dstMat->ptr<_TDest>(y);
+              srcPtr = srcMat->ptr<const ito::complex64>(y);
+              for (int x = 0; x < sizex; ++x)
+              {
+                  dstPtr[x] = cv::saturate_cast<_TDest>(srcPtr[x] * alpha2 + beta2);
+              }
+          }
+       }
+   }
+
+   return ito::retOk;
+}
+
+template<typename _TDest> RetVal CastFuncFromComplex128(const DataObject *srcObj, DataObject *resObj, double alpha, double beta)
+{
+   int numMats = srcObj->getNumPlanes();
+   int resTmat = 0;
+   int srcTmat = 0;
+
+   int sizex = srcObj->getSize(srcObj->getDims() - 1);
+   int sizey = srcObj->getSize(srcObj->getDims() - 2);
+   const cv::Mat* srcMat = NULL;
+   cv::Mat* dstMat = NULL;
+   const ito::complex128* srcPtr = NULL;
+   _TDest* dstPtr = NULL;
+
+   if(alpha == 1.0 && beta == 0.0)
+   {
+       for (int nmat = 0; nmat < numMats; ++nmat)
+       {
+          resTmat = resObj->seekMat(nmat, numMats);
+          srcTmat = srcObj->seekMat(nmat, numMats);
+          srcMat = (srcObj->get_mdata())[srcTmat];
+          dstMat = (resObj->get_mdata())[resTmat];
+          for (int y = 0; y < sizey; ++y)
+          {
+              dstPtr = dstMat->ptr<_TDest>(y);
+              srcPtr = srcMat->ptr<const ito::complex128>(y);
+              for (int x = 0; x < sizex; ++x)
+              {
+                  dstPtr[x] = cv::saturate_cast<_TDest>(srcPtr[x]);
+              }
+          }
+       }
+   }
+   else
+   {
+       ito::complex128 alpha2(cv::saturate_cast<ito::float64>(alpha), 0.0);
+       ito::complex128 beta2(cv::saturate_cast<ito::float64>(beta), 0.0);
+
+       for (int nmat = 0; nmat < numMats; ++nmat)
+       {
+          resTmat = resObj->seekMat(nmat, numMats);
+          srcTmat = srcObj->seekMat(nmat, numMats);
+          srcMat = (srcObj->get_mdata())[srcTmat];
+          dstMat = (resObj->get_mdata())[resTmat];
+          for (int y = 0; y < sizey; ++y)
+          {
+              dstPtr = dstMat->ptr<_TDest>(y);
+              srcPtr = srcMat->ptr<const ito::complex128>(y);
+              for (int x = 0; x < sizex; ++x)
+              {
+                  dstPtr[x] = cv::saturate_cast<_TDest>(srcPtr[x] * alpha2 + beta2);
+              }
+          }
+       }
+   }
+
+   return ito::retOk;
+}
+
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! cast operator for data object
@@ -6627,14 +6743,14 @@ template<typename T2> DataObject::operator T2 ()
 
     \param &lhs is the left-hand sided data object, whose data should be converted
     \param &rhs is the destination data object, whose memory is firstly deleted, then newly allocated
-    \param type is the type-number of the destination element
+    \param dest_type is the type-number of the destination element
     \param alpha scaling factor (default: 1.0)
     \param beta offset value (default: 0.0)
     \return retOk
     \throws cv::Exception(CV_StsAssert) if conversion type is unknown
     \sa convertTo, CastFunc
 */
-template<typename _Tp> RetVal ConvertToFunc(const DataObject &lhs, DataObject &rhs, const int type, const double alpha, const double beta)
+template<typename _Tp> RetVal ConvertToFunc(const DataObject &lhs, DataObject &rhs, const int dest_type, const double alpha, const double beta)
 {
    if (&lhs == &rhs)
    {
@@ -6642,7 +6758,7 @@ template<typename _Tp> RetVal ConvertToFunc(const DataObject &lhs, DataObject &r
    }
    //_Tp is source type
 
-   if(type == lhs.getType() && alpha == 1.0 && beta == 0.0)
+   if(dest_type == lhs.getType() && alpha == 1.0 && beta == 0.0)
    {
        rhs = lhs;
    }
@@ -6650,61 +6766,61 @@ template<typename _Tp> RetVal ConvertToFunc(const DataObject &lhs, DataObject &r
    {
        rhs.freeData();
 
-       switch (type)
+       switch (dest_type)
        {
           case ito::tInt8:
-             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
              CastFunc<_Tp, int8>(&lhs, &rhs, alpha, beta);
           break;
 
           case ito::tUInt8:
-             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
              CastFunc<_Tp, uint8>(&lhs, &rhs, alpha, beta);
           break;
 
           case ito::tInt16:
-             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
              CastFunc<_Tp, int16>(&lhs, &rhs, alpha, beta);
           break;
 
           case ito::tUInt16:
-             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
              CastFunc<_Tp, uint16>(&lhs, &rhs, alpha, beta);
           break;
 
           case ito::tInt32:
-             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
              CastFunc<_Tp, int32>(&lhs, &rhs, alpha, beta);
           break;
 
           //uint32 is not fully supported by OpenCV -> constructor is blocked
           /*case ito::tUInt32:
-             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
              CastFunc<_Tp, uint32>(&lhs, &rhs, alpha, beta);
           break;*/
 
           case ito::tFloat32:
-             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
              CastFunc<_Tp, float32>(&lhs, &rhs, alpha, beta);
           break;
 
           case ito::tFloat64:
-             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
              CastFunc<_Tp, float64>(&lhs, &rhs, alpha, beta);
           break;
 
           case ito::tComplex64:
-             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
              CastFunc<_Tp, complex64>(&lhs, &rhs, alpha, beta);
           break;
 
           case ito::tComplex128:
-             rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
              CastFunc<_Tp, complex128>(&lhs, &rhs, alpha, beta);
           break;
 
           case ito::tRGBA32:
-              rhs.create(lhs.m_dims, lhs.m_size, type, lhs.m_continuous);
+              rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
               CastFunc<_Tp, Rgba32>(&lhs, &rhs, alpha, beta);
           break;
 
@@ -6720,7 +6836,185 @@ template<typename _Tp> RetVal ConvertToFunc(const DataObject &lhs, DataObject &r
    return ito::retOk;
 }
 
-typedef RetVal (*tConvertToFunc)(const DataObject &lhs, DataObject &rhs, const int type, const double alpha, const double beta);
+template<> RetVal ConvertToFunc<ito::complex64>(const DataObject &lhs, DataObject &rhs, const int dest_type, const double alpha, const double beta)
+{
+   if (&lhs == &rhs)
+   {
+         return ito::RetVal(ito::retError, 0, "inplace-conversion of dataObject not possible");
+   }
+   //_Tp is source type
+
+   if(dest_type == lhs.getType() && alpha == 1.0 && beta == 0.0)
+   {
+       rhs = lhs;
+   }
+   else
+   {
+       rhs.freeData();
+
+       switch (dest_type)
+       {
+          case ito::tInt8:
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+             CastFuncFromComplex64<int8>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tUInt8:
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+             CastFuncFromComplex64<uint8>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tInt16:
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+             CastFuncFromComplex64<int16>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tUInt16:
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+             CastFuncFromComplex64<uint16>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tInt32:
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+             CastFuncFromComplex64<int32>(&lhs, &rhs, alpha, beta);
+          break;
+
+          //uint32 is not fully supported by OpenCV -> constructor is blocked
+          /*case ito::tUInt32:
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+             CastFuncFromComplex64<uint32>(&lhs, &rhs, alpha, beta);
+          break;*/
+
+          case ito::tFloat32:
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+             CastFuncFromComplex64<float32>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tFloat64:
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+             CastFuncFromComplex64<float64>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tComplex64:
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+             CastFuncFromComplex64<complex64>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tComplex128:
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+             CastFuncFromComplex64<complex128>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tRGBA32:
+              rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+              CastFuncFromComplex64<Rgba32>(&lhs, &rhs, alpha, beta);
+          break;
+
+          default:
+             cv::error(cv::Exception(CV_StsAssert, "cast to destination type not defined (e.g. uint32 is not supported)", "", __FILE__, __LINE__));
+          break;
+       }
+
+        lhs.copyTagMapTo(rhs);   //Deepcopy the tagspace
+        lhs.copyAxisTagsTo(rhs); //Deepcopy the tagspace
+   }
+
+   return ito::retOk;
+}
+
+template<> RetVal ConvertToFunc<ito::complex128>(const DataObject &lhs, DataObject &rhs, const int dest_type, const double alpha, const double beta)
+{
+   if (&lhs == &rhs)
+   {
+         return ito::RetVal(ito::retError, 0, "inplace-conversion of dataObject not possible");
+   }
+   //_Tp is source type
+
+   if(dest_type == lhs.getType() && alpha == 1.0 && beta == 0.0)
+   {
+       rhs = lhs;
+   }
+   else
+   {
+       rhs.freeData();
+
+       switch (dest_type)
+       {
+          case ito::tInt8:
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+             CastFuncFromComplex128<int8>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tUInt8:
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+             CastFuncFromComplex128<uint8>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tInt16:
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+             CastFuncFromComplex128<int16>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tUInt16:
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+             CastFuncFromComplex128<uint16>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tInt32:
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+             CastFuncFromComplex128<int32>(&lhs, &rhs, alpha, beta);
+          break;
+
+          //uint32 is not fully supported by OpenCV -> constructor is blocked
+          /*case ito::tUInt32:
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+             CastFuncFromComplex128<uint32>(&lhs, &rhs, alpha, beta);
+          break;*/
+
+          case ito::tFloat32:
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+             CastFuncFromComplex128<float32>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tFloat64:
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+             CastFuncFromComplex128<float64>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tComplex64:
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+             CastFuncFromComplex128<complex64>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tComplex128:
+             rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+             CastFuncFromComplex128<complex128>(&lhs, &rhs, alpha, beta);
+          break;
+
+          case ito::tRGBA32:
+              rhs.create(lhs.m_dims, lhs.m_size, dest_type, lhs.m_continuous);
+              CastFuncFromComplex128<Rgba32>(&lhs, &rhs, alpha, beta);
+          break;
+
+          default:
+             cv::error(cv::Exception(CV_StsAssert, "cast to destination type not defined (e.g. uint32 is not supported)", "", __FILE__, __LINE__));
+          break;
+       }
+
+        lhs.copyTagMapTo(rhs);   //Deepcopy the tagspace
+        lhs.copyAxisTagsTo(rhs); //Deepcopy the tagspace
+   }
+
+   return ito::retOk;
+}
+
+template<> RetVal ConvertToFunc<ito::Rgba32>(const DataObject &lhs, DataObject &rhs, const int dest_type, const double alpha, const double beta)
+{
+    cv::error(cv::Exception(CV_StsAssert,"convertTo from rgba32 type not supported.","", __FILE__, __LINE__));
+    return ito::retOk;
+}
+
+typedef RetVal (*tConvertToFunc)(const DataObject &lhs, DataObject &rhs, const int dest_type, const double alpha, const double beta);
 
 MAKEFUNCLIST(ConvertToFunc);
 
