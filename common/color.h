@@ -74,25 +74,11 @@ namespace ito
                 Rgba32 temp(255, 0,0,0);
                 return temp;
             }
-
-            /*static Rgba32 red()
-            {
-                Rgba32 temp(255, 255, 0, 0);
-                return temp;
-            }
-
-            static Rgba32 green()
-            {
-                Rgba32 temp(255, 0, 255, 0);
-                return temp;
-            }
-
-            static Rgba32 blue()
-            {
-                Rgba32 temp(255, 0, 0, 255);
-                return temp;
-            }*/
-
+            
+            //! static constructor to create Rgba32 from uint32 containing the values argb
+            /*!
+             \param val is the uint32 value that is defined as (alpha << 24 + red << 16 + green << 8 + blue)
+             */
             static Rgba32 fromUnsignedLong(const uint32 val)
             {
                 Rgba32 temp;
@@ -107,14 +93,17 @@ namespace ito
                 this->r = r;
                 this->a = a;
             }
-
-            explicit Rgba32(const uint8 gray) /*! < Constructor which will set color channels to gray uint8 and alpha to 255 */
+            
+            //! Constructor which will set color channels to gray uint8 and alpha to 255.
+            /*!
+             \param gray is the gray value. Alpha is 255, R=G=B are set to this value 'gray'.
+             */
+            explicit Rgba32(const uint8 gray)
             {
                 a = 0xFF;
                 r = gray;
                 b = gray;
                 g = gray;
-                //memset(value, gray, 3*sizeof(uint8));
             }
 
             Rgba32(const Rgba32 &rhs)/*! < Copy-Constructor for lvalues */
@@ -151,7 +140,11 @@ namespace ito
                 a = static_cast<uint8>(std::max<int16>(a - rhs.a, 0));
                 return *this;
             }
-
+            
+            //! Multiplication by another Rgba32 value.
+            /*!
+             \param All channels are multiplied by each other and then divided by 255 (integer division leads to a ceil operation in any case)
+             */
             Rgba32& operator *=(const Rgba32 &rhs)/*! < Implementation of *= operator with overflow handling and normalisation */
             {
                 b = static_cast<uint8>(b * rhs.b / 255);
