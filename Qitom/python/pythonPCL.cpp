@@ -206,6 +206,7 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
     }
 
     //2. check for copy constructor
+    PyErr_Clear();
     if (!done && PyArg_ParseTuple(args, "O!|O", &PythonPCL::PyPointCloudType, &copyConstr, &pySeq))
     {
         PyPointCloud *copyConstr2 = (PyPointCloud*)copyConstr; 
@@ -232,25 +233,53 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
             }
             else
             {
-                if (PyIter_Check(pySeq))
+                if (PyIter_Check(pySeq) || PySequence_Check(pySeq))
                 {
-                    PyObject *iterator = PyObject_GetIter(pySeq);
-                    PyObject *item = NULL;
                     std::vector< int > indices;
-                    if (PySequence_Check(pySeq) && PySequence_Length(pySeq)>0)
+                    PyObject *item = NULL;
+
+                    if (PyIter_Check(pySeq))
+                    {
+                        PyObject *iterator = PyObject_GetIter(pySeq);
+                    
+                        if (PySequence_Check(pySeq) && PySequence_Length(pySeq)>0)
+                        {
+                            indices.reserve(PySequence_Length(pySeq));
+                        }
+
+                        if (iterator == NULL) 
+                        {
+                            PyErr_SetString(PyExc_TypeError, "error creating iterator");
+                        }
+                        else
+                        {
+                            //TODO: gcc wants paraentheses around assignment in while condition
+                            while (item = PyIter_Next(iterator)) 
+                            {
+                                if (PyLong_Check(item))
+                                {
+                                    indices.push_back(PyLong_AsLong(item));
+                                    Py_DECREF(item);
+                                }
+                                else
+                                {
+                                    PyErr_SetString(PyExc_TypeError, "indices must only contain integer values");
+                                    Py_DECREF(item);
+                                    break;
+                                }
+                            }
+
+                            Py_DECREF(iterator);
+                        }
+                    }
+                    else if (PySequence_Check(pySeq))
                     {
                         indices.reserve(PySequence_Length(pySeq));
-                    }
 
-                    if (iterator == NULL) 
-                    {
-                        PyErr_SetString(PyExc_TypeError, "error creating iterator");
-                    }
-                    else
-                    {
-                        //TODO: gcc wants paraentheses around assignment in while condition
-                        while (item = PyIter_Next(iterator)) 
+                        for (Py_ssize_t i = 0; i < PySequence_Length(pySeq); ++i)
                         {
+                            item = PySequence_GetItem(pySeq, i); //new ref
+
                             if (PyLong_Check(item))
                             {
                                 indices.push_back(PyLong_AsLong(item));
@@ -263,27 +292,25 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
                                 break;
                             }
                         }
+                    }
 
-                        Py_DECREF(iterator);
-
-                        if (!PyErr_Occurred()) 
+                    if (!PyErr_Occurred()) 
+                    {
+                        try
                         {
-                            try
-                            {
-                                self->data = new ito::PCLPointCloud(*copyConstr2->data, indices);
-                            }
-                            catch(std::bad_alloc &/*ba*/)
-                            {
-                                self->data = NULL;
-                                PyErr_SetString(PyExc_RuntimeError, "no more memory when creating point cloud");
-                                return -1;
-                            }
-                            catch(...)
-                            {
-                                self->data = NULL;
-                                PyErr_SetString(PyExc_RuntimeError, "an exception has been raised when creating point cloud");
-                                return -1;
-                            }
+                            self->data = new ito::PCLPointCloud(*copyConstr2->data, indices);
+                        }
+                        catch(std::bad_alloc &/*ba*/)
+                        {
+                            self->data = NULL;
+                            PyErr_SetString(PyExc_RuntimeError, "no more memory when creating point cloud");
+                            return -1;
+                        }
+                        catch(...)
+                        {
+                            self->data = NULL;
+                            PyErr_SetString(PyExc_RuntimeError, "an exception has been raised when creating point cloud");
+                            return -1;
                         }
                     }
                 }
@@ -1410,30 +1437,31 @@ PyObject* PythonPCL::PyPointCloud_mappingGetElem(PyPointCloud *self, PyObject *k
         return NULL;
     }
 
-    if (slicelength > 1) //two or more points -> return tuple of points
+    if (slicelength > 1) //two or more points -> return point cloud with selected points only
     {
-        PyObject *retValue = PyTuple_New(slicelength);
-        PyPoint *tempPt = NULL;
+        PyObject *indices = PyTuple_New(slicelength);
+        PyObject *result = NULL;
         Py_ssize_t c = 0;
         for (Py_ssize_t i = start ; i < stop ; i += step)
         {
-            tempPt = (PyPoint*)PyObject_Call((PyObject*)&PyPointType, NULL, NULL); //new reference
-            if (tempPt)
-            {
-                tempPt->point = new ito::PCLPoint(self->data->at(i));
-            }
-            else
-            {
-                Py_XDECREF(retValue);
-                PyErr_SetString(PyExc_RuntimeError, "could not allocate object of type point");
-                return NULL;
-            }
-
-            PyTuple_SetItem(retValue, c, (PyObject*)tempPt); //steals reference
+            PyTuple_SetItem(indices, c, PyLong_FromLong(i)); //steals a reference
             c++;
         }
 
-        return retValue;
+        PyObject *args = Py_BuildValue("OO", (PyObject*)self, indices);
+        PyObject *kwds = PyDict_New();
+
+        result = PyObject_Call((PyObject*)&PyPointCloudType, args, kwds); //new reference
+        if (!result)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "could not allocate object of type point cloud");
+        }
+
+        Py_DECREF(kwds);
+        Py_DECREF(args);
+        Py_DECREF(indices);
+
+        return result;
     }
     else //one element -> return point
     {
