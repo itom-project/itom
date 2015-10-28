@@ -91,9 +91,6 @@ namespace pclHelper
         return retval;
     }
 
-    //ito::RetVal writeBinary(const std::string &filename, const ito::PCLPointCloud &cloud);
-    //ito::RetVal readBinary(const std::string &filename, ito::PCLPointCloud &cloud);
-
 } //end namespace pclHelper
 
 } //end namespace ito

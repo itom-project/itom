@@ -54,11 +54,29 @@ namespace ito
     #define PCLALPHA _unused
 #endif
 
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!
+    \class PCLPoint
+    \brief generic class that covers one single point of different possible types provided by the Point Cloud Library (PCL).
+     
+    The possible types are compatible to PCLPointCloud and described in ito::tPCLPointType:
+
+    * ito::pclXYZ: x, y, z
+    * ito::pclXYZI: x, y, z, intensity
+    * ito::pclXYZRGBA: x, y, z, color (red, green, blue, alpha)
+    * ito::pclXYZNormal: x, y, z, normal_x, normal_y, normal_z, curvature
+    * ito::pclXYZINormal
+    * ito::pclXYZRGBNormal
+
+    The specific type is saved in the member m_type whereas m_genericPoint points to the value.
+*/
 class POINTCLOUD_EXPORT PCLPoint
 {
 public:
+    //! empty constructor creates invalid point type
     PCLPoint() : m_genericPoint(NULL), m_type(ito::pclInvalid) {}
 
+    //! constructor with desired point type. The specific point is created but not initialized with desired values.
     PCLPoint(ito::tPCLPointType type) : m_genericPoint(NULL), m_type(type)
     {
         switch(m_type)
@@ -86,49 +104,60 @@ public:
                 break;
         }
     }
+
+    //! helper function to copy the content of a given pointer representing a specific point of given type into this object.
     void copyFromVoidPtrAndType(void* ptr, ito::tPCLPointType type);
 
+    //! copy constructor from point of PCL type pcl::PointXYZ
     PCLPoint(const pcl::PointXYZ &point) : m_genericPoint(NULL), m_type(ito::pclXYZ) 
     { 
         m_genericPoint = reinterpret_cast<void*>(new pcl::PointXYZ(point));
     }
 
+    //! copy constructor from point of PCL type pcl::PointXYZI
     PCLPoint(const pcl::PointXYZI &point) : m_genericPoint(NULL), m_type(ito::pclXYZI) 
     { 
         m_genericPoint = reinterpret_cast<void*>(new pcl::PointXYZI(point));
     }
 
+    //! copy constructor from point of PCL type pcl::PointXYZRGBA
     PCLPoint(const pcl::PointXYZRGBA &point) : m_genericPoint(NULL), m_type(ito::pclXYZRGBA) 
     { 
         m_genericPoint = reinterpret_cast<void*>(new pcl::PointXYZRGBA(point));
     }
 
+    //! copy constructor from point of PCL type pcl::PointNormal
     PCLPoint(const pcl::PointNormal &point) : m_genericPoint(NULL), m_type(ito::pclXYZNormal) 
     { 
         m_genericPoint = reinterpret_cast<void*>(new pcl::PointNormal(point));
     }
 
+    //! copy constructor from point of PCL type pcl::PointXYZINormal
     PCLPoint(const pcl::PointXYZINormal &point) : m_genericPoint(NULL), m_type(ito::pclXYZINormal) 
     { 
         m_genericPoint = reinterpret_cast<void*>(new pcl::PointXYZINormal(point));
     }
 
+    //! copy constructor from point of PCL type pcl::PointXYZRGBNormal
     PCLPoint(const pcl::PointXYZRGBNormal &point) : m_genericPoint(NULL), m_type(ito::pclXYZRGBNormal) 
     { 
         m_genericPoint = reinterpret_cast<void*>(new pcl::PointXYZRGBNormal(point));
     }
 
+    //! copy constructor from another instance of PCLPoint
     PCLPoint ( const PCLPoint & p ) : m_genericPoint(NULL), m_type(ito::pclInvalid)
     {
         copyFromVoidPtrAndType( p.m_genericPoint, p.m_type);
     }
 
+    //! assigns the given PCLPoint data to this object
     PCLPoint & operator= ( const PCLPoint & p )
     {
         copyFromVoidPtrAndType( p.m_genericPoint, p.m_type);
         return *this;
     }
 
+    //! destructor
     ~PCLPoint() 
     {
         if(m_genericPoint)
@@ -147,13 +176,43 @@ public:
         }
     }
 
+    //! returns type of covered point type or ito::pclInvalid if invalid point.
     inline ito::tPCLPointType getType() const { return m_type; }
 
+    //! if this object covers a point of type ito::PointXYZ, this point is returned as pcl::PointXYZ object.
+    /*!
+    \throws pcl::PCLException if this point is not of type ito::PointXYZ
+    */
     const pcl::PointXYZ & getPointXYZ() const;
+
+    //! if this object covers a point of type ito::PointXYZI, this point is returned as pcl::PointXYZI object.
+    /*!
+    \throws pcl::PCLException if this point is not of type ito::PointXYZI
+    */
     const pcl::PointXYZI & getPointXYZI() const;
+
+    //! if this object covers a point of type ito::PointXYZRGBA, this point is returned as pcl::PointXYZRGBA object.
+    /*!
+    \throws pcl::PCLException if this point is not of type ito::PointXYZRGBA
+    */
     const pcl::PointXYZRGBA & getPointXYZRGBA() const;
+
+    //! if this object covers a point of type ito::PointXYZNormal, this point is returned as pcl::PointNormal object.
+    /*!
+    \throws pcl::PCLException if this point is not of type ito::PointXYZNormal
+    */
     const pcl::PointNormal & getPointXYZNormal() const;
+
+    //! if this object covers a point of type ito::PointXYZINormal, this point is returned as pcl::PointXYZINormal object.
+    /*!
+    \throws pcl::PCLException if this point is not of type ito::PointXYZINormal
+    */
     const pcl::PointXYZINormal & getPointXYZINormal() const;
+
+    //! if this object covers a point of type ito::PointXYZRGBNormal, this point is returned as pcl::PointXYZRGBNormal object.
+    /*!
+    \throws pcl::PCLException if this point is not of type ito::PointXYZRGBNormal
+    */
     const pcl::PointXYZRGBNormal & getPointXYZRGBNormal() const;
 
     pcl::PointXYZ & getPointXYZ();
@@ -179,8 +238,8 @@ private:
     template<typename _Tp> friend _Tp* getPointPtrInternal(ito::PCLPoint &point);
     template<typename _Tp> friend const _Tp* getPointPtrInternal(const ito::PCLPoint &point);
 
-    void *m_genericPoint;
-    ito::tPCLPointType m_type;
+    void *m_genericPoint;      /*!< generic pointer that holds an instance of the corresponding classes pcl::PointXYZ, pcl::PointNormal... (depending on m_type) */
+    ito::tPCLPointType m_type; /*!< type covered by this object */
 };
 
 // Forward declaration of friend methods
@@ -212,7 +271,24 @@ private:
     template<typename _Tp> void InsertFunc(ito::PCLPointCloud *pc, uint32_t index, const ito::PCLPoint& point);
     template<typename _Tp> std::string GetFieldsListFunc(const ito::PCLPointCloud *pc);
 #endif // __APPLE__
-    
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!
+    \class PCLPointCloud
+    \brief generic class that covers one single point cloud of different possible types provided by the Point Cloud Library (PCL).
+     
+    The possible types are compatible to PCLPoint and described in ito::tPCLPointType:
+
+    * ito::pclXYZ: x, y, z
+    * ito::pclXYZI: x, y, z, intensity
+    * ito::pclXYZRGBA: x, y, z, color (red, green, blue, alpha)
+    * ito::pclXYZNormal: x, y, z, normal_x, normal_y, normal_z, curvature
+    * ito::pclXYZINormal
+    * ito::pclXYZRGBNormal
+
+    The specific type is saved in the member m_type whereas different members are available each one holding a shared pointer to 
+    the point cloud of one specific type. Only one of those shared pointers can contain a valid point cloud.
+*/
 class POINTCLOUD_EXPORT PCLPointCloud
 {
 public:
@@ -233,8 +309,10 @@ public:
     PCLPointCloud(const PCLPointCloud &pc);
     PCLPointCloud(const PCLPointCloud &pc, const std::vector< int > &indices);
 
+    //! destructor
     ~PCLPointCloud(){};
 
+    //! returns type of covered point cloud or ito::pclInvalid if invalid point cloud.
     inline ito::tPCLPointType getType() const 
     { 
         return m_type; 
@@ -407,16 +485,21 @@ private:
     template<typename _Tp> friend std::string GetFieldsListFunc(const ito::PCLPointCloud *pc);
 
 
-    pcl::PointCloud<pcl::PointXYZ>::Ptr m_pcXYZ;
-    pcl::PointCloud<pcl::PointXYZI>::Ptr m_pcXYZI;
-    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr m_pcXYZRGBA;
-    pcl::PointCloud<pcl::PointNormal>::Ptr m_pcXYZNormal;
-    pcl::PointCloud<pcl::PointXYZINormal>::Ptr m_pcXYZINormal;
-    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr m_pcXYZRGBNormal;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr m_pcXYZ;                   /*!< shared pointer to point cloud of type pcl::PointXYZ. Contains valid data if m_type is ito::pclXYZ.*/
+    pcl::PointCloud<pcl::PointXYZI>::Ptr m_pcXYZI;                 /*!< shared pointer to point cloud of type pcl::PointXYZI. Contains valid data if m_type is ito::pclXYZI.*/
+    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr m_pcXYZRGBA;           /*!< shared pointer to point cloud of type pcl::PointXYZRGBA. Contains valid data if m_type is ito::pclXYZRGBA.*/
+    pcl::PointCloud<pcl::PointNormal>::Ptr m_pcXYZNormal;          /*!< shared pointer to point cloud of type pcl::PointNormal. Contains valid data if m_type is ito::pclXYZNormal.*/
+    pcl::PointCloud<pcl::PointXYZINormal>::Ptr m_pcXYZINormal;     /*!< shared pointer to point cloud of type pcl::PointXYZINormal. Contains valid data if m_type is ito::pclXYZINormal.*/
+    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr m_pcXYZRGBNormal; /*!< shared pointer to point cloud of type pcl::PointXYZRGBNormal. Contains valid data if m_type is ito::pclXYZRGBNormal.*/
 
-    ito::tPCLPointType m_type;
+    ito::tPCLPointType m_type;                                     /*!< type of point cloud covered by this instance */
 };
 
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!
+    \class PCLPolygonMesh
+    \brief generic class that covers a shared pointer to pcl::PolygonMesh that is a class for a polygonal mesh provided by the point cloud library (PCL)
+*/
 class POINTCLOUD_EXPORT PCLPolygonMesh
 {
 public:
@@ -446,8 +529,8 @@ public:
 protected:
 
 private:
-    bool m_valid;
-    pcl::PolygonMesh::Ptr m_polygonMesh;
+    bool m_valid;                        /*!< true if m_polygonMesh is a valid polygonal mesh, else false */
+    pcl::PolygonMesh::Ptr m_polygonMesh; /*!< shared pointer to pcl::PolygonMesh object */
 };
 
 } //end namespace ito
