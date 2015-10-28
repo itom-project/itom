@@ -54,6 +54,8 @@ namespace pclHelper
     ito::tPCLPointType POINTCLOUD_EXPORT guessPointType(const sensor_msgs::PointCloud2 &msg);
 #endif
 
+    ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &mesh, PCLPointCloud &out, const std::vector<int> &indices = std::vector<int>());
+
     ito::RetVal POINTCLOUD_EXPORT pointCloudFromXYZ(const DataObject* mapX, const DataObject* mapY, const DataObject* mapZ, PCLPointCloud &out, bool deleteNaNorInf = false);
     ito::RetVal POINTCLOUD_EXPORT pointCloudFromXYZI(const DataObject* mapX, const DataObject* mapY, const DataObject* mapZ, const DataObject* mapI, PCLPointCloud &out, bool deleteNaNorInf = false);
     ito::RetVal POINTCLOUD_EXPORT pointCloudFromXYZRGBA(const DataObject* mapX, const DataObject* mapY, const DataObject* mapZ, const DataObject* mapColor, PCLPointCloud &out, bool deleteNaNorInf = false);

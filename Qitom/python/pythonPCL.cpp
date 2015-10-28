@@ -4100,7 +4100,7 @@ pointType : {int, enum point.PointXXX}, optional \n\
         }
     }
     
-    if (pointType == ito::pclXYZ || pointType == pclInvalid || pointType == pclXYZ || pointType == pclXYZI
+    if (pointType == ito::pclXYZ || pointType == pclXYZ || pointType == pclXYZI
         || pointType == pclXYZRGBA || pointType == pclXYZNormal || pointType == pclXYZINormal || pointType == pclXYZRGBNormal)
     {
         PyPointCloud* pc = createEmptyPyPointCloud();

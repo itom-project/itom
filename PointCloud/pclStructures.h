@@ -434,7 +434,8 @@ public:
     inline void setPolygonMesh(pcl::PolygonMesh::Ptr &mesh) { m_polygonMesh = mesh; }
     PCLPolygonMesh & operator= (const PCLPolygonMesh &copy);
 
-    inline bool valid() { return m_valid; }
+    inline bool valid() { return m_valid; } //deprecated: remove this at next interface increment in favour to the version below.
+    inline bool valid() const { return m_valid; }
 
     size_t height() const;
     size_t width() const;

@@ -311,6 +311,443 @@ ito::tPCLPointType guessPointType(const sensor_msgs::PointCloud2 &msg)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &mesh, PCLPointCloud &out, const std::vector<int> &indices /*= std::vector<int>()*/)
+{
+    ito::RetVal retval;
+
+    if (mesh.valid())
+    {
+        ito::tPCLPointType t = ito::pclHelper::guessPointType(mesh.polygonMesh()->cloud);
+        ito::tPCLPointType t_out = ito::pclInvalid;
+
+        switch (t)
+        {
+        case ito::pclXYZ:
+        case ito::pclXYZNormal:
+            t_out = ito::pclXYZNormal;
+            break;
+        case ito::pclXYZI:
+        case ito::pclXYZINormal:
+            t_out = ito::pclXYZINormal;
+            break;
+        case ito::pclXYZRGBA:
+        case ito::pclXYZRGBNormal:
+            t_out = ito::pclXYZRGBNormal;
+            break;
+        }
+
+        if (t_out != ito::pclInvalid)
+        {
+            out = ito::PCLPointCloud(t_out);
+            const pcl::Vertices *v;
+            const uint32_t *v_;
+            Eigen::Vector3f a, b;
+            Eigen::Vector3f cog;           //center of gravity of all mesh segments that should be covered
+            Eigen::Vector3f normal;    //normal vector (given in coordinate frame phi) of each center of gravity
+            bool indexed_mode = (indices.size() > 0);
+            int next_index = 0;
+            int index;
+            bool has_next;
+            int count = 0;
+            pcl::PolygonMeshConstPtr meshPtr = mesh.polygonMesh();
+            size_t nrPolygons = meshPtr->polygons.size();
+
+            if (indices.size() > 0)
+            {
+                for (int i = 0; i < indices.size(); ++i)
+                {
+                    if (indices[i] < 0 || indices[i] >= nrPolygons)
+                    {
+                        retval += ito::RetVal(ito::retError, 0, "indices contain invalid values. out of bounds.");
+                        t_out = ito::pclInvalid;
+                        break;
+                    }
+                }
+            }
+
+            if (t_out == ito::pclXYZNormal)
+            {
+                if (t == ito::pclXYZ)
+                {
+                    pcl::PointCloud<pcl::PointXYZ>::Ptr points_(new pcl::PointCloud<pcl::PointXYZ>());
+                    pcl::PointCloud<pcl::PointNormal>::Ptr out_points = out.toPointXYZNormal();
+                    pcl::PointNormal pt;
+                    pt.curvature = 0.0;
+
+                    pcl::fromPCLPointCloud2(meshPtr->cloud, *points_);
+                    has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
+                    
+                    while (has_next)
+                    {
+                        index = indexed_mode ? indices[next_index] : next_index;
+
+                        v = &(meshPtr->polygons[index]);
+                        if( v->vertices.size() >= 3 )
+                        {
+                            v_ = &(v->vertices.front());
+                            cog = Eigen::Vector3f::Zero();
+                            for(size_t j = 0; j < v->vertices.size() ; j++)
+                            {
+                                cog += points_->points[*v_].getVector3fMap();
+                                v_++;
+                            }
+                            v_ = &(v->vertices.front());
+                            a = points_->points[*(v_+1)].getVector3fMap() - points_->points[*v_].getVector3fMap();
+                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap(); 
+                            //     P1
+                            //    /  \
+                            //   P0 - P2
+                            // normal points out of screen if polygon is [0,1,2]
+                            normal = a.cross(b).normalized(); //normal points outside of the surface
+                            cog /= static_cast<float>( v->vertices.size() );
+                            pt.x = cog[0];
+                            pt.y = cog[1];
+                            pt.z = cog[2];
+                            pt.normal_x = normal[0];
+                            pt.normal_y = normal[1];
+                            pt.normal_z = normal[2];
+                            out_points->push_back(pt);
+                            count++;
+                        }
+
+                        next_index ++;
+                        has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    }
+
+                    out_points->resize(count);
+                    out_points->is_dense = true;
+                    out_points->height = 1; //unorganized
+                    out_points->width = count;
+                }
+                else
+                {
+                    pcl::PointCloud<pcl::PointNormal>::Ptr points_(new pcl::PointCloud<pcl::PointNormal>());
+                    pcl::PointCloud<pcl::PointNormal>::Ptr out_points = out.toPointXYZNormal();
+                    pcl::PointNormal pt;
+                    float curvature;
+
+                    pcl::fromPCLPointCloud2(meshPtr->cloud, *points_);
+                    has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
+                    
+                    while (has_next)
+                    {
+                        index = indexed_mode ? indices[next_index] : next_index;
+
+                        v = &(meshPtr->polygons[index]);
+                        if( v->vertices.size() >= 3 )
+                        {
+                            v_ = &(v->vertices.front());
+                            cog = Eigen::Vector3f::Zero();
+                            curvature = 0.0;
+                            for(size_t j = 0; j < v->vertices.size() ; j++)
+                            {
+                                cog += points_->points[*v_].getVector3fMap();
+                                curvature += points_->points[*v_].curvature;
+                                v_++;
+                            }
+                            v_ = &(v->vertices.front());
+                            a = points_->points[*(v_+1)].getVector3fMap() - points_->points[*v_].getVector3fMap();
+                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap(); 
+                            //     P1
+                            //    /  \
+                            //   P0 - P2
+                            // normal points out of screen if polygon is [0,1,2]
+                            normal = a.cross(b).normalized(); //normal points outside of the surface
+                            cog /= static_cast<float>( v->vertices.size() );
+                            pt.x = cog[0];
+                            pt.y = cog[1];
+                            pt.z = cog[2];
+                            pt.normal_x = normal[0];
+                            pt.normal_y = normal[1];
+                            pt.normal_z = normal[2];
+                            pt.curvature = curvature / v->vertices.size();
+                            out_points->push_back(pt);
+                            count++;
+                        }
+
+                        next_index ++;
+                        has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    }
+
+                    out_points->resize(count);
+                    out_points->is_dense = true;
+                    out_points->height = 1; //unorganized
+                    out_points->width = count;
+                }
+            }
+            else if (t_out == ito::pclXYZINormal)
+            {
+                if (t == ito::pclXYZI)
+                {
+                    pcl::PointCloud<pcl::PointXYZI>::Ptr points_(new pcl::PointCloud<pcl::PointXYZI>());
+                    pcl::PointCloud<pcl::PointXYZINormal>::Ptr out_points = out.toPointXYZINormal();
+                    pcl::PointXYZINormal pt;
+                    pt.curvature = 0.0;
+
+                    pcl::fromPCLPointCloud2(meshPtr->cloud, *points_);
+                    has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
+
+                    float intensity;
+                    
+                    while (has_next)
+                    {
+                        index = indexed_mode ? indices[next_index] : next_index;
+
+                        v = &(meshPtr->polygons[index]);
+                        if( v->vertices.size() >= 3 )
+                        {
+                            v_ = &(v->vertices.front());
+                            cog = Eigen::Vector3f::Zero();
+                            intensity = 0.0;
+                            for(size_t j = 0; j < v->vertices.size() ; j++)
+                            {
+                                cog += points_->points[*v_].getVector3fMap();
+                                intensity += points_->points[*v_].intensity;
+                                v_++;
+                            }
+                            v_ = &(v->vertices.front());
+                            a = points_->points[*(v_+1)].getVector3fMap() - points_->points[*v_].getVector3fMap();
+                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap(); 
+                            //     P1
+                            //    /  \
+                            //   P0 - P2
+                            // normal points out of screen if polygon is [0,1,2]
+                            normal = a.cross(b).normalized(); //normal points outside of the surface
+                            cog /= static_cast<float>( v->vertices.size() );
+                            pt.x = cog[0];
+                            pt.y = cog[1];
+                            pt.z = cog[2];
+                            pt.normal_x = normal[0];
+                            pt.normal_y = normal[1];
+                            pt.normal_z = normal[2];
+                            pt.intensity = intensity / v->vertices.size();
+                            out_points->push_back(pt);
+                            count++;
+                        }
+
+                        next_index ++;
+                        has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    }
+
+                    out_points->resize(count);
+                    out_points->is_dense = true;
+                    out_points->height = 1; //unorganized
+                    out_points->width = count;
+                }
+                else
+                {
+                    pcl::PointCloud<pcl::PointXYZINormal>::Ptr points_(new pcl::PointCloud<pcl::PointXYZINormal>());
+                    pcl::PointCloud<pcl::PointXYZINormal>::Ptr out_points = out.toPointXYZINormal();
+                    pcl::PointXYZINormal pt;
+                    float curvature;
+
+                    pcl::fromPCLPointCloud2(meshPtr->cloud, *points_);
+                    has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
+
+                    float intensity;
+                    
+                    while (has_next)
+                    {
+                        index = indexed_mode ? indices[next_index] : next_index;
+
+                        v = &(meshPtr->polygons[index]);
+                        if( v->vertices.size() >= 3 )
+                        {
+                            v_ = &(v->vertices.front());
+                            cog = Eigen::Vector3f::Zero();
+                            intensity = 0.0;
+                            curvature = 0.0;
+                            for(size_t j = 0; j < v->vertices.size() ; j++)
+                            {
+                                cog += points_->points[*v_].getVector3fMap();
+                                intensity += points_->points[*v_].intensity;
+                                curvature += points_->points[*v_].curvature;
+                                v_++;
+                            }
+                            v_ = &(v->vertices.front());
+                            a = points_->points[*(v_+1)].getVector3fMap() - points_->points[*v_].getVector3fMap();
+                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap(); 
+                            //     P1
+                            //    /  \
+                            //   P0 - P2
+                            // normal points out of screen if polygon is [0,1,2]
+                            normal = a.cross(b).normalized(); //normal points outside of the surface
+                            cog /= static_cast<float>( v->vertices.size() );
+                            pt.x = cog[0];
+                            pt.y = cog[1];
+                            pt.z = cog[2];
+                            pt.normal_x = normal[0];
+                            pt.normal_y = normal[1];
+                            pt.normal_z = normal[2];
+                            pt.intensity = intensity / v->vertices.size();
+                            pt.curvature = curvature / v->vertices.size();
+                            out_points->push_back(pt);
+                            count++;
+                        }
+
+                        next_index ++;
+                        has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    }
+
+                    out_points->resize(count);
+                    out_points->is_dense = true;
+                    out_points->height = 1; //unorganized
+                    out_points->width = count;
+                }
+            }
+            else if (t_out == ito::pclXYZRGBNormal)
+            {
+                if (t == ito::pclXYZRGBA)
+                {
+                    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr points_(new pcl::PointCloud<pcl::PointXYZRGBA>());
+                    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr out_points = out.toPointXYZRGBNormal();
+                    pcl::PointXYZRGBNormal pt;
+                    pt.curvature = 0.0;
+
+                    pcl::fromPCLPointCloud2(meshPtr->cloud, *points_);
+                    has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
+
+                    float red,green,blue,alpha;
+                    
+                    while (has_next)
+                    {
+                        index = indexed_mode ? indices[next_index] : next_index;
+
+                        v = &(meshPtr->polygons[index]);
+                        if( v->vertices.size() >= 3 )
+                        {
+                            v_ = &(v->vertices.front());
+                            cog = Eigen::Vector3f::Zero();
+                            red = 0.0; green = 0.0; blue = 0.0; alpha = 0.0;
+                            for(size_t j = 0; j < v->vertices.size() ; j++)
+                            {
+                                cog += points_->points[*v_].getVector3fMap();
+                                red += points_->points[*v_].r;
+                                green += points_->points[*v_].g;
+                                blue += points_->points[*v_].b;
+                                alpha += points_->points[*v_].a;
+                                v_++;
+                            }
+                            v_ = &(v->vertices.front());
+                            a = points_->points[*(v_+1)].getVector3fMap() - points_->points[*v_].getVector3fMap();
+                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap(); 
+                            //     P1
+                            //    /  \
+                            //   P0 - P2
+                            // normal points out of screen if polygon is [0,1,2]
+                            normal = a.cross(b).normalized(); //normal points outside of the surface
+                            cog /= static_cast<float>( v->vertices.size() );
+                            pt.x = cog[0];
+                            pt.y = cog[1];
+                            pt.z = cog[2];
+                            pt.normal_x = normal[0];
+                            pt.normal_y = normal[1];
+                            pt.normal_z = normal[2];
+                            pt.r = red / v->vertices.size();
+                            pt.g = green / v->vertices.size();
+                            pt.b = blue / v->vertices.size();
+                            pt.a = alpha / v->vertices.size();
+                            out_points->push_back(pt);
+                            count++;
+                        }
+
+                        next_index ++;
+                        has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    }
+
+                    out_points->resize(count);
+                    out_points->is_dense = true;
+                    out_points->height = 1; //unorganized
+                    out_points->width = count;
+                }
+                else
+                {
+                    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr points_(new pcl::PointCloud<pcl::PointXYZRGBNormal>());
+                    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr out_points = out.toPointXYZRGBNormal();
+                    pcl::PointXYZRGBNormal pt;
+                    float curvature;
+
+                    pcl::fromPCLPointCloud2(meshPtr->cloud, *points_);
+                    has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
+
+                    float red,green,blue,alpha;
+                    
+                    while (has_next)
+                    {
+                        index = indexed_mode ? indices[next_index] : next_index;
+
+                        v = &(meshPtr->polygons[index]);
+                        if( v->vertices.size() >= 3 )
+                        {
+                            v_ = &(v->vertices.front());
+                            cog = Eigen::Vector3f::Zero();
+                            red = 0.0; green = 0.0; blue = 0.0; alpha = 0.0;
+                            curvature = 0.0;
+                            for(size_t j = 0; j < v->vertices.size() ; j++)
+                            {
+                                cog += points_->points[*v_].getVector3fMap();
+                                red += points_->points[*v_].r;
+                                green += points_->points[*v_].g;
+                                blue += points_->points[*v_].b;
+                                alpha += points_->points[*v_].a;
+                                curvature += points_->points[*v_].curvature;
+                                v_++;
+                            }
+                            v_ = &(v->vertices.front());
+                            a = points_->points[*(v_+1)].getVector3fMap() - points_->points[*v_].getVector3fMap();
+                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap(); 
+                            //     P1
+                            //    /  \
+                            //   P0 - P2
+                            // normal points out of screen if polygon is [0,1,2]
+                            normal = a.cross(b).normalized(); //normal points outside of the surface
+                            cog /= static_cast<float>( v->vertices.size() );
+                            pt.x = cog[0];
+                            pt.y = cog[1];
+                            pt.z = cog[2];
+                            pt.normal_x = normal[0];
+                            pt.normal_y = normal[1];
+                            pt.normal_z = normal[2];
+                            pt.r = red / v->vertices.size();
+                            pt.g = green / v->vertices.size();
+                            pt.b = blue / v->vertices.size();
+                            pt.a = alpha / v->vertices.size();
+                            pt.curvature = curvature / v->vertices.size();
+                            out_points->push_back(pt);
+                            count++;
+                        }
+
+                        next_index ++;
+                        has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    }
+
+                    out_points->resize(count);
+                    out_points->is_dense = true;
+                    out_points->height = 1; //unorganized
+                    out_points->width = count;
+                }
+            }
+            
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError, 0, "no corresponding cloud type with normal vectors could be derived from cloud type of given mesh");
+        }
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, "invalid mesh");
+    }
+    return retval;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> ito::RetVal readXYZData(const cv::Mat *x, const cv::Mat *y, const cv::Mat *z, pcl::PointCloud<pcl::PointXYZ>::Ptr  &cloud, const bool deleteNaNorInf)
 {
     pcl::PointXYZ point;
