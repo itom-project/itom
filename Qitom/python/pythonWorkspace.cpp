@@ -570,7 +570,7 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
                     }
                     if (encodedByteArray)
                     {
-                        item->m_extendedValue = item->m_value = PyBytes_AS_STRING(encodedByteArray);
+                        item->m_extendedValue = item->m_value = QString::fromLatin1(PyBytes_AS_STRING(encodedByteArray));
                         
                         if(item->m_value.length() > 100)
                         {
