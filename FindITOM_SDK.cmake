@@ -42,15 +42,15 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
     
     INCLUDE(${ITOM_SDK_CONFIG_FILE})
 
-    IF (${BUILD_TARGET64})
+    IF (BUILD_TARGET64)
         IF (NOT ((${ITOM_SDK_BUILD_TARGET64} STREQUAL "TRUE") OR (${ITOM_SDK_BUILD_TARGET64} STREQUAL "ON")))
             MESSAGE(FATAL_ERROR "BUILD_TARGET64 (ON) option does not correspond to configuration of itom SDK")
         ENDIF()
-    ELSE (${BUILD_TARGET64})
+    ELSE (BUILD_TARGET64)
         IF (NOT ((${ITOM_SDK_BUILD_TARGET64} STREQUAL "FALSE") OR (${ITOM_SDK_BUILD_TARGET64} STREQUAL "OFF")))
             MESSAGE(FATAL_ERROR "BUILD_TARGET64 (OFF) option does not correspond to configuration of itom SDK")
         ENDIF()
-    ENDIF (${BUILD_TARGET64})
+    ENDIF (BUILD_TARGET64)
 
     #find include directory
     FIND_PATH(ITOM_SDK_INCLUDE_DIR "itom_sdk.h" PATHS "${ITOM_SDK_DIR}" PATH_SUFFIXES "include" DOC "")
