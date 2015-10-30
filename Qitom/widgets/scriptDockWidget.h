@@ -69,7 +69,7 @@ public:
     RetVal appendEditor(ScriptEditorWidget* editorWidget);         /*!<  appends widget, without creating it (for drag&drop, (un)-docking...) */
     ScriptEditorWidget* removeEditor(int index);                    /*!<  removes widget, without deleting it (for drag&drop, (un)-docking...) */
     bool activateTabByFilename(const QString &filename, int line = -1);
-    bool activeTabEnsureLineVisible(int lineNr);
+    bool activeTabEnsureLineVisible(const int lineNr, bool errorMessageClick = false);
 
     QList<ito::ScriptEditorStorage> saveScriptState() const;
     RetVal restoreScriptState(const QList<ito::ScriptEditorStorage> &states);
@@ -101,7 +101,6 @@ private:
     WidgetFindWord *m_pWidgetFindWord;
     DialogReplace *m_pDialogReplace;
     
-
     int m_actTabIndex;                  /*!<  member indicating the tab-index of the active script editor */
 
     // ACTIONS

@@ -70,7 +70,6 @@ void AbstractPyScintillaWidget::init()
     m_textIndicatorNr = indicatorDefine(QsciScintilla::RoundBoxIndicator);
     setIndicatorForegroundColor(Qt::green, m_textIndicatorNr);
     setIndicatorDrawUnder(true, m_textIndicatorNr);
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -308,7 +307,7 @@ void AbstractPyScintillaWidget::selectionChanged()
     if (m_textIndicatorActive)
     {
         m_textIndicatorActive = false;
-        clearIndicatorRange(0,0,nrOfLines,lengthOfLastLine,m_textIndicatorNr);
+        clearIndicatorRange(0, 0, nrOfLines, lengthOfLastLine, m_textIndicatorNr);
     }
 
     QString selection;
@@ -318,6 +317,7 @@ void AbstractPyScintillaWidget::selectionChanged()
     int j;
     int index;
     int selLength;
+
     if (hasSelectedText())
     {
         selection = selectedText();
@@ -334,7 +334,8 @@ void AbstractPyScintillaWidget::selectionChanged()
             {
                 lineText = text(i);
                 lineLength = lineText.length() - selLength;
-                j=0;
+                j = 0;
+
                 while(j <= lineLength)
                 {
                     index = lineText.indexOf(selection, j, Qt::CaseInsensitive);
@@ -371,7 +372,6 @@ QString AbstractPyScintillaWidget::getWordAtPosition(const int &line, const int 
     }
 
     long pos = positionFromLineIndex(line, index);
-
     long start = SendScintilla(QsciScintilla::SCI_WORDSTARTPOSITION, pos, true);
     long end = SendScintilla(QsciScintilla::SCI_WORDENDPOSITION, pos, true);
 
@@ -383,6 +383,7 @@ QString AbstractPyScintillaWidget::getWordAtPosition(const int &line, const int 
         delete[] bytes;
         return word;
     }
+
     return "";
 }
 

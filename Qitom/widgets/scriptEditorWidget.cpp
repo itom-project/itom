@@ -53,8 +53,6 @@ const QString ScriptEditorWidget::lineBreak = QString("\n");
 
 int ScriptEditorWidget::unnamedAutoIncrement = 1;
 
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
 ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     AbstractPyScintillaWidget(parent), 
@@ -66,7 +64,9 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
     m_pythonExecutable(true),
     canCopy(false),
     m_syntaxTimer(NULL),
-    m_classNavigatorTimer(NULL)
+    m_classNavigatorTimer(NULL),
+    m_errorMarkerVisible(false),
+    m_errorMarkerNr(-1)
 {
     bookmarkErrorHandles.clear();
     bookmarkMenuActions.clear();
@@ -222,7 +222,6 @@ RetVal ScriptEditorWidget::initEditor()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::loadSettings()
 {
-
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("PyScintilla");
 
@@ -327,7 +326,7 @@ RetVal ScriptEditorWidget::initMenus()
     editorMenu->addAction(bookmarkMenuActions["prevBM"]);
     editorMenu->addAction(bookmarkMenuActions["clearAllBM"]);
     editorMenu->addSeparator();
-    QMenu *foldMenu = editorMenu->addMenu("folding");
+    QMenu *foldMenu = editorMenu->addMenu(tr("folding"));
     editorMenuActions["foldUnfoldToplevel"] = foldMenu->addAction(tr("fold/unfold &toplevel"), this, SLOT(menuFoldUnfoldToplevel()));
     editorMenuActions["foldUnfoldAll"] = foldMenu->addAction(tr("fold/unfold &all"), this, SLOT(menuFoldUnfoldAll()));
     editorMenuActions["unfoldAll"] = foldMenu->addAction(tr("&unfold all"), this, SLOT(menuUnfoldAll()));
@@ -337,6 +336,9 @@ RetVal ScriptEditorWidget::initMenus()
     //this->addAction(editorMenuActions["save"]);
 
     connect(editorMenu, SIGNAL(aboutToShow()), this, SLOT(preShowContextMenuEditor()));
+
+    m_errorMarkerNr = markerDefine(QsciScintilla::FullBoxIndicator);
+    setMarkerBackgroundColor(QColor(255, 192, 192), m_errorMarkerNr);
 
     return RetVal(retOk);
 }
@@ -546,7 +548,9 @@ bool ScriptEditorWidget::canInsertFromMimeData(const QMimeData *source) const
 //            qDebug() << fext.toLatin1().data();
             if ((fext == "txt") || (fext == "py") || (fext == "c") || (fext == "cpp")
                 || (fext == "h") || (fext == "hpp") || (fext == "cxx") || (fext == "hxx"))
+            {
                 return 1;
+            }
         }
     }
     else
@@ -573,7 +577,9 @@ void ScriptEditorWidget::dropEvent(QDropEvent *event)
     //            qDebug() << fext.toLatin1().data();
                 if ((fext == "txt") || (fext == "py") || (fext == "c") || (fext == "cpp")
                     || (fext == "h") || (fext == "hpp") || (fext == "cxx") || (fext == "hxx"))
+                {
                     QMetaObject::invokeMethod(sew, "openScript", Q_ARG(QString, event->mimeData()->urls().at(0).toLocalFile()), Q_ARG(ItomSharedSemaphore*, NULL));
+                }
             }
         }
         else
@@ -609,26 +615,41 @@ int ScriptEditorWidget::getMarginNumber(int xPos)
         }
     nr++;
     }
+
     return -1;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ScriptEditorWidget::copyAvailable(bool yes)
+void ScriptEditorWidget::copyAvailable(const bool yes)
 {
     canCopy = yes;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal ScriptEditorWidget::setCursorPosAndEnsureVisible(int line)
+RetVal ScriptEditorWidget::setCursorPosAndEnsureVisible(const int line, bool errorMessageClick /*= false*/)
 {
     setCursorPosition(line, 0);
     ensureLineVisible(line);
     ensureCursorVisible();
+
+    if (errorMessageClick)
+    {
+        if (m_errorMarkerVisible)
+        {
+            markerDeleteAll(m_errorMarkerNr);
+        }
+
+        m_errorMarkerVisible = true;
+        markerAdd(line, m_errorMarkerNr);
+    }
+
+    this->setFocus();
+
     return retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal ScriptEditorWidget::setCursorPosAndEnsureVisibleWithSelection(int line, const QString &currentClass, const QString &currentMethod)
+RetVal ScriptEditorWidget::setCursorPosAndEnsureVisibleWithSelection(const int line, const QString &currentClass, const QString &currentMethod)
 {
     ito::RetVal retval;
     
@@ -1108,6 +1129,7 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
     {
         return RetVal(retOk);
     }
+
     if (this->getFilename().isNull())
     {
         return saveAsFile(askFirst);
@@ -1221,7 +1243,6 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
     return RetVal(retOk);
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 //! slot invoked by pythonEnginge::pythonSyntaxCheck
 /*!
@@ -1329,7 +1350,7 @@ void ScriptEditorWidget::updateSyntaxCheck()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool ScriptEditorWidget::event (QEvent * event)
+bool ScriptEditorWidget::event(QEvent *event)
 { // This function is called when staying over an error icon to display the hint
     if (event->type() == QEvent::ToolTip)
     {
@@ -1379,9 +1400,29 @@ bool ScriptEditorWidget::event (QEvent * event)
             m_classNavigatorTimer->start();
         }
     }
-    return QsciScintilla::event(event);
+    else if (m_errorMarkerVisible)
+    {
+        if (event->type() == QEvent::MouseButtonPress || event->type() == QEvent::KeyPress)
+        {
+            markerDeleteAll(m_errorMarkerNr);
+            m_errorMarkerVisible = false;
+        }
+    }
+
+    return AbstractPyScintillaWidget::event(event);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptEditorWidget::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (m_errorMarkerVisible)
+    {
+        markerDeleteAll(m_errorMarkerNr);
+        m_errorMarkerVisible = false;
+    }
+
+    AbstractPyScintillaWidget::mouseReleaseEvent(event);
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //!< bookmark handling
@@ -1502,7 +1543,7 @@ RetVal ScriptEditorWidget::gotoNextBookmark()
     }
     setCursorPosAndEnsureVisible(closestLine);
     return RetVal(retOk);
-    return RetVal(retError);
+//    return RetVal(retError);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1529,6 +1570,7 @@ RetVal ScriptEditorWidget::gotoPreviousBookmark()
         {
             closestLine = markerLine(it->handle);
         }
+
         ++it;
         if (it == bookmarkErrorHandles.end() && closestLine == 0)
         { // eoF reached without finding a bookmark
@@ -1538,8 +1580,7 @@ RetVal ScriptEditorWidget::gotoPreviousBookmark()
     }
     setCursorPosAndEnsureVisible(closestLine);
     return RetVal(retOk);
-    return RetVal(retError);
-
+//    return RetVal(retError);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2324,7 +2365,6 @@ ClassNavigatorItem* ScriptEditorWidget::getPythonNavigatorRoot()
     }
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 //void ScriptEditorWidget::keyPressEvent (QKeyEvent *event)
 //{
@@ -2360,7 +2400,6 @@ ClassNavigatorItem* ScriptEditorWidget::getPythonNavigatorRoot()
 //
 //}
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 void ItomQsciPrinter::formatPage(QPainter &painter, bool drawing, QRect &area, int pagenr)
 {
@@ -2385,8 +2424,5 @@ void ItomQsciPrinter::formatPage(QPainter &painter, bool drawing, QRect &area, i
     area.setBottom(area.bottom() - painter.fontMetrics().height() - 50);
     painter.restore();
 }
-
-
-
 
 } // end namespace ito

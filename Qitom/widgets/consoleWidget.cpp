@@ -191,6 +191,7 @@ void ConsoleWidget::loadSettings()
     {
         wrapMode = 0;
     }
+
     switch (wrapMode)
     {
         case 0: setWrapMode(QsciScintilla::WrapNone); break;
@@ -344,6 +345,7 @@ RetVal ConsoleWidget::startNewCommand(bool clearEditorFirst)
         moveCursorToEnd();
         startLineBeginCmd = lines() - 1;
     }
+
     return RetVal(retOk);
 }
 
@@ -802,7 +804,7 @@ void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)
                     int line = rx.cap(2).toInt(&ok);
                     if (ok)
                     {
-                        seo->openScript(rx.cap(1), NULL, line - 1);
+                        seo->openScript(rx.cap(1), NULL, line - 1, true);
                     }
                 }
             }
@@ -968,10 +970,8 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
                 }
 
                 cmdQueue.push(cmdQueueStruct(singleLine, beginLine + lines[i] - 1, temp.length()));
-
             }
         }
-
     }
 
     //if endLine does not correspond to last line in command line, remove this part
@@ -1155,7 +1155,6 @@ void ConsoleWidget::dragEnterEvent(QDragEnterEvent * event)
                 }
 
                 event->acceptProposedAction();
-   
             }
         }
     }
@@ -1507,22 +1506,13 @@ QString DequeCommandList::getPrevious()
 //----------------------------------------------------------------------------------------------------------------------------------
 QString DequeCommandList::getNext()
 {
-    if (cmdList.size() > 1)
+    if (cmdList.size() > 1 && rit > cmdList.rbegin())
     {
-        if (rit > cmdList.rbegin())
-        {
-            --rit;
-            return *rit;
-        }
-        else
-        {
-            return QString();
-        }
+        --rit;
+        return *rit;
     }
-    else
-    {
-        return QString();
-    }
+
+    return QString();
 }
 
 } //end namespace ito
