@@ -476,31 +476,62 @@ bool PCLPoint::setCurvature(float curvature)
 PCLPointCloud::PCLPointCloud(uint32_t width_, uint32_t height_, ito::tPCLPointType type_,  const PCLPoint &value_)
 {
     m_type = type_;
-    switch(type_)
+
+    if (value_.getType() == ito::pclInvalid)
     {
-        case ito::pclXYZ:
-            m_pcXYZ = pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>(width_,height_,value_.getPointXYZ()));
-            break;
-        case ito::pclXYZI:
-            m_pcXYZI = pcl::PointCloud<pcl::PointXYZI>::Ptr(new pcl::PointCloud<pcl::PointXYZI>(width_,height_,value_.getPointXYZI()));
-            break;
-        case ito::pclXYZRGBA:
-            m_pcXYZRGBA = pcl::PointCloud<pcl::PointXYZRGBA>::Ptr(new pcl::PointCloud<pcl::PointXYZRGBA>(width_,height_,value_.getPointXYZRGBA()));
-            break;
-        case ito::pclXYZNormal:
-            m_pcXYZNormal = pcl::PointCloud<pcl::PointNormal>::Ptr(new pcl::PointCloud<pcl::PointNormal>(width_,height_,value_.getPointXYZNormal()));
-            break;
-        case ito::pclXYZINormal:
-            m_pcXYZINormal = pcl::PointCloud<pcl::PointXYZINormal>::Ptr(new pcl::PointCloud<pcl::PointXYZINormal>(width_,height_,value_.getPointXYZINormal()));
-            break;
-        case ito::pclXYZRGBNormal:
-            m_pcXYZRGBNormal = pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr(new pcl::PointCloud<pcl::PointXYZRGBNormal>(width_,height_,value_.getPointXYZRGBNormal()));
-            break;
-        default:
-            break;
+        switch(type_)
+        {
+            case ito::pclXYZ:
+                m_pcXYZ = pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>(width_,height_));
+                break;
+            case ito::pclXYZI:
+                m_pcXYZI = pcl::PointCloud<pcl::PointXYZI>::Ptr(new pcl::PointCloud<pcl::PointXYZI>(width_,height_));
+                break;
+            case ito::pclXYZRGBA:
+                m_pcXYZRGBA = pcl::PointCloud<pcl::PointXYZRGBA>::Ptr(new pcl::PointCloud<pcl::PointXYZRGBA>(width_,height_));
+                break;
+            case ito::pclXYZNormal:
+                m_pcXYZNormal = pcl::PointCloud<pcl::PointNormal>::Ptr(new pcl::PointCloud<pcl::PointNormal>(width_,height_));
+                break;
+            case ito::pclXYZINormal:
+                m_pcXYZINormal = pcl::PointCloud<pcl::PointXYZINormal>::Ptr(new pcl::PointCloud<pcl::PointXYZINormal>(width_,height_));
+                break;
+            case ito::pclXYZRGBNormal:
+                m_pcXYZRGBNormal = pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr(new pcl::PointCloud<pcl::PointXYZRGBNormal>(width_,height_));
+                break;
+            default:
+                break;
+        }
+    }
+    else
+    {
+        switch(type_)
+        {
+            case ito::pclXYZ:
+                m_pcXYZ = pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>(width_,height_,value_.getPointXYZ()));
+                break;
+            case ito::pclXYZI:
+                m_pcXYZI = pcl::PointCloud<pcl::PointXYZI>::Ptr(new pcl::PointCloud<pcl::PointXYZI>(width_,height_,value_.getPointXYZI()));
+                break;
+            case ito::pclXYZRGBA:
+                m_pcXYZRGBA = pcl::PointCloud<pcl::PointXYZRGBA>::Ptr(new pcl::PointCloud<pcl::PointXYZRGBA>(width_,height_,value_.getPointXYZRGBA()));
+                break;
+            case ito::pclXYZNormal:
+                m_pcXYZNormal = pcl::PointCloud<pcl::PointNormal>::Ptr(new pcl::PointCloud<pcl::PointNormal>(width_,height_,value_.getPointXYZNormal()));
+                break;
+            case ito::pclXYZINormal:
+                m_pcXYZINormal = pcl::PointCloud<pcl::PointXYZINormal>::Ptr(new pcl::PointCloud<pcl::PointXYZINormal>(width_,height_,value_.getPointXYZINormal()));
+                break;
+            case ito::pclXYZRGBNormal:
+                m_pcXYZRGBNormal = pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr(new pcl::PointCloud<pcl::PointXYZRGBNormal>(width_,height_,value_.getPointXYZRGBNormal()));
+                break;
+            default:
+                break;
+        }
     }
 }
 
+//---------------------------------------------------------------------------------------------------------------
 PCLPointCloud::PCLPointCloud (PCLPointCloud &pc)
 {
     m_type = pc.m_type;
@@ -529,6 +560,7 @@ PCLPointCloud::PCLPointCloud (PCLPointCloud &pc)
     }
 }
 
+//---------------------------------------------------------------------------------------------------------------
 PCLPointCloud::PCLPointCloud (const PCLPointCloud &pc)
 {
     m_type = pc.m_type;
@@ -557,8 +589,24 @@ PCLPointCloud::PCLPointCloud (const PCLPointCloud &pc)
     }
 }
 
-PCLPointCloud::PCLPointCloud (const PCLPointCloud &pc, const std::vector< int > &indices)
+//---------------------------------------------------------------------------------------------------------------
+PCLPointCloud::PCLPointCloud (const PCLPointCloud &pc, const std::vector< int > &indices) :
+    m_type(ito::pclInvalid)
 {
+    int size = pc.size();
+    if (indices.size() > size)
+    {
+        throw pcl::PCLException("indices vector is longer than the number of points in the given point cloud",__FILE__, "PCLPointCloud", __LINE__);
+    }
+    
+    for (size_t i = 0; i < indices.size(); ++i)
+    {
+        if (indices[i] < 0 || indices[i] >= size)
+        {
+            throw pcl::PCLException("indices vector contain invalid values.",__FILE__, "PCLPointCloud", __LINE__);
+        }
+    }
+
     m_type = pc.m_type;
     switch(pc.m_type)
     {
@@ -583,12 +631,13 @@ PCLPointCloud::PCLPointCloud (const PCLPointCloud &pc, const std::vector< int > 
     }
 }
 
-
+//---------------------------------------------------------------------------------------------------------------
 void PCLPointCloud::setInvalid()
 {
     createEmptyPointCloud(ito::pclInvalid);
 }
 
+//---------------------------------------------------------------------------------------------------------------
 void PCLPointCloud::createEmptyPointCloud(ito::tPCLPointType type)
 {
     //clear existing data
