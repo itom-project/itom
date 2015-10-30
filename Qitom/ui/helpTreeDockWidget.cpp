@@ -1297,8 +1297,8 @@ void HelpTreeDockWidget::saveIni()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("HelpScriptReference");
-    settings.setValue("percWidthVi", m_percWidthVi);
-    settings.setValue("percWidthUn", m_percWidthUn);
+    settings.setValue("percWidthVi", m_treeWidthVisible);
+    settings.setValue("percWidthUn", m_treeWidthInvisible);
     settings.endGroup();
 }
 
@@ -1310,9 +1310,26 @@ void HelpTreeDockWidget::loadIni()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("HelpScriptReference");
-    m_percWidthVi = settings.value("percWidthVi", "50").toDouble();
-    m_percWidthUn = settings.value("percWidthUn", "50").toDouble();
+    m_treeWidthVisible = settings.value("percWidthVi", "50").toDouble();
+    m_treeWidthInvisible = settings.value("percWidthUn", "50").toDouble();
     settings.endGroup();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void HelpTreeDockWidget::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+
+    QList<int> intList;
+    if (m_treeVisible)
+    {
+        intList  <<  ui.splitter->width()*m_treeWidthVisible/100  <<  ui.splitter->width() * (100 - m_treeWidthVisible) / 100;
+    }
+    else
+    {
+        intList  <<  ui.splitter->width()*m_treeWidthInvisible/100  <<  ui.splitter->width() * (100 - m_treeWidthInvisible) / 100;
+    }
+    ui.splitter->setSizes(intList);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2084,19 +2101,17 @@ void HelpTreeDockWidget::on_splitter_splitterMoved (int pos, int index)
     double width = ui.splitter->width();
     if (m_treeVisible == true)
     {
-        m_percWidthVi = pos / width * 100;
+        m_treeWidthVisible = pos / width * 100;
     }
     else
     {
-        m_percWidthUn = pos / width * 100;
+        m_treeWidthInvisible = pos / width * 100;
     }
 
-    if (m_percWidthVi == 0)
+    if (m_treeWidthVisible == 0)
     {
-        m_percWidthVi = 30;
+        m_treeWidthVisible = 30;
     }
-    // Verhaltnis testweise anzeigen lassen
-    //ui.label->setText(QString("vi %1 un %2").arg(percWidthVi).arg(percWidthUn));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2164,7 +2179,7 @@ void HelpTreeDockWidget::showTreeview()
 {
     m_treeVisible = true;
     QList<int> intList;
-    intList  <<  ui.splitter->width()*m_percWidthVi/100  <<  ui.splitter->width() * (100 - m_percWidthVi) / 100;
+    intList  <<  ui.splitter->width()*m_treeWidthVisible/100  <<  ui.splitter->width() * (100 - m_treeWidthVisible) / 100;
     ui.splitter->setSizes(intList);
 }
 
@@ -2174,7 +2189,7 @@ void HelpTreeDockWidget::unshowTreeview()
 {
     m_treeVisible = false;
     QList<int> intList;
-    intList  <<  ui.splitter->width()*m_percWidthUn/100  <<  ui.splitter->width() * (100 - m_percWidthUn) / 100;
+    intList  <<  ui.splitter->width()*m_treeWidthInvisible/100  <<  ui.splitter->width() * (100 - m_treeWidthInvisible) / 100;
     ui.splitter->setSizes(intList);
 }
 
