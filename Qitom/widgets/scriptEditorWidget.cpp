@@ -337,7 +337,7 @@ RetVal ScriptEditorWidget::initMenus()
 
     connect(editorMenu, SIGNAL(aboutToShow()), this, SLOT(preShowContextMenuEditor()));
 
-    m_errorMarkerNr = markerDefine(QsciScintilla::FullBoxIndicator);
+    m_errorMarkerNr = markerDefine(QsciScintilla::Background);
     setMarkerBackgroundColor(QColor(255, 192, 192), m_errorMarkerNr);
 
     return RetVal(retOk);
