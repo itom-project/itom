@@ -1969,8 +1969,8 @@ namespace dObjHelper
         \param[in]  sizeYMax                the maximum size in y direction
         \param[in]  sizeXMin                the minimum size in x direction
         \param[in]  sizeXMax                the maximum size in x direction
-        \param[in]  numberOfAllowedTypes    number of allowed types appened behind this.
-        \param[in]  Allowed types(mul)      A number of additional variabled (number = numberOfAllowedTypes) containing the type definition e.g. ito::tUint8, ito::tInt8... (order does not care)
+        \param[in]  numberOfAllowedTypes    number of allowed types appened behind this, if zero all types are allowed.
+        \param[in]  Allowed types(mul)      A number of additional variables (number = numberOfAllowedTypes) containing the type definition e.g. ito::tUint8, ito::tInt8... (order does not care)
 
         \return retOk if valid and handle not NULL, else retError
     */
@@ -1988,10 +1988,13 @@ namespace dObjHelper
 
         ito::RetVal retValue;
 
-        va_list vl;
-        va_start(vl, numberOfAllowedTypes);
-        retValue += verifyDataObjectType(dObj, name, numberOfAllowedTypes, vl);
-        va_end(vl);
+        if (numberOfAllowedTypes > 0)
+        {
+            va_list vl;
+            va_start(vl, numberOfAllowedTypes);
+            retValue += verifyDataObjectType(dObj, name, numberOfAllowedTypes, vl);
+            va_end(vl);
+        }
 
         retValue += verifySize(dObj->getSize(0), sizeYMin, sizeYMax, "y-axis", name);
         retValue += verifySize(dObj->getSize(1), sizeXMin, sizeXMax, "x-axis", name);
@@ -2013,7 +2016,7 @@ namespace dObjHelper
         \param[in]  sizeYMax                the maximum size in y direction
         \param[in]  sizeXMin                the minimum size in x direction
         \param[in]  sizeXMax                the maximum size in x direction
-        \param[in]  numberOfAllowedTypes    number of allowed types appened behind this.
+        \param[in]  numberOfAllowedTypes    number of allowed types appened behind this, if zero all types are allowed.
         \param[in]  Allowed types(mul)      A number of additional variabled (number = numberOfAllowedTypes) containing the type definition e.g. ito::tUint8, ito::tInt8... (order does not care)
 
         \return retOk if valid and handle not NULL, else retError
@@ -2032,10 +2035,13 @@ namespace dObjHelper
 
         ito::RetVal retValue;
 
-        va_list vl;
-        va_start(vl, numberOfAllowedTypes);
-        retValue += verifyDataObjectType(dObj, name, numberOfAllowedTypes, vl);
-        va_end(vl);
+        if (numberOfAllowedTypes > 0)
+        {
+            va_list vl;
+            va_start(vl, numberOfAllowedTypes);
+            retValue += verifyDataObjectType(dObj, name, numberOfAllowedTypes, vl);
+            va_end(vl);
+        }
 
         retValue += verifySize(dObj->getSize(0), sizeZMin, sizeZMax, "z-axis", name);
         retValue += verifySize(dObj->getSize(1), sizeYMin, sizeYMax, "y-axis", name);
