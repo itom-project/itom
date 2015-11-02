@@ -2,7 +2,13 @@ SET (target_name qitom)
          
 project(${target_name})
  
-cmake_minimum_required(VERSION 2.8.7)
+cmake_minimum_required(VERSION 2.8.9)
+
+#CMAKE Policies
+IF(CMAKE_VERSION VERSION_GREATER 2.8.12)
+    #https://bugreports.qt.io/browse/QTBUG-39457
+    cmake_policy(SET CMP0043 OLD)
+ENDIF()
   
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)

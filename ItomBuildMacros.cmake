@@ -5,6 +5,8 @@ OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to 
 OPTION(BUILD_OPENCV_SHARED "Use the shared version of OpenCV (default: ON)." ON)
 SET (BUILD_QTVERSION "auto" CACHE STRING "auto: automatically detects Qt4 or Qt5, else use Qt4 or Qt5")
 
+
+
 IF(BUILD_OPENCV_SHARED)
     SET(OpenCV_STATIC FALSE)
 ELSE(BUILD_OPENCV_SHARED)

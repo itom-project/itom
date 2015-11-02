@@ -23,7 +23,12 @@
 #ifndef TREECOMBOBOXPLUGIN_H
 #define TREECOMBOBOXPLUGIN_H
 
+#include "qglobal.h"
+#if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
 #include <QtDesigner/QDesignerCustomWidgetInterface>
+#else
+#include <QtUiPlugin/QDesignerCustomWidgetInterface>
+#endif
 
 
 class TreeComboBoxFactory : public QObject, public QDesignerCustomWidgetInterface

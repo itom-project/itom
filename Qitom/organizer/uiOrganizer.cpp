@@ -49,7 +49,12 @@
 #include <qfiledialog.h>
 #include <qcoreapplication.h>
 #include <qpluginloader.h>
+
+#if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
 #include <QtDesigner/QDesignerCustomWidgetInterface>
+#else
+#include <QtUiPlugin/QDesignerCustomWidgetInterface>
+#endif
 #include <qsettings.h>
 #include <qcoreapplication.h>
 #include <qmainwindow.h>

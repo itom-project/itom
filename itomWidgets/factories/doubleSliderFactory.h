@@ -23,7 +23,12 @@
 #ifndef DOUBLESLIDERFACTORY_H
 #define DOUBLESLIDERFACTORY_H
 
+#include "qglobal.h"
+#if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
 #include <QtDesigner/QDesignerCustomWidgetInterface>
+#else
+#include <QtUiPlugin/QDesignerCustomWidgetInterface>
+#endif
 
 
 class DoubleSliderFactory : public QObject, public QDesignerCustomWidgetInterface

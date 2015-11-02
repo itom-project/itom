@@ -2,8 +2,9 @@ SET (target_name qpropertyeditor)
 
 project(${target_name})
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.9)
 
+#CMAKE Policies
 IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
     if(POLICY CMP0042)
         cmake_policy(SET CMP0042 OLD)
@@ -101,6 +102,10 @@ add_library(${target_name} ${LIBRARY_TYPE} ${qpropertyeditor_SOURCES} ${qpropert
 
 TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} itomCommonLib)
 IF (QT5_FOUND)
+    IF(CMAKE_VERSION VERSION_GREATER 2.8.12)
+        #https://bugreports.qt.io/browse/QTBUG-39457
+        cmake_policy(SET CMP0043 OLD)
+    ENDIF()
     qt5_use_modules(${target_name} ${QT_COMPONENTS})
 ENDIF (QT5_FOUND)
 
