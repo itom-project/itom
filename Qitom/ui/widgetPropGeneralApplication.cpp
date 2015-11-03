@@ -99,12 +99,7 @@ void WidgetPropGeneralApplication::on_btnAdd_clicked()
 {
     QString dir = QFileDialog::getExistingDirectory(this, tr("load directory"), QDir::currentPath());
 
-    if (dir != "")
-    {
-        QDir::setCurrent(dir);
-    }
-
-    if (ui.listWidget->findItems(dir, Qt::MatchExactly).isEmpty())
+    if (dir != "" && ui.listWidget->findItems(dir, Qt::MatchExactly).isEmpty())
     {
         ui.listWidget->addItem(dir);
     }

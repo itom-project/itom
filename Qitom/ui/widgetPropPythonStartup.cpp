@@ -100,13 +100,13 @@ void WidgetPropPythonStartup::on_btnAdd_clicked()
     if (!filenames.empty())
     {
         QDir::setCurrent(QFileInfo(filenames.first()).path());
-    }
 
-    foreach (QString filename, filenames)
-    {
-        if (ui.listWidget->findItems(filename, Qt::MatchExactly).isEmpty())
+        foreach (QString filename, filenames)
         {
-            ui.listWidget->addItem(filename);
+            if (ui.listWidget->findItems(filename, Qt::MatchExactly).isEmpty())
+            {
+                ui.listWidget->addItem(filename);
+            }
         }
     }
 }

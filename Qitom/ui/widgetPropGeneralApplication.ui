@@ -37,6 +37,13 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>If you have to include some other library paths, add the path to this list.</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_2">
