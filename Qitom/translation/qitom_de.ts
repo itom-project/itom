@@ -2517,6 +2517,21 @@ dem Editor ein.</translation>
         <source>show message before closing the application</source>
         <translation>Vor dem Schließen von itom fragen</translation>
     </message>
+    <message>
+        <location line="+10"/>
+        <source>Library Path(s)</source>
+        <translation type="unfinished">Bibliotheksverzeichnis(se)</translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>Add Path</source>
+        <translation type="unfinished">Hinzufügen</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Remove</source>
+        <translation type="unfinished">Entfernen</translation>
+    </message>
 </context>
 <context>
     <name>WidgetPropGeneralLanguage</name>
@@ -3209,7 +3224,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::ConsoleWidget</name>
     <message>
-        <location filename="../widgets/consoleWidget.cpp" line="+880"/>
+        <location filename="../widgets/consoleWidget.cpp" line="+882"/>
         <source>script execution</source>
         <translation type="unfinished">Skript wird ausgeführt</translation>
     </message>
@@ -4502,7 +4517,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Platzhalter: &lt;keine Vorlage&gt;</translation>
     </message>
     <message>
-        <location line="+455"/>
+        <location line="+472"/>
         <source>Database %s could not be opened</source>
         <translation type="unfinished">Datenbank &apos;%s&apos; konnte nicht geöffnet werden</translation>
     </message>
@@ -5824,12 +5839,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Die Datei &apos;%1&apos;  ist kein Python-Makro</translation>
     </message>
     <message>
-        <location line="+46"/>
+        <location line="+47"/>
         <source>The following files have been changed and should be safed:</source>
         <translation>Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>
     <message>
-        <location line="+551"/>
+        <location line="+552"/>
         <source>move left</source>
         <translation>Nach Links verschieben</translation>
     </message>
@@ -6175,7 +6190,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::ScriptEditorOrganizer</name>
     <message>
-        <location filename="../organizer/scriptEditorOrganizer.cpp" line="+298"/>
+        <location filename="../organizer/scriptEditorOrganizer.cpp" line="+293"/>
         <source>Script Editor</source>
         <translation>Skript-Editor</translation>
     </message>
@@ -6193,7 +6208,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::ScriptEditorWidget</name>
     <message>
-        <location filename="../widgets/scriptEditorWidget.cpp" line="+289"/>
+        <location filename="../widgets/scriptEditorWidget.cpp" line="+288"/>
         <source>&amp;toggle bookmark</source>
         <translation type="unfinished">Lesezeichen ein-/aus&amp;schalten</translation>
     </message>
@@ -6219,12 +6234,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     </message>
     <message>
         <location line="+1"/>
-        <location line="+212"/>
+        <location line="+215"/>
         <source>&amp;disable breakpoint</source>
         <translation type="unfinished">Haltepunkt &amp;deaktivieren</translation>
     </message>
     <message>
-        <location line="-211"/>
+        <location line="-214"/>
         <source>&amp;edit condition</source>
         <translation type="unfinished">Bedingungen &amp;bearbeiten</translation>
     </message>
@@ -6324,12 +6339,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">&amp;Kodierung einfügen...</translation>
     </message>
     <message>
-        <location line="+179"/>
+        <location line="+182"/>
         <source>&amp;enable breakpoint</source>
         <translation type="unfinished">Haltepunkte d&amp;eaktivieren</translation>
     </message>
     <message>
-        <location line="+483"/>
+        <location line="+502"/>
         <source>insert codec</source>
         <translation type="unfinished">Kodierung einfügen</translation>
     </message>
@@ -6340,19 +6355,19 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     </message>
     <message>
         <location line="+38"/>
-        <location line="+83"/>
+        <location line="+84"/>
         <location line="+48"/>
         <source>unsaved changes</source>
         <translation type="unfinished">Ungespeicherte Änderungen</translation>
     </message>
     <message>
-        <location line="-131"/>
-        <location line="+131"/>
+        <location line="-132"/>
+        <location line="+132"/>
         <source>there are unsaved changes in the current document. Do you want to save it first?</source>
         <translation type="unfinished">Es gibt noch ungespeicherte Änderungen im aktuellen Dokument. Sollen diese zuerst gespeichert werden?</translation>
     </message>
     <message>
-        <location line="-114"/>
+        <location line="-115"/>
         <source>error while opening file</source>
         <translation type="unfinished">Fehler beim Öffnen der Datei</translation>
     </message>
@@ -6362,7 +6377,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Datei %1 konnte nicht geladen werden</translation>
     </message>
     <message>
-        <location line="+66"/>
+        <location line="+67"/>
         <source>there are unsaved changes in the document &apos;%1&apos;. Do you want to save it first?</source>
         <translation type="unfinished">Im Dokument &apos;%1&apos; gibt es noch ungespeicherte Änderungen. Sollen diese zuerst gespeichert werden?</translation>
     </message>
@@ -6384,7 +6399,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Speichern unter...</translation>
     </message>
     <message>
-        <location line="+698"/>
+        <location line="+717"/>
         <source>Print</source>
         <translation>Drucken</translation>
     </message>
@@ -6424,7 +6439,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>{Globaler Gültigkeitsbereich}</translation>
     </message>
     <message>
-        <location filename="../widgets/scriptEditorWidget.h" line="+88"/>
+        <location filename="../widgets/scriptEditorWidget.h" line="+91"/>
         <source>Untitled%1</source>
         <translation type="unfinished">Unbenannt%1</translation>
     </message>
@@ -7025,6 +7040,14 @@ Katesisch</translation>
     </message>
 </context>
 <context>
+    <name>ito::WidgetPropGeneralApplication</name>
+    <message>
+        <location filename="../ui/widgetPropGeneralApplication.cpp" line="+97"/>
+        <source>load directory</source>
+        <translation type="unfinished">Verzeichnis hinzufügen</translation>
+    </message>
+</context>
+<context>
     <name>ito::WidgetPropGeneralLanguage</name>
     <message>
         <location filename="../ui/widgetPropGeneralLanguage.cpp" line="+115"/>
@@ -7056,13 +7079,13 @@ Katesisch</translation>
         <translation>Updates und Downloads</translation>
     </message>
     <message>
-        <location line="+217"/>
-        <location line="+459"/>
+        <location line="+219"/>
+        <location line="+457"/>
         <source>Cancel</source>
         <translation>Abbrechen</translation>
     </message>
     <message>
-        <location line="-390"/>
+        <location line="-388"/>
         <source>Invalid type attribute of xml file</source>
         <translation>Ungültiges Typen-Attribut der XML-Datei</translation>
     </message>
@@ -7107,7 +7130,7 @@ Katesisch</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+141"/>
         <source>download error</source>
         <translation>Download-Fehler</translation>
     </message>
@@ -7145,12 +7168,12 @@ Katesisch</translation>
 <context>
     <name>ito::WidgetPropPythonStartup</name>
     <message>
-        <location filename="../ui/widgetPropPythonStartup.cpp" line="+42"/>
+        <location filename="../ui/widgetPropPythonStartup.cpp" line="+43"/>
         <source>base path for relative pathes: </source>
         <translation type="unfinished">Basispfad der relativen Pfade: </translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+55"/>
         <source>load python script</source>
         <translation type="unfinished">Pyhton-Skript laden</translation>
     </message>

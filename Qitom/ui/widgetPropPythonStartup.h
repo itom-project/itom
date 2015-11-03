@@ -24,11 +24,8 @@
 #define WIDGETPROPPYTHONSTARTUP_H
 
 #include "abstractPropertyPageWidget.h"
-
 #include <qlistwidget.h>
-
 #include <qwidget.h>
-
 #include "ui_widgetPropPythonStartup.h"
 
 namespace ito
@@ -49,19 +46,16 @@ protected:
 
 private:
     Ui::WidgetPropPythonStartup ui;
-    
 
 signals:
 
 public slots:
-
 
 private slots:
     void on_listWidget_currentItemChanged(QListWidgetItem* current, QListWidgetItem* previous);
     void on_listWidget_itemActivated(QListWidgetItem* item);
     void on_btnAdd_clicked();
     void on_btnRemove_clicked();
-
 };
 
 } //end namespace ito

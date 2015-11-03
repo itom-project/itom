@@ -34,16 +34,19 @@
 namespace ito
 {
 
+//----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropPythonGeneral::WidgetPropPythonGeneral(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
 {
     ui.setupUi(this);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropPythonGeneral::~WidgetPropPythonGeneral()
 {
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropPythonGeneral::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -56,6 +59,7 @@ void WidgetPropPythonGeneral::readSettings()
     settings.endGroup();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropPythonGeneral::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);

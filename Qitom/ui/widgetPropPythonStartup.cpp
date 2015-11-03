@@ -34,6 +34,7 @@
 namespace ito
 {
 
+//----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropPythonStartup::WidgetPropPythonStartup(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
 {
@@ -44,10 +45,12 @@ WidgetPropPythonStartup::WidgetPropPythonStartup(QWidget *parent) :
     ui.btnRemove->setEnabled(false);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropPythonStartup::~WidgetPropPythonStartup()
 {
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropPythonStartup::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -58,23 +61,21 @@ void WidgetPropPythonStartup::readSettings()
     {
         settings.setArrayIndex(i);
 
-        ui.listWidget->addItem(settings.value("file",QString()).toString());        
+        ui.listWidget->addItem(settings.value("file", QString()).toString());
     }
 
     settings.endArray();
-
-
     settings.endGroup();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropPythonStartup::writeSettings()
 {
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     QStringList files;
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("Python");
-
     settings.beginWriteArray("startupFiles");
-    for (int i = 0 ; i < ui.listWidget->count() ; i++)
+    for (int i = 0; i < ui.listWidget->count(); i++)
     {
         settings.setArrayIndex(i);
         settings.setValue("file", ui.listWidget->item(i)->text());
@@ -85,11 +86,13 @@ void WidgetPropPythonStartup::writeSettings()
     settings.endGroup();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropPythonStartup::on_listWidget_currentItemChanged(QListWidgetItem* current, QListWidgetItem* /*previous*/)
 {
     ui.btnRemove->setEnabled(current != NULL);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropPythonStartup::on_btnAdd_clicked()
 {
     QStringList filenames = QFileDialog::getOpenFileNames(this, tr("load python script"), QDir::currentPath(), tr("python script (*.py)"));
@@ -108,6 +111,7 @@ void WidgetPropPythonStartup::on_btnAdd_clicked()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropPythonStartup::on_btnRemove_clicked()
 {
     qDeleteAll(ui.listWidget->selectedItems());
@@ -117,12 +121,13 @@ void WidgetPropPythonStartup::on_btnRemove_clicked()
     }*/
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropPythonStartup::on_listWidget_itemActivated(QListWidgetItem* item)
 {
     if (item)
     {
-        item->setFlags(item->flags() | Qt::ItemIsEditable);
-        ui.listWidget->editItem(item);
+/*        item->setFlags(item->flags() | Qt::ItemIsEditable);
+        ui.listWidget->editItem(item);*/
     }
 }
 

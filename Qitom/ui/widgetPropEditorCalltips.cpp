@@ -42,6 +42,7 @@ WidgetPropEditorCalltips::~WidgetPropEditorCalltips()
 {
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorCalltips::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
