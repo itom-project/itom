@@ -1,6 +1,6 @@
 ﻿itom measurement system
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2014, Institut für Technische Optik (ITO), 
+Copyright (C) 2015, Institut für Technische Optik (ITO), 
 Universität Stuttgart, Germany
 
 itom is free software and is provided under the terms of the 

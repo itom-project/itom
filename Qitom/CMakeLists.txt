@@ -14,8 +14,7 @@ OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to 
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
 OPTION(BUILD_WITH_PYMATLAB "Build itom with integrated python module 'matlab' to control and use Matlab within itom." OFF)
-OPTION(CONSIDER_GIT_SVN "If ON GIT or SVN will be considered." ON)
-OPTION(PREFER_GIT "If ON GIT will be prefered, else use SVN." ON)
+OPTION(CONSIDER_GIT_SVN "If ON GIT version history will be considered." ON)
 OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
 OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and itomCommonQtLib as shared library (default)" ON)
@@ -436,12 +435,6 @@ endif(MSVC)
 #    ${CMAKE_CURRENT_SOURCE_DIR}/../translation/qitom_de.ts
 #)
 
-#if (QT5_FOUND)
-#    qt5_add_translation(qitom_qm ${qitom_ts})
-#else (QT5_FOUND)
-#    QT4_ADD_TRANSLATION(qitom_qm ${qitom_ts})
-#endif (QT5_FOUND)
-
 #add filters to visual studio
 ADD_SOURCE_GROUP(api)
 ADD_SOURCE_GROUP(helper)
@@ -478,15 +471,11 @@ foreach( OUTPUTCONFIG ${CMAKE_CONFIGURATION_TYPES} )
     set( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_${OUTPUTCONFIG} ${ITOMOUTPUTDIR} )
 endforeach( OUTPUTCONFIG CMAKE_CONFIGURATION_TYPES )
 
-# HANDLE VERSION (FROM SVN, GIT...)
+# HANDLE VERSION (FROM GIT)
 UNSET(GIT_FOUND CACHE)
 find_package(Git)
-UNSET(SUBWCREV_FOUND CACHE)
-FIND_PROGRAM(SUBWCREV_FOUND "subwcrev") #change to git
-MARK_AS_ADVANCED(SUBWCREV_FOUND) #only show in cmake gui if Advanced-checkbox is marked
-SET( VERSION_DEPENDENCY "")
 
-IF(CONSIDER_GIT_SVN AND GIT_FOUND AND PREFER_GIT)
+IF(CONSIDER_GIT_SVN AND GIT_FOUND)
     MESSAGE(STATUS "Using GIT as repository information")
     CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/pyGit2Header.py.in ${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py )
     
@@ -495,25 +484,17 @@ IF(CONSIDER_GIT_SVN AND GIT_FOUND AND PREFER_GIT)
         COMMAND    ${PYTHON_EXECUTABLE}
         "${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py"
     )
-ELSEIF(CONSIDER_GIT_SVN AND SUBWCREV_FOUND AND NOT(PREFER_GIT))
-    MESSAGE(STATUS "Using SVN as repository information")
-
-    ADD_CUSTOM_TARGET (
-        ${target_name}_prebuild
-        COMMAND    subwcrev
-        " \"${CMAKE_CURRENT_SOURCE_DIR}\" \"${CMAKE_CURRENT_SOURCE_DIR}/version.tmpl\" \"${CMAKE_CURRENT_BINARY_DIR}/version.h\" "
-    )
 ELSE()
-    MESSAGE(STATUS "subwcrev (subversion tool) could not be found. Default version.h file is generated")
-    FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/version_nosvn.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    MESSAGE(STATUS "Git versioning was not enabled (CONSIDER_GIT_SVN OFF) or git could not be found. Default version.h file is generated")
+    FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/version_nogit.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
     FILE(REMOVE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
-    FILE(RENAME ${CMAKE_CURRENT_BINARY_DIR}/version_nosvn.h ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+    FILE(RENAME ${CMAKE_CURRENT_BINARY_DIR}/version_nogit.h ${CMAKE_CURRENT_BINARY_DIR}/version.h)
     
     #empty target, necessary for translations (later). All prebuild-events are connected to this target.
     ADD_CUSTOM_TARGET (
         ${target_name}_prebuild
     )
-ENDIF(CONSIDER_GIT_SVN AND GIT_FOUND AND PREFER_GIT)
+ENDIF(CONSIDER_GIT_SVN AND GIT_FOUND)
 # END HANDLE VERSION
 
 #handle translations BEGIN
@@ -575,7 +556,7 @@ IF(APPLE)
     SET_SOURCE_FILES_PROPERTIES(${target_icon_path} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
     # Add executable for OS X
-    ADD_EXECUTABLE(${target_name} MACOSX_BUNDLE ${target_icon_path} ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENDENCY} )
+    ADD_EXECUTABLE(${target_name} MACOSX_BUNDLE ${target_icon_path} ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
 
     # SET_SOURCE_FILES_PROPERTIES(
     #     ${CMAKE_BINARY_DIR}/../itoDebugger.py
@@ -603,7 +584,7 @@ IF(APPLE)
     COPY_TO_BUNDLE(${target_name} "${CMAKE_CURRENT_BINARY_DIR}/../demo" "../demo")
 ELSE(APPLE)
     # Executable for WINDOWS and LINUX
-    ADD_EXECUTABLE(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} ${VERSION_DEPENDENCY} )
+    ADD_EXECUTABLE(${target_name} WIN32 ${qitom_SOURCES} ${qitom_HEADERS} ${qitom_HEADERS_NOMOC} ${qitom_HEADERS_MOC} ${qitom_ui_MOC} ${qitom_rcc_MOC} ${EXISTING_TRANSLATION_FILES} )
 
     # Set binary file names for  WINDOWS and LINUX
     set_target_properties(${target_name} PROPERTIES OUTPUT_NAME_DEBUG "qitomd")
@@ -653,8 +634,6 @@ IF(BUILD_WITH_PCL)
 ELSE(BUILD_WITH_PCL)
     SET(POINTCLOUD_LIBRARIES "")
 ENDIF(BUILD_WITH_PCL)
-
-#TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_WIDGET_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor)
 
 IF (QT5_FOUND)
     if (WIN32)
