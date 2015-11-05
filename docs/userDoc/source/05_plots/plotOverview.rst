@@ -34,6 +34,13 @@ The result of both examples looks like this (if no other default plot class has 
     :scale: 70%
     :align: left
     
+Instead of writing the full class name of a plot plugin that you want to use, you can also set the parameter *className* to some short-hand aliases.
+Depending on the alias, the default plot class (see itom's :ref:`property dialog <gui-propertydialog>`) is chosen. Possible aliases are:
+
+* dataObject: 1D, 2D, 2.5D
+* pointCloud: 2.5D
+* polygonMesh: 2.5D
+    
 In the following sections, you will see that any plot has various properties that can be set in the property dialog or using square brackets in Python. However, you can also
 pass various properties to the :py:meth:`~itom.plot` command such that your customized plot is displayed.
 
@@ -93,6 +100,11 @@ is set to True (which is also the default case):
     cam = dataIO("DummyGrabber")
     cam.setAutoGrabbing(True) #can be omitted if auto grabbing already enabled
     liveImage(cam)
+    
+The command :py:meth:`itom.liveImage` has almost the same arguments than :py:meth:`itom.plot`. You can also set a desired plot plugin using the argument *className*.
+Similar to the command :py:meth:`itom.plot`, described above, there are also aliases available that describe the desired plot style of the camera's live image:
+
+* dataObject: 1D, 2D
 
 You can also show the live image of any camera using the GUI. Right-click on the opened camera instance in the plugin toolbox and choose **live image**:
 
