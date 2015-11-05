@@ -174,10 +174,24 @@ PyObject* PythonFigure::PyFigure_repr(PyFigure *self)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigurePlot_doc,"plot(data, [areaIndex, className, properties]) -> plots a dataObject in the current or given area of this figure\n\
-Plot an existing dataObject in not dockable, not blocking window. \n\
-The style of the plot will depend on the object dimensions.\n\
-If x-dim or y-dim are equal to 1, plot will be a lineplot else a 2D-plot.\n\
+PyDoc_STRVAR(pyFigurePlot_doc,"plot(data, [areaIndex, className, properties]) -> plots an existing dataObject, pointCloud or polygonMesh in the current or given area of this figure\n\
+\n\
+The style of the plot depends on the object dimensions.\n\
+\n\
+If no 'className' is given, the type of the plot is chosen depending on the type and the size \n\
+of the object. The defaults for several plot classes can be adjusted in the property dialog of itom. \n\
+\n\
+You can also set a class name of your preferred plot plugin (see also property dialog of itom). \n\
+If your preffered plot is not able to display the given object, a warning is returned and the default \n\
+plot type is used again. For dataObjects, it is also possible to simply set 'className' to '1D', '2D' \n\
+or '2.5D' in order to choose the default plot type depending on these aliases. For pointCloud and \n\
+polygonMesh only the alias '2.5D' is valid. \n\
+\n\
+Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
+or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
+\n\
+Use the 'properties' argument to pass a dictionary with properties you want to set to a certain value. \n\
+\n\
 \n\
 Parameters\n\
 -----------\n\
@@ -186,7 +200,7 @@ data : {DataObject} \n\
 areaIndex: {int}, optional \n\
     Area number where the plot should be put if subplots have been created\n\
 className : {str}, optional \n\
-    class name of desired plot (if not indicated default plot will be used (see application settings) \n\
+    class name of desired plot (if not indicated default plot will be used, see application settings) \n\
 properties : {dict}, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget.");
 PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *kwds)
@@ -309,6 +323,19 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
 PyDoc_STRVAR(pyFigureLiveImage_doc,"liveImage(cam, [areaIndex, className, properties]) -> shows a camera live image in the current or given area of this figure\n\
 Creates a plot-image (2D) and automatically grabs images into this window.\n\
 This function is not blocking.\n\
+\n\
+If no 'className' is given, the type of the plot is chosen depending on the type and the size \n\
+of the object. The defaults for several plot classes can be adjusted in the property dialog of itom. \n\
+\n\
+You can also set a class name of your preferred plot plugin (see also property dialog of itom). \n\
+If your preferred plot is not able to display the given object, a warning is returned and the default \n\
+plot type is used again. For dataObjects, it is also possible to simply set 'className' to '1D' or '2D' \n\
+in order to choose the default plot type depending on these aliases. \n\
+\n\
+Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
+or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
+\n\
+Use the 'properties' argument to pass a dictionary with properties you want to set to a certain value. \n\
 \n\
 Parameters\n\
 -----------\n\

@@ -2923,7 +2923,6 @@ RetVal UiOrganizer::getObjectID(const QObject *obj, QSharedPointer<unsigned int>
 //}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//RetVal UiOrganizer::figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore /*= NULL*/)
 ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retval;
@@ -2951,8 +2950,7 @@ ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, QSharedPoint
 
     if (!retval.containsError())
     {
-
-        if (m_dialogList.contains(*figHandle))
+		if (m_dialogList.contains(*figHandle))
         {
             fig = qobject_cast<FigureWidget*>(m_dialogList[*figHandle].container->getUiWidget());
             if (fig)

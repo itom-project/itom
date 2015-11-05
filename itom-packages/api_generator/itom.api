@@ -122,7 +122,7 @@ itom.figure.docked
 itom.figure.handle
 itom.figure.hide() -> hides figure without deleting it
 itom.figure.liveImage(cam, [areaIndex, className, properties]) -> shows a camera live image in the current or given area of this figure
-itom.figure.plot(data, [areaIndex, className, properties]) -> plots a dataObject in the current or given area of this figure
+itom.figure.plot(data, [areaIndex, className, properties]) -> plots an existing dataObject, pointCloud or polygonMesh in the current or given area of this figure
 itom.figure.show() -> shows figure
 itom.figure.subplot(index) -> returns plotItem of desired subplot
 itom.filter(name [, furtherParameters, ...]) -> invoke a filter (or algorithm) function from an algorithm-plugin.
@@ -148,14 +148,14 @@ itom.getDefaultScaleableUnits() -> Get a list with the strings of the standard s
 itom.getPalette(name) -> get the palette for color bars defined by name.
 itom.getPaletteList(typefilter) -> get a list of color bars / palettes.
 itom.getScreenInfo() -> returns dictionary with information about all available screens.
-itom.liveImage(cam, [className, properties]) -> show a camera live image in a newly created figure
+itom.liveImage(cam, [className, properties]) -> show a camera live image in a new figure
 itom.loadDataObject(filename, dataObject [, doNotAppendIDO]) -> load a dataObject from the harddrive.
 itom.loadIDC(filename) -> load a pickled idc-file and return the content as dictionary
 itom.loadMatlabMat(filename) -> loads Matlab mat-file by using scipy methods and returns the loaded dictionary.
 itom.newScript() -> opens an empty, new script in the current script window.
 itom.numeric:: [module]
 itom.openScript(filename) -> open the given script in current script window.
-itom.plot(data, [className, properties]) -> plots a dataObject in a newly created figure
+itom.plot(data, [className, properties]) -> plots a dataObject, pointCloud or polygonMesh in a new figure
 itom.plotHelp(plotName [, dictionary = False]) -> generates an online help for the specified plot.
 itom.plotItem(figure | uiItem[, subplotIdx]) -> instance of the plot or subplot of a figure.
 itom.plotItem.PrimitiveCircle

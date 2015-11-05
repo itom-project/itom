@@ -215,18 +215,33 @@ PyObject* PythonItom::PyClearCommandLine(PyObject *pSelf)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotImage_doc,"plot(data, [className, properties]) -> plots a dataObject in a newly created figure \n\
+PyDoc_STRVAR(pyPlotImage_doc,"plot(data, [className, properties]) -> plots a dataObject, pointCloud or polygonMesh in a new figure \n\
 \n\
-Plot an existing dataObject in dockable, not blocking window. \n\
+Plots an existing dataObject, pointCloud or polygonMesh in a dockable, not blocking window. \n\
 The style of the plot depends on the object dimensions.\n\
-If x-dim or y-dim are equal to 1, plot will be a line-plot, else a 2D-plot.\n\
+\n\
+If no 'className' is given, the type of the plot is chosen depending on the type and the size \n\
+of the object. The defaults for several plot classes can be adjusted in the property dialog of itom. \n\
+\n\
+You can also set a class name of your preferred plot plugin (see also property dialog of itom). \n\
+If your preffered plot is not able to display the given object, a warning is returned and the default \n\
+plot type is used again. For dataObjects, it is also possible to simply set 'className' to '1D', '2D' \n\
+or '2.5D' in order to choose the default plot type depending on these aliases. For pointCloud and \n\
+polygonMesh only the alias '2.5D' is valid. \n\
+\n\
+Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
+or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
+\n\
+Use the 'properties' argument to pass a dictionary with properties you want to set to a certain value. \n\
 \n\
 Parameters \n\
 ----------- \n\
-data : {DataObject} \n\
+data : {DataObject, PointCloud, PolygonMesh} \n\
     Is the data object whose region of interest will be plotted.\n\
 className : {str}, optional \n\
-    class name of desired plot (if not indicated or if the className can not be found, the default plot will be used (see application settings) \n\
+    class name of desired plot (if not indicated or if the className can not be found, the default plot will be used (see application settings)) \n\
+	Depending on the object, you can also use '1D', '2D' or '2.5D' for displaying the object in the default plot of \n\
+	the indicated categories. \n\
 properties : {dict}, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget.");
 PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
@@ -416,10 +431,23 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 //}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyLiveImage_doc,"liveImage(cam, [className, properties]) -> show a camera live image in a newly created figure\n\
+PyDoc_STRVAR(pyLiveImage_doc,"liveImage(cam, [className, properties]) -> show a camera live image in a new figure\n\
 \n\
 Creates a plot-image (2D) and automatically grabs images into this window.\n\
 This function is not blocking.\n\
+\n\
+If no 'className' is given, the type of the plot is chosen depending on the type and the size \n\
+of the object. The defaults for several plot classes can be adjusted in the property dialog of itom. \n\
+\n\
+You can also set a class name of your preferred plot plugin (see also property dialog of itom). \n\
+If your preferred plot is not able to display the given object, a warning is returned and the default \n\
+plot type is used again. For dataObjects, it is also possible to simply set 'className' to '1D' or '2D' \n\
+in order to choose the default plot type depending on these aliases. \n\
+\n\
+Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
+or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
+\n\
+Use the 'properties' argument to pass a dictionary with properties you want to set to a certain value. \n\
 \n\
 Parameters \n\
 ----------- \n\

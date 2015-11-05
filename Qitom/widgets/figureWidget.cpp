@@ -281,21 +281,36 @@ RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, 
 
     *canvasWidget = NULL;
 
-    if (dwo)
-    {
-        int dims = dataObj->getDims();
-        int sizex = dataObj->getSize(dims - 1);
-        int sizey = dataObj->getSize(dims - 2);
-        if ((dims == 1) || ((dims > 1) && ((sizex == 1) || (sizey == 1))))
-        {
-            plotClassName = dwo->getFigureClass("DObjStaticLine", className, retval);
-            
-        }
-        else
-        {
-            plotClassName = dwo->getFigureClass("DObjStaticImage", className, retval);
-            //not 1D so try 2D;-) new 2dknoten()
-        }
+	if (dwo)
+	{
+		/* if className is 1D, 2D, 2.5D or 3D, the default from the respective categories is used:*/
+		if (className.compare("1d", Qt::CaseInsensitive) == 0)
+		{
+			plotClassName = dwo->getFigureClass("DObjStaticLine", "", retval);
+		}
+		else if (className.compare("2d", Qt::CaseInsensitive) == 0)
+		{
+			plotClassName = dwo->getFigureClass("DObjStaticImage", "", retval);
+		}
+		else if (className.compare("2.5d", Qt::CaseInsensitive) == 0)
+		{
+			plotClassName = dwo->getFigureClass("PerspectivePlot", "", retval);
+		}
+		else
+		{
+			int dims = dataObj->getDims();
+			int sizex = dataObj->getSize(dims - 1);
+			int sizey = dataObj->getSize(dims - 2);
+			if ((dims == 1) || ((dims > 1) && ((sizex == 1) || (sizey == 1))))
+			{
+				plotClassName = dwo->getFigureClass("DObjStaticLine", className, retval);
+
+			}
+			else
+			{
+				plotClassName = dwo->getFigureClass("DObjStaticImage", className, retval);
+			}
+		}
 
         QWidget *destWidget = prepareWidget(plotClassName, areaRow, areaCol, retval);
 
@@ -395,15 +410,31 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
         
         if (!retval.containsError())
         {
-            if (sizex->getVal<int>() == 1 || sizey->getVal<int>() == 1)
-            {
-                plotClassName = dwo->getFigureClass("DObjLiveLine", className, retval);
-                isLine = true;
-            }
-            else
-            {
-                plotClassName = dwo->getFigureClass("DObjLiveImage", className, retval);
-            }
+			/* if className is 1D, 2D, 2.5D or 3D, the default from the respective categories is used:*/
+			if (className.compare("1d", Qt::CaseInsensitive) == 0)
+			{
+				plotClassName = dwo->getFigureClass("DObjLiveLine", "", retval);
+			}
+			else if (className.compare("2d", Qt::CaseInsensitive) == 0)
+			{
+				plotClassName = dwo->getFigureClass("DObjLiveImage", "", retval);
+			}
+			else if (className.compare("2.5d", Qt::CaseInsensitive) == 0)
+			{
+				plotClassName = dwo->getFigureClass("PerspectivePlot", "", retval);
+			}
+			else
+			{
+				if (sizex->getVal<int>() == 1 || sizey->getVal<int>() == 1)
+				{
+					plotClassName = dwo->getFigureClass("DObjLiveLine", className, retval);
+					isLine = true;
+				}
+				else
+				{
+					plotClassName = dwo->getFigureClass("DObjLiveImage", className, retval);
+				}
+			}
         }
 
         QWidget *destWidget = prepareWidget(plotClassName, areaRow, areaCol, retval);
