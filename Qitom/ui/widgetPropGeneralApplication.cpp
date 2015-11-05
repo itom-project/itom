@@ -53,9 +53,8 @@ void WidgetPropGeneralApplication::readSettings()
     ui.checkAskBeforeExit->setChecked( settings.value("askBeforeClose", false).toBool() );
     settings.endGroup();
 
-    QListWidgetItem *lwi;
     settings.beginGroup("Application");
-    lwi = new QListWidgetItem(QCoreApplication::applicationDirPath() + "/lib", ui.listWidget);
+	QListWidgetItem *lwi = new QListWidgetItem(QCoreApplication::applicationDirPath() + "/lib", ui.listWidget, QListWidgetItem::UserType);
     lwi->setTextColor(Qt::GlobalColor::gray);
 
     int size = settings.beginReadArray("searchPathes");
@@ -64,6 +63,7 @@ void WidgetPropGeneralApplication::readSettings()
         settings.setArrayIndex(i);
         ui.listWidget->addItem(settings.value("path", QString()).toString());
     }
+	settings.endArray();
     settings.endGroup();
 }
 
@@ -91,7 +91,7 @@ void WidgetPropGeneralApplication::writeSettings()
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropGeneralApplication::on_listWidget_currentItemChanged(QListWidgetItem* current, QListWidgetItem* /*previous*/)
 {
-    ui.btnRemove->setEnabled(current != NULL && current->text() != QCoreApplication::applicationDirPath() + "/lib");
+	ui.btnRemove->setEnabled(current != NULL && current->type() != QListWidgetItem::UserType);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>477</width>
-    <height>255</height>
+    <width>448</width>
+    <height>375</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -39,7 +39,10 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>If you have to include some other library paths, add the path to this list.</string>
+         <string>The following pathes are prepended to the PATH environment variable used by itom. It is modified before itom starts loading plugins or designer plugins. These pathes do not affect the overall PATH environment variable of the operating system.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -109,19 +112,6 @@
       </item>
      </layout>
     </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>141</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>
