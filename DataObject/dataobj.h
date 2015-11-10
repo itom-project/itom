@@ -1063,6 +1063,15 @@ namespace ito {
         // element-wise multiplication 
         DataObject mul(const DataObject &mat2, const double scale = 1.0) const;
         DataObject div(const DataObject &mat2, const double scale = 1.0) const;
+
+		// power (power of 0.5 is the square root)
+		DataObject pow(const ito::float64 &power); // returns a new data object with the same size and type than this data object and calculates src**power if power is an integer, else |src|**power (only for float32 and float64 data objects)
+		void pow(const ito::float64 &power, DataObject &dst); // this function raises every element of this data object to *power* and saves the result in dst. Dst must be of the same size and type than this data object or empty. In the latter case, it is reassigned to the right size and type.
+
+		DataObject sqrt(); // returns a new data object of the same size and type than this data object where the square root of every element is calculated. Is the same than pow(0.5)
+		void sqrt(DataObject &dst); // this function calculates the square root of every element and saves the result in dst. Dst must be of the same size and type than this data object or empty. In the latter case, it is reassigned to the right size and type.. Is the same than pow(0.5, dst)
+
+
         DataObject squeeze() const;
         int elemSize() const;  /*!< number of bytes that are required by each value inside of the data object array (e.g. 1 for uint8, 2 for int16...) */
         

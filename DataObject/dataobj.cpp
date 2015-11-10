@@ -6356,6 +6356,118 @@ DataObject DataObject::div(const DataObject &mat2, const double /*scale*/) const
 
     return result;
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+DataObject DataObject::pow(const ito::float64 &power)
+{
+	DataObject result(m_dims, getSize(), m_type);
+	pow(power, result);
+	return result;
+	
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DataObject::pow(const ito::float64 &power, DataObject &dst)
+{
+	if (dst.getDims() == 0)
+	{
+		dst = DataObject(m_dims, getSize(), m_type);
+	}
+
+	CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(dst)
+
+	int ipower = cvRound(power);
+	bool is_ipower = fabs(ipower - power) < DBL_EPSILON;
+	int num_planes = getNumPlanes();
+	const cv::Mat* mat_src;
+	cv::Mat* mat_dest;
+
+	if (is_ipower)
+	{
+		switch (m_type)
+		{
+		case ito::tUInt8:
+		case ito::tInt8:
+		case ito::tUInt16:
+		case ito::tInt16:
+		case ito::tUInt32:
+		case ito::tInt32:
+		case ito::tFloat32:
+		case ito::tFloat64:
+		{
+			for (int i = 0; i < num_planes; ++i)
+			{
+				mat_src = get_mdata()[seekMat(i, num_planes)];
+				mat_dest = dst.get_mdata()[dst.seekMat(i, num_planes)];
+				cv::pow(*mat_src, power, *mat_dest);
+			}
+		}
+		break;
+		default:
+			cv::error(cv::Exception(CV_StsAssert, "an integer power requires a real-typed data object.", "", __FILE__, __LINE__));
+		}
+	}
+	else
+	{
+		switch (m_type)
+		{
+		case ito::tFloat32:
+		case ito::tFloat64:
+		{
+			for (int i = 0; i < num_planes; ++i)
+			{
+				mat_src = get_mdata()[seekMat(i, num_planes)];
+				mat_dest = dst.get_mdata()[dst.seekMat(i, num_planes)];
+				cv::pow(*mat_src, power, *mat_dest);
+			}
+		}
+		break;
+		default:
+			cv::error(cv::Exception(CV_StsAssert, "an non-integer power requires a data object of type float32 or float64.", "", __FILE__, __LINE__));
+		}
+	}
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+DataObject DataObject::sqrt()
+{
+	DataObject result(m_dims, getSize(), m_type);
+	sqrt(result);
+	return result;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DataObject::sqrt(DataObject &dst)
+{
+	if (dst.getDims() == 0)
+	{
+		dst = DataObject(m_dims, getSize(), m_type);
+	}
+
+	CHECK_SAME_TYPE_AND_NUM_PLANES_AND_PLANE_SIZE(dst)
+
+	int num_planes = getNumPlanes();
+	const cv::Mat* mat_src;
+	cv::Mat* mat_dest;
+
+	switch (m_type)
+	{
+	case ito::tFloat32:
+	case ito::tFloat64:
+	{
+		for (int i = 0; i < num_planes; ++i)
+		{
+			mat_src = get_mdata()[seekMat(i, num_planes)];
+			mat_dest = dst.get_mdata()[dst.seekMat(i, num_planes)];
+			cv::pow(*mat_src, 0.5, *mat_dest);
+		}
+	}
+	break;
+	default:
+		cv::error(cv::Exception(CV_StsAssert, "sqrt requires a data object of type float32 or float64.", "", __FILE__, __LINE__));
+	}
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 DataObject DataObject::squeeze() const
 {
@@ -7346,31 +7458,31 @@ template<typename _Tp> RetVal AbsFuncReal(const DataObject *dObj, DataObject *re
     int srcMatNum = 0;
     int dstMatNum = 0;
 
-    const cv::Mat_<_Tp> * srcMat = NULL;
-    cv::Mat_<_Tp> * dstMat = NULL;
+    const cv::Mat* srcMat = NULL;
+    cv::Mat* dstMat = NULL;
     _Tp* dstPtr = NULL;
     const _Tp* srcPtr = NULL;
-    int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
-    int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
+    int sizex = dObj->getSize(dObj->getDims() - 1);
+    int sizey = dObj->getSize(dObj->getDims() - 2);
     for (int nmat = 0; nmat < numMats; nmat++)
     {
          //TODO: check if non iterator version is working
         srcMatNum = dObj->seekMat(nmat, numMats);
         dstMatNum = resObj->seekMat(nmat, numMats);
-        srcMat = static_cast<const cv::Mat_<_Tp> *>(dObj->get_mdata()[srcMatNum]);
-        dstMat = static_cast<cv::Mat_<_Tp> *>(resObj->get_mdata()[dstMatNum]);
+        srcMat = dObj->get_mdata()[srcMatNum];
+        dstMat = resObj->get_mdata()[dstMatNum];
 
         for (int y = 0; y < sizey; y++)
         {
-            dstPtr = (_Tp*)dstMat->ptr(y);
-            srcPtr = (const _Tp*)srcMat->ptr(y);
+            dstPtr = dstMat->ptr<_Tp>(y);
+            srcPtr = srcMat->ptr<const _Tp>(y);
             for (int x = 0; x < sizex; x++)
             {
                 dstPtr[x] = std::abs(srcPtr[x]);
             }
         }
     }
-    return 0;
+    return ito::retOk;
 }
 
 typedef RetVal (*tAbsFunc)(const DataObject *dObj, DataObject *resObj);
@@ -7402,12 +7514,21 @@ DataObject abs(const DataObject &dObj)
         case ito::tInt8:
             AbsFuncReal<int8>(&dObj, &resObj);
             break;
+		case ito::tUInt8:
+			AbsFuncReal<uint8>(&dObj, &resObj);
+			break;
         case ito::tInt16:
             AbsFuncReal<int16>(&dObj, &resObj);
             break;
+		case ito::tUInt16:
+			AbsFuncReal<uint16>(&dObj, &resObj);
+			break;
         case ito::tInt32:
             AbsFuncReal<int32>(&dObj, &resObj);
             break;
+		case ito::tUInt32:
+			AbsFuncReal<uint32>(&dObj, &resObj);
+			break;
         case ito::tFloat32:
             AbsFuncReal<ito::float32>(&dObj, &resObj);
             break;

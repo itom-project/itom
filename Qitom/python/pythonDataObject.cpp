@@ -361,7 +361,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
         }
     }
 
-    //3. check for argument: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]
+    //3. check for argument: list/tuple/seq.(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]
     if (!retValue.containsError()) PyErr_Clear();
     if (!done && PyArg_ParseTupleAndKeywords(args, kwds, "O|sbO", const_cast<char**>(kwlist), &dimList, &type, &continuous, &data))
     {
@@ -694,7 +694,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
 
     if (!done && retValue.containsError())
     {
-        PyErr_SetString(PyExc_TypeError,"required arguments: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]][, data=SequenceOfSingleValue]");
+        PyErr_SetString(PyExc_TypeError,"required arguments: list/tuple(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]][, data=SequenceOfSingleValue]");
         retValue += RetVal(retError);
     }
     else if (!done && !retValue.containsError())
@@ -767,7 +767,6 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(PyObject *args, PyObject *kwd
     PyObject *dimList = NULL;
     const char *type;
     unsigned int dims = 0;
-    int dimensions = 0;
     int tempSizes = 0;
 
     type = typeNumberToName(typeno);
@@ -775,8 +774,7 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(PyObject *args, PyObject *kwd
 
     RetVal retValue(retOk);
 
-    //3. check for argument: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]
-    PyErr_Clear();
+    //check for argument: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]
     if (PyArg_ParseTupleAndKeywords(args, kwds, "O!|sb", const_cast<char**>(kwlist), &PyList_Type, &dimList, &type, &continuous))
     {
         typeno = typeNameToNumber(type);
@@ -797,7 +795,6 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(PyObject *args, PyObject *kwd
 
             if (!retValue.containsError())
             {
-                dimensions = static_cast<unsigned char>(dims);
                 sizes.clear();
                 sizes.resize(dims);
 
@@ -830,9 +827,61 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(PyObject *args, PyObject *kwd
             retValue += RetVal(retError);
         }
     }
+	else if (PyErr_Clear(), PyArg_ParseTupleAndKeywords(args, kwds, "O!|sb", const_cast<char**>(kwlist), &PyTuple_Type, &dimList, &type, &continuous))
+	{
+		typeno = typeNameToNumber(type);
+		if (typeno >= 0)
+		{
+			dims = PyTuple_Size(dimList);
+
+			if (dims < 0)
+			{
+				retValue += RetVal(retError);
+				PyErr_SetString(PyExc_TypeError, "Number of dimensions must be bigger than zero.");
+			}
+			else if (dims > 255)
+			{
+				retValue += RetVal(retError);
+				PyErr_SetString(PyExc_TypeError, "Number of dimensions must be lower than 256.");
+			}
+
+			if (!retValue.containsError())
+			{
+				sizes.clear();
+				sizes.resize(dims);
+
+				//try to parse list to values of unsigned int
+				for (unsigned int i = 0; i < dims; i++)
+				{
+					if (!PyArg_Parse(PyTuple_GetItem(dimList, i), "I", &tempSizes)) //borrowed ref
+					{
+						PyErr_PrintEx(0);
+						PyErr_Clear();
+						PyErr_Format(PyExc_TypeError, "Element %d of dimension-tuple is no integer number", i + 1);
+						retValue += RetVal(retError);
+						break;
+
+					}
+					else if (tempSizes <= 0)
+					{
+						PyErr_SetString(PyExc_TypeError, "Element %d must be bigger than 1");
+						retValue += RetVal(retError);
+						break;
+					}
+
+					sizes[i] = tempSizes;
+				}
+			}
+		}
+		else
+		{
+			PyErr_SetString(PyExc_TypeError, "dtype name is unknown.");
+			retValue += RetVal(retError);
+		}
+	}
     else
     {
-        PyErr_SetString(PyExc_TypeError,"required arguments: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]");
+        PyErr_SetString(PyExc_TypeError,"required arguments: list/tuple(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]");
         retValue += RetVal(retError);
     }
 
@@ -2148,9 +2197,8 @@ PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *ar
     PyObject *axes = NULL;
     bool single = false;
 
-    //3. check for argument: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]
     PyErr_Clear();
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "d|i", const_cast<char**>(kwlist), &value, &axis)) //&PyList_Type, &dimList, &type, &continuous))
+    if (PyArg_ParseTupleAndKeywords(args, kwds, "d|i", const_cast<char**>(kwlist), &value, &axis))
     {
         single = true;
     }
@@ -2275,9 +2323,8 @@ PyObject* PythonDataObject::PyDataObj_PixToPhys(PyDataObject *self, PyObject *ar
     PyObject *axes = NULL;
     bool single = false;
 
-    //3. check for argument: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]
     PyErr_Clear();
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "d|i", const_cast<char**>(kwlist), &value, &axis)) //&PyList_Type, &dimList, &type, &continuous))
+    if (PyArg_ParseTupleAndKeywords(args, kwds, "d|i", const_cast<char**>(kwlist), &value, &axis))
     {
         single = true;
     }
@@ -3180,7 +3227,7 @@ PyObject* PythonDataObject::PyDataObj_nbDivmod(PyObject* /*o1*/, PyObject* /*o2*
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonDataObject::PyDataObj_nbPower(PyObject* o1, PyObject* o2, PyObject* o3)
 {
-    if (!checkPyDataObject(2,o1,o2))
+    if (!checkPyDataObject(1,o1))
     {
         return NULL;
     }
@@ -3195,22 +3242,38 @@ PyObject* PythonDataObject::PyDataObj_nbPower(PyObject* o1, PyObject* o2, PyObje
         return Py_NotImplemented;
     }
 
-    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+	ito::float64 power;
 
-    try
-    {
-        retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) ^ *(dobj2->dataObject));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
-    }
-    catch(cv::Exception &exc)
-    {
-        Py_DECREF(retObj);
-        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        return NULL;
-    }
+	if (PyLong_Check(o2))
+	{
+		power = PyLong_AsLong(o2);
+	}
+	else if (PyFloat_Check(o2))
+	{
+		power = PyFloat_AsDouble(o2);
+	}
+	else
+	{
+		PyErr_SetString(PyExc_TypeError, "2nd operand of power-method must be an integer of float.");
+		return NULL;
+	}
+	PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    if(retObj) retObj->dataObject->addToProtocol("Created by dataObject0 ** dataObject1");
+	try
+	{
+		retObj->dataObject = new ito::DataObject();
+		dobj1->dataObject->pow(power, *retObj->dataObject);
+	}
+	catch (cv::Exception &exc)
+	{
+		Py_DECREF(retObj);
+		PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+		return NULL;
+	}
 
-    return (PyObject*)retObj;
+	if (retObj && retObj->dataObject) retObj->dataObject->addToProtocol("Created by dataObject ** power");
+
+	return (PyObject*)retObj;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
