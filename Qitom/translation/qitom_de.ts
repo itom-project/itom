@@ -517,8 +517,8 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+10"/>
-        <source>Install from tar.gz archive</source>
-        <translation type="unfinished">Vom tar.gz-Archive installieren</translation>
+        <source>Install from tar.gz or zip archive</source>
+        <translation type="unfinished">Vom tar.gz oder zip-Archiv installieren</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -3617,7 +3617,7 @@ Wenn die Datei &apos;restart_itom_with_pip_manager.txt&apos; im Verzeichnis &apo
     </message>
     <message>
         <location line="+10"/>
-        <source>choose tar.gz archive...</source>
+        <source>choose tar.gz or zip archive...</source>
         <translation type="unfinished">Tar.gz-Archiv wählen...</translation>
     </message>
     <message>
