@@ -73,15 +73,18 @@ begin
   
   if not RegQueryStringValue(RootKey, 'SOFTWARE\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
     if not RegQueryStringValue(RootKey, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
-      if not RegQueryStringValue(RootKey, 'SOFTWARE\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
-        if not RegQueryStringValue(RootKey, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
-          MsgBox('Python path was not found in registry!', mbError, MB_OK);
-          Found := False;
-        end; 
+      if not RegQueryStringValue(HKEY_CURRENT_USER, 'SOFTWARE\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
+        if not RegQueryStringValue(HKEY_CURRENT_USER, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
+//          MsgBox('Python path was not found in registry!', mbError, MB_OK);
+//          Found := False;
+          Found := BrowseForFolder('Python path was not found in registry. Please select the Python directory!', PythonPath, False);
+        end;
       end;
     end; 
   end;
   
   if Found then
     Result := PythonPath;
+//  else
+//    MsgBox('Python path was not found!', mbError, MB_OK);
 end;
