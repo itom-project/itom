@@ -2938,7 +2938,7 @@ PyObject* PythonItom::PyGetScreenInfo(PyObject* /*pSelf*/)
 //---------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pySaveMatlabMat_doc,"saveMatlabMat(filename, values[, matrixName = 'matrix']) -> save strings, numbers, arrays or combinations into a Matlab mat file. \n\
 \n\
-Save one or multiple objects (strings, numbers, arrays, `dataObject`, `numpy.ndarray`, `npDataObject`...) to a Matlab *mat* file. \n\
+Save one or multiple objects (strings, numbers, arrays, `dataObject`, `numpy.ndarray`...) to a Matlab *mat* file. \n\
 There are the following possibilites for saving: \n\
 \n\
 * One given value is saved under one given 'matrixName' or 'matrix' if 'matrixName' is not given. \n\
@@ -2950,7 +2950,7 @@ Parameters \n\
 filename : {str} \n\
     Filename under which the file should be saved (.mat will be appended if not available)\n\
 values : {dictionary, list, tuple, variant} \n\
-    single value, dictionary, list or tuple with elements of type number, string, array (dataObject, numpy.ndarray, npDataObject...)\n\
+    single value, dictionary, list or tuple with elements of type number, string, array (dataObject, numpy.ndarray...)\n\
 matrix-name : {str, list, tuple}, optional \n\
     if 'values' is a single value, this parameter must be one single str, if 'values' is a sequence it must be a sequence of strings with the same length, if 'values' is a dictionary this argument is ignored. \n\
 \n\

@@ -933,7 +933,7 @@ PyObject* PythonDataObject::PyDataObj_GetType(PyDataObject *self, void * /*closu
 PyDoc_STRVAR(dataObjectAttrContinuous_doc,"true if matrix is continuously organized, else false. \n\
 \n\
 If true, the whole matrix is allocated in one huge block in memory, hence, \n\
-this data object can be transformed into a numpy representation (npDataObject) \n\
+this data object can be transformed into a numpy representation \n\
 without reallocating memory.\n\
 \n\
 Notes \n\
@@ -1127,6 +1127,8 @@ using tuple indexing. \n\
 \n\
 Definition: Physical unit = (px-Coordinate - offset)* scale\n\
 \n\
+If the data object is plot with scalings != 1, the scaled (physical) units are displayed in the plot. \n\
+\n\
 Notes \n\
 ----- \n\
 read / write\n\
@@ -1215,6 +1217,8 @@ using tuple indexing. \n\
 \n\
 Definition: Physical unit = (px-Coordinate - offset)* scale\n\
 \n\
+If the data object is plot with offsets != 0, the scaled (physical) units are displayed in the plot. \n\
+\n\
 Notes \n\
 ----- \n\
 read / write\n\
@@ -1300,6 +1304,8 @@ This attribute gives access to the internal axis descriptions expressed as \n\
 a tuple of strings. The tuple has the same length than the number of dimensions of this data object. \n\
 \n\
 You can either assign a new tuple with the same length or change single values using tuple indexing. \n\
+\n\
+The axis descriptions are considered if the data object is plotted. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -1390,6 +1396,8 @@ a tuple of strings. The tuple has the same length than the number of dimensions 
 \n\
 You can either assign a new tuple with the same length or change single values using tuple indexing. \n\
 \n\
+The axis units are considered if the data object is plotted. \n\
+\n\
 See Also \n\
 --------- \n\
 setAxisUnits : alternative method to change the unit string of one single axis \n\
@@ -1471,6 +1479,8 @@ PyDoc_STRVAR(dataObjectAttrValueUnit_doc, "value unit. \n\
 \n\
 Attribute to read or write the unit string of the values in this data object. \n\
 \n\
+The value unit is considered if the data object is plotted. \n\
+\n\
 Notes \n\
 ----- \n\
 read / write");
@@ -1512,6 +1522,8 @@ int PythonDataObject::PyDataObject_setValueUnit(PyDataObject *self, PyObject *va
 PyDoc_STRVAR(dataObjectAttrValueDescription_doc, "value unit description. \n\
 \n\
 Attribute to read or write the unit description string of the values in this data object. \n\
+\n\
+The value description is considered if the data object is plotted. \n\
 \n\
 Notes \n\
 ----- \n\
@@ -1557,7 +1569,7 @@ int PythonDataObject::PyDataObject_setValueDescription(PyDataObject *self, PyObj
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(dataObjectAttrValueScale_doc, "value scale [default: 0.0].\n\
+PyDoc_STRVAR(dataObjectAttrValueScale_doc, "value scale.\n\
 \n\
 This attribute gives the scaling factor of each value in the data object. This value is always 1.0. \n\
 \n\
@@ -1570,7 +1582,7 @@ PyObject* PythonDataObject::PyDataObject_getValueScale(PyDataObject *self, void 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(dataObjectAttrValueOffset_doc, "value offset [default: 0.0].\n\
+PyDoc_STRVAR(dataObjectAttrValueOffset_doc, "value offset.\n\
 \n\
 This attribute gives the offset of each value in the data object. This value is always 0.0. \n\
 \n\
