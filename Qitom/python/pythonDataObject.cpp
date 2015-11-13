@@ -2184,6 +2184,7 @@ by the offset and scaling of each axis: \n\
 phys = (pix - offset) * scaling \n\
 \n\
 If no axes parameter is given, the values are assumed to belong the the ascending axis list (0,1,2,3...). \n\
+The returned pixel value is clipped by the real size of the data object in the requested dimension [0, shape[axis]-1]. \n\
 \n\
 Parameters  \n\
 ------------\n\
@@ -2199,7 +2200,9 @@ Float or float-tuple with the pixel coordinates for each physical coordinate at 
 Raises \n\
 ------- \n\
 Value error : \n\
-    if the given axes is invalid (out of range)");
+    if the given axes is invalid (out of range) \n\
+Runtime warning : \n\
+    if requested physical unit is outside of the range of the requested axis. The returned pixel value is clipped to the closest boundary value.");
 PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *args, PyObject *kwds)
 {
     static const char *kwlist[] = {"values","axes", NULL};
@@ -2251,6 +2254,7 @@ PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *ar
         PyObject *v = NULL;
         PyObject *a = NULL;
         PyObject *result = PyTuple_New(PySequence_Length(values));
+        bool isInsideImage;
 
         for (Py_ssize_t i = 0; i < PySequence_Length(values); ++i)
         {
@@ -2291,11 +2295,23 @@ PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *ar
                 axis = i;
             }
 
-            PyTuple_SetItem(result, i, PyFloat_FromDouble(self->dataObject->getPhysToPix(axis, value)));
+            PyTuple_SetItem(result, i, PyFloat_FromDouble(self->dataObject->getPhysToPix(axis, value, isInsideImage)));
+
+            if (!isInsideImage)
+            {
+                if (PyErr_WarnFormat(PyExc_RuntimeWarning, 1, "the returned pixel for axis %i is clipped to the boundaries of the axis [0,%i]", axis, self->dataObject->getSize(axis) - 1) == -1)
+                {
+                    Py_DECREF(result);
+                    return NULL; //warning was turned into a real exception, 
+                }
+                //else
+                //{
+                //warning is a warning, go on with the script
+                //}
+            }
         }
 
         return result;
-
     }
 
     Py_RETURN_NONE;
