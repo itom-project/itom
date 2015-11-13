@@ -859,7 +859,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_abs_Test)
     ito::DataObject dTempTest1;
 
     mat1_2d.copyTo(dTempTest1);
-    if(mat1_2d.getType() == ito::tRGBA32 || mat1_2d.getType() == ito::tUInt8 || mat1_2d.getType() == ito::tUInt16)
+    if(mat1_2d.getType() == ito::tRGBA32)
     {
         EXPECT_ANY_THROW(ito::abs(dTempTest1););
     }

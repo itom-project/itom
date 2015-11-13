@@ -7507,32 +7507,37 @@ DataObject abs(const DataObject &dObj)
     }
     else
     {
-        DataObject resObj(dObj.getDims(), dObj.getSize().m_p, dObj.getType());
+        DataObject resObj;
 
         switch(dObj.getType())
         {
         case ito::tInt8:
+            resObj = ito::DataObject(dObj.getDims(), dObj.getSize().m_p, dObj.getType());
             AbsFuncReal<int8>(&dObj, &resObj);
             break;
 		case ito::tUInt8:
-			AbsFuncReal<uint8>(&dObj, &resObj);
+            resObj = dObj;
 			break;
         case ito::tInt16:
+            resObj = ito::DataObject(dObj.getDims(), dObj.getSize().m_p, dObj.getType());
             AbsFuncReal<int16>(&dObj, &resObj);
             break;
 		case ito::tUInt16:
-			AbsFuncReal<uint16>(&dObj, &resObj);
+            resObj = dObj;
 			break;
         case ito::tInt32:
+            resObj = ito::DataObject(dObj.getDims(), dObj.getSize().m_p, dObj.getType());
             AbsFuncReal<int32>(&dObj, &resObj);
             break;
 		case ito::tUInt32:
-			AbsFuncReal<uint32>(&dObj, &resObj);
+            resObj = dObj;
 			break;
         case ito::tFloat32:
+            resObj = ito::DataObject(dObj.getDims(), dObj.getSize().m_p, dObj.getType());
             AbsFuncReal<ito::float32>(&dObj, &resObj);
             break;
         case ito::tFloat64:
+            resObj = ito::DataObject(dObj.getDims(), dObj.getSize().m_p, dObj.getType());
             AbsFuncReal<ito::float64>(&dObj, &resObj);
             break;
         default:
