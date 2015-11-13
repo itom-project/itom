@@ -167,3 +167,36 @@ set some properties by passing a dictionary with all name, values pairs to the '
     
     plot(data2d, properties={"yAxisFlipped":True, "title":"My self configured plot"})
 
+Tags and attributes of dataObjects in plots
+----------------------------------------------
+
+Many plots, especially the 1D and 2D plots (type *itom1dQwtPlot*, *itom2dQwtPlot*), can read several tags and attributes from the plotted dataObject. This is in detail:
+
+1. The axes of the plot always show so called *physical units*. Their relationship to the pixel-coordinate system of a data object is defined by the scale and offset value
+    of each axis. If the offset is 0 and the scale is 1 (default), both the physical and pixel unit is the same and the plot displays a data objects with axes beginning
+    with zero::
+        
+        phys = (pix - offset) * scaling
+    
+2. The label of each axis is mainly defined by the properties **valueLabel**, **xAxisLabel** or **yAxisLabel**. If one of these properties is set to **<auto>** (default),
+    the attributes **valueUnit**, **valueDescription**, **axisUnits** or **axisDescriptions** of the data object are requested. The style of the label is defined by the property
+    **unitLabelStyle** ::
+        
+        obj = dataObject.zeros([10,10],'uint8')
+        obj.axisUnits = ('mm','mm')
+        obj.axisDescriptions = ('y','x')
+        obj.valueUnit = ('rad')
+        obj.valueDescription = 'phase'
+        plot(obj, "2D", properties = {"unitLabelStyle":"UnitLabelKeywordIn"})
+    
+    If a property is set to something different than **<auto>**, the corresponding attribute from the data object is ignored and the property value is displayed instead.
+    
+3. Usually, the title of a plot is set by its property **title**. However, if **title** is set to **<auto>** (default), the tag-space of the data object is searched for a tag
+    with the keyword **title**. If this is given, the title-tag is displayed::
+        
+        obj = dataObject.zeros([10,10],'complex64')
+        obj.setTag("title", "complex object")
+        print("title-tag:", obj.tags["title"])
+        plot(obj, "2D")
+    
+    If the title property is set to something different than **<auto>**, the tag is ignored and the value of the property is displayed as title.
