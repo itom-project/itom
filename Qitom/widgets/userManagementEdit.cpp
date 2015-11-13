@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -139,13 +139,13 @@ QString DialogUserManagementEdit::clearName(const QString &name)
 {
     QString name_(name);
     name_.replace( QRegExp( "[" + QRegExp::escape( "\\/:*?\"<>|" ) + "]" ), QString( "_" ) );
-    name_.replace("ä", "ae");
-    name_.replace("ö", "oe");
-    name_.replace("ü", "ue");
-    name_.replace("Ä", "Ae");
-    name_.replace("Ö", "Oe");
-    name_.replace("Ü", "Ue");
-    name_.replace("ß", "ss");
+    name_.replace("\u00E4", "ae");
+    name_.replace("\u00F6", "oe");
+    name_.replace("\u00FC", "ue");
+    name_.replace("\u00C4", "Ae");
+    name_.replace("\u00D6", "Oe");
+    name_.replace("\u00DC", "Ue");
+    name_.replace("\u00DF", "ss");
 
     return name_;
 }

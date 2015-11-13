@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -570,11 +570,11 @@ ito::RetVal ParamInputParser::getStringValue(ito::ParamBase &param, const ito::P
 
     if (!retVal.containsError())
     {
-        string.replace("\\\\", "#~!?üü@@?!~#");
+        string.replace("\\\\", "#~!?\u00FC\u00FC@@?!~#");
         string.replace("\\n", "\n");
         string.replace("\\r", "\r");
         string.replace("\\t", "\t");
-        string.replace("#~!?üü@@?!~#", "\\");
+        string.replace("#~!?\u00FC\u00FC@@?!~#", "\\");
         QByteArray ba = string.toLatin1();
         char *temp = ba.data();
         param.setVal<char*>(temp);

@@ -138,7 +138,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
     case 1: //Filter
         {
             const QHash <QString, ito::AddInAlgo::FilterDef *> *filterHashTable = aim->getFilterList();
-            // Main Node zusammenbauen
+            // build Main Node
             mainNode->setText("Algorithms");
             mainNode->setData(typeCategory, m_urType);
             mainNode->setData("Algorithms", m_urPath);
@@ -147,7 +147,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
             while (i != filterHashTable->constEnd()) 
             {
                 if (!plugins.contains(i.value()->m_pBasePlugin->objectName()))
-                { // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das Filter-Node anzuhängen
+                { // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das Filter-Node anzuhaengen
                     QStandardItem *plugin = new QStandardItem(i.value()->m_pBasePlugin->objectName());
                     plugin->setEditable(false);
                     plugin->setData(typeFPlugin, m_urType);
@@ -157,7 +157,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                     plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
                     mainNode->appendRow(plugin);
                 }
-                // Filter-Node anhängen
+                // Filter-Node anhaengen
                 QStandardItem *filter = new QStandardItem(i.value()->m_name);
                 filter->setEditable(false);
                 filter->setData(typeFilter, m_urType);
@@ -182,7 +182,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
             while (i != widgetHashTable->constEnd()) 
             {
                 if (!plugins.contains(i.value()->m_pBasePlugin->objectName()))
-                { // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das Filter-Node anzuhängen
+                { // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das Filter-Node anzuhaengen
                     QStandardItem *plugin = new QStandardItem(i.value()->m_pBasePlugin->objectName());
                     plugin->setEditable(false);
                     plugin->setData(typeWPlugin, m_urType);
@@ -192,7 +192,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                     plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
                     mainNode->appendRow(plugin);
                 }
-                // Filter-Node anhängen
+                // Filter-Node anhaengen
                 QStandardItem *filter = new QStandardItem(i.value()->m_name);
                 filter->setEditable(false);
                 filter->setData(typeWidget, m_urType);
@@ -300,7 +300,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
             break;
         }
     }
-    // MainNode an Model anhängen
+    // MainNode an Model anhaengen
     model->insertRow(0, mainNode);
 }
 
@@ -1400,7 +1400,7 @@ void HelpTreeDockWidget::propertiesChanged()
             QStandardItem *node = new QStandardItem(firstItem.name);
             if (firstItem.type > 11) //splitt[0].startsWith(1))
             {
-                // diese Zeile könnte man auch durch Code ersetzen der das Link Icon automatisch zeichnet... das waere flexibler
+                // diese Zeile koennte man auch durch Code ersetzen der das Link Icon automatisch zeichnet... das waere flexibler
                 node->setIcon(iconGallery->value(firstItem.type));
             }
             else
@@ -1637,7 +1637,7 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QS
     QStringList errorList;
 
     /*********************************/
-    // Allgemeine HTML sachen anfügen /
+    // Allgemeine HTML sachen anfuegen /
     /*********************************/ 
     QString rawContent = helpText;
     QString html = "<html><head>"
@@ -1650,7 +1650,7 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QS
     if (shortDesc != "")
         rawContent.insert(0,shortDesc+"");
 
-    // Überschrift (Funktionsname) einfuegen
+    // Ueberschrift (Funktionsname) einfuegen
     // -------------------------------------
     rawContent.insert(0,"<h1 id=\"FunctionName\">"+name+param+"</h1>"+"");
 
@@ -1749,8 +1749,8 @@ ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path)
     bool ok = false;
     bool found = false;
 
-    // Das ist ein kleiner workaround mit dem if 5 Zeilen später. Man könnt euahc direkt über die includeddbs list iterieren
-    // dann wäre folgende Zeile hinfällig
+    // Das ist ein kleiner workaround mit dem if 5 Zeilen spaeter. Man koennt auch direkt ueber die includeddbs list iterieren
+    // dann waere folgende Zeile hinfaellig
     QDirIterator it(m_dbPath, QStringList("*.db"), QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
 
     while(it.hasNext() && !found)
