@@ -418,9 +418,9 @@ int AbstractPyScintillaWidget::getSpaceTabCount(const QString &s)
 bool AbstractPyScintillaWidget::haveToIndention(QString s)
 {
     s = s.trimmed();
-    s.replace("'''", "§");
-    s.replace("\"\"\"", "§");
-    int count1 = s.count("§");
+    s.replace("'''", "\u00A7");
+    s.replace("\"\"\"", "\u00A7");
+    int count1 = s.count("\u00A7");
     int count2 = s.count("#");
 
     if (count1 + count2 > 0)
@@ -434,16 +434,16 @@ bool AbstractPyScintillaWidget::haveToIndention(QString s)
             bool comment = (count1 % 2 == 1);
             if (comment)
             {
-                s = s.mid(1, s.lastIndexOf("§") - 1);
+                s = s.mid(1, s.lastIndexOf("\u00A7") - 1);
                 s = s.trimmed();
                 --count1;
             }
 
             while (count1 > 0)
             {
-                int pos1 = s.indexOf("§");
+                int pos1 = s.indexOf("\u00A7");
                 int pos2 = pos1 + 1;
-                while (s.mid(pos2, 1) != "§")
+                while (s.mid(pos2, 1) != "\u00A7")
                 {
                     ++pos2;
                 }
@@ -460,16 +460,16 @@ bool AbstractPyScintillaWidget::haveToIndention(QString s)
             bool comment = ((count1 & 2) == 1);
             if (comment)
             {
-                s = s.mid(1, s.lastIndexOf("§"));
+                s = s.mid(1, s.lastIndexOf("\u00A7"));
                 s = s.trimmed();
                 --count1;
             }
 
             while (count1 > 0)
             {
-                int pos1 = s.indexOf("§");
+                int pos1 = s.indexOf("\u00A7");
                 int pos2 = pos1 + 1;
-                while (s.mid(pos2, 1) != "§")
+                while (s.mid(pos2, 1) != "\u00A7")
                 {
                     ++pos2;
                 }

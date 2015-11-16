@@ -47,13 +47,13 @@ namespace ito
 {
     //----------------------------------------------------------------------------------------------------------------------------------
     /**
-    *   @detail Compared the abs(dValue) with the 10^(3N) and according to the results µ p M ... are added to the unit
+    *   @detail Compared the abs(dValue) with the 10^(3N) and according to the results mu p M ... are added to the unit
     *           Allowed units are SI-Unit except kg and mm. It % is given as unit, values are multiplied by 100
     *   @param [in]  scaleThisUnitsOnly     List with scaleable units (e.g. mm, m)
     *   @param [in]  unitIn                 Old unit (e.g. mm, m, %)
     *   @param [in]  dVal                   Double value (e.g. mm, m, %)
     *   @param [out] dValOut                Scaled value
-    *   @param [out] unitOut                Scaled unit m -> mm or µm
+    *   @param [out] unitOut                Scaled unit m -> mm or mu m
     *
     */
     RetVal formatDoubleWithUnit(QStringList scaleThisUnitsOnly, QString unitIn, double dVal, double &dValOut, QString &unitOut)
@@ -127,7 +127,7 @@ namespace ito
             else if (aval < 1.0E-3)
             {
                 dValOut = dVal / factor / 1.0E-6;
-                unitOut = QString::fromLatin1("µ");
+                unitOut = QString::fromLatin1("\u00B5");
             }
             else if (aval < 1.0)
             {
@@ -170,14 +170,14 @@ namespace ito
             }
             unitOut.append(tempUnit);
             // TODO
-            if (!unitOut.compare("µm"))
+            if (!unitOut.compare("\u00B5m"))
             {
                 unitOut.clear();
                 unitOut.append("muh");
             }
             else
             {
-                unitOut.replace(QLatin1String("µ"), QLatin1String("u"));
+                unitOut.replace(QLatin1String("\u00B5"), QLatin1String("u"));
             }
         }
         return retVal;

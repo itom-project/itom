@@ -1360,7 +1360,7 @@ void HelpTreeDockWidget::propertiesChanged()
         {
             settings.setArrayIndex(i);
             QString nameID = settings.value("DB", QString()).toString();
-            QString name = nameID.left(nameID.indexOf("§"));
+            QString name = nameID.left(nameID.indexOf("\u00A7"));
             QString dbName = name + ".db";
             //Add to m_pMainlist
             m_includedDBs.append(dbName);
