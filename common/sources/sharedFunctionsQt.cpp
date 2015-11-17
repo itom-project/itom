@@ -127,7 +127,7 @@ namespace ito
             else if (aval < 1.0E-3)
             {
                 dValOut = dVal / factor / 1.0E-6;
-                unitOut = QString::fromLatin1("\u00B5");
+                unitOut = QString::fromLatin1("\u00B5"); // mu
             }
             else if (aval < 1.0)
             {
@@ -170,14 +170,14 @@ namespace ito
             }
             unitOut.append(tempUnit);
             // TODO
-            if (!unitOut.compare("\u00B5m"))
+            if (!unitOut.compare("\u00B5m")) // mu
             {
                 unitOut.clear();
                 unitOut.append("muh");
             }
             else
             {
-                unitOut.replace(QLatin1String("\u00B5"), QLatin1String("u"));
+                unitOut.replace(QLatin1String("\u00B5"), QLatin1String("u")); //  mu
             }
         }
         return retVal;
