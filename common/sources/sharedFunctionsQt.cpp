@@ -48,12 +48,12 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     /**
     *   @detail Compared the abs(dValue) with the 10^(3N) and according to the results mu p M ... are added to the unit
-    *           Allowed units are SI-Unit except kg and mm. It % is given as unit, values are multiplied by 100
+    *           Allowed units are SI-Unit except kg and mm. If % is given as input unit, values are multiplied by 100
     *   @param [in]  scaleThisUnitsOnly     List with scaleable units (e.g. mm, m)
     *   @param [in]  unitIn                 Old unit (e.g. mm, m, %)
     *   @param [in]  dVal                   Double value (e.g. mm, m, %)
     *   @param [out] dValOut                Scaled value
-    *   @param [out] unitOut                Scaled unit m -> mm or mu m
+    *   @param [out] unitOut                Scaled unit m -> mm or \mu m
     *
     */
     RetVal formatDoubleWithUnit(QStringList scaleThisUnitsOnly, QString unitIn, double dVal, double &dValOut, QString &unitOut)
@@ -78,10 +78,10 @@ namespace ito
         {
             unitOut = QString(unitIn);  // Do not scale unit for 0.0
         }
-        else if (!unitIn.compare("%"))
+        else if (unitIn == "%")
         {
             dValOut = dVal*100;
-            unitOut = QString(unitIn);
+            unitOut = unitIn;
         }
         else
         {
@@ -127,7 +127,7 @@ namespace ito
             else if (aval < 1.0E-3)
             {
                 dValOut = dVal / factor / 1.0E-6;
-                unitOut = QString::fromLatin1("\u00B5"); // mu
+                unitOut = QChar(0x00, 0xB5); // \mu
             }
             else if (aval < 1.0)
             {
@@ -169,16 +169,6 @@ namespace ito
                 unitOut.append("E");
             }
             unitOut.append(tempUnit);
-            // TODO
-            if (!unitOut.compare("\u00B5m")) // mu
-            {
-                unitOut.clear();
-                unitOut.append("muh");
-            }
-            else
-            {
-                unitOut.replace(QLatin1String("\u00B5"), QLatin1String("u")); //  mu
-            }
         }
         return retVal;
     }

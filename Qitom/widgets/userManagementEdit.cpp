@@ -139,13 +139,13 @@ QString DialogUserManagementEdit::clearName(const QString &name)
 {
     QString name_(name);
     name_.replace( QRegExp( "[" + QRegExp::escape( "\\/:*?\"<>|" ) + "]" ), QString( "_" ) );
-    name_.replace("\u00E4", "ae");
-    name_.replace("\u00F6", "oe");
-    name_.replace("\u00FC", "ue");
-    name_.replace("\u00C4", "Ae");
-    name_.replace("\u00D6", "Oe");
-    name_.replace("\u00DC", "Ue");
-    name_.replace("\u00DF", "ss");
+    name_.replace(QChar(0x00, 0xE4), "ae"); //german umlaut 'a with diaresis' replaced by ae
+    name_.replace(QChar(0x00, 0xF6), "oe"); //german umlaut 'o with diaresis' replaced by oe
+    name_.replace(QChar(0x00, 0xFC), "ue"); //german umlaut 'u with diaresis' replaced by ue
+    name_.replace(QChar(0x00, 0xC4), "Ae"); //german umlaut 'A with diaresis' replaced by Ae
+    name_.replace(QChar(0x00, 0xD6), "Oe"); //german umlaut 'O with diaresis' replaced by Oe
+    name_.replace(QChar(0x00, 0xDC), "Ue"); //german umlaut 'U with diaresis' replaced by Ue
+    name_.replace(QChar(0x00, 0xDF), "ss"); //german sharp s replaced by ss
 
     return name_;
 }

@@ -154,7 +154,7 @@ void WidgetPropHelpDock::readSettings()
     {
         settings.setArrayIndex(i);
         QString nameID = settings.value("DB", QString()).toString();
-        int id = nameID.mid(nameID.indexOf("\u00A7")+1, -1).toInt(); // paragraph sign
+        int id = nameID.mid(nameID.indexOf(QChar(0x00, 0xA7) /*section or paragraph sign*/) + 1, -1).toInt();
         checkedIdList.append(id);
         settings.remove("DB");
     }
@@ -194,7 +194,7 @@ void WidgetPropHelpDock::writeSettings()
         if (it->isChecked)
         {
             settings.setArrayIndex(i);
-            settings.setValue("DB", it->name + "\u00A7" + QString::number(it.key())); // paragraph sign
+            settings.setValue("DB", it->name + QChar(0x00, 0xA7) /*section or paragraph sign*/ + QString::number(it.key()));
             ++i;
         }
     }
