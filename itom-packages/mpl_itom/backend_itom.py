@@ -438,6 +438,8 @@ class NavigationToolbar2Itom( NavigationToolbar2 ):
         self._idle = True
         self.subplotConfigDialog = None
         
+        self.defaultSaveFileName = None
+        
         NavigationToolbar2.__init__( self, figureCanvas )
 
     def _init_toolbar(self):
@@ -546,16 +548,26 @@ class NavigationToolbar2Itom( NavigationToolbar2 ):
         filetypes = self.canvas.get_supported_filetypes_grouped()
         sorted_filetypes = list(filetypes.items())
         sorted_filetypes.sort()
-        default_filetype = self.canvas.get_default_filetype()
-
-        start = "image." + default_filetype
+        
+        
+        if not self.defaultSaveFileName is None:
+            start = self.defaultSaveFileName
+            default_filetype = os.path.splitext(start)[1]
+            if default_filetype == "":
+                default_filetype = self.canvas.get_default_filetype()
+            elif default_filetype.startswith("."):
+                default_filetype = default_filetype[1:]
+        else:
+            default_filetype = self.canvas.get_default_filetype()
+            start = "image." + default_filetype
+        
         filters = []
         selectedFilterIndex = 0
         for name, exts in sorted_filetypes:
             exts_list = " ".join(['*.%s' % ext for ext in exts])
             filter = '%s (%s)' % (name, exts_list)
             if default_filetype in exts:
-                selectedFilterIndex = exts.index(default_filetype)
+                selectedFilterIndex = len(filters)
             filters.append(filter)
         filters = ';;'.join(filters)
         
@@ -564,6 +576,7 @@ class NavigationToolbar2Itom( NavigationToolbar2 ):
         if fname:
             try:
                 self.canvas.print_figure( str(fname) )
+                self.defaultSaveFileName = fname
             except Exception as e:
                 ui.msgCritical("Error saving file", str(e), parent = self.itomUI())
     

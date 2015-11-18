@@ -1348,6 +1348,13 @@ RetVal UiOrganizer::showMessageBox(unsigned int uiHandle, int type, const QStrin
 
     if (!retValue.containsWarningOrError())
     {
+        //if parent is inherited from AbstractDockWidget, the currently visible component
+        //of parent is either the dock widget or the main widget. This is obtained
+        //by getActiveInstance. This is necessary, since an invisible parent is ignored.
+        if (parent && parent->inherits("ito::AbstractDockWidget"))
+        {
+            parent = ((ito::AbstractDockWidget*)parent)->getActiveInstance();
+        }
 
         switch(type)
         {
@@ -1394,6 +1401,13 @@ RetVal UiOrganizer::showFileDialogExistingDir(unsigned int uiHandle, const QStri
     {
         parent = qobject_cast<QWidget*>(AppManagement::getMainWindow());
     }
+    //if parent is inherited from AbstractDockWidget, the currently visible component
+    //of parent is either the dock widget or the main widget. This is obtained
+    //by getActiveInstance. This is necessary, since an invisible parent is ignored.
+    else if (parent && parent->inherits("ito::AbstractDockWidget"))
+    {
+        parent = ((ito::AbstractDockWidget*)parent)->getActiveInstance();
+    }
 
     QFileDialog::Options opt = 0;
     opt = (~opt) & options;
@@ -1424,6 +1438,13 @@ RetVal UiOrganizer::showFileOpenDialog(unsigned int uiHandle, const QString &cap
     if (parent == NULL)
     {
         parent = qobject_cast<QWidget*>(AppManagement::getMainWindow());
+    }
+    //if parent is inherited from AbstractDockWidget, the currently visible component
+    //of parent is either the dock widget or the main widget. This is obtained
+    //by getActiveInstance. This is necessary, since an invisible parent is ignored.
+    else if (parent && parent->inherits("ito::AbstractDockWidget"))
+    {
+        parent = ((ito::AbstractDockWidget*)parent)->getActiveInstance();
     }
 
     QFileDialog::Options opt = 0;
@@ -1465,6 +1486,13 @@ RetVal UiOrganizer::showFileSaveDialog(unsigned int uiHandle, const QString &cap
     {
         parent = qobject_cast<QWidget*>(AppManagement::getMainWindow());
     }
+    //if parent is inherited from AbstractDockWidget, the currently visible component
+    //of parent is either the dock widget or the main widget. This is obtained
+    //by getActiveInstance. This is necessary, since an invisible parent is ignored.
+    else if (parent && parent->inherits("ito::AbstractDockWidget"))
+    {
+        parent = ((ito::AbstractDockWidget*)parent)->getActiveInstance();
+    }
 
     QFileDialog::Options opt = 0;
     opt = (~opt) & options;
@@ -1474,7 +1502,7 @@ RetVal UiOrganizer::showFileSaveDialog(unsigned int uiHandle, const QString &cap
     {
         selectedFilter = new QString(filters[selectedFilterIndex]);
     }
-
+    
     QString result = QFileDialog::getSaveFileName(parent, caption, directory, filter, selectedFilter, opt);
     *file = result;
 
