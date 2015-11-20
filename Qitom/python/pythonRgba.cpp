@@ -198,6 +198,20 @@ PyObject* PythonRgba::PyRgba_nbMultiply(PyObject* o1, PyObject* o2)
 
         return (PyObject*)retRgba;
     }
+    else if (PyFloat_Check(o2))
+    {
+        PyRgba *rgba1 = (PyRgba*)(o1);
+
+        PyRgba* retRgba = PythonRgba::createEmptyPyRgba(); // new reference
+        retRgba->rgba = rgba1->rgba * PyFloat_AsDouble(o2);
+
+        return (PyObject*)retRgba;
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "both operands must be of type rgba");
+        return NULL;
+    }
     
     return NULL;
 }

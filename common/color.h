@@ -154,6 +154,26 @@ namespace ito
                 return *this;
             }
 
+            //! Multiplication by a float32 grayFactor (alpha is unchanged).
+            /*!
+            \param The channels R,G and B are multiplied by the given grayFactor and cropped to the range [0,255]
+            \throws runtime_error if grayFactor < 0
+            */
+            Rgba32& operator *=(const ito::float32 &grayFactor)
+            {
+                if (grayFactor < 0.0)
+                {
+                    throw std::runtime_error("Multiplication factor must be >= 0.0");
+                }
+                unsigned int t = static_cast<unsigned int>(b * grayFactor);
+                b = static_cast<uint8>(t <= 255 ? t : 255);
+                t = g * grayFactor;
+                g = static_cast<uint8>(t <= 255 ? t : 255);
+                t = r * grayFactor;
+                r = static_cast<uint8>(t <= 255 ? t : 255);
+                return *this;
+            }
+
             Rgba32& operator /=(const Rgba32 &rhs)/*! < Implementation of /= operator with overflow handling and normalisation */
             {
                 if(rhs.b == 0 || rhs.g == 0 || rhs.r == 0 || rhs.a == 0)
@@ -182,6 +202,13 @@ namespace ito
             }
 
             Rgba32 operator *(const Rgba32 &second) const /*! < Implementation of * operator using *= operator */
+            {
+                Rgba32 first(*this);
+                first *= second;
+                return first;
+            }
+
+            Rgba32 operator *(const ito::float32 &second) const /*! < Implementation of * operator using *= operator */
             {
                 Rgba32 first(*this);
                 first *= second;
