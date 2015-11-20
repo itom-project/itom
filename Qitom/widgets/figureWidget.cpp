@@ -199,7 +199,7 @@ RetVal FigureWidget::plot(QSharedPointer<ito::PCLPointCloud> pc, int areaRow, in
             }
             else
             {
-                retval += RetVal::format(retError, 0, tr("designer widget of class '%s' cannot plot objects of type dataObject").toLatin1().data(), plotClassName.toLatin1().data());
+                retval += RetVal::format(retError, 0, tr("designer widget of class '%s' cannot plot objects of type pointCloud").toLatin1().data(), plotClassName.toLatin1().data());
                 DELETE_AND_SET_NULL(destWidget);
             }
 
@@ -242,13 +242,13 @@ RetVal FigureWidget::plot(QSharedPointer<ito::PCLPolygonMesh> pm, int areaRow, i
             if (destWidget->inherits("ito::AbstractDObjPclFigure"))
             {
                 ito::AbstractDObjPclFigure *dObjPclFigure = NULL;
-                dObjPclFigure = (ito::AbstractDObjPclFigure*)(destWidget);
+                dObjPclFigure = qobject_cast<ito::AbstractDObjPclFigure*>(destWidget);
                 dObjPclFigure->setPolygonMesh(pm);
                 *canvasWidget = destWidget;
             }
             else
             {
-                retval += RetVal::format(retError, 0, tr("designer widget of class '%s' cannot plot objects of type dataObject").toLatin1().data(), plotClassName.toLatin1().data());
+                retval += RetVal::format(retError, 0, tr("designer widget of class '%s' cannot plot objects of type polygonMesh").toLatin1().data(), plotClassName.toLatin1().data());
                 DELETE_AND_SET_NULL(destWidget);
             }
 

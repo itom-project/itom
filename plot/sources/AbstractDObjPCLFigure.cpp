@@ -35,69 +35,8 @@ namespace ito
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AbstractDObjPclFigure::update(void)
 {
-    ito::RetVal retval = ito::retOk;
-
     //!> do the real update work, here the transformation from source to displayed takes place
-    retval += applyUpdate();
-
-    //!> input data object is different from output data object so must cache it
-/*
-    if (m_inpType == ito::ParamBase::PointCloudPtr)
-    {
-        ito::PCLPointCloud *newDisplayed = (ito::PCLPointCloud*)(m_pOutput["displayed"]->getVal<void*>());
-
-        if (m_dataPointerPC.contains("displayed") && newDisplayed == m_dataPointerPC["displayed"].data())
-        {
-            //contents remains the same
-        }
-        else if (newDisplayed == (ito::PCLPointCloud*)m_pInput["source"]->getVal<void*>())
-        {
-            //displayed is the same than source, source is already cached. Therefore we don't need to cache displayed
-            m_dataPointerPC["displayed"].clear();
-        }
-        else
-        {
-            m_dataPointerPC["displayed"] = QSharedPointer<ito::PCLPointCloud>(new ito::PCLPointCloud(*newDisplayed));
-        }
-    }
-    else if (m_inpType == ito::ParamBase::PolygonMeshPtr)
-    {
-        ito::PCLPolygonMesh *newDisplayed = (ito::PCLPolygonMesh*)(m_pOutput["displayed"]->getVal<void*>());
-
-        if (m_dataPointerPM.contains("displayed") && newDisplayed == m_dataPointerPM["displayed"].data())
-        {
-            //contents remains the same
-        }
-        else if (newDisplayed == (ito::PCLPolygonMesh*)m_pInput["source"]->getVal<void*>())
-        {
-            //displayed is the same than source, source is already cached. Therefore we don't need to cache displayed
-            m_dataPointerPM["displayed"].clear();
-        }
-        else
-        {
-            m_dataPointerPM["displayed"] = QSharedPointer<ito::PCLPolygonMesh>(new ito::PCLPolygonMesh(*newDisplayed));
-        }    
-    }
-    else if (m_inpType == ito::ParamBase::DObjPtr)
-    {
-        ito::DataObject *newDisplayed = (ito::DataObject*)(m_pOutput["displayed"]->getVal<void*>());
-
-        if (m_dataPointerDObj.contains("displayed") && newDisplayed == m_dataPointerDObj["displayed"].data())
-        {
-            //contents remains the same
-        }
-        else if (newDisplayed == (ito::DataObject*)m_pInput["source"]->getVal<void*>())
-        {
-            //displayed is the same than source, source is already cached. Therefore we don't need to cache displayed
-            m_dataPointerDObj["displayed"].clear();
-        }
-        else
-        {
-            m_dataPointerDObj["displayed"] = QSharedPointer<ito::DataObject>(new ito::DataObject(*newDisplayed));
-        }
-    }
-*/    
-    return retval;
+    return applyUpdate();  
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -124,7 +63,6 @@ void AbstractDObjPclFigure::setDataObject(QSharedPointer<ito::DataObject> source
         if (m_dataPointerDObj["dataObject"].data() != source.data())
         {
             oldSource = m_dataPointerDObj["dataObject"];
-            // sometimes crash here when replacing the source
             m_dataPointerDObj["dataObject"] = source;
         }  
     }
@@ -165,13 +103,7 @@ void AbstractDObjPclFigure::setPointCloud(QSharedPointer<ito::PCLPointCloud> sou
         if (m_dataPointerPC["pointCloud"].data() != source.data())
         {
             oldSource = m_dataPointerPC["pointCloud"];
-//            if (oldSource)
-//                oldSource->lockWrite();
-
-            // sometimes crash here when replacing the source
             m_dataPointerPC["pointCloud"] = source;
-//            if (oldSource)
-//                oldSource->unlock();
         }  
     }
     else
@@ -189,7 +121,7 @@ void AbstractDObjPclFigure::setPointCloud(QSharedPointer<ito::PCLPointCloud> sou
 //----------------------------------------------------------------------------------------------------------------------------------
 QSharedPointer<ito::PCLPolygonMesh> AbstractDObjPclFigure::getPolygonMesh(void) const 
 {
-    ito::PCLPolygonMesh *pm = m_pInput["polgonMesh"]->getVal<ito::PCLPolygonMesh*>();
+    ito::PCLPolygonMesh *pm = m_pInput["polygonMesh"]->getVal<ito::PCLPolygonMesh*>();
     if (pm)
     {
         return QSharedPointer<ito::PCLPolygonMesh>(new ito::PCLPolygonMesh(*pm)); 
@@ -203,29 +135,23 @@ void AbstractDObjPclFigure::setPolygonMesh(QSharedPointer<ito::PCLPolygonMesh> s
     ito::RetVal retval = ito::retOk;
     QSharedPointer<ito::PCLPolygonMesh> oldSource; //possible backup for previous source, this backup must be alive until updateParam with the new one has been completely propagated
 
-    if (m_dataPointerPM.contains("polgonMesh"))
+    if (m_dataPointerPM.contains("polygonMesh"))
     {
         //check if pointer of shared incoming data object is different to pointer of previous data object
         //if so, free previous
-        if (m_dataPointerPM["polgonMesh"].data() != source.data())
+        if (m_dataPointerPM["polygonMesh"].data() != source.data())
         {
-            oldSource = m_dataPointerPM["polgonMesh"];
-//            if (oldSource)
-//                oldSource->lockWrite();
-
-            // sometimes crash here when replacing the source
-            m_dataPointerPM["polgonMesh"] = source;
-//            if (oldSource)
-//                oldSource->unlock();
+            oldSource = m_dataPointerPM["polygonMesh"];
+            m_dataPointerPM["polygonMesh"] = source;
 
         }  
     }
     else
     {
-        m_dataPointerPM["polgonMesh"] = source;
+        m_dataPointerPM["polygonMesh"] = source;
     }
             
-    ito::ParamBase thisParam("polgonMesh", ito::ParamBase::PolygonMeshPtr, (const char*)source.data());
+    ito::ParamBase thisParam("polygonMesh", ito::ParamBase::PolygonMeshPtr, (const char*)source.data());
     m_inpType = ito::ParamBase::PolygonMeshPtr;
     retval += updateParam(&thisParam, 1);
 
@@ -242,51 +168,5 @@ ito::RetVal AbstractDObjPclFigure::setLinePlot(const double /*x0*/, const double
     return ito::RetVal(ito::retError, 0, tr("Function \'spawnLinePlot\' not supported from this plot widget").toLatin1().data());
 
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-/*
-//this source is invoked by any connected camera
-void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source, ItomSharedSemaphore *waitCond) 
-{ 
-    ito::RetVal retval = ito::retOk;
-
-    if (m_cameraConnected)
-    {
-        if (m_dataPointer.contains("source"))
-        {
-            //check if pointer of shared incoming data object is different to pointer of previous data object
-            //if so, free previous
-            if (m_dataPointer["source"].data() != source.data())
-            {
-                QSharedPointer<ito::DataObject> oldSource = m_dataPointer["source"];
-                if (oldSource.data())
-                {
-                    oldSource->lockWrite();
-                    m_dataPointer["source"] = source;
-                    oldSource->unlock();
-                }
-                else
-                {
-                    m_dataPointer["source"] = source;
-                }
-            }
-        }
-        else
-        {
-            m_dataPointer["source"] = source;
-        }
-            
-        ito::ParamBase thisParam("source", ito::ParamBase::DObjPtr, (const char*)source.data());
-        retval += updateParam(&thisParam, 1);
-    }
-
-    if (waitCond)
-    {
-        waitCond->release();
-        waitCond->deleteSemaphore();
-        waitCond = NULL;
-    }
-}
-*/
 
 } //end namespace ito

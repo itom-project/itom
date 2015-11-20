@@ -43,16 +43,18 @@
 
 namespace ito
 {
+    //! enumeration that describes the type of input data that a designer plot widget accepts
     enum PlotDataType
     {
-        DataObjLine         = 0x0001,
-        DataObjPlane        = 0x0002,
-        DataObjPlaneStack   = 0x0004,
-        PointCloud          = 0x0008,
-        PolygonMesh         = 0x0010
+        DataObjLine         = 0x0001, /*!< 1xN or Nx1 data object */ 
+        DataObjPlane        = 0x0002, /*!< 2D data object */
+        DataObjPlaneStack   = 0x0004, /*!< data object with more than one plane */
+        PointCloud          = 0x0008, /*!< point cloud */
+        PolygonMesh         = 0x0010  /*!< polygon mesh */
     };
     Q_DECLARE_FLAGS(PlotDataTypes, PlotDataType)
     
+    //! allowed data formats
     enum PlotDataFormat
     {
         Format_Gray8    = 0x0001,
@@ -67,7 +69,7 @@ namespace ito
     };
     Q_DECLARE_FLAGS(PlotDataFormats, PlotDataFormat)
     
-
+    //! this enumeration describe the features a designer plot widget provides concerning the visualization of data objects, point clouds or polygonal meshes
     enum PlotFeature
     {
         Static      = 0x0001,
