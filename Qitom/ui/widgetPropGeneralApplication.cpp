@@ -55,7 +55,7 @@ void WidgetPropGeneralApplication::readSettings()
 
     settings.beginGroup("Application");
 	QListWidgetItem *lwi = new QListWidgetItem(QCoreApplication::applicationDirPath() + "/lib", ui.listWidget, QListWidgetItem::UserType);
-    lwi->setTextColor(Qt::GlobalColor::gray);
+    lwi->setTextColor(Qt::gray);
 
     int size = settings.beginReadArray("searchPathes");
     for (int i = 0; i < size; ++i) 
