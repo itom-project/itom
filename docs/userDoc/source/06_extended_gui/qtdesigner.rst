@@ -305,6 +305,9 @@ unsigned int ...  integer, floats are rounded to integer, True=1, False=0
 float, double     integer, floats, True=1.0, False=0.0
 QVector<int>      any sequence whose values are castable to int
 QVector<double>   any sequence whose values are castable to double
+QVector2D         any sequence with two values castable to double (x,y)
+QVector3D         any sequence with three values castable to double (x,y,z)
+QVector4D         any sequence with four values castable to double (x,y,z,w)
 PCLPointCloud     :py:class:`~itom.pointCloud`
 PCLPoint          :py:class:`~itom.point`
 PCLPolygonMesh    :py:class:`~itom.polygonMesh`
