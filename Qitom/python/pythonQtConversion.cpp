@@ -33,6 +33,9 @@
 #include <qurl.h>
 #include <qtextcodec.h>
 #include <qdatetime.h>
+#include <qvector2d.h>
+#include <qvector3d.h>
+#include <qvector4d.h>
 
 #include "pythonSharedPointerGuard.h"
 
@@ -1596,6 +1599,66 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 retval += ito::RetVal(ito::retError, 0, "transformation error to RectF: 4 values required.");
             }
         }
+        else if (destType == QVariant::Vector2D)
+        {
+            const QVariantList list = item.toList();
+            if (list.size() == 2)
+            {
+                bool ok2;
+                result = QVector2D(list[0].toFloat(&ok), list[1].toFloat(&ok2));
+                ok &= ok2;
+
+                if (!ok)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "transformation error to Vector2D: at least one value could not be transformed to float.");
+                }
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, "transformation error to Vector2D: 2 values required.");
+            }
+        }
+        else if (destType == QVariant::Vector3D)
+        {
+            const QVariantList list = item.toList();
+            if (list.size() == 3)
+            {
+                bool ok2, ok3;
+                result = QVector3D(list[0].toFloat(&ok), list[1].toFloat(&ok2), list[2].toFloat(&ok3));
+                ok &= ok2;
+                ok &= ok3;
+
+                if (!ok)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "transformation error to Vector3D: at least one value could not be transformed to float.");
+                }
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, "transformation error to Vector3D: 3 values required.");
+            }
+        }
+        else if (destType == QVariant::Vector4D)
+        {
+            const QVariantList list = item.toList();
+            if (list.size() == 4)
+            {
+                bool ok2, ok3, ok4;
+                result = QVector4D(list[0].toFloat(&ok), list[1].toFloat(&ok2), list[2].toFloat(&ok3), list[3].toFloat(&ok4));
+                ok &= ok2;
+                ok &= ok3;
+                ok &= ok4;
+
+                if (!ok)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "transformation error to Vector4D: at least one value could not be transformed to float.");
+                }
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, "transformation error to Vector4D: 4 values required.");
+            }
+        }
         else if (destType == QVariant::Size)
         {
             const QVariantList list = item.toList();
@@ -2909,6 +2972,33 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             {
                 PyTuple_SetItem(temp, i, PyFloat_FromDouble(temp2->at(i)));
             }
+            return temp;
+        }
+        else if (strcmp(name, "QVector2D") == 0)
+        {
+            QVector2D *temp2 = (QVector2D*)data;
+            PyObject *temp = PyTuple_New(2);
+            PyTuple_SetItem(temp, 0, PyFloat_FromDouble(temp2->x()));
+            PyTuple_SetItem(temp, 1, PyFloat_FromDouble(temp2->y()));
+            return temp;
+        }
+        else if (strcmp(name, "QVector3D") == 0)
+        {
+            QVector3D *temp2 = (QVector3D*)data;
+            PyObject *temp = PyTuple_New(3);
+            PyTuple_SetItem(temp, 0, PyFloat_FromDouble(temp2->x()));
+            PyTuple_SetItem(temp, 1, PyFloat_FromDouble(temp2->y()));
+            PyTuple_SetItem(temp, 2, PyFloat_FromDouble(temp2->z()));
+            return temp;
+        }
+        else if (strcmp(name, "QVector4D") == 0)
+        {
+            QVector4D *temp2 = (QVector4D*)data;
+            PyObject *temp = PyTuple_New(4);
+            PyTuple_SetItem(temp, 0, PyFloat_FromDouble(temp2->x()));
+            PyTuple_SetItem(temp, 1, PyFloat_FromDouble(temp2->y()));
+            PyTuple_SetItem(temp, 2, PyFloat_FromDouble(temp2->z()));
+            PyTuple_SetItem(temp, 2, PyFloat_FromDouble(temp2->w()));
             return temp;
         }
     }
