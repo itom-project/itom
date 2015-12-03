@@ -25,9 +25,10 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef ITOMCUSTOMTYPES_H
-#define ITOMCUSTOMTYPES_H
+#ifndef QVECTOR4DPROPERTY_H
+#define QVECTOR4DPROPERTY_H
 
+#include <qvector4d.h>
 #include <qvariant.h>
 #include "Property.h"
 
@@ -37,11 +38,42 @@ class QObject;
 
 namespace ito
 {
-    namespace itomCustomTypes
+    class QVector4DProperty : public Property
     {
-        void registerTypes();
-        Property* createCustomProperty(const QString& name, QObject* propertyObject, Property* parent);
-    }
-}
+        Q_OBJECT
+        Q_PROPERTY(float x READ x WRITE setX DESIGNABLE true USER true)
+        Q_PROPERTY(float y READ y WRITE setY DESIGNABLE true USER true)
+        Q_PROPERTY(float z READ z WRITE setZ DESIGNABLE true USER true)
+        Q_PROPERTY(float w READ w WRITE setW DESIGNABLE true USER true)
 
-#endif //ITOMCUSTOMTYPES_H
+    public:
+        QVector4DProperty(const QString& name = QString(), QObject* propertyObject = 0, QObject* parent = 0);
+
+        QVariant value(int role = Qt::UserRole) const;
+        virtual void setValue(const QVariant& value);
+
+        void setEditorHints(const QString& hints);
+
+        float x() const;
+        void setX(float x);
+
+        float y() const;
+        void setY(float y);
+        
+        float z() const;
+        void setZ(float z);
+        
+        float w() const;
+        void setW(float w);
+
+    private:
+        QString parseHints(const QString& hints, const QChar component);
+
+        Property*    m_x;
+        Property*    m_y;
+        Property*    m_z;
+        Property*    m_w;
+    };
+
+}
+#endif //QVECTOR4DPROPERTY_H
