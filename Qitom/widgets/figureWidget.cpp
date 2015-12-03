@@ -602,10 +602,12 @@ QWidget* FigureWidget::prepareWidget(const QString &plotClassName, int areaRow, 
                             t.toolbar->setVisible(false);
                         }
 
-                        QDockWidget *propertyDock = figWidget->getPropertyDockWidget();
-                        if (propertyDock && getCanvas())
+                        foreach(const AbstractFigure::ToolboxItem &t, figWidget->getToolboxes())
                         {
-                            getCanvas()->addDockWidget(Qt::RightDockWidgetArea, propertyDock);
+                            if (t.toolbox && getCanvas())
+                            {
+                                getCanvas()->addDockWidget(t.area, t.toolbox);
+                            }
                         }
                     }
 
