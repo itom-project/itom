@@ -50,7 +50,7 @@ namespace ito
             if (!registered)
             {
                 qRegisterMetaType<ito::AutoInterval>("ito::AutoInterval");
-                qRegisterMetaType<QVector3D>("QVector2D");
+                qRegisterMetaType<QVector2D>("QVector2D");
                 qRegisterMetaType<QVector3D>("QVector3D");
                 qRegisterMetaType<QVector4D>("QVector4D");
                 registered = true;
