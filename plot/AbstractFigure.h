@@ -158,21 +158,21 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
 
         virtual RetVal init() { return retOk; } //this method is called from after construction and after that the api pointers have been transmitted
 
-        virtual void importItomApi(void** apiPtr) = 0; //this methods are implemented in the plugin itsself. Therefore place ITOM_API right after Q_INTERFACE in the header file and replace Q_EXPORT_PLUGIN2 by Q_EXPORT_PLUGIN2_ITOM in the source file.
-        virtual void importItomApiGraph(void** apiPtr) = 0;
+        virtual void importItomApi(void** apiPtr) = 0;      /*!< function to provide access to the itom API functions. this methods are implemented in the plugin itsself. Therefore put the macro DESIGNER_PLUGIN_ITOM_API before the public section in the designer plugin class. */
+        virtual void importItomApiGraph(void** apiPtr) = 0; /*!< function to provide access to the itom API functions. this methods are implemented in the plugin itsself. Therefore put the macro DESIGNER_PLUGIN_ITOM_API before the public section in the designer plugin class. */
 
-        void addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea, int section = 1);
-        void addToolBarBreak(const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea);
+        void addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea, int section = 1); /*!< Register any toolbar of the plot widget using this method. */
+        void addToolBarBreak(const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea); /*!< Add a toolbar break, hence a new line for the following toolbars to the indicated area. */
 
-        void addToolbox(QDockWidget *toolbox, const QString &key, Qt::DockWidgetArea area = Qt::RightDockWidgetArea);
+        void addToolbox(QDockWidget *toolbox, const QString &key, Qt::DockWidgetArea area = Qt::RightDockWidgetArea); /*!< Every plot widget is automatically equipped with a property toolbox. If you want to add further toolboxes (dock widgets), register and append them using this method. */
 
-        void showToolBar(const QString &key);
-        void hideToolBar(const QString &key);
+        void showToolBar(const QString &key); /*!< show a toolbar with given key. This toolbar must first be registered using addToolBar. */
+        void hideToolBar(const QString &key); /*!< hide a toolbar with given key. This toolbar must first be registered using addToolBar. */
 
-        void addMenu(QMenu *menu);
+        void addMenu(QMenu *menu); /*!< append a menu to the figure. AbstractFigure then takes care about the menu. Only use this method to add menus since the menu bar of figures is differently handled depending on the window mode of the figure. */
 
-        void updatePropertyDock();
-        void setPropertyObservedObject(QObject* obj);
+        void updatePropertyDock(); /*!< call this method if any property of the figure changed such that the property toolbox is synchronized and updated. */
+        void setPropertyObservedObject(QObject* obj); /*!< registeres obj for a property observation of the property toolbox. All readable properties are then listed in the property toolbox. */
 
         RetVal initialize();
 
@@ -191,8 +191,8 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
         AbstractFigurePrivate *d;
 
     private slots:
-        inline void mnuShowToolbar(bool /*checked*/) { setToolbarVisible(true); }
-        void mnuShowProperties(bool checked);
+        inline void mnuShowToolbar(bool /*checked*/) { setToolbarVisible(true); } /*!< shows all registered toolbars*/
+        void mnuShowProperties(bool checked); /*!< set the visibility of the property toolbox */
 
     public slots:
 
