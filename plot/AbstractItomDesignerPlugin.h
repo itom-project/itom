@@ -32,7 +32,7 @@
 #include "../common/sharedStructuresGraphics.h"
 #include "AbstractFigure.h"
 
-#if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
+#if QT_VERSION < 0x050500 //hex-code must be used since Qt4 moc process does not understand QT_VERSION_CHECK(5,5,0)
 #include <QtDesigner/QDesignerCustomWidgetInterface>
 #else
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
