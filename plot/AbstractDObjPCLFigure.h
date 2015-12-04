@@ -72,52 +72,31 @@ class ITOMCOMMONQT_EXPORT AbstractDObjPclFigure : public AbstractFigure
     Q_CLASSINFO("slot://setLinePlot", "This (virtual) slot can be invoked by python to trigger a lineplot.")
 
 public:
-    AbstractDObjPclFigure(const QString &itomSettingsFile, const ito::ParamBase::Type inpType, AbstractFigure::WindowMode windowMode = AbstractFigure::ModeStandaloneInUi, QWidget *parent = 0) : 
-        AbstractFigure(itomSettingsFile, windowMode, parent),
-        m_inpType(inpType)
-    {
-        m_pInput.insert("pointCloud", new ito::Param("pointCloud", ito::ParamBase::PointCloudPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));       
-        m_pInput.insert("polygonMesh", new ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));       
-        m_pInput.insert("dataObject", new ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
-    }
+    AbstractDObjPclFigure(const QString &itomSettingsFile, const ito::ParamBase::Type inpType, AbstractFigure::WindowMode windowMode = AbstractFigure::ModeStandaloneInUi, QWidget *parent = 0);
 
-    AbstractDObjPclFigure(const QString &itomSettingsFile, AbstractFigure::WindowMode windowMode = AbstractFigure::ModeStandaloneInUi, QWidget *parent = 0) :
-        AbstractFigure(itomSettingsFile, windowMode, parent),
-        m_inpType(0)
-    {
-        m_pInput.insert("pointCloud", new ito::Param("pointCloud", ito::ParamBase::PointCloudPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
-        m_pInput.insert("polygonMesh", new ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
-        m_pInput.insert("dataObject", new ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
-    }
+    AbstractDObjPclFigure(const QString &itomSettingsFile, AbstractFigure::WindowMode windowMode = AbstractFigure::ModeStandaloneInUi, QWidget *parent = 0);
     
-    virtual ~AbstractDObjPclFigure() 
-    {
-    }
+    virtual ~AbstractDObjPclFigure();
 
     ito::RetVal update(void);
 
     virtual void setDataObject(QSharedPointer<ito::DataObject>);
     virtual QSharedPointer<ito::DataObject> getDataObject(void) const;
 
-    virtual inline ito::AutoInterval getXAxisInterval(void) const { return ito::AutoInterval(); }
-    virtual inline void setXAxisInterval(ito::AutoInterval) { return; }
-        
-    virtual inline ito::AutoInterval getYAxisInterval(void) const { return ito::AutoInterval(); }
-    virtual inline void setYAxisInterval(ito::AutoInterval) { return; }
-        
-    virtual inline ito::AutoInterval getZAxisInterval(void) const { return ito::AutoInterval(); }
-    virtual inline void setZAxisInterval(ito::AutoInterval) { return; }
-        
-    virtual inline QString getColorMap(void) const { return QString(); }
-    virtual inline void setColorMap(QString) { return; }
+    virtual ito::AutoInterval getXAxisInterval(void) const;
+    virtual void setXAxisInterval(ito::AutoInterval);
+
+    virtual ito::AutoInterval getYAxisInterval(void) const;
+    virtual void setYAxisInterval(ito::AutoInterval);
+
+    virtual ito::AutoInterval getZAxisInterval(void) const;
+    virtual void setZAxisInterval(ito::AutoInterval);
+
+    virtual QString getColorMap(void) const;
+    virtual void setColorMap(QString);
 
     //! plot-specific render function to enable more complex printing in subfigures ...
-    virtual inline QPixmap renderToPixMap(const int xsize, const int ysize, const int resolution) 
-    {
-        QPixmap emptyMap(xsize, ysize);
-        emptyMap.fill(Qt::green);
-        return emptyMap;
-    } 
+    virtual QPixmap renderToPixMap(const int xsize, const int ysize, const int resolution);
 
 #ifdef USEPCL
     virtual void setPointCloud(QSharedPointer<ito::PCLPointCloud>);
@@ -138,12 +117,6 @@ protected:
 signals:
 
 public slots:
-    //this source is invoked by any connected camera
-/*    
-    virtual void setSource(QSharedPointer<ito::DataObject> source, ItomSharedSemaphore *waitCond);
-    virtual void setSource(QSharedPointer<ito::PCLPointCloud> source, ItomSharedSemaphore *waitCond);
-    virtual void setSource(QSharedPointer<ito::PCLPolygonMesh> source, ItomSharedSemaphore *waitCond);
-*/
     //this can be invoked by python to trigger a lineplot
     virtual ito::RetVal setLinePlot(const double x0, const double y0, const double x1, const double y1, const int destID = -1);
 };

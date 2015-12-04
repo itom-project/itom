@@ -118,9 +118,7 @@ set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/apiFunctionsGraphInc.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/apiFunctionsInc.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperActuator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperCommon.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedFunctionsQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructures.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresGraphics.h

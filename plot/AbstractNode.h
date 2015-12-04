@@ -203,13 +203,7 @@ class ITOMCOMMONQT_EXPORT Channel
 class ITOMCOMMONQT_EXPORT AbstractNode
 {
     public:
-        AbstractNode() : 
-            m_NodeType(rttiUnknown),
-            m_uniqueID(UID++)
-        {
-            m_pInput.insert("liveSource", new ito::Param("liveSource", ito::ParamBase::HWRef, NULL, QObject::tr("Live data source for plot").toLatin1().data()));
-        }
-
+        AbstractNode();
 
         virtual ~AbstractNode(); //>! will delete the node and all data associated with it, except m_pCurrentData if m_isCurrent is set to TRUE
 

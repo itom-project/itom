@@ -76,6 +76,15 @@ ito::RetVal Channel::propagateUpdatePending()
     }
 }
 
+
+//----------------------------------------------------------------------------------------------------------------------------------
+AbstractNode::AbstractNode() :
+    m_NodeType(rttiUnknown),
+    m_uniqueID(UID++)
+{
+    m_pInput.insert("liveSource", new ito::Param("liveSource", ito::ParamBase::HWRef, NULL, QObject::tr("Live data source for plot").toLatin1().data()));
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 AbstractNode::~AbstractNode()
 {

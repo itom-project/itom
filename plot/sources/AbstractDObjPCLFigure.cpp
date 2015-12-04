@@ -33,6 +33,31 @@ namespace ito
 {
 
 //----------------------------------------------------------------------------------------------------------------------------------
+AbstractDObjPclFigure::AbstractDObjPclFigure(const QString &itomSettingsFile, const ito::ParamBase::Type inpType, AbstractFigure::WindowMode windowMode /*= AbstractFigure::ModeStandaloneInUi*/, QWidget *parent /*= 0*/) :
+    AbstractFigure(itomSettingsFile, windowMode, parent),
+    m_inpType(inpType)
+{
+    m_pInput.insert("pointCloud", new ito::Param("pointCloud", ito::ParamBase::PointCloudPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+    m_pInput.insert("polygonMesh", new ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+    m_pInput.insert("dataObject", new ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+AbstractDObjPclFigure::AbstractDObjPclFigure(const QString &itomSettingsFile, AbstractFigure::WindowMode windowMode /*= AbstractFigure::ModeStandaloneInUi*/, QWidget *parent /*= 0*/) :
+    AbstractFigure(itomSettingsFile, windowMode, parent),
+    m_inpType(0)
+{
+    m_pInput.insert("pointCloud", new ito::Param("pointCloud", ito::ParamBase::PointCloudPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+    m_pInput.insert("polygonMesh", new ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+    m_pInput.insert("dataObject", new ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+AbstractDObjPclFigure::~AbstractDObjPclFigure()
+{
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AbstractDObjPclFigure::update(void)
 {
     //!> do the real update work, here the transformation from source to displayed takes place
@@ -167,6 +192,63 @@ ito::RetVal AbstractDObjPclFigure::setLinePlot(const double /*x0*/, const double
 {
     return ito::RetVal(ito::retError, 0, tr("Function \'spawnLinePlot\' not supported from this plot widget").toLatin1().data());
 
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::AutoInterval AbstractDObjPclFigure::getXAxisInterval(void) const
+{
+    return ito::AutoInterval();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDObjPclFigure::setXAxisInterval(ito::AutoInterval)
+{
+    return;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::AutoInterval AbstractDObjPclFigure::getYAxisInterval(void) const
+{
+    return ito::AutoInterval();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDObjPclFigure::setYAxisInterval(ito::AutoInterval)
+{
+    return;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::AutoInterval AbstractDObjPclFigure::getZAxisInterval(void) const
+{
+    return ito::AutoInterval();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDObjPclFigure::setZAxisInterval(ito::AutoInterval)
+{
+    return;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString AbstractDObjPclFigure::getColorMap(void) const
+{
+    return QString();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDObjPclFigure::setColorMap(QString)
+{
+    return;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! plot-specific render function to enable more complex printing in subfigures ...
+QPixmap AbstractDObjPclFigure::renderToPixMap(const int xsize, const int ysize, const int resolution)
+{
+    QPixmap emptyMap(xsize, ysize);
+    emptyMap.fill(Qt::green);
+    return emptyMap;
 }
 
 } //end namespace ito

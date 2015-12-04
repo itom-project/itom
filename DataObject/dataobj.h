@@ -485,7 +485,6 @@ namespace ito {
     template<typename _Tp> RetVal AssignScalarFunc(const DataObject *src, const ito::tDataType type, const void *scalar);
     template<typename _Tp> RetVal MakeContinuousFunc(const DataObject &dObj, DataObject &resDObj);
     template<typename _Tp> RetVal EvaluateTransposeFlagFunc(DataObject *dObj);
-    //template<typename _Tp> RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel);
     template<typename _Tp> std::ostream& coutFunc(std::ostream& out, const DataObject& dObj);
     
     // more friends due to change of std::vector to int ** for m_data ...
@@ -594,9 +593,6 @@ namespace ito {
         
         RetVal copyFromData2DInternal(const uchar* src, const int sizeOfElem, const int sizeX, const int sizeY);
         RetVal copyFromData2DInternal(const uchar* src, const int sizeOfElem, const int sizeX, const int x0, const int y0, const int width, const int height);
-        
-        //! Forward declaration: Default values are not allowed for friend functions, adding a non-friend function with default argument instead \deprecated Will be deleted once the interface number is incremented due to further changes
-        //template<typename _Tp> RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel = 0);
 
         //low-level, templated methods
         //most low-level methods are marked "friend" such that they can access private members of their data object parameters
@@ -611,7 +607,6 @@ namespace ito {
         template<typename _Tp> friend RetVal AssignScalarFunc(const DataObject *src, const ito::tDataType type, const void *scalar);
         template<typename _Tp> friend RetVal MakeContinuousFunc(const DataObject &dObj, DataObject &resDObj);
         template<typename _Tp> friend RetVal EvaluateTransposeFlagFunc(DataObject *dObj);
-        //template<typename _Tp> friend RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel); //!< \deprecated Will be deleted once the interface number is incremented due to further changes
         template<typename _Tp> friend std::ostream& coutFunc(std::ostream& out, const DataObject& dObj);
         
         // more friends due to change of std::vector to int ** for m_data ...
@@ -1374,14 +1369,7 @@ namespace ito {
         }
         
         return retValue;
-    };
-    
-    //deprecated
-    template<typename _Tp> inline _Tp numberConversion(ito::tDataType fromType, void *scalar)
-    {
-        return numberConversion<_Tp>(fromType, const_cast<const void*>(scalar));
-    };
-    
+    };    
     
     //! streaming operator to stream the representation or contant of a data object
     DATAOBJ_EXPORT std::ostream& operator << (std::ostream& out, const DataObject& dObj);

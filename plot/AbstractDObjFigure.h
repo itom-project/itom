@@ -36,6 +36,7 @@
 #include "../common/qtMetaTypeDeclarations.h"
 
 #include <qpointer.h>
+#include <qpixmap.h>
 
 
 #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
@@ -66,18 +67,9 @@ class ITOMCOMMONQT_EXPORT AbstractDObjFigure : public AbstractFigure
     Q_CLASSINFO("slot://setLinePlot", "This (virtual) slot can be invoked by python to trigger a lineplot.")
 
 public:
-    AbstractDObjFigure(const QString &itomSettingsFile, AbstractFigure::WindowMode windowMode = AbstractFigure::ModeStandaloneInUi, QWidget *parent = 0) : 
-        AbstractFigure(itomSettingsFile, windowMode, parent),
-        m_cameraConnected(false)
-    {
-        m_pInput.insert("source", new ito::Param("source", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
-        m_pOutput.insert("displayed", new ito::Param("displayed", ito::ParamBase::DObjPtr, NULL, QObject::tr("Actual output data of plot").toLatin1().data()));
-    }
+    AbstractDObjFigure(const QString &itomSettingsFile, AbstractFigure::WindowMode windowMode = AbstractFigure::ModeStandaloneInUi, QWidget *parent = 0);
 
-    virtual ~AbstractDObjFigure() 
-    {
-        removeLiveSource();
-    }
+    virtual ~AbstractDObjFigure();
 
     ito::RetVal update(void);
 
@@ -89,25 +81,20 @@ public:
     virtual QPointer<ito::AddInDataIO> getCamera(void) const;
     virtual void setCamera( QPointer<ito::AddInDataIO> camera );
 
-    virtual inline ito::AutoInterval getXAxisInterval(void) const { return ito::AutoInterval(); }
-    virtual inline void setXAxisInterval(ito::AutoInterval) { return; }
+    virtual ito::AutoInterval getXAxisInterval(void) const;
+    virtual void setXAxisInterval(ito::AutoInterval);
         
-    virtual inline ito::AutoInterval getYAxisInterval(void) const { return ito::AutoInterval(); }
-    virtual inline void setYAxisInterval(ito::AutoInterval) { return; }
+    virtual ito::AutoInterval getYAxisInterval(void) const;
+    virtual void setYAxisInterval(ito::AutoInterval);
         
-    virtual inline ito::AutoInterval getZAxisInterval(void) const { return ito::AutoInterval(); }
-    virtual inline void setZAxisInterval(ito::AutoInterval) { return; }
+    virtual ito::AutoInterval getZAxisInterval(void) const;
+    virtual void setZAxisInterval(ito::AutoInterval);
         
-    virtual inline QString getColorMap(void) const { return QString(); }
-    virtual inline void setColorMap(QString) { return; }
+    virtual QString getColorMap(void) const;
+    virtual void setColorMap(QString);
 
     //! plot-specific render function to enable more complex printing in subfigures ...
-    virtual inline QPixmap renderToPixMap(const int xsize, const int ysize, const int resolution) 
-    {
-        QPixmap emptyMap(xsize, ysize);
-        emptyMap.fill(Qt::green);
-        return emptyMap;
-    }
+    virtual QPixmap renderToPixMap(const int xsize, const int ysize, const int resolution);
 
 protected:
     QHash<QString, QSharedPointer<ito::DataObject> > m_dataPointer;

@@ -34,19 +34,11 @@
 #include "../common/apiFunctionsGraphInc.h"
 #include "../common/apiFunctionsInc.h"
 
-#if QT_VERSION < 0x050000
 #include <qmainwindow.h>
 #include <qlabel.h>
 #include <qtoolbar.h>
 #include <qevent.h>
 #include <qdockwidget.h>
-#else
-#include <QtWidgets/qmainwindow.h>
-//#include <QtWidgets/qlabel.h>
-#include <QtWidgets/qtoolbar.h>
-#include <QtWidgets/qdockwidget.h>
-//#include <QtGui/qevent.h>
-#endif
 
 class QPropertyEditorWidget; //forward declaration
 
@@ -64,7 +56,8 @@ class QPropertyEditorWidget; //forward declaration
 
 namespace ito {
 
-class AbstractFigure;
+class AbstractFigure; //forward declaration
+class AbstractFigurePrivate; //forward declaration
 
 class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNode
 {
@@ -77,11 +70,15 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
 
     Q_CLASSINFO("prop://toolbarVisible", "Toggles the visibility of the toolbar of the plot.")
     Q_CLASSINFO("prop://contextMenuEnabled", "Defines whether the context menu of the plot should be enabled or not.")
-
     Q_CLASSINFO("slot://refreshPlot", "Triggers an update of the current plot window.")
 
     public:
-        enum WindowMode { ModeInItomFigure, ModeStandaloneInUi, ModeStandaloneWindow };
+        enum WindowMode 
+        { 
+            ModeInItomFigure, 
+            ModeStandaloneInUi, 
+            ModeStandaloneWindow 
+        };
         
         enum CompilerFeatures 
         { 
@@ -123,6 +120,13 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
             QString key;
         };
 
+        struct ToolboxItem {
+            ToolboxItem() : toolbox(NULL), key("") {}
+            QDockWidget *toolbox;
+            Qt::DockWidgetArea area;
+            QString key;
+        };
+
         AbstractFigure(const QString &itomSettingsFile, WindowMode windowMode = ModeStandaloneInUi, QWidget *parent = 0);
         virtual ~AbstractFigure();
 
@@ -145,10 +149,10 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
         virtual void setContextMenuEnabled(bool show) = 0; 
         virtual bool getContextMenuEnabled() const = 0;
 
-        virtual QDockWidget *getPropertyDockWidget() const { return m_propertyDock; }
-
+        QDockWidget *getPropertyDockWidget() const;
         QList<QMenu*> getMenus() const;
         QList<AbstractFigure::ToolBarItem> getToolbars() const;
+        QList<AbstractFigure::ToolboxItem> getToolboxes() const; //the first toolbox is always the property dock widget
 
     protected:
 
@@ -160,6 +164,8 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
         void addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea, int section = 1);
         void addToolBarBreak(const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea);
 
+        void addToolbox(QDockWidget *toolbox, const QString &key, Qt::DockWidgetArea area = Qt::RightDockWidgetArea);
+
         void showToolBar(const QString &key);
         void hideToolBar(const QString &key);
 
@@ -170,42 +176,29 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
 
         RetVal initialize();
 
-        QMenu *m_contextMenu;
-
         WindowMode m_windowMode;
         QString m_itomSettingsFile;
         QWidget *m_mainParent; //the parent of this figure is only set to m_mainParent, if the stay-on-top behaviour is set to the right value
 
         void **m_apiFunctionsGraphBasePtr;
         void **m_apiFunctionsBasePtr;
-        
-        bool m_toolbarsVisible;
 
         ito::uint8 m_lineCutType;
         ito::uint8 m_zSliceType;
         ito::uint8 m_zoomCutType;
 
     private:
-        QList<QMenu*> m_menus;
-        QList<ToolBarItem> m_toolbars;
+        AbstractFigurePrivate *d;
 
-        QDockWidget *m_propertyDock;
-        QPropertyEditorWidget *m_propertyEditorWidget;
-        QObject *m_propertyObservedObject;
-
-    signals:
-        
     private slots:
-
         inline void mnuShowToolbar(bool /*checked*/) { setToolbarVisible(true); }
-        inline void mnuShowProperties(bool checked) { if (m_propertyDock) { m_propertyDock->setVisible(checked); } }
+        void mnuShowProperties(bool checked);
 
     public slots:
 
         int getPlotID() 
         { 
             if(!ito::ITOM_API_FUNCS_GRAPH) return 0;
-            //return getUniqueID();
             ito::uint32 thisID = 0;
             ito::RetVal retval = apiGetFigureIDbyHandle(this, thisID);
 
@@ -215,6 +208,7 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
             }
             return thisID; 
         }
+
         void refreshPlot() { update(); }
 };
 

@@ -25,22 +25,13 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-//#define ITOM_IMPORT_PLOTAPI
-//#define ITOM_IMPORT_API
 #include "../AbstractFigure.h"
 
-#if QT_VERSION < 0x050000
 #include <qaction.h>
 #include <qtoolbar.h>
 #include <qmenu.h>
 #include <qmenubar.h>
-#else
-#include <QtWidgets/qaction.h>
-#include <QtWidgets/qtoolbar.h>
-#include <QtWidgets/qmenu.h>
-#include <QtWidgets/qmenubar.h>
-#include <QtGui/qevent.h>
-#endif
+#include <qevent.h>
 #include <qsettings.h>
 
 #include "../../common/typeDefs.h"
@@ -51,62 +42,85 @@
 namespace ito 
 {
 
+//------------------------------------------------------------------------------------------------------------------------
+class AbstractFigurePrivate
+{
+public:
+    AbstractFigurePrivate() :
+        propertyDock(NULL),
+        propertyEditorWidget(NULL),
+        propertyObservedObject(NULL),
+        toolbarsVisible(true)
+    {}
+
+    QList<QMenu*> menus;
+    QList<AbstractFigure::ToolBarItem> toolbars;
+    QList<AbstractFigure::ToolboxItem> toolboxes;
+
+    QDockWidget *propertyDock;
+    QPropertyEditorWidget *propertyEditorWidget;
+    QObject *propertyObservedObject;
+    bool toolbarsVisible;
+};
+
 //----------------------------------------------------------------------------------------------------------------------------------
 AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windowMode, QWidget *parent) : 
     QMainWindow(parent),
     AbstractNode(),
-    m_contextMenu(NULL),
+    d(NULL),
     m_itomSettingsFile(itomSettingsFile),
     m_apiFunctionsGraphBasePtr(NULL),
     m_apiFunctionsBasePtr(NULL),
     m_mainParent(parent),
-    m_toolbarsVisible(true),
     m_windowMode(windowMode),
-    m_propertyDock(NULL),
-    m_propertyEditorWidget(NULL),
-    m_propertyObservedObject(NULL),
+    
     m_lineCutType(tNoChildPlot),
     m_zSliceType(tNoChildPlot),
     m_zoomCutType(tNoChildPlot)
 {
-    //itom_PLOTAPI = NULL;
-    //importItomPlotApi(NULL);
+    d = new AbstractFigurePrivate();
+
     initialize();
-    //ito::ITOM_API_FUNCS_GRAPH = NULL;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 AbstractFigure::~AbstractFigure()
 {
-    Channel *delChan;
-    foreach(delChan, m_pChannels)
+    foreach(Channel *delChan, m_pChannels)
     {
-        // connection is removed in the destructor of Connection so the following line is not necessary
-//            (delConn->getPartner())->disconnect(delConn->getKey());
         removeChannel(delChan);
     }
     m_pChannels.clear();
 
     //clear toolbars and menus
-    foreach(QMenu *m, m_menus)
+    foreach(QMenu *m, d->menus)
     {
         m->deleteLater();
     }
-    m_menus.clear();
+    d->menus.clear();
 
-    foreach (ToolBarItem t, m_toolbars)
+    foreach (ToolBarItem t, d->toolbars)
     {
         if (t.toolbar)
         {
             t.toolbar->deleteLater();
         }
     }
-    m_toolbars.clear();
+    d->toolbars.clear();
 
-    if (m_propertyDock)
+    foreach(ToolboxItem t, d->toolboxes)
     {
-        m_propertyDock->deleteLater();
+        if (t.toolbox)
+        {
+            t.toolbox->deleteLater();
+        }
     }
+    d->toolboxes.clear();
+
+    d->propertyDock = NULL;
+
+    delete d;
+    d = NULL;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -128,44 +142,14 @@ RetVal AbstractFigure::initialize()
             break;
     }
 
-    if (m_windowMode == AbstractFigure::ModeStandaloneInUi)
-    {
-        foreach(const ToolBarItem &item, m_toolbars)
-        {
-            if (item.toolbar)
-            {
-                QMainWindow::addToolBar(item.area, item.toolbar);
-            }
-            else
-            {
-                QMainWindow::addToolBarBreak(item.area);
-            }
-        }
-    }
+    d->propertyDock = new QDockWidget(tr("Properties"), this);
+    d->propertyDock->setVisible(false);
+    d->propertyDock->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable);
 
-    m_propertyDock = new QDockWidget(tr("Properties"), this);
-    m_propertyDock->setVisible(false);
-    m_propertyDock->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable);
+    d->propertyEditorWidget = new QPropertyEditorWidget(d->propertyDock);
+    d->propertyDock->setWidget(d->propertyEditorWidget);
 
-    m_propertyEditorWidget = new QPropertyEditorWidget(m_propertyDock);
-    m_propertyDock->setWidget(m_propertyEditorWidget);
-
-    switch (m_windowMode)
-    {
-        case AbstractFigure::ModeInItomFigure:
-            /*default if figure is used for plotting data in itom, may also be part of a subfigure area.
-            Then, the created DockWidget should be used by the outer window and managed/displayed by it */
-            break;
-        case AbstractFigure::ModeStandaloneInUi:
-            /*figure is contained in an user interface. Then the dock widget is dock with floating mode (default) */
-            addDockWidget(Qt::RightDockWidgetArea, m_propertyDock);
-            m_propertyDock->setFloating(true);
-            break;
-
-        case AbstractFigure::ModeStandaloneWindow:
-            addDockWidget(Qt::RightDockWidgetArea, m_propertyDock);
-            break;
-    }
+    addToolbox(d->propertyDock, "properties", Qt::RightDockWidgetArea);
 
     return ito::retOk;
 }
@@ -173,19 +157,19 @@ RetVal AbstractFigure::initialize()
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::setPropertyObservedObject(QObject* obj)
 {
-    m_propertyObservedObject = obj;
-    if (m_propertyEditorWidget)
+    d->propertyObservedObject = obj;
+    if (d->propertyEditorWidget)
     {
-        m_propertyEditorWidget->setObject(obj);
+        d->propertyEditorWidget->setObject(obj);
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::updatePropertyDock()
 {
-    if (m_propertyEditorWidget && m_propertyObservedObject)
+    if (d->propertyEditorWidget && d->propertyObservedObject)
     {
-        m_propertyEditorWidget->updateObject(m_propertyObservedObject);
+        d->propertyEditorWidget->updateObject(d->propertyObservedObject);
     }
 }
 
@@ -274,10 +258,8 @@ RetVal AbstractFigure::removeChannelFromList(unsigned int uniqueID)
         foreach(iterChannel, m_pChannels)
         {
             // connection is removed in the destructor of Connection so the following line is not necessary
-//            (delConn->getPartner())->disconnect(delConn->getKey()); 
             removeChannel(iterChannel);
         }
-//        m_pChannels.clear();
 //        delete this;
         deleteLater();
     }
@@ -298,7 +280,6 @@ RetVal AbstractFigure::removeChannel(Channel *delChannel)
 
     if (delChannel->getParent() == (AbstractNode*)this)
     {
-//        delChannel->getChild()->removeChannel(delChannel);
         m_pChannels.remove(uniqueID);
         delChannel->getChild()->removeChannelFromList(uniqueID);
         delete delChannel;
@@ -314,11 +295,8 @@ RetVal AbstractFigure::removeChannel(Channel *delChannel)
         foreach(iterChannel, m_pChannels)
         {
             // connection is removed in the destructor of Connection so the following line is not necessary
-//            (delConn->getPartner())->disconnect(delConn->getKey()); 
             removeChannel(iterChannel);
         }
-//        m_pChannels.clear();
-//        delete this;
         deleteLater();
     }
     
@@ -329,7 +307,7 @@ RetVal AbstractFigure::removeChannel(Channel *delChannel)
 void AbstractFigure::addMenu(QMenu *menu)
 {
     //never adds to menuBar()
-    m_menus.append(menu);
+    d->menus.append(menu);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -342,7 +320,7 @@ QList<QMenu*> AbstractFigure::getMenus() const
     }
     else
     {
-        return m_menus;
+        return d->menus;
     }
 }
 
@@ -356,7 +334,7 @@ QList<AbstractFigure::ToolBarItem> AbstractFigure::getToolbars() const
     }
     else
     {
-        return m_toolbars;
+        return d->toolbars;
     }
 }
 
@@ -367,13 +345,13 @@ void AbstractFigure::addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolB
     item.key = key;
     item.area = area;
     item.toolbar = toolbar;
-    item.visible = m_toolbarsVisible;
+    item.visible = d->toolbarsVisible;
     item.section = section;
 
     int maxSection = 1;
 
     //get highest section for same area
-    foreach (const ToolBarItem &titem, m_toolbars)
+    foreach (const ToolBarItem &titem, d->toolbars)
     {
         if (titem.area == area)
         {
@@ -381,7 +359,7 @@ void AbstractFigure::addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolB
         }
     }
 
-    m_toolbars.append(item);
+    d->toolbars.append(item);
 
     if (m_windowMode == AbstractFigure::ModeStandaloneInUi || m_windowMode == AbstractFigure::ModeStandaloneWindow)
     {
@@ -401,11 +379,11 @@ void AbstractFigure::addToolBarBreak(const QString &key, Qt::ToolBarArea area /*
     item.key = key;
     item.area = area;
     item.toolbar = NULL;
-    item.visible = m_toolbarsVisible;
+    item.visible = d->toolbarsVisible;
     item.section = 1;
 
     //get highest section for same area
-    foreach (const ToolBarItem &titem, m_toolbars)
+    foreach(const ToolBarItem &titem, d->toolbars)
     {
         if (titem.area == area)
         {
@@ -413,7 +391,7 @@ void AbstractFigure::addToolBarBreak(const QString &key, Qt::ToolBarArea area /*
         }
     }
 
-    m_toolbars.append(item);
+    d->toolbars.append(item);
 
     if (m_windowMode == AbstractFigure::ModeStandaloneInUi || m_windowMode == AbstractFigure::ModeStandaloneWindow)
     {
@@ -426,12 +404,12 @@ void AbstractFigure::showToolBar(const QString &key)
 {
     QList<AbstractFigure::ToolBarItem>::iterator i;
     
-    for (i = m_toolbars.begin(); i != m_toolbars.end(); ++i)
+    for (i = d->toolbars.begin(); i != d->toolbars.end(); ++i)
     {
         if (i->key == key)
         {
             i->visible = true;
-            i->toolbar->setVisible(true && m_toolbarsVisible);
+            i->toolbar->setVisible(true && d->toolbarsVisible);
         }
     }
 }
@@ -441,7 +419,7 @@ void AbstractFigure::hideToolBar(const QString &key)
 {
     QList<AbstractFigure::ToolBarItem>::iterator i;
     
-    for (i = m_toolbars.begin(); i != m_toolbars.end(); ++i)
+    for (i = d->toolbars.begin(); i != d->toolbars.end(); ++i)
     {
         if (i->key == key)
         {
@@ -491,7 +469,7 @@ void AbstractFigure::setToolbarVisible(bool visible)
 
     QList<AbstractFigure::ToolBarItem>::iterator i;
     
-    for (i = m_toolbars.begin(); i != m_toolbars.end(); ++i)
+    for (i = d->toolbars.begin(); i != d->toolbars.end(); ++i)
     {
         if (i->toolbar)
         {
@@ -499,14 +477,70 @@ void AbstractFigure::setToolbarVisible(bool visible)
         }
     }
 
-    m_toolbarsVisible = visible;
+    d->toolbarsVisible = visible;
     updatePropertyDock();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 bool AbstractFigure::getToolbarVisible() const 
 { 
-    return m_toolbarsVisible;
+    return d->toolbarsVisible;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QDockWidget* AbstractFigure::getPropertyDockWidget() const 
+{ 
+    return d->propertyDock; 
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QList<AbstractFigure::ToolboxItem> AbstractFigure::getToolboxes() const
+{
+    if (m_windowMode == AbstractFigure::ModeStandaloneInUi)
+    {
+        //in standalone mode, this plugin handles its own menus and toolbars
+        return QList<AbstractFigure::ToolboxItem>();
+    }
+    else
+    {
+        return d->toolboxes;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractFigure::addToolbox(QDockWidget *toolbox, const QString &key, Qt::DockWidgetArea area /*= Qt::RightDockWidgetArea*/)
+{
+    ToolboxItem item;
+    item.key = key;
+    item.area = area;
+    item.toolbox = toolbox;
+    d->toolboxes.append(item);
+
+    switch (m_windowMode)
+    {
+    case AbstractFigure::ModeInItomFigure:
+        /*default if figure is used for plotting data in itom, may also be part of a subfigure area.
+        Then, the created DockWidget should be used by the outer window and managed/displayed by it */
+        break;
+    case AbstractFigure::ModeStandaloneInUi:
+        /*figure is contained in an user interface. Then the dock widget is dock with floating mode (default) */
+        QMainWindow::addDockWidget(Qt::RightDockWidgetArea, toolbox);
+        toolbox->setFloating(true);
+        break;
+
+    case AbstractFigure::ModeStandaloneWindow:
+        QMainWindow::addDockWidget(Qt::RightDockWidgetArea, toolbox);
+        break;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractFigure::mnuShowProperties(bool checked) 
+{ 
+    if (d->propertyDock) 
+    { 
+        d->propertyDock->setVisible(checked);
+    } 
 }
 
 } //end namespace ito

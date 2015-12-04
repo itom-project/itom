@@ -830,8 +830,6 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInActuator::AddInActuator() 
         : AddInBase(), 
-        m_nrOfStatusChangedConnections(0), /* deprecated: remove this due to new Qt5 support */
-        m_nrOfTargetChangedConnections(0), /* deprecated: remove this due to new Qt5 support */ 
         m_interruptFlag(false)
     {
     }
@@ -851,17 +849,14 @@ namespace ito
     */
     void AddInActuator::sendStatusUpdate(const bool statusOnly)
     {
-        //if (m_nrOfStatusChangedConnections>0)
-        //{
-            if (statusOnly)
-            {
-                emit actuatorStatusChanged(m_currentStatus, QVector<double>());
-            }
-            else
-            {
-                emit actuatorStatusChanged(m_currentStatus, m_currentPos);
-            }
-        //}
+        if (statusOnly)
+        {
+            emit actuatorStatusChanged(m_currentStatus, QVector<double>());
+        }
+        else
+        {
+            emit actuatorStatusChanged(m_currentStatus, m_currentPos);
+        }
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -871,10 +866,7 @@ namespace ito
     */
     void AddInActuator::sendTargetUpdate()
     {
-        //if (m_nrOfTargetChangedConnections>0)
-        //{
-            emit targetChanged(m_targetPos);
-        //}
+        emit targetChanged(m_targetPos);
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
