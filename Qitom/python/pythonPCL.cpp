@@ -1147,7 +1147,7 @@ PyObject* PythonPCL::PyPointCloud_repr(PyPointCloud *self)
         width = self->data->width();
         height = self->data->height();
         }
-        catch(pcl::PCLException &exc) {};
+        catch(pcl::PCLException &/*exc*/) {};
 
         switch(type)
         {
@@ -1199,7 +1199,7 @@ Py_ssize_t PythonPCL::PyPointCloud_seqLength(PyPointCloud *self)
         {
             s = self->data->size();
         }
-        catch(pcl::PCLException &exc)
+        catch(pcl::PCLException &/*exc*/)
         {
             s = 0;
         }
@@ -2345,15 +2345,37 @@ PointCloud.");
 }
 
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudFromDisparity_doc,"fromDisparity(disparity [,intensity] [,deleteNaN]) -> creates a point cloud from a given disparity dataObject.\n\
+PyDoc_STRVAR(pyPointCloudFromDisparity_doc,"fromDisparity(disparity [,intensity] [,deleteNaN]) -> creates a point cloud from a given topography dataObject.\n\
 \n\
-Creates a point cloud from the 2.5D data set given by the disparity dataObject. The x and y-components of each point are taken from the regular grid \n\
-values of 'disparity' (considering the scaling and offset of the object). The corresponding z-value is the disparity's value itself. \n\
+Creates a point cloud from the 2.5D data set given by the topography dataObject. The x and y-components of each point are taken from the regular grid \n\
+values of 'topography' (considering the scaling and offset of the object). The corresponding z-value is the topography's value itself. \n\
+\n\
+This method is deprecated and has been renamed to 'fromTopography' due to the wrong usage of the name topography in this case. \n\
 \n\
 Parameters \n\
 ----------- \n\
 disparity : {MxN data object, float32} \n\
-    The values of this dataObject represent the disparity values.\n\
+    The values of this dataObject represent the z-components.\n\
+intensity : {MxN data object, float32}, optional \n\
+    If given, an XYZI-point cloud is created whose intensity values are determined by this dataObject (cannot be used together with 'color')\n\
+deleteNaN : {bool}, optional \n\
+    If true (default: false), NaN or Inf-values (z) in the topography map will not be copied into the point cloud (the point cloud is not organized any more).\n\
+color : {MxN data object, rgba32}, optional \n\
+    If given, a XYZRGBA-point cloud is created whose color values are determined by this dataObject (cannot be used together with 'intensity')\n\
+\n\
+Returns \n\
+------- \n\
+PointCloud.");
+//---------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCloudFromTopography_doc, "fromTopography(topography [,intensity] [,deleteNaN = False]) -> creates a point cloud from a given topography dataObject.\n\
+\n\
+Creates a point cloud from the 2.5D data set given by the topography dataObject. The x and y-components of each point are taken from the regular grid \n\
+values of 'topography' (considering the scaling and offset of the object). The corresponding z-value is the topography's value itself. \n\
+\n\
+Parameters \n\
+----------- \n\
+topography : {MxN data object, float32} \n\
+    The values of this dataObject represent the topography values.\n\
 intensity : {MxN data object, float32}, optional \n\
     If given, an XYZI-point cloud is created whose intensity values are determined by this dataObject (cannot be used together with 'color')\n\
 deleteNaN : {bool}, optional \n\
@@ -2364,13 +2386,14 @@ color : {MxN data object, rgba32}, optional \n\
 Returns \n\
 ------- \n\
 PointCloud.");
-/*static*/ PyObject* PythonPCL::PyPointCloud_fromDisparity(PyPointCloud * /*self*/, PyObject *args, PyObject *kwds)
+/*static*/ PyObject* PythonPCL::PyPointCloud_fromTopography(PyPointCloud * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyObject *objDisp = NULL;
     PyObject *objI = NULL;
     PyObject *objColor = NULL;
     bool deleteNaN = false;
-    const char *kwlist[] = {"disparity", "intensity", "deleteNaN", "color", NULL};
+    const char *kwlist[] = {"topography", "intensity", "deleteNaN", "color", NULL};
+    const char *kwlist2[] = { "disparity", "intensity", "deleteNaN", "color", NULL };
 
     QSharedPointer<ito::DataObject> dispMap, IntMap, colorMap;
     bool ok = true;
@@ -2378,13 +2401,17 @@ PointCloud.");
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|ObO", const_cast<char**>(kwlist), &objDisp, &objI, &deleteNaN, &objColor))
     {
-        return NULL; 
+        PyErr_Clear();
+        if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|ObO", const_cast<char**>(kwlist2), &objDisp, &objI, &deleteNaN, &objColor))
+        {
+            return NULL;
+        }
     }
     
     dispMap = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objDisp, false, ok));
     if (!ok)
     {
-        PyErr_SetString(PyExc_RuntimeError, "disparity map argument could not be converted to a data object");
+        PyErr_SetString(PyExc_RuntimeError, "topography map argument could not be converted to a data object");
         return NULL;
     }
 
@@ -2393,7 +2420,7 @@ PointCloud.");
         IntMap = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objI, false, ok));
         if (!ok)
         {
-            PyErr_SetString(PyExc_RuntimeError, "intensity map argument could not be converted to a data object");
+            PyErr_SetString(PyExc_RuntimeError, "topography map argument could not be converted to a data object");
             return NULL;
         }
         colorMap = QSharedPointer<ito::DataObject>(NULL);
@@ -2486,7 +2513,8 @@ PyMethodDef PythonPCL::PyPointCloud_methods[] = {
     {"fromXYZ",       (PyCFunction)PyPointCloud_fromXYZ, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZ_doc},
     {"fromXYZI",      (PyCFunction)PyPointCloud_fromXYZI, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZI_doc},
     {"fromXYZRGBA",   (PyCFunction)PyPointCloud_fromXYZRGBA, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZRGBA_doc},
-    {"fromDisparity", (PyCFunction)PyPointCloud_fromDisparity, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromDisparity_doc},
+    {"fromDisparity", (PyCFunction)PyPointCloud_fromTopography, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromDisparity_doc},
+    {"fromTopography",  (PyCFunction)PyPointCloud_fromTopography, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromTopography_doc },
 
     {"copy",          (PyCFunction)PyPointCloud_copy, METH_NOARGS, pyPointCloudCopy_doc},
     
@@ -4266,58 +4294,132 @@ polygons : {array-like, MxN} \n\
     }
 }
 
+//------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPolygonMeshFromTopography_docs, "fromTopography(topography [, triangulationType = 0]) -> creates a polygon mesh from a dataObject whose values are the z-components. \n\
+\n\
+The polygons are created either as rectangles (quads) or triangles. \n\
+This method is the same than calling polygonMesh.fromOrganizedCloud(pointCloud.fromTopography(topography)). \n\
+\n\
+Parameters \n\
+----------- \n\
+topography : {dataObject} \n\
+    the input point cloud (must be organized, see attribute organized of a cloud) \n\
+triangulationType : {int} \n\
+    type of triangulation. 0: quads [default], 1: triangles");
+/*static*/ PyObject* PythonPCL::PyPolygonMesh_FromTopography(PyObject * /*self*/, PyObject *args, PyObject *kwds)
+{
+    PythonDataObject::PyDataObject *topography = NULL;
+    unsigned char triangulationType = 0;
+    const char *kwlist[] = { "topography", "triangulationType", NULL };
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|b", const_cast<char**>(kwlist), &PythonDataObject::PyDataObjectType, &topography, &triangulationType))
+    {
+        return NULL;
+    }
+
+    PyObject *args2 = Py_BuildValue("(O)", topography);
+    PyObject *kwds2 = PyDict_New();
+    PyObject* cloud = PyPointCloud_fromTopography(NULL, args2, kwds2);
+    PyObject* mesh = NULL;
+    Py_DECREF(args2);
+
+    if (cloud)
+    {
+        args2 = Py_BuildValue("(Oi)", cloud, triangulationType);
+        mesh = PyPolygonMesh_FromOrganizedCloud(NULL, args2, kwds2);
+        Py_DECREF(args2);
+    }
+
+    Py_DECREF(kwds2);
+
+    return mesh;
+}
+
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPolygonMeshFromOrganizedCloud_docs,"fromOrganizedCloud(cloud) -> creates a polygon mesh from an organized cloud using triangles. \n\
+PyDoc_STRVAR(pyPolygonMeshFromOrganizedCloud_docs,"fromOrganizedCloud(cloud [, triangulationType = 1]) -> creates a polygon mesh from an organized cloud using triangles. \n\
 \n\
 The polygons are created as triangles. Triangles are also created for non-finite points. \n\
 \n\
 Parameters \n\
 ----------- \n\
 cloud : {pointCloud} \n\
-    the input point cloud (must be organized, see attribute organized of a cloud)"); 
+    the input point cloud (must be organized, see attribute organized of a cloud) \n\
+triangulationType : {int} \n\
+    type of triangulation. 0: quads, 1 : triangles [default]");
 /*static*/ PyObject* PythonPCL::PyPolygonMesh_FromOrganizedCloud(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyPointCloud *cloud = NULL;
-    const char *kwlist[] = {"cloud", NULL};
+    unsigned char triangulationType = 1;
+    const char *kwlist[] = { "cloud", "triangulationType", NULL };
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", const_cast<char**>(kwlist), &PythonPCL::PyPointCloudType, &cloud))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|b", const_cast<char**>(kwlist), &PythonPCL::PyPointCloudType, &cloud, &triangulationType))
     {
         return NULL;
     }
 
     if (cloud->data->isOrganized() == false)
     {
-        PyErr_SetString(PyExc_RuntimeError,"given cloud must be organized (e.g. creating from disparity map without NaN or Inf values)");
+        PyErr_SetString(PyExc_RuntimeError,"given cloud must be organized (e.g. creating from topography map without NaN or Inf values)");
         return NULL;
     }
 
     std::vector<pcl::Vertices> p;
     uint32_t h = cloud->data->height();
     uint32_t w = cloud->data->width();
-    p.resize((h - 1) * (w - 1) * 2);
-    pcl::Vertices v;
-    v.vertices.resize(3);
-    uint32_t i = 0;
 
-    for (uint32_t r = 0; r < (w-1); ++r)
+    if (triangulationType > 0)
     {
-        for (uint32_t c = 0; c < (h-1); ++c)
+        //triangles
+        p.resize((h - 1) * (w - 1) * 2);
+        pcl::Vertices v;
+        v.vertices.resize(3);
+        uint32_t i = 0;
+
+        for (uint32_t r = 0; r < (w - 1); ++r)
         {
-            //points: p1 - p2
-            //         |    |
-            //        p3 - p4
-            //triangles: p1,p3,p2 and p3,p4,p2
-            v.vertices[0] = r * w + c;
-            v.vertices[1] = (r+1)*w + c;
-            v.vertices[2] = v.vertices[0] + 1;
-            p[i++] = v;
-            v.vertices[0] += w;
-            v.vertices[1] += 1;
-            //v.vertices[2] is the same than above
-            p[i++] = v;
+            for (uint32_t c = 0; c < (h - 1); ++c)
+            {
+                //points: p1 - p2
+                //         |    |
+                //        p3 - p4
+                //triangles: p1,p3,p2 and p3,p4,p2
+                v.vertices[0] = r * w + c;
+                v.vertices[1] = (r + 1)*w + c;
+                v.vertices[2] = v.vertices[0] + 1;
+                p[i++] = v;
+                v.vertices[0] += w;
+                v.vertices[1] += 1;
+                //v.vertices[2] is the same than above
+                p[i++] = v;
+            }
         }
     }
+    else
+    {
+        //quads
+        p.resize((h - 1) * (w - 1));
+        pcl::Vertices v;
+        v.vertices.resize(4);
+        uint32_t i = 0;
+
+        for (uint32_t r = 0; r < (w - 1); ++r)
+        {
+            for (uint32_t c = 0; c < (h - 1); ++c)
+            {
+                //points: p1 - p2
+                //         |    |
+                //        p3 - p4
+                //triangles: p1,p3,p2 and p3,p4,p2
+                v.vertices[0] = r * w + c;
+                v.vertices[1] = r * w + c + 1;
+                v.vertices[2] = (r + 1) * w + c + 1;
+                v.vertices[3] = (r + 1) * w + c;
+                p[i++] = v;
+            }
+        }
+    }
+    
 
     PyPolygonMesh *mesh = PythonPCL::createEmptyPyPolygonMesh();
     mesh->polygonMesh = new ito::PCLPolygonMesh(*(cloud->data), p);
@@ -4361,6 +4463,7 @@ PyMethodDef PythonPCL::PyPolygonMesh_methods[] = {
     {"getPolygons", (PyCFunction)PyPolygonMesh_getPolygons, METH_VARARGS, pyPolygonMeshGetPolygons_docs},
     {"fromCloudAndPolygons", (PyCFunction)PyPolygonMesh_FromCloudAndPolygons, METH_VARARGS | METH_KEYWORDS | METH_STATIC, pyPolygonMeshFromCloudAndPolygons_docs},
     {"fromOrganizedCloud", (PyCFunction)PyPolygonMesh_FromOrganizedCloud, METH_VARARGS | METH_KEYWORDS | METH_STATIC, pyPolygonMeshFromOrganizedCloud_docs},
+    {"fromTopography", (PyCFunction)PyPolygonMesh_FromTopography, METH_VARARGS | METH_KEYWORDS | METH_STATIC, pyPolygonMeshFromTopography_docs },
     {NULL}  /* Sentinel */
 };
 

@@ -195,7 +195,8 @@ itom.pointCloud.dense
 itom.pointCloud.empty
 itom.pointCloud.erase(indices) -> erases the points in point clouds indicated by indices (single number of slice)
 itom.pointCloud.fields
-itom.pointCloud.fromDisparity(disparity [,intensity] [,deleteNaN]) -> creates a point cloud from a given disparity dataObject.
+itom.pointCloud.fromDisparity(disparity [,intensity] [,deleteNaN]) -> creates a point cloud from a given topography dataObject.
+itom.pointCloud.fromTopography(topography [,intensity] [,deleteNaN = False]) -> creates a point cloud from a given topography dataObject.
 itom.pointCloud.fromXYZ(X,Y,Z | XYZ) -> creates a point cloud from three X,Y,Z data objects or from one 3xMxN data object
 itom.pointCloud.fromXYZI(X,Y,Z,I | XYZ,I) -> creates a point cloud from four X,Y,Z,I data objects or from one 3xMxN data object and one intensity data object
 itom.pointCloud.fromXYZRGBA(X,Y,Z,color | XYZ,color) -> creates a point cloud from four X,Y,Z,color data objects or from one 3xMxN data object and one coloured data object
@@ -210,7 +211,8 @@ itom.pointCloud.width
 itom.polygonMesh([mesh, polygons]) -> creates a polygon mesh.
 itom.polygonMesh.data
 itom.polygonMesh.fromCloudAndPolygons(cloud, polygons) -> creates a polygon mesh from cloud and polygons.
-itom.polygonMesh.fromOrganizedCloud(cloud) -> creates a polygon mesh from an organized cloud using triangles.
+itom.polygonMesh.fromOrganizedCloud(cloud [, triangulationType = 1]) -> creates a polygon mesh from an organized cloud using triangles.
+itom.polygonMesh.fromTopography(topography [, triangulationType = 0]) -> creates a polygon mesh from a dataObject whose values are the z-components.
 itom.polygonMesh.getCloud(pointType = point.PointInvalid) -> returns the point cloud of this polygon mesh converted to the desired type.
 itom.polygonMesh.getPolygons() ->
 itom.polygonMesh.name
