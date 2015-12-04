@@ -9,9 +9,12 @@
         <translation type="unfinished">Live Datenquelle für Plot</translation>
     </message>
     <message>
+        <location filename="../../plot/AbstractDObjPCLFigure.h" line="79"/>
         <location filename="../../plot/AbstractDObjPCLFigure.h" line="80"/>
-        <location filename="../../plot/AbstractDObjPCLFigure.h" line="82"/>
-        <location filename="../../plot/AbstractDObjPCLFigure.h" line="84"/>
+        <location filename="../../plot/AbstractDObjPCLFigure.h" line="81"/>
+        <location filename="../../plot/AbstractDObjPCLFigure.h" line="88"/>
+        <location filename="../../plot/AbstractDObjPCLFigure.h" line="89"/>
+        <location filename="../../plot/AbstractDObjPCLFigure.h" line="90"/>
         <location filename="../../plot/AbstractDObjFigure.h" line="73"/>
         <source>Source data for plot</source>
         <translation type="unfinished">Quelldaten für Plot</translation>
@@ -90,285 +93,285 @@
         <translation type="unfinished">Keine Einheiten festgelegt</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="216"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="206"/>
         <source>Pluginname undefined. No xml file loaded</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="253"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="243"/>
         <source>ParamList not inialized properly</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="498"/>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="714"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="488"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="704"/>
         <source>Can&apos;t open xml file</source>
         <translation type="unfinished">XML-Datei kann nicht geöffnet werden</translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="786"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="776"/>
         <source>%1
 Autosave parameter %2 not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="790"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="780"/>
         <source>XML-Import warnings:
 Autosave parameter %1 not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="817"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="807"/>
         <source>%1
 Obsolete parameter %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="821"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="811"/>
         <source>XML-Import warnings:
 Obsolete parameter %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="830"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="820"/>
         <source>%1
 Parameter %2 not autosave</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="834"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="824"/>
         <source>XML-Import warnings:
 Parameter %1 not autosave</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="859"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="849"/>
         <source>%1
 Parameter not loadable %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="863"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="853"/>
         <source>XML-Import warnings:
 Parameter not loadable %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="873"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="863"/>
         <source>%1
 Type conflict for %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="877"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="867"/>
         <source>XML-Import warnings:
 Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="954"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="944"/>
         <source>Save object failed: type not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1248"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1238"/>
         <source>Save object failed: invalid object handle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1253"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1243"/>
         <source>Save object failed: object seems empty</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1288"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1278"/>
         <source>Save object failed: file not writeable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1383"/>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1412"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1373"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1402"/>
         <source>Load object warning: Metadata &quot; %1 &quot; for %2 missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1448"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1438"/>
         <source>Load object failed: Number of dims smaller 2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1456"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1446"/>
         <source>Not enough memory to alloc sizes vector</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1472"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1462"/>
         <source>Load object failed: dimension size missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1486"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1476"/>
         <source>Load object failed: dimX not specified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1498"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1488"/>
         <source>Load object failed: dimY not specified</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1573"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1563"/>
         <source>Load object failed: type not supported</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1582"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1572"/>
         <source>Load object failed: Error during allocating memory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1627"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1617"/>
         <source>Load object failed: file corrupted at metaData (v1.0)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1634"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1624"/>
         <source>Load object warning: file has invalid metaData for v1.0</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1652"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1642"/>
         <source>Load object warning: DoubleExportType for v1.0 invalid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1657"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1647"/>
         <source>Load object warning: DoubleExportType for v1.0 missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1691"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1681"/>
         <source>Load object warning: MetaData for %1 missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1724"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1714"/>
         <source>Load object warning: MetaData for dimX missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1754"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1744"/>
         <source>Load object warning: MetaData for dimY missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1784"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1774"/>
         <source>Load object warning: MetaData for values missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1813"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1803"/>
         <source>Load object warning: MetaData import for Rotation Matrix failed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1848"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1838"/>
         <source>Load object failed: file corrupted at tagSpace (v1.0)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1853"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1843"/>
         <source>Load object failed: tag space not at expected position. Got %1 instead</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1866"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1856"/>
         <source>Load object failed: tags Space invalid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1904"/>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1910"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1894"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1900"/>
         <source>Load object warning: invalid tagType found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1916"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1906"/>
         <source>Load object warning: tagsSpace invalid</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1955"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1945"/>
         <source>Load object failed: dataSpace missing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1960"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1950"/>
         <source>Load object failed: dataSpace not at expected position. Got %1 instead</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1970"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1960"/>
         <source>Load object warning: dataSpace and dataObject are not equal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1975"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1965"/>
         <source>Load object warning: dataSpace attributes corrupted</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1988"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1978"/>
         <source>Load object warning: dataSpace for a plane corrupted. Got %1 instead of %2 bytes</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1999"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="1989"/>
         <source>Load object failed: dataStream ended before finished reading</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2029"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2019"/>
         <source>Load object failed: invalid object handle</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2056"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2046"/>
         <source>Load object failed: file not readable or does not exists</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2070"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2060"/>
         <source>Load object failed: file seems corrupt</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2078"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2068"/>
         <source>Load object failed: wrong xml version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2086"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2076"/>
         <source>Load object failed: wrong document encoding</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2092"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2082"/>
         <source>Load object failed: unexpected file ending</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2111"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2101"/>
         <source>Load object failed: file is no itomDataObjectFile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2139"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2129"/>
         <source>Load object failed: illegal format version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2144"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2134"/>
         <source>Load object failed: object header not valied</source>
         <translation type="unfinished"></translation>
     </message>
@@ -661,7 +664,7 @@ Type conflict for %1</source>
 <context>
     <name>ito::AbstractDObjPclFigure</name>
     <message>
-        <location filename="../../plot/sources/AbstractDObjPCLFigure.cpp" line="242"/>
+        <location filename="../../plot/sources/AbstractDObjPCLFigure.cpp" line="168"/>
         <source>Function &apos;spawnLinePlot&apos; not supported from this plot widget</source>
         <translation type="unfinished">Die Funktion  &apos;spawnLinePlot&apos; wird von diesem Plot-Widget nicht unterstützt</translation>
     </message>

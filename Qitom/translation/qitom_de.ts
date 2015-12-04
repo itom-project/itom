@@ -9,12 +9,24 @@
         <translation>ITOM Logo</translation>
     </message>
     <message>
-        <location line="+229"/>
+        <location line="+256"/>
         <source>ito logo</source>
         <translation>ITO Logo</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+46"/>
+        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Institut fuer Technische Optik (&lt;/span&gt;&lt;a href=&quot;http://www.ito.uni-stuttgart.de&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;ITO&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;) &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Universitaet Stuttgart&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Prof. Dr. Wolfgang Osten&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Pfaffenwaldring 9, 70569 Stuttgart, Germany&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+32"/>
         <source>Copy all version numbers to clip board</source>
         <translation>Kopiert alle Versionsnummern in die Zwischenablage</translation>
     </message>
@@ -29,7 +41,7 @@
         <translation>Schließen</translation>
     </message>
     <message>
-        <location line="-327"/>
+        <location line="-354"/>
         <source>About itom</source>
         <translation>Über itom</translation>
     </message>
@@ -39,41 +51,29 @@
         <translation>Informationen</translation>
     </message>
     <message>
-        <location line="+53"/>
+        <location line="+62"/>
         <source>Contributors</source>
         <translation>Mitwirkende</translation>
     </message>
     <message>
-        <location line="+50"/>
+        <location line="+59"/>
         <source>License</source>
         <translation>Lizenz</translation>
     </message>
     <message>
-        <location line="+18"/>
+        <location line="+27"/>
         <source>The following license text corresponds to the file COPYING.txt, which is provided with this installation of itom. </source>
         <translation>Die folgende Lizenz entspricht der Datei COPYING.txt, die mit dieser Installation von itom mitgeliefert wurde.</translation>
     </message>
     <message>
-        <location line="-86"/>
-        <location line="+53"/>
-        <location line="+69"/>
+        <location line="-104"/>
+        <location line="+62"/>
+        <location line="+78"/>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+83"/>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Institut fuer Technische Optik (&lt;/span&gt;&lt;a href=&quot;http://www.ito.uni-stuttgart.de&quot;&gt;&lt;span style=&quot; font-size:8pt; text-decoration: underline; color:#0000ff;&quot;&gt;ITO&lt;/span&gt;&lt;/a&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;) &lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Universität Stuttgart&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Prof. Dr. Wolfgang Osten&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:8pt;&quot;&gt;Pfaffenwaldring 9, 70569 Stuttgart, Germany&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation></translation>
     </message>
 </context>
@@ -1600,14 +1600,17 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">nicht</translation>
     </message>
     <message>
-        <location line="+80"/>
-        <source>Warning: The version contains locally changed code!
-</source>
-        <translation type="unfinished">Warnung: Die Version enthält lokal geänderten Code!</translation>
+        <location line="+81"/>
+        <source>The version contains unversioned files (e.g. from __pycache__-files)!</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+4"/>
-        <location line="+19"/>
+        <source>Warning: The version contains locally changed code!
+</source>
+        <translation type="obsolete">Warnung: Die Version enthält lokal geänderten Code!</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>Build from a clean version.
 </source>
         <translation type="unfinished">Das &apos;Build&apos; ist keine &apos;clean version&apos; von GIT.
@@ -1619,19 +1622,18 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Diese Version beinhaltet lokal geänderten Code! </translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>The version contains unversioned files (e.g. from pyCache-files)!</source>
-        <translation type="unfinished">Diese Version beinhaltet nicht versionierte Dateien (z. B. von &apos;pyCache-Dateien)!</translation>
+        <translation type="obsolete">Diese Version beinhaltet nicht versionierte Dateien (z. B. von &apos;pyCache-Dateien)!</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+9"/>
         <source>This version of itom is not under version control (no GIT or SVN)!
 </source>
         <translation type="unfinished">Diese Version von itom ist nicht unter der Versionskontrolle (kein GIT oder SVN)!
 </translation>
     </message>
     <message>
-        <location filename="../python/pythonItom.cpp" line="+2461"/>
+        <location filename="../python/pythonItom.cpp" line="+2489"/>
         <source>Menu element must have a valid key.</source>
         <translation type="unfinished">Menüelement muss einen gültigen Schlüssel haben.</translation>
     </message>
@@ -1701,9 +1703,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">&apos;UI-Organizer&apos; ist nicht verfügbar!</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractDObjPCLFigure.h" line="+80"/>
-        <location line="+2"/>
-        <location line="+2"/>
+        <location filename="../../plot/AbstractDObjPCLFigure.h" line="+79"/>
+        <location line="+1"/>
+        <location line="+1"/>
+        <location line="+7"/>
+        <location line="+1"/>
+        <location line="+1"/>
         <location filename="../../plot/AbstractDObjFigure.h" line="+73"/>
         <source>Source data for plot</source>
         <translation type="unfinished">Quelldaten für Plot</translation>
@@ -1738,7 +1743,7 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
     </message>
     <message>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+197"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+201"/>
         <location filename="../organizer/addInManager.cpp" line="+40"/>
         <source>Unable to find translation file.</source>
         <translation type="unfinished">Übersetzungsdatei wurde nicht gefunden.</translation>
@@ -2523,7 +2528,12 @@ dem Editor ein.</translation>
         <translation type="unfinished">Bibliotheksverzeichnis(se)</translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+6"/>
+        <source>The following pathes are prepended to the PATH environment variable used by itom. It is modified before itom starts loading plugins or designer plugins. These pathes do not affect the overall PATH environment variable of the operating system.</source>
+        <translation type="unfinished">Die folgenden Verzeichnisse werden beim Laden der Plugins und Designer-Plugins als Bibliotheksquellen berücksichtigt.</translation>
+    </message>
+    <message>
+        <location line="+40"/>
         <source>Add Path</source>
         <translation type="unfinished">Hinzufügen</translation>
     </message>
@@ -2655,7 +2665,7 @@ dem Editor ein.</translation>
         <translation></translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+46"/>
         <source>Add File</source>
         <translation>Hinzufügen</translation>
     </message>
@@ -3433,7 +3443,7 @@ Katesisch</translation>
     <name>ito::DialogAboutQItom</name>
     <message>
         <location filename="../ui/dialogAbout.cpp" line="+42"/>
-        <location line="+77"/>
+        <location line="+60"/>
         <location line="+14"/>
         <source>Could not load file %1. Reason: %2.</source>
         <translation type="unfinished">Die Datei &apos;%1&apos; kann nicht geladen werden. Grund: %2.</translation>
@@ -4083,29 +4093,37 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">&amp;Fenster</translation>
     </message>
     <message>
-        <location line="+57"/>
-        <location line="+49"/>
-        <location line="+69"/>
-        <location line="+137"/>
+        <location line="+190"/>
+        <location line="+153"/>
         <source>designer widget of class &apos;%s&apos; cannot plot objects of type dataObject</source>
         <translation type="unfinished">Designer-Widget der Klasse &apos;%s&apos; kann keine Objekte vom Typ DataObject anzeigen</translation>
     </message>
     <message>
-        <location line="-239"/>
+        <location line="-270"/>
         <location line="+49"/>
-        <location line="+69"/>
+        <location line="+84"/>
         <location line="+19"/>
-        <location line="+149"/>
+        <location line="+165"/>
         <source>designerWidgetOrganizer is not available</source>
         <translation type="unfinished">&apos;designerWidgetOrganizer&apos; ist nicht verfügbar</translation>
     </message>
     <message>
-        <location line="-145"/>
+        <location line="-333"/>
+        <source>designer widget of class &apos;%s&apos; cannot plot objects of type pointCloud</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+49"/>
+        <source>designer widget of class &apos;%s&apos; cannot plot objects of type polygonMesh</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+123"/>
         <source>camera is not available any more</source>
         <translation type="unfinished">Die Kamera ist nicht länger verfügbar</translation>
     </message>
     <message>
-        <location line="+165"/>
+        <location line="+181"/>
         <source>areaRow out of range [0,%i]</source>
         <translation type="unfinished">&apos;areaRow&apos; liegt außerhalb des Gültigkeitsbereichs [0, %i]</translation>
     </message>
@@ -5363,18 +5381,30 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <message>
         <location line="+37"/>
         <location line="+23"/>
-        <source>QT error: Spin box widget could not be found</source>
-        <translation type="unfinished">QT-Fehler: QSpinBox wurde nicht gefunden</translation>
+        <source>Qt error: Spin box widget could not be found</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+19"/>
-        <source>QT error: Double spin box widget could not be found</source>
-        <translation type="unfinished">QT-Fehler: QDoubleSpinBox wurde nicht gefunden</translation>
+        <source>Qt error: Double spin box widget could not be found</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+23"/>
+        <source>Qt error: String input widget could not be found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>QT error: Spin box widget could not be found</source>
+        <translation type="obsolete">QT-Fehler: QSpinBox wurde nicht gefunden</translation>
+    </message>
+    <message>
+        <source>QT error: Double spin box widget could not be found</source>
+        <translation type="obsolete">QT-Fehler: QDoubleSpinBox wurde nicht gefunden</translation>
+    </message>
+    <message>
         <source>QT error: String input widget could not be found</source>
-        <translation type="unfinished">QT-Fehler: String Input Widget wurde nicht gefunden</translation>
+        <translation type="obsolete">QT-Fehler: String Input Widget wurde nicht gefunden</translation>
     </message>
 </context>
 <context>
@@ -6447,7 +6477,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::UiOrganizer</name>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="+288"/>
+        <location filename="../organizer/uiOrganizer.cpp" line="+293"/>
         <source>the plugin did not return a valid widget pointer.</source>
         <translation type="unfinished">Das Plugin gibt keinen gültigen Widget-Pointer zurück.</translation>
     </message>
@@ -6548,7 +6578,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+177"/>
+        <location line="+205"/>
         <location line="+93"/>
         <location line="+102"/>
         <location line="+146"/>
@@ -6590,7 +6620,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <location line="+31"/>
         <location line="+25"/>
         <location line="+24"/>
-        <location line="+1506"/>
+        <location line="+1504"/>
         <location line="+37"/>
         <location line="+36"/>
         <location line="+26"/>
@@ -6598,7 +6628,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1365"/>
+        <location line="-1363"/>
         <source>The object ID is invalid.</source>
         <translation type="unfinished">Die ID des Datenobjekts ist ungültig.</translation>
     </message>
@@ -6666,7 +6696,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+354"/>
+        <location line="+352"/>
         <source>unsupported data type</source>
         <translation type="unfinished">Nicht unterstützter Datentyp</translation>
     </message>
@@ -6678,8 +6708,8 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2674"/>
-        <location line="+2430"/>
+        <location line="-2700"/>
+        <location line="+2456"/>
         <location line="+64"/>
         <location line="+151"/>
         <location line="+34"/>
@@ -7042,7 +7072,7 @@ Katesisch</translation>
 <context>
     <name>ito::WidgetPropGeneralApplication</name>
     <message>
-        <location filename="../ui/widgetPropGeneralApplication.cpp" line="+97"/>
+        <location filename="../ui/widgetPropGeneralApplication.cpp" line="+100"/>
         <source>load directory</source>
         <translation type="unfinished">Verzeichnis hinzufügen</translation>
     </message>
