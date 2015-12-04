@@ -229,7 +229,7 @@ else (QT5_FOUND)
 endif (QT5_FOUND)
 
 IF (QT5_FOUND)
-    IF(CMAKE_VERSION VERSION_GREATER 2.8.12)
+    IF(CMAKE_VERSION VERSION_GREATER 3.0.0)
         #https://bugreports.qt.io/browse/QTBUG-39457
         cmake_policy(SET CMP0043 OLD)
     ENDIF()

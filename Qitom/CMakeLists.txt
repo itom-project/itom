@@ -5,7 +5,7 @@ project(${target_name})
 cmake_minimum_required(VERSION 2.8.9)
 
 #CMAKE Policies
-IF(CMAKE_VERSION VERSION_GREATER 2.8.12)
+IF(CMAKE_VERSION VERSION_GREATER 3.0.0)
     #https://bugreports.qt.io/browse/QTBUG-39457
     cmake_policy(SET CMP0043 OLD)
 ENDIF()
