@@ -4062,6 +4062,111 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PythonEngine::checkVarnamesInWorkspace(bool globalNotLocal, const QStringList &names, QSharedPointer<IntList> existing, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    ItomSharedSemaphoreLocker locker(semaphore);
+    tPythonState oldState = pythonState;
+    ito::RetVal retVal;
+    PyObject* destinationDict = NULL;
+    PyObject* value = NULL;
+
+
+    bool released = false;
+
+    if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    {
+        retVal += ito::RetVal(ito::retError, 0, tr("It is not allowed to check names of variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
+    }
+    else
+    {
+        if (pythonState == pyStateIdle)
+        {
+            pythonStateTransition(pyTransBeginRun);
+        }
+        else if (pythonState == pyStateDebuggingWaiting)
+        {
+            pythonStateTransition(pyTransDebugExecCmdBegin);
+        }
+
+        if (globalNotLocal)
+        {
+            destinationDict = getGlobalDictionary();
+        }
+        else
+        {
+            destinationDict = getLocalDictionary();
+        }
+
+        if (destinationDict == NULL)
+        {
+            retVal += ito::RetVal(ito::retError, 0, tr("values cannot be saved since workspace dictionary not available.").toLatin1().data());
+        }
+        else
+        {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
+            PyObject *existingItem = NULL;
+            PyObject *varname = NULL;
+
+            existing->clear();
+            existing->reserve(names.size());
+
+            for (int i = 0; (i < names.size()) && (!retVal.containsError()); i++)
+            {
+                varname = getAndCheckIdentifier(names[i], retVal); //new ref
+                existingItem = varname ? PyDict_GetItem(destinationDict, varname) : NULL; //borrowed ref
+
+                if (existingItem)
+                {
+                    if (PyFunction_Check(existingItem) || PyCFunction_Check(existingItem)
+                        || PyMethod_Check(existingItem) || PyType_Check(existingItem) ||
+                        PyModule_Check(existingItem))
+                    {
+                        existing->push_back(2); //existing, non overwritable
+                    }
+                    else
+                    {
+                        existing->push_back(1); //existing, but overwritable
+                    }
+                }
+                else
+                {
+                    existing->push_back(0); //non existing
+                }
+
+                Py_DECREF(varname);
+            }
+
+            PyGILState_Release(gstate);
+
+            if (semaphore != NULL)
+            {
+                semaphore->returnValue = retVal;
+                semaphore->release();
+                released = true;
+            }
+        }
+
+        if (oldState == pyStateIdle)
+        {
+            pythonStateTransition(pyTransEndRun);
+        }
+        else if (oldState == pyStateDebuggingWaiting)
+        {
+            pythonStateTransition(pyTransDebugExecCmdEnd);
+        }
+    }
+
+    if (semaphore != NULL && !released)
+    {
+        semaphore->returnValue = retVal;
+        semaphore->release();
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStringList &names, const QVector<SharedParamBasePointer > &values, ItomSharedSemaphore *semaphore)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
@@ -4122,21 +4227,25 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
                     if (PyFunction_Check(existingItem) || PyCFunction_Check(existingItem))
                     {
                         retVal += ito::RetVal::format(ito::retError, 0, tr("Function '%s' in this workspace can not be overwritten.").toLatin1().data(), names[i].toLatin1().data());
+                        Py_XDECREF(varname);
                         break;
                     }
                     else if (PyMethod_Check(existingItem))
                     {
                         retVal += ito::RetVal::format(ito::retError, 0, tr("Method '%s' in this workspace can not be overwritten.").toLatin1().data(), names[i].toLatin1().data());
+                        Py_XDECREF(varname);
                         break;
                     }
                     else if (PyType_Check(existingItem))
                     {
                         retVal += ito::RetVal::format(ito::retError, 0, tr("Type or class '%s' in this workspace can not be overwritten.").toLatin1().data(), names[i].toLatin1().data());
+                        Py_XDECREF(varname);
                         break;
                     }
                     else if (PyModule_Check(existingItem))
                     {
                         retVal += ito::RetVal::format(ito::retError, 0, tr("Module '%s' in this workspace can not be overwritten.").toLatin1().data(), names[i].toLatin1().data());
+                        Py_XDECREF(varname);
                         break;
                     }
                 }

@@ -348,6 +348,7 @@ public slots:
     void workspaceGetChildNode(PyWorkspaceContainer *container, QString fullNameParentItem);
     void workspaceGetValueInformation(PyWorkspaceContainer *container, const QString &fullItemName, QSharedPointer<QString> extendedValue, ItomSharedSemaphore *semaphore = NULL);
 
+    ito::RetVal checkVarnamesInWorkspace(bool globalNotLocal, const QStringList &names, QSharedPointer<IntList> existing, ItomSharedSemaphore *semaphore = NULL); /*!< check if variable already exist in workspace, existing is 0 (non existing), 1 (existing, but can be overwritten), 2 (existing, not overwritable, e.g. function, method...)*/
     ito::RetVal putParamsToWorkspace(bool globalNotLocal, const QStringList &names, const QVector<SharedParamBasePointer > &values, ItomSharedSemaphore *semaphore = NULL);
     ito::RetVal getParamsFromWorkspace(bool globalNotLocal, const QStringList &names, QVector<int> paramBaseTypes, QSharedPointer<SharedParamBasePointerVector > values, ItomSharedSemaphore *semaphore = NULL);
 

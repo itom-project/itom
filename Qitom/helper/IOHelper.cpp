@@ -639,6 +639,8 @@ end:
     bool putParamsToWorkspace = false;
     QVector<SharedParamBasePointer> values;
 
+    DialogOpenFileWithFilter::CheckVarname varnameCheck = (globalNotLocal) ? DialogOpenFileWithFilter::CheckGlobalWorkspace : DialogOpenFileWithFilter::CheckLocalWorkspace;
+
     ito::DataObject dObj;
 #if ITOM_POINTCLOUDLIBRARY > 0
     ito::PCLPointCloud pointCloud;
@@ -669,7 +671,7 @@ end:
                     //2. filename
                     autoMand[1].setVal<char*>(filename.toLatin1().data());
 
-                    dialog = new DialogOpenFileWithFilter(filename, filter, autoMand, autoOut, userMand, userOpt, retval, parent );
+                    dialog = new DialogOpenFileWithFilter(filename, filter, autoMand, autoOut, userMand, userOpt, retval, varnameCheck, parent);
                     if (!retval.containsError())
                     {
                         int result = dialog->exec();
@@ -692,7 +694,7 @@ end:
                     //2. filename
                     autoMand[1].setVal<char*>(filename.toLatin1().data());
 
-                    dialog = new DialogOpenFileWithFilter(filename, filter, autoMand, autoOut, userMand, userOpt, retval, parent );
+                    dialog = new DialogOpenFileWithFilter(filename, filter, autoMand, autoOut, userMand, userOpt, retval, varnameCheck, parent);
                     if (!retval.containsError())
                     {
                         int result = dialog->exec();
@@ -714,7 +716,7 @@ end:
                     //2. filename
                     autoMand[1].setVal<char*>(filename.toLatin1().data());
 
-                    dialog = new DialogOpenFileWithFilter(filename, filter, autoMand, autoOut, userMand, userOpt, retval, parent);
+                    dialog = new DialogOpenFileWithFilter(filename, filter, autoMand, autoOut, userMand, userOpt, retval, varnameCheck, parent);
                     if (!retval.containsError())
                     {
                         int result = dialog->exec();
@@ -743,7 +745,7 @@ end:
             {
                 ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
                         
-                QMetaObject::invokeMethod(pyEng, "putParamsToWorkspace", Q_ARG(bool,globalNotLocal), Q_ARG(QStringList, pythonVarNames), Q_ARG(QVector<SharedParamBasePointer>, values), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+                QMetaObject::invokeMethod(pyEng, "putParamsToWorkspace", Q_ARG(bool, globalNotLocal), Q_ARG(QStringList, pythonVarNames), Q_ARG(QVector<SharedParamBasePointer>, values), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
                 if (locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad) == false)
                 {
                     QMessageBox::critical(parent, tr("Timeout while sending values to python"), tr("A timeout occurred while content of loaded file has been sent to python workspace"));

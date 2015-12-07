@@ -22,6 +22,8 @@
 
 #include "dialogOpenFileWithFilter.h"
 
+#include "../appManagement.h"
+
 #if QT_VERSION >= 0x050000
 #include <QtConcurrent/qtconcurrentrun.h>
 #else
@@ -31,17 +33,20 @@
 #include <qfileiconprovider.h>
 #include <qmessagebox.h>
 
+
+
 namespace ito {
 
 //------------------------------------------------------------------------------------------------------------
-DialogOpenFileWithFilter::DialogOpenFileWithFilter(const QString &filename, const ito::AddInAlgo::FilterDef *filter, QVector<ito::ParamBase> &autoMand, QVector<ito::ParamBase> &autoOut, QVector<ito::Param> &userMand, QVector<ito::Param> &userOpt, ito::RetVal &retValue, QWidget *parent)
+    DialogOpenFileWithFilter::DialogOpenFileWithFilter(const QString &filename, const ito::AddInAlgo::FilterDef *filter, QVector<ito::ParamBase> &autoMand, QVector<ito::ParamBase> &autoOut, QVector<ito::Param> &userMand, QVector<ito::Param> &userOpt, ito::RetVal &retValue, CheckVarname varnameCheck /*= CheckNo*/, QWidget *parent /*= NULL*/)
     : AbstractFilterDialog(autoMand, autoOut, parent),
     m_pMandParser(NULL),
     m_pOptParser(NULL),
     m_filter(NULL),
     m_filterExecuted(false),
     m_previewMovie(NULL),
-    m_acceptedClicked(false)
+    m_acceptedClicked(false),
+    m_checkVarname(varnameCheck)
 {
     ui.setupUi(this);
 
@@ -122,11 +127,50 @@ DialogOpenFileWithFilter::DialogOpenFileWithFilter(const QString &filename, cons
 void DialogOpenFileWithFilter::on_buttonBox_accepted()
 {
     ito::RetVal retValue;
+    QObject *pyEng = static_cast<QObject*>(AppManagement::getPythonEngine());
+    bool success = true;
+
     if(ui.txtPythonVariable->text() == "")
     {
         QMessageBox::critical(this, tr("Python variable name missing"), tr("You have to give a variable name, under which the loaded item is saved in the global workspace"));
+        success = false;
     }
     else
+    {
+        if (m_checkVarname != CheckNo)
+        {
+            bool globalNotLocal = (m_checkVarname == CheckGlobalWorkspace) ? true : false;
+            QStringList pythonVarNames;
+            pythonVarNames << ui.txtPythonVariable->text();
+            QSharedPointer<IntList> existing(new IntList());
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+
+            QMetaObject::invokeMethod(pyEng, "checkVarnamesInWorkspace", Q_ARG(bool, globalNotLocal), Q_ARG(QStringList, pythonVarNames), Q_ARG(QSharedPointer<IntList>, existing), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            if (locker.getSemaphore()->wait(5000))
+            {
+                if ((*existing)[0] == 1)
+                {
+                    QMessageBox::StandardButton result = QMessageBox::question(this, tr("Python variable name already exists"), tr("The variable name %1 already exists in this workspace. Do you want to overwrite it?").arg(ui.txtPythonVariable->text()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::No);
+                    if (result == QMessageBox::No || result == QMessageBox::Cancel)
+                    {
+                        success = false;
+                    }
+                }
+                else if ((*existing)[0] == 2)
+                {
+                    QMessageBox::critical(this, tr("Python variable name already exists"), tr("The variable name %1 already exists in this workspace. It cannot be overwritten since it is a function, method, type or class. Choose a new name.").arg(ui.txtPythonVariable->text()));
+                    success = false;
+                }
+            }
+            else
+            {
+                QMessageBox::critical(this, tr("Timeout while verifiying variable name"), tr("A timeout occurred while checking for the existence of the variable name in Python. Please try it again."));
+                success = false;
+            }
+        }
+    }
+    
+    if (success)
     {
         if(m_filterExecuted == false)
         {
