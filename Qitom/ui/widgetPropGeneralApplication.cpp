@@ -54,6 +54,10 @@ void WidgetPropGeneralApplication::readSettings()
     settings.endGroup();
 
     settings.beginGroup("Application");
+    ui.spinBoxTimeoutGeneral->setValue(settings.value("timeoutGeneral", PLUGINWAIT).toInt());
+    ui.spinBoxTimeoutInitClose->setValue(settings.value("timeoutInitClose", 10000).toInt());
+    ui.spinBoxTimeoutFileSaveLoad->setValue(settings.value("timeoutFileSaveLoad", 60000).toInt());
+
 	QListWidgetItem *lwi = new QListWidgetItem(QCoreApplication::applicationDirPath() + "/lib", ui.listWidget, QListWidgetItem::UserType);
     lwi->setTextColor(Qt::gray);
 
@@ -77,6 +81,14 @@ void WidgetPropGeneralApplication::writeSettings()
 
     QStringList files;
     settings.beginGroup("Application");
+    settings.setValue("timeoutGeneral", ui.spinBoxTimeoutGeneral->value());
+    settings.setValue("timeoutInitClose", ui.spinBoxTimeoutInitClose->value());
+    settings.setValue("timeoutFileSaveLoad", ui.spinBoxTimeoutFileSaveLoad->value());
+    //apply the new timeout times in the current session, too.
+    AppManagement::timeouts.pluginInitClose = ui.spinBoxTimeoutInitClose->value();
+    AppManagement::timeouts.pluginGeneral = ui.spinBoxTimeoutGeneral->value();
+    AppManagement::timeouts.pluginFileSaveLoad = ui.spinBoxTimeoutFileSaveLoad->value();
+
     settings.beginWriteArray("searchPathes");
     for (int i = 1; i < ui.listWidget->count(); i++)
     {

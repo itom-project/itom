@@ -313,7 +313,7 @@ end:
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
         QMetaObject::invokeMethod(eng, "pickleVariables", Q_ARG(bool,globalNotLocal), Q_ARG(QString,filename), Q_ARG(QStringList,varNames), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
-        if (!locker.getSemaphore()->wait(120000))
+        if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
         {
             retValue += RetVal(retError, 2, tr("timeout while pickling variables").toLatin1().data());
         }
@@ -331,7 +331,7 @@ end:
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
         QMetaObject::invokeMethod(eng, "saveMatlabVariables", Q_ARG(bool,globalNotLocal), Q_ARG(QString,filename), Q_ARG(QStringList,varNames), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
-        if (!locker.getSemaphore()->wait(120000))
+        if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
         {
             retValue += RetVal(retError, 2, tr("timeout while saving variables to matlab file").toLatin1().data());
         }
@@ -427,7 +427,7 @@ end:
 
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
         QMetaObject::invokeMethod(eng, "unpickleVariables", Q_ARG(bool,globalNotLocal), Q_ARG(QString,filename), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-        if (!locker.getSemaphore()->wait(120000))
+        if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
         {
             retValue += RetVal(retError, 2, tr("timeout while unpickling variables").toLatin1().data());
         }
@@ -445,7 +445,7 @@ end:
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
         QMetaObject::invokeMethod(eng, "loadMatlabVariables", Q_ARG(bool,globalNotLocal), Q_ARG(QString,filename), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         
-        if (!locker.getSemaphore()->wait(120000))
+        if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
         {
             retValue += RetVal(retError, 2, tr("timeout while loading matlab variables").toLatin1().data());
         }
@@ -744,7 +744,7 @@ end:
                 ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
                         
                 QMetaObject::invokeMethod(pyEng, "putParamsToWorkspace", Q_ARG(bool,globalNotLocal), Q_ARG(QStringList, pythonVarNames), Q_ARG(QVector<SharedParamBasePointer>, values), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-                if (locker.getSemaphore()->wait(10000) == false)
+                if (locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad) == false)
                 {
                     QMessageBox::critical(parent, tr("Timeout while sending values to python"), tr("A timeout occurred while content of loaded file has been sent to python workspace"));
                 }

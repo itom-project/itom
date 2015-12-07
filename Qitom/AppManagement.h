@@ -116,6 +116,7 @@ class AppManagement
         {
             int pluginInitClose;
             int pluginGeneral;
+            int pluginFileSaveLoad;
         };
 
         static Timeouts timeouts;
