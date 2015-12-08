@@ -1,3 +1,5 @@
+.. _itom1dqwtplot:
+
 line plots (1D)
 ******************
 

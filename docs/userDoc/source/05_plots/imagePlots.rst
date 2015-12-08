@@ -8,6 +8,8 @@ horizontal or vertical according to the mouse movement.
 You can also use the "matplotlib"-backend to plot any data structures (lines, bars, statistical plots, images, contours, 3d plots...). 
 See section :ref:`pymod-matplotlib` for more information about how to use "matplotlib".
 
+.. _itom2dqwtplot:
+
 Itom2dQwtPlot
 ==========================
 
