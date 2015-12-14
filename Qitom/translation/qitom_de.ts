@@ -2964,22 +2964,22 @@ Meldung: &apos;%1&apos;</translation>
     <name>ito::AbstractDockWidget</name>
     <message>
         <location filename="../widgets/abstractDockWidget.cpp" line="+111"/>
-        <source>stay on top</source>
+        <source>Stay on top</source>
         <translation>Im Vordergrund anzeigen</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>stay on top of all visible windows</source>
+        <source>Stay on top of all visible windows</source>
         <translation type="unfinished">Alle sichtbaren Fenster im Vordergrund anzeigen</translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>stay on top of main window</source>
+        <source>Stay on top of main window</source>
         <translation>Hauptfenster im Vordergrund anzeigen</translation>
     </message>
     <message>
         <location line="+1"/>
-        <source>stay on top of main window of itom</source>
+        <source>Stay on top of main window of itom</source>
         <translation type="unfinished">Hauptfenster im Vordergrund von itom anzeigen</translation>
     </message>
     <message>
