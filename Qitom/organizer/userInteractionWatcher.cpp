@@ -125,9 +125,32 @@ void UserInteractionWatcher::plotWidgetDestroyed(QObject *obj)
 void UserInteractionWatcher::userInteractionDone(int type, bool aborted, QPolygonF points)
 {
     int dims = 2; //m_dObjPtr ? m_dObjPtr->getDims() : 2;
-    
-    switch(type & ito::PrimitiveContainer::tTypeMask)
+    m_waiting = false;
+
+    if (aborted)
     {
+        *m_coords = ito::DataObject();
+    }
+    else
+    {
+        switch (type & ito::PrimitiveContainer::tTypeMask)
+        {
+        case ito::PrimitiveContainer::tMultiPointPick:
+        {
+            //in case of multi-point a Nx2 data object is returned. Each row is the x,y coordinate of the clicked point
+            ito::DataObject output(points.size(), 2, ito::tFloat64);
+            cv::Mat *mat = output.getCvPlaneMat(0);
+            ito::float64 *ptr;
+
+            for (int i = 0; i < points.size(); ++i)
+            {
+                ptr = mat->ptr<ito::float64>(i);
+                ptr[0] = points[i].rx();
+                ptr[1] = points[i].ry();
+            }
+            *m_coords = output;
+            break;
+        }
         case ito::PrimitiveContainer::tSquare:
         case ito::PrimitiveContainer::tCircle:
         case ito::PrimitiveContainer::tPolygon:
@@ -136,99 +159,36 @@ void UserInteractionWatcher::userInteractionDone(int type, bool aborted, QPolygo
             *m_coords = ito::DataObject();
             break;
         }
-        case ito::PrimitiveContainer::tMultiPointPick:
         case ito::PrimitiveContainer::tPoint:
-        {
-            if (aborted)
-            {
-                points.clear();
-                *m_coords = ito::DataObject();
-                break;
-            }
-            m_waiting = false;
-
-            if (aborted) points.clear();
-
-            ito::DataObject output(dims, points.size(), ito::tFloat64);
-
-            ito::float64 *ptr = (ito::float64*)output.rowPtr(0,0);
-            int stride = points.size();
-
-            for (int i = 0; i < points.size(); ++i)
-            {
-                ptr[i] = points[i].rx();
-                ptr[i + stride] = points[i].ry();
-            }
-
-            *m_coords = output;
-            break;
-        }
         case ito::PrimitiveContainer::tLine:
         case ito::PrimitiveContainer::tRectangle:
         case ito::PrimitiveContainer::tEllipse:
         {
-            if (aborted)
-            {
-                points.clear();
-                *m_coords = ito::DataObject();
-                break;
-            }
-            m_waiting = false;
-
             dims = 8;
-            int elementCount = (points.size() * 2)/ dims;
+            int elementCount = (points.size() * 2) / dims;
 
-            ito::DataObject output(dims, elementCount, ito::tFloat64);
+            ito::DataObject output(elementCount, dims, ito::tFloat64);
+            cv::Mat *mat = output.getCvPlaneMat(0);
+            ito::float64 *ptr;
 
-#if 0
-            ito::float64 *ptr = (ito::float64*)output.rowPtr(0, 0);
             for (int i = 0; i < elementCount; i++)
             {
-                int n = i;
-                ptr[i]                    = points[i].rx();      //idx
-                
-                n += elementCount;
-                ptr[n]     = points[i].ry();      // type
-                
-                n += elementCount;
-                ptr[n] = points[i + 1].rx();  // x1
-                
-                n += elementCount;
-                ptr[n] = points[i + 1].ry();  // y1
-                
-                n += elementCount;
-                ptr[n] = points[i + 2].rx();  // x2
-                
-                n += elementCount;
-                ptr[n] = points[i + 2].ry();  // y2
-                
-                n += elementCount;
-                ptr[n] = 0.0;  // to be announced
-                
-                n += elementCount;
-                ptr[n] = 0.0;  // alpha
+                ptr = mat->ptr<ito::float64>(i);
+                ptr[0] = points[4 * i].rx();      //idx
+                ptr[1] = points[4 * i].ry();      //type
+                ptr[2] = points[4 * i + 1].rx();      //x1
+                ptr[3] = points[4 * i + 1].ry();      //y1
+                ptr[4] = points[4 * i + 2].rx();      //x2
+                ptr[5] = points[4 * i + 2].ry();      //y2
+                ptr[6] = 0.0; //points[i + 3].rx();      //???
+                ptr[7] = 0.0; //points[i + 3].ry();      //???
             }
-#else
-            cv::Mat* dst = (cv::Mat*)(output.get_mdata()[0]);
-            for (int i = 0; i < elementCount; i++)
-            {
-                dst->at<ito::float64>(0, i) = points[4 * i].rx();      //idx
-                dst->at<ito::float64>(1, i) = points[4 * i].ry();      //type
-                dst->at<ito::float64>(2, i) = points[4 * i + 1].rx();      //x1
-                dst->at<ito::float64>(3, i) = points[4 * i + 1].ry();      //y1
-                dst->at<ito::float64>(4, i) = points[4 * i + 2].rx();      //x2
-                dst->at<ito::float64>(5, i) = points[4 * i + 2].ry();      //y2
-                dst->at<ito::float64>(6, i) = 0.0; //points[i + 3].rx();      //???
-                dst->at<ito::float64>(7, i) = 0.0; //points[i + 3].ry();      //???
-            }
-#endif
             *m_coords = output;
             break;
         }
         break;
+        }
     }
-
-        
 
     if (m_pSemaphore)
     {
