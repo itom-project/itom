@@ -40,13 +40,13 @@ h["title"] = "Showcase: paint 4 ellipses"
 #pick point demo
 #------------------
 
-pickedPoints = dataObject()
+geometricShapes = dataObject()
 #this command let the user pick maximum 4 points (earlier break with space, esc aborts the selection)
-h.drawAndPickElements(plotItem.PrimitiveEllipse, pickedPoints, 4)
+h.drawAndPickElements(plotItem.PrimitiveEllipse, geometricShapes, 4)
 
-print("selected points")
-pickedPoints.data()
+print("selected shapes")
+geometricShapes.data()
 
 [nr, hDrawInto] = plot(obj, "itom2dqwtplot")
 hDrawInto["title"] = "Showcase: plot painted ellipses"
-hDrawInto.call("plotMarkers", pickedPoints, "b", "") #"b" and "setname" will be ignored anyway
+hDrawInto.call("setGeometricElements", geometricShapes) #"b" and "setname" will be ignored anyway

@@ -137,16 +137,16 @@ void UserInteractionWatcher::userInteractionDone(int type, bool aborted, QPolygo
         {
         case ito::PrimitiveContainer::tMultiPointPick:
         {
-            //in case of multi-point a Nx2 data object is returned. Each row is the x,y coordinate of the clicked point
-            ito::DataObject output(points.size(), 2, ito::tFloat64);
+            //in case of multi-point a 2xN data object is returned. Each column is the x,y coordinate of the clicked point
+            ito::DataObject output(2, points.size(), ito::tFloat64);
             cv::Mat *mat = output.getCvPlaneMat(0);
-            ito::float64 *ptr;
+            ito::float64 *x_ptr = mat->ptr<ito::float64>(0);
+            ito::float64 *y_ptr = mat->ptr<ito::float64>(1);
 
             for (int i = 0; i < points.size(); ++i)
             {
-                ptr = mat->ptr<ito::float64>(i);
-                ptr[0] = points[i].rx();
-                ptr[1] = points[i].ry();
+                x_ptr[i] = points[i].rx();
+                y_ptr[i] = points[i].ry();
             }
             *m_coords = output;
             break;
