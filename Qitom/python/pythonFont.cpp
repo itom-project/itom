@@ -274,7 +274,7 @@ int PythonFont::PyFont_setWeight(PyFont *self, PyObject *value, void * /*closure
     }
     else
     {
-        PyErr_SetString(PyExc_TypeError, "error interpreting the font family as string.");
+        PyErr_SetString(PyExc_TypeError, "error interpreting the weight as uint.");
         return -1;
     }
 }

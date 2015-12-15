@@ -31,6 +31,22 @@
 
 namespace ito {
 
+QDataStream &operator<<(QDataStream &out, const ito::Shape &obj)
+{
+    out << obj.type() << obj.flags() << obj.basePoints() << obj.transform();
+    return out;
+}
+
+QDataStream &operator>>(QDataStream &in, ito::Shape &obj)
+{
+    int type, flags;
+    QPolygonF polygons;
+    QTransform transform;
+    in >> type >> flags >> polygons >> transform;
+    obj = Shape(type, flags, polygons, transform);
+    return in;
+}
+
 class ShapePrivate
 {
 public:
@@ -56,6 +72,15 @@ public:
 Shape::Shape() : d(NULL)
 {
     d = new ShapePrivate();
+}
+
+//----------------------------------------------------------------------------------------------
+Shape::Shape(int type, int flags, const QPolygonF &basePoints, const QTransform &transform /*=QTransform()*/) : d(NULL)
+{
+    d = new ShapePrivate();
+    d->m_type = (type & Shape::TypeMask) | (flags & Shape::FlagMask);
+    d->m_polygon = basePoints;
+    d->m_transform = transform;
 }
 
 //----------------------------------------------------------------------------------------------
@@ -112,7 +137,7 @@ void Shape::setFlags(const int &flags)
 }
 
 //----------------------------------------------------------------------------------------------
-int Shape::shapeType() const
+int Shape::type() const
 {
     return d->m_type & Shape::TypeMask;
 }
@@ -148,7 +173,7 @@ QPolygonF Shape::contour(bool applyTrafo /*= false*/, qreal tol /*= -1.0*/) cons
         poly = d->m_polygon;
     }
 
-    switch (shapeType())
+    switch (type())
     {
     case Point:
     case Line:
@@ -174,7 +199,7 @@ QRegion Shape::region() const
 //----------------------------------------------------------------------------------------------
 double Shape::area() const
 {
-    switch (shapeType())
+    switch (type())
     {
     case Point:
     case Line:

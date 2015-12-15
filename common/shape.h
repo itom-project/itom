@@ -34,6 +34,7 @@
 #include <qpolygon.h>
 #include <qtransform.h>
 #include <qregion.h>
+#include <qdatastream.h>
 
 #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 
@@ -41,6 +42,12 @@
 namespace ito
 {
     class ShapePrivate;
+    class Shape;
+
+    QDataStream ITOMCOMMONQT_EXPORT &operator<<(QDataStream &out, const ito::Shape &shape);
+
+    QDataStream ITOMCOMMONQT_EXPORT &operator>>(QDataStream &in, ito::Shape &shape);
+
 
     class ITOMCOMMONQT_EXPORT Shape 
     {
@@ -67,6 +74,7 @@ namespace ito
         };
 
         explicit Shape();
+        explicit Shape(int type, int flags, const QPolygonF &basePoints, const QTransform &transform = QTransform());
         Shape(const Shape &other);
         virtual ~Shape();
 
@@ -77,7 +85,7 @@ namespace ito
         int flags() const;
         void setFlags(const int &flags);
 
-        int shapeType() const;
+        int type() const;
 
         QTransform transform() const;
         void setTransform(const QTransform &trafo);

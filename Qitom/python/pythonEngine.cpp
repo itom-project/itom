@@ -43,6 +43,7 @@
 #include "pythonRegion.h"
 #include "pythonRgba.h"
 #include "pythonFont.h"
+#include "pythonShape.h"
 #include "pythonAutoInterval.h"
 
 #include "../organizer/addInManager.h"
@@ -454,6 +455,13 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 Py_INCREF(&PythonFont::PyFontType);
                 PythonFont::PyFont_addTpDict(PythonFont::PyFontType.tp_dict);
                 PyModule_AddObject(itomModule, "font", (PyObject *)&PythonFont::PyFontType);
+            }
+
+            if (PyType_Ready(&PythonShape::PyShapeType) >= 0)
+            {
+                Py_INCREF(&PythonShape::PyShapeType);
+                PythonShape::PyShape_addTpDict(PythonShape::PyShapeType.tp_dict);
+                PyModule_AddObject(itomModule, "shape", (PyObject *)&PythonShape::PyShapeType);
             }
 
             if (PyType_Ready(&PythonRgba::PyRgbaType) >= 0)
