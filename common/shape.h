@@ -88,6 +88,7 @@ namespace ito
         int type() const;
 
         QTransform transform() const;
+        QTransform &rtransform() const;
         void setTransform(const QTransform &trafo);
 
         QPolygonF basePoints() const; /*!< base points are various points that help to define the geometry in a precise description. */

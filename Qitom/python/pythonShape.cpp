@@ -24,7 +24,9 @@
 
 #include "../global.h"
 #include "pythonQtConversion.h"
+#include "pythonDataObject.h"
 #include "../common/shape.h"
+#include "../DataObject/dataobj.h"
 
 
 
@@ -162,34 +164,37 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
             switch (self->shape->type())
             {
             case Shape::Point:
-                result = PyUnicode_FromFormat("shape(Point, (%f, %f)", base[0].rx(), base[0].ry());
+                result = PyUnicode_FromFormat("shape(Point, (%f, %f))", base[0].rx(), base[0].ry());
                 break;
             case Shape::Line:
-                result = PyUnicode_FromFormat("shape(Line, (%f, %f) - (%f, %f)", base[0].rx(), base[0].ry(), base[1].rx(), base[1].ry());
+                result = PyUnicode_FromFormat("shape(Line, (%f, %f) - (%f, %f))", base[0].rx(), base[0].ry(), base[1].rx(), base[1].ry());
                 break;
             case Shape::Rectangle:
-                result = PyUnicode_FromFormat("shape(Rectangle, (%f, %f) - (%f, %f)", base[0].rx(), base[0].ry(), base[1].rx(), base[1].ry());
+                result = PyUnicode_FromFormat("shape(Rectangle, (%f, %f) - (%f, %f))", base[0].rx(), base[0].ry(), base[1].rx(), base[1].ry());
                 break;
             case Shape::Square:
-                result = PyUnicode_FromFormat("shape(Square, (%f, %f) - (%f, %f)", base[0].rx(), base[0].ry(), base[1].rx(), base[1].ry());
+                result = PyUnicode_FromFormat("shape(Square, (%f, %f) - (%f, %f))", base[0].rx(), base[0].ry(), base[1].rx(), base[1].ry());
                 break;
             case Shape::Polygon:
-                result = PyUnicode_FromFormat("shape(Polygon, %i points", base.size());
+                result = PyUnicode_FromFormat("shape(Polygon, %i points)", base.size());
                 break;
             case Shape::Ellipse:
             {
                 QPointF p = base[0] + base[1];
                 QPointF s = base[1] - base[0];
-                result = PyUnicode_FromFormat("shape(Ellipse, center (%f, %f), (a=%f, b=%f)", p.rx() / 2, p.ry() / 2, s.rx(), s.ry());
+                result = PyUnicode_FromFormat("shape(Ellipse, center (%f, %f), (a=%f, b=%f))", p.rx() / 2, p.ry() / 2, s.rx(), s.ry());
                 break;
             }
             case Shape::Circle:
             {
                 QPointF p = base[0] + base[1];
                 QPointF s = base[1] - base[0];
-                result = PyUnicode_FromFormat("shape(Circle, center (%f, %f), r=%f", p.rx() / 2, p.ry() / 2, s.rx());
+                result = PyUnicode_FromFormat("shape(Circle, center (%f, %f), r=%f)", p.rx() / 2, p.ry() / 2, s.rx());
                 break;
             }
+            case Shape::Invalid:
+                result = PyUnicode_FromFormat("shape(Invalid)");
+                break;
             default:
                 result = PyUnicode_FromFormat("shape(Unknown)");
                 break;
@@ -202,10 +207,10 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
             switch (self->shape->type())
             {
             case Shape::Point:
-                result = PyUnicode_FromFormat("shape(Point, (%f, %f)", contour[0].rx(), contour[0].ry());
+                result = PyUnicode_FromFormat("shape(Point, (%f, %f))", contour[0].rx(), contour[0].ry());
                 break;
             case Shape::Line:
-                result = PyUnicode_FromFormat("shape(Line, (%f, %f) - (%f, %f)", contour[0].rx(), contour[0].ry(), contour[1].rx(), contour[1].ry());
+                result = PyUnicode_FromFormat("shape(Line, (%f, %f) - (%f, %f))", contour[0].rx(), contour[0].ry(), contour[1].rx(), contour[1].ry());
                 break;
             case Shape::Rectangle:
                 result = PyUnicode_FromFormat("shape(Rectangle)");
@@ -214,13 +219,16 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
                 result = PyUnicode_FromFormat("shape(Square)");
                 break;
             case Shape::Polygon:
-                result = PyUnicode_FromFormat("shape(Polygon, %i points", base.size());
+                result = PyUnicode_FromFormat("shape(Polygon, %i points)", base.size());
                 break;
             case Shape::Ellipse:
                 result = PyUnicode_FromFormat("shape(Ellipse)");
                 break;
             case Shape::Circle:
                 result = PyUnicode_FromFormat("shape(Circle)");
+                break;
+            case Shape::Invalid:
+                result = PyUnicode_FromFormat("shape(Invalid)");
                 break;
             default:
                 result = PyUnicode_FromFormat("shape(Unknown)");
@@ -315,7 +323,7 @@ int PythonShape::PyShape_setFlags(PyShape *self, PyObject *value, void * /*closu
     if (!self || self->shape == NULL)
     {
         PyErr_SetString(PyExc_RuntimeError, "shape is not available");
-        return NULL;
+        return -1;
     }
 
     bool ok;
@@ -329,6 +337,7 @@ int PythonShape::PyShape_setFlags(PyShape *self, PyObject *value, void * /*closu
             return -1;
         }
         self->shape->setFlags(flags);
+        return 0;
     }
     else
     {
@@ -338,7 +347,7 @@ int PythonShape::PyShape_setFlags(PyShape *self, PyObject *value, void * /*closu
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getTransform_doc,  "...");
+PyDoc_STRVAR(shape_getTransform_doc,  "Get/set the affine, non scaled 2D transformation matrix (2x3, float64, [2x2 Rot, 2x1 trans])");
 PyObject* PythonShape::PyShape_getTransform(PyShape *self, void * /*closure*/)
 {
     if (!self || self->shape == NULL)
@@ -347,22 +356,67 @@ PyObject* PythonShape::PyShape_getTransform(PyShape *self, void * /*closure*/)
         return NULL;
     }
 
-    return NULL; // PyLong_FromLong(self->font->pointSize());
+    QTransform &t = self->shape->transform();
+    ito::DataObject trafo(2, 3, ito::tFloat64);
+    ito::float64 *ptr = trafo.rowPtr<ito::float64>(0, 0);
+    ptr[0] = t.m11();
+    ptr[1] = t.m12();
+    ptr[2] = t.dx();
+    ptr = trafo.rowPtr<ito::float64>(0, 1);
+    ptr[0] = t.m21();
+    ptr[1] = t.m22();
+    ptr[2] = t.dy();
+
+    ito::PythonDataObject::PyDataObject *obj = PythonDataObject::createEmptyPyDataObject();
+    if (obj)
+        obj->dataObject = new DataObject(trafo);
+
+    return (PyObject*)obj;
 }
 
 int PythonShape::PyShape_setTransform(PyShape *self, PyObject *value, void * /*closure*/)
 {
-    bool ok;
-    quint64 pointSize = PythonQtConversion::PyObjGetULongLong(value, true, ok);
-    if (ok)
+    if (!self || self->shape == NULL)
     {
-        return 0;
-    }
-    else
-    {
-        PyErr_SetString(PyExc_TypeError, "error interpreting the point size as uint.");
+        PyErr_SetString(PyExc_RuntimeError, "shape is not available");
         return -1;
     }
+
+    bool ok = true; //true since PyArray_ContiguousFromAny may throw its own error.
+    PyObject *arr = PyArray_ContiguousFromAny(value, NPY_DOUBLE, 2, 2);
+    PyArrayObject* npArray = (PyArrayObject*)arr;
+    if (arr)
+    {
+        ok = false;
+        const npy_intp *shape = PyArray_SHAPE(npArray);
+        if (shape[0] == 2 && shape[1] == 3)
+        {
+            const npy_double *ptr1 = (npy_double*)PyArray_GETPTR1(npArray, 0);
+            const npy_double *ptr2 = (const npy_double*)PyArray_GETPTR1(npArray, 1);
+            ok = true;
+            QTransform trafo(ptr1[0], ptr1[1], ptr2[0], ptr2[1], ptr1[2], ptr2[2]);
+            if (trafo.isAffine() && !trafo.isScaling())
+            {
+                self->shape->setTransform(trafo);
+            }
+            else
+            {
+                Py_XDECREF(arr);
+                PyErr_SetString(PyExc_RuntimeError, "2x3 transformation must be affine and not scaled [2x2 Rot,2x1 trans]");
+                return -1;
+            }
+        }
+    }
+
+    Py_XDECREF(arr);
+
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "affine, non-scaled 2x3, float64 array for transformation required");
+        return -1;
+    }
+
+    return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -379,6 +433,97 @@ PyObject* PythonShape::PyShape_getArea(PyShape *self, void * /*closure*/)
 }
 
 //-----------------------------------------------------------------------------
+PyDoc_STRVAR(shape_rotateDeg_doc, "Rotate shape by given angle in degree (counterclockwise).");
+PyObject* PythonShape::PyShape_RotateDeg(PyShape *self, PyObject *args)
+{
+    if (!self || self->shape == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "shape is not available");
+        return NULL;
+    }
+
+    qreal rot = 0.0;
+    if (!PyArg_ParseTuple(args, "d", &rot))
+    {
+        return NULL;
+    }
+
+    self->shape->rtransform().rotate(rot, Qt::ZAxis);
+    Py_RETURN_NONE;
+}
+
+//-----------------------------------------------------------------------------
+PyDoc_STRVAR(shape_rotateRad_doc, "Rotate shape by given angle in radians (counterclockwise).");
+PyObject* PythonShape::PyShape_RotateRad(PyShape *self, PyObject *args)
+{
+    if (!self || self->shape == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "shape is not available");
+        return NULL;
+    }
+
+    qreal rot = 0.0;
+    if (!PyArg_ParseTuple(args, "d", &rot))
+    {
+        return NULL;
+    }
+
+    self->shape->rtransform().rotateRadians(rot, Qt::ZAxis);
+    Py_RETURN_NONE;
+}
+
+//-----------------------------------------------------------------------------
+PyDoc_STRVAR(shape_translate_doc, "Translate shape by given (dx,dy) value.");
+PyObject* PythonShape::PyShape_Translate(PyShape *self, PyObject *args)
+{
+    PyObject *obj = NULL;
+    if (!PyArg_ParseTuple(args, "O", &obj))
+    {
+        return NULL;
+    }
+
+    bool ok = true; //true since PyArray_ContiguousFromAny may throw its own error.
+    PyObject *arr = PyArray_ContiguousFromAny(obj, NPY_DOUBLE, 1, 2);
+    PyArrayObject* npArray = (PyArrayObject*)arr;
+    if (arr)
+    {
+        ok = false;
+        if (PyArray_NDIM(npArray) == 2)
+        {
+            const npy_double *ptr1 = (npy_double*)PyArray_GETPTR1(npArray, 0);
+            if (PyArray_DIM(npArray, 0) == 2 && PyArray_DIM(npArray, 1) == 1) //2d, two rows, one col
+            {
+                self->shape->rtransform().translate(ptr1[0], ((npy_double*)PyArray_GETPTR1(npArray, 1))[0]);
+                ok = true;
+            }
+            else if (PyArray_DIM(npArray, 0) == 1 && PyArray_DIM(npArray, 1) == 2) //2d, one row, two cols
+            {
+                self->shape->rtransform().translate(ptr1[0], ptr1[1]);
+                ok = true;
+            }
+        }
+        else
+        {
+            const npy_double *ptr1 = (npy_double*)PyArray_GETPTR1(npArray, 0);
+            if (PyArray_DIM(npArray, 0) == 2) //1d
+            {
+                self->shape->rtransform().translate(ptr1[0], ptr1[1]);
+                ok = true;
+            }
+        }
+    }
+
+    Py_XDECREF(arr);
+
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "float64 array with two elements required (dx,dy)");
+        return NULL;
+    }
+    Py_RETURN_NONE;
+}
+
+//-----------------------------------------------------------------------------
 PyGetSetDef PythonShape::PyShape_getseters[] = {
     { "type", (getter)PyShape_getType,          (setter)NULL,                   shape_getType_doc, NULL },
     {"flags", (getter)PyShape_getFlags,         (setter)PyShape_setFlags,       shape_getFlags_doc, NULL},
@@ -389,8 +534,11 @@ PyGetSetDef PythonShape::PyShape_getseters[] = {
 
 //-----------------------------------------------------------------------------
 PyMethodDef PythonShape::PyShape_methods[] = {
-    {"__reduce__", (PyCFunction)PyShape_Reduce, METH_VARARGS,      "__reduce__ method for handle pickling commands"},
-    {"__setstate__", (PyCFunction)PyShape_SetState, METH_VARARGS,  "__setstate__ method for handle unpickling commands"},
+    { "__reduce__", (PyCFunction)PyShape_Reduce, METH_VARARGS,      "__reduce__ method for handle pickling commands"},
+    { "__setstate__", (PyCFunction)PyShape_SetState, METH_VARARGS,  "__setstate__ method for handle unpickling commands"},
+    { "rotateDeg", (PyCFunction)PyShape_RotateDeg, METH_VARARGS, shape_rotateDeg_doc },
+    { "rotateRad", (PyCFunction)PyShape_RotateRad, METH_VARARGS, shape_rotateRad_doc },
+    { "translate", (PyCFunction)PyShape_Translate, METH_VARARGS, shape_translate_doc },
     {NULL}  /* Sentinel */
 };
 

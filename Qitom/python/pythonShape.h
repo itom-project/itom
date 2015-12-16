@@ -69,6 +69,9 @@ public:
     // general members
     //------------------------------------------------------------------------------------------------- 
     static PyObject* PyShape_repr(PyShape *self);
+    static PyObject* PyShape_RotateDeg(PyShape *self, PyObject *args);
+    static PyObject* PyShape_RotateRad(PyShape *self, PyObject *args);
+    static PyObject* PyShape_Translate(PyShape *self, PyObject *args);
 
     //-------------------------------------------------------------------------------------------------
     // pickling

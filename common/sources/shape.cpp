@@ -149,6 +149,12 @@ QTransform Shape::transform() const
 }
 
 //----------------------------------------------------------------------------------------------
+QTransform &Shape::rtransform() const
+{
+    return d->m_transform;
+}
+
+//----------------------------------------------------------------------------------------------
 void Shape::setTransform(const QTransform &trafo)
 {
     d->m_transform = trafo;
