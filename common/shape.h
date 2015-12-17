@@ -99,8 +99,10 @@ namespace ito
 
         static Shape fromRect(const QRectF &rect, const QTransform &trafo = QTransform());
         static Shape fromRect(qreal x1, qreal y1, qreal x2, qreal y2, const QTransform &trafo = QTransform());
+        static Shape fromSquare(const QPointF &center, qreal sideLength, const QTransform &trafo = QTransform());
         static Shape fromEllipse(const QRectF &rect, const QTransform &trafo = QTransform());
         static Shape fromEllipse(qreal x1, qreal y1, qreal x2, qreal y2, const QTransform &trafo = QTransform());
+        static Shape fromCircle(const QPointF &center, qreal radius, const QTransform &trafo = QTransform());
         static Shape fromLine(const QPointF &p1, const QPointF &p2, const QTransform &trafo = QTransform());
         static Shape fromLine(qreal x1, qreal y1, qreal x2, qreal y2, const QTransform &trafo = QTransform());
         static Shape fromPoint(const QPointF &point, const QTransform &trafo = QTransform());
@@ -109,6 +111,8 @@ namespace ito
 
     private:
         ShapePrivate *d;
+
+        QPolygonF ramerDouglasPeucker(qreal tol) const;
 
     };
 

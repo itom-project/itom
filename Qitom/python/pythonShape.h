@@ -39,6 +39,9 @@
     #endif
 #endif
 
+#include <qpoint.h>
+#include "../common/retVal.h"
+
 namespace ito
 {
 
@@ -69,15 +72,18 @@ public:
     // general members
     //------------------------------------------------------------------------------------------------- 
     static PyObject* PyShape_repr(PyShape *self);
-    static PyObject* PyShape_RotateDeg(PyShape *self, PyObject *args);
-    static PyObject* PyShape_RotateRad(PyShape *self, PyObject *args);
-    static PyObject* PyShape_Translate(PyShape *self, PyObject *args);
+    static PyObject* PyShape_rotateDeg(PyShape *self, PyObject *args);
+    static PyObject* PyShape_rotateRad(PyShape *self, PyObject *args);
+    static PyObject* PyShape_translate(PyShape *self, PyObject *args);
+    static PyObject* PyShape_basePoints(PyShape *self);
+    static PyObject* PyShape_region(PyShape *self);
+    static PyObject* PyShape_contour(PyShape *self, PyObject *args, PyObject *kwds);
 
     //-------------------------------------------------------------------------------------------------
     // pickling
     //-------------------------------------------------------------------------------------------------
-    static PyObject* PyShape_Reduce(PyShape *self, PyObject *args);
-    static PyObject* PyShape_SetState(PyShape *self, PyObject *args);
+    static PyObject* PyShape_reduce(PyShape *self, PyObject *args);
+    static PyObject* PyShape_setState(PyShape *self, PyObject *args);
 
     //-------------------------------------------------------------------------------------------------
     // getter / setter
@@ -103,7 +109,8 @@ public:
 
     static void PyShape_addTpDict(PyObject *tp_dict);
 
-    
+private:
+    static QPointF PyObject2PointF(PyObject *value, ito::RetVal &retval, const char* paramName);
 
 };
 

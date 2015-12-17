@@ -25,8 +25,11 @@
 #include "../global.h"
 #include "pythonQtConversion.h"
 #include "pythonDataObject.h"
+#include "pythonRegion.h"
+#include "pythonCommon.h"
 #include "../common/shape.h"
 #include "../DataObject/dataobj.h"
+#include <qrect.h>
 
 
 
@@ -106,27 +109,157 @@ PyObject* PythonShape::PyShape_new(PyTypeObject *type, PyObject* /*args*/, PyObj
 
 //------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyShape_doc,"shape() -> creates an empty shape object.");
+PyDoc_STRVAR(PyShape_doc,"shape([type, param1, param2]) -> creates a shape object of a specific type. \n\
+\n\
+Depending on the type, the following parameters are allowed: \n\
+\n\
+* shape.Invalid: - \n\
+* shape.Point: point \n\
+* shape.Line: start-point, end-point \n\
+* shape.Rectangle: top left point, bottom right point \n\
+* shape.Square: center point, side-length \n\
+* shape.Ellipse: top left point, bottom right point of bounding box \n\
+* shape.Circle: center point, radius \n\
+* shape.Polygon : 2xM float64 array with M points of polygon \n\
+\n\
+parameters point, start-point, ... can be all array-like types (e.g. dataObject, list, tuple, np.array) \n\
+that can be mapped to float64 and have two elements. \n\
+\n\
+During construction, all shapes are aligned with respect to the x- and y-axis. Set a 2d transformation (attribute 'transform') to \n\
+rotate and move it.");
 int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
 {
-    //int pointSize = 0;
-    //int weight = -1;
-    //bool italic = false;
-    //const char* family = NULL;
+    int type = Shape::Invalid;
+    PyObject *param1 = NULL;
+    PyObject *param2 = NULL;
 
-    //const char *kwlist[] = {"family", "pointSize", "weight", "italic", NULL};
+    const char *kwlist[] = {"type", "param1", "param2", NULL};
 
-    //if (args == NULL && kwds == NULL)
-    //{
-    //    return 0; //call from createPyShape
-    //}
+    if (args == NULL && kwds == NULL)
+    {
+        return 0; //call from createPyShape
+    }
 
-    //if(!PyArg_ParseTupleAndKeywords(args, kwds, "s|iiB", const_cast<char**>(kwlist), &(family), &(pointSize), &(weight), &(italic)))
-    //{
-    //    return -1;
-    //}
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i|OO", const_cast<char**>(kwlist), &(type), &(param1), &(param2)))
+    {
+        return -1;
+    }
 
-    self->shape = new Shape();
+    self->shape = NULL;
+    QPointF pt1, pt2;
+    ito::RetVal retval;
+    bool ok = false;
+    double dbl;
+
+    switch (type)
+    {
+    case Shape::Invalid:
+        break;
+    case Shape::Point:
+        pt1 = PyObject2PointF(param1, retval, "param1");
+        if (!retval.containsError())
+        {
+            self->shape = new ito::Shape(ito::Shape::fromPoint(pt1));
+        }
+        break;
+    case Shape::Line:
+        pt1 = PyObject2PointF(param1, retval, "param1");
+        pt2 = PyObject2PointF(param2, retval, "param2");
+        if (!retval.containsError())
+        {
+            self->shape = new ito::Shape(ito::Shape::fromLine(pt1, pt2));
+        }
+        break;
+    case Shape::Rectangle:
+        pt1 = PyObject2PointF(param1, retval, "param1");
+        pt2 = PyObject2PointF(param2, retval, "param2");
+        if (!retval.containsError())
+        {
+            self->shape = new ito::Shape(ito::Shape::fromRect(pt1.rx(), pt1.ry(), pt2.rx(), pt2.ry()));
+        }
+        break;
+    case Shape::Square:
+        pt1 = PyObject2PointF(param1, retval, "param1");
+        dbl = param2 ? PythonQtConversion::PyObjGetDouble(param2, false, ok) : 0.0;
+        if (!ok)
+        {
+            retval += ito::RetVal(ito::retError, 0, "param2 must be a double value.");
+        }
+
+        if (!retval.containsError())
+        {
+            self->shape = new ito::Shape(ito::Shape::fromSquare(pt1, dbl));
+        }
+        break;
+    case Shape::Polygon:
+    {
+        if (!param1)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "param1: 2xM float64 array like object with polygon data required.");
+            return -1;
+        }
+
+        PyObject *arr = PyArray_ContiguousFromAny(param1, NPY_DOUBLE, 2, 2);
+        PyArrayObject* npArray = (PyArrayObject*)arr;
+        if (arr)
+        {
+            const npy_intp *shape = PyArray_SHAPE(npArray);
+            if (shape[0] == 2 && shape[1] == 3)
+            {
+                QPolygonF polygon;
+                polygon.reserve(shape[1]);
+                const npy_double *ptr1 = (npy_double*)PyArray_GETPTR1(npArray, 0);
+                const npy_double *ptr2 = (const npy_double*)PyArray_GETPTR1(npArray, 1);
+                for (int i = 0; i < shape[1]; ++i)
+                {
+                    polygon.push_back(QPointF(ptr1[i], ptr2[i]));
+                }
+            }
+            else
+            {
+                Py_XDECREF(arr);
+                PyErr_SetString(PyExc_RuntimeError, "param1: 2xM float64 array like object with polygon data required.");
+                return -1;
+            }
+        }
+        else
+        {
+            return -1;
+        }
+
+        Py_XDECREF(arr);
+    }
+
+    case Shape::Ellipse:
+    {
+        pt1 = PyObject2PointF(param1, retval, "param1");
+        pt2 = PyObject2PointF(param2, retval, "param2");
+        if (!retval.containsError())
+        {
+            self->shape = new ito::Shape(ito::Shape::fromEllipse(pt1.rx(), pt1.ry(), pt2.rx(), pt2.ry()));
+        }
+        break;
+    }
+    case Shape::Circle:
+        pt1 = PyObject2PointF(param1, retval, "param1");
+        dbl = param2 ? PythonQtConversion::PyObjGetDouble(param2, false, ok) : 0.0;
+        if (!ok)
+        {
+            retval += ito::RetVal(ito::retError, 0, "param2 must be a double value.");
+        }
+
+        if (!retval.containsError())
+        {
+            self->shape = new ito::Shape(ito::Shape::fromCircle(pt1, dbl));
+        }
+        break;
+    
+    default:
+        PyErr_SetString(PyExc_RuntimeError, "unknown type");
+        return -1;
+    }
+
+    if (!PythonCommon::transformRetValToPyException(retval)) return -1;
 
     return 0;
 };
@@ -164,16 +297,16 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
             switch (self->shape->type())
             {
             case Shape::Point:
-                result = PyUnicode_FromFormat("shape(Point, (%f, %f))", base[0].rx(), base[0].ry());
+                result = PyUnicode_FromFormat(QString("shape(Point, (%1, %2))").arg(base[0].rx()).arg(base[0].ry()).toLatin1().data());
                 break;
             case Shape::Line:
-                result = PyUnicode_FromFormat("shape(Line, (%f, %f) - (%f, %f))", base[0].rx(), base[0].ry(), base[1].rx(), base[1].ry());
+                result = PyUnicode_FromFormat(QString("shape(Line, (%1, %2) - (%3, %4))").arg(base[0].rx()).arg(base[0].ry()).arg(base[1].rx()).arg(base[1].ry()).toLatin1().data());
                 break;
             case Shape::Rectangle:
-                result = PyUnicode_FromFormat("shape(Rectangle, (%f, %f) - (%f, %f))", base[0].rx(), base[0].ry(), base[1].rx(), base[1].ry());
+                result = PyUnicode_FromFormat(QString("shape(Rectangle, (%1, %2) - (%3, %4))").arg(base[0].rx()).arg(base[0].ry()).arg(base[1].rx()).arg(base[1].ry()).toLatin1().data());
                 break;
             case Shape::Square:
-                result = PyUnicode_FromFormat("shape(Square, (%f, %f) - (%f, %f))", base[0].rx(), base[0].ry(), base[1].rx(), base[1].ry());
+                result = PyUnicode_FromFormat(QString("shape(Square, (%1, %2) - (%3, %4))").arg(base[0].rx()).arg(base[0].ry()).arg(base[1].rx()).arg(base[1].ry()).toLatin1().data());
                 break;
             case Shape::Polygon:
                 result = PyUnicode_FromFormat("shape(Polygon, %i points)", base.size());
@@ -182,14 +315,14 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
             {
                 QPointF p = base[0] + base[1];
                 QPointF s = base[1] - base[0];
-                result = PyUnicode_FromFormat("shape(Ellipse, center (%f, %f), (a=%f, b=%f))", p.rx() / 2, p.ry() / 2, s.rx(), s.ry());
+                result = PyUnicode_FromFormat(QString("shape(Ellipse, center (%1, %2), (a=%3, b=%4))").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(s.ry() / 2).toLatin1().data());
                 break;
             }
             case Shape::Circle:
             {
                 QPointF p = base[0] + base[1];
                 QPointF s = base[1] - base[0];
-                result = PyUnicode_FromFormat("shape(Circle, center (%f, %f), r=%f)", p.rx() / 2, p.ry() / 2, s.rx());
+                result = PyUnicode_FromFormat(QString("shape(Circle, center (%1, %2), r=%3)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).toLatin1().data());
                 break;
             }
             case Shape::Invalid:
@@ -240,7 +373,7 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
 }
 
 //-----------------------------------------------------------------------------
-/*static*/ PyObject* PythonShape::PyShape_Reduce(PyShape *self, PyObject *args)
+/*static*/ PyObject* PythonShape::PyShape_reduce(PyShape *self, PyObject *args)
 {
     PyObject *stateTuple = NULL;
 
@@ -266,7 +399,7 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
 }
 
 //-----------------------------------------------------------------------------
-/*static*/ PyObject* PythonShape::PyShape_SetState(PyShape *self, PyObject *args)
+/*static*/ PyObject* PythonShape::PyShape_setState(PyShape *self, PyObject *args)
 {
     PyObject *data = NULL;
     if (!PyArg_ParseTuple(args, "O", &data))
@@ -420,7 +553,7 @@ int PythonShape::PyShape_setTransform(PyShape *self, PyObject *value, void * /*c
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getArea_doc,  "Area of shape.");
+PyDoc_STRVAR(shape_getArea_doc,  "Get area of shape.");
 PyObject* PythonShape::PyShape_getArea(PyShape *self, void * /*closure*/)
 {
     if(!self || self->shape == NULL)
@@ -433,8 +566,8 @@ PyObject* PythonShape::PyShape_getArea(PyShape *self, void * /*closure*/)
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_rotateDeg_doc, "Rotate shape by given angle in degree (counterclockwise).");
-PyObject* PythonShape::PyShape_RotateDeg(PyShape *self, PyObject *args)
+PyDoc_STRVAR(shape_rotateDeg_doc, "rotateDeg(array-like object) -> Rotate shape by given angle in degree (counterclockwise).");
+PyObject* PythonShape::PyShape_rotateDeg(PyShape *self, PyObject *args)
 {
     if (!self || self->shape == NULL)
     {
@@ -453,8 +586,8 @@ PyObject* PythonShape::PyShape_RotateDeg(PyShape *self, PyObject *args)
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_rotateRad_doc, "Rotate shape by given angle in radians (counterclockwise).");
-PyObject* PythonShape::PyShape_RotateRad(PyShape *self, PyObject *args)
+PyDoc_STRVAR(shape_rotateRad_doc, "rotateRad(array-like object) -> Rotate shape by given angle in radians (counterclockwise).");
+PyObject* PythonShape::PyShape_rotateRad(PyShape *self, PyObject *args)
 {
     if (!self || self->shape == NULL)
     {
@@ -473,8 +606,8 @@ PyObject* PythonShape::PyShape_RotateRad(PyShape *self, PyObject *args)
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_translate_doc, "Translate shape by given (dx,dy) value.");
-PyObject* PythonShape::PyShape_Translate(PyShape *self, PyObject *args)
+PyDoc_STRVAR(shape_translate_doc, "translate(array-like object) -> Translate shape by given (dx,dy) value.");
+PyObject* PythonShape::PyShape_translate(PyShape *self, PyObject *args)
 {
     PyObject *obj = NULL;
     if (!PyArg_ParseTuple(args, "O", &obj))
@@ -524,6 +657,167 @@ PyObject* PythonShape::PyShape_Translate(PyShape *self, PyObject *args)
 }
 
 //-----------------------------------------------------------------------------
+PyDoc_STRVAR(shape_basePoints_doc, "basePoints() -> Return M base points of shape as 2xM float64 dataObject \n\
+\n\
+The base points are untransformed points that describe the shape dependent on its type: \n\
+\n\
+* shape.Point: one point \n\
+* shape.Line : start point, end point \n\
+* shape.Rectangle, shape.Square : top left point, bottom right point \n\
+* shape.Ellipse, shape.Circle : top left point, bottom right point of bounding box \n\
+* shape.Polygon : points of polygon, the last and first point are connected, too.");
+PyObject* PythonShape::PyShape_basePoints(PyShape *self)
+{
+    if (!self || self->shape == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "shape is not available");
+        return NULL;
+    }
+
+    QPolygonF basePoints = self->shape->basePoints();
+    ito::DataObject bp;
+    if (basePoints.size() > 0)
+    {
+        bp = ito::DataObject(2, basePoints.size(), ito::tFloat64);
+        ito::float64 *ptr_x = bp.rowPtr<ito::float64>(0, 0);
+        ito::float64 *ptr_y = bp.rowPtr<ito::float64>(0, 1);
+        for (int i = 0; i < basePoints.size(); ++i)
+        {
+            ptr_x[i] = basePoints[i].rx();
+            ptr_y[i] = basePoints[i].ry();
+        }
+    }
+
+    ito::PythonDataObject::PyDataObject *obj = PythonDataObject::createEmptyPyDataObject();
+    if (obj)
+        obj->dataObject = new DataObject(bp);
+
+    return (PyObject*)obj;
+}
+
+//-----------------------------------------------------------------------------
+PyDoc_STRVAR(shape_region_doc, "region() -> Return a region object from this shape. \n\
+\n\
+The region object only contains valid regions if the shape has an area > 0. \n\
+A region object is an integer based object (pixel raster), therefore the shapes \n\
+are rounded to the nearest fixed-point coordinates. \n\
+\n\
+Note \n\
+------- \n\
+Transformed shapes are currently not supported.");
+PyObject* PythonShape::PyShape_region(PyShape *self)
+{
+    if (!self || self->shape == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "shape is not available");
+        return NULL;
+    }
+
+    return ito::PythonRegion::createPyRegion(self->shape->region());
+}
+
+//-----------------------------------------------------------------------------
+PyDoc_STRVAR(shape_contour_doc, "contour([applyTrafo = False, tol = -1.0]) -> return contour points as a 2xNumPoints float64 dataObject \n\
+\n\
+If a transformation matrix is set, the base points can be transformed if 'applyTrafo' is True. For point, line and rectangle \n\
+based shapes, the contour is directly given. For ellipses and circles, a polygon is approximated to the form of the ellipse \n\
+and returned as contour. The approximation is done by line segments. Use 'tol' to set the maximum distance between each line segment \n\
+and the real shape. If 'tol' is -1.0, 'tol' is set to 1% of the smallest diameter.");
+PyObject* PythonShape::PyShape_contour(PyShape *self, PyObject *args, PyObject *kwds)
+{
+    if (!self || self->shape == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "shape is not available");
+        return NULL;
+    }
+
+    double tol = -1.0;
+    unsigned char applyTrafo = false;
+
+    const char *kwlist[] = { "applyTrafo", "tol", NULL };
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|bd", const_cast<char**>(kwlist), &applyTrafo, &tol))
+    {
+        return NULL;
+    }
+
+    QPolygonF contour = self->shape->contour(applyTrafo, tol);
+    ito::DataObject cont;
+    if (contour.size() > 0)
+    {
+        cont = ito::DataObject(2, contour.size(), ito::tFloat64);
+        ito::float64 *ptr_x = cont.rowPtr<ito::float64>(0, 0);
+        ito::float64 *ptr_y = cont.rowPtr<ito::float64>(0, 1);
+        for (int i = 0; i < contour.size(); ++i)
+        {
+            ptr_x[i] = contour[i].rx();
+            ptr_y[i] = contour[i].ry();
+        }
+    }
+
+    ito::PythonDataObject::PyDataObject *obj = PythonDataObject::createEmptyPyDataObject();
+    if (obj)
+        obj->dataObject = new DataObject(cont);
+
+    return (PyObject*)obj;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------
+QPointF PythonShape::PyObject2PointF(PyObject *value, ito::RetVal &retval, const char* paramName)
+{
+    if (!value)
+    {
+        retval += ito::RetVal::format(ito::retError, 0, "%s missing", paramName);
+        return QPointF();
+    }
+
+    bool ok = true; //true since PyArray_ContiguousFromAny may throw its own error.
+    PyObject *arr = PyArray_ContiguousFromAny(value, NPY_DOUBLE, 1, 2);
+    PyArrayObject* npArray = (PyArrayObject*)arr;
+    QPointF point;
+
+    if (arr)
+    {
+        ok = false;
+        if (PyArray_NDIM(npArray) == 2)
+        {
+            const npy_double *ptr1 = (npy_double*)PyArray_GETPTR1(npArray, 0);
+            if (PyArray_DIM(npArray, 0) == 2 && PyArray_DIM(npArray, 1) == 1) //2d, two rows, one col
+            {
+                point.rx() = ptr1[0];
+                point.ry() = ((npy_double*)PyArray_GETPTR1(npArray, 1))[0];
+                ok = true;
+            }
+            else if (PyArray_DIM(npArray, 0) == 1 && PyArray_DIM(npArray, 1) == 2) //2d, one row, two cols
+            {
+                point.rx() = ptr1[0];
+                point.ry() = ptr1[1];
+                ok = true;
+            }
+        }
+        else
+        {
+            const npy_double *ptr1 = (npy_double*)PyArray_GETPTR1(npArray, 0);
+            if (PyArray_DIM(npArray, 0) == 2) //1d
+            {
+                point.rx() = ptr1[0];
+                point.ry() = ptr1[1];
+                ok = true;
+            }
+        }
+    }
+
+    Py_XDECREF(arr);
+
+    if (!ok)
+    {
+        retval += ito::RetVal::format(ito::retError, 0, "%s: float64 array with two elements required (x,y)", paramName);
+    }
+
+    return point;
+}
+
+//-----------------------------------------------------------------------------
 PyGetSetDef PythonShape::PyShape_getseters[] = {
     { "type", (getter)PyShape_getType,          (setter)NULL,                   shape_getType_doc, NULL },
     {"flags", (getter)PyShape_getFlags,         (setter)PyShape_setFlags,       shape_getFlags_doc, NULL},
@@ -534,11 +828,14 @@ PyGetSetDef PythonShape::PyShape_getseters[] = {
 
 //-----------------------------------------------------------------------------
 PyMethodDef PythonShape::PyShape_methods[] = {
-    { "__reduce__", (PyCFunction)PyShape_Reduce, METH_VARARGS,      "__reduce__ method for handle pickling commands"},
-    { "__setstate__", (PyCFunction)PyShape_SetState, METH_VARARGS,  "__setstate__ method for handle unpickling commands"},
-    { "rotateDeg", (PyCFunction)PyShape_RotateDeg, METH_VARARGS, shape_rotateDeg_doc },
-    { "rotateRad", (PyCFunction)PyShape_RotateRad, METH_VARARGS, shape_rotateRad_doc },
-    { "translate", (PyCFunction)PyShape_Translate, METH_VARARGS, shape_translate_doc },
+    { "__reduce__", (PyCFunction)PyShape_reduce, METH_VARARGS,      "__reduce__ method for handle pickling commands"},
+    { "__setstate__", (PyCFunction)PyShape_setState, METH_VARARGS,  "__setstate__ method for handle unpickling commands"},
+    { "rotateDeg", (PyCFunction)PyShape_rotateDeg, METH_VARARGS, shape_rotateDeg_doc },
+    { "rotateRad", (PyCFunction)PyShape_rotateRad, METH_VARARGS, shape_rotateRad_doc },
+    { "translate", (PyCFunction)PyShape_translate, METH_VARARGS, shape_translate_doc },
+    { "basePoints", (PyCFunction)PyShape_basePoints, METH_NOARGS, shape_basePoints_doc },
+    { "region", (PyCFunction)PyShape_region, METH_NOARGS, shape_region_doc },
+    { "contour", (PyCFunction)PyShape_contour, METH_VARARGS | METH_KEYWORDS, shape_contour_doc },
     {NULL}  /* Sentinel */
 };
 

@@ -167,39 +167,268 @@ QPolygonF Shape::basePoints() const
 }
 
 //----------------------------------------------------------------------------------------------
-QPolygonF Shape::contour(bool applyTrafo /*= false*/, qreal tol /*= -1.0*/) const
+QPolygonF circle2Polygon(const QPointF &center, qreal radius, qreal tol)
 {
-    QPolygonF poly;
-    if (applyTrafo)
+    if (tol < 0)
     {
-        poly = d->m_transform.map(d->m_polygon);
-    }
-    else
-    {
-        poly = d->m_polygon;
+        tol = qBound(1.0e-6, 0.01 * radius, 0.5 * radius);
     }
 
+    qreal sideLength = 2 * std::sqrt((2 * radius - tol) * tol);
+    qreal angle = 2 * std::asin(sideLength / (2 * radius));
+    int segments = std::ceil(2 * M_PI / angle); //round up to the next higher number of segments to have an error of max. tol.
+    angle = (2 * M_PI) / (qreal)segments;
+    QPolygonF poly;
+
+    for (int i = 0; i < segments; ++i)
+    {
+        poly << center + QPointF(radius * std::cos(angle * i), radius * std::sin(angle * i));
+    }
+
+    return poly;
+}
+
+//----------------------------------------------------------------------------------------------
+QPolygonF Shape::contour(bool applyTrafo /*= false*/, qreal tol /*= -1.0*/) const
+{
     switch (type())
     {
     case Point:
     case Line:
+    {
+        if (applyTrafo)
+        {
+            return d->m_transform.map(d->m_polygon);
+        }
+        else
+        {
+            return d->m_polygon;
+        }
+        break;
+    }
     case Rectangle:
     case Square:
+    {
+        QRectF rect(d->m_polygon[0], d->m_polygon[1]);
+        if (applyTrafo)
+        {
+            return d->m_transform.mapToPolygon(rect.toRect());
+        }
+        else
+        {
+            return QPolygonF() << rect.topLeft() << rect.bottomLeft() << rect.bottomRight() << rect.topRight();
+        }
+    }
     case Polygon:
-        return poly;
-    case Ellipse:
+    {
+        if (applyTrafo)
+        {
+            return d->m_transform.map(d->m_polygon);
+        }
+        else
+        {
+            return d->m_polygon;
+        }
+        break;
+    }
     case Circle:
-        //todo: Ramer-Douglas-Peucker algorithm (see http://stackoverflow.com/questions/22694850/approximating-an-ellipse-with-a-polygon)
-        return QPolygonF();
+    {
+        QPointF center = (d->m_polygon[0] + d->m_polygon[1]) / 2.0;
+        qreal radius = std::abs((d->m_polygon[1] - d->m_polygon[0]).x() / 2.0);
+        if (radius > 0)
+        {
+            if (applyTrafo)
+            {
+                QPolygonF poly = circle2Polygon(center, radius, tol);
+                poly.translate(d->m_transform.dx(), d->m_transform.dy()); //rotation is irrelevant
+                return poly;
+            }
+            else
+            {
+                return circle2Polygon(center, radius, tol);
+            }
+        }
+        else
+        {
+            QPolygonF poly;
+            poly << center;
+            if (applyTrafo)
+            {
+                poly.translate(d->m_transform.dx(), d->m_transform.dy()); //rotation is irrelevant
+                return poly;
+            }
+            else
+            {
+                return poly;
+            }
+        }
+        break; 
+    }
+    case Ellipse:
+    {
+        QPolygonF poly = ramerDouglasPeucker(tol);
+        if (applyTrafo)
+        {
+            return d->m_transform.map(poly);
+        }
+        else
+        {
+            return poly;
+        }
+    }
     default:
         return QPolygonF();
     }
 }
 
 //----------------------------------------------------------------------------------------------
+//this struct is used, since it is faster to pass one argument to the iterative function call instead of multiple variables
+struct RamerDouglasPeuckerData
+{
+    QList<QLineF> edges;
+    double a;
+    double b;
+    double tol;
+};
+int ramerDouglasPeuckerIter(RamerDouglasPeuckerData &data, int current_index)
+{
+    const QLineF &seg = data.edges[current_index];
+
+    QPointF edge_center = (seg.p1() + seg.p2()) / 2.0;
+    QPointF normal_vector(seg.dy(), -seg.dx()); //towards the right side (outer side)
+    qreal b2 = data.b * data.b;
+    qreal a2 = data.a * data.a;
+    qreal p = b2 * normal_vector.rx() * normal_vector.rx() + a2 * normal_vector.ry() * normal_vector.ry();
+    qreal q = 2 * b2 * edge_center.rx() * normal_vector.rx() + a2 * edge_center.ry() * normal_vector.ry();
+    qreal r = b2 * edge_center.rx() * edge_center.rx() + a2 * edge_center.ry() * edge_center.ry() - a2 * b2;
+
+    //solve for pm^2 + qm + r = 0 -> positive root of m only!
+    qreal m = (-q + std::sqrt(q*q - 4.0 * p * r)) / (2.0 * p);
+
+    QPointF ellipse_point = edge_center + m * normal_vector;
+
+    //correct ellipse_point due to discretization and rounding errors:
+    qreal y_new = data.b * std::sqrt(1 - ellipse_point.x() * ellipse_point.x() / a2);
+    qreal x_new = data.a * std::sqrt(1 - ellipse_point.y() * ellipse_point.y() / b2);
+
+    if (std::abs(y_new - ellipse_point.ry()) < std::abs(x_new - ellipse_point.rx()))
+    {
+        ellipse_point.ry() = (ellipse_point.y() * y_new) >= 0 ? y_new : -y_new;
+    }
+    else
+    {
+        ellipse_point.rx() = (ellipse_point.x() * x_new) >= 0 ? x_new : -x_new;
+    }
+
+    qreal length = (ellipse_point - edge_center).manhattanLength();
+    if (length > data.tol)
+    {
+        QLineF seg1(seg.p1(), ellipse_point);
+        QLineF seg2(ellipse_point, seg.p2());
+        data.edges[current_index] = seg1;
+        data.edges.insert(current_index + 1, seg2); //add one segment after the current one, but the current one must be checked in the next turn
+
+        return current_index;
+    }
+    else
+    {
+        return current_index + 1; //handle next edge, this edge is short enough, no edge has been added
+    }
+}
+
+//----------------------------------------------------------------------------------------------
+QPolygonF Shape::ramerDouglasPeucker(qreal tol) const
+{
+    //Ramer-Douglas-Peucker algorithm (see http://stackoverflow.com/questions/22694850/approximating-an-ellipse-with-a-polygon)
+    QPolygonF p;
+    if (type() == Ellipse || type() == Circle)
+    {
+        QRectF rect(d->m_polygon[0], d->m_polygon[1]);
+        int N = 0;
+
+        if (tol < 0)
+        {
+            tol = 0.01 * std::min(rect.width(), rect.height());
+        }
+        
+        if (!rect.isEmpty())
+        {
+            //move the shape such that the center is the origin, afterwards translate all points back to the real center
+            QPointF p_left(-rect.width() / 2, 0.0);
+            QPointF p_right(rect.width() / 2, 0.0);
+            QPointF p_top(0.0, rect.height() / 2);
+            QPointF p_bottom(0.0, -rect.height() / 2);
+            QPointF p_center((rect.left() + rect.right()) / 2, (rect.top() + rect.bottom()) / 2);
+            
+            int next_index = 0;
+            RamerDouglasPeuckerData data;
+            data.edges << QLineF(p_left, p_bottom) << QLineF(p_bottom, p_right) << QLineF(p_right, p_top) << QLineF(p_top, p_left);
+            data.a = rect.width() / 2;
+            data.b = rect.height() / 2;
+            data.tol = tol;
+            while (next_index < data.edges.size())
+            {
+                next_index = ramerDouglasPeuckerIter(data, next_index);
+            }
+
+            p.reserve(data.edges.size());
+            foreach(const QLineF &line, data.edges)
+            {
+                p.push_back(line.p1());
+            }
+
+            p.translate(p_center);
+        }
+        else
+        {
+            p.push_back(rect.topLeft());
+        }
+    }
+
+    return p;
+}
+
+//----------------------------------------------------------------------------------------------
 QRegion Shape::region() const
 {
-    return QRegion(contour(true).toPolygon());
+    QRegion region;
+
+    switch (type())
+    {
+    case Shape::Point:
+    case Shape::Line:
+        break;
+    case Shape::Rectangle:
+    case Shape::Square:
+    {
+        region = QRegion(QRectF(d->m_polygon[0], d->m_polygon[1]).toRect(), QRegion::Rectangle);
+        break;
+    }
+    case Shape::Polygon:
+    {
+        region = QRegion(d->m_polygon.toPolygon());
+        break;
+    }
+    case Shape::Ellipse:
+    case Shape::Circle:
+    {
+        region = QRegion(QRectF(d->m_polygon[0], d->m_polygon[1]).toRect(), QRegion::Ellipse);
+        break;
+    }
+    default:
+        break;
+    }
+
+    if (d->m_transform.isIdentity())
+    {
+        return region;
+    }
+    else
+    {
+        return d->m_transform.map(region); //time consuming
+    }
+
+    return region;
 }
 
 //----------------------------------------------------------------------------------------------
@@ -329,6 +558,28 @@ double Shape::area() const
     Shape s;
     s.d->m_type = Line;
     s.d->m_polygon = polygon;
+    s.d->m_transform = trafo;
+    return s;
+}
+
+//----------------------------------------------------------------------------------------------
+/*static*/ Shape Shape::fromSquare(const QPointF &center, qreal sideLength, const QTransform &trafo /*= QTransform()*/)
+{
+    Shape s;
+    QPointF dist(sideLength / 2, sideLength / 2);
+    s.d->m_type = Square;
+    s.d->m_polygon << (center - dist) << (center + dist);
+    s.d->m_transform = trafo;
+    return s;
+}
+
+//----------------------------------------------------------------------------------------------
+/*static*/ Shape Shape::fromCircle(const QPointF &center, qreal radius, const QTransform &trafo /*= QTransform()*/)
+{
+    Shape s;
+    QPointF dist(radius, radius);
+    s.d->m_type = Circle;
+    s.d->m_polygon << (center - dist) << (center + dist);
     s.d->m_transform = trafo;
     return s;
 }

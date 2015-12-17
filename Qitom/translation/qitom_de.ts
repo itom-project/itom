@@ -6589,8 +6589,8 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <location line="+40"/>
         <location line="+55"/>
         <location line="+61"/>
-        <source>object name is not available</source>
-        <translation type="unfinished">Der Objektname ist nicht verfügbar</translation>
+        <source>widget is not available (any more)</source>
+        <translation type="unfinished">Widget existiert nicht (mehr)</translation>
     </message>
     <message>
         <location line="-686"/>

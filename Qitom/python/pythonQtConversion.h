@@ -32,6 +32,7 @@
 
 #include "../global.h"
 #include "../../common/itomPlotHandle.h"
+#include "../../common/shape.h"
 
 #include "opencv/cv.h"
 #include <qvariant.h>
@@ -50,6 +51,8 @@ Q_DECLARE_METATYPE(ito::PCLPolygonMesh)
 Q_DECLARE_METATYPE(QSharedPointer<ito::DataObject>)
 Q_DECLARE_METATYPE(QPointer<ito::AddInDataIO>)
 Q_DECLARE_METATYPE(QPointer<ito::AddInActuator>)
+Q_DECLARE_METATYPE(ito::Shape)
+Q_DECLARE_METATYPE(QVector<ito::Shape>)
 
 
 Q_DECLARE_METATYPE(ito::ItomPlotHandle)
@@ -105,6 +108,8 @@ public:
     static QVector<int>  PyObjGetIntArray(PyObject* val, bool strict, bool &ok);
     //! get bool from py object
     static bool    PyObjGetBool(PyObject* val, bool strict, bool &ok);
+    //! get shape vector from py object
+    static QVector<ito::Shape> PyObjGetShapeVector(PyObject* val, bool &ok);
 
 #if ITOM_POINTCLOUDLIBRARY > 0
     static ito::PCLPointCloud PyObjGetPointCloud(PyObject *val, bool strict, bool &ok);
