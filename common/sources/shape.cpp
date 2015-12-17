@@ -282,7 +282,7 @@ QPolygonF Shape::contour(bool applyTrafo /*= false*/, qreal tol /*= -1.0*/) cons
 }
 
 //----------------------------------------------------------------------------------------------
-//this struct is used, since it is faster to pass one argument to the iterative function call instead of multiple variables
+//this struct is used, since it is faster to pass one argument by-ref to the iterative function call instead of multiple variables
 struct RamerDouglasPeuckerData
 {
     QList<QLineF> edges;
@@ -290,6 +290,7 @@ struct RamerDouglasPeuckerData
     double b;
     double tol;
 };
+
 int ramerDouglasPeuckerIter(RamerDouglasPeuckerData &data, int current_index)
 {
     const QLineF &seg = data.edges[current_index];

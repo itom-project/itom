@@ -29,7 +29,7 @@ contour_point = point.contour()
 contour_line = line.contour()
 contour_rect = rect.contour()
 contour_square = square.contour()
-contour_ellipse = ellipse.contour(tol = 0.002)
+contour_ellipse = ellipse.contour(tol = 0.02)
 contour_circle = circle.contour(tol = 0.01)
 
 #plot mask and contour points

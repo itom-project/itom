@@ -426,7 +426,7 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getType_doc,  "...");
+PyDoc_STRVAR(shape_getType_doc,  "Get type of shape, e.g. Shape.Line, Shape.Point, Shape.Rectangle, Shape.Ellipse, Shape.Circle, Shape.Square");
 PyObject* PythonShape::PyShape_getType(PyShape *self, void * /*closure*/)
 {
     if(!self || self->shape == NULL)
@@ -439,7 +439,7 @@ PyObject* PythonShape::PyShape_getType(PyShape *self, void * /*closure*/)
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getFlags_doc,  "....");
+PyDoc_STRVAR(shape_getFlags_doc,  "Get/set bitmask with flags for this shape: Shape.MoveLock, Shape.RotateLock, Shape.ResizeLock");
 PyObject* PythonShape::PyShape_getFlags(PyShape *self, void * /*closure*/)
 {
     if (!self || self->shape == NULL)
