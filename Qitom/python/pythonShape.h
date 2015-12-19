@@ -93,6 +93,12 @@ public:
     static PyObject* PyShape_getFlags(PyShape *self, void *closure);
     static int PyShape_setFlags(PyShape *self, PyObject *value, void *closure);
 
+    static PyObject* PyShape_getIndex(PyShape *self, void *closure);
+    static int PyShape_setIndex(PyShape *self, PyObject *value, void *closure);
+
+    static PyObject* PyShape_getName(PyShape *self, void *closure);
+    static int PyShape_setName(PyShape *self, PyObject *value, void *closure);
+
     static PyObject* PyShape_getTransform(PyShape *self, void *closure);
     static int PyShape_setTransform(PyShape *self, PyObject *value, void *closure);
 

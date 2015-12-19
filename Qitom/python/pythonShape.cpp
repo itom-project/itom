@@ -109,7 +109,7 @@ PyObject* PythonShape::PyShape_new(PyTypeObject *type, PyObject* /*args*/, PyObj
 
 //------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(PyShape_doc,"shape([type, param1, param2]) -> creates a shape object of a specific type. \n\
+PyDoc_STRVAR(PyShape_doc,"shape([type, param1, param2, index, name]) -> creates a shape object of a specific type. \n\
 \n\
 Depending on the type, the following parameters are allowed: \n\
 \n\
@@ -132,15 +132,17 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
     int type = Shape::Invalid;
     PyObject *param1 = NULL;
     PyObject *param2 = NULL;
+    int index = -1;
+    const char* name = NULL;
 
-    const char *kwlist[] = {"type", "param1", "param2", NULL};
+    const char *kwlist[] = {"type", "param1", "param2", "index", "name", NULL};
 
     if (args == NULL && kwds == NULL)
     {
         return 0; //call from createPyShape
     }
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i|OO", const_cast<char**>(kwlist), &(type), &(param1), &(param2)))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i|OOis", const_cast<char**>(kwlist), &(type), &(param1), &(param2), &index, &name))
     {
         return -1;
     }
@@ -148,6 +150,7 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
     self->shape = NULL;
     QPointF pt1, pt2;
     ito::RetVal retval;
+    QString name_(name ? name : "");
     bool ok = false;
     double dbl;
 
@@ -159,7 +162,7 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
         pt1 = PyObject2PointF(param1, retval, "param1");
         if (!retval.containsError())
         {
-            self->shape = new ito::Shape(ito::Shape::fromPoint(pt1));
+            self->shape = new ito::Shape(ito::Shape::fromPoint(pt1, index, name_));
         }
         break;
     case Shape::Line:
@@ -167,7 +170,7 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
         pt2 = PyObject2PointF(param2, retval, "param2");
         if (!retval.containsError())
         {
-            self->shape = new ito::Shape(ito::Shape::fromLine(pt1, pt2));
+            self->shape = new ito::Shape(ito::Shape::fromLine(pt1, pt2, index, name_));
         }
         break;
     case Shape::Rectangle:
@@ -175,7 +178,7 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
         pt2 = PyObject2PointF(param2, retval, "param2");
         if (!retval.containsError())
         {
-            self->shape = new ito::Shape(ito::Shape::fromRect(pt1.rx(), pt1.ry(), pt2.rx(), pt2.ry()));
+            self->shape = new ito::Shape(ito::Shape::fromRect(pt1.rx(), pt1.ry(), pt2.rx(), pt2.ry(), index, name_));
         }
         break;
     case Shape::Square:
@@ -188,7 +191,7 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
 
         if (!retval.containsError())
         {
-            self->shape = new ito::Shape(ito::Shape::fromSquare(pt1, dbl));
+            self->shape = new ito::Shape(ito::Shape::fromSquare(pt1, dbl, index, name_));
         }
         break;
     case Shape::Polygon:
@@ -214,6 +217,7 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
                 {
                     polygon.push_back(QPointF(ptr1[i], ptr2[i]));
                 }
+                self->shape = new ito::Shape(ito::Shape::fromPolygon(polygon, index, name_));
             }
             else
             {
@@ -236,7 +240,7 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
         pt2 = PyObject2PointF(param2, retval, "param2");
         if (!retval.containsError())
         {
-            self->shape = new ito::Shape(ito::Shape::fromEllipse(pt1.rx(), pt1.ry(), pt2.rx(), pt2.ry()));
+            self->shape = new ito::Shape(ito::Shape::fromEllipse(pt1.rx(), pt1.ry(), pt2.rx(), pt2.ry(), index, name_));
         }
         break;
     }
@@ -250,7 +254,7 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
 
         if (!retval.containsError())
         {
-            self->shape = new ito::Shape(ito::Shape::fromCircle(pt1, dbl));
+            self->shape = new ito::Shape(ito::Shape::fromCircle(pt1, dbl, index, name_));
         }
         break;
     
@@ -297,32 +301,32 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
             switch (self->shape->type())
             {
             case Shape::Point:
-                result = PyUnicode_FromFormat(QString("shape(Point, (%1, %2))").arg(base[0].rx()).arg(base[0].ry()).toLatin1().data());
+                result = PyUnicode_FromFormat(QString("shape(Point, (%1, %2), index: %3)").arg(base[0].rx()).arg(base[0].ry()).arg(self->shape->index()).toLatin1().data());
                 break;
             case Shape::Line:
-                result = PyUnicode_FromFormat(QString("shape(Line, (%1, %2) - (%3, %4))").arg(base[0].rx()).arg(base[0].ry()).arg(base[1].rx()).arg(base[1].ry()).toLatin1().data());
+                result = PyUnicode_FromFormat(QString("shape(Line, (%1, %2) - (%3, %4), index: %5)").arg(base[0].rx()).arg(base[0].ry()).arg(base[1].rx()).arg(base[1].ry()).arg(self->shape->index()).toLatin1().data());
                 break;
             case Shape::Rectangle:
-                result = PyUnicode_FromFormat(QString("shape(Rectangle, (%1, %2) - (%3, %4))").arg(base[0].rx()).arg(base[0].ry()).arg(base[1].rx()).arg(base[1].ry()).toLatin1().data());
+                result = PyUnicode_FromFormat(QString("shape(Rectangle, (%1, %2) - (%3, %4), index: %5)").arg(base[0].rx()).arg(base[0].ry()).arg(base[1].rx()).arg(base[1].ry()).arg(self->shape->index()).toLatin1().data());
                 break;
             case Shape::Square:
-                result = PyUnicode_FromFormat(QString("shape(Square, (%1, %2) - (%3, %4))").arg(base[0].rx()).arg(base[0].ry()).arg(base[1].rx()).arg(base[1].ry()).toLatin1().data());
+                result = PyUnicode_FromFormat(QString("shape(Square, (%1, %2) - (%3, %4), index: %5)").arg(base[0].rx()).arg(base[0].ry()).arg(base[1].rx()).arg(base[1].ry()).arg(self->shape->index()).toLatin1().data());
                 break;
             case Shape::Polygon:
-                result = PyUnicode_FromFormat("shape(Polygon, %i points)", base.size());
+                result = PyUnicode_FromFormat("shape(Polygon, %i points, index: %i)", base.size(), self->shape->index());
                 break;
             case Shape::Ellipse:
             {
                 QPointF p = base[0] + base[1];
                 QPointF s = base[1] - base[0];
-                result = PyUnicode_FromFormat(QString("shape(Ellipse, center (%1, %2), (a=%3, b=%4))").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(s.ry() / 2).toLatin1().data());
+                result = PyUnicode_FromFormat(QString("shape(Ellipse, center (%1, %2), (a=%3, b=%4), index: %5)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(s.ry() / 2).arg(self->shape->index()).toLatin1().data());
                 break;
             }
             case Shape::Circle:
             {
                 QPointF p = base[0] + base[1];
                 QPointF s = base[1] - base[0];
-                result = PyUnicode_FromFormat(QString("shape(Circle, center (%1, %2), r=%3)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).toLatin1().data());
+                result = PyUnicode_FromFormat(QString("shape(Circle, center (%1, %2), r: %3, index: %4)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(self->shape->index()).toLatin1().data());
                 break;
             }
             case Shape::Invalid:
@@ -340,25 +344,25 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
             switch (self->shape->type())
             {
             case Shape::Point:
-                result = PyUnicode_FromFormat("shape(Point, (%f, %f))", contour[0].rx(), contour[0].ry());
+                result = PyUnicode_FromFormat("shape(Point, (%f, %f), index: %i)", contour[0].rx(), contour[0].ry(), self->shape->index());
                 break;
             case Shape::Line:
-                result = PyUnicode_FromFormat("shape(Line, (%f, %f) - (%f, %f))", contour[0].rx(), contour[0].ry(), contour[1].rx(), contour[1].ry());
+                result = PyUnicode_FromFormat("shape(Line, (%f, %f) - (%f, %f), index: %i)", contour[0].rx(), contour[0].ry(), contour[1].rx(), contour[1].ry(), self->shape->index());
                 break;
             case Shape::Rectangle:
-                result = PyUnicode_FromFormat("shape(Rectangle)");
+                result = PyUnicode_FromFormat("shape(Rectangle, index: %i)");
                 break;
             case Shape::Square:
-                result = PyUnicode_FromFormat("shape(Square)");
+                result = PyUnicode_FromFormat("shape(Square, index: %i)");
                 break;
             case Shape::Polygon:
-                result = PyUnicode_FromFormat("shape(Polygon, %i points)", base.size());
+                result = PyUnicode_FromFormat("shape(Polygon, %i points, index: %i)", base.size(), self->shape->index());
                 break;
             case Shape::Ellipse:
-                result = PyUnicode_FromFormat("shape(Ellipse)");
+                result = PyUnicode_FromFormat("shape(Ellipse, index: %i)", self->shape->index());
                 break;
             case Shape::Circle:
-                result = PyUnicode_FromFormat("shape(Circle)");
+                result = PyUnicode_FromFormat("shape(Circle, index: %i)", self->shape->index());
                 break;
             case Shape::Invalid:
                 result = PyUnicode_FromFormat("shape(Invalid)");
@@ -475,6 +479,76 @@ int PythonShape::PyShape_setFlags(PyShape *self, PyObject *value, void * /*closu
     else
     {
         PyErr_SetString(PyExc_TypeError, "error interpreting the flags as uint.");
+        return -1;
+    }
+}
+
+//-----------------------------------------------------------------------------
+PyDoc_STRVAR(shape_getIndex_doc,  "Get/set index of shape. The default is -1, then a plot assigns an auto-incremented index to the shape. If >= 0 it is possible to modify an existing shape with the same index.");
+PyObject* PythonShape::PyShape_getIndex(PyShape *self, void * /*closure*/)
+{
+    if (!self || self->shape == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "shape is not available");
+        return NULL;
+    }
+
+    return PyLong_FromLong(self->shape->index());
+}
+
+int PythonShape::PyShape_setIndex(PyShape *self, PyObject *value, void * /*closure*/)
+{
+    if (!self || self->shape == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "shape is not available");
+        return -1;
+    }
+
+    bool ok;
+    int index = PythonQtConversion::PyObjGetInt(value, true, ok);
+    if (ok)
+    {
+        self->shape->setIndex(index);
+        return 0;
+    }
+    else
+    {
+        PyErr_SetString(PyExc_TypeError, "error interpreting the index as int.");
+        return -1;
+    }
+}
+
+//-----------------------------------------------------------------------------
+PyDoc_STRVAR(shape_getName_doc,  "Get/set name (label) of the shape.");
+PyObject* PythonShape::PyShape_getName(PyShape *self, void * /*closure*/)
+{
+    if (!self || self->shape == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "shape is not available");
+        return NULL;
+    }
+
+    return PythonQtConversion::QStringToPyObject(self->shape->name());
+}
+
+int PythonShape::PyShape_setName(PyShape *self, PyObject *value, void * /*closure*/)
+{
+    if (!self || self->shape == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "shape is not available");
+        return -1;
+    }
+
+    bool ok;
+    QString name = PythonQtConversion::PyObjGetString(value, false, ok);
+    if (ok)
+    {
+        self->shape->setName(name);
+        return 0;
+    }
+    else
+    {
+        PyErr_SetString(PyExc_TypeError, "error interpreting the name as str.");
         return -1;
     }
 }
@@ -717,7 +791,7 @@ PyObject* PythonShape::PyShape_region(PyShape *self)
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_contour_doc, "contour([applyTrafo = False, tol = -1.0]) -> return contour points as a 2xNumPoints float64 dataObject \n\
+PyDoc_STRVAR(shape_contour_doc, "contour([applyTrafo = True, tol = -1.0]) -> return contour points as a 2xNumPoints float64 dataObject \n\
 \n\
 If a transformation matrix is set, the base points can be transformed if 'applyTrafo' is True. For point, line and rectangle \n\
 based shapes, the contour is directly given. For ellipses and circles, a polygon is approximated to the form of the ellipse \n\
@@ -732,7 +806,7 @@ PyObject* PythonShape::PyShape_contour(PyShape *self, PyObject *args, PyObject *
     }
 
     double tol = -1.0;
-    unsigned char applyTrafo = false;
+    unsigned char applyTrafo = true;
 
     const char *kwlist[] = { "applyTrafo", "tol", NULL };
 
@@ -819,8 +893,10 @@ QPointF PythonShape::PyObject2PointF(PyObject *value, ito::RetVal &retval, const
 
 //-----------------------------------------------------------------------------
 PyGetSetDef PythonShape::PyShape_getseters[] = {
-    { "type", (getter)PyShape_getType,          (setter)NULL,                   shape_getType_doc, NULL },
+    {"type",  (getter)PyShape_getType,          (setter)NULL,                   shape_getType_doc, NULL },
     {"flags", (getter)PyShape_getFlags,         (setter)PyShape_setFlags,       shape_getFlags_doc, NULL},
+    {"index", (getter)PyShape_getIndex,         (setter)PyShape_setIndex,       shape_getIndex_doc, NULL},
+    {"name",  (getter)PyShape_getName,         (setter)PyShape_setName,         shape_getName_doc, NULL},
     {"transform", (getter)PyShape_getTransform, (setter)PyShape_setTransform,   shape_getTransform_doc, NULL}, //only affine transformation, 2d, allowed
     {"area", (getter)PyShape_getArea,           (setter)NULL,                   shape_getArea_doc, NULL},
     {NULL}  /* Sentinel */

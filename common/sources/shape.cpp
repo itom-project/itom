@@ -33,7 +33,7 @@ namespace ito {
 
 QDataStream &operator<<(QDataStream &out, const ito::Shape &obj)
 {
-    out << obj.type() << obj.flags() << obj.basePoints() << obj.transform();
+    out << obj.type() << obj.flags() << obj.basePoints() << obj.transform() << obj.index() << obj.name();
     return out;
 }
 
@@ -42,8 +42,10 @@ QDataStream &operator>>(QDataStream &in, ito::Shape &obj)
     int type, flags;
     QPolygonF polygons;
     QTransform transform;
-    in >> type >> flags >> polygons >> transform;
-    obj = Shape(type, flags, polygons, transform);
+    int index;
+    QString name;
+    in >> type >> flags >> polygons >> transform >> index >> name;
+    obj = Shape(type, flags, polygons, index, name, transform);
     return in;
 }
 
@@ -66,6 +68,8 @@ public:
     */
     QPolygonF m_polygon; 
     QTransform m_transform;
+    int m_index; /*!< index of shape, -1: no specific index*/
+    QString m_name; /*!< name (label) of shape */
 };
 
 //----------------------------------------------------------------------------------------------
@@ -81,6 +85,41 @@ Shape::Shape(int type, int flags, const QPolygonF &basePoints, const QTransform 
     d->m_type = (type & Shape::TypeMask) | (flags & Shape::FlagMask);
     d->m_polygon = basePoints;
     d->m_transform = transform;
+    d->m_index = -1; //no specific index
+    d->m_name = "";
+}
+
+//----------------------------------------------------------------------------------------------
+Shape::Shape(int type, int flags, const QPolygonF &basePoints, int index, const QTransform &transform /*=QTransform()*/) : d(NULL)
+{
+    d = new ShapePrivate();
+    d->m_type = (type & Shape::TypeMask) | (flags & Shape::FlagMask);
+    d->m_polygon = basePoints;
+    d->m_transform = transform;
+    d->m_index = index;
+    d->m_name = "";
+}
+
+//----------------------------------------------------------------------------------------------
+Shape::Shape(int type, int flags, const QPolygonF &basePoints, int index, const QString &name, const QTransform &transform /*=QTransform()*/) : d(NULL)
+{
+    d = new ShapePrivate();
+    d->m_type = (type & Shape::TypeMask) | (flags & Shape::FlagMask);
+    d->m_polygon = basePoints;
+    d->m_transform = transform;
+    d->m_index = index;
+    d->m_name = name;
+}
+
+//----------------------------------------------------------------------------------------------
+Shape::Shape(int type, int flags, const QPolygonF &basePoints, const QString &name, const QTransform &transform /*=QTransform()*/) : d(NULL)
+{
+    d = new ShapePrivate();
+    d->m_type = (type & Shape::TypeMask) | (flags & Shape::FlagMask);
+    d->m_polygon = basePoints;
+    d->m_transform = transform;
+    d->m_index = -1; //no specific index
+    d->m_name = name;
 }
 
 //----------------------------------------------------------------------------------------------
@@ -90,6 +129,8 @@ Shape::Shape(const Shape &other) : d(NULL)
     d->m_type = other.d->m_type;
     d->m_polygon = other.d->m_polygon;
     d->m_transform = other.d->m_transform;
+    d->m_index = other.d->m_index;
+    d->m_name = other.d->m_name;
 }
 
 //----------------------------------------------------------------------------------------------
@@ -114,6 +155,8 @@ Shape& Shape::operator =(const Shape &other)
     d->m_type = other.d->m_type;
     d->m_polygon = other.d->m_polygon;
     d->m_transform = other.d->m_transform;
+    d->m_index = other.d->m_index;
+    d->m_name = other.d->m_name;
 
     return *this;
 }
@@ -134,6 +177,30 @@ int Shape::flags() const
 void Shape::setFlags(const int &flags)
 {
     d->m_type = (d->m_type & Shape::TypeMask) | (flags & Shape::FlagMask);
+}
+
+//----------------------------------------------------------------------------------------------
+int Shape::index() const
+{
+    return d->m_index;
+}
+
+//----------------------------------------------------------------------------------------------
+void Shape::setIndex(const int &index)
+{
+    d->m_index = index;
+}
+
+//----------------------------------------------------------------------------------------------
+QString Shape::name() const
+{
+    return d->m_name;
+}
+
+//----------------------------------------------------------------------------------------------
+void Shape::setName(const QString &name)
+{
+    d->m_name = name;
 }
 
 //----------------------------------------------------------------------------------------------
@@ -189,7 +256,7 @@ QPolygonF circle2Polygon(const QPointF &center, qreal radius, qreal tol)
 }
 
 //----------------------------------------------------------------------------------------------
-QPolygonF Shape::contour(bool applyTrafo /*= false*/, qreal tol /*= -1.0*/) const
+QPolygonF Shape::contour(bool applyTrafo /*= true*/, qreal tol /*= -1.0*/) const
 {
     switch (type())
     {
@@ -474,114 +541,136 @@ double Shape::area() const
 }
 
 //----------------------------------------------------------------------------------------------
-/*static*/ Shape Shape::fromRect(const QRectF &rect, const QTransform &trafo /*= QTransform()*/)
+/*static*/ Shape Shape::fromRect(const QRectF &rect, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)
 {
     Shape s;
     s.d->m_type = Rectangle;
     s.d->m_polygon << rect.topLeft() << rect.bottomRight();
     s.d->m_transform = trafo;
+    s.d->m_index = index;
+    s.d->m_name = name;
     return s;
 }
 
 //----------------------------------------------------------------------------------------------
-/*static*/ Shape Shape::fromRect(qreal x1, qreal y1, qreal x2, qreal y2, const QTransform &trafo /*= QTransform()*/)
+/*static*/ Shape Shape::fromRect(qreal x1, qreal y1, qreal x2, qreal y2, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)
 {
     Shape s;
     s.d->m_type = Rectangle;
     s.d->m_polygon << QPointF(x1,y1) << QPointF(x2,y2);
     s.d->m_transform = trafo;
+    s.d->m_index = index;
+    s.d->m_name = name;
     return s;
 }
 
 //----------------------------------------------------------------------------------------------
-/*static*/ Shape Shape::fromEllipse(const QRectF &rect, const QTransform &trafo /*= QTransform()*/)
+/*static*/ Shape Shape::fromEllipse(const QRectF &rect, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)
 {
     Shape s;
     s.d->m_type = Ellipse;
     s.d->m_polygon << rect.topLeft() << rect.bottomRight();
     s.d->m_transform = trafo;
+    s.d->m_index = index;
+    s.d->m_name = name;
     return s;
 }
 
 //----------------------------------------------------------------------------------------------
-/*static*/ Shape Shape::fromEllipse(qreal x1, qreal y1, qreal x2, qreal y2, const QTransform &trafo /*= QTransform()*/)
+/*static*/ Shape Shape::fromEllipse(qreal x1, qreal y1, qreal x2, qreal y2, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)
 {
     Shape s;
     s.d->m_type = Ellipse;
     s.d->m_polygon << QPointF(x1,y1) << QPointF(x2,y2);
     s.d->m_transform = trafo;
+    s.d->m_index = index;
+    s.d->m_name = name;
     return s;
 }
 
 //----------------------------------------------------------------------------------------------
-/*static*/ Shape Shape::fromLine(const QPointF &p1, const QPointF &p2, const QTransform &trafo /*= QTransform()*/)
+/*static*/ Shape Shape::fromLine(const QPointF &p1, const QPointF &p2, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)
 {
     Shape s;
     s.d->m_type = Line;
     s.d->m_polygon << p1 << p2;
     s.d->m_transform = trafo;
+    s.d->m_index = index;
+    s.d->m_name = name;
     return s;
 }
 
 //----------------------------------------------------------------------------------------------
-/*static*/ Shape Shape::fromLine(qreal x1, qreal y1, qreal x2, qreal y2, const QTransform &trafo /*= QTransform()*/)
+/*static*/ Shape Shape::fromLine(qreal x1, qreal y1, qreal x2, qreal y2, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)
 {
     Shape s;
     s.d->m_type = Line;
     s.d->m_polygon << QPointF(x1,y1) << QPointF(x2,y2);
     s.d->m_transform = trafo;
+    s.d->m_index = index;
+    s.d->m_name = name;
     return s;
 }
 
 //----------------------------------------------------------------------------------------------
-/*static*/ Shape Shape::fromPoint(const QPointF &point, const QTransform &trafo /*= QTransform()*/)
+/*static*/ Shape Shape::fromPoint(const QPointF &point, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)
 {
     Shape s;
     s.d->m_type = Point;
     s.d->m_polygon << point;
     s.d->m_transform = trafo;
+    s.d->m_index = index;
+    s.d->m_name = name;
     return s;
 }
 
 //----------------------------------------------------------------------------------------------
-/*static*/ Shape Shape::fromPoint(qreal x, qreal y, const QTransform &trafo /*= QTransform()*/)
+/*static*/ Shape Shape::fromPoint(qreal x, qreal y, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)
 {
     Shape s;
     s.d->m_type = Line;
     s.d->m_polygon << QPointF(x,y);
     s.d->m_transform = trafo;
+    s.d->m_index = index;
+    s.d->m_name = name;
     return s;
 }
 
 //----------------------------------------------------------------------------------------------
-/*static*/ Shape Shape::fromPolygon(const QPolygonF &polygon, const QTransform &trafo /*= QTransform()*/)
+/*static*/ Shape Shape::fromPolygon(const QPolygonF &polygon, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)
 {
     Shape s;
     s.d->m_type = Line;
     s.d->m_polygon = polygon;
     s.d->m_transform = trafo;
+    s.d->m_index = index;
+    s.d->m_name = name;
     return s;
 }
 
 //----------------------------------------------------------------------------------------------
-/*static*/ Shape Shape::fromSquare(const QPointF &center, qreal sideLength, const QTransform &trafo /*= QTransform()*/)
+/*static*/ Shape Shape::fromSquare(const QPointF &center, qreal sideLength, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)
 {
     Shape s;
     QPointF dist(sideLength / 2, sideLength / 2);
     s.d->m_type = Square;
     s.d->m_polygon << (center - dist) << (center + dist);
     s.d->m_transform = trafo;
+    s.d->m_index = index;
+    s.d->m_name = name;
     return s;
 }
 
 //----------------------------------------------------------------------------------------------
-/*static*/ Shape Shape::fromCircle(const QPointF &center, qreal radius, const QTransform &trafo /*= QTransform()*/)
+/*static*/ Shape Shape::fromCircle(const QPointF &center, qreal radius, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)
 {
     Shape s;
     QPointF dist(radius, radius);
     s.d->m_type = Circle;
     s.d->m_polygon << (center - dist) << (center + dist);
     s.d->m_transform = trafo;
+    s.d->m_index = index;
+    s.d->m_name = name;
     return s;
 }
 

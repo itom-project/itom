@@ -75,6 +75,9 @@ namespace ito
 
         explicit Shape();
         explicit Shape(int type, int flags, const QPolygonF &basePoints, const QTransform &transform = QTransform());
+        explicit Shape(int type, int flags, const QPolygonF &basePoints, int index, const QTransform &transform = QTransform());
+        explicit Shape(int type, int flags, const QPolygonF &basePoints, int index, const QString &name, const QTransform &transform = QTransform());
+        explicit Shape(int type, int flags, const QPolygonF &basePoints, const QString &name, const QTransform &transform = QTransform());
         Shape(const Shape &other);
         virtual ~Shape();
 
@@ -85,6 +88,12 @@ namespace ito
         int flags() const;
         void setFlags(const int &flags);
 
+        int index() const;
+        void setIndex(const int &index);
+
+        QString name() const;
+        void setName(const QString &name);
+
         int type() const;
 
         QTransform transform() const;
@@ -92,22 +101,22 @@ namespace ito
         void setTransform(const QTransform &trafo);
 
         QPolygonF basePoints() const; /*!< base points are various points that help to define the geometry in a precise description. */
-        QPolygonF contour(bool applyTrafo = false, qreal tol = -1.0) const; /*!< returns the enclosing contour as polygon. If the shape is elliptic, an approximation is applied, where tol is the maximum distance between real contour and a line segment of the polygon (if -1.0, the tolerance is defined to be 1% of the smaller diameter of the ellise*/ 
+        QPolygonF contour(bool applyTrafo = true, qreal tol = -1.0) const; /*!< returns the enclosing contour as polygon. If the shape is elliptic, an approximation is applied, where tol is the maximum distance between real contour and a line segment of the polygon (if -1.0, the tolerance is defined to be 1% of the smaller diameter of the ellise*/ 
         QRegion   region() const;
         
         double area() const;
 
-        static Shape fromRect(const QRectF &rect, const QTransform &trafo = QTransform());
-        static Shape fromRect(qreal x1, qreal y1, qreal x2, qreal y2, const QTransform &trafo = QTransform());
-        static Shape fromSquare(const QPointF &center, qreal sideLength, const QTransform &trafo = QTransform());
-        static Shape fromEllipse(const QRectF &rect, const QTransform &trafo = QTransform());
-        static Shape fromEllipse(qreal x1, qreal y1, qreal x2, qreal y2, const QTransform &trafo = QTransform());
-        static Shape fromCircle(const QPointF &center, qreal radius, const QTransform &trafo = QTransform());
-        static Shape fromLine(const QPointF &p1, const QPointF &p2, const QTransform &trafo = QTransform());
-        static Shape fromLine(qreal x1, qreal y1, qreal x2, qreal y2, const QTransform &trafo = QTransform());
-        static Shape fromPoint(const QPointF &point, const QTransform &trafo = QTransform());
-        static Shape fromPoint(qreal x, qreal y, const QTransform &trafo = QTransform());
-        static Shape fromPolygon(const QPolygonF &polygon, const QTransform &trafo = QTransform());
+        static Shape fromRect(const QRectF &rect, int index = -1, QString name = "", const QTransform &trafo = QTransform());
+        static Shape fromRect(qreal x1, qreal y1, qreal x2, qreal y2, int index = -1, QString name = "", const QTransform &trafo = QTransform());
+        static Shape fromSquare(const QPointF &center, qreal sideLength, int index = -1, QString name = "", const QTransform &trafo = QTransform());
+        static Shape fromEllipse(const QRectF &rect, int index = -1, QString name = "", const QTransform &trafo = QTransform());
+        static Shape fromEllipse(qreal x1, qreal y1, qreal x2, qreal y2, int index = -1, QString name = "", const QTransform &trafo = QTransform());
+        static Shape fromCircle(const QPointF &center, qreal radius, int index = -1, QString name = "", const QTransform &trafo = QTransform());
+        static Shape fromLine(const QPointF &p1, const QPointF &p2, int index = -1, QString name = "", const QTransform &trafo = QTransform());
+        static Shape fromLine(qreal x1, qreal y1, qreal x2, qreal y2, int index = -1, QString name = "", const QTransform &trafo = QTransform());
+        static Shape fromPoint(const QPointF &point, int index = -1, QString name = "", const QTransform &trafo = QTransform());
+        static Shape fromPoint(qreal x, qreal y, int index = -1, QString name = "", const QTransform &trafo = QTransform());
+        static Shape fromPolygon(const QPolygonF &polygon, int index = -1, QString name = "", const QTransform &trafo = QTransform());
 
     private:
         ShapePrivate *d;
