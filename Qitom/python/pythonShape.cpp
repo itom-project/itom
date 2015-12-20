@@ -616,6 +616,7 @@ int PythonShape::PyShape_setPoint2(PyShape *self, PyObject *value, void * /*clos
                 QTransform inv = self->shape->transform().inverted();
                 self->shape->rbasePoints()[1] = inv.map(point);
             }
+            break;
         case Shape::Square:
         case Shape::Circle:
             retval += ito::RetVal(ito::retError, 0, "point2 cannot be changed for square and circle. Change center and width / height.");
