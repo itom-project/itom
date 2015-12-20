@@ -75,7 +75,6 @@ public:
     static PyObject* PyShape_rotateDeg(PyShape *self, PyObject *args);
     static PyObject* PyShape_rotateRad(PyShape *self, PyObject *args);
     static PyObject* PyShape_translate(PyShape *self, PyObject *args);
-    static PyObject* PyShape_basePoints(PyShape *self);
     static PyObject* PyShape_region(PyShape *self);
     static PyObject* PyShape_contour(PyShape *self, PyObject *args, PyObject *kwds);
 
@@ -104,6 +103,32 @@ public:
 
     static PyObject* PyShape_getArea(PyShape *self, void *closure);
 
+    static PyObject* PyShape_getBasePoints(PyShape *self, void *closure);
+
+    static PyObject* PyShape_getPoint1(PyShape *self, void *closure);
+    static int PyShape_setPoint1(PyShape *self, PyObject *value, void *closure);
+
+    static PyObject* PyShape_getPoint2(PyShape *self, void *closure);
+    static int PyShape_setPoint2(PyShape *self, PyObject *value, void *closure);
+
+    static PyObject* PyShape_getCenter(PyShape *self, void *closure);
+    static int PyShape_setCenter(PyShape *self, PyObject *value, void *closure);
+
+    static PyObject* PyShape_getAngleDeg(PyShape *self, void *closure);
+    static int PyShape_setAngleDeg(PyShape *self, PyObject *value, void *closure);
+
+    static PyObject* PyShape_getAngleRad(PyShape *self, void *closure);
+    static int PyShape_setAngleRad(PyShape *self, PyObject *value, void *closure);
+
+    static PyObject* PyShape_getRadius(PyShape *self, void *closure);
+    static int PyShape_setRadius(PyShape *self, PyObject *value, void *closure);
+
+    static PyObject* PyShape_getWidth(PyShape *self, void *closure);
+    static int PyShape_setWidth(PyShape *self, PyObject *value, void *closure);
+
+    static PyObject* PyShape_getHeight(PyShape *self, void *closure);
+    static int PyShape_setHeight(PyShape *self, PyObject *value, void *closure);
+
     //-------------------------------------------------------------------------------------------------
     // type structures
     //------------------------------------------------------------------------------------------------- 
@@ -117,6 +142,7 @@ public:
 
 private:
     static QPointF PyObject2PointF(PyObject *value, ito::RetVal &retval, const char* paramName);
+    static PyObject* PointF2PyObject(const QPointF &point);
 
 };
 

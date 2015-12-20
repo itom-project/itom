@@ -101,6 +101,7 @@ namespace ito
         void setTransform(const QTransform &trafo);
 
         QPolygonF basePoints() const; /*!< base points are various points that help to define the geometry in a precise description. */
+        QPolygonF &rbasePoints();
         QPolygonF contour(bool applyTrafo = true, qreal tol = -1.0) const; /*!< returns the enclosing contour as polygon. If the shape is elliptic, an approximation is applied, where tol is the maximum distance between real contour and a line segment of the polygon (if -1.0, the tolerance is defined to be 1% of the smaller diameter of the ellise*/ 
         QRegion   region() const;
         

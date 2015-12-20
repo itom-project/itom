@@ -234,6 +234,12 @@ QPolygonF Shape::basePoints() const
 }
 
 //----------------------------------------------------------------------------------------------
+QPolygonF &Shape::rbasePoints()
+{
+    return d->m_polygon;
+}
+
+//----------------------------------------------------------------------------------------------
 QPolygonF circle2Polygon(const QPointF &center, qreal radius, qreal tol)
 {
     if (tol < 0)
