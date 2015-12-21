@@ -3335,7 +3335,7 @@ RetVal UiOrganizer::figureClose(unsigned int figHandle, ItomSharedSemaphore *sem
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<ito::DataObject> coords, int maxNrPoints, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<QVector<ito::Shape> > shapes, int maxNrPoints, ItomSharedSemaphore *semaphore)
 {
     QObject *obj = getWeakObjectReference(objectID);
     QWidget *widget = qobject_cast<QWidget*>(obj);
@@ -3343,13 +3343,13 @@ RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<ito::
     if (widget)
     {
         const QMetaObject* metaObject = widget->metaObject();
-        if (metaObject->indexOfSlot("userInteractionStart(int,bool,int)") == -1 ||metaObject->indexOfSignal("userInteractionDone(int,bool,QPolygonF)") == -1)
+        if (metaObject->indexOfSlot("userInteractionStart(int,bool,int)") == -1 ||metaObject->indexOfSignal("userInteractionDone(int,bool,QVector<ito::Shape>)") == -1)
         {
             retval += RetVal(retError, 0, tr("The desired widget has no signals/slots defined that enable the pick points interaction").toLatin1().data());
         }
         else
         {
-            UserInteractionWatcher *watcher = new UserInteractionWatcher(widget, ito::PrimitiveContainer::tMultiPointPick, maxNrPoints, coords, semaphore, this);
+            UserInteractionWatcher *watcher = new UserInteractionWatcher(widget, ito::Shape::MultiPointPick, maxNrPoints, shapes, semaphore, this);
             connect(watcher, SIGNAL(finished()), this, SLOT(watcherThreadFinished()));
             QThread *watcherThread = new QThread();
             watcher->moveToThread(watcherThread);
@@ -3372,7 +3372,7 @@ RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<ito::
     return retval;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::figureDrawGeometricElements(unsigned int objectID, QSharedPointer<ito::DataObject> coords, int elementType, int maxNrPoints, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::figureDrawGeometricShapes(unsigned int objectID, QSharedPointer<QVector<ito::Shape> > shapes, int shapeType, int maxNrPoints, ItomSharedSemaphore *semaphore)
 {
     QObject *obj = getWeakObjectReference(objectID);
     QWidget *widget = qobject_cast<QWidget*>(obj);
@@ -3380,13 +3380,13 @@ RetVal UiOrganizer::figureDrawGeometricElements(unsigned int objectID, QSharedPo
     if (widget)
     {
         const QMetaObject* metaObject = widget->metaObject();
-        if (metaObject->indexOfSlot("userInteractionStart(int,bool,int)") == -1 ||metaObject->indexOfSignal("userInteractionDone(int,bool,QPolygonF)") == -1)
+        if (metaObject->indexOfSlot("userInteractionStart(int,bool,int)") == -1 ||metaObject->indexOfSignal("userInteractionDone(int,bool,QVector<ito::Shape>)") == -1)
         {
             retval += RetVal(retError, 0, tr("The desired widget has no signals/slots defined that enable the pick points interaction").toLatin1().data());
         }
         else
         {
-            UserInteractionWatcher *watcher = new UserInteractionWatcher(widget, elementType, maxNrPoints, coords, semaphore, this);
+            UserInteractionWatcher *watcher = new UserInteractionWatcher(widget, (ito::Shape::ShapeType)shapeType, maxNrPoints, shapes, semaphore, this);
             connect(watcher, SIGNAL(finished()), this, SLOT(watcherThreadFinished()));
             QThread *watcherThread = new QThread();
             watcher->moveToThread(watcherThread);
@@ -3424,11 +3424,6 @@ RetVal UiOrganizer::figurePickPointsInterrupt(unsigned int objectID)
         else
         {
             QMetaObject::invokeMethod(obj, "userInteractionStart", Q_ARG(int,1), Q_ARG(bool,false), Q_ARG(int,0));
-            /*int type = 1;
-            bool aborted = true;
-            QPolygonF points;
-            void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&type)), const_cast<void*>(reinterpret_cast<const void*>(&aborted)), const_cast<void*>(reinterpret_cast<const void*>(&points)) };
-            QMetaObject::activate(obj, obj->metaObject(), metaObject->indexOfSignal("userInteractionDone(int,bool,QPolygonF)") - metaObject->methodOffset(), _a);*/
         }
     }
    else
@@ -3448,7 +3443,7 @@ RetVal UiOrganizer::isFigureItem(unsigned int objectID,  QSharedPointer<unsigned
     if (widget)
     {
         const QMetaObject* metaObject = widget->metaObject();
-        if (metaObject->indexOfSlot("userInteractionStart(int,bool,int)") == -1 || metaObject->indexOfSignal("userInteractionDone(int,bool,QPolygonF)") == -1)
+        if (metaObject->indexOfSlot("userInteractionStart(int,bool,int)") == -1 || metaObject->indexOfSignal("userInteractionDone(int,bool,QVector<ito::Shape>)") == -1)
         {
             *isFigureItem = 0;
         }

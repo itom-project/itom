@@ -31,23 +31,23 @@
 
 namespace ito {
 
-QDataStream &operator<<(QDataStream &out, const ito::Shape &obj)
-{
-    out << obj.type() << obj.flags() << obj.basePoints() << obj.transform() << obj.index() << obj.name();
-    return out;
-}
+    QDataStream &operator<<(QDataStream &out, const ito::Shape &obj)
+    {
+        out << obj.type() << obj.flags() << obj.basePoints() << obj.transform() << obj.index() << obj.name();
+        return out;
+    }
 
-QDataStream &operator>>(QDataStream &in, ito::Shape &obj)
-{
-    int type, flags;
-    QPolygonF polygons;
-    QTransform transform;
-    int index;
-    QString name;
-    in >> type >> flags >> polygons >> transform >> index >> name;
-    obj = Shape(type, flags, polygons, index, name, transform);
-    return in;
-}
+    QDataStream &operator>>(QDataStream &in, ito::Shape &obj)
+    {
+        int type, flags;
+        QPolygonF polygons;
+        QTransform transform;
+        int index;
+        QString name;
+        in >> type >> flags >> polygons >> transform >> index >> name;
+        obj = Shape(type, flags, polygons, index, name, transform);
+        return in;
+    }
 
 class ShapePrivate
 {
@@ -60,6 +60,7 @@ public:
     int m_type;
 
     /*!< 
+    * multipoint: like polygons, multiple points
     * point: one point
     * line: start pt, end pt
     * rectangle, square: top left, bottom right points
@@ -240,6 +241,32 @@ QPolygonF &Shape::rbasePoints()
 }
 
 //----------------------------------------------------------------------------------------------
+void Shape::point1MoveTo(const QPointF &newPoint1)
+{
+    switch (type())
+    {
+    case MultiPointPick:
+    case Point:
+    case Line:
+    case Rectangle:
+    case Square:
+    case Circle:
+    case Ellipse:
+    case Polygon:
+    {
+        QPointF dist = d->m_transform.inverted().map(newPoint1) - d->m_polygon[0];
+        for (int i = 0; i < d->m_polygon.size(); ++i)
+        {
+            d->m_polygon[i] += dist;
+        }
+    }
+    break;
+    default:
+        break;
+    }
+}
+
+//----------------------------------------------------------------------------------------------
 QPolygonF circle2Polygon(const QPointF &center, qreal radius, qreal tol)
 {
     if (tol < 0)
@@ -261,12 +288,15 @@ QPolygonF circle2Polygon(const QPointF &center, qreal radius, qreal tol)
     return poly;
 }
 
+
+
 //----------------------------------------------------------------------------------------------
-QPolygonF Shape::contour(bool applyTrafo /*= true*/, qreal tol /*= -1.0*/) const
+QPolygonF Shape::contour(bool applyTrafo /*= false*/, qreal tol /*= -1.0*/) const
 {
     switch (type())
     {
     case Point:
+    case MultiPointPick:
     case Line:
     {
         if (applyTrafo)
@@ -469,6 +499,7 @@ QRegion Shape::region() const
 
     switch (type())
     {
+    case MultiPointPick:
     case Shape::Point:
     case Shape::Line:
         break;
@@ -510,9 +541,10 @@ double Shape::area() const
 {
     switch (type())
     {
+    case MultiPointPick:
     case Point:
     case Line:
-        return 0;
+        return 0.0;
     case Rectangle:
     case Square:
         {
@@ -547,7 +579,7 @@ double Shape::area() const
 }
 
 //----------------------------------------------------------------------------------------------
-/*static*/ Shape Shape::fromRect(const QRectF &rect, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)
+/*static*/ Shape Shape::fromRectangle(const QRectF &rect, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)
 {
     Shape s;
     s.d->m_type = Rectangle;
@@ -559,11 +591,11 @@ double Shape::area() const
 }
 
 //----------------------------------------------------------------------------------------------
-/*static*/ Shape Shape::fromRect(qreal x1, qreal y1, qreal x2, qreal y2, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)
+/*static*/ Shape Shape::fromRectangle(qreal x1, qreal y1, qreal x2, qreal y2, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)
 {
     Shape s;
     s.d->m_type = Rectangle;
-    s.d->m_polygon << QPointF(x1,y1) << QPointF(x2,y2);
+    s.d->m_polygon << QPointF(x1, y1) << QPointF(x2, y2);
     s.d->m_transform = trafo;
     s.d->m_index = index;
     s.d->m_name = name;
@@ -587,7 +619,7 @@ double Shape::area() const
 {
     Shape s;
     s.d->m_type = Ellipse;
-    s.d->m_polygon << QPointF(x1,y1) << QPointF(x2,y2);
+    s.d->m_polygon << QPointF(x1, y1) << QPointF(x2, y2);
     s.d->m_transform = trafo;
     s.d->m_index = index;
     s.d->m_name = name;
@@ -611,7 +643,7 @@ double Shape::area() const
 {
     Shape s;
     s.d->m_type = Line;
-    s.d->m_polygon << QPointF(x1,y1) << QPointF(x2,y2);
+    s.d->m_polygon << QPointF(x1, y1) << QPointF(x2, y2);
     s.d->m_transform = trafo;
     s.d->m_index = index;
     s.d->m_name = name;
@@ -635,7 +667,7 @@ double Shape::area() const
 {
     Shape s;
     s.d->m_type = Line;
-    s.d->m_polygon << QPointF(x,y);
+    s.d->m_polygon << QPointF(x, y);
     s.d->m_transform = trafo;
     s.d->m_index = index;
     s.d->m_name = name;
@@ -647,6 +679,18 @@ double Shape::area() const
 {
     Shape s;
     s.d->m_type = Line;
+    s.d->m_polygon = polygon;
+    s.d->m_transform = trafo;
+    s.d->m_index = index;
+    s.d->m_name = name;
+    return s;
+}
+
+//----------------------------------------------------------------------------------------------
+/*static*/ Shape Shape::fromMultipoint(const QPolygonF &polygon, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)
+{
+    Shape s;
+    s.d->m_type = MultiPointPick;
     s.d->m_polygon = polygon;
     s.d->m_transform = trafo;
     s.d->m_index = index;
@@ -679,7 +723,6 @@ double Shape::area() const
     s.d->m_name = name;
     return s;
 }
-
 
 
 

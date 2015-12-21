@@ -178,7 +178,7 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
         pt2 = PyObject2PointF(param2, retval, "param2");
         if (!retval.containsError())
         {
-            self->shape = new ito::Shape(ito::Shape::fromRect(pt1.rx(), pt1.ry(), pt2.rx(), pt2.ry(), index, name_));
+            self->shape = new ito::Shape(ito::Shape::fromRectangle(pt1.rx(), pt1.ry(), pt2.rx(), pt2.ry(), index, name_));
         }
         break;
     case Shape::Square:

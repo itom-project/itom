@@ -239,6 +239,9 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<ito::ItomPaletteBase>("ito::ItomPaletteBase");
     qRegisterMetaType<QSharedPointer<ito::ItomPaletteBase> >("QSharedPointer<ito::ItomPaletteBase>");
     qRegisterMetaType<ito::ItomPlotHandle>("ito::ItomPlotHandle");
+    qRegisterMetaType<ito::Shape>("ito::Shape");
+    qRegisterMetaType<QVector<ito::Shape> >("QVector<ito::Shape>");
+    qRegisterMetaType<QSharedPointer<QVector<ito::Shape> > >("QSharedPointer<QVector<ito::Shape>>");
 
     m_autoReload.modAutoReload = NULL;
     m_autoReload.classAutoReload = NULL;

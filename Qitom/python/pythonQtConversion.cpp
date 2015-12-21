@@ -1112,6 +1112,10 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         {
             type = QMetaType::type("ito::ItomPlotHandle");
         }
+        else if (Py_TYPE(val) == &ito::PythonShape::PyShapeType)
+        {
+            type = QMetaType::type("ito::Shape");
+        }
     }
 
     // special type request:
@@ -1541,6 +1545,18 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 v = QVariant();
             }
         }
+        else if (type == QMetaType::type("ito::Shape"))
+        {
+            ito::PythonShape::PyShape *shape = (ito::PythonShape::PyShape*)val;
+            if (shape)
+            {
+                v = qVariantFromValue<ito::Shape>(*(shape->shape));
+            }
+            else
+            {
+                v = QVariant();
+            }
+        }
         else
         {
             v = QVariant();
@@ -1742,6 +1758,31 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             else
             {
                 retval += ito::RetVal(ito::retError, 0, "transformation error to AutoInterval: 2 values required.");
+            }
+        }
+        else if (destType == QVariant::UserType && userType == QMetaType::type("QVector<ito::Shape>"))
+        {
+            const QVariantList list = item.toList();
+            QVector<ito::Shape> shapes;
+
+            foreach(const QVariant &listItem, list)
+            {
+                if (listItem.type() == QVariant::UserType && listItem.userType() == QMetaType::type("ito::Shape"))
+                {
+                    shapes.append(qvariant_cast<ito::Shape>(listItem));
+                    ok = true;
+                }
+                else
+                {
+                    retval += ito::RetVal(ito::retError, 0, "transformation error to vector of shapes: at least one item could not be interpreted as shape.");
+                    ok = false;
+                    break;
+                }
+            }
+
+            if (!retval.containsError())
+            {
+                result = QVariant::fromValue<QVector<ito::Shape> >(shapes);
             }
         }
     } //end item.type() == QVariant::List
@@ -2962,6 +3003,16 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             PyTuple_SetItem(temp, 1, PyFloat_FromDouble(temp2->y()));
             PyTuple_SetItem(temp, 2, PyFloat_FromDouble(temp2->z()));
             PyTuple_SetItem(temp, 2, PyFloat_FromDouble(temp2->w()));
+            return temp;
+        }
+        else if (strcmp(name, "QVector<ito::Shape>") == 0)
+        {
+            QVector<ito::Shape> *temp2 = (QVector<ito::Shape>*)data;
+            PyObject *temp = PyTuple_New(temp2->size());
+            for (int i = 0; i < temp2->size(); ++i)
+            {
+                PyTuple_SetItem(temp, i, ito::PythonShape::createPyShape(temp2->at(i))); //steals reference
+            }
             return temp;
         }
     }
