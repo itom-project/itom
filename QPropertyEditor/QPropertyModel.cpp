@@ -29,6 +29,7 @@
 
 #include "Property.h"
 #include "EnumProperty.h"
+#include "FlagsProperty.h"
 
 #include <qapplication.h>
 #include <qbytearray.h>
@@ -339,7 +340,14 @@ void QPropertyModel::addItem(QObject *propertyObject)
                 {
                     if (property.isEnumType())
                     {
-                        p = new EnumProperty(property.name(), propertyObject, propertyItem);
+                        if (property.isFlagType())
+                        {
+                            p = new FlagsProperty(property.name(), propertyObject, propertyItem);
+                        }
+                        else
+                        {
+                            p = new EnumProperty(property.name(), propertyObject, propertyItem);
+                        }
                     }
                     else
                     {
