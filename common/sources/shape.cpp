@@ -147,10 +147,12 @@ Shape::~Shape()
 //----------------------------------------------------------------------------------------------
 Shape& Shape::operator =(const Shape &other)
 {
-    if (d)
+    if (&other == this)
     {
-        delete d;
+        return *this;
     }
+
+    ShapePrivate *d_old = d;
 
     d = new ShapePrivate();
     d->m_type = other.d->m_type;
@@ -158,6 +160,11 @@ Shape& Shape::operator =(const Shape &other)
     d->m_transform = other.d->m_transform;
     d->m_index = other.d->m_index;
     d->m_name = other.d->m_name;
+
+    if (d_old)
+    {
+        delete d_old;
+    }
 
     return *this;
 }
@@ -424,7 +431,7 @@ int ramerDouglasPeuckerIter(RamerDouglasPeuckerData &data, int current_index)
         ellipse_point.rx() = (ellipse_point.x() * x_new) >= 0 ? x_new : -x_new;
     }
 
-    qreal length = (ellipse_point - edge_center).manhattanLength();
+    qreal length = QLineF(ellipse_point, edge_center).length();
     if (length > data.tol)
     {
         QLineF seg1(seg.p1(), ellipse_point);
