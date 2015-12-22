@@ -248,6 +248,12 @@ QPolygonF &Shape::rbasePoints()
 }
 
 //----------------------------------------------------------------------------------------------
+const QPolygonF &Shape::rbasePoints() const
+{
+    return d->m_polygon;
+}
+
+//----------------------------------------------------------------------------------------------
 void Shape::point1MoveTo(const QPointF &newPoint1)
 {
     switch (type())
