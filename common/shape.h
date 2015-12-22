@@ -66,9 +66,9 @@ namespace ito
             Ellipse = 105,          /**! Element is tEllipse or order to pick ellipses*/
             Circle = 106,          /**! Element is tCircle or order to pick circles*/
             Polygon = 110,          /**! Element is tPolygon or order to pick polygon*/
-            MoveLock = 0x00010000,   /**! Element is readOnly */
-            RotateLock = 0x00020000,   /**! Element can not be moved */
-            ResizeLock = 0x00040000,   /**! Element can not be moved */
+            MoveLock = 0x00010000,   /**! Element can not be moved */
+            RotateLock = 0x00020000,   /**! Element can not be rotated */
+            ResizeLock = 0x00040000,   /**! Element can not be resized */
             TypeMask = 0x0000FFFF,   /**! Mask for the type space */
             FlagMask = 0xFFFF0000    /**! Mask for the flag space */
         };
