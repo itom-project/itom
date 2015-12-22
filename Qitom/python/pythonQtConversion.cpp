@@ -1854,15 +1854,42 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 
     if (ok) //integer
     {
-        const char *key = enumerator.valueToKey(val);
-        if (key)
+        if (enumerator.isFlag())
         {
-            result = val;
+            int result_ = 0;
+            int e;
+
+            for (int idx = 0; idx < enumerator.keyCount(); ++idx)
+            {
+                e = enumerator.value(idx);
+                if (val & e)
+                {
+                    result_ |= e;
+                }
+            }
+
+            if (result_ == val)
+            {
+                result = result_;
+            }
+            else
+            {
+                retval += ito::RetVal::format(ito::retError, 0, "The value %i contains a bitmask that is not fully covered by an or-combination of the enumeration %s::%s (flags)", val, enumerator.scope(), enumerator.name());
+                return result;
+            }
         }
         else
         {
-            retval += ito::RetVal::format(ito::retError, 0, "The value %i does not exist in the enumeration %s::%s", val,enumerator.scope(), enumerator.name());
-            return result;
+            const char *key = enumerator.valueToKey(val);
+            if (key)
+            {
+                result = val;
+            }
+            else
+            {
+                retval += ito::RetVal::format(ito::retError, 0, "The value %i does not exist in the enumeration %s::%s", val, enumerator.scope(), enumerator.name());
+                return result;
+            }
         }
     }
     else //
@@ -1870,15 +1897,38 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         QString str = item.toString();
         if (str.isEmpty() == false) //string
         {
-            val = enumerator.keyToValue(str.toLatin1().data());
-            if (val >= 0)
+            if (enumerator.isFlag())
             {
-                result = val;
+                int result_ = 0;
+                QStringList str_ = str.split(";");
+                foreach(const QString &substr, str_)
+                {
+                    val = enumerator.keyToValue(substr.toLatin1().data());
+                    if (val >= 0)
+                    {
+                        result_ |= val;
+                    }
+                    else
+                    {
+                        retval += ito::RetVal::format(ito::retError, 0, "The key %s does not exist in the enumeration %s::%s (flags)", str.toLatin1().data(), enumerator.scope(), enumerator.name());
+                        return result;
+                    }
+                }
+
+                result = result_;
             }
             else
             {
-                retval += ito::RetVal::format(ito::retError, 0, "The key %s does not exist in the enumeration %s::%s",str.toLatin1().data(), enumerator.scope(), enumerator.name());
-                return result;
+                val = enumerator.keyToValue(str.toLatin1().data());
+                if (val >= 0)
+                {
+                    result = val;
+                }
+                else
+                {
+                    retval += ito::RetVal::format(ito::retError, 0, "The key %s does not exist in the enumeration %s::%s", str.toLatin1().data(), enumerator.scope(), enumerator.name());
+                    return result;
+                }
             }
         }
         else

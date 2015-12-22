@@ -1684,7 +1684,7 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, const QVariantMap &pr
                     //e.g. QVariantList can sometimes be casted to QPointF...
                     RetVal tempRet;
                     QVariant item;
-
+                    
                     if (prop.isEnumType())
                     {
                         item = PythonQtConversion::QVariantToEnumCast(i.value(), prop.enumerator(), tempRet);
