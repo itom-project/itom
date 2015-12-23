@@ -730,9 +730,7 @@ PyObject* PythonShape::PyShape_getAngleDeg(PyShape *self, void * /*closure*/)
         return NULL;
     }
 
-    QTransform &transform = self->shape->rtransform();
-
-    return PyFloat_FromDouble(std::atan2(transform.m21(), transform.m11()) * 180 / M_PI);
+    return PyFloat_FromDouble(self->shape->rotationAngleDeg());
 }
 
 int PythonShape::PyShape_setAngleDeg(PyShape *self, PyObject *value, void * /*closure*/)
@@ -772,9 +770,7 @@ PyObject* PythonShape::PyShape_getAngleRad(PyShape *self, void * /*closure*/)
         return NULL;
     }
 
-    QTransform &transform = self->shape->rtransform();
-
-    return PyFloat_FromDouble(std::atan2(transform.m21(), transform.m11()));
+    return PyFloat_FromDouble(self->shape->rotationAngleRad());
 }
 
 int PythonShape::PyShape_setAngleRad(PyShape *self, PyObject *value, void * /*closure*/)

@@ -236,6 +236,18 @@ void Shape::setTransform(const QTransform &trafo)
 }
 
 //----------------------------------------------------------------------------------------------
+double Shape::rotationAngleDeg() const
+{
+    return (std::atan2(d->m_transform.m21(), d->m_transform.m11()) * 180 / M_PI);
+}
+
+//----------------------------------------------------------------------------------------------
+double Shape::rotationAngleRad() const
+{
+    return std::atan2(d->m_transform.m21(), d->m_transform.m11());
+}
+
+//----------------------------------------------------------------------------------------------
 QPolygonF Shape::basePoints() const
 {
     return d->m_polygon;

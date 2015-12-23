@@ -100,6 +100,9 @@ namespace ito
         QTransform &rtransform() const;
         void setTransform(const QTransform &trafo);
 
+        double rotationAngleDeg() const;
+        double rotationAngleRad() const;
+
         QPolygonF basePoints() const; /*!< base points are various points that help to define the geometry in a precise description. */
         QPolygonF &rbasePoints();
         const QPolygonF &rbasePoints() const;
