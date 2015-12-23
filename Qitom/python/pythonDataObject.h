@@ -132,6 +132,8 @@ class PythonDataObject
         static PyObject* PyDataObject_div(PyDataObject *self, PyObject *args);
 
         static PyObject* PyDataObject_reshape(PyDataObject *self, PyObject *args);
+
+        static PyObject* PyDataObject_createMask(PyDataObject *self, PyObject *args, PyObject* kwds);
     
         // Get / Set metadata / objecttags
         static PyObject* PyDataObj_SetAxisOffset(PyDataObject *self, PyObject *args);

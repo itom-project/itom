@@ -31,6 +31,8 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "typeDefs.h"
 #include "commonGlobal.h"
 
+#include "../DataObject/dataobj.h"
+
 #include <qpolygon.h>
 #include <qtransform.h>
 #include <qregion.h>
@@ -108,6 +110,7 @@ namespace ito
         const QPolygonF &rbasePoints() const;
         QPolygonF contour(bool applyTrafo = true, qreal tol = -1.0) const; /*!< returns the enclosing contour as polygon. If the shape is elliptic, an approximation is applied, where tol is the maximum distance between real contour and a line segment of the polygon (if -1.0, the tolerance is defined to be 1% of the smaller diameter of the ellise*/
         QRegion   region() const;
+        ito::DataObject mask(const ito::DataObject &dataObject, bool inverse = false) const;
 
         void point1MoveTo(const QPointF &newPoint1);
 
@@ -126,10 +129,13 @@ namespace ito
         static Shape fromPolygon(const QPolygonF &polygon, int index = -1, QString name = "", const QTransform &trafo = QTransform());
         static Shape fromMultipoint(const QPolygonF &polygon, int index = -1, QString name = "", const QTransform &trafo = QTransform());
 
+        static ito::DataObject maskFromMultipleShapes(const ito::DataObject &dataObject, const QVector<ito::Shape> &shapes, bool inverse = false);
+
     private:
         ShapePrivate *d;
 
         QPolygonF ramerDouglasPeucker(qreal tol) const;
+        void maskHelper(const ito::DataObject &dataObject, ito::DataObject &mask, bool inverse = false) const;
 
     };
 

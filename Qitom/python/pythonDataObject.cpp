@@ -30,6 +30,7 @@
 #include "pythonCommon.h"
 #include "pythonNpDataObject.h"
 #include "pythonRgba.h"
+#include "pythonShape.h"
 
 #include "pythonQtConversion.h"
 #include "dataObjectFuncs.h"
@@ -7118,6 +7119,96 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, int continuou
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectCreateMask_doc, "createMask(shapes [, inverse = False]) -> return a uint8 data object of the same size where all pixels belonging to any shape are masked. \n\
+\n\
+The destination data object has the same size than this data object and the real type given by destinationType.The pixel - wise \
+conversion is done using the formula : gray = 0.299 * red + 0.587 * green + 0.114 * blue.\
+\n\
+Parameters \n\
+---------- - \n\
+shapes : {shape or seq. of shapes} \n\
+    The union of all shapes (polygons, rectangles, squares, circles and ellipes are considered, only) are marked within the mask \n\
+inverse : {bool} \n\
+    If False (default) the shape areas are marked with 255 and the outer areas with 0, if True the behaviour is vice-versa. \n\
+\n\
+Returns \n\
+------ - \n\
+dataObj : {dataObject} \n\
+    uint8 data object as mask with the same size, scales and offsets than this object. The mask is applied to all planes.");
+PyObject* PythonDataObject::PyDataObject_createMask(PyDataObject *self, PyObject *args, PyObject* kwds)
+{
+    if (self->dataObject == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        return NULL;
+    }
+
+    PyObject *shapes = NULL;
+    int inverse = 0;
+
+    const char *kwlist[] = { "shapes", "inverse", NULL };
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|i", const_cast<char**>(kwlist), &shapes, &inverse))
+    {
+        return NULL;
+    }
+
+    if (PyShape_Check(shapes))
+    {
+        PythonShape::PyShape* shape = (PythonShape::PyShape*)shapes;
+        if (shape && shape->shape)
+        {
+            ito::DataObject mask = shape->shape->mask(*self->dataObject, inverse > 0);
+            PyDataObject *ret = createEmptyPyDataObject();
+            ret->dataObject = new ito::DataObject(mask);
+            return (PyObject*)ret;
+        }
+
+        PyErr_SetString(PyExc_TypeError, "at least one shape item is invalid.");
+        return NULL;
+    }
+    else if (PySequence_Check(shapes))
+    {
+        QVector<ito::Shape> shape_vector;
+        PyObject *obj;
+        PythonShape::PyShape* shape;
+
+        for (Py_ssize_t i = 0; i < PySequence_Length(shapes); ++i)
+        {
+            obj = PySequence_Fast_GET_ITEM(shapes, i); //borrowed
+            if (PyShape_Check(obj))
+            {
+                shape = (PythonShape::PyShape*)obj;
+                if (shape && shape->shape)
+                {
+                    shape_vector << *shape->shape;
+                }
+                else
+                {
+                    PyErr_SetString(PyExc_TypeError, "at least one shape item is invalid.");
+                    return NULL;
+                }
+            }
+            else
+            {
+                PyErr_SetString(PyExc_TypeError, "at least one item of parameter 'shape' is no type itom.shape.");
+                return NULL;
+            }
+        }
+
+        ito::DataObject mask = ito::Shape::maskFromMultipleShapes(*self->dataObject, shape_vector, inverse > 0);
+        PyDataObject *ret = createEmptyPyDataObject();
+        ret->dataObject = new ito::DataObject(mask);
+        return (PyObject*)ret;
+    }
+    else
+    {
+        PyErr_SetString(PyExc_TypeError, "shape required.");
+        return NULL;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void PythonDataObject::PyDataObj_Capsule_Destructor(PyObject* capsule)
 {
     PyArrayInterface *inter = (PyArrayInterface*)PyCapsule_GetPointer(capsule, NULL);
@@ -7513,6 +7604,7 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"__reduce__", (PyCFunction)PythonDataObject::PyDataObj_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
         {"__setstate__", (PyCFunction)PythonDataObject::PyDataObj_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
         {"__array__", (PyCFunction)PythonDataObject::PyDataObj_Array_, METH_VARARGS, dataObject_Array__doc},
+        { "createMask", (PyCFunction)PythonDataObject::PyDataObject_createMask, METH_KEYWORDS | METH_VARARGS, pyDataObjectCreateMask_doc },
 
         {"abs", (PyCFunction)PythonDataObject::PyDataObject_abs, METH_NOARGS, pyDataObjectAbs_doc}, 
         {"arg", (PyCFunction)PythonDataObject::PyDataObject_arg, METH_NOARGS, pyDataObjectArg_doc},
