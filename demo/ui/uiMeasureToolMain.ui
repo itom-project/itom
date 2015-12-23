@@ -18,7 +18,7 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="Itom2dQwtPlot" name="dataPlot">
-       <property name="keepAspectRatio" stdset="0">
+       <property name="keepAspectRatio">
         <bool>true</bool>
        </property>
        <property name="enablePlotting" stdset="0">
@@ -153,17 +153,17 @@
  <connections>
   <connection>
    <sender>dataPlot</sender>
-   <signal>plotItemChanged(int,int,QVector&lt;float&gt;)</signal>
+   <signal>geometricShapeChanged(int,ito::Shape)</signal>
    <receiver>measurementTable</receiver>
-   <slot>plotItemChanged(int,int,QVector&lt;float&gt;)</slot>
+   <slot>geometricShapeChanged(int,ito::Shape)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>232</x>
-     <y>169</y>
+     <x>344</x>
+     <y>213</y>
     </hint>
     <hint type="destinationlabel">
-     <x>276</x>
-     <y>463</y>
+     <x>336</x>
+     <y>424</y>
     </hint>
    </hints>
   </connection>

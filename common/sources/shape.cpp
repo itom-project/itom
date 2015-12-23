@@ -574,7 +574,7 @@ double Shape::area() const
     case Square:
         {
             QPointF size = d->m_polygon[1] - d->m_polygon[0];
-            return (size.rx() * size.ry());
+            return (std::abs(size.rx()) * std::abs(size.ry()));
         }
     case Polygon:
         {
@@ -596,7 +596,7 @@ double Shape::area() const
     case Circle:
         {
             QPointF size = d->m_polygon[1] - d->m_polygon[0];
-            return (M_PI * size.rx() * size.ry() / 4);
+            return (M_PI * std::abs(size.rx()) * std::abs(size.ry()) / 4);
         }
     default:
         return 0.0;

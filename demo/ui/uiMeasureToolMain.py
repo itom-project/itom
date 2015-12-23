@@ -1,6 +1,7 @@
 from itom import dataObject
 from itom import ui
 from itomUi import ItomUi
+from itom import shape
 import inspect
 import os.path
 import numpy as np
@@ -16,7 +17,7 @@ class measureToolMain(ItomUi):
     elementCount = 0
     
     enumGeomNames = ["noType", "point", "line", "rectangle", "square", "ellipse", "circle", "polygon"]
-    enumGeomIdx = [0, 101, 102, 103, 104, 105, 106, 110]
+    enumGeomIdx = [shape.Invalid, shape.Point, shape.Line, shape.Rectangle, shape.Square, shape.Ellipse, shape.Circle, shape.Polygon]
     enumRelationName = None
     enumRelationIdx = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     
@@ -62,8 +63,8 @@ class measureToolMain(ItomUi):
             self.on_pushButtonCancel_clicked()
         else:
             self.gui.measurementTable.call("clearAll")
-            self.gui.dataPlot.call("clearGeometricElements")
-            self.elementCount = self.gui.dataPlot["geometricElementsCount"]
+            self.gui.dataPlot.call("clearGeometricShapes")
+            self.elementCount = self.gui.dataPlot["geometricShapesCount"]
             
         if(newObject is None):
             self.gui.dataPlot["source"] = dataObject.zeros([1,1])
@@ -73,15 +74,15 @@ class measureToolMain(ItomUi):
     def clearPlots(self):
         ret = self.gui.dataPlot["source"] = dataObject.zeros([1,1])
         self.gui.measurementTable.call("clearAll")
-        self.gui.dataPlot.call("clearGeometricElements")
-        self.elementCount = self.gui.dataPlot["geometricElementsCount"]
+        self.gui.dataPlot.call("clearGeometricShapes")
+        self.elementCount = self.gui.dataPlot["geometricShapesCount"]
     
     @ItomUi.autoslot("")
     def on_pushButtonDistanceP2P_clicked(self):
         if(self.measureType== 0):
             self.measureType = 2
-            self.plotElementTyp = self.enumGeomIdx[self.enumGeomNames.index('point')]
-            self.elementCount = self.gui.dataPlot["geometricElementsCount"]
+            self.plotElementTyp = shape.Point
+            self.elementCount = self.gui.dataPlot["geometricShapesCount"]
             self.gui.dataPlot.call("userInteractionStart", self.plotElementTyp, True, 2)
         
     
@@ -89,24 +90,24 @@ class measureToolMain(ItomUi):
     def on_pushButtonDistanceP2L_clicked(self):
         if(self.measureType== 0):
             self.measureType = 3
-            self.plotElementTyp = self.enumGeomIdx[self.enumGeomNames.index('point')]
-            self.elementCount = self.gui.dataPlot["geometricElementsCount"]
+            self.plotElementTyp = shape.Point
+            self.elementCount = self.gui.dataPlot["geometricShapesCount"]
             self.gui.dataPlot.call("userInteractionStart", self.plotElementTyp, True, 1)
         
     @ItomUi.autoslot("")
     def on_pushButtonRadius_clicked(self):
         if(self.measureType== 0):
             self.measureType = 1
-            self.plotElementTyp = self.enumGeomIdx[self.enumGeomNames.index('ellipse')]
-            self.elementCount = self.gui.dataPlot["geometricElementsCount"]
+            self.plotElementTyp = shape.Ellipse
+            self.elementCount = self.gui.dataPlot["geometricShapesCount"]
             self.gui.dataPlot.call("userInteractionStart", self.plotElementTyp, True, 1)
     
     @ItomUi.autoslot("")
     def on_pushButtonMean_clicked(self):
         if(self.measureType== 0):
             self.measureType = 4
-            self.plotElementTyp = self.enumGeomIdx[self.enumGeomNames.index('rectangle')]
-            self.elementCount = self.gui.dataPlot["geometricElementsCount"]
+            self.plotElementTyp = shape.Rectangle
+            self.elementCount = self.gui.dataPlot["geometricShapesCount"]
             self.gui.dataPlot.call("userInteractionStart", self.plotElementTyp, True, 1)
     
     @ItomUi.autoslot("")
@@ -124,8 +125,8 @@ class measureToolMain(ItomUi):
             self.plotElementTyp = 0
         
         self.gui.measurementTable.call("clearAll")
-        self.gui.dataPlot.call("clearGeometricElements")
-        self.elementCount = self.gui.dataPlot["geometricElementsCount"]
+        self.gui.dataPlot.call("clearGeometricShapes")
+        self.elementCount = self.gui.dataPlot["geometricShapesCount"]
         
 #    @ItomUi.autoslot("int")
 #    def on_dataPlot_plotItemChanged(self, index):
@@ -133,76 +134,65 @@ class measureToolMain(ItomUi):
 #        self.gui.measurementTable["source"] = geometricElements
     
     @ItomUi.autoslot("int, bool")
-    def on_dataPlot_plotItemsFinished(self, type, aborted):
-        geometricElements = self.gui.dataPlot["geometricElements"]
-        self.gui.measurementTable["source"] = geometricElements
+    def on_dataPlot_geometricShapeFinished(self, type, aborted):
+        geometricShapes = self.gui.dataPlot["geometricShapes"]
+        self.gui.measurementTable["geometricShapes"] = geometricShapes
         
-        newElementCount = self.gui.dataPlot["geometricElementsCount"]
-        
-        first = 0.0
-        second = -1.0
+        newElementCount = self.gui.dataPlot["geometricShapesCount"]
         
         if(self.elementCount + 1 > newElementCount):
             self.measureType = 0
             return
         
         if(self.measureType == 1):    #radius
-            first = geometricElements[newElementCount-1, 0]
-            self.gui.measurementTable.call("addRelation" , dataObject(np.array([first, self.enumRelationIdx[1], -1.0, 0.0])))
+            first = geometricShapes[newElementCount-1]
+            self.gui.measurementTable.call("addRelation" , dataObject(np.array([first.index, self.enumRelationIdx[1], -1, 0.0])))
             
         elif(self.measureType == 2):    #distance point to point P2P
             if(self.elementCount + 2 <= newElementCount):
-                first = geometricElements[newElementCount-2, 0]
-                second = geometricElements[newElementCount-1, 0]
+                first = geometricShapes[newElementCount-2]
+                second = geometricShapes[newElementCount-1]
             else:
-                first = geometricElements[newElementCount-1, 0]
+                first = geometricShapes[newElementCount-1]
             
-            self.gui.measurementTable.call("addRelation" , dataObject(np.array([first, self.enumRelationIdx[2], second, 0.0])))
+            self.gui.measurementTable.call("addRelation" , dataObject(np.array([first.index, self.enumRelationIdx[2], second.index, 0.0])))
             
         elif(self.measureType == 3):    #distance point to point P2L the first time, still missing a line
             self.measureType = 33
-            self.gui.measurementTable.call("addRelation" , dataObject(np.array([first, self.enumRelationIdx[2], second, 0.0])))
+            first = geometricShapes[newElementCount-1]
+            self.gui.measurementTable.call("addRelation" , dataObject(np.array([first.index, self.enumRelationIdx[2], -1, 0.0])))
             self.plotElementTyp = self.enumGeomIdx[self.enumGeomNames.index('line')]
             self.gui.dataPlot.call("userInteractionStart", self.plotElementTyp, True, 1)
             return
         
         elif(self.measureType == 33):    #distance point to point P2L the second time, now having a line
             if(self.elementCount + 2 <= newElementCount):
-                first = geometricElements[newElementCount-2, 0]
-                second = geometricElements[newElementCount-1, 0]
+                first = geometricShapes[newElementCount-2]
+                second = geometricShapes[newElementCount-1]
             
                 try:
                     relToEdit = self.gui.measurementTable["lastAddedRelation"]
-                    self.gui.measurementTable.call("modifyRelation" , relToEdit, dataObject(np.array([first, self.enumRelationIdx[2], second, 0.0])))
+                    self.gui.measurementTable.call("modifyRelation" , relToEdit, dataObject(np.array([first.index, self.enumRelationIdx[2], second.index, 0.0])))
                 except:
                     print("setting second geometric element failed")
             else:
                 print("setting second geometric element failed")
         
         elif(self.measureType == 4):    #mean-Value
-            first = geometricElements[newElementCount-1, 0]
-            
+            first = geometricShapes[newElementCount-1]
             try:
-                
                 tempObj = self.gui.dataPlot["source"]
                 
-                tempScales = tempObj.axisScales
-                tempOffsets = tempObj.axisOffsets 
-                val0 = int(geometricElements[newElementCount-1, 2] * (1 / tempScales[1]) - tempOffsets[1])
-                val1 = int(geometricElements[newElementCount-1, 5] * (1 / tempScales[1]) - tempOffsets[1])
-                x0 = min(val0, val1)
-                x1 = max(val0, val1) + 1
-                
+                rect = geometricShapes[newElementCount-1]
+                x0 = round(tempObj.physToPix(min(rect.point1[0], rect.point2[0]), 1))
+                x1 = round(tempObj.physToPix(max(rect.point1[0], rect.point2[0]), 1)) + 1
                 x0 = max(x0, 0)
                 x1 = max(x1, 0)
                 x0 = min(x0, tempObj.shape[tempObj.dims-1] - 1)
                 x1 = min(x1, tempObj.shape[tempObj.dims-1])
                 
-                val0 = int(geometricElements[newElementCount-1, 3] * (1 / tempScales[0]) - tempOffsets[0])
-                val1 = int(geometricElements[newElementCount-1, 6] * (1 / tempScales[0]) - tempOffsets[0])
-                y0 = min(val0, val1)
-                y1 = max(val0, val1) + 1
-                
+                y0 = round(tempObj.physToPix(min(rect.point1[1], rect.point2[1]), 1))
+                y1 = round(tempObj.physToPix(max(rect.point1[1], rect.point2[1]), 1)) + 1
                 y0 = max(y0, 0)
                 y1 = max(y1, 0)
                 y0 = min(y0, tempObj.shape[tempObj.dims-2] - 1)
@@ -213,8 +203,8 @@ class measureToolMain(ItomUi):
             except:
                 meanValue = np.NaN
                 
-            self.gui.measurementTable.call("addRelation" , dataObject(np.array([first, self.enumRelationIdx[4], -1.0, 0.0])))
-            self.gui.measurementTable.call("addRelation" , dataObject(np.array([first, self.enumRelationIdx[5] + 0x8000, -1.0, meanValue])))
+            self.gui.measurementTable.call("addRelation" , dataObject(np.array([first.index, self.enumRelationIdx[4], -1, 0.0])))
+            self.gui.measurementTable.call("addRelation" , dataObject(np.array([first.index, self.enumRelationIdx[5] + 0x8000, -1, meanValue])))
             
             
         self.measureType = 0
