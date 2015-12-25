@@ -20,8 +20,12 @@ area += rect.region()
 area += square.region()
 area += ellipse.region()
 area += circle.region()
-
 mask = area.createMask(region(-100, -100, 300, 300, region.RECTANGLE))
+
+#create the mask for a data object based on the shapes
+image = dataObject.zeros([400,400],'uint8')
+image.axisOffsets=(100,100)
+mask = image.createMask([point, line, rect, square, ellipse, circle])
 
 #plot all contours inside of plot
 area = region()
@@ -41,4 +45,15 @@ h.call("plotMarkers", contour_square, "cd")
 h.call("plotMarkers", contour_ellipse, "y>")
 h.call("plotMarkers", contour_circle, "kx")
 
+#plot shapes into plot
+#move them first by 50px each
+for s in [point, line, rect, square, ellipse, circle]:
+    s.center = [s.center[0]+50, s.center[1]]
 
+#don't allow the rectangle to be moved
+rect.flags = shape.MoveLock
+
+#don't allow the line to be resized
+line.flags = shape.ResizeLock
+
+h["geometricShapes"] = [point, line, rect, square, ellipse, circle]
