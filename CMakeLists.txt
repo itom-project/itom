@@ -1,5 +1,5 @@
 project(itom)     
-#trigger update on 2014.07.02@14:16
+#trigger update on 2015.12.26@14:09
 cmake_minimum_required(VERSION 2.8)
      
 if(APPLE)

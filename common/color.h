@@ -167,9 +167,9 @@ namespace ito
                 }
                 unsigned int t = static_cast<unsigned int>(b * grayFactor);
                 b = static_cast<uint8>(t <= 255 ? t : 255);
-                t = g * grayFactor;
+				t = static_cast<unsigned int>(g * grayFactor);
                 g = static_cast<uint8>(t <= 255 ? t : 255);
-                t = r * grayFactor;
+				t = static_cast<unsigned int>(r * grayFactor);
                 r = static_cast<uint8>(t <= 255 ? t : 255);
                 return *this;
             }

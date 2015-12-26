@@ -114,7 +114,12 @@ namespace ito
 
         void point1MoveTo(const QPointF &newPoint1);
 
+		QPointF centerPoint() const;
+
         double area() const;
+        double circumference() const;
+		double distance(const Shape &otherShape) const;
+		double centerDistance(const Shape &otherShape) const;
 
         static Shape fromRectangle(const QRectF &rect, int index = -1, QString name = "", const QTransform &trafo = QTransform());
         static Shape fromRectangle(qreal x1, qreal y1, qreal x2, qreal y2, int index = -1, QString name = "", const QTransform &trafo = QTransform());
@@ -137,6 +142,9 @@ namespace ito
         QPolygonF ramerDouglasPeucker(qreal tol) const;
         void maskHelper(const ito::DataObject &dataObject, ito::DataObject &mask, bool inverse = false) const;
 
+		static double distanceLine2Point2D(const Shape &line, const QPointF &point);
+		static double distanceLine2Line2D(const Shape &line1, const Shape &line2);
+		static double distancePoint2Point2D(const QPointF &point1, const QPointF &point2);
     };
 
 

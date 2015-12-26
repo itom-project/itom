@@ -560,7 +560,36 @@ QRegion Shape::region() const
 
     return region;
 }
+QPointF Shape::centerPoint() const
+{
+	switch (type())
+	{
+	
+	case Point:
+		return d->m_polygon[0];
+	case Polygon:
+	case MultiPointPick:
+	{
+		QPointF sum(0.0, 0.0);
+		for each (QPointF curPoint in d->m_polygon)
+		{
+			sum += curPoint;
+		}
+		return sum / d->m_polygon.length();
+	}
+	case Line:
+	case Rectangle:
+	case Square:
+	case Ellipse:
+	case Circle:
+	{
+		return (d->m_polygon[1] + d->m_polygon[0]) / 2.0;
+	}
+	default:
+		return QPointF(0.0, 0.0);
+	}
 
+}
 //----------------------------------------------------------------------------------------------
 double Shape::area() const
 {
@@ -601,6 +630,103 @@ double Shape::area() const
     default:
         return 0.0;
     }
+}
+//----------------------------------------------------------------------------------------------
+double Shape::circumference() const
+{
+    switch (type())
+    {
+    case MultiPointPick:
+    case Point:
+    case Line:
+        return 0.0;
+    case Rectangle:
+    case Square:
+        {
+            QPointF size = d->m_polygon[1] - d->m_polygon[0];
+            return (2 * std::abs(size.rx()) + 2 * std::abs(size.ry()));
+        }
+    case Polygon:
+        {
+            //from http://www.mathopenref.com/coordpolygonarea.html
+            qreal val = 0.0;
+            for (int i = 0; i < d->m_polygon.size() - 1; ++i)
+            {
+				val += std::sqrt(     std::pow(d->m_polygon[i + 1].rx() - d->m_polygon[i].rx(), 2)
+							    	+ std::pow(d->m_polygon[i + 1].ry() - d->m_polygon[i].ry(), 2));
+            }
+
+            if (d->m_polygon.size() > 0)
+            {
+				val += std::sqrt(  std::pow(d->m_polygon[0].rx() - d->m_polygon.last().rx(), 2)
+								 + std::pow(d->m_polygon[0].ry() - d->m_polygon.last().ry(), 2));
+			}
+
+            return val;
+        }
+	// Nährung mittels Näherungsformel nach Ramanujan https://de.wikipedia.org/wiki/Ellipse
+    case Ellipse:
+		{
+			QPointF size = d->m_polygon[1] - d->m_polygon[0];
+			double a = std::abs(size.rx());
+			double b = std::abs(size.ry());
+			if (ito::isZeroValue(a, std::numeric_limits<double>::epsilon()))
+			{
+				return 0.0;
+			}
+			if (ito::isZeroValue(b, std::numeric_limits<double>::epsilon()))
+			{
+				return 0.0;
+			}
+			double lamdaSq = std::pow((a - b) / (a + b), 2);
+
+			return M_PI * (a + b) * (  1.0 + (3.0 * lamdaSq) / (10.0 + std::sqrt(4.0 - 3.0 * lamdaSq ) ) );
+		}
+	case Circle:
+        {
+            QPointF size = d->m_polygon[1] - d->m_polygon[0];
+            return ( M_PI * std::abs(size.rx()));
+        }
+    default:
+        return 0.0;
+    }
+}
+//----------------------------------------------------------------------------------------------
+double Shape::distance(const Shape &otherShape) const
+{
+	if (type() == Line && otherShape.type() == Line)
+	{
+		return distanceLine2Line2D(*this, otherShape);
+	}
+
+	if (type() == Line)
+	{
+
+	}
+
+	if (otherShape.type() == Line)
+	{
+
+	}
+	return 0.0;
+}
+
+double Shape::centerDistance(const Shape &otherShape) const
+{
+	return distancePoint2Point2D(this->centerPoint(), otherShape.centerPoint());
+}
+double Shape::distanceLine2Point2D(const Shape &line, const QPointF &point)
+{
+	return 0.0;
+}
+double Shape::distanceLine2Line2D(const Shape &line1, const Shape &line2)
+{
+	return 0.0;
+}
+double Shape::distancePoint2Point2D(const QPointF &point1, const QPointF &point2)
+{
+	QPointF val = point1 - point2;
+	return std::sqrt(std::pow(val.rx(), 2) + std::pow(val.ry(), 2));
 }
 
 //----------------------------------------------------------------------------------------------
