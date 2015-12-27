@@ -701,34 +701,124 @@ double Shape::distance(const Shape &otherShape) const
 
 	if (type() == Line)
 	{
-
+		return distanceLine2Point2D(*this, otherShape.centerPoint());
 	}
 
 	if (otherShape.type() == Line)
 	{
-
+		return distanceLine2Point2D(otherShape, this->centerPoint());
 	}
 	return 0.0;
 }
-
+//----------------------------------------------------------------------------------------------
 double Shape::centerDistance(const Shape &otherShape) const
 {
 	return distancePoint2Point2D(this->centerPoint(), otherShape.centerPoint());
 }
+//----------------------------------------------------------------------------------------------
 double Shape::distanceLine2Point2D(const Shape &line, const QPointF &point)
 {
-	return 0.0;
+	double result = 0.0;
+
+	QPointF dirVec = line.d->m_polygon[1] - line.d->m_polygon[0];
+	QPointF normVec(dirVec.y() * -1, dirVec.x());
+	normVec /= std::sqrt(std::pow(normVec.x(), 2) + pow(normVec.y(), 2));
+	QPointF baseVec = line.d->m_polygon[0];
+
+	// m * nx + px = n * dx + bx
+	// m * ny + py = n * dy + by
+
+	// m * nx + px = n * dx + bx
+	// n = (m * ny + py - by) / dy
+
+	// m * nx + px = (m * ny + py - by) * dx / dy  + bx
+	// m * nx + px = (m * ny * dx / dy) + (py - by) * dx / dy  + bx
+	// m * nx - (m * ny * dx / dy) =  (py - by) * dx / dy  + bx - px
+	// m * (nx - ny * dx / dy) =  (py - by) * dx / dy  + bx - px
+	// m =  ((py - by) * dx / dy  + bx - px) / (nx - ny * dx / dy)
+
+	if (ito::isZeroValue<double>(normVec.x() - normVec.y() * dirVec.x() / dirVec.y(), std::numeric_limits<double>::epsilon()))
+	{
+		return std::numeric_limits<double>::quiet_NaN();
+	}
+	result = ((point.y() - baseVec.y()) * dirVec.x() / dirVec.y() + baseVec.x() - point.x()) / (normVec.x() - normVec.y() * dirVec.x() / dirVec.y());
+	return result;
 }
+//----------------------------------------------------------------------------------------------
 double Shape::distanceLine2Line2D(const Shape &line1, const Shape &line2)
 {
-	return 0.0;
+	double result = 0.0;
+	QPointF dirVec1 = line1.d->m_polygon[1] - line1.d->m_polygon[0];
+	dirVec1 /= std::sqrt(std::pow(dirVec1.x(), 2) + pow(dirVec1.y(), 2)); 	
+	QPointF baseVec1 = line1.d->m_polygon[0];
+
+	QPointF dirVec2 = line2.d->m_polygon[1] - line2.d->m_polygon[0];
+	double length2 = std::sqrt(std::pow(dirVec2.x(), 2) + pow(dirVec2.y(), 2));
+	dirVec2 /= length2;
+	QPointF baseVec2 = line2.d->m_polygon[0];
+
+	if ((ito::isZeroValue<double>(dirVec1.x() - dirVec2.x(), std::numeric_limits<double>::epsilon()) &&
+		ito::isZeroValue<double>(dirVec1.y() - dirVec2.y(), std::numeric_limits<double>::epsilon()))
+		||
+		(ito::isZeroValue<double>(dirVec1.x() + dirVec2.x(), std::numeric_limits<double>::epsilon()) &&
+		ito::isZeroValue<double>(dirVec1.y() + dirVec2.y(), std::numeric_limits<double>::epsilon())))
+	{
+		// line must be parallel
+		result = distanceLine2Point2D(line1, baseVec2);
+	}
+	else // lines are not parallel
+	{
+
+		// m * d2x + b2x = n * d1x + b1x
+		// m * d2y + b2y = n * d1y + b1y
+
+		// m * d2x + b2x = n * d1x + b1x
+		// n = (m * d2y + b2y - b1y) / d1y
+
+		// m * d2x + b2x = (m * d2y + b2y - b1y) * d1x / d1y  + b1x
+		// m * d2x + b2x = (m * d2y * d1x / d1y) + (b2y - b1y) * d1x / d1y  + b1x
+		// m * d2x - (m * d2y * d1x / d1y) =  (b2y - b1y) * d1x / d1y  + b1x - b2x
+		// m * (d2x - d2y * d1x / d1y) =  (b2y - b1y) * d1x / d1y  + b1x - b2x
+		// m =  ((b2y - b1y) * d1x / d1y  + b1x - b2x) / (d2x - d2y * d1x / d1y)
+
+		// lines have an intersection
+		result = ((baseVec2.y() - baseVec1.y()) * dirVec1.x() / dirVec1.y() + baseVec1.x() - baseVec2.x()) / (dirVec2.x() - dirVec2.y() * dirVec1.x() / dirVec1.y());
+		// lines does not have an intersection
+
+		if (result > length2 || result < 0.0)
+		{
+			result = distanceLine2Point2D(line1, baseVec2);
+			double tmpRes = distanceLine2Point2D(line1, line2.d->m_polygon[1]);
+			if (tmpRes < result)
+			{
+				result = tmpRes;
+			}
+
+			tmpRes = distanceLine2Point2D(line2, line1.d->m_polygon[1]);
+			if (tmpRes < result)
+			{
+				result = tmpRes;
+			}
+			tmpRes = distanceLine2Point2D(line2, line1.d->m_polygon[0]);
+			if (tmpRes < result)
+			{
+				result = tmpRes;
+			}
+		}
+		else // both lines intersect
+		{
+			result = 0.0;
+		}
+	}
+	
+	return result;
 }
+//----------------------------------------------------------------------------------------------
 double Shape::distancePoint2Point2D(const QPointF &point1, const QPointF &point2)
 {
 	QPointF val = point1 - point2;
 	return std::sqrt(std::pow(val.rx(), 2) + std::pow(val.ry(), 2));
 }
-
 //----------------------------------------------------------------------------------------------
 ito::DataObject Shape::mask(const ito::DataObject &dataObject, bool inverse /*= false*/) const
 {
