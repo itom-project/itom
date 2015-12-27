@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -139,13 +139,13 @@ QString DialogUserManagementEdit::clearName(const QString &name)
 {
     QString name_(name);
     name_.replace( QRegExp( "[" + QRegExp::escape( "\\/:*?\"<>|" ) + "]" ), QString( "_" ) );
-    name_.replace("ä", "ae");
-    name_.replace("ö", "oe");
-    name_.replace("ü", "ue");
-    name_.replace("Ä", "Ae");
-    name_.replace("Ö", "Oe");
-    name_.replace("Ü", "Ue");
-    name_.replace("ß", "ss");
+    name_.replace(QChar(0x00, 0xE4), "ae"); //german umlaut 'a with diaresis' replaced by ae
+    name_.replace(QChar(0x00, 0xF6), "oe"); //german umlaut 'o with diaresis' replaced by oe
+    name_.replace(QChar(0x00, 0xFC), "ue"); //german umlaut 'u with diaresis' replaced by ue
+    name_.replace(QChar(0x00, 0xC4), "Ae"); //german umlaut 'A with diaresis' replaced by Ae
+    name_.replace(QChar(0x00, 0xD6), "Oe"); //german umlaut 'O with diaresis' replaced by Oe
+    name_.replace(QChar(0x00, 0xDC), "Ue"); //german umlaut 'U with diaresis' replaced by Ue
+    name_.replace(QChar(0x00, 0xDF), "ss"); //german sharp s replaced by ss
 
     return name_;
 }

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -70,7 +70,6 @@ void AbstractPyScintillaWidget::init()
     m_textIndicatorNr = indicatorDefine(QsciScintilla::RoundBoxIndicator);
     setIndicatorForegroundColor(Qt::green, m_textIndicatorNr);
     setIndicatorDrawUnder(true, m_textIndicatorNr);
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -271,7 +270,7 @@ void AbstractPyScintillaWidget::checkUserSelectionState()
         sel = false;
     }
 
-// signale in scriptEditorOrganizer annehmen und gebündelt an Replace senden!
+// signale in scriptEditorOrganizer annehmen und gebuendelt an Replace senden!
     switch(m_userSelectionState)
     {
     case selNo:
@@ -308,7 +307,7 @@ void AbstractPyScintillaWidget::selectionChanged()
     if (m_textIndicatorActive)
     {
         m_textIndicatorActive = false;
-        clearIndicatorRange(0,0,nrOfLines,lengthOfLastLine,m_textIndicatorNr);
+        clearIndicatorRange(0, 0, nrOfLines, lengthOfLastLine, m_textIndicatorNr);
     }
 
     QString selection;
@@ -318,6 +317,7 @@ void AbstractPyScintillaWidget::selectionChanged()
     int j;
     int index;
     int selLength;
+
     if (hasSelectedText())
     {
         selection = selectedText();
@@ -334,7 +334,8 @@ void AbstractPyScintillaWidget::selectionChanged()
             {
                 lineText = text(i);
                 lineLength = lineText.length() - selLength;
-                j=0;
+                j = 0;
+
                 while(j <= lineLength)
                 {
                     index = lineText.indexOf(selection, j, Qt::CaseInsensitive);
@@ -371,7 +372,6 @@ QString AbstractPyScintillaWidget::getWordAtPosition(const int &line, const int 
     }
 
     long pos = positionFromLineIndex(line, index);
-
     long start = SendScintilla(QsciScintilla::SCI_WORDSTARTPOSITION, pos, true);
     long end = SendScintilla(QsciScintilla::SCI_WORDENDPOSITION, pos, true);
 
@@ -383,6 +383,7 @@ QString AbstractPyScintillaWidget::getWordAtPosition(const int &line, const int 
         delete[] bytes;
         return word;
     }
+
     return "";
 }
 
@@ -417,9 +418,9 @@ int AbstractPyScintillaWidget::getSpaceTabCount(const QString &s)
 bool AbstractPyScintillaWidget::haveToIndention(QString s)
 {
     s = s.trimmed();
-    s.replace("'''", "§");
-    s.replace("\"\"\"", "§");
-    int count1 = s.count("§");
+    s.replace("'''", "\a");
+    s.replace("\"\"\"", "\a");
+    int count1 = s.count("\a");
     int count2 = s.count("#");
 
     if (count1 + count2 > 0)
@@ -433,16 +434,16 @@ bool AbstractPyScintillaWidget::haveToIndention(QString s)
             bool comment = (count1 % 2 == 1);
             if (comment)
             {
-                s = s.mid(1, s.lastIndexOf("§") - 1);
+                s = s.mid(1, s.lastIndexOf("\a") - 1);
                 s = s.trimmed();
                 --count1;
             }
 
             while (count1 > 0)
             {
-                int pos1 = s.indexOf("§");
+                int pos1 = s.indexOf("\a");
                 int pos2 = pos1 + 1;
-                while (s.mid(pos2, 1) != "§")
+                while (s.mid(pos2, 1) != "\a")
                 {
                     ++pos2;
                 }
@@ -459,16 +460,16 @@ bool AbstractPyScintillaWidget::haveToIndention(QString s)
             bool comment = ((count1 & 2) == 1);
             if (comment)
             {
-                s = s.mid(1, s.lastIndexOf("§"));
+                s = s.mid(1, s.lastIndexOf("\a"));
                 s = s.trimmed();
                 --count1;
             }
 
             while (count1 > 0)
             {
-                int pos1 = s.indexOf("§");
+                int pos1 = s.indexOf("\a");
                 int pos2 = pos1 + 1;
-                while (s.mid(pos2, 1) != "§")
+                while (s.mid(pos2, 1) != "\a")
                 {
                     ++pos2;
                 }

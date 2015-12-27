@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -199,7 +199,7 @@ RetVal FigureWidget::plot(QSharedPointer<ito::PCLPointCloud> pc, int areaRow, in
             }
             else
             {
-                retval += RetVal::format(retError, 0, tr("designer widget of class '%s' cannot plot objects of type dataObject").toLatin1().data(), plotClassName.toLatin1().data());
+                retval += RetVal::format(retError, 0, tr("designer widget of class '%s' cannot plot objects of type pointCloud").toLatin1().data(), plotClassName.toLatin1().data());
                 DELETE_AND_SET_NULL(destWidget);
             }
 
@@ -242,13 +242,13 @@ RetVal FigureWidget::plot(QSharedPointer<ito::PCLPolygonMesh> pm, int areaRow, i
             if (destWidget->inherits("ito::AbstractDObjPclFigure"))
             {
                 ito::AbstractDObjPclFigure *dObjPclFigure = NULL;
-                dObjPclFigure = (ito::AbstractDObjPclFigure*)(destWidget);
+                dObjPclFigure = qobject_cast<ito::AbstractDObjPclFigure*>(destWidget);
                 dObjPclFigure->setPolygonMesh(pm);
                 *canvasWidget = destWidget;
             }
             else
             {
-                retval += RetVal::format(retError, 0, tr("designer widget of class '%s' cannot plot objects of type dataObject").toLatin1().data(), plotClassName.toLatin1().data());
+                retval += RetVal::format(retError, 0, tr("designer widget of class '%s' cannot plot objects of type polygonMesh").toLatin1().data(), plotClassName.toLatin1().data());
                 DELETE_AND_SET_NULL(destWidget);
             }
 
@@ -281,21 +281,36 @@ RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, 
 
     *canvasWidget = NULL;
 
-    if (dwo)
-    {
-        int dims = dataObj->getDims();
-        int sizex = dataObj->getSize(dims - 1);
-        int sizey = dataObj->getSize(dims - 2);
-        if ((dims == 1) || ((dims > 1) && ((sizex == 1) || (sizey == 1))))
-        {
-            plotClassName = dwo->getFigureClass("DObjStaticLine", className, retval);
-            
-        }
-        else
-        {
-            plotClassName = dwo->getFigureClass("DObjStaticImage", className, retval);
-            //not 1D so try 2D;-) new 2dknoten()
-        }
+	if (dwo)
+	{
+		/* if className is 1D, 2D, 2.5D or 3D, the default from the respective categories is used:*/
+		if (className.compare("1d", Qt::CaseInsensitive) == 0)
+		{
+			plotClassName = dwo->getFigureClass("DObjStaticLine", "", retval);
+		}
+		else if (className.compare("2d", Qt::CaseInsensitive) == 0)
+		{
+			plotClassName = dwo->getFigureClass("DObjStaticImage", "", retval);
+		}
+		else if (className.compare("2.5d", Qt::CaseInsensitive) == 0)
+		{
+			plotClassName = dwo->getFigureClass("PerspectivePlot", "", retval);
+		}
+		else
+		{
+			int dims = dataObj->getDims();
+			int sizex = dataObj->getSize(dims - 1);
+			int sizey = dataObj->getSize(dims - 2);
+			if ((dims == 1) || ((dims > 1) && ((sizex == 1) || (sizey == 1))))
+			{
+				plotClassName = dwo->getFigureClass("DObjStaticLine", className, retval);
+
+			}
+			else
+			{
+				plotClassName = dwo->getFigureClass("DObjStaticImage", className, retval);
+			}
+		}
 
         QWidget *destWidget = prepareWidget(plotClassName, areaRow, areaCol, retval);
 
@@ -395,15 +410,31 @@ RetVal FigureWidget::liveImage(QPointer<AddInDataIO> cam, int areaRow, int areaC
         
         if (!retval.containsError())
         {
-            if (sizex->getVal<int>() == 1 || sizey->getVal<int>() == 1)
-            {
-                plotClassName = dwo->getFigureClass("DObjLiveLine", className, retval);
-                isLine = true;
-            }
-            else
-            {
-                plotClassName = dwo->getFigureClass("DObjLiveImage", className, retval);
-            }
+			/* if className is 1D, 2D, 2.5D or 3D, the default from the respective categories is used:*/
+			if (className.compare("1d", Qt::CaseInsensitive) == 0)
+			{
+				plotClassName = dwo->getFigureClass("DObjLiveLine", "", retval);
+			}
+			else if (className.compare("2d", Qt::CaseInsensitive) == 0)
+			{
+				plotClassName = dwo->getFigureClass("DObjLiveImage", "", retval);
+			}
+			else if (className.compare("2.5d", Qt::CaseInsensitive) == 0)
+			{
+				plotClassName = dwo->getFigureClass("PerspectivePlot", "", retval);
+			}
+			else
+			{
+				if (sizex->getVal<int>() == 1 || sizey->getVal<int>() == 1)
+				{
+					plotClassName = dwo->getFigureClass("DObjLiveLine", className, retval);
+					isLine = true;
+				}
+				else
+				{
+					plotClassName = dwo->getFigureClass("DObjLiveImage", className, retval);
+				}
+			}
         }
 
         QWidget *destWidget = prepareWidget(plotClassName, areaRow, areaCol, retval);
@@ -571,10 +602,12 @@ QWidget* FigureWidget::prepareWidget(const QString &plotClassName, int areaRow, 
                             t.toolbar->setVisible(false);
                         }
 
-                        QDockWidget *propertyDock = figWidget->getPropertyDockWidget();
-                        if (propertyDock && getCanvas())
+                        foreach(const AbstractFigure::ToolboxItem &t, figWidget->getToolboxes())
                         {
-                            getCanvas()->addDockWidget(Qt::RightDockWidgetArea, propertyDock);
+                            if (t.toolbox && getCanvas())
+                            {
+                                getCanvas()->addDockWidget(t.area, t.toolbox);
+                            }
                         }
                     }
 

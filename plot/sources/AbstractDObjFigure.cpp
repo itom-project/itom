@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
    
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -31,6 +31,21 @@
 
 namespace ito
 {
+
+//----------------------------------------------------------------------------------------------------------------------------------
+AbstractDObjFigure::AbstractDObjFigure(const QString &itomSettingsFile, AbstractFigure::WindowMode windowMode /*= AbstractFigure::ModeStandaloneInUi*/, QWidget *parent /*= 0*/) :
+    AbstractFigure(itomSettingsFile, windowMode, parent),
+    m_cameraConnected(false)
+{
+    m_pInput.insert("source", new ito::Param("source", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+    m_pOutput.insert("displayed", new ito::Param("displayed", ito::ParamBase::DObjPtr, NULL, QObject::tr("Actual output data of plot").toLatin1().data()));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+AbstractDObjFigure::~AbstractDObjFigure()
+{
+    removeLiveSource();
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AbstractDObjFigure::update(void)
@@ -232,6 +247,63 @@ RetVal AbstractDObjFigure::removeLiveSource()
         retval += RetVal(retWarning, 0, tr("Figure does not contain an input slot for live sources").toLatin1().data());
     }
     return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::AutoInterval AbstractDObjFigure::getXAxisInterval(void) const 
+{ 
+    return ito::AutoInterval(); 
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDObjFigure::setXAxisInterval(ito::AutoInterval) 
+{ 
+    return; 
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::AutoInterval AbstractDObjFigure::getYAxisInterval(void) const 
+{ 
+    return ito::AutoInterval(); 
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDObjFigure::setYAxisInterval(ito::AutoInterval) 
+{ 
+    return; 
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::AutoInterval AbstractDObjFigure::getZAxisInterval(void) const 
+{ 
+    return ito::AutoInterval(); 
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDObjFigure::setZAxisInterval(ito::AutoInterval) 
+{ 
+    return; 
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString AbstractDObjFigure::getColorMap(void) const 
+{ 
+    return QString(); 
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDObjFigure::setColorMap(QString) 
+{ 
+    return; 
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! plot-specific render function to enable more complex printing in subfigures ...
+QPixmap AbstractDObjFigure::renderToPixMap(const int xsize, const int ysize, const int resolution)
+{
+    QPixmap emptyMap(xsize, ysize);
+    emptyMap.fill(Qt::green);
+    return emptyMap;
 }
 
 } //end namespace ito

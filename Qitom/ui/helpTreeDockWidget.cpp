@@ -138,7 +138,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
     case 1: //Filter
         {
             const QHash <QString, ito::AddInAlgo::FilterDef *> *filterHashTable = aim->getFilterList();
-            // Main Node zusammenbauen
+            // build Main Node
             mainNode->setText("Algorithms");
             mainNode->setData(typeCategory, m_urType);
             mainNode->setData("Algorithms", m_urPath);
@@ -147,7 +147,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
             while (i != filterHashTable->constEnd()) 
             {
                 if (!plugins.contains(i.value()->m_pBasePlugin->objectName()))
-                { // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das Filter-Node anzuhängen
+                { // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das Filter-Node anzuhaengen
                     QStandardItem *plugin = new QStandardItem(i.value()->m_pBasePlugin->objectName());
                     plugin->setEditable(false);
                     plugin->setData(typeFPlugin, m_urType);
@@ -157,7 +157,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                     plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
                     mainNode->appendRow(plugin);
                 }
-                // Filter-Node anhängen
+                // Filter-Node anhaengen
                 QStandardItem *filter = new QStandardItem(i.value()->m_name);
                 filter->setEditable(false);
                 filter->setData(typeFilter, m_urType);
@@ -182,7 +182,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
             while (i != widgetHashTable->constEnd()) 
             {
                 if (!plugins.contains(i.value()->m_pBasePlugin->objectName()))
-                { // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das Filter-Node anzuhängen
+                { // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das Filter-Node anzuhaengen
                     QStandardItem *plugin = new QStandardItem(i.value()->m_pBasePlugin->objectName());
                     plugin->setEditable(false);
                     plugin->setData(typeWPlugin, m_urType);
@@ -192,7 +192,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                     plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
                     mainNode->appendRow(plugin);
                 }
-                // Filter-Node anhängen
+                // Filter-Node anhaengen
                 QStandardItem *filter = new QStandardItem(i.value()->m_name);
                 filter->setEditable(false);
                 filter->setData(typeWidget, m_urType);
@@ -300,7 +300,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
             break;
         }
     }
-    // MainNode an Model anhängen
+    // MainNode an Model anhaengen
     model->insertRow(0, mainNode);
 }
 
@@ -617,7 +617,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                             }
                         }
                     }
-                    else if (type == typeDataIO)
+                    else /*if (type == typeDataIO)*/
                     {
                         const QList<QObject*> *DataIOList = aim->getDataIOList();
                         for(int i = 0; i < DataIOList->length(); i++)
@@ -630,6 +630,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                             }
                         }
                     }
+
                     if (obj != NULL)
                     {
                         const ito::AddInInterfaceBase *aib = qobject_cast<ito::AddInInterfaceBase*>(obj);
@@ -1296,8 +1297,8 @@ void HelpTreeDockWidget::saveIni()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("HelpScriptReference");
-    settings.setValue("percWidthVi", m_percWidthVi);
-    settings.setValue("percWidthUn", m_percWidthUn);
+    settings.setValue("percWidthVi", m_treeWidthVisible);
+    settings.setValue("percWidthUn", m_treeWidthInvisible);
     settings.endGroup();
 }
 
@@ -1309,9 +1310,26 @@ void HelpTreeDockWidget::loadIni()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("HelpScriptReference");
-    m_percWidthVi = settings.value("percWidthVi", "50").toDouble();
-    m_percWidthUn = settings.value("percWidthUn", "50").toDouble();
+    m_treeWidthVisible = settings.value("percWidthVi", "50").toDouble();
+    m_treeWidthInvisible = settings.value("percWidthUn", "50").toDouble();
     settings.endGroup();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void HelpTreeDockWidget::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+
+    QList<int> intList;
+    if (m_treeVisible)
+    {
+        intList  <<  ui.splitter->width()*m_treeWidthVisible/100  <<  ui.splitter->width() * (100 - m_treeWidthVisible) / 100;
+    }
+    else
+    {
+        intList  <<  ui.splitter->width()*m_treeWidthInvisible/100  <<  ui.splitter->width() * (100 - m_treeWidthInvisible) / 100;
+    }
+    ui.splitter->setSizes(intList);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1342,7 +1360,7 @@ void HelpTreeDockWidget::propertiesChanged()
         {
             settings.setArrayIndex(i);
             QString nameID = settings.value("DB", QString()).toString();
-            QString name = nameID.left(nameID.indexOf("§"));
+            QString name = nameID.left(nameID.indexOf(QChar(0x00, 0xA7) /*section or paragraph sign*/));
             QString dbName = name + ".db";
             //Add to m_pMainlist
             m_includedDBs.append(dbName);
@@ -1382,7 +1400,7 @@ void HelpTreeDockWidget::propertiesChanged()
             QStandardItem *node = new QStandardItem(firstItem.name);
             if (firstItem.type > 11) //splitt[0].startsWith(1))
             {
-                // diese Zeile könnte man auch durch Code ersetzen der das Link Icon automatisch zeichnet... das waere flexibler
+                // diese Zeile koennte man auch durch Code ersetzen der das Link Icon automatisch zeichnet... das waere flexibler
                 node->setIcon(iconGallery->value(firstItem.type));
             }
             else
@@ -1619,7 +1637,7 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QS
     QStringList errorList;
 
     /*********************************/
-    // Allgemeine HTML sachen anfügen /
+    // Allgemeine HTML sachen anfuegen /
     /*********************************/ 
     QString rawContent = helpText;
     QString html = "<html><head>"
@@ -1632,7 +1650,7 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QS
     if (shortDesc != "")
         rawContent.insert(0,shortDesc+"");
 
-    // Überschrift (Funktionsname) einfuegen
+    // Ueberschrift (Funktionsname) einfuegen
     // -------------------------------------
     rawContent.insert(0,"<h1 id=\"FunctionName\">"+name+param+"</h1>"+"");
 
@@ -1731,8 +1749,8 @@ ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path)
     bool ok = false;
     bool found = false;
 
-    // Das ist ein kleiner workaround mit dem if 5 Zeilen später. Man könnt euahc direkt über die includeddbs list iterieren
-    // dann wäre folgende Zeile hinfällig
+    // Das ist ein kleiner workaround mit dem if 5 Zeilen spaeter. Man koennt auch direkt ueber die includeddbs list iterieren
+    // dann waere folgende Zeile hinfaellig
     QDirIterator it(m_dbPath, QStringList("*.db"), QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
 
     while(it.hasNext() && !found)
@@ -2083,19 +2101,17 @@ void HelpTreeDockWidget::on_splitter_splitterMoved (int pos, int index)
     double width = ui.splitter->width();
     if (m_treeVisible == true)
     {
-        m_percWidthVi = pos / width * 100;
+        m_treeWidthVisible = pos / width * 100;
     }
     else
     {
-        m_percWidthUn = pos / width * 100;
+        m_treeWidthInvisible = pos / width * 100;
     }
 
-    if (m_percWidthVi == 0)
+    if (m_treeWidthVisible == 0)
     {
-        m_percWidthVi = 30;
+        m_treeWidthVisible = 30;
     }
-    // Verhaltnis testweise anzeigen lassen
-    //ui.label->setText(QString("vi %1 un %2").arg(percWidthVi).arg(percWidthUn));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2163,7 +2179,7 @@ void HelpTreeDockWidget::showTreeview()
 {
     m_treeVisible = true;
     QList<int> intList;
-    intList  <<  ui.splitter->width()*m_percWidthVi/100  <<  ui.splitter->width() * (100 - m_percWidthVi) / 100;
+    intList  <<  ui.splitter->width()*m_treeWidthVisible/100  <<  ui.splitter->width() * (100 - m_treeWidthVisible) / 100;
     ui.splitter->setSizes(intList);
 }
 
@@ -2173,7 +2189,7 @@ void HelpTreeDockWidget::unshowTreeview()
 {
     m_treeVisible = false;
     QList<int> intList;
-    intList  <<  ui.splitter->width()*m_percWidthUn/100  <<  ui.splitter->width() * (100 - m_percWidthUn) / 100;
+    intList  <<  ui.splitter->width()*m_treeWidthInvisible/100  <<  ui.splitter->width() * (100 - m_treeWidthInvisible) / 100;
     ui.splitter->setSizes(intList);
 }
 

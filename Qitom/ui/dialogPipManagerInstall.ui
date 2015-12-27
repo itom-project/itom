@@ -33,7 +33,7 @@
       <item>
        <widget class="QRadioButton" name="radioTarGz">
         <property name="text">
-         <string>Install from tar.gz archive</string>
+         <string>Install from tar.gz or zip archive</string>
         </property>
        </widget>
       </item>

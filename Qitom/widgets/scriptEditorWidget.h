@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -76,6 +76,9 @@ public:
     ScriptEditorWidget(QWidget* parent = NULL);
     ~ScriptEditorWidget();
 
+    bool m_errorMarkerVisible;
+    int m_errorMarkerNr; //number of indicator which marks the line with current error
+
     RetVal saveFile(bool askFirst = true);
     RetVal saveAsFile(bool askFirst = true);
 
@@ -89,8 +92,8 @@ public:
     inline QString getCurrentClass() const { return m_currentClass; } //currently chosen class in class navigator for this script editor widget
     inline QString getCurrentMethod() const { return m_currentMethod; } //currently chosen method in class navigator for this script editor widget
 
-    RetVal setCursorPosAndEnsureVisible(int line);
-    RetVal setCursorPosAndEnsureVisibleWithSelection(int line, const QString &currentClass, const QString &currentMethod);
+    RetVal setCursorPosAndEnsureVisible(const int line, bool errorMessageClick = false);
+    RetVal setCursorPosAndEnsureVisibleWithSelection(const int line, const QString &currentClass, const QString &currentMethod);
 
     const ScriptEditorStorage saveState() const;
     RetVal restoreState(const ScriptEditorStorage &data);
@@ -102,9 +105,8 @@ protected:
 //    void dragEnterEvent(QDragEnterEvent *event);
     void dropEvent(QDropEvent *event);
     virtual void loadSettings();
-    bool event (QEvent * event);
-
-
+    bool event(QEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
 
 private:
     enum msgType
@@ -261,6 +263,10 @@ public slots:
     void menuComment();
     void menuUncomment();
 
+    void menuUnfoldAll();
+    void menuFoldUnfoldToplevel();
+    void menuFoldUnfoldAll();
+
     void menuRunScript();
     void menuRunSelection();
     void menuDebugScript();
@@ -282,10 +288,9 @@ public slots:
 
     void print();
 
-
 private slots:
     void marginClicked(int margin, int line, Qt::KeyboardModifiers state);
-    void copyAvailable(bool yes);
+    void copyAvailable(const bool yes);
 
     void classNavTimerElapsed();
 
@@ -297,7 +302,6 @@ private slots:
     void fileSysWatcherFileChanged ( const QString & path );
     void printPreviewRequested(QPrinter *printer);
 };
-
 
 class ItomQsciPrinter : public QsciPrinter
 {

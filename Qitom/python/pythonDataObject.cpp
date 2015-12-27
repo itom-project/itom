@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -30,6 +30,7 @@
 #include "pythonCommon.h"
 #include "pythonNpDataObject.h"
 #include "pythonRgba.h"
+#include "pythonShape.h"
 
 #include "pythonQtConversion.h"
 #include "dataObjectFuncs.h"
@@ -220,16 +221,6 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
 
     if (!retValue.containsError()) PyErr_Clear();
 
-    // temporary fix for numpy-arrays. This used to live in the python engine, but at the moment
-    // it doesn't seem to have an effect here, so we need to do it again in this place :-/
- //   if (_import_array() < 0)
-    //{
-    //    PyErr_PrintEx(0);
-    //    PyErr_SetString(PyExc_ImportError, "numpy.core.multiarray failed to import");
-    //    return -1;
-    //}
-    // end fix
-
     if (!done && PyArg_ParseTuple(args, "O!", &PyArray_Type, &copyObject)) // copyObject is a borrowed reference
     {
         PyArrayObject *ndArray = (PyArrayObject*)copyObject; //reference (from now on, copyObject is only used once when the tags are copied, don't use it for further tasks)
@@ -242,7 +233,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
         if (! (descr->byteorder == '<' || descr->byteorder == '|' || (descr->byteorder == '=' && NPY_NATBYTE == NPY_LITTLE)))
         {
             retValue += RetVal(retError);
-            PyErr_SetString(PyExc_TypeError,"Given ndarray or ndDataObject has wrong byteorder (litte endian desired), which cannot be transformed to dataObject");
+            PyErr_SetString(PyExc_TypeError,"Given numpy array has wrong byteorder (litte endian desired), which cannot be transformed to dataObject");
             done = true;
         }
         else
@@ -257,7 +248,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                 if (ndArray == NULL)
                 {
                     retValue += RetVal(retError);
-                    PyErr_SetString(PyExc_TypeError,"An error occurred while transforming the given ndArray (or ndDataObject) to a c-contiguous array.");
+                    PyErr_SetString(PyExc_TypeError,"An error occurred while transforming the given numpy array to a c-contiguous array.");
                     done = true;
                 }
                 else
@@ -371,7 +362,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
         }
     }
 
-    //3. check for argument: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]
+    //3. check for argument: list/tuple/seq.(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]
     if (!retValue.containsError()) PyErr_Clear();
     if (!done && PyArg_ParseTupleAndKeywords(args, kwds, "O|sbO", const_cast<char**>(kwlist), &dimList, &type, &continuous, &data))
     {
@@ -453,7 +444,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                         {
                             self->dataObject = new ito::DataObject(dimensions, sizes, typeno, continuous);
                         }
-                        catch(cv::Exception exc)
+                        catch(cv::Exception &exc)
                         {
                             PyErr_Format(PyExc_RuntimeError, "failed to create data object: %s", (exc.err).c_str());
                             self->dataObject = NULL;
@@ -501,7 +492,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
 
                                     if (npArray == NULL)
                                     {
-                                        throw cv::Exception(0, "given data could not entirely transformed to the required data type.","PyDataObject_init",__FILE__,__LINE__);
+                                        throw cv::Exception(0, "given data could not entirely be transformed to the required data type.","PyDataObject_init",__FILE__,__LINE__);
                                     }
                                     else
                                     {
@@ -675,9 +666,8 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                                     throw cv::Exception(0, "invalid data value","PyDataObject_init",__FILE__,__LINE__);
                                 }
                             }
-                            catch(cv::Exception exc)
+                            catch(cv::Exception &exc)
                             {
-                                //PyErr_Format(PyExc_TypeError, "file: %s, line: %d, error: %s", (exc.file).c_str(), exc.line, (exc.err).c_str());
                                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                                 
                                 delete self->dataObject;
@@ -705,7 +695,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
 
     if (!done && retValue.containsError())
     {
-        PyErr_SetString(PyExc_TypeError,"required arguments: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]][, data=SequenceOfSingleValue]");
+        PyErr_SetString(PyExc_TypeError,"required arguments: list/tuple(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]][, data=SequenceOfSingleValue]");
         retValue += RetVal(retError);
     }
     else if (!done && !retValue.containsError())
@@ -778,7 +768,6 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(PyObject *args, PyObject *kwd
     PyObject *dimList = NULL;
     const char *type;
     unsigned int dims = 0;
-    int dimensions = 0;
     int tempSizes = 0;
 
     type = typeNumberToName(typeno);
@@ -786,8 +775,7 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(PyObject *args, PyObject *kwd
 
     RetVal retValue(retOk);
 
-    //3. check for argument: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]
-    PyErr_Clear();
+    //check for argument: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]
     if (PyArg_ParseTupleAndKeywords(args, kwds, "O!|sb", const_cast<char**>(kwlist), &PyList_Type, &dimList, &type, &continuous))
     {
         typeno = typeNameToNumber(type);
@@ -808,7 +796,6 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(PyObject *args, PyObject *kwd
 
             if (!retValue.containsError())
             {
-                dimensions = static_cast<unsigned char>(dims);
                 sizes.clear();
                 sizes.resize(dims);
 
@@ -841,9 +828,61 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(PyObject *args, PyObject *kwd
             retValue += RetVal(retError);
         }
     }
+	else if (PyErr_Clear(), PyArg_ParseTupleAndKeywords(args, kwds, "O!|sb", const_cast<char**>(kwlist), &PyTuple_Type, &dimList, &type, &continuous))
+	{
+		typeno = typeNameToNumber(type);
+		if (typeno >= 0)
+		{
+			dims = PyTuple_Size(dimList);
+
+			if (dims < 0)
+			{
+				retValue += RetVal(retError);
+				PyErr_SetString(PyExc_TypeError, "Number of dimensions must be bigger than zero.");
+			}
+			else if (dims > 255)
+			{
+				retValue += RetVal(retError);
+				PyErr_SetString(PyExc_TypeError, "Number of dimensions must be lower than 256.");
+			}
+
+			if (!retValue.containsError())
+			{
+				sizes.clear();
+				sizes.resize(dims);
+
+				//try to parse list to values of unsigned int
+				for (unsigned int i = 0; i < dims; i++)
+				{
+					if (!PyArg_Parse(PyTuple_GetItem(dimList, i), "I", &tempSizes)) //borrowed ref
+					{
+						PyErr_PrintEx(0);
+						PyErr_Clear();
+						PyErr_Format(PyExc_TypeError, "Element %d of dimension-tuple is no integer number", i + 1);
+						retValue += RetVal(retError);
+						break;
+
+					}
+					else if (tempSizes <= 0)
+					{
+						PyErr_SetString(PyExc_TypeError, "Element %d must be bigger than 1");
+						retValue += RetVal(retError);
+						break;
+					}
+
+					sizes[i] = tempSizes;
+				}
+			}
+		}
+		else
+		{
+			PyErr_SetString(PyExc_TypeError, "dtype name is unknown.");
+			retValue += RetVal(retError);
+		}
+	}
     else
     {
-        PyErr_SetString(PyExc_TypeError,"required arguments: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]");
+        PyErr_SetString(PyExc_TypeError,"required arguments: list/tuple(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]");
         retValue += RetVal(retError);
     }
 
@@ -895,7 +934,7 @@ PyObject* PythonDataObject::PyDataObj_GetType(PyDataObject *self, void * /*closu
 PyDoc_STRVAR(dataObjectAttrContinuous_doc,"true if matrix is continuously organized, else false. \n\
 \n\
 If true, the whole matrix is allocated in one huge block in memory, hence, \n\
-this data object can be transformed into a numpy representation (npDataObject) \n\
+this data object can be transformed into a numpy representation \n\
 without reallocating memory.\n\
 \n\
 Notes \n\
@@ -1089,6 +1128,8 @@ using tuple indexing. \n\
 \n\
 Definition: Physical unit = (px-Coordinate - offset)* scale\n\
 \n\
+If the data object is plot with scalings != 1, the scaled (physical) units are displayed in the plot. \n\
+\n\
 Notes \n\
 ----- \n\
 read / write\n\
@@ -1177,6 +1218,8 @@ using tuple indexing. \n\
 \n\
 Definition: Physical unit = (px-Coordinate - offset)* scale\n\
 \n\
+If the data object is plot with offsets != 0, the scaled (physical) units are displayed in the plot. \n\
+\n\
 Notes \n\
 ----- \n\
 read / write\n\
@@ -1262,6 +1305,8 @@ This attribute gives access to the internal axis descriptions expressed as \n\
 a tuple of strings. The tuple has the same length than the number of dimensions of this data object. \n\
 \n\
 You can either assign a new tuple with the same length or change single values using tuple indexing. \n\
+\n\
+The axis descriptions are considered if the data object is plotted. \n\
 \n\
 See Also \n\
 --------- \n\
@@ -1352,6 +1397,8 @@ a tuple of strings. The tuple has the same length than the number of dimensions 
 \n\
 You can either assign a new tuple with the same length or change single values using tuple indexing. \n\
 \n\
+The axis units are considered if the data object is plotted. \n\
+\n\
 See Also \n\
 --------- \n\
 setAxisUnits : alternative method to change the unit string of one single axis \n\
@@ -1433,6 +1480,8 @@ PyDoc_STRVAR(dataObjectAttrValueUnit_doc, "value unit. \n\
 \n\
 Attribute to read or write the unit string of the values in this data object. \n\
 \n\
+The value unit is considered if the data object is plotted. \n\
+\n\
 Notes \n\
 ----- \n\
 read / write");
@@ -1474,6 +1523,8 @@ int PythonDataObject::PyDataObject_setValueUnit(PyDataObject *self, PyObject *va
 PyDoc_STRVAR(dataObjectAttrValueDescription_doc, "value unit description. \n\
 \n\
 Attribute to read or write the unit description string of the values in this data object. \n\
+\n\
+The value description is considered if the data object is plotted. \n\
 \n\
 Notes \n\
 ----- \n\
@@ -1519,7 +1570,7 @@ int PythonDataObject::PyDataObject_setValueDescription(PyDataObject *self, PyObj
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(dataObjectAttrValueScale_doc, "value scale [default: 0.0].\n\
+PyDoc_STRVAR(dataObjectAttrValueScale_doc, "value scale.\n\
 \n\
 This attribute gives the scaling factor of each value in the data object. This value is always 1.0. \n\
 \n\
@@ -1532,7 +1583,7 @@ PyObject* PythonDataObject::PyDataObject_getValueScale(PyDataObject *self, void 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(dataObjectAttrValueOffset_doc, "value offset [default: 0.0].\n\
+PyDoc_STRVAR(dataObjectAttrValueOffset_doc, "value offset.\n\
 \n\
 This attribute gives the offset of each value in the data object. This value is always 0.0. \n\
 \n\
@@ -2134,6 +2185,7 @@ by the offset and scaling of each axis: \n\
 phys = (pix - offset) * scaling \n\
 \n\
 If no axes parameter is given, the values are assumed to belong the the ascending axis list (0,1,2,3...). \n\
+The returned pixel value is clipped by the real size of the data object in the requested dimension [0, shape[axis]-1]. \n\
 \n\
 Parameters  \n\
 ------------\n\
@@ -2149,7 +2201,9 @@ Float or float-tuple with the pixel coordinates for each physical coordinate at 
 Raises \n\
 ------- \n\
 Value error : \n\
-    if the given axes is invalid (out of range)");
+    if the given axes is invalid (out of range) \n\
+Runtime warning : \n\
+    if requested physical unit is outside of the range of the requested axis. The returned pixel value is clipped to the closest boundary value.");
 PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *args, PyObject *kwds)
 {
     static const char *kwlist[] = {"values","axes", NULL};
@@ -2159,9 +2213,8 @@ PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *ar
     PyObject *axes = NULL;
     bool single = false;
 
-    //3. check for argument: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]
     PyErr_Clear();
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "d|i", const_cast<char**>(kwlist), &value, &axis)) //&PyList_Type, &dimList, &type, &continuous))
+    if (PyArg_ParseTupleAndKeywords(args, kwds, "d|i", const_cast<char**>(kwlist), &value, &axis))
     {
         single = true;
     }
@@ -2202,6 +2255,7 @@ PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *ar
         PyObject *v = NULL;
         PyObject *a = NULL;
         PyObject *result = PyTuple_New(PySequence_Length(values));
+        bool isInsideImage;
 
         for (Py_ssize_t i = 0; i < PySequence_Length(values); ++i)
         {
@@ -2242,11 +2296,23 @@ PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *ar
                 axis = i;
             }
 
-            PyTuple_SetItem(result, i, PyFloat_FromDouble(self->dataObject->getPhysToPix(axis, value)));
+            PyTuple_SetItem(result, i, PyFloat_FromDouble(self->dataObject->getPhysToPix(axis, value, isInsideImage)));
+
+            if (!isInsideImage)
+            {
+                if (PyErr_WarnFormat(PyExc_RuntimeWarning, 1, "the returned pixel for axis %i is clipped to the boundaries of the axis [0,%i]", axis, self->dataObject->getSize(axis) - 1) == -1)
+                {
+                    Py_DECREF(result);
+                    return NULL; //warning was turned into a real exception, 
+                }
+                //else
+                //{
+                //warning is a warning, go on with the script
+                //}
+            }
         }
 
         return result;
-
     }
 
     Py_RETURN_NONE;
@@ -2286,9 +2352,8 @@ PyObject* PythonDataObject::PyDataObj_PixToPhys(PyDataObject *self, PyObject *ar
     PyObject *axes = NULL;
     bool single = false;
 
-    //3. check for argument: list(int size1, int size2,...,int sizeLast)[, dtype='typename'][, continuous=[0|1]
     PyErr_Clear();
-    if (PyArg_ParseTupleAndKeywords(args, kwds, "d|i", const_cast<char**>(kwlist), &value, &axis)) //&PyList_Type, &dimList, &type, &continuous))
+    if (PyArg_ParseTupleAndKeywords(args, kwds, "d|i", const_cast<char**>(kwlist), &value, &axis))
     {
         single = true;
     }
@@ -2610,7 +2675,7 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
             case Py_GE: resDataObj = *(self->dataObject) >= *(otherDataObj->dataObject); break;
             }
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             return NULL;
@@ -2637,7 +2702,7 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
                 case Py_GE: resDataObj = *(self->dataObject) >= value; break;
                 }
             }
-            catch(cv::Exception exc)
+            catch(cv::Exception &exc)
             {
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                 return NULL;
@@ -2662,7 +2727,6 @@ PyObject* PythonDataObject::PyDataObject_RichCompare(PyDataObject *self, PyObjec
 //----------------------------------------------------------------------------------------------------------------------------------
 PythonDataObject::PyDataObject* PythonDataObject::createEmptyPyDataObject()
 {
-    //PyDataObject* result = (PyDataObject*)PyType_Type.tp_call((PyObject*)&PyDataObjectType, NULL, NULL);
     PyDataObject* result = (PyDataObject*)PyObject_Call((PyObject*)&PyDataObjectType, NULL, NULL);
     if (result != NULL)
     {
@@ -2674,6 +2738,15 @@ PythonDataObject::PyDataObject* PythonDataObject::createEmptyPyDataObject()
         Py_XDECREF(result);
         return NULL;
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ PyObject* PythonDataObject::createPyDataObjectFromArray(PyObject *npArray) //returns NULL with set Python exception if npArray could not be converted to data object. If everything ok, returns a new reference of the PyDataObject
+{
+    PyObject *args = Py_BuildValue("(O)", npArray);
+    ito::PythonDataObject::PyDataObject *result = (ito::PythonDataObject::PyDataObject*)PyObject_Call((PyObject*)&ito::PythonDataObject::PyDataObjectType, args, NULL); //new reference
+    Py_DECREF(args);
+    return (PyObject*)result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2716,8 +2789,10 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
 {
     PyDataObject *dobj1 = NULL;
     PyDataObject *dobj2 = NULL;
-    double scalar = 0;
+    ito::float64 scalar = 0;
+    ito::complex128 cscalar = 0;
     bool doneScalar = false;
+    bool complexScalar = false;
 
     if (PyDataObject_Check(o1) && PyDataObject_Check(o2))
     {
@@ -2731,9 +2806,14 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
         {
             scalar = PyFloat_AsDouble(o2);
         }
+        else if (PyComplex_Check(o2))
+        {
+            cscalar = ito::complex128(PyComplex_RealAsDouble(o2), PyComplex_ImagAsDouble(o2));
+            complexScalar = true;
+        }
         else
         {
-            PyErr_SetString(PyExc_RuntimeError, "second operand must be a dataObject, integer of float");
+            PyErr_SetString(PyExc_RuntimeError, "second operand must be a dataObject, integer, float or complex");
             return NULL;
         }
     }
@@ -2744,9 +2824,14 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
         {
             scalar = PyFloat_AsDouble(o1);
         }
+        else if (PyComplex_Check(o2))
+        {
+            cscalar = ito::complex128(PyComplex_RealAsDouble(o1), PyComplex_ImagAsDouble(o1));
+            complexScalar = true;
+        }
         else
         {
-            PyErr_SetString(PyExc_RuntimeError, "second operand must be a dataObject, integer of float");
+            PyErr_SetString(PyExc_RuntimeError, "first operand must be a dataObject, integer, float or complex");
             return NULL;
         }
     }
@@ -2764,13 +2849,18 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
         {
             retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) + *(dobj2->dataObject));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         }
+        else if (complexScalar)
+        {
+            doneScalar = true;
+            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) + cscalar);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+        }
         else
         {
             doneScalar = true;
             retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) + scalar);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         }
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -2780,7 +2870,21 @@ PyObject* PythonDataObject::PyDataObj_nbAdd(PyObject* o1, PyObject* o2)
     if(doneScalar)
     {
         char buf[PROTOCOL_STR_LENGTH] = {0};
-        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Added %g scalar to dataObject.", scalar);
+        if (complexScalar)
+        {
+            if (cscalar.imag() > 0)
+            {
+                sprintf_s(buf, PROTOCOL_STR_LENGTH, "Added %g+i%g scalar to dataObject.", cscalar.real(), cscalar.imag());
+            }
+            else
+            {
+                sprintf_s(buf, PROTOCOL_STR_LENGTH, "Added %g-i%g scalar to dataObject.", cscalar.real(), -cscalar.imag());
+            }
+        }
+        else
+        {
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Added %g scalar to dataObject.", scalar);
+        }
         if(retObj) retObj->dataObject->addToProtocol(buf);
         
     }
@@ -2797,8 +2901,10 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
 {
     PyDataObject *dobj1 = NULL;
     PyDataObject *dobj2 = NULL;
-    double scalar = 0;
+    ito::float64 scalar = 0;
+    ito::complex128 cscalar = 0;
     bool doneScalar = false;
+    bool complexScalar = false;
 
     if (PyDataObject_Check(o1) && PyDataObject_Check(o2))
     {
@@ -2812,9 +2918,14 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
         {
             scalar = PyFloat_AsDouble(o2);
         }
+        else if (PyComplex_Check(o2))
+        {
+            cscalar = ito::complex128(PyComplex_RealAsDouble(o2), PyComplex_ImagAsDouble(o2));
+            complexScalar = true;
+        }
         else
         {
-            PyErr_SetString(PyExc_RuntimeError, "second operand must be a dataObject, integer of float");
+            PyErr_SetString(PyExc_RuntimeError, "second operand must be a dataObject, integer, float or complex");
             return NULL;
         }
     }
@@ -2825,9 +2936,14 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
         {
             scalar = PyFloat_AsDouble(o1);
         }
+        else if (PyComplex_Check(o2))
+        {
+            cscalar = ito::complex128(PyComplex_RealAsDouble(o1), PyComplex_ImagAsDouble(o1));
+            complexScalar = true;
+        }
         else
         {
-            PyErr_SetString(PyExc_RuntimeError, "second operand must be a dataObject, integer of float");
+            PyErr_SetString(PyExc_RuntimeError, "first operand must be a dataObject, integer, float or complex");
             return NULL;
         }
     }
@@ -2847,16 +2963,38 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
         }
         else if (dobj1)
         {
-            doneScalar = true;
-            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) - scalar);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            if (complexScalar)
+            {
+                doneScalar = true;
+                retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) - cscalar);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            }
+            else
+            {
+                doneScalar = true;
+                retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) - scalar);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            }
         }
         else
         {
-            doneScalar = true;
-            retObj->dataObject = new ito::DataObject((*(dobj2->dataObject)*(-1.0)) + scalar);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            if (complexScalar)
+            {
+                doneScalar = true;
+                //this step is necessary in order to allow e.g. 255 - (uint8dataobject) without buffer overflows.
+                retObj->dataObject = new ito::DataObject(dobj2->dataObject->getSize(), dobj2->dataObject->getType());
+                retObj->dataObject->setTo(complexScalar);
+                *(retObj->dataObject) -= *(dobj2->dataObject); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            }
+            else
+            {
+                doneScalar = true;
+                //this step is necessary in order to allow e.g. 255 - (uint8dataobject) without buffer overflows.
+                retObj->dataObject = new ito::DataObject(dobj2->dataObject->getSize(), dobj2->dataObject->getType());
+                retObj->dataObject->setTo(scalar);
+                *(retObj->dataObject) -= *(dobj2->dataObject); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            }
         }
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -2866,16 +3004,29 @@ PyObject* PythonDataObject::PyDataObj_nbSubtract(PyObject* o1, PyObject* o2)
     if(doneScalar)
     {
         char buf[PROTOCOL_STR_LENGTH] = {0};
-        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Substracting %g scalar from dataObject or vice versa.", scalar);
-
+        if (complexScalar)
+        {
+            if (cscalar.imag() > 0)
+            {
+                sprintf_s(buf, PROTOCOL_STR_LENGTH, "Subtracted %g+i%g scalar to dataObject.", cscalar.real(), cscalar.imag());
+            }
+            else
+            {
+                sprintf_s(buf, PROTOCOL_STR_LENGTH, "Subtracted %g-i%g scalar to dataObject.", cscalar.real(), -cscalar.imag());
+            }
+        }
+        else
+        {
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Subtracted %g scalar to dataObject.", scalar);
+        }
         if(retObj) retObj->dataObject->addToProtocol(buf);
         
     }
     else
     {
-        if(retObj) retObj->dataObject->addToProtocol("Created by adding two dataObjects.");
+        if(retObj) retObj->dataObject->addToProtocol("Created by subtracting two dataObjects.");
     }
-
+    
     return (PyObject*)retObj;
 }
 
@@ -2898,7 +3049,7 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
         {
             retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * *(dobj2->dataObject));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             Py_DECREF(retObj);
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());         
@@ -2910,33 +3061,68 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
     }
     else if (Py_TYPE(o1) == &PyDataObjectType)
     {
-        double factor = PyFloat_AsDouble((PyObject*)o2);
         PyDataObject *dobj1 = (PyDataObject*)(o1);
 
-        if (PyErr_Occurred())
+        if (PyComplex_Check(o2))
         {
-            return NULL;
+            complex128 factor = complex128(PyComplex_RealAsDouble(o2), PyComplex_ImagAsDouble(o2));
+
+            PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+            try
+            {
+                retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * factor);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            }
+            catch(cv::Exception &exc)
+            {
+                Py_DECREF(retObj);
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str()); 
+                return NULL;
+            }
+
+            char buf[PROTOCOL_STR_LENGTH] = {0};
+            if (factor.imag() > 0)
+            {
+                sprintf_s(buf, PROTOCOL_STR_LENGTH, "Multiplied dataObject with %g+i%g.", factor.real(), factor.imag());
+            }
+            else
+            {
+                sprintf_s(buf, PROTOCOL_STR_LENGTH, "Multiplied dataObject with %g-i%g.", factor.real(), -factor.imag());
+            }
+
+            if(retObj) retObj->dataObject->addToProtocol(  buf);
+
+            return (PyObject*)retObj;
         }
-
-        PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-
-        try
+        else
         {
-            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * factor);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            double factor = PyFloat_AsDouble((PyObject*)o2);
+        
+            if (PyErr_Occurred())
+            {
+                return NULL;
+            }
+
+            PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+            try
+            {
+                retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * factor);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            }
+            catch(cv::Exception &exc)
+            {
+                Py_DECREF(retObj);
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str()); 
+                return NULL;
+            }
+
+            char buf[PROTOCOL_STR_LENGTH] = {0};
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Multiplied dataObject with %g.", factor);
+
+            if(retObj) retObj->dataObject->addToProtocol(  buf);
+
+            return (PyObject*)retObj;
         }
-        catch(cv::Exception exc)
-        {
-            Py_DECREF(retObj);
-            PyErr_SetString(PyExc_TypeError, (exc.err).c_str()); 
-            return NULL;
-        }
-
-        char buf[PROTOCOL_STR_LENGTH] = {0};
-        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Multiplied dataObject scalar with %g.", factor);
-
-        if(retObj) retObj->dataObject->addToProtocol(  buf);
-
-        return (PyObject*)retObj;
     }
     else if (Py_TYPE(o2) == &PyDataObjectType)
     {
@@ -2954,7 +3140,7 @@ PyObject* PythonDataObject::PyDataObj_nbMultiply(PyObject* o1, PyObject* o2)
         {
             retObj->dataObject = new ito::DataObject(*(dobj2->dataObject) * factor);  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             Py_DECREF(retObj);
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -2986,45 +3172,68 @@ PyObject* PythonDataObject::PyDataObj_nbDivide(PyObject* o1, PyObject* o2)
     }
     if (Py_TYPE(o1) == &PyDataObjectType)
     {
-        double factor = PyFloat_AsDouble((PyObject*)o2);
         PyDataObject *dobj1 = (PyDataObject*)(o1);
-/*
-        if(!ito::dObjHelper::isNotZero(factor))
+
+        if (PyComplex_Check(o2))
         {
-            PyErr_SetString(PyExc_RuntimeError, "division by zero not implemented.");
-            return NULL;        
-        }
+            complex128 factor = complex128(PyComplex_RealAsDouble(o2), PyComplex_ImagAsDouble(o2));
 
-        if(!ito::dObjHelper::isFinite(factor))
+            PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+            try
+            {
+                retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * (complex128(1.0,0.0)/factor));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            }
+            catch(cv::Exception &exc)
+            {
+                Py_DECREF(retObj);
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str()); 
+                return NULL;
+            }
+
+            char buf[PROTOCOL_STR_LENGTH] = {0};
+            if (factor.imag() > 0)
+            {
+                sprintf_s(buf, PROTOCOL_STR_LENGTH, "Divided dataObject by %g+i%g.", factor.real(), factor.imag());
+            }
+            else
+            {
+                sprintf_s(buf, PROTOCOL_STR_LENGTH, "Divided dataObject by %g-i%g.", factor.real(), -factor.imag());
+            }
+
+            if(retObj) retObj->dataObject->addToProtocol(  buf);
+
+            return (PyObject*)retObj;
+        }
+        else
         {
-             PyErr_SetString(PyExc_RuntimeError, "division by a dataObject not implemented.");
-            return NULL;            
+            double factor = PyFloat_AsDouble((PyObject*)o2);
+        
+            if (PyErr_Occurred())
+            {
+                return NULL;
+            }
+
+            PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+            try
+            {
+                retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * (1.0/factor));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+            }
+            catch(cv::Exception &exc)
+            {
+                Py_DECREF(retObj);
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str()); 
+                return NULL;
+            }
+
+            char buf[PROTOCOL_STR_LENGTH] = {0};
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Divided dataObject by %g.", factor);
+
+            if(retObj) retObj->dataObject->addToProtocol(buf);
+
+            return (PyObject*)retObj;
         }
-*/
-        if (PyErr_Occurred())
-        {
-            return NULL;
-        }
-
-        PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-
-        try
-        {
-            retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) * (1.0/factor));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
-        }
-        catch(cv::Exception exc)
-        {
-            Py_DECREF(retObj);
-            PyErr_SetString(PyExc_TypeError, (exc.err).c_str()); 
-            return NULL;
-        }
-
-        char buf[PROTOCOL_STR_LENGTH] = {0};
-        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Multiplied dataObject scalar with 1/%g.", factor);
-
-        if(retObj) retObj->dataObject->addToProtocol(buf);
-
-        return (PyObject*)retObj;
     }
 
     return NULL;
@@ -3047,7 +3256,7 @@ PyObject* PythonDataObject::PyDataObj_nbDivmod(PyObject* /*o1*/, PyObject* /*o2*
 //----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonDataObject::PyDataObj_nbPower(PyObject* o1, PyObject* o2, PyObject* o3)
 {
-    if (!checkPyDataObject(2,o1,o2))
+    if (!checkPyDataObject(1,o1))
     {
         return NULL;
     }
@@ -3062,22 +3271,38 @@ PyObject* PythonDataObject::PyDataObj_nbPower(PyObject* o1, PyObject* o2, PyObje
         return Py_NotImplemented;
     }
 
-    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+	ito::float64 power;
 
-    try
-    {
-        retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) ^ *(dobj2->dataObject));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
-    }
-    catch(cv::Exception exc)
-    {
-        Py_DECREF(retObj);
-        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        return NULL;
-    }
+	if (PyLong_Check(o2))
+	{
+		power = PyLong_AsLong(o2);
+	}
+	else if (PyFloat_Check(o2))
+	{
+		power = PyFloat_AsDouble(o2);
+	}
+	else
+	{
+		PyErr_SetString(PyExc_TypeError, "2nd operand of power-method must be an integer of float.");
+		return NULL;
+	}
+	PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 
-    if(retObj) retObj->dataObject->addToProtocol("Created by dataObject0 ** dataObject1");
+	try
+	{
+		retObj->dataObject = new ito::DataObject();
+		dobj1->dataObject->pow(power, *retObj->dataObject);
+	}
+	catch (cv::Exception &exc)
+	{
+		Py_DECREF(retObj);
+		PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+		return NULL;
+	}
 
-    return (PyObject*)retObj;
+	if (retObj && retObj->dataObject) retObj->dataObject->addToProtocol("Created by dataObject ** power");
+
+	return (PyObject*)retObj;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3096,7 +3321,7 @@ PyObject* PythonDataObject::PyDataObj_nbNegative(PyObject* o1)
     {
         retObj->dataObject = new ito::DataObject((*(dobj1->dataObject) * -1.0));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -3129,7 +3354,7 @@ PyObject* PythonDataObject::PyDataObj_nbPositive(PyObject* o1)
             PyDataObject_SetBase(retObj, (PyObject*)o1);
         }
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -3157,7 +3382,7 @@ PyObject* PythonDataObject::PyDataObj_nbAbsolute(PyObject* o1)
     {
         retObj->dataObject = new ito::DataObject(ito::abs(*(dobj1->dataObject)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -3200,7 +3425,7 @@ PyObject* PythonDataObject::PyDataObj_nbLshift(PyObject* o1, PyObject* o2)
     {
         retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) << static_cast<unsigned int>(shift));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -3242,7 +3467,7 @@ PyObject* PythonDataObject::PyDataObj_nbRshift(PyObject* o1, PyObject* o2)
     {
         retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) >> static_cast<unsigned int>(shift));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -3273,7 +3498,7 @@ PyObject* PythonDataObject::PyDataObj_nbAnd(PyObject* o1, PyObject* o2)
     {
         retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) & *(dobj2->dataObject)); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -3301,7 +3526,7 @@ PyObject* PythonDataObject::PyDataObj_nbXor(PyObject* o1, PyObject* o2)
     {
         retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) ^ *(dobj2->dataObject)); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -3329,7 +3554,7 @@ PyObject* PythonDataObject::PyDataObj_nbOr(PyObject* o1, PyObject* o2)
     {
         retObj->dataObject = new ito::DataObject(*(dobj1->dataObject) | *(dobj2->dataObject)); //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -3358,7 +3583,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2)
         {
             *(dobj1->dataObject) += *(dobj2->dataObject);
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             return NULL;
@@ -3374,7 +3599,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2)
         {
             *(dobj1->dataObject) += val;
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             return NULL;
@@ -3386,9 +3611,36 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAdd(PyObject* o1, PyObject* o2)
         dobj1->dataObject->addToProtocol(buf);
         
     }
+    else if (PyComplex_Check(o2))
+    {
+        ito::complex128 val = ito::complex128(PyComplex_RealAsDouble(o2), PyComplex_ImagAsDouble(o2));
+
+        try
+        {
+            *(dobj1->dataObject) += val;
+        }
+        catch(cv::Exception &exc)
+        {
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            return NULL;
+        }
+
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        if (val.imag() > 0)
+        {
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar addition of %g+i%g.", val.real(), val.imag());
+        }
+        else
+        {
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar addition of %g-i%g.", val.real(), -val.imag());
+        }
+
+        dobj1->dataObject->addToProtocol(buf);
+        
+    }
     else
     {
-        PyErr_SetString(PyExc_RuntimeError, "the second operand must be either a data object or an integer or floating point value");
+        PyErr_SetString(PyExc_RuntimeError, "the second operand must be either a data object or an integer, floating point or complex value");
         return NULL;
     }
 
@@ -3414,7 +3666,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
         {
             *(dobj1->dataObject) -= *(dobj2->dataObject);
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             return NULL;
@@ -3430,7 +3682,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
         {
             *(dobj1->dataObject) -= val;
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             return NULL;
@@ -3440,6 +3692,33 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceSubtract(PyObject* o1, PyObject* 
         sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar substraction of %g.", val);
 
         dobj1->dataObject->addToProtocol(buf);
+    }
+    else if (PyComplex_Check(o2))
+    {
+        ito::complex128 val = ito::complex128(PyComplex_RealAsDouble(o2), PyComplex_ImagAsDouble(o2));
+
+        try
+        {
+            *(dobj1->dataObject) -= val;
+        }
+        catch(cv::Exception &exc)
+        {
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            return NULL;
+        }
+
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        if (val.imag() > 0)
+        {
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar subtraction of %g+i%g.", val.real(), val.imag());
+        }
+        else
+        {
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar subtraction of %g-i%g.", val.real(), -val.imag());
+        }
+
+        dobj1->dataObject->addToProtocol(buf);
+        
     }
     else
     {
@@ -3474,7 +3753,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* 
         {
             *(dobj1->dataObject) *= *(dobj2->dataObject);
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             return NULL;
@@ -3484,27 +3763,61 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceMultiply(PyObject* o1, PyObject* 
     }
     else
     {
-        double factor = PyFloat_AsDouble((PyObject*)o2);
-
-        if (PyErr_Occurred())
+        if (PyComplex_Check(o2))
         {
-            return NULL;
-        }
+            ito::complex128 factor(PyComplex_RealAsDouble(o2), PyComplex_ImagAsDouble(o2));
 
-        try
+            if (PyErr_Occurred())
+            {
+                return NULL;
+            }
+
+            try
+            {
+                *(dobj1->dataObject) *= factor;
+            }
+            catch(cv::Exception &exc)
+            {
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                return NULL;
+            }
+
+            char buf[PROTOCOL_STR_LENGTH] = {0};
+            if (factor.imag() > 0)
+            {
+                sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar multiplication of %g+i%g.", factor.real(), factor.imag());
+            }
+            else
+            {
+                sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar multiplication of %g-i%g.", factor.real(), -factor.imag());
+            }
+
+            dobj1->dataObject->addToProtocol(buf);
+        }
+        else
         {
-            *(dobj1->dataObject) *= factor;
-        }
-        catch(cv::Exception exc)
-        {
-            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-            return NULL;
-        }
+            double factor = PyFloat_AsDouble(o2);
 
-        char buf[PROTOCOL_STR_LENGTH] = {0};
-        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar multiplication of %g.", factor);
+            if (PyErr_Occurred())
+            {
+                return NULL;
+            }
 
-        dobj1->dataObject->addToProtocol(buf);
+            try
+            {
+                *(dobj1->dataObject) *= factor;
+            }
+            catch(cv::Exception &exc)
+            {
+                PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+                return NULL;
+            }
+
+            char buf[PROTOCOL_STR_LENGTH] = {0};
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar multiplication of %g.", factor);
+
+            dobj1->dataObject->addToProtocol(buf);
+        }
     }
 
     Py_INCREF(o1);
@@ -3532,9 +3845,35 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceTrueDivide(PyObject* o1, PyObject
         //dobj1->dataObject->addToProtocol("Inplace division of two dataObjects");
         return NULL;
     }
+    else if (PyComplex_Check(o2))
+    {
+        complex128 factor = complex128(PyComplex_RealAsDouble(o2), PyComplex_ImagAsDouble(o2));
+
+        try
+        {
+            *(dobj1->dataObject) *= (complex128(1.0,0.0) / factor);
+        }
+        catch(cv::Exception &exc)
+        {
+            PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+            return NULL;
+        }
+
+        char buf[PROTOCOL_STR_LENGTH] = {0};
+        if (factor.real() > 0)
+        {
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar division by %g+i%g.", factor.real(), factor.imag());
+        }
+        else
+        {
+            sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar division by %g-i%g.", factor.real(), -factor.imag());
+        }
+
+        dobj1->dataObject->addToProtocol(buf);
+    }
     else
     {
-        double factor = PyFloat_AsDouble((PyObject*)o2);
+        double factor = PyFloat_AsDouble(o2);
 
         if (PyErr_Occurred())
         {
@@ -3545,14 +3884,14 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceTrueDivide(PyObject* o1, PyObject
         {
             *(dobj1->dataObject) *= (1.0 / factor);
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             return NULL;
         }
 
         char buf[PROTOCOL_STR_LENGTH] = {0};
-        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar devision of %g.", factor);
+        sprintf_s(buf, PROTOCOL_STR_LENGTH, "Inplace scalar division by %g.", factor);
 
         dobj1->dataObject->addToProtocol(buf);
     }
@@ -3651,7 +3990,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceAnd(PyObject* o1, PyObject* o2)
     {
         *(dobj1->dataObject) &= *(dobj2->dataObject);
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
         return NULL;
@@ -3678,7 +4017,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceXor(PyObject* o1, PyObject* o2)
     {
         *(dobj1->dataObject) ^= *(dobj2->dataObject);
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
         return NULL;
@@ -3704,7 +4043,7 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceOr(PyObject* o1, PyObject* o2)
     {
         *(dobj1->dataObject) |= *(dobj2->dataObject);
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
         return NULL;
@@ -3748,7 +4087,7 @@ PyObject* PythonDataObject::PyDataObject_repr(PyDataObject *self)
     int dims;
     if (self->dataObject == NULL)
     {
-        result = PyUnicode_FromFormat("DataObject(empty)");
+        result = PyUnicode_FromFormat("dataObject(empty)");
     }
     else
     {
@@ -3757,13 +4096,13 @@ PyObject* PythonDataObject::PyDataObject_repr(PyDataObject *self)
         switch(dims)
         {
         case 2:
-            result = PyUnicode_FromFormat("DataObject('%s', [%i x %i], continuous: %i, owndata: %i)", typeNumberToName(dObj->getType()), dObj->getSize(0), dObj->getSize(1), dObj->getContinuous(), dObj->getOwnData());
+            result = PyUnicode_FromFormat("dataObject('%s', [%i x %i], continuous: %i, owndata: %i)", typeNumberToName(dObj->getType()), dObj->getSize(0), dObj->getSize(1), dObj->getContinuous(), dObj->getOwnData());
             break;
         case 3:
-            result = PyUnicode_FromFormat("DataObject('%s', [%i x %i x %i], continuous: %i, owndata: %i)", typeNumberToName(dObj->getType()), dObj->getSize(0), dObj->getSize(1), dObj->getSize(2), dObj->getContinuous(), dObj->getOwnData());
+            result = PyUnicode_FromFormat("dataObject('%s', [%i x %i x %i], continuous: %i, owndata: %i)", typeNumberToName(dObj->getType()), dObj->getSize(0), dObj->getSize(1), dObj->getSize(2), dObj->getContinuous(), dObj->getOwnData());
             break;
         default:
-            result = PyUnicode_FromFormat("DataObject('%s', %i dims, continuous: %i, owndata: %i)", typeNumberToName(dObj->getType()), dObj->getDims(), dObj->getContinuous(), dObj->getOwnData());
+            result = PyUnicode_FromFormat("dataObject('%s', %i dims, continuous: %i, owndata: %i)", typeNumberToName(dObj->getType()), dObj->getDims(), dObj->getContinuous(), dObj->getOwnData());
             break;
         }
     }
@@ -3782,7 +4121,7 @@ PyObject* PythonDataObject::PyDataObject_data(PyDataObject *self)
     {
         std::cout << *(self->dataObject);
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
         return NULL;
@@ -3814,7 +4153,7 @@ PyObject* PythonDataObject::PyDataObject_conj(PyDataObject *self)
     {
         self->dataObject->conj();
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
         return NULL;
@@ -3855,7 +4194,7 @@ PyObject* PythonDataObject::PyDataObject_conjugate(PyDataObject *self)
         self->dataObject->copyTo( *(retObj->dataObject), 1);
         retObj->dataObject->conj();
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -3897,7 +4236,7 @@ PyObject* PythonDataObject::PyDataObject_adj(PyDataObject *self)
         delete self->dataObject;
         self->dataObject = newDataObj;
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
         return NULL;
@@ -3941,7 +4280,7 @@ PyObject* PythonDataObject::PyDataObject_adjugate(PyDataObject *self)
     {
         retObj->dataObject = new ito::DataObject(self->dataObject->adj());
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -3982,7 +4321,7 @@ PyObject* PythonDataObject::PyDataObject_trans(PyDataObject *self)
     {
         retObj->dataObject = new ito::DataObject(self->dataObject->trans());
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -4134,7 +4473,7 @@ PyObject* PythonDataObject::PyDataObject_copy(PyDataObject *self, PyObject* args
             self->dataObject->copyTo(*(retObj->dataObject),0);  //self->dataObject should always be the owner of its data, therefore base of resultObject remains None
         }
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -4188,7 +4527,7 @@ PyObject* PythonDataObject::PyDataObject_mul(PyDataObject *self, PyObject *args)
     {
         retObj->dataObject = new ito::DataObject(self->dataObject->mul(*(obj2->dataObject)));  //new dataObject should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -4233,7 +4572,7 @@ PyObject* PythonDataObject::PyDataObject_div(PyDataObject *self, PyObject *args)
     {
         retObj->dataObject = new ito::DataObject((*(self->dataObject)).div(*(obj2->dataObject)));//new dataObject should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -4306,7 +4645,7 @@ PyObject* PythonDataObject::PyDataObject_astype(PyDataObject *self, PyObject* ar
     {
         self->dataObject->convertTo(*(retObj->dataObject), typeno);
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -4391,7 +4730,7 @@ PyObject* PythonDataObject::PyDataObject_normalize(PyDataObject *self, PyObject*
     {
         self->dataObject->convertTo(dataObj, typeno, scale, shift);
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -4547,7 +4886,7 @@ PyObject* PythonDataObject::PyDataObject_adjustROI(PyDataObject *self, PyObject*
         {
             self->dataObject->adjustROI(dims, offsetVector);
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
             error = true;
@@ -4595,7 +4934,7 @@ PyObject* PythonDataObject::PyDataObject_squeeze(PyDataObject *self, PyObject* /
         ito::DataObject resObj = self->dataObject->squeeze();
         retObj->dataObject = new ito::DataObject(resObj);
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         retObj->dataObject = NULL;
 
@@ -4771,7 +5110,7 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
 
                 retObj = (PyObject*)retObj2;
             }
-            catch(cv::Exception exc)
+            catch(cv::Exception &exc)
             {
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                 Py_DECREF(retObj2);
@@ -4796,7 +5135,7 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
 
                 retObj = (PyObject*)retObj2;
             }
-            catch(cv::Exception exc)
+            catch(cv::Exception &exc)
             {
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                 Py_DECREF(retObj2);
@@ -4943,7 +5282,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 //self->dataObject in readLock, dataObj will become readLock, too
                 dataObj = self->dataObject->at(ranges); //self->dataObject must not be locked for writing, since dataObj will read it
             }
-            catch(cv::Exception exc)
+            catch(cv::Exception &exc)
             {
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                 error = true;
@@ -4986,7 +5325,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 {
                     ((PyDataObject*)value)->dataObject->deepCopyPartial(dataObj);
                 }
-                catch(cv::Exception exc)
+                catch(cv::Exception &exc)
                 {
                     PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                     error = true;
@@ -5006,9 +5345,137 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
             }
             else
             {
-                error = true;
-                PyErr_SetString(PyExc_TypeError, "assign value has no of the following types: integer, floating point, complex, rgba (type rgba32 only)");
+                //try to convert the assigned value to a numpy array and then read the values
+                int npTypenum;
+                switch(dataObj.getType())
+                {
+                case ito::tInt8:        npTypenum = NPY_BYTE; break;
+                case ito::tUInt8:       npTypenum = NPY_UBYTE; break;
+                case ito::tInt16:       npTypenum = NPY_SHORT; break;
+                case ito::tUInt16:      npTypenum = NPY_USHORT; break;
+                case ito::tInt32:       npTypenum = NPY_INT; break;
+                case ito::tUInt32:      npTypenum = NPY_UINT; break;
+                case ito::tRGBA32:      npTypenum = NPY_UINT; break;
+                case ito::tFloat32:     npTypenum = NPY_FLOAT; break;
+                case ito::tFloat64:     npTypenum = NPY_DOUBLE; break;
+                case ito::tComplex64:   npTypenum = NPY_CFLOAT; break;
+                case ito::tComplex128:  npTypenum = NPY_CDOUBLE; break;
+                default: npTypenum = -1;
+                }
+
+                if (dataObj.getDims() < 2)
+                {
+                    PyErr_SetString(PyExc_TypeError, "the destination data object is empty.");
+                }
+                else if (npTypenum >= 0)
+                {
+                    int dims = dataObj.getDims();
+                    PyObject *npArray = PyArray_ContiguousFromAny(value, npTypenum, 1, dims);
+
+                    if (npArray)
+                    {
+                        PyArrayObject *npArray_ = (PyArrayObject*)npArray;
+                        int npdims = PyArray_NDIM(npArray_);
+
+                        const npy_intp *npArrayShape = PyArray_SHAPE(npArray_);
+                        int *map_dims_to_npdims = new int[dims];
+
+                        if (dataObj.getTotal() != PyArray_SIZE(npArray_))
+                        {
+                            PyErr_Format(PyExc_ValueError, "size of given data does not fit to size of data object");
+                            error = true;
+                        }
+                        int c = 0;
+
+                        if (!error)
+                        {
+                            //check dimensions
+                            for (int d = 0; d < dims; ++d)
+                            {
+                                if ((c < npdims) && (npArrayShape[c] == dataObj.getSize(d)))
+                                {
+                                    map_dims_to_npdims[d] = c;
+                                    c++;
+                                }
+                                else if (dataObj.getSize(d) == 1) //this dimension is not required in np-array
+                                {
+                                    map_dims_to_npdims[d] = -1; //d.th dimension of dataObj is not available in np-array (squeezed)
+                                }
+                                else
+                                {
+                                    PyErr_Format(PyExc_ValueError, "%i. dimension of given data does not fit to given dimension. %i obtained, %i required", d, npArrayShape[c], dataObj.getSize(d));
+                                    error = true;
+                                }
+                            }
+                        }
+
+                        if (!error)
+                        {
+                            npy_intp *ind = new npy_intp[npdims];
+                            memset(ind, 0, npdims * sizeof(npy_intp));
+                            const void* npPtr = NULL;
+                            int numPlanes = dataObj.getNumPlanes();
+                            cv::Mat *mat;
+
+                            int orgPlaneSize = 1;
+
+                            for (int nDim = 1; nDim < dims - 2; nDim++)
+                            {
+                                orgPlaneSize *= npArrayShape[nDim];
+                            }
+
+                            for (int plane = 0; plane < numPlanes; ++plane)
+                            {
+                                mat = dataObj.getCvPlaneMat(plane);
+
+                                int tMatNum = plane;
+                                int planeSize = orgPlaneSize;
+                                for (int nDim = 0; nDim < dims - 2; nDim++)
+                                {
+                                    if (map_dims_to_npdims[nDim] >= 0)
+                                    {
+                                        ind[map_dims_to_npdims[nDim]] = tMatNum / planeSize;
+                                    }
+                                    tMatNum %= planeSize;
+                                    planeSize /= npArrayShape[nDim + 1];
+                                }
+
+
+                                for (int row = 0; row < mat->rows; ++row)
+                                {
+                                    if (map_dims_to_npdims[dims-2] >= 0)
+                                    {
+                                        ind[dims-2] = row;
+                                    }
+                                    npPtr = PyArray_GetPtr(npArray_, ind);
+                                    memcpy(mat->ptr(row), npPtr, mat->cols * mat->elemSize());
+                                }
+                            }
+
+                            DELETE_AND_SET_NULL_ARRAY(ind);
+                        }
+
+                        DELETE_AND_SET_NULL_ARRAY(map_dims_to_npdims);
+
+                        Py_DECREF(npArray);
+                    }
+                    else
+                    {
+                        //pyerror is already set
+                        error = true;
+                    }
+                }
+                else
+                {
+                    PyErr_SetString(PyExc_TypeError, "assign value has no of the following types: integer, floating point, complex, rgba (type rgba32 only) or data object");
+                    error = true;
+                }
             }
+            /*else
+            {
+                error = true;
+                PyErr_SetString(PyExc_TypeError, "assign value has no of the following types: integer, floating point, complex, rgba (type rgba32 only) or data object");
+            }*/
         }
 
     }
@@ -5093,7 +5560,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 }
 
             }
-            catch(cv::Exception exc)
+            catch(cv::Exception &exc)
             {
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                 error = true;
@@ -5133,7 +5600,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                     dataObj = self->dataObject->at(ranges); //dataObj in readLock
                     ((PyDataObject*)value)->dataObject->deepCopyPartial(dataObj);
                 }
-                catch(cv::Exception exc)
+                catch(cv::Exception &exc)
                 {
                     PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                     error = true;
@@ -5197,7 +5664,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                 }
 
             }
-            catch(cv::Exception exc)
+            catch(cv::Exception &exc)
             {
                 PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
                 error = true;
@@ -5730,7 +6197,7 @@ PyObject* PythonDataObject::PyDataObj_Array_(PyDataObject *self, PyObject *args)
         {
             continuousObject = new ito::DataObject(ito::makeContinuous(*selfDO));
         }
-        catch(cv::Exception exc)
+        catch(cv::Exception &exc)
         {
             continuousObject = NULL;
             PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -6269,7 +6736,7 @@ PyObject* PythonDataObject::PyDataObject_abs(PyDataObject *self)
     {
         retObj->dataObject = new ito::DataObject(ito::abs(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -6307,7 +6774,7 @@ PyObject* PythonDataObject::PyDataObject_arg(PyDataObject *self)
     {
         retObj->dataObject = new ito::DataObject(ito::arg(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -6345,7 +6812,7 @@ PyObject* PythonDataObject::PyDataObject_real(PyDataObject *self)
     {
         retObj->dataObject = new ito::DataObject(ito::real(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -6384,7 +6851,7 @@ PyObject* PythonDataObject::PyDataObject_imag(PyDataObject *self)
     {
         retObj->dataObject = new ito::DataObject(ito::imag(*(d)));  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -6440,7 +6907,7 @@ dataObj : {dataObject} \n\
     {
         retObj->dataObject = new ito::DataObject(self->dataObject->toGray(typeno));
     }
-    catch(cv::Exception exc)
+    catch(cv::Exception &exc)
     {
         Py_DECREF(retObj);
         PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
@@ -6647,6 +7114,96 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, int continuou
         }
     default:
         PyErr_SetString(PyExc_TypeError, "type of data object not supported");
+        return NULL;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectCreateMask_doc, "createMask(shapes [, inverse = False]) -> return a uint8 data object of the same size where all pixels belonging to any shape are masked. \n\
+\n\
+The destination data object has the same size than this data object and the real type given by destinationType.The pixel - wise \
+conversion is done using the formula : gray = 0.299 * red + 0.587 * green + 0.114 * blue.\
+\n\
+Parameters \n\
+---------- - \n\
+shapes : {shape or seq. of shapes} \n\
+    The union of all shapes (polygons, rectangles, squares, circles and ellipes are considered, only) are marked within the mask \n\
+inverse : {bool} \n\
+    If False (default) the shape areas are marked with 255 and the outer areas with 0, if True the behaviour is vice-versa. \n\
+\n\
+Returns \n\
+------ - \n\
+dataObj : {dataObject} \n\
+    uint8 data object as mask with the same size, scales and offsets than this object. The mask is applied to all planes.");
+PyObject* PythonDataObject::PyDataObject_createMask(PyDataObject *self, PyObject *args, PyObject* kwds)
+{
+    if (self->dataObject == NULL)
+    {
+        PyErr_SetString(PyExc_TypeError, "data object is NULL");
+        return NULL;
+    }
+
+    PyObject *shapes = NULL;
+    int inverse = 0;
+
+    const char *kwlist[] = { "shapes", "inverse", NULL };
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|i", const_cast<char**>(kwlist), &shapes, &inverse))
+    {
+        return NULL;
+    }
+
+    if (PyShape_Check(shapes))
+    {
+        PythonShape::PyShape* shape = (PythonShape::PyShape*)shapes;
+        if (shape && shape->shape)
+        {
+            ito::DataObject mask = shape->shape->mask(*self->dataObject, inverse > 0);
+            PyDataObject *ret = createEmptyPyDataObject();
+            ret->dataObject = new ito::DataObject(mask);
+            return (PyObject*)ret;
+        }
+
+        PyErr_SetString(PyExc_TypeError, "at least one shape item is invalid.");
+        return NULL;
+    }
+    else if (PySequence_Check(shapes))
+    {
+        QVector<ito::Shape> shape_vector;
+        PyObject *obj;
+        PythonShape::PyShape* shape;
+
+        for (Py_ssize_t i = 0; i < PySequence_Length(shapes); ++i)
+        {
+            obj = PySequence_Fast_GET_ITEM(shapes, i); //borrowed
+            if (PyShape_Check(obj))
+            {
+                shape = (PythonShape::PyShape*)obj;
+                if (shape && shape->shape)
+                {
+                    shape_vector << *shape->shape;
+                }
+                else
+                {
+                    PyErr_SetString(PyExc_TypeError, "at least one shape item is invalid.");
+                    return NULL;
+                }
+            }
+            else
+            {
+                PyErr_SetString(PyExc_TypeError, "at least one item of parameter 'shape' is no type itom.shape.");
+                return NULL;
+            }
+        }
+
+        ito::DataObject mask = ito::Shape::maskFromMultipleShapes(*self->dataObject, shape_vector, inverse > 0);
+        PyDataObject *ret = createEmptyPyDataObject();
+        ret->dataObject = new ito::DataObject(mask);
+        return (PyObject*)ret;
+    }
+    else
+    {
+        PyErr_SetString(PyExc_TypeError, "shape required.");
         return NULL;
     }
 }
@@ -7047,6 +7604,7 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"__reduce__", (PyCFunction)PythonDataObject::PyDataObj_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
         {"__setstate__", (PyCFunction)PythonDataObject::PyDataObj_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
         {"__array__", (PyCFunction)PythonDataObject::PyDataObj_Array_, METH_VARARGS, dataObject_Array__doc},
+        { "createMask", (PyCFunction)PythonDataObject::PyDataObject_createMask, METH_KEYWORDS | METH_VARARGS, pyDataObjectCreateMask_doc },
 
         {"abs", (PyCFunction)PythonDataObject::PyDataObject_abs, METH_NOARGS, pyDataObjectAbs_doc}, 
         {"arg", (PyCFunction)PythonDataObject::PyDataObject_arg, METH_NOARGS, pyDataObjectArg_doc},
@@ -7128,7 +7686,7 @@ PyTypeObject PythonDataObject::PyDataObjectType = {
         (richcmpfunc)PyDataObject_RichCompare,            /* tp_richcompare */
         0,                       /* tp_weaklistoffset */
         (getiterfunc)PyDataObj_getiter,                       /* tp_iter */
-        0,                       /* tp_iternext */
+        (iternextfunc)PyDataObjectIter_new,                 /* tp_iternext */
         PyDataObject_methods,             /* tp_methods */
         PyDataObject_members,             /* tp_members */
         PyDataObject_getseters,            /* tp_getset */

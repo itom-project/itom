@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -43,10 +43,12 @@
 #include "pythonRegion.h"
 #include "pythonRgba.h"
 #include "pythonFont.h"
+#include "pythonShape.h"
 #include "pythonAutoInterval.h"
 
 #include "../organizer/addInManager.h"
 #include "common/interval.h"
+#include "../helper/sleeper.h"
 
 #include <qobject.h>
 #include <qcoreapplication.h>
@@ -126,7 +128,7 @@ FuncWeakRef& FuncWeakRef::operator =(FuncWeakRef rhs)
     m_argument = rhs.m_argument;
     Py_XINCREF(m_proxyObject);
     Py_XINCREF(m_argument);
-
+    m_handle = rhs.m_handle;
     Py_XDECREF(t1);
     Py_XDECREF(t2);
 
@@ -237,6 +239,9 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<ito::ItomPaletteBase>("ito::ItomPaletteBase");
     qRegisterMetaType<QSharedPointer<ito::ItomPaletteBase> >("QSharedPointer<ito::ItomPaletteBase>");
     qRegisterMetaType<ito::ItomPlotHandle>("ito::ItomPlotHandle");
+    qRegisterMetaType<ito::Shape>("ito::Shape");
+    qRegisterMetaType<QVector<ito::Shape> >("QVector<ito::Shape>");
+    qRegisterMetaType<QSharedPointer<QVector<ito::Shape> > >("QSharedPointer<QVector<ito::Shape>>");
 
     m_autoReload.modAutoReload = NULL;
     m_autoReload.classAutoReload = NULL;
@@ -284,6 +289,13 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
     m_pythonThreadId = QThread::currentThreadId ();
     qDebug() << "python in thread: " << m_pythonThreadId;
 
+	/*set new seed for random generator of OpenCV. 
+	This is required to have real random values for any randn or randu command.
+	The seed must be set in every thread. This is for the main thread.
+	*/
+	cv::theRNG().state = (uint64)cv::getCPUTickCount();
+	/*seed is set*/
+
     readSettings();
 
     RetVal tretVal(retOk);
@@ -302,7 +314,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 #endif
 
             Py_Initialize();                                                        //!< must be called after any PyImport_AppendInittab-call
-//            PyEval_InitThreads();                                                   //!< prepare Python multithreading
+            PyEval_InitThreads();                                                   //!< prepare Python multithreading
 
             itomModule = PyImport_ImportModule("itom");
             m_pyModGC = PyImport_ImportModule("gc"); //new reference
@@ -446,6 +458,13 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 Py_INCREF(&PythonFont::PyFontType);
                 PythonFont::PyFont_addTpDict(PythonFont::PyFontType.tp_dict);
                 PyModule_AddObject(itomModule, "font", (PyObject *)&PythonFont::PyFontType);
+            }
+
+            if (PyType_Ready(&PythonShape::PyShapeType) >= 0)
+            {
+                Py_INCREF(&PythonShape::PyShapeType);
+                PythonShape::PyShape_addTpDict(PythonShape::PyShapeType.tp_dict);
+                PyModule_AddObject(itomModule, "shape", (PyObject *)&PythonShape::PyShapeType);
             }
 
             if (PyType_Ready(&PythonRgba::PyRgbaType) >= 0)
@@ -621,6 +640,9 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 PyErr_PrintEx(0);
             }
 
+            PyThreadState *pts = PyGILState_GetThisThreadState(); //wichtige Zeile
+            PyEval_ReleaseThread(pts);
+
             (*retValue) += stringEncodingChanged();
 
             runString("from itom import *");
@@ -765,6 +787,9 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
     RetVal retValue(retOk);
     if (m_started)
     {
+        PyGILState_STATE gstate;
+        gstate = PyGILState_Ensure();
+
         //unload the possibly loaded auto-reload tool
         if (m_autoReload.classAutoReload)
         {
@@ -1046,11 +1071,14 @@ ito::RetVal PythonEngine::stringEncodingChanged()
 //----------------------------------------------------------------------------------------------------------------------------------
 QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const char *str, QByteArray &encoding) const
 {
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
     //see http://docs.python.org/devguide/compiler.html
     _node *n = PyParser_SimpleParseString(str, Py_file_input);
     _node *n2 = n;
     if (n == NULL)
     {
+        PyGILState_Release(gstate);
         //here: error indicator is set.
         return QList<int>();
     }
@@ -1074,9 +1102,13 @@ QList<int> PythonEngine::parseAndSplitCommandInMainComponents(const char *str, Q
         {
             ret.append(temp->n_lineno);
         }
+ 
     }
-
+    
     PyNode_Free(n);
+    
+    PyGILState_Release(gstate);
+
     return ret;
 }
 
@@ -1085,6 +1117,8 @@ void PythonEngine::setAutoReloader(bool enabled, bool checkFile, bool checkCmd, 
 {
     if (m_autoReload.modAutoReload)
     {
+        PyGILState_STATE gstate = PyGILState_Ensure();
+
         if (enabled)
         {
             if (!m_autoReload.classAutoReload)
@@ -1135,6 +1169,8 @@ void PythonEngine::setAutoReloader(bool enabled, bool checkFile, bool checkCmd, 
                 Py_XDECREF(result);
             }
         }
+
+        PyGILState_Release(gstate);
     }
     else
     {
@@ -1153,6 +1189,8 @@ ito::RetVal PythonEngine::autoReloaderCheck()
     {
         if (m_autoReload.enabled && m_autoReload.classAutoReload)
         {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "autoreload", "");
             if (!result)
             {
@@ -1166,6 +1204,8 @@ ito::RetVal PythonEngine::autoReloaderCheck()
                 PyErr_PrintEx(0);
             }
             Py_XDECREF(result);
+
+            PyGILState_Release(gstate);
         }
         else
         {
@@ -1187,6 +1227,7 @@ ito::RetVal PythonEngine::runString(const QString &command)
     //if it is not single line, Py_single_input below must be replaced.
 
     RetVal retValue = RetVal(retOk);
+    PyGILState_STATE gstate = PyGILState_Ensure();
 
     PyObject *mainDict = getGlobalDictionary();
     PyObject *localDict = getLocalDictionary();
@@ -1266,6 +1307,8 @@ ito::RetVal PythonEngine::runString(const QString &command)
         Py_XDECREF(result);
     }
 
+    PyGILState_Release(gstate);
+
     return retValue;
 }
 
@@ -1288,6 +1331,8 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
     }
 
     m_interruptCounter = 0;
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
     if (method == 1)
     {
         //direct call
@@ -1443,14 +1488,23 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
         }
     }
 
+    PyGILState_Release(gstate);
+
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple)
+
+ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple, bool gilExternal /*= false*/)
 {
     RetVal retValue = RetVal(retOk);
     m_interruptCounter = 0;
+    PyGILState_STATE gstate;
+    if (!gilExternal)
+    {
+        gstate = PyGILState_Ensure();
+    }
+
     if (m_autoReload.enabled && m_autoReload.checkFctExec)
     {
         PyObject *result = PyObject_CallMethod(m_autoReload.classAutoReload, "pre_run_cell", "");
@@ -1489,11 +1543,17 @@ ito::RetVal PythonEngine::runFunction(PyObject *callable, PyObject *argTuple)
         Py_XDECREF(result);
     }
 
+    if (!gilExternal)
+    {
+        PyGILState_Release(gstate);
+    }
+
     return retValue;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple)
+
+ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, bool gilExternal /*= false*/)
 {
     PyObject* result = NULL;
     RetVal retValue = RetVal(retOk);
@@ -1504,12 +1564,24 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple)
     }
     else
     {
+        PyGILState_STATE gstate;
+        if (!gilExternal)
+        {
+            gstate = PyGILState_Ensure();
+        }
+
         //!< first, clear all existing breakpoints
         result = PyObject_CallMethod(itomDbgInstance, "clear_all_breaks", "");
         if (result == NULL)
         {
             std::cerr << tr("Error while clearing all breakpoints in itoDebugger.").toLatin1().data() << "\n" << std::endl;
             printPythonErrorWithoutTraceback(); //traceback is sense-less, since the traceback is in itoDebugger.py only!
+
+            if (!gilExternal)
+            {
+                PyGILState_Release(gstate);
+            }
+
             return RetVal(retError);
         }
 
@@ -1518,12 +1590,15 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple)
         QList<BreakPointItem>::iterator it;
         int pyBpNumber;
         QModelIndex modelIndex;
+
         ito::RetVal retValueTemp;
 
         for (it = bp.begin() ; it != bp.end() ; ++it)
         {
+
             if (it->pythonDbgBpNumber == -1)
             {
+
                 retValueTemp = pythonAddBreakpoint(it->filename, it->lineno, it->enabled, it->temporary, it->condition, it->ignoreCount, pyBpNumber);
                 if (retValueTemp == ito::retOk)
                 {
@@ -1535,6 +1610,7 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple)
                     std::cerr << (retValueTemp.hasErrorMessage() ? retValueTemp.errorMessage() : "unspecified error when adding breakpoint to debugger") << "\n" << std::endl;
                 }
             }
+
         }
 
         //!< setup connections for live-changes in breakpoints
@@ -1600,6 +1676,11 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple)
         //!< disconnect connections for live-changes in breakpoints
         shutdownBreakPointDebugConnections();
         bpModel->resetAllPyBpNumbers();
+
+        if (!gilExternal)
+        {
+            PyGILState_Release(gstate);
+        }
     }
 
     return retValue;
@@ -1626,6 +1707,8 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
     }
     else
     {
+        PyGILState_STATE gstate = PyGILState_Ensure();
+
         //!< first, clear all existing breakpoints
         result = PyObject_CallMethod(itomDbgInstance, "clear_all_breaks", "");
         if (result == NULL)
@@ -1722,6 +1805,8 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
         //!< disconnect connections for live-changes in breakpoints
         shutdownBreakPointDebugConnections();
         bpModel->resetAllPyBpNumbers();
+
+        PyGILState_Release(gstate);
     }
 
     return retValue;
@@ -1750,6 +1835,8 @@ ito::RetVal PythonEngine::debugString(const QString &command)
     }
     else
     {
+        PyGILState_STATE gstate = PyGILState_Ensure();
+
         //!< first, clear all existing breakpoints
         result = PyObject_CallMethod(itomDbgInstance, "clear_all_breaks", "");
         if (result == NULL)
@@ -1847,6 +1934,8 @@ ito::RetVal PythonEngine::debugString(const QString &command)
         //!< disconnect connections for live-changes in breakpoints
         shutdownBreakPointDebugConnections();
         bpModel->resetAllPyBpNumbers();
+
+        PyGILState_Release(gstate);
     }
 
     return retValue;
@@ -1877,6 +1966,8 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
         {
             firstLine = code;
         }
+
+        PyGILState_STATE gstate = PyGILState_Ensure();
         PyObject *result = PyObject_CallMethod(m_pyModSyntaxCheck, "check", "s", firstLine.toUtf8().data());
 
         if (result && PyList_Check(result) && PyList_Size(result) >= 2)
@@ -1935,6 +2026,8 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
         }
 
         Py_XDECREF(result);
+
+        PyGILState_Release(gstate);
     }
 }
 
@@ -1942,6 +2035,7 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
 ito::RetVal PythonEngine::pythonAddBreakpoint(const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount, int &pyBpNumber)
 {
     RetVal retval;
+    //when calling this method, the Python GIL must already be locked
     PyObject *result = NULL;
 
     pyBpNumber = -1;
@@ -2012,6 +2106,7 @@ ito::RetVal PythonEngine::pythonAddBreakpoint(const QString &filename, const int
 ito::RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const QString &filename, const int lineno, const bool enabled, const bool temporary, const QString &condition, const int ignoreCount)
 {
     RetVal retval;
+    //when calling this method, the Python GIL must already be locked
     PyObject *result = NULL;
 
     if (itomDbgInstance == NULL)
@@ -2076,6 +2171,7 @@ ito::RetVal PythonEngine::pythonEditBreakpoint(const int pyBpNumber, const QStri
 ito::RetVal PythonEngine::pythonDeleteBreakpoint(const int pyBpNumber)
 {
     ito::RetVal retval;
+    //when calling this method, the Python GIL must already be locked
     PyObject *result = NULL;
     if (itomDbgInstance == NULL)
     {
@@ -2116,7 +2212,6 @@ ito::RetVal PythonEngine::pythonDeleteBreakpoint(const int pyBpNumber)
         Py_XDECREF(result);
         result = NULL;
     }
-
     return retval;
 }
 
@@ -2269,10 +2364,16 @@ void PythonEngine::pythonRunString(QString cmd)
     switch (pythonState)
     {
     case pyStateIdle:
+        {
         pythonStateTransition(pyTransBeginRun);
         runString(ba.data());
+
+        PyGILState_STATE gstate = PyGILState_Ensure();
         emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+        PyGILState_Release(gstate);
+
         pythonStateTransition(pyTransEndRun);
+        }
         break;
     case pyStateRunning:
     case pyStateDebugging:
@@ -2296,6 +2397,7 @@ void PythonEngine::pythonRunFile(QString filename)
     switch (pythonState)
     {
     case pyStateIdle:
+        {
         pythonStateTransition(pyTransBeginRun);
         list = filename.split(";");
         foreach (const QString &filenameTemp, list)
@@ -2305,8 +2407,13 @@ void PythonEngine::pythonRunFile(QString filename)
                 runPyFile(filenameTemp);
             }
         }
+
+        PyGILState_STATE gstate = PyGILState_Ensure();
         emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+        PyGILState_Release(gstate);
+        
         pythonStateTransition(pyTransEndRun);
+        }
         break;
     case pyStateRunning:
     case pyStateDebugging:
@@ -2324,10 +2431,16 @@ void PythonEngine::pythonDebugFile(QString filename)
     switch (pythonState)
     {
     case pyStateIdle:
+        {
         pythonStateTransition(pyTransBeginDebug);
         debugFile(filename);
+
+        PyGILState_STATE gstate = PyGILState_Ensure();
         emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+        PyGILState_Release(gstate);
+
         pythonStateTransition(pyTransEndDebug);
+        }
         break;
     case pyStateRunning:
     case pyStateDebugging:
@@ -2351,10 +2464,16 @@ void PythonEngine::pythonDebugString(QString cmd)
     switch (pythonState)
     {
     case pyStateIdle:
+        {
         pythonStateTransition(pyTransBeginDebug);
         debugString(cmd.toLatin1().data());
+
+        PyGILState_STATE gstate = PyGILState_Ensure();
         emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+        PyGILState_Release(gstate);
+
         pythonStateTransition(pyTransEndDebug);
+        }
         break;
     case pyStateRunning:
     case pyStateDebugging:
@@ -2384,14 +2503,18 @@ void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
         {
             pythonStateTransition(pyTransBeginDebug);
             debugString(cmd);
+            PyGILState_STATE gstate = PyGILState_Ensure();
             emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+            PyGILState_Release(gstate);
             pythonStateTransition(pyTransEndDebug);
         }
         else
         {
             pythonStateTransition(pyTransBeginRun);
             runString(cmd);
+            PyGILState_STATE gstate = PyGILState_Ensure();
             emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+            PyGILState_Release(gstate);
             pythonStateTransition(pyTransEndRun);
         }
         break;
@@ -2401,23 +2524,38 @@ void PythonEngine::pythonExecStringFromCommandLine(QString cmd)
         std::cerr << "it is not allowed to run a python string in mode pyStateRunning or pyStateDebugging\n" << std::endl;
         break;
     case pyStateDebuggingWaiting:
+        {
         pythonStateTransition(pyTransDebugExecCmdBegin);
         runString(cmd);
+        PyGILState_STATE gstate = PyGILState_Ensure();
         emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+        PyGILState_Release(gstate);
         pythonStateTransition(pyTransDebugExecCmdEnd);
+        }
         break;
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::pythonDebugFunction(PyObject *callable, PyObject *argTuple)
+void PythonEngine::pythonDebugFunction(PyObject *callable, PyObject *argTuple, bool gilExternal /*= false*/)
 {
     switch (pythonState)
     {
     case pyStateIdle:
         pythonStateTransition(pyTransBeginDebug);
-        debugFunction(callable,argTuple);
-        emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+        debugFunction(callable, argTuple, gilExternal);
+
+        if (gilExternal)
+        {
+            emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+        }
+        else
+        {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+            emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+            PyGILState_Release(gstate);
+        }
+
         pythonStateTransition(pyTransEndDebug);
         break;
     case pyStateRunning:
@@ -2429,7 +2567,7 @@ void PythonEngine::pythonDebugFunction(PyObject *callable, PyObject *argTuple)
     case pyStateDebuggingWaitingButBusy:
         pythonStateTransition(pyTransDebugExecCmdBegin);
         std::cout << "Function will be executed instead of debugged since another debug session is currently running.\n" << std::endl;
-        pythonRunFunction(callable, argTuple);
+        pythonRunFunction(callable, argTuple, gilExternal);
         pythonStateTransition(pyTransDebugExecCmdEnd);
         // no command execution allowed if running or debugging without being in waiting mode
         //qDebug() << "it is now allowed to debug a python function or method in mode pyStateRunning, pyStateDebugging, pyStateDebuggingWaiting or pyStateDebuggingWaitingButBusy";
@@ -2439,29 +2577,61 @@ void PythonEngine::pythonDebugFunction(PyObject *callable, PyObject *argTuple)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //do not execute this method from another thread, only execute it within python-thread since this method is not thread safe
-void PythonEngine::pythonRunFunction(PyObject *callable, PyObject *argTuple)
+void PythonEngine::pythonRunFunction(PyObject *callable, PyObject *argTuple, bool gilExternal /*= false*/)
 {
     m_interruptCounter = 0;
     switch (pythonState)
     {
         case pyStateIdle:
             pythonStateTransition(pyTransBeginRun);
-            runFunction(callable, argTuple);
-            emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+            runFunction(callable, argTuple, gilExternal);
+
+            if (gilExternal)
+            {
+                emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+            }
+            else
+            {
+                PyGILState_STATE gstate = PyGILState_Ensure();
+                emitPythonDictionary(true, true, getGlobalDictionary(), NULL);
+                PyGILState_Release(gstate);
+            }
+
             pythonStateTransition(pyTransEndRun);
         break;
 
         case pyStateRunning:
         case pyStateDebugging:
         case pyStateDebuggingWaitingButBusy: //functions (from signal-calls) can be executed whenever another python method is executed (only possible if another method executing python code is calling processEvents. processEvents stops until this "runFunction" has been terminated
-            runFunction(callable, argTuple);
-            emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+            runFunction(callable, argTuple, gilExternal);
+
+            if (gilExternal)
+            {
+                emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+            }
+            else
+            {
+                PyGILState_STATE gstate = PyGILState_Ensure();
+                emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+                PyGILState_Release(gstate);
+            }
         break;
 
         case pyStateDebuggingWaiting:
             pythonStateTransition(pyTransDebugExecCmdBegin);
-            runFunction(callable, argTuple);
-            emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+            runFunction(callable, argTuple, gilExternal);
+
+            if (gilExternal)
+            {
+                emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+            }
+            else
+            {
+                PyGILState_STATE gstate = PyGILState_Ensure();
+                emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+                PyGILState_Release(gstate);
+            }
+
             pythonStateTransition(pyTransDebugExecCmdEnd);
         break;
     }
@@ -2484,6 +2654,8 @@ void PythonEngine::pythonRunStringOrFunction(QString cmdOrFctHash)
             std::cerr << "The command '" << cmdOrFctHashCropped.toLatin1().data() << "' seems to be a hashed function or method, but no handle value can be extracted (size_t required)\n" << std::endl;
             return;
         }
+
+        PyGILState_STATE gstate = PyGILState_Ensure();
 
         QHash<size_t, FuncWeakRef>::iterator it = m_pyFuncWeakRefHashes.find(hashValue);
         if (it != m_pyFuncWeakRefHashes.end())
@@ -2515,6 +2687,8 @@ void PythonEngine::pythonRunStringOrFunction(QString cmdOrFctHash)
         {
             std::cerr << "No action associated with key '" << cmdOrFctHashCropped.toLatin1().data() << "' could be found in internal hash table\n" << std::endl;
         }
+
+        PyGILState_Release(gstate);
     }
     else
     {
@@ -2539,6 +2713,8 @@ void PythonEngine::pythonDebugStringOrFunction(QString cmdOrFctHash)
             std::cerr << "The command '" << cmdOrFctHashCropped.toLatin1().data() << "' seems to be a hashed function or method, but no handle value can be extracted (size_t required)\n" << std::endl;
             return;
         }
+
+        PyGILState_STATE gstate = PyGILState_Ensure();
 
         QHash<size_t, FuncWeakRef>::iterator it = m_pyFuncWeakRefHashes.find(hashValue);
         if (it != m_pyFuncWeakRefHashes.end())
@@ -2570,6 +2746,8 @@ void PythonEngine::pythonDebugStringOrFunction(QString cmdOrFctHash)
         {
             std::cerr << "No action associated with key '" << cmdOrFctHashCropped.toLatin1().data() << "' could be found in internal hash table\n" << std::endl;
         }
+
+        PyGILState_Release(gstate);
         
     }
     else
@@ -2737,28 +2915,34 @@ void PythonEngine::clearDbgCmdLoop()
 void PythonEngine::breakPointAdded(BreakPointItem bp, int row)
 {
     int pyBpNumber;
+    PyGILState_STATE gstate = PyGILState_Ensure();
     pythonAddBreakpoint(bp.filename, bp.lineno, bp.enabled, bp.temporary, bp.condition, bp.ignoreCount, pyBpNumber);
+    PyGILState_Release(gstate);
     bpModel->setPyBpNumber(bp, pyBpNumber);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::breakPointDeleted(QString /*filename*/, int /*lineNo*/, int pyBpNumber)
 {
+    PyGILState_STATE gstate = PyGILState_Ensure();
     ito::RetVal ret = pythonDeleteBreakpoint(pyBpNumber);
     if (ret.containsError())
     {
         std::cerr << (ret.hasErrorMessage() ? ret.errorMessage() : "unknown error while deleting breakpoint") << "\n" << std::endl;
     }
+    PyGILState_Release(gstate);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::breakPointChanged(BreakPointItem /*oldBp*/, ito::BreakPointItem newBp)
 {
+    PyGILState_STATE gstate = PyGILState_Ensure();
     ito::RetVal ret = pythonEditBreakpoint(newBp.pythonDbgBpNumber, newBp.filename, newBp.lineno, newBp.enabled, newBp.temporary, newBp.condition, newBp.ignoreCount);
     if (ret.containsError())
     {
         std::cerr << (ret.hasErrorMessage() ? ret.errorMessage() : "unknown error while editing breakpoint") << "\n" << std::endl;
     }
+    PyGILState_Release(gstate);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2796,8 +2980,9 @@ void PythonEngine::registerWorkspaceContainer(PyWorkspaceContainer *container, b
             connect(container,SIGNAL(getChildNodes(PyWorkspaceContainer*,QString)),this,SLOT(workspaceGetChildNode(PyWorkspaceContainer*,QString)));
             m_localWorkspaceContainer.insert(container);
         }
-
+        PyGILState_STATE gstate = PyGILState_Ensure();
         emitPythonDictionary(true, true, getGlobalDictionary(), getLocalDictionary());
+        PyGILState_Release(gstate);
     }
     else
     {
@@ -2815,9 +3000,20 @@ void PythonEngine::registerWorkspaceContainer(PyWorkspaceContainer *container, b
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//return new reference of found object that corresponds to fullName in the global or local workspace
+//Python GIL must be locked when calling this function!
 PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QStringList &fullName)
 {
+#if defined _DEBUG && PY_VERSION_HEX >= 0x030400
+    if (!PyGILState_Check())
+    {
+        std::cerr << "Python GIL must be locked when calling getPyObjectByFullName\n" << std::endl;
+        return NULL;
+    }
+#endif
+
     PyObject *obj = NULL;
+    PyObject *current_obj = NULL;
     QStringList items = fullName; //.split(".");
     int i=0;
     float f=0.0;
@@ -2828,6 +3024,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
     QByteArray itemName;
     QByteArray itemKey;
     bool ok;
+    bool objIsNewRef = false;
 
     if (items.count() > 0 && items[0] == "") items.removeFirst();
 
@@ -2842,6 +3039,8 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
 
     while(items.count() > 0 && obj)
     {
+        current_obj = obj;
+
         itemName = items[0].toLatin1();
 
         if (itemName.size() < 4) //every item has the form "as:name" where a,s... are values of the enumeration PyWorkspaceContainer:WorkspaceItemType
@@ -2881,28 +3080,67 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                     }
                 }
             }
+
             obj = tempObj;
+
+            if (objIsNewRef)
+            {
+                Py_DECREF(current_obj); 
+                objIsNewRef = false; //in the overall if-case, no new obj is a new reference, all borrowed
+            }
         }
         else if (PyList_Check(obj))
         {
             i = itemKey.toInt(&ok);
             if (!ok || i < 0 || i >= PyList_Size(obj)) return NULL; //error
-            obj = PyList_GET_ITEM(obj,i);
+            obj = PyList_GET_ITEM(obj,i); //borrowed
+
+            if (objIsNewRef)
+            {
+                Py_DECREF(current_obj); 
+                objIsNewRef = false; //no new obj is a new reference, all borrowed
+            }
         }
         else if (PyTuple_Check(obj))
         {
             i = itemKey.toInt(&ok);
             if (!ok || i < 0 || i >= PyTuple_Size(obj)) return NULL; //error
-            obj = PyTuple_GET_ITEM(obj,i);
+            obj = PyTuple_GET_ITEM(obj,i); //borrowed
+
+            if (objIsNewRef)
+            {
+                Py_DECREF(current_obj); 
+                objIsNewRef = false; //no new obj is a new reference, all borrowed
+            }
         }
         else if (PyObject_HasAttr(obj, dictUnicode))
         {
-            PyObject *temp = PyObject_GetAttr(obj, dictUnicode);
+            PyObject *temp = PyObject_GetAttr(obj, dictUnicode); //new reference
             if (temp)
             {
                 if (itemKeyType == 's') //string
                 {
-                    tempObj = PyDict_GetItemString(obj, itemKey); //borrowed
+                    tempObj = PyDict_GetItemString(temp, itemKey); //borrowed
+                    if (!tempObj)
+                    {
+                        obj = PyObject_GetAttrString(obj, itemKey); //new reference (only for this case, objIsNewRef is true (if nothing failed))
+
+                        if (objIsNewRef)
+                        {
+                            Py_DECREF(current_obj); 
+                        }
+
+                        objIsNewRef = (obj != NULL);
+                    }
+                    else
+                    {
+                        obj = tempObj;
+                        if (objIsNewRef)
+                        {
+                            Py_DECREF(current_obj); 
+                            objIsNewRef = false;  //no new obj is a new reference, all borrowed
+                        }
+                    }
                 }
                 else if (itemKeyType == 'n') //number
                 {
@@ -2910,7 +3148,7 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                     if (ok)
                     {
                         number = PyLong_FromLong(i);
-                        tempObj = PyDict_GetItem(obj, number); //borrowed
+                        tempObj = PyDict_GetItem(temp, number); //borrowed
                         Py_XDECREF(number);
                     }
                     if (!ok || tempObj == NULL)
@@ -2919,12 +3157,19 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
                         if (ok)
                         {
                             number = PyFloat_FromDouble(i);
-                            tempObj = PyDict_GetItem(obj, number); //borrowed
+                            tempObj = PyDict_GetItem(temp, number); //borrowed
                             Py_XDECREF(number);
                         }
                     }
+
+                    obj = tempObj;
+                    if (objIsNewRef)
+                    {
+                        Py_DECREF(current_obj); 
+                        objIsNewRef = false;
+                    }
                 }
-                obj = tempObj;
+                
                 Py_DECREF(temp);
             }
             else
@@ -2939,24 +3184,36 @@ PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QString
         items.removeFirst();
     }
 
-    return obj;
+    if (objIsNewRef == false)
+    {
+        Py_XINCREF(obj);
+    }
+
+    return obj; //always new reference
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::workspaceGetChildNode(PyWorkspaceContainer *container, QString fullNameParentItem)
 {
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
     QStringList itemNameSplit = fullNameParentItem.split(container->getDelimiter());
     PyObject *obj = getPyObjectByFullName(container->isGlobalWorkspace(), itemNameSplit);
     
     if (obj)
     {
         container->loadDictionary(obj, fullNameParentItem);
+        Py_DECREF(obj);
     }
+
+    PyGILState_Release(gstate);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container, QString fullItemName, QSharedPointer<QString> extendedValue, ItomSharedSemaphore *semaphore)
+void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container, const QString &fullItemName, QSharedPointer<QString> extendedValue, ItomSharedSemaphore *semaphore)
 {
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
     QStringList itemNameSplit = fullItemName.split(container->getDelimiter());
     PyObject *obj = getPyObjectByFullName(container->isGlobalWorkspace(), itemNameSplit);
 
@@ -2987,7 +3244,11 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
             *extendedValue = "unknown";
             Py_XDECREF(repr);
         }
+
+        Py_DECREF(obj);
     }
+
+    PyGILState_Release(gstate);
 
     if (semaphore)
     {
@@ -2999,6 +3260,14 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObject* globalDict, PyObject* localDict)
 {
+#if defined _DEBUG && PY_VERSION_HEX >= 0x030400
+    if (!PyGILState_Check())
+    {
+        std::cerr << "Python GIL must be locked when calling emitPythonDictionary\n" << std::endl;
+        return;
+    }
+#endif
+
     //if localDict is equal to globalDict, the localDict is the current global dict (currently debugging at top level) -> it is sufficient to only show the global dict and delete the local dict
     //qDebug() << "python emitPythonDictionary. Thread: " << QThread::currentThreadId ();
     if (emitGlobal && m_mainWorkspaceContainer.count() > 0)
@@ -3307,10 +3576,21 @@ PyObject* PythonEngine::PyDbgCommandLoop(PyObject * /*pSelf*/, PyObject *pArgs)
             }
         }
 
+        PyThreadState *_save;
+
         while(!pyEngine->DbgCommandsAvailable()) //->isValidDbgCmd())
         {
+            Py_UNBLOCK_THREADS //from here, python can do something else... (e.g. executing another code snippet)
+
+            //tests showed that the CPU consumption becomes very high, if
+            //this while loop iterates without a tiny sleep.
+            //The subsequent processEvents however is necessary to t(5get
+            //the next debug command.
+            Sleeper::msleep(50);
+
             QCoreApplication::processEvents();
-            //QCoreApplication::sendPostedEvents(pyEngine,0);
+
+            Py_BLOCK_THREADS
 
             if (PyErr_CheckSignals() == -1) //!< check if key interrupt occurred
             {
@@ -3427,6 +3707,8 @@ bool PythonEngine::renameVariable(bool globalNotLocal, QString oldKey, QString n
         }
         else
         {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             //if (!PyUnicode_IsIdentifier(PyUnicode_FromString(newKey.toLatin1().data())))
             if (!PyUnicode_IsIdentifier(PyUnicode_DecodeLatin1(newKey.toLatin1().data(), newKey.length(), NULL)))
             {
@@ -3461,6 +3743,8 @@ bool PythonEngine::renameVariable(bool globalNotLocal, QString oldKey, QString n
                     }
                 }
             }
+
+            PyGILState_Release(gstate);
         }
 
         if (semaphore != NULL) //release semaphore now, since the following emit command will be a blocking connection, too.
@@ -3468,6 +3752,7 @@ bool PythonEngine::renameVariable(bool globalNotLocal, QString oldKey, QString n
             semaphore->release();
         }
 
+        PyGILState_STATE gstate = PyGILState_Ensure();
         if (globalNotLocal)
         {
             emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
@@ -3476,6 +3761,7 @@ bool PythonEngine::renameVariable(bool globalNotLocal, QString oldKey, QString n
         {
             emitPythonDictionary(false, true, NULL, getLocalDictionary());
         }
+        PyGILState_Release(gstate);
 
         if (oldState == pyStateIdle)
         {
@@ -3535,6 +3821,8 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, QStringList keys, ItomSha
         }
         else
         {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             foreach (key, keys)
             {
                 PyDict_DelItemString(dict, key.toLatin1().data());
@@ -3547,10 +3835,13 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, QStringList keys, ItomSha
                 }
             }
 
+            PyGILState_Release(gstate);
+
         }
 
         if (semaphore != NULL) semaphore->release();
 
+        PyGILState_STATE gstate = PyGILState_Ensure();
         if (globalNotLocal)
         {
             emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
@@ -3559,6 +3850,7 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, QStringList keys, ItomSha
         {
             emitPythonDictionary(false, true, NULL, getLocalDictionary());
         }
+        PyGILState_Release(gstate);
 
 
         if (oldState == pyStateIdle)
@@ -3615,6 +3907,8 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
         }
         else
         {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             //build dictionary, which should be pickled
             PyObject* pyRet;
             PyObject* pArgs = PyTuple_New(3);
@@ -3650,6 +3944,8 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
             retVal += checkForPyExceptions();
 
             Py_XDECREF(pArgs);
+
+            PyGILState_Release(gstate);
         }
 
 
@@ -3711,6 +4007,8 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
         }
         else
         {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             //PyObject *pArgs = PyTuple_Pack(1, PyUnicode_FromString(filename.toLatin1().data()));
             PyObject *pArgs = PyTuple_Pack(1, PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL));
             PyObject *dict = ito::PythonItom::PyLoadMatlabMat(NULL, pArgs);
@@ -3734,6 +4032,8 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
 
             Py_XDECREF(dict);
 
+            PyGILState_Release(gstate);
+
             if (semaphore) 
             {
                 semaphore->returnValue = retVal;
@@ -3741,6 +4041,7 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
                 released = true;
             }
 
+            gstate = PyGILState_Ensure();
             if (globalNotLocal)
             {
                 emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
@@ -3749,6 +4050,7 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
             {
                 emitPythonDictionary(false, true, NULL, getLocalDictionary());
             }
+            PyGILState_Release(gstate);
         }
 
         if (oldState == pyStateIdle)
@@ -3762,6 +4064,111 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
     }
 
     if (semaphore && !released)
+    {
+        semaphore->returnValue = retVal;
+        semaphore->release();
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PythonEngine::checkVarnamesInWorkspace(bool globalNotLocal, const QStringList &names, QSharedPointer<IntList> existing, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    ItomSharedSemaphoreLocker locker(semaphore);
+    tPythonState oldState = pythonState;
+    ito::RetVal retVal;
+    PyObject* destinationDict = NULL;
+    PyObject* value = NULL;
+
+
+    bool released = false;
+
+    if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    {
+        retVal += ito::RetVal(ito::retError, 0, tr("It is not allowed to check names of variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
+    }
+    else
+    {
+        if (pythonState == pyStateIdle)
+        {
+            pythonStateTransition(pyTransBeginRun);
+        }
+        else if (pythonState == pyStateDebuggingWaiting)
+        {
+            pythonStateTransition(pyTransDebugExecCmdBegin);
+        }
+
+        if (globalNotLocal)
+        {
+            destinationDict = getGlobalDictionary();
+        }
+        else
+        {
+            destinationDict = getLocalDictionary();
+        }
+
+        if (destinationDict == NULL)
+        {
+            retVal += ito::RetVal(ito::retError, 0, tr("values cannot be saved since workspace dictionary not available.").toLatin1().data());
+        }
+        else
+        {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
+            PyObject *existingItem = NULL;
+            PyObject *varname = NULL;
+
+            existing->clear();
+            existing->reserve(names.size());
+
+            for (int i = 0; (i < names.size()) && (!retVal.containsError()); i++)
+            {
+                varname = getAndCheckIdentifier(names[i], retVal); //new ref
+                existingItem = varname ? PyDict_GetItem(destinationDict, varname) : NULL; //borrowed ref
+
+                if (existingItem)
+                {
+                    if (PyFunction_Check(existingItem) || PyCFunction_Check(existingItem)
+                        || PyMethod_Check(existingItem) || PyType_Check(existingItem) ||
+                        PyModule_Check(existingItem))
+                    {
+                        existing->push_back(2); //existing, non overwritable
+                    }
+                    else
+                    {
+                        existing->push_back(1); //existing, but overwritable
+                    }
+                }
+                else
+                {
+                    existing->push_back(0); //non existing
+                }
+
+                Py_DECREF(varname);
+            }
+
+            PyGILState_Release(gstate);
+
+            if (semaphore != NULL)
+            {
+                semaphore->returnValue = retVal;
+                semaphore->release();
+                released = true;
+            }
+        }
+
+        if (oldState == pyStateIdle)
+        {
+            pythonStateTransition(pyTransEndRun);
+        }
+        else if (oldState == pyStateDebuggingWaiting)
+        {
+            pythonStateTransition(pyTransDebugExecCmdEnd);
+        }
+    }
+
+    if (semaphore != NULL && !released)
     {
         semaphore->returnValue = retVal;
         semaphore->release();
@@ -3812,11 +4219,12 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
 
         if (destinationDict == NULL)
         {
-            retVal = false;
             retVal += ito::RetVal(ito::retError, 0, tr("values cannot be saved since workspace dictionary not available.").toLatin1().data());
         }
         else
         {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             PyObject *existingItem = NULL;
             PyObject *varname = NULL;
 
@@ -3830,21 +4238,25 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
                     if (PyFunction_Check(existingItem) || PyCFunction_Check(existingItem))
                     {
                         retVal += ito::RetVal::format(ito::retError, 0, tr("Function '%s' in this workspace can not be overwritten.").toLatin1().data(), names[i].toLatin1().data());
+                        Py_XDECREF(varname);
                         break;
                     }
                     else if (PyMethod_Check(existingItem))
                     {
                         retVal += ito::RetVal::format(ito::retError, 0, tr("Method '%s' in this workspace can not be overwritten.").toLatin1().data(), names[i].toLatin1().data());
+                        Py_XDECREF(varname);
                         break;
                     }
                     else if (PyType_Check(existingItem))
                     {
                         retVal += ito::RetVal::format(ito::retError, 0, tr("Type or class '%s' in this workspace can not be overwritten.").toLatin1().data(), names[i].toLatin1().data());
+                        Py_XDECREF(varname);
                         break;
                     }
                     else if (PyModule_Check(existingItem))
                     {
                         retVal += ito::RetVal::format(ito::retError, 0, tr("Module '%s' in this workspace can not be overwritten.").toLatin1().data(), names[i].toLatin1().data());
+                        Py_XDECREF(varname);
                         break;
                     }
                 }
@@ -3866,6 +4278,8 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
                 Py_XDECREF(varname);
             }
 
+            PyGILState_Release(gstate);
+
             if (semaphore != NULL) 
             {
                 semaphore->returnValue = retVal;
@@ -3873,6 +4287,7 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
                 released = true;
             }
 
+            gstate = PyGILState_Ensure();
             if (globalNotLocal)
             {
                 emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
@@ -3881,6 +4296,7 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
             {
                 emitPythonDictionary(false, true, NULL, getLocalDictionary());
             }
+            PyGILState_Release(gstate);
         }
 
         if (oldState == pyStateIdle)
@@ -3946,11 +4362,12 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
 
         if (sourceDict == NULL)
         {
-            retVal = false;
             retVal += ito::RetVal(ito::retError, 0, tr("values cannot be obtained since workspace dictionary not available.").toLatin1().data());
         }
         else
         {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             for (int i=0; i<names.size();i++)
             {
                 value = PyDict_GetItemString (sourceDict, names[i].toLatin1().data()); //borrowed
@@ -3976,6 +4393,8 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
                 }
             }
 
+            PyGILState_Release(gstate);
+
             if (semaphore != NULL) 
             {
                 semaphore->returnValue = retVal;
@@ -3983,6 +4402,7 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
                 released = true;
             }
 
+            gstate = PyGILState_Ensure();
             if (globalNotLocal)
             {
                 emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
@@ -3991,6 +4411,7 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
             {
                 emitPythonDictionary(false, true, NULL, getLocalDictionary());
             }
+            PyGILState_Release(gstate);
         }
 
         if (oldState == pyStateIdle)
@@ -4059,6 +4480,8 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
         }
         else
         {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             PyObject *pyVarname = getAndCheckIdentifier(varname, retVal); //new reference
 
             if (pyVarname)
@@ -4117,6 +4540,8 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
             }
 
             Py_XDECREF(pyVarname);
+
+            PyGILState_Release(gstate);
         }
 
         if (semaphore != NULL) //release semaphore now, since the following emit command will be a blocking connection, too.
@@ -4125,6 +4550,7 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
             semaphore->release();
         }
 
+        PyGILState_STATE gstate = PyGILState_Ensure();
         if (globalNotLocal)
         {
             emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
@@ -4133,6 +4559,7 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
         {
             emitPythonDictionary(false, true, NULL, getLocalDictionary());
         }
+        PyGILState_Release(gstate);
 
         if (oldState == pyStateIdle)
         {
@@ -4201,6 +4628,8 @@ ito::RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QS
         }
         else
         {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             PyObject *result = PyObject_CallMethod(itomFunctions, "getModules", "");
 
             if (!result)
@@ -4219,6 +4648,8 @@ ito::RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QS
                 }
             }
             Py_XDECREF(result);
+
+            PyGILState_Release(gstate);
         }
         //code
 
@@ -4237,7 +4668,6 @@ ito::RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QS
         semaphore->returnValue = retValue;
         semaphore->release();
         semaphore->deleteSemaphore();
-        semaphore = NULL;
     }
 
     return retValue;
@@ -4273,6 +4703,8 @@ ito::RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames,
         }
         else
         {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
             PyObject *stringList = PythonQtConversion::QStringListToPyList(*modNames);
             modNames->clear();
 
@@ -4289,6 +4721,8 @@ ito::RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames,
             }
             Py_XDECREF(result);
             Py_XDECREF(stringList);
+
+            PyGILState_Release(gstate);
         }
         //code
 
@@ -4307,7 +4741,6 @@ ito::RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames,
         semaphore->returnValue = retValue;
         semaphore->release();
         semaphore->deleteSemaphore();
-        semaphore = NULL;
     }
 
     return retValue;
@@ -4336,6 +4769,8 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
         {
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
+
+        PyGILState_STATE gstate = PyGILState_Ensure();
 
         if (globalNotLocal)
         {
@@ -4377,6 +4812,8 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
             exportDict = NULL;
         }
 
+        PyGILState_Release(gstate);
+
 
         if (oldState == pyStateIdle)
         {
@@ -4407,11 +4844,14 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
         return RetVal(retError, 0, "mainModule is empty or cannot be accessed");
     }
 
+    PyGILState_STATE gstate = PyGILState_Ensure();
+
     PyObject* pickleModule = PyImport_AddModule("pickle"); // borrowed reference
 
     if (pickleModule == NULL)
     {
         retval += checkForPyExceptions();
+        PyGILState_Release(gstate);
         return retval;
     }
 
@@ -4420,6 +4860,7 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
     if (builtinsModule == NULL)
     {
         retval += checkForPyExceptions();
+        PyGILState_Release(gstate);
         return retval;
     }
 
@@ -4487,6 +4928,8 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
 
     Py_XDECREF(fileHandle);
 
+    PyGILState_Release(gstate);
+
     return retval;
 }
 
@@ -4538,6 +4981,7 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
                 released = true;
             }
 
+            PyGILState_STATE gstate = PyGILState_Ensure();
             if (globalNotLocal)
             {
                 emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
@@ -4546,6 +4990,7 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
             {
                 emitPythonDictionary(false, true, NULL, getLocalDictionary());
             }
+            PyGILState_Release(gstate);
         }
 
         if (oldState == pyStateIdle)
@@ -4576,6 +5021,8 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
     {
         return RetVal(retError, 0, "mainModule is empty or cannot be accessed");
     }
+
+    PyGILState_STATE gstate = PyGILState_Ensure();
 
     PyObject* pickleModule = PyImport_AddModule("pickle"); // borrowed reference
 
@@ -4687,6 +5134,8 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
         Py_XDECREF(unpickledItem);
     }
 
+    PyGILState_Release(gstate);
+
     return retval;
 
 }
@@ -4734,3 +5183,4 @@ PyObject* PythonEngine::PyInitItomDbg(void)
 }
 
 } //end namespace ito
+

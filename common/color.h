@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
    
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -74,25 +74,11 @@ namespace ito
                 Rgba32 temp(255, 0,0,0);
                 return temp;
             }
-
-            /*static Rgba32 red()
-            {
-                Rgba32 temp(255, 255, 0, 0);
-                return temp;
-            }
-
-            static Rgba32 green()
-            {
-                Rgba32 temp(255, 0, 255, 0);
-                return temp;
-            }
-
-            static Rgba32 blue()
-            {
-                Rgba32 temp(255, 0, 0, 255);
-                return temp;
-            }*/
-
+            
+            //! static constructor to create Rgba32 from uint32 containing the values argb
+            /*!
+             \param val is the uint32 value that is defined as (alpha << 24 + red << 16 + green << 8 + blue)
+             */
             static Rgba32 fromUnsignedLong(const uint32 val)
             {
                 Rgba32 temp;
@@ -107,14 +93,17 @@ namespace ito
                 this->r = r;
                 this->a = a;
             }
-
-            explicit Rgba32(const uint8 gray) /*! < Constructor which will set color channels to gray uint8 and alpha to 255 */
+            
+            //! Constructor which will set color channels to gray uint8 and alpha to 255.
+            /*!
+             \param gray is the gray value. Alpha is 255, R=G=B are set to this value 'gray'.
+             */
+            explicit Rgba32(const uint8 gray)
             {
                 a = 0xFF;
                 r = gray;
                 b = gray;
                 g = gray;
-                //memset(value, gray, 3*sizeof(uint8));
             }
 
             Rgba32(const Rgba32 &rhs)/*! < Copy-Constructor for lvalues */
@@ -151,13 +140,37 @@ namespace ito
                 a = static_cast<uint8>(std::max<int16>(a - rhs.a, 0));
                 return *this;
             }
-
+            
+            //! Multiplication by another Rgba32 value.
+            /*!
+             \param All channels are multiplied by each other and then divided by 255 (integer division leads to a ceil operation in any case)
+             */
             Rgba32& operator *=(const Rgba32 &rhs)/*! < Implementation of *= operator with overflow handling and normalisation */
             {
                 b = static_cast<uint8>(b * rhs.b / 255);
                 g = static_cast<uint8>(g * rhs.g / 255);
                 r = static_cast<uint8>(r * rhs.r / 255);
                 a = static_cast<uint8>(a * rhs.a / 255);
+                return *this;
+            }
+
+            //! Multiplication by a float32 grayFactor (alpha is unchanged).
+            /*!
+            \param The channels R,G and B are multiplied by the given grayFactor and cropped to the range [0,255]
+            \throws runtime_error if grayFactor < 0
+            */
+            Rgba32& operator *=(const ito::float32 &grayFactor)
+            {
+                if (grayFactor < 0.0)
+                {
+                    throw std::runtime_error("Multiplication factor must be >= 0.0");
+                }
+                unsigned int t = static_cast<unsigned int>(b * grayFactor);
+                b = static_cast<uint8>(t <= 255 ? t : 255);
+				t = static_cast<unsigned int>(g * grayFactor);
+                g = static_cast<uint8>(t <= 255 ? t : 255);
+				t = static_cast<unsigned int>(r * grayFactor);
+                r = static_cast<uint8>(t <= 255 ? t : 255);
                 return *this;
             }
 
@@ -189,6 +202,13 @@ namespace ito
             }
 
             Rgba32 operator *(const Rgba32 &second) const /*! < Implementation of * operator using *= operator */
+            {
+                Rgba32 first(*this);
+                first *= second;
+                return first;
+            }
+
+            Rgba32 operator *(const ito::float32 &second) const /*! < Implementation of * operator using *= operator */
             {
                 Rgba32 first(*this);
                 first *= second;

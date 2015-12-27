@@ -1,8 +1,9 @@
 SET (target_name itomCommonQtLib)
 project(${target_name}) 
-    
-cmake_minimum_required(VERSION 2.8)
-
+     
+cmake_minimum_required(VERSION 2.8.9)
+   
+#CMAKE Policies
 IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
     if(POLICY CMP0042)
         cmake_policy(SET CMP0042 OLD)
@@ -27,7 +28,7 @@ IF(BUILD_ITOMLIBS_SHARED)
     ADD_DEFINITIONS(-DITOMCOMMONQT_DLL -D_ITOMCOMMONQT_DLL)
 ELSE(BUILD_ITOMLIBS_SHARED)
     SET(LIBRARY_TYPE STATIC)
-	
+    
     #if itomCommon is static, add -fPIC as compiler flag for linux
     IF(UNIX)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
@@ -92,10 +93,9 @@ set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInConfigDialog.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperActuator.h #deprecated
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperGrabber.h #deprecated
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperCommon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/pluginThreadCtrl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/shape.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedFunctionsQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresGraphics.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.h
@@ -116,10 +116,9 @@ set(itomCommonQt_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInInterface.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInConfigDialog.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperActuator.cpp #deprecated
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperGrabber.cpp #deprecated
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperCommon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/pluginThreadCtrl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/shape.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedFunctionsQt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresPrimitives.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresQt.cpp
@@ -130,13 +129,8 @@ set(itomCommonQt_SOURCES
 )
 
 if(MSVC)
-	list(APPEND itomCommonQt_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
+    list(APPEND itomCommonQt_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
 endif(MSVC)
-
-#handle translations BEGIN STEP 1
-#set (FILES_TO_TRANSLATE ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS})
-#set (TRANSLATION_OUTPUT_FILES)
-#set (TRANSLATIONS_FILES)
 
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 #handle translations END STEP 1
@@ -146,37 +140,16 @@ add_library(${target_name} ${LIBRARY_TYPE} ${itomCommonQt_SOURCES} ${itomCommonQ
 TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} dataobject qpropertyeditor itomCommonLib markerLegend)
 
 IF (QT5_FOUND)
+    IF(CMAKE_VERSION VERSION_GREATER 3.0.0)
+        #https://bugreports.qt.io/browse/QTBUG-39457
+        cmake_policy(SET CMP0043 OLD)
+    ENDIF()
     qt5_use_modules(${target_name} ${QT_COMPONENTS})
 ENDIF (QT5_FOUND)
 
 #translation
 set (FILES_TO_TRANSLATE ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS})
 PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
-
-#handle translations BEGIN STEP 2
-# if (UPDATE_TRANSLATIONS)
-    # if (QT5_FOUND)
-        # QT5_CREATE_TRANSLATION(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-    # else (QT5_FOUND)
-        # QT4_CREATE_TRANSLATION_ITOM(TRANSLATION_OUTPUT_FILES TRANSLATIONS_FILES ${target_name} ITOM_LANGUAGES ${FILES_TO_TRANSLATE} ${TRANSLATIONS_FILES})
-    # endif (QT5_FOUND)
-
-    # add_custom_target (_${target_name}_translation DEPENDS ${TRANSLATION_OUTPUT_FILES})
-    # add_dependencies(${target_name} _${target_name}_translation)
-
-    # if (QT5_FOUND)
-        # QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
-    # else (QT5_FOUND)
-        # QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${TRANSLATIONS_FILES})
-    # endif (QT5_FOUND)
-# else (UPDATE_TRANSLATIONS)
-    # if (QT5_FOUND)
-        # QT5_ADD_TRANSLATION(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
-    # else (QT5_FOUND)
-        # QT4_ADD_TRANSLATION_ITOM(QM_FILES "${CMAKE_CURRENT_BINARY_DIR}/translation" ${target_name} ${EXISTING_TRANSLATION_FILES})
-    # endif (QT5_FOUND)
-# endif (UPDATE_TRANSLATIONS)
-#handle translations END STEP 2
 
 FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/translation)
 

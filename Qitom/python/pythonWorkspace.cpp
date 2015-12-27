@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -26,6 +26,7 @@
 #include "pythonPlugins.h"
 #include "pythonDataObject.h"
 #include "pythonPCL.h"
+#include "pythonQtConversion.h"
 
 namespace ito
 {
@@ -73,17 +74,28 @@ PyWorkspaceContainer::~PyWorkspaceContainer()
 //-----------------------------------------------------------------------------------------------------------
 void PyWorkspaceContainer::clear()
 {
+    PyGILState_STATE gstate = PyGILState_Ensure();
     loadDictionary(NULL, "");
+    PyGILState_Release(gstate);
 }
 
 //-----------------------------------------------------------------------------------------------------------
+//Python GIL must be locked when calling this function!
 void PyWorkspaceContainer::loadDictionary(PyObject *obj, const QString &fullNameParentItem)
 {
+#if defined _DEBUG && PY_VERSION_HEX >= 0x030400
+    if (!PyGILState_Check())
+    {
+        std::cerr << "Python GIL must be locked when calling loadDictionaryRec\n" << std::endl;
+        return;
+    }
+#endif
+
     QStringList deleteList;
     
     if(fullNameParentItem == "")
     {
-        loadDictionaryRec(obj, "", &m_rootItem, deleteList);
+        loadDictionaryRec(obj,"",&m_rootItem,deleteList);
         emit updateAvailable(&m_rootItem, fullNameParentItem, deleteList);
     }
     else
@@ -111,13 +123,26 @@ void PyWorkspaceContainer::loadDictionary(PyObject *obj, const QString &fullName
         }
 
         loadDictionaryRec(obj, fullNameParentItem, parent, deleteList);
+
         emit updateAvailable(parent, fullNameParentItem, deleteList);
     }
+
+    
 }
 
 //-----------------------------------------------------------------------------------------------------------
 void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, const QString &fullNameParentItem, PyWorkspaceItem *parentItem, QStringList &deletedKeys)
 {
+#if defined _DEBUG && PY_VERSION_HEX >= 0x030400
+    if (!PyGILState_Check())
+    {
+        std::cerr << "Python GIL must be locked when calling loadDictionaryRec\n" << std::endl;
+        return;
+    }
+#endif
+
+    //To call this method, the Python GIL must already be locked!
+
     PyObject* keys = NULL;
     PyObject* values = NULL;
     PyObject *key = NULL;
@@ -242,13 +267,13 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, const QString &fullN
                             else if(PyFloat_Check(key))
                             {
                                 keyText = QString::number( PyFloat_AsDouble(key) );
-                                keyKey = ":" + keyText;
+                                keyKey = "xx:" + keyText;
                                 keyKey[0] = keyType[0];
                                 keyKey[1] = PY_NUMBER;
                             }
                             else
                             {
-                                keyText = "<unknown>";
+                                keyText = PythonQtConversion::PyObjGetRepresentation(key); //"<unknown>";
                                 keyKey = "xx:" + keyText;
                                 keyKey[0] = keyType[0];
                                 keyKey[1] = PY_STRING;
@@ -324,6 +349,8 @@ void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, const QString &fullN
 //-----------------------------------------------------------------------------------------------------------
 void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *value, QString &fullName, QStringList &deletedKeys, int & /*m_compatibleParamBaseType*/)
 {
+    //To call this method, the Python GIL must already be locked!
+
     Py_ssize_t size;
     bool expandableType = false;
 
@@ -543,7 +570,7 @@ void PyWorkspaceContainer::parseSinglePyObject(PyWorkspaceItem *item, PyObject *
                     }
                     if (encodedByteArray)
                     {
-                        item->m_extendedValue = item->m_value = PyBytes_AS_STRING(encodedByteArray);
+                        item->m_extendedValue = item->m_value = QString::fromLatin1(PyBytes_AS_STRING(encodedByteArray));
                         
                         if(item->m_value.length() > 100)
                         {

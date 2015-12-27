@@ -81,7 +81,7 @@ parameter. Examples might be:
 * *getParam*-method of plugins, which usually return one specific value of map *m_params*. Here an instance of class *Param* is returned and not *ParamBase* such that advanced information about the value can be presented.
 * Vector of out-parameters of filters.
 
-Variables of class *ParamBase* are used when you only need to transfer the parameter itsself:
+Variables of class *ParamBase* are used when you only need to transfer the parameter itself:
 
 * Method *setParam* of plugins. The validation of the given value is done with respect to its corresponding value in map *m_params*.
 * Vector of mandatory and optional parameters used for calling the constructor (method *init*) of plugins.
@@ -269,10 +269,15 @@ parameter, that corresponds to the original data type, which is covered by the p
     p5_val = p5.getVal<int*>(length);
     //now length is equal to 5.
     
+    //if you don't want to change the content of the pointer based parameter but only read the content,
+    //consider to get the value as const parameter:
+    const int* p5_val_const = p5.getVal<const int*>();
+    
     //pointer-parameters are obtained by using the right template
     //parameter of the getVal method. The internal pointer of the
     //parameter is then casted to the template type.
     ito::DataObject *dObj = p6.getVal<ito::DataObject*>();
+    const ito::DataObject *dObjConst = p6.getVal<ito::DataObject*>();
     
     ito::AddInActuator *aia = p7.getVal<ito::AddInActuator*>();
     
@@ -311,7 +316,7 @@ parameters **p1** to **p7**:
     int length = p5.getLen(); //length of array
     
     ito::DataObject dObj;
-    retValue += p6.setVal<void*>( (void*)(&dObj) );
+    retValue += p6.setVal<ito::DataObject*>( &dObj );
     //again remember, that p6 requires, that dObj remains accessible during the lifetime of p6.
     
 .. note::
@@ -576,6 +581,10 @@ In the following, examples about how to create parameters and meta information o
         bool numeric = param.isNumeric()        //returns false
         int len = param.getLen()                //-1, since no length available
         
+        //if you marked the parameter to be an in-parameter only (flag ito::ParamBase::In set and ito::ParamBase::Out is not set)
+        //please get the DataObject only in a const version:
+        const ito::DataObject *dObjConst = param.getVal<const ito::DataObject*>();
+        
         //if you do not need param again, you can delete dObj:
         delete dObj;
         dObj = NULL;
@@ -590,7 +599,7 @@ In the following, examples about how to create parameters and meta information o
         
         //returns the pointer casted to pclPointCloud*
         ito::pclPointCloud* value = param.getVal<ito::pclPointCloud*>();    
-        ito::RetVal retValue = param.setVal<void*>(ptr); //should return ito::retOk
+        ito::RetVal retValue = param.setVal<ito::pclPointCloud*>(ptr); //should return ito::retOk
         bool numeric = param.isNumeric()        //returns false
         int len = param.getLen()                //-1, since no length available
         
@@ -604,7 +613,7 @@ In the following, examples about how to create parameters and meta information o
         
         //returns the pointer casted to pclPoint*
         ito::pclPoint* value = param.getVal<ito::pclPoint*>();    
-        ito::RetVal retValue = param.setVal<void*>(ptr); //should return ito::retOk
+        ito::RetVal retValue = param.setVal<ito::pclPoint*>(ptr); //should return ito::retOk
         bool numeric = param.isNumeric()        //returns false
         int len = param.getLen()                //-1, since no length available
         
@@ -618,7 +627,7 @@ In the following, examples about how to create parameters and meta information o
         
         //returns the pointer casted to pclPolygonMesh*
         ito::pclPolygonMesh* value = param.getVal<ito::pclPolygonMesh*>();    
-        ito::RetVal retValue = param.setVal<void*>(ptr); //should return ito::retOk
+        ito::RetVal retValue = param.setVal<ito::pclPolygonMesh*>(ptr); //should return ito::retOk
         bool numeric = param.isNumeric()        //returns false
         int len = param.getLen()                //-1, since no length available
         

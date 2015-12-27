@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -27,21 +27,21 @@
 namespace ito
 {
 
-UserInteractionWatcher::UserInteractionWatcher(QWidget *plotWidget, int geomtriecType, int maxNrOfPoints, QSharedPointer<ito::DataObject> coords, ItomSharedSemaphore *semaphore, QObject *parent) :
+    UserInteractionWatcher::UserInteractionWatcher(QWidget *plotWidget, ito::Shape::ShapeType type, int maxNrOfPoints, QSharedPointer<QVector<ito::Shape> > shapes, ItomSharedSemaphore *semaphore, QObject *parent) :
     QObject(parent), 
     m_pPlotWidget(plotWidget), 
     m_pSemaphore(semaphore), 
     m_maxNrOfPoints(maxNrOfPoints), 
-    m_coords(coords),
+    m_shapes(shapes),
     m_waiting(true)
 {
     connect(m_pPlotWidget, SIGNAL(destroyed(QObject*)), this, SLOT(plotWidgetDestroyed(QObject*)));
 
-    if (coords.data() == NULL)
+    if (shapes.data() == NULL)
     {
         if (m_pSemaphore)
         {
-            m_pSemaphore->returnValue += ito::RetVal(ito::retError,0,"The given data object is NULL.");
+            m_pSemaphore->returnValue += ito::RetVal(ito::retError,0,"The given shape storage is NULL.");
             m_pSemaphore->release();
             m_pSemaphore->deleteSemaphore();
             m_pSemaphore = NULL;
@@ -50,7 +50,7 @@ UserInteractionWatcher::UserInteractionWatcher(QWidget *plotWidget, int geomtrie
         return;
     }
         
-    if (!connect(m_pPlotWidget, SIGNAL(userInteractionDone(int,bool,QPolygonF)), this, SLOT(userInteractionDone(int,bool,QPolygonF))) )
+    if (!connect(m_pPlotWidget, SIGNAL(userInteractionDone(int, bool, QVector<ito::Shape>)), this, SLOT(userInteractionDone(int, bool, QVector<ito::Shape>))))
     {
         if (m_pSemaphore)
         {
@@ -74,7 +74,7 @@ UserInteractionWatcher::UserInteractionWatcher(QWidget *plotWidget, int geomtrie
     }
     else
     {
-        emit userInteractionStart(geomtriecType, true, m_maxNrOfPoints);
+        emit userInteractionStart(type, true, m_maxNrOfPoints);
     }
 }
 
@@ -122,113 +122,19 @@ void UserInteractionWatcher::plotWidgetDestroyed(QObject *obj)
     \param aborted
     \param points
 */
-void UserInteractionWatcher::userInteractionDone(int type, bool aborted, QPolygonF points)
+void UserInteractionWatcher::userInteractionDone(int type, bool aborted, QVector<ito::Shape> shapes)
 {
     int dims = 2; //m_dObjPtr ? m_dObjPtr->getDims() : 2;
-    
-    switch(type & ito::tGeoTypeMask)
+    m_waiting = false;
+
+    if (aborted)
     {
-        case ito::tGeoSquare:
-        case ito::tGeoCircle:
-        case ito::tGeoPolygon:
-        default:
-        {
-            *m_coords = ito::DataObject();
-            break;
-        }
-        case ito::tMultiPointPick:
-        case ito::tGeoPoint:
-        {
-            if (aborted)
-            {
-                points.clear();
-                *m_coords = ito::DataObject();
-                break;
-            }
-            m_waiting = false;
-
-            if (aborted) points.clear();
-
-            ito::DataObject output(dims, points.size(), ito::tFloat64);
-
-            ito::float64 *ptr = (ito::float64*)output.rowPtr(0,0);
-            int stride = points.size();
-
-            for (int i = 0; i < points.size(); ++i)
-            {
-                ptr[i] = points[i].rx();
-                ptr[i + stride] = points[i].ry();
-            }
-
-            *m_coords = output;
-            break;
-        }
-        case ito::tGeoLine:
-        case ito::tGeoRectangle:
-        case ito::tGeoEllipse:
-        {
-            if (aborted)
-            {
-                points.clear();
-                *m_coords = ito::DataObject();
-                break;
-            }
-            m_waiting = false;
-
-            dims = 8;
-            int elementCount = (points.size() * 2)/ dims;
-
-            ito::DataObject output(dims, elementCount, ito::tFloat64);
-
-#if 0
-            ito::float64 *ptr = (ito::float64*)output.rowPtr(0, 0);
-            for (int i = 0; i < elementCount; i++)
-            {
-                int n = i;
-                ptr[i]                    = points[i].rx();      //idx
-                
-                n += elementCount;
-                ptr[n]     = points[i].ry();      // type
-                
-                n += elementCount;
-                ptr[n] = points[i + 1].rx();  // x1
-                
-                n += elementCount;
-                ptr[n] = points[i + 1].ry();  // y1
-                
-                n += elementCount;
-                ptr[n] = points[i + 2].rx();  // x2
-                
-                n += elementCount;
-                ptr[n] = points[i + 2].ry();  // y2
-                
-                n += elementCount;
-                ptr[n] = 0.0;  // to be announced
-                
-                n += elementCount;
-                ptr[n] = 0.0;  // alpha
-            }
-#else
-            cv::Mat* dst = (cv::Mat*)(output.get_mdata()[0]);
-            for (int i = 0; i < elementCount; i++)
-            {
-                dst->at<ito::float64>(0, i) = points[4 * i].rx();      //idx
-                dst->at<ito::float64>(1, i) = points[4 * i].ry();      //type
-                dst->at<ito::float64>(2, i) = points[4 * i + 1].rx();      //x1
-                dst->at<ito::float64>(3, i) = points[4 * i + 1].ry();      //y1
-                dst->at<ito::float64>(4, i) = points[4 * i + 2].rx();      //x2
-                dst->at<ito::float64>(5, i) = points[4 * i + 2].ry();      //y2
-                dst->at<ito::float64>(6, i) = 0.0; //points[i + 3].rx();      //???
-                dst->at<ito::float64>(7, i) = 0.0; //points[i + 3].ry();      //???
-            }
-#endif
-            *m_coords = output;
-            break;
-        }
-        break;
+        m_shapes->clear();
     }
-
-        
+    else
+    {
+        *m_shapes = shapes;
+    }
 
     if (m_pSemaphore)
     {

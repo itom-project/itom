@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
+    Copyright (C) 2015, Institut für Technische Optik (ITO),
     Universität Stuttgart, Germany
 
     This file is part of itom.
@@ -19,8 +19,8 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
-#ifndef SNV_NO_H
-#define SNV_NO_H
+#ifndef GIT_NO_H
+#define GIT_NO_H
  
 
-#endif // SNV_NO_H
+#endif // GIT_NO_H

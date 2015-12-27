@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -130,13 +130,13 @@ WorkspaceDockWidget::~WorkspaceDockWidget()
 */
 void WorkspaceDockWidget::createActions()
 {
-    m_actDelete = new ShortcutAction(QIcon(":/workspace/icons/document-close-4.png"), tr("delete item(s)"), this, QKeySequence::Delete, Qt::WidgetWithChildrenShortcut);
+    m_actDelete = new ShortcutAction(QIcon(":/workspace/icons/document-close-4.png"), tr("delete selected item(s)"), this, QKeySequence::Delete, Qt::WidgetWithChildrenShortcut);
     m_actDelete->connectTrigger(this, SLOT(mnuDeleteItem()));
-    m_actExport = new ShortcutAction(QIcon(":/workspace/icons/document-export.png"), tr("export item(s)"), this);
+    m_actExport = new ShortcutAction(QIcon(":/workspace/icons/document-export.png"), tr("export selected item(s)"), this);
     m_actExport->connectTrigger(this, SLOT(mnuExportItem()));
     m_actImport = new ShortcutAction(QIcon(":/workspace/icons/document-import.png"), tr("import item(s)"), this);
     m_actImport->connectTrigger(this, SLOT(mnuImportItem()));
-    m_actRename = new ShortcutAction(QIcon(":/workspace/icons/edit-rename.png"), tr("rename item"), this, QKeySequence(tr("F2")), Qt::WidgetWithChildrenShortcut);
+    m_actRename = new ShortcutAction(QIcon(":/workspace/icons/edit-rename.png"), tr("rename selected item"), this, QKeySequence(tr("F2")), Qt::WidgetWithChildrenShortcut);
     m_actRename->connectTrigger(this, SLOT(mnuRenameItem()));
 }
 

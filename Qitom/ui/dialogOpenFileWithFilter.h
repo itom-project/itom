@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -41,7 +41,9 @@ class DialogOpenFileWithFilter : public AbstractFilterDialog
     Q_OBJECT
 
 public:
-    DialogOpenFileWithFilter(const QString &filename, const ito::AddInAlgo::FilterDef *filter, QVector<ito::ParamBase> &autoMand, QVector<ito::ParamBase> &autoOut, QVector<ito::Param> &userMand, QVector<ito::Param> &userOpt, ito::RetVal &retValue, QWidget *parent = NULL);
+    enum CheckVarname { CheckNo, CheckGlobalWorkspace, CheckLocalWorkspace }; /*!< defines options to check the python variable name: no check, check for duplicates in global or local workspace. */
+
+    DialogOpenFileWithFilter(const QString &filename, const ito::AddInAlgo::FilterDef *filter, QVector<ito::ParamBase> &autoMand, QVector<ito::ParamBase> &autoOut, QVector<ito::Param> &userMand, QVector<ito::Param> &userOpt, ito::RetVal &retValue, CheckVarname varnameCheck = CheckNo, QWidget *parent = NULL);
     ~DialogOpenFileWithFilter() { delete m_previewMovie; }
 
     QString getPythonVariable() const { return ui.txtPythonVariable->text(); }
@@ -66,6 +68,7 @@ private:
     Ui::DialogOpenFileWithFilter ui;
     QMovie *m_previewMovie;
     bool m_acceptedClicked;
+    CheckVarname m_checkVarname;
 
 private slots:
     void on_buttonBox_accepted();

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
    
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -89,10 +89,10 @@ namespace ito
     */
     ito::Param* getParamByName(QVector<ito::Param> *paramVec, const char* name, ito::RetVal *retval)
     {
-        const char *temp;
         if (paramVec)
         {
             ito::Param* data = paramVec->data();
+            const char *temp;
 
             for (int i = 0; i < paramVec->size(); ++i)
             {
@@ -110,10 +110,10 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::ParamBase* getParamByName(QVector<ito::ParamBase> *paramVec, const char* name, ito::RetVal *retval)
     {
-        const char *temp;
         if (paramVec)
         {
             ito::ParamBase* data = paramVec->data();
+            const char *temp;
 
             for (int i = 0; i < paramVec->size(); ++i)
             {
@@ -202,16 +202,16 @@ namespace ito
         index = -1;
         pkey = key;
 
-        QString paramName;
-        bool hasIndex;
-        QString additionalTag;
-
         if (key == "")
         {
             retValue += ito::RetVal(ito::retError, 0, QObject::tr("name of requested parameter is empty.").toLatin1().data());
         }
         else
         {
+            QString paramName;
+            bool hasIndex;
+            QString additionalTag;
+
             retValue += parseParamName(key, paramName, hasIndex, index, additionalTag);
             if (retValue.containsError() || paramName.isEmpty())
             {
@@ -327,16 +327,16 @@ namespace ito
         pkey = key;
         index = -1;
 
-        QString paramName;
-        bool hasIndex;
-        QString additionalTag;
-
         if (key == "")
         {
             retValue += ito::RetVal(ito::retError, 0, QObject::tr("name of requested parameter is empty.").toLatin1().data());
         }
         else
         {
+            QString paramName;
+            bool hasIndex;
+            QString additionalTag;
+
             retValue += parseParamName(key, paramName, hasIndex, index, additionalTag);
             if (retValue.containsError() || paramName.isEmpty())
             {

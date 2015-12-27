@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
    
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -34,19 +34,11 @@
 #include "../common/apiFunctionsGraphInc.h"
 #include "../common/apiFunctionsInc.h"
 
-#if QT_VERSION < 0x050000
 #include <qmainwindow.h>
 #include <qlabel.h>
 #include <qtoolbar.h>
 #include <qevent.h>
 #include <qdockwidget.h>
-#else
-#include <QtWidgets/qmainwindow.h>
-//#include <QtWidgets/qlabel.h>
-#include <QtWidgets/qtoolbar.h>
-#include <QtWidgets/qdockwidget.h>
-//#include <QtGui/qevent.h>
-#endif
 
 class QPropertyEditorWidget; //forward declaration
 class MarkerLegendWidget; //forward declaration
@@ -65,7 +57,8 @@ class MarkerLegendWidget; //forward declaration
 
 namespace ito {
 
-class AbstractFigure;
+class AbstractFigure; //forward declaration
+class AbstractFigurePrivate; //forward declaration
 
 class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNode
 {
@@ -86,7 +79,12 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
     Q_CLASSINFO("slot://refreshPlot", "Triggers an update of the current plot window.")
 
     public:
-        enum WindowMode { ModeInItomFigure, ModeStandaloneInUi, ModeStandaloneWindow };
+        enum WindowMode 
+        { 
+            ModeInItomFigure, 
+            ModeStandaloneInUi, 
+            ModeStandaloneWindow 
+        };
         
         enum CompilerFeatures 
         { 
@@ -128,6 +126,13 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
             QString key;
         };
 
+        struct ToolboxItem {
+            ToolboxItem() : toolbox(NULL), key("") {}
+            QDockWidget *toolbox;
+            Qt::DockWidgetArea area;
+            QString key;
+        };
+
         AbstractFigure(const QString &itomSettingsFile, WindowMode windowMode = ModeStandaloneInUi, QWidget *parent = 0);
         virtual ~AbstractFigure();
 
@@ -150,8 +155,8 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
         virtual void setContextMenuEnabled(bool show) = 0; 
         virtual bool getContextMenuEnabled() const = 0;
 
-        virtual QDockWidget *getPropertyDockWidget() const { return m_propertyDock; }
-        virtual QDockWidget *getMarkerLegendDockWidget() const { return m_markerLegendDock; }
+        QDockWidget *getPropertyDockWidget() const;
+        QDockWidget *getMarkerLegendDockWidget() const;
 
         virtual bool getMarkerLegendVisible() const { return false;}
         virtual void setMarkerLegendVisible(const bool val) { return;}
@@ -160,30 +165,31 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
 
         QList<QMenu*> getMenus() const;
         QList<AbstractFigure::ToolBarItem> getToolbars() const;
+        QList<AbstractFigure::ToolboxItem> getToolboxes() const; //the first toolbox is always the property dock widget
 
     protected:
 
         virtual RetVal init() { return retOk; } //this method is called from after construction and after that the api pointers have been transmitted
 
-        virtual void importItomApi(void** apiPtr) = 0; //this methods are implemented in the plugin itsself. Therefore place ITOM_API right after Q_INTERFACE in the header file and replace Q_EXPORT_PLUGIN2 by Q_EXPORT_PLUGIN2_ITOM in the source file.
-        virtual void importItomApiGraph(void** apiPtr) = 0;
+        virtual void importItomApi(void** apiPtr) = 0;      /*!< function to provide access to the itom API functions. this methods are implemented in the plugin itsself. Therefore put the macro DESIGNER_PLUGIN_ITOM_API before the public section in the designer plugin class. */
+        virtual void importItomApiGraph(void** apiPtr) = 0; /*!< function to provide access to the itom API functions. this methods are implemented in the plugin itsself. Therefore put the macro DESIGNER_PLUGIN_ITOM_API before the public section in the designer plugin class. */
 
-        void addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea, int section = 1);
-        void addToolBarBreak(const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea);
+        void addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea, int section = 1); /*!< Register any toolbar of the plot widget using this method. */
+        void addToolBarBreak(const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea); /*!< Add a toolbar break, hence a new line for the following toolbars to the indicated area. */
 
-        void showToolBar(const QString &key);
-        void hideToolBar(const QString &key);
+        void addToolbox(QDockWidget *toolbox, const QString &key, Qt::DockWidgetArea area = Qt::RightDockWidgetArea); /*!< Every plot widget is automatically equipped with a property toolbox. If you want to add further toolboxes (dock widgets), register and append them using this method. */
 
-        void addMenu(QMenu *menu);
+        void showToolBar(const QString &key); /*!< show a toolbar with given key. This toolbar must first be registered using addToolBar. */
+        void hideToolBar(const QString &key); /*!< hide a toolbar with given key. This toolbar must first be registered using addToolBar. */
 
-        void updatePropertyDock();
-        void setPropertyObservedObject(QObject* obj);
+        void addMenu(QMenu *menu); /*!< append a menu to the figure. AbstractFigure then takes care about the menu. Only use this method to add menus since the menu bar of figures is differently handled depending on the window mode of the figure. */
+
+        void updatePropertyDock(); /*!< call this method if any property of the figure changed such that the property toolbox is synchronized and updated. */
+        void setPropertyObservedObject(QObject* obj); /*!< registeres obj for a property observation of the property toolbox. All readable properties are then listed in the property toolbox. */
 
         QObject* legendDock();
 
         RetVal initialize();
-
-        QMenu *m_contextMenu;
 
         WindowMode m_windowMode;
         QString m_itomSettingsFile;
@@ -191,44 +197,23 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
 
         void **m_apiFunctionsGraphBasePtr;
         void **m_apiFunctionsBasePtr;
-        
-        bool m_toolbarsVisible;
 
         ito::uint8 m_lineCutType;
         ito::uint8 m_zSliceType;
         ito::uint8 m_zoomCutType;
 
     private:
-        QList<QMenu*> m_menus;
-        QList<ToolBarItem> m_toolbars;
+        AbstractFigurePrivate *d;
 
-        QDockWidget *m_propertyDock;
-        QPropertyEditorWidget *m_propertyEditorWidget;
-        QObject *m_propertyObservedObject;
-
-        QDockWidget *m_markerLegendDock;
-        MarkerLegendWidget *m_markerLegendWidget;
-
-    signals:
-        
     private slots:
-
-        inline void mnuShowToolbar(bool /*checked*/) { setToolbarVisible(true); }
-        inline void mnuShowProperties(bool checked) { if (m_propertyDock) { m_propertyDock->setVisible(checked); } }
-        inline void mnuShowMarkerLegend(bool checked) 
-        { 
-            if (m_markerLegendDock) 
-            { 
-                m_markerLegendDock->setVisible(checked); 
-            } 
-        }
+        inline void mnuShowToolbar(bool /*checked*/) { setToolbarVisible(true); } /*!< shows all registered toolbars*/
+        void mnuShowProperties(bool checked); /*!< set the visibility of the property toolbox */
 
     public slots:
 
         int getPlotID() 
         { 
             if(!ito::ITOM_API_FUNCS_GRAPH) return 0;
-            //return getUniqueID();
             ito::uint32 thisID = 0;
             ito::RetVal retval = apiGetFigureIDbyHandle(this, thisID);
 
@@ -238,6 +223,7 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
             }
             return thisID; 
         }
+
         void refreshPlot() { update(); }
 };
 

@@ -1,8 +1,8 @@
 /* ********************************************************************
    itom measurement system
    URL: http://www.uni-stuttgart.de/ito
-   Copyright (C) 2012, Institut für Technische Optik (ITO), 
-   Universität Stuttgart, Germany 
+   Copyright (C) 2016, Institut fuer Technische Optik (ITO), 
+   Universitaet Stuttgart, Germany 
  
    This file is part of itom.
 
@@ -23,7 +23,12 @@
 #ifndef DOUBLESLIDERFACTORY_H
 #define DOUBLESLIDERFACTORY_H
 
+#include "qglobal.h"
+#if QT_VERSION < 0x050500 //hex-code must be used since Qt4 moc process does not understand QT_VERSION_CHECK(5,5,0)
 #include <QtDesigner/QDesignerCustomWidgetInterface>
+#else
+#include <QtUiPlugin/QDesignerCustomWidgetInterface>
+#endif
 
 
 class DoubleSliderFactory : public QObject, public QDesignerCustomWidgetInterface

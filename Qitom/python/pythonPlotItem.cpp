@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -25,10 +25,12 @@
 #include "structmember.h"
 #include "pythonFigure.h"
 #include "pythonEngine.h"
+#include "pythonShape.h"
 
 #include "../organizer/uiOrganizer.h"
 #include "../AppManagement.h"
 #include "common/sharedStructuresPrimitives.h"
+#include "common/shape.h"
 
 namespace ito
 {
@@ -236,8 +238,9 @@ maxNrPoints: {int}, optional \n\
     }
     else
     {
+        QSharedPointer<QVector<ito::Shape> > shapes(new QVector<ito::Shape>());
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(uiOrga, "figurePickPoints", Q_ARG(uint, self->uiItem.objectID), Q_ARG(QSharedPointer<ito::DataObject>, coords), Q_ARG(int, maxNrPoints), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        QMetaObject::invokeMethod(uiOrga, "figurePickPoints", Q_ARG(uint, self->uiItem.objectID), Q_ARG(QSharedPointer<QVector<ito::Shape> >, shapes), Q_ARG(int, maxNrPoints), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
 
         bool finished = false;
 
@@ -259,6 +262,26 @@ maxNrPoints: {int}, optional \n\
         {
             retval += locker.getSemaphore()->returnValue;
         }
+
+        if (!retval.containsError() &&shapes->size() > 0)
+        {
+            QPolygonF polygon = shapes->at(0).contour();
+            ito::DataObject obj(2, polygon.size(), ito::tFloat64);
+            ito::float64 *xPtr = obj.rowPtr<ito::float64>(0, 0);
+            ito::float64 *yPtr = obj.rowPtr<ito::float64>(0, 1);
+
+            for (int i = 0; i < polygon.size(); ++i)
+            {
+                xPtr[i] = polygon[i].x();
+                yPtr[i] = polygon[i].y();
+    }
+
+            *coords = obj;
+        }
+        else
+        {
+            *coords = ito::DataObject();
+        }
     }
 
     if(!PythonCommon::transformRetValToPyException(retval))
@@ -270,7 +293,7 @@ maxNrPoints: {int}, optional \n\
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotItem_drawAndPickElement_doc,"drawAndPickElement(elementType, elementData, [,maxNrElements]) -> method to let the user draw geometric elements on a plot (only if plot supports this) \n\
+PyDoc_STRVAR(pyPlotItem_drawAndPickElement_doc,"drawAndPickElement(elementType [,maxNrElements]) -> method to let the user draw geometric elements on a plot (only if plot supports this) \n\
 \n\
 This method lets the user select one or multiple elements of type (up to maxNrElements) at the current plot (if the plot supports this).\n\
 \n\
@@ -278,19 +301,20 @@ Parameters\n\
 -----------\n\
 elementType : {int} \n\
     The element type to plot according to ito::PrimitiveContainer::tPrimitive.\n\
-points : {DataObject} \n\
-    resulting data object containing the 2D positions of the selected points [2 x nrOfSelectedPoints].\n\
 maxNrElements: {int}, optional \n\
-    let the user select up to this number of points [default: infinity]. Selection can be stopped pressing Space or Esc.");
+    let the user select up to this number of points [default: infinity]. Selection can be stopped pressing Space or Esc. \n\
+\n\
+Return \n\
+-------- \n\
+Tuple of class itom.shape for all created geometric shapes.");
 /*static*/ PyObject* PythonPlotItem::PyPlotItem_drawAndPickElement(PyPlotItem *self, PyObject *args, PyObject *kwds)
 {
-    const char *kwlist[] = {"elementType", "elementData", "maxNrElements", NULL};
+    const char *kwlist[] = {"elementType", "maxNrElements", NULL};
     ito::RetVal retval;
-    PyObject *dataObject = NULL;
     int maxNrPoints = -1;
     int elementType = -1;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds,"iO!|i",const_cast<char**>(kwlist), &elementType, &PythonDataObject::PyDataObjectType, &dataObject, &maxNrPoints))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds,"i|i",const_cast<char**>(kwlist), &elementType, &maxNrPoints))
     {
         return NULL;
     }
@@ -303,33 +327,26 @@ maxNrElements: {int}, optional \n\
     }
 
     
-    switch(elementType & ito::tGeoTypeMask)
+    switch(elementType & ito::Shape::TypeMask)
     {
-        case ito::tGeoSquare:
-        case ito::tGeoCircle:
-        case ito::tGeoPolygon:
+        case ito::Shape::Square:
+        case ito::Shape::Circle:
+        case ito::Shape::Polygon:
             PyErr_SetString(PyExc_RuntimeError, "Drawing of element type currently not supported");
             return NULL;
 
-        case ito::tMultiPointPick:
-        case ito::tGeoPoint:
-        case ito::tGeoLine:
-        case ito::tGeoRectangle:
-        case ito::tGeoEllipse:
+        case ito::Shape::MultiPointPick:
+        case ito::Shape::Point:
+        case ito::Shape::Line:
+        case ito::Shape::Rectangle:
+        case ito::Shape::Ellipse:
             break;
     }
 
-    bool ok;
-    QSharedPointer<ito::DataObject> coords = PythonQtConversion::PyObjGetSharedDataObject(dataObject, ok);
+    QSharedPointer<QVector<ito::Shape> > shapes(new QVector<ito::Shape>());
 
-    if (!ok)
-    {
-        retval += ito::RetVal(ito::retError,0,"data object cannot be converted to a shared data object");
-    }
-    else
-    {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        QMetaObject::invokeMethod(uiOrga, "figureDrawGeometricElements", Q_ARG(uint, self->uiItem.objectID), Q_ARG(QSharedPointer<ito::DataObject>, coords), Q_ARG(int, elementType), Q_ARG(int, maxNrPoints), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(uiOrga, "figureDrawGeometricShapes", Q_ARG(uint, self->uiItem.objectID), Q_ARG(QSharedPointer<QVector<ito::Shape> >, shapes), Q_ARG(int, elementType), Q_ARG(int, maxNrPoints), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
 
         bool finished = false;
 
@@ -351,14 +368,19 @@ maxNrElements: {int}, optional \n\
         {
             retval += locker.getSemaphore()->returnValue;
         }
-    }
 
     if(!PythonCommon::transformRetValToPyException(retval))
     {
         return NULL;
     }
 
-    Py_RETURN_NONE;
+    PyObject *tuple = PyTuple_New(shapes->size());
+    for (int i = 0; i < shapes->size(); ++i)
+    {
+        PyTuple_SetItem(tuple, i, ito::PythonShape::createPyShape(shapes->at(i))); //steals reference
+    }
+
+    return tuple;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -434,35 +456,35 @@ void PythonPlotItem::PyPlotItem_addTpDict(PyObject *tp_dict)
 {
     PyObject *value;
     
-    value = Py_BuildValue("i",ito::tMultiPointPick);
+    value = Py_BuildValue("i",ito::Shape::MultiPointPick);
     PyDict_SetItemString(tp_dict, "PrimitiveMultiPointPick", value);
     Py_DECREF(value);
 
-    value = Py_BuildValue("i",ito::tGeoPoint);
+    value = Py_BuildValue("i", ito::Shape::Point);
     PyDict_SetItemString(tp_dict, "PrimitivePoint", value);
     Py_DECREF(value);
 
-    value = Py_BuildValue("i",ito::tGeoLine);
+    value = Py_BuildValue("i", ito::Shape::Line);
     PyDict_SetItemString(tp_dict, "PrimitiveLine", value);
     Py_DECREF(value);
 
-    value = Py_BuildValue("i",ito::tGeoRectangle);
+    value = Py_BuildValue("i", ito::Shape::Rectangle);
     PyDict_SetItemString(tp_dict, "PrimitiveRectangle", value);
     Py_DECREF(value);
 
-    value = Py_BuildValue("i",ito::tGeoSquare);
+    value = Py_BuildValue("i", ito::Shape::Square);
     PyDict_SetItemString(tp_dict, "PrimitiveSquare", value);
     Py_DECREF(value);
 
-    value = Py_BuildValue("i",ito::tGeoEllipse);
+    value = Py_BuildValue("i", ito::Shape::Ellipse);
     PyDict_SetItemString(tp_dict, "PrimitiveEllipse", value);
     Py_DECREF(value);
 
-    value = Py_BuildValue("i",ito::tGeoCircle);
+    value = Py_BuildValue("i", ito::Shape::Circle);
     PyDict_SetItemString(tp_dict, "PrimitiveCircle", value);
     Py_DECREF(value);
 
-    value = Py_BuildValue("i",ito::tGeoPolygon);
+    value = Py_BuildValue("i", ito::Shape::Polygon);
     PyDict_SetItemString(tp_dict, "PrimitivePolygon", value);
     Py_DECREF(value);
 }

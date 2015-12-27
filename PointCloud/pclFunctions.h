@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
    
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -54,6 +54,8 @@ namespace pclHelper
     ito::tPCLPointType POINTCLOUD_EXPORT guessPointType(const sensor_msgs::PointCloud2 &msg);
 #endif
 
+    ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &mesh, PCLPointCloud &out, const std::vector<int> &indices = std::vector<int>());
+
     ito::RetVal POINTCLOUD_EXPORT pointCloudFromXYZ(const DataObject* mapX, const DataObject* mapY, const DataObject* mapZ, PCLPointCloud &out, bool deleteNaNorInf = false);
     ito::RetVal POINTCLOUD_EXPORT pointCloudFromXYZI(const DataObject* mapX, const DataObject* mapY, const DataObject* mapZ, const DataObject* mapI, PCLPointCloud &out, bool deleteNaNorInf = false);
     ito::RetVal POINTCLOUD_EXPORT pointCloudFromXYZRGBA(const DataObject* mapX, const DataObject* mapY, const DataObject* mapZ, const DataObject* mapColor, PCLPointCloud &out, bool deleteNaNorInf = false);
@@ -65,11 +67,6 @@ namespace pclHelper
 
     ito::RetVal POINTCLOUD_EXPORT dataObj4x4ToEigenAffine3f(const DataObject *in, Eigen::Affine3f &out);
     ito::RetVal POINTCLOUD_EXPORT eigenAffine3fToDataObj4x4(const Eigen::Affine3f *in, DataObject &out);
-
-    //template<typename _Tp, int _Rows, int _Cols> ito::RetVal eigenMatrixToDataObj(const Eigen::Matrix<_Tp,_Rows,_Cols> &mat, DataObject &out);
-
-    //ito::RetVal writeBinary(const std::string &filename, const ito::PCLPointCloud &cloud);
-    //ito::RetVal readBinary(const std::string &filename, ito::PCLPointCloud &cloud);
 
 } //end namespace pclHelper
 

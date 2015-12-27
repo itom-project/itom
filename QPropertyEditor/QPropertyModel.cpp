@@ -29,6 +29,7 @@
 
 #include "Property.h"
 #include "EnumProperty.h"
+#include "FlagsProperty.h"
 
 #include <qapplication.h>
 #include <qbytearray.h>
@@ -322,7 +323,11 @@ void QPropertyModel::addItem(QObject *propertyObject)
             {
                 QMetaProperty property(pair.Property);
                 Property* p = 0;
-                if (property.type() == QVariant::UserType && !m_userCallbacks.isEmpty())
+                if ((property.type() == QVariant::UserType ||
+                    property.type() == QVariant::Vector2D ||
+                    property.type() == QVariant::Vector3D || 
+                    property.type() == QVariant::Vector4D)
+                    && !m_userCallbacks.isEmpty())
                 {
                     QList<QPropertyEditorWidget::UserTypeCB>::iterator iter = m_userCallbacks.begin();
                     while (p == 0 && iter != m_userCallbacks.end())
@@ -335,7 +340,14 @@ void QPropertyModel::addItem(QObject *propertyObject)
                 {
                     if (property.isEnumType())
                     {
-                        p = new EnumProperty(property.name(), propertyObject, propertyItem);
+                        if (property.isFlagType())
+                        {
+                            p = new FlagsProperty(property.name(), propertyObject, propertyItem);
+                        }
+                        else
+                        {
+                            p = new EnumProperty(property.name(), propertyObject, propertyItem);
+                        }
                     }
                     else
                     {

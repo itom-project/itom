@@ -2,36 +2,48 @@
 
 .. _primitives:
 
-**Primitives** - Marking and Measuring
+Markers, user selections and geometric shapes
 ==============================================
 
-The plot-widgets itom1DQwtPlot and itom2DQwtPlot supports plotting of geometric primitives by user interaction and script language.
+The plot-widgets :ref:`itom1dqwtplot` and :ref:`itom2dqwtplot` (short: Qwt-plots) support displaying markers, geometric shapes by script or by user interaction.
 This section will give a short introduction about plotting, read- /write-functions and the corresponding plots and the internal geometric element structure.
 
 At last the evaluateGeomtrics-plugin for direct evaluation of geometric elements is introduced.
 
-Drawing items into a Qwt-Plot
-----------------------------------------------
+Displaying geometric shapes or markers onto Qwt-plots can be done by three different ways:
 
-The plot functionality can be accessed by three different ways. The first way is the GUI based approach by which the user presses the 
+* GUI based approach by draw and delete options in the toolbar or the **Tools** menu.
+* Displaying shapes and markers by a Python script.
+* Get the position and size of specified shapes or markers by the user and optionally display them by script.
+
+Drawing items into a Qwt-plot
+-------------------------------------
+
+The plot functionality can be accessed by three different ways. The first way is the GUI based approach where the user presses the 
 "switch draw mode"-button in the button-bar of the plot. The button represents the current item to be plotted. 
 The red X ("clear button") will delete all geometric elements within the plot either drawn by hand or by script.
 
 .. figure:: images/drawInto2DToolbarIcons.png
     :scale: 50%
-    :align: left
+    :align: center
 
-At the moment "itom" only supports "point", "line", "rectangle" and "ellipse" but further items, e.g. "circle" and "polygons", are in preparation. 
-To draw an item simply click into the image space and left-click the mouse. 
-In case of elements with at least more than a marker, you can now set the size of the element by setting the second point by left-clicking again.
-During plotting a green lined geometric element appears. After finishing the element color turns to the first inverse 
-color of the current color palette with handles (diamonds or squares) colored with the second inverse color of the current palette.
+At the moment "itom" supports the following shapes:
+
+* point
+* line
+* rectangle (alignment parallel to axes)
+* ellipse (alignment parallel to axes)
+
+To draw an item, select the right shape from the **tools >> switch draw mode** menu. The button is then in an active, toggled state and you can start
+by clicking the canvas. For lines, rectangles and ellipses, you have to click once for the first point of the item and another time for the second time.
+During the design mode, a green line indicates the current position and size of the draft, after the last necessary mouse click, the shape design
+is finished and its color turns to the corresponding inverse color of the current color palette. 
     
 .. figure:: images/drawInto2D.png
     :scale: 50%
     :align: left
 
-After creation the geometric elements can be edited by left-clicking one of the element handles  which becomes high-lighted (squares) and moving the mouse.
+By clicking the **tools >> clear marker** menu, all current shapes are deleted. After creation the geometric elements can be edited by left-clicking one of the element handles which becomes high-lighted (squares) and moving the mouse.
 By pressing the "ctrl"-button during mouse-movement the element resize behaviour will be changed depending on the element type. 
 Lines will be changed to horizontal or vertical alignment.
 Rectangles and ellipses will be become squares or circles according to plot coordinates (x/y-space) and not pixel coordinates. 
@@ -50,11 +62,11 @@ To allow more complex user interaction with scripts, e.g. script based element p
     # Blocking access which return the values for a single point in myElement
     # Structure will be dataObject([8, 1], 'float32') with [[idx], [type], [x], [y], [0], [0], [0],[0]]
     myElement = dataObject()
-    handle.drawAndPickElements(101, myElement, 1) 
+    handle.drawAndPickElements(plotItem.PrimitivePoint, myElement, 1) 
     
     # None blocking plot
     # Structure will be dataObject([1, 11], 'float32') with [idx, type, x, y, 0, 0, 0, 0]
-    handle.call("userInteractionStart", 101, True, 1)
+    handle.call("userInteractionStart", plotItem.PrimitivePoint, True, 1)
     
     # --> Read out later after plot is finished
     myGeometry = handle["geometricElements"]
@@ -73,12 +85,12 @@ The geometric elements can also be set by script by calling the corresponding sl
     
     # Add the marker to the plot
     # marker is filled according to marker style definition
-    marker = dataObject([8,1],'float32', data = [101.0, 1.0, 5.0, 6.0, 0.0, 0.0, 0.0, 0,0])
+    marker = dataObject([8,1],'float32', data = [plotItem.PrimitivePoint, 1.0, 5.0, 6.0, 0.0, 0.0, 0.0, 0,0])
     handle.call("plotMarkers", marker, "b", "")
 
     # Delete all marker and than plot new marker
     # marker is filled according to marker style definition
-    myGeometry = dataObject([1,11],'float32', data = [101.0, 1.0, 5.0, 6.0, 0.0, 0.0, 0.0, 0,0, 0.0, 0.0, 0.0])
+    myGeometry = dataObject([1,11],'float32', data = [plotItem.PrimitivePoint, 1.0, 5.0, 6.0, 0.0, 0.0, 0.0, 0,0, 0.0, 0.0, 0.0])
     handle["geometricElements"] = myGeometry
   
 The geometric elements can be read any time using the property "geometricElements".
@@ -91,7 +103,7 @@ The geometric elements can be read any time using the property "geometricElement
 The object "myGeometry" consists of all geometric elements with in the plot. Each row corresponds to one geometric element while the parameters for each element are align column-wise.
 This kind of reading differs from the blocking-variant ("drawAndPickElements"). The blocking-variant returns only the data created during the current function call and ignores old geometric elements.
 In this case the elements are aligned column-wise. This means each column corresponds to on element while its data is stored along the rows. 
-For the differernt definitions of the geometric elements see section "Indexing of Geometric Elements".
+For the different definitions of the geometric elements see section "Indexing of Geometric Elements".
 
 Implemented Functions, Signals and Slots
 ----------------------------------------------
@@ -173,8 +185,8 @@ All other values depends on the primitive type and may change between each type.
    :hidden:
 
 .. doxygenclass:: ito::PrimitiveContainer
-	:project: itom
-	:members:
+    :project: itom
+    :members:
     
     
 Evaluation of Geometric Elements 

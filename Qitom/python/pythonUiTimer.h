@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -25,9 +25,9 @@
 
 #include "pythonCommon.h"
 
-#include <qstring.h>
-#include <qvariant.h>
 #include <qobject.h>
+
+class QTimer; //forward declaration
 
 namespace ito 
 {
@@ -41,7 +41,7 @@ class TimerCallback : public QObject
         PyObject *m_function; //pyFunctionObject
         PyObject *m_boundedInstance; //self if bounded method, else null
         PyObject *m_callbackArgs;
-        int m_boundedMethod;
+        bool m_boundedMethod;
 
     public slots:
         void timeout(); 

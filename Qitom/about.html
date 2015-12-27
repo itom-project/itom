@@ -13,21 +13,16 @@ Cheers your itom team</p>
 
 <p><b>Basic information</b>
 <ul>
-  <li>Build-Version: $itom_Version$</li>
-    <li>Build-Date: $itom_compileDate$</li>
+  <li>Build Version: $itom_Version$</li>
+  <li>Build Date: $itom_compileDate$</li>
   <li>Operating System: $itom_SysType$</li>
   <li>Plugin-Interface Version: $itom_pluginInterface_Version$</li>
   <li>Itom Shared-Libraries: $itom_sharedLibs$</li>
+  <li>Python Version: $Py_Version$</li>
 </ul>
 </p>
 
-$USINGSVN$<p><b>SVN Repository</b>
-<ul>
-  <li>SVN-Revision: $itom_SVN_Rev$</li>
-  <li>Date: $itom_SVN_Date$</li>
-  <li>Repository URL: $itom_SVN_URL$</li>
-  <li>$version_Warnings$</li>
-</ul>$USINGSVN$$USINGGIT$<p><b>Git Repository</b>
+$USINGGIT$<p><b>Git Repository</b>
 <ul>
   <li>Git-Revision: $itom_GIT_Rev$</li>
   <li>Date: $itom_GIT_Date$</li>
@@ -37,9 +32,9 @@ $USINGSVN$<p><b>SVN Repository</b>
 
 <p><b>Your main program of itom uses the following third party packages:</b>
 <ul>
-  <li><a href="http://opencv.willowgarage.com/wiki/">openCV</a> openCV in version $openCV_Version$ by Willow Garage under BSD-license.</li>
-  $WITHPCL$<li><a href="http://www.pointclouds.org/">point cloud library</a> in version $PCL_Version$ by Willow Garage under BSD-license.</li>$WITHPCL$
-  <li>The <a href="http://qt.nokia.com/">QT-Framework</a> in version $QT_Your_Version$ (Compile-Version $QT_Version$) by Nokia under LGPL.</li>
+  <li><a href="http://opencv.willowgarage.com/wiki/">OpenCV</a> in version $openCV_Version$ by Willow Garage under BSD-license.</li>
+  $WITHPCL$<li><a href="http://www.pointclouds.org/">point cloud library</a> in version $PCL_Version$ by Open Perception Inc. under BSD-license.</li>$WITHPCL$
+  <li>The <a href="http://qt.nokia.com/">QT-Framework</a> in version $QT_Your_Version$ (Compile-Version $QT_Version$) by The Qt Company under LGPL.</li>
   <li>A modified version of <a href="http://qt-apps.org/content/show.php/QPropertyEditor?content=68684">QPropertyEditor</a> that is licensed under LGPL</li>
   <li><a href="http://www.riverbankcomputing.co.uk/software/qscintilla/intro">QScintilla</a> in version $QScintilla_Version$ by Riverbank Computed Limited under GPL with additional exceptions.</li>
   <li>QScintilla is a port to Qt of Neil Hodgson's  <a href="http://www.scintilla.org/">Scintilla</a> C++ editor control.</li>

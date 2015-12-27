@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
    
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -33,71 +33,35 @@ namespace ito
 {
 
 //----------------------------------------------------------------------------------------------------------------------------------
+AbstractDObjPclFigure::AbstractDObjPclFigure(const QString &itomSettingsFile, const ito::ParamBase::Type inpType, AbstractFigure::WindowMode windowMode /*= AbstractFigure::ModeStandaloneInUi*/, QWidget *parent /*= 0*/) :
+    AbstractFigure(itomSettingsFile, windowMode, parent),
+    m_inpType(inpType)
+{
+    m_pInput.insert("pointCloud", new ito::Param("pointCloud", ito::ParamBase::PointCloudPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+    m_pInput.insert("polygonMesh", new ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+    m_pInput.insert("dataObject", new ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+AbstractDObjPclFigure::AbstractDObjPclFigure(const QString &itomSettingsFile, AbstractFigure::WindowMode windowMode /*= AbstractFigure::ModeStandaloneInUi*/, QWidget *parent /*= 0*/) :
+    AbstractFigure(itomSettingsFile, windowMode, parent),
+    m_inpType(0)
+{
+    m_pInput.insert("pointCloud", new ito::Param("pointCloud", ito::ParamBase::PointCloudPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+    m_pInput.insert("polygonMesh", new ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+    m_pInput.insert("dataObject", new ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+AbstractDObjPclFigure::~AbstractDObjPclFigure()
+{
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal AbstractDObjPclFigure::update(void)
 {
-    ito::RetVal retval = ito::retOk;
-
     //!> do the real update work, here the transformation from source to displayed takes place
-    retval += applyUpdate();
-
-    //!> input data object is different from output data object so must cache it
-/*
-    if (m_inpType == ito::ParamBase::PointCloudPtr)
-    {
-        ito::PCLPointCloud *newDisplayed = (ito::PCLPointCloud*)(m_pOutput["displayed"]->getVal<void*>());
-
-        if (m_dataPointerPC.contains("displayed") && newDisplayed == m_dataPointerPC["displayed"].data())
-        {
-            //contents remains the same
-        }
-        else if (newDisplayed == (ito::PCLPointCloud*)m_pInput["source"]->getVal<void*>())
-        {
-            //displayed is the same than source, source is already cached. Therefore we don't need to cache displayed
-            m_dataPointerPC["displayed"].clear();
-        }
-        else
-        {
-            m_dataPointerPC["displayed"] = QSharedPointer<ito::PCLPointCloud>(new ito::PCLPointCloud(*newDisplayed));
-        }
-    }
-    else if (m_inpType == ito::ParamBase::PolygonMeshPtr)
-    {
-        ito::PCLPolygonMesh *newDisplayed = (ito::PCLPolygonMesh*)(m_pOutput["displayed"]->getVal<void*>());
-
-        if (m_dataPointerPM.contains("displayed") && newDisplayed == m_dataPointerPM["displayed"].data())
-        {
-            //contents remains the same
-        }
-        else if (newDisplayed == (ito::PCLPolygonMesh*)m_pInput["source"]->getVal<void*>())
-        {
-            //displayed is the same than source, source is already cached. Therefore we don't need to cache displayed
-            m_dataPointerPM["displayed"].clear();
-        }
-        else
-        {
-            m_dataPointerPM["displayed"] = QSharedPointer<ito::PCLPolygonMesh>(new ito::PCLPolygonMesh(*newDisplayed));
-        }    
-    }
-    else if (m_inpType == ito::ParamBase::DObjPtr)
-    {
-        ito::DataObject *newDisplayed = (ito::DataObject*)(m_pOutput["displayed"]->getVal<void*>());
-
-        if (m_dataPointerDObj.contains("displayed") && newDisplayed == m_dataPointerDObj["displayed"].data())
-        {
-            //contents remains the same
-        }
-        else if (newDisplayed == (ito::DataObject*)m_pInput["source"]->getVal<void*>())
-        {
-            //displayed is the same than source, source is already cached. Therefore we don't need to cache displayed
-            m_dataPointerDObj["displayed"].clear();
-        }
-        else
-        {
-            m_dataPointerDObj["displayed"] = QSharedPointer<ito::DataObject>(new ito::DataObject(*newDisplayed));
-        }
-    }
-*/    
-    return retval;
+    return applyUpdate();  
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -124,7 +88,6 @@ void AbstractDObjPclFigure::setDataObject(QSharedPointer<ito::DataObject> source
         if (m_dataPointerDObj["dataObject"].data() != source.data())
         {
             oldSource = m_dataPointerDObj["dataObject"];
-            // sometimes crash here when replacing the source
             m_dataPointerDObj["dataObject"] = source;
         }  
     }
@@ -165,13 +128,7 @@ void AbstractDObjPclFigure::setPointCloud(QSharedPointer<ito::PCLPointCloud> sou
         if (m_dataPointerPC["pointCloud"].data() != source.data())
         {
             oldSource = m_dataPointerPC["pointCloud"];
-//            if (oldSource)
-//                oldSource->lockWrite();
-
-            // sometimes crash here when replacing the source
             m_dataPointerPC["pointCloud"] = source;
-//            if (oldSource)
-//                oldSource->unlock();
         }  
     }
     else
@@ -189,7 +146,7 @@ void AbstractDObjPclFigure::setPointCloud(QSharedPointer<ito::PCLPointCloud> sou
 //----------------------------------------------------------------------------------------------------------------------------------
 QSharedPointer<ito::PCLPolygonMesh> AbstractDObjPclFigure::getPolygonMesh(void) const 
 {
-    ito::PCLPolygonMesh *pm = m_pInput["polgonMesh"]->getVal<ito::PCLPolygonMesh*>();
+    ito::PCLPolygonMesh *pm = m_pInput["polygonMesh"]->getVal<ito::PCLPolygonMesh*>();
     if (pm)
     {
         return QSharedPointer<ito::PCLPolygonMesh>(new ito::PCLPolygonMesh(*pm)); 
@@ -203,29 +160,23 @@ void AbstractDObjPclFigure::setPolygonMesh(QSharedPointer<ito::PCLPolygonMesh> s
     ito::RetVal retval = ito::retOk;
     QSharedPointer<ito::PCLPolygonMesh> oldSource; //possible backup for previous source, this backup must be alive until updateParam with the new one has been completely propagated
 
-    if (m_dataPointerPM.contains("polgonMesh"))
+    if (m_dataPointerPM.contains("polygonMesh"))
     {
         //check if pointer of shared incoming data object is different to pointer of previous data object
         //if so, free previous
-        if (m_dataPointerPM["polgonMesh"].data() != source.data())
+        if (m_dataPointerPM["polygonMesh"].data() != source.data())
         {
-            oldSource = m_dataPointerPM["polgonMesh"];
-//            if (oldSource)
-//                oldSource->lockWrite();
-
-            // sometimes crash here when replacing the source
-            m_dataPointerPM["polgonMesh"] = source;
-//            if (oldSource)
-//                oldSource->unlock();
+            oldSource = m_dataPointerPM["polygonMesh"];
+            m_dataPointerPM["polygonMesh"] = source;
 
         }  
     }
     else
     {
-        m_dataPointerPM["polgonMesh"] = source;
+        m_dataPointerPM["polygonMesh"] = source;
     }
             
-    ito::ParamBase thisParam("polgonMesh", ito::ParamBase::PolygonMeshPtr, (const char*)source.data());
+    ito::ParamBase thisParam("polygonMesh", ito::ParamBase::PolygonMeshPtr, (const char*)source.data());
     m_inpType = ito::ParamBase::PolygonMeshPtr;
     retval += updateParam(&thisParam, 1);
 
@@ -244,49 +195,60 @@ ito::RetVal AbstractDObjPclFigure::setLinePlot(const double /*x0*/, const double
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*
-//this source is invoked by any connected camera
-void AbstractDObjFigure::setSource(QSharedPointer<ito::DataObject> source, ItomSharedSemaphore *waitCond) 
-{ 
-    ito::RetVal retval = ito::retOk;
-
-    if (m_cameraConnected)
-    {
-        if (m_dataPointer.contains("source"))
-        {
-            //check if pointer of shared incoming data object is different to pointer of previous data object
-            //if so, free previous
-            if (m_dataPointer["source"].data() != source.data())
-            {
-                QSharedPointer<ito::DataObject> oldSource = m_dataPointer["source"];
-                if (oldSource.data())
-                {
-                    oldSource->lockWrite();
-                    m_dataPointer["source"] = source;
-                    oldSource->unlock();
-                }
-                else
-                {
-                    m_dataPointer["source"] = source;
-                }
-            }
-        }
-        else
-        {
-            m_dataPointer["source"] = source;
-        }
-            
-        ito::ParamBase thisParam("source", ito::ParamBase::DObjPtr, (const char*)source.data());
-        retval += updateParam(&thisParam, 1);
-    }
-
-    if (waitCond)
-    {
-        waitCond->release();
-        waitCond->deleteSemaphore();
-        waitCond = NULL;
-    }
+ito::AutoInterval AbstractDObjPclFigure::getXAxisInterval(void) const
+{
+    return ito::AutoInterval();
 }
-*/
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDObjPclFigure::setXAxisInterval(ito::AutoInterval)
+{
+    return;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::AutoInterval AbstractDObjPclFigure::getYAxisInterval(void) const
+{
+    return ito::AutoInterval();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDObjPclFigure::setYAxisInterval(ito::AutoInterval)
+{
+    return;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::AutoInterval AbstractDObjPclFigure::getZAxisInterval(void) const
+{
+    return ito::AutoInterval();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDObjPclFigure::setZAxisInterval(ito::AutoInterval)
+{
+    return;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString AbstractDObjPclFigure::getColorMap(void) const
+{
+    return QString();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDObjPclFigure::setColorMap(QString)
+{
+    return;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! plot-specific render function to enable more complex printing in subfigures ...
+QPixmap AbstractDObjPclFigure::renderToPixMap(const int xsize, const int ysize, const int resolution)
+{
+    QPixmap emptyMap(xsize, ysize);
+    emptyMap.fill(Qt::green);
+    return emptyMap;
+}
 
 } //end namespace ito

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -50,8 +50,6 @@ public:
 protected:
     ScriptDockWidget* createEmptyScriptDock(bool docked, Qt::DockWidgetArea area = Qt::TopDockWidgetArea, const QString &objectName = QString());
 
-    
-
 private:
     ScriptDockWidget* getFirstDockedElement();
     ScriptDockWidget* getFirstUndockedElement();
@@ -80,7 +78,7 @@ public slots:
 
     void openNewScriptWindow(bool docked, ItomSharedSemaphore* semaphore = NULL);
     RetVal newScript(ItomSharedSemaphore* semaphore = NULL);
-    RetVal openScript(const QString &filename, ItomSharedSemaphore* semaphore = NULL, int visibleLineNr = -1);
+    RetVal openScript(const QString &filename, ItomSharedSemaphore* semaphore = NULL, int visibleLineNr = -1, bool errorMessageClick = false);
 
     ScriptDockWidget* openScriptRequested(const QString &filename, ScriptDockWidget* widget);
 
@@ -93,7 +91,6 @@ public slots:
 
 private slots:
     void widgetFocusChanged(QWidget* old, QWidget* now);
-
 };
 
 } //end namespace ito

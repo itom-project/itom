@@ -2,8 +2,9 @@ SET (target_name itomWidgets)
 
 project(${target_name})
 
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.9)
 
+#CMAKE Policies
 IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
     if(POLICY CMP0042)
         cmake_policy(SET CMP0042 OLD)
@@ -223,10 +224,17 @@ ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${itomWidgets_SOURCES} ${itomWidgets_
 
 if (QT5_FOUND)
     TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} itomCommonLib)
-    qt5_use_modules(${target_name} UiTools Widgets Svg Designer LinguistTools)
 else (QT5_FOUND)
     TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTDESIGNER_LIBRARY} ${QT_QTSVG_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} itomCommonLib)
 endif (QT5_FOUND)
+
+IF (QT5_FOUND)
+    IF(CMAKE_VERSION VERSION_GREATER 3.0.0)
+        #https://bugreports.qt.io/browse/QTBUG-39457
+        cmake_policy(SET CMP0043 OLD)
+    ENDIF()
+    qt5_use_modules(${target_name} ${QT_COMPONENTS})
+ENDIF (QT5_FOUND)
 
 #translation
 set (FILES_TO_TRANSLATE ${itomWidgets_SOURCES} ${itomWidgets_HEADERS} ${itomWidgets_UI})

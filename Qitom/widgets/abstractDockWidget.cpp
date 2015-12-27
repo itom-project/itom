@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO), 
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO), 
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -108,11 +108,11 @@ AbstractDockWidget::AbstractDockWidget(bool docked, bool isDockAvailable, tFloat
 
     setWindowTitle(title);
 
-    m_actStayOnTop = new QAction(QIcon(""), tr("stay on top"), this);
+    m_actStayOnTop = new QAction(QIcon(""), tr("Stay on top"), this);
     m_actStayOnTop->setToolTip(tr("stay on top of all visible windows"));
     m_actStayOnTop->setCheckable(true);
     connect(m_actStayOnTop, SIGNAL(triggered(bool)), this, SLOT(mnuStayOnTop(bool)));
-    m_actStayOnTopOfApp = new QAction(tr("stay on top of main window"), this);
+    m_actStayOnTopOfApp = new QAction(tr("Stay on top of main window"), this);
     m_actStayOnTopOfApp->setToolTip(tr("stay on top of main window of itom"));
     m_actStayOnTopOfApp->setCheckable(true);
     connect(m_actStayOnTopOfApp, SIGNAL(triggered(bool)), this, SLOT(mnuStayOnTopOfApp(bool)));

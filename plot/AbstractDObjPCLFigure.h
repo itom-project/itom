@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
    
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -49,10 +49,8 @@ namespace ito {
 class ITOMCOMMONQT_EXPORT AbstractDObjPclFigure : public AbstractFigure
 {
     Q_OBJECT
-    Q_PROPERTY(QSharedPointer<ito::DataObject> dataObject READ getDataObject WRITE setDataObject DESIGNABLE false USER false)
-//    Q_PROPERTY(QSharedPointer<ito::DataObject> displayed READ getDisplayed DESIGNABLE false USER false)
-//    Q_PROPERTY(QPointer<ito::AddInDataIO> camera READ getCamera WRITE setCamera DESIGNABLE false USER false)    
-#ifdef USEPCL
+    Q_PROPERTY(QSharedPointer<ito::DataObject> dataObject READ getDataObject WRITE setDataObject DESIGNABLE false USER false)   
+#ifdef USEPCL //this symbol is automatically defined if the itom SDK is compiled with PCL support (set in itom_sdk.cmake)
     Q_PROPERTY(QSharedPointer<ito::PCLPointCloud> pointCloud READ getPointCloud WRITE setPointCloud DESIGNABLE false USER false)
     Q_PROPERTY(QSharedPointer<ito::PCLPolygonMesh> polygonMesh READ getPolygonMesh WRITE setPolygonMesh DESIGNABLE false USER false)
 #endif
@@ -62,9 +60,10 @@ class ITOMCOMMONQT_EXPORT AbstractDObjPclFigure : public AbstractFigure
     Q_PROPERTY(ito::AutoInterval zAxisInterval READ getZAxisInterval WRITE setZAxisInterval DESIGNABLE true USER true)
     Q_PROPERTY(QString colorMap READ getColorMap WRITE setColorMap DESIGNABLE true USER true)
 
-    Q_CLASSINFO("prop://source", "Sets the input data object for this plot.")
-    Q_CLASSINFO("prop://displayed", "This returns the currently displayed data object [read only].")
-//    Q_CLASSINFO("prop://camera", "Use this property to set a camera/grabber to this plot (live image).")
+    Q_CLASSINFO("prop://dataObject", "Sets the input data object for this plot.")
+    Q_CLASSINFO("prop://polygonMesh", "Sets the input polygon mesh for this plot.")
+    Q_CLASSINFO("prop://pointCloud", "Sets the input point cloud for this plot.")
+
     Q_CLASSINFO("prop://xAxisInterval", "Sets the visible range of the displayed x-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].")
     Q_CLASSINFO("prop://yAxisInterval", "Sets the visible range of the displayed y-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].")
     Q_CLASSINFO("prop://zAxisInterval", "Sets the visible range of the displayed z-axis (in coordinates of the data object) or (0.0, 0.0) if range should be automatically set [default].")
@@ -73,47 +72,31 @@ class ITOMCOMMONQT_EXPORT AbstractDObjPclFigure : public AbstractFigure
     Q_CLASSINFO("slot://setLinePlot", "This (virtual) slot can be invoked by python to trigger a lineplot.")
 
 public:
-    AbstractDObjPclFigure(const QString &itomSettingsFile, const ito::ParamBase::Type inpType, AbstractFigure::WindowMode windowMode = AbstractFigure::ModeStandaloneInUi, QWidget *parent = 0) : 
-        AbstractFigure(itomSettingsFile, windowMode, parent),
-        m_inpType(inpType)
-    {
-        m_pInput.insert("pointCloud", new ito::Param("pointCloud", ito::ParamBase::PointCloudPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
-//            m_pOutput.insert("displayed", new ito::Param("displayed", ito::ParamBase::PointCloudPtr, NULL, QObject::tr("Actual output data of plot").toLatin1().data()));        
-        m_pInput.insert("polygonMesh", new ito::Param("polygonMesh", ito::ParamBase::PolygonMeshPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
-//            m_pOutput.insert("displayed", new ito::Param("displayed", ito::ParamBase::PolygonMeshPtr, NULL, QObject::tr("Actual output data of plot").toLatin1().data()));        
-        m_pInput.insert("dataObject", new ito::Param("dataObject", ito::ParamBase::DObjPtr, NULL, QObject::tr("Source data for plot").toLatin1().data()));
-//            m_pOutput.insert("displayed", new ito::Param("displayed", ito::ParamBase::DObjPtr, NULL, QObject::tr("Actual output data of plot").toLatin1().data()));
-    }
+    AbstractDObjPclFigure(const QString &itomSettingsFile, const ito::ParamBase::Type inpType, AbstractFigure::WindowMode windowMode = AbstractFigure::ModeStandaloneInUi, QWidget *parent = 0);
+
+    AbstractDObjPclFigure(const QString &itomSettingsFile, AbstractFigure::WindowMode windowMode = AbstractFigure::ModeStandaloneInUi, QWidget *parent = 0);
     
-    virtual ~AbstractDObjPclFigure() 
-    {
-//        removeLiveSource();
-    }
+    virtual ~AbstractDObjPclFigure();
 
     ito::RetVal update(void);
 
     virtual void setDataObject(QSharedPointer<ito::DataObject>);
     virtual QSharedPointer<ito::DataObject> getDataObject(void) const;
 
-    virtual inline ito::AutoInterval getXAxisInterval(void) const { return ito::AutoInterval(); }
-    virtual inline void setXAxisInterval(ito::AutoInterval) { return; }
-        
-    virtual inline ito::AutoInterval getYAxisInterval(void) const { return ito::AutoInterval(); }
-    virtual inline void setYAxisInterval(ito::AutoInterval) { return; }
-        
-    virtual inline ito::AutoInterval getZAxisInterval(void) const { return ito::AutoInterval(); }
-    virtual inline void setZAxisInterval(ito::AutoInterval) { return; }
-        
-    virtual inline QString getColorMap(void) const { return QString(); }
-    virtual inline void setColorMap(QString) { return; }
+    virtual ito::AutoInterval getXAxisInterval(void) const;
+    virtual void setXAxisInterval(ito::AutoInterval);
+
+    virtual ito::AutoInterval getYAxisInterval(void) const;
+    virtual void setYAxisInterval(ito::AutoInterval);
+
+    virtual ito::AutoInterval getZAxisInterval(void) const;
+    virtual void setZAxisInterval(ito::AutoInterval);
+
+    virtual QString getColorMap(void) const;
+    virtual void setColorMap(QString);
 
     //! plot-specific render function to enable more complex printing in subfigures ...
-    virtual inline QPixmap renderToPixMap(const int xsize, const int ysize, const int resolution) 
-    {
-        QPixmap emptyMap(xsize, ysize);
-        emptyMap.fill(Qt::green);
-        return emptyMap;
-    } 
+    virtual QPixmap renderToPixMap(const int xsize, const int ysize, const int resolution);
 
 #ifdef USEPCL
     virtual void setPointCloud(QSharedPointer<ito::PCLPointCloud>);
@@ -134,12 +117,6 @@ protected:
 signals:
 
 public slots:
-    //this source is invoked by any connected camera
-/*    
-    virtual void setSource(QSharedPointer<ito::DataObject> source, ItomSharedSemaphore *waitCond);
-    virtual void setSource(QSharedPointer<ito::PCLPointCloud> source, ItomSharedSemaphore *waitCond);
-    virtual void setSource(QSharedPointer<ito::PCLPolygonMesh> source, ItomSharedSemaphore *waitCond);
-*/
     //this can be invoked by python to trigger a lineplot
     virtual ito::RetVal setLinePlot(const double x0, const double y0, const double x1, const double y1, const int destID = -1);
 };

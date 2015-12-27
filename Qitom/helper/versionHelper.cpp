@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -92,10 +92,11 @@ QMap<QString, QString> ito::getItomVersionMap()
 #if QT_VERSION > 0x040802
         case QSysInfo::WV_WINDOWS8:     items["itom_SysType"] = "Windows 8";            break;
 #endif
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050500
         case QSysInfo::WV_WINDOWS8_1:   items["itom_SysType"] = "Windows 8.1";          break;
-#endif
-#if QT_VERSION >= 0x050200
+        case QSysInfo::WV_WINDOWS10:    items["itom_SysType"] = "Windows 10";           break;
+#elif QT_VERSION >= 0x050200
+        case QSysInfo::WV_WINDOWS8_1:   items["itom_SysType"] = "Windows 8.1";          break;
         case QSysInfo::WV_WINDOWS8_1+1: items["itom_SysType"] = "Windows 10";           break;
 #endif
         default:                        items["itom_SysType"] = "Windows";              break;
@@ -137,30 +138,12 @@ QMap<QString, QString> ito::getItomVersionMap()
     items["itom_compileDate"].append(", ");
     items["itom_compileDate"].append( __TIME__);
 
-    items["itom_SVN_Rev"] = "";
-    items["itom_SVN_Date"] = "";
-    items["itom_SVN_URL"] = "";
     items["itom_GIT_Rev"] = "";
     items["itom_GIT_Rev_Abbrev"] = "";
     items["itom_GIT_Date"] = "";
     items["itom_GIT_URL"] = "";
 
-#ifdef USING_SVN
-    items["itom_SVN_Rev"] = SVN_REVISION;
-    items["itom_SVN_Date"] = SVN_REVISION_DATE;
-    items["itom_SVN_URL"] = SVN_REPOSITORY_URL;
-
-    bool isClean = SVN_CLEAN_BUILD_FLAG > 0? true:false;
-    if(!isClean)
-    {
-        items["version_Warnings"] = QObject::tr("Warning: The version contains locally changed code!\n");
-    }
-    else
-    {
-        items["version_Warnings"] = QObject::tr("Build from a clean version.\n");
-    }
-
-#elif (defined USING_GIT)
+#ifdef USING_GIT
     items["itom_GIT_Rev"] = GIT_HASHTAG;
     items["itom_GIT_Rev_Abbrev"] = GIT_HASHTAG_ABBREV;
     items["itom_GIT_Date"] = GIT_REVISION_DATE;
@@ -171,7 +154,7 @@ QMap<QString, QString> ito::getItomVersionMap()
     {
         items["version_Warnings"] = "Warning: ";
         if(GIT_CLEAN_BUILD_FLAG & 0x01) items["version_Warnings"].append(QObject::tr("The version contains locally changed code! "));
-        if(GIT_CLEAN_BUILD_FLAG & 0x02) items["version_Warnings"].append(QObject::tr("The version contains unversioned files (e.g. from pyCache-files)!"));
+        if(GIT_CLEAN_BUILD_FLAG & 0x02) items["version_Warnings"].append(QObject::tr("The version contains unversioned files (e.g. from __pycache__-files)!"));
         items["version_Warnings"].append("\n");
     }
     else

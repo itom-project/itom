@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
    
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -54,8 +54,13 @@
 
 //plugins define VISUAL_LEAK_DETECTOR_CMAKE in their CMake configuration file
 #if defined _DEBUG  && defined(_MSC_VER) && defined(VISUAL_LEAK_DETECTOR_CMAKE)
-    #define NOMINMAX //instead min, max is defined as macro in winDef.h, included by vld.h
-    #include "vld.h"
+    #ifndef NOMINAX
+        #define NOMINMAX //instead min, max is defined as macro in winDef.h, included by vld.h
+        #include "vld.h"
+        #undef NOMINMAX
+    #else
+        #include "vld.h"
+    #endif
 #endif
 
 #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
@@ -699,8 +704,6 @@ namespace ito
         private:
             Q_DISABLE_COPY (AddInActuator)
 
-            int m_nrOfStatusChangedConnections; /*!< number of signal-slot connections which are conntected to the signal "actuatorStatusChanged" */
-            int m_nrOfTargetChangedConnections; /*!< number of signal-slot connections which are conntected to the signal "targetChanged" */
             bool m_interruptFlag;               /*!< interrupt flag (true if interrupt is requested, default: false) */
             QMutex m_interruptMutex;            /*!< mutex providing a thread-safe handling of the interrupt flag (internal use only) */
 
@@ -1095,6 +1098,7 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/1.3.0", //outdated on 2014-10-27 due to insertion of ito::AutoInterval object and addition of further ito::ParamMeta classes.
     "ito.AddIn.InterfaceBase/1.3.1", //outdated on 2015-03-01 due to rework on data object
     "ito.AddIn.InterfaceBase/1.4.0", //outdated on 2015-07-03 due to removal of lock mechanism in data object, add of embedded line plots, qt5 incompatiblity changes and some refinements in addInInterface
+    "ito.AddIn.InterfaceBase/2.0.0", //outdated on 2015-12-04 due to improvements in plot/figure interfaces, removal of deprecated classes helperActuator and helperGrabber and further removal of deprecated items
     NULL
 };
 
@@ -1103,10 +1107,10 @@ static const char* ito_AddInInterface_OldVersions[] = {
 #define CREATE_ADDININTERFACE_VERSION(major,minor,patch) ((major<<16)|(minor<<8)|(patch))
 
 #define ITOM_ADDININTERFACE_MAJOR 2
-#define ITOM_ADDININTERFACE_MINOR 0
+#define ITOM_ADDININTERFACE_MINOR 1
 #define ITOM_ADDININTERFACE_PATCH 0
 #define ITOM_ADDININTERFACE_VERSION CREATE_ADDININTERFACE_VERSION(ITOM_ADDININTERFACE_MAJOR,ITOM_ADDININTERFACE_MINOR,ITOM_ADDININTERFACE_PATCH)
-static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_VERSION_STR(2,0,0); //results in "ito.AddIn.InterfaceBase/x.x.x"; (the numbers 1,3,1 can not be replaced by the macros above. Does not work properly)
+static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_VERSION_STR(2,1,0); //results in "ito.AddIn.InterfaceBase/x.x.x"; (the numbers 1,3,1 can not be replaced by the macros above. Does not work properly)
 
 
 

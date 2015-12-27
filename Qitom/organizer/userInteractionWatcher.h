@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -28,8 +28,10 @@
 #include "../global.h"
 #include "common/sharedStructuresQt.h"
 #include "DataObject/dataobj.h"
+#include "common/shape.h"
 
 #include <qpolygon.h>
+#include <qvector.h>
 #include <qsharedpointer.h>
 
 namespace ito
@@ -40,7 +42,7 @@ class UserInteractionWatcher : public QObject
     Q_OBJECT
 
 public:
-    UserInteractionWatcher(QWidget *plotWidget, int geomtriecType, int maxNrOfPoints, QSharedPointer<ito::DataObject> coords, ItomSharedSemaphore *semaphore, QObject *parent = 0); //constructor
+    UserInteractionWatcher(QWidget *plotWidget, ito::Shape::ShapeType type, int maxNrOfPoints, QSharedPointer<QVector<ito::Shape> > shapes, ItomSharedSemaphore *semaphore, QObject *parent = 0); //constructor
     virtual ~UserInteractionWatcher(); //destructor
 
 private:
@@ -48,11 +50,11 @@ private:
     ItomSharedSemaphore *m_pSemaphore;
     int m_maxNrOfPoints;
     bool m_waiting;
-    QSharedPointer<ito::DataObject> m_coords;
+    QSharedPointer<QVector<ito::Shape> > m_shapes;
 
 private slots:
     void plotWidgetDestroyed(QObject *obj);
-    void userInteractionDone(int type, bool aborted, QPolygonF points);
+    void userInteractionDone(int type, bool aborted, QVector<ito::Shape> shapes);
 
     public slots:
 

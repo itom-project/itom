@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -232,13 +232,6 @@ ito::RetVal apiFParseInitParams(QVector<ito::ParamBase> *initParamListMand, QVec
     return ito::retOk;
 }
 
-
-
-//------------------------------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal ApiFunctions::setFPointer()
-{
-    return ito::retOk;
-}
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::FilterDef *&FilterDef)

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -313,7 +313,7 @@ end:
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
         QMetaObject::invokeMethod(eng, "pickleVariables", Q_ARG(bool,globalNotLocal), Q_ARG(QString,filename), Q_ARG(QStringList,varNames), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
-        if (!locker.getSemaphore()->wait(120000))
+        if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
         {
             retValue += RetVal(retError, 2, tr("timeout while pickling variables").toLatin1().data());
         }
@@ -331,7 +331,7 @@ end:
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
         QMetaObject::invokeMethod(eng, "saveMatlabVariables", Q_ARG(bool,globalNotLocal), Q_ARG(QString,filename), Q_ARG(QStringList,varNames), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
-        if (!locker.getSemaphore()->wait(120000))
+        if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
         {
             retValue += RetVal(retError, 2, tr("timeout while saving variables to matlab file").toLatin1().data());
         }
@@ -427,7 +427,7 @@ end:
 
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
         QMetaObject::invokeMethod(eng, "unpickleVariables", Q_ARG(bool,globalNotLocal), Q_ARG(QString,filename), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
-        if (!locker.getSemaphore()->wait(120000))
+        if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
         {
             retValue += RetVal(retError, 2, tr("timeout while unpickling variables").toLatin1().data());
         }
@@ -445,7 +445,7 @@ end:
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
         QMetaObject::invokeMethod(eng, "loadMatlabVariables", Q_ARG(bool,globalNotLocal), Q_ARG(QString,filename), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         
-        if (!locker.getSemaphore()->wait(120000))
+        if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
         {
             retValue += RetVal(retError, 2, tr("timeout while loading matlab variables").toLatin1().data());
         }
@@ -639,6 +639,8 @@ end:
     bool putParamsToWorkspace = false;
     QVector<SharedParamBasePointer> values;
 
+    DialogOpenFileWithFilter::CheckVarname varnameCheck = (globalNotLocal) ? DialogOpenFileWithFilter::CheckGlobalWorkspace : DialogOpenFileWithFilter::CheckLocalWorkspace;
+
     ito::DataObject dObj;
 #if ITOM_POINTCLOUDLIBRARY > 0
     ito::PCLPointCloud pointCloud;
@@ -669,7 +671,7 @@ end:
                     //2. filename
                     autoMand[1].setVal<char*>(filename.toLatin1().data());
 
-                    dialog = new DialogOpenFileWithFilter(filename, filter, autoMand, autoOut, userMand, userOpt, retval, parent );
+                    dialog = new DialogOpenFileWithFilter(filename, filter, autoMand, autoOut, userMand, userOpt, retval, varnameCheck, parent);
                     if (!retval.containsError())
                     {
                         int result = dialog->exec();
@@ -692,7 +694,7 @@ end:
                     //2. filename
                     autoMand[1].setVal<char*>(filename.toLatin1().data());
 
-                    dialog = new DialogOpenFileWithFilter(filename, filter, autoMand, autoOut, userMand, userOpt, retval, parent );
+                    dialog = new DialogOpenFileWithFilter(filename, filter, autoMand, autoOut, userMand, userOpt, retval, varnameCheck, parent);
                     if (!retval.containsError())
                     {
                         int result = dialog->exec();
@@ -714,7 +716,7 @@ end:
                     //2. filename
                     autoMand[1].setVal<char*>(filename.toLatin1().data());
 
-                    dialog = new DialogOpenFileWithFilter(filename, filter, autoMand, autoOut, userMand, userOpt, retval, parent);
+                    dialog = new DialogOpenFileWithFilter(filename, filter, autoMand, autoOut, userMand, userOpt, retval, varnameCheck, parent);
                     if (!retval.containsError())
                     {
                         int result = dialog->exec();
@@ -743,8 +745,8 @@ end:
             {
                 ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
                         
-                QMetaObject::invokeMethod(pyEng, "putParamsToWorkspace", Q_ARG(bool,globalNotLocal), Q_ARG(QStringList, pythonVarNames), Q_ARG(QVector<SharedParamBasePointer>, values), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-                if (locker.getSemaphore()->wait(10000) == false)
+                QMetaObject::invokeMethod(pyEng, "putParamsToWorkspace", Q_ARG(bool, globalNotLocal), Q_ARG(QStringList, pythonVarNames), Q_ARG(QVector<SharedParamBasePointer>, values), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+                if (locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad) == false)
                 {
                     QMessageBox::critical(parent, tr("Timeout while sending values to python"), tr("A timeout occurred while content of loaded file has been sent to python workspace"));
                 }

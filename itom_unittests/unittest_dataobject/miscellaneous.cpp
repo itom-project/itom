@@ -26,19 +26,19 @@ public:
         int *temp_size1 = new int[2];
         temp_size1[0] =10;
         temp_size1[1] =10;
-        dObj1 = ito::DataObject(0,temp_size1,ito::getDataType( (const _Tp *) NULL ));
-        dObj2 = ito::DataObject(2,temp_size1,ito::getDataType( (const _Tp *) NULL ));
-        dObj3 = ito::DataObject(3,3,10,ito::getDataType( (const _Tp *) NULL ));
+        dObj1 = ito::DataObject(0,temp_size1,ito::getDataType2<_Tp*>());
+        dObj2 = ito::DataObject(2,temp_size1,ito::getDataType2<_Tp*>());
+        dObj3 = ito::DataObject(3,3,10,ito::getDataType2<_Tp*>());
         int *temp_size = new int[5];
         temp_size[0] = 3;
         temp_size[1] = 4;
         temp_size[2] = 2;
         temp_size[3] = 10;
         temp_size[4] = 10;
-        dObj4 = ito::DataObject(5,temp_size,ito::getDataType( (const _Tp *) NULL ));
+        dObj4 = ito::DataObject(5,temp_size,ito::getDataType2<_Tp*>());
         int *temp_size2 = new int[1];
         temp_size2[0] = 3;
-        dObj7 = ito::DataObject(1,temp_size2,ito::getDataType( (const _Tp *) NULL ));
+        dObj7 = ito::DataObject(1,temp_size2,ito::getDataType2<_Tp*>());
     };
  
     virtual void TearDown(void) {};

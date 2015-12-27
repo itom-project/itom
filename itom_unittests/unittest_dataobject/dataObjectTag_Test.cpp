@@ -23,17 +23,17 @@ public:
     {
         //Creating 1,2 and 3 dimension DataObjects for this Perticular Test class.
 
-        mat1_1d = ito::DataObject(3,ito::getDataType( (const _Tp *) NULL ) );
-        mat2_1d = ito::DataObject(3,ito::getDataType( (const _Tp *) NULL ));
-        mat3_1d = ito::DataObject(3,ito::getDataType( (const _Tp *) NULL ));
+        mat1_1d = ito::DataObject(3,ito::getDataType2<_Tp*>() );
+        mat2_1d = ito::DataObject(3,ito::getDataType2<_Tp*>());
+        mat3_1d = ito::DataObject(3,ito::getDataType2<_Tp*>());
 
-        mat1_2d = ito::DataObject(3,4,ito::getDataType( (const _Tp *) NULL ));
-        mat2_2d = ito::DataObject(3,4,ito::getDataType( (const _Tp *) NULL ));
-        mat3_2d = ito::DataObject(3,4,ito::getDataType( (const _Tp *) NULL ));
+        mat1_2d = ito::DataObject(3,4,ito::getDataType2<_Tp*>());
+        mat2_2d = ito::DataObject(3,4,ito::getDataType2<_Tp*>());
+        mat3_2d = ito::DataObject(3,4,ito::getDataType2<_Tp*>());
 
-        mat1_3d = ito::DataObject(3,3,3,ito::getDataType( (const _Tp *) NULL ));
-        mat2_3d = ito::DataObject(3,3,3,ito::getDataType( (const _Tp *) NULL ));
-        mat3_3d = ito::DataObject(3,3,3,ito::getDataType( (const _Tp *) NULL ));
+        mat1_3d = ito::DataObject(3,3,3,ito::getDataType2<_Tp*>());
+        mat2_3d = ito::DataObject(3,3,3,ito::getDataType2<_Tp*>());
+        mat3_3d = ito::DataObject(3,3,3,ito::getDataType2<_Tp*>());
 
         };
     virtual void TearDown(void){};

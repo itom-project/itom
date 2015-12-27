@@ -262,6 +262,8 @@ class Snapshot(ItomUi):
             try:
                 if self.gui.checkSaveAfterSnap["checked"]:
                     self.saveFiles(data)
+                else:
+                    globals()["snapshot"] = data
                 self.disableElements(1)
             except Exception:
                 self.disableElements(1)
@@ -270,6 +272,8 @@ class Snapshot(ItomUi):
                 try:
                     if self.gui.checkSaveAfterSnap["checked"]:
                         self.safeMultiFiles(data)
+                    else:
+                        globals()["snapshot"] = data
                     self.disableElements(1)
                 except Exception:
                     self.disableElements(1)

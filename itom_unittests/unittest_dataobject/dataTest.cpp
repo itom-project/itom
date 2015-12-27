@@ -31,10 +31,10 @@ public:
             switch(nrOfDimensions)
             {
             case 2:
-                matrix.zeros(dim1, dim2, ito::getDataType( (const _Tp *) NULL ));
+                matrix.zeros(dim1, dim2, ito::getDataType2<_Tp*>());
                 break;
             case 3:
-                matrix.zeros(dim1, dim2, dim3, ito::getDataType( (const _Tp *) NULL ));
+                matrix.zeros(dim1, dim2, dim3, ito::getDataType2<_Tp*>());
                 break;
             case 4:
                 //...
@@ -63,7 +63,7 @@ public:
          MatrixContainer1(int eyeSize) : m_eyeSize(eyeSize) 
          {
              matrix = ito::DataObject();
-             matrix.eye(eyeSize, ito::getDataType( (const _Tp *) NULL ));
+             matrix.eye(eyeSize, ito::getDataType2<_Tp*>());
             
          };
              
@@ -84,10 +84,10 @@ public:
             switch(nrOfDimensions)
             {
             case 2:
-                matrix.ones(dim1, dim2, ito::getDataType( (const _Tp *) NULL ));
+                matrix.ones(dim1, dim2, ito::getDataType2<_Tp*>());
                 break;
             case 3:
-                matrix.ones(dim1, dim2, dim3, ito::getDataType( (const _Tp *) NULL ));
+                matrix.ones(dim1, dim2, dim3, ito::getDataType2<_Tp*>());
                 break;
             case 4:
                 //...

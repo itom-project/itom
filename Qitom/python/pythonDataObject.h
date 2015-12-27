@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -132,6 +132,8 @@ class PythonDataObject
         static PyObject* PyDataObject_div(PyDataObject *self, PyObject *args);
 
         static PyObject* PyDataObject_reshape(PyDataObject *self, PyObject *args);
+
+        static PyObject* PyDataObject_createMask(PyDataObject *self, PyObject *args, PyObject* kwds);
     
         // Get / Set metadata / objecttags
         static PyObject* PyDataObj_SetAxisOffset(PyDataObject *self, PyObject *args);
@@ -274,6 +276,7 @@ class PythonDataObject
         static char* typeNumberToName(int typeno);
 
         static PyDataObject* createEmptyPyDataObject();
+        static PyObject* createPyDataObjectFromArray(PyObject *npArray); //returns NULL with set Python exception if npArray could not be converted to data object
 
         static bool checkPyDataObject(int number, PyObject* o1 = NULL, PyObject* o2 = NULL, PyObject* o3 = NULL);
 

@@ -22,20 +22,20 @@ public:
 
     virtual void SetUp(void)
     {
-        matrix1x1 = ito::DataObject(1,1,ito::getDataType( (const _Tp *) NULL ));
+        matrix1x1 = ito::DataObject(1,1,ito::getDataType2<_Tp*>());
         matrix1x1.at<_Tp>(0,0) = cv::saturate_cast<_Tp>(11);
 
-        matrix1x2 = ito::DataObject(1,2,ito::getDataType( (const _Tp *) NULL ));
+        matrix1x2 = ito::DataObject(1,2,ito::getDataType2<_Tp*>());
         matrix1x2.at<_Tp>(0,0) = cv::saturate_cast<_Tp>(11);
         matrix1x2.at<_Tp>(0,1) = cv::saturate_cast<_Tp>(12);
 
-        matrix2x2 = ito::DataObject(2,2,ito::getDataType( (const _Tp *) NULL ));
+        matrix2x2 = ito::DataObject(2,2,ito::getDataType2<_Tp*>());
         matrix2x2.at<_Tp>(0,0) = cv::saturate_cast<_Tp>(11);
         matrix2x2.at<_Tp>(0,1) = cv::saturate_cast<_Tp>(12);
         matrix2x2.at<_Tp>(1,0) = cv::saturate_cast<_Tp>(21);
         matrix2x2.at<_Tp>(1,1) = cv::saturate_cast<_Tp>(22);
 
-        matrix1x1x1 = ito::DataObject(1,1,1,ito::getDataType( (const _Tp *) NULL ));
+        matrix1x1x1 = ito::DataObject(1,1,1,ito::getDataType2<_Tp*>());
         matrix1x1x1.at<_Tp>(0,0,0) = 111;
     };
 

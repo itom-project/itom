@@ -33,7 +33,7 @@ public:
         rotMat[7] = 7.0;
         rotMat[8] = 35.0;
 
-        mat1_2d = ito::DataObject(3,4,ito::getDataType( (const _Tp *) NULL ));
+        mat1_2d = ito::DataObject(3,4,ito::getDataType2<_Tp*>());
         mat1_2d.setTag("testTag1", "test");
         mat1_2d.setTag("testTag2", 0.0);
         mat1_2d.setTag("testTag3", 1.0);
@@ -55,7 +55,7 @@ public:
         mat1_2d.setXYRotationalMatrix(rotMat[0], rotMat[1], rotMat[2], rotMat[3], rotMat[4], rotMat[5], rotMat[6], rotMat[7], rotMat[8]);
         
 
-        mat2_2d = ito::DataObject(3,3,ito::getDataType( (const _Tp *) NULL ));
+        mat2_2d = ito::DataObject(3,3,ito::getDataType2<_Tp*>());
         mat2_2d.setTag("testTag1", "test");
         mat2_2d.setTag("testTag2", 0.0);
         mat2_2d.setTag("testTag3", 1.0);
@@ -74,7 +74,7 @@ public:
         mat2_2d.setValueDescription("val");
         mat2_2d.setXYRotationalMatrix(rotMat[0], rotMat[1], rotMat[2], rotMat[3], rotMat[4], rotMat[5], rotMat[6], rotMat[7], rotMat[8]);
 
-        mat1_3d = ito::DataObject(3,3,3,ito::getDataType( (const _Tp *) NULL ));
+        mat1_3d = ito::DataObject(3,3,3,ito::getDataType2<_Tp*>());
         mat1_3d.setTag("testTag1", "test");
         mat1_3d.setTag("testTag2", 0.0);
         mat1_3d.setTag("testTag3", 1.0);
@@ -99,7 +99,7 @@ public:
         mat1_3d.setXYRotationalMatrix(rotMat[0], rotMat[1], rotMat[2], rotMat[3], rotMat[4], rotMat[5], rotMat[6], rotMat[7], rotMat[8]);
 
 
-        mat2_3d = ito::DataObject(1,3,3,ito::getDataType( (const _Tp *) NULL ));
+        mat2_3d = ito::DataObject(1,3,3,ito::getDataType2<_Tp*>());
         mat2_3d.setTag("testTag1", "test");
         mat2_3d.setTag("testTag2", 0.0);
         mat2_3d.setTag("testTag3", 1.0);
@@ -859,7 +859,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_abs_Test)
     ito::DataObject dTempTest1;
 
     mat1_2d.copyTo(dTempTest1);
-    if(mat1_2d.getType() == ito::tRGBA32 || mat1_2d.getType() == ito::tUInt8 || mat1_2d.getType() == ito::tUInt16)
+    if(mat1_2d.getType() == ito::tRGBA32)
     {
         EXPECT_ANY_THROW(ito::abs(dTempTest1););
     }

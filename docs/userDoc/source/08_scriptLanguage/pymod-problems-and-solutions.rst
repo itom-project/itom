@@ -94,5 +94,7 @@ e.g. by adding::
     
     # -- coding: iso-8859-15 --
     
-at the first line of your script file (iso-8859-15 represents the Western Europe charset). For more information see https://www.python.org/dev/peps/pep-0263/.
+at the first line of your script file (iso-8859-15 represents the Western Europe charset). You can also choose **insert codec...** from the context menu or the edit menu of the editor.
+Choose then the codec you want to use and the corresponding line is automatically prepended to your script. The list of default codec is only a small subset of
+possible codecs, you can also insert another codec into the editable drop-down box. For more information see https://www.python.org/dev/peps/pep-0263/.
 

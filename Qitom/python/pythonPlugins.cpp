@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -166,7 +166,7 @@ PyObject * getParamList(ito::AddInBase *aib)
         result = PyList_New(0);
         QMap<QString, ito::Param>::const_iterator paramIt;
 
-        for (paramIt = paramList->constBegin(); paramIt != paramList->constEnd(); paramIt++)
+        for (paramIt = paramList->constBegin(); paramIt != paramList->constEnd(); ++paramIt)
         {
             name = paramIt.value().getName();
             if (name)
@@ -606,10 +606,10 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
             pyObj = PyTuple_GetSlice(args, 1, argsLength); //new ref
 
             //parses python-parameters with respect to the default values given py (*it).paramsMand and (*it).paramsOpt and returns default-initialized ParamBase-Vectors paramsMand and paramsOpt.
-            ret += parseInitParams(&(*it).paramsMand, &(*it).paramsOpt, pyObj, kwds, *paramsMand, *paramsOpt);
+            ret += parseInitParams(&(it->paramsMand), &(it->paramsOpt), pyObj, kwds, *paramsMand, *paramsOpt);
 
             //makes deep copy from default-output parameters (*it).paramsOut and returns it in paramsOut (ParamBase-Vector)
-            ret += copyParamVector(&(*it).paramsOut, *paramsOut);
+            ret += copyParamVector(&(it->paramsOut), *paramsOut);
 
             Py_XDECREF(pyObj);
 
@@ -1318,12 +1318,8 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
 
     params = PyTuple_GetSlice(args, 1, PyTuple_Size(args));
 
-    //retval += copyParamVector(paramsMand, paramsMandCpy);
-    //retval += copyParamVector(paramsOpt, paramsOptCpy);
-
     if (!retval.containsError())
     {
-
         if (parseInitParams(paramsMand, paramsOpt, params, kwds, paramsMandCpy, paramsOptCpy) != ito::retOk)
         {
             PyErr_SetString(PyExc_RuntimeError, "error while parsing parameters.");
@@ -2595,9 +2591,6 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
     }
 
     params = PyTuple_GetSlice(args, 1, PyTuple_Size(args));
-
-    //retval += copyParamVector(paramsMand, paramsMandCpy);
-    //retval += copyParamVector(paramsOpt, paramsOptCpy);
 
     if (!retval.containsError())
     {

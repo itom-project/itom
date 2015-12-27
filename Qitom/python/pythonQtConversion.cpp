@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -27,14 +27,24 @@
 #include "pythonCommon.h"
 #include "pythonRgba.h"
 #include "pythonFont.h"
+#include "pythonShape.h"
 #include "pythonAutoInterval.h"
 
 #include <qstringlist.h>
 #include <qurl.h>
 #include <qtextcodec.h>
 #include <qdatetime.h>
+#include <qvector2d.h>
+#include <qvector3d.h>
+#include <qvector4d.h>
 
 #include "pythonSharedPointerGuard.h"
+
+#if QT_VERSION >= 0x050000
+    #define METATYPE_CONSTRUCT(type, ptr) QMetaType::create(type, ptr)
+#else
+    #define METATYPE_CONSTRUCT(type, ptr) QMetaType::construct(type, ptr)
+#endif
 
 namespace ito
 {
@@ -714,6 +724,46 @@ QVector<int> PythonQtConversion::PyObjGetIntArray(PyObject* val, bool strict, bo
     return v;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+//! get shape vector from pyObj
+QVector<ito::Shape> PythonQtConversion::PyObjGetShapeVector(PyObject* val, bool &ok)
+{
+    QVector<ito::Shape> v;
+    ok = true;
+
+    if (PySequence_Check(val) == false)
+    {
+        ok = false;
+        return v;
+    }
+
+    Py_ssize_t len = PySequence_Size(val);
+    PyObject *t = NULL;
+
+    for (Py_ssize_t i = 0; i < len; i++)
+    {
+        t = PySequence_GetItem(val, i); //new reference
+        if (PyShape_Check(t))
+        {
+            v.append(*((ito::PythonShape::PyShape*)t)->shape);
+        }
+        else
+        {
+            ok = false;
+            Py_XDECREF(t);
+            break;
+        }
+        Py_XDECREF(t);
+    }
+
+    if (!ok)
+    {
+        v.clear();
+    }
+
+    return v;
+}
+
 #if ITOM_POINTCLOUDLIBRARY > 0
 //----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from PyObject* to ito::PCLPointCloud
@@ -1061,6 +1111,10 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         else if (Py_TYPE(val) == &ito::PythonUi::PyUiItemType)
         {
             type = QMetaType::type("ito::ItomPlotHandle");
+        }
+        else if (Py_TYPE(val) == &ito::PythonShape::PyShapeType)
+        {
+            type = QMetaType::type("ito::Shape");
         }
     }
 
@@ -1491,6 +1545,18 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 v = QVariant();
             }
         }
+        else if (type == QMetaType::type("ito::Shape"))
+        {
+            ito::PythonShape::PyShape *shape = (ito::PythonShape::PyShape*)val;
+            if (shape)
+            {
+                v = qVariantFromValue<ito::Shape>(*(shape->shape));
+            }
+            else
+            {
+                v = QVariant();
+            }
+        }
         else
         {
             v = QVariant();
@@ -1596,6 +1662,66 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 retval += ito::RetVal(ito::retError, 0, "transformation error to RectF: 4 values required.");
             }
         }
+        else if (destType == QVariant::Vector2D)
+        {
+            const QVariantList list = item.toList();
+            if (list.size() == 2)
+            {
+                bool ok2;
+                result = QVector2D(list[0].toFloat(&ok), list[1].toFloat(&ok2));
+                ok &= ok2;
+
+                if (!ok)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "transformation error to Vector2D: at least one value could not be transformed to float.");
+                }
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, "transformation error to Vector2D: 2 values required.");
+            }
+        }
+        else if (destType == QVariant::Vector3D)
+        {
+            const QVariantList list = item.toList();
+            if (list.size() == 3)
+            {
+                bool ok2, ok3;
+                result = QVector3D(list[0].toFloat(&ok), list[1].toFloat(&ok2), list[2].toFloat(&ok3));
+                ok &= ok2;
+                ok &= ok3;
+
+                if (!ok)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "transformation error to Vector3D: at least one value could not be transformed to float.");
+                }
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, "transformation error to Vector3D: 3 values required.");
+            }
+        }
+        else if (destType == QVariant::Vector4D)
+        {
+            const QVariantList list = item.toList();
+            if (list.size() == 4)
+            {
+                bool ok2, ok3, ok4;
+                result = QVector4D(list[0].toFloat(&ok), list[1].toFloat(&ok2), list[2].toFloat(&ok3), list[3].toFloat(&ok4));
+                ok &= ok2;
+                ok &= ok3;
+                ok &= ok4;
+
+                if (!ok)
+                {
+                    retval += ito::RetVal(ito::retError, 0, "transformation error to Vector4D: at least one value could not be transformed to float.");
+                }
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, "transformation error to Vector4D: 4 values required.");
+            }
+        }
         else if (destType == QVariant::Size)
         {
             const QVariantList list = item.toList();
@@ -1632,6 +1758,31 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             else
             {
                 retval += ito::RetVal(ito::retError, 0, "transformation error to AutoInterval: 2 values required.");
+            }
+        }
+        else if (destType == QVariant::UserType && userType == QMetaType::type("QVector<ito::Shape>"))
+        {
+            const QVariantList list = item.toList();
+            QVector<ito::Shape> shapes;
+
+            foreach(const QVariant &listItem, list)
+            {
+                if (listItem.type() == QVariant::UserType && listItem.userType() == QMetaType::type("ito::Shape"))
+                {
+                    shapes.append(qvariant_cast<ito::Shape>(listItem));
+                    ok = true;
+                }
+                else
+                {
+                    retval += ito::RetVal(ito::retError, 0, "transformation error to vector of shapes: at least one item could not be interpreted as shape.");
+                    ok = false;
+                    break;
+                }
+            }
+
+            if (!retval.containsError())
+            {
+                result = QVariant::fromValue<QVector<ito::Shape> >(shapes);
             }
         }
     } //end item.type() == QVariant::List
@@ -1703,15 +1854,42 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 
     if (ok) //integer
     {
-        const char *key = enumerator.valueToKey(val);
-        if (key)
+        if (enumerator.isFlag())
         {
-            result = val;
+            int result_ = 0;
+            int e;
+
+            for (int idx = 0; idx < enumerator.keyCount(); ++idx)
+            {
+                e = enumerator.value(idx);
+                if (val & e)
+                {
+                    result_ |= e;
+                }
+            }
+
+            if (result_ == val)
+            {
+                result = result_;
+            }
+            else
+            {
+                retval += ito::RetVal::format(ito::retError, 0, "The value %i contains a bitmask that is not fully covered by an or-combination of the enumeration %s::%s (flags)", val, enumerator.scope(), enumerator.name());
+                return result;
+            }
         }
         else
         {
-            retval += ito::RetVal::format(ito::retError, 0, "The value %i does not exist in the enumeration %s::%s", val,enumerator.scope(), enumerator.name());
-            return result;
+            const char *key = enumerator.valueToKey(val);
+            if (key)
+            {
+                result = val;
+            }
+            else
+            {
+                retval += ito::RetVal::format(ito::retError, 0, "The value %i does not exist in the enumeration %s::%s", val, enumerator.scope(), enumerator.name());
+                return result;
+            }
         }
     }
     else //
@@ -1719,15 +1897,38 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         QString str = item.toString();
         if (str.isEmpty() == false) //string
         {
-            val = enumerator.keyToValue(str.toLatin1().data());
-            if (val >= 0)
+            if (enumerator.isFlag())
             {
-                result = val;
+                int result_ = 0;
+                QStringList str_ = str.split(";");
+                foreach(const QString &substr, str_)
+                {
+                    val = enumerator.keyToValue(substr.toLatin1().data());
+                    if (val >= 0)
+                    {
+                        result_ |= val;
+                    }
+                    else
+                    {
+                        retval += ito::RetVal::format(ito::retError, 0, "The key %s does not exist in the enumeration %s::%s (flags)", str.toLatin1().data(), enumerator.scope(), enumerator.name());
+                        return result;
+                    }
+                }
+
+                result = result_;
             }
             else
             {
-                retval += ito::RetVal::format(ito::retError, 0, "The key %s does not exist in the enumeration %s::%s",str.toLatin1().data(), enumerator.scope(), enumerator.name());
-                return result;
+                val = enumerator.keyToValue(str.toLatin1().data());
+                if (val >= 0)
+                {
+                    result = val;
+                }
+                else
+                {
+                    retval += ito::RetVal::format(ito::retError, 0, "The key %s does not exist in the enumeration %s::%s", str.toLatin1().data(), enumerator.scope(), enumerator.name());
+                    return result;
+                }
             }
         }
         else
@@ -1858,22 +2059,14 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
         switch (type) 
         {
         case QMetaType::Void:
-            #if QT_VERSION >= 0x050000
-            *retPtr = QMetaType::create(type, NULL);
-            #else
-            *retPtr = QMetaType::construct(type, NULL);
-            #endif
+            *retPtr = METATYPE_CONSTRUCT(type, NULL);
             break;
         case QMetaType::Int:
         {
             int d = PyObjGetInt(val, strict, ok);
             if (ok)
             {
-                #if QT_VERSION >= 0x050000
-                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&d));
-                #else
-                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
-                #endif
+                *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -1882,11 +2075,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             unsigned int d = (unsigned int)PyObjGetInt(val, strict, ok);
             if (ok)
             {
-                #if QT_VERSION >= 0x050000
-                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&d));
-                #else
-                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
-                #endif
+                *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -1896,11 +2085,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             if (ok)
             {
                 bool d2 = (d != 0);
-                #if QT_VERSION >= 0x050000
-                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&d2));
-                #else
-                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d2));
-                #endif
+                *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&d2));
             }
             break;
         }
@@ -1909,11 +2094,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             double d = PyObjGetDouble(val, strict, ok);
             if (ok)
             {
-                #if QT_VERSION >= 0x050000
-                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&d));
-                #else
-                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
-                #endif
+                * retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&d));
             }  
             break;
         }
@@ -1922,11 +2103,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             float d = (float) PyObjGetDouble(val, strict, ok);
             if (ok)
             {
-                #if QT_VERSION >= 0x050000
-                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&d));
-                #else
-                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
-                #endif
+                * retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -1935,11 +2112,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             long d = (long) PyObjGetLongLong(val, strict, ok);
             if (ok)
             {
-                #if QT_VERSION >= 0x050000
-                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&d));
-                #else
-                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
-                #endif
+                * retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -1948,11 +2121,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             unsigned long d = (unsigned long) PyObjGetLongLong(val, strict, ok);
             if (ok)
             {
-                #if QT_VERSION >= 0x050000
-                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&d));
-                #else
-                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
-                #endif
+                * retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -1961,11 +2130,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             qint64 d = (qint64) PyObjGetLongLong(val, strict, ok);
             if (ok)
             {
-                #if QT_VERSION >= 0x050000
-                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&d));
-                #else
-                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
-                #endif
+                * retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -1974,11 +2139,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             quint64 d = (quint64) PyObjGetULongLong(val, strict, ok);
             if (ok)
             {
-                #if QT_VERSION >= 0x050000
-                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&d));
-                #else
-                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
-                #endif
+                * retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -1987,11 +2148,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             short d = (short) PyObjGetInt(val, strict, ok);
             if (ok)
             {
-                #if QT_VERSION >= 0x050000
-                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&d));
-                #else
-                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
-                #endif
+                * retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -2000,11 +2157,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             unsigned short d = (unsigned short) PyObjGetInt(val, strict, ok);
             if (ok)
             {
-                #if QT_VERSION >= 0x050000
-                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&d));
-                #else
-                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
-                #endif
+                *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -2013,11 +2166,8 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             char d = (char) PyObjGetInt(val, strict, ok);
             if (ok)
             {
-                #if QT_VERSION >= 0x050000
-                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&d));
-                #else
-                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
-                #endif
+                *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&d));
+
             }
             break;
         }
@@ -2026,11 +2176,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             unsigned char d = (unsigned char) PyObjGetInt(val, strict, ok);
             if (ok)
             {
-                #if QT_VERSION >= 0x050000
-                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&d));
-                #else
-                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&d));
-                #endif
+                *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&d));
             }
             break;
         }
@@ -2096,11 +2242,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                     }
                     Py_DECREF(items);
                 }
-                #if QT_VERSION >= 0x050000
-                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&map));
-                #else
-                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&map));
-                #endif
+                *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&map));
             }
             break;
         }
@@ -2117,11 +2259,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 list.append(PyObjToQVariant(value, -1));
                 Py_XDECREF(value);
             }
-            #if QT_VERSION >= 0x050000
-            *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&list));
-            #else
-            *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&list));
-            #endif
+            *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&list));
             break;
         }
         
@@ -2131,41 +2269,35 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             QStringList l = PyObjToStringList(val, strict, ok);
             if (ok) 
             {
-                #if QT_VERSION >= 0x050000
-                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&l));
-                #else
-                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&l));
-                #endif
+                *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&l));
             }
             break;
         }
 
         case QMetaType::QRegion:
         {
-            ito::PythonRegion::PyRegion *reg = (ito::PythonRegion::PyRegion*)val;
-            if (reg && reg->r)
+            if (PyRegion_Check(val))
             {
-                QRegion r = *(reg->r);
-                #if QT_VERSION >= 0x050000
-                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&r));
-                #else
-                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&r));
-                #endif
+                ito::PythonRegion::PyRegion *reg = (ito::PythonRegion::PyRegion*)val;
+                if (reg && reg->r)
+                {
+                    QRegion r = *(reg->r);
+                    *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&r));
+                }
             }
             break;
         }
 
         case QMetaType::QFont:
         {
-            ito::PythonFont::PyFont *font = (ito::PythonFont::PyFont*)val;
-            if (font && font->font)
+            if (PyFont_Check(val))
             {
-                QFont f = *(font->font);
-                #if QT_VERSION >= 0x050000
-                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&f));
-                #else
-                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&f));
-                #endif
+                ito::PythonFont::PyFont *font = (ito::PythonFont::PyFont*)val;
+                if (font && font->font)
+                {
+                    QFont f = *(font->font);
+                    *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&f));
+                }
             }
             break;
         }
@@ -2179,11 +2311,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 {
                     //QColor c(rgba->rgba.red(), rgba->rgba.green(), rgba->rgba.blue(), rgba->rgba.alpha());
                     QColor c(rgba->rgba.argb());
-                    #if QT_VERSION >= 0x050000
-                    *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&c));
-                    #else
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&c));
-                    #endif
+                    *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&c));
                 }
             }
             else
@@ -2192,48 +2320,41 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 if (ok)
                 {
                     QColor c(text);
-                    #if QT_VERSION >= 0x050000
-                    *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&c));
-                    #else
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&c));
-                    #endif
+                    *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&c));
                 }
             }
             break;
         }
         case QVariant::Time:
         {
-            PyDateTime_Time *o = (PyDateTime_Time*)val;
-            QTime l = QTime(PyDateTime_TIME_GET_HOUR(o), PyDateTime_TIME_GET_MINUTE(o), PyDateTime_TIME_GET_SECOND(o), PyDateTime_TIME_GET_MICROSECOND(o));
-            #if QT_VERSION >= 0x050000
-            *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&l));
-            #else
-            *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&l));
-            #endif
+            if (PyTime_Check(val))
+            {
+                PyDateTime_Time *o = (PyDateTime_Time*)val;
+                QTime l = QTime(PyDateTime_TIME_GET_HOUR(o), PyDateTime_TIME_GET_MINUTE(o), PyDateTime_TIME_GET_SECOND(o), PyDateTime_TIME_GET_MICROSECOND(o));
+                *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&l));
+            }
             break;
         }
         case QVariant::Date:
         {
-            PyDateTime_Date *o = (PyDateTime_Date*)val;
-            QDate l = QDate(PyDateTime_GET_YEAR(o), PyDateTime_GET_MONTH(o), PyDateTime_GET_DAY(o));
-            #if QT_VERSION >= 0x050000
-            *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&l));
-            #else
-            *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&l));
-            #endif
+            if (PyDate_Check(val))
+            {
+                PyDateTime_Date *o = (PyDateTime_Date*)val;
+                QDate l = QDate(PyDateTime_GET_YEAR(o), PyDateTime_GET_MONTH(o), PyDateTime_GET_DAY(o));
+                *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&l));
+            }
             break;
         }
         case QVariant::DateTime:
         {
-            PyDateTime_DateTime *o = (PyDateTime_DateTime*)val;
-            QDate date(PyDateTime_GET_YEAR(o), PyDateTime_GET_MONTH(o), PyDateTime_GET_DAY(o));
-            QTime time(PyDateTime_DATE_GET_HOUR(o), PyDateTime_DATE_GET_MINUTE(o), PyDateTime_DATE_GET_SECOND(o), PyDateTime_DATE_GET_MICROSECOND(o));
-            QDateTime l = QDateTime(date, time);
-            #if QT_VERSION >= 0x050000
-            *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&l));
-            #else
-            *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&l));
-            #endif
+            if (PyDateTime_Check(val))
+            {
+                PyDateTime_DateTime *o = (PyDateTime_DateTime*)val;
+                QDate date(PyDateTime_GET_YEAR(o), PyDateTime_GET_MONTH(o), PyDateTime_GET_DAY(o));
+                QTime time(PyDateTime_DATE_GET_HOUR(o), PyDateTime_DATE_GET_MINUTE(o), PyDateTime_DATE_GET_SECOND(o), PyDateTime_DATE_GET_MICROSECOND(o));
+                QDateTime l = QDateTime(date, time);
+                *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&l));
+            }
             break;
         }
         default:
@@ -2241,42 +2362,39 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
         {
             if (type == QMetaType::type("ito::PythonQObjectMarshal"))
             {
-                ito::PythonUi::PyUiItem *val2 = (ito::PythonUi::PyUiItem*)val;
-                
-                ito::PythonQObjectMarshal m = ito::PythonQObjectMarshal();
-                m.m_objectID = val2->objectID;
-                m.m_object = NULL;
-                m.m_objName = val2->objName;
-                m.m_className = val2->widgetClassName;
-                #if QT_VERSION >= 0x050000
-                *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&m));
-                #else
-                *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&m));
-                #endif
+                if (PyUiItem_Check(val))
+                {
+                    ito::PythonUi::PyUiItem *val2 = (ito::PythonUi::PyUiItem*)val;
+
+                    ito::PythonQObjectMarshal m = ito::PythonQObjectMarshal();
+                    m.m_objectID = val2->objectID;
+                    m.m_object = NULL;
+                    m.m_objName = val2->objName;
+                    m.m_className = val2->widgetClassName;
+                    *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&m));
+                }
             }
             else if (type == QMetaType::type("QSharedPointer<ito::DataObject>"))
             {
-                ito::PythonDataObject::PyDataObject *val2 = (ito::PythonDataObject::PyDataObject*)val;
-                if (val2 && val2->dataObject)
+                if (PyDataObject_Check(val))
                 {
-                    QSharedPointer<ito::DataObject> sharedBuffer = ito::PythonSharedPointerGuard::createPythonSharedPointer<ito::DataObject>(val2->dataObject, val);
-                    #if QT_VERSION >= 0x050000
-                    *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&sharedBuffer));
-                    #else
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&sharedBuffer));
-                    #endif
+                    ito::PythonDataObject::PyDataObject *val2 = (ito::PythonDataObject::PyDataObject*)val;
+                    if (val2 && val2->dataObject)
+                    {
+                        QSharedPointer<ito::DataObject> sharedBuffer = ito::PythonSharedPointerGuard::createPythonSharedPointer<ito::DataObject>(val2->dataObject, val);
+                        *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&sharedBuffer));
+                    }
                 }
             }
             else if (type == QMetaType::type("ito::DataObject"))
             {
-                ito::PythonDataObject::PyDataObject *val2 = (ito::PythonDataObject::PyDataObject*)val;
-                if (val2 && val2->dataObject)
+                if (PyDataObject_Check(val))
                 {
-                    #if QT_VERSION >= 0x050000
-                    *retPtr = QMetaType::create(type, reinterpret_cast<char*>(val2->dataObject));
-                    #else
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(val2->dataObject));
-                    #endif
+                    ito::PythonDataObject::PyDataObject *val2 = (ito::PythonDataObject::PyDataObject*)val;
+                    if (val2 && val2->dataObject)
+                    {
+                        *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(val2->dataObject));
+                    }
                 }
             }
 #if ITOM_POINTCLOUDLIBRARY > 0
@@ -2286,24 +2404,19 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 ito::PCLPointCloud pcl = PyObjGetPointCloud(val, strict, ok);
                 if (ok)
                 {
-                    #if QT_VERSION >= 0x050000
-                    *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&pcl));
-                    #else
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&pcl));
-                    #endif
+                    *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&pcl));
                 }
             }
             else if (type == QMetaType::type("QSharedPointer<ito::PCLPointCloud>"))
             {
-                ito::PythonPCL::PyPointCloud* pyPlc = (ito::PythonPCL::PyPointCloud*)val;
-                if (pyPlc && pyPlc->data)
+                if (PyPointCloud_Check(val))
                 {
-                    QSharedPointer<ito::PCLPointCloud> sharedBuffer = ito::PythonSharedPointerGuard::createPythonSharedPointer<ito::PCLPointCloud>(pyPlc->data, val);
-                    #if QT_VERSION >= 0x050000
-                    *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&sharedBuffer));
-                    #else
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&sharedBuffer));
-                    #endif
+                    ito::PythonPCL::PyPointCloud* pyPlc = (ito::PythonPCL::PyPointCloud*)val;
+                    if (pyPlc && pyPlc->data)
+                    {
+                        QSharedPointer<ito::PCLPointCloud> sharedBuffer = ito::PythonSharedPointerGuard::createPythonSharedPointer<ito::PCLPointCloud>(pyPlc->data, val);
+                        *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&sharedBuffer));
+                    }
                 }
             }
             else if (type == QMetaType::type("ito::PCLPoint"))
@@ -2312,11 +2425,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 ito::PCLPoint pt = PyObjGetPoint(val, strict, ok);
                 if (ok)
                 {
-                    #if QT_VERSION >= 0x050000
-                    *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&pt));
-                    #else
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&pt));
-                    #endif
+                    *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&pt));
                 }
             }
             else if (type == QMetaType::type("ito::PCLPolygonMesh") || type == QMetaType::type("ito::PCLPolygonMesh&"))
@@ -2325,24 +2434,17 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 ito::PCLPolygonMesh mesh = PyObjGetPolygonMesh(val, strict, ok);
                 if (ok)
                 {
-                    #if QT_VERSION >= 0x050000
-                    *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&mesh));
-                    #else
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&mesh));
-                    #endif
+                    *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&mesh));
                 }
             }
+#endif //#if ITOM_POINTCLOUDLIBRARY > 0
             else if (type == QMetaType::type("QVector<double>"))
             {
                 bool ok;
                 QVector<double> arr = PyObjGetDoubleArray(val, strict, ok);
                 if (ok)
                 {
-                    #if QT_VERSION >= 0x050000
-                    *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&arr));
-                    #else
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&arr));
-                    #endif
+                    *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&arr));
                 }
             }
             else if (type == QMetaType::type("QVector<int>"))
@@ -2351,14 +2453,29 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                 QVector<int> arr = PyObjGetIntArray(val, strict, ok);
                 if (ok)
                 {
-                    #if QT_VERSION >= 0x050000
-                    *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&arr));
-                    #else
-                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&arr));
-                    #endif
+                    *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&arr));
                 }
             }
-#endif //#if ITOM_POINTCLOUDLIBRARY > 0
+            else if (type == QMetaType::type("ito::Shape"))
+            {
+                if (PyShape_Check(val))
+                {
+                    ito::PythonShape::PyShape* shape = (ito::PythonShape::PyShape*)val;
+                    if (shape)
+                    {
+                        *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(shape->shape));
+                    }
+                }
+            }
+            else if (type == QMetaType::type("QVector<ito::Shape>"))
+            {
+                bool ok;
+                QVector<ito::Shape> vec = PyObjGetShapeVector(val, ok);
+                if (ok)
+                {
+                    *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&vec));
+                }
+            }
             else
             {
                 *retPtr = NULL;
@@ -2908,6 +3025,43 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             for (Py_ssize_t i = 0; i < temp2->size(); ++i)
             {
                 PyTuple_SetItem(temp, i, PyFloat_FromDouble(temp2->at(i)));
+            }
+            return temp;
+        }
+        else if (strcmp(name, "QVector2D") == 0)
+        {
+            QVector2D *temp2 = (QVector2D*)data;
+            PyObject *temp = PyTuple_New(2);
+            PyTuple_SetItem(temp, 0, PyFloat_FromDouble(temp2->x()));
+            PyTuple_SetItem(temp, 1, PyFloat_FromDouble(temp2->y()));
+            return temp;
+        }
+        else if (strcmp(name, "QVector3D") == 0)
+        {
+            QVector3D *temp2 = (QVector3D*)data;
+            PyObject *temp = PyTuple_New(3);
+            PyTuple_SetItem(temp, 0, PyFloat_FromDouble(temp2->x()));
+            PyTuple_SetItem(temp, 1, PyFloat_FromDouble(temp2->y()));
+            PyTuple_SetItem(temp, 2, PyFloat_FromDouble(temp2->z()));
+            return temp;
+        }
+        else if (strcmp(name, "QVector4D") == 0)
+        {
+            QVector4D *temp2 = (QVector4D*)data;
+            PyObject *temp = PyTuple_New(4);
+            PyTuple_SetItem(temp, 0, PyFloat_FromDouble(temp2->x()));
+            PyTuple_SetItem(temp, 1, PyFloat_FromDouble(temp2->y()));
+            PyTuple_SetItem(temp, 2, PyFloat_FromDouble(temp2->z()));
+            PyTuple_SetItem(temp, 2, PyFloat_FromDouble(temp2->w()));
+            return temp;
+        }
+        else if (strcmp(name, "QVector<ito::Shape>") == 0)
+        {
+            QVector<ito::Shape> *temp2 = (QVector<ito::Shape>*)data;
+            PyObject *temp = PyTuple_New(temp2->size());
+            for (int i = 0; i < temp2->size(); ++i)
+            {
+                PyTuple_SetItem(temp, i, ito::PythonShape::createPyShape(temp2->at(i))); //steals reference
             }
             return temp;
         }

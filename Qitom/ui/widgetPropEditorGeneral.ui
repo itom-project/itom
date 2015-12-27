@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>611</width>
-    <height>506</height>
+    <width>601</width>
+    <height>520</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -175,6 +175,69 @@
            </widget>
           </item>
          </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="groupFolding">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="title">
+        <string>Folding Style</string>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <item>
+         <widget class="QRadioButton" name="radioFoldingPM">
+          <property name="text">
+           <string>Plus/Minus</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioFoldingSquares">
+          <property name="text">
+           <string>Squares</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioFoldingCircles">
+          <property name="text">
+           <string>Circles</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioFoldingSquaresTree">
+          <property name="text">
+           <string>Squares + Tree</string>
+          </property>
+          <property name="checked">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioFoldingCirclesTree">
+          <property name="text">
+           <string>Circles + Tree</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioFoldingNone">
+          <property name="text">
+           <string>None</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>

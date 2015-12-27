@@ -20,27 +20,12 @@ In order to be able to build the documentation, you need to have some tools inst
 2. Python-Package Sphinx
     
     The real user documentation is created in |itom| using a python script that needs the |Python| package **Sphinx** (http://sphinx-doc.org/).
-    **Sphinx** itself requires other python packages installed on your computer. For windows users, we therefore suggest to obtain **Sphinx** via
-    the python package tool *pip* or *easy_install*.
+    **Sphinx** itself requires other python packages to be installed on your computer. For windows users, we therefore suggest to obtain **Sphinx** via
+    the python package tools *pip* or *easy_install*.
     
-    For *pip*, download the script *get-pip.py* from http://www.pip-installer.org/en/latest/installing.html and save it on your harddrive. Then execute
-    this script with your desired python version either by double-clicking on it, or open a command line and call something like::
-        
-        C:/python32/python.exe get-pip.py
-    
-    Then use the command line again and change to the directory::
-        
-        cd C:/python32/scripts
-    
-    and execute::
-        
-        pip install sphinx
-    
-    or::
-        
-        pip install --ugrade sphinx
-    
-    if you want to upgrade sphinx. All dependent python packages will be installed, too.
+    The easiest way to obtain **Sphinx** is using the :ref:`Python package manager <gui-pipmanager>` in the *script* menu of |itom|. Choose
+    **install** and then **Sphinx** from the Python package index to obtain Sphinx including all depending packages. Select the **Upgrade** checkbox
+    if you want to upgrade **Sphinx** to a newer version.
     
     You can also manually download and install Sphinx and its depending packages. Setup-versions of **Sphinx**, **Pygments**, **Jinja2**, **docutils**... are also available from http://www.lfd.uci.edu/~gohlke/pythonlibs/. However, you then need to separately install all depending packages of **Sphinx**.
 
@@ -48,7 +33,7 @@ Run doxygen
 ---------------
 
 In your build-directory of |itom|, you will find a folder **docs**. Open its subfolder **doxygen**. There you will find a document
-**itom_doxygen.dox**. This document contains absolute pathes to the source directories of |itom|'s sources. Run doxygen with this document
+**itom_doxygen.dox**. This document contains absolute paths to the source directories of |itom|'s sources. Run doxygen with this document
 in order to create the source code documentation. 
 
 On Windows computers, the easiest way to do this is open **itom_doxygen.dox** with the tool **doxywizard** that is located in the **bin**-folder 
@@ -59,16 +44,17 @@ of your **doxygen** installation. In **doxywizard** go to the *run*-tab and clic
     :scale: 70%
     :align: left
 
-After the build process, a folder **xml** is created in the **doxygen** subfolder of the **docs** folder. This **xml** folder is required afterwards.
+After the build process, a folder **xml** is created in the **doxygen** sub-folder of the **docs** folder. This **xml** folder is required afterwards.
 
 Run Sphinx
 --------------
 
-Now open |itom| and execute the script **create_doc.py** in the folder **docs/userDoc** of the build-directory. The default-builder of the
+Now, open |itom| and execute the script **create_doc.py** in the folder **docs/userDoc** of the build-directory. The default-builder of the
 documentation is **qthelp**. If you also want to build the documentation for other builders, you can change the list *buildernames*. The following
 values are possible::
     
     qthelp -> default qthelp format for opening the documentation within itom
+    html -> creates the help for the homepage
     htmlhelp -> creates a chm-help format on Windows only
     latex -> creates a pdf-document using latex. You need to have latex installed on your computer
 

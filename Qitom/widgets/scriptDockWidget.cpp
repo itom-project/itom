@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -199,7 +199,6 @@ ScriptDockWidget::~ScriptDockWidget()
     }
     m_rootElements.clear();
 
-
     DELETE_AND_SET_NULL(m_tab);
     DELETE_AND_SET_NULL(m_pWidgetFindWord);
     DELETE_AND_SET_NULL(m_pVBox);
@@ -232,6 +231,7 @@ void ScriptDockWidget::fillClassBox(const ClassNavigatorItem *parent, QString pr
     {
         m_classBox->addItem(parent->m_icon, prefix+"::"+parent->m_name, parentPointer);
     }
+
     for (int i = 0; i < parent->m_member.length(); ++i)
     {
         if ((parent->m_member.at(i)->m_internalType == ClassNavigatorItem::typePyClass) ||
@@ -600,6 +600,7 @@ RetVal ScriptDockWidget::openScript(QString filename, bool silent)
         appendEditor(sew);
         sew->setFocus();
     }
+
     return retValue;
 }
 
@@ -651,6 +652,7 @@ RetVal ScriptDockWidget::saveAllScripts(bool askFirst, bool ignoreNewScripts, in
             retValue += saveTab(i, false, false);
         }
     }
+
     return retValue;
 }
 
@@ -1577,14 +1579,14 @@ bool ScriptDockWidget::activateTabByFilename(const QString &filename, int line /
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-bool ScriptDockWidget::activeTabEnsureLineVisible(int lineNr)
+bool ScriptDockWidget::activeTabEnsureLineVisible(const int lineNr, bool errorMessageClick /*= false*/)
 {
     if (m_actTabIndex >= 0)
     {
         ScriptEditorWidget *sew = static_cast<ScriptEditorWidget *>(m_tab->widget(m_actTabIndex));
         if (sew)
         {
-            sew->setCursorPosAndEnsureVisible(lineNr);
+            sew->setCursorPosAndEnsureVisible(lineNr, errorMessageClick);
             return true;
         }
     }
@@ -2253,6 +2255,12 @@ void ScriptDockWidget::findWordWidgetFinished()
     {
         sew->setFocus();
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ScriptDockWidget::setCurrentIndex(int index)
+{
+    m_tab->setCurrentIndex(index);
 }
 
 } //end namespace ito

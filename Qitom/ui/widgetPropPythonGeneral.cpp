@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -34,16 +34,19 @@
 namespace ito
 {
 
+//----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropPythonGeneral::WidgetPropPythonGeneral(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
 {
     ui.setupUi(this);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropPythonGeneral::~WidgetPropPythonGeneral()
 {
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropPythonGeneral::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -56,6 +59,7 @@ void WidgetPropPythonGeneral::readSettings()
     settings.endGroup();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropPythonGeneral::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);

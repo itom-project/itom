@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -48,7 +48,6 @@ namespace ito
         return in;
     }
 
-
 /*!
     \class ScriptEditorOrganizer
     \brief organizes script editors, independent on their appearance (docked or window-style)
@@ -80,7 +79,6 @@ ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable)
         connect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString,int)));
         connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(widgetFocusChanged(QWidget*,QWidget*)));
     }
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -138,6 +136,7 @@ void ScriptEditorOrganizer::saveScriptState()
         
         settings.setValue("objectName", sdw->objectName());
         settings.setValue("docked",sdw->docked());
+        settings.setValue("currentIndex", sdw->getCurrentIndex());
         states = QVariant::fromValue<QList<ito::ScriptEditorStorage> >(sdw->saveScriptState());
         settings.setValue("state", states);
     }
@@ -232,6 +231,10 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
                 {
                     removeScriptDockWidget(sdw);
                 }
+				else
+				{
+					sdw->setCurrentIndex(settings.value("currentIndex", 0).toInt());
+				}
 
                 retval += ret;
             }
@@ -279,7 +282,6 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked, Qt::
 {
     ScriptDockWidget* newWidget;
     
-
     //QWidget *mainWin = qobject_cast<QWidget*>(AppManagement::getMainWindow());
 
     docked = docked && m_dockAvailable;
@@ -719,7 +721,7 @@ RetVal ScriptEditorOrganizer::newScript(ItomSharedSemaphore *semaphore)
     \param visibleLineNr is the line number that should be visible and where the cursor should be positioned (default: -1, no cursor positioning)
     \return retOk if success, else retError
 */
-RetVal ScriptEditorOrganizer::openScript(const QString &filename, ItomSharedSemaphore *semaphore, int visibleLineNr)
+RetVal ScriptEditorOrganizer::openScript(const QString &filename, ItomSharedSemaphore *semaphore, int visibleLineNr, bool errorMessageClick /*= false*/)
 {
     RetVal retValue(retOk);
 
@@ -738,7 +740,7 @@ RetVal ScriptEditorOrganizer::openScript(const QString &filename, ItomSharedSema
             (*it)->raiseAndActivate();
             if (visibleLineNr >= 0)
             {
-                (*it)->activeTabEnsureLineVisible(visibleLineNr);
+                (*it)->activeTabEnsureLineVisible(visibleLineNr, errorMessageClick);
             }
         }
     }
@@ -765,7 +767,7 @@ RetVal ScriptEditorOrganizer::openScript(const QString &filename, ItomSharedSema
 
             if (visibleLineNr >= 0)
             {
-                activeWidget->activeTabEnsureLineVisible(visibleLineNr);
+                activeWidget->activeTabEnsureLineVisible(visibleLineNr, errorMessageClick);
             }
 
             activeWidget->raiseAndActivate();

@@ -11,6 +11,8 @@
 #include <qmovie.h>
 #include "../widgets/abstractDockWidget.h"
 
+class QShowEvent; //forward declaration
+
 namespace ito
 {
 
@@ -124,8 +126,8 @@ private:
     DisplayBool              m_showSelection;
     int                      m_historyIndex;        
     int                      m_autoCollTime;        /*!< after this time the tree automatically becomes smaller*/
-    double                   m_percWidthVi;         /*!< width of three while visible*/
-    double                   m_percWidthUn;         /*!< width of tree while small*/
+    double                   m_treeWidthVisible;    /*!< width of tree while visible (in percent of the total width)*/
+    double                   m_treeWidthInvisible;  /*!< width of tree while small (in percent of the total width)*/
     bool                     m_treeVisible;
     bool                     m_plaintext;           /*!< true: html code is displayed, false: normal help with style is displayed*/
     bool                     m_openLinks;           /*!< decides if external links open when clicked*/
@@ -136,6 +138,7 @@ private:
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
+    void showEvent(QShowEvent *event);
 };
 
 } //end namespace ito

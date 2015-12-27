@@ -1,6 +1,6 @@
 .. include:: /include/global.inc
    
-|logo| itom documentation for v. |version|
+|logo| itom documentation for version |version|
 ##################################################
 
 .. |logo| image:: itomLogo2_64.png  
@@ -22,20 +22,20 @@
     11_test-scripts/test-scripts.rst
     12_tutorials/tutorials.rst
 
-.. only:: html
+.. only:: builder_qthelp
     
     .. toctree::
         :maxdepth: 1
         
-        structure.rst
-        todo.rst
+        .. structure.rst
+        .. todo.rst
 
 .. only:: latex
     
     ..toctree::
         :maxdepth: 1
         
-        todo.rst
+        .. todo.rst
    
 Indices and tables
 ###################

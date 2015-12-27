@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -68,27 +68,10 @@ DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap)
         {
             hasGIT = true;
         }
-        if (i.key() == "itom_SVN_Rev" && i.value() != "")
-        {
-            hasSVN = true;
-        }
     }
 
-    int x0 = tabText.indexOf("$USINGSVN$");
-    int x1 = tabText.lastIndexOf("$USINGSVN$");
-    if (!hasSVN)
-    {
-        tabText.remove(x0, x1 - x0 + 10);
-    }
-    else
-    {
-        tabText.remove(x0, 10);
-        x1 = tabText.lastIndexOf("$USINGSVN$");
-        tabText.remove(x1 - 10, 10);
-    }
-
-    x0 = tabText.indexOf("$USINGGIT$");
-    x1 = tabText.lastIndexOf("$USINGGIT$");
+    int x0 = tabText.indexOf("$USINGGIT$");
+    int x1 = tabText.lastIndexOf("$USINGGIT$");
     if (!hasGIT)
     {
         tabText.remove(x0, x1 - x0 + 10);

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -215,9 +215,6 @@ RetVal HelpSystem::scanPluginQhpFiles(quint16 &checksum)
     QString checksumString;
     QFileInfo fileInfo;
     int i;
-
-    //documentation folder
-    appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());
     
     //plugin base folder
     appPath = QDir::cleanPath(QCoreApplication::applicationDirPath());

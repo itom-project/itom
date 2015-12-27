@@ -6,21 +6,21 @@ except Exception as ex:
     ui.msgInformation("PointCloud missing", "your itom version is compiled without support of pointClouds")
     raise ex
 
-#create a data objects with X, Y and Z values of a topology
-# as well as a 2.5D topology in terms of a data object
+#create a data objects with X, Y and Z values of a topography
+# as well as a 2.5D topography in terms of a data object
 [X,Y] = np.meshgrid(np.arange(0,5,0.1),np.arange(0,5,0.1))
 Z = np.sin(X*2)+np.cos(Y*0.5)
 I = np.random.rand(*X.shape) #further intensity
 C = dataObject.randN([X.shape[0],X.shape[1]], 'rgba32') #further color information
-disparity = dataObject(Z).astype('float32')
-disparity.axisScales = (0.1,0.1)
-disparity[0,0]=float('nan')
+topography = dataObject(Z).astype('float32')
+topography.axisScales = (0.1,0.1)
+topography[0,0]=float('nan')
 
 # create a point cloud from the X, Y and Z arrays with further intensity information
 cloud1 = pointCloud.fromXYZI(X,Y,Z,I)
 
-# create a point cloud from the topology (disparity) image with further colour information
-cloud2 = pointCloud.fromDisparity(disparity,color=C)
+# create a point cloud from the topography image with further colour information
+cloud2 = pointCloud.fromTopography(topography,color=C)
 
 # create a point cloud from the X, Y and Z arrays with further colour information
 cloud3 = pointCloud.fromXYZRGBA(X,Y,Z,C)

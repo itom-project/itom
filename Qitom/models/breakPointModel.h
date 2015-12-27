@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -86,10 +86,9 @@ public:
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
     RetVal addBreakPoint(BreakPointItem bp);
-    RetVal deleteBreakPoint(QModelIndex index);
-    RetVal deleteBreakPoints(QModelIndexList indizes);
-
-    
+    RetVal deleteBreakPoint(const QModelIndex &index);
+    RetVal deleteBreakPoints(const QModelIndexList &indizes);
+    RetVal deleteAllBreakPoints();
 
     QModelIndex getFirstBreakPointIndex(const QString &filename, int lineNo) const;
     QModelIndexList getBreakPointIndizes(const QString &filename, int lineNo) const;

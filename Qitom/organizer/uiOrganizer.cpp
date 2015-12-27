@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -49,7 +49,12 @@
 #include <qfiledialog.h>
 #include <qcoreapplication.h>
 #include <qpluginloader.h>
+
+#if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
 #include <QtDesigner/QDesignerCustomWidgetInterface>
+#else
+#include <QtUiPlugin/QDesignerCustomWidgetInterface>
+#endif
 #include <qsettings.h>
 #include <qcoreapplication.h>
 #include <qmainwindow.h>
@@ -1343,6 +1348,13 @@ RetVal UiOrganizer::showMessageBox(unsigned int uiHandle, int type, const QStrin
 
     if (!retValue.containsWarningOrError())
     {
+        //if parent is inherited from AbstractDockWidget, the currently visible component
+        //of parent is either the dock widget or the main widget. This is obtained
+        //by getActiveInstance. This is necessary, since an invisible parent is ignored.
+        if (parent && parent->inherits("ito::AbstractDockWidget"))
+        {
+            parent = ((ito::AbstractDockWidget*)parent)->getActiveInstance();
+        }
 
         switch(type)
         {
@@ -1389,6 +1401,13 @@ RetVal UiOrganizer::showFileDialogExistingDir(unsigned int uiHandle, const QStri
     {
         parent = qobject_cast<QWidget*>(AppManagement::getMainWindow());
     }
+    //if parent is inherited from AbstractDockWidget, the currently visible component
+    //of parent is either the dock widget or the main widget. This is obtained
+    //by getActiveInstance. This is necessary, since an invisible parent is ignored.
+    else if (parent && parent->inherits("ito::AbstractDockWidget"))
+    {
+        parent = ((ito::AbstractDockWidget*)parent)->getActiveInstance();
+    }
 
     QFileDialog::Options opt = 0;
     opt = (~opt) & options;
@@ -1419,6 +1438,13 @@ RetVal UiOrganizer::showFileOpenDialog(unsigned int uiHandle, const QString &cap
     if (parent == NULL)
     {
         parent = qobject_cast<QWidget*>(AppManagement::getMainWindow());
+    }
+    //if parent is inherited from AbstractDockWidget, the currently visible component
+    //of parent is either the dock widget or the main widget. This is obtained
+    //by getActiveInstance. This is necessary, since an invisible parent is ignored.
+    else if (parent && parent->inherits("ito::AbstractDockWidget"))
+    {
+        parent = ((ito::AbstractDockWidget*)parent)->getActiveInstance();
     }
 
     QFileDialog::Options opt = 0;
@@ -1460,6 +1486,13 @@ RetVal UiOrganizer::showFileSaveDialog(unsigned int uiHandle, const QString &cap
     {
         parent = qobject_cast<QWidget*>(AppManagement::getMainWindow());
     }
+    //if parent is inherited from AbstractDockWidget, the currently visible component
+    //of parent is either the dock widget or the main widget. This is obtained
+    //by getActiveInstance. This is necessary, since an invisible parent is ignored.
+    else if (parent && parent->inherits("ito::AbstractDockWidget"))
+    {
+        parent = ((ito::AbstractDockWidget*)parent)->getActiveInstance();
+    }
 
     QFileDialog::Options opt = 0;
     opt = (~opt) & options;
@@ -1469,7 +1502,7 @@ RetVal UiOrganizer::showFileSaveDialog(unsigned int uiHandle, const QString &cap
     {
         selectedFilter = new QString(filters[selectedFilterIndex]);
     }
-
+    
     QString result = QFileDialog::getSaveFileName(parent, caption, directory, filter, selectedFilter, opt);
     *file = result;
 
@@ -1515,7 +1548,7 @@ RetVal UiOrganizer::getPropertyInfos(unsigned int objectID, QSharedPointer<QVari
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
     }
 
     if (semaphore)
@@ -1608,7 +1641,7 @@ RetVal UiOrganizer::readProperties(unsigned int objectID, QSharedPointer<QVarian
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
     }
 
     if (semaphore)
@@ -1651,7 +1684,7 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, const QVariantMap &pr
                     //e.g. QVariantList can sometimes be casted to QPointF...
                     RetVal tempRet;
                     QVariant item;
-
+                    
                     if (prop.isEnumType())
                     {
                         item = PythonQtConversion::QVariantToEnumCast(i.value(), prop.enumerator(), tempRet);
@@ -1710,7 +1743,7 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, const QVariantMap &pr
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
     }
 
     if (semaphore)
@@ -1856,7 +1889,7 @@ RetVal UiOrganizer::widgetMetaObjectCounts(unsigned int objectID, QSharedPointer
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
     }
 
     if (semaphore)
@@ -1886,7 +1919,7 @@ RetVal UiOrganizer::getChildObject(unsigned int uiHandle, const QString &objectN
             }
             else
             {
-                retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
+                retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
             }
         }
         else //return reference to dialog or windows itself
@@ -1937,7 +1970,7 @@ RetVal UiOrganizer::getChildObject2(unsigned int parentObjectID, const QString &
                 }
                 else
                 {
-                    retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
+                    retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
                 }
             }
             else //return reference to dialog or windows itself
@@ -1988,7 +2021,7 @@ RetVal UiOrganizer::getChildObject3(unsigned int parentObjectID, const QString &
                 {
                     //ptr->dumpObjectInfo();
                     //ptr->dumpObjectTree();
-                    retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
+                    retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
                 }
             }
             else //return reference to dialog or windows itself
@@ -2117,7 +2150,7 @@ RetVal UiOrganizer::getSignalIndex(unsigned int objectID, const QString &signalS
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
     }
 
     if (semaphore)
@@ -2157,7 +2190,7 @@ RetVal UiOrganizer::connectWithKeyboardInterrupt(unsigned int objectID, const QS
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
     }
 
     if (semaphore)
@@ -2212,7 +2245,7 @@ RetVal UiOrganizer::callSlotOrMethod(bool slotNotMethod, unsigned int objectID, 
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
     }
 
     if (semaphore)
@@ -2273,7 +2306,7 @@ RetVal UiOrganizer::getMethodDescriptions(unsigned int objectID, QSharedPointer<
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("object name is not available").toLatin1().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
     }
 
     if (semaphore)
@@ -2918,7 +2951,6 @@ RetVal UiOrganizer::getObjectID(const QObject *obj, QSharedPointer<unsigned int>
 //}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//RetVal UiOrganizer::figurePlot(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, ItomSharedSemaphore *semaphore /*= NULL*/)
 ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retval;
@@ -2946,13 +2978,12 @@ ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, QSharedPoint
 
     if (!retval.containsError())
     {
-
         if (m_dialogList.contains(*figHandle))
         {
             fig = qobject_cast<FigureWidget*>(m_dialogList[*figHandle].container->getUiWidget());
             if (fig)
             {
-                QWidget *destWidget;
+                QWidget *destWidget = NULL;
 #if ITOM_POINTCLOUDLIBRARY > 0
                 if (dataCont.getType() == ito::ParamBase::PointCloudPtr)
                 {
@@ -2966,16 +2997,23 @@ ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, QSharedPoint
 #else
                 if (dataCont.getType() == ito::ParamBase::DObjPtr)
 #endif
+                {
                     retval += fig->plot(dataCont.getDataObject(), areaRow, areaCol, className, &destWidget);
+                }
                 else
+                {
                     retval += ito::RetVal(ito::retError, 0, tr("unsupported data type").toLatin1().data());
-                                
+                }
+
+                if (!retval.containsError())
+                {                                
                 *objectID = addObjectToList(destWidget);
 
                 if (properties.size() > 0)
                 {
                     retval += writeProperties(*objectID, properties, NULL);
                 }
+            }
             }
             else
             {
@@ -3136,7 +3174,7 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
         }
 
         set = new UiContainer(fig2);
-        unsigned int *handle = new unsigned int;
+        unsigned int *handle = new unsigned int; //will be guarded and destroyed by guardedFigureHandle below
         if (forcedHandle == 0)
         {
             *handle = ++UiOrganizer::autoIncUiDialogCounter;
@@ -3297,7 +3335,7 @@ RetVal UiOrganizer::figureClose(unsigned int figHandle, ItomSharedSemaphore *sem
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<ito::DataObject> coords, int maxNrPoints, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<QVector<ito::Shape> > shapes, int maxNrPoints, ItomSharedSemaphore *semaphore)
 {
     QObject *obj = getWeakObjectReference(objectID);
     QWidget *widget = qobject_cast<QWidget*>(obj);
@@ -3305,13 +3343,13 @@ RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<ito::
     if (widget)
     {
         const QMetaObject* metaObject = widget->metaObject();
-        if (metaObject->indexOfSlot("userInteractionStart(int,bool,int)") == -1 ||metaObject->indexOfSignal("userInteractionDone(int,bool,QPolygonF)") == -1)
+        if (metaObject->indexOfSlot("userInteractionStart(int,bool,int)") == -1 ||metaObject->indexOfSignal("userInteractionDone(int,bool,QVector<ito::Shape>)") == -1)
         {
             retval += RetVal(retError, 0, tr("The desired widget has no signals/slots defined that enable the pick points interaction").toLatin1().data());
         }
         else
         {
-            UserInteractionWatcher *watcher = new UserInteractionWatcher(widget, ito::tMultiPointPick, maxNrPoints, coords, semaphore, this);
+            UserInteractionWatcher *watcher = new UserInteractionWatcher(widget, ito::Shape::MultiPointPick, maxNrPoints, shapes, semaphore, this);
             connect(watcher, SIGNAL(finished()), this, SLOT(watcherThreadFinished()));
             QThread *watcherThread = new QThread();
             watcher->moveToThread(watcherThread);
@@ -3334,7 +3372,7 @@ RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<ito::
     return retval;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::figureDrawGeometricElements(unsigned int objectID, QSharedPointer<ito::DataObject> coords, int elementType, int maxNrPoints, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::figureDrawGeometricShapes(unsigned int objectID, QSharedPointer<QVector<ito::Shape> > shapes, int shapeType, int maxNrPoints, ItomSharedSemaphore *semaphore)
 {
     QObject *obj = getWeakObjectReference(objectID);
     QWidget *widget = qobject_cast<QWidget*>(obj);
@@ -3342,13 +3380,13 @@ RetVal UiOrganizer::figureDrawGeometricElements(unsigned int objectID, QSharedPo
     if (widget)
     {
         const QMetaObject* metaObject = widget->metaObject();
-        if (metaObject->indexOfSlot("userInteractionStart(int,bool,int)") == -1 ||metaObject->indexOfSignal("userInteractionDone(int,bool,QPolygonF)") == -1)
+        if (metaObject->indexOfSlot("userInteractionStart(int,bool,int)") == -1 ||metaObject->indexOfSignal("userInteractionDone(int,bool,QVector<ito::Shape>)") == -1)
         {
             retval += RetVal(retError, 0, tr("The desired widget has no signals/slots defined that enable the pick points interaction").toLatin1().data());
         }
         else
         {
-            UserInteractionWatcher *watcher = new UserInteractionWatcher(widget, elementType, maxNrPoints, coords, semaphore, this);
+            UserInteractionWatcher *watcher = new UserInteractionWatcher(widget, (ito::Shape::ShapeType)shapeType, maxNrPoints, shapes, semaphore, this);
             connect(watcher, SIGNAL(finished()), this, SLOT(watcherThreadFinished()));
             QThread *watcherThread = new QThread();
             watcher->moveToThread(watcherThread);
@@ -3386,11 +3424,6 @@ RetVal UiOrganizer::figurePickPointsInterrupt(unsigned int objectID)
         else
         {
             QMetaObject::invokeMethod(obj, "userInteractionStart", Q_ARG(int,1), Q_ARG(bool,false), Q_ARG(int,0));
-            /*int type = 1;
-            bool aborted = true;
-            QPolygonF points;
-            void *_a[] = { 0, const_cast<void*>(reinterpret_cast<const void*>(&type)), const_cast<void*>(reinterpret_cast<const void*>(&aborted)), const_cast<void*>(reinterpret_cast<const void*>(&points)) };
-            QMetaObject::activate(obj, obj->metaObject(), metaObject->indexOfSignal("userInteractionDone(int,bool,QPolygonF)") - metaObject->methodOffset(), _a);*/
         }
     }
    else
@@ -3410,7 +3443,7 @@ RetVal UiOrganizer::isFigureItem(unsigned int objectID,  QSharedPointer<unsigned
     if (widget)
     {
         const QMetaObject* metaObject = widget->metaObject();
-        if (metaObject->indexOfSlot("userInteractionStart(int,bool,int)") == -1 || metaObject->indexOfSignal("userInteractionDone(int,bool,QPolygonF)") == -1)
+        if (metaObject->indexOfSlot("userInteractionStart(int,bool,int)") == -1 || metaObject->indexOfSignal("userInteractionDone(int,bool,QVector<ito::Shape>)") == -1)
         {
             *isFigureItem = 0;
         }

@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -206,6 +206,7 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
     }
 
     //2. check for copy constructor
+    PyErr_Clear();
     if (!done && PyArg_ParseTuple(args, "O!|O", &PythonPCL::PyPointCloudType, &copyConstr, &pySeq))
     {
         PyPointCloud *copyConstr2 = (PyPointCloud*)copyConstr; 
@@ -232,25 +233,53 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
             }
             else
             {
-                if (PyIter_Check(pySeq))
+                if (PyIter_Check(pySeq) || PySequence_Check(pySeq))
                 {
-                    PyObject *iterator = PyObject_GetIter(pySeq);
-                    PyObject *item = NULL;
                     std::vector< int > indices;
-                    if (PySequence_Check(pySeq) && PySequence_Length(pySeq)>0)
+                    PyObject *item = NULL;
+
+                    if (PyIter_Check(pySeq))
+                    {
+                        PyObject *iterator = PyObject_GetIter(pySeq);
+                    
+                        if (PySequence_Check(pySeq) && PySequence_Length(pySeq)>0)
+                        {
+                            indices.reserve(PySequence_Length(pySeq));
+                        }
+
+                        if (iterator == NULL) 
+                        {
+                            PyErr_SetString(PyExc_TypeError, "error creating iterator");
+                        }
+                        else
+                        {
+                            //TODO: gcc wants paraentheses around assignment in while condition
+                            while (item = PyIter_Next(iterator)) 
+                            {
+                                if (PyLong_Check(item))
+                                {
+                                    indices.push_back(PyLong_AsLong(item));
+                                    Py_DECREF(item);
+                                }
+                                else
+                                {
+                                    PyErr_SetString(PyExc_TypeError, "indices must only contain integer values");
+                                    Py_DECREF(item);
+                                    break;
+                                }
+                            }
+
+                            Py_DECREF(iterator);
+                        }
+                    }
+                    else if (PySequence_Check(pySeq))
                     {
                         indices.reserve(PySequence_Length(pySeq));
-                    }
 
-                    if (iterator == NULL) 
-                    {
-                        PyErr_SetString(PyExc_TypeError, "error creating iterator");
-                    }
-                    else
-                    {
-                        //TODO: gcc wants paraentheses around assignment in while condition
-                        while (item = PyIter_Next(iterator)) 
+                        for (Py_ssize_t i = 0; i < PySequence_Length(pySeq); ++i)
                         {
+                            item = PySequence_GetItem(pySeq, i); //new ref
+
                             if (PyLong_Check(item))
                             {
                                 indices.push_back(PyLong_AsLong(item));
@@ -263,33 +292,32 @@ int PythonPCL::PyPointCloud_init(PyPointCloud *self, PyObject *args, PyObject * 
                                 break;
                             }
                         }
+                    }
 
-                        Py_DECREF(iterator);
-
-                        if (!PyErr_Occurred()) 
+                    if (!PyErr_Occurred()) 
+                    {
+                        try
                         {
-                            try
-                            {
-                                self->data = new ito::PCLPointCloud(*copyConstr2->data, indices);
-                            }
-                            catch(std::bad_alloc &/*ba*/)
-                            {
-                                self->data = NULL;
-                                PyErr_SetString(PyExc_RuntimeError, "no more memory when creating point cloud");
-                                return -1;
-                            }
-                            catch(...)
-                            {
-                                self->data = NULL;
-                                PyErr_SetString(PyExc_RuntimeError, "an exception has been raised when creating point cloud");
-                                return -1;
-                            }
+                            self->data = new ito::PCLPointCloud(*copyConstr2->data, indices);
+                        }
+                        catch(std::bad_alloc &/*ba*/)
+                        {
+                            self->data = NULL;
+                            PyErr_SetString(PyExc_RuntimeError, "no more memory when creating point cloud");
+                            return -1;
+                        }
+                        catch(...)
+                        {
+                            self->data = NULL;
+                            PyErr_SetString(PyExc_RuntimeError, "an exception has been raised when creating point cloud");
+                            return -1;
                         }
                     }
                 }
                 else
                 {
                     PyErr_SetString(PyExc_TypeError, "indices must be an iteratible object");
+                    return -1;
                 }
             }
         }
@@ -406,7 +434,7 @@ PyObject* PythonPCL::PyPointCloud_GetType(PyPointCloud *self, void * /*closure*/
     {
         type = self->data->getType();
     }
-    catch(pcl::PCLException exc)
+    catch(pcl::PCLException &exc)
     {
         PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
@@ -472,7 +500,7 @@ PyObject* PythonPCL::PyPointCloud_GetSize(PyPointCloud *self, void * /*closure*/
     {
         size = self->data->size();
     }
-    catch(pcl::PCLException exc)
+    catch(pcl::PCLException &exc)
     {
         PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
     }
@@ -503,7 +531,7 @@ PyObject* PythonPCL::PyPointCloud_GetHeight(PyPointCloud *self, void * /*closure
     {
         height = self->data->height();
     }
-    catch(pcl::PCLException exc)
+    catch(pcl::PCLException &exc)
     {
         PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
@@ -535,7 +563,7 @@ PyObject* PythonPCL::PyPointCloud_GetWidth(PyPointCloud *self, void * /*closure*
     {
         width = self->data->width();
     }
-    catch(pcl::PCLException exc)
+    catch(pcl::PCLException &exc)
     {
         PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
@@ -564,7 +592,7 @@ PyObject* PythonPCL::PyPointCloud_GetEmpty(PyPointCloud *self, void * /*closure*
     {
         empty = self->data->empty();
     }
-    catch(pcl::PCLException exc)
+    catch(pcl::PCLException &exc)
     {
         PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
@@ -594,7 +622,7 @@ PyObject* PythonPCL::PyPointCloud_GetOrganized(PyPointCloud *self, void * /*clos
     {
         organized = self->data->isOrganized();
     }
-    catch(pcl::PCLException exc)
+    catch(pcl::PCLException &exc)
     {
         PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
@@ -624,7 +652,7 @@ PyObject* PythonPCL::PyPointCloud_GetDense(PyPointCloud *self, void * /*closure*
     {
         dense = self->data->is_dense();
     }
-    catch(pcl::PCLException exc)
+    catch(pcl::PCLException &exc)
     {
         PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
@@ -649,7 +677,7 @@ int PythonPCL::PyPointCloud_SetDense(PyPointCloud *self, PyObject *value, void *
         {
             self->data->set_dense(dense);
         }
-        catch(pcl::PCLException exc)
+        catch(pcl::PCLException &exc)
         {
             PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
             return -1;
@@ -665,7 +693,7 @@ int PythonPCL::PyPointCloud_SetDense(PyPointCloud *self, PyObject *value, void *
     {
         self->data->set_dense(dense);
     }
-    catch(pcl::PCLException exc)
+    catch(pcl::PCLException &exc)
     {
         PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return -1;
@@ -694,7 +722,7 @@ PyObject* PythonPCL::PyPointCloud_GetFields(PyPointCloud *self, void * /*closure
     {
         names = self->data->getFieldsList();
     }
-    catch(pcl::PCLException exc)
+    catch(pcl::PCLException &exc)
     {
         PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
@@ -1119,7 +1147,7 @@ PyObject* PythonPCL::PyPointCloud_repr(PyPointCloud *self)
         width = self->data->width();
         height = self->data->height();
         }
-        catch(pcl::PCLException exc) {};
+        catch(pcl::PCLException &/*exc*/) {};
 
         switch(type)
         {
@@ -1152,7 +1180,7 @@ PyObject* PythonPCL::PyPointCloud_clear(PyPointCloud *self)
     {
         self->data->clear();
     }
-    catch(pcl::PCLException exc)
+    catch(pcl::PCLException &exc)
     {
         PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
         return NULL;
@@ -1171,7 +1199,7 @@ Py_ssize_t PythonPCL::PyPointCloud_seqLength(PyPointCloud *self)
         {
             s = self->data->size();
         }
-        catch(pcl::PCLException exc)
+        catch(pcl::PCLException &/*exc*/)
         {
             s = 0;
         }
@@ -1200,7 +1228,7 @@ PyObject* PythonPCL::PyPointCloud_seqConcat(PyPointCloud *self, PyObject *rhs) /
             {
                 *result->data = *self->data + *rhs_->data;
             }
-            catch(pcl::PCLException exc)
+            catch(pcl::PCLException &exc)
             {
                 PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
                 return NULL;
@@ -1234,7 +1262,7 @@ PyObject* PythonPCL::PyPointCloud_seqRepeat(PyPointCloud *self, Py_ssize_t size)
                     *result->data += *self->data;
                 }
             }
-            catch(pcl::PCLException exc)
+            catch(pcl::PCLException &exc)
             {
                 PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
                 return NULL;
@@ -1271,7 +1299,7 @@ PyObject* PythonPCL::PyPointCloud_seqItem(PyPointCloud *self, Py_ssize_t size) /
                 result->point = new ito::PCLPoint(self->data->at(size));
                 return (PyObject*)result;
             }
-            catch(pcl::PCLException exc)
+            catch(pcl::PCLException &exc)
             {
                 PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
                 return NULL;
@@ -1345,7 +1373,7 @@ PyObject* PythonPCL::PyPointCloud_seqInplaceConcat(PyPointCloud *self, PyObject 
         {
             *self->data = *self->data + *rhs_->data;
         }
-        catch(pcl::PCLException exc)
+        catch(pcl::PCLException &exc)
         {
             PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
             return NULL;
@@ -1409,30 +1437,31 @@ PyObject* PythonPCL::PyPointCloud_mappingGetElem(PyPointCloud *self, PyObject *k
         return NULL;
     }
 
-    if (slicelength > 1) //two or more points -> return tuple of points
+    if (slicelength > 1) //two or more points -> return point cloud with selected points only
     {
-        PyObject *retValue = PyTuple_New(slicelength);
-        PyPoint *tempPt = NULL;
+        PyObject *indices = PyTuple_New(slicelength);
+        PyObject *result = NULL;
         Py_ssize_t c = 0;
         for (Py_ssize_t i = start ; i < stop ; i += step)
         {
-            tempPt = (PyPoint*)PyObject_Call((PyObject*)&PyPointType, NULL, NULL); //new reference
-            if (tempPt)
-            {
-                tempPt->point = new ito::PCLPoint(self->data->at(i));
-            }
-            else
-            {
-                Py_XDECREF(retValue);
-                PyErr_SetString(PyExc_RuntimeError, "could not allocate object of type point");
-                return NULL;
-            }
-
-            PyTuple_SetItem(retValue, c, (PyObject*)tempPt); //steals reference
+            PyTuple_SetItem(indices, c, PyLong_FromLong(i)); //steals a reference
             c++;
         }
 
-        return retValue;
+        PyObject *args = Py_BuildValue("OO", (PyObject*)self, indices);
+        PyObject *kwds = PyDict_New();
+
+        result = PyObject_Call((PyObject*)&PyPointCloudType, args, kwds); //new reference
+        if (!result)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "could not allocate object of type point cloud");
+        }
+
+        Py_DECREF(kwds);
+        Py_DECREF(args);
+        Py_DECREF(indices);
+
+        return result;
     }
     else //one element -> return point
     {
@@ -1588,7 +1617,7 @@ PyObject* PythonPCL::PyPointCloud_insert(PyPointCloud *self, PyObject *args)
         {
             self->data->insert(start, *(((PyPoint*)points)->point));
         }
-        catch(pcl::PCLException exc)
+        catch(pcl::PCLException &exc)
         {
             PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
             return NULL;
@@ -1614,7 +1643,7 @@ PyObject* PythonPCL::PyPointCloud_insert(PyPointCloud *self, PyObject *args)
             {
                 self->data->insert(start + i, *(((PyPoint*)PySequence_Fast_GET_ITEM(sequence,i))->point));
             }
-            catch(pcl::PCLException exc)
+            catch(pcl::PCLException &exc)
             {
                 Py_DECREF(sequence);
                 PythonPCL_SetString(PyExc_TypeError, exc.detailedMessage());
@@ -2316,15 +2345,37 @@ PointCloud.");
 }
 
 //---------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudFromDisparity_doc,"fromDisparity(disparity [,intensity] [,deleteNaN]) -> creates a point cloud from a given disparity dataObject.\n\
+PyDoc_STRVAR(pyPointCloudFromDisparity_doc,"fromDisparity(disparity [,intensity] [,deleteNaN]) -> creates a point cloud from a given topography dataObject.\n\
 \n\
-Creates a point cloud from the 2.5D data set given by the disparity dataObject. The x and y-components of each point are taken from the regular grid \n\
-values of 'disparity' (considering the scaling and offset of the object). The corresponding z-value is the disparity's value itself. \n\
+Creates a point cloud from the 2.5D data set given by the topography dataObject. The x and y-components of each point are taken from the regular grid \n\
+values of 'topography' (considering the scaling and offset of the object). The corresponding z-value is the topography's value itself. \n\
+\n\
+This method is deprecated and has been renamed to 'fromTopography' due to the wrong usage of the name topography in this case. \n\
 \n\
 Parameters \n\
 ----------- \n\
 disparity : {MxN data object, float32} \n\
-    The values of this dataObject represent the disparity values.\n\
+    The values of this dataObject represent the z-components.\n\
+intensity : {MxN data object, float32}, optional \n\
+    If given, an XYZI-point cloud is created whose intensity values are determined by this dataObject (cannot be used together with 'color')\n\
+deleteNaN : {bool}, optional \n\
+    If true (default: false), NaN or Inf-values (z) in the topography map will not be copied into the point cloud (the point cloud is not organized any more).\n\
+color : {MxN data object, rgba32}, optional \n\
+    If given, a XYZRGBA-point cloud is created whose color values are determined by this dataObject (cannot be used together with 'intensity')\n\
+\n\
+Returns \n\
+------- \n\
+PointCloud.");
+//---------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCloudFromTopography_doc, "fromTopography(topography [,intensity] [,deleteNaN = False]) -> creates a point cloud from a given topography dataObject.\n\
+\n\
+Creates a point cloud from the 2.5D data set given by the topography dataObject. The x and y-components of each point are taken from the regular grid \n\
+values of 'topography' (considering the scaling and offset of the object). The corresponding z-value is the topography's value itself. \n\
+\n\
+Parameters \n\
+----------- \n\
+topography : {MxN data object, float32} \n\
+    The values of this dataObject represent the topography values.\n\
 intensity : {MxN data object, float32}, optional \n\
     If given, an XYZI-point cloud is created whose intensity values are determined by this dataObject (cannot be used together with 'color')\n\
 deleteNaN : {bool}, optional \n\
@@ -2335,13 +2386,14 @@ color : {MxN data object, rgba32}, optional \n\
 Returns \n\
 ------- \n\
 PointCloud.");
-/*static*/ PyObject* PythonPCL::PyPointCloud_fromDisparity(PyPointCloud * /*self*/, PyObject *args, PyObject *kwds)
+/*static*/ PyObject* PythonPCL::PyPointCloud_fromTopography(PyPointCloud * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyObject *objDisp = NULL;
     PyObject *objI = NULL;
     PyObject *objColor = NULL;
     bool deleteNaN = false;
-    const char *kwlist[] = {"disparity", "intensity", "deleteNaN", "color", NULL};
+    const char *kwlist[] = {"topography", "intensity", "deleteNaN", "color", NULL};
+    const char *kwlist2[] = { "disparity", "intensity", "deleteNaN", "color", NULL };
 
     QSharedPointer<ito::DataObject> dispMap, IntMap, colorMap;
     bool ok = true;
@@ -2349,13 +2401,17 @@ PointCloud.");
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|ObO", const_cast<char**>(kwlist), &objDisp, &objI, &deleteNaN, &objColor))
     {
-        return NULL; 
+        PyErr_Clear();
+        if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|ObO", const_cast<char**>(kwlist2), &objDisp, &objI, &deleteNaN, &objColor))
+        {
+            return NULL;
+        }
     }
     
     dispMap = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objDisp, false, ok));
     if (!ok)
     {
-        PyErr_SetString(PyExc_RuntimeError, "disparity map argument could not be converted to a data object");
+        PyErr_SetString(PyExc_RuntimeError, "topography map argument could not be converted to a data object");
         return NULL;
     }
 
@@ -2364,7 +2420,7 @@ PointCloud.");
         IntMap = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objI, false, ok));
         if (!ok)
         {
-            PyErr_SetString(PyExc_RuntimeError, "intensity map argument could not be converted to a data object");
+            PyErr_SetString(PyExc_RuntimeError, "topography map argument could not be converted to a data object");
             return NULL;
         }
         colorMap = QSharedPointer<ito::DataObject>(NULL);
@@ -2457,7 +2513,8 @@ PyMethodDef PythonPCL::PyPointCloud_methods[] = {
     {"fromXYZ",       (PyCFunction)PyPointCloud_fromXYZ, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZ_doc},
     {"fromXYZI",      (PyCFunction)PyPointCloud_fromXYZI, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZI_doc},
     {"fromXYZRGBA",   (PyCFunction)PyPointCloud_fromXYZRGBA, METH_VARARGS | METH_STATIC, pyPointCloudFromXYZRGBA_doc},
-    {"fromDisparity", (PyCFunction)PyPointCloud_fromDisparity, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromDisparity_doc},
+    {"fromDisparity", (PyCFunction)PyPointCloud_fromTopography, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromDisparity_doc},
+    {"fromTopography",  (PyCFunction)PyPointCloud_fromTopography, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyPointCloudFromTopography_doc },
 
     {"copy",          (PyCFunction)PyPointCloud_copy, METH_NOARGS, pyPointCloudCopy_doc},
     
@@ -4099,7 +4156,7 @@ pointType : {int, enum point.PointXXX}, optional \n\
         }
     }
     
-    if (pointType == ito::pclXYZ || pointType == pclInvalid || pointType == pclXYZ || pointType == pclXYZI
+    if (pointType == ito::pclXYZ || pointType == pclXYZ || pointType == pclXYZI
         || pointType == pclXYZRGBA || pointType == pclXYZNormal || pointType == pclXYZINormal || pointType == pclXYZRGBNormal)
     {
         PyPointCloud* pc = createEmptyPyPointCloud();
@@ -4237,58 +4294,132 @@ polygons : {array-like, MxN} \n\
     }
 }
 
+//------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPolygonMeshFromTopography_docs, "fromTopography(topography [, triangulationType = 0]) -> creates a polygon mesh from a dataObject whose values are the z-components. \n\
+\n\
+The polygons are created either as rectangles (quads) or triangles. \n\
+This method is the same than calling polygonMesh.fromOrganizedCloud(pointCloud.fromTopography(topography)). \n\
+\n\
+Parameters \n\
+----------- \n\
+topography : {dataObject} \n\
+    the input point cloud (must be organized, see attribute organized of a cloud) \n\
+triangulationType : {int} \n\
+    type of triangulation. 0: quads [default], 1: triangles");
+/*static*/ PyObject* PythonPCL::PyPolygonMesh_FromTopography(PyObject * /*self*/, PyObject *args, PyObject *kwds)
+{
+    PythonDataObject::PyDataObject *topography = NULL;
+    unsigned char triangulationType = 0;
+    const char *kwlist[] = { "topography", "triangulationType", NULL };
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|b", const_cast<char**>(kwlist), &PythonDataObject::PyDataObjectType, &topography, &triangulationType))
+    {
+        return NULL;
+    }
+
+    PyObject *args2 = Py_BuildValue("(O)", topography);
+    PyObject *kwds2 = PyDict_New();
+    PyObject* cloud = PyPointCloud_fromTopography(NULL, args2, kwds2);
+    PyObject* mesh = NULL;
+    Py_DECREF(args2);
+
+    if (cloud)
+    {
+        args2 = Py_BuildValue("(Oi)", cloud, triangulationType);
+        mesh = PyPolygonMesh_FromOrganizedCloud(NULL, args2, kwds2);
+        Py_DECREF(args2);
+    }
+
+    Py_DECREF(kwds2);
+
+    return mesh;
+}
+
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPolygonMeshFromOrganizedCloud_docs,"fromOrganizedCloud(cloud) -> creates a polygon mesh from an organized cloud using triangles. \n\
+PyDoc_STRVAR(pyPolygonMeshFromOrganizedCloud_docs,"fromOrganizedCloud(cloud [, triangulationType = 1]) -> creates a polygon mesh from an organized cloud using triangles. \n\
 \n\
 The polygons are created as triangles. Triangles are also created for non-finite points. \n\
 \n\
 Parameters \n\
 ----------- \n\
 cloud : {pointCloud} \n\
-    the input point cloud (must be organized, see attribute organized of a cloud)"); 
+    the input point cloud (must be organized, see attribute organized of a cloud) \n\
+triangulationType : {int} \n\
+    type of triangulation. 0: quads, 1 : triangles [default]");
 /*static*/ PyObject* PythonPCL::PyPolygonMesh_FromOrganizedCloud(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     PyPointCloud *cloud = NULL;
-    const char *kwlist[] = {"cloud", NULL};
+    unsigned char triangulationType = 1;
+    const char *kwlist[] = { "cloud", "triangulationType", NULL };
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", const_cast<char**>(kwlist), &PythonPCL::PyPointCloudType, &cloud))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|b", const_cast<char**>(kwlist), &PythonPCL::PyPointCloudType, &cloud, &triangulationType))
     {
         return NULL;
     }
 
     if (cloud->data->isOrganized() == false)
     {
-        PyErr_SetString(PyExc_RuntimeError,"given cloud must be organized (e.g. creating from disparity map without NaN or Inf values)");
+        PyErr_SetString(PyExc_RuntimeError,"given cloud must be organized (e.g. creating from topography map without NaN or Inf values)");
         return NULL;
     }
 
     std::vector<pcl::Vertices> p;
     uint32_t h = cloud->data->height();
     uint32_t w = cloud->data->width();
-    p.resize((h - 1) * (w - 1) * 2);
-    pcl::Vertices v;
-    v.vertices.resize(3);
-    uint32_t i = 0;
 
-    for (uint32_t r = 0; r < (w-1); ++r)
+    if (triangulationType > 0)
     {
-        for (uint32_t c = 0; c < (h-1); ++c)
+        //triangles
+        p.resize((h - 1) * (w - 1) * 2);
+        pcl::Vertices v;
+        v.vertices.resize(3);
+        uint32_t i = 0;
+
+        for (uint32_t r = 0; r < (w - 1); ++r)
         {
-            //points: p1 - p2
-            //         |    |
-            //        p3 - p4
-            //triangles: p1,p3,p2 and p3,p4,p2
-            v.vertices[0] = r * w + c;
-            v.vertices[1] = (r+1)*w + c;
-            v.vertices[2] = v.vertices[0] + 1;
-            p[i++] = v;
-            v.vertices[0] += w;
-            v.vertices[1] += 1;
-            //v.vertices[2] is the same than above
-            p[i++] = v;
+            for (uint32_t c = 0; c < (h - 1); ++c)
+            {
+                //points: p1 - p2
+                //         |    |
+                //        p3 - p4
+                //triangles: p1,p3,p2 and p3,p4,p2
+                v.vertices[0] = r * w + c;
+                v.vertices[1] = (r + 1)*w + c;
+                v.vertices[2] = v.vertices[0] + 1;
+                p[i++] = v;
+                v.vertices[0] += w;
+                v.vertices[1] += 1;
+                //v.vertices[2] is the same than above
+                p[i++] = v;
+            }
         }
     }
+    else
+    {
+        //quads
+        p.resize((h - 1) * (w - 1));
+        pcl::Vertices v;
+        v.vertices.resize(4);
+        uint32_t i = 0;
+
+        for (uint32_t r = 0; r < (w - 1); ++r)
+        {
+            for (uint32_t c = 0; c < (h - 1); ++c)
+            {
+                //points: p1 - p2
+                //         |    |
+                //        p3 - p4
+                //triangles: p1,p3,p2 and p3,p4,p2
+                v.vertices[0] = r * w + c;
+                v.vertices[1] = r * w + c + 1;
+                v.vertices[2] = (r + 1) * w + c + 1;
+                v.vertices[3] = (r + 1) * w + c;
+                p[i++] = v;
+            }
+        }
+    }
+    
 
     PyPolygonMesh *mesh = PythonPCL::createEmptyPyPolygonMesh();
     mesh->polygonMesh = new ito::PCLPolygonMesh(*(cloud->data), p);
@@ -4332,6 +4463,7 @@ PyMethodDef PythonPCL::PyPolygonMesh_methods[] = {
     {"getPolygons", (PyCFunction)PyPolygonMesh_getPolygons, METH_VARARGS, pyPolygonMeshGetPolygons_docs},
     {"fromCloudAndPolygons", (PyCFunction)PyPolygonMesh_FromCloudAndPolygons, METH_VARARGS | METH_KEYWORDS | METH_STATIC, pyPolygonMeshFromCloudAndPolygons_docs},
     {"fromOrganizedCloud", (PyCFunction)PyPolygonMesh_FromOrganizedCloud, METH_VARARGS | METH_KEYWORDS | METH_STATIC, pyPolygonMeshFromOrganizedCloud_docs},
+    {"fromTopography", (PyCFunction)PyPolygonMesh_FromTopography, METH_VARARGS | METH_KEYWORDS | METH_STATIC, pyPolygonMeshFromTopography_docs },
     {NULL}  /* Sentinel */
 };
 

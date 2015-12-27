@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -144,8 +144,8 @@ public:
     inline void setExecInternalCodeByDebugger(bool value) { m_executeInternalPythonCodeInDebugMode = value; }
     ito::RetVal checkForPyExceptions();
     void printPythonErrorWithoutTraceback();
-    void pythonDebugFunction(PyObject *callable, PyObject *argTuple);
-    void pythonRunFunction(PyObject *callable, PyObject *argTuple);
+    void pythonDebugFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);
+    void pythonRunFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);    
     inline PyObject *getGlobalDictionary()  const { return globalDictionary;  }  /*!< returns reference to main dictionary (main workspace) */
     inline bool pySyntaxCheckAvailable() const { return (m_pyModSyntaxCheck != NULL); }
     QList<int> parseAndSplitCommandInMainComponents(const char *str, QByteArray &encoding) const; //can be directly called from different thread
@@ -154,15 +154,14 @@ public:
 
     static bool isInterruptQueued();
     static const PythonEngine *getInstance();
-
 protected:
     //RetVal syntaxCheck(char* pythonFileName);       // syntaxCheck for file with filename pythonFileName
     ito::RetVal runPyFile(const QString &pythonFileName);         // run file pythonFileName
     ito::RetVal debugFile(const QString &pythonFileName);         // debug file pythonFileName
     ito::RetVal runString(const QString &command);          // run string command
     ito::RetVal debugString(const QString &command);        // debug string command
-    ito::RetVal debugFunction(PyObject *callable, PyObject *argTuple);
-    ito::RetVal runFunction(PyObject *callable, PyObject *argTuple);
+    ito::RetVal debugFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);
+    ito::RetVal runFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);
 
     ito::RetVal modifyTracebackDepth(int NrOfLevelsToPopAtFront = -1, bool showTraceback = true);
 
@@ -179,7 +178,7 @@ private:
 
     inline PyObject *getLocalDictionary() { return localDictionary; } /*!< returns reference to local dictionary (workspace of method, which is handled right now). Is NULL if no method is executed right now. */
 
-    PyObject *getPyObjectByFullName(bool globalNotLocal, const QStringList &fullName);
+    PyObject *getPyObjectByFullName(bool globalNotLocal, const QStringList &fullName); //Python GIL must be locked when calling this function!
 
     void setGlobalDictionary(PyObject* mainDict = NULL);
     void setLocalDictionary(PyObject* localDict);
@@ -347,8 +346,9 @@ public slots:
 
     void registerWorkspaceContainer(PyWorkspaceContainer *container, bool registerNotUnregister, bool globalNotLocal);
     void workspaceGetChildNode(PyWorkspaceContainer *container, QString fullNameParentItem);
-    void workspaceGetValueInformation(PyWorkspaceContainer *container, QString fullItemName, QSharedPointer<QString> extendedValue, ItomSharedSemaphore *semaphore = NULL);
+    void workspaceGetValueInformation(PyWorkspaceContainer *container, const QString &fullItemName, QSharedPointer<QString> extendedValue, ItomSharedSemaphore *semaphore = NULL);
 
+    ito::RetVal checkVarnamesInWorkspace(bool globalNotLocal, const QStringList &names, QSharedPointer<IntList> existing, ItomSharedSemaphore *semaphore = NULL); /*!< check if variable already exist in workspace, existing is 0 (non existing), 1 (existing, but can be overwritten), 2 (existing, not overwritable, e.g. function, method...)*/
     ito::RetVal putParamsToWorkspace(bool globalNotLocal, const QStringList &names, const QVector<SharedParamBasePointer > &values, ItomSharedSemaphore *semaphore = NULL);
     ito::RetVal getParamsFromWorkspace(bool globalNotLocal, const QStringList &names, QVector<int> paramBaseTypes, QSharedPointer<SharedParamBasePointerVector > values, ItomSharedSemaphore *semaphore = NULL);
 

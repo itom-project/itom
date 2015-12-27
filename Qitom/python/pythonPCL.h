@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom.
@@ -158,7 +158,7 @@ public:
     static PyObject *PyPointCloud_fromXYZ(PyPointCloud *self, PyObject *args);
     static PyObject *PyPointCloud_fromXYZI(PyPointCloud *self, PyObject *args);
     static PyObject *PyPointCloud_fromXYZRGBA(PyPointCloud *self, PyObject *args);
-    static PyObject *PyPointCloud_fromDisparity(PyPointCloud *self, PyObject *args, PyObject *kwds);
+    static PyObject *PyPointCloud_fromTopography(PyPointCloud *self, PyObject *args, PyObject *kwds);
 
     //-------------------------------------------------------------------------------------------------
     // type structures
@@ -293,6 +293,7 @@ public:
     //-------------------------------------------------------------------------------------------------
     static PyObject* PyPolygonMesh_FromCloudAndPolygons(PyObject *self, PyObject *args, PyObject *kwds);
     static PyObject* PyPolygonMesh_FromOrganizedCloud(PyObject * self, PyObject *args, PyObject *kwds);
+    static PyObject* PyPolygonMesh_FromTopography(PyObject * self, PyObject *args, PyObject *kwds);
 
     //-------------------------------------------------------------------------------------------------
     // getter / setter

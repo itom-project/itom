@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
    
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -47,13 +47,13 @@ namespace ito
 {
     //----------------------------------------------------------------------------------------------------------------------------------
     /**
-    *   @detail Compared the abs(dValue) with the 10^(3N) and according to the results µ p M ... are added to the unit
-    *           Allowed units are SI-Unit except kg and mm. It % is given as unit, values are multiplied by 100
+    *   @detail Compared the abs(dValue) with the 10^(3N) and according to the results mu p M ... are added to the unit
+    *           Allowed units are SI-Unit except kg and mm. If % is given as input unit, values are multiplied by 100
     *   @param [in]  scaleThisUnitsOnly     List with scaleable units (e.g. mm, m)
     *   @param [in]  unitIn                 Old unit (e.g. mm, m, %)
     *   @param [in]  dVal                   Double value (e.g. mm, m, %)
     *   @param [out] dValOut                Scaled value
-    *   @param [out] unitOut                Scaled unit m -> mm or µm
+    *   @param [out] unitOut                Scaled unit m -> mm or \mu m
     *
     */
     RetVal formatDoubleWithUnit(QStringList scaleThisUnitsOnly, QString unitIn, double dVal, double &dValOut, QString &unitOut)
@@ -78,10 +78,10 @@ namespace ito
         {
             unitOut = QString(unitIn);  // Do not scale unit for 0.0
         }
-        else if (!unitIn.compare("%"))
+        else if (unitIn == "%")
         {
             dValOut = dVal*100;
-            unitOut = QString(unitIn);
+            unitOut = unitIn;
         }
         else
         {
@@ -127,7 +127,7 @@ namespace ito
             else if (aval < 1.0E-3)
             {
                 dValOut = dVal / factor / 1.0E-6;
-                unitOut = QString::fromLatin1("µ");
+                unitOut = QChar(0x00, 0xB5); // \mu
             }
             else if (aval < 1.0)
             {
@@ -169,16 +169,6 @@ namespace ito
                 unitOut.append("E");
             }
             unitOut.append(tempUnit);
-            // TODO
-            if (!unitOut.compare("µm"))
-            {
-                unitOut.clear();
-                unitOut.append("muh");
-            }
-            else
-            {
-                unitOut.replace(QLatin1String("µ"), QLatin1String("u"));
-            }
         }
         return retVal;
     }

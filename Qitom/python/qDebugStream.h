@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -40,7 +40,7 @@ class QDebugStream : public QObject, public std::basic_streambuf<char>
     Q_OBJECT
 
 public:
-    QDebugStream(std::ostream &stream, tMsgType type, QString lineBreak = "\n");
+    QDebugStream(std::ostream &stream, tMsgType type, const QString &lineBreak = "\n");
     ~QDebugStream();
 
 

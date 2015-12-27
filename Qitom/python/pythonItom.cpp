@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -215,18 +215,33 @@ PyObject* PythonItom::PyClearCommandLine(PyObject *pSelf)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotImage_doc,"plot(data, [className, properties]) -> plots a dataObject in a newly created figure \n\
+PyDoc_STRVAR(pyPlotImage_doc,"plot(data, [className, properties]) -> plots a dataObject, pointCloud or polygonMesh in a new figure \n\
 \n\
-Plot an existing dataObject in dockable, not blocking window. \n\
+Plots an existing dataObject, pointCloud or polygonMesh in a dockable, not blocking window. \n\
 The style of the plot depends on the object dimensions.\n\
-If x-dim or y-dim are equal to 1, plot will be a line-plot, else a 2D-plot.\n\
+\n\
+If no 'className' is given, the type of the plot is chosen depending on the type and the size \n\
+of the object. The defaults for several plot classes can be adjusted in the property dialog of itom. \n\
+\n\
+You can also set a class name of your preferred plot plugin (see also property dialog of itom). \n\
+If your preffered plot is not able to display the given object, a warning is returned and the default \n\
+plot type is used again. For dataObjects, it is also possible to simply set 'className' to '1D', '2D' \n\
+or '2.5D' in order to choose the default plot type depending on these aliases. For pointCloud and \n\
+polygonMesh only the alias '2.5D' is valid. \n\
+\n\
+Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
+or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
+\n\
+Use the 'properties' argument to pass a dictionary with properties you want to set to a certain value. \n\
 \n\
 Parameters \n\
 ----------- \n\
-data : {DataObject} \n\
+data : {DataObject, PointCloud, PolygonMesh} \n\
     Is the data object whose region of interest will be plotted.\n\
 className : {str}, optional \n\
-    class name of desired plot (if not indicated or if the className can not be found, the default plot will be used (see application settings) \n\
+    class name of desired plot (if not indicated or if the className can not be found, the default plot will be used (see application settings)) \n\
+	Depending on the object, you can also use '1D', '2D' or '2.5D' for displaying the object in the default plot of \n\
+	the indicated categories. \n\
 properties : {dict}, optional \n\
     optional dictionary of properties that will be directly applied to the plot widget.");
 PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
@@ -310,9 +325,9 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     QSharedPointer<unsigned int> objectID(new unsigned int);
 
     QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-    if (!locker.getSemaphore()->wait(PLUGINWAIT))
+    if (!locker.getSemaphore()->wait(PLUGINWAIT * 5))
     {
-        PyErr_SetString(PyExc_RuntimeError, "timeout while plotting data object");
+        PyErr_SetString(PyExc_RuntimeError, "timeout while plotting object");
         return NULL;
     }
 
@@ -416,10 +431,23 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 //}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyLiveImage_doc,"liveImage(cam, [className, properties]) -> show a camera live image in a newly created figure\n\
+PyDoc_STRVAR(pyLiveImage_doc,"liveImage(cam, [className, properties]) -> show a camera live image in a new figure\n\
 \n\
 Creates a plot-image (2D) and automatically grabs images into this window.\n\
 This function is not blocking.\n\
+\n\
+If no 'className' is given, the type of the plot is chosen depending on the type and the size \n\
+of the object. The defaults for several plot classes can be adjusted in the property dialog of itom. \n\
+\n\
+You can also set a class name of your preferred plot plugin (see also property dialog of itom). \n\
+If your preferred plot is not able to display the given object, a warning is returned and the default \n\
+plot type is used again. For dataObjects, it is also possible to simply set 'className' to '1D' or '2D' \n\
+in order to choose the default plot type depending on these aliases. \n\
+\n\
+Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
+or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
+\n\
+Use the 'properties' argument to pass a dictionary with properties you want to set to a certain value. \n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -1385,7 +1413,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
                 std::cout << "\nCLASSINFO:\n";
             }
 
-            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); mapIter++)
+            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
 
                 if (mapIter.key().startsWith("ci_"))
@@ -1416,7 +1444,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
                 std::cout << "\nPROPERTIES:\n";
             }
             
-            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); mapIter++)
+            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
                 if (mapIter.key().startsWith("prop_"))
                 {
@@ -1446,7 +1474,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
                 std::cout << "\nSIGNALS:\n";            
             }
 
-            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); mapIter++)
+            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
                 if (mapIter.key().startsWith("signal_"))
                 {
@@ -1476,7 +1504,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
                 std::cout << "\nSLOTS:\n";  
             }
 
-            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); mapIter++)
+            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
                 if (mapIter.key().startsWith("slot_"))
                 {
@@ -1505,7 +1533,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             {
                 std::cout << "\nINHERITANCE:\n";
             }
-            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); mapIter++)
+            for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
                 if (mapIter.key().startsWith("inheritance_"))
                 {
@@ -1967,8 +1995,6 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
     PyObject* key = NULL;
     PyObject* value = NULL;
 
-    int ret = 0;
-
     QMap<QString, QString> versionMap = ito::getItomVersionMap();
     QMapIterator<QString, QString> i(versionMap);
 
@@ -1978,7 +2004,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
 
         key = PythonQtConversion::QStringToPyObject(i.key());
         value = PythonQtConversion::QStringToPyObject(i.value());
-        ret = PyDict_SetItem(myTempDic, key, value);
+        PyDict_SetItem(myTempDic, key, value);
 
         Py_DECREF(key);
         Py_DECREF(value);
@@ -1996,7 +2022,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
         Py_DECREF(value);
     }*/
 
-    ret = PyDict_SetItemString(myDic, "itom", myTempDic);
+    PyDict_SetItemString(myDic, "itom", myTempDic);
     Py_XDECREF(myTempDic);
 
     if (addPlugIns)
@@ -2028,10 +2054,10 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
                     sprintf_s(buf, 7, "%i.%i.%i", first, middle, last);
                     value = PyUnicode_FromString(buf);
 
-                    ret = PyDict_SetItemString(info, "version", value);
-                    ret = PyDict_SetItemString(info, "license", license);
+                    PyDict_SetItemString(info, "version", value);
+                    PyDict_SetItemString(info, "license", license);
 
-                    ret = PyDict_SetItem(myTempDic, key, info);
+                    PyDict_SetItem(myTempDic, key, info);
 
                     Py_DECREF(key);
                     Py_DECREF(value);
@@ -2041,7 +2067,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
             }
         }
 
-        ret = PyDict_SetItemString(myDic, "plugins", myTempDic);
+        PyDict_SetItemString(myDic, "plugins", myTempDic);
         Py_XDECREF(myTempDic);
 
     }
@@ -2912,7 +2938,7 @@ PyObject* PythonItom::PyGetScreenInfo(PyObject* /*pSelf*/)
 //---------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pySaveMatlabMat_doc,"saveMatlabMat(filename, values[, matrixName = 'matrix']) -> save strings, numbers, arrays or combinations into a Matlab mat file. \n\
 \n\
-Save one or multiple objects (strings, numbers, arrays, `dataObject`, `numpy.ndarray`, `npDataObject`...) to a Matlab *mat* file. \n\
+Save one or multiple objects (strings, numbers, arrays, `dataObject`, `numpy.ndarray`...) to a Matlab *mat* file. \n\
 There are the following possibilites for saving: \n\
 \n\
 * One given value is saved under one given 'matrixName' or 'matrix' if 'matrixName' is not given. \n\
@@ -2924,7 +2950,7 @@ Parameters \n\
 filename : {str} \n\
     Filename under which the file should be saved (.mat will be appended if not available)\n\
 values : {dictionary, list, tuple, variant} \n\
-    single value, dictionary, list or tuple with elements of type number, string, array (dataObject, numpy.ndarray, npDataObject...)\n\
+    single value, dictionary, list or tuple with elements of type number, string, array (dataObject, numpy.ndarray...)\n\
 matrix-name : {str, list, tuple}, optional \n\
     if 'values' is a single value, this parameter must be one single str, if 'values' is a sequence it must be a sequence of strings with the same length, if 'values' is a dictionary this argument is ignored. \n\
 \n\
@@ -3334,25 +3360,28 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
         return NULL;
     }
 
-    params = PyTuple_GetSlice(pArgs, 1, PyTuple_Size(pArgs));
+    params = PyTuple_GetSlice(pArgs, 1, PyTuple_Size(pArgs)); //new reference
 
     //parses python-parameters with respect to the default values given py (*it).paramsMand and (*it).paramsOpt and returns default-initialized ParamBase-Vectors paramsMand and paramsOpt.
     ret += parseInitParams(&(filterParams->paramsMand), &(filterParams->paramsOpt), params, kwds, paramsMandBase, paramsOptBase);
     //makes deep copy from default-output parameters (*it).paramsOut and returns it in paramsOut (ParamBase-Vector)
     ret += copyParamVector(&(filterParams->paramsOut), paramsOutBase);
 
+    Py_DECREF(params);
+
     if (ret.containsError())
     {
         PyErr_SetString(PyExc_RuntimeError, "error while parsing parameters.");
         return NULL;
     }
-    Py_DECREF(params);
+
+    Py_BEGIN_ALLOW_THREADS //from here, python can do something else... (we assume that the filter might be a longer operation)
 
     try
     {
         ret = (*(fFunc->m_filterFunc))(&paramsMandBase, &paramsOptBase, &paramsOutBase);
     }
-    catch (cv::Exception exc)
+    catch (cv::Exception &exc)
     {
         const char* errorStr = cvErrorStr(exc.code);
 
@@ -3367,7 +3396,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
         *p = 0;
 #endif
     }
-    catch(std::exception exc)
+    catch(std::exception &exc)
     {
         if (exc.what())
         {
@@ -3391,6 +3420,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
 #endif
     }
     
+    Py_END_ALLOW_THREADS //now we want to get back the GIL from Python
 
     if (!PythonCommon::transformRetValToPyException(ret))
     {

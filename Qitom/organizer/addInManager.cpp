@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -1619,57 +1619,56 @@ namespace ito
     {
         ito::RetVal retValue;
         // this needs to be done in combination with Q_DECLARE_METATYPE to register a user data type
-        int id;
-        id = qRegisterMetaType<char*>("char*");
-        id = qRegisterMetaType<char**>("char**");
-        id = qRegisterMetaType<const char*>("const char*");
-        id = qRegisterMetaType<const char**>("const char**");
+        qRegisterMetaType<char*>("char*");
+        qRegisterMetaType<char**>("char**");
+        qRegisterMetaType<const char*>("const char*");
+        qRegisterMetaType<const char**>("const char**");
         // incomplete type, i.e. void* are illegal in Qt5!
-        //id = qRegisterMetaType<const void *>("const void *");
-        id = qRegisterMetaType<double>("double");
-        id = qRegisterMetaType<double *>("double*");
-        //id = qRegisterMetaType<const double>();
-        id = qRegisterMetaType<const double *>("const double*");
-        id = qRegisterMetaType<int *>("int*");
-        id = qRegisterMetaType<const int *>("const int*");
-        //id = qRegisterMetaType<int>();
-        id = qRegisterMetaType<ItomSharedSemaphore*>("ItomSharedSemaphore*");
-        id = qRegisterMetaType<ito::AddInInterfaceBase*>("ito::AddInInterfaceBase*");
-        id = qRegisterMetaType<ito::AddInBase*>("ito::AddInBase*");
-        id = qRegisterMetaType<ito::AddInBase*>("ito::AddInBase**");
-        id = qRegisterMetaType<ito::AddInDataIO**>("ito::AddInDataIO**");
-        id = qRegisterMetaType<ito::AddInActuator**>("ito::AddInActuator**");
-        id = qRegisterMetaType<ito::AddInAlgo**>("ito::AddInAlgo**");
-//        id = qRegisterMetaType<ito::ActuatorAxis*>("ito::ActuatorAxis**");
-        id = qRegisterMetaType<ito::RetVal>("ito::RetVal");
-        id = qRegisterMetaType<ito::RetVal*>("ito::RetVal*");
-//        id = qRegisterMetaType<const void*>("const void*");
-        id = qRegisterMetaType<QVector<ito::Param>*>("QVector<ito::Param>*");
-        id = qRegisterMetaType<QVector<ito::ParamBase>*>("QVector<ito::ParamBase>*");
-        id = qRegisterMetaType<QVector<int> >("QVector<int>");
-        id = qRegisterMetaType<QVector<double> >("QVector<double>");
+        //qRegisterMetaType<const void *>("const void *");
+        qRegisterMetaType<double>("double");
+        qRegisterMetaType<double *>("double*");
+        //qRegisterMetaType<const double>();
+        qRegisterMetaType<const double *>("const double*");
+        qRegisterMetaType<int *>("int*");
+        qRegisterMetaType<const int *>("const int*");
+        //qRegisterMetaType<int>();
+        qRegisterMetaType<ItomSharedSemaphore*>("ItomSharedSemaphore*");
+        qRegisterMetaType<ito::AddInInterfaceBase*>("ito::AddInInterfaceBase*");
+        qRegisterMetaType<ito::AddInBase*>("ito::AddInBase*");
+        qRegisterMetaType<ito::AddInBase*>("ito::AddInBase**");
+        qRegisterMetaType<ito::AddInDataIO**>("ito::AddInDataIO**");
+        qRegisterMetaType<ito::AddInActuator**>("ito::AddInActuator**");
+        qRegisterMetaType<ito::AddInAlgo**>("ito::AddInAlgo**");
+//        qRegisterMetaType<ito::ActuatorAxis*>("ito::ActuatorAxis**");
+        qRegisterMetaType<ito::RetVal>("ito::RetVal");
+        qRegisterMetaType<ito::RetVal*>("ito::RetVal*");
+//        qRegisterMetaType<const void*>("const void*");
+        qRegisterMetaType<QVector<ito::Param>*>("QVector<ito::Param>*");
+        qRegisterMetaType<QVector<ito::ParamBase>*>("QVector<ito::ParamBase>*");
+        qRegisterMetaType<QVector<int> >("QVector<int>");
+        qRegisterMetaType<QVector<double> >("QVector<double>");
         // used in plotItemsChanged do not remove
-        id = qRegisterMetaType<QVector<float> >("QVector<float>");
+        qRegisterMetaType<QVector<float> >("QVector<float>");
 
-        id = qRegisterMetaType<QSharedPointer<double> >("QSharedPointer<double>");
-        id = qRegisterMetaType<QSharedPointer<QVector<double> > >("QSharedPointer<QVector<double>>");
-        id = qRegisterMetaType<QSharedPointer<int> >("QSharedPointer<int>");
-        id = qRegisterMetaType<QSharedPointer<IntVector> >("QSharedPointer<IntVector>");
-        id = qRegisterMetaType<QSharedPointer<char*> >("QSharedPointer<char>");
-        id = qRegisterMetaType<QSharedPointer<ito::Param> >("QSharedPointer<ito::Param>");
-        id = qRegisterMetaType<QSharedPointer<ito::ParamBase> >("QSharedPointer<ito::ParamBase>");
+        qRegisterMetaType<QSharedPointer<double> >("QSharedPointer<double>");
+        qRegisterMetaType<QSharedPointer<QVector<double> > >("QSharedPointer<QVector<double>>");
+        qRegisterMetaType<QSharedPointer<int> >("QSharedPointer<int>");
+        qRegisterMetaType<QSharedPointer<IntVector> >("QSharedPointer<IntVector>");
+        qRegisterMetaType<QSharedPointer<char*> >("QSharedPointer<char>");
+        qRegisterMetaType<QSharedPointer<ito::Param> >("QSharedPointer<ito::Param>");
+        qRegisterMetaType<QSharedPointer<ito::ParamBase> >("QSharedPointer<ito::ParamBase>");
 
-        id = qRegisterMetaType<ito::DataObject>("ito::DataObject");
-        id = qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
-        id = qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::ParamBase>");
+        qRegisterMetaType<ito::DataObject>("ito::DataObject");
+        qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
+        qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::ParamBase>");
 
 #if ITOM_POINTCLOUDLIBRARY > 0    
-        id = qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud");
-        id = qRegisterMetaType<ito::PCLPolygonMesh >("ito::PCLPolygonMesh");
-        id = qRegisterMetaType<ito::PCLPoint >("ito::PCLPoint");
-        id = qRegisterMetaType<QSharedPointer<ito::PCLPointCloud> >("QSharedPointer<ito::PCLPointCloud>");
-        id = qRegisterMetaType<QSharedPointer<ito::PCLPolygonMesh> >("QSharedPointer<ito::PCLPolygonMesh>");
-        id = qRegisterMetaType<QSharedPointer<ito::PCLPoint> >("QSharedPointer<ito::PCLPoint>");
+        qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud");
+        qRegisterMetaType<ito::PCLPolygonMesh >("ito::PCLPolygonMesh");
+        qRegisterMetaType<ito::PCLPoint >("ito::PCLPoint");
+        qRegisterMetaType<QSharedPointer<ito::PCLPointCloud> >("QSharedPointer<ito::PCLPointCloud>");
+        qRegisterMetaType<QSharedPointer<ito::PCLPolygonMesh> >("QSharedPointer<ito::PCLPolygonMesh>");
+        qRegisterMetaType<QSharedPointer<ito::PCLPoint> >("QSharedPointer<ito::PCLPoint>");
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
 
         m_deadPlugins.clear();

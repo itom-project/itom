@@ -1,9 +1,10 @@
 SET (target_name qpropertyeditor)
 
 project(${target_name})
+ 
+cmake_minimum_required(VERSION 2.8.9)
 
-cmake_minimum_required(VERSION 2.8)
-
+#CMAKE Policies
 IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
     if(POLICY CMP0042)
         cmake_policy(SET CMP0042 OLD)
@@ -19,6 +20,7 @@ OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and it
 IF(BUILD_ITOMLIBS_SHARED)
     SET(LIBRARY_TYPE SHARED)
     ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
+	ADD_DEFINITIONS(-DITOMWIDGETS_SHARED -D_ITOMWIDGETS_SHARED)
     ADD_DEFINITIONS(-DQPROPERTYEDITOR_DLL -D_QPROPERTYEDITOR_DLL)
 ELSE(BUILD_ITOMLIBS_SHARED)
     SET(LIBRARY_TYPE STATIC)
@@ -57,11 +59,16 @@ set(qpropertyeditor_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/BooleanCombo.h
     ${CMAKE_CURRENT_SOURCE_DIR}/FontEditor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/EnumProperty.h
+	${CMAKE_CURRENT_SOURCE_DIR}/FlagsProperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/Property.h
     ${CMAKE_CURRENT_SOURCE_DIR}/QPropertyEditorWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/QPropertyModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/QVariantDelegate.h
     ${CMAKE_CURRENT_SOURCE_DIR}/itomCustomTypes.h
+	${CMAKE_CURRENT_SOURCE_DIR}/qVector2DProperty.h
+	${CMAKE_CURRENT_SOURCE_DIR}/qVector3DProperty.h
+	${CMAKE_CURRENT_SOURCE_DIR}/qVector4DProperty.h
+	${CMAKE_CURRENT_SOURCE_DIR}/autoIntervalProperty.h
     ${CMAKE_CURRENT_SOURCE_DIR}/stringListEditor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/stringListDialog.h
 )
@@ -71,11 +78,16 @@ set(qpropertyeditor_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/BooleanCombo.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/FontEditor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/EnumProperty.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/FlagsProperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/Property.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/QPropertyEditorWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/QPropertyModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/QVariantDelegate.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/itomCustomTypes.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/qVector2DProperty.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/qVector3DProperty.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/qVector4DProperty.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/autoIntervalProperty.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/stringListEditor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/stringListDialog.cpp
 )
@@ -99,8 +111,12 @@ endif (QT5_FOUND)
 
 add_library(${target_name} ${LIBRARY_TYPE} ${qpropertyeditor_SOURCES} ${qpropertyeditor_HEADERS} ${qproperteditor_HEADERS_MOC} ${qpropertyeditor_UI_MOC} ${qpropertyeditor_RCC_MOC})
 
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} itomCommonLib)
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} itomCommonLib  itomWidgets)
 IF (QT5_FOUND)
+    IF(CMAKE_VERSION VERSION_GREATER 3.0.0)
+        #https://bugreports.qt.io/browse/QTBUG-39457
+        cmake_policy(SET CMP0043 OLD)
+    ENDIF()
     qt5_use_modules(${target_name} ${QT_COMPONENTS})
 ENDIF (QT5_FOUND)
 
@@ -110,6 +126,7 @@ SET(SOURCEFILE ${CMAKE_CURRENT_SOURCE_DIR}/../QPropertyEditor)
 #FILE(COPY ${SOURCEFILE}/BooleanCombo.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
 #FILE(COPY ${SOURCEFILE}/FontEditor.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
 #FILE(COPY ${SOURCEFILE}/EnumProperty.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
+#FILE(COPY ${SOURCEFILE}/FlagsProperty.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
 FILE(COPY ${SOURCEFILE}/defines.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
 FILE(COPY ${SOURCEFILE}/Property.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)
 FILE(COPY ${SOURCEFILE}/QPropertyEditorWidget.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/QPropertyEditor)

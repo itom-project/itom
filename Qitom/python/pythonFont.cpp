@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2015, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -274,7 +274,7 @@ int PythonFont::PyFont_setWeight(PyFont *self, PyObject *value, void * /*closure
     }
     else
     {
-        PyErr_SetString(PyExc_TypeError, "error interpreting the font family as string.");
+        PyErr_SetString(PyExc_TypeError, "error interpreting the weight as uint.");
         return -1;
     }
 }

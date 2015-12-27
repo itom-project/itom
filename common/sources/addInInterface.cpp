@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
    
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -33,6 +33,7 @@
 #include <qmetaobject.h>
 #include <qcoreapplication.h>
 #include "abstractAddInDockWidget.h"
+#include "opencv/cv.h"
 
 #if defined _DEBUG  && defined(_MSC_VER) && defined(VISUAL_LEAK_DETECTOR_CMAKE)
     #include "vld.h"
@@ -226,6 +227,14 @@ namespace ito
         m_pThread = new QThread();
         moveToThread(m_pThread);
         m_pThread->start();
+
+		/*set new seed for random generator of OpenCV. 
+		This is required to have real random values for any randn or randu command.
+		The seed must be set in every thread. This is for the main thread.
+		*/
+		cv::theRNG().state = (uint64)cv::getCPUTickCount();
+		/*seed is set*/
+
         return retOk;
     }
 
@@ -821,8 +830,6 @@ namespace ito
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInActuator::AddInActuator() 
         : AddInBase(), 
-        m_nrOfStatusChangedConnections(0), /* deprecated: remove this due to new Qt5 support */
-        m_nrOfTargetChangedConnections(0), /* deprecated: remove this due to new Qt5 support */ 
         m_interruptFlag(false)
     {
     }
@@ -842,17 +849,14 @@ namespace ito
     */
     void AddInActuator::sendStatusUpdate(const bool statusOnly)
     {
-        //if (m_nrOfStatusChangedConnections>0)
-        //{
-            if (statusOnly)
-            {
-                emit actuatorStatusChanged(m_currentStatus, QVector<double>());
-            }
-            else
-            {
-                emit actuatorStatusChanged(m_currentStatus, m_currentPos);
-            }
-        //}
+        if (statusOnly)
+        {
+            emit actuatorStatusChanged(m_currentStatus, QVector<double>());
+        }
+        else
+        {
+            emit actuatorStatusChanged(m_currentStatus, m_currentPos);
+        }
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -862,10 +866,7 @@ namespace ito
     */
     void AddInActuator::sendTargetUpdate()
     {
-        //if (m_nrOfTargetChangedConnections>0)
-        //{
-            emit targetChanged(m_targetPos);
-        //}
+        emit targetChanged(m_targetPos);
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------

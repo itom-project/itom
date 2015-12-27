@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
    
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -43,16 +43,18 @@
 
 namespace ito
 {
+    //! enumeration that describes the type of input data that a designer plot widget accepts
     enum PlotDataType
     {
-        DataObjLine         = 0x0001,
-        DataObjPlane        = 0x0002,
-        DataObjPlaneStack   = 0x0004,
-        PointCloud          = 0x0008,
-        PolygonMesh         = 0x0010
+        DataObjLine         = 0x0001, /*!< 1xN or Nx1 data object */ 
+        DataObjPlane        = 0x0002, /*!< 2D data object */
+        DataObjPlaneStack   = 0x0004, /*!< data object with more than one plane */
+        PointCloud          = 0x0008, /*!< point cloud */
+        PolygonMesh         = 0x0010  /*!< polygon mesh */
     };
     Q_DECLARE_FLAGS(PlotDataTypes, PlotDataType)
     
+    //! allowed data formats
     enum PlotDataFormat
     {
         Format_Gray8    = 0x0001,
@@ -67,7 +69,7 @@ namespace ito
     };
     Q_DECLARE_FLAGS(PlotDataFormats, PlotDataFormat)
     
-
+    //! this enumeration describe the features a designer plot widget provides concerning the visualization of data objects, point clouds or polygonal meshes
     enum PlotFeature
     {
         Static      = 0x0001,

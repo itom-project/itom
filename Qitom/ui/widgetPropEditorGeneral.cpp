@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -55,6 +55,15 @@ void WidgetPropEditorGeneral::readSettings()
     ui.radioEOL2->setChecked(eolMode == "EolUnix");
     ui.radioEOL3->setChecked(eolMode == "EolMac");
 
+    // Fold Style
+    QString foldStyle = settings.value("foldStyle", "plus_minus").toString();
+    ui.radioFoldingPM->setChecked(foldStyle == "plus_minus");
+    ui.radioFoldingCirclesTree->setChecked(foldStyle == "circles_tree");
+    ui.radioFoldingCircles->setChecked(foldStyle == "circles");
+    ui.radioFoldingSquares->setChecked(foldStyle == "squares");
+    ui.radioFoldingSquaresTree->setChecked(foldStyle == "squares_tree");
+    ui.radioFoldingNone->setChecked(foldStyle == "none");
+
     // Syntax Checker
     ui.groupSyntaxCheck->setChecked(settings.value("syntaxChecker", true).toBool());
     ui.checkIncludeItom->setChecked(settings.value("syntaxIncludeItom", true).toBool());
@@ -101,6 +110,32 @@ void WidgetPropEditorGeneral::writeSettings()
     else
     {
         settings.setValue("eolMode", "EolMac");
+    }
+
+    // Fold Style
+    if (ui.radioFoldingPM->isChecked())
+    {
+            settings.setValue("foldStyle", "plus_minus");
+    }
+    else if (ui.radioFoldingCirclesTree->isChecked())
+    {
+            settings.setValue("foldStyle", "circles_tree");
+    }
+    else if (ui.radioFoldingCircles->isChecked())
+    {
+            settings.setValue("foldStyle", "circles");
+    }
+    else if (ui.radioFoldingSquaresTree->isChecked())
+    {
+            settings.setValue("foldStyle", "squares_tree");
+    }
+    else if (ui.radioFoldingSquares->isChecked())
+    {
+            settings.setValue("foldStyle", "squares");
+    }
+    else if (ui.radioFoldingNone->isChecked())
+    {
+            settings.setValue("foldStyle", "none");
     }
 
     // Syntax Checker

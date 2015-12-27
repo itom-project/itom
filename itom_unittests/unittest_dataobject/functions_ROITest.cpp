@@ -20,10 +20,11 @@ public:
     
     virtual void SetUp(void)
     {
-        mat1_2d = ito::DataObject(12,13,ito::getDataType( (const _Tp *) NULL ));
-        mat2_2d = ito::DataObject(10,15,ito::getDataType( (const _Tp *) NULL ));
-        mat1_3d = ito::DataObject(13,12,14,ito::getDataType( (const _Tp *) NULL ));    
-        mat2_3d = ito::DataObject(4,5,5,ito::getDataType( (const _Tp *) NULL ));
+        mat1_2d = ito::DataObject(12,13,ito::getDataType2<_Tp*>());
+        mat2_2d = ito::DataObject(10,15,ito::getDataType2<_Tp*>());
+        mat1_3d = ito::DataObject(13,12,14,ito::getDataType2<_Tp*>());    
+        mat2_3d = ito::DataObject(4,5,5,ito::getDataType2<_Tp*>());
+        mat0 = ito::DataObject();
 
 
     };
@@ -35,6 +36,7 @@ public:
     ito::DataObject mat2_2d;
     ito::DataObject mat1_3d;
     ito::DataObject mat2_3d;
+    ito::DataObject mat0;
 
 //    size_t *temp_size;
     };
@@ -60,17 +62,11 @@ TYPED_TEST(ROITest, adjustROITest2d)
             {mat1_2d.at<TypeParam>(i,j) = cv::saturate_cast<TypeParam>(13*i+j);}   //assigning unique value to each element of mat1_2d
         }
 
-    //std::cout << mat1_2d << std::endl;
-
     mat1_2d.adjustROI(matDims2d,matLimits2d);   //adjust ROI of mat1_2d (shrinking because offset values are negative)
     mat1_2d.locateROI(orgSize2d,offsets2d);        //retrieve offset values of mat1_2d
-    
-    for(int i=0; i<2;i++) std::cout << orgSize2d[i] << std::endl;
-    for(int i=0; i<2;i++) std::cout << offsets2d[i] << std::endl;
 
     for(int i=0; i<mat1_2d.getDims();i++) EXPECT_EQ(orgSize2d[i],expSize2d[i]);  //check retrieved size of matrix matches with original
     for(int i=0; i<mat1_2d.getDims();i++) EXPECT_EQ(offsets2d[i],expOffsets2d[i]);  //check retrieved offsets of ROI of mat1_2d matches with original
-    //std::cout << mat1_2d << std::endl;
 
     for(int i =0;i<4;i++) 
         {
@@ -80,13 +76,9 @@ TYPED_TEST(ROITest, adjustROITest2d)
     mat1_2d.adjustROI(4,4,1,4);   //again expanding mat1_2d to original size
     mat1_2d.locateROI(orgSize2d,offsets2d);   //retrieve the dimensions and offset of ROI for expanded mat1_2d
     for(int i =0;i<2;i++) expOffsets2d[i] = 0;
-    for(int i=0; i<2;i++) std::cout << orgSize2d[i] << std::endl;  
-    for(int i=0; i<2;i++) std::cout << offsets2d[i] << std::endl;
 
     for(int i=0; i<mat1_2d.getDims();i++) EXPECT_EQ(orgSize2d[i],expSize2d[i]);  //check retrieved size of the matrix matches with original
     for(int i=0; i<mat1_2d.getDims();i++) EXPECT_EQ(offsets2d[i],expOffsets2d[i]); //check if the offsets of mat1_2d are 0 after expanding the matrix to its original size
-    
-    //std::cout << mat1_2d << std::endl;
     
     for(int i =0;i<12;i++) 
         {
@@ -118,27 +110,30 @@ TYPED_TEST(ROITest, adjustROITest3d)
     int offsets3d[] = {0,0,0};
     const unsigned char matDims3d = 3;
     int matLimits3d[] = {-4,-4,-1,-4,-2,-3};
+    int matLimits3dRevert[] = {4,4,1,4,2,3};
     unsigned int res2_str[] = {26,27,28,31,32,33,36,37,38,41,42,43,51,52,53,56,57,58,61,62,63,66,67,68};
+    
     mat1_3d.adjustROI(matDims3d,matLimits3d);  
     mat1_3d.locateROI(orgSize3d,offsets3d);
-
-    //for(int i=0; i<3;i++) std::cout << orgSize3d[i] << std::endl;
-    //for(int i=0; i<3;i++) std::cout << offsets3d[i] << std::endl;
 
     for(int i=0; i<mat1_3d.getDims();i++) EXPECT_EQ(orgSize3d[i],expSize3d[i]);        //checks if the size of matrix still sustain its original value as expected after adjusting ROI to desired location
     for(int i=0; i<mat1_3d.getDims();i++) EXPECT_EQ(offsets3d[i],expOffsets3d[i]);    //cheks if retrieved offset values for ROI after adjusting it are same as expected 
 
     int temp=0;
     for(int i =0;i<4;i++) 
-        {
-            for(int j=0;j<5;j++)
-            {  
-                for(int k=0;k<5;k++)
-                {
-                    mat2_3d.at<TypeParam>(i,j,k) = cv::saturate_cast<TypeParam>(temp++);   //assigning unique value to each element of 3 dimensional matrix mat2_3d
-                }
+    {
+        for(int j=0;j<5;j++)
+        {  
+            for(int k=0;k<5;k++)
+            {
+                mat2_3d.at<TypeParam>(i,j,k) = cv::saturate_cast<TypeParam>(temp++);   //assigning unique value to each element of 3 dimensional matrix mat2_3d
             }
         }
+    }
+
+    //go back to original size
+    mat1_3d.adjustROI(matDims3d,matLimits3dRevert);  
+    mat1_3d.locateROI(orgSize3d,offsets3d);
 
     //std::cout << mat2_3d << std::endl;
 
@@ -146,40 +141,77 @@ TYPED_TEST(ROITest, adjustROITest3d)
     mat2_3d.adjustROI(matDims3d,matLimits3d1);  
     mat2_3d.locateROI(orgSize3d,offsets3d);
 
-    //for(int i=0; i<3;i++) std::cout << orgSize3d[i] << std::endl;
-    //for(int i=0; i<3;i++) std::cout << offsets3d[i] << std::endl;
-
-    //std::cout << mat2_3d << std::endl;
     temp=0;
     for(int i =0;i<2;i++) 
-        {
-            for(int j=0;j<4;j++)
-            {  
-                for(int k=0;k<3;k++)
-                {
-                    EXPECT_EQ(mat2_3d.at<TypeParam>(i,j,k),cv::saturate_cast<TypeParam>(res2_str[temp++]));   //checking value to each element of mat2_3d
-                }
+    {
+        for(int j=0;j<4;j++)
+        {  
+            for(int k=0;k<3;k++)
+            {
+                EXPECT_EQ(mat2_3d.at<TypeParam>(i,j,k),cv::saturate_cast<TypeParam>(res2_str[temp++]));   //checking value to each element of mat2_3d
             }
         }
+    }
 
     int matLimits3d2[] = {1,0,0,1,0,1};
+    int matLimits3d12Revert[] = {0,1,0,0,1,0};
     mat2_3d.adjustROI(matDims3d,matLimits3d2);  
     mat2_3d.locateROI(orgSize3d,offsets3d);
-    //for(int i=0; i<3;i++) std::cout << orgSize3d[i] << std::endl;
-    //for(int i=0; i<3;i++) std::cout << offsets3d[i] << std::endl;
 
     unsigned int res3_str[] = {1,2,3,4,6,7,8,9,11,12,13,14,16,17,18,19,21,22,23,24,26,27,28,29,31,32,33,34,36,37,38,39,41,42,43,44,46,47,48,49,51,52,53,54,56,57,58,59,61,62,63,64,66,67,68,69,71,72,73,74};
     //std::cout << mat2_3d << std::endl;
     temp=0;
     for(int i =0;i<3;i++) 
-        {
-            for(int j=0;j<5;j++)
-            {  
-                for(int k=0;k<4;k++)
-                {
-                    EXPECT_EQ(mat2_3d.at<TypeParam>(i,j,k),cv::saturate_cast<TypeParam>(res3_str[temp++]));   //checking value to each element of mat2_3d
-                }
+    {
+        for(int j=0;j<5;j++)
+        {  
+            for(int k=0;k<4;k++)
+            {
+                EXPECT_EQ(mat2_3d.at<TypeParam>(i,j,k),cv::saturate_cast<TypeParam>(res3_str[temp++]));   //checking value to each element of mat2_3d
             }
         }
+    }
+
+    //go back to original size
+    mat2_3d.adjustROI(matDims3d,matLimits3d12Revert);  
+}
+
+
+
+//checkSizeTest
+/*!
+    This test checks the MSize structure for equal, non equal...
+*/
+TYPED_TEST(ROITest, checkSizeTest)
+{
+    //equal
+    EXPECT_TRUE(mat1_2d.getSize() == mat1_2d.getSize());
+    EXPECT_TRUE(mat2_2d.getSize() == mat2_2d.getSize());
+    EXPECT_TRUE(mat1_3d.getSize() == mat1_3d.getSize());
+    EXPECT_TRUE(mat2_3d.getSize() == mat2_3d.getSize());
+    EXPECT_TRUE(mat0.getSize() == mat0.getSize());
+
+    EXPECT_FALSE(mat1_2d.getSize() == mat2_2d.getSize());
+    EXPECT_FALSE(mat2_2d.getSize() == mat1_2d.getSize());
+    EXPECT_FALSE(mat1_3d.getSize() == mat1_2d.getSize());
+    EXPECT_FALSE(mat2_3d.getSize() == mat1_3d.getSize());
+    EXPECT_FALSE(mat2_3d.getSize() == mat0.getSize());
+
+    //non equal
+    EXPECT_FALSE(mat1_2d.getSize() != mat1_2d.getSize());
+    EXPECT_FALSE(mat2_2d.getSize() != mat2_2d.getSize());
+    EXPECT_FALSE(mat1_3d.getSize() != mat1_3d.getSize());
+    EXPECT_FALSE(mat2_3d.getSize() != mat2_3d.getSize());
+    EXPECT_FALSE(mat0.getSize() != mat0.getSize());
+
+    EXPECT_TRUE(mat1_2d.getSize() != mat2_2d.getSize());
+    EXPECT_TRUE(mat2_2d.getSize() != mat1_2d.getSize());
+    EXPECT_TRUE(mat1_3d.getSize() != mat1_2d.getSize());
+    EXPECT_TRUE(mat2_3d.getSize() != mat1_3d.getSize());
+    EXPECT_TRUE(mat2_3d.getSize() != mat0.getSize());
+
+    EXPECT_TRUE(mat1_2d.at(ito::Range(1,5), ito::Range(2,4)).getSize() == mat2_2d.at(ito::Range(2,6), ito::Range(1,3)).getSize());
+    EXPECT_FALSE(mat1_2d.at(ito::Range(1,5), ito::Range(2,4)).getSize() != mat2_2d.at(ito::Range(2,6), ito::Range(1,3)).getSize());
+
 }
 

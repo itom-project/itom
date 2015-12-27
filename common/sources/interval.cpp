@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2014, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
    
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -51,6 +51,10 @@ AutoInterval::AutoInterval(float min, float max, bool autoInterval)
     m_max(max),
     m_auto(autoInterval)
 {
+    if (m_min > m_max)
+    {
+        std::swap(m_min, m_max);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -63,18 +67,33 @@ void AutoInterval::setRange(float min, float max)
 {
     m_min = min;
     m_max = max;
+
+    if (m_min > m_max)
+    {
+        std::swap(m_min, m_max);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AutoInterval::setMinimum(float min)
 {
     m_min = min;
+
+    if (m_min > m_max)
+    {
+        m_max = m_min;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void AutoInterval::setMaximum(float max)
 {
     m_max = max;
+
+    if (m_max < m_min)
+    {
+        m_min = m_max;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

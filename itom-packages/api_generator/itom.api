@@ -122,7 +122,7 @@ itom.figure.docked
 itom.figure.handle
 itom.figure.hide() -> hides figure without deleting it
 itom.figure.liveImage(cam, [areaIndex, className, properties]) -> shows a camera live image in the current or given area of this figure
-itom.figure.plot(data, [areaIndex, className, properties]) -> plots a dataObject in the current or given area of this figure
+itom.figure.plot(data, [areaIndex, className, properties]) -> plots an existing dataObject, pointCloud or polygonMesh in the current or given area of this figure
 itom.figure.show() -> shows figure
 itom.figure.subplot(index) -> returns plotItem of desired subplot
 itom.filter(name [, furtherParameters, ...]) -> invoke a filter (or algorithm) function from an algorithm-plugin.
@@ -148,14 +148,14 @@ itom.getDefaultScaleableUnits() -> Get a list with the strings of the standard s
 itom.getPalette(name) -> get the palette for color bars defined by name.
 itom.getPaletteList(typefilter) -> get a list of color bars / palettes.
 itom.getScreenInfo() -> returns dictionary with information about all available screens.
-itom.liveImage(cam, [className, properties]) -> show a camera live image in a newly created figure
+itom.liveImage(cam, [className, properties]) -> show a camera live image in a new figure
 itom.loadDataObject(filename, dataObject [, doNotAppendIDO]) -> load a dataObject from the harddrive.
 itom.loadIDC(filename) -> load a pickled idc-file and return the content as dictionary
 itom.loadMatlabMat(filename) -> loads Matlab mat-file by using scipy methods and returns the loaded dictionary.
 itom.newScript() -> opens an empty, new script in the current script window.
 itom.numeric:: [module]
 itom.openScript(filename) -> open the given script in current script window.
-itom.plot(data, [className, properties]) -> plots a dataObject in a newly created figure
+itom.plot(data, [className, properties]) -> plots a dataObject, pointCloud or polygonMesh in a new figure
 itom.plotHelp(plotName [, dictionary = False]) -> generates an online help for the specified plot.
 itom.plotItem(figure | uiItem[, subplotIdx]) -> instance of the plot or subplot of a figure.
 itom.plotItem.PrimitiveCircle
@@ -195,7 +195,8 @@ itom.pointCloud.dense
 itom.pointCloud.empty
 itom.pointCloud.erase(indices) -> erases the points in point clouds indicated by indices (single number of slice)
 itom.pointCloud.fields
-itom.pointCloud.fromDisparity(disparity [,intensity] [,deleteNaN]) -> creates a point cloud from a given disparity dataObject.
+itom.pointCloud.fromDisparity(disparity [,intensity] [,deleteNaN]) -> creates a point cloud from a given topography dataObject.
+itom.pointCloud.fromTopography(topography [,intensity] [,deleteNaN = False]) -> creates a point cloud from a given topography dataObject.
 itom.pointCloud.fromXYZ(X,Y,Z | XYZ) -> creates a point cloud from three X,Y,Z data objects or from one 3xMxN data object
 itom.pointCloud.fromXYZI(X,Y,Z,I | XYZ,I) -> creates a point cloud from four X,Y,Z,I data objects or from one 3xMxN data object and one intensity data object
 itom.pointCloud.fromXYZRGBA(X,Y,Z,color | XYZ,color) -> creates a point cloud from four X,Y,Z,color data objects or from one 3xMxN data object and one coloured data object
@@ -210,7 +211,8 @@ itom.pointCloud.width
 itom.polygonMesh([mesh, polygons]) -> creates a polygon mesh.
 itom.polygonMesh.data
 itom.polygonMesh.fromCloudAndPolygons(cloud, polygons) -> creates a polygon mesh from cloud and polygons.
-itom.polygonMesh.fromOrganizedCloud(cloud) -> creates a polygon mesh from an organized cloud using triangles.
+itom.polygonMesh.fromOrganizedCloud(cloud [, triangulationType = 1]) -> creates a polygon mesh from an organized cloud using triangles.
+itom.polygonMesh.fromTopography(topography [, triangulationType = 0]) -> creates a polygon mesh from a dataObject whose values are the z-components.
 itom.polygonMesh.getCloud(pointType = point.PointInvalid) -> returns the point cloud of this polygon mesh converted to the desired type.
 itom.polygonMesh.getPolygons() ->
 itom.polygonMesh.name
@@ -257,6 +259,28 @@ itom.scriptEditor() -> opens new, empty script editor window (undocked)
 itom.setApplicationCursor([cursorIndex = -1]) -> changes the itom cursor or restores the previously set cursor if -1
 itom.setCurrentPath(newPath) -> set current working directory to given absolute newPath
 itom.setPalette(name, entries) -> set the palette for color bars defined by name.
+itom.shape([type, param1, param2]) -> creates a shape object of a specific type.
+itom.shape.Circle
+itom.shape.Ellipse
+itom.shape.Invalid
+itom.shape.Line
+itom.shape.MoveLock
+itom.shape.Point
+itom.shape.Polygon
+itom.shape.Rectangle
+itom.shape.ResizeLock
+itom.shape.RotateLock
+itom.shape.Square
+itom.shape.area
+itom.shape.basePoints() -> Return M base points of shape as 2xM float64 dataObject
+itom.shape.contour([applyTrafo = False, tol = -1.0]) -> return contour points as a 2xNumPoints float64 dataObject
+itom.shape.flags
+itom.shape.region() -> Return a region object from this shape.
+itom.shape.rotateDeg(array-like object) -> Rotate shape by given angle in degree (counterclockwise).
+itom.shape.rotateRad(array-like object) -> Rotate shape by given angle in radians (counterclockwise).
+itom.shape.transform
+itom.shape.translate(array-like object) -> Translate shape by given (dx,dy) value.
+itom.shape.type
 itom.timer(interval, callbackFunc [, argTuple, singleShot]) -> new callback timer
 itom.timer.isActive() -> returns timer status
 itom.timer.setInterval(interval) -> sets timer interval in [ms]

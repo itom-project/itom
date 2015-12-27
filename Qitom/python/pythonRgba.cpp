@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -197,6 +197,20 @@ PyObject* PythonRgba::PyRgba_nbMultiply(PyObject* o1, PyObject* o2)
         retRgba->rgba = rgba1->rgba * rgba2->rgba;
 
         return (PyObject*)retRgba;
+    }
+    else if (PyFloat_Check(o2))
+    {
+        PyRgba *rgba1 = (PyRgba*)(o1);
+
+        PyRgba* retRgba = PythonRgba::createEmptyPyRgba(); // new reference
+        retRgba->rgba = rgba1->rgba * PyFloat_AsDouble(o2);
+
+        return (PyObject*)retRgba;
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "both operands must be of type rgba");
+        return NULL;
     }
     
     return NULL;

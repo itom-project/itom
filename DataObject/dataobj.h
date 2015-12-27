@@ -1,8 +1,8 @@
 /* ********************************************************************
  itom software
  URL: http://www.uni-stuttgart.de/ito
- Copyright (C) 2013, Institut für Technische Optik (ITO),
- Universität Stuttgart, Germany
+ Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+ Universitaet Stuttgart, Germany
  
  This file is part of itom and its software development toolkit (SDK).
  
@@ -11,7 +11,7 @@
  the Free Software Foundation; either version 2 of the Licence, or (at
  your option) any later version.
  
- In addition, as a special exception, the Institut für Technische
+ In addition, as a special exception, the Institut fuer Technische
  Optik (ITO) gives you certain additional rights.
  These rights are described in the ITO LGPL Exception version 1.0,
  which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -485,7 +485,6 @@ namespace ito {
     template<typename _Tp> RetVal AssignScalarFunc(const DataObject *src, const ito::tDataType type, const void *scalar);
     template<typename _Tp> RetVal MakeContinuousFunc(const DataObject &dObj, DataObject &resDObj);
     template<typename _Tp> RetVal EvaluateTransposeFlagFunc(DataObject *dObj);
-    //template<typename _Tp> RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel);
     template<typename _Tp> std::ostream& coutFunc(std::ostream& out, const DataObject& dObj);
     
     // more friends due to change of std::vector to int ** for m_data ...
@@ -531,22 +530,11 @@ namespace ito {
                     return sz.m_p == m_p;
                 }
                 
-                int d = m_p[-1], dsz = sz.m_p[-1];
-                if( d != dsz )
+                int d = m_p[-1]; 
+                if( d != sz.m_p[-1] )
                     return false;
-                if( d == 2 )
-                {
-                    return m_p[0] == sz.m_p[0] && m_p[1] == sz.m_p[1];
-                }
-                
-                for( int i = 0; i < d - 2; i++ )
-                {
-                    if( m_p[i] != sz.m_p[i] )
-                    {
-                        return false;
-                    }
-                }
-                return (m_p[d - 2] == sz.m_p[d - 2]) && (m_p[d - 1] == sz.m_p[d - 1]);
+
+                return (memcmp(m_p, sz.m_p, d * sizeof(int)) == 0); //returns true if the size vector (having the same length) is equal
             }
             
             inline bool operator != (const MSize& sz) const { return !(*this == sz); }
@@ -569,22 +557,17 @@ namespace ito {
                 {
                     return rroi.m_p == m_p;
                 }
+
+                int d = m_p[-1]; 
+                if( d != rroi.m_p[-1] )
+                    return false;
+
+                return (memcmp(m_p, rroi.m_p, d * sizeof(int)) == 0); //returns true if the size vector (having the same length) is equal
                 
                 if (m_p[-1] != rroi.m_p[-1])
                 {
                     return false;
                 }
-                
-                int d = m_p[-1];
-                for (int n = 0; n < d - 2; n++)
-                {
-                    if (m_p[n] != rroi.m_p[n])
-                    {
-                        return false;
-                    }
-                }
-                
-                return m_p[d - 2] == rroi.m_p[d - 2] && m_p[d - 1] == rroi.m_p[d - 1];
             }
             
             int *m_p;
@@ -610,9 +593,6 @@ namespace ito {
         
         RetVal copyFromData2DInternal(const uchar* src, const int sizeOfElem, const int sizeX, const int sizeY);
         RetVal copyFromData2DInternal(const uchar* src, const int sizeOfElem, const int sizeX, const int x0, const int y0, const int width, const int height);
-        
-        //! Forward declaration: Default values are not allowed for friend functions, adding a non-friend function with default argument instead \deprecated Will be deleted once the interface number is incremented due to further changes
-        //template<typename _Tp> RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel = 0);
 
         //low-level, templated methods
         //most low-level methods are marked "friend" such that they can access private members of their data object parameters
@@ -627,7 +607,6 @@ namespace ito {
         template<typename _Tp> friend RetVal AssignScalarFunc(const DataObject *src, const ito::tDataType type, const void *scalar);
         template<typename _Tp> friend RetVal MakeContinuousFunc(const DataObject &dObj, DataObject &resDObj);
         template<typename _Tp> friend RetVal EvaluateTransposeFlagFunc(DataObject *dObj);
-        //template<typename _Tp> friend RetVal CalcMinMaxValues(DataObject *lhs, double &result_min, double &result_max, const int cmplxSel); //!< \deprecated Will be deleted once the interface number is incremented due to further changes
         template<typename _Tp> friend std::ostream& coutFunc(std::ostream& out, const DataObject& dObj);
         
         // more friends due to change of std::vector to int ** for m_data ...
@@ -817,6 +796,8 @@ namespace ito {
                     return 1;
                 case 3:
                     return m_size[0];
+                case 4:
+                    return m_size[0] * m_size[1];
                 default:
                 {
                     int numMat = 1;
@@ -962,7 +943,7 @@ namespace ito {
         RetVal setTo(const complex128 &value, const DataObject &mask = DataObject());  /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
         RetVal setTo(const ito::Rgba32 &value, const DataObject &mask = DataObject()); /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
         
-        //! copy all values of this data object to the copyTo data object. The copyTo-data object must be allocated and have the same type and size (of its roi) than this data object.
+        //! copy all values of this data object to the copyTo data object. The copyTo-data object must be allocated and have the same type and size (of its roi) than this data object. The compared sequence of sizes only contains dimensions whose size is bigger than one (e.g. it is possible to copy a 5x1 object to a 1x1x5 object)
         RetVal deepCopyPartial(DataObject &copyTo);
         
         //! Returns the matrix iterator and sets it to the first matrix element.
@@ -994,21 +975,27 @@ namespace ito {
         
         DataObject & operator += (const DataObject &rhs);
         DataObject & operator += (const float64 &value);
+        DataObject & operator += (const complex128 &value);
         
         DataObject operator + (const DataObject &rhs);
         DataObject operator + (const float64 &value);
+        DataObject operator + (const complex128 &value);
         
         DataObject & operator -= (const DataObject &rhs);
         DataObject & operator -= (const float64 &value);
+        DataObject & operator -= (const complex128 &value);
         
         DataObject operator - (const DataObject &rhs);
         DataObject operator - (const float64 &value);
+        DataObject operator - (const complex128 &value);
         
         DataObject & operator *= (const DataObject &rhs);
         DataObject & operator *= (const float64 &factor);
+        DataObject & operator *= (const complex128 &factor);
         
         DataObject operator * (const DataObject &rhs);
         DataObject operator * (const float64 &factor);
+        DataObject operator * (const complex128 &factor);
         
         // Comparison Operators
         DataObject operator < (DataObject &rhs);
@@ -1071,6 +1058,15 @@ namespace ito {
         // element-wise multiplication 
         DataObject mul(const DataObject &mat2, const double scale = 1.0) const;
         DataObject div(const DataObject &mat2, const double scale = 1.0) const;
+
+		// power (power of 0.5 is the square root)
+		DataObject pow(const ito::float64 &power); // returns a new data object with the same size and type than this data object and calculates src**power if power is an integer, else |src|**power (only for float32 and float64 data objects)
+		void pow(const ito::float64 &power, DataObject &dst); // this function raises every element of this data object to *power* and saves the result in dst. Dst must be of the same size and type than this data object or empty. In the latter case, it is reassigned to the right size and type.
+
+		DataObject sqrt(); // returns a new data object of the same size and type than this data object where the square root of every element is calculated. Is the same than pow(0.5)
+		void sqrt(DataObject &dst); // this function calculates the square root of every element and saves the result in dst. Dst must be of the same size and type than this data object or empty. In the latter case, it is reassigned to the right size and type.. Is the same than pow(0.5, dst)
+
+
         DataObject squeeze() const;
         int elemSize() const;  /*!< number of bytes that are required by each value inside of the data object array (e.g. 1 for uint8, 2 for int16...) */
         
@@ -1215,6 +1211,34 @@ namespace ito {
             int matIndex = seekMat(matNum);
             return ((const cv::Mat*)m_data[matIndex])->ptr(y);
         }
+
+        //! returns pointer to the data in the y-th row in the 2d-matrix plane matNum
+        /*!
+         This is a templated version to return the pointer already casted to the right type,
+         e.g. ito::float64* myPtr = myObj->rowPtr<ito::float64>(0,0).
+         
+         \remark No further error checking (e.g. boundaries)
+         \return data-pointer
+         */
+        template<typename _Tp> inline _Tp* rowPtr(const int matNum, const int y)
+        {
+            int matIndex = seekMat(matNum);
+            return ((cv::Mat*)m_data[matIndex])->ptr<_Tp>(y);
+        }
+        
+        //! returns pointer to the data in the y-th row in the 2d-matrix plane matNum
+        /*!
+         This is a templated version to return the pointer already casted to the right type,
+         e.g. const ito::float64* myPtr = myObj->rowPtr<ito::float64>(0,0).
+         
+         \remark No further error checking (e.g. boundaries)
+         \return data-pointer
+         */
+        template<typename _Tp> inline const _Tp* rowPtr(const int matNum, const int y) const
+        {
+            int matIndex = seekMat(matNum);
+            return ((const cv::Mat*)m_data[matIndex])->ptr<_Tp>(y);
+        }
         
         DataObject row(const int selRow) const;
         DataObject col(const int selCol) const;
@@ -1345,14 +1369,7 @@ namespace ito {
         }
         
         return retValue;
-    };
-    
-    //deprecated
-    template<typename _Tp> inline _Tp numberConversion(ito::tDataType fromType, void *scalar)
-    {
-        return numberConversion<_Tp>(fromType, const_cast<const void*>(scalar));
-    };
-    
+    };    
     
     //! streaming operator to stream the representation or contant of a data object
     DATAOBJ_EXPORT std::ostream& operator << (std::ostream& out, const DataObject& dObj);

@@ -13,21 +13,22 @@ Content:
    :maxdepth: 1
    
    itom_general.rst
-   dataIO.rst
    actuator.rst
    algo.rst
-   figure.rst
-   plotItem.rst
-   itom_GUI.rst
+   autoInterval.rst
+   dataIO.rst
    dataObject.rst
+   figure.rst
+   font.rst
+   plotItem.rst
    point.rst
    pointCloud.rst
    polygonMesh.rst
    region.rst
    rgba.rst
-   autoInterval.rst
+   shape.rst
    timer.rst
-   font.rst
+   itom_GUI.rst
 
 For an alphabetic index see:
 

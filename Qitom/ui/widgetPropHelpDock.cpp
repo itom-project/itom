@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
 
@@ -40,8 +40,8 @@
 
 namespace ito
 {
-// Constructor
 //----------------------------------------------------------------------------------------------------------------------------------
+// Constructor
 WidgetPropHelpDock::WidgetPropHelpDock(QWidget *parent) :
     AbstractPropertyPageWidget(parent),
     m_pdbPath(qApp->applicationDirPath()+"/help/"),
@@ -71,15 +71,15 @@ WidgetPropHelpDock::WidgetPropHelpDock(QWidget *parent) :
 
 }
 
-// Destructor
 //----------------------------------------------------------------------------------------------------------------------------------
+// Destructor
 WidgetPropHelpDock::~WidgetPropHelpDock()
 {
 
 }
 
-// Checkbox Modules and Packages
 //----------------------------------------------------------------------------------------------------------------------------------
+// Checkbox Modules and Packages
 void WidgetPropHelpDock::on_checkModules_stateChanged (int state)
 {
     if (ui.checkModules->isChecked())
@@ -88,14 +88,15 @@ void WidgetPropHelpDock::on_checkModules_stateChanged (int state)
         ui.treeWidgetDB->setEnabled(false);
 }
 
-// Checkbox Algorithms
 //----------------------------------------------------------------------------------------------------------------------------------
+// Checkbox Algorithms
 void WidgetPropHelpDock::on_checkFilters_stateChanged (int state)
 {
     m_listChanged = true;
     ui.label->show();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 // Checkbox Widgets
 void WidgetPropHelpDock::on_checkWidgets_stateChanged (int state)
 {
@@ -103,6 +104,7 @@ void WidgetPropHelpDock::on_checkWidgets_stateChanged (int state)
     ui.label->show();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 // Checkbox DataIO
 void WidgetPropHelpDock::on_checkDataIO_stateChanged (int state)
 {
@@ -110,8 +112,8 @@ void WidgetPropHelpDock::on_checkDataIO_stateChanged (int state)
     ui.label->show();
 }
 
-// Checkbox changed
 //----------------------------------------------------------------------------------------------------------------------------------
+// Checkbox changed
 void WidgetPropHelpDock::on_treeWidgetDB_itemChanged(QTreeWidgetItem* item, int column)
 {
     if (!m_treeIsUpdating && item->data(0, m_urID).isValid())
@@ -123,8 +125,8 @@ void WidgetPropHelpDock::on_treeWidgetDB_itemChanged(QTreeWidgetItem* item, int 
     }
 }
 
-// get settings from ini
 //----------------------------------------------------------------------------------------------------------------------------------
+// get settings from ini
 void WidgetPropHelpDock::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -152,7 +154,7 @@ void WidgetPropHelpDock::readSettings()
     {
         settings.setArrayIndex(i);
         QString nameID = settings.value("DB", QString()).toString();
-        int id = nameID.mid(nameID.indexOf("§")+1, -1).toInt();
+        int id = nameID.mid(nameID.indexOf(QChar(0x00, 0xA7) /*section or paragraph sign*/) + 1, -1).toInt();
         checkedIdList.append(id);
         settings.remove("DB");
     }
@@ -166,8 +168,8 @@ void WidgetPropHelpDock::readSettings()
     compareDatabaseVersions();
 }
 
-// set settings from ini
 //----------------------------------------------------------------------------------------------------------------------------------
+// set settings from ini
 void WidgetPropHelpDock::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
@@ -192,7 +194,7 @@ void WidgetPropHelpDock::writeSettings()
         if (it->isChecked)
         {
             settings.setArrayIndex(i);
-            settings.setValue("DB", it->name + "§" + QString::number(it.key()));
+            settings.setValue("DB", it->name + QChar(0x00, 0xA7) /*section or paragraph sign*/ + QString::number(it.key()));
             ++i;
         }
     }
@@ -200,15 +202,15 @@ void WidgetPropHelpDock::writeSettings()
     settings.endGroup();
 }
 
-// ui Spinbox for timeout changed
 //----------------------------------------------------------------------------------------------------------------------------------
+// ui Spinbox for timeout changed
 void WidgetPropHelpDock::on_spinTimeout_valueChanged(int i)
 {
     m_downloadTimeout = i*1000;
 }
 
-// All about the Databases and online updates
 //----------------------------------------------------------------------------------------------------------------------------------
+// All about the Databases and online updates
 void WidgetPropHelpDock::refreshButtonClicked()
 {// This button is also automatically clicked when the option dialog is started
     m_serverAdress.setUrl(ui.lineEdit->text());
@@ -223,8 +225,8 @@ void WidgetPropHelpDock::refreshButtonClicked()
     // =====> updateTreeWidget()
 }
 
-// refreshes the existingDBs Map
 //----------------------------------------------------------------------------------------------------------------------------------
+// refreshes the existingDBs Map
 void WidgetPropHelpDock::refreshExistingDBs()
 {
     QDirIterator it(m_pdbPath, QStringList("*.db"), QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
@@ -265,15 +267,15 @@ void WidgetPropHelpDock::refreshExistingDBs()
     setExistingDBsChecks();
 }
 
-// if download takes too long, this slot is called and the while loop is broken up
 //----------------------------------------------------------------------------------------------------------------------------------
+// if download takes too long, this slot is called and the while loop is broken up
 void WidgetPropHelpDock::downloadTimeoutReached()
 {
     m_downloadTimeoutReached = true;
 }
 
-// This block downlaods and refreshes the updatableDBs Map
 //----------------------------------------------------------------------------------------------------------------------------------
+// This block downlaods and refreshes the updatableDBs Map
 void WidgetPropHelpDock::refreshUpdatableDBs()
 {
     QProgressDialog progress("Remote database update...", tr("Cancel"), 0, 101, this);
@@ -406,8 +408,8 @@ void WidgetPropHelpDock::refreshUpdatableDBs()
     compareDatabaseVersions();
 }
 
-// Parse the xml Elements and return each as pair
 //----------------------------------------------------------------------------------------------------------------------------------
+// Parse the xml Elements and return each as pair
 QPair<int, WidgetPropHelpDock::DatabaseInfo> WidgetPropHelpDock::parseFile(QXmlStreamReader& xml)
 {
     QPair<int, WidgetPropHelpDock::DatabaseInfo> file;
@@ -474,8 +476,8 @@ QPair<int, WidgetPropHelpDock::DatabaseInfo> WidgetPropHelpDock::parseFile(QXmlS
     return file;
 }
 
-// Sets the text in the last column of the tree (update available etc)
 //----------------------------------------------------------------------------------------------------------------------------------
+// Sets the text in the last column of the tree (update available etc)
 void WidgetPropHelpDock::setUpdateColumnText(QTreeWidgetItem *widget)
 {
     QString infoText = "";
@@ -521,8 +523,8 @@ void WidgetPropHelpDock::setUpdateColumnText(QTreeWidgetItem *widget)
     }
 }
 
-// Updates the treeWidget from the two maps (existingDBs / updatableDBs)
 //----------------------------------------------------------------------------------------------------------------------------------
+// Updates the treeWidget from the two maps (existingDBs / updatableDBs)
 void WidgetPropHelpDock::updateTreeWidget()
 {
     // surpress the itemChanged() event of the tree View
@@ -603,8 +605,8 @@ void WidgetPropHelpDock::updateTreeWidget()
     m_treeIsUpdating = false;
 }
 
-// Compares the two maps and sets their update/download status
 //----------------------------------------------------------------------------------------------------------------------------------
+// Compares the two maps and sets their update/download status
 void WidgetPropHelpDock::compareDatabaseVersions()
 {
     // All existingDBs-elements are set to unknown
@@ -657,7 +659,6 @@ void WidgetPropHelpDock::compareDatabaseVersions()
 //----------------------------------------------------------------------------------------------------------------------------------
 // This function saves the id of each checked entry of the TreeWidget in the
 // checkedIdList. Don´t modify that list manually.
-//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::updateCheckedIdList()
 {
     checkedIdList.clear();
@@ -670,8 +671,8 @@ void WidgetPropHelpDock::updateCheckedIdList()
     }
 }
 
-// Checkstate of a DB changes
 //----------------------------------------------------------------------------------------------------------------------------------
+// Checkstate of a DB changes
 void WidgetPropHelpDock::setExistingDBsChecks()
 {
     QMap<int, WidgetPropHelpDock::DatabaseInfo>::iterator i;
@@ -688,8 +689,8 @@ void WidgetPropHelpDock::setExistingDBsChecks()
     }
 }
 
-// Hint-Information (path and url)
 //----------------------------------------------------------------------------------------------------------------------------------
+// Hint-Information (path and url)
 bool WidgetPropHelpDock::event (QEvent * event)
 {
     if (event->type() == QEvent::ToolTip)
@@ -708,17 +709,16 @@ bool WidgetPropHelpDock::event (QEvent * event)
     return AbstractPropertyPageWidget::event(event);
 }
 
-// Update-Context-Menu
-
-// Show error Message
 //----------------------------------------------------------------------------------------------------------------------------------
+// Update-Context-Menu
+// Show error Message
 void WidgetPropHelpDock::showErrorMessage(const QString &error)
 {
     QMessageBox::warning(this, tr("download error"), error);
 }
 
-// init DropdownMenu
 //----------------------------------------------------------------------------------------------------------------------------------
+// init DropdownMenu
 void WidgetPropHelpDock::initMenus()
 {
     m_pContextMenu = new QMenu(this);
@@ -727,8 +727,8 @@ void WidgetPropHelpDock::initMenus()
     contextMenuActions["removeDatabase"] = m_pContextMenu->addAction(QIcon(":/helpTreeDockWidget/deleteDatabase"), tr("remove from disk"), this, SLOT(mnuRemoveDatabase()));
 }
 
-// This Block downloads/updates a single database
 //----------------------------------------------------------------------------------------------------------------------------------
+// This Block downloads/updates a single database
 void WidgetPropHelpDock::mnuDownloadUpdate()
 {
     QTreeWidgetItem *item = ui.treeWidgetDB->selectedItems().at(0);
@@ -819,8 +819,8 @@ void WidgetPropHelpDock::mnuDownloadUpdate()
     }
 }
 
-// Locate on disc button on Database clicked
 //----------------------------------------------------------------------------------------------------------------------------------
+// Locate on disc button on Database clicked
 void WidgetPropHelpDock::mnuLocateOnDisk()
 {
     QTreeWidgetItem *item = ui.treeWidgetDB->selectedItems().at(0);
@@ -830,6 +830,7 @@ void WidgetPropHelpDock::mnuLocateOnDisk()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropHelpDock::mnuRemoveDatabase()
 {
     QTreeWidgetItem *item = ui.treeWidgetDB->selectedItems().at(0);
@@ -840,11 +841,10 @@ void WidgetPropHelpDock::mnuRemoveDatabase()
     }
 }
 
-// Highlights a file in the explorer when mnuLocateOnDisc is clicked
 //----------------------------------------------------------------------------------------------------------------------------------
+// Highlights a file in the explorer when mnuLocateOnDisc is clicked
 void WidgetPropHelpDock::showInGraphicalShell(const QString & filePath)
 {
-
     #ifdef Q_WS_MAC
     QStringList args;
     args << "-e";
@@ -865,8 +865,8 @@ void WidgetPropHelpDock::showInGraphicalShell(const QString & filePath)
 #endif
 }
 
-// ContextMenu pops up
 //----------------------------------------------------------------------------------------------------------------------------------
+// ContextMenu pops up
 void WidgetPropHelpDock::treeWidgetContextMenuRequested(const QPoint &pos)
 {
     //pos is relative to viewport of treeWidget

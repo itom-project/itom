@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -25,358 +25,211 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "sharedStructuresPrimitives.h"
-#include "DataObject/dataObjectFuncs.h"
-#include <iostream>
-
-#ifdef _USE_MATH_DEFINES
-    #include <math.h>
-#else
-    #define _USE_MATH_DEFINES
-    #include <math.h>
-    #undef _USE_MATH_DEFINES
-#endif
-namespace ito
-{
-
-
-    //----------------------------------------------------------------------------------------------------------------------------------
-    PrimitiveBase::PrimitiveBase()
-    {
-        memset(cells, 0, sizeof(float32)*PRIM_ELEMENTLENGTH);
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    PrimitiveBase::PrimitiveBase(const PrimitiveBase &rhs)
-    {
-        memcpy(cells, rhs.cells, sizeof(float32)*PRIM_ELEMENTLENGTH);
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    PrimitiveBase::PrimitiveBase(const GeometricPrimitive &rhs)
-    {
-        memcpy(cells, rhs.cells, sizeof(float32)*PRIM_ELEMENTLENGTH);
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    void PrimitiveBase::setIndex( const int idx ) 
-    {
-        cells[0] = (float32)idx;
-    } 
-    //----------------------------------------------------------------------------------------------------------------------------------
-    void PrimitiveBase::setFlags( const int flags ) 
-    {
-        cells[1] = ( float32 )( ( ( (int)(cells[1]) ) & tGeoTypeMask ) | ( flags & tGeoFlagMask ));
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    void PrimitiveBase::setType( const int type ) 
-    {
-        cells[1] = ( float32 )( ( ( (int)(cells[1]) ) & tGeoFlagMask ) | ( type & tGeoTypeMask ));
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    void PrimitiveBase::setTypeAndFlags( const int val ) 
-    {
-        cells[1] = (float32)val;
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    float32* PrimitiveBase::ptr_data() 
-    {
-        return cells;
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    float32* PrimitiveBase::ptr_geo()
-    {
-        return &(cells[2]);
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    float32 PrimitiveBase::distanceLineToPoint(const PrimitiveBase &line, const PrimitiveBase &point, const bool plaine /*= false*/)
-    {
-
-        float32 cSq = pow(point.cells[2] - line.cells[2], 2) + pow(point.cells[3] - line.cells[3], 2);
-        float32 bSq = pow(line.cells[5] - line.cells[2], 2) + pow(line.cells[6] - line.cells[3], 2);
-        if(!plaine)
-        {
-            cSq += pow(point.cells[4] - line.cells[4], 2);
-            bSq += pow(line.cells[7] - line.cells[4], 2);
-        }
-        if(cSq - bSq < 0)
-        {
-            return std::numeric_limits<float32>::quiet_NaN();
-        }
-        return sqrt(cSq - bSq);
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    float32 PrimitiveBase::distanceLineToPointRAW(const float32 *line, const float32 *point, const bool plaine /*= false*/)
-    {
-
-        float32 cSq = pow(point[0] - line[0], 2) + pow(point[1] - line[1], 2);
-        float32 bSq = pow(line[0] - line[0], 2) + pow(line[3] - line[1], 2);
-        if(!plaine)
-        {
-            cSq += pow(point[2] - line[2], 2);
-            bSq += pow(line[5] - line[2], 2);
-        }
-        if(cSq - bSq < 0)
-        {
-            return std::numeric_limits<float32>::quiet_NaN();
-        }
-        return sqrt(cSq - bSq);
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    float32 PrimitiveBase::distanceRectCenterToLine(const PrimitiveBase &rect, const PrimitiveBase &line, const bool plaine /*= false*/)
-    {
-        GeometricPrimitive point;
-        memset(point.cells, 0, sizeof(float32)*PRIM_ELEMENTLENGTH);
-        point.cells[2] = (rect.cells[2] + rect.cells[5]) / 2.0f;
-        point.cells[3] = (rect.cells[3] + rect.cells[6]) / 2.0f;
-        point.cells[4] = (rect.cells[4] + rect.cells[7]) / 2.0f;
-        return distanceLineToPoint(line, point, plaine);
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    float32 PrimitiveBase::distancePointToPoint(const PrimitiveBase &point1, const PrimitiveBase &point2, const bool plaine /*= false*/)
-    {
-        float32 res = pow(point1.cells[2] - point2.cells[2], 2) - pow(point1.cells[3] - point2.cells[3], 2);
-        if(!plaine) res += pow(point1.cells[4] - point2.cells[4], 2);
-        return sqrt(res);
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    float32 PrimitiveBase::distancePointToPointRAW(const float32* point1, const float32* point2, const bool plaine /*= false*/)
-    {
-        float32 res = pow(point1[0] - point2[0], 2) - pow(point1[1] - point2[1], 2);
-        if(!plaine) res += pow(point1[3] - point2[3], 2);
-        return sqrt(res);
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    float32 PrimitiveBase::distanceRectCenterToPoint(const PrimitiveBase &rect, const PrimitiveBase &point, const bool plaine /*= false*/)
-    {
-        GeometricPrimitive centerPoint;
-        memset(centerPoint.cells, 0, sizeof(float32)*PRIM_ELEMENTLENGTH);
-        centerPoint.cells[2] = (rect.cells[2] + rect.cells[5]) / 2.0f;
-        centerPoint.cells[3] = (rect.cells[3] + rect.cells[6]) / 2.0f;
-        centerPoint.cells[4] = (rect.cells[4] + rect.cells[7]) / 2.0f;
-        return distancePointToPoint(centerPoint, point, plaine);
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    void PrimitiveBase::normalVector(float32 direction[3]) const
-    {
-        direction[0] = 0;
-        direction[1] = 0;
-        direction[2] = 1;
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    float32 PrimitiveBase::area() const
-    {
-        return 0.0f;
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    void GeometricPrimitivePoint::normalVector(float32 direction[3]) const
-    {
-        direction[0] = 0;
-        direction[1] = 0;
-        direction[2] = 1;
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    float32 GeometricPrimitiveLine::length(const bool plaine /*= false*/) const
-    {
-        ito::float32 dir[3] = {0.0f,0.0f,1.0f};
-        directionVector(dir);
-        if(plaine)
-        {
-            return vectorLength2D(dir);
-        }
-        else
-        {
-            return vectorLength(dir);
-        }
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    void GeometricPrimitiveLine::normalVector(float32 direction[3]) const
-    {
-        ito::float32 base[3] = {0.0f,1.0f,0.0f};
-        ito::float32 dir[3] = {1.0f,0.0f,0.0f};
-        ito::float32 len = 1.0;
-        directionVector(dir);
-        vectorCross(dir, base, direction);
-
-        if((len = vectorLength(direction)) < 0.001 )
-        {
-            base[0] = 1.0f;
-            base[1] = 0.0f;
-            base[2] = 0.0f;
-            vectorCross(dir, base, direction);
-            len = vectorLength(direction);           
-        }
-        if(ito::dObjHelper::isNotZero(len))
-        {
-            vectorScale(direction, 1.0f/len);
-        }
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    void GeometricPrimitiveCircle::normalVector(float32 direction[3]) const
-    {
-        direction[0] = 0.0f;
-        direction[1] = 0.0f;
-        direction[2] = 1.0f;
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    float32 GeometricPrimitiveCircle::area() const
-    {
-        return (float32)(M_PI * pow(cells[5], 2)); 
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    void GeometricPrimitiveEllipse::normalVector(float32 direction[3]) const
-    {
-        direction[0] = 0.0f;
-        direction[1] = 0.0f;
-        direction[2] = 1.0f;
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    float32 GeometricPrimitiveEllipse::area() const
-    {
-        return (float32)(M_PI * (cells[5] / 2.0 * cells[6] / 2.0)); 
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    void GeometricPrimitiveSquare::normalVector(float32 direction[3]) const
-    {
-        direction[0] = 0.0f;
-        direction[1] = 0.0f;
-        direction[2] = 1.0f;
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    void GeometricPrimitiveSquare::topLeft(float32 direction[3]) const
-    {
-#if _DEBUG
-        throw std::invalid_argument("Calculation for alpha != 0 not implemented yet");
-#endif
-        direction[0] = 0.0f;
-        direction[1] = 0.0f;
-        direction[2] = 1.0f;           
-
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    void GeometricPrimitiveSquare::topRight(float32 direction[3]) const
-    {
-#if _DEBUG
-        throw std::invalid_argument("Calculation for alpha != 0 not implemented yet");
-#endif
-        direction[0] = 0.0f;
-        direction[1] = 0.0f;
-        direction[2] = 1.0f;       
-
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    void GeometricPrimitiveSquare::bottomLeft(float32 direction[3]) const
-    {
-#if _DEBUG
-        throw std::invalid_argument("Calculation for alpha != 0 not implemented yet");
-#endif
-        direction[0] = 0.0f;
-        direction[1] = 0.0f;
-        direction[2] = 1.0f;       
-
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    void GeometricPrimitiveSquare::bottomRight(float32 direction[3]) const
-    {
-#if _DEBUG
-        throw std::invalid_argument("Calculation for alpha != 0 not implemented yet");
-#endif
-        direction[0] = 0.0f;
-        direction[1] = 0.0f;
-        direction[2] = 1.0f;       
-
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    float32 GeometricPrimitiveSquare::area() const
-    {
-        return cells[5] * cells[5]; 
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    void GeometricPrimitiveRectangle::normalVector(float32 direction[3]) const
-    {
-        ito::float32 len = 1.0;
-        if(ito::dObjHelper::isNotZero(alpha()))
-        {
-#if _DEBUG
-            throw std::invalid_argument("Calculation for alpha != 0 not implemented yet");
-#endif
-            direction[0] = 0.0f;
-            direction[1] = 0.0f;
-            direction[2] = 1.0f;
-        }
-        else // if alpha is 0, the plane can be defined by dx/dz and dy/dz
-        {
-
-            float32 dir[3] = { cells[5] - cells[2], 0, cells[7] - cells[4]};
-            float32 dir2[3] = { 0, cells[6] - cells[3], cells[7] - cells[4]};
-
-            vectorCross(dir, dir2, direction);     
-            len = vectorLength(direction); 
-        }
-
-        if(ito::dObjHelper::isNotZero(len))
-        {
-            vectorScale(direction, 1.0f/len);
-        }
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    void GeometricPrimitiveRectangle::topLeft(float32 direction[3]) const
-    {
-#if _DEBUG
-        throw std::invalid_argument("Calculation for alpha != 0 not implemented yet");
-#endif
-        direction[0] = 0.0f;
-        direction[1] = 0.0f;
-        direction[2] = 1.0f;   
-
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    void GeometricPrimitiveRectangle::topRight(float32 direction[3]) const
-    {
-#if _DEBUG
-        throw std::invalid_argument("Calculation for alpha != 0 not implemented yet");
-#endif
-        direction[0] = 0.0f;
-        direction[1] = 0.0f;
-        direction[2] = 1.0f;       
-
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    void GeometricPrimitiveRectangle::bottomLeft(float32 direction[3]) const
-    {
-#if _DEBUG
-        throw std::invalid_argument("Calculation for alpha != 0 not implemented yet");
-#endif
-        direction[0] = 0.0f;
-        direction[1] = 0.0f;
-        direction[2] = 1.0f;       
-
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    void GeometricPrimitiveRectangle::bottomRight(float32 direction[3]) const
-    {
-#if _DEBUG
-        throw std::invalid_argument("Calculation for alpha != 0 not implemented yet");
-#endif
-        direction[0] = 0.0f;
-        direction[1] = 0.0f;
-        direction[2] = 1.0f;       
-
-    }
-    //----------------------------------------------------------------------------------------------------------------------------------
-    float32 GeometricPrimitiveRectangle::area() const
-    {
-        if(ito::dObjHelper::isNotZero(alpha()))
-        {
-#if _DEBUG
-            throw std::invalid_argument("Calculation for alpha != 0 not implemented yet");
-#endif
-            return 0.0f;
-        }
-        else // if alpha is 0, the plane can be defined by dx/dz and dy/dz
-        {
-
-            float32 dir[3] = { cells[5] - cells[2], 0, cells[7] - cells[4]};
-            float32 dir2[3] = { 0, cells[6] - cells[3], cells[7] - cells[4]};
-  
-            return vectorLength(dir) * vectorLength(dir2); 
-        }
-    }
-}
+//#include "sharedStructuresPrimitives.h"
+//
+//namespace ito
+//{
+//    //----------------------------------------------------------------------------------------------------------------------------------
+//    PrimitiveContainer::PrimitiveContainer(ito::DataObject primitives)
+//    {
+//        int newSize = 64;
+//        int cols = 11;
+//
+//#if (defined _DEBUG) && (defined WIN32)
+//        if (primitives.getDims() != 0 && primitives.getSize(primitives.getDims()-1) < 11)
+//        {
+//            cv::error(cv::Exception(CV_StsAssert, "Error, primitives object not valid.", "", __FILE__, __LINE__));
+//        }
+//#endif
+//
+//        if (primitives.getDims() == 2 || primitives.calcNumMats() == 1)
+//        {
+//            newSize = newSize * (primitives.getSize(primitives.getDims() - 2) / 64 + 1);
+//
+//            m_primitives.zeros(newSize, 11, ito::tFloat32);
+//
+//            cv::Mat* scr = (cv::Mat*)(primitives.get_mdata()[primitives.seekMat(0)]);
+//            cv::Mat* dst = (cv::Mat*)(m_primitives.get_mdata()[0]);
+//
+//            for (int i = 0; i < scr->rows; i++)
+//            {
+//                memcpy(dst->ptr<ito::float32>(i), scr->ptr<ito::float32>(i), sizeof(ito::float32) * cols);
+//            }       
+//        }
+//        else
+//        {
+//            m_primitives.zeros(64, 11, ito::tFloat32);
+//        }
+//
+//        m_internalMat = (cv::Mat*)(m_primitives.get_mdata()[0]);
+//    }
+//
+//    //----------------------------------------------------------------------------------------------------------------------------------
+//    PrimitiveContainer::~PrimitiveContainer()
+//    {
+//        m_internalMat = NULL;
+//        return;
+//    }
+//
+//    //----------------------------------------------------------------------------------------------------------------------------------
+//    int PrimitiveContainer::getNumberOfElements(const int type) const
+//    {
+//        int val = 0;
+//        if (type == -1)
+//        {
+//            for (int i = 0; i < m_internalMat->rows; i++)
+//            {
+//                if (((int)(m_internalMat->ptr<float32>(i)[0]) & 0x0000FFFF) != 0)
+//                {
+//                    val++;
+//                }
+//            }
+//        }
+//        else
+//        {
+//            for (int i = 0; i < m_internalMat->rows; i++)
+//            {
+//                if (((int)(m_internalMat->ptr<float32>(i)[1]) & 0x0000FFFF) == type)
+//                {
+//                    val++;
+//                }
+//            }        
+//        }
+//        return val;
+//    }
+//
+//    //----------------------------------------------------------------------------------------------------------------------------------
+//    int PrimitiveContainer::getFirstElementRow(const int type) const
+//    {
+//        for (int i = 0; i < m_internalMat->rows; i++)
+//        {
+//            if (((int)(m_internalMat->ptr<float32>(i)[1]) & 0x0000FFFF) == type)
+//            {
+//                return i;
+//            }
+//        }
+//        return -1;
+//    }
+//
+//    //----------------------------------------------------------------------------------------------------------------------------------
+//    ito::float32* PrimitiveContainer::getElementPtr(const int row)
+//    {
+//        if (row > -1 && row < m_internalMat->rows)
+//        {
+//            return m_internalMat->ptr<float32>(row);
+//        }
+//        return NULL;
+//    }
+//
+//    //----------------------------------------------------------------------------------------------------------------------------------
+//    const ito::float32* PrimitiveContainer::getElementPtr(const int row) const
+//    {
+//        if (row > -1 && row < m_internalMat->rows)
+//        {
+//            return m_internalMat->ptr<const float32>(row);
+//        }
+//        return NULL;
+//    }
+//
+//    //----------------------------------------------------------------------------------------------------------------------------------
+//    int PrimitiveContainer::getIndexFromRow(const int row) const
+//    {
+//        if (row > -1 && row < m_internalMat->rows)
+//        {
+//            return (int)(m_internalMat->ptr<float32>(row)[0]);       
+//        }
+//        return false;
+//    }
+//
+//    //----------------------------------------------------------------------------------------------------------------------------------
+//    int PrimitiveContainer::getRowFromIndex(const int idx) const
+//    {
+//        for (int i = 0; i < m_internalMat->rows; i++)
+//        {
+//            if ((int)(m_internalMat->ptr<float32>(i)[0]) == idx)
+//            {
+//                return i;
+//            }
+//        }
+//        return -1;
+//    }
+//
+//    //----------------------------------------------------------------------------------------------------------------------------------
+//    void PrimitiveContainer::clear(void)
+//    {
+//        memset(m_internalMat->ptr(), 0, m_internalMat->rows * 11);
+//        return;
+//    }
+//
+//    //----------------------------------------------------------------------------------------------------------------------------------
+//    bool PrimitiveContainer::isElement(const int row) const
+//    {
+//        if (row > -1 && row < m_internalMat->rows)
+//        {
+//            if (m_internalMat->ptr<float32>(row)[1] > 0.0)
+//            {
+//                return true;
+//            }
+//        
+//        }
+//        return false;
+//    }
+//
+//    //----------------------------------------------------------------------------------------------------------------------------------
+//    ito::RetVal PrimitiveContainer::addElement(const int type, ito::float32 * cells)
+//    {
+//        return ito::retOk;
+//    }
+//
+//    //----------------------------------------------------------------------------------------------------------------------------------
+//    ito::RetVal PrimitiveContainer::changeElement(const int type, ito::float32 * cells)
+//    {
+//        return ito::retOk;
+//    }
+//
+//    //----------------------------------------------------------------------------------------------------------------------------------
+//    ito::RetVal PrimitiveContainer::removeElement(const int row)
+//    {
+//        return ito::retOk;
+//    }
+//
+//    //----------------------------------------------------------------------------------------------------------------------------------
+//    ito::RetVal PrimitiveContainer::copyGeometricElements(const ito::DataObject &rhs)
+//    {
+//        bool newObject = false;
+//        int cols = 11;
+//
+//        if (rhs.getDims() == 0 || rhs.calcNumMats() != 1)
+//        {
+//            return ito::retError;
+//        }
+//
+//        if (rhs.getSize(rhs.getDims()-1) > m_primitives.getSize(1))
+//        {
+//            int newSize = 64 * (rhs.getSize(rhs.getDims() - 2) / 64 + 1);
+//            m_primitives.zeros(newSize, 11, ito::tFloat32);
+//            m_internalMat = (cv::Mat*)(m_primitives.get_mdata()[0]);
+//            newObject = true;
+//        }
+//
+//        
+//        cols = cols > rhs.getSize(rhs.getDims()-1) ? cols : rhs.getSize(rhs.getDims() - 1);
+//
+//        cv::Mat* scr = (cv::Mat*)(rhs.get_mdata()[rhs.seekMat(0)]);
+//        cv::Mat* dst = (cv::Mat*)(m_primitives.get_mdata()[0]);
+//
+//        for (int i = 0; i < scr->rows; i++)
+//        {
+//            memcpy(dst->ptr<ito::float32>(i), scr->ptr<ito::float32>(i), sizeof(ito::float32) * cols);
+//        }
+//
+//        if (!newObject)
+//        {
+//            for (int i = scr->rows; i < dst->rows; i++)
+//            {
+//                memset(dst->ptr<ito::float32>(i), 0, sizeof(ito::float32) * 11);
+//            }
+//        }
+//        return ito::retOk;
+//    }
+//}

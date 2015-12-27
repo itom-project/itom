@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
    
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -71,7 +71,6 @@ ito::RetVal AbstractAddInConfigDialog::setPluginParameter(QSharedPointer<ito::Pa
 
     if (d->m_pPlugin)
     {
-        bool success = false;
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         if (QMetaObject::invokeMethod(d->m_pPlugin, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, param), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
@@ -140,7 +139,6 @@ ito::RetVal AbstractAddInConfigDialog::setPluginParameters(const QVector<QShared
 
     if (d->m_pPlugin)
     {
-        bool success = false;
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
         if (QMetaObject::invokeMethod(d->m_pPlugin, "setParamVector", Q_ARG(const QVector<QSharedPointer<ito::ParamBase> >, params), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
@@ -191,10 +189,11 @@ ito::RetVal AbstractAddInConfigDialog::setPluginParameters(const QVector<QShared
 ito::RetVal AbstractAddInConfigDialog::observeInvocation(ItomSharedSemaphore *waitCond, MessageLevel msgLevel) const
 {
     ito::RetVal retval;
-    bool timeout = false;
-
+    
     if (d->m_pPlugin)
     {
+        bool timeout = false;
+
         while(!timeout && waitCond->waitAndProcessEvents(PLUGINWAIT) == false)
         {
             if (d->m_pPlugin->isAlive() == false)

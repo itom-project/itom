@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -59,14 +59,17 @@ public:
     RetVal saveAllScripts(bool askFirst = true, bool ignoreNewScripts = false, int excludeIndex = -1);
     RetVal closeAllScripts(bool saveFirst = true, bool askFirst = true, bool ignoreNewScripts = false, int excludeIndex = -1);
 
-    inline bool isTabIndexValid(int tabIndex) const { return (tabIndex >= 0 && tabIndex < m_tab->count()); };   /*!<  checks wether given tab-index is valid (true) or not (false) */
-    inline int getTabCount() const { return m_tab->count(); };      /*!<  returns number of tabs */
+    inline bool isTabIndexValid(int tabIndex) const { return (tabIndex >= 0 && tabIndex < m_tab->count()); }   /*!<  checks wether given tab-index is valid (true) or not (false) */
+    inline int getTabCount() const { return m_tab->count(); }      /*!<  returns number of tabs */
+    inline int getCurrentIndex() const { return m_tab->currentIndex(); }
+    void setCurrentIndex(int index);
+
     bool containsNewScripts() const;
 
     RetVal appendEditor(ScriptEditorWidget* editorWidget);         /*!<  appends widget, without creating it (for drag&drop, (un)-docking...) */
     ScriptEditorWidget* removeEditor(int index);                    /*!<  removes widget, without deleting it (for drag&drop, (un)-docking...) */
     bool activateTabByFilename(const QString &filename, int line = -1);
-    bool activeTabEnsureLineVisible(int lineNr);
+    bool activeTabEnsureLineVisible(const int lineNr, bool errorMessageClick = false);
 
     QList<ito::ScriptEditorStorage> saveScriptState() const;
     RetVal restoreScriptState(const QList<ito::ScriptEditorStorage> &states);
@@ -98,7 +101,6 @@ private:
     WidgetFindWord *m_pWidgetFindWord;
     DialogReplace *m_pDialogReplace;
     
-
     int m_actTabIndex;                  /*!<  member indicating the tab-index of the active script editor */
 
     // ACTIONS

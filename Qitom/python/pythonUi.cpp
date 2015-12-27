@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -2708,7 +2708,7 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
 
     if(!PyArg_ParseTupleAndKeywords(args, kwds, "OO|iiO!", const_cast<char**>(kwlist), &titleObj, &textObj, &buttons, &defaultButton, &PythonUi::PyUiType, &parentItem))
     {
-        PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), buttons (combination of ui.MsgBox[...]), defaultButton (ui.MsgBox[...])");
+        PyErr_SetString(PyExc_TypeError, "arguments must be title (str), label (str), and optional buttons (combination of ui.MsgBox[...]), defaultButton (ui.MsgBox[...]), parent (any instance of class ui)");
         return NULL;
     }
 
@@ -3144,7 +3144,6 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
 
     params = PyTuple_GetSlice(args, 1, PyTuple_Size(args));
     if(parseInitParams(&(filterParams->paramsMand), &(filterParams->paramsOpt), params, kwds, paramsMandBase, paramsOptBase) != ito::retOk)
-    //if (parseInitParams(&paramsMand, &paramsOpt, params, kwds) != ito::retOk)
     {
         PyErr_SetString(PyExc_RuntimeError, "error while parsing parameters.");
         return NULL;

@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
    
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -476,31 +476,62 @@ bool PCLPoint::setCurvature(float curvature)
 PCLPointCloud::PCLPointCloud(uint32_t width_, uint32_t height_, ito::tPCLPointType type_,  const PCLPoint &value_)
 {
     m_type = type_;
-    switch(type_)
+
+    if (value_.getType() == ito::pclInvalid)
     {
-        case ito::pclXYZ:
-            m_pcXYZ = pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>(width_,height_,value_.getPointXYZ()));
-            break;
-        case ito::pclXYZI:
-            m_pcXYZI = pcl::PointCloud<pcl::PointXYZI>::Ptr(new pcl::PointCloud<pcl::PointXYZI>(width_,height_,value_.getPointXYZI()));
-            break;
-        case ito::pclXYZRGBA:
-            m_pcXYZRGBA = pcl::PointCloud<pcl::PointXYZRGBA>::Ptr(new pcl::PointCloud<pcl::PointXYZRGBA>(width_,height_,value_.getPointXYZRGBA()));
-            break;
-        case ito::pclXYZNormal:
-            m_pcXYZNormal = pcl::PointCloud<pcl::PointNormal>::Ptr(new pcl::PointCloud<pcl::PointNormal>(width_,height_,value_.getPointXYZNormal()));
-            break;
-        case ito::pclXYZINormal:
-            m_pcXYZINormal = pcl::PointCloud<pcl::PointXYZINormal>::Ptr(new pcl::PointCloud<pcl::PointXYZINormal>(width_,height_,value_.getPointXYZINormal()));
-            break;
-        case ito::pclXYZRGBNormal:
-            m_pcXYZRGBNormal = pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr(new pcl::PointCloud<pcl::PointXYZRGBNormal>(width_,height_,value_.getPointXYZRGBNormal()));
-            break;
-        default:
-            break;
+        switch(type_)
+        {
+            case ito::pclXYZ:
+                m_pcXYZ = pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>(width_,height_));
+                break;
+            case ito::pclXYZI:
+                m_pcXYZI = pcl::PointCloud<pcl::PointXYZI>::Ptr(new pcl::PointCloud<pcl::PointXYZI>(width_,height_));
+                break;
+            case ito::pclXYZRGBA:
+                m_pcXYZRGBA = pcl::PointCloud<pcl::PointXYZRGBA>::Ptr(new pcl::PointCloud<pcl::PointXYZRGBA>(width_,height_));
+                break;
+            case ito::pclXYZNormal:
+                m_pcXYZNormal = pcl::PointCloud<pcl::PointNormal>::Ptr(new pcl::PointCloud<pcl::PointNormal>(width_,height_));
+                break;
+            case ito::pclXYZINormal:
+                m_pcXYZINormal = pcl::PointCloud<pcl::PointXYZINormal>::Ptr(new pcl::PointCloud<pcl::PointXYZINormal>(width_,height_));
+                break;
+            case ito::pclXYZRGBNormal:
+                m_pcXYZRGBNormal = pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr(new pcl::PointCloud<pcl::PointXYZRGBNormal>(width_,height_));
+                break;
+            default:
+                break;
+        }
+    }
+    else
+    {
+        switch(type_)
+        {
+            case ito::pclXYZ:
+                m_pcXYZ = pcl::PointCloud<pcl::PointXYZ>::Ptr(new pcl::PointCloud<pcl::PointXYZ>(width_,height_,value_.getPointXYZ()));
+                break;
+            case ito::pclXYZI:
+                m_pcXYZI = pcl::PointCloud<pcl::PointXYZI>::Ptr(new pcl::PointCloud<pcl::PointXYZI>(width_,height_,value_.getPointXYZI()));
+                break;
+            case ito::pclXYZRGBA:
+                m_pcXYZRGBA = pcl::PointCloud<pcl::PointXYZRGBA>::Ptr(new pcl::PointCloud<pcl::PointXYZRGBA>(width_,height_,value_.getPointXYZRGBA()));
+                break;
+            case ito::pclXYZNormal:
+                m_pcXYZNormal = pcl::PointCloud<pcl::PointNormal>::Ptr(new pcl::PointCloud<pcl::PointNormal>(width_,height_,value_.getPointXYZNormal()));
+                break;
+            case ito::pclXYZINormal:
+                m_pcXYZINormal = pcl::PointCloud<pcl::PointXYZINormal>::Ptr(new pcl::PointCloud<pcl::PointXYZINormal>(width_,height_,value_.getPointXYZINormal()));
+                break;
+            case ito::pclXYZRGBNormal:
+                m_pcXYZRGBNormal = pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr(new pcl::PointCloud<pcl::PointXYZRGBNormal>(width_,height_,value_.getPointXYZRGBNormal()));
+                break;
+            default:
+                break;
+        }
     }
 }
 
+//---------------------------------------------------------------------------------------------------------------
 PCLPointCloud::PCLPointCloud (PCLPointCloud &pc)
 {
     m_type = pc.m_type;
@@ -529,6 +560,7 @@ PCLPointCloud::PCLPointCloud (PCLPointCloud &pc)
     }
 }
 
+//---------------------------------------------------------------------------------------------------------------
 PCLPointCloud::PCLPointCloud (const PCLPointCloud &pc)
 {
     m_type = pc.m_type;
@@ -557,8 +589,24 @@ PCLPointCloud::PCLPointCloud (const PCLPointCloud &pc)
     }
 }
 
-PCLPointCloud::PCLPointCloud (const PCLPointCloud &pc, const std::vector< int > &indices)
+//---------------------------------------------------------------------------------------------------------------
+PCLPointCloud::PCLPointCloud (const PCLPointCloud &pc, const std::vector< int > &indices) :
+    m_type(ito::pclInvalid)
 {
+    int size = pc.size();
+    if (indices.size() > size)
+    {
+        throw pcl::PCLException("indices vector is longer than the number of points in the given point cloud",__FILE__, "PCLPointCloud", __LINE__);
+    }
+    
+    for (size_t i = 0; i < indices.size(); ++i)
+    {
+        if (indices[i] < 0 || indices[i] >= size)
+        {
+            throw pcl::PCLException("indices vector contain invalid values.",__FILE__, "PCLPointCloud", __LINE__);
+        }
+    }
+
     m_type = pc.m_type;
     switch(pc.m_type)
     {
@@ -583,12 +631,13 @@ PCLPointCloud::PCLPointCloud (const PCLPointCloud &pc, const std::vector< int > 
     }
 }
 
-
+//---------------------------------------------------------------------------------------------------------------
 void PCLPointCloud::setInvalid()
 {
     createEmptyPointCloud(ito::pclInvalid);
 }
 
+//---------------------------------------------------------------------------------------------------------------
 void PCLPointCloud::createEmptyPointCloud(ito::tPCLPointType type)
 {
     //clear existing data
@@ -866,6 +915,50 @@ std::string PCLPointCloud::getFieldsList() const
 }
 
 
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> std::vector<pcl::PCLPointField> GetFieldsInfoFunc(const ito::PCLPointCloud *pc)
+{
+   const pcl::PointCloud<_Tp>* temp = getPointCloudPtrInternal<_Tp >(*pc);
+   if(temp)
+   {
+       std::vector<pcl::PCLPointField> fields;
+       pcl::getFields<_Tp>(fields);
+       return fields;
+   }
+   throw pcl::PCLException("shared pointer is NULL",__FILE__, "header", __LINE__);
+}
+
+typedef std::vector<pcl::PCLPointField> (*tGetFieldsInfoFunc)(const ito::PCLPointCloud *pc);
+PCLMAKEFUNCLIST(GetFieldsInfoFunc)
+
+std::vector<pcl::PCLPointField> PCLPointCloud::getFieldsInfo() const
+{
+    int idx = getFuncListIndex();
+    if(idx >= 0)    return fListGetFieldsInfoFunc[idx](this);
+    throw pcl::PCLException("invalid point cloud",__FILE__, "header", __LINE__);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> unsigned char* GenericPointAccessFunc(const ito::PCLPointCloud *pc, size_t &strideBytes)
+{
+   const pcl::PointCloud<_Tp>* temp = getPointCloudPtrInternal<_Tp >(*pc);
+   if(temp)
+   {
+       strideBytes = sizeof(_Tp);
+       return (unsigned char*)(temp->points.data());
+   }
+   throw pcl::PCLException("shared pointer is NULL",__FILE__, "header", __LINE__);
+}
+
+typedef unsigned char* (*tGenericPointAccessFunc)(const ito::PCLPointCloud *pc, size_t &strideBytes);
+PCLMAKEFUNCLIST(GenericPointAccessFunc)
+
+unsigned char* PCLPointCloud::genericPointAccess(size_t &strideBytes) const
+{
+    int idx = getFuncListIndex();
+    if(idx >= 0)    return fListGenericPointAccessFunc[idx](this, strideBytes);
+    return NULL;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> void PcAddFunc(ito::PCLPointCloud *pc1, const ito::PCLPointCloud *pc2, ito::PCLPointCloud *pcRes)
@@ -941,31 +1034,32 @@ const PCLPointCloud PCLPointCloud::operator+ (const PCLPointCloud &rhs)
 
 PCLPointCloud & PCLPointCloud::operator= (const PCLPointCloud &copy)
 {
-    // ToDo perhaps a check of identical object copy is necessary
-    this->setInvalid();
-
-    m_type = copy.getType();
-
-    switch(copy.getType())
+    if (this != &copy)
     {
-        case ito::pclXYZ:
-            m_pcXYZ = copy.m_pcXYZ;
-            break;
-        case ito::pclXYZI:
-            m_pcXYZI = copy.m_pcXYZI;
-            break;
-        case ito::pclXYZRGBA:
-            m_pcXYZRGBA = copy.m_pcXYZRGBA;
-            break;
-        case ito::pclXYZNormal:
-            m_pcXYZNormal = copy.m_pcXYZNormal;
-            break;
-        case ito::pclXYZINormal:
-            m_pcXYZINormal = copy.m_pcXYZINormal;
-            break;
-        case ito::pclXYZRGBNormal:
-            m_pcXYZRGBNormal = copy.m_pcXYZRGBNormal;
-            break;
+        setInvalid();
+        m_type = copy.getType();
+
+        switch(copy.getType())
+        {
+            case ito::pclXYZ:
+                m_pcXYZ = copy.m_pcXYZ;
+                break;
+            case ito::pclXYZI:
+                m_pcXYZI = copy.m_pcXYZI;
+                break;
+            case ito::pclXYZRGBA:
+                m_pcXYZRGBA = copy.m_pcXYZRGBA;
+                break;
+            case ito::pclXYZNormal:
+                m_pcXYZNormal = copy.m_pcXYZNormal;
+                break;
+            case ito::pclXYZINormal:
+                m_pcXYZINormal = copy.m_pcXYZINormal;
+                break;
+            case ito::pclXYZRGBNormal:
+                m_pcXYZRGBNormal = copy.m_pcXYZRGBNormal;
+                break;
+        }
     }
 
     return *this;
@@ -1466,7 +1560,8 @@ PCLPolygonMesh::PCLPolygonMesh(PCLPolygonMesh &mesh, const std::vector<uint32_t>
     }
 }
 
-PCLPolygonMesh::PCLPolygonMesh(const PCLPointCloud &cloud, const std::vector<pcl::Vertices> &polygons)
+PCLPolygonMesh::PCLPolygonMesh(const PCLPointCloud &cloud, const std::vector<pcl::Vertices> &polygons) :
+    m_valid(true)
 {
     m_polygonMesh = pcl::PolygonMesh::Ptr(new pcl::PolygonMesh());
     m_polygonMesh->header = cloud.header();
@@ -1605,7 +1700,6 @@ std::ostream& PCLPolygonMesh::streamOut(std::ostream& out)
         }
 
         out << "\npoints[]:\n" << std::endl;
-        uint32_t rowStep = c->row_step;
         uint32_t counter = 0;
         uint8_t *ptr = &(c->data[0]);
 

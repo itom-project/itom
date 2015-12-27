@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -35,12 +35,13 @@ namespace ito {
     \return description
     \sa tMsgType
 */
-QDebugStream::QDebugStream(std::ostream &stream, tMsgType type, QString lineBreak) : m_stream(stream)
+QDebugStream::QDebugStream(std::ostream &stream, tMsgType type, const QString &lineBreak) : 
+    m_stream(stream),
+    msg_type(type),
+    line_break(lineBreak)
 {
-    msg_type = type;
     m_old_buf = stream.rdbuf();
     stream.rdbuf(this);
-    line_break = lineBreak;
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -75,7 +76,7 @@ std::streamsize QDebugStream::xsputn(const char *p, std::streamsize n)
             std::string tmp(m_string.begin(), m_string.begin() + pos);
             QString str = QString::fromLatin1(tmp.c_str()); //Python stdout and stderr streams as well as std::cout streams in itom and plugins are encoded with latin1.
 
-            emit flushStream(QString(str).append(line_break), msg_type); //the c_str will be converted into QString using the codec set by QTextCodec::setCodecForCStrings(textCodec) in MainApplication
+            emit flushStream(str.append(line_break), msg_type); //the c_str will be converted into QString using the codec set by QTextCodec::setCodecForCStrings(textCodec) in MainApplication
             m_string.erase(m_string.begin(), m_string.begin() + pos + 1);
         }
     }

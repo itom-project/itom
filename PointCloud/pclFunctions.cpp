@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2013, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
 
@@ -11,7 +11,7 @@
     the Free Software Foundation; either version 2 of the Licence, or (at
     your option) any later version.
    
-    In addition, as a special exception, the Institut für Technische
+    In addition, as a special exception, the Institut fuer Technische
     Optik (ITO) gives you certain additional rights.
     These rights are described in the ITO LGPL Exception version 1.0,
     which can be found in the file LGPL_EXCEPTION.txt in this package.
@@ -311,19 +311,457 @@ ito::tPCLPointType guessPointType(const sensor_msgs::PointCloud2 &msg)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> ito::RetVal readXYZData(const cv::Mat *x, const cv::Mat *y, const cv::Mat *z, pcl::PointCloud<pcl::PointXYZ>::Ptr  &cloud, bool &isDense, const bool deleteNaNorInf)
+ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &mesh, PCLPointCloud &out, const std::vector<int> &indices /*= std::vector<int>()*/)
+{
+    ito::RetVal retval;
+
+    if (mesh.valid())
+    {
+        ito::tPCLPointType t = ito::pclHelper::guessPointType(mesh.polygonMesh()->cloud);
+        ito::tPCLPointType t_out = ito::pclInvalid;
+
+        switch (t)
+        {
+        case ito::pclXYZ:
+        case ito::pclXYZNormal:
+            t_out = ito::pclXYZNormal;
+            break;
+        case ito::pclXYZI:
+        case ito::pclXYZINormal:
+            t_out = ito::pclXYZINormal;
+            break;
+        case ito::pclXYZRGBA:
+        case ito::pclXYZRGBNormal:
+            t_out = ito::pclXYZRGBNormal;
+            break;
+        }
+
+        if (t_out != ito::pclInvalid)
+        {
+            out = ito::PCLPointCloud(t_out);
+            const pcl::Vertices *v;
+            const uint32_t *v_;
+            Eigen::Vector3f a, b;
+            Eigen::Vector3f cog;           //center of gravity of all mesh segments that should be covered
+            Eigen::Vector3f normal;    //normal vector (given in coordinate frame phi) of each center of gravity
+            bool indexed_mode = (indices.size() > 0);
+            int next_index = 0;
+            int index;
+            bool has_next;
+            int count = 0;
+            pcl::PolygonMeshConstPtr meshPtr = mesh.polygonMesh();
+            size_t nrPolygons = meshPtr->polygons.size();
+
+            if (indices.size() > 0)
+            {
+                for (int i = 0; i < indices.size(); ++i)
+                {
+                    if (indices[i] < 0 || indices[i] >= nrPolygons)
+                    {
+                        retval += ito::RetVal(ito::retError, 0, "indices contain invalid values. out of bounds.");
+                        t_out = ito::pclInvalid;
+                        break;
+                    }
+                }
+            }
+
+            if (t_out == ito::pclXYZNormal)
+            {
+                if (t == ito::pclXYZ)
+                {
+                    pcl::PointCloud<pcl::PointXYZ>::Ptr points_(new pcl::PointCloud<pcl::PointXYZ>());
+                    pcl::PointCloud<pcl::PointNormal>::Ptr out_points = out.toPointXYZNormal();
+                    pcl::PointNormal pt;
+                    pt.curvature = 0.0;
+
+                    pcl::fromPCLPointCloud2(meshPtr->cloud, *points_);
+                    has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
+                    
+                    while (has_next)
+                    {
+                        index = indexed_mode ? indices[next_index] : next_index;
+
+                        v = &(meshPtr->polygons[index]);
+                        if( v->vertices.size() >= 3 )
+                        {
+                            v_ = &(v->vertices.front());
+                            cog = Eigen::Vector3f::Zero();
+                            for(size_t j = 0; j < v->vertices.size() ; j++)
+                            {
+                                cog += points_->points[*v_].getVector3fMap();
+                                v_++;
+                            }
+                            v_ = &(v->vertices.front());
+                            a = points_->points[*(v_+1)].getVector3fMap() - points_->points[*v_].getVector3fMap();
+                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap(); 
+                            //     P1
+                            //    /  \
+                            //   P0 - P2
+                            // normal points out of screen if polygon is [0,1,2]
+                            normal = a.cross(b).normalized(); //normal points outside of the surface
+                            cog /= static_cast<float>( v->vertices.size() );
+                            pt.x = cog[0];
+                            pt.y = cog[1];
+                            pt.z = cog[2];
+                            pt.normal_x = normal[0];
+                            pt.normal_y = normal[1];
+                            pt.normal_z = normal[2];
+                            out_points->push_back(pt);
+                            count++;
+                        }
+
+                        next_index ++;
+                        has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    }
+
+                    out_points->resize(count);
+                    out_points->is_dense = true;
+                    out_points->height = 1; //unorganized
+                    out_points->width = count;
+                }
+                else
+                {
+                    pcl::PointCloud<pcl::PointNormal>::Ptr points_(new pcl::PointCloud<pcl::PointNormal>());
+                    pcl::PointCloud<pcl::PointNormal>::Ptr out_points = out.toPointXYZNormal();
+                    pcl::PointNormal pt;
+                    float curvature;
+
+                    pcl::fromPCLPointCloud2(meshPtr->cloud, *points_);
+                    has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
+                    
+                    while (has_next)
+                    {
+                        index = indexed_mode ? indices[next_index] : next_index;
+
+                        v = &(meshPtr->polygons[index]);
+                        if( v->vertices.size() >= 3 )
+                        {
+                            v_ = &(v->vertices.front());
+                            cog = Eigen::Vector3f::Zero();
+                            curvature = 0.0;
+                            for(size_t j = 0; j < v->vertices.size() ; j++)
+                            {
+                                cog += points_->points[*v_].getVector3fMap();
+                                curvature += points_->points[*v_].curvature;
+                                v_++;
+                            }
+                            v_ = &(v->vertices.front());
+                            a = points_->points[*(v_+1)].getVector3fMap() - points_->points[*v_].getVector3fMap();
+                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap(); 
+                            //     P1
+                            //    /  \
+                            //   P0 - P2
+                            // normal points out of screen if polygon is [0,1,2]
+                            normal = a.cross(b).normalized(); //normal points outside of the surface
+                            cog /= static_cast<float>( v->vertices.size() );
+                            pt.x = cog[0];
+                            pt.y = cog[1];
+                            pt.z = cog[2];
+                            pt.normal_x = normal[0];
+                            pt.normal_y = normal[1];
+                            pt.normal_z = normal[2];
+                            pt.curvature = curvature / v->vertices.size();
+                            out_points->push_back(pt);
+                            count++;
+                        }
+
+                        next_index ++;
+                        has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    }
+
+                    out_points->resize(count);
+                    out_points->is_dense = true;
+                    out_points->height = 1; //unorganized
+                    out_points->width = count;
+                }
+            }
+            else if (t_out == ito::pclXYZINormal)
+            {
+                if (t == ito::pclXYZI)
+                {
+                    pcl::PointCloud<pcl::PointXYZI>::Ptr points_(new pcl::PointCloud<pcl::PointXYZI>());
+                    pcl::PointCloud<pcl::PointXYZINormal>::Ptr out_points = out.toPointXYZINormal();
+                    pcl::PointXYZINormal pt;
+                    pt.curvature = 0.0;
+
+                    pcl::fromPCLPointCloud2(meshPtr->cloud, *points_);
+                    has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
+
+                    float intensity;
+                    
+                    while (has_next)
+                    {
+                        index = indexed_mode ? indices[next_index] : next_index;
+
+                        v = &(meshPtr->polygons[index]);
+                        if( v->vertices.size() >= 3 )
+                        {
+                            v_ = &(v->vertices.front());
+                            cog = Eigen::Vector3f::Zero();
+                            intensity = 0.0;
+                            for(size_t j = 0; j < v->vertices.size() ; j++)
+                            {
+                                cog += points_->points[*v_].getVector3fMap();
+                                intensity += points_->points[*v_].intensity;
+                                v_++;
+                            }
+                            v_ = &(v->vertices.front());
+                            a = points_->points[*(v_+1)].getVector3fMap() - points_->points[*v_].getVector3fMap();
+                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap(); 
+                            //     P1
+                            //    /  \
+                            //   P0 - P2
+                            // normal points out of screen if polygon is [0,1,2]
+                            normal = a.cross(b).normalized(); //normal points outside of the surface
+                            cog /= static_cast<float>( v->vertices.size() );
+                            pt.x = cog[0];
+                            pt.y = cog[1];
+                            pt.z = cog[2];
+                            pt.normal_x = normal[0];
+                            pt.normal_y = normal[1];
+                            pt.normal_z = normal[2];
+                            pt.intensity = intensity / v->vertices.size();
+                            out_points->push_back(pt);
+                            count++;
+                        }
+
+                        next_index ++;
+                        has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    }
+
+                    out_points->resize(count);
+                    out_points->is_dense = true;
+                    out_points->height = 1; //unorganized
+                    out_points->width = count;
+                }
+                else
+                {
+                    pcl::PointCloud<pcl::PointXYZINormal>::Ptr points_(new pcl::PointCloud<pcl::PointXYZINormal>());
+                    pcl::PointCloud<pcl::PointXYZINormal>::Ptr out_points = out.toPointXYZINormal();
+                    pcl::PointXYZINormal pt;
+                    float curvature;
+
+                    pcl::fromPCLPointCloud2(meshPtr->cloud, *points_);
+                    has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
+
+                    float intensity;
+                    
+                    while (has_next)
+                    {
+                        index = indexed_mode ? indices[next_index] : next_index;
+
+                        v = &(meshPtr->polygons[index]);
+                        if( v->vertices.size() >= 3 )
+                        {
+                            v_ = &(v->vertices.front());
+                            cog = Eigen::Vector3f::Zero();
+                            intensity = 0.0;
+                            curvature = 0.0;
+                            for(size_t j = 0; j < v->vertices.size() ; j++)
+                            {
+                                cog += points_->points[*v_].getVector3fMap();
+                                intensity += points_->points[*v_].intensity;
+                                curvature += points_->points[*v_].curvature;
+                                v_++;
+                            }
+                            v_ = &(v->vertices.front());
+                            a = points_->points[*(v_+1)].getVector3fMap() - points_->points[*v_].getVector3fMap();
+                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap(); 
+                            //     P1
+                            //    /  \
+                            //   P0 - P2
+                            // normal points out of screen if polygon is [0,1,2]
+                            normal = a.cross(b).normalized(); //normal points outside of the surface
+                            cog /= static_cast<float>( v->vertices.size() );
+                            pt.x = cog[0];
+                            pt.y = cog[1];
+                            pt.z = cog[2];
+                            pt.normal_x = normal[0];
+                            pt.normal_y = normal[1];
+                            pt.normal_z = normal[2];
+                            pt.intensity = intensity / v->vertices.size();
+                            pt.curvature = curvature / v->vertices.size();
+                            out_points->push_back(pt);
+                            count++;
+                        }
+
+                        next_index ++;
+                        has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    }
+
+                    out_points->resize(count);
+                    out_points->is_dense = true;
+                    out_points->height = 1; //unorganized
+                    out_points->width = count;
+                }
+            }
+            else if (t_out == ito::pclXYZRGBNormal)
+            {
+                if (t == ito::pclXYZRGBA)
+                {
+                    pcl::PointCloud<pcl::PointXYZRGBA>::Ptr points_(new pcl::PointCloud<pcl::PointXYZRGBA>());
+                    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr out_points = out.toPointXYZRGBNormal();
+                    pcl::PointXYZRGBNormal pt;
+                    pt.curvature = 0.0;
+
+                    pcl::fromPCLPointCloud2(meshPtr->cloud, *points_);
+                    has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
+
+                    float red,green,blue,alpha;
+                    
+                    while (has_next)
+                    {
+                        index = indexed_mode ? indices[next_index] : next_index;
+
+                        v = &(meshPtr->polygons[index]);
+                        if( v->vertices.size() >= 3 )
+                        {
+                            v_ = &(v->vertices.front());
+                            cog = Eigen::Vector3f::Zero();
+                            red = 0.0; green = 0.0; blue = 0.0; alpha = 0.0;
+                            for(size_t j = 0; j < v->vertices.size() ; j++)
+                            {
+                                cog += points_->points[*v_].getVector3fMap();
+                                red += points_->points[*v_].r;
+                                green += points_->points[*v_].g;
+                                blue += points_->points[*v_].b;
+                                alpha += points_->points[*v_].a;
+                                v_++;
+                            }
+                            v_ = &(v->vertices.front());
+                            a = points_->points[*(v_+1)].getVector3fMap() - points_->points[*v_].getVector3fMap();
+                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap(); 
+                            //     P1
+                            //    /  \
+                            //   P0 - P2
+                            // normal points out of screen if polygon is [0,1,2]
+                            normal = a.cross(b).normalized(); //normal points outside of the surface
+                            cog /= static_cast<float>( v->vertices.size() );
+                            pt.x = cog[0];
+                            pt.y = cog[1];
+                            pt.z = cog[2];
+                            pt.normal_x = normal[0];
+                            pt.normal_y = normal[1];
+                            pt.normal_z = normal[2];
+                            pt.r = red / v->vertices.size();
+                            pt.g = green / v->vertices.size();
+                            pt.b = blue / v->vertices.size();
+                            pt.a = alpha / v->vertices.size();
+                            out_points->push_back(pt);
+                            count++;
+                        }
+
+                        next_index ++;
+                        has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    }
+
+                    out_points->resize(count);
+                    out_points->is_dense = true;
+                    out_points->height = 1; //unorganized
+                    out_points->width = count;
+                }
+                else
+                {
+                    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr points_(new pcl::PointCloud<pcl::PointXYZRGBNormal>());
+                    pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr out_points = out.toPointXYZRGBNormal();
+                    pcl::PointXYZRGBNormal pt;
+                    float curvature;
+
+                    pcl::fromPCLPointCloud2(meshPtr->cloud, *points_);
+                    has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
+
+                    float red,green,blue,alpha;
+                    
+                    while (has_next)
+                    {
+                        index = indexed_mode ? indices[next_index] : next_index;
+
+                        v = &(meshPtr->polygons[index]);
+                        if( v->vertices.size() >= 3 )
+                        {
+                            v_ = &(v->vertices.front());
+                            cog = Eigen::Vector3f::Zero();
+                            red = 0.0; green = 0.0; blue = 0.0; alpha = 0.0;
+                            curvature = 0.0;
+                            for(size_t j = 0; j < v->vertices.size() ; j++)
+                            {
+                                cog += points_->points[*v_].getVector3fMap();
+                                red += points_->points[*v_].r;
+                                green += points_->points[*v_].g;
+                                blue += points_->points[*v_].b;
+                                alpha += points_->points[*v_].a;
+                                curvature += points_->points[*v_].curvature;
+                                v_++;
+                            }
+                            v_ = &(v->vertices.front());
+                            a = points_->points[*(v_+1)].getVector3fMap() - points_->points[*v_].getVector3fMap();
+                            b = points_->points[*(v_+2)].getVector3fMap() - points_->points[*v_].getVector3fMap(); 
+                            //     P1
+                            //    /  \
+                            //   P0 - P2
+                            // normal points out of screen if polygon is [0,1,2]
+                            normal = a.cross(b).normalized(); //normal points outside of the surface
+                            cog /= static_cast<float>( v->vertices.size() );
+                            pt.x = cog[0];
+                            pt.y = cog[1];
+                            pt.z = cog[2];
+                            pt.normal_x = normal[0];
+                            pt.normal_y = normal[1];
+                            pt.normal_z = normal[2];
+                            pt.r = red / v->vertices.size();
+                            pt.g = green / v->vertices.size();
+                            pt.b = blue / v->vertices.size();
+                            pt.a = alpha / v->vertices.size();
+                            pt.curvature = curvature / v->vertices.size();
+                            out_points->push_back(pt);
+                            count++;
+                        }
+
+                        next_index ++;
+                        has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
+                    }
+
+                    out_points->resize(count);
+                    out_points->is_dense = true;
+                    out_points->height = 1; //unorganized
+                    out_points->width = count;
+                }
+            }
+            
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError, 0, "no corresponding cloud type with normal vectors could be derived from cloud type of given mesh");
+        }
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, "invalid mesh");
+    }
+    return retval;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> ito::RetVal readXYZData(const cv::Mat *x, const cv::Mat *y, const cv::Mat *z, pcl::PointCloud<pcl::PointXYZ>::Ptr  &cloud, const bool deleteNaNorInf)
 {
     pcl::PointXYZ point;
     int width = z->cols;
     int height = z->rows;
     const _Tp *xRow, *yRow, *zRow;
     size_t counter = 0;
-    isDense = true; //we assume no NaN or Inf values are in the cloud
     bool organized = true;
 
     if (deleteNaNorInf)
     {
         cloud->reserve(width * height);
+        cloud->is_dense = true; //always dense since nan or inf not included in cloud
+
         for (int i = 0; i < x->rows; i++)
         {
             xRow = x->ptr<_Tp>(i);
@@ -346,10 +784,14 @@ template<typename _Tp> ito::RetVal readXYZData(const cv::Mat *x, const cv::Mat *
                 }
             }
         }
+
+        cloud->resize(counter);
     }
     else
     {
         cloud->resize(width * height);
+        cloud->is_dense = true;
+
         for (int i = 0; i < x->rows; i++)
         {
             xRow = x->ptr<_Tp>(i);
@@ -364,7 +806,7 @@ template<typename _Tp> ito::RetVal readXYZData(const cv::Mat *x, const cv::Mat *
 
                 if (!pcl_isfinite(point.z) || !pcl_isfinite(point.x) || !pcl_isfinite(point.y))
                 {
-                    isDense = false;
+                    cloud->is_dense = false;
                 }
 
                 cloud->at(i * width + j) = point;
@@ -372,25 +814,36 @@ template<typename _Tp> ito::RetVal readXYZData(const cv::Mat *x, const cv::Mat *
             }
         }
     }
-    cloud->resize(counter);
+
+	if (organized)
+	{
+		cloud->width = width;
+		cloud->height = height;
+	}
+	else
+	{
+		cloud->width = counter;
+		cloud->height = 1;
+	}
 
     return ito::retOk;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> ito::RetVal readXYZIData(const cv::Mat *x, const cv::Mat *y, const cv::Mat *z, const cv::Mat *inten, pcl::PointCloud<pcl::PointXYZI>::Ptr  &cloud, bool &isDense, const bool deleteNaNorInf)
+template<typename _Tp> ito::RetVal readXYZIData(const cv::Mat *x, const cv::Mat *y, const cv::Mat *z, const cv::Mat *inten, pcl::PointCloud<pcl::PointXYZI>::Ptr  &cloud, const bool deleteNaNorInf)
 {
     pcl::PointXYZI point;
     int width = z->cols;
     int height = z->rows;
     const _Tp *xRow, *yRow, *zRow, *iRow;
     size_t counter = 0;
-    isDense = true; //we assume no NaN or Inf values are in the cloud
     bool organized = true;
 
     if (deleteNaNorInf)
     {
         cloud->reserve(width * height);
+        cloud->is_dense = true; //always dense since nan or inf not included in cloud
+
         for (int i = 0; i < x->rows; i++)
         {
             xRow = x->ptr<_Tp>(i);
@@ -415,9 +868,12 @@ template<typename _Tp> ito::RetVal readXYZIData(const cv::Mat *x, const cv::Mat 
                 }
             }
         }
+
+        cloud->resize(counter);
     }
     else
     {
+        cloud->is_dense = true;
         cloud->resize(width * height);
         for (int i = 0; i < x->rows; i++)
         {
@@ -435,7 +891,7 @@ template<typename _Tp> ito::RetVal readXYZIData(const cv::Mat *x, const cv::Mat 
 
                 if (!pcl_isfinite(point.z) || !pcl_isfinite(point.x) || !pcl_isfinite(point.y))
                 {
-                    isDense = false;
+                    cloud->is_dense = false;
                 }
 
                 cloud->at(i * width + j) = point;
@@ -443,13 +899,23 @@ template<typename _Tp> ito::RetVal readXYZIData(const cv::Mat *x, const cv::Mat 
             }
         }
     }
-    cloud->resize(counter);
+    
+	if (organized)
+	{
+		cloud->width = width;
+		cloud->height = height;
+	}
+	else
+	{
+		cloud->width = counter;
+		cloud->height = 1;
+	}
 
     return ito::retOk;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> ito::RetVal readXYZRGBAData(const cv::Mat *x, const cv::Mat *y, const cv::Mat *z, const cv::Mat *color, pcl::PointCloud<pcl::PointXYZRGBA>::Ptr  &cloud, bool &isDense, const bool deleteNaNorInf)
+template<typename _Tp> ito::RetVal readXYZRGBAData(const cv::Mat *x, const cv::Mat *y, const cv::Mat *z, const cv::Mat *color, pcl::PointCloud<pcl::PointXYZRGBA>::Ptr  &cloud, const bool deleteNaNorInf)
 {
     pcl::PointXYZRGBA point;
     int width = z->cols;
@@ -457,13 +923,13 @@ template<typename _Tp> ito::RetVal readXYZRGBAData(const cv::Mat *x, const cv::M
     const _Tp *xRow, *yRow, *zRow;
     const ito::Rgba32 *cRow;
     size_t counter = 0;
-    isDense = true; //we assume no NaN or Inf values are in the cloud
     bool organized = true;
 
     if (deleteNaNorInf)
     {
-        //always dense, since nan values are removed
         cloud->reserve(width * height);
+        cloud->is_dense = true; //always dense since nan or inf not included in cloud
+
         for (int i = 0; i < x->rows; i++)
         {
             xRow = x->ptr<_Tp>(i);
@@ -489,10 +955,13 @@ template<typename _Tp> ito::RetVal readXYZRGBAData(const cv::Mat *x, const cv::M
             }
         }
         
+        cloud->resize(counter);
     }
     else
     {
         cloud->resize(width * height);
+        cloud->is_dense = true;
+
         for (int i = 0; i < x->rows; i++)
         {
             xRow = x->ptr<_Tp>(i);
@@ -509,7 +978,7 @@ template<typename _Tp> ito::RetVal readXYZRGBAData(const cv::Mat *x, const cv::M
 
                 if (!pcl_isfinite(point.z) || !pcl_isfinite(point.x) || !pcl_isfinite(point.y))
                 {
-                    isDense = false;
+                    cloud->is_dense = false;
                 }
 
                 cloud->at(i * width + j) = point;
@@ -517,7 +986,18 @@ template<typename _Tp> ito::RetVal readXYZRGBAData(const cv::Mat *x, const cv::M
             }
         }
     }
-    cloud->resize(counter);
+    
+
+	if ((counter == (width * height)) && organized)
+	{
+		cloud->width = width;
+		cloud->height = height;
+	}
+	else
+	{
+		cloud->width = counter;
+		cloud->height = 1;
+	}
 
     return ito::retOk;
 }
@@ -526,7 +1006,6 @@ template<typename _Tp> ito::RetVal readXYZRGBAData(const cv::Mat *x, const cv::M
 ito::RetVal pointCloudFromXYZ(const DataObject* mapX, const DataObject* mapY, const DataObject* mapZ, PCLPointCloud &out, bool deleteNaNorInf /*= false*/)
 {
     RetVal retval = retOk;
-    bool isDense = true;
 
     retval += ito::dObjHelper::verify2DDataObject(mapZ, "Z", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 8, ito::tFloat32, ito::tFloat64, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32);
     retval += ito::dObjHelper::verify2DDataObject(mapX, "X", mapZ->getSize(0), mapZ->getSize(0), mapZ->getSize(1), mapZ->getSize(1), 8, ito::tFloat32, ito::tFloat64, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32);
@@ -547,35 +1026,35 @@ ito::RetVal pointCloudFromXYZ(const DataObject* mapX, const DataObject* mapY, co
         switch (mapZ->getType())
         {
             case tUInt8:
-                readXYZData<ito::uint8>(x, y, z, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZData<ito::uint8>(x, y, z, cloud, deleteNaNorInf);
             break;
 
             case tInt8:
-                readXYZData<ito::int8>(x, y, z, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZData<ito::int8>(x, y, z, cloud, deleteNaNorInf);
             break;
 
             case tUInt16:
-                readXYZData<ito::uint16>(x, y, z, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZData<ito::uint16>(x, y, z, cloud, deleteNaNorInf);
             break;
 
             case tInt16:
-                readXYZData<ito::int16>(x, y, z, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZData<ito::int16>(x, y, z, cloud, deleteNaNorInf);
             break;
 
             case tUInt32:
-                readXYZData<ito::uint32>(x, y, z, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZData<ito::uint32>(x, y, z, cloud, deleteNaNorInf);
             break;
 
             case tInt32:
-                readXYZData<ito::int32>(x, y, z, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZData<ito::int32>(x, y, z, cloud, deleteNaNorInf);
             break;
 
             case tFloat32:
-                readXYZData<ito::float32>(x, y, z, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZData<ito::float32>(x, y, z, cloud, deleteNaNorInf);
             break;
 
             case tFloat64:
-                readXYZData<ito::float64>(x, y, z, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZData<ito::float64>(x, y, z, cloud, deleteNaNorInf);
             break;
 
             default:
@@ -591,7 +1070,6 @@ ito::RetVal pointCloudFromXYZ(const DataObject* mapX, const DataObject* mapY, co
 ito::RetVal pointCloudFromXYZI(const DataObject* mapX, const DataObject* mapY, const DataObject* mapZ, const DataObject* mapI, PCLPointCloud &out, bool deleteNaNorInf /*= false*/)
 {
     RetVal retval = retOk;
-    bool isDense = true;
 
     retval += ito::dObjHelper::verify2DDataObject(mapZ, "Z", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 8, ito::tFloat32, ito::tFloat64, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32);
     retval += ito::dObjHelper::verify2DDataObject(mapX, "X", mapZ->getSize(0), mapZ->getSize(0), mapZ->getSize(1), mapZ->getSize(1), 8, ito::tFloat32, ito::tFloat64, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32);
@@ -614,35 +1092,35 @@ ito::RetVal pointCloudFromXYZI(const DataObject* mapX, const DataObject* mapY, c
         switch (mapZ->getType())
         {
             case tUInt8:
-                readXYZIData<ito::uint8>(x, y, z, intensity, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZIData<ito::uint8>(x, y, z, intensity, cloud, deleteNaNorInf);
             break;
 
             case tInt8:
-                readXYZIData<ito::int8>(x, y, z, intensity, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZIData<ito::int8>(x, y, z, intensity, cloud, deleteNaNorInf);
             break;
 
             case tUInt16:
-                readXYZIData<ito::uint16>(x, y, z, intensity, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZIData<ito::uint16>(x, y, z, intensity, cloud, deleteNaNorInf);
             break;
 
             case tInt16:
-                readXYZIData<ito::int16>(x, y, z, intensity, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZIData<ito::int16>(x, y, z, intensity, cloud, deleteNaNorInf);
             break;
 
             case tUInt32:
-                readXYZIData<ito::uint32>(x, y, z, intensity, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZIData<ito::uint32>(x, y, z, intensity, cloud, deleteNaNorInf);
             break;
 
             case tInt32:
-                readXYZIData<ito::int32>(x, y, z, intensity, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZIData<ito::int32>(x, y, z, intensity, cloud, deleteNaNorInf);
             break;
 
             case tFloat32:
-                readXYZIData<ito::float32>(x, y, z, intensity, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZIData<ito::float32>(x, y, z, intensity, cloud, deleteNaNorInf);
             break;
 
             case tFloat64:
-                readXYZIData<ito::float64>(x, y, z, intensity, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZIData<ito::float64>(x, y, z, intensity, cloud, deleteNaNorInf);
             break;
 
             default:
@@ -659,7 +1137,6 @@ ito::RetVal pointCloudFromXYZI(const DataObject* mapX, const DataObject* mapY, c
 ito::RetVal pointCloudFromXYZRGBA(const DataObject* mapX, const DataObject* mapY, const DataObject* mapZ, const DataObject* mapColor, PCLPointCloud &out, bool deleteNaNorInf /*= false*/)
 {
     RetVal retval = retOk;
-    bool isDense = true;
 
     retval += ito::dObjHelper::verify2DDataObject(mapZ, "Z", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 8, ito::tFloat32, ito::tFloat64, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32);
     retval += ito::dObjHelper::verify2DDataObject(mapX, "X", mapZ->getSize(0), mapZ->getSize(0), mapZ->getSize(1), mapZ->getSize(1), 8, ito::tFloat32, ito::tFloat64, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32);
@@ -682,35 +1159,35 @@ ito::RetVal pointCloudFromXYZRGBA(const DataObject* mapX, const DataObject* mapY
         switch (mapZ->getType())
         {
             case tUInt8:
-                readXYZRGBAData<ito::uint8>(x, y, z, color, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZRGBAData<ito::uint8>(x, y, z, color, cloud, deleteNaNorInf);
             break;
 
             case tInt8:
-                readXYZRGBAData<ito::int8>(x, y, z, color, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZRGBAData<ito::int8>(x, y, z, color, cloud, deleteNaNorInf);
             break;
 
             case tUInt16:
-                readXYZRGBAData<ito::uint16>(x, y, z, color, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZRGBAData<ito::uint16>(x, y, z, color, cloud, deleteNaNorInf);
             break;
 
             case tInt16:
-                readXYZRGBAData<ito::int16>(x, y, z, color, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZRGBAData<ito::int16>(x, y, z, color, cloud, deleteNaNorInf);
             break;
 
             case tUInt32:
-                readXYZRGBAData<ito::uint32>(x, y, z, color, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZRGBAData<ito::uint32>(x, y, z, color, cloud, deleteNaNorInf);
             break;
 
             case tInt32:
-                readXYZRGBAData<ito::int32>(x, y, z, color, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZRGBAData<ito::int32>(x, y, z, color, cloud, deleteNaNorInf);
             break;
 
             case tFloat32:
-                readXYZRGBAData<ito::float32>(x, y, z, color, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZRGBAData<ito::float32>(x, y, z, color, cloud, deleteNaNorInf);
             break;
 
             case tFloat64:
-                readXYZRGBAData<ito::float64>(x, y, z, color, cloud, cloud->is_dense, deleteNaNorInf);
+                readXYZRGBAData<ito::float64>(x, y, z, color, cloud, deleteNaNorInf);
             break;
 
             default:
@@ -733,7 +1210,7 @@ ito::RetVal pointCloudFromDisparity(const DataObject* mapDisp, PCLPointCloud &ou
 template<typename _TpM, typename _TpI> void fromDataObj(const cv::Mat *mapDisp, const cv::Mat *mapInt, const ito::float32 firstX, const ito::float32 stepX, 
     const ito::float32 firstY, const ito::float32 stepY, 
     const ito::float32 minI, const ito::float32 scaleI,
-    const bool deleteNaNorInf, ito::PCLPointCloud &out, bool &isDense)
+    const bool deleteNaNorInf, ito::PCLPointCloud &out)
 {
     pcl::PointCloud<pcl::PointXYZI>::Ptr cloud;
     pcl::PointXYZI point;
@@ -747,7 +1224,8 @@ template<typename _TpM, typename _TpI> void fromDataObj(const cv::Mat *mapDisp, 
         cloud = out.toPointXYZI();
         out.reserve(width*height);
         size_t counter = 0;
-        cloud->is_dense = true;
+        cloud->is_dense = true; //cloud is always dense since nan and inf values are deleted
+        bool organized = true;
 
         for (int i = 0; i < height; i++)
         {
@@ -767,23 +1245,30 @@ template<typename _TpM, typename _TpI> void fromDataObj(const cv::Mat *mapDisp, 
                 }
                 else
                 {
-                    cloud->is_dense = false;
+                    organized = false;
                 }
             }
         }
 
         cloud->resize(counter);
+
+        if (organized)
+        {
+            cloud->width = width;
+            cloud->height = height;
+        }
+        else
+        {
+            cloud->width = counter;
+            cloud->height = 1;
+        }
     }
     else
     {
         out = ito::PCLPointCloud(width, height, ito::pclXYZI, ito::PCLPoint(point));
         cloud = out.toPointXYZI();
+        cloud->is_dense = true;
 
-        #if (USEOMP)
-        #pragma omp parallel num_threads(NTHREADS)
-        {
-        #pragma omp for schedule(guided)
-        #endif
         for (int i = 0; i < height; i++)
         {
             _TpM *zRow = (_TpM*)mapDisp->ptr<_TpM>(i);
@@ -798,24 +1283,22 @@ template<typename _TpM, typename _TpI> void fromDataObj(const cv::Mat *mapDisp, 
 
                 if (!pcl_isfinite(point.z))
                 {
-                    isDense = false;
+                    cloud->is_dense = false;
                 }
 
-                //cloud->at(j,i) = point;
                 cloud->at(i * width + j) = point;
             }
         }
-        #if (USEOMP)
-        }
-        #endif
 
-        cloud->is_dense = isDense;
+        //always organized
+        cloud->height = height;
+        cloud->width = width;
     }
 }
 
 
 //------------------------------------------------------------------------------------------------------------------------------
-template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const ito::float32 firstX, const ito::float32 stepX, const ito::float32 firstY, const ito::float32 stepY, const bool deleteNaNorInf, ito::PCLPointCloud &out, const bool isDense)
+template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const ito::float32 firstX, const ito::float32 stepX, const ito::float32 firstY, const ito::float32 stepY, const bool deleteNaNorInf, ito::PCLPointCloud &out)
 {
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
     pcl::PointXYZ point;
@@ -827,9 +1310,10 @@ template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const i
     {
         out = ito::PCLPointCloud(ito::pclXYZ);
         cloud = out.toPointXYZ();
-        cloud->is_dense = isDense;
+        cloud->is_dense = true; //cloud is always dense since nan or inf are not included
         out.reserve(width * height);
         size_t counter = 0;
+        bool organized = true;
 
         for (int i = 0; i < height; i++)
         {
@@ -847,24 +1331,30 @@ template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const i
                 }
                 else
                 {
-                    cloud->is_dense = false; //at least one nan value --> cloud is not dense
+                    organized = false; //at least one nan value --> cloud is not organized
                 }
             }
         }
 
         cloud->resize(counter);
+
+        if (organized)
+        {
+            cloud->width = width;
+            cloud->height = height;
+        }
+        else
+        {
+            cloud->width = counter;
+            cloud->height = 1;
+        }
     }
     else
     {
         out = ito::PCLPointCloud(width, height, ito::pclXYZ, ito::PCLPoint(point));
         cloud = out.toPointXYZ();
-        cloud->is_dense = isDense;
+        cloud->is_dense = true;
 
-        #if (USEOMP)
-        #pragma omp parallel num_threads(NTHREADS)
-        {
-        #pragma omp for schedule(guided)
-        #endif
         for (int i = 0; i < height; i++)
         {
             _TpM *zRow = (_TpM*)mapDisp->ptr<ito::float32>(i);
@@ -880,23 +1370,19 @@ template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const i
                     cloud->is_dense = false;
                 }
 
-                //cloud->at(j,i) = point;
                 cloud->at(i * width + j) = point;
-//                counter++;
             }
         }
-        #if (USEOMP)
-        }
-        #endif
 
-//        cloud->is_dense = isDense;
+        cloud->height = height;
+        cloud->width = width;
     }
 
     return ito::retOk;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------
-template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const ito::DataObject *mapI, const ito::float32 firstX, const ito::float32 stepX, const ito::float32 firstY, const ito::float32 stepY, const bool deleteNaNorInf, ito::PCLPointCloud &out, bool &isDense)
+template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const ito::DataObject *mapI, const ito::float32 firstX, const ito::float32 stepX, const ito::float32 firstY, const ito::float32 stepY, const bool deleteNaNorInf, ito::PCLPointCloud &out)
 {
     const cv::Mat *intensity = mapI->get_mdata()[ mapI->seekMat(0) ];
 
@@ -905,12 +1391,12 @@ template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const i
         case ito::tUInt8:
         {
             // 8 bit intensity we always scale between 0 - 255
-            fromDataObj<_TpM, ito::uint8>(mapDisp, intensity, firstX, stepX, firstY, stepY, 0.0, 1.0 / 255.0, deleteNaNorInf, out, isDense);
+            fromDataObj<_TpM, ito::uint8>(mapDisp, intensity, firstX, stepX, firstY, stepY, 0.0, 1.0 / 255.0, deleteNaNorInf, out);
         }
         break;
         case ito::tInt8:
         {
-            fromDataObj<_TpM, ito::int8>(mapDisp, intensity, firstX, stepX, firstY, stepY, -128.0, 1.0 / 255.0, deleteNaNorInf, out, isDense);
+            fromDataObj<_TpM, ito::int8>(mapDisp, intensity, firstX, stepX, firstY, stepY, -128.0, 1.0 / 255.0, deleteNaNorInf, out);
         }
         break;
         case ito::tUInt16:
@@ -926,7 +1412,7 @@ template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const i
                 maxVal = 16384.0;
             else
                 maxVal = 65535.0;       //guess 16 bit image
-            fromDataObj<_TpM, ito::uint16>(mapDisp, intensity, firstX, stepX, firstY, stepY, 0.0, 1.0 / maxVal, deleteNaNorInf, out, isDense);
+            fromDataObj<_TpM, ito::uint16>(mapDisp, intensity, firstX, stepX, firstY, stepY, 0.0, 1.0 / maxVal, deleteNaNorInf, out);
         }
         break;
         case ito::tInt16:
@@ -954,7 +1440,7 @@ template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const i
                 minVal = -32768.0;
                 maxVal = 65536.0;      //guess 16 bit image
             }
-            fromDataObj<_TpM, ito::int16>(mapDisp, intensity, firstX, stepX, firstY, stepY, minVal, 1.0 / maxVal, deleteNaNorInf, out, isDense);
+            fromDataObj<_TpM, ito::int16>(mapDisp, intensity, firstX, stepX, firstY, stepY, minVal, 1.0 / maxVal, deleteNaNorInf, out);
         }
         break;
         case ito::tUInt32:
@@ -962,7 +1448,7 @@ template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const i
             ito::float64 minVal, maxVal;
             ito::uint32 minLoc[3], maxLoc[3];
             ito::dObjHelper::minMaxValue(mapI, minVal, &minLoc[0], maxVal, &maxLoc[0]);
-            fromDataObj<_TpM, ito::uint32>(mapDisp, intensity, firstX, stepX, firstY, stepY, minVal, 1.0 / (maxVal - minVal), deleteNaNorInf, out, isDense);
+            fromDataObj<_TpM, ito::uint32>(mapDisp, intensity, firstX, stepX, firstY, stepY, minVal, 1.0 / (maxVal - minVal), deleteNaNorInf, out);
         }
         break;
         case ito::tInt32:
@@ -970,7 +1456,7 @@ template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const i
             ito::float64 minVal, maxVal;
             ito::uint32 minLoc[3], maxLoc[3];
             ito::dObjHelper::minMaxValue(mapI, minVal, &minLoc[0], maxVal, &maxLoc[0]);
-            fromDataObj<_TpM, ito::int32>(mapDisp, intensity, firstX, stepX, firstY, stepY, minVal, 1.0 / (maxVal - minVal), deleteNaNorInf, out, isDense);
+            fromDataObj<_TpM, ito::int32>(mapDisp, intensity, firstX, stepX, firstY, stepY, minVal, 1.0 / (maxVal - minVal), deleteNaNorInf, out);
         }
         break;
         case ito::tFloat32:
@@ -978,7 +1464,7 @@ template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const i
             ito::float64 minVal, maxVal;
             ito::uint32 minLoc[3], maxLoc[3];
             ito::dObjHelper::minMaxValue(mapI, minVal, &minLoc[0], maxVal, &maxLoc[0]);
-            fromDataObj<_TpM, ito::float32>(mapDisp, intensity, firstX, stepX, firstY, stepY, minVal, 1.0 / (maxVal - minVal), deleteNaNorInf, out, isDense);
+            fromDataObj<_TpM, ito::float32>(mapDisp, intensity, firstX, stepX, firstY, stepY, minVal, 1.0 / (maxVal - minVal), deleteNaNorInf, out);
         }
         break;
         case ito::tFloat64:
@@ -986,7 +1472,7 @@ template<typename _TpM> ito::RetVal fromDataObj1(const cv::Mat *mapDisp, const i
             ito::float64 minVal, maxVal;
             ito::uint32 minLoc[3], maxLoc[3];
             ito::dObjHelper::minMaxValue(mapI, minVal, &minLoc[0], maxVal, &maxLoc[0]);
-            fromDataObj<_TpM, ito::float64>(mapDisp, intensity, firstX, stepX, firstY, stepY, minVal, 1.0 / (maxVal - minVal), deleteNaNorInf, out, isDense);
+            fromDataObj<_TpM, ito::float64>(mapDisp, intensity, firstX, stepX, firstY, stepY, minVal, 1.0 / (maxVal - minVal), deleteNaNorInf, out);
         }
         break;
         default:
@@ -1005,7 +1491,6 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
     float stepX = 1.0;
     float firstY = 0.0;
     float stepY = 1.0;
-    bool isDense = true;
 
     retval += ito::dObjHelper::verify2DDataObject(mapDisp, "disparityMap", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 8, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, 
         ito::tInt32, ito::tUInt32, ito::tFloat32, ito::tFloat64);
@@ -1043,42 +1528,42 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
             {
                 case ito::tUInt8:
                 {
-                    fromDataObj1<ito::uint8>(z, firstX, stepX, firstY, stepY, deleteNaNorInf, out, isDense);
+                    fromDataObj1<ito::uint8>(z, firstX, stepX, firstY, stepY, deleteNaNorInf, out);
                 }
                 break;
                 case ito::tInt8:
                 {
-                    fromDataObj1<ito::int8>(z, firstX, stepX, firstY, stepY, deleteNaNorInf, out, isDense);
+                    fromDataObj1<ito::int8>(z, firstX, stepX, firstY, stepY, deleteNaNorInf, out);
                 }
                 break;
                 case ito::tUInt16:
                 {
-                    fromDataObj1<ito::uint16>(z, firstX, stepX, firstY, stepY, deleteNaNorInf, out, isDense);
+                    fromDataObj1<ito::uint16>(z, firstX, stepX, firstY, stepY, deleteNaNorInf, out);
                 }
                 break;
                 case ito::tInt16:
                 {
-                    fromDataObj1<ito::int16>(z, firstX, stepX, firstY, stepY, deleteNaNorInf, out, isDense);
+                    fromDataObj1<ito::int16>(z, firstX, stepX, firstY, stepY, deleteNaNorInf, out);
                 }
                 break;
                 case ito::tUInt32:
                 {
-                    fromDataObj1<ito::uint32>(z, firstX, stepX, firstY, stepY, deleteNaNorInf, out, isDense);
+                    fromDataObj1<ito::uint32>(z, firstX, stepX, firstY, stepY, deleteNaNorInf, out);
                 }
                 break;
                 case ito::tInt32:
                 {
-                    fromDataObj1<ito::int32>(z, firstX, stepX, firstY, stepY, deleteNaNorInf, out, isDense);
+                    fromDataObj1<ito::int32>(z, firstX, stepX, firstY, stepY, deleteNaNorInf, out);
                 }
                 break;
                 case ito::tFloat32:
                 {
-                    fromDataObj1<ito::float32>(z, firstX, stepX, firstY, stepY, deleteNaNorInf, out, isDense);
+                    fromDataObj1<ito::float32>(z, firstX, stepX, firstY, stepY, deleteNaNorInf, out);
                 }
                 break;
                 case ito::tFloat64:
                 {
-                    fromDataObj1<ito::float64>(z, firstX, stepX, firstY, stepY, deleteNaNorInf, out, isDense);
+                    fromDataObj1<ito::float64>(z, firstX, stepX, firstY, stepY, deleteNaNorInf, out);
                 }
                 break;
                 default:
@@ -1091,42 +1576,42 @@ ito::RetVal pointCloudFromDisparityI(const DataObject* mapDisp, const DataObject
             {
                 case ito::tUInt8:
                 {
-                    return fromDataObj1<ito::uint8>(z, mapI, firstX, stepX, firstY, stepY, deleteNaNorInf, out, isDense);
+                    return fromDataObj1<ito::uint8>(z, mapI, firstX, stepX, firstY, stepY, deleteNaNorInf, out);
                 }
                 break;
                 case ito::tInt8:
                 {
-                    return fromDataObj1<ito::int8>(z, mapI, firstX, stepX, firstY, stepY, deleteNaNorInf, out, isDense);
+                    return fromDataObj1<ito::int8>(z, mapI, firstX, stepX, firstY, stepY, deleteNaNorInf, out);
                 }
                 break;
                 case ito::tUInt16:
                 {
-                    return fromDataObj1<ito::uint16>(z, mapI, firstX, stepX, firstY, stepY, deleteNaNorInf, out, isDense);
+                    return fromDataObj1<ito::uint16>(z, mapI, firstX, stepX, firstY, stepY, deleteNaNorInf, out);
                 }
                 break;
                 case ito::tInt16:
                 {
-                    return fromDataObj1<ito::int16>(z, mapI, firstX, stepX, firstY, stepY, deleteNaNorInf, out, isDense);
+                    return fromDataObj1<ito::int16>(z, mapI, firstX, stepX, firstY, stepY, deleteNaNorInf, out);
                 }
                 break;
                 case ito::tUInt32:
                 {
-                    return fromDataObj1<ito::uint32>(z, mapI, firstX, stepX, firstY, stepY, deleteNaNorInf, out, isDense);
+                    return fromDataObj1<ito::uint32>(z, mapI, firstX, stepX, firstY, stepY, deleteNaNorInf, out);
                 }
                 break;
                 case ito::tInt32:
                 {
-                    return fromDataObj1<ito::int32>(z, mapI, firstX, stepX, firstY, stepY, deleteNaNorInf, out, isDense);
+                    return fromDataObj1<ito::int32>(z, mapI, firstX, stepX, firstY, stepY, deleteNaNorInf, out);
                 }
                 break;
                 case ito::tFloat32:
                 {
-                    return fromDataObj1<ito::float32>(z, mapI, firstX, stepX, firstY, stepY, deleteNaNorInf, out, isDense);
+                    return fromDataObj1<ito::float32>(z, mapI, firstX, stepX, firstY, stepY, deleteNaNorInf, out);
                 }
                 break;
                 case ito::tFloat64:
                 {
-                    return fromDataObj1<ito::float64>(z, mapI, firstX, stepX, firstY, stepY, deleteNaNorInf, out, isDense);
+                    return fromDataObj1<ito::float64>(z, mapI, firstX, stepX, firstY, stepY, deleteNaNorInf, out);
                 }
                 break;
                 default:
@@ -1146,7 +1631,6 @@ ito::RetVal pointCloudFromDisparityRGBA(const DataObject* mapDisp, const DataObj
     float stepX = 1.0;
     float firstY = 0.0;
     float stepY = 1.0;
-    bool isDense = true;
 
     retval += ito::dObjHelper::verify2DDataObject(mapDisp, "disparityMap", 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
     if (mapColor)
@@ -1190,7 +1674,7 @@ ito::RetVal pointCloudFromDisparityRGBA(const DataObject* mapDisp, const DataObj
                 cloud = out.toPointXYZ();
                 out.reserve(width*height);
                 size_t counter = 0;
-                cloud->is_dense = true;
+                cloud->is_dense = true; //always dense since no nan or inf values will be in the cloud
 
                 for (int i = 0; i < z->rows; i++)
                 {
@@ -1206,20 +1690,32 @@ ito::RetVal pointCloudFromDisparityRGBA(const DataObject* mapDisp, const DataObj
                             (*cloud).push_back(point);
                             counter++;
                         }
-                        else
-                        {
-                            cloud->is_dense = false;
-                        }
                     }
                 }
 
                 cloud->resize(counter);
+
+                if (counter == (width*height))
+                {
+                    //organized
+                    cloud->height = height;
+                    cloud->width = width;
+                }
+                else
+                {
+                    //non-organized
+                    cloud->height = 1;
+                    cloud->width = counter;
+                }
             }
             else
             {
                 out = ito::PCLPointCloud(width, height, ito::pclXYZ, ito::PCLPoint(point));
                 cloud = out.toPointXYZ();
-                size_t counter = 0;
+                cloud->is_dense = true;
+                //organized
+                cloud->height = height;
+                cloud->width = width;
 
                 for (int i = 0; i < z->rows; i++)
                 {
@@ -1233,16 +1729,12 @@ ito::RetVal pointCloudFromDisparityRGBA(const DataObject* mapDisp, const DataObj
 
                         if (!pcl_isfinite(point.z))
                         {
-                            isDense = false;
+                            cloud->is_dense = false;
                         }
 
-                        //cloud->at(j,i) = point;
                         cloud->at(i * width + j) = point;
-                        counter++;
                     }
                 }
-
-                cloud->is_dense = isDense;
             }
         }
         else
@@ -1261,7 +1753,7 @@ ito::RetVal pointCloudFromDisparityRGBA(const DataObject* mapDisp, const DataObj
                 cloud = out.toPointXYZRGBA();
                 out.reserve(width*height);
                 size_t counter = 0;
-                cloud->is_dense = true;
+                cloud->is_dense = true; //always dense since no nan or inf values will be in the cloud
 
                 for (int i = 0; i < z->rows; i++)
                 {
@@ -1279,20 +1771,32 @@ ito::RetVal pointCloudFromDisparityRGBA(const DataObject* mapDisp, const DataObj
                             (*cloud).push_back(point);
                             counter++;
                         }
-                        else
-                        {
-                            cloud->is_dense = true;
-                        }
                     }
                 }
 
                 cloud->resize(counter);
+
+                if (counter == (width*height))
+                {
+                    //organized
+                    cloud->height = height;
+                    cloud->width = width;
+                }
+                else
+                {
+                    //non-organized
+                    cloud->height = 1;
+                    cloud->width = counter;
+                }
             }
             else
             {
                 out = ito::PCLPointCloud(width, height, ito::pclXYZRGBA, ito::PCLPoint(point));
                 cloud = out.toPointXYZRGBA();
-                size_t counter = 0;
+                cloud->is_dense = true;
+                //organized
+                cloud->height = height;
+                cloud->width = width;
 
                 for (int i = 0; i < z->rows; i++)
                 {
@@ -1308,16 +1812,12 @@ ito::RetVal pointCloudFromDisparityRGBA(const DataObject* mapDisp, const DataObj
 
                         if (!pcl_isfinite(point.z))
                         {
-                            isDense = false;
+                            cloud->is_dense = false;
                         }
 
-                        //cloud->at(j,i) = point;
                         cloud->at(i * width + j) = point;
-                        counter++;
                     }
                 }
-
-                cloud->is_dense = isDense;
             }
         }
     }
@@ -1607,47 +2107,6 @@ ito::RetVal eigenAffine3fToDataObj4x4(const Eigen::Affine3f *in, DataObject &out
 
     return retval;
 }
-
-
-
-////------------------------------------------------------------------------------------------------------------------------------
-//ito::RetVal writeBinary(const std::string &filename, const ito::PCLPointCloud &cloud)
-//{
-//    pcl::PCDWriter w;
-//    int ret;
-//
-//    switch(cloud.getType())
-//    {
-//    case ito::pclXYZ:
-//        ret = pcl::io::savePCDFile<pcl::PointXYZ>(filename, *cloud.toPointXYZ(), true);
-//        break;
-//    case ito::pclXYZI:
-//        ret = pcl::io::savePCDFile<pcl::PointXYZI>(filename, *cloud.toPointXYZI(), true);
-//        break;
-//    case ito::pclXYZRGBA:
-//        ret = pcl::io::savePCDFile<pcl::PointXYZRGBA>(filename, *cloud.toPointXYZRGBA(), true);
-//        break;
-//    case ito::pclXYZNormal:
-//        ret = pcl::io::savePCDFile<pcl::PointNormal>(filename, *cloud.toPointXYZNormal(), true);
-//        break;
-//    case ito::pclXYZINormal:
-//        ret = pcl::io::savePCDFile<pcl::PointXYZINormal>(filename, *cloud.toPointXYZINormal(), true);
-//        break;
-//    case ito::pclXYZRGBNormal:
-//        ret = pcl::io::savePCDFile<pcl::PointXYZRGBNormal>(filename, *cloud.toPointXYZRGBNormal(), true);
-//        break;
-//    default:
-//        return RetVal(retError,0,"invalid point cloud");
-//    }
-//
-//    return ito::retOk;
-//}
-//
-////------------------------------------------------------------------------------------------------------------------------------
-//ito::RetVal readBinary(const std::string &filename, ito::PCLPointCloud &cloud)
-//{
-//    return ito::retOk;
-//}
 
 } //end namespace pclHelper
 } //end namespace ito

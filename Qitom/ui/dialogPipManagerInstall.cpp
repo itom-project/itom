@@ -1,8 +1,8 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2015, Institut für Technische Optik (ITO),
-    Universität Stuttgart, Germany
+    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
 
     This file is part of itom.
   
@@ -92,7 +92,7 @@ void DialogPipManagerInstall::getResult(int &type, QString &packageName, bool &u
 void DialogPipManagerInstall::on_btnPackage_clicked()
 {
     static QString btnPackageDirectory;
-    QString filter = (m_selectedType == typeWhl) ? "Python Wheel (*.whl)" : "Python tar.gz archive (*.tar.gz)";
+	QString filter = (m_selectedType == typeWhl) ? "Python Wheel (*.whl)" : "Python archives (*.tar.gz *.zip)";
     QString name = QFileDialog::getOpenFileName(this, tr("Select package archive"), btnPackageDirectory, filter);
     if (name != "")
     {
@@ -129,7 +129,7 @@ void DialogPipManagerInstall::on_radioTarGz_clicked(bool checked)
     m_selectedType = typeTarGz;
     ui.btnPackage->setEnabled(true);
     ui.txtPackage->setText("");
-    ui.txtPackage->setPlaceholderText(tr("choose tar.gz archive..."));
+    ui.txtPackage->setPlaceholderText(tr("choose tar.gz or zip archive..."));
     ui.txtPackage->setReadOnly(true);
 }
 
