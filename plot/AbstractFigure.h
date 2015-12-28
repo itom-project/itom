@@ -187,7 +187,10 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
         void updatePropertyDock(); /*!< call this method if any property of the figure changed such that the property toolbox is synchronized and updated. */
         void setPropertyObservedObject(QObject* obj); /*!< registeres obj for a property observation of the property toolbox. All readable properties are then listed in the property toolbox. */
 
-        QObject* legendDock();
+		QObject* MarkerWidget();
+		QObject* PickerWidget();
+		QObject* ShapesWidget();
+		QObject* ObjectInfoWidget();
 
         RetVal initialize();
 

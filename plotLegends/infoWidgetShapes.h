@@ -25,8 +25,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef MARKERLEGENDWIDGET_H
-#define MARKERLEGENDWIDGET_H
+#ifndef SHAPELEGENDWIDGET_H
+#define SHAPELEGENDWIDGET_H
 
 #ifdef __APPLE__
 extern "C++" {
@@ -36,8 +36,6 @@ extern "C++" {
 #include "../common/typeDefs.h"
 #include "../common/shape.h"
 
-#include <qvector3d.h>
-#include <qvector4d.h>
 #if QT_VERSION < 0x050000
 #include <qtreewidget.h>
 #include <qhash.h>
@@ -62,12 +60,12 @@ class relation
     tRelationType type;
 };
 
-class ITOMCOMMONQT_EXPORT MarkerLegendWidget : public QTreeWidget
+class ITOMCOMMONQT_EXPORT ShapesInfoWidget : public QTreeWidget
 {
     Q_OBJECT
         
     public:        
-        MarkerLegendWidget(QWidget* parent = NULL);
+		ShapesInfoWidget(QWidget* parent = NULL);
 
     private:
         QHash< int, relation> m_relationHash;
@@ -75,23 +73,17 @@ class ITOMCOMMONQT_EXPORT MarkerLegendWidget : public QTreeWidget
         bool m_onlyTwoDims;
 
     public slots:
-		void updatePicker(const int index, const QPointF position);
-		void updatePickers(const QVector<int> indices, const QVector< QPointF> positions);
-		void updatePicker(const int index, const QVector3D position);
-        void updatePickers(const QVector<int> indices, const QVector< QVector3D> positions);
         void updateShape(const int index, const ito::Shape element);
         void updateShapes(const QVector< ito::Shape > elements);
-		void updateLinePlot(const int index, const int type, const QVector4D positionAndDirection);
-		void updateLinePlots(const QVector<int> indices, const QVector<int> type, const QVector<QVector4D> positionAndDirection);
-
-        void removePicker(int index);
-        void removePickers();
 
         void removeShape(int index);
         void removeShapes();
 
-		void removeLinePlot(int index);
-		void removeLinePlots();
+		void addRelation(const int index1, const int index2, const int relationType);
+		void removeRelation(const int index1, const int index2);
+		void removeRelations(const int index1, const int index2);
+		void removeRelations(const int index);
+		void removeRelations();
 
     private slots:
 };
@@ -100,4 +92,4 @@ class ITOMCOMMONQT_EXPORT MarkerLegendWidget : public QTreeWidget
 }
 #endif
 
-#endif // MARKERLEGENDWIDGET_H
+#endif // SHAPELEGENDWIDGET_H

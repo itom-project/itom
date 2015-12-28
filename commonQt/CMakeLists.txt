@@ -105,7 +105,10 @@ set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractItomDesignerPlugin.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../MarkerLegend/markerLegendWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plotLegends/infoWidgetMarkers.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plotLegends/infoWidgetPickers.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plotLegends/infoWidgetShapes.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plotLegends/infoWidgetDObject.h
 )
 
 IF(NOT QT5_FOUND)
@@ -127,7 +130,10 @@ set(itomCommonQt_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractDObjPCLFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractNode.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../MarkerLegend/sources/markerLegendWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plotLegends/sources/infoWidgetMarkers.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plotLegends/sources/infoWidgetPickers.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plotLegends/sources/infoWidgetShapes.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plotLegends/sources/infoWidgetDObject.cpp
 )
 
 if(MSVC)
