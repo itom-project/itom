@@ -53,12 +53,20 @@ void PickerInfoWidget::updatePicker(const int index, const QPointF position)
 
 	if (!curItem)
 	{
-		curItem = new QTreeWidgetItem(this);
+		int position = 0;
+		curItem = new QTreeWidgetItem();
 
 		curItem->setData(0, Qt::DisplayRole, QString::number(index));
 		curItem->setData(0, Qt::UserRole, index);
 
-		this->addTopLevelItem(curItem);
+		if (topLevelItemCount() != 0)
+		{
+			while (position < topLevelItemCount() &&  !(topLevelItem(position)->data(0, Qt::UserRole).toInt() & 0xF000))
+			{
+				position++;
+			}
+		}
+		insertTopLevelItem(position, curItem);
 	}
 
 	if (curItem)
@@ -72,7 +80,6 @@ void PickerInfoWidget::updatePicker(const int index, const QPointF position)
 //---------------------------------------------------------------------------------------------------------
 void PickerInfoWidget::updatePickers(const QVector< int > indices, const QVector< QPointF> positions)
 {
-	QTreeWidgetItem *pickerEntries = topLevelItem(0);
 
 	if (indices.size() != positions.size())
 	{
@@ -96,12 +103,20 @@ void PickerInfoWidget::updatePickers(const QVector< int > indices, const QVector
 
 		if (!curItem)
 		{
-			curItem = new QTreeWidgetItem(this);
+			int position = 0;
+			curItem = new QTreeWidgetItem();
 
 			curItem->setData(0, Qt::DisplayRole, QString::number(indices[curSearchIndex]));
 			curItem->setData(0, Qt::UserRole, indices[curSearchIndex]);
 
-			this->addTopLevelItem(curItem);
+			if (topLevelItemCount() != 0)
+			{
+				while (position < topLevelItemCount() && !(topLevelItem(position)->data(0, Qt::UserRole).toInt() & 0xF000))
+				{
+					position++;
+				}
+			}
+			insertTopLevelItem(position, curItem);
 		}
 
 		if (curItem)
@@ -131,12 +146,20 @@ void PickerInfoWidget::updatePicker(const int index, const QVector3D position)
 
 	if (!curItem)
 	{
-		curItem = new QTreeWidgetItem(this);
+		int position = 0;
+		curItem = new QTreeWidgetItem();
 
 		curItem->setData(0, Qt::DisplayRole, QString::number(index));
 		curItem->setData(0, Qt::UserRole, index);
 
-		this->addTopLevelItem(curItem);
+		if (topLevelItemCount() != 0)
+		{
+			while (position < topLevelItemCount() &&  !(topLevelItem(position)->data(0, Qt::UserRole).toInt() & 0xF000))
+			{
+				position++;
+			}
+		}
+		insertTopLevelItem(position, curItem);
 	}
 
 	if (curItem)
@@ -150,8 +173,6 @@ void PickerInfoWidget::updatePicker(const int index, const QVector3D position)
 //---------------------------------------------------------------------------------------------------------
 void PickerInfoWidget::updatePickers(const QVector< int > indices, const QVector< QVector3D> positions)
 {
-	QTreeWidgetItem *pickerEntries = topLevelItem(0);
-
 	if (indices.size() != positions.size())
 	{
 		qDebug("Could not update pickers, indices and positions missmatch");
@@ -174,12 +195,20 @@ void PickerInfoWidget::updatePickers(const QVector< int > indices, const QVector
 
 		if (!curItem)
 		{
-			curItem = new QTreeWidgetItem(this);
+			int position = 0;
+			curItem = new QTreeWidgetItem();
 
 			curItem->setData(0, Qt::DisplayRole, QString::number(indices[curSearchIndex]));
 			curItem->setData(0, Qt::UserRole, indices[curSearchIndex]);
 
-			this->addTopLevelItem(curItem);
+			if (topLevelItemCount() != 0)
+			{
+				while (position < topLevelItemCount() &&  !(topLevelItem(position)->data(0, Qt::UserRole).toInt() & 0xF000))
+				{
+					position++;
+				}
+			}
+			insertTopLevelItem(position, curItem);
 		}
 
 		if (curItem)
@@ -191,7 +220,6 @@ void PickerInfoWidget::updatePickers(const QVector< int > indices, const QVector
 	}
 
 	return;
-    return;
 }
 //---------------------------------------------------------------------------------------------------------
 void PickerInfoWidget::removePicker(int index)
@@ -211,8 +239,89 @@ void PickerInfoWidget::removePicker(int index)
 //---------------------------------------------------------------------------------------------------------
 void PickerInfoWidget::removePickers()
 {
-	clear();
+	QTreeWidgetItem *pickerEntry = NULL;
+	for (int idx = topLevelItemCount(); idx > 0; idx--)
+	{
+		if (!(topLevelItem(idx)->data(0, Qt::UserRole).toInt() & 0xF000))
+		{
+			delete topLevelItem(idx);
+		}
+	}
 
     return;
+}
+//---------------------------------------------------------------------------------------------------------
+void PickerInfoWidget::updateChildPlot(const int index, const int type, const QVector4D positionAndDirection)
+{
+	QTreeWidgetItem *entry = NULL;
+
+	if (topLevelItemCount() == 0)
+	{
+		entry = new QTreeWidgetItem();
+		if (type == ito::Shape::Point)
+		{
+			entry->setData(0, Qt::DisplayRole, QString("Slice %1").arg(QString::number(index)));
+			entry->setData(0, Qt::UserRole, index | 0x4000);
+		}
+		else
+		{
+			entry->setData(0, Qt::DisplayRole, QString("Line %1").arg(QString::number(index)));
+			entry->setData(0, Qt::UserRole, index | 0x8000);
+		}
+		addTopLevelItem(entry);
+	}
+
+	if (entry)
+	{
+		if (type == ito::Shape::Point)
+		{
+			entry->setData(1, Qt::DisplayRole, QString("%1, %2").arg(QString::number(positionAndDirection.x()), QString::number(positionAndDirection.y())));
+		}
+		else
+		{
+			entry->setData(1, Qt::DisplayRole, QString("%1, %2 to %3, %4").arg(QString::number(positionAndDirection.x()),
+				QString::number(positionAndDirection.y()),
+				QString::number(positionAndDirection.z()),
+				QString::number(positionAndDirection.w())));
+		}
+		entry->setData(1, Qt::UserRole, positionAndDirection);
+	}
+
+	return;
+}
+//---------------------------------------------------------------------------------------------------------
+void PickerInfoWidget::updateChildPlots(const QVector<int> indices, const QVector<int> type, const QVector<QVector4D> positionAndDirection)
+{
+
+	return;
+}
+//---------------------------------------------------------------------------------------------------------
+void PickerInfoWidget::removeChildPlot(int index)
+{
+	QTreeWidgetItem *pickerEntry = NULL;
+	for (int idx = 0; idx < topLevelItemCount(); idx++)
+	{
+		int indexVal = topLevelItem(idx)->data(0, Qt::UserRole).toInt();
+		if (indexVal == (index | 0x8000) || indexVal == (index | 0x4000))
+		{
+			delete topLevelItem(idx);
+			break;
+		}
+	}
+	return;
+}
+//---------------------------------------------------------------------------------------------------------
+void PickerInfoWidget::removeChildPlots()
+{
+	QTreeWidgetItem *pickerEntry = NULL;
+	for (int idx = topLevelItemCount(); idx > 0; idx--)
+	{
+		if ((topLevelItem(idx - 1)->data(0, Qt::UserRole).toInt() & 0x8000) ||
+			(topLevelItem(idx - 1)->data(0, Qt::UserRole).toInt() & 0x4000))
+		{
+			delete topLevelItem(idx);
+		}
+	}
+	return;
 }
 //---------------------------------------------------------------------------------------------------------

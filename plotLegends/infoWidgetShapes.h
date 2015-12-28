@@ -73,7 +73,7 @@ class ITOMCOMMONQT_EXPORT ShapesInfoWidget : public QTreeWidget
         bool m_onlyTwoDims;
 
     public slots:
-        void updateShape(const int index, const ito::Shape element);
+        void updateShape(const ito::Shape element);
         void updateShapes(const QVector< ito::Shape > elements);
 
         void removeShape(int index);

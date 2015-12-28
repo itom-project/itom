@@ -34,7 +34,9 @@ extern "C++" {
 
 #include "../common/commonGlobal.h"
 #include "../common/typeDefs.h"
+#include "../common/shape.h"
 
+#include <qpoint.h>
 #include <qvector3d.h>
 #include <qvector4d.h>
 #if QT_VERSION < 0x050000
@@ -60,6 +62,11 @@ class ITOMCOMMONQT_EXPORT PickerInfoWidget : public QTreeWidget
 		void updatePickers(const QVector<int> indices, const QVector< QPointF> positions);
 		void updatePicker(const int index, const QVector3D position);
         void updatePickers(const QVector<int> indices, const QVector< QVector3D> positions);
+
+		void updateChildPlot(const int index, int type, const QVector4D positionAndDirection);
+		void updateChildPlots(const QVector<int> indices, const QVector<int> type, const QVector<QVector4D> positionAndDirection);
+		void removeChildPlot(int index);
+		void removeChildPlots();
 
         void removePicker(int index);
         void removePickers();

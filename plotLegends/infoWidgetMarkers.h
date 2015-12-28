@@ -34,9 +34,8 @@ extern "C++" {
 
 #include "../common/commonGlobal.h"
 #include "../common/typeDefs.h"
+#include "../common/shape.h"
 
-#include <qvector3d.h>
-#include <qvector4d.h>
 #if QT_VERSION < 0x050000
 #include <qtreewidget.h>
 #include <qhash.h>
@@ -55,7 +54,8 @@ class ITOMCOMMONQT_EXPORT MarkerInfoWidget : public QTreeWidget
     private:
 
 	public slots:
-		void updateMarker(const int index, const QVector< QPointF> positions);
+		void updateMarker(const ito::Shape element);
+		void updateMarkers(const QVector< ito::Shape > elements);
 
         void removeMarker(int index);
         void removeMarkers();

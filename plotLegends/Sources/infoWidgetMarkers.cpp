@@ -39,22 +39,138 @@ MarkerInfoWidget::MarkerInfoWidget(QWidget* parent /*= NULL*/) : QTreeWidget(par
 
 }
 //---------------------------------------------------------------------------------------------------------
-void MarkerInfoWidget::updateMarker(const int index, const QVector< QPointF> positions)
+void MarkerInfoWidget::updateMarker(const ito::Shape element)
 {
+
+	QTreeWidgetItem *curItem = NULL;
+
+	for (int idx = 0; idx < topLevelItemCount(); idx++)
+	{
+		if (topLevelItem(idx)->data(0, Qt::UserRole).toInt() == element.index())
+		{
+			curItem = this->topLevelItem(idx);
+			break;
+		}
+	}
+
+	if (!curItem)
+	{
+		curItem = new QTreeWidgetItem();
+		curItem->setData(0, Qt::UserRole, element.index());
+
+		addTopLevelItem(curItem);
+	}
+
+	if (curItem)
+	{
+		while (curItem->childCount() > 0)
+		{
+			curItem->removeChild(curItem->child(curItem->childCount()) - 1);
+		}
+
+		switch (element.type() & ito::Shape::TypeMask)
+		{
+		case ito::Shape::MultiPointPick:
+			curItem->setData(0, Qt::DisplayRole, QString("Group %1").arg(QString::number(element.index())));
+			curItem->setData(1, Qt::UserRole, element.basePoints());
+			for each (QPointF basePoint in element.basePoints())
+			{
+				curItem->addChild(new QTreeWidgetItem());
+				curItem->child(curItem->childCount()-1)->setData(1, Qt::DisplayRole, QString("%1, %2").arg(QString::number(basePoint.x()), QString::number(basePoint.y())));
+			}
+			break;
+		default:
+			delete curItem;
+			curItem = NULL;
+			break;
+		}
+
+		//curItem->setData(1, Qt::DisplayRole, QString("%1, %2").arg(QString::number((positions[curSearchIndex]).x()), QString::number((positions[curSearchIndex]).y())));
+
+	}
 
 
 	return;
 }
 //---------------------------------------------------------------------------------------------------------
-void MarkerInfoWidget::removeMarker(int index)
+void MarkerInfoWidget::updateMarkers(const QVector< ito::Shape > elements)
 {
 
-    return;
+	for (int curSearchIndex = 0; curSearchIndex < elements.size(); curSearchIndex++)
+	{
+		QTreeWidgetItem *curItem = NULL;
+
+		for (int idx = 0; idx < topLevelItemCount(); idx++)
+		{
+			if (topLevelItem(idx)->data(0, Qt::UserRole).toInt() == elements[curSearchIndex].index())
+			{
+				curItem = this->topLevelItem(idx);
+				break;
+			}
+		}
+
+		if (!curItem)
+		{
+			curItem = new QTreeWidgetItem();
+			curItem->setData(0, Qt::UserRole, elements[curSearchIndex].index());
+
+			addTopLevelItem(curItem);
+		}
+
+		if (curItem)
+		{
+			while (curItem->childCount() > 0)
+			{
+				curItem->removeChild(curItem->child(curItem->childCount()) - 1);
+			}
+
+			switch (elements[curSearchIndex].type() & ito::Shape::TypeMask)
+			{
+			case ito::Shape::MultiPointPick:
+				curItem->setData(0, Qt::DisplayRole, QString("Group %1").arg(QString::number(elements[curSearchIndex].index())));
+				curItem->setData(1, Qt::UserRole, elements[curSearchIndex].basePoints());
+				for each (QPointF basePoint in elements[curSearchIndex].basePoints())
+				{
+					curItem->addChild(new QTreeWidgetItem());
+					curItem->child(curItem->childCount() - 1)->setData(1, Qt::DisplayRole, QString("%1, %2").arg(QString::number(basePoint.x()), QString::number(basePoint.y())));
+				}
+				break;
+			default:
+				delete curItem;
+				curItem = NULL;
+				break;
+			}
+
+			//curItem->setData(1, Qt::DisplayRole, QString("%1, %2").arg(QString::number((positions[curSearchIndex]).x()), QString::number((positions[curSearchIndex]).y())));
+
+		}
+	}
+
+	return;
+
+}
+//---------------------------------------------------------------------------------------------------------
+void MarkerInfoWidget::removeMarker(int index)
+{
+	for (int idx = 0; idx < topLevelItemCount(); idx++)
+	{
+		if (topLevelItem(idx)->data(0, Qt::UserRole).toInt() == index)
+		{
+			delete topLevelItem(idx);
+			break;
+		}
+	}
+
+	return;
 }
 //---------------------------------------------------------------------------------------------------------
 void MarkerInfoWidget::removeMarkers()
 {
+	while (topLevelItemCount() > 0)
+	{
+		delete topLevelItem(topLevelItemCount() - 1);
+	}
 
-    return;
+	return;
 }
 //---------------------------------------------------------------------------------------------------------

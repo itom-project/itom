@@ -44,30 +44,157 @@ ShapesInfoWidget::ShapesInfoWidget(QWidget* parent /*= NULL*/) : QTreeWidget(par
 	*/
 }
 //---------------------------------------------------------------------------------------------------------
-void ShapesInfoWidget::updateShape(const int index, const ito::Shape element)
+void ShapesInfoWidget::updateShape(const ito::Shape element)
 {
 
+	QTreeWidgetItem *curItem = NULL;
 
-    return;
+	for (int idx = 0; idx < topLevelItemCount(); idx++)
+	{
+		if (topLevelItem(idx)->data(0, Qt::UserRole).toInt() == element.index())
+		{
+			curItem = this->topLevelItem(idx);
+			break;
+		}
+	}
+
+	if (!curItem)
+	{
+		curItem = new QTreeWidgetItem();
+		curItem->setData(0, Qt::UserRole, element.index());
+
+		addTopLevelItem(curItem);
+	}
+
+	if (curItem)
+	{
+		switch (element.type() & ito::Shape::TypeMask)
+		{
+		case ito::Shape::Point:
+			curItem->setData(0, Qt::DisplayRole, QString("Point %1").arg(QString::number(element.index())));
+			curItem->setData(1, Qt::UserRole, element.basePoints());
+			break;
+		case ito::Shape::Line:
+			curItem->setData(0, Qt::DisplayRole, QString("Line %1").arg(QString::number(element.index())));
+			curItem->setData(1, Qt::UserRole, element.basePoints());
+			break;
+		case ito::Shape::Square:
+			curItem->setData(0, Qt::DisplayRole, QString("Sqare %1").arg(QString::number(element.index())));
+			curItem->setData(1, Qt::UserRole, element.basePoints());
+			break;
+		case ito::Shape::Rectangle:
+			curItem->setData(0, Qt::DisplayRole, QString("Rectangle %1").arg(QString::number(element.index())));
+			curItem->setData(1, Qt::UserRole, element.basePoints());
+			break;
+		case ito::Shape::Ellipse:
+			curItem->setData(0, Qt::DisplayRole, QString("Ellipse %1").arg(QString::number(element.index())));
+			curItem->setData(1, Qt::UserRole, element.basePoints());
+			break;
+		case ito::Shape::Circle:
+			curItem->setData(0, Qt::DisplayRole, QString("Circle %1").arg(QString::number(element.index())));
+			curItem->setData(1, Qt::UserRole, element.basePoints());
+			break;
+		case ito::Shape::Polygon:
+			curItem->setData(0, Qt::DisplayRole, QString("Polygon %1").arg(QString::number(element.index())));
+			curItem->setData(1, Qt::UserRole, element.basePoints());
+			break;
+		default:
+			delete curItem;
+			curItem = NULL;
+			break;
+		}
+
+		//curItem->setData(1, Qt::DisplayRole, QString("%1, %2").arg(QString::number((positions[curSearchIndex]).x()), QString::number((positions[curSearchIndex]).y())));
+
+	}
+
+	
+	return;
 }
 //---------------------------------------------------------------------------------------------------------
 void ShapesInfoWidget::updateShapes(const QVector< ito::Shape > elements)
 {
+	if (elements.size() < 0)
+	{
+		qDebug("Could not update pickers");
+		return;
+	}
 
-    return;
+	for (int curSearchIndex = 0; curSearchIndex < elements.size(); curSearchIndex++)
+	{
+
+		QTreeWidgetItem *curItem = NULL;
+
+		for (int idx = 0; idx < topLevelItemCount(); idx++)
+		{
+			if (topLevelItem(idx)->data(0, Qt::UserRole).toInt() == elements[curSearchIndex].index())
+			{
+				curItem = this->topLevelItem(idx);
+				break;
+			}
+		}
+
+		if (!curItem)
+		{
+			curItem = new QTreeWidgetItem();
+			curItem->setData(0, Qt::UserRole, elements[curSearchIndex].index());
+
+			addTopLevelItem(curItem);
+		}
+
+		if (curItem)
+		{
+			switch (elements[curSearchIndex].type() & ito::Shape::TypeMask)
+			{
+				case ito::Shape::Point:
+					curItem->setData(0, Qt::DisplayRole, QString("Point %1").arg(QString::number(elements[curSearchIndex].index())));
+					curItem->setData(1, Qt::UserRole, elements[curSearchIndex].basePoints()); 
+					break;
+				case ito::Shape::Line:
+					curItem->setData(0, Qt::DisplayRole, QString("Line %1").arg(QString::number(elements[curSearchIndex].index())));
+					curItem->setData(1, Qt::UserRole, elements[curSearchIndex].basePoints());
+					break;
+				case ito::Shape::Square:
+					curItem->setData(0, Qt::DisplayRole, QString("Sqare %1").arg(QString::number(elements[curSearchIndex].index())));
+					curItem->setData(1, Qt::UserRole, elements[curSearchIndex].basePoints()); 
+					break;
+				case ito::Shape::Rectangle:
+					curItem->setData(0, Qt::DisplayRole, QString("Rectangle %1").arg(QString::number(elements[curSearchIndex].index())));
+					curItem->setData(1, Qt::UserRole, elements[curSearchIndex].basePoints()); 
+					break;
+				case ito::Shape::Ellipse:
+					curItem->setData(0, Qt::DisplayRole, QString("Ellipse %1").arg(QString::number(elements[curSearchIndex].index())));
+					curItem->setData(1, Qt::UserRole, elements[curSearchIndex].basePoints()); 
+					break;
+				case ito::Shape::Circle:
+					curItem->setData(0, Qt::DisplayRole, QString("Circle %1").arg(QString::number(elements[curSearchIndex].index())));
+					curItem->setData(1, Qt::UserRole, elements[curSearchIndex].basePoints()); 
+					break;
+				case ito::Shape::Polygon:
+					curItem->setData(0, Qt::DisplayRole, QString("Polygon %1").arg(QString::number(elements[curSearchIndex].index())));
+					curItem->setData(1, Qt::UserRole, elements[curSearchIndex].basePoints());
+					break;
+				default:
+					delete curItem;
+					curItem = NULL;
+					break;
+			}
+			
+			//curItem->setData(1, Qt::DisplayRole, QString("%1, %2").arg(QString::number((positions[curSearchIndex]).x()), QString::number((positions[curSearchIndex]).y())));
+			
+		}
+
+	}
+	return;
 }
-//---------------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------
 void ShapesInfoWidget::removeShape(int index)
 {
-    QTreeWidgetItem *shapeEntries = topLevelItem(1);
-    QTreeWidgetItem* myChild = NULL;
-	for (int idx = 0; idx < shapeEntries->childCount(); idx++)
+	for (int idx = 0; idx < topLevelItemCount(); idx++)
     {
-		if (shapeEntries->child(idx)->data(0, Qt::UserRole).toInt() == index)
+		if (topLevelItem(idx)->data(0, Qt::UserRole).toInt() == index)
         {
-			myChild = shapeEntries->child(idx);
-			shapeEntries->removeChild(myChild);
+			delete topLevelItem(idx);
             break;
         }
     }
@@ -77,10 +204,9 @@ void ShapesInfoWidget::removeShape(int index)
 //---------------------------------------------------------------------------------------------------------
 void ShapesInfoWidget::removeShapes()
 {
-	QTreeWidgetItem *shapeEntries = topLevelItem(1);
-	while (shapeEntries->childCount() > 0)
+	while (topLevelItemCount() > 0)
     {
-		shapeEntries->removeChild(shapeEntries->child(shapeEntries->childCount() - 1));
+		delete topLevelItem(topLevelItemCount() - 1);
     }
 
     return;
