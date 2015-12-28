@@ -32,8 +32,9 @@
 extern "C++" {
 #endif
 
-#include "defines.h"
+#include "../common/commonGlobal.h"
 #include "../common/typeDefs.h"
+#include "../common/shape.h"
 
 #include <qvector3d.h>
 #include <qvector4d.h>
@@ -61,7 +62,7 @@ class relation
     tRelationType type;
 };
 
-class MARKERLEGEND_EXPORT MarkerLegendWidget : public QTreeWidget
+class ITOMCOMMONQT_EXPORT MarkerLegendWidget : public QTreeWidget
 {
     Q_OBJECT
         
@@ -74,19 +75,23 @@ class MARKERLEGEND_EXPORT MarkerLegendWidget : public QTreeWidget
         bool m_onlyTwoDims;
 
     public slots:
-        void updatePicker(const int index, const QVector3D position);
+		void updatePicker(const int index, const QPointF position);
+		void updatePickers(const QVector<int> indices, const QVector< QPointF> positions);
+		void updatePicker(const int index, const QVector3D position);
         void updatePickers(const QVector<int> indices, const QVector< QVector3D> positions);
-        void updateGeometry(const int index, const ito::GeometricPrimitive element);
-        void updateGeometries(const QVector< ito::GeometricPrimitive > elements);
-        void updateLinePlot(const int type, const QVector4D positionAndDirection);
+        void updateShape(const int index, const ito::Shape element);
+        void updateShapes(const QVector< ito::Shape > elements);
+		void updateLinePlot(const int index, const int type, const QVector4D positionAndDirection);
+		void updateLinePlots(const QVector<int> indices, const QVector<int> type, const QVector<QVector4D> positionAndDirection);
 
         void removePicker(int index);
         void removePickers();
 
-        void removeGeometry(int index);
-        void removeGeometries();
+        void removeShape(int index);
+        void removeShapes();
 
-        void removeLinePlot();
+		void removeLinePlot(int index);
+		void removeLinePlots();
 
     private slots:
 };

@@ -105,6 +105,7 @@ set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractItomDesignerPlugin.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../MarkerLegend/markerLegendWidget.h
 )
 
 IF(NOT QT5_FOUND)
@@ -126,6 +127,7 @@ set(itomCommonQt_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractDObjPCLFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractFigure.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractNode.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../MarkerLegend/sources/markerLegendWidget.cpp
 )
 
 if(MSVC)
@@ -137,7 +139,7 @@ file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
 add_library(${target_name} ${LIBRARY_TYPE} ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS} ${itomCommonQt_HEADERS_MOC} ${EXISTING_TRANSLATION_FILES})
 
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} dataobject qpropertyeditor itomCommonLib markerLegend)
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} dataobject qpropertyeditor itomCommonLib)
 
 IF (QT5_FOUND)
     IF(CMAKE_VERSION VERSION_GREATER 3.0.0)

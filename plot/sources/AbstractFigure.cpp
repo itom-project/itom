@@ -161,7 +161,7 @@ RetVal AbstractFigure::initialize()
 	d->markerLegendDock->setWidget(d->markerLegendWidget);
 
     addToolbox(d->propertyDock, "properties", Qt::RightDockWidgetArea);
-	addToolbox(d->markerLegendDock, "properties", Qt::RightDockWidgetArea);
+	addToolbox(d->markerLegendDock, "legend", Qt::RightDockWidgetArea);
 
     return ito::retOk;
 }
@@ -507,6 +507,11 @@ bool AbstractFigure::getToolbarVisible() const
 QDockWidget* AbstractFigure::getPropertyDockWidget() const 
 { 
     return d->propertyDock; 
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+QDockWidget* AbstractFigure::getMarkerLegendDockWidget() const
+{
+	return d->markerLegendDock;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
