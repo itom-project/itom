@@ -68,6 +68,14 @@ class ITOMCOMMONQT_EXPORT ShapesInfoWidget : public QTreeWidget
 		ShapesInfoWidget(QWidget* parent = NULL);
 
     private:
+		void setItem2Point(QTreeWidgetItem* curItem, const ito::Shape &element);
+		void setItem2Line(QTreeWidgetItem* curItem, const ito::Shape &element);
+		void setItem2Circle(QTreeWidgetItem* curItem, const ito::Shape &element);
+		void setItem2Ellipse(QTreeWidgetItem* curItem, const ito::Shape &element);
+		void setItem2Square(QTreeWidgetItem* curItem, const ito::Shape &element);
+		void setItem2Rect(QTreeWidgetItem* curItem, const ito::Shape &element);
+		void setItem2Poly(QTreeWidgetItem* curItem, const ito::Shape &element);
+
         QHash< int, relation> m_relationHash;
 
         bool m_onlyTwoDims;

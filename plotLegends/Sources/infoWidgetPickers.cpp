@@ -274,31 +274,41 @@ void PickerInfoWidget::updateChildPlot(const int index, const int type, const QV
 		entry = new QTreeWidgetItem();
 		if (type == ito::Shape::Point)
 		{
-			entry->setData(0, Qt::DisplayRole, QString("Slice %1").arg(QString::number(index)));
+			entry->setData(0, Qt::DisplayRole, QString("z-Slice"));
 			entry->setData(0, Qt::UserRole, searchIndex0);
 		}
 		else
 		{
-			entry->setData(0, Qt::DisplayRole, QString("Line %1").arg(QString::number(index)));
+			entry->setData(0, Qt::DisplayRole, QString("LineCut"));
 			entry->setData(0, Qt::UserRole, searchIndex1);
 		}
 		addTopLevelItem(entry);
+		entry->addChild(new QTreeWidgetItem());
+		entry->child(0)->setData(0, Qt::DisplayRole, "Unique ID");
+		entry->addChild(new QTreeWidgetItem());
+		entry->child(1)->setData(0, Qt::DisplayRole, "Position");
+		if (type == ito::Shape::Line)
+		{
+			entry->addChild(new QTreeWidgetItem());
+			entry->child(2)->setData(0, Qt::DisplayRole, "End");
+			entry->addChild(new QTreeWidgetItem());
+			entry->child(3)->setData(0, Qt::DisplayRole, "Length");
+		}
+		entry->setExpanded(true);
 	}
 
 	if (entry)
 	{
-		if (type == ito::Shape::Point)
-		{
-			entry->setData(1, Qt::DisplayRole, QString("%1, %2").arg(QString::number(positionAndDirection.x()), QString::number(positionAndDirection.y())));
-		}
-		else
-		{
-			entry->setData(1, Qt::DisplayRole, QString("%1, %2 to %3, %4").arg(QString::number(positionAndDirection.x()),
-				QString::number(positionAndDirection.y()),
-				QString::number(positionAndDirection.z()),
-				QString::number(positionAndDirection.w())));
-		}
 		entry->setData(1, Qt::UserRole, positionAndDirection);
+		entry->child(0)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(index)));
+		entry->child(1)->setData(1, Qt::DisplayRole, QString("%1, %2").arg(QString::number(positionAndDirection.x()), QString::number(positionAndDirection.y())));
+		if (type == ito::Shape::Line)
+		{
+			entry->child(2)->setData(1, Qt::DisplayRole, QString("%1, %2").arg(QString::number(positionAndDirection.z()), QString::number(positionAndDirection.w())));
+			double length = std::sqrt(std::pow(positionAndDirection.x() - positionAndDirection.z(), 2) + std::pow(positionAndDirection.y() - positionAndDirection.w(), 2));
+			entry->child(3)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(length)));
+		}
+				
 	}
 
 	return;

@@ -59,6 +59,7 @@ void MarkerInfoWidget::updateMarker(const ito::Shape element)
 		curItem->setData(0, Qt::UserRole, element.index());
 
 		addTopLevelItem(curItem);
+		curItem->setExpanded(true);
 	}
 
 	if (curItem)
@@ -84,7 +85,9 @@ void MarkerInfoWidget::updateMarker(const ito::Shape element)
 			for each (QPointF basePoint in element.basePoints())
 			{
 				curItem->addChild(new QTreeWidgetItem());
-				curItem->child(curItem->childCount()-1)->setData(1, Qt::DisplayRole, QString("%1, %2").arg(QString::number(basePoint.x()), QString::number(basePoint.y())));
+				int curCnt = curItem->childCount() - 1; 
+				curItem->child(curCnt)->setData(0, Qt::DisplayRole, QString("Node%1").arg(QString::number(curCnt)));
+				curItem->child(curCnt)->setData(1, Qt::DisplayRole, QString("%1, %2").arg(QString::number(basePoint.x()), QString::number(basePoint.y())));
 			}
 			break;
 		default:
@@ -123,6 +126,7 @@ void MarkerInfoWidget::updateMarkers(const QVector< ito::Shape > elements)
 			curItem->setData(0, Qt::UserRole, elements[curSearchIndex].index());
 
 			addTopLevelItem(curItem);
+			curItem->setExpanded(true);
 		}
 
 		if (curItem)

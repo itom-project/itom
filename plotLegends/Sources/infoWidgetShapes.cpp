@@ -37,11 +37,157 @@ ShapesInfoWidget::ShapesInfoWidget(QWidget* parent /*= NULL*/) : QTreeWidget(par
     clear();
 
     this->setColumnCount(2);
-	/*
-    insertTopLevelItem(0, new QTreeWidgetItem(this, QStringList("Picker")));
-    insertTopLevelItem(1, new QTreeWidgetItem(this, QStringList("Shapes")));
-    insertTopLevelItem(2, new QTreeWidgetItem(this, QStringList("Plot Nodes")));
-	*/
+
+}
+//---------------------------------------------------------------------------------------------------------
+void ShapesInfoWidget::setItem2Point(QTreeWidgetItem* curItem, const ito::Shape &element)
+{
+	curItem->setData(0, Qt::DisplayRole, QString("Point %1").arg(QString::number(element.index())));
+	curItem->setData(1, Qt::UserRole, element.rbasePoints());
+
+	while (curItem->childCount() > 1)
+	{
+		curItem->removeChild(curItem->child(curItem->childCount() - 1));
+	}
+	while (curItem->childCount() < 1)
+	{
+		curItem->addChild(new QTreeWidgetItem());
+	}
+	QPointF center = element.centerPoint();
+	curItem->child(0)->setData(0, Qt::DisplayRole, "Position");
+	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(center.x()), QString::number(center.y())));
+}
+//---------------------------------------------------------------------------------------------------------
+void ShapesInfoWidget::setItem2Line(QTreeWidgetItem* curItem, const ito::Shape &element)
+{
+	curItem->setData(0, Qt::DisplayRole, QString("Line %1").arg(QString::number(element.index())));
+	curItem->setData(1, Qt::UserRole, element.rbasePoints());
+	while (curItem->childCount() > 3)
+	{
+		curItem->removeChild(curItem->child(curItem->childCount() - 1));
+	}
+	while (curItem->childCount() < 3)
+	{
+		curItem->addChild(new QTreeWidgetItem());
+	}
+	const QPolygonF points = element.rbasePoints();
+	double length = std::sqrt(std::pow(points[0].x() - points[1].x(), 2) + std::pow(points[0].y() - points[1].y(), 2));
+	curItem->child(0)->setData(0, Qt::DisplayRole, "Start");
+	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(points[0].x()), QString::number(points[0].y())));
+	curItem->child(1)->setData(0, Qt::DisplayRole, "End");
+	curItem->child(1)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(points[1].x()), QString::number(points[1].y())));
+	curItem->child(2)->setData(0, Qt::DisplayRole, "Length");
+	curItem->child(2)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(length)));
+}
+//---------------------------------------------------------------------------------------------------------
+void ShapesInfoWidget::setItem2Circle(QTreeWidgetItem* curItem, const ito::Shape &element)
+{
+	curItem->setData(0, Qt::DisplayRole, QString("Circle %1").arg(QString::number(element.index())));
+	curItem->setData(1, Qt::UserRole, element.rbasePoints());
+	while (curItem->childCount() > 2)
+	{
+		curItem->removeChild(curItem->child(curItem->childCount() - 1));
+	}
+	while (curItem->childCount() < 2)
+	{
+		curItem->addChild(new QTreeWidgetItem());
+	}
+	QPointF center = element.centerPoint();
+	double radius = std::abs(element.rbasePoints()[0].x() - element.rbasePoints()[1].x()) / 2;
+	curItem->child(0)->setData(0, Qt::DisplayRole, "Position");
+	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(center.x()), QString::number(center.y())));
+	curItem->child(1)->setData(0, Qt::DisplayRole, "Radius");
+	curItem->child(1)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(radius)));
+}
+//---------------------------------------------------------------------------------------------------------
+void ShapesInfoWidget::setItem2Ellipse(QTreeWidgetItem* curItem, const ito::Shape &element)
+{
+	curItem->setData(0, Qt::DisplayRole, QString("Ellipse %1").arg(QString::number(element.index())));
+	curItem->setData(1, Qt::UserRole, element.rbasePoints());
+	while (curItem->childCount() > 3)
+	{
+		curItem->removeChild(curItem->child(curItem->childCount() - 1));
+	}
+	while (curItem->childCount() < 3)
+	{
+		curItem->addChild(new QTreeWidgetItem());
+	}
+	QPointF center = element.centerPoint();
+
+	curItem->child(0)->setData(0, Qt::DisplayRole, "Position");
+	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(center.x()), QString::number(center.y())));
+	double radius = std::abs(element.rbasePoints()[0].x() - element.rbasePoints()[1].x()) / 2;
+	curItem->child(1)->setData(0, Qt::DisplayRole, "Radius1");
+	curItem->child(1)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(radius)));
+	radius = std::abs(element.rbasePoints()[0].y() - element.rbasePoints()[1].y()) / 2;
+	curItem->child(2)->setData(0, Qt::DisplayRole, "Radius2");
+	curItem->child(2)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(radius)));
+}
+//---------------------------------------------------------------------------------------------------------
+void ShapesInfoWidget::setItem2Square(QTreeWidgetItem* curItem, const ito::Shape &element)
+{
+	curItem->setData(0, Qt::DisplayRole, QString("Sqare %1").arg(QString::number(element.index())));
+	curItem->setData(1, Qt::UserRole, element.rbasePoints());
+	while (curItem->childCount() > 2)
+	{
+		curItem->removeChild(curItem->child(curItem->childCount() - 1));
+	}
+	while (curItem->childCount() < 2)
+	{
+		curItem->addChild(new QTreeWidgetItem());
+	}
+	QPointF center = element.centerPoint();
+
+	curItem->child(0)->setData(0, Qt::DisplayRole, "Position");
+	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(center.x()), QString::number(center.y())));
+	double side = std::abs(element.rbasePoints()[0].x() - element.rbasePoints()[1].x());
+	curItem->child(1)->setData(0, Qt::DisplayRole, "SizeX");
+	curItem->child(1)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(side)));
+}
+//---------------------------------------------------------------------------------------------------------
+void ShapesInfoWidget::setItem2Rect(QTreeWidgetItem* curItem, const ito::Shape &element)
+{
+	curItem->setData(0, Qt::DisplayRole, QString("Rectangle %1").arg(QString::number(element.index())));
+	curItem->setData(1, Qt::UserRole, element.rbasePoints());
+	while (curItem->childCount() > 3)
+	{
+		curItem->removeChild(curItem->child(curItem->childCount() - 1));
+	}
+	while (curItem->childCount() < 3)
+	{
+		curItem->addChild(new QTreeWidgetItem());
+	}
+	QPointF center = element.centerPoint();
+
+	curItem->child(0)->setData(0, Qt::DisplayRole, "Position");
+	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(center.x()), QString::number(center.y())));
+	double side = std::abs(element.rbasePoints()[0].x() - element.rbasePoints()[1].x());
+	curItem->child(1)->setData(0, Qt::DisplayRole, "SizeX");
+	curItem->child(1)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(side)));
+	side = std::abs(element.rbasePoints()[0].y() - element.rbasePoints()[1].y());
+	curItem->child(2)->setData(0, Qt::DisplayRole, "SizeY");
+	curItem->child(2)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(side)));
+}
+//---------------------------------------------------------------------------------------------------------
+void ShapesInfoWidget::setItem2Poly(QTreeWidgetItem* curItem, const ito::Shape &element)
+{
+	curItem->setData(0, Qt::DisplayRole, QString("Polygon %1").arg(QString::number(element.index())));
+	curItem->setData(1, Qt::UserRole, element.rbasePoints());
+	while (curItem->childCount() > 3)
+	{
+		curItem->removeChild(curItem->child(curItem->childCount() - 1));
+	}
+	while (curItem->childCount() < 3)
+	{
+		curItem->addChild(new QTreeWidgetItem());
+	}
+	QPointF center = element.centerPoint();
+	curItem->child(0)->setData(0, Qt::DisplayRole, "Position");
+	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(center.x()), QString::number(center.y())));
+	curItem->child(1)->setData(0, Qt::DisplayRole, "Length");
+	curItem->child(1)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(element.circumference())));
+	curItem->child(2)->setData(0, Qt::DisplayRole, "Notes");
+	curItem->child(2)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(element.rbasePoints().length())));
 }
 //---------------------------------------------------------------------------------------------------------
 void ShapesInfoWidget::updateShape(const ito::Shape element)
@@ -64,43 +210,51 @@ void ShapesInfoWidget::updateShape(const ito::Shape element)
 		curItem->setData(0, Qt::UserRole, element.index());
 
 		addTopLevelItem(curItem);
+		curItem->setExpanded(true);
 	}
 
 	if (curItem)
 	{
 		switch (element.type() & ito::Shape::TypeMask)
 		{
-		case ito::Shape::Point:
-			curItem->setData(0, Qt::DisplayRole, QString("Point %1").arg(QString::number(element.index())));
-			curItem->setData(1, Qt::UserRole, element.basePoints());
+			case ito::Shape::Point:
+			{
+				setItem2Point(curItem, element);
+			}
 			break;
-		case ito::Shape::Line:
-			curItem->setData(0, Qt::DisplayRole, QString("Line %1").arg(QString::number(element.index())));
-			curItem->setData(1, Qt::UserRole, element.basePoints());
+			case ito::Shape::Line:
+			{
+				setItem2Line(curItem, element);
+			}
 			break;
-		case ito::Shape::Square:
-			curItem->setData(0, Qt::DisplayRole, QString("Sqare %1").arg(QString::number(element.index())));
-			curItem->setData(1, Qt::UserRole, element.basePoints());
+			case ito::Shape::Square:
+			{
+				setItem2Square(curItem, element);
+			}
 			break;
-		case ito::Shape::Rectangle:
-			curItem->setData(0, Qt::DisplayRole, QString("Rectangle %1").arg(QString::number(element.index())));
-			curItem->setData(1, Qt::UserRole, element.basePoints());
+			case ito::Shape::Rectangle:
+			{
+				setItem2Rect(curItem, element);
+			}
 			break;
-		case ito::Shape::Ellipse:
-			curItem->setData(0, Qt::DisplayRole, QString("Ellipse %1").arg(QString::number(element.index())));
-			curItem->setData(1, Qt::UserRole, element.basePoints());
+			case ito::Shape::Ellipse:
+			{
+				setItem2Ellipse(curItem, element);
+			}
 			break;
-		case ito::Shape::Circle:
-			curItem->setData(0, Qt::DisplayRole, QString("Circle %1").arg(QString::number(element.index())));
-			curItem->setData(1, Qt::UserRole, element.basePoints());
+			case ito::Shape::Circle:
+			{
+				setItem2Circle(curItem, element);
+			}
 			break;
-		case ito::Shape::Polygon:
-			curItem->setData(0, Qt::DisplayRole, QString("Polygon %1").arg(QString::number(element.index())));
-			curItem->setData(1, Qt::UserRole, element.basePoints());
+			case ito::Shape::Polygon:
+			{
+				setItem2Poly(curItem, element);
+			}
 			break;
-		default:
-			delete curItem;
-			curItem = NULL;
+			default:
+				delete curItem;
+				curItem = NULL;
 			break;
 		}
 
@@ -114,20 +268,13 @@ void ShapesInfoWidget::updateShape(const ito::Shape element)
 //---------------------------------------------------------------------------------------------------------
 void ShapesInfoWidget::updateShapes(const QVector< ito::Shape > elements)
 {
-	if (elements.size() < 0)
+	for each (const ito::Shape &element in elements)
 	{
-		qDebug("Could not update pickers");
-		return;
-	}
-
-	for (int curSearchIndex = 0; curSearchIndex < elements.size(); curSearchIndex++)
-	{
-
 		QTreeWidgetItem *curItem = NULL;
 
 		for (int idx = 0; idx < topLevelItemCount(); idx++)
 		{
-			if (topLevelItem(idx)->data(0, Qt::UserRole).toInt() == elements[curSearchIndex].index())
+			if (topLevelItem(idx)->data(0, Qt::UserRole).toInt() == element.index())
 			{
 				curItem = this->topLevelItem(idx);
 				break;
@@ -137,53 +284,57 @@ void ShapesInfoWidget::updateShapes(const QVector< ito::Shape > elements)
 		if (!curItem)
 		{
 			curItem = new QTreeWidgetItem();
-			curItem->setData(0, Qt::UserRole, elements[curSearchIndex].index());
+			curItem->setData(0, Qt::UserRole, element.index());
 
 			addTopLevelItem(curItem);
+			curItem->setExpanded(true);
 		}
 
 		if (curItem)
 		{
-			switch (elements[curSearchIndex].type() & ito::Shape::TypeMask)
+			switch (element.type() & ito::Shape::TypeMask)
 			{
-				case ito::Shape::Point:
-					curItem->setData(0, Qt::DisplayRole, QString("Point %1").arg(QString::number(elements[curSearchIndex].index())));
-					curItem->setData(1, Qt::UserRole, elements[curSearchIndex].basePoints()); 
-					break;
-				case ito::Shape::Line:
-					curItem->setData(0, Qt::DisplayRole, QString("Line %1").arg(QString::number(elements[curSearchIndex].index())));
-					curItem->setData(1, Qt::UserRole, elements[curSearchIndex].basePoints());
-					break;
-				case ito::Shape::Square:
-					curItem->setData(0, Qt::DisplayRole, QString("Sqare %1").arg(QString::number(elements[curSearchIndex].index())));
-					curItem->setData(1, Qt::UserRole, elements[curSearchIndex].basePoints()); 
-					break;
-				case ito::Shape::Rectangle:
-					curItem->setData(0, Qt::DisplayRole, QString("Rectangle %1").arg(QString::number(elements[curSearchIndex].index())));
-					curItem->setData(1, Qt::UserRole, elements[curSearchIndex].basePoints()); 
-					break;
-				case ito::Shape::Ellipse:
-					curItem->setData(0, Qt::DisplayRole, QString("Ellipse %1").arg(QString::number(elements[curSearchIndex].index())));
-					curItem->setData(1, Qt::UserRole, elements[curSearchIndex].basePoints()); 
-					break;
-				case ito::Shape::Circle:
-					curItem->setData(0, Qt::DisplayRole, QString("Circle %1").arg(QString::number(elements[curSearchIndex].index())));
-					curItem->setData(1, Qt::UserRole, elements[curSearchIndex].basePoints()); 
-					break;
-				case ito::Shape::Polygon:
-					curItem->setData(0, Qt::DisplayRole, QString("Polygon %1").arg(QString::number(elements[curSearchIndex].index())));
-					curItem->setData(1, Qt::UserRole, elements[curSearchIndex].basePoints());
-					break;
-				default:
-					delete curItem;
-					curItem = NULL;
-					break;
+			case ito::Shape::Point:
+			{
+				setItem2Point(curItem, element);
 			}
-			
-			//curItem->setData(1, Qt::DisplayRole, QString("%1, %2").arg(QString::number((positions[curSearchIndex]).x()), QString::number((positions[curSearchIndex]).y())));
-			
+			break;
+			case ito::Shape::Line:
+			{
+				setItem2Line(curItem, element);
+			}
+			break;
+			case ito::Shape::Square:
+			{
+				setItem2Square(curItem, element);
+			}
+			break;
+			case ito::Shape::Rectangle:
+			{
+				setItem2Rect(curItem, element);
+			}
+			break;
+			case ito::Shape::Ellipse:
+			{
+				setItem2Ellipse(curItem, element);
+			}
+			break;
+			case ito::Shape::Circle:
+			{
+				setItem2Circle(curItem, element);
+			}
+			break;
+			case ito::Shape::Polygon:
+			{
+				setItem2Poly(curItem, element);
+			}
+			break;
+			default:
+				delete curItem;
+				curItem = NULL;
+				break;
+			}	
 		}
-
 	}
 	return;
 }
