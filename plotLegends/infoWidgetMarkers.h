@@ -57,7 +57,7 @@ class ITOMCOMMONQT_EXPORT MarkerInfoWidget : public QTreeWidget
 		void updateMarker(const ito::Shape element);
 		void updateMarkers(const QVector< ito::Shape > elements);
 
-        void removeMarker(int index);
+		void removeMarker(const QString setName);
         void removeMarkers();
 
     private slots:

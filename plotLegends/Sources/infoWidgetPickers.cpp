@@ -244,7 +244,7 @@ void PickerInfoWidget::removePickers()
 	{
 		if (!(topLevelItem(idx)->data(0, Qt::UserRole).toInt() & 0xF000))
 		{
-			delete topLevelItem(idx);
+			delete topLevelItem(idx - 1);
 		}
 	}
 
@@ -255,21 +255,37 @@ void PickerInfoWidget::updateChildPlot(const int index, const int type, const QV
 {
 	QTreeWidgetItem *entry = NULL;
 
-	if (topLevelItemCount() == 0)
+	int searchIndex0 = 0x4000;
+	int searchIndex1 = 0x8000;
+
+	for (int idx = 0; idx < topLevelItemCount(); idx++)
+	{
+		int curIndex = topLevelItem(idx)->data(0, Qt::UserRole).toInt();
+		if (curIndex == searchIndex0 ||
+			curIndex == searchIndex1)
+		{
+			entry = this->topLevelItem(idx);
+			break;
+		}
+	}
+
+	if (!entry)
 	{
 		entry = new QTreeWidgetItem();
 		if (type == ito::Shape::Point)
 		{
 			entry->setData(0, Qt::DisplayRole, QString("Slice %1").arg(QString::number(index)));
-			entry->setData(0, Qt::UserRole, index | 0x4000);
+			entry->setData(0, Qt::UserRole, searchIndex0);
 		}
 		else
 		{
 			entry->setData(0, Qt::DisplayRole, QString("Line %1").arg(QString::number(index)));
-			entry->setData(0, Qt::UserRole, index | 0x8000);
+			entry->setData(0, Qt::UserRole, searchIndex1);
 		}
 		addTopLevelItem(entry);
 	}
+
+
 
 	if (entry)
 	{
@@ -319,7 +335,7 @@ void PickerInfoWidget::removeChildPlots()
 		if ((topLevelItem(idx - 1)->data(0, Qt::UserRole).toInt() & 0x8000) ||
 			(topLevelItem(idx - 1)->data(0, Qt::UserRole).toInt() & 0x4000))
 		{
-			delete topLevelItem(idx);
+			delete topLevelItem(idx - 1);
 		}
 	}
 	return;

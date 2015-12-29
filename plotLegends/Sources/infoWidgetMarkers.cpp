@@ -46,7 +46,7 @@ void MarkerInfoWidget::updateMarker(const ito::Shape element)
 
 	for (int idx = 0; idx < topLevelItemCount(); idx++)
 	{
-		if (topLevelItem(idx)->data(0, Qt::UserRole).toInt() == element.index())
+		if (topLevelItem(idx)->data(0, Qt::DisplayRole).toString() == element.name())
 		{
 			curItem = this->topLevelItem(idx);
 			break;
@@ -65,13 +65,21 @@ void MarkerInfoWidget::updateMarker(const ito::Shape element)
 	{
 		while (curItem->childCount() > 0)
 		{
-			curItem->removeChild(curItem->child(curItem->childCount()) - 1);
+			curItem->removeChild(curItem->child(curItem->childCount() - 1));
 		}
 
 		switch (element.type() & ito::Shape::TypeMask)
 		{
 		case ito::Shape::MultiPointPick:
-			curItem->setData(0, Qt::DisplayRole, QString("Group %1").arg(QString::number(element.index())));
+			if (element.index() < 0)
+			{
+				curItem->setData(0, Qt::DisplayRole, "Picked Group");
+			}
+			else
+			{
+				curItem->setData(0, Qt::DisplayRole, element.name());
+			}
+			
 			curItem->setData(1, Qt::UserRole, element.basePoints());
 			for each (QPointF basePoint in element.basePoints())
 			{
@@ -102,7 +110,7 @@ void MarkerInfoWidget::updateMarkers(const QVector< ito::Shape > elements)
 
 		for (int idx = 0; idx < topLevelItemCount(); idx++)
 		{
-			if (topLevelItem(idx)->data(0, Qt::UserRole).toInt() == elements[curSearchIndex].index())
+			if (topLevelItem(idx)->data(0, Qt::DisplayRole).toString() == elements[curSearchIndex].name())
 			{
 				curItem = this->topLevelItem(idx);
 				break;
@@ -121,13 +129,20 @@ void MarkerInfoWidget::updateMarkers(const QVector< ito::Shape > elements)
 		{
 			while (curItem->childCount() > 0)
 			{
-				curItem->removeChild(curItem->child(curItem->childCount()) - 1);
+				curItem->removeChild(curItem->child(curItem->childCount() - 1));
 			}
 
 			switch (elements[curSearchIndex].type() & ito::Shape::TypeMask)
 			{
 			case ito::Shape::MultiPointPick:
-				curItem->setData(0, Qt::DisplayRole, QString("Group %1").arg(QString::number(elements[curSearchIndex].index())));
+				if (elements[curSearchIndex].index() < 0)
+				{
+					curItem->setData(0, Qt::DisplayRole, "Picked Group");
+				}
+				else
+				{
+					curItem->setData(0, Qt::DisplayRole, elements[curSearchIndex].name());
+				}				
 				curItem->setData(1, Qt::UserRole, elements[curSearchIndex].basePoints());
 				for each (QPointF basePoint in elements[curSearchIndex].basePoints())
 				{
@@ -150,11 +165,11 @@ void MarkerInfoWidget::updateMarkers(const QVector< ito::Shape > elements)
 
 }
 //---------------------------------------------------------------------------------------------------------
-void MarkerInfoWidget::removeMarker(int index)
+void MarkerInfoWidget::removeMarker(const QString setName)
 {
 	for (int idx = 0; idx < topLevelItemCount(); idx++)
 	{
-		if (topLevelItem(idx)->data(0, Qt::UserRole).toInt() == index)
+		if (topLevelItem(idx)->data(0, Qt::UserRole).toString() == setName)
 		{
 			delete topLevelItem(idx);
 			break;

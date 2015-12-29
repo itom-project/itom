@@ -28,8 +28,103 @@
 #include "../plotLegends/infoWidgetDObject.h"
 
 //---------------------------------------------------------------------------------------------------------
-DObjectInfoWidget::DObjectInfoWidget(QWidget* parent /*= NULL*/) : QTextEdit(parent)
+DObjectInfoWidget::DObjectInfoWidget(QWidget* parent /*= NULL*/) : QPlainTextEdit(parent)
 {
-    clear();
+	clearObjectInfo();
+}
+//---------------------------------------------------------------------------------------------------------
+void DObjectInfoWidget::updateInfoHeader(const QString newString)
+{
+	m_infoHeader = newString;
+	QString baseText = m_infoHeader;
+	baseText.append(m_infoDetail);
+	setPlainText(baseText);
+}
+//---------------------------------------------------------------------------------------------------------
+void DObjectInfoWidget::updateInfoHeader(const QString typeString, const int dType, const int dims, const int sizes[])
+{
+	m_valid = true;
+	QString baseText = typeString;
+	switch (dType)
+	{
+	case ito::tUInt8:
+		baseText.append("\n\nType: uint8\n");
+		break;
+	case ito::tInt8:
+		baseText.append("\n\nType: int8\n");
+		break;
+	case ito::tUInt16:
+		baseText.append("\n\nType: uint16\n");
+		break;
+	case ito::tInt16:
+		baseText.append("\n\nType: int16\n");
+		break;
+	case ito::tUInt32:
+		baseText.append("\n\nType: uint32\n");
+		break;
+	case ito::tInt32:
+		baseText.append("\n\nType: int32\n");
+		break;
+	case ito::tFloat32:
+		baseText.append("\n\nType: float32\n");
+		break;
+	case ito::tFloat64:
+		baseText.append("\n\nType: float64\n");
+		break;
+	case ito::tComplex64:
+		baseText.append("\n\nType: complex64\n");
+		break;
+	case ito::tComplex128:
+		baseText.append("\n\nType: complex128\n");
+		break;
+	default:
+		baseText.append("\n\nUndefined type!");
+		m_valid = false;
+		break;
+	}
+	if (dims < 2)
+	{
+		baseText.append("\nempty object container");
+	}
+	else if (m_valid == true)
+	{
+		baseText.append(QString("Dimensions: %1\n").arg(QString::number(dims)));
+		baseText.append(QString("Plainsize: %1px x %2px\n\n").arg(QString::number(sizes[dims - 1]), QString::number(sizes[dims - 2])));
+	}
+
+	if (m_valid == false)
+	{
+		m_infoDetail = "";
+	}
+	updateInfoHeader(baseText);
+}
+//---------------------------------------------------------------------------------------------------------
+void DObjectInfoWidget::updateInfoDetail(const QString newString)
+{
+	m_infoDetail = newString;
+	QString baseText = m_infoHeader;
+	baseText.append(m_infoDetail);
+	setPlainText(baseText);
+}
+//---------------------------------------------------------------------------------------------------------
+void DObjectInfoWidget::updateInfoDetail(const double minVal, const double maxVal, const double meanVal, const double devVal)
+{
+	QString baseText = "";
+	if (m_valid)
+	{
+		baseText.append(QString("Maximum: %1\n").arg(QString::number(maxVal)));
+		baseText.append(QString("Minimum: %1\n").arg(QString::number(minVal)));
+		baseText.append(QString("Mean Value: %1\n").arg(QString::number(meanVal)));
+		baseText.append(QString("Dev Value: %1\n").arg(QString::number(devVal)));
+	}
+	updateInfoDetail(baseText);
+}
+//---------------------------------------------------------------------------------------------------------
+void DObjectInfoWidget::clearObjectInfo()
+{
+	m_valid = false;
+	m_infoHeader = "No object info available\n";
+	m_infoDetail = "";
+	setPlainText(m_infoHeader);
 }
 //---------------------------------------------------------------------------------------------------------

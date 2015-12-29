@@ -36,22 +36,27 @@ extern "C++" {
 #include "../common/typeDefs.h"
 
 #if QT_VERSION < 0x050000
-#include <qtextedit.h>
-
+#include <qplaintextedit.h>
 #else
-#include <QtWidgets/qtextedit.h>
+#include <QtWidgets/qplaintextedit.h>
 //
 #endif
 
-class ITOMCOMMONQT_EXPORT DObjectInfoWidget : public QTextEdit
+class ITOMCOMMONQT_EXPORT DObjectInfoWidget : public QPlainTextEdit
 {
     Q_OBJECT
         
     public:        
 		DObjectInfoWidget(QWidget* parent = NULL);
-
+		void updateInfoHeader(const QString newString);
+		void updateInfoHeader(const QString typeString, const int dType, const int dims, const int sizes[]);
+		void updateInfoDetail(const QString newString);
+		void updateInfoDetail(const double minVal, const double maxVal, const double meanVal, const double devVal);
+		void clearObjectInfo();
     private:
-
+		QString m_infoHeader;
+		QString m_infoDetail;
+		bool m_valid;
 
     public slots:
 
