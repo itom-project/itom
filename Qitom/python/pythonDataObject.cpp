@@ -4909,19 +4909,20 @@ PyObject* PythonDataObject::PyDataObject_adjustROI(PyDataObject *self, PyObject*
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyDataObjectSqueeze_doc,"squeeze() -> return a squeezed shallow copy (if possible) of this dataObject. \n\
 \n\
-This method removes every dimension with size equal to 1. Take care, that \n\
-none of the last two dimensions is considered by this squeeze-command. \n\
+This method removes every dimension with size equal to 1. A shallow copy is only returned, if the last two dimensions \n\
+(called plane) are not affected by the squeeze operation. Else a deep-copy has to be returned due to a overall re-\n\
+aligment of the matrix. The returned object can never have less then two dimensions. If this is the case, the \n\
+last or second to last dimensions with a size of 1 is not deleted. If squeeze() returns a shallow copy, a change in a \n\
+value will change the same value in the original object, too. \n\
 \n\
 Returns \n\
 -------- \n\
 squeezed : {dataObject} \n\
-    The squeezed data object where all kept planes are shallow copies of the original plane. \n\
+    The squeezed data object. \n\
 \n\
 Notes \n\
 ----- \n\
-The returned squeezed data object is a shallow copy of the original data object and hence changes in its values\n\
-will also change the original data set.\n\
-This method is equal to numpy.squeeze");
+This method is similar to numpy.squeeze");
 PyObject* PythonDataObject::PyDataObject_squeeze(PyDataObject *self, PyObject* /*args*/)
 {
     if (self->dataObject == NULL) return NULL;
