@@ -1579,7 +1579,8 @@ template<typename _Tp> RetVal CreateFuncWithCVPlanes(DataObject *dObj, const uns
         tempSize = planes[0].size();
         int dtop = tempPoint.y;
         int dleft = tempPoint.x;
-        int dbottom = tempOrgSize.height - tempSize.height - tempPoint.y;
+        int dbottom = tempOrgSize.height - tempSize.height - dtop;
+        int dright = tempOrgSize.width - tempSize.width - dleft;
 
         int* sizes_inc = new int[dimensions];
         int* osizes_inc = new int[dimensions];
@@ -1598,14 +1599,14 @@ template<typename _Tp> RetVal CreateFuncWithCVPlanes(DataObject *dObj, const uns
             roi_inc[dimensions - 2] = +dtop;
 
             sizes_inc[dimensions - 1] = sizes[dimensions - 1];
-            osizes_inc[dimensions - 1] = sizes[dimensions - 1] + dleft + dtop;
+            osizes_inc[dimensions - 1] = sizes[dimensions - 1] + dleft + dright;
             roi_inc[dimensions - 1] = +dleft;
 
         }
         else //if one-dimensional create a two-dimensional data-object
         {
             sizes_inc[0] = 1; sizes_inc[1] = sizes[0];
-            osizes_inc[0] = 1; osizes_inc[1] = sizes[0] + dleft + dtop;
+            osizes_inc[0] = 1; osizes_inc[1] = sizes[0] + dleft + dright;
             roi_inc[0] = 0; roi_inc[1] = +dleft;
         }
 
