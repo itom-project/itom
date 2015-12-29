@@ -6632,27 +6632,136 @@ DataObject DataObject::squeeze() const
     return resObj;
 }
 
-////----------------------------------------------------------------------------------------------------------------------------------
-////! verifies if the data type of elements in this data object is equal to the type of the argument.
-///*
-//    \param [in] src is any variable whose type is checked
-//    \return retOk if both types are equal, retError if they are not equal or if the type of src is unknown
-//*/
-//template<typename _Tp> RetVal DataObject::checkType(const _Tp * src)
-//{
-//    try
-//    {
-//        if(m_type == ito::getDataType(src))
-//        {
-//            return ito::retOk;
-//        }
-//        return RetVal(retError,0,"CheckType failed: types are not equal");
-//    }
-//    catch(cv::Exception /*&ex*/)
-//    {
-//        return RetVal(retError,0,"Error during Type-Check. Type not templated");
-//    }
-//}
+//----------------------------------------------------------------------------------------------------------------------------------
+DataObject DataObject::reshape(int newDims, const int *newSizes) const
+{
+    int newTotal = 1;
+    for (int i = 0; i < newDims; ++i)
+    {
+        newTotal *= newSizes[i];
+    }
+
+    if (getTotal() != newTotal)
+    {
+        cv::error(cv::Exception(CV_StsAssert,"Total size of new dataObject must be unchanged.",  "", __FILE__, __LINE__));
+    }
+    else if (newDims < 2)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "New new object must have at least two dimensions (e.g. 1xM or Mx1).", "", __FILE__, __LINE__));
+    }
+
+    if(m_dims <= 0)
+    {
+        return DataObject();
+    }
+    else if(m_dims == 1)
+    {
+        cv::error(cv::Exception(CV_StsAssert,"DataObject to reshape may not have dimension = 1",  "", __FILE__, __LINE__));
+    }
+
+    int numMats = getNumPlanes();
+
+    if (numMats == 0)
+    {
+        cv::error(cv::Exception(CV_StsAssert,"DataObject to squeeze must contain at least one value (has no planes).",  "", __FILE__, __LINE__));
+    }
+
+    int counter = 0;
+    bool test;
+    bool planesUnchanged = false;
+    int shapeOfLastDim = 0;
+
+    if (getSize(m_dims - 1) == newSizes[newDims - 1])
+    {
+        if (getSize(m_dims - 2) == newSizes[newDims - 2])
+        {
+            planesUnchanged = true;
+        }
+        else
+        {
+            shapeOfLastDim = newSizes[newDims - 1];
+        }
+    }
+
+    DataObject resObj;
+    
+    if (planesUnchanged)
+    {
+        //shallow copy without change in any plane
+        cv::Mat * planes = new cv::Mat[numMats];
+        for(int i = 0 ; i < numMats ; i++)
+        {
+            planes[i] = *( (cv::Mat*)(m_data[this->seekMat(i)]) );
+        }
+
+        resObj = DataObject(newDims, newSizes, m_type, planes, static_cast<unsigned int>(numMats));
+
+        delete[] planes;
+    }
+    else
+    {
+        //the dimension within a plane changed, therefore an element-wise deep copy is required.
+        //this is done by an iterator (yes, there are faster ways, but this is a comfortable one)
+        resObj = DataObject(newDims, newSizes, m_type);
+        ito::DObjIterator resIt = resObj.begin();
+        DObjConstIterator srcIt = constBegin();
+        int es = elemSize();
+
+        if (shapeOfLastDim > 0)
+        {
+            //copy line by line since the last dimension is not squeezed
+            es *= shapeOfLastDim;
+
+            while (resIt != resObj.end() && srcIt != constEnd())
+            {
+                memcpy(*resIt, *srcIt, es);
+                resIt += shapeOfLastDim;
+                srcIt += shapeOfLastDim;
+            }
+        }
+        else
+        {
+            while (resIt != resObj.end() && srcIt != constEnd())
+            {
+                memcpy(*resIt, *srcIt, es);
+                resIt++;
+                srcIt++;
+            }
+        }
+    }
+
+    //copy axis description, unit, offset, scale... for all axes with same size beginning from the last axis index.
+    //the copy operation is stopped if the first dimension with different sizes is detected.
+    for (int i = 0; i < std::min(newDims, m_dims); ++i)
+    {
+        if (newSizes[newDims - i] == getSize(m_dims - i))
+        {
+            resObj.setAxisDescription(newDims - i, this->getAxisDescription(m_dims - i, test));
+            resObj.setAxisUnit(newDims - i, this->getAxisUnit(m_dims - i, test));
+            resObj.setAxisOffset(newDims - i,this->getAxisOffset(m_dims - i));
+            resObj.setAxisScale(newDims - i, this->getAxisScale(m_dims - i));
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    //copy tags
+    copyTagMapTo(resObj);
+
+    //copy rotation matrix
+    const double *rot = m_pDataObjectTags->m_rotMatrix;
+    resObj.setXYRotationalMatrix(rot[0], rot[1], rot[2], rot[3], rot[4], rot[5], rot[6], rot[7], rot[8]);
+
+    //copy value description and unit
+    resObj.setValueDescription(getValueDescription());
+    resObj.setValueUnit(getValueUnit());
+
+    return resObj;
+}
+
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal DataObject::copyFromData2DInternal(const uchar* src, const int sizeOfElem, const int sizeX, const int sizeY)
