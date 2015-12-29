@@ -255,8 +255,8 @@ void PickerInfoWidget::updateChildPlot(const int index, const int type, const QV
 {
 	QTreeWidgetItem *entry = NULL;
 
-	int searchIndex0 = 0x4000;
-	int searchIndex1 = 0x8000;
+	int searchIndex0 = index | 0x4000;
+	int searchIndex1 = index | 0x8000;
 
 	for (int idx = 0; idx < topLevelItemCount(); idx++)
 	{
@@ -284,8 +284,6 @@ void PickerInfoWidget::updateChildPlot(const int index, const int type, const QV
 		}
 		addTopLevelItem(entry);
 	}
-
-
 
 	if (entry)
 	{
