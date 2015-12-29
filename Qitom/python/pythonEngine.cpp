@@ -1272,7 +1272,7 @@ ito::RetVal PythonEngine::runString(const QString &command)
         {
             if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
             {
-                std::cerr << "wish to exit (not possible yet)" << std::endl;
+                std::cerr << "wish to exit (not possible yet)\n" << std::endl;
                 retValue += RetVal(retError, 2, tr("exiting desired.").toLatin1().data());
             }
             else
@@ -1354,7 +1354,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                 {
                     if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
                     {
-                        std::cerr << "wish to exit (not possible yet)" << std::endl;
+                        std::cerr << "wish to exit (not possible yet)\n" << std::endl;
                         retValue += RetVal(retError);
                     }
                     else
@@ -1381,7 +1381,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
                     {
                         if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
                         {
-                            std::cerr << "wish to exit (not possible yet)" << std::endl;
+                            std::cerr << "wish to exit (not possible yet)\n" << std::endl;
                             retValue += RetVal(retError);
                         }
                         else
@@ -1443,7 +1443,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
             {
                 if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
                 {
-                    std::cerr << "wish to exit (not possible yet)" << std::endl;
+                    std::cerr << "wish to exit (not possible yet)\n" << std::endl;
                     retValue += RetVal(retError);
                 }
                 else
@@ -1630,7 +1630,7 @@ ito::RetVal PythonEngine::debugFunction(PyObject *callable, PyObject *argTuple, 
         {
             if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
             {
-                std::cerr << "wish to exit (not possible yet)" << std::endl;
+                std::cerr << "wish to exit (not possible yet)\n" << std::endl;
                 retValue += RetVal(retError);
             }
             else
@@ -1759,7 +1759,7 @@ ito::RetVal PythonEngine::debugFile(const QString &pythonFileName)
         {
             if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
             {
-                std::cerr << "wish to exit (not possible yet)" << std::endl;
+                std::cerr << "wish to exit (not possible yet)\n" << std::endl;
                 retValue += RetVal(retError);
             }
             else
@@ -1888,7 +1888,7 @@ ito::RetVal PythonEngine::debugString(const QString &command)
         {
             if (PyErr_Occurred() && PyErr_ExceptionMatches(PyExc_SystemExit))
             {
-                std::cerr << "wish to exit (not possible yet)" << std::endl;
+                std::cerr << "wish to exit (not possible yet)\n" << std::endl;
                 retValue += RetVal(retError);
             }
             else

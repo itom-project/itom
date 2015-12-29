@@ -4584,17 +4584,72 @@ PyObject* PythonDataObject::PyDataObject_div(PyDataObject *self, PyObject *args)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectReshape_doc,"reshape(newSizes) -> Returns reshaped shallow copy of data object  \n\
+PyDoc_STRVAR(pyDataObjectReshape_doc,"reshape(newShape) -> return a reshaped shallow copy (if possible) of this dataObject. \n\
+\n\
+This method returns a shallow or deep copy if this data object where the type and data is unchanged. The shape \n\
+of the returned object corresponds to the parameter 'newShape'. The number of values must therefore not be changed. \n\
+If the last two dimensions of 'newShape' and this object are the same, a shallow copy can be returned, else a deep \n\
+copy has to be created. Tags and the rotation matrix are copied, the axis tags are only copied for all axes whose \n\
+size will not change beginning from the last axis ('x'). This axis copying is stopped after the first axis with a different \n\
+new size. \n\
+\n\
+Parameters \n\
+----------- \n\
+newShape : {seq. of int} \n\
+    New shape of the returned object. A minimal size of this list or tuple is two. \n\
+\n\
+Returns \n\
+-------- \n\
+reshaped : {dataObject} \n\
+    The reshaped data object. \n\
 \n\
 Notes \n\
 ----- \n\
-Not implemented yet.\n\
-\n\
-");
+This method is similar to numpy.reshape");
 PyObject* PythonDataObject::PyDataObject_reshape(PyDataObject *self, PyObject *args)
 {
-    PyErr_SetString(PyExc_NotImplementedError,"Not implemented yet");
-    return NULL;
+    if (self->dataObject == NULL) return NULL;
+
+    PyObject *shape = NULL;
+
+    if (!PyArg_ParseTuple(args,"O", &shape))
+    {
+        return NULL;
+    }
+
+    bool ok;
+    QVector<int> shapes = PythonQtConversion::PyObjGetIntArray(shape, false, ok);
+
+    if (!ok)
+    {
+        PyErr_Format(PyExc_TypeError,"The argument 'newShape' must be a sequence of integers");
+        return NULL;
+    }
+
+    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+    
+    try
+    {
+        ito::DataObject resObj = self->dataObject->reshape(shapes.size(), shapes.data());
+        retObj->dataObject = new ito::DataObject(resObj);
+    }
+    catch(cv::Exception &exc)
+    {
+        retObj->dataObject = NULL;
+
+        Py_DECREF(retObj);
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        return NULL;
+    }
+
+    if (!retObj->dataObject->getOwnData())
+    {
+        PyDataObject_SetBase(retObj, (PyObject*)self);
+    }
+
+    if(retObj) retObj->dataObject->addToProtocol("Reshaped dataObject.");
+
+    return (PyObject*)retObj;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
