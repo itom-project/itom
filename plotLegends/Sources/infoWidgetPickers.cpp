@@ -27,6 +27,12 @@
 
 #include "../plotLegends/infoWidgetPickers.h"
 
+#if QT_VERSION < 0x050000
+#include <qpainter.h>
+#else
+#include <QtGui/qpainter.h>
+#endif
+
 //---------------------------------------------------------------------------------------------------------
 PickerInfoWidget::PickerInfoWidget(QWidget* parent /*= NULL*/) : QTreeWidget(parent)
 {
@@ -347,5 +353,11 @@ void PickerInfoWidget::removeChildPlots()
 		}
 	}
 	return;
+}
+//---------------------------------------------------------------------------------------------------------
+QPixmap PickerInfoWidget::renderToPixMap(const int xsize, const int ysize, const int resolution)
+{
+	QPixmap pixMap;
+	return pixMap;
 }
 //---------------------------------------------------------------------------------------------------------

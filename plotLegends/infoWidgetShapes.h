@@ -39,8 +39,10 @@ extern "C++" {
 #if QT_VERSION < 0x050000
 #include <qtreewidget.h>
 #include <qhash.h>
+#include <qpixmap.h>
 #else
 #include <QtWidgets/qtreewidget.h>
+#include <QtGui/qpixmap.h>
 //
 #endif
 
@@ -78,6 +80,7 @@ class ITOMCOMMONQT_EXPORT ShapesInfoWidget : public QTreeWidget
 
         QHash< int, relation> m_relationHash;
 
+
         bool m_onlyTwoDims;
 
     public slots:
@@ -92,6 +95,8 @@ class ITOMCOMMONQT_EXPORT ShapesInfoWidget : public QTreeWidget
 		void removeRelations(const int index1, const int index2);
 		void removeRelations(const int index);
 		void removeRelations();
+
+		QPixmap renderToPixMap(const int xsize, const int ysize, const int resolution);
 
     private slots:
 };

@@ -42,8 +42,10 @@ extern "C++" {
 #if QT_VERSION < 0x050000
 #include <qtreewidget.h>
 #include <qhash.h>
+#include <qpixmap.h>
 #else
 #include <QtWidgets/qtreewidget.h>
+#include <QtGui/qpixmap.h>
 //
 #endif
 
@@ -70,6 +72,8 @@ class ITOMCOMMONQT_EXPORT PickerInfoWidget : public QTreeWidget
 
         void removePicker(int index);
         void removePickers();
+
+		QPixmap renderToPixMap(const int xsize, const int ysize, const int resolution);
 
     private slots:
 };

@@ -27,6 +27,13 @@
 
 #include "../plotLegends/infoWidgetShapes.h"
 
+
+#if QT_VERSION < 0x050000
+#include <qpainter.h>
+#else
+#include <QtGui/qpainter.h>
+#endif
+
 //---------------------------------------------------------------------------------------------------------
 ShapesInfoWidget::ShapesInfoWidget(QWidget* parent /*= NULL*/) : QTreeWidget(parent)
 {
@@ -386,5 +393,78 @@ void ShapesInfoWidget::removeRelations(const int index)
 void ShapesInfoWidget::removeRelations()
 {
 
+}
+//---------------------------------------------------------------------------------------------------------
+QPixmap ShapesInfoWidget::renderToPixMap(const int xsize, const int ysize, const int resolution)
+{
+	QPixmap destinationImage(xsize, ysize);
+
+	destinationImage.fill(Qt::white);
+
+	QPainter painter(&destinationImage);
+
+
+	int ySpacing = 12;
+	int ySpacingTp = 6;
+	int xSpacing = 10;
+	int yStartPos = 5;
+	int linesize = iconSize().height() + ySpacing;
+
+	//if(m_pContent->topLevelItemCount() > 0) yStartPos = (m_pContent->iconSize().height() - m_pContent->topLevelItem(0)->font(0).pixelSize()) / 2;
+
+	QPoint pos(iconSize().width() + 4, yStartPos);
+	QPoint posI(0, 0);
+
+	for (int topItem = 0; topItem < topLevelItemCount(); topItem++)
+	{
+		pos.setX(iconSize().width() + xSpacing);
+		posI.setX(0);
+		painter.setFont(topLevelItem(topItem)->font(0));
+		painter.drawText(pos, topLevelItem(topItem)->text(0));
+		painter.drawPixmap(posI, topLevelItem(topItem)->icon(0).pixmap(iconSize()));
+		pos.setY(pos.y() + linesize);
+		posI.setY(posI.y() + linesize);
+		if (topLevelItem(topItem)->childCount() > 0)
+		{
+			pos.setX(30 + iconSize().width() + xSpacing);
+			posI.setX(30);
+			for (int childItem = 0; childItem < topLevelItem(topItem)->childCount(); childItem++)
+			{
+				painter.setFont(topLevelItem(topItem)->child(childItem)->font(0));
+				painter.drawText(pos, topLevelItem(topItem)->child(childItem)->text(0));
+				painter.drawPixmap(posI, topLevelItem(topItem)->child(childItem)->icon(0).pixmap(iconSize()));
+				pos.setY(pos.y() + linesize);
+				posI.setY(posI.y() + linesize);
+			}
+		}
+		pos.setY(pos.y() + ySpacingTp);
+		posI.setY(posI.y() + ySpacingTp);
+	}
+	pos.setX(0);
+	for (int col = 1; col < columnCount(); col++)
+	{
+		pos.setX(pos.x() + columnWidth(col - 1) + xSpacing);
+		pos.setY(yStartPos);
+		for (int topItem = 0; topItem < topLevelItemCount(); topItem++)
+		{
+
+			painter.setFont(topLevelItem(topItem)->font(col));
+			painter.drawText(pos, topLevelItem(topItem)->text(col));
+			pos.setY(pos.y() + linesize);
+
+			if (topLevelItem(topItem)->childCount() > 0)
+			{
+				for (int childItem = 0; childItem < topLevelItem(topItem)->childCount(); childItem++)
+				{
+					painter.setFont(topLevelItem(topItem)->child(childItem)->font(col));
+					painter.drawText(pos, topLevelItem(topItem)->child(childItem)->text(col));
+					pos.setY(pos.y() + linesize);
+				}
+			}
+			pos.setY(pos.y() + ySpacingTp);
+		}
+	}
+
+	return destinationImage;
 }
 //---------------------------------------------------------------------------------------------------------

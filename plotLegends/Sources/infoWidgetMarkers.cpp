@@ -27,6 +27,12 @@
 
 #include "../plotLegends/infoWidgetMarkers.h"
 
+#if QT_VERSION < 0x050000
+#include <qpainter.h>
+#else
+#include <QtGui/qpainter.h>
+#endif
+
 //---------------------------------------------------------------------------------------------------------
 MarkerInfoWidget::MarkerInfoWidget(QWidget* parent /*= NULL*/) : QTreeWidget(parent)
 {
@@ -191,5 +197,11 @@ void MarkerInfoWidget::removeMarkers()
 	}
 
 	return;
+}
+//---------------------------------------------------------------------------------------------------------
+QPixmap MarkerInfoWidget::renderToPixMap(const int xsize, const int ysize, const int resolution)
+{
+	QPixmap pixMap;
+	return pixMap;
 }
 //---------------------------------------------------------------------------------------------------------

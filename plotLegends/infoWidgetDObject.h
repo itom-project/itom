@@ -37,8 +37,10 @@ extern "C++" {
 
 #if QT_VERSION < 0x050000
 #include <qplaintextedit.h>
+#include <qpixmap.h>
 #else
 #include <QtWidgets/qplaintextedit.h>
+#include <QtGui/qpixmap.h>
 //
 #endif
 
@@ -47,21 +49,27 @@ class ITOMCOMMONQT_EXPORT DObjectInfoWidget : public QPlainTextEdit
     Q_OBJECT
         
     public:        
-		DObjectInfoWidget(QWidget* parent = NULL);
+		DObjectInfoWidget(QWidget* parent = NULL);	
+		bool useDetailInfo() const { return m_addDetailInfo; }
+
+    private:
+		QString m_infoHeader;
+		QString m_infoDetail;
+		bool m_valid;
+		bool m_addDetailInfo;
+
+    public slots:
+
 		void updateInfoHeader(const QString newString);
 		void updateInfoHeader(const QString typeString, const int dType, const int dims, const int sizes[]);
 		void updateInfoDetail(const QString newString);
 		void updateInfoDetail(const double minVal, const double maxVal, const double meanVal, const double devVal);
 		void clearObjectInfo();
-    private:
-		QString m_infoHeader;
-		QString m_infoDetail;
-		bool m_valid;
-
-    public slots:
-
+		void setUseDetailInfo(const bool state);
+		QPixmap renderToPixMap(const int xsize, const int ysize, const int resolution);
 
     private slots:
+
 };
 
 #ifdef __APPLE__

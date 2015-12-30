@@ -27,6 +27,12 @@
 
 #include "../plotLegends/infoWidgetDObject.h"
 
+#if QT_VERSION < 0x050000
+#include <qpainter.h>
+#else
+#include <QtGui/qpainter.h>
+#endif
+
 //---------------------------------------------------------------------------------------------------------
 DObjectInfoWidget::DObjectInfoWidget(QWidget* parent /*= NULL*/) : QPlainTextEdit(parent)
 {
@@ -94,7 +100,8 @@ void DObjectInfoWidget::updateInfoHeader(const QString typeString, const int dTy
 
 	if (m_valid == false)
 	{
-		m_infoDetail = "";
+		m_addDetailInfo = false;
+		updateInfoDetail("");
 	}
 	updateInfoHeader(baseText);
 }
@@ -126,5 +133,22 @@ void DObjectInfoWidget::clearObjectInfo()
 	m_infoHeader = "No object info available\n";
 	m_infoDetail = "";
 	setPlainText(m_infoHeader);
+	m_addDetailInfo = false;
+}
+//---------------------------------------------------------------------------------------------------------
+void DObjectInfoWidget::setUseDetailInfo(const bool state)
+{
+	m_addDetailInfo = state;
+	if (!state)
+	{
+		updateInfoDetail("");
+	}
+	return;
+}
+//---------------------------------------------------------------------------------------------------------
+QPixmap DObjectInfoWidget::renderToPixMap(const int xsize, const int ysize, const int resolution)
+{
+	QPixmap pixMap;
+	return pixMap;
 }
 //---------------------------------------------------------------------------------------------------------
