@@ -1066,8 +1066,9 @@ namespace ito {
 		DataObject sqrt(); // returns a new data object of the same size and type than this data object where the square root of every element is calculated. Is the same than pow(0.5)
 		void sqrt(DataObject &dst); // this function calculates the square root of every element and saves the result in dst. Dst must be of the same size and type than this data object or empty. In the latter case, it is reassigned to the right size and type.. Is the same than pow(0.5, dst)
 
-
         DataObject squeeze() const;
+        DataObject reshape(int newDims, const int *newSizes) const;
+
         int elemSize() const;  /*!< number of bytes that are required by each value inside of the data object array (e.g. 1 for uint8, 2 for int16...) */
         
         //! addressing method for two-dimensional data object.
