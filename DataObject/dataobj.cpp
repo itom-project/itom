@@ -8777,7 +8777,7 @@ template<typename _Tp> std::ostream& coutFunc(std::ostream& out, const DataObjec
 {
     static const char* types[] =
     {
-        "uint8", "int8", "uint16", "int16", "int32", "uint32", "float32", "float64", "complex64", "complex128", "rgba32"
+        "int8", "uint8", "int16", "uint16", "int32", "uint32", "float32", "float64", "complex64", "complex128", "rgba32"
     };
 
     int numMats = dObj.getNumPlanes();
