@@ -54,7 +54,7 @@ public:
     std::string m_valueDescription;             /*!< descriptions for the values (e.g. 'Intensity' or 'Heigth') */
     std::string m_valueUnit;                    /*!< unit description for the values (e.g. 'mm') */
 
-    double m_rotMatrix[9];                      /*!< array containing the rotiational matrix for the yx-plane */;
+    double m_rotMatrix[9];                      /*!< array containing the rotation matrix for the yx-plane */;
 
     DataObjectTagsPrivate()
         : m_valueOffset(0.0), m_valueScale(1.0)
@@ -1579,7 +1579,8 @@ template<typename _Tp> RetVal CreateFuncWithCVPlanes(DataObject *dObj, const uns
         tempSize = planes[0].size();
         int dtop = tempPoint.y;
         int dleft = tempPoint.x;
-        int dbottom = tempOrgSize.height - tempSize.height - tempPoint.y;
+        int dbottom = tempOrgSize.height - tempSize.height - dtop;
+        int dright = tempOrgSize.width - tempSize.width - dleft;
 
         int* sizes_inc = new int[dimensions];
         int* osizes_inc = new int[dimensions];
@@ -1598,14 +1599,14 @@ template<typename _Tp> RetVal CreateFuncWithCVPlanes(DataObject *dObj, const uns
             roi_inc[dimensions - 2] = +dtop;
 
             sizes_inc[dimensions - 1] = sizes[dimensions - 1];
-            osizes_inc[dimensions - 1] = sizes[dimensions - 1] + dleft + dtop;
+            osizes_inc[dimensions - 1] = sizes[dimensions - 1] + dleft + dright;
             roi_inc[dimensions - 1] = +dleft;
 
         }
         else //if one-dimensional create a two-dimensional data-object
         {
             sizes_inc[0] = 1; sizes_inc[1] = sizes[0];
-            osizes_inc[0] = 1; osizes_inc[1] = sizes[0] + dleft + dtop;
+            osizes_inc[0] = 1; osizes_inc[1] = sizes[0] + dleft + dright;
             roi_inc[0] = 0; roi_inc[1] = +dleft;
         }
 
@@ -2513,17 +2514,18 @@ RetVal DataObject::copyAxisTagsTo(DataObject &rhs) const
         return ito::RetVal(ito::retError, 0, "Destination tagspace is not allocated");
     }
 
-    rhs.setXYRotationalMatrix(m_pDataObjectTags->m_rotMatrix[0], m_pDataObjectTags->m_rotMatrix[1], m_pDataObjectTags->m_rotMatrix[2], m_pDataObjectTags->m_rotMatrix[3], m_pDataObjectTags->m_rotMatrix[4], m_pDataObjectTags->m_rotMatrix[5], m_pDataObjectTags->m_rotMatrix[6], m_pDataObjectTags->m_rotMatrix[7], m_pDataObjectTags->m_rotMatrix[8]);
+    const double *rot = m_pDataObjectTags->m_rotMatrix;
+    rhs.setXYRotationalMatrix(rot[0], rot[1], rot[2], rot[3], rot[4], rot[5], rot[6], rot[7], rot[8]);
 
-    int axisNumRhs = rhs.getDims()-1;
+    int axisNumRhs = rhs.getDims() - 1;
+    bool isValid;
 
-    for(int axisNum = getDims()-1; axisNum > -1 ; axisNum--)
+    for(int axisNum = getDims() - 1; axisNum > -1 ; axisNum--)
     {
-
         rhs.setAxisOffset(axisNumRhs, getAxisOffset(axisNum));
         rhs.setAxisScale(axisNumRhs, getAxisScale(axisNum));
 
-        bool isValid = false;
+        isValid = false;
         std::string tempDes = getAxisDescription(axisNum, isValid);   // check this
         if(isValid) rhs.setAxisDescription(axisNumRhs, tempDes);
 
@@ -6484,100 +6486,283 @@ DataObject DataObject::squeeze() const
 
     if (numMats == 0)
     {
-        cv::error(cv::Exception(CV_StsAssert,"DataObject to squeeze must contain at least one value (has zero planes).",  "", __FILE__, __LINE__));
+        cv::error(cv::Exception(CV_StsAssert,"DataObject to squeeze must contain at least one value (has no planes).",  "", __FILE__, __LINE__));
     }
 
-    cv::Mat * planes = new cv::Mat[numMats];
-
-    for(int i = 0 ; i < numMats ; i++)
-    {
-        planes[i] = *( (cv::Mat*)(m_data[this->seekMat(i)]) );
-    }
-
-    unsigned char newDimensions = 2;
+    unsigned char newDimensions = 0;
     int *newSizes = new int[m_dims];
+    int *axesMap = new int[m_dims]; //axesMap[0] gives the axes index in this object of the 0th axis in resObj. axesMap[idx >= newDimensions] is invalid
     int counter = 0;
+    bool test;
+    bool planesUnchanged = true;
+    int shapeOfLastDim = 0;
 
-    for(int i = 0; i < m_dims - 2 ; i++)
+    for(int i = 0; i < m_dims - 2 ;i++)
     {
         if( getSize(i) > 1 )
         {
-            newDimensions ++;
+            axesMap[counter] = i;
             newSizes[counter] = getSize(i);
+            newDimensions++;
             counter++;
         }
     }
 
-    //last two dimensions (do not squeeze)
-    newSizes[counter] = getSize(m_dims - 2);
-    newSizes[counter+1] = getSize(m_dims - 1);
-
-    DataObject resObj = DataObject(newDimensions, newSizes, m_type, planes, static_cast<unsigned int>(numMats));
-
-    if(!copyTagMapTo(resObj).containsError())   // Now deal with the tagspace
+    //last two dimensions
+    if ( getSize(m_dims - 2) > 1 )
     {
-        resObj.setXYRotationalMatrix(m_pDataObjectTags->m_rotMatrix[0], m_pDataObjectTags->m_rotMatrix[1], m_pDataObjectTags->m_rotMatrix[2], m_pDataObjectTags->m_rotMatrix[3], m_pDataObjectTags->m_rotMatrix[4], m_pDataObjectTags->m_rotMatrix[5], m_pDataObjectTags->m_rotMatrix[6], m_pDataObjectTags->m_rotMatrix[7], m_pDataObjectTags->m_rotMatrix[8]);
+        axesMap[counter] = m_dims - 2;
+        newSizes[counter] = getSize(m_dims - 2);
+        newDimensions++;
+        counter++;
+    }
+    else
+    {
+        planesUnchanged = false;
+    }
+    
+    if ( getSize(m_dims - 1) > 1 )
+    {
+        axesMap[counter] = m_dims - 1;
+        newSizes[counter] = getSize(m_dims - 1);
+        shapeOfLastDim = newSizes[counter];
+        newDimensions++;
+        counter++;
+    }
+    else
+    {
+        planesUnchanged = false;
+    }
 
-        unsigned int counter = 0;
-        for(int i = 0; i < m_dims - 2 ; i++)
+    if (newDimensions == 0) //1x1x1x... object cannot be totally squeezed. The last two dimensions will be kept.
+    {
+        newDimensions = 2;
+        axesMap[0] = m_dims - 2;
+        newSizes[0] = getSize(m_dims - 2);
+        axesMap[1] = m_dims - 1;
+        newSizes[1] = getSize(m_dims - 1);
+    }
+    else if (newDimensions == 1) //a 1-dim object cannot be built. Therefore
+    {
+        newDimensions = 2;
+        if (axesMap[0] == (m_dims - 1)) //the last dimensions was > 1, add the second to last dimension
         {
-            if( getSize(i) > 1 )
+            axesMap[1] = axesMap[0];
+            newSizes[1] = newSizes[0];
+            axesMap[0] = m_dims - 2;
+            newSizes[0] = getSize(m_dims - 2);
+        }
+        else //the last dimension was 1, nevertheless add it...
+        {
+            axesMap[1] = m_dims - 1;
+            newSizes[1] = getSize(m_dims - 1);
+        }
+    }
+
+    DataObject resObj;
+    
+    if (planesUnchanged)
+    {
+        //shallow copy without change in any plane
+        cv::Mat * planes = new cv::Mat[numMats];
+        for(int i = 0 ; i < numMats ; i++)
+        {
+            planes[i] = *( (cv::Mat*)(m_data[this->seekMat(i)]) );
+        }
+
+        resObj = DataObject(newDimensions, newSizes, m_type, planes, static_cast<unsigned int>(numMats));
+
+        delete[] planes;
+    }
+    else
+    {
+        //the dimension within a plane changed, therefore an element-wise deep copy is required.
+        //this is done by an iterator (yes, there are faster ways, but this is a comfortable one)
+        resObj = DataObject(newDimensions, newSizes, m_type);
+        ito::DObjIterator resIt = resObj.begin();
+        DObjConstIterator srcIt = constBegin();
+        int es = elemSize();
+
+        if (shapeOfLastDim > 0)
+        {
+            //copy line by line since the last dimension is not squeezed
+            es *= shapeOfLastDim;
+
+            while (resIt != resObj.end() && srcIt != constEnd())
             {
-                bool test = false;
-                resObj.setAxisDescription(counter, this->getAxisDescription(i, test));
-                resObj.setAxisUnit(counter, this->getAxisUnit(i, test));
-                resObj.setAxisOffset(counter,this->getAxisOffset(i));
-                resObj.setAxisScale(counter, this->getAxisScale(i));
-                counter++;
+                memcpy(*resIt, *srcIt, es);
+                resIt += shapeOfLastDim;
+                srcIt += shapeOfLastDim;
             }
         }
-        for(int i = m_dims - 2; i < m_dims ; i++)
+        else
         {
-            bool test = false;
-            resObj.setAxisDescription(counter, this->getAxisDescription(i, test));
-            resObj.setAxisUnit(counter, this->getAxisUnit(i, test));
-            resObj.setAxisOffset(counter,this->getAxisOffset(i));
-            resObj.setAxisScale(counter, this->getAxisScale(i));
-            counter++;
+            while (resIt != resObj.end() && srcIt != constEnd())
+            {
+                memcpy(*resIt, *srcIt, es);
+                resIt++;
+                srcIt++;
+            }
         }
-        resObj.setValueDescription(this->getValueDescription());
-        resObj.setValueUnit(this->getValueUnit());
-        //resObj.setValueOffset(counter,this->getAxisOffset(i));
-        //resObj.setValueScales(counter, this->getAxisScales(i));
     }
 
-    //tempMat->adjustROI(-dtop, -dbottom, -dleft, -dright);
-    //resObj.adjustROI(newDimensions , );
-    ////adjust ROI of resObj and both last dimensions (plane)
+    for (int i = 0; i < newDimensions; ++i)
+    {
+        resObj.setAxisDescription(i, this->getAxisDescription(axesMap[i], test));
+        resObj.setAxisUnit(i, this->getAxisUnit(axesMap[i], test));
+        resObj.setAxisOffset(i,this->getAxisOffset(axesMap[i]));
+        resObj.setAxisScale(i, this->getAxisScale(axesMap[i]));
+    }
+
+    //copy tags
+    copyTagMapTo(resObj);
+
+    //copy rotation matrix
+    const double *rot = m_pDataObjectTags->m_rotMatrix;
+    resObj.setXYRotationalMatrix(rot[0], rot[1], rot[2], rot[3], rot[4], rot[5], rot[6], rot[7], rot[8]);
+
+    //copy value description and unit
+    resObj.setValueDescription(getValueDescription());
+    resObj.setValueUnit(getValueUnit());
 
     delete[] newSizes;
-    delete[] planes;
+    delete[] axesMap;
+    
     newSizes = NULL;
 
     return resObj;
 }
 
-////----------------------------------------------------------------------------------------------------------------------------------
-////! verifies if the data type of elements in this data object is equal to the type of the argument.
-///*
-//    \param [in] src is any variable whose type is checked
-//    \return retOk if both types are equal, retError if they are not equal or if the type of src is unknown
-//*/
-//template<typename _Tp> RetVal DataObject::checkType(const _Tp * src)
-//{
-//    try
-//    {
-//        if(m_type == ito::getDataType(src))
-//        {
-//            return ito::retOk;
-//        }
-//        return RetVal(retError,0,"CheckType failed: types are not equal");
-//    }
-//    catch(cv::Exception /*&ex*/)
-//    {
-//        return RetVal(retError,0,"Error during Type-Check. Type not templated");
-//    }
-//}
+//----------------------------------------------------------------------------------------------------------------------------------
+DataObject DataObject::reshape(int newDims, const int *newSizes) const
+{
+    int newTotal = 1;
+    for (int i = 0; i < newDims; ++i)
+    {
+        newTotal *= newSizes[i];
+    }
+
+    if (getTotal() != newTotal)
+    {
+        cv::error(cv::Exception(CV_StsAssert,"Total size of new dataObject must be unchanged.",  "", __FILE__, __LINE__));
+    }
+    else if (newDims < 2)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "New new object must have at least two dimensions (e.g. 1xM or Mx1).", "", __FILE__, __LINE__));
+    }
+
+    if(m_dims <= 0)
+    {
+        return DataObject();
+    }
+    else if(m_dims == 1)
+    {
+        cv::error(cv::Exception(CV_StsAssert,"DataObject to reshape may not have dimension = 1",  "", __FILE__, __LINE__));
+    }
+
+    int numMats = getNumPlanes();
+
+    if (numMats == 0)
+    {
+        cv::error(cv::Exception(CV_StsAssert,"DataObject to squeeze must contain at least one value (has no planes).",  "", __FILE__, __LINE__));
+    }
+
+    int counter = 0;
+    bool test;
+    bool planesUnchanged = false;
+    int shapeOfLastDim = 0;
+
+    if (getSize(m_dims - 1) == newSizes[newDims - 1])
+    {
+        if (getSize(m_dims - 2) == newSizes[newDims - 2])
+        {
+            planesUnchanged = true;
+        }
+        else
+        {
+            shapeOfLastDim = newSizes[newDims - 1];
+        }
+    }
+
+    DataObject resObj;
+    
+    if (planesUnchanged)
+    {
+        //shallow copy without change in any plane
+        cv::Mat * planes = new cv::Mat[numMats];
+        for(int i = 0 ; i < numMats ; i++)
+        {
+            planes[i] = *( (cv::Mat*)(m_data[this->seekMat(i)]) );
+        }
+
+        resObj = DataObject(newDims, newSizes, m_type, planes, static_cast<unsigned int>(numMats));
+
+        delete[] planes;
+    }
+    else
+    {
+        //the dimension within a plane changed, therefore an element-wise deep copy is required.
+        //this is done by an iterator (yes, there are faster ways, but this is a comfortable one)
+        resObj = DataObject(newDims, newSizes, m_type);
+        ito::DObjIterator resIt = resObj.begin();
+        DObjConstIterator srcIt = constBegin();
+        int es = elemSize();
+
+        if (shapeOfLastDim > 0)
+        {
+            //copy line by line since the last dimension is not squeezed
+            es *= shapeOfLastDim;
+
+            while (resIt != resObj.end() && srcIt != constEnd())
+            {
+                memcpy(*resIt, *srcIt, es);
+                resIt += shapeOfLastDim;
+                srcIt += shapeOfLastDim;
+            }
+        }
+        else
+        {
+            while (resIt != resObj.end() && srcIt != constEnd())
+            {
+                memcpy(*resIt, *srcIt, es);
+                resIt++;
+                srcIt++;
+            }
+        }
+    }
+
+    //copy axis description, unit, offset, scale... for all axes with same size beginning from the last axis index.
+    //the copy operation is stopped if the first dimension with different sizes is detected.
+    for (int i = 0; i < std::min(newDims, m_dims); ++i)
+    {
+        if (newSizes[newDims - i] == getSize(m_dims - i))
+        {
+            resObj.setAxisDescription(newDims - i, this->getAxisDescription(m_dims - i, test));
+            resObj.setAxisUnit(newDims - i, this->getAxisUnit(m_dims - i, test));
+            resObj.setAxisOffset(newDims - i,this->getAxisOffset(m_dims - i));
+            resObj.setAxisScale(newDims - i, this->getAxisScale(m_dims - i));
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    //copy tags
+    copyTagMapTo(resObj);
+
+    //copy rotation matrix
+    const double *rot = m_pDataObjectTags->m_rotMatrix;
+    resObj.setXYRotationalMatrix(rot[0], rot[1], rot[2], rot[3], rot[4], rot[5], rot[6], rot[7], rot[8]);
+
+    //copy value description and unit
+    resObj.setValueDescription(getValueDescription());
+    resObj.setValueUnit(getValueUnit());
+
+    return resObj;
+}
+
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal DataObject::copyFromData2DInternal(const uchar* src, const int sizeOfElem, const int sizeX, const int sizeY)
@@ -8592,7 +8777,7 @@ template<typename _Tp> std::ostream& coutFunc(std::ostream& out, const DataObjec
 {
     static const char* types[] =
     {
-        "uint8", "int8", "uint16", "int16", "int32", "uint32", "float32", "float64", "complex64", "complex128", "rgba32"
+        "int8", "uint8", "int16", "uint16", "int32", "uint32", "float32", "float64", "complex64", "complex128", "rgba32"
     };
 
     int numMats = dObj.getNumPlanes();
@@ -8614,7 +8799,7 @@ template<typename _Tp> std::ostream& coutFunc(std::ostream& out, const DataObjec
 
         if (numMats == 1)
         {
-            coutPlane<_Tp>(out, dObj.get_mdata()[tMat], 4, 5);
+            coutPlane<_Tp>(out, dObj.get_mdata()[dObj.seekMat(tMat, numMats)], 4, 5);
         }
         else
         {

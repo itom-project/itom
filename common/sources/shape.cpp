@@ -560,6 +560,8 @@ QRegion Shape::region() const
 
     return region;
 }
+
+//----------------------------------------------------------------------------------------------
 QPointF Shape::centerPoint() const
 {
 	switch (type())
@@ -571,7 +573,7 @@ QPointF Shape::centerPoint() const
 	case MultiPointPick:
 	{
 		QPointF sum(0.0, 0.0);
-		for each (QPointF curPoint in d->m_polygon)
+		foreach (QPointF curPoint, d->m_polygon)
 		{
 			sum += curPoint;
 		}
@@ -590,6 +592,7 @@ QPointF Shape::centerPoint() const
 	}
 
 }
+
 //----------------------------------------------------------------------------------------------
 double Shape::area() const
 {
@@ -664,7 +667,7 @@ double Shape::circumference() const
 
             return val;
         }
-	// Nährung mittels Näherungsformel nach Ramanujan https://de.wikipedia.org/wiki/Ellipse
+	// N\E4hrung mittels N\E4herungsformel nach Ramanujan https://de.wikipedia.org/wiki/Ellipse
     case Ellipse:
 		{
 			QPointF size = d->m_polygon[1] - d->m_polygon[0];

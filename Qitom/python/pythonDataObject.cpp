@@ -4585,17 +4585,72 @@ PyObject* PythonDataObject::PyDataObject_div(PyDataObject *self, PyObject *args)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectReshape_doc,"reshape(newSizes) -> Returns reshaped shallow copy of data object  \n\
+PyDoc_STRVAR(pyDataObjectReshape_doc,"reshape(newShape) -> return a reshaped shallow copy (if possible) of this dataObject. \n\
+\n\
+This method returns a shallow or deep copy if this data object where the type and data is unchanged. The shape \n\
+of the returned object corresponds to the parameter 'newShape'. The number of values must therefore not be changed. \n\
+If the last two dimensions of 'newShape' and this object are the same, a shallow copy can be returned, else a deep \n\
+copy has to be created. Tags and the rotation matrix are copied, the axis tags are only copied for all axes whose \n\
+size will not change beginning from the last axis ('x'). This axis copying is stopped after the first axis with a different \n\
+new size. \n\
+\n\
+Parameters \n\
+----------- \n\
+newShape : {seq. of int} \n\
+    New shape of the returned object. A minimal size of this list or tuple is two. \n\
+\n\
+Returns \n\
+-------- \n\
+reshaped : {dataObject} \n\
+    The reshaped data object. \n\
 \n\
 Notes \n\
 ----- \n\
-Not implemented yet.\n\
-\n\
-");
+This method is similar to numpy.reshape");
 PyObject* PythonDataObject::PyDataObject_reshape(PyDataObject *self, PyObject *args)
 {
-    PyErr_SetString(PyExc_NotImplementedError,"Not implemented yet");
-    return NULL;
+    if (self->dataObject == NULL) return NULL;
+
+    PyObject *shape = NULL;
+
+    if (!PyArg_ParseTuple(args,"O", &shape))
+    {
+        return NULL;
+    }
+
+    bool ok;
+    QVector<int> shapes = PythonQtConversion::PyObjGetIntArray(shape, false, ok);
+
+    if (!ok)
+    {
+        PyErr_Format(PyExc_TypeError,"The argument 'newShape' must be a sequence of integers");
+        return NULL;
+    }
+
+    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+    
+    try
+    {
+        ito::DataObject resObj = self->dataObject->reshape(shapes.size(), shapes.data());
+        retObj->dataObject = new ito::DataObject(resObj);
+    }
+    catch(cv::Exception &exc)
+    {
+        retObj->dataObject = NULL;
+
+        Py_DECREF(retObj);
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        return NULL;
+    }
+
+    if (!retObj->dataObject->getOwnData())
+    {
+        PyDataObject_SetBase(retObj, (PyObject*)self);
+    }
+
+    if(retObj) retObj->dataObject->addToProtocol("Reshaped dataObject.");
+
+    return (PyObject*)retObj;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -4910,19 +4965,20 @@ PyObject* PythonDataObject::PyDataObject_adjustROI(PyDataObject *self, PyObject*
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyDataObjectSqueeze_doc,"squeeze() -> return a squeezed shallow copy (if possible) of this dataObject. \n\
 \n\
-This method removes every dimension with size equal to 1. Take care, that \n\
-none of the last two dimensions is considered by this squeeze-command. \n\
+This method removes every dimension with size equal to 1. A shallow copy is only returned, if the last two dimensions \n\
+(called plane) are not affected by the squeeze operation. Else a deep-copy has to be returned due to a overall re-\n\
+aligment of the matrix. The returned object can never have less then two dimensions. If this is the case, the \n\
+last or second to last dimensions with a size of 1 is not deleted. If squeeze() returns a shallow copy, a change in a \n\
+value will change the same value in the original object, too. \n\
 \n\
 Returns \n\
 -------- \n\
 squeezed : {dataObject} \n\
-    The squeezed data object where all kept planes are shallow copies of the original plane. \n\
+    The squeezed data object. \n\
 \n\
 Notes \n\
 ----- \n\
-The returned squeezed data object is a shallow copy of the original data object and hence changes in its values\n\
-will also change the original data set.\n\
-This method is equal to numpy.squeeze");
+This method is similar to numpy.squeeze");
 PyObject* PythonDataObject::PyDataObject_squeeze(PyDataObject *self, PyObject* /*args*/)
 {
     if (self->dataObject == NULL) return NULL;

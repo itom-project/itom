@@ -722,7 +722,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_trans_Test)
 
 //tagSpace_squeeze_Test
 /*!
-    This test checks functionality of "suqeeze" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "squeeze" if a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_squeeze_Test)
 {
@@ -738,7 +738,7 @@ TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_squeeze_Test)
 
 //tagSpace_toGray_Test
 /*!
-    This test checks functionality of "toGray" of a DataObject is compatible with tagSpace copy.
+    This test checks functionality of "toGray" if a DataObject is compatible with tagSpace copy.
 */
 TYPED_TEST(dataObjectTagSpace_operator_Test, tagSpace_toGray_Test)
 {
