@@ -51,7 +51,7 @@ class MainApplication : public QObject
         ~MainApplication();
 
         int loadSettings(const QString userName = "");
-        void setupApplication();
+        void setupApplication(const QStringList &scriptsToOpen);
         void finalizeApplication();
 
         int exec();
