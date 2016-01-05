@@ -32,11 +32,12 @@ namespace ito {
 /*static*/ char ByteArray::emptyChar = '\0';
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//doc in header file
 ByteArray::ByteArray(const char *str) : d(NULL)
 {
     if (str)
     {
-        int len = strlen(str);
+        size_t len = strlen(str);
         d = static_cast<Data*>(malloc(sizeof(Data)+len));
         d->m_ref = 0;
         d->m_pData = d->m_buffer;
@@ -46,6 +47,7 @@ ByteArray::ByteArray(const char *str) : d(NULL)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//doc in header file
 ByteArray &ByteArray::operator=(const ByteArray &rhs)
 {
     if (rhs.d)
@@ -59,13 +61,14 @@ ByteArray &ByteArray::operator=(const ByteArray &rhs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//doc in header file
 ByteArray &ByteArray::operator=(const char *str)
 {
     decAndFree(d);
 
     if (str)
     {
-        int len = strlen(str);
+        size_t len = strlen(str);
         d = static_cast<Data*>(malloc(sizeof(Data)+len));
         d->m_ref = 0;
         d->m_pData = d->m_buffer;
@@ -80,17 +83,18 @@ ByteArray &ByteArray::operator=(const char *str)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//doc in header file
 ByteArray &ByteArray::append(const char *str)
 {
     if (str)
     {
-        int newlen = strlen(str);
+        size_t newlen = strlen(str);
         
         if (newlen > 0)
         {
             if (d)
             {
-                int oldlen = strlen(d->m_pData);
+                size_t oldlen = strlen(d->m_pData);
 
                 if (d->m_ref == 0) //this is the only user
                 {
@@ -125,11 +129,12 @@ ByteArray &ByteArray::append(const char *str)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//doc in header file
 ByteArray &ByteArray::append(const ByteArray &str)
 {
     int newlen = str.length();
     Data *oldData = d;
-    int oldlen = strlen(d->m_pData);
+    size_t oldlen = strlen(d->m_pData);
 
     if (newlen > 0)
     {
@@ -150,6 +155,7 @@ ByteArray &ByteArray::append(const ByteArray &str)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//doc in header file
 bool ByteArray::operator==(const ByteArray &a) const
 {
     if (d && a.d)
