@@ -52,6 +52,48 @@
 
 namespace ito {
 
+/*!
+    \class IOHelper
+    \brief This class contains several static methods to load or save various file formats.
+
+    The methods in this class can be used to save or load data objects, point clouds or polygonal meshes
+    to or from various file formats. The algorithms for most file formats are not directly supported
+    by this class, but algorithm plugins are scanned and checked if they support loading or saving from or
+    to different formats. If so, the specific method in the plugin is called by methods defined in this class.
+
+    Most methods can be operated with or without GUI support, hence either message boxes are displayed or
+    the communication is done by RetVal only.
+*/
+
+//------------------------------------------------------------------------------------------------------------------------------------------------
+//! method to load any supported file
+/*!
+    This method tries to load any given file that is directly or indirectly supported.
+    Indirect support means that algorithm plugins are checked for their support for the
+    given file format. If there is a corresponding method found, it is used to open the file.
+
+    Possible file formats are:
+
+    * .py -> open the python file in a script editor
+    * .idc -> loads the content of the 'itom data collection' file to the global or local python workspace
+    * .mat -> load the content of the Matlab file to the global or local python workspace using Scipy (only if the package Scipy is available)
+    * .ui -> open the ui file in the QtDesigner application
+    * else -> tries to find at least algorithm that supports this file ending and can load it to a data object, point cloud or polygonal mesh (to global or local workspace)
+
+    If two or more algorithms pretend to be able to load the file format, a dialog appears where the user can select the desired filter.
+
+    \param generalFileName is the file name to load. If the file name is not absolute, it is considered to be relative to the current directory.
+    \param openUnknownsWithExternalApp is a boolean variable that indicates if an unsupported or unknown file format is opened with the external 
+               application that is officially connected with this file format
+    \param showMessages if true, an error or warning during the execution of this method will be displayed in a message box.
+    \param parent is the widget this method should be related to. Dialogs or messages are then displayed using this parent.
+    \param errorSlotMemberOfParent is only considered for ui-files. Pass a SLOT(myMethod(QProcess::ProcessError)) description such that errors 
+               occurred in the QtDesigner will call the given slot. Else pass NULL.
+    \param globalNotLocalWorkspace is only considered when files are opened that load data objects, point clouds or polygonal meshes to the Python 
+               workspace. If true, the object is loaded to the global workspace, else to the local (only allowed if a local workspace is currently available)
+    \return success of loading as RetVal
+    \sa openPythonScript, importPyWorkspaceVars, openUIFile, uiOpenFileWithFilter
+*/
 /*static */RetVal IOHelper::openGeneralFile(const QString &generalFileName, bool openUnknownsWithExternalApp, bool showMessages, QWidget* parent, const char* errorSlotMemberOfParent, bool globalNotLocalWorkspace /*= true*/)
 {
     QFile file(generalFileName);
@@ -168,7 +210,30 @@ end:
     return retval;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------------
+//! export one or more variables from a python workspace
+/*!
+    This method allows exporting one or more variables from the global or local python workspace to
+    a user defined file. A file save dialog is shown to the user in order to select the desired file name.
+    Depending on the type of the given variables, the dialog only allows inserting supported file formats.
+
+    One or multiple variables can be saved in idc (itom data collection) or mat (Matlab) containers using
+    the method exportPyWorkspaceVars. Single variables can also be exported to suitable file formats using
+    the method uiSaveFileWithFilter. This finally uses a suitable filter method from an algorithm plugin.
+
+    In case of an export based on a plugin filter, the data related to the variable name is obtained
+    from the workspace by invoking the slot getParamsFromWorkspace in the class PythonEngine.
+
+    \param globalNotLocal defines if the variables are exported from the global (true) or local (false) workspace
+    \param varNames is a list if one or multiple variable names within the workspace
+    \param compatibleParamBaseTypes is a vector of the same size than varNames. A value can be ito::ParamBase::DObjPtr, ito::ParamBase::PointCloudPtr
+              or ito::ParamBase::PolygonMeshPtr to describe the type of the variable or 0 if the variable covers another object. This information is
+              used to set the filters in the file save dialog.
+    \param defaultPath is the default path that is pre-set in the file save dialog.
+    \param parent is the parent widget of the file save dialog.
+    \return success of the export as RetVal
+    \sa exportPyWorkspaceVars, uiSaveFileWithFilter, getParamsFromWorkspace
+*/
 /*static */RetVal IOHelper::uiExportPyWorkspaceVars(bool globalNotLocal, const QStringList &varNames, QVector<int> compatibleParamBaseTypes, QString defaultPath, QWidget* parent)
 {
     static QString uiExportPyWorkspaceDefaultPath;
@@ -188,8 +253,10 @@ end:
     }
 
     Q_ASSERT(varNames.size() == compatibleParamBaseTypes.size());
-    IOFilters filters = (IOFilters) (IOHelper::IOOutput | IOHelper::IOWorkspace | IOHelper::IOPlugin);
+    IOFilters filters = IOHelper::IOOutput | IOHelper::IOWorkspace | IOHelper::IOPlugin;
 
+    //multiple files can only be saved to idc or mat containers, only one single file can be saved using an plugin filter.
+    //Its search can then be limited to a mime type.
     if (varNames.size() == 1)
     {
         switch(compatibleParamBaseTypes[0])
@@ -223,7 +290,6 @@ end:
 
         if (suffix == "idc" || suffix == "mat")
         {
-            //QDir::setCurrent(info.path());
             return exportPyWorkspaceVars(filename, globalNotLocal, varNames);
         }
         else
@@ -267,19 +333,26 @@ end:
                 retVal += uiSaveFileWithFilter((*values)[0], filename,parent);
             }
 
-            /*if (retVal.containsError())
-            {
-                QString text = tr("An error occurred while saving to file.");
-                if (retVal.errorMessage()) text.append("\n").append(retVal.errorMessage());
-                QMessageBox::critical(parent, tr("Error while saving file"), text);
-            }*/
-
             return retVal;
         }
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! export one or more variables from a python workspace to an idc or mat file
+/*!
+    This method exports one or more variables from the global or local python workspace
+    to a idc (itom data collection) or mat (Matlab) container file. Other file suffixes
+    will return an error. For the export, the slots pickleVariables (idc) or saveMatlabVariables (mat),
+    defined in class PythonEngine, are invoked. Mat is only supported if the Python package Scipy is available.
+    The idc format is written via the Python module pickle.
+
+    \param filename is the filename to the idc or mat file
+    \param globalNotLocal defines if the variables are exported from the global (true) or local (false) workspace
+    \param varNames is a list if one or multiple variable names within the workspace
+    \return success of the export as RetVal
+    \sa uiExportPyWorkspaceVars
+*/
 /*static */RetVal IOHelper::exportPyWorkspaceVars(const QString &filename, bool globalNotLocal, const QStringList &varNames)
 {
     RetVal retValue(retOk);
@@ -351,7 +424,21 @@ end:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static */RetVal IOHelper::uiImportPyWorkspaceVars(bool globalNotLocal, IOFilters IOfilters, QString defaultPath, QWidget* parent)
+//! open a file load dialog and let the user selected a file that is opened and load to a python workspace
+/*!
+    This method opens a file load dialog and let the user selected a file. The file filters can
+    be adjusted, such that for instance only file formats that contain data objects, point clouds and/or polygonal meshes
+    are allowed. The selected file is then opened using openGeneralFile. If loading the file using a plugin filter
+    requires further mandatory or optional parameters, a generic parameter input dialog is shown, too.
+
+    \param globalNotLocal defines if the variables are loaded to the global (true) or local (false) workspace
+    \param IOfilters is an or combination of IOFilter to adjust the supported file formats.
+    \param defaultPath is the default path that is pre-set in the file load dialog.
+    \param parent is the parent widget of the file load dialog.
+    \return success of the import as RetVal
+    \sa openGeneralFile
+*/
+/*static */RetVal IOHelper::uiImportPyWorkspaceVars(bool globalNotLocal, const IOFilters &IOfilters, QString defaultPath, QWidget* parent)
 {
 
     static QString uiImportPyWorkspaceDefaultPath;
@@ -365,8 +452,7 @@ end:
         defaultPath = uiImportPyWorkspaceDefaultPath;
     }
 
-    IOfilters &= ~ito::IOHelper::IOOutput;
-    QString filters = IOHelper::getFileFilters(IOfilters);
+    QString filters = IOHelper::getFileFilters(IOfilters & (~IOOutput));
     static QString selectedFilter; //this variable will contain the last selected filter which is the default for the next time
 
     QString filename = QFileDialog::getOpenFileName(parent, tr("Import data"), defaultPath, filters, &selectedFilter);
@@ -380,8 +466,6 @@ end:
         QFile file(filename);
         if (file.exists())
         {
-            //QDir::setCurrent(QFileInfo(filename).path());
-
             uiImportPyWorkspaceDefaultPath = QFileInfo(filename).canonicalPath(); //save directory as default for next call to this export dialog
 
             QFileInfo info(filename);
@@ -395,6 +479,17 @@ end:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! import an idc or mat file and load the content to a python workspace
+/*!
+    Import an idc (itom data collection) or mat (Matlab) ocntainer to the global or local
+    python workspace. This is done by an invokation of the slot unpickleVariables or loadMatlabVariables
+    of the class PythonEngine.
+
+    \param filename is the filename with a suffix idc or mat (only supported if Scipy is available)
+    \param globalNotLocal defines if the file is loaded to the global (true) or local (false) workspace
+    \return success of the import as RetVal
+    \sa unpickleVariables, loadMatlabVariables
+*/
 /*static */RetVal IOHelper::importPyWorkspaceVars(const QString &filename, bool globalNotLocal)
 {
     RetVal retValue(retOk);
@@ -465,28 +560,15 @@ end:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static */RetVal IOHelper::uiOpenPythonScript(QString defaultPath, QWidget* parent)
-{
-    QString fileName;
+//! open a given python file in a script editor window
+/*!
+    Open the given python file (suffix *.py) using the slot openScript of the
+    class ScriptEditorOrganizer.
 
-    if (defaultPath.isNull() || defaultPath.isEmpty()) defaultPath = QDir::currentPath();
-
-    fileName = QFileDialog::getOpenFileName(parent, tr("open python script"), defaultPath, tr("python (*.py)"));
-
-    QFileInfo info(fileName);
-
-    if (fileName.isEmpty())
-    {
-        return RetVal(retOk);
-    }
-    else
-    {
-        QDir::setCurrent(QFileInfo(fileName).path());
-        return openPythonScript(fileName);
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
+    \param filename is the filename to the py file
+    \return retOk in case of success and retError in case of an error or timeout.
+    \sa openScript
+*/
 /*static */RetVal IOHelper::openPythonScript(const QString &filename)
 {
     QFile file(filename);
@@ -520,6 +602,22 @@ end:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! open ui file in an instance of QtDesigner
+/*!
+    Tries to open the given ui file in a new or already opened instance of QtDesigner.
+    The designer folder of itom is passed as plugin path to the QtDesigner such that
+    itom designer plugins are also considered as widgets in the QtDesigner application.
+
+    It is possible to pass a slot with a single argument of type QProcess::ProcessError.
+    If this slot is given, it is connected to the error signal of the QtDesigner process such that
+    error during the startup... of QtDesigner can be appropriately handled.
+
+    \param filename is the filename to the ui file
+    \param parent is the widget where the slot given by errorSlotMemberOfParent is defined
+    \param errorSlotMemberOfParent is SLOT(myMethod(QProcess::ProcessError)) description such that errors 
+               occurred in the QtDesigner will call the given slot. Else pass NULL.
+    \return retOk in case of success and retError in case of an error or timeout.
+*/
 /*static */RetVal IOHelper::openUIFile(const QString &filename, QWidget* parent, const char* errorSlotMemberOfParent)
 {
     ProcessOrganizer *po = qobject_cast<ProcessOrganizer*>(AppManagement::getProcessOrganizer());
@@ -625,6 +723,24 @@ end:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! open a file using a filter method from an algorithm plugin and shows an import dialog
+/*!
+    This method tries to open a given file using a given filter method from an algorithm plugin.
+    If the file could be successfully loaded (to a data object, point cloud or polygonal mesh), it is
+    imported to the global or local python workspace. The given filter method must support one of the
+    filter interfaces ito::AddInAlgo::iReadDataObject, ito::AddInAlgo::iReadPointCloud or ito::AddInAlgo::iReadPolygonMesh.
+
+    The load and preview of the file as well as an input mask for the variable name of the imported data
+    is done by a dialog of class DialogOpenFileWithFilter. This dialog let the user also indicate required
+    mandatory or optional parameters for the load. The variable name can also be validated and checked for duplicates.
+
+    \param filter is a pointer to the ito::AddInAlgo::FilterDef structures that indicates the desired plugin filter method.
+    \param filename is the name of the file
+    \param parent is the parent widget of the load and preview dialog.
+    \param globalNotLocal defines if the file should be loaded to the global (true) or local python workspace (false)
+    \return success of the import as RetVal
+    \sa putParamsToWorkspace, uiSaveFileWithFilter, DialogOpenFileWithFilter
+*/
 /*static*/ RetVal IOHelper::uiOpenFileWithFilter(const ito::AddInAlgo::FilterDef *filter, const QString &filename, QWidget *parent /*= NULL*/, bool globalNotLocal /*= true*/)
 {
     RetVal retval;
@@ -793,6 +909,22 @@ end:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! save a file using a filter method from an algorithm plugin and shows an export dialog
+/*!
+    This method tries to save a given data object, point cloud or polygonal mesh using a given filter method from an algorithm plugin.
+    The given filter method must support one of the filter interfaces ito::AddInAlgo::iWriteDataObject, 
+    ito::AddInAlgo::iWritePointCloud or ito::AddInAlgo::iWritePolygonMesh.
+
+    If the export requires further mandatory or optional parameters, an export dialog (class DialogSaveFileWithFilter)
+    is shown.
+
+    \param value is the export object as shared pointer of ParamBase. Only the types ito::ParamBase::DObjPtr, ito::ParamBase::PointCloudPtr 
+               and ito::ParamBase::PolygonMeshPtr are supported.
+    \param filename is the name of the file
+    \param parent is the parent widget of the possible export dialog.
+    \return success of the export as RetVal
+    \sa DialogSaveFileWithFilter, uiOpenFileWithFilter
+*/
 /*static*/ RetVal IOHelper::uiSaveFileWithFilter(QSharedPointer<ito::ParamBase> &value, const QString &filename, QWidget *parent /*= NULL*/)
 {
 
@@ -1102,7 +1234,14 @@ end:
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ QIcon IOHelper::searchIcon(const QString &filename, SearchFolders searchFolders /*= SFAll*/, const QIcon &fallbackIcon /*= QIcon()*/)
+//! search an icon file in different locations, open and return it
+/*!
+    \param filename is the relative or absolute filename of the icon
+    \param searchFolders is a bitmask that defines the locations that are searched for the filename
+    \param fallbackIcon let you define an alternative icon that is returned if filename is not found in any location
+    \return loaded icon or invalid QIcon
+*/
+/*static*/ QIcon IOHelper::searchIcon(const QString &filename, const SearchFolders &searchFolders /*= SFAll*/, const QIcon &fallbackIcon /*= QIcon()*/)
 {
     QIcon icon;
     bool found = false;
