@@ -39,11 +39,6 @@
 #include "../../common/apiFunctionsInc.h"
 #include "QPropertyEditor/QPropertyEditorWidget.h"
 
-#include "plotLegends/infoWidgetMarkers.h"
-#include "plotLegends/infoWidgetPickers.h"
-#include "plotLegends/infoWidgetShapes.h"
-#include "plotLegends/infoWidgetDObject.h"
-
 namespace ito 
 {
 
@@ -64,18 +59,6 @@ public:
 
     QDockWidget *propertyDock;
     QPropertyEditorWidget *propertyEditorWidget;
-	
-	QDockWidget *markerDock;
-	MarkerInfoWidget *markerInfo;
-
-	QDockWidget *dObjectInfoDock;
-	DObjectInfoWidget *dObjectInfo;
-	
-	QDockWidget *shapesDock; 
-	ShapesInfoWidget *shapesInfo;
-	
-	QDockWidget *pickerDock; 
-	PickerInfoWidget *pickerInfo;
 	
 	QObject *propertyObservedObject;
     bool toolbarsVisible;
@@ -134,11 +117,13 @@ AbstractFigure::~AbstractFigure()
     }
     d->toolboxes.clear();
 
+	/*
     d->propertyDock = NULL;
 	d->markerDock = NULL;
 	d->pickerDock = NULL;
 	d->shapesDock = NULL;
 	d->dObjectInfoDock = NULL;
+	*/
 
     delete d;
     d = NULL;
@@ -169,7 +154,9 @@ RetVal AbstractFigure::initialize()
 
     d->propertyEditorWidget = new QPropertyEditorWidget(d->propertyDock);
     d->propertyDock->setWidget(d->propertyEditorWidget);
-   
+	addToolbox(d->propertyDock, "properties", Qt::RightDockWidgetArea);
+
+	/*
 	d->markerDock = new QDockWidget(tr("Marker Info"), this);
 	d->markerDock->setVisible(false);
 	d->markerDock->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable);
@@ -198,12 +185,12 @@ RetVal AbstractFigure::initialize()
 	d->dObjectInfo = new DObjectInfoWidget(d->dObjectInfoDock);
 	d->dObjectInfoDock->setWidget(d->dObjectInfo);
 
-    addToolbox(d->propertyDock, "properties", Qt::RightDockWidgetArea);
+    
 	addToolbox(d->markerDock, "marker info", Qt::RightDockWidgetArea);
 	addToolbox(d->pickerDock, "picker info", Qt::RightDockWidgetArea);
 	addToolbox(d->shapesDock, "shapes info", Qt::RightDockWidgetArea);
 	addToolbox(d->dObjectInfoDock, "object info", Qt::RightDockWidgetArea);
-
+	*/
     return ito::retOk;
 }
 
@@ -534,30 +521,6 @@ void AbstractFigure::setToolbarVisible(bool visible)
     updatePropertyDock();
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-QObject* AbstractFigure::MarkerWidget() 
-{
-	if (d)	return (QObject*) d->markerInfo;
-	else return NULL;
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-QObject* AbstractFigure::PickerWidget()
-{
-	if (d)	return (QObject*)d->pickerInfo;
-	else return NULL;
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-QObject* AbstractFigure::ShapesWidget()
-{
-	if (d)	return (QObject*)d->shapesInfo;
-	else return NULL;
-}
-//----------------------------------------------------------------------------------------------------------------------------------
-QObject* AbstractFigure::ObjectInfoWidget()
-{
-	if (d)	return (QObject*)d->dObjectInfo;
-	else return NULL;
-}
-//----------------------------------------------------------------------------------------------------------------------------------
 bool AbstractFigure::getToolbarVisible() const 
 { 
     return d->toolbarsVisible;
@@ -568,12 +531,6 @@ QDockWidget* AbstractFigure::getPropertyDockWidget() const
 { 
     return d->propertyDock; 
 }
-//----------------------------------------------------------------------------------------------------------------------------------
-QDockWidget* AbstractFigure::getMarkerLegendDockWidget() const
-{
-	return d->markerDock;
-}
-
 //----------------------------------------------------------------------------------------------------------------------------------
 QList<AbstractFigure::ToolboxItem> AbstractFigure::getToolboxes() const
 {

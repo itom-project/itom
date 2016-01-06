@@ -31,6 +31,7 @@
 #include "pythonNpDataObject.h"
 #include "pythonRgba.h"
 #include "pythonShape.h"
+#include "../common/shapeDObject.h"
 
 #include "pythonQtConversion.h"
 #include "dataObjectFuncs.h"
@@ -7214,7 +7215,8 @@ PyObject* PythonDataObject::PyDataObject_createMask(PyDataObject *self, PyObject
         PythonShape::PyShape* shape = (PythonShape::PyShape*)shapes;
         if (shape && shape->shape)
         {
-            ito::DataObject mask = shape->shape->mask(*self->dataObject, inverse > 0);
+            //ito::DataObject mask = shape->shape->mask(*self->dataObject, inverse > 0);
+			ito::DataObject mask = ShapeDObject::mask(*self->dataObject, *shape->shape, inverse > 0);
             PyDataObject *ret = createEmptyPyDataObject();
             ret->dataObject = new ito::DataObject(mask);
             return (PyObject*)ret;
@@ -7252,8 +7254,10 @@ PyObject* PythonDataObject::PyDataObject_createMask(PyDataObject *self, PyObject
             }
         }
 
-        ito::DataObject mask = ito::Shape::maskFromMultipleShapes(*self->dataObject, shape_vector, inverse > 0);
-        PyDataObject *ret = createEmptyPyDataObject();
+        //ito::DataObject mask = ito::Shape::maskFromMultipleShapes(*self->dataObject, shape_vector, inverse > 0);
+		ito::DataObject mask = ito::ShapeDObject::maskFromMultipleShapes(*self->dataObject, shape_vector, inverse > 0);
+
+		PyDataObject *ret = createEmptyPyDataObject();
         ret->dataObject = new ito::DataObject(mask);
         return (PyObject*)ret;
     }

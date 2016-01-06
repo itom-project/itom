@@ -68,13 +68,11 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
 
     Q_PROPERTY(bool toolbarVisible READ getToolbarVisible WRITE setToolbarVisible DESIGNABLE true USER true)
     Q_PROPERTY(bool contextMenuEnabled READ getContextMenuEnabled WRITE setContextMenuEnabled DESIGNABLE true)
-    Q_PROPERTY(bool markerLegendVisible READ getMarkerLegendVisible WRITE setMarkerLegendVisible DESIGNABLE true)
-    Q_PROPERTY(bool renderMarkerLegend READ getMarkerLegendRender WRITE setMarkerLegendRender DESIGNABLE true)
+    Q_PROPERTY(bool renderLegend READ getLegendRender WRITE setLegendRender DESIGNABLE true)
 
     Q_CLASSINFO("prop://toolbarVisible", "Toggles the visibility of the toolbar of the plot.")
     Q_CLASSINFO("prop://contextMenuEnabled", "Defines whether the context menu of the plot should be enabled or not.")
-    Q_CLASSINFO("prop://markerLegendVisible", "Toogles the visibility of the marker legend.")
-    Q_CLASSINFO("prop://renderMarkerLegend", "If this property is true, the marker legend is included in pixelmaps renderings.")
+    Q_CLASSINFO("prop://renderLegend", "If this property is true, the legend are included in pixelmaps renderings.")
 
     Q_CLASSINFO("slot://refreshPlot", "Triggers an update of the current plot window.")
 
@@ -156,12 +154,9 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
         virtual bool getContextMenuEnabled() const = 0;
 
         QDockWidget *getPropertyDockWidget() const;
-        QDockWidget *getMarkerLegendDockWidget() const;
 
-        virtual bool getMarkerLegendVisible() const { return false;}
-        virtual void setMarkerLegendVisible(const bool val) { return;}
-        virtual bool getMarkerLegendRender() const { return false;}
-        virtual void setMarkerLegendRender(const bool val) { return;}
+        virtual bool getLegendRender() const { return false;}
+        virtual void setLegendRender(const bool val) { return;}
 
         QList<QMenu*> getMenus() const;
         QList<AbstractFigure::ToolBarItem> getToolbars() const;
@@ -186,11 +181,6 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
 
         void updatePropertyDock(); /*!< call this method if any property of the figure changed such that the property toolbox is synchronized and updated. */
         void setPropertyObservedObject(QObject* obj); /*!< registeres obj for a property observation of the property toolbox. All readable properties are then listed in the property toolbox. */
-
-		QObject* MarkerWidget();
-		QObject* PickerWidget();
-		QObject* ShapesWidget();
-		QObject* ObjectInfoWidget();
 
         RetVal initialize();
 

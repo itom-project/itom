@@ -1,4 +1,4 @@
-SET (target_name itomCommonQtLib)
+SET (target_name itomShapeLib)
 project(${target_name}) 
      
 cmake_minimum_required(VERSION 2.8.9)
@@ -24,12 +24,12 @@ include("../ItomBuildMacros.cmake")
 IF(BUILD_ITOMLIBS_SHARED)
     SET(LIBRARY_TYPE SHARED)
 
-    ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
-    ADD_DEFINITIONS(-DITOMCOMMONQT_DLL -D_ITOMCOMMONQT_DLL)
+    ADD_DEFINITIONS(-DITOMSHAPE_SHARED -D_ITOMSHAPE_SHARED)
+    ADD_DEFINITIONS(-DITOMSHAPE_DLL -D_ITOMSHAPE_DLL)
 ELSE(BUILD_ITOMLIBS_SHARED)
     SET(LIBRARY_TYPE STATIC)
     
-    #if itomCommon is static, add -fPIC as compiler flag for linux
+    #if itomShape is static, add -fPIC as compiler flag for linux
     IF(UNIX)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     ENDIF(UNIX)
@@ -54,7 +54,7 @@ IF (BUILD_UNICODE)
     ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 ENDIF (BUILD_UNICODE)
 
-ADD_DEFINITIONS(-DITOMCOMMONQT_MOC)
+ADD_DEFINITIONS(-DITOMSHAPE_MOC)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 IF (DEFINED CMAKE_BUILD_TYPE)
@@ -76,7 +76,6 @@ ENDIF(BUILD_WITH_PCL)
 message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
 INCLUDE_DIRECTORIES( 
-    ${CMAKE_CURRENT_SOURCE_DIR}/../shapes
     ${CMAKE_CURRENT_SOURCE_DIR}/../common
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${OpenCV_DIR}/include
@@ -85,59 +84,35 @@ INCLUDE_DIRECTORIES(
 
 LINK_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
-    ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
     ${OpenCV_DIR}/lib
 )
 
-set(itomCommonQt_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/commonQtVersion.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInDockWidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInConfigDialog.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperCommon.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/pluginThreadCtrl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedFunctionsQt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresGraphics.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresQt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjFigure.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjPCLFigure.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractItomDesignerPlugin.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
+set(itomShape_HEADERS
+    ${CMAKE_CURRENT_SOURCE_DIR}/shapeCommon.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/shapeVersion.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/shape.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/shapeDObject.h
 )
 
 IF(NOT QT5_FOUND)
-    QT4_WRAP_CPP_ITOM(itomCommonQt_HEADERS_MOC ${itomCommonQt_HEADERS})
+    QT4_WRAP_CPP_ITOM(itomShape_HEADERS_MOC ${itomShape_HEADERS})
 ENDIF(NOT QT5_FOUND)
 
-set(itomCommonQt_SOURCES 
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInGrabber.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInInterface.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInDockWidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInConfigDialog.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperCommon.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/pluginThreadCtrl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedFunctionsQt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresPrimitives.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresQt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractDObjFigure.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractDObjPCLFigure.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractFigure.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/sources/AbstractNode.cpp
+set(itomShape_SOURCES 
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/shape.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/shapeDObject.cpp
 )
 
 if(MSVC)
-    list(APPEND itomCommonQt_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
+    list(APPEND itomShape_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/version.rc)
 endif(MSVC)
 
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 #handle translations END STEP 1
 
-add_library(${target_name} ${LIBRARY_TYPE} ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS} ${itomCommonQt_HEADERS_MOC} ${EXISTING_TRANSLATION_FILES})
+add_library(${target_name} ${LIBRARY_TYPE} ${itomShape_SOURCES} ${itomShape_HEADERS} ${itomShape_HEADERS_MOC} ${EXISTING_TRANSLATION_FILES})
 
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomShapeLib itomWidgets)
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} dataobject itomCommonLib)
 
 IF (QT5_FOUND)
     IF(CMAKE_VERSION VERSION_GREATER 3.0.0)
@@ -148,13 +123,13 @@ IF (QT5_FOUND)
 ENDIF (QT5_FOUND)
 
 #translation
-set (FILES_TO_TRANSLATE ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS})
+set (FILES_TO_TRANSLATE ${itomShape_SOURCES} ${itomShape_HEADERS})
 PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 
 FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/translation)
 
 # COPY SECTION
-set(COPY_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/translation/itomCommonQtLib_de.qm")
+set(COPY_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/translation/itomShapeLib_de.qm")
 set(COPY_DESTINATIONS "${CMAKE_CURRENT_BINARY_DIR}/../translation")
 ADD_LIBRARY_TO_APPDIR_AND_SDK(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
