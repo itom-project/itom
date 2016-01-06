@@ -40,7 +40,10 @@
 #include "factories/menuComboBoxFactory.h"
 #include "factories/comboBoxFactory.h"
 #include "factories/checkableComboBoxFactory.h"
-
+#include "factories/plotInfoDObjectFactory.h"
+#include "factories/plotInfoMarkerFactory.h"
+#include "factories/plotInfoPickerFactory.h"
+#include "factories/plotInfoShapesFactory.h"
 //------------------------------------------------------------------------------------------------
 ItomWidgetsFactory::ItomWidgetsFactory(QObject *parent)
     : QObject(parent)
@@ -60,6 +63,10 @@ ItomWidgetsFactory::ItomWidgetsFactory(QObject *parent)
     widgets.append(new MenuComboBoxFactory(this));
     widgets.append(new ComboBoxFactory(this));
     widgets.append(new CheckableComboBoxFactory(this));
+	widgets.append(new PlotInfoDObjectFactory(this));
+	widgets.append(new PlotInfoMarkerFactory(this));
+	widgets.append(new PlotInfoPickerFactory(this));
+	widgets.append(new PlotInfoShapesFactory(this));
 }
 
 //------------------------------------------------------------------------------------------------
