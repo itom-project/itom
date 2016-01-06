@@ -117,13 +117,7 @@ AbstractFigure::~AbstractFigure()
     }
     d->toolboxes.clear();
 
-	/*
     d->propertyDock = NULL;
-	d->markerDock = NULL;
-	d->pickerDock = NULL;
-	d->shapesDock = NULL;
-	d->dObjectInfoDock = NULL;
-	*/
 
     delete d;
     d = NULL;
@@ -156,41 +150,6 @@ RetVal AbstractFigure::initialize()
     d->propertyDock->setWidget(d->propertyEditorWidget);
 	addToolbox(d->propertyDock, "properties", Qt::RightDockWidgetArea);
 
-	/*
-	d->markerDock = new QDockWidget(tr("Marker Info"), this);
-	d->markerDock->setVisible(false);
-	d->markerDock->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable);
-
-	d->markerInfo = new MarkerInfoWidget(d->markerDock);
-	d->markerDock->setWidget(d->markerInfo);
-
-	d->pickerDock = new QDockWidget(tr("Picker Info"), this);
-	d->pickerDock->setVisible(false);
-	d->pickerDock->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable);
-
-	d->pickerInfo = new PickerInfoWidget(d->pickerDock);
-	d->pickerDock->setWidget(d->pickerInfo);
-
-	d->shapesDock = new QDockWidget(tr("Shapes Info"), this);
-	d->shapesDock->setVisible(false);
-	d->shapesDock->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable);
-
-	d->shapesInfo = new ShapesInfoWidget(d->shapesDock);
-	d->shapesDock->setWidget(d->shapesInfo);
-
-	d->dObjectInfoDock = new QDockWidget(tr("Data Object Info"), this);
-	d->dObjectInfoDock->setVisible(false);
-	d->dObjectInfoDock->setFeatures(QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetMovable);
-
-	d->dObjectInfo = new DObjectInfoWidget(d->dObjectInfoDock);
-	d->dObjectInfoDock->setWidget(d->dObjectInfo);
-
-    
-	addToolbox(d->markerDock, "marker info", Qt::RightDockWidgetArea);
-	addToolbox(d->pickerDock, "picker info", Qt::RightDockWidgetArea);
-	addToolbox(d->shapesDock, "shapes info", Qt::RightDockWidgetArea);
-	addToolbox(d->dObjectInfoDock, "object info", Qt::RightDockWidgetArea);
-	*/
     return ito::retOk;
 }
 
