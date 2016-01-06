@@ -50,6 +50,7 @@ set(itomCommon_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/commonVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/retVal.h
     ${CMAKE_CURRENT_SOURCE_DIR}/typeDefs.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/basicCheckerDefs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/byteArray.h
     ${CMAKE_CURRENT_SOURCE_DIR}/param.h
     ${CMAKE_CURRENT_SOURCE_DIR}/paramMeta.h

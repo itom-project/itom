@@ -1509,49 +1509,7 @@ namespace ito {
     template<> inline ito::tDataType getDataType2<float64*>()    { return ito::tFloat64; }
     template<> inline ito::tDataType getDataType2<complex64*>()  { return ito::tComplex64; }
     template<> inline ito::tDataType getDataType2<complex128*>() { return ito::tComplex128; }
-    template<> inline ito::tDataType getDataType2<Rgba32*>()     { return ito::tRGBA32; }
-    
-    //! method returns whether a given variable is equal to zero.
-    /*!
-     For floating point variables, this method considers a variable to be zero, if its value
-     lie within the boundaries (-epsilon,epsilon). Epsilon can for example be obtained by
-     std::numeric_limits<_Tp>::epsilon(). For floating point values only parameters of type
-     float32, float64, complex64 or complex128 are treated in the desired way.
-     
-     \param v is value to check
-     \param epsilon is epsilon boundary, for fixed-point values this value is ignored.
-     \return true if value is zero or within the epsilon boundaries, else false
-     */
-    template<typename _Tp> inline bool isZeroValue(_Tp v, _Tp /*epsilon*/)
-    {
-        return v == 0;
-    }
-    
-    template<> inline bool isZeroValue(Rgba32 v, Rgba32 /*epsilon*/)
-    {
-        return v == Rgba32::zeros();
-    }
-    
-    template<> inline bool isZeroValue(float32 v, float32 epsilon)
-    {
-        return v >= epsilon ? false : (v <= -epsilon ? false : true);
-    }
-    
-    template<> inline bool isZeroValue(float64 v, float64 epsilon)
-    {
-        return v >= epsilon ? false : (v <= -epsilon ? false : true);
-    }
-    
-    template<> inline bool isZeroValue(std::complex<ito::float32> v, std::complex<ito::float32> epsilon)
-    {
-        return isZeroValue<ito::float32>(v.real(),epsilon.real()) && isZeroValue<ito::float32>(v.imag(),epsilon.real());
-    }
-    
-    template<> inline bool isZeroValue(std::complex<ito::float64> v, std::complex<ito::float64> epsilon)
-    {
-        return isZeroValue<ito::float64>(v.real(),epsilon.real()) && isZeroValue<ito::float64>(v.imag(),epsilon.real());
-    }
-    
+    template<> inline ito::tDataType getDataType2<Rgba32*>()     { return ito::tRGBA32; }  
     
 } //namespace ito
 
