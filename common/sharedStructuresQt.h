@@ -50,11 +50,11 @@ class ITOMCOMMONQT_EXPORT ItomSharedSemaphore
 {
     private:
         QSemaphore *m_pSemaphore;        /*!< underlying instance of QSemaphore. This semaphore is created and destructed in the constructor and destructor respectively. */
-        int m_instCounter;                /*!<  counts how many instances are remaining, which are still participating at this wait condition */
-        bool m_enableDelete;              /*!<  helper member variable avoiding that this instance is deleted directly by "delete"-keyword */
+        int m_instCounter;               /*!<  counts how many instances are remaining, which are still participating at this wait condition */
+        bool m_enableDelete;             /*!<  helper member variable avoiding that this instance is deleted directly by "delete"-keyword */
         int m_numOfListeners;            /*!< number of called methods (listeners) in different threads. Every listener must release this semaphore before it is finally unlocked. */
-        bool m_callerStillWaiting;        /*!< true if caller is still waiting, false if caller finished or run into a timeout */
-        QMutex internalMutex;           /*!<  static mutex internally used for protecting some commands */
+        bool m_callerStillWaiting;       /*!< true if caller is still waiting, false if caller finished or run into a timeout */
+        QMutex internalMutex;            /*!<  static mutex internally used for protecting some commands */
 
     public:
         //! constructor
@@ -124,6 +124,23 @@ class ITOMCOMMONQT_EXPORT ItomSharedSemaphore
             return temp;
         }
 
+        //! The call of this method returns if a certain timeout has been expired or every listener released the semaphore
+        /*
+        The timeout time is indicated in milliseconds, a value equal to -1 means that no timeout is set and this methods
+        only returns if the called method released the semaphore. In the constructor of ItomSharedSemaphore, the semaphore
+        has been locked with a number equal to the number of listeners, which usually is 1. The semaphore is unlocked, if
+        every listener releases the semaphore once (\sa release).
+
+        The only difference between this method and wait is, that this implementation continuously allows
+        processing events in the event loop of the waiting thread. The type of allowed events is set by flags.
+
+        A possible timeout is indicated by a debug-warning in the output window of the IDE.
+
+        @param [in] timeout in ms [-1 : no timeout]
+        @param [in] flags is the type of allowed events that can be processed in the calling thread during the wait.
+        @return true if caller (listener) released the lock within the given timeout time, false if timeout expired
+        @sa release, wait
+        */
         bool waitAndProcessEvents(int timeout, QEventLoop::ProcessEventsFlags flags = QEventLoop::AllEvents);
 
         //! decreases the number of locks by one
