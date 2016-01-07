@@ -173,8 +173,9 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
         void addToolBarBreak(const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea); /*!< Add a toolbar break, hence a new line for the following toolbars to the indicated area. */
 
         void addToolbox(QDockWidget *toolbox, const QString &key, Qt::DockWidgetArea area = Qt::RightDockWidgetArea); /*!< Every plot widget is automatically equipped with a property toolbox. If you want to add further toolboxes (dock widgets), register and append them using this method. */
-
-        void showToolBar(const QString &key); /*!< show a toolbar with given key. This toolbar must first be registered using addToolBar. */
+		bool removeToolbox(const QString &key); /*!< If you added further toolboxes (dock widgets), remove them using this method. */
+       
+		void showToolBar(const QString &key); /*!< show a toolbar with given key. This toolbar must first be registered using addToolBar. */
         void hideToolBar(const QString &key); /*!< hide a toolbar with given key. This toolbar must first be registered using addToolBar. */
 
         void addMenu(QMenu *menu); /*!< append a menu to the figure. AbstractFigure then takes care about the menu. Only use this method to add menus since the menu bar of figures is differently handled depending on the window mode of the figure. */

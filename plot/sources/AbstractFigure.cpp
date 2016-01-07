@@ -530,7 +530,41 @@ void AbstractFigure::addToolbox(QDockWidget *toolbox, const QString &key, Qt::Do
         break;
     }
 }
-
+//----------------------------------------------------------------------------------------------------------------------------------
+bool AbstractFigure::removeToolbox(const QString &key)
+{
+	bool state = false;
+	bool found = true;
+	while (found == true)
+	{ 
+		int index = 0;
+		found = false;
+		for each (ToolboxItem item in d->toolboxes)
+		{
+			if (item.toolbox == NULL)
+			{
+				continue;
+			}
+			if (item.key == key)
+			{ 
+				if (item.toolbox->isVisible())
+				{
+					item.toolbox->hide();
+				}
+				if (m_windowMode != AbstractFigure::ModeInItomFigure)
+				{
+					QMainWindow::removeDockWidget(item.toolbox);
+				}
+				d->toolboxes.removeAt(index);
+				state = true;
+				found = true;
+				break;
+			}
+			index++;
+		}
+	}
+	return state;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::mnuShowProperties(bool checked) 
 { 
