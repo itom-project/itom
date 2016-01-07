@@ -83,6 +83,8 @@ class PythonRgba
 
         static PyObject* PyRgba_repr(PyRgba *self);
 
+        static PyObject *PyRgba_toGray(PyRgba *self);
+
         static PyObject* PyRgba_RichCompare(PyRgba *self, PyObject *other, int cmp_op);
 
         static PyGetSetDef PyRgba_getseters[];
@@ -140,11 +142,6 @@ class PythonRgba
         //-------------------------------------------------------------------------------------------------
         // static type methods
         //-------------------------------------------------------------------------------------------------
-        static PyObject* PyRgba_StaticZeros(PyObject *self, PyObject *args, PyObject *kwds);
-        static PyObject* PyRgba_StaticOnes(PyObject *self, PyObject *args, PyObject *kwds);
-        static PyObject* PyRgba_StaticRand(PyObject *self, PyObject *args, PyObject *kwds);
-        static PyObject* PyRgba_StaticRandN(PyObject *self, PyObject *args, PyObject *kwds);
-        static PyObject* PyRgba_StaticEye(PyObject *self, PyObject *args /*, PyObject *kwds*/);
 
 
 };
