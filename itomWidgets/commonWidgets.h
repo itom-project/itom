@@ -28,7 +28,7 @@
 #ifndef COMMONWIDGETS_H
 #define COMMONWIDGETS_H
 
-#if (defined ITOMWIDGETS_SHARED && ( defined(_Windows) || defined(_WINDOWS) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__) )) 
+#if (defined ITOMLIBS_SHARED && ( defined(_Windows) || defined(_WINDOWS) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__) )) 
     
     #ifndef ITOMWIDGETS_EXPORT
         

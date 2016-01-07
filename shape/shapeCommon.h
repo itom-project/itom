@@ -28,7 +28,7 @@
 #ifndef COMMONSHAPES_H
 #define COMMONSHAPES_H
 
-#if (defined ITOMSHAPE_SHARED && ( defined(_Windows) || defined(_WINDOWS) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__) )) 
+#if (defined ITOMLIBS_SHARED && ( defined(_Windows) || defined(_WINDOWS) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__) )) 
     
     #ifndef ITOMSHAPE_EXPORT
         

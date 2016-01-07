@@ -92,29 +92,37 @@ AbstractFigure::~AbstractFigure()
     }
     m_pChannels.clear();
 
-    //clear toolbars and menus
+    //clear toolbars and menus. toolbars and toolboxes are only added
+    //to the main window of the plot in the window modes standaloneInUi or
+    //standaloneWindow. If so, they are deleted by the destructor of
+    //the main window. Else they have to be deleted here.
+    if (m_windowMode == ModeInItomFigure)
+    {
+        foreach(ToolBarItem t, d->toolbars)
+        {
+            if (t.toolbar)
+            {
+                t.toolbar->deleteLater();
+            }
+        }
+        
+
+        foreach(ToolboxItem t, d->toolboxes)
+        {
+            if (t.toolbox)
+            {
+                t.toolbox->deleteLater();
+            }
+        }
+    }
+
     foreach(QMenu *m, d->menus)
     {
         m->deleteLater();
     }
+
     d->menus.clear();
-
-    foreach (ToolBarItem t, d->toolbars)
-    {
-        if (t.toolbar)
-        {
-            t.toolbar->deleteLater();
-        }
-    }
     d->toolbars.clear();
-
-    foreach(ToolboxItem t, d->toolboxes)
-    {
-        if (t.toolbox)
-        {
-            t.toolbox->deleteLater();
-		}
-    }
     d->toolboxes.clear();
 
     d->propertyDock = NULL;

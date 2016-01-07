@@ -20,7 +20,6 @@ OPTION(BUILD_ITOMLIBS_SHARED "Build dataObject, pointCloud, itomCommonLib and it
 IF(BUILD_ITOMLIBS_SHARED)
     SET(LIBRARY_TYPE SHARED)
     ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
-	ADD_DEFINITIONS(-DITOMWIDGETS_SHARED -D_ITOMWIDGETS_SHARED)
     ADD_DEFINITIONS(-DQPROPERTYEDITOR_DLL -D_QPROPERTYEDITOR_DLL)
 ELSE(BUILD_ITOMLIBS_SHARED)
     SET(LIBRARY_TYPE STATIC)
@@ -36,6 +35,7 @@ SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOUR
 include("../ItomBuildMacros.cmake")
 
 FIND_PACKAGE_QT(ON Core PrintSupport Widgets)
+find_package(OpenCV COMPONENTS core REQUIRED)
 
 add_definitions(-DUNICODE -D_UNICODE)
 
@@ -111,7 +111,7 @@ endif (QT5_FOUND)
 
 add_library(${target_name} ${LIBRARY_TYPE} ${qpropertyeditor_SOURCES} ${qpropertyeditor_HEADERS} ${qproperteditor_HEADERS_MOC} ${qpropertyeditor_UI_MOC} ${qpropertyeditor_RCC_MOC})
 
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} itomCommonLib  itomWidgets)
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} itomCommonLib itomWidgets)
 IF (QT5_FOUND)
     IF(CMAKE_VERSION VERSION_GREATER 3.0.0)
         #https://bugreports.qt.io/browse/QTBUG-39457
