@@ -456,16 +456,22 @@ PyObject* PythonRgba::PyRgba_nbInplaceOr(PyObject* o1, PyObject* o2)
 //------------------------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_name(PyRgba* /*self*/)
 {
-    PyObject *result;
-    result = PyUnicode_FromString("rgba");
-    return result;
+    return PyUnicode_FromString("rgba");
 };
 
 //------------------------------------------------------------------------------------------------------
 PyObject* PythonRgba::PyRgba_repr(PyRgba *self)
 {
-    PyObject *result = PyUnicode_FromFormat("rgba(%i,%i,%i alpha:%i)", self->rgba.r, self->rgba.g, self->rgba.b, self->rgba.a);
-    return result;
+    return PyUnicode_FromFormat("rgba(%i,%i,%i alpha:%i)", self->rgba.r, self->rgba.g, self->rgba.b, self->rgba.a);
+};
+
+//-----------------------------------------------------------------------------
+PyDoc_STRVAR(PyRgba_toGray_doc, "toGray() -> returns the gray value from the color (alpha is not considered) \n\
+\n\
+The returned gray value is a float value and calculated by 0.299 * r + 0.587 * g + 0.114 * b");
+PyObject* PythonRgba::PyRgba_toGray(PyRgba *self)
+{
+    return PyFloat_FromDouble(self->rgba.gray());
 };
 
 //------------------------------------------------------------------------------------------------------
@@ -491,13 +497,11 @@ PyObject* PythonRgba::PyRgba_RichCompare(PyRgba *self, PyObject *other, int cmp_
     if(other == NULL)
     {
         PyErr_SetString(PyExc_TypeError, "compare object is empty.");
-        Py_RETURN_NONE;
+        return NULL;
     }
 
     //check type of other
     PyRgba* otherRgba = NULL;
-    ito::DataObject resDataObj;
-    PyRgba* resultRgba = createEmptyPyRgba();
 
     if(PyArg_Parse(other, "O!", &PyRgbaType, &otherRgba))
     {
@@ -505,12 +509,14 @@ PyObject* PythonRgba::PyRgba_RichCompare(PyRgba *self, PyObject *other, int cmp_
         {
         //case Py_LT: resultRgba->rgba = self->rgba < otherRgba->rgba; break;
         //case Py_LE: resultRgba->rgba = self->rgba <= otherRgba->rgba; break;
-        case Py_EQ: resultRgba->rgba = self->rgba == otherRgba->rgba; break;
-        case Py_NE: resultRgba->rgba = self->rgba != otherRgba->rgba; break;
+        case Py_EQ: return PyBool_FromLong(self->rgba == otherRgba->rgba);
+        case Py_NE: return PyBool_FromLong(self->rgba != otherRgba->rgba);
         //case Py_GT: resultRgba->rgba = self->rgba > otherRgba->rgba; break;
         //case Py_GE: resultRgba->rgba = self->rgba >= otherRgba->rgba; break;
         }
-        return (PyObject*)resultRgba;
+        
+        PyErr_SetString(PyExc_TypeError, "rgba can only be compared for equality or inequality.");
+        return NULL;
 
     }
     else
@@ -525,6 +531,7 @@ PyMethodDef PythonRgba::PyRgba_methods[] = {
     {"name", (PyCFunction)PythonRgba::PyRgba_name, METH_NOARGS, ""}, 
     {"__reduce__", (PyCFunction)PythonRgba::PyRgba_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
     {"__setstate__", (PyCFunction)PythonRgba::PyRgba_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
+    { "toGray", (PyCFunction)PythonRgba::PyRgba_toGray, METH_NOARGS, PyRgba_toGray_doc },
     {NULL}  /* Sentinel */
 };
 

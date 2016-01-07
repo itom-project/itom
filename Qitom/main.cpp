@@ -152,6 +152,7 @@ int main(int argc, char *argv[])
     /*
         possible arguments are:
 
+        *.py : opens the given python file in the script editor
         log : writes all messages sent via qDebug, qWarning... to the logfile itomlog.txt
                in the itom application directory.
         name=anyUsername : tries to start itom with the given username (different setting file)
@@ -337,7 +338,17 @@ int main(int argc, char *argv[])
     }
     else
     {
-        m.setupApplication();
+        //check if args contains entries with .py at the end, these files should be opened as scripts at startup
+        QStringList scriptsToOpen;
+        foreach(const QString &a, args)
+        {
+            if (a.endsWith(".py", Qt::CaseInsensitive))
+            {
+                scriptsToOpen << a;
+            }
+        }
+
+        m.setupApplication(scriptsToOpen);
 
         qDebug("starting main event loop");
 

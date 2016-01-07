@@ -39,6 +39,7 @@ namespace ito
         {
             return in.gray() * m_value[0];
         }
+
         inline void rgb2yuv(const Rgba32_t &in, float32 &Y, float32 &U, float32 &V)
         {
             Y = in.gray();
@@ -67,9 +68,9 @@ namespace ito
         }
 
 
-        template<uint8 _CHANAL> inline Rgba32_t max(const Rgba32_t &first, const Rgba32_t &second) const
+        template<uint8 _CHANNEL> inline Rgba32_t max(const Rgba32_t &first, const Rgba32_t &second) const
         {
-            if(((RGBChannel_t<_CHANAL>)first) > ((RGBChannel_t<_CHANAL>)second)
+            if (((RGBChannel_t<_CHANNEL>)first) > ((RGBChannel_t<_CHANNEL>)second)
             {
                 return first;
             }

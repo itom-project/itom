@@ -637,7 +637,14 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                         if (aib != NULL)
                         {
                             docString.replace("%NAME%", aib->objectName());        // TODO: should return desc, but returns sdesc
-                            docString.replace("%INFO%", parseFilterWidgetContent(aib->getDescription()));
+							QString desc = aib->getDescription();
+							QString detaileddesc = aib->getDetailDescription();
+							if (detaileddesc != NULL)
+							{
+								desc.append("<br><br>");
+								desc.append(detaileddesc);
+							}
+                            docString.replace("%INFO%", parseFilterWidgetContent(desc));
                 
                             // Parameter-Section
                             const QVector<ito::Param> *paramsMand = (qobject_cast<ito::AddInInterfaceBase *>(obj))->getInitParamsMand();
@@ -646,6 +653,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                             {
                                 //remove parameters section
                                 parameterSection = "";
+
                             }
                             else if (parameterSection.isNull() == false)
                             {

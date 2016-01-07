@@ -263,7 +263,7 @@ void WorkspaceDockWidget::mnuExportItem()
 */
 void WorkspaceDockWidget::mnuImportItem()
 {
-    RetVal retValue = IOHelper::uiImportPyWorkspaceVars(m_globalNotLocal, IOHelper::IOFilters(IOHelper::IOPlugin |IOHelper::IOInput | IOHelper::IOWorkspace | IOHelper::IOMimeAll), QString::Null(), this);
+    RetVal retValue = IOHelper::uiImportPyWorkspaceVars(m_globalNotLocal, IOHelper::IOPlugin |IOHelper::IOInput | IOHelper::IOWorkspace | IOHelper::IOMimeAll, QString::Null(), this);
     if (retValue.containsError())
     {
         const char *errorMsg = retValue.errorMessage();

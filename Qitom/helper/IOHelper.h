@@ -34,10 +34,17 @@
 
 namespace ito {
 
+
+
 class IOHelper : public QObject
 {
     Q_OBJECT
 public:
+
+    /**
+    * IOFilter enumeration
+    * This enum contains flags to filter out input/output algorithms for various objects
+    */
     enum IOFilter
     {
         IOInput = 0x001,        /*!< consider algorithms for file input */
@@ -45,21 +52,25 @@ public:
         IOPlugin = 0x004,       /*!< consider algorithms provided by plugins */
         IOAllFiles = 0x008,     /*!< add the "All Files (*.*)" filter */
         IOWorkspace = 0x010,     /*!< only consider filters which can be imported or exported from python workspace */
-        IOMimeDataObject = 0x020,
-        IOMimePointCloud = 0x040,
-        IOMimePolygonMesh = 0x080,
-        IOMimeAll = IOMimeDataObject | IOMimePointCloud | IOMimePolygonMesh
+        IOMimeDataObject = 0x020, /*!< consider algorithms that allow saving or loading data objects */
+        IOMimePointCloud = 0x040, /*!< consider algorithms that allow saving or loading point clouds */
+        IOMimePolygonMesh = 0x080, /*!< consider algorithms that allow saving or loading polygonal meshes */
+        IOMimeAll = IOMimeDataObject | IOMimePointCloud | IOMimePolygonMesh /*!< or-combination of IOMimeDataObject, IOMimePointCloud and IOMimePolygonMesh */
     };
     Q_DECLARE_FLAGS(IOFilters, IOFilter)
-
+    
+    /**
+    * SearchFolder enumeration
+    * This enumeration contains values to describe specific directories that are searched for files (e.g. icons)
+    */
     enum SearchFolder
     {
-        SFResources = 0x001,
-        SFDirect = 0x002,
-        SFCurrent = 0x004,
-        SFAppDir = 0x008,
-        SFAppDirQItom = 0x010,
-        SFAll = SFResources | SFDirect | SFCurrent | SFAppDir | SFAppDirQItom
+        SFResources = 0x001,   /*!< search the resource files for the file */
+        SFDirect = 0x002,      /*!< consider the file as absolute file path */
+        SFCurrent = 0x004,     /*!< look for the given file in the current directory */
+        SFAppDir = 0x008,      /*!< look for the file in the application directory of itom */
+        SFAppDirQItom = 0x010, /*!< look for the file in the Qitom subdirectory of the application directory*/
+        SFAll = SFResources | SFDirect | SFCurrent | SFAppDir | SFAppDirQItom /*!< or-combination of all available search folders */
     };
     Q_DECLARE_FLAGS(SearchFolders, SearchFolder)
 
@@ -69,10 +80,9 @@ public:
     static RetVal uiExportPyWorkspaceVars(bool globalNotLocal, const QStringList &varNames, QVector<int> compatibleParamBaseTypes, QString defaultPath = QString::Null(), QWidget* parent = NULL);
     static RetVal exportPyWorkspaceVars(const QString &filename, bool globalNotLocal, const QStringList &varNames);
 
-    static RetVal uiImportPyWorkspaceVars(bool globalNotLocal, IOFilters IOfilters, QString defaultPath = QString::Null(), QWidget* parent = NULL);
+    static RetVal uiImportPyWorkspaceVars(bool globalNotLocal, const IOFilters &IOfilters, QString defaultPath = QString::Null(), QWidget* parent = NULL);
     static RetVal importPyWorkspaceVars(const QString &filename, bool globalNotLocal);
 
-    static RetVal uiOpenPythonScript(QString defaultPath = QString::Null(), QWidget* parent = NULL);
     static RetVal openPythonScript(const QString &filename);
 
     static RetVal uiOpenFileWithFilter(const ito::AddInAlgo::FilterDef *filter, const QString &filename, QWidget *parent = NULL, bool globalNotLocal = true);
@@ -86,15 +96,17 @@ public:
 
     static void elideFilepathMiddle(QString &path, int pixelLength);
 
-    static QIcon searchIcon(const QString &filename, SearchFolders searchFolders = SFAll, const QIcon &fallbackIcon = QIcon());
+    static QIcon searchIcon(const QString &filename, const SearchFolders &searchFolders = SFAll, const QIcon &fallbackIcon = QIcon());
 
 private:
-    IOHelper() {};
-    ~IOHelper() {};
+    IOHelper() {}; /*!< private constructor since this class only contains static method and no instance must be created */
+    ~IOHelper() {}; /*!< private destructor */
     IOHelper(const IOHelper &) : QObject() {};
 
 };
 
 } //end namespace ito
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(ito::IOHelper::IOFilters)
 
 #endif

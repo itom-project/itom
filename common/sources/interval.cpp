@@ -34,6 +34,7 @@ namespace ito {
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
+    //doc in header file
 AutoInterval::AutoInterval()
     : m_min(-std::numeric_limits<float>::infinity()),
     m_max(std::numeric_limits<float>::infinity()),
@@ -46,6 +47,7 @@ AutoInterval::AutoInterval()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//doc in header file
 AutoInterval::AutoInterval(float min, float max, bool autoInterval)
     : m_min(min),
     m_max(max),
@@ -58,11 +60,13 @@ AutoInterval::AutoInterval(float min, float max, bool autoInterval)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//doc in header file
 AutoInterval::~AutoInterval()
 {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//doc in header file
 void AutoInterval::setRange(float min, float max)
 {
     m_min = min;
@@ -75,6 +79,7 @@ void AutoInterval::setRange(float min, float max)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//doc in header file
 void AutoInterval::setMinimum(float min)
 {
     m_min = min;
@@ -86,6 +91,7 @@ void AutoInterval::setMinimum(float min)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//doc in header file
 void AutoInterval::setMaximum(float max)
 {
     m_max = max;
@@ -97,12 +103,14 @@ void AutoInterval::setMaximum(float max)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//doc in header file
 void AutoInterval::setAuto(bool autoInterval)
 {
     m_auto = autoInterval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//doc in header file
 bool AutoInterval::operator==( const AutoInterval &other ) const
 {
     if (m_auto != other.m_auto)
@@ -114,6 +122,7 @@ bool AutoInterval::operator==( const AutoInterval &other ) const
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//doc in header file
 bool AutoInterval::operator!=( const AutoInterval &other ) const
 {
     return ( !( *this == other ) );

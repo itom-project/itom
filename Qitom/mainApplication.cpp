@@ -45,6 +45,7 @@
 #include <qpainter.h>
 #include <qlibraryinfo.h>
 #include <qresource.h>
+#include <qfileinfo.h>
 
 namespace ito
 {
@@ -150,7 +151,7 @@ void MainApplication::registerMetaObjects()
 
     \sa PythonEngine, MainWindow, ScriptEditorOrganizer
 */
-void MainApplication::setupApplication()
+void MainApplication::setupApplication(const QStringList &scriptsToOpen)
 {
     RetVal retValue = retOk;
     RetVal pyRetValue;
@@ -459,6 +460,15 @@ void MainApplication::setupApplication()
         connect(m_mainWin, SIGNAL(mainWindowCloseRequest()), this, SLOT(mainWindowCloseRequest()));
 
         m_scriptEditorOrganizer->restoreScriptState();
+
+        foreach(const QString &script, scriptsToOpen)
+        {
+            QFileInfo info(script);
+            if (info.exists())
+            {
+                m_scriptEditorOrganizer->openScript(script);
+            }
+        }
     }
 
     qDebug("..starting load settings");

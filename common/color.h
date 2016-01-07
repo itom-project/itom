@@ -34,7 +34,7 @@ namespace ito
 {
 
     ////////////////////////////////////////////////////////// DO NOT ADD ANY MEMBER VARIABLES TO RGBA_T / CHANNEL_T ///////////////////////////////////////////////////////////////////////
-    /** \class  Rgba32_t
+    /** \class  Rgba32
     *   \brief  This class implements basic functionality for color handling in itom.
     *   \detail This class implements ARGB32 into itom. In openCV-mat this will be represented by an 4channel uint8-plane.
     *           The functions of this class are inspired by http://virjo.googlecode.com/svn/trunk/SFML_Windows/src/SFML/Graphics/Color.cpp, written by Laurent Gomila (laurent.gom@gmail.com)

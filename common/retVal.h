@@ -44,24 +44,28 @@ namespace ito
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** @class RetVal
-*   @brief  Class for error value management
+*   @brief  Class for managing status values (like errors or warning)
 *
 *   The RetVal class is used for handling return codes. All classes should use this class.
 *   In case an error occurs, only the first error is stored and will not be overridden
-*   by potentially subsequent occurring errors.
+*   by potentially subsequent occurring errors. An error is more severe than a warning and will
+*   overwrite a warning if it is added to an existing RetVal.
 */
 class ITOMCOMMON_EXPORT RetVal
 {       
     private:
         tRetValue m_retValue;    /*!< can be one of enumeration \ref tLogLevel values or an or-combination of these values*/
         int m_retCode;           /*!< the error code itself */
-        ByteArray m_retMessage;
+        ByteArray m_retMessage;  /*!< message of this RetVal using ByteArray (using implicit sharing) */
 
     public:
+        //! default constructor that creates a RetVal with status ito::retOk, code 0 and no message.
         inline RetVal() : m_retValue(ito::retOk), m_retCode(0) {}
         
+        //! default constructor that creates a RetVal with the status given by retValue, code 0 and no message.
         RetVal(tRetValue retValue) : m_retValue(retValue), m_retCode(0) {}
         
+        //! default constructor that creates a RetVal with the status given by retValue, code 0 and no message.
         RetVal(int retValue) : m_retValue((tRetValue)retValue), m_retCode(0) {}
         
         //RetVal(tRetValue retValue, int retCode, char *pRetMessage)
@@ -74,6 +78,7 @@ class ITOMCOMMON_EXPORT RetVal
         */
         RetVal(ito::tRetValue retValue, int retCode, const char *pRetMessage);
         
+        //! destructor
         inline ~RetVal() {}
 
         //RetVal & operator = (const RetVal &rhs);
@@ -141,17 +146,25 @@ class ITOMCOMMON_EXPORT RetVal
         void appendRetMessage(const char *addRetMessage);
 
         //----------------------------------------------------------------------------------------------------------------------------------
-        inline int containsWarning() const { return (m_retValue & retWarning); }              /*!< checks if any warning has occurred in this return value (true), else (false) */
-        inline int containsError() const { return (m_retValue & retError); }                 /*!< checks if any error has occurred in this return value (true), else (false) */
-        inline int containsWarningOrError() const { return (m_retValue & (retError | retWarning)); }  /*!< checks if any warning or error has occurred in this return value (true), else (false) */
+        inline int containsWarning() const { return (m_retValue & retWarning); }              /*!< check if any warning has occurred in this return value (true), else (false) */
+        inline int containsError() const { return (m_retValue & retError); }                 /*!< check if any error has occurred in this return value (true), else (false) */
+        inline int containsWarningOrError() const { return (m_retValue & (retError | retWarning)); }  /*!< check if any warning or error has occurred in this return value (true), else (false) */
 
-        inline bool hasErrorMessage() const { return m_retMessage.size() > 0; }
+        inline bool hasErrorMessage() const { return m_retMessage.size() > 0; } /*!< return true if an error or warning message is available */
 
-        inline int errorCode() const { return m_retCode; }
+        inline int errorCode() const { return m_retCode; } /*!< return the error code (default: 0) */
 
-        inline const char *errorMessage() const { return m_retMessage.data(); } /*!< returns zero-terminated error message or empty, zero-terminated string if no error message has been set */
+        inline const char *errorMessage() const { return m_retMessage.data(); } /*!< return zero-terminated error message or empty, zero-terminated string if no error message has been set */
 
         //----------------------------------------------------------------------------------------------------------------------------------
+        //! create RetVal with message that may contain placeholders using the formalism of the default sprintf method.
+        /*!
+        \param retValue is the type of RetVal (retOk, retWarning, retError)
+        \param retCode is the code number of RetVal
+        \param pRetMessage is the zero-terminated message string that may contain placeholders like %s, %i, ... (see sprintf)
+        \param ... are further arguments. Their number and type must correspond to the placeholders in pRetMessage
+        \return created RetVal
+        */
         static RetVal format(ito::tRetValue retValue, int retCode, const char *pRetMessage, ...);
 
 };
