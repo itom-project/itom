@@ -146,9 +146,12 @@ void PlotInfoDObject::setUseDetailInfo(const bool state)
 	return;
 }
 //---------------------------------------------------------------------------------------------------------
-QPixmap PlotInfoDObject::renderToPixMap(const int xsize, const int ysize, const int resolution)
+QPainterPath PlotInfoDObject::renderToPainterPath(const int xsize, const int ysize, const int fontSize)
 {
-	QPixmap pixMap;
-	return pixMap;
+	QPainterPath destinationPath(QPoint(0, 0));
+	
+	destinationPath.addText(QPoint(0, 0), font(), toPlainText());
+
+	return destinationPath;
 }
 //---------------------------------------------------------------------------------------------------------

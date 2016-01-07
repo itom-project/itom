@@ -199,9 +199,67 @@ void PlotInfoMarker::removeMarkers()
 	return;
 }
 //---------------------------------------------------------------------------------------------------------
-QPixmap PlotInfoMarker::renderToPixMap(const int xsize, const int ysize, const int resolution)
+QPainterPath PlotInfoMarker::renderToPainterPath(const int xsize, const int ysize, const int fontSize)
 {
-	QPixmap pixMap;
-	return pixMap;
+	QPainterPath destinationPath(QPoint(0, 0));
+
+	int ySpacing = 12;
+	int ySpacingTp = 6;
+	int xSpacing = 10;
+	int yStartPos = 5;
+	int linesize = iconSize().height() + ySpacing;
+
+	//if(m_pContent->topLevelItemCount() > 0) yStartPos = (m_pContent->iconSize().height() - m_pContent->topLevelItem(0)->font(0).pixelSize()) / 2;
+
+	QPoint pos(iconSize().width() + 4, yStartPos);
+	QPoint posI(0, 0);
+
+	for (int topItem = 0; topItem < topLevelItemCount(); topItem++)
+	{
+		pos.setX(iconSize().width() + xSpacing);
+		posI.setX(0);
+		destinationPath.addText(pos, topLevelItem(topItem)->font(0), topLevelItem(topItem)->text(0));
+		//painter.drawPixmap(posI, topLevelItem(topItem)->icon(0).pixmap(iconSize()));
+		pos.setY(pos.y() + linesize);
+		posI.setY(posI.y() + linesize);
+		if (topLevelItem(topItem)->childCount() > 0)
+		{
+			pos.setX(30 + iconSize().width() + xSpacing);
+			posI.setX(30);
+			for (int childItem = 0; childItem < topLevelItem(topItem)->childCount(); childItem++)
+			{
+				destinationPath.addText(pos, topLevelItem(topItem)->child(childItem)->font(0), topLevelItem(topItem)->child(childItem)->text(0));
+				//painter.drawPixmap(posI, topLevelItem(topItem)->child(childItem)->icon(0).pixmap(iconSize()));
+				pos.setY(pos.y() + linesize);
+				posI.setY(posI.y() + linesize);
+			}
+		}
+		pos.setY(pos.y() + ySpacingTp);
+		posI.setY(posI.y() + ySpacingTp);
+	}
+	pos.setX(0);
+	for (int col = 1; col < columnCount(); col++)
+	{
+		pos.setX(pos.x() + columnWidth(col - 1) + xSpacing);
+		pos.setY(yStartPos);
+		for (int topItem = 0; topItem < topLevelItemCount(); topItem++)
+		{
+
+			destinationPath.addText(pos, topLevelItem(topItem)->font(0), topLevelItem(topItem)->text(col));
+			pos.setY(pos.y() + linesize);
+
+			if (topLevelItem(topItem)->childCount() > 0)
+			{
+				for (int childItem = 0; childItem < topLevelItem(topItem)->childCount(); childItem++)
+				{
+					destinationPath.addText(pos, topLevelItem(topItem)->child(childItem)->font(0), topLevelItem(topItem)->child(childItem)->text(col));
+					pos.setY(pos.y() + linesize);
+				}
+			}
+			pos.setY(pos.y() + ySpacingTp);
+		}
+	}
+
+	return destinationPath;
 }
 //---------------------------------------------------------------------------------------------------------

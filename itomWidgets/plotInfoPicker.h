@@ -75,7 +75,7 @@ extern "C++" {
         void removePicker(int index);
         void removePickers();
 
-		QPixmap renderToPixMap(const int xsize, const int ysize, const int resolution);
+		QPainterPath renderToPainterPath(const int xsize, const int ysize, const int fontSize);
 
     private slots:
 };

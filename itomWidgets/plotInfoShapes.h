@@ -41,10 +41,10 @@ extern "C++" {
 #if QT_VERSION < 0x050000
 #include <qtreewidget.h>
 #include <qhash.h>
-#include <qpixmap.h>
+#include <qpainterpath.h>
 #else
 #include <QtWidgets/qtreewidget.h>
-#include <QtGui/qpixmap.h>
+#include <QtGui/qpainterpath.h>
 //
 #endif
 
@@ -98,7 +98,7 @@ class ITOMWIDGETS_EXPORT PlotInfoShapes : public QTreeWidget
 		void removeRelations(const int index);
 		void removeRelations();
 
-		QPixmap renderToPixMap(const int xsize, const int ysize, const int resolution);
+		QPainterPath renderToPainterPath(const int xsize, const int ysize, const int fontSize);
 
     private slots:
 };
