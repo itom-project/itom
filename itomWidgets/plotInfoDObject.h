@@ -68,7 +68,7 @@ class ITOMWIDGETS_EXPORT PlotInfoDObject : public QPlainTextEdit
 		void updateInfoDetail(const double minVal, const double maxVal, const double meanVal, const double devVal);
 		void clearObjectInfo();
 		void setUseDetailInfo(const bool state);
-		QPixmap renderToPixMap(const int xsize, const int ysize, const int resolution);
+		QPainterPath renderToPainterPath(const int xsize, const int ysize, const int fontSize);
 
     private slots:
 

@@ -395,14 +395,9 @@ void PlotInfoShapes::removeRelations()
 
 }
 //---------------------------------------------------------------------------------------------------------
-QPixmap PlotInfoShapes::renderToPixMap(const int xsize, const int ysize, const int resolution)
+QPainterPath PlotInfoShapes::renderToPainterPath(const int xsize, const int ysize, const int fontSize)
 {
-	QPixmap destinationImage(xsize, ysize);
-
-	destinationImage.fill(Qt::white);
-
-	QPainter painter(&destinationImage);
-
+	QPainterPath destinationPath(QPoint(0,0));
 
 	int ySpacing = 12;
 	int ySpacingTp = 6;
@@ -419,9 +414,8 @@ QPixmap PlotInfoShapes::renderToPixMap(const int xsize, const int ysize, const i
 	{
 		pos.setX(iconSize().width() + xSpacing);
 		posI.setX(0);
-		painter.setFont(topLevelItem(topItem)->font(0));
-		painter.drawText(pos, topLevelItem(topItem)->text(0));
-		painter.drawPixmap(posI, topLevelItem(topItem)->icon(0).pixmap(iconSize()));
+		destinationPath.addText(pos, topLevelItem(topItem)->font(0), topLevelItem(topItem)->text(0));
+		//painter.drawPixmap(posI, topLevelItem(topItem)->icon(0).pixmap(iconSize()));
 		pos.setY(pos.y() + linesize);
 		posI.setY(posI.y() + linesize);
 		if (topLevelItem(topItem)->childCount() > 0)
@@ -430,9 +424,8 @@ QPixmap PlotInfoShapes::renderToPixMap(const int xsize, const int ysize, const i
 			posI.setX(30);
 			for (int childItem = 0; childItem < topLevelItem(topItem)->childCount(); childItem++)
 			{
-				painter.setFont(topLevelItem(topItem)->child(childItem)->font(0));
-				painter.drawText(pos, topLevelItem(topItem)->child(childItem)->text(0));
-				painter.drawPixmap(posI, topLevelItem(topItem)->child(childItem)->icon(0).pixmap(iconSize()));
+				destinationPath.addText(pos, topLevelItem(topItem)->child(childItem)->font(0), topLevelItem(topItem)->child(childItem)->text(0));
+				//painter.drawPixmap(posI, topLevelItem(topItem)->child(childItem)->icon(0).pixmap(iconSize()));
 				pos.setY(pos.y() + linesize);
 				posI.setY(posI.y() + linesize);
 			}
@@ -448,16 +441,14 @@ QPixmap PlotInfoShapes::renderToPixMap(const int xsize, const int ysize, const i
 		for (int topItem = 0; topItem < topLevelItemCount(); topItem++)
 		{
 
-			painter.setFont(topLevelItem(topItem)->font(col));
-			painter.drawText(pos, topLevelItem(topItem)->text(col));
+			destinationPath.addText(pos, topLevelItem(topItem)->font(0), topLevelItem(topItem)->text(col));
 			pos.setY(pos.y() + linesize);
 
 			if (topLevelItem(topItem)->childCount() > 0)
 			{
 				for (int childItem = 0; childItem < topLevelItem(topItem)->childCount(); childItem++)
 				{
-					painter.setFont(topLevelItem(topItem)->child(childItem)->font(col));
-					painter.drawText(pos, topLevelItem(topItem)->child(childItem)->text(col));
+					destinationPath.addText(pos, topLevelItem(topItem)->child(childItem)->font(0), topLevelItem(topItem)->child(childItem)->text(col));
 					pos.setY(pos.y() + linesize);
 				}
 			}
@@ -465,6 +456,6 @@ QPixmap PlotInfoShapes::renderToPixMap(const int xsize, const int ysize, const i
 		}
 	}
 
-	return destinationImage;
+	return destinationPath;
 }
 //---------------------------------------------------------------------------------------------------------

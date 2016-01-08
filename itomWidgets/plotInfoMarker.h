@@ -63,7 +63,7 @@ extern "C++" {
 
 		void removeMarker(const QString setName);
         void removeMarkers();
-		QPixmap renderToPixMap(const int xsize, const int ysize, const int resolution);
+		QPainterPath renderToPainterPath(const int xsize, const int ysize, const int fontSize);
     private slots:
 };
 
