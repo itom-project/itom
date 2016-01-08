@@ -103,7 +103,7 @@ INCLUDE_DIRECTORIES(
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
     ../DataObject/
     ../PointCloud/
-    ../itomWidgets
+	../itomWidgets
 )
 
 LINK_DIRECTORIES(
@@ -125,6 +125,7 @@ set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/typeDefs.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/basicCheckerDefs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/color.h
     
 )
@@ -144,7 +145,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/sleeper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.h
+	${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.h
@@ -161,7 +162,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/widgetWrapper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userInteractionWatcher.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAutoInterval.h
+	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAutoInterval.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonCommon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonDataObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonEngine.h
@@ -327,7 +328,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/paramHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.cpp    
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.cpp
@@ -344,7 +345,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userInteractionWatcher.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/widgetWrapper.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAutoInterval.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAutoInterval.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonCommon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonDataObject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonEngine.cpp
@@ -636,11 +637,11 @@ ELSE(BUILD_WITH_PCL)
 ENDIF(BUILD_WITH_PCL)
 
 IF (QT5_FOUND)
-    if (WIN32)
-        TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets ${PYMATLAB_LIBRARIES} shell32)
-    else (WIN32)
-        TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets ${PYMATLAB_LIBRARIES})
-    endif (WIN32)
+	if (WIN32)
+		TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets  ${PYMATLAB_LIBRARIES} shell32)
+	else (WIN32)
+		TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets  ${PYMATLAB_LIBRARIES})
+	endif (WIN32)
 ELSE (QT5_FOUND)
     TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets ${PYMATLAB_LIBRARIES})
 ENDIF (QT5_FOUND)
@@ -657,6 +658,7 @@ FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../ItomBuildMacros.cmake         DESTINATI
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../common                        DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include FILES_MATCHING PATTERN "*.h")
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../pluginTemplates               DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/pluginTemplates PATTERN ".svn" EXCLUDE)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../plot                          DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include FILES_MATCHING PATTERN "*.h")
+FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../plotLegends                   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include FILES_MATCHING PATTERN "*.h")
 #FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../PointCloud                   DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK FILES_MATCHING PATTERN "*.h")
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindGLEW.cmake                DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)
 #FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../FindGlut.cmake               DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK)

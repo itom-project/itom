@@ -28,6 +28,15 @@
 #ifndef __DATAOBJFUNCH
 #define __DATAOBJFUNCH
 
+#ifdef __GNUC__
+#define DEPRECATED __attribute__((deprecated))
+#elif defined(_MSC_VER)
+#define DEPRECATED __declspec(deprecated)
+#else
+#pragma message("WARNING: You need to implement DEPRECATED for this compiler")
+#define DEPRECATED
+#endif
+
 #include "dataobj.h"
 #include <assert.h>     /* assert */
 
@@ -410,8 +419,10 @@ namespace dObjHelper
         memcpy(&resRowPtr[x0], pData, length *sizeof(float64));
     }
 
+#if 1 // DOBJHELPER_OBSOLTE
     //! Check if a value is equal to zero (trivial)
-    template<typename _Tp> inline bool isNotZero(_Tp value)
+	
+	template<typename _Tp> DEPRECATED inline bool isNotZero(_Tp value)
     {
         if(value == 0)
             return false;
@@ -420,7 +431,7 @@ namespace dObjHelper
     }
 
     //! Check if a value is equal to zero for float32
-    template<> inline bool isNotZero<float32>(float32 value)
+	template<> DEPRECATED inline bool isNotZero<float32>(float32 value)
     {
         float32 lowVal = std::numeric_limits<float32>::epsilon();
         if(fabs(value) < lowVal)
@@ -430,7 +441,7 @@ namespace dObjHelper
     }
 
     //! Check if a value is equal to zero for float64
-    template<> inline bool isNotZero<float64>(float64 value)
+	template<> DEPRECATED inline bool isNotZero<float64>(float64 value)
     {
         float64 lowVal = std::numeric_limits<float64>::epsilon();
         if(fabs(value) < lowVal)
@@ -440,27 +451,27 @@ namespace dObjHelper
     }
 
     //! Check if a value is finite (this is for integer types --> always true)
-    template<typename _Tp> inline bool isFinite(_Tp /*value*/)
+	template<typename _Tp> DEPRECATED inline bool isFinite(_Tp /*value*/)
     {
         return true;
     }
 
     //! Check if a value is finite float32 values
-    template<> inline bool isFinite<float32>(float32 value)
+	template<> DEPRECATED inline bool isFinite<float32>(float32 value)
     {
         uchar *ch = (uchar *)&value;
         return (ch[3] & 0x7f) != 0x7f || (ch[2] & 0x80) != 0x80;
     }
 
     //! Check if a value is finite float64 values
-    template<> inline bool isFinite<float64>(float64 value)
+	template<> DEPRECATED inline bool isFinite<float64>(float64 value)
     {
         uchar *ch = (uchar *)&value;
         return (ch[7] & 0x7f) != 0x7f || (ch[6] & 0xf0) != 0xf0;
     }
 
     //! Check if both components of complex64 value are finite
-    template<> inline bool isFinite<complex64>(complex64 value)
+	template<> DEPRECATED inline bool isFinite<complex64>(complex64 value)
     {
         float32 realVal = value.real();
         float32 imagVal = value.real();
@@ -470,7 +481,7 @@ namespace dObjHelper
     }
 
     //! Check if both components of complex128 value are finite
-    template<> inline bool isFinite<complex128>(complex128 value)
+	template<> DEPRECATED inline bool isFinite<complex128>(complex128 value)
     {
         float64 realVal = value.real();
         float64 imagVal = value.real();
@@ -480,26 +491,26 @@ namespace dObjHelper
     }
 
     //! Check if a value is NaN (this is for integer types --> always false)
-    template<typename _Tp> inline bool isNaN(_Tp value)
+	template<typename _Tp> DEPRECATED inline bool isNaN(_Tp value)
     {
         return false;
     }
 
     //! Check if a value is isNaN float32 values
-    template<> inline bool isNaN<float32>(float32 value)
+	template<> DEPRECATED inline bool isNaN<float32>(float32 value)
     {
         uchar *ch = (uchar *)&value;
         return (ch[3] & 0x7f) == 0x7f && ch[2] > 0x80;
     }
     //! Check if a value is isNaN float64 values
-    template<> inline bool isNaN<float64>(float64 value)
+	template<> DEPRECATED inline bool isNaN<float64>(float64 value)
     {
         uchar *ch = (uchar *)&value;
         return (ch[7] & 0x7f) == 0x7f && ch[6] > 0xf0;
     }
 
     //! Check if one of the components of complex64 values are not a number
-    template<> inline bool isNaN<complex64>(complex64 value)
+	template<> DEPRECATED inline bool isNaN<complex64>(complex64 value)
     {
         float32 realVal = value.real();
         float32 imagVal = value.real();
@@ -509,7 +520,7 @@ namespace dObjHelper
     }
 
     //! Check if one of the components of complex128 values are not a number
-    template<> inline bool isNaN<complex128>(complex128 value)
+	template<> DEPRECATED inline bool isNaN<complex128>(complex128 value)
     {
         float64 realVal = value.real();
         float64 imagVal = value.real();
@@ -519,27 +530,27 @@ namespace dObjHelper
     }
 
     //! Check if a value is Inf (this is for integer types --> always false)
-    template<typename _Tp> inline bool isInf(_Tp /*value*/)
+	template<typename _Tp> DEPRECATED inline bool isInf(_Tp /*value*/)
     {
         return false;
     }
 
     //! Check if a value is infinite float32 values
-    template<> inline bool isInf<float32>(float32 value)
+	template<> DEPRECATED inline bool isInf<float32>(float32 value)
     {
         uchar *ch = (uchar *)&value;
         return (ch[3] & 0x7f) == 0x7f && ch[2] == 0x80;
     }
 
     //! Check if a value is infinite float64 values
-    template<> inline bool isInf<float64>(float64 value)
+	template<> DEPRECATED inline bool isInf<float64>(float64 value)
     {
         uchar *ch = (uchar *)&value;
         return (ch[7] & 0x7f) == 0x7f && ch[6] == 0xf0;
     }
 
     //! Check if one of the components of complex64 values are infinite
-    template<> inline bool isInf<complex64>(complex64 value)
+	template<> DEPRECATED inline bool isInf<complex64>(complex64 value)
     {
         float32 realVal = value.real();
         float32 imagVal = value.real();
@@ -549,7 +560,7 @@ namespace dObjHelper
     }
 
     //! Check if one of the components of complex128 values are infinite
-    template<> inline bool isInf<complex128>(complex128 value)
+	template<> DEPRECATED inline bool isInf<complex128>(complex128 value)
     {
         float64 realVal = value.real();
         float64 imagVal = value.real();
@@ -557,6 +568,7 @@ namespace dObjHelper
         uchar *chimag = (uchar *)&imagVal;
         return ((chreal[7] & 0x7f) == 0x7f && chreal[6] == 0xf0) || ((chimag[7] & 0x7f) == 0x7f && chimag[6] == 0xf0);
     }
+#endif // DOBJHELPER_OBSOLTE
 
     //! Find the min-value of this data object and the first position <Templated version>.
     template<typename _Tp> RetVal minValueFunc(const DataObject *dObj, float64 &minValue, uint32 *firstLocation, bool ignoreInf = true);

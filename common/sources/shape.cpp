@@ -29,6 +29,8 @@
 #define _USE_MATH_DEFINES
 #include "math.h"
 
+#include "basicCheckerDefs.h"
+
 namespace ito {
 
     QDataStream &operator<<(QDataStream &out, const ito::Shape &obj)
@@ -823,212 +825,212 @@ double Shape::distancePoint2Point2D(const QPointF &point1, const QPointF &point2
 	return std::sqrt(std::pow(val.rx(), 2) + std::pow(val.ry(), 2));
 }
 //----------------------------------------------------------------------------------------------
-ito::DataObject Shape::mask(const ito::DataObject &dataObject, bool inverse /*= false*/) const
-{
-    ito::DataObject mask;
-
-    if (dataObject.getTotal() > 0)
-    {
-        mask.zeros(dataObject.getDims(), dataObject.getSize(), ito::tUInt8);
-        dataObject.copyAxisTagsTo(mask);
-
-        if (inverse)
-        {
-            mask.setTo(255);
-        }
-
-        maskHelper(dataObject, mask, inverse);
-    }
-
-    return mask;
-}
-
-//----------------------------------------------------------------------------------------------
-void Shape::maskHelper(const ito::DataObject &dataObject, ito::DataObject &mask, bool inverse /*= false*/) const
-{
-    //only call this via mask or maskFromMultipleShapes
-    int dims = dataObject.getDims();
-    int numPlanes = dataObject.getNumPlanes();
-
-    if (dataObject.getTotal() > 0)
-    {
-        int rows = dataObject.getSize(dims - 2);
-        int cols = dataObject.getSize(dims - 1);
-        cv::Mat *mat;
-        ito::uint8 *ptr;
-
-        switch (type())
-        {
-        case MultiPointPick:
-        case Point:
-        case Line:
-            break;
-        case Rectangle:
-        case Square:
-        {
-            QPointF p1 = d->m_transform.map(d->m_polygon[0]);
-            QPointF p2 = d->m_transform.map(d->m_polygon[1]);
-
-            p1.setX(dataObject.getPhysToPix(dims - 1, p1.x()));
-            p1.setY(dataObject.getPhysToPix(dims - 2, p1.y()));
-
-            p2.setX(dataObject.getPhysToPix(dims - 1, p2.x()));
-            p2.setY(dataObject.getPhysToPix(dims - 2, p2.y()));
-
-            int minRow = qBound(0, qRound(p1.y()), rows - 1);
-            int maxRow = qBound(0, qRound(p2.y()), rows - 1);
-            if (maxRow < minRow)
-            {
-                std::swap(minRow, maxRow);
-            }
-
-            int minCol = qBound(0, qRound(p1.x()), cols - 1);
-            int maxCol = qBound(0, qRound(p2.x()), cols - 1);
-            if (maxCol < minCol)
-            {
-                std::swap(minCol, maxCol);
-            }
-
-            for (int plane = 0; plane < numPlanes; ++plane)
-            {
-                mat = mask.getCvPlaneMat(0);
-                for (int row = minRow; row <= maxRow; ++row)
-                {
-                    ptr = mat->ptr<ito::uint8>(row);
-                    for (int col = minCol; col <= maxCol; ++col)
-                    {
-                        ptr[col] = (inverse ? 0 : 255);
-                    }
-                }
-            }
-        }
-        case Polygon:
-        {
-            QPolygonF cont = contour(true);
-            //trafo from phys coords to pixel coords
-            for (int i = 0; i < cont.size(); ++i)
-            {
-                cont[i].setX(dataObject.getPhysToPix(dims - 1, cont[i].x()));
-                cont[i].setY(dataObject.getPhysToPix(dims - 2, cont[i].y()));
-            }
-
-            QRectF boundingRect = cont.boundingRect();
-            QPointF p1 = boundingRect.topLeft();
-            QPointF p2 = boundingRect.bottomRight();
-            QPointF test;
-
-            int minRow = qBound(0, qRound(p1.y()), rows - 1);
-            int maxRow = qBound(0, qRound(p2.y()), rows - 1);
-            if (maxRow < minRow)
-            {
-                std::swap(minRow, maxRow);
-            }
-
-            int minCol = qBound(0, qRound(p1.x()), cols - 1);
-            int maxCol = qBound(0, qRound(p2.x()), cols - 1);
-            if (maxCol < minCol)
-            {
-                std::swap(minCol, maxCol);
-            }
-
-            for (int plane = 0; plane < numPlanes; ++plane)
-            {
-                mat = mask.getCvPlaneMat(0);
-                for (int row = minRow; row <= maxRow; ++row)
-                {
-                    ptr = mat->ptr<ito::uint8>(row);
-                    test.setY(row);
-                    for (int col = minCol; col <= maxCol; ++col)
-                    {
-                        test.setX(col);
-                        if (cont.containsPoint(test, Qt::OddEvenFill))
-                        {
-                            ptr[col] = (inverse ? 0 : 255);
-                        }
-                    }
-                }
-            }
-        }
-        case Ellipse:
-        case Circle:
-        {
-            QPointF p1 = d->m_transform.map(d->m_polygon[0]);
-            QPointF p2 = d->m_transform.map(d->m_polygon[1]);
-
-            p1.setX(dataObject.getPhysToPix(dims - 1, p1.x()));
-            p1.setY(dataObject.getPhysToPix(dims - 2, p1.y()));
-
-            p2.setX(dataObject.getPhysToPix(dims - 1, p2.x()));
-            p2.setY(dataObject.getPhysToPix(dims - 2, p2.y()));
-
-            QPointF c = 0.5 * (p1 + p2);
-            QPointF r = 0.5 * (p2 - p1);
-            double x, y;
-            double a = r.x();
-            double b = r.y();
-
-            int minRow = qBound(0, qRound(p1.y()), rows - 1);
-            int maxRow = qBound(0, qRound(p2.y()), rows - 1);
-            if (maxRow < minRow)
-            {
-                std::swap(minRow, maxRow);
-            }
-
-            int minCol = qBound(0, qRound(p1.x()), cols - 1);
-            int maxCol = qBound(0, qRound(p2.x()), cols - 1);
-            if (maxCol < minCol)
-            {
-                std::swap(minCol, maxCol);
-            }
-
-            for (int plane = 0; plane < numPlanes; ++plane)
-            {
-                mat = mask.getCvPlaneMat(0);
-                for (int row = minRow; row <= maxRow; ++row)
-                {
-                    ptr = mat->ptr<ito::uint8>(row);
-                    for (int col = minCol; col <= maxCol; ++col)
-                    {
-                        x = col - c.x();
-                        y = row - c.y();
-
-                        if ((((x*x) / (a*a)) + ((y*y) / (b*b))) <= 1.0)
-                        {
-                            ptr[col] = (inverse ? 0 : 255);
-                        }
-                    }
-                }
-            }
-        }
-        default:
-            break;
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------
-/*static*/ ito::DataObject Shape::maskFromMultipleShapes(const ito::DataObject &dataObject, const QVector<ito::Shape> &shapes, bool inverse /*= false*/)
-{
-    ito::DataObject mask;
-    
-    if (dataObject.getTotal() > 0)
-    {
-        mask.zeros(dataObject.getDims(), dataObject.getSize(), ito::tUInt8);
-        dataObject.copyAxisTagsTo(mask);
-
-        if (inverse)
-        {
-            mask.setTo(255);
-        }
-
-        foreach(const ito::Shape &shape, shapes)
-        {
-            shape.maskHelper(dataObject, mask, inverse);
-        }
-    }
-
-    return mask;
-}
+//ito::DataObject Shape::mask(const ito::DataObject &dataObject, bool inverse /*= false*/) const
+//{
+//    ito::DataObject mask;
+//
+//    if (dataObject.getTotal() > 0)
+//    {
+//        mask.zeros(dataObject.getDims(), dataObject.getSize(), ito::tUInt8);
+//        dataObject.copyAxisTagsTo(mask);
+//
+//        if (inverse)
+//        {
+//            mask.setTo(255);
+//        }
+//
+//        maskHelper(dataObject, mask, inverse);
+//    }
+//
+//    return mask;
+//}
+//
+////----------------------------------------------------------------------------------------------
+//void Shape::maskHelper(const ito::DataObject &dataObject, ito::DataObject &mask, bool inverse /*= false*/) const
+//{
+//    //only call this via mask or maskFromMultipleShapes
+//    int dims = dataObject.getDims();
+//    int numPlanes = dataObject.getNumPlanes();
+//
+//    if (dataObject.getTotal() > 0)
+//    {
+//        int rows = dataObject.getSize(dims - 2);
+//        int cols = dataObject.getSize(dims - 1);
+//        cv::Mat *mat;
+//        ito::uint8 *ptr;
+//
+//        switch (type())
+//        {
+//        case MultiPointPick:
+//        case Point:
+//        case Line:
+//            break;
+//        case Rectangle:
+//        case Square:
+//        {
+//            QPointF p1 = d->m_transform.map(d->m_polygon[0]);
+//            QPointF p2 = d->m_transform.map(d->m_polygon[1]);
+//
+//            p1.setX(dataObject.getPhysToPix(dims - 1, p1.x()));
+//            p1.setY(dataObject.getPhysToPix(dims - 2, p1.y()));
+//
+//            p2.setX(dataObject.getPhysToPix(dims - 1, p2.x()));
+//            p2.setY(dataObject.getPhysToPix(dims - 2, p2.y()));
+//
+//            int minRow = qBound(0, qRound(p1.y()), rows - 1);
+//            int maxRow = qBound(0, qRound(p2.y()), rows - 1);
+//            if (maxRow < minRow)
+//            {
+//                std::swap(minRow, maxRow);
+//            }
+//
+//            int minCol = qBound(0, qRound(p1.x()), cols - 1);
+//            int maxCol = qBound(0, qRound(p2.x()), cols - 1);
+//            if (maxCol < minCol)
+//            {
+//                std::swap(minCol, maxCol);
+//            }
+//
+//            for (int plane = 0; plane < numPlanes; ++plane)
+//            {
+//                mat = mask.getCvPlaneMat(0);
+//                for (int row = minRow; row <= maxRow; ++row)
+//                {
+//                    ptr = mat->ptr<ito::uint8>(row);
+//                    for (int col = minCol; col <= maxCol; ++col)
+//                    {
+//                        ptr[col] = (inverse ? 0 : 255);
+//                    }
+//                }
+//            }
+//        }
+//        case Polygon:
+//        {
+//            QPolygonF cont = contour(true);
+//            //trafo from phys coords to pixel coords
+//            for (int i = 0; i < cont.size(); ++i)
+//            {
+//                cont[i].setX(dataObject.getPhysToPix(dims - 1, cont[i].x()));
+//                cont[i].setY(dataObject.getPhysToPix(dims - 2, cont[i].y()));
+//            }
+//
+//            QRectF boundingRect = cont.boundingRect();
+//            QPointF p1 = boundingRect.topLeft();
+//            QPointF p2 = boundingRect.bottomRight();
+//            QPointF test;
+//
+//            int minRow = qBound(0, qRound(p1.y()), rows - 1);
+//            int maxRow = qBound(0, qRound(p2.y()), rows - 1);
+//            if (maxRow < minRow)
+//            {
+//                std::swap(minRow, maxRow);
+//            }
+//
+//            int minCol = qBound(0, qRound(p1.x()), cols - 1);
+//            int maxCol = qBound(0, qRound(p2.x()), cols - 1);
+//            if (maxCol < minCol)
+//            {
+//                std::swap(minCol, maxCol);
+//            }
+//
+//            for (int plane = 0; plane < numPlanes; ++plane)
+//            {
+//                mat = mask.getCvPlaneMat(0);
+//                for (int row = minRow; row <= maxRow; ++row)
+//                {
+//                    ptr = mat->ptr<ito::uint8>(row);
+//                    test.setY(row);
+//                    for (int col = minCol; col <= maxCol; ++col)
+//                    {
+//                        test.setX(col);
+//                        if (cont.containsPoint(test, Qt::OddEvenFill))
+//                        {
+//                            ptr[col] = (inverse ? 0 : 255);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        case Ellipse:
+//        case Circle:
+//        {
+//            QPointF p1 = d->m_transform.map(d->m_polygon[0]);
+//            QPointF p2 = d->m_transform.map(d->m_polygon[1]);
+//
+//            p1.setX(dataObject.getPhysToPix(dims - 1, p1.x()));
+//            p1.setY(dataObject.getPhysToPix(dims - 2, p1.y()));
+//
+//            p2.setX(dataObject.getPhysToPix(dims - 1, p2.x()));
+//            p2.setY(dataObject.getPhysToPix(dims - 2, p2.y()));
+//
+//            QPointF c = 0.5 * (p1 + p2);
+//            QPointF r = 0.5 * (p2 - p1);
+//            double x, y;
+//            double a = r.x();
+//            double b = r.y();
+//
+//            int minRow = qBound(0, qRound(p1.y()), rows - 1);
+//            int maxRow = qBound(0, qRound(p2.y()), rows - 1);
+//            if (maxRow < minRow)
+//            {
+//                std::swap(minRow, maxRow);
+//            }
+//
+//            int minCol = qBound(0, qRound(p1.x()), cols - 1);
+//            int maxCol = qBound(0, qRound(p2.x()), cols - 1);
+//            if (maxCol < minCol)
+//            {
+//                std::swap(minCol, maxCol);
+//            }
+//
+//            for (int plane = 0; plane < numPlanes; ++plane)
+//            {
+//                mat = mask.getCvPlaneMat(0);
+//                for (int row = minRow; row <= maxRow; ++row)
+//                {
+//                    ptr = mat->ptr<ito::uint8>(row);
+//                    for (int col = minCol; col <= maxCol; ++col)
+//                    {
+//                        x = col - c.x();
+//                        y = row - c.y();
+//
+//                        if ((((x*x) / (a*a)) + ((y*y) / (b*b))) <= 1.0)
+//                        {
+//                            ptr[col] = (inverse ? 0 : 255);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//        default:
+//            break;
+//        }
+//    }
+//}
+//
+////----------------------------------------------------------------------------------------------
+///*static*/ ito::DataObject Shape::maskFromMultipleShapes(const ito::DataObject &dataObject, const QVector<ito::Shape> &shapes, bool inverse /*= false*/)
+//{
+//    ito::DataObject mask;
+//    
+//    if (dataObject.getTotal() > 0)
+//    {
+//        mask.zeros(dataObject.getDims(), dataObject.getSize(), ito::tUInt8);
+//        dataObject.copyAxisTagsTo(mask);
+//
+//        if (inverse)
+//        {
+//            mask.setTo(255);
+//        }
+//
+//        foreach(const ito::Shape &shape, shapes)
+//        {
+//            shape.maskHelper(dataObject, mask, inverse);
+//        }
+//    }
+//
+//    return mask;
+//}
 
 //----------------------------------------------------------------------------------------------
 /*static*/ Shape Shape::fromRectangle(const QRectF &rect, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)

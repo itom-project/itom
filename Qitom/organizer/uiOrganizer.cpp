@@ -2978,7 +2978,7 @@ ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, QSharedPoint
 
     if (!retval.containsError())
     {
-		if (m_dialogList.contains(*figHandle))
+        if (m_dialogList.contains(*figHandle))
         {
             fig = qobject_cast<FigureWidget*>(m_dialogList[*figHandle].container->getUiWidget());
             if (fig)
@@ -3007,13 +3007,13 @@ ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, QSharedPoint
 
                 if (!retval.containsError())
                 {                                
-                    *objectID = addObjectToList(destWidget);
+                *objectID = addObjectToList(destWidget);
 
-                    if (properties.size() > 0)
-                    {
-                        retval += writeProperties(*objectID, properties, NULL);
-                    }
+                if (properties.size() > 0)
+                {
+                    retval += writeProperties(*objectID, properties, NULL);
                 }
+            }
             }
             else
             {

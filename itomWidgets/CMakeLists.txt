@@ -23,7 +23,7 @@ SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOUR
 IF(BUILD_ITOMLIBS_SHARED)
     SET(LIBRARY_TYPE SHARED)
     
-    ADD_DEFINITIONS(-DITOMWIDGETS_SHARED -D_ITOMWIDGETS_SHARED)
+    ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
     ADD_DEFINITIONS(-DITOMWIDGETS_DLL -D_ITOMWIDGETS_DLL)
 ELSE(BUILD_ITOMLIBS_SHARED)
     SET(LIBRARY_TYPE STATIC)
@@ -38,6 +38,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 FIND_PACKAGE_QT(OFF UiTools Widgets Svg Xml Designer LinguistTools) #no automoc for Qt5
 find_package(VisualLeakDetector QUIET)
+find_package(OpenCV COMPONENTS core REQUIRED)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../ItomBuildMacros.cmake")
 
@@ -61,11 +62,15 @@ ENDIF (DEFINED CMAKE_BUILD_TYPE)
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/..    
+    ${CMAKE_CURRENT_SOURCE_DIR}/..  
     ${QT_QTCORE_INCLUDE_DIR}
     ${Qt5Widgets_INCLUDE_DIRS}
     ${Qt5Designer_INCLUDE_DIRS}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}   
+)
+
+LINK_DIRECTORIES(
+    ${OpenCV_DIR}/lib
 )
 
 set(itomWidgets_Factory_HEADERS
@@ -84,7 +89,11 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/comboBoxFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/searchBoxFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/treeComboBoxFactory.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/factories/menuComboBoxFactory.h    
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/menuComboBoxFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoDObjectFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoMarkerFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoPickerFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoShapesFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSpinBox_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget_p.h
@@ -95,6 +104,10 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/treeComboBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/menuComboBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/menuComboBox_p.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoDObject.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoMarker.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoPicker.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoShapes.h
     ${CMAKE_CURRENT_SOURCE_DIR}/valueProxy.h
     ${CMAKE_CURRENT_SOURCE_DIR}/utils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/proxyStyle.h
@@ -115,6 +128,10 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/sliderWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/basePopupWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoDObject.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoMarker.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoPicker.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoShapes.h
 )
 
 
@@ -159,6 +176,10 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/comboBoxFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/searchBoxFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/treeComboBoxFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoDObjectFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoMarkerFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoPickerFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoShapesFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/menuComboBoxFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/checkableModelHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/completer.cpp
@@ -181,6 +202,10 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/valueProxy.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/proxyStyle.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoDObject.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoMarker.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoPicker.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoShapes.cpp
 )
 
 #If you want to use automatical metadata for dlls under windows use the following if-case.
@@ -223,9 +248,9 @@ ADD_SOURCE_GROUP(helper)
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${itomWidgets_SOURCES} ${itomWidgets_HEADERS} ${itomWidgets_HEADERS_MOC} ${itomWidgets_Factory_HEADERS} ${itomWidgets_Factory_HEADERS_MOC} ${itomWidgets_UI_MOC} ${itomWidgets_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
 
 if (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} itomCommonLib)
+    TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${OpenCV_LIBS} itomCommonLib itomShapeLib)
 else (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTDESIGNER_LIBRARY} ${QT_QTSVG_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} itomCommonLib)
+    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTDESIGNER_LIBRARY} ${QT_QTSVG_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} ${OpenCV_LIBS} itomCommonLib itomShapeLib)
 endif (QT5_FOUND)
 
 IF (QT5_FOUND)

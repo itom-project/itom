@@ -41,6 +41,7 @@
 #include <qdockwidget.h>
 
 class QPropertyEditorWidget; //forward declaration
+class MarkerLegendWidget; //forward declaration
 
 #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 
@@ -67,9 +68,12 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
 
     Q_PROPERTY(bool toolbarVisible READ getToolbarVisible WRITE setToolbarVisible DESIGNABLE true USER true)
     Q_PROPERTY(bool contextMenuEnabled READ getContextMenuEnabled WRITE setContextMenuEnabled DESIGNABLE true)
+    Q_PROPERTY(bool renderLegend READ getLegendRender WRITE setLegendRender DESIGNABLE true)
 
     Q_CLASSINFO("prop://toolbarVisible", "Toggles the visibility of the toolbar of the plot.")
     Q_CLASSINFO("prop://contextMenuEnabled", "Defines whether the context menu of the plot should be enabled or not.")
+    Q_CLASSINFO("prop://renderLegend", "If this property is true, the legend are included in pixelmaps renderings.")
+
     Q_CLASSINFO("slot://refreshPlot", "Triggers an update of the current plot window.")
 
     public:
@@ -150,6 +154,10 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
         virtual bool getContextMenuEnabled() const = 0;
 
         QDockWidget *getPropertyDockWidget() const;
+
+        virtual bool getLegendRender() const { return false;}
+        virtual void setLegendRender(const bool val) { return;}
+
         QList<QMenu*> getMenus() const;
         QList<AbstractFigure::ToolBarItem> getToolbars() const;
         QList<AbstractFigure::ToolboxItem> getToolboxes() const; //the first toolbox is always the property dock widget
@@ -165,8 +173,9 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
         void addToolBarBreak(const QString &key, Qt::ToolBarArea area = Qt::TopToolBarArea); /*!< Add a toolbar break, hence a new line for the following toolbars to the indicated area. */
 
         void addToolbox(QDockWidget *toolbox, const QString &key, Qt::DockWidgetArea area = Qt::RightDockWidgetArea); /*!< Every plot widget is automatically equipped with a property toolbox. If you want to add further toolboxes (dock widgets), register and append them using this method. */
-
-        void showToolBar(const QString &key); /*!< show a toolbar with given key. This toolbar must first be registered using addToolBar. */
+		bool removeToolbox(const QString &key); /*!< If you added further toolboxes (dock widgets), remove them using this method. */
+       
+		void showToolBar(const QString &key); /*!< show a toolbar with given key. This toolbar must first be registered using addToolBar. */
         void hideToolBar(const QString &key); /*!< hide a toolbar with given key. This toolbar must first be registered using addToolBar. */
 
         void addMenu(QMenu *menu); /*!< append a menu to the figure. AbstractFigure then takes care about the menu. Only use this method to add menus since the menu bar of figures is differently handled depending on the window mode of the figure. */

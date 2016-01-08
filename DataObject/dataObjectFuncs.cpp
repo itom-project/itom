@@ -26,7 +26,7 @@
 *********************************************************************** */
 
 #include "dataObjectFuncs.h"
-
+#include "../common/basicCheckerDefs.h"
 namespace ito 
 {
 namespace dObjHelper
@@ -1803,7 +1803,7 @@ namespace dObjHelper
         std::string axisUnit;
         
         float64 newScale = dObjIO->getAxisScale(curDim);
-        if(ito::dObjHelper::isFinite<float64>(newScale) && ito::dObjHelper::isNotZero<float64>(newScale))
+        if(ito::isFinite<float64>(newScale) && ito::isNotZero<float64>(newScale))
         {
             newScale = 1/newScale / dObjIO->getSize(curDim);
             axisUnit = invertUnit(dObjIO->getAxisUnit(curDim, test));
@@ -1823,7 +1823,7 @@ namespace dObjHelper
         {
             curDim--;
             newScale = dObjIO->getAxisScale(curDim);
-            if(ito::dObjHelper::isFinite<float64>(newScale) && ito::dObjHelper::isNotZero<float64>(newScale))
+            if(ito::isFinite<float64>(newScale) && ito::isNotZero<float64>(newScale))
             {
                 newScale = 1/newScale / dObjIO->getSize(curDim);
                 axisUnit = invertUnit(dObjIO->getAxisUnit(curDim, test));
@@ -2259,7 +2259,7 @@ namespace dObjHelper
 
         ito::float64 scaleX = (x1 - x0);
         ito::float64 scaleY = (y1 - y0);
-        if(!ito::dObjHelper::isNotZero(scaleX) || !ito::dObjHelper::isNotZero(scaleY))
+        if(!ito::isNotZero(scaleX) || !ito::isNotZero(scaleY))
         {
             return ito::RetVal(ito::retError, 0, "Set scale and offset to rectangle failed due to zero scale error of at least one scale");
         }

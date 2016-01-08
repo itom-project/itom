@@ -25,44 +25,44 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef COMMONWIDGETS_H
-#define COMMONWIDGETS_H
+#ifndef COMMONSHAPES_H
+#define COMMONSHAPES_H
 
 #if (defined ITOMLIBS_SHARED && ( defined(_Windows) || defined(_WINDOWS) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__) )) 
     
-    #ifndef ITOMWIDGETS_EXPORT
+    #ifndef ITOMSHAPE_EXPORT
         
         /* Borland/Microsoft */
         #if defined(_MSC_VER) || defined(__BORLANDC__)
             #if (_MSC_VER >= 800) || (__BORLANDC__ >= 0x500)
             #else
-                #ifdef ITOMWIDGETS_DLL
-                    #define ITOMWIDGETS_EXPORT __export
+                #ifdef ITOMSHAPE_DLL
+                    #define ITOMSHAPE_EXPORT __export
                 #else
-                    #define ITOMWIDGETS_EXPORT /*__import */ /* doesn't exist AFAIK in VC++ */
+                    #define ITOMSHAPE_EXPORT /*__import */ /* doesn't exist AFAIK in VC++ */
                 #endif                              /* Exists in Borland C++ for
                                                                 C++ classes (== huge) */
             #endif
         #endif
 
-        #ifndef ITOMWIDGETS_EXPORT //ITOMCOMMON_EXPORT has not be defined yet
-            #ifdef ITOMWIDGETS_DLL
-                #define ITOMWIDGETS_EXPORT __declspec(dllexport)
+        #ifndef ITOMSHAPE_EXPORT //ITOMCOMMON_EXPORT has not be defined yet
+            #ifdef ITOMSHAPE_DLL
+                #define ITOMSHAPE_EXPORT __declspec(dllexport)
             #else
-                #define ITOMWIDGETS_EXPORT __declspec(dllimport)
+                #define ITOMSHAPE_EXPORT __declspec(dllimport)
             #endif
         #endif
         
-    #endif //ITOMWIDGETS_EXPORT
+    #endif //ITOMSHAPE_EXPORT
     
 #endif //windows
 
-#ifndef ITOMWIDGETS_EXPORT
-    #define ITOMWIDGETS_EXPORT
+#ifndef ITOMSHAPE_EXPORT
+    #define ITOMSHAPE_EXPORT
 #endif
 
 
 
 
-#endif
+#endif // COMMONSHAPES_H
 

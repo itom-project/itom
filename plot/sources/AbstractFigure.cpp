@@ -59,7 +59,8 @@ public:
 
     QDockWidget *propertyDock;
     QPropertyEditorWidget *propertyEditorWidget;
-    QObject *propertyObservedObject;
+	
+	QObject *propertyObservedObject;
     bool toolbarsVisible;
 };
 
@@ -72,8 +73,7 @@ AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windo
     m_apiFunctionsGraphBasePtr(NULL),
     m_apiFunctionsBasePtr(NULL),
     m_mainParent(parent),
-    m_windowMode(windowMode),
-    
+    m_windowMode(windowMode),    
     m_lineCutType(tNoChildPlot),
     m_zSliceType(tNoChildPlot),
     m_zoomCutType(tNoChildPlot)
@@ -92,29 +92,37 @@ AbstractFigure::~AbstractFigure()
     }
     m_pChannels.clear();
 
-    //clear toolbars and menus
+    //clear toolbars and menus. toolbars and toolboxes are only added
+    //to the main window of the plot in the window modes standaloneInUi or
+    //standaloneWindow. If so, they are deleted by the destructor of
+    //the main window. Else they have to be deleted here.
+    if (m_windowMode == ModeInItomFigure)
+    {
+        foreach(ToolBarItem t, d->toolbars)
+        {
+            if (t.toolbar)
+            {
+                t.toolbar->deleteLater();
+            }
+        }
+        
+
+        foreach(ToolboxItem t, d->toolboxes)
+        {
+            if (t.toolbox)
+            {
+                t.toolbox->deleteLater();
+            }
+        }
+    }
+
     foreach(QMenu *m, d->menus)
     {
         m->deleteLater();
     }
+
     d->menus.clear();
-
-    foreach (ToolBarItem t, d->toolbars)
-    {
-        if (t.toolbar)
-        {
-            t.toolbar->deleteLater();
-        }
-    }
     d->toolbars.clear();
-
-    foreach(ToolboxItem t, d->toolboxes)
-    {
-        if (t.toolbox)
-        {
-            t.toolbox->deleteLater();
-        }
-    }
     d->toolboxes.clear();
 
     d->propertyDock = NULL;
@@ -148,8 +156,7 @@ RetVal AbstractFigure::initialize()
 
     d->propertyEditorWidget = new QPropertyEditorWidget(d->propertyDock);
     d->propertyDock->setWidget(d->propertyEditorWidget);
-
-    addToolbox(d->propertyDock, "properties", Qt::RightDockWidgetArea);
+	addToolbox(d->propertyDock, "properties", Qt::RightDockWidgetArea);
 
     return ito::retOk;
 }
@@ -480,7 +487,6 @@ void AbstractFigure::setToolbarVisible(bool visible)
     d->toolbarsVisible = visible;
     updatePropertyDock();
 }
-
 //----------------------------------------------------------------------------------------------------------------------------------
 bool AbstractFigure::getToolbarVisible() const 
 { 
@@ -492,7 +498,6 @@ QDockWidget* AbstractFigure::getPropertyDockWidget() const
 { 
     return d->propertyDock; 
 }
-
 //----------------------------------------------------------------------------------------------------------------------------------
 QList<AbstractFigure::ToolboxItem> AbstractFigure::getToolboxes() const
 {
@@ -533,7 +538,41 @@ void AbstractFigure::addToolbox(QDockWidget *toolbox, const QString &key, Qt::Do
         break;
     }
 }
-
+//----------------------------------------------------------------------------------------------------------------------------------
+bool AbstractFigure::removeToolbox(const QString &key)
+{
+	bool state = false;
+	bool found = true;
+	while (found == true)
+	{ 
+		int index = 0;
+		found = false;
+		for each (ToolboxItem item in d->toolboxes)
+		{
+			if (item.toolbox == NULL)
+			{
+				continue;
+			}
+			if (item.key == key)
+			{ 
+				if (item.toolbox->isVisible())
+				{
+					item.toolbox->hide();
+				}
+				if (m_windowMode != AbstractFigure::ModeInItomFigure)
+				{
+					QMainWindow::removeDockWidget(item.toolbox);
+				}
+				d->toolboxes.removeAt(index);
+				state = true;
+				found = true;
+				break;
+			}
+			index++;
+		}
+	}
+	return state;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::mnuShowProperties(bool checked) 
 { 

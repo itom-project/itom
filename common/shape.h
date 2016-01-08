@@ -29,29 +29,28 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #define SHAPE_H
 
 #include "typeDefs.h"
-#include "commonGlobal.h"
+#include "../shape/shapeCommon.h"
 
-#include "../DataObject/dataobj.h"
+//#include "../DataObject/dataobj.h"
 
 #include <qpolygon.h>
 #include <qtransform.h>
 #include <qregion.h>
 #include <qdatastream.h>
 
-#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
-
+#if !defined(Q_MOC_RUN) || defined(ITOMSHAPE_MOC) //only moc this file in itomShapeLib but not in other libraries or executables linking against this itomCommonQtLib
 
 namespace ito
 {
     class ShapePrivate;
     class Shape;
 
-    QDataStream ITOMCOMMONQT_EXPORT &operator<<(QDataStream &out, const ito::Shape &shape);
+    QDataStream ITOMSHAPE_EXPORT &operator<<(QDataStream &out, const ito::Shape &shape);
 
-    QDataStream ITOMCOMMONQT_EXPORT &operator>>(QDataStream &in, ito::Shape &shape);
+	QDataStream ITOMSHAPE_EXPORT &operator>>(QDataStream &in, ito::Shape &shape);
 
 
-    class ITOMCOMMONQT_EXPORT Shape
+	class ITOMSHAPE_EXPORT Shape
     {
     public:
 
@@ -110,7 +109,7 @@ namespace ito
         const QPolygonF &rbasePoints() const;
         QPolygonF contour(bool applyTrafo = true, qreal tol = -1.0) const; /*!< returns the enclosing contour as polygon. If the shape is elliptic, an approximation is applied, where tol is the maximum distance between real contour and a line segment of the polygon (if -1.0, the tolerance is defined to be 1% of the smaller diameter of the ellise*/
         QRegion   region() const;
-        ito::DataObject mask(const ito::DataObject &dataObject, bool inverse = false) const;
+        
 
         void point1MoveTo(const QPointF &newPoint1);
 
@@ -134,13 +133,15 @@ namespace ito
         static Shape fromPolygon(const QPolygonF &polygon, int index = -1, QString name = "", const QTransform &trafo = QTransform());
         static Shape fromMultipoint(const QPolygonF &polygon, int index = -1, QString name = "", const QTransform &trafo = QTransform());
 
-        static ito::DataObject maskFromMultipleShapes(const ito::DataObject &dataObject, const QVector<ito::Shape> &shapes, bool inverse = false);
+		//static ito::DataObject maskFromMultipleShapes(const ito::DataObject &dataObject, const QVector<ito::Shape> &shapes, bool inverse = false);
+		//ito::DataObject mask(const ito::DataObject &dataObject, bool inverse = false) const;
 
-    private:
+    protected:
+
         ShapePrivate *d;
 
         QPolygonF ramerDouglasPeucker(qreal tol) const;
-        void maskHelper(const ito::DataObject &dataObject, ito::DataObject &mask, bool inverse = false) const;
+        //void maskHelper(const ito::DataObject &dataObject, ito::DataObject &mask, bool inverse = false) const;
 
 		static double distanceLine2Point2D(const Shape &line, const QPointF &point);
 		static double distanceLine2Line2D(const Shape &line1, const Shape &line2);

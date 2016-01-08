@@ -274,7 +274,7 @@ maxNrPoints: {int}, optional \n\
             {
                 xPtr[i] = polygon[i].x();
                 yPtr[i] = polygon[i].y();
-            }
+    }
 
             *coords = obj;
         }
@@ -345,29 +345,29 @@ Tuple of class itom.shape for all created geometric shapes.");
 
     QSharedPointer<QVector<ito::Shape> > shapes(new QVector<ito::Shape>());
 
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     QMetaObject::invokeMethod(uiOrga, "figureDrawGeometricShapes", Q_ARG(uint, self->uiItem.objectID), Q_ARG(QSharedPointer<QVector<ito::Shape> >, shapes), Q_ARG(int, elementType), Q_ARG(int, maxNrPoints), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
 
-    bool finished = false;
+        bool finished = false;
 
-    while(!finished)
-    {
-        if (PythonEngine::isInterruptQueued()) //PyErr_CheckSignals())
+        while(!finished)
         {
-            retval += ito::RetVal(ito::retError,0,"draw points operation interrupted by user");
-            QMetaObject::invokeMethod(uiOrga, "figurePickPointsInterrupt", Q_ARG(uint, self->uiItem.objectID)); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
-            finished = locker.getSemaphore()->wait(2000);
+            if (PythonEngine::isInterruptQueued()) //PyErr_CheckSignals())
+            {
+                retval += ito::RetVal(ito::retError,0,"draw points operation interrupted by user");
+                QMetaObject::invokeMethod(uiOrga, "figurePickPointsInterrupt", Q_ARG(uint, self->uiItem.objectID)); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+                finished = locker.getSemaphore()->wait(2000);
+            }
+            else
+            {
+                finished = locker.getSemaphore()->wait(200);
+            }
         }
-        else
-        {
-            finished = locker.getSemaphore()->wait(200);
-        }
-    }
 
-    if (finished)
-    {
-        retval += locker.getSemaphore()->returnValue;
-    }
+        if (finished)
+        {
+            retval += locker.getSemaphore()->returnValue;
+        }
 
     if(!PythonCommon::transformRetValToPyException(retval))
     {
