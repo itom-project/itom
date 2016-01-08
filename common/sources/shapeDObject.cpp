@@ -29,7 +29,7 @@
 #define _USE_MATH_DEFINES
 #include "math.h"
 
-#include "basicCheckerDefs.h"
+#include "numeric.h"
 
 namespace ito 
 {

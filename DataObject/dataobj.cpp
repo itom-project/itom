@@ -27,7 +27,7 @@
 
 //#include <crtdbg.h>
 #include "dataobj.h"
-#include "../common/basicCheckerDefs.h"
+#include "../common/numeric.h"
 #include <cmath>
 
 #include <vector>

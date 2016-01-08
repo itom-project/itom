@@ -125,7 +125,7 @@ set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/typeDefs.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/basicCheckerDefs.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/numeric.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/color.h
     
 )

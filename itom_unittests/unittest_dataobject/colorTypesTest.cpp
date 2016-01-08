@@ -11,7 +11,7 @@
 #include "gtest/gtest.h"
 //#include "test_global.h"
 #include "commonChannel.h"
-#include "../../common/basicCheckerDefs.h"
+#include "../../common/numeric.h"
 
 
 /*! \class 

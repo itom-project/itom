@@ -29,7 +29,7 @@
 #include "pythonPCL.h"
 
 #include "helper/paramHelper.h"
-#include "../common/basicCheckerDefs.h"
+#include "../common/numeric.h"
 
 #include <iostream>
 

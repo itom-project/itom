@@ -25,11 +25,11 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef BASICCHECKERDEFS_H
-#define BASICCHECKERDEFS_H
+#ifndef NUMERIC_H
+#define NUMERIC_H
 
 #include "typeDefs.h"
-#include "../common/color.h"
+#include "color.h"
 
 // WARNING it is very EVIL to include ANY QT STUFF here!!!
 
@@ -263,4 +263,4 @@ namespace ito
 
 } // namespace ito
 
-#endif // BASICCHECKERDEFS_H
+#endif // NUMERIC_H

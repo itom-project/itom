@@ -26,7 +26,7 @@
 *********************************************************************** */
 
 #include "dataObjectFuncs.h"
-#include "../common/basicCheckerDefs.h"
+#include "../common/numeric.h"
 namespace ito 
 {
 namespace dObjHelper
