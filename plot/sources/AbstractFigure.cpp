@@ -43,7 +43,7 @@ namespace ito
 {
 
 //------------------------------------------------------------------------------------------------------------------------
-class AbstractFigurePrivate
+class AbstractFigurePrivate : QObject
 {
 public:
     AbstractFigurePrivate() :
@@ -63,7 +63,6 @@ public:
 	QObject *propertyObservedObject;
     bool toolbarsVisible;
 };
-
 //----------------------------------------------------------------------------------------------------------------------------------
 AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windowMode, QWidget *parent) : 
     QMainWindow(parent),
@@ -96,17 +95,19 @@ AbstractFigure::~AbstractFigure()
     //to the main window of the plot in the window modes standaloneInUi or
     //standaloneWindow. If so, they are deleted by the destructor of
     //the main window. Else they have to be deleted here.
-    if (m_windowMode == ModeInItomFigure)
-    {
-        foreach(ToolBarItem t, d->toolbars)
-        {
-            if (t.toolbar)
-            {
-                t.toolbar->deleteLater();
-            }
-        }
+	if (m_windowMode == ModeInItomFigure)
+	{
+		foreach(ToolBarItem t, d->toolbars)
+		{
+			if (t.toolbar)
+			{
+				t.toolbar->deleteLater();
+			}
+		}
+	}
         
-
+	if (m_windowMode == ModeInItomFigure)
+	{
         foreach(ToolboxItem t, d->toolboxes)
         {
             if (t.toolbox)
@@ -365,6 +366,8 @@ void AbstractFigure::addToolBar(QToolBar *toolbar, const QString &key, Qt::ToolB
             maxSection = std::max(maxSection, titem.section);
         }
     }
+	//this signal is established in order to check if the toolbar war already destroyed
+	bool test = connect(toolbar, SIGNAL(destroyed(QObject*)), this, SLOT(toolBarDestroyed(QObject*))); 
 
     d->toolbars.append(item);
 
@@ -520,6 +523,8 @@ void AbstractFigure::addToolbox(QDockWidget *toolbox, const QString &key, Qt::Do
     item.area = area;
     item.toolbox = toolbox;
     d->toolboxes.append(item);
+	//this signal is established in order to check if the docking widget already has been deleted while destruction of mainWindows
+	bool test = connect(toolbox, SIGNAL(destroyed(QObject*)), this, SLOT(toolBoxDestroyed(QObject*))); 
 
     switch (m_windowMode)
     {
@@ -581,5 +586,43 @@ void AbstractFigure::mnuShowProperties(bool checked)
         d->propertyDock->setVisible(checked);
     } 
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractFigure::toolBoxDestroyed(QObject *object)
+{
+	if (object == NULL)
+	{
+		return;
+	}
+	int index = 0;
+	for each (ToolboxItem item in d->toolboxes)
+	{
+		if (item.toolbox == object)
+		{
+			d->toolboxes.removeAt(index);
+			break;
+		}
+		index++;
+	}
+	return;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractFigure::toolBarDestroyed(QObject *object)
+{
+	if (object == NULL)
+	{
+		return;
+	}
+	int index = 0;
+	for each (ToolBarItem item in d->toolbars)
+	{
+		if (item.toolbar == object)
+		{
+			d->toolbars.removeAt(index);
+			break;
+		}
+		index++;
+	}
 
+	return;
+}
 } //end namespace ito

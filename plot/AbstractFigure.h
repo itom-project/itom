@@ -203,6 +203,9 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
         inline void mnuShowToolbar(bool /*checked*/) { setToolbarVisible(true); } /*!< shows all registered toolbars*/
         void mnuShowProperties(bool checked); /*!< set the visibility of the property toolbox */
 
+		void toolBoxDestroyed(QObject *object);
+		void toolBarDestroyed(QObject *object);
+
     public slots:
 
         int getPlotID() 
