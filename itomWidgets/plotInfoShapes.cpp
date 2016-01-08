@@ -133,7 +133,7 @@ void PlotInfoShapes::setItem2Ellipse(QTreeWidgetItem* curItem, const ito::Shape 
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoShapes::setItem2Square(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
-	curItem->setData(0, Qt::DisplayRole, QString("Sqare %1").arg(QString::number(element.index())));
+	curItem->setData(0, Qt::DisplayRole, QString("Square %1").arg(QString::number(element.index())));
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
 	while (curItem->childCount() > 2)
 	{
