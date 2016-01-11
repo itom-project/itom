@@ -178,7 +178,8 @@ private:
 
     inline PyObject *getLocalDictionary() { return localDictionary; } /*!< returns reference to local dictionary (workspace of method, which is handled right now). Is NULL if no method is executed right now. */
 
-    PyObject *getPyObjectByFullName(bool globalNotLocal, const QStringList &fullName); //Python GIL must be locked when calling this function!
+    PyObject *getPyObjectByFullName(bool globalNotLocal, const QStringList &fullNameSplittedByDelimiter, QString *validVariableName = NULL); //Python GIL must be locked when calling this function!
+    PyObject *getPyObjectByFullName(bool globalNotLocal, const QString &fullName, QString *validVariableName = NULL); //Python GIL must be locked when calling this function!
 
     void setGlobalDictionary(PyObject* mainDict = NULL);
     void setLocalDictionary(PyObject* localDict);
@@ -334,8 +335,8 @@ public slots:
     ito::RetVal setupBreakPointDebugConnections();
     ito::RetVal shutdownBreakPointDebugConnections();
 
-    bool renameVariable(bool globalNotLocal, QString oldKey, QString newKey, ItomSharedSemaphore *semaphore = NULL);
-    bool deleteVariable(bool globalNotLocal, QStringList keys, ItomSharedSemaphore *semaphore = NULL);
+    bool renameVariable(bool globalNotLocal, const QString &oldFullItemName, QString newKey, ItomSharedSemaphore *semaphore = NULL);
+    bool deleteVariable(bool globalNotLocal, const QStringList &fullItemNames, ItomSharedSemaphore *semaphore = NULL);
     ito::RetVal pickleVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore = NULL);
     ito::RetVal unpickleVariables(bool globalNotLocal, QString filename, ItomSharedSemaphore *semaphore = NULL);
     ito::RetVal saveMatlabVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore = NULL);

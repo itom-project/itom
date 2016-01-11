@@ -225,7 +225,7 @@ end:
     from the workspace by invoking the slot getParamsFromWorkspace in the class PythonEngine.
 
     \param globalNotLocal defines if the variables are exported from the global (true) or local (false) workspace
-    \param varNames is a list if one or multiple variable names within the workspace
+    \param varNames is a list if one or multiple variable names within the workspace. These can be single variable names (direct child of local or global workspace, or a full item name to any subitem as it is used in workspaceWidget)
     \param compatibleParamBaseTypes is a vector of the same size than varNames. A value can be ito::ParamBase::DObjPtr, ito::ParamBase::PointCloudPtr
               or ito::ParamBase::PolygonMeshPtr to describe the type of the variable or 0 if the variable covers another object. This information is
               used to set the filters in the file save dialog.
@@ -330,7 +330,7 @@ end:
 
             for (int i=0;i<varNames.size() && !retVal.containsError();i++)
             {
-                retVal += uiSaveFileWithFilter((*values)[0], filename,parent);
+                retVal += uiSaveFileWithFilter((*values)[0], filename, parent);
             }
 
             return retVal;
@@ -349,7 +349,7 @@ end:
 
     \param filename is the filename to the idc or mat file
     \param globalNotLocal defines if the variables are exported from the global (true) or local (false) workspace
-    \param varNames is a list if one or multiple variable names within the workspace
+    varNames is a list if one or multiple variable names within the workspace. These can be single variable names (direct child of local or global workspace, or a full item name to any subitem as it is used in workspaceWidget)
     \return success of the export as RetVal
     \sa uiExportPyWorkspaceVars
 */

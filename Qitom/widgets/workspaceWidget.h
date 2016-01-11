@@ -57,9 +57,16 @@ public:
     WorkspaceWidget(bool globalNotLocal, QWidget* parent = NULL);
     ~WorkspaceWidget();
 
-    inline int numberOfSelectedItems() const { return selectedItems().count(); }
+    int numberOfSelectedItems(bool ableToBeRenamed = false) const;
     int numberOfSelectedMainItems() const;
     inline ito::PyWorkspaceContainer* getWorkspaceContainer() { return m_workspaceContainer; }
+
+    enum WorkspaceRole
+    {
+        RoleFullName = Qt::UserRole + 1, /*!< the fullName role indicates the full, encrypted path name to the variable such that the PythonEngine can decode back the corresponding PyObject */
+        RoleCompatibleTypes = Qt::UserRole + 2,
+        RoleType     = Qt::UserRole + 3
+    };
 
 protected:
     QStringList mimeTypes() const;
@@ -75,7 +82,6 @@ private:
     QHash<QString,QTreeWidgetItem*> m_itemHash;
     ito::PyWorkspaceContainer *m_workspaceContainer;
 
-    QString m_delimiter;
     QPixmap m_dragPixmap;
 #if QT_VERSION >= 0x050000
     Qt::DropActions supportedDragActions() const;
