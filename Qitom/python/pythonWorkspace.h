@@ -64,9 +64,10 @@
 #include <qhash.h>
 #include <qmutex.h>
 #include <qset.h>
+#include <qchar.h>
 #include <qstringlist.h>
 
-#define PY_LIST 'l'
+#define PY_LIST_TUPLE 'l'
 #define PY_MAPPING 'm'
 #define PY_ATTR 'a'
 #define PY_DICT 'd'
@@ -78,6 +79,11 @@ namespace ito
 
 class PyWorkspaceItem;
 
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!
+\class PyWorkspaceItem
+\brief every item in the workspace is represented by one PyWorkspaceItem
+*/
 class PyWorkspaceItem
 {
 public:
@@ -87,17 +93,21 @@ public:
     ~PyWorkspaceItem();
     PyWorkspaceItem(const PyWorkspaceItem &other);
 
-    enum childState { stateNoChilds = 0x00, stateChilds = 0x01};
+    enum ChildState 
+    { 
+        stateNoChilds = 0x00, /*!< this variable has no children (no list items, no attributes, no dict items). Therefore no expand indicators are displayed in the tree view. */
+        stateChilds = 0x01    /*!< this variable can have children. An expand indicator is shown in the tree view. */
+    };
 
-    QString m_name;
-    QString m_key;
-    QString m_type;
+    QString m_name; /*!< name of the item as it is visible in the first column of the workspace (either name of variable or index of list, tuple...) */
+    QString m_key;  /*!< type of this item. The string has the following form XY:name, where X is PY_LIST_TUPLE, PY_MAPPING, PY_ATTR or PY_DICT (depends where this variable is member from), Y is PY_NUMBER or PY_STRING (depends on the type of m_name, e.g. variable string name or index of list or tuple) and name is m_name.*/
+    QString m_type; /*!< Python internal type name of the variable (ob_type->tp_name of PyObject) */
     QString m_value;
     QString m_extendedValue;
-    int m_compatibleParamBaseType;
+    int m_compatibleParamBaseType; /*!< sets the corresponding type of ito::ParamBase::Type that fits to the variable or 0 if no ito::ParamBase::Type fits. */
     bool m_exist;
-    bool m_isarrayelement;
-    int m_childState;
+    bool m_isarrayelement; /*!< true if this variable is part of a list, tuple, dict, mapping, ... If the python type does not allow any child, m_isarrayelement is set to false. */
+    ChildState m_childState; /*!< indicates if this type of variable can have any childs and the expand indicator should be displayed in the tree view. */
     QHash<QString, PyWorkspaceItem*> m_childs;
 };
 
@@ -117,13 +127,13 @@ public:
     inline bool isRoot(PyWorkspaceItem *item) const { return item == &m_rootItem; }
     inline void emitGetChildNodes(PyWorkspaceContainer *container, QString fullNameParentItem) { emit getChildNodes(container,fullNameParentItem); }
 
-    inline QString getDelimiter() const { return m_delimiter; };
-
     ito::PyWorkspaceItem* getItemByFullName(const QString &fullname);
 
     QMutex m_accessMutex;
     QSet<QString> m_expandedFullNames; //this full names are recently expanded in the corresponding view (full name is "." + name + "." + subname + "." + subsubname ...)
     PyWorkspaceItem m_rootItem;
+
+    static QChar delimiter;
 
 private:
     void loadDictionaryRec(PyObject *obj, const QString &fullNameParentItem, PyWorkspaceItem *parentItem, QStringList &deletedKeys);
@@ -131,8 +141,6 @@ private:
 
     QSet<QByteArray> m_blackListType;
     bool m_globalNotLocal;
-
-    QString m_delimiter;
 
     PyObject *dictUnicode;
 

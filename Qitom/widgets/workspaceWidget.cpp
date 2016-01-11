@@ -74,8 +74,6 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
     clear();
     m_itemHash.clear();
 
-    m_delimiter = QString( QByteArray::fromHex("AAD791A8") );
-
     QIcon icon(":/application/icons/preferences-python.png");
     m_dragPixmap = icon.pixmap(22,22);
   
@@ -143,8 +141,8 @@ QMimeData * WorkspaceWidget::mimeData(const QList<QTreeWidgetItem *> items) cons
 
     foreach(const QTreeWidgetItem *item, items)
     {
-        fullName = item->data(0, Qt::UserRole+1).toString();
-        type = item->data(0, Qt::UserRole + 3).toByteArray();
+        fullName = item->data(0, RoleFullName).toString();
+        type = item->data(0, RoleType).toByteArray();
 
         if (item->parent() == NULL)
         {
@@ -155,7 +153,9 @@ QMimeData * WorkspaceWidget::mimeData(const QList<QTreeWidgetItem *> items) cons
             tempItem = item;
             while(tempItem->parent() != NULL)
             {
-                if (type[0] == PY_DICT || type[0] == PY_MAPPING || type[0] == PY_LIST)
+                type = tempItem->data(0, RoleType).toByteArray();
+
+                if (type[0] == PY_DICT || type[0] == PY_MAPPING || type[0] == PY_LIST_TUPLE)
                 {
                     if (type[1] == PY_NUMBER)
                     {
@@ -193,11 +193,37 @@ QMimeData * WorkspaceWidget::mimeData(const QList<QTreeWidgetItem *> items) cons
 //----------------------------------------------------------------------------------------------------------------------------------
 int WorkspaceWidget::numberOfSelectedMainItems() const
 {
-    unsigned int counter = 0;
+    int counter = 0;
     QList<QTreeWidgetItem*> items = selectedItems();
     foreach(const QTreeWidgetItem* item, items)
     {
         if (item->parent() == NULL) counter++;
+    }
+    return counter;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int WorkspaceWidget::numberOfSelectedItems(bool ableToBeRenamed /*= false*/) const
+{
+    int counter = 0;
+    QList<QTreeWidgetItem*> items = selectedItems();
+    if (ableToBeRenamed)
+    {
+        QByteArray type;
+
+        foreach(const QTreeWidgetItem* item, items)
+        {
+            type = item->data(0, RoleType).toByteArray();
+            if (type[0] != PY_LIST_TUPLE)
+            {
+                //only variables and not index-entries of lists or tuples can be renamed
+                counter++;
+            }
+        }
+    }
+    else
+    {
+        counter = items.count();
     }
     return counter;
 }
@@ -211,7 +237,7 @@ void WorkspaceWidget::updateView(QHash<QString,ito::PyWorkspaceItem*> items, QSt
     QTreeWidgetItem *tempItem;
     foreach(const ito::PyWorkspaceItem *item, items)
     {
-        hashName = baseName + m_delimiter + item->m_key;
+        hashName = baseName + ito::PyWorkspaceContainer::delimiter + item->m_key;
         it = m_itemHash.find(hashName);
         if (it != m_itemHash.end())
         {
@@ -228,16 +254,16 @@ void WorkspaceWidget::updateView(QHash<QString,ito::PyWorkspaceItem*> items, QSt
             }
             else
             {
-                actItem->setFlags( Qt::ItemIsDragEnabled | Qt::ItemIsEnabled );
+                actItem->setFlags(Qt::ItemIsDragEnabled | Qt::ItemIsEditable | Qt::ItemIsSelectable | Qt::ItemIsEnabled); //Qt::ItemIsDragEnabled | Qt::ItemIsEnabled );
             }
         }
 
         actItem->setText(0, item->m_name); //name of variable, key-word of dictionary of index number of sequences (list, tuple..)
         actItem->setText(1, item->m_value); //content of variable
         actItem->setText(2, item->m_type); //data type
-        actItem->setData(0, Qt::UserRole + 1, hashName);
-        actItem->setData(0, Qt::UserRole + 2, item->m_compatibleParamBaseType);
-        actItem->setData(0, Qt::UserRole + 3, item->m_key.left(2).toLatin1()); //m_key is ab:name where a is [PY_LIST,PY_MAPPING,PY_DICT,PY_ATTR] and b is [PY_NUMBER or PY_STRING]
+        actItem->setData(0, RoleFullName, hashName);
+        actItem->setData(0, RoleCompatibleTypes, item->m_compatibleParamBaseType);
+        actItem->setData(0, RoleType, item->m_key.left(2).toLatin1()); //m_key is ab:name where a is [PY_LIST_TUPLE,PY_MAPPING,PY_DICT,PY_ATTR] and b is [PY_NUMBER or PY_STRING]
 
         if (item->m_childState == ito::PyWorkspaceItem::stateNoChilds)
         {
@@ -245,7 +271,7 @@ void WorkspaceWidget::updateView(QHash<QString,ito::PyWorkspaceItem*> items, QSt
             while(actItem->childCount() > 0)
             {
                 tempItem = actItem->child(0);
-                recursivelyDeleteHash( tempItem->data(0, Qt::UserRole+1).toString() );
+                recursivelyDeleteHash(tempItem->data(0, RoleFullName).toString());
                 actItem->removeChild( actItem->child(0) );
             }
         }
@@ -257,7 +283,7 @@ void WorkspaceWidget::updateView(QHash<QString,ito::PyWorkspaceItem*> items, QSt
                 while(actItem->childCount() > 0)
                 {
                     tempItem = actItem->child(0);
-                    recursivelyDeleteHash( tempItem->data(0, Qt::UserRole+1).toString() );
+                    recursivelyDeleteHash(tempItem->data(0, RoleFullName).toString());
                     actItem->removeChild( actItem->child(0) );
                 }
             }
@@ -321,7 +347,7 @@ void WorkspaceWidget::recursivelyDeleteHash(QTreeWidgetItem *item)
 {
     if (item)
     {
-        QString fullName = item->data(0,Qt::UserRole+1).toString();
+        QString fullName = item->data(0, RoleFullName).toString();
         recursivelyDeleteHash(fullName);
     }
 }
@@ -360,8 +386,8 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
 
     if (item)
     {
-        fullName = item->data(0, Qt::UserRole+1).toString();
-        type = item->data(0, Qt::UserRole + 3).toByteArray();
+        fullName = item->data(0, RoleFullName).toString();
+        type = item->data(0, RoleType).toByteArray();
         ito::PyWorkspaceItem* item2 = m_workspaceContainer->getItemByFullName( fullName );
         extendedValue = item2->m_extendedValue;
 
@@ -374,9 +400,9 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
             tempItem = item;
             while(tempItem->parent() != NULL)
             {
-                type = tempItem->data(0, Qt::UserRole + 3).toByteArray();
+                type = tempItem->data(0, RoleType).toByteArray();
 
-                if (type[0] == PY_DICT || type[0] == PY_MAPPING || type[0] == PY_LIST)
+                if (type[0] == PY_DICT || type[0] == PY_MAPPING || type[0] == PY_LIST_TUPLE)
                 {
                     if (type[1] == PY_NUMBER)
                     {
@@ -426,7 +452,7 @@ void WorkspaceWidget::itemDoubleClicked(QTreeWidgetItem* item, int /*column*/)
 //----------------------------------------------------------------------------------------------------------------------------------
 void WorkspaceWidget::itemExpanded(QTreeWidgetItem* item)
 {
-    QString fullName = item->data(0, Qt::UserRole + 1).toString();
+    QString fullName = item->data(0, RoleFullName).toString();
     m_workspaceContainer->m_accessMutex.lock();
     m_workspaceContainer->m_expandedFullNames.insert(fullName);
     m_workspaceContainer->m_accessMutex.unlock();
@@ -440,7 +466,7 @@ void WorkspaceWidget::itemExpanded(QTreeWidgetItem* item)
 //----------------------------------------------------------------------------------------------------------------------------------
 void WorkspaceWidget::itemCollapsed(QTreeWidgetItem* item)
 {
-    QString fullName = item->data(0, Qt::UserRole + 1).toString();
+    QString fullName = item->data(0, RoleFullName).toString();
     m_workspaceContainer->m_accessMutex.lock();
     m_workspaceContainer->m_expandedFullNames.remove(fullName);
     m_workspaceContainer->m_accessMutex.unlock();

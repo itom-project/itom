@@ -190,7 +190,7 @@ void WorkspaceDockWidget::treeViewContextMenuRequested(const QPoint & /*pos*/)
 */
 void WorkspaceDockWidget::mnuDeleteItem()
 {
-    if (m_pWorkspaceWidget != NULL && m_pWorkspaceWidget->numberOfSelectedMainItems() >= 1)
+    if (m_pWorkspaceWidget != NULL && m_pWorkspaceWidget->numberOfSelectedItems() >= 1)
     {
          QMessageBox msgBox;
          msgBox.setText(tr("Do you really want to delete the selected variables?"));
@@ -205,11 +205,32 @@ void WorkspaceDockWidget::mnuDeleteItem()
              QList<QTreeWidgetItem*> itemList = m_pWorkspaceWidget->selectedItems();
              QStringList keyList;
 
-             for (int i = 0; i < itemList.size(); i++)
+             QTreeWidgetItem * parent;
+             bool ignore;
+             foreach(const QTreeWidgetItem *item, itemList)
              {
-                 if (itemList.at(i)->parent() == NULL)
+                 if (item->parent() == NULL)
                  {
-                    keyList.append(itemList.at(i)->data(0,Qt::DisplayRole).toString());
+                     keyList.append(item->data(0, WorkspaceWidget::RoleFullName).toString());
+                 }
+                 else //check if parent or parent of parent is also selected. If so, ignore item
+                 {
+                     parent = item->parent();
+                     ignore = false;
+                     while (parent && !ignore)
+                     {
+                         if (itemList.contains(parent))
+                         {
+                             ignore = true;
+                         }
+
+                         parent = parent->parent();
+                     }
+
+                     if (!ignore)
+                     {
+                         keyList.append(item->data(0, WorkspaceWidget::RoleFullName).toString());
+                     }
                  }
              }
 
@@ -228,18 +249,39 @@ void WorkspaceDockWidget::mnuDeleteItem()
 */
 void WorkspaceDockWidget::mnuExportItem()
 {
-    if (m_pWorkspaceWidget != NULL && m_pWorkspaceWidget->numberOfSelectedMainItems() >= 1)
+    if (m_pWorkspaceWidget != NULL && m_pWorkspaceWidget->numberOfSelectedItems() >= 1)
     {
         QList<QTreeWidgetItem*> itemList = m_pWorkspaceWidget->selectedItems();
         QStringList keyList;
         QVector<int> compatibleParamBaseTypes; //Type of ParamBase, which is compatible to this value, or 0 if not compatible
-        QTreeWidgetItem * item;
-        foreach (item, itemList)
+        QTreeWidgetItem * parent;
+        bool ignore;
+        foreach (const QTreeWidgetItem *item, itemList)
         {
             if (item->parent() == NULL)
             {
-                keyList.append(item->data(0, Qt::DisplayRole).toString());
-                compatibleParamBaseTypes.append(item->data(0, Qt::UserRole + 2).toInt());
+                keyList.append(item->data(0, WorkspaceWidget::RoleFullName).toString());
+                compatibleParamBaseTypes.append(item->data(0, WorkspaceWidget::RoleCompatibleTypes).toInt());
+            }
+            else //check if parent or parent of parent is also selected. If so, ignore item
+            {
+                parent = item->parent();
+                ignore = false;
+                while (parent && !ignore)
+                {
+                    if (itemList.contains(parent))
+                    {
+                        ignore = true;
+                    }
+
+                    parent = parent->parent();
+                }
+
+                if (!ignore)
+                {
+                    keyList.append(item->data(0, WorkspaceWidget::RoleFullName).toString());
+                    compatibleParamBaseTypes.append(item->data(0, WorkspaceWidget::RoleCompatibleTypes).toInt());
+                }
             }
         }
 
@@ -280,7 +322,7 @@ void WorkspaceDockWidget::mnuImportItem()
 */
 void WorkspaceDockWidget::mnuRenameItem()
 {
-    if (m_pWorkspaceWidget != NULL && m_pWorkspaceWidget->numberOfSelectedMainItems() == 1 && m_firstCurrentItem != NULL)
+    if (m_pWorkspaceWidget != NULL && m_pWorkspaceWidget->numberOfSelectedItems(true) == 1 && m_firstCurrentItem != NULL)
     {
         m_firstCurrentItemKey = m_firstCurrentItem->data(0, Qt::DisplayRole).toString();
         m_pWorkspaceWidget->editItem(m_firstCurrentItem, 0);
@@ -303,7 +345,8 @@ void WorkspaceDockWidget::updateActions()
 {
     if (m_pWorkspaceWidget != NULL)
     {
-        int num = m_pWorkspaceWidget->numberOfSelectedMainItems();
+        int num = m_pWorkspaceWidget->numberOfSelectedItems();
+        int numToBeRenamed = m_pWorkspaceWidget->numberOfSelectedItems(true);
         int i=0;
 
         if (num > 0)
@@ -325,14 +368,14 @@ void WorkspaceDockWidget::updateActions()
             m_actDelete->setEnabled(num > 0 && pythonFree);
             m_actExport->setEnabled(num > 0 && pythonFree);
             m_actImport->setEnabled(pythonFree);
-            m_actRename->setEnabled(num == 1 && pythonFree);
+            m_actRename->setEnabled(numToBeRenamed == 1 && pythonFree);
         }
         else
         {
             m_actDelete->setEnabled(num > 0 && pythonInWaitingMode());
             m_actExport->setEnabled(num > 0 && pythonInWaitingMode());
             m_actImport->setEnabled(pythonInWaitingMode());
-            m_actRename->setEnabled(num == 1 && pythonInWaitingMode());
+            m_actRename->setEnabled(numToBeRenamed == 1 && pythonInWaitingMode());
             m_pWorkspaceWidget->setEnabled(pythonInWaitingMode());
         }
     }
@@ -363,7 +406,7 @@ void WorkspaceDockWidget::treeWidgetItemChanged(QTreeWidgetItem * item, int /*co
 
             emit setStatusInformation(tr("renaming variable"), 0);
 
-            QMetaObject::invokeMethod(eng, "renameVariable", Q_ARG(bool, m_globalNotLocal), Q_ARG(QString, m_firstCurrentItemKey), Q_ARG(QString,newKey), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            QMetaObject::invokeMethod(eng, "renameVariable", Q_ARG(bool, m_globalNotLocal), Q_ARG(QString, m_firstCurrentItem->data(0, WorkspaceWidget::RoleFullName).toString()), Q_ARG(QString, newKey), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
             m_firstCurrentItemKey = QString::Null();
 
