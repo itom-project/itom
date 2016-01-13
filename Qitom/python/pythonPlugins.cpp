@@ -507,7 +507,7 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
 
     std::cout << "\n";
 
-    if ((funcName == NULL) || (detailLevel < 1))
+    if ((funcName == NULL) && (detailLevel < 1))
     {
         Py_DECREF(result);
         Py_RETURN_NONE;
