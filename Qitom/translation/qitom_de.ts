@@ -1668,9 +1668,8 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Ein Menüelement vom Typ &apos;menu&apos; kann keine Funktionen oder Methoden ausführen. Der Code wird ignoriert.</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractNode.h" line="+210"/>
         <source>Live data source for plot</source>
-        <translation type="unfinished">Live Datenquelle für Anzeige</translation>
+        <translation type="obsolete">Live Datenquelle für Anzeige</translation>
     </message>
     <message>
         <location filename="../api/apiFunctionsGraph.cpp" line="+265"/>
@@ -1703,20 +1702,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">&apos;UI-Organizer&apos; ist nicht verfügbar!</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractDObjPCLFigure.h" line="+79"/>
-        <location line="+1"/>
-        <location line="+1"/>
-        <location line="+7"/>
-        <location line="+1"/>
-        <location line="+1"/>
-        <location filename="../../plot/AbstractDObjFigure.h" line="+73"/>
         <source>Source data for plot</source>
-        <translation type="unfinished">Quelldaten für Plot</translation>
+        <translation type="obsolete">Quelldaten für Plot</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractDObjFigure.h" line="+1"/>
         <source>Actual output data of plot</source>
-        <translation type="unfinished">Aktuelle Ausgabedaten des Plots</translation>
+        <translation type="obsolete">Aktuelle Ausgabedaten des Plots</translation>
     </message>
     <message>
         <location filename="../organizer/addInManager.cpp" line="-201"/>
@@ -2523,14 +2514,59 @@ dem Editor ein.</translation>
         <translation>Vor dem Schließen von itom fragen</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+16"/>
+        <source>Timeouts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>General timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <location line="+36"/>
+        <location line="+36"/>
+        <source>-1 (infinity)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-69"/>
+        <location line="+36"/>
+        <location line="+36"/>
+        <source> ms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-53"/>
+        <location line="+36"/>
+        <location line="+36"/>
+        <source>(0: no, -1: infinite timeout)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-65"/>
+        <source>Plugin init and close timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>File load and save timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+39"/>
         <source>Library Path(s)</source>
         <translation type="unfinished">Bibliotheksverzeichnis(se)</translation>
     </message>
     <message>
         <location line="+6"/>
+        <source>The following paths are prepended to the PATH environment variable used by itom. It is modified before itom starts loading plugins or designer plugins. These paths do not affect the overall PATH environment variable of the operating system.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>The following pathes are prepended to the PATH environment variable used by itom. It is modified before itom starts loading plugins or designer plugins. These pathes do not affect the overall PATH environment variable of the operating system.</source>
-        <translation type="unfinished">Die folgenden Verzeichnisse werden beim Laden der Plugins und Designer-Plugins als Bibliotheksquellen berücksichtigt.</translation>
+        <translation type="obsolete">Die folgenden Verzeichnisse werden beim Laden der Plugins und Designer-Plugins als Bibliotheksquellen berücksichtigt.</translation>
     </message>
     <message>
         <location line="+40"/>
@@ -2968,19 +3004,27 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Im Vordergrund anzeigen</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Stay on top of all visible windows</source>
-        <translation type="unfinished">Alle sichtbaren Fenster im Vordergrund anzeigen</translation>
+        <translation type="obsolete">Alle sichtbaren Fenster im Vordergrund anzeigen</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Stay on top of main window</source>
         <translation>Hauptfenster im Vordergrund anzeigen</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Stay on top of main window of itom</source>
-        <translation type="unfinished">Hauptfenster im Vordergrund von itom anzeigen</translation>
+        <translation type="obsolete">Hauptfenster im Vordergrund von itom anzeigen</translation>
+    </message>
+    <message>
+        <location line="-3"/>
+        <source>stay on top of all visible windows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>stay on top of main window of itom</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+69"/>
@@ -3033,7 +3077,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../common/addInInterface.h" line="+1023"/>
+        <location filename="../../common/addInInterface.h" line="+1026"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation>Nicht-Inizialisierte Vektoren bei Pflichtparametern!</translation>
     </message>
@@ -3483,12 +3527,12 @@ Katesisch</translation>
 <context>
     <name>ito::DialogOpenFileWithFilter</name>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.cpp" line="+58"/>
+        <location filename="../ui/dialogOpenFileWithFilter.cpp" line="+63"/>
         <source>The name must start with a letter followed by numbers or letters [a-z] or [A-Z]</source>
         <translation type="unfinished">Der Name muss mit einem Buchstaben, gefolgt von Ziffern oder Buchstaben [a-z] oder [A-Z], beginnen</translation>
     </message>
     <message>
-        <location line="+69"/>
+        <location line="+72"/>
         <source>Python variable name missing</source>
         <translation type="unfinished">Python Variablenname fehlt</translation>
     </message>
@@ -3498,7 +3542,33 @@ Katesisch</translation>
         <translation type="unfinished">Für den globalen Bereich muss ein Variablenname vergeben werden</translation>
     </message>
     <message>
-        <location line="+58"/>
+        <location line="+18"/>
+        <location line="+8"/>
+        <source>Python variable name already exists</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-8"/>
+        <source>The variable name %1 already exists in this workspace. Do you want to overwrite it?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>The variable name %1 already exists in this workspace. It cannot be overwritten since it is a function, method, type or class. Choose a new name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Timeout while verifiying variable name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>A timeout occurred while checking for the existence of the variable name in Python. Please try it again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+62"/>
         <source>loading...</source>
         <translation type="unfinished">laden...</translation>
     </message>
@@ -4133,7 +4203,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">&apos;areaCol&apos; liegt außerhalb des Gültigkeitsbereichs [0, %i]</translation>
     </message>
     <message>
-        <location line="+55"/>
+        <location line="+57"/>
         <source>subplot %1</source>
         <translation type="unfinished">Subplot %1</translation>
     </message>
@@ -4571,12 +4641,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <name>ito::IOHelper</name>
     <message>
         <location filename="../helper/IOHelper.cpp" line="+112"/>
-        <location line="+720"/>
+        <location line="+722"/>
         <source>Multiple plugins</source>
         <translation type="unfinished">Multiple Plugins</translation>
     </message>
     <message>
-        <location line="-720"/>
+        <location line="-722"/>
         <source>Multiple plugins provide methods to load the file of type &apos;%1&apos;. Please choose one.</source>
         <translation type="unfinished">Multiple Plugins unterstüzen Methoden um Dateien des Typs &apos;%1&apos; zu laden. Bitte einen auswählen.</translation>
     </message>
@@ -4676,7 +4746,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Zeitüberschreitung beim Öffnen eines Skripts</translation>
     </message>
     <message>
-        <location line="+228"/>
+        <location line="+230"/>
         <source>PolygonMesh and PointCloud not available since support of PointCloudLibrary is disabled in this version.</source>
         <translation type="unfinished">PolygonMesh und PointCloud sind in dieser Version von PointCloudLibrary nicht verfügbar.</translation>
     </message>
@@ -4711,7 +4781,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Fehler beim Senden von Werten an Python</translation>
     </message>
     <message>
-        <location line="-700"/>
+        <location line="-702"/>
         <source>file %1 does not exist</source>
         <translation type="unfinished">Datei &apos;%1&apos; existiert nicht</translation>
     </message>
@@ -4721,7 +4791,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Datei &apos;%1&apos; kann mit dieser Anwendung nicht geöffnet werden</translation>
     </message>
     <message>
-        <location line="+621"/>
+        <location line="+623"/>
         <source>Warning while sending values to python</source>
         <translation type="unfinished">Warnung beim Senden von Werten an Python</translation>
     </message>
@@ -4826,7 +4896,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation></translation>
     </message>
     <message>
-        <location line="+94"/>
+        <location line="+95"/>
         <source>load translations...</source>
         <translation>Übersetzungen werden geladen...</translation>
     </message>
@@ -5695,7 +5765,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="obsolete">Fehler beim Löschen eines Haltepunktes im ITO-Debugger.</translation>
     </message>
     <message>
-        <location line="+2245"/>
+        <location line="+2350"/>
         <source>The number of names and values must be equal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5705,17 +5775,18 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+143"/>
         <source>it is not allowed to load variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-115"/>
+        <location line="-228"/>
+        <location line="+109"/>
         <source>values cannot be saved since workspace dictionary not available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2053"/>
+        <location line="-2158"/>
         <source>Error while transmitting breakpoints to debugger.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5730,27 +5801,32 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1949"/>
+        <location line="+1903"/>
+        <source>It is not allowed to check names of variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+151"/>
         <source>Function &apos;%s&apos; in this workspace can not be overwritten.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
         <source>Method &apos;%s&apos; in this workspace can not be overwritten.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
         <source>Type or class &apos;%s&apos; in this workspace can not be overwritten.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
         <source>Module &apos;%s&apos; in this workspace can not be overwritten.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
         <source>error while transforming value &apos;%s&apos; to PyObject*.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7072,7 +7148,7 @@ Katesisch</translation>
 <context>
     <name>ito::WidgetPropGeneralApplication</name>
     <message>
-        <location filename="../ui/widgetPropGeneralApplication.cpp" line="+100"/>
+        <location filename="../ui/widgetPropGeneralApplication.cpp" line="+112"/>
         <source>load directory</source>
         <translation type="unfinished">Verzeichnis hinzufügen</translation>
     </message>
