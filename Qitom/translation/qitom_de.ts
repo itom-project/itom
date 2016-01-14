@@ -38,12 +38,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>Close</source>
-        <translation>SchlieÃŸen</translation>
+        <translation>Schließen</translation>
     </message>
     <message>
         <location line="-354"/>
         <source>About itom</source>
-        <translation>Ãœber itom</translation>
+        <translation>Über itom</translation>
     </message>
     <message>
         <location line="+45"/>
@@ -117,7 +117,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+23"/>
         <source>temporary &amp;breakpoint</source>
-        <translation>&amp;TemporÃ¤rer Haltepunkt</translation>
+        <translation>&amp;Temporärer Haltepunkt</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -158,7 +158,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+52"/>
         <source>Insert and Close</source>
-        <translation>EinfÃ¼gen und SchlieÃŸen</translation>
+        <translation>Einfügen und Schließen</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -297,7 +297,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../ui/dialogOpenFileWithFilter.ui" line="+14"/>
         <source>File Import Assistant</source>
-        <translation>Assistent fÃ¼r den Import von Dateien</translation>
+        <translation>Assistent für den Import von Dateien</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -410,7 +410,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+20"/>
         <source>Check for updates</source>
-        <translation type="unfinished">Auf Updates prÃ¼fen</translation>
+        <translation type="unfinished">Auf Updates prüfen</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -444,7 +444,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>No connection to pip available</source>
-        <translation type="unfinished">Keine Verbindung zu Pip mÃ¶glich</translation>
+        <translation type="unfinished">Keine Verbindung zu Pip möglich</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -539,17 +539,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="-48"/>
         <source>Options (Basic pip options are also considered)</source>
-        <translation type="unfinished">Optionen (enthÃ¤lt auch Basisoptionen fÃ¼r Pip)</translation>
+        <translation type="unfinished">Optionen (enthält auch Basisoptionen für Pip)</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Upgrade existing package if newer version is available</source>
-        <translation type="unfinished">Aktualisierung wenn eine neuere Version verfÃ¼gbar ist</translation>
+        <translation type="unfinished">Aktualisierung wenn eine neuere Version verfügbar ist</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Install dependencies if required</source>
-        <translation type="unfinished">Installation von abhÃ¤ngigen Modulen wenn nÃ¶tig</translation>
+        <translation type="unfinished">Installation von abhängigen Modulen wenn nötig</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -564,12 +564,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+26"/>
         <source>Ignore Python package index (pypi.python.org/simple). Only look at find-links URLs.</source>
-        <translation type="unfinished">Online-Python Package ignorieren (es wird nur der Suchpfad berÃ¼cksichtigt).</translation>
+        <translation type="unfinished">Online-Python Package ignorieren (es wird nur der Suchpfad berücksichtigt).</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Run install with sudo rights (linux only)</source>
-        <translation type="unfinished">Installation mit sudo-Berechtigungen ausfÃ¼hren (nur Linux)</translation>
+        <translation type="unfinished">Installation mit sudo-Berechtigungen ausführen (nur Linux)</translation>
     </message>
 </context>
 <context>
@@ -582,7 +582,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+6"/>
         <source>Choose plugin instance:</source>
-        <translation>Plugin-Instanz auswÃ¤hlen:</translation>
+        <translation>Plugin-Instanz auswählen:</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -723,7 +723,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>Match case</source>
-        <translation>GroÃŸ-/Kleinschreibung beachten</translation>
+        <translation>Groß-/Kleinschreibung beachten</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -733,7 +733,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>Regular expression</source>
-        <translation>RegulÃ¤re AusdrÃ¼cke</translation>
+        <translation>Reguläre Ausdrücke</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -743,12 +743,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+6"/>
         <source>Up</source>
-        <translation>AufwÃ¤rts</translation>
+        <translation>Aufwärts</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Down</source>
-        <translation>AbwÃ¤rts</translation>
+        <translation>Abwärts</translation>
     </message>
 </context>
 <context>
@@ -756,7 +756,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../ui/dialogSaveFileWithFilter.ui" line="+14"/>
         <source>File Export Assistant</source>
-        <translation>Assistent fÃ¼r den Export von Dateien</translation>
+        <translation>Assistent für den Export von Dateien</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -841,7 +841,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="-77"/>
         <source>Select user</source>
-        <translation type="unfinished">Benutzer auswÃ¤hlen</translation>
+        <translation type="unfinished">Benutzer auswählen</translation>
     </message>
 </context>
 <context>
@@ -885,7 +885,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Requested URL forces a redirection. Maximum number of redirections exceeded.</source>
-        <translation type="vanished">Angefragte URL erfordert eine Weiterleitung. Anzahl maximaler Weiterleitungen wurde jedoch Ã¼berschritten.</translation>
+        <translation type="vanished">Angefragte URL erfordert eine Weiterleitung. Anzahl maximaler Weiterleitungen wurde jedoch überschritten.</translation>
     </message>
 </context>
 <context>
@@ -916,7 +916,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../organizer/addInManager.cpp" line="+460"/>
         <source>The file &apos;%1&apos; is not a valid Qt plugin.</source>
-        <translation>Die Datei &apos;%1&apos; ist kein gÃ¼ltiges Qt Plugin.</translation>
+        <translation>Die Datei &apos;%1&apos; ist kein gültiges Qt Plugin.</translation>
     </message>
 </context>
 <context>
@@ -924,7 +924,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../helper/paramHelper.cpp" line="+1404"/>
         <source>invalid parameter name</source>
-        <translation>UngÃ¼ltiger Parametername</translation>
+        <translation>Ungültiger Parametername</translation>
     </message>
     <message>
         <location line="-1365"/>
@@ -1057,7 +1057,7 @@ p, li { white-space: pre-wrap; }
         <location line="+31"/>
         <location line="+22"/>
         <source>value out of range [%1, %2]</source>
-        <translation>Wert liegt auÃŸerhalb des GÃ¼ltigkeitsbereichs [%1, %2]</translation>
+        <translation>Wert liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <location line="-106"/>
@@ -1066,7 +1066,7 @@ p, li { white-space: pre-wrap; }
         <location line="+30"/>
         <location line="+22"/>
         <source>value does not fit to given step size [%1:%2:%3]</source>
-        <translation>Wert entspricht nicht der angegebenen SchrittgrÃ¶ÃŸe [%1:%2:%3]</translation>
+        <translation>Wert entspricht nicht der angegebenen Schrittgröße [%1:%2:%3]</translation>
     </message>
     <message>
         <location line="+42"/>
@@ -1171,7 +1171,7 @@ p, li { white-space: pre-wrap; }
         <location line="+83"/>
         <location line="+151"/>
         <source>Index value is out of range [0, %i]</source>
-        <translation>Indexwert liegt auÃŸerhalb des GÃ¼ltigkeitsbereichs [0, %i]</translation>
+        <translation>Indexwert liegt außerhalb des Gültigkeitsbereichs [0, %i]</translation>
     </message>
     <message>
         <location line="+40"/>
@@ -1181,12 +1181,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+199"/>
         <source>index is ouf of range [0, %i]</source>
-        <translation>Index liegt auÃŸerhalb des GÃ¼ltigkeitsbereichs [0, %i]</translation>
+        <translation>Index liegt außerhalb des Gültigkeitsbereichs [0, %i]</translation>
     </message>
     <message>
         <location line="+40"/>
         <source>Paramater is no array type. Indexing not possible.</source>
-        <translation>Der Parameter ist nicht vom Typ Array. Eine Indizierung ist nicht mÃ¶glich.</translation>
+        <translation>Der Parameter ist nicht vom Typ Array. Eine Indizierung ist nicht möglich.</translation>
     </message>
     <message>
         <location line="-818"/>
@@ -1201,7 +1201,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+102"/>
         <source>The given integer array [%1,%2] is considered to be an interval but the first value is bigger than the second one</source>
-        <translation type="unfinished">Gegebenes Integer-Array [%1, %2] wird als Interval interpretiert, doch ist der erste Wert ist grÃ¶ÃŸer als der Zweite</translation>
+        <translation type="unfinished">Gegebenes Integer-Array [%1, %2] wird als Interval interpretiert, doch ist der erste Wert ist größer als der Zweite</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -1211,7 +1211,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>The given integer array [%1,%2] is considered to be a range but the first value is bigger than the second one</source>
-        <translation type="unfinished">Gegebenes Integer-Array [%1, %2] wird als Range interpretiert, doch ist der erste Wert ist grÃ¶ÃŸer als der Zweite</translation>
+        <translation type="unfinished">Gegebenes Integer-Array [%1, %2] wird als Range interpretiert, doch ist der erste Wert ist größer als der Zweite</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -1221,42 +1221,42 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+55"/>
         <source>roi[2] (width) is out of range [%1,%2]</source>
-        <translation type="unfinished">roi[2] (Breits) liegt auÃŸerhalb des GÃ¼ltigkeitsbereichs [%1, %2]</translation>
+        <translation type="unfinished">roi[2] (Breits) liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>roi[2] (width) does not fit to given step size [%1:%2:%3]</source>
-        <translation type="unfinished">roi[2] (Breits) hat nicht die vorgegebene SchrittgrÃ¶ÃŸe [%1:%2:%3]</translation>
+        <translation type="unfinished">roi[2] (Breits) hat nicht die vorgegebene Schrittgröße [%1:%2:%3]</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>roi[0] (x0) is out of range [%1,%2]</source>
-        <translation type="unfinished">roi[0] (x0) liegt auÃŸerhalb des GÃ¼ltigkeitsbereichs [%1, %2]</translation>
+        <translation type="unfinished">roi[0] (x0) liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>right side of roi exceeds the maximal limit of %1 (reduce x0 or width)</source>
-        <translation type="unfinished">Die rechte Seite des RIO Ã¼berschreitet den maximalen Grenzwert von %1 (x0 oder Breite reduzieren)</translation>
+        <translation type="unfinished">Die rechte Seite des RIO überschreitet den maximalen Grenzwert von %1 (x0 oder Breite reduzieren)</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>roi[0] (x0) does not fit to given step size [%1:%2:%3]</source>
-        <translation type="unfinished">roi[0] (x0) hat nicht die vorgegebene SchrittgrÃ¶ÃŸe [%1:%2:%3]</translation>
+        <translation type="unfinished">roi[0] (x0) hat nicht die vorgegebene Schrittgröße [%1:%2:%3]</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>roi[3] (height) is out of range [%1,%2]</source>
-        <translation type="unfinished">roi[3] (HÃ¶he) liegt auÃŸerhalb des GÃ¼ltigkeitsbereichs [%1, %2]</translation>
+        <translation type="unfinished">roi[3] (Höhe) liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>roi[3] (height) does not fit to given step size [%1:%2:%3]</source>
-        <translation type="unfinished">roi[3] (HÃ¶he) hat nicht die vorgegebene SchrittgrÃ¶ÃŸe [%1:%2:%3]</translation>
+        <translation type="unfinished">roi[3] (Höhe) hat nicht die vorgegebene Schrittgröße [%1:%2:%3]</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>roi[1] (y0) is out of range [%1,%2]</source>
-        <translation type="unfinished">roi[1] (y0) liegt auÃŸerhalb des GÃ¼ltigkeitsbereichs [%1, %2]</translation>
+        <translation type="unfinished">roi[1] (y0) liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -1266,7 +1266,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+5"/>
         <source>roi[1] (y0) does not fit to given step size [%1:%2:%3]</source>
-        <translation type="unfinished">roi[1] (y0) hat nicht die vorgegebene SchrittgrÃ¶ÃŸe [%1:%2:%3]</translation>
+        <translation type="unfinished">roi[1] (y0) hat nicht die vorgegebene Schrittgröße [%1:%2:%3]</translation>
     </message>
     <message>
         <location line="+191"/>
@@ -1284,7 +1284,7 @@ p, li { white-space: pre-wrap; }
         <location line="-122"/>
         <location line="+139"/>
         <source>Parameter could not be converted to destination type.</source>
-        <translation type="unfinished">Der Parameter kann nicht in den benÃ¶tigten Zielparametertyp umgewandelt werden.</translation>
+        <translation type="unfinished">Der Parameter kann nicht in den benötigten Zielparametertyp umgewandelt werden.</translation>
     </message>
     <message>
         <location line="-134"/>
@@ -1295,12 +1295,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+88"/>
         <source>Name of given parameter is empty.</source>
-        <translation type="unfinished">Name des Ã¼bergebenen Parameters ist leer.</translation>
+        <translation type="unfinished">Name des übergebenen Parameters ist leer.</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Parameter &apos;%1&apos; is read only.</source>
-        <translation>Parameter &apos;%1&apos; ist schreibgeschÃ¼tzt.</translation>
+        <translation>Parameter &apos;%1&apos; ist schreibgeschützt.</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1353,7 +1353,7 @@ p, li { white-space: pre-wrap; }
         <location line="-56"/>
         <location line="+48"/>
         <source>Vectors paramsMand, paramsOpt and paramsOut must not be NULL</source>
-        <translation type="unfinished">Die Vektoren paramsMand, paramsOpt und paramsOut dÃ¼rfen nicht NULL sein</translation>
+        <translation type="unfinished">Die Vektoren paramsMand, paramsOpt und paramsOut dürfen nicht NULL sein</translation>
     </message>
     <message>
         <location line="-33"/>
@@ -1377,42 +1377,42 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+85"/>
         <source>The data object &apos;%s&apos; must have %i dimensions (%i given)</source>
-        <translation type="unfinished">Das DataObject &apos;%s&apos; muss %i Dimensionen besitzen (Ã¼bergeben wurden %i)</translation>
+        <translation type="unfinished">Das DataObject &apos;%s&apos; muss %i Dimensionen besitzen (übergeben wurden %i)</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>The given data object must have %i dimensions (%i given)</source>
-        <translation type="unfinished">Das Ã¼bergebene DataObject &apos;%s&apos; muss %i Dimensionen besitzen (Ã¼bergeben wurden %i)</translation>
+        <translation type="unfinished">Das übergebene DataObject &apos;%s&apos; muss %i Dimensionen besitzen (übergeben wurden %i)</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>The size of the %i. dimension of data object &apos;%s&apos; exceeds the given boundaries [%i, %i]</source>
-        <translation type="unfinished">Die GrÃ¶ÃŸe der %i. Dimension des DataObjects &apos;%s&apos; Ã¼bersteigt die aktuelle Begrenzung [%i, %i]</translation>
+        <translation type="unfinished">Die Größe der %i. Dimension des DataObjects &apos;%s&apos; übersteigt die aktuelle Begrenzung [%i, %i]</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>The size of the %i. dimension exceeds the given boundaries [%i, %i]</source>
-        <translation type="unfinished">Die GrÃ¶ÃŸe der %i. Dimension Ã¼bersteigt die aktuelle Begrenzung [%i, %i]</translation>
+        <translation type="unfinished">Die Größe der %i. Dimension übersteigt die aktuelle Begrenzung [%i, %i]</translation>
     </message>
     <message>
         <location filename="../python/pythonCommon.cpp" line="+981"/>
         <source>Keyword autoLoadParams not of integer type</source>
-        <translation type="unfinished">SchlÃ¼sselwort autoLoadParams ist nicht vom Typ Integer</translation>
+        <translation type="unfinished">Schlüsselwort autoLoadParams ist nicht vom Typ Integer</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Could not delete Keyword: autoLoadParams</source>
-        <translation type="unfinished">SchlÃ¼sselwort kann nicht gelÃ¶scht werden: autoLoadParams</translation>
+        <translation type="unfinished">Schlüsselwort kann nicht gelöscht werden: autoLoadParams</translation>
     </message>
     <message>
         <location filename="../python/pythonPlugins.cpp" line="+540"/>
         <source>timeout while getting name parameter</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung beim Lesen des Parameternamens</translation>
+        <translation type="unfinished">Zeitüberschreitung beim Lesen des Parameternamens</translation>
     </message>
     <message>
         <location line="+42"/>
         <source>you must provide at least one parameter with the name of the function</source>
-        <translation type="unfinished">Es muss mindestens ein Parameter fÃ¼r dem Funktionsnamen unterstÃ¼tzt werden</translation>
+        <translation type="unfinished">Es muss mindestens ein Parameter für dem Funktionsnamen unterstützt werden</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -1422,52 +1422,52 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+11"/>
         <source>plugin does not provide an execution of function &apos;%s&apos;</source>
-        <translation type="unfinished">Das Plugin unterstÃ¼tzt nicht die AusfÃ¼hrung der Funktion &apos;%s&apos;</translation>
+        <translation type="unfinished">Das Plugin unterstützt nicht die Ausführung der Funktion &apos;%s&apos;</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>timeout while calling specific function in plugin.</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung beim Aufruf spezifischer Funktionen im Plugin.</translation>
+        <translation type="unfinished">Zeitüberschreitung beim Aufruf spezifischer Funktionen im Plugin.</translation>
     </message>
     <message>
         <location line="+136"/>
         <source>timeout while getting parameter</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung beim Lesen der Parameter</translation>
+        <translation type="unfinished">Zeitüberschreitung beim Lesen der Parameter</translation>
     </message>
     <message>
         <location line="+336"/>
         <source>timeout.</source>
-        <translation>ZeitÃ¼berschreitung.</translation>
+        <translation>Zeitüberschreitung.</translation>
     </message>
     <message>
         <location line="+482"/>
         <source>timeout while calibration</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung bei der Kalibrierung</translation>
+        <translation type="unfinished">Zeitüberschreitung bei der Kalibrierung</translation>
     </message>
     <message>
         <location line="+117"/>
         <source>timeout while setting origin</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung beim Setzen auf den Nullpunkt</translation>
+        <translation type="unfinished">Zeitüberschreitung beim Setzen auf den Nullpunkt</translation>
     </message>
     <message>
         <location line="+89"/>
         <source>timeout while getting Status</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung beim Lesen des Status</translation>
+        <translation type="unfinished">Zeitüberschreitung beim Lesen des Status</translation>
     </message>
     <message>
         <location line="+133"/>
         <source>timeout while getting position values</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung beim Lesen der Positionswerte</translation>
+        <translation type="unfinished">Zeitüberschreitung beim Lesen der Positionswerte</translation>
     </message>
     <message>
         <location line="+289"/>
         <source>timeout while setting absolute position</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung beim setzen der absoluten Position</translation>
+        <translation type="unfinished">Zeitüberschreitung beim setzen der absoluten Position</translation>
     </message>
     <message>
         <location line="+87"/>
         <source>timeout while setting relative position</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung beim Setzten der relativen Position</translation>
+        <translation type="unfinished">Zeitüberschreitung beim Setzten der relativen Position</translation>
     </message>
     <message>
         <location line="+56"/>
@@ -1477,7 +1477,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+971"/>
         <source>copyVal function only implemented for typeADDA and typeGrabber</source>
-        <translation type="unfinished">Die Funktion &apos;copyVal&apos; wurde nur fÃ¼r ADDA-Wandler und Grabber implementiert</translation>
+        <translation type="unfinished">Die Funktion &apos;copyVal&apos; wurde nur für ADDA-Wandler und Grabber implementiert</translation>
     </message>
     <message>
         <location line="+553"/>
@@ -1512,27 +1512,27 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../organizer/helpSystem.cpp" line="+314"/>
         <source>file could not be opened.</source>
-        <translation type="unfinished">Datei konnte nicht geÃ¶ffnet werden.</translation>
+        <translation type="unfinished">Datei konnte nicht geöffnet werden.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Load XML file failed: file seems corrupt</source>
-        <translation type="unfinished">Das Ã–ffnen der XML-Datei schlug fehl: Datei scheint defekt zu sein</translation>
+        <translation type="unfinished">Das Öffnen der XML-Datei schlug fehl: Datei scheint defekt zu sein</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Load XML file failed:  wrong xml version</source>
-        <translation type="unfinished">Das Ã–ffnen der XML-Datei schlug fehl: Falsche XML-Version</translation>
+        <translation type="unfinished">Das Öffnen der XML-Datei schlug fehl: Falsche XML-Version</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Load XML file failed: wrong document encoding</source>
-        <translation type="unfinished">Das Ã–ffnen der XML-Datei schlug fehl: Falscher Dokumenten-Encoder</translation>
+        <translation type="unfinished">Das Öffnen der XML-Datei schlug fehl: Falscher Dokumenten-Encoder</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Load XML file failed: could not intepret checksum content as uint</source>
-        <translation type="unfinished">Das Ã–ffnen der XML-Datei schlug fehl: Checksummenfehler</translation>
+        <translation type="unfinished">Das Öffnen der XML-Datei schlug fehl: Checksummenfehler</translation>
     </message>
     <message>
         <location line="+70"/>
@@ -1607,7 +1607,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Warning: The version contains locally changed code!
 </source>
-        <translation type="obsolete">Warnung: Die Version enthÃ¤lt lokal geÃ¤nderten Code!</translation>
+        <translation type="obsolete">Warnung: Die Version enthält lokal geänderten Code!</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -1619,7 +1619,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="-6"/>
         <source>The version contains locally changed code! </source>
-        <translation type="unfinished">Diese Version beinhaltet lokal geÃ¤nderten Code! </translation>
+        <translation type="unfinished">Diese Version beinhaltet lokal geänderten Code! </translation>
     </message>
     <message>
         <source>The version contains unversioned files (e.g. from pyCache-files)!</source>
@@ -1635,52 +1635,51 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../python/pythonItom.cpp" line="+2489"/>
         <source>Menu element must have a valid key.</source>
-        <translation type="unfinished">MenÃ¼element muss einen gÃ¼ltigen SchlÃ¼ssel haben.</translation>
+        <translation type="unfinished">Menüelement muss einen gültigen Schlüssel haben.</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>For menu elements of type &apos;BUTTON&apos; any type of code (String or callable method or function) must be indicated.</source>
-        <translation type="unfinished">FÃ¼r MenÃ¼elemente vom Typ &apos;button&apos; muss jede Art von Code (Sting oder Funktionen/Methoden) erkennbar sein.</translation>
+        <translation type="unfinished">Für Menüelemente vom Typ &apos;button&apos; muss jede Art von Code (Sting oder Funktionen/Methoden) erkennbar sein.</translation>
     </message>
     <message>
         <location line="-234"/>
         <source>Button must have a valid name.</source>
-        <translation type="unfinished">Der Button muss einen gÃ¼ltigen Namen haben.</translation>
+        <translation type="unfinished">Der Button muss einen gültigen Namen haben.</translation>
     </message>
     <message>
         <location line="+248"/>
         <source>A menu element of type &apos;separator&apos; can not execute some code. Code argument is ignored.</source>
-        <translation type="unfinished">Ein MenÃ¼element vom Typ &apos;separator&apos; kann keinen Code ausfÃ¼hren. Der Code wird ignoriert.</translation>
+        <translation type="unfinished">Ein Menüelement vom Typ &apos;separator&apos; kann keinen Code ausführen. Der Code wird ignoriert.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>A menu element of type &apos;separator&apos; can not execute any function or method. Code argument is ignored.</source>
-        <translation type="unfinished">Ein MenÃ¼element vom Typ &apos;separator&apos; kann keine Funktionen oder Methoden ausfÃ¼hren. Der Code wird ignoriert.</translation>
+        <translation type="unfinished">Ein Menüelement vom Typ &apos;separator&apos; kann keine Funktionen oder Methoden ausführen. Der Code wird ignoriert.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>A menu element of type &apos;menu&apos; can not execute some code. Code argument is ignored.</source>
-        <translation type="unfinished">Ein MenÃ¼element vom Typ &apos;menu&apos; kann keinen Code ausfÃ¼hren. Der Code wird ignoriert.</translation>
+        <translation type="unfinished">Ein Menüelement vom Typ &apos;menu&apos; kann keinen Code ausführen. Der Code wird ignoriert.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>A menu element of type &apos;menu&apos; can not execute any function or method. Code argument is ignored.</source>
-        <translation type="unfinished">Ein MenÃ¼element vom Typ &apos;menu&apos; kann keine Funktionen oder Methoden ausfÃ¼hren. Der Code wird ignoriert.</translation>
+        <translation type="unfinished">Ein Menüelement vom Typ &apos;menu&apos; kann keine Funktionen oder Methoden ausführen. Der Code wird ignoriert.</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractNode.h" line="+210"/>
         <source>Live data source for plot</source>
-        <translation type="unfinished">Live Datenquelle fÃ¼r Anzeige</translation>
+        <translation type="obsolete">Live Datenquelle für Anzeige</translation>
     </message>
     <message>
         <location filename="../api/apiFunctionsGraph.cpp" line="+265"/>
         <source>timeout while unregistering live image from camera.</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung beim Stoppen des Livebilds der Kamera.</translation>
+        <translation type="unfinished">Zeitüberschreitung beim Stoppen des Livebilds der Kamera.</translation>
     </message>
     <message>
         <location line="+127"/>
         <source>timeout while loading plugin widget</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung beim Laden der Plugin-Widgets</translation>
+        <translation type="unfinished">Zeitüberschreitung beim Laden der Plugin-Widgets</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -1690,33 +1689,25 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+6"/>
         <source>error closing dialog</source>
-        <translation type="unfinished">Fehler beim SchlieÃŸen des Dialogs</translation>
+        <translation type="unfinished">Fehler beim Schließen des Dialogs</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>timeout showing dialog</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung beim Anzeigen des Dialogs</translation>
+        <translation type="unfinished">Zeitüberschreitung beim Anzeigen des Dialogs</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>UI-Organizer is not available!</source>
-        <translation type="unfinished">&apos;UI-Organizer&apos; ist nicht verfÃ¼gbar!</translation>
+        <translation type="unfinished">&apos;UI-Organizer&apos; ist nicht verfügbar!</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractDObjPCLFigure.h" line="+79"/>
-        <location line="+1"/>
-        <location line="+1"/>
-        <location line="+7"/>
-        <location line="+1"/>
-        <location line="+1"/>
-        <location filename="../../plot/AbstractDObjFigure.h" line="+73"/>
         <source>Source data for plot</source>
-        <translation type="unfinished">Quelldaten fÃ¼r Plot</translation>
+        <translation type="obsolete">Quelldaten für Plot</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractDObjFigure.h" line="+1"/>
         <source>Actual output data of plot</source>
-        <translation type="unfinished">Aktuelle Ausgabedaten des Plots</translation>
+        <translation type="obsolete">Aktuelle Ausgabedaten des Plots</translation>
     </message>
     <message>
         <location filename="../organizer/addInManager.cpp" line="-201"/>
@@ -1740,19 +1731,19 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Unable to load translation file &apos;%1&apos;.</source>
-        <translation type="obsolete">Ãœbersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
+        <translation type="obsolete">Übersetzungsdatei &apos;%1&apos; konnte nicht geladen werden.</translation>
     </message>
     <message>
         <location filename="../organizer/designerWidgetOrganizer.cpp" line="+201"/>
         <location filename="../organizer/addInManager.cpp" line="+40"/>
         <source>Unable to find translation file.</source>
-        <translation type="unfinished">Ãœbersetzungsdatei wurde nicht gefunden.</translation>
+        <translation type="unfinished">Übersetzungsdatei wurde nicht gefunden.</translation>
     </message>
     <message>
         <location line="-11"/>
         <location filename="../organizer/addInManager.cpp" line="-12"/>
         <source>Unable to load translation file &apos;%1&apos;. Translation file is empty.</source>
-        <translation type="unfinished">Die Ãœbersetzungsdatei &apos;%1&apos; kann nicht geladen werden. Diese Datei ist leer.</translation>
+        <translation type="unfinished">Die Übersetzungsdatei &apos;%1&apos; kann nicht geladen werden. Diese Datei ist leer.</translation>
     </message>
     <message>
         <location filename="../organizer/addInManager.cpp" line="+55"/>
@@ -1767,7 +1758,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>AddIn &apos;%1&apos; fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of &apos;itom&apos; is %2.</source>
-        <translation type="unfinished">AddIn &apos;%1&apos; wurde fÃ¼r eine neuere AddIn-Schnittstelle erstellt, die aktuell nicht unterstÃ¼tzt wird. Die aktuelle ITOM-Version ist %2.</translation>
+        <translation type="unfinished">AddIn &apos;%1&apos; wurde für eine neuere AddIn-Schnittstelle erstellt, die aktuell nicht unterstützt wird. Die aktuelle ITOM-Version ist %2.</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -1838,12 +1829,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+87"/>
         <source>invalid plugin type. Only typeDataIO, typeActuator or typeAlgo are allowed.</source>
-        <translation type="unfinished">UngÃ¼ltiger Plugin-Typ. Nur &apos;typeDataIO&apos;, &apos;typeActuator&apos; und &apos;typeAlgo&apos; sind erlaubt.</translation>
+        <translation type="unfinished">Ungültiger Plugin-Typ. Nur &apos;typeDataIO&apos;, &apos;typeActuator&apos; und &apos;typeAlgo&apos; sind erlaubt.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Plugin &apos;%1&apos; not found in list of given type</source>
-        <translation type="unfinished">Plugin &apos;%1&apos; wurde in der Ã¼bergebenen Liste nicht gefunden</translation>
+        <translation type="unfinished">Plugin &apos;%1&apos; wurde in der übergebenen Liste nicht gefunden</translation>
     </message>
     <message>
         <location line="+24"/>
@@ -1861,34 +1852,34 @@ p, li { white-space: pre-wrap; }
         <location line="-257"/>
         <location line="+143"/>
         <source>Base plugin or appropriate plugin type not indicated for this plugin.</source>
-        <translation type="unfinished">FÃ¼r dieses Plugin wurde kein Basis-Plugin oder geeigneter Plugin-Typ gefunden.</translation>
+        <translation type="unfinished">Für dieses Plugin wurde kein Basis-Plugin oder geeigneter Plugin-Typ gefunden.</translation>
     </message>
     <message>
         <location line="-118"/>
         <source>timeout while initializing dataIO</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung wÃ¤hrend der Initialisierung von DataIO</translation>
+        <translation type="unfinished">Zeitüberschreitung während der Initialisierung von DataIO</translation>
     </message>
     <message>
         <location line="+43"/>
         <location line="+141"/>
         <location line="+86"/>
         <source>Parameter has own parameter management. Keyword &apos;autoLoadParams&apos; is ignored.</source>
-        <translation type="unfinished">Parameter haben ein eigenes Management. SchlÃ¼sselwort &apos;autoLoadParams&apos; wurde ignoriert.</translation>
+        <translation type="unfinished">Parameter haben ein eigenes Management. Schlüsselwort &apos;autoLoadParams&apos; wurde ignoriert.</translation>
     </message>
     <message>
         <location line="-127"/>
         <source>timeout while initializing actuator</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung wÃ¤hrend der Initialisierung von Actuator</translation>
+        <translation type="unfinished">Zeitüberschreitung während der Initialisierung von Actuator</translation>
     </message>
     <message>
         <location line="+735"/>
         <source>no toolbox available</source>
-        <translation type="unfinished">Keine Symbolleiste verfÃ¼gbar</translation>
+        <translation type="unfinished">Keine Symbolleiste verfügbar</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>plugin not available</source>
-        <translation type="unfinished">Plugin ist nicht verfÃ¼gbar</translation>
+        <translation type="unfinished">Plugin ist nicht verfügbar</translation>
     </message>
 </context>
 <context>
@@ -1934,7 +1925,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+19"/>
         <source>up</source>
-        <translation>AufwÃ¤rts</translation>
+        <translation>Aufwärts</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1944,7 +1935,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+19"/>
         <source>down</source>
-        <translation>AbwÃ¤rts</translation>
+        <translation>Abwärts</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1964,7 +1955,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>match case</source>
-        <translation>GroÃŸ/Klein</translation>
+        <translation>Groß/Klein</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1992,7 +1983,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+10"/>
         <source>Close</source>
-        <translation>SchlieÃŸen</translation>
+        <translation>Schließen</translation>
     </message>
 </context>
 <context>
@@ -2005,17 +1996,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+6"/>
         <source>Paste text to console</source>
-        <translation type="unfinished">Text aus der Zwischenablage in die Konsole einfÃ¼gen</translation>
+        <translation type="unfinished">Text aus der Zwischenablage in die Konsole einfügen</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>If subparts of a code are copied from any script and pasted to the console, it might happen that the whole code block is already globally indentend. The code can then not be executed. Check the following option to let itom remove the global indentation level before pasting it to the console.</source>
-        <translation type="unfinished">Wenn Teile eines Python-Codes in die Konsole eingefÃ¼gt werden sollen kann es vorkommen, dass der einzufÃ¼gende Code-Block bereits eingerÃ¼ckt ist und dadurch nicht ausgefÃ¼hrt werden kann. Um von itom den Code-Block automatisch anpassen zu lassen folgende Option auswÃ¤hlen.</translation>
+        <translation type="unfinished">Wenn Teile eines Python-Codes in die Konsole eingefügt werden sollen kann es vorkommen, dass der einzufügende Code-Block bereits eingerückt ist und dadurch nicht ausgeführt werden kann. Um von itom den Code-Block automatisch anpassen zu lassen folgende Option auswählen.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Modify text in clipboard before pasting to console. </source>
-        <translation type="unfinished">Text vor dem EinfÃ¼gen in die Konsole modifizieren.</translation>
+        <translation type="unfinished">Text vor dem Einfügen in die Konsole modifizieren.</translation>
     </message>
 </context>
 <context>
@@ -2028,7 +2019,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+6"/>
         <source>command history enabled (set disable to clear the history!)</source>
-        <translation>Befehlsliste aktivieren (Deaktivieren lÃ¶scht die Liste!)</translation>
+        <translation>Befehlsliste aktivieren (Deaktivieren löscht die Liste!)</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -2038,7 +2029,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+35"/>
         <source>do not add if the new command is equal to the last one</source>
-        <translation>Nicht hinzufÃ¼gen wenn der letzte Befehl in der Liste identisch ist</translation>
+        <translation>Nicht hinzufügen wenn der letzte Befehl in der Liste identisch ist</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -2109,27 +2100,27 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+26"/>
         <source>Number of characters a wrapped line is indented by</source>
-        <translation type="unfinished">Anzahl Zeichen beim EinrÃ¼cken einer umbegrochenen Zeile</translation>
+        <translation type="unfinished">Anzahl Zeichen beim Einrücken einer umbegrochenen Zeile</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Wrap Indentation Mode</source>
-        <translation type="unfinished">EinrÃ¼ckmodus beim Zeilenumbruch</translation>
+        <translation type="unfinished">Einrückmodus beim Zeilenumbruch</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Wrapped sub-lines are indented by the amount indicated above</source>
-        <translation type="unfinished">Umgebrochene Unterzeile mit oben angegebenem Wert einrÃ¼cken</translation>
+        <translation type="unfinished">Umgebrochene Unterzeile mit oben angegebenem Wert einrücken</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Wrapped sub-lines are indented by the same amount as the first sub-line</source>
-        <translation type="unfinished">Folgende Unterzeilen wie die erste Unterzeile einrÃ¼cken</translation>
+        <translation type="unfinished">Folgende Unterzeilen wie die erste Unterzeile einrücken</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Wrapped sub-lines are indented by the same amount as the first sub-line plus one mor level of indentation</source>
-        <translation type="unfinished">Jede Unterzeilen um einen Einzug mehr einrÃ¼cken als die Vorherige</translation>
+        <translation type="unfinished">Jede Unterzeilen um einen Einzug mehr einrücken als die Vorherige</translation>
     </message>
 </context>
 <context>
@@ -2142,7 +2133,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+17"/>
         <source>Add API</source>
-        <translation>HinzufÃ¼gen</translation>
+        <translation>Hinzufügen</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -2165,7 +2156,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+6"/>
         <source>auto-completion enabled</source>
-        <translation>AutovervollstÃ¤ndigung aktivieren</translation>
+        <translation>Autovervollständigung aktivieren</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -2175,17 +2166,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+29"/>
         <source>Case sensitive</source>
-        <translation>GroÃŸ-/Kleinschreibung berÃ¼cksichtigen</translation>
+        <translation>Groß-/Kleinschreibung berücksichtigen</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Use fill-up characters</source>
-        <translation>FÃ¼llzeichen benutzen</translation>
+        <translation>Füllzeichen benutzen</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>replace word right of the cursor if entry from list is selected</source>
-        <translation>Ersetze WÃ¶rter hinter dem Cursor wenn der Eintrag von der Liste ausgewÃ¤hlt wird</translation>
+        <translation>Ersetze Wörter hinter dem Cursor wenn der Eintrag von der Liste ausgewählt wird</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -2195,12 +2186,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>Sources for auto-completion</source>
-        <translation>Quellen der AutovervollstÃ¤ndigung</translation>
+        <translation>Quellen der Autovervollständigung</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Use all available sources</source>
-        <translation>Alle verfÃ¼gbaren Quellen nutzen</translation>
+        <translation>Alle verfügbaren Quellen nutzen</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -2223,12 +2214,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+6"/>
         <source>calltips enabled</source>
-        <translation>VorschlÃ¤ge aktivieren</translation>
+        <translation>Vorschläge aktivieren</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>number of calltips</source>
-        <translation>Anzahl der VorschlÃ¤ge</translation>
+        <translation>Anzahl der Vorschläge</translation>
     </message>
     <message>
         <location line="+29"/>
@@ -2243,7 +2234,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>Show context information, if no prior autocompletion</source>
-        <translation>Nur Kontextinformationen anzeigen wenn die AutovervollstÃ¤ndigung nichts liefert</translation>
+        <translation>Nur Kontextinformationen anzeigen wenn die Autovervollständigung nichts liefert</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -2291,12 +2282,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+11"/>
         <source>Indentation Width</source>
-        <translation type="unfinished">EinzugsgrÃ¶ÃŸe</translation>
+        <translation type="unfinished">Einzugsgröße</translation>
     </message>
     <message>
         <location line="+29"/>
         <source>Indentation Warning</source>
-        <translation type="unfinished">Warnungen beim EinrÃ¼cken</translation>
+        <translation type="unfinished">Warnungen beim Einrücken</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -2321,12 +2312,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>indentation contains spaces</source>
-        <translation type="unfinished">der Einzug Leerzeichen enthÃ¤lt</translation>
+        <translation type="unfinished">der Einzug Leerzeichen enthält</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>indentation contains tabs</source>
-        <translation type="unfinished">der Einzug Tabs enthÃ¤lt</translation>
+        <translation type="unfinished">der Einzug Tabs enthält</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -2391,18 +2382,18 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+11"/>
         <source>Automatically include itom module for syntax checker</source>
-        <translation type="unfinished">itom-Modul fÃ¼r den Syntax-Checker automatisch hinzufÃ¼gen</translation>
+        <translation type="unfinished">itom-Modul für den Syntax-Checker automatisch hinzufügen</translation>
     </message>
     <message>
         <source>Check intervall [sec]:</source>
         <extracomment>The timer is started when entering a new line</extracomment>
-        <translation type="obsolete">PrÃ¼fintervall [Sek]:</translation>
+        <translation type="obsolete">Prüfintervall [Sek]:</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>Check interval:</source>
         <extracomment>The timer is started when entering a new line</extracomment>
-        <translation type="unfinished">PrÃ¼fintervall:</translation>
+        <translation type="unfinished">Prüfintervall:</translation>
     </message>
     <message>
         <location line="+28"/>
@@ -2420,7 +2411,7 @@ p, li { white-space: pre-wrap; }
         <source>This feature enables two comboboxes with 
  class- and method-navigation above the editor.</source>
         <translation type="unfinished">Diese Funktion blendet zwei Combo-Boxen zur 
-Navigation der Klassen und Methoden Ã¼ber 
+Navigation der Klassen und Methoden über 
 dem Editor ein.</translation>
     </message>
     <message>
@@ -2454,7 +2445,7 @@ dem Editor ein.</translation>
     <message>
         <location line="+7"/>
         <source>Fill to end of line</source>
-        <translation>Bis Zeilenende ausfÃ¼llen</translation>
+        <translation>Bis Zeilenende ausfüllen</translation>
     </message>
     <message>
         <location line="+97"/>
@@ -2474,12 +2465,12 @@ dem Editor ein.</translation>
     <message>
         <location line="-28"/>
         <source>Overall font size:</source>
-        <translation>Generelle SchriftgrÃ¶ÃŸe:</translation>
+        <translation>Generelle Schriftgröße:</translation>
     </message>
     <message>
         <location line="+56"/>
         <source>Reset to Default</source>
-        <translation>Auf Standard zurÃ¼cksetzen</translation>
+        <translation>Auf Standard zurücksetzen</translation>
     </message>
 </context>
 <context>
@@ -2502,7 +2493,7 @@ dem Editor ein.</translation>
     <message>
         <location line="+31"/>
         <source>Reset to standard</source>
-        <translation type="unfinished">ZurÃ¼cksetzen</translation>
+        <translation type="unfinished">Zurücksetzen</translation>
     </message>
 </context>
 <context>
@@ -2520,22 +2511,67 @@ dem Editor ein.</translation>
     <message>
         <location line="+6"/>
         <source>show message before closing the application</source>
-        <translation>Vor dem SchlieÃŸen von itom fragen</translation>
+        <translation>Vor dem Schließen von itom fragen</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+16"/>
+        <source>Timeouts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>General timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <location line="+36"/>
+        <location line="+36"/>
+        <source>-1 (infinity)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-69"/>
+        <location line="+36"/>
+        <location line="+36"/>
+        <source> ms</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-53"/>
+        <location line="+36"/>
+        <location line="+36"/>
+        <source>(0: no, -1: infinite timeout)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-65"/>
+        <source>Plugin init and close timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>File load and save timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+39"/>
         <source>Library Path(s)</source>
         <translation type="unfinished">Bibliotheksverzeichnis(se)</translation>
     </message>
     <message>
         <location line="+6"/>
+        <source>The following paths are prepended to the PATH environment variable used by itom. It is modified before itom starts loading plugins or designer plugins. These paths do not affect the overall PATH environment variable of the operating system.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>The following pathes are prepended to the PATH environment variable used by itom. It is modified before itom starts loading plugins or designer plugins. These pathes do not affect the overall PATH environment variable of the operating system.</source>
-        <translation type="unfinished">Die folgenden Verzeichnisse werden beim Laden der Plugins und Designer-Plugins als Bibliotheksquellen berÃ¼cksichtigt.</translation>
+        <translation type="obsolete">Die folgenden Verzeichnisse werden beim Laden der Plugins und Designer-Plugins als Bibliotheksquellen berücksichtigt.</translation>
     </message>
     <message>
         <location line="+40"/>
         <source>Add Path</source>
-        <translation type="unfinished">HinzufÃ¼gen</translation>
+        <translation type="unfinished">Hinzufügen</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -2581,7 +2617,7 @@ dem Editor ein.</translation>
     <message>
         <location line="+6"/>
         <source>Open external links</source>
-        <translation>Externe Links Ã¶ffnen</translation>
+        <translation>Externe Links öffnen</translation>
     </message>
     <message>
         <location line="-39"/>
@@ -2621,7 +2657,7 @@ dem Editor ein.</translation>
     <message>
         <location line="+18"/>
         <source>Download Timeout in sec:</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung fÃ¼r Download (Sek.):</translation>
+        <translation type="unfinished">Zeitüberschreitung für Download (Sek.):</translation>
     </message>
     <message>
         <location line="+37"/>
@@ -2639,22 +2675,22 @@ dem Editor ein.</translation>
     <message>
         <location line="+6"/>
         <source>Executing or debugging scripts with unsaved changes</source>
-        <translation type="unfinished">Ã„nderungen im Skript vor dem AusfÃ¼hren nicht speichern</translation>
+        <translation type="unfinished">Änderungen im Skript vor dem Ausführen nicht speichern</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>always ask to save scripts before execution</source>
-        <translation type="unfinished">Vor dem AusfÃ¼hren immer fragen ob das Skript gespeichert werden soll</translation>
+        <translation type="unfinished">Vor dem Ausführen immer fragen ob das Skript gespeichert werden soll</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>automatically save all unsaved scripts before execution</source>
-        <translation type="unfinished">Vor dem AusfÃ¼hren das Skript immer speichern</translation>
+        <translation type="unfinished">Vor dem Ausführen das Skript immer speichern</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>do not save any unsaved scripts (last saved version is executed then)</source>
-        <translation type="unfinished">Ã„nderungen im Skript nicht speichern (letzte gespeicherte Version wird ausgefÃ¼hrt!)</translation>
+        <translation type="unfinished">Änderungen im Skript nicht speichern (letzte gespeicherte Version wird ausgeführt!)</translation>
     </message>
 </context>
 <context>
@@ -2667,7 +2703,7 @@ dem Editor ein.</translation>
     <message>
         <location line="+46"/>
         <source>Add File</source>
-        <translation>HinzufÃ¼gen</translation>
+        <translation>Hinzufügen</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -2682,7 +2718,7 @@ dem Editor ein.</translation>
     <message>
         <location line="-45"/>
         <source>To change the order in which the items (files) are loaded, use Drag and Drop</source>
-        <translation type="unfinished">Um die Reihenfolger der geladenen EintrÃ¤ge zu Ã¤ndern, bitte Drag and Drop benutzen</translation>
+        <translation type="unfinished">Um die Reihenfolger der geladenen Einträge zu ändern, bitte Drag and Drop benutzen</translation>
     </message>
 </context>
 <context>
@@ -2700,7 +2736,7 @@ dem Editor ein.</translation>
     <message>
         <location line="-276"/>
         <source>Close Instance</source>
-        <translation>Instanz schlieÃŸen</translation>
+        <translation>Instanz schließen</translation>
     </message>
     <message>
         <location line="-16"/>
@@ -2715,7 +2751,7 @@ dem Editor ein.</translation>
     <message>
         <location line="-29"/>
         <source>Close all</source>
-        <translation>Alles schlieÃŸen</translation>
+        <translation>Alles schließen</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -2735,7 +2771,7 @@ dem Editor ein.</translation>
     <message>
         <location line="-6"/>
         <source>Open Widget...</source>
-        <translation>Fenster Ã¶ffnen...</translation>
+        <translation>Fenster öffnen...</translation>
     </message>
     <message>
         <location line="+143"/>
@@ -2775,7 +2811,7 @@ dem Editor ein.</translation>
     <message>
         <location line="+348"/>
         <source>The instance &apos;%1&apos; cannot be closed by GUI since it has been created by Python</source>
-        <translation>Die Instanz &apos;%1&apos; kann nicht Ã¼ber die GUI geschlossen werden, da diese durch Python erstellt wurde</translation>
+        <translation>Die Instanz &apos;%1&apos; kann nicht über die GUI geschlossen werden, da diese durch Python erstellt wurde</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2785,7 +2821,7 @@ dem Editor ein.</translation>
     <message>
         <location line="+10"/>
         <source>The instance &apos;%1&apos; can finally not be closed since there are still references to this instance from other componentents, e.g. python variables.</source>
-        <translation>Die Instanz &apos;%1&apos; kann nicht endgÃ¼ltig geschlossen werden, da auf diese noch andere Komponenten (z. B. Python-Variablen) referenzieren.</translation>
+        <translation>Die Instanz &apos;%1&apos; kann nicht endgültig geschlossen werden, da auf diese noch andere Komponenten (z. B. Python-Variablen) referenzieren.</translation>
     </message>
     <message>
         <location line="+45"/>
@@ -2839,13 +2875,13 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+19"/>
         <location line="+97"/>
         <source>Timeout</source>
-        <translation>ZeitÃ¼berschreitung</translation>
+        <translation>Zeitüberschreitung</translation>
     </message>
     <message>
         <location line="-97"/>
         <location line="+97"/>
         <source>Python did not response to the request within a certain timeout.</source>
-        <translation>Python reagierte nicht innerhalb der zulÃ¤ssigen Zeit auf die Anfrag.</translation>
+        <translation>Python reagierte nicht innerhalb der zulässigen Zeit auf die Anfrag.</translation>
     </message>
     <message>
         <location line="-90"/>
@@ -2875,44 +2911,44 @@ Meldung: &apos;%1&apos;</translation>
         <location line="-92"/>
         <location line="+98"/>
         <source>Python not available</source>
-        <translation>Python nicht verfÃ¼gbar</translation>
+        <translation>Python nicht verfügbar</translation>
     </message>
     <message>
         <location line="-98"/>
         <location line="+98"/>
         <source>The Python engine is not available</source>
-        <translation>Die Python-Engine ist nicht verfÃ¼gbar</translation>
+        <translation>Die Python-Engine ist nicht verfügbar</translation>
     </message>
     <message>
         <location line="-295"/>
         <location line="+4"/>
         <source>closing not possible</source>
-        <translation>SchlieÃŸen nicht mÃ¶glich</translation>
+        <translation>Schließen nicht möglich</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>final closing not possible</source>
-        <translation>EndgÃ¼ltiges SchlieÃŸen nicht mÃ¶glich</translation>
+        <translation>Endgültiges Schließen nicht möglich</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>warning while closing instance. Message: %1</source>
-        <translation>Warnung beim SchlieÃŸen der Instanz. Meldung: %1</translation>
+        <translation>Warnung beim Schließen der Instanz. Meldung: %1</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Warning while closing instance</source>
-        <translation>Warnung beim SchlieÃŸen der Instanz</translation>
+        <translation>Warnung beim Schließen der Instanz</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>error while closing instance. Message: %1</source>
-        <translation>Fehler beim SchlieÃŸen der Instanz. Meldung: %1</translation>
+        <translation>Fehler beim Schließen der Instanz. Meldung: %1</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Error while closing instance</source>
-        <translation>Fehler beim SchlieÃŸen der Instanz</translation>
+        <translation>Fehler beim Schließen der Instanz</translation>
     </message>
     <message>
         <location line="+238"/>
@@ -2932,12 +2968,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+99"/>
         <source>Currently, you can only open user interfaces from plugins which does not have any mandatory or optional starting parameters</source>
-        <translation>Derzeit kÃ¶nnen nur Benutzerschnittstellen von Plugins geÃ¶ffnet werden, die keine Pflicht- oder optionale Startparameter haben</translation>
+        <translation>Derzeit können nur Benutzerschnittstellen von Plugins geöffnet werden, die keine Pflicht- oder optionale Startparameter haben</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>User interface of plugin could not be created. Returned handle is invalid.</source>
-        <translation>Benutzerschnittstelle des Plugins konnte nicht erstellt werden. Gesendetes Handle ist ungÃ¼ltig.</translation>
+        <translation>Benutzerschnittstelle des Plugins konnte nicht erstellt werden. Gesendetes Handle ist ungültig.</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -2947,17 +2983,17 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+8"/>
         <source>Error while opening user interface from plugin.</source>
-        <translation>Fehler beim Ã–ffnen der Benutzerschnittstelle des Plugins.</translation>
+        <translation>Fehler beim Öffnen der Benutzerschnittstelle des Plugins.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Warning while opening user interface from plugin.</source>
-        <translation>Warnung beim Ã–ffnen der Benutzerschnittstelle des Plugins.</translation>
+        <translation>Warnung beim Öffnen der Benutzerschnittstelle des Plugins.</translation>
     </message>
     <message>
         <location line="+50"/>
         <source>This instance is no grabber. Therefore no live image is available.</source>
-        <translation>Diese Instanz ist kein Grabber. Daher ist kein Livebild verfÃ¼gbar.</translation>
+        <translation>Diese Instanz ist kein Grabber. Daher ist kein Livebild verfügbar.</translation>
     </message>
 </context>
 <context>
@@ -2968,19 +3004,27 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Im Vordergrund anzeigen</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Stay on top of all visible windows</source>
-        <translation type="unfinished">Alle sichtbaren Fenster im Vordergrund anzeigen</translation>
+        <translation type="obsolete">Alle sichtbaren Fenster im Vordergrund anzeigen</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+4"/>
         <source>Stay on top of main window</source>
         <translation>Hauptfenster im Vordergrund anzeigen</translation>
     </message>
     <message>
-        <location line="+1"/>
         <source>Stay on top of main window of itom</source>
-        <translation type="unfinished">Hauptfenster im Vordergrund von itom anzeigen</translation>
+        <translation type="obsolete">Hauptfenster im Vordergrund von itom anzeigen</translation>
+    </message>
+    <message>
+        <location line="-3"/>
+        <source>stay on top of all visible windows</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>stay on top of main window of itom</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+69"/>
@@ -3017,7 +3061,7 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+36"/>
         <location line="+20"/>
         <source>size</source>
-        <translation>GrÃ¶ÃŸe</translation>
+        <translation>Größe</translation>
     </message>
     <message>
         <location line="-41"/>
@@ -3033,7 +3077,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../common/addInInterface.h" line="+1023"/>
+        <location filename="../../common/addInInterface.h" line="+1026"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation>Nicht-Inizialisierte Vektoren bei Pflichtparametern!</translation>
     </message>
@@ -3045,7 +3089,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+4"/>
         <source>uninitialized vector for output parameters!</source>
-        <translation>Nicht inizialisierte Vektoren bei RÃ¼ckgabeparametern!</translation>
+        <translation>Nicht inizialisierte Vektoren bei Rückgabeparametern!</translation>
     </message>
 </context>
 <context>
@@ -3055,7 +3099,7 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+143"/>
         <location line="+136"/>
         <source>Plugin instance is invalid (NULL)</source>
-        <translation>Die Plugin-Instanz ist ungÃ¼ltig (NULL)</translation>
+        <translation>Die Plugin-Instanz ist ungültig (NULL)</translation>
     </message>
     <message>
         <location line="+584"/>
@@ -3114,17 +3158,17 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+202"/>
         <source>Number of mandatory parameters of given algorithm exceed the maximum value, given by algorithm interface.</source>
-        <translation type="unfinished">Die Anzahl der Pflichtparameter Ã¼berschreitet den Maximalwert fÃ¼r die angegebene Algorithmusschnittstelle.</translation>
+        <translation type="unfinished">Die Anzahl der Pflichtparameter überschreitet den Maximalwert für die angegebene Algorithmusschnittstelle.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Number of optional parameters of given algorithm exceed the maximum value, given by algorithm interface.</source>
-        <translation type="unfinished">Die Anzahl der Optionalen Parameter Ã¼berschreitet den Maximalwert fÃ¼r die angegebene Algorithmusschnittstelle.</translation>
+        <translation type="unfinished">Die Anzahl der Optionalen Parameter überschreitet den Maximalwert für die angegebene Algorithmusschnittstelle.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Number of output parameters of given algorithm exceed the maximum value, given by algorithm interface.</source>
-        <translation type="unfinished">Die Anzahl der Ausgabeparameter Ã¼berschreitet den Maximalwert fÃ¼r die angegebene Algorithmusschnittstelle.</translation>
+        <translation type="unfinished">Die Anzahl der Ausgabeparameter überschreitet den Maximalwert für die angegebene Algorithmusschnittstelle.</translation>
     </message>
     <message>
         <location line="+27"/>
@@ -3150,12 +3194,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+18"/>
         <source>delete Breakpoint</source>
-        <translation type="unfinished">Haltepunkt lÃ¶schen</translation>
+        <translation type="unfinished">Haltepunkt löschen</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>delete all Breakpoints</source>
-        <translation type="unfinished">Alle Haltepunkte lÃ¶schen</translation>
+        <translation type="unfinished">Alle Haltepunkte löschen</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3188,7 +3232,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+0"/>
         <source>temporary</source>
-        <translation type="unfinished">TemporÃ¤r</translation>
+        <translation type="unfinished">Temporär</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -3236,12 +3280,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location filename="../widgets/consoleWidget.cpp" line="+882"/>
         <source>script execution</source>
-        <translation type="unfinished">Skript wird ausgefÃ¼hrt</translation>
+        <translation type="unfinished">Skript wird ausgeführt</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Python is not available</source>
-        <translation type="unfinished">Python ist nicht verfÃ¼gbar</translation>
+        <translation type="unfinished">Python ist nicht verfügbar</translation>
     </message>
 </context>
 <context>
@@ -3292,12 +3336,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="-67"/>
         <source>The figure class &apos;%1&apos; could not be found or does not support displaying the given type of data. The default class for the given data is used instead.</source>
-        <translation type="unfinished">Die Klasse &apos;%1&apos; wurde nicht gefunden oder die Daten kÃ¶nnen nicht angezeigt werden. Es wird zur Anzeige der Daten die Standardklasse verwendet.</translation>
+        <translation type="unfinished">Die Klasse &apos;%1&apos; wurde nicht gefunden oder die Daten können nicht angezeigt werden. Es wird zur Anzeige der Daten die Standardklasse verwendet.</translation>
     </message>
     <message>
         <location line="+51"/>
         <source>no plot figure plugin could be found that fits to the given category.</source>
-        <translation type="unfinished">Kein Plot-Figure-Plugin gefunden, welches mit der vorgegebenen Kategorie Ã¼bereinstimmt.</translation>
+        <translation type="unfinished">Kein Plot-Figure-Plugin gefunden, welches mit der vorgegebenen Kategorie übereinstimmt.</translation>
     </message>
     <message>
         <location line="+71"/>
@@ -3307,12 +3351,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+4"/>
         <source>DataObject - Plane</source>
-        <translation type="unfinished">Datenobjekt - FlÃ¤che</translation>
+        <translation type="unfinished">Datenobjekt - Fläche</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>DataObject - Plane Stack</source>
-        <translation type="unfinished">Datenobjekt - FlÃ¤schenstapel</translation>
+        <translation type="unfinished">Datenobjekt - Fläschenstapel</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -3330,7 +3374,7 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+50"/>
         <location line="+34"/>
         <source>invalid type or no type defined</source>
-        <translation type="unfinished">UngÃ¼ltiger Typ oder keine Typendefinition</translation>
+        <translation type="unfinished">Ungültiger Typ oder keine Typendefinition</translation>
     </message>
     <message>
         <location line="-120"/>
@@ -3365,12 +3409,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+4"/>
         <source>Float32</source>
-        <translation type="unfinished">FlieÃŸkomma32</translation>
+        <translation type="unfinished">Fließkomma32</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Float64</source>
-        <translation type="unfinished">FlieÃŸkomma64</translation>
+        <translation type="unfinished">Fließkomma64</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -3483,29 +3527,55 @@ Katesisch</translation>
 <context>
     <name>ito::DialogOpenFileWithFilter</name>
     <message>
-        <location filename="../ui/dialogOpenFileWithFilter.cpp" line="+58"/>
+        <location filename="../ui/dialogOpenFileWithFilter.cpp" line="+63"/>
         <source>The name must start with a letter followed by numbers or letters [a-z] or [A-Z]</source>
         <translation type="unfinished">Der Name muss mit einem Buchstaben, gefolgt von Ziffern oder Buchstaben [a-z] oder [A-Z], beginnen</translation>
     </message>
     <message>
-        <location line="+69"/>
+        <location line="+72"/>
         <source>Python variable name missing</source>
         <translation type="unfinished">Python Variablenname fehlt</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>You have to give a variable name, under which the loaded item is saved in the global workspace</source>
-        <translation type="unfinished">FÃ¼r den globalen Bereich muss ein Variablenname vergeben werden</translation>
+        <translation type="unfinished">Für den globalen Bereich muss ein Variablenname vergeben werden</translation>
     </message>
     <message>
-        <location line="+58"/>
+        <location line="+18"/>
+        <location line="+8"/>
+        <source>Python variable name already exists</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-8"/>
+        <source>The variable name %1 already exists in this workspace. Do you want to overwrite it?</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>The variable name %1 already exists in this workspace. It cannot be overwritten since it is a function, method, type or class. Choose a new name.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Timeout while verifiying variable name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>A timeout occurred while checking for the existence of the variable name in Python. Please try it again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+62"/>
         <source>loading...</source>
         <translation type="unfinished">laden...</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Invalid parameters.</source>
-        <translation type="unfinished">UngÃ¼ltige Parameter.</translation>
+        <translation type="unfinished">Ungültige Parameter.</translation>
     </message>
     <message>
         <location line="+27"/>
@@ -3534,7 +3604,7 @@ Katesisch</translation>
     <message>
         <location line="+24"/>
         <source>Procedure still running</source>
-        <translation type="unfinished">Wird noch ausgefÃ¼hrt</translation>
+        <translation type="unfinished">Wird noch ausgeführt</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -3552,7 +3622,7 @@ Katesisch</translation>
     <message>
         <location line="+0"/>
         <source>The pip process is still running. Do you want to interrupt it?</source>
-        <translation type="unfinished">Der Pip-Prozess lÃ¤uft bereits. Soll dieser abgebrochen werden?</translation>
+        <translation type="unfinished">Der Pip-Prozess läuft bereits. Soll dieser abgebrochen werden?</translation>
     </message>
     <message>
         <location line="+58"/>
@@ -3571,11 +3641,11 @@ Katesisch</translation>
 Click ignore if you want to try to continue the installation or click OK in order to stop the installation. 
 
 In the latter case, the file &apos;restart_itom_with_pip_manager.txt&apos; is created in the directory &apos;%1&apos;, such that the pip manager is started one time as standalone application once you restart itom. Then, close all instances of itom or other software accessing Numpy, restart itom and try to upgrade Numpy.</source>
-        <translation type="unfinished">Die Installation oder das Updaten von Numpy im laufenden itom kÃ¶nnte einen Fehler verursachen, wenn Teile von Numby bereits verwendet werden. 
+        <translation type="unfinished">Die Installation oder das Updaten von Numpy im laufenden itom könnte einen Fehler verursachen, wenn Teile von Numby bereits verwendet werden. 
 
-Soll die Installation dennoch ausgefÃ¼hrt werden kann mit &apos;Ignorieren&apos; fortgesetzt werden oder mit Ok die Installation gestopt werden. 
+Soll die Installation dennoch ausgeführt werden kann mit &apos;Ignorieren&apos; fortgesetzt werden oder mit Ok die Installation gestopt werden. 
 
-Wenn die Datei &apos;restart_itom_with_pip_manager.txt&apos; im Verzeichnis &apos;%1&apos; erstellt wurde, wird der Pip-Manager beim nÃ¤chsten Programmstart in einem &apos;Standalone&apos;-Modus geÃ¶ffnet und es kann versucht werden Numpy zu updaten.</translation>
+Wenn die Datei &apos;restart_itom_with_pip_manager.txt&apos; im Verzeichnis &apos;%1&apos; erstellt wurde, wird der Pip-Manager beim nächsten Programmstart in einem &apos;Standalone&apos;-Modus geöffnet und es kann versucht werden Numpy zu updaten.</translation>
     </message>
     <message>
         <location line="+49"/>
@@ -3613,22 +3683,22 @@ Wenn die Datei &apos;restart_itom_with_pip_manager.txt&apos; im Verzeichnis &apo
     <message>
         <location line="+41"/>
         <source>Select package archive</source>
-        <translation type="unfinished">Package-Archiv auswÃ¤hlen</translation>
+        <translation type="unfinished">Package-Archiv auswählen</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Select directory</source>
-        <translation type="unfinished">Verzeichnis wÃ¤hlen</translation>
+        <translation type="unfinished">Verzeichnis wählen</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>choose whl archive...</source>
-        <translation type="unfinished">Whl-Archiv wÃ¤hlen...</translation>
+        <translation type="unfinished">Whl-Archiv wählen...</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>choose tar.gz or zip archive...</source>
-        <translation type="unfinished">Tar.gz-Archiv wÃ¤hlen...</translation>
+        <translation type="unfinished">Tar.gz-Archiv wählen...</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -3643,7 +3713,7 @@ Wenn die Datei &apos;restart_itom_with_pip_manager.txt&apos; im Verzeichnis &apo
     <message>
         <location line="+0"/>
         <source>You need to indicate a package</source>
-        <translation type="unfinished">Es muss ein Package ausgewÃ¤hlt sein</translation>
+        <translation type="unfinished">Es muss ein Package ausgewählt sein</translation>
     </message>
 </context>
 <context>
@@ -3679,12 +3749,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+26"/>
         <source>choose plugin</source>
-        <translation type="unfinished">Plugin auswÃ¤hlen</translation>
+        <translation type="unfinished">Plugin auswählen</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Please choose plugin you want to create a new instance from</source>
-        <translation type="unfinished">Bitte Plugin zur Erzeugung einer neuen Instanz auswÃ¤hlen</translation>
+        <translation type="unfinished">Bitte Plugin zur Erzeugung einer neuen Instanz auswählen</translation>
     </message>
 </context>
 <context>
@@ -3702,7 +3772,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+0"/>
         <source>Editor - please choose subpage</source>
-        <translation>Editor - Bitte Unterrubrik auswÃ¤hlen</translation>
+        <translation>Editor - Bitte Unterrubrik auswählen</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3730,22 +3800,22 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+1"/>
         <source>Calltips</source>
-        <translation>VorschlÃ¤ge</translation>
+        <translation>Vorschläge</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Editor - calltips</source>
-        <translation>Editor - VorschlÃ¤ge</translation>
+        <translation>Editor - Vorschläge</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Auto Completion</source>
-        <translation type="unfinished">AutovervollstÃ¤ndigung</translation>
+        <translation type="unfinished">Autovervollständigung</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Editor - auto completion</source>
-        <translation type="unfinished">Editor - AutovervollstÃ¤ndigung</translation>
+        <translation type="unfinished">Editor - Autovervollständigung</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3765,7 +3835,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+0"/>
         <source>Console - please choose subpage</source>
-        <translation>Konsole - Bitte Unterrubrik auswÃ¤hlen</translation>
+        <translation>Konsole - Bitte Unterrubrik auswählen</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3800,7 +3870,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+0"/>
         <source>Python - please choose subpage</source>
-        <translation>Python - Bitte Unterrubrik auswÃ¤hlen</translation>
+        <translation>Python - Bitte Unterrubrik auswählen</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3820,7 +3890,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+1"/>
         <source>General - please choose subpage</source>
-        <translation>Allgemein - Bitte Unterrubrik auswÃ¤hlen</translation>
+        <translation>Allgemein - Bitte Unterrubrik auswählen</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3860,7 +3930,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+0"/>
         <source>Plots and Figures - please choose subpage</source>
-        <translation type="unfinished">Plots und Figures - Bitte Unterrubrik auswÃ¤hlen</translation>
+        <translation type="unfinished">Plots und Figures - Bitte Unterrubrik auswählen</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -3879,7 +3949,7 @@ Meldung: &apos;%1&apos;</translation>
         <location filename="../ui/dialogReloadModule.cpp" line="+68"/>
         <location line="+75"/>
         <source>Python Engine is invalid</source>
-        <translation type="unfinished">Python-Engine ist ungÃ¼ltig</translation>
+        <translation type="unfinished">Python-Engine ist ungültig</translation>
     </message>
     <message>
         <location line="-75"/>
@@ -3896,7 +3966,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="-75"/>
         <source>No information about loaded modules could be retrieved by python.</source>
-        <translation type="unfinished">Keine Informationen Ã¼ber geladene Module von Python verfÃ¼gbar.</translation>
+        <translation type="unfinished">Keine Informationen über geladene Module von Python verfügbar.</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -3913,7 +3983,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="-10"/>
         <source>Timeout while forcing python to reload modules.</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung beim erneuten Laden der Module.</translation>
+        <translation type="unfinished">Zeitüberschreitung beim erneuten Laden der Module.</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -3980,7 +4050,7 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <source>No or invalid group entered, setting to developer!</source>
-        <translation type="obsolete">Es wurde keine oder eine ungÃ¼ltige Gruppe ausgewÃ¤hlt. Als Gruppe wurde &apos;Entwickler&apos; eingestellt!</translation>
+        <translation type="obsolete">Es wurde keine oder eine ungültige Gruppe ausgewählt. Als Gruppe wurde &apos;Entwickler&apos; eingestellt!</translation>
     </message>
     <message>
         <source>No user name entered, creating user with empty name!</source>
@@ -4017,12 +4087,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+7"/>
         <source>User name and ini file user name mismatch, aborting!</source>
-        <translation type="unfinished">Der Benutzername und der Name in der Ini-Datei stimmen nicht Ã¼berein! Der Vorgang wurde abgebrochen!</translation>
+        <translation type="unfinished">Der Benutzername und der Name in der Ini-Datei stimmen nicht überein! Der Vorgang wurde abgebrochen!</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Cannot delete current user, aborting!</source>
-        <translation type="unfinished">Der aktuelle Benutzer kann nicht gelÃ¶scht werden! Der Vorgang wurde abgebrochen!</translation>
+        <translation type="unfinished">Der aktuelle Benutzer kann nicht gelöscht werden! Der Vorgang wurde abgebrochen!</translation>
     </message>
 </context>
 <context>
@@ -4105,7 +4175,7 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+19"/>
         <location line="+165"/>
         <source>designerWidgetOrganizer is not available</source>
-        <translation type="unfinished">&apos;designerWidgetOrganizer&apos; ist nicht verfÃ¼gbar</translation>
+        <translation type="unfinished">&apos;designerWidgetOrganizer&apos; ist nicht verfügbar</translation>
     </message>
     <message>
         <location line="-333"/>
@@ -4120,20 +4190,20 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+123"/>
         <source>camera is not available any more</source>
-        <translation type="unfinished">Die Kamera ist nicht lÃ¤nger verfÃ¼gbar</translation>
+        <translation type="unfinished">Die Kamera ist nicht länger verfügbar</translation>
     </message>
     <message>
         <location line="+181"/>
         <source>areaRow out of range [0,%i]</source>
-        <translation type="unfinished">&apos;areaRow&apos; liegt auÃŸerhalb des GÃ¼ltigkeitsbereichs [0, %i]</translation>
+        <translation type="unfinished">&apos;areaRow&apos; liegt außerhalb des Gültigkeitsbereichs [0, %i]</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>arealCol out of range [0,%i]</source>
-        <translation type="unfinished">&apos;areaCol&apos; liegt auÃŸerhalb des GÃ¼ltigkeitsbereichs [0, %i]</translation>
+        <translation type="unfinished">&apos;areaCol&apos; liegt außerhalb des Gültigkeitsbereichs [0, %i]</translation>
     </message>
     <message>
-        <location line="+55"/>
+        <location line="+57"/>
         <source>subplot %1</source>
         <translation type="unfinished">Subplot %1</translation>
     </message>
@@ -4145,7 +4215,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+6"/>
         <source>designerWidgetOrganizer or uiOrganizer is not available</source>
-        <translation type="unfinished">&apos;designerWidgetOrganizer&apos; oder &apos;uiOrganizer&apos; ist nicht verfÃ¼gbar</translation>
+        <translation type="unfinished">&apos;designerWidgetOrganizer&apos; oder &apos;uiOrganizer&apos; ist nicht verfügbar</translation>
     </message>
     <message>
         <location line="+30"/>
@@ -4155,7 +4225,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+12"/>
         <source>timeout while getting parameter &apos;%s&apos; from plugin</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung beim Lesen des Parameters &apos;%s&apos; vom Plugin</translation>
+        <translation type="unfinished">Zeitüberschreitung beim Lesen des Parameters &apos;%s&apos; vom Plugin</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -4174,7 +4244,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="-13"/>
         <source>Requested URL forces a redirection. Maximum number of redirections exceeded.</source>
-        <translation type="unfinished">Angefragte URL erfordert eine Weiterleitung. Anzahl maximaler Weiterleitungen wurde jedoch Ã¼berschritten.</translation>
+        <translation type="unfinished">Angefragte URL erfordert eine Weiterleitung. Anzahl maximaler Weiterleitungen wurde jedoch überschritten.</translation>
     </message>
 </context>
 <context>
@@ -4192,12 +4262,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+142"/>
         <source>open new folder</source>
-        <translation>Neues Verzeichnis Ã¶ffnen</translation>
+        <translation>Neues Verzeichnis öffnen</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>change to parent folder</source>
-        <translation>Zum Ã¼bergeordneten Verzeichnis wechseln</translation>
+        <translation>Zum übergeordneten Verzeichnis wechseln</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -4207,17 +4277,17 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+2"/>
         <source>get path from clipboard</source>
-        <translation>Pfad aus der Zwischenablage Ã¼bernehmen</translation>
+        <translation>Pfad aus der Zwischenablage übernehmen</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>open file</source>
-        <translation>Datei Ã¶ffnen</translation>
+        <translation>Datei öffnen</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>execute file</source>
-        <translation>Datei ausfÃ¼hren</translation>
+        <translation>Datei ausführen</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -4239,7 +4309,7 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+579"/>
         <location line="+13"/>
         <source>delete</source>
-        <translation>LÃ¶schen</translation>
+        <translation>Löschen</translation>
     </message>
     <message>
         <location line="-590"/>
@@ -4254,7 +4324,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+2"/>
         <source>paste</source>
-        <translation>EinfÃ¼gen</translation>
+        <translation>Einfügen</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -4299,32 +4369,32 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+95"/>
         <source>select base directory</source>
-        <translation>Aktuelles Stammverzeichnis auswÃ¤hlen</translation>
+        <translation>Aktuelles Stammverzeichnis auswählen</translation>
     </message>
     <message>
         <location line="+228"/>
         <source>the selected items</source>
-        <translation type="unfinished">der ausgewÃ¤hlte Eintrag</translation>
+        <translation type="unfinished">der ausgewählte Eintrag</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>Do you really want to delete %1?</source>
-        <translation>Soll &apos;%1&apos; wirklich gelÃ¶scht werden?</translation>
+        <translation>Soll &apos;%1&apos; wirklich gelöscht werden?</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Error while deleting &apos;%1&apos;!</source>
-        <translation>Fehler beim LÃ¶schen von &apos;%1&apos;!</translation>
+        <translation>Fehler beim Löschen von &apos;%1&apos;!</translation>
     </message>
     <message>
         <location line="+91"/>
         <source>Error pasting items</source>
-        <translation>EinfÃ¼gen</translation>
+        <translation>Einfügen</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>The selected items could not be pasted from the clipboard. Maybe their URLs already exist</source>
-        <translation>Die markierten Objekte konnten nicht aus der Zwischenablage eingefÃ¼gt werden. Vielleicht existieren die Objekte bereits</translation>
+        <translation>Die markierten Objekte konnten nicht aus der Zwischenablage eingefügt werden. Vielleicht existieren die Objekte bereits</translation>
     </message>
     <message>
         <location line="+25"/>
@@ -4354,12 +4424,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location filename="../widgets/helpDockWidget.cpp" line="+69"/>
         <source>backwards</source>
-        <translation>ZurÃ¼ck</translation>
+        <translation>Zurück</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>forwards</source>
-        <translation>VorwÃ¤rts</translation>
+        <translation>Vorwärts</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -4384,7 +4454,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+21"/>
         <source>type text to filter the keywords in the tree</source>
-        <translation>Text fÃ¼r die Filterung von SchlÃ¼sselwÃ¶rtern im Baum eingeben</translation>
+        <translation>Text für die Filterung von Schlüsselwörtern im Baum eingeben</translation>
     </message>
     <message>
         <location line="-7"/>
@@ -4413,18 +4483,18 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+17"/>
         <location line="+26"/>
         <source>Template Error: Returns section is only defined by either the start or end tag.</source>
-        <translation type="unfinished">Vorlagenfehler: Die RÃ¼ckgabe-Sektion ist nur definiert um entweder ein Start- oder Endzeiger zu enthalten.</translation>
+        <translation type="unfinished">Vorlagenfehler: Die Rückgabe-Sektion ist nur definiert um entweder ein Start- oder Endzeiger zu enthalten.</translation>
     </message>
     <message>
         <location line="-22"/>
         <location line="+26"/>
         <source>Template Error: End tag of returns section comes before start tag.</source>
-        <translation type="unfinished">Vorlagenfehler: Der Endzeiger der RÃ¼ckgabe-Sektion liegt vor dem Startzeiger.</translation>
+        <translation type="unfinished">Vorlagenfehler: Der Endzeiger der Rückgabe-Sektion liegt vor dem Startzeiger.</translation>
     </message>
     <message>
         <location line="-21"/>
         <source>Returns</source>
-        <translation type="unfinished">RÃ¼ckgabe</translation>
+        <translation type="unfinished">Rückgabe</translation>
     </message>
     <message>
         <location line="+26"/>
@@ -4537,7 +4607,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+472"/>
         <source>Database %s could not be opened</source>
-        <translation type="unfinished">Datenbank &apos;%s&apos; konnte nicht geÃ¶ffnet werden</translation>
+        <translation type="unfinished">Datenbank &apos;%s&apos; konnte nicht geöffnet werden</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -4554,7 +4624,7 @@ Meldung: &apos;%1&apos;</translation>
         <source>No help database available! 
  go to Properties File -&gt; General -&gt; Helpviewer and check the selection</source>
         <translation type="unfinished">Keine Hilfe-Datenbank erreichbar!
-Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼fen</translation>
+Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfen</translation>
     </message>
     <message>
         <location line="+511"/>
@@ -4564,26 +4634,26 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+1"/>
         <source>Do you want to try with the external browser?</source>
-        <translation type="unfinished">Soll versucht werden den Link mit dem Browser zu Ã¶ffnen?</translation>
+        <translation type="unfinished">Soll versucht werden den Link mit dem Browser zu öffnen?</translation>
     </message>
 </context>
 <context>
     <name>ito::IOHelper</name>
     <message>
         <location filename="../helper/IOHelper.cpp" line="+112"/>
-        <location line="+720"/>
+        <location line="+722"/>
         <source>Multiple plugins</source>
         <translation type="unfinished">Multiple Plugins</translation>
     </message>
     <message>
-        <location line="-720"/>
+        <location line="-722"/>
         <source>Multiple plugins provide methods to load the file of type &apos;%1&apos;. Please choose one.</source>
-        <translation type="unfinished">Multiple Plugins unterstÃ¼zen Methoden um Dateien des Typs &apos;%1&apos; zu laden. Bitte einen auswÃ¤hlen.</translation>
+        <translation type="unfinished">Multiple Plugins unterstüzen Methoden um Dateien des Typs &apos;%1&apos; zu laden. Bitte einen auswählen.</translation>
     </message>
     <message>
         <location line="+28"/>
         <source>File &apos;%1&apos; could not be opened with registered external application</source>
-        <translation type="unfinished">Die Datei &apos;%1&apos; konnte nicht mit der verknÃ¼pften externen Anwendung geÃ¶ffnet werden</translation>
+        <translation type="unfinished">Die Datei &apos;%1&apos; konnte nicht mit der verknüpften externen Anwendung geöffnet werden</translation>
     </message>
     <message>
         <location line="+71"/>
@@ -4595,44 +4665,44 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
         <location line="+61"/>
         <location line="+115"/>
         <source>python engine not available</source>
-        <translation type="unfinished">Python-Engine ist nicht verfÃ¼gbar</translation>
+        <translation type="unfinished">Python-Engine ist nicht verfügbar</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>variables cannot be imported since python is busy right now</source>
-        <translation type="unfinished">Variablen kÃ¶nnen nicht importiert werden wÃ¤hrend Python lÃ¤uft</translation>
+        <translation type="unfinished">Variablen können nicht importiert werden während Python läuft</translation>
     </message>
     <message>
         <location line="-166"/>
         <source>timeout while getting value from workspace</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung beim Lesen der Werte aus dem Arbeitsbereich</translation>
+        <translation type="unfinished">Zeitüberschreitung beim Lesen der Werte aus dem Arbeitsbereich</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>the number of values returned from workspace does not correspond to requested number</source>
-        <translation type="unfinished">Die Anzahl der zurÃ¼ckgegebenen Werte aus dem Arbeitsbereich entspricht nicht der angeforderten Anzahl</translation>
+        <translation type="unfinished">Die Anzahl der zurückgegebenen Werte aus dem Arbeitsbereich entspricht nicht der angeforderten Anzahl</translation>
     </message>
     <message>
         <location line="+30"/>
         <location line="+115"/>
         <source>file cannot be opened</source>
-        <translation type="unfinished">Datei kann nicht geÃ¶ffnet werden</translation>
+        <translation type="unfinished">Datei kann nicht geöffnet werden</translation>
     </message>
     <message>
         <location line="-164"/>
         <location line="+61"/>
         <source>variables cannot be exported since python is busy right now</source>
-        <translation type="unfinished">Variablen kÃ¶nnen nicht exportiert werden wÃ¤hrend Python ausgefÃ¼hrt wird</translation>
+        <translation type="unfinished">Variablen können nicht exportiert werden während Python ausgeführt wird</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>timeout while pickling variables</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung beim &quot;Pickeln&quot; von Variablen</translation>
+        <translation type="unfinished">Zeitüberschreitung beim &quot;Pickeln&quot; von Variablen</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>timeout while saving variables to matlab file</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung beim Speichern von Variablen in eine Matlab-Datei</translation>
+        <translation type="unfinished">Zeitüberschreitung beim Speichern von Variablen in eine Matlab-Datei</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -4653,17 +4723,17 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+40"/>
         <source>timeout while unpickling variables</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung beim &quot;Unpickeln&quot; von Variablen</translation>
+        <translation type="unfinished">Zeitüberschreitung beim &quot;Unpickeln&quot; von Variablen</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>timeout while loading matlab variables</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung beim Laden von Matlab-Variablen</translation>
+        <translation type="unfinished">Zeitüberschreitung beim Laden von Matlab-Variablen</translation>
     </message>
     <message>
         <location line="+24"/>
         <source>open python script</source>
-        <translation type="unfinished">Python-Skript Ã¶ffnen</translation>
+        <translation type="unfinished">Python-Skript öffnen</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -4673,27 +4743,27 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+33"/>
         <source>timeout while opening script</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung beim Ã–ffnen eines Skripts</translation>
+        <translation type="unfinished">Zeitüberschreitung beim Öffnen eines Skripts</translation>
     </message>
     <message>
-        <location line="+228"/>
+        <location line="+230"/>
         <source>PolygonMesh and PointCloud not available since support of PointCloudLibrary is disabled in this version.</source>
-        <translation type="unfinished">PolygonMesh und PointCloud sind in dieser Version von PointCloudLibrary nicht verfÃ¼gbar.</translation>
+        <translation type="unfinished">PolygonMesh und PointCloud sind in dieser Version von PointCloudLibrary nicht verfügbar.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>The algorithm interface is not supported</source>
-        <translation type="unfinished">Die Algorithmusschnittstelle wird nicht unterstÃ¼tzt</translation>
+        <translation type="unfinished">Die Algorithmusschnittstelle wird nicht unterstützt</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Timeout while sending values to python</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung beim Versuch Werte an Pyhton zu senden</translation>
+        <translation type="unfinished">Zeitüberschreitung beim Versuch Werte an Pyhton zu senden</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>A timeout occurred while content of loaded file has been sent to python workspace</source>
-        <translation type="unfinished">Beim Senden des Dateiinhalts der geladenen Datei an Python ist eine ZeitÃ¼berschreitung aufgetreten</translation>
+        <translation type="unfinished">Beim Senden des Dateiinhalts der geladenen Datei an Python ist eine Zeitüberschreitung aufgetreten</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -4711,29 +4781,29 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
         <translation type="unfinished">Fehler beim Senden von Werten an Python</translation>
     </message>
     <message>
-        <location line="-700"/>
+        <location line="-702"/>
         <source>file %1 does not exist</source>
         <translation type="unfinished">Datei &apos;%1&apos; existiert nicht</translation>
     </message>
     <message>
         <location line="+84"/>
         <source>file %1 can not be opened with this application</source>
-        <translation type="unfinished">Datei &apos;%1&apos; kann mit dieser Anwendung nicht geÃ¶ffnet werden</translation>
+        <translation type="unfinished">Datei &apos;%1&apos; kann mit dieser Anwendung nicht geöffnet werden</translation>
     </message>
     <message>
-        <location line="+621"/>
+        <location line="+623"/>
         <source>Warning while sending values to python</source>
         <translation type="unfinished">Warnung beim Senden von Werten an Python</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>AlgoInterfaceValidator not available.</source>
-        <translation type="unfinished">&apos;AlgoInterfaceValidator&apos; ist nicht verfÃ¼gbar.</translation>
+        <translation type="unfinished">&apos;AlgoInterfaceValidator&apos; ist nicht verfügbar.</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>AddInManager or PythonEngine not available</source>
-        <translation type="unfinished">&apos;AddInManager&apos; oder &apos;PythonEngine&apos; ist nicht verfÃ¼gbar</translation>
+        <translation type="unfinished">&apos;AddInManager&apos; oder &apos;PythonEngine&apos; ist nicht verfügbar</translation>
     </message>
     <message>
         <location line="+30"/>
@@ -4743,12 +4813,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+15"/>
         <source>Multiple plugins provide methods to save the file of type &apos;%1&apos;. Please choose one.</source>
-        <translation type="unfinished">Diverse Plugins unterstÃ¼tzen Methoden um Dateien des Typs &apos;%1&apos; zu speichern. Bitte eines wÃ¤hlen.</translation>
+        <translation type="unfinished">Diverse Plugins unterstützen Methoden um Dateien des Typs &apos;%1&apos; zu speichern. Bitte eines wählen.</translation>
     </message>
     <message>
         <location line="+36"/>
         <source>algorithm interface not supported</source>
-        <translation type="unfinished">Algorithmus-Schnittstelle wird nicht unterstÃ¼tzt</translation>
+        <translation type="unfinished">Algorithmus-Schnittstelle wird nicht unterstützt</translation>
     </message>
     <message>
         <location line="+32"/>
@@ -4758,12 +4828,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+5"/>
         <source>AlgoInterfaceValidator not available</source>
-        <translation type="unfinished">&apos;AlgoInterfaceValidato&apos; ist nicht verfÃ¼gbar</translation>
+        <translation type="unfinished">&apos;AlgoInterfaceValidato&apos; ist nicht verfügbar</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>AddInManager not available</source>
-        <translation type="unfinished">AddInManager nicht verfÃ¼gbar</translation>
+        <translation type="unfinished">AddInManager nicht verfügbar</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -4803,7 +4873,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location filename="../widgets/lastCommandDockWidget.cpp" line="+190"/>
         <source>clear list</source>
-        <translation>Liste lÃ¶schen</translation>
+        <translation>Liste löschen</translation>
     </message>
 </context>
 <context>
@@ -4826,9 +4896,9 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
         <translation></translation>
     </message>
     <message>
-        <location line="+94"/>
+        <location line="+95"/>
         <source>load translations...</source>
-        <translation>Ãœbersetzungen werden geladen...</translation>
+        <translation>Übersetzungen werden geladen...</translation>
     </message>
     <message>
         <location line="+40"/>
@@ -4873,12 +4943,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+33"/>
         <source>execute startup scripts...</source>
-        <translation type="unfinished">Startskripts werden ausgefÃ¼hrt...</translation>
+        <translation type="unfinished">Startskripts werden ausgeführt...</translation>
     </message>
     <message>
         <location line="+26"/>
         <source>scan and run scripts in autostart folder...</source>
-        <translation type="unfinished">Skripts im Autostartordner werden gescannt und ausgefÃ¼hrt...</translation>
+        <translation type="unfinished">Skripts im Autostartordner werden gescannt und ausgeführt...</translation>
     </message>
     <message>
         <location line="+138"/>
@@ -4888,7 +4958,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+21"/>
         <source>Python is still running. Please close it first before shutting down this application</source>
-        <translation type="unfinished">Python lÃ¤uft bereits. Bitte zuerst die laufende Anwendung beenden</translation>
+        <translation type="unfinished">Python läuft bereits. Bitte zuerst die laufende Anwendung beenden</translation>
     </message>
 </context>
 <context>
@@ -4951,7 +5021,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+5"/>
         <source>Open File...</source>
-        <translation>Datei Ã¶ffnen...</translation>
+        <translation>Datei öffnen...</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -4966,12 +5036,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+4"/>
         <source>About Qt...</source>
-        <translation>Ãœber QT...</translation>
+        <translation>Über QT...</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>About itom...</source>
-        <translation>Ãœber itom...</translation>
+        <translation>Über itom...</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -5001,12 +5071,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+3"/>
         <source>Run python code in debug mode</source>
-        <translation type="unfinished">Python-Code im Debug-Modus ausfÃ¼hren</translation>
+        <translation type="unfinished">Python-Code im Debug-Modus ausführen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>set whether internal python code should be executed in debug mode</source>
-        <translation type="unfinished">Interner Pyhton-Code wird im Debug-Modus ausgefÃ¼hrt</translation>
+        <translation type="unfinished">Interner Pyhton-Code wird im Debug-Modus ausgeführt</translation>
     </message>
     <message>
         <location line="+8"/>
@@ -5051,7 +5121,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+4"/>
         <source>step out</source>
-        <translation type="unfinished">AusfÃ¼hren bis RÃ¼cksprung</translation>
+        <translation type="unfinished">Ausführen bis Rücksprung</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -5071,7 +5141,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+4"/>
         <source>autoreload before script execution</source>
-        <translation type="unfinished">Automatisch laden vor der SkriptausfÃ¼hrung</translation>
+        <translation type="unfinished">Automatisch laden vor der Skriptausführung</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -5101,7 +5171,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+8"/>
         <source>About</source>
-        <translation type="unfinished">Ãœber</translation>
+        <translation type="unfinished">Über</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -5136,12 +5206,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+601"/>
         <source>key must not be empty.</source>
-        <translation type="unfinished">Der SchlÃ¼ssel darf nicht leer sein.</translation>
+        <translation type="unfinished">Der Schlüssel darf nicht leer sein.</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>invalid menu item type.</source>
-        <translation type="unfinished">UngÃ¼ltiger Typ von &quot;menu item&quot;.</translation>
+        <translation type="unfinished">Ungültiger Typ von &quot;menu item&quot;.</translation>
     </message>
     <message>
         <location line="+356"/>
@@ -5151,7 +5221,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+81"/>
         <source>The UI designer (Qt designer) could not be started (%1).</source>
-        <translation type="unfinished">Der UI-Designer (QT-Designer) konnte nicht geÃ¶ffnet werden (%1).</translation>
+        <translation type="unfinished">Der UI-Designer (QT-Designer) konnte nicht geöffnet werden (%1).</translation>
     </message>
     <message>
         <location line="-1629"/>
@@ -5179,12 +5249,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
         <location line="+15"/>
         <location line="+27"/>
         <source>python is being executed</source>
-        <translation type="unfinished">Python wird ausgefÃ¼hrt</translation>
+        <translation type="unfinished">Python wird ausgeführt</translation>
     </message>
     <message>
         <location line="+75"/>
         <source>open file</source>
-        <translation type="unfinished">Datei Ã¶ffnen</translation>
+        <translation type="unfinished">Datei öffnen</translation>
     </message>
     <message>
         <location line="+86"/>
@@ -5222,39 +5292,39 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+227"/>
         <source>one single menu element must be of type MENU [2]</source>
-        <translation type="unfinished">Das MenÃ¼element muss vom Typ MENU sein [2]</translation>
+        <translation type="unfinished">Das Menüelement muss vom Typ MENU sein [2]</translation>
     </message>
     <message>
         <source>no menu element is indicated</source>
-        <translation type="obsolete">Es wurde kein MenÃ¼element erkannt</translation>
+        <translation type="obsolete">Es wurde kein Menüelement erkannt</translation>
     </message>
     <message>
         <source>The menu item &apos;%s&apos; does already exist but is no menu type</source>
-        <translation type="obsolete">Das MenÃ¼element &apos;%s&apos;  existiert bereits, ist jedoch nicht Typ von MENU</translation>
+        <translation type="obsolete">Das Menüelement &apos;%s&apos;  existiert bereits, ist jedoch nicht Typ von MENU</translation>
     </message>
     <message>
         <source>menu item already exists.</source>
-        <translation type="obsolete">Das MenÃ¼element existiert bereits.</translation>
+        <translation type="obsolete">Das Menüelement existiert bereits.</translation>
     </message>
     <message>
         <source>Invalid typeID.</source>
-        <translation type="obsolete">UngÃ¼ltige Typ-ID.</translation>
+        <translation type="obsolete">Ungültige Typ-ID.</translation>
     </message>
     <message>
         <location line="+103"/>
         <location line="+4"/>
         <source>Add menu element</source>
-        <translation type="unfinished">MenÃ¼punkt hinzufÃ¼gen</translation>
+        <translation type="unfinished">Menüpunkt hinzufügen</translation>
     </message>
     <message>
         <location line="+89"/>
         <location line="+64"/>
         <source>Remove menu element</source>
-        <translation type="unfinished">MenÃ¼element lÃ¶schen</translation>
+        <translation type="unfinished">Menüelement löschen</translation>
     </message>
     <message>
         <source>A user-defined menu with the key sequence &apos;%1&apos; could not be found</source>
-        <translation type="obsolete">Das Benutzerdefiniertes MenÃ¼ mit dem SchlÃ¼ssel &apos;%1&apos; konnte nicht gefunden werden</translation>
+        <translation type="obsolete">Das Benutzerdefiniertes Menü mit dem Schlüssel &apos;%1&apos; konnte nicht gefunden werden</translation>
     </message>
     <message>
         <location line="+69"/>
@@ -5264,7 +5334,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+29"/>
         <source>Python is not available. This action cannot be executed.</source>
-        <translation type="unfinished">Python ist nicht verfÃ¼gbar. Diese Anwendung kann nicht ausgefÃ¼hrt werden.</translation>
+        <translation type="unfinished">Python ist nicht verfügbar. Diese Anwendung kann nicht ausgeführt werden.</translation>
     </message>
     <message>
         <source>there is no python code associated to this action.</source>
@@ -5280,12 +5350,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location filename="../organizer/paletteOrganizer.cpp" line="+615"/>
         <source>Palette %1 has a restricted access.</source>
-        <translation type="unfinished">Die Palette &apos;%1&apos; hat eine ZugangsbeschrÃ¤nkung.</translation>
+        <translation type="unfinished">Die Palette &apos;%1&apos; hat eine Zugangsbeschränkung.</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Palette %1 has a write protection.</source>
-        <translation type="unfinished">Die Palette &apos;%1&apos; ist schreibgeschÃ¼tzt.</translation>
+        <translation type="unfinished">Die Palette &apos;%1&apos; ist schreibgeschützt.</translation>
     </message>
     <message>
         <location line="+33"/>
@@ -5305,7 +5375,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
         <location line="+117"/>
         <location line="+72"/>
         <source>Canvas widget does not exist any more</source>
-        <translation type="unfinished">Container existiert nicht lÃ¤nger</translation>
+        <translation type="unfinished">Container existiert nicht länger</translation>
     </message>
     <message>
         <location line="-159"/>
@@ -5351,17 +5421,17 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="-38"/>
         <source>The parameter &apos;%1&apos; is invalid.</source>
-        <translation type="unfinished">Der Parameter &apos;%1&apos; ist ungÃ¼ltig.</translation>
+        <translation type="unfinished">Der Parameter &apos;%1&apos; ist ungültig.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>Invalid input</source>
-        <translation type="unfinished">UngÃ¼ltiger Input</translation>
+        <translation type="unfinished">Ungültiger Input</translation>
     </message>
     <message>
         <location line="+78"/>
         <source>checked: 1, unchecked: 0</source>
-        <translation type="unfinished">ausgewÃ¤hlt: 1, nicht ausgewÃ¤hlt: 0</translation>
+        <translation type="unfinished">ausgewählt: 1, nicht ausgewählt: 0</translation>
     </message>
     <message>
         <location line="+126"/>
@@ -5371,7 +5441,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+10"/>
         <source>%1 [Regular Expression]</source>
-        <translation type="unfinished">%1 [RegulÃ¤rer Ausdruck]</translation>
+        <translation type="unfinished">%1 [Regulärer Ausdruck]</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -5457,7 +5527,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+4"/>
         <source>new version %1 available</source>
-        <translation type="unfinished">neue Version %1 verfÃ¼gbar</translation>
+        <translation type="unfinished">neue Version %1 verfügbar</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -5486,7 +5556,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
         <location line="+16"/>
         <source>Python pip crashed during execution
 </source>
-        <translation type="unfinished">Python-Pip ist bei der AusfÃ¼hrung abgestÃ¼rzt</translation>
+        <translation type="unfinished">Python-Pip ist bei der Ausführung abgestürzt</translation>
     </message>
 </context>
 <context>
@@ -5647,7 +5717,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+189"/>
         <source>main dictionary is empty</source>
-        <translation type="unfinished">HauptwÃ¶rterbuch ist leer</translation>
+        <translation type="unfinished">Hauptwörterbuch ist leer</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -5673,18 +5743,18 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+80"/>
         <source>file could not be opened in readonly-mode</source>
-        <translation type="unfinished">Datei konnte nicht im &quot;ReadOnly&quot;-Modus geÃ¶ffnet werden</translation>
+        <translation type="unfinished">Datei konnte nicht im &quot;ReadOnly&quot;-Modus geöffnet werden</translation>
     </message>
     <message>
         <location line="+155"/>
         <location line="+139"/>
         <location line="+128"/>
         <source>Error while clearing all breakpoints in itoDebugger.</source>
-        <translation type="unfinished">Fehler beim LÃ¶schen aller Haltepunkte im ITO-Debugger.</translation>
+        <translation type="unfinished">Fehler beim Löschen aller Haltepunkte im ITO-Debugger.</translation>
     </message>
     <message>
         <source>Error while transmitting breakpoints to itoDebugger.</source>
-        <translation type="obsolete">Fehler beim Ãœbermitteln der Haltepunkte zum ITO-Debugger.</translation>
+        <translation type="obsolete">Fehler beim Übermitteln der Haltepunkte zum ITO-Debugger.</translation>
     </message>
     <message>
         <source>Error while editing breakpoint in itoDebugger.</source>
@@ -5692,10 +5762,10 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     </message>
     <message>
         <source>Error while clearing breakpoint in itoDebugger.</source>
-        <translation type="obsolete">Fehler beim LÃ¶schen eines Haltepunktes im ITO-Debugger.</translation>
+        <translation type="obsolete">Fehler beim Löschen eines Haltepunktes im ITO-Debugger.</translation>
     </message>
     <message>
-        <location line="+2245"/>
+        <location line="+2350"/>
         <source>The number of names and values must be equal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5705,17 +5775,18 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+143"/>
         <source>it is not allowed to load variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-115"/>
+        <location line="-228"/>
+        <location line="+109"/>
         <source>values cannot be saved since workspace dictionary not available.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2053"/>
+        <location line="-2158"/>
         <source>Error while transmitting breakpoints to debugger.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5730,27 +5801,32 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1949"/>
+        <location line="+1903"/>
+        <source>It is not allowed to check names of variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+151"/>
         <source>Function &apos;%s&apos; in this workspace can not be overwritten.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
         <source>Method &apos;%s&apos; in this workspace can not be overwritten.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
         <source>Type or class &apos;%s&apos; in this workspace can not be overwritten.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
         <source>Module &apos;%s&apos; in this workspace can not be overwritten.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
         <source>error while transforming value &apos;%s&apos; to PyObject*.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5778,7 +5854,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
         <location line="+30"/>
         <location line="+56"/>
         <source>Dictionary is not available</source>
-        <translation type="unfinished">WÃ¶rterbuch ist nicht verfÃ¼gbar</translation>
+        <translation type="unfinished">Wörterbuch ist nicht verfügbar</translation>
     </message>
     <message>
         <location line="-44"/>
@@ -5804,13 +5880,13 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
         <location line="+85"/>
         <location line="+75"/>
         <source>it is not allowed to get modules if python is currently executed</source>
-        <translation type="unfinished">Es ist nicht mÃ¶glich Python-Module anzufordern wÃ¤hrend Python ausgefÃ¼hrt wird</translation>
+        <translation type="unfinished">Es ist nicht möglich Python-Module anzufordern während Python ausgeführt wird</translation>
     </message>
     <message>
         <location line="-59"/>
         <location line="+75"/>
         <source>the script itomFunctions.py is not available</source>
-        <translation type="unfinished">Das Skript &apos;itomFunctions.py&apos; ist nicht verfÃ¼gbar</translation>
+        <translation type="unfinished">Das Skript &apos;itomFunctions.py&apos; ist nicht verfügbar</translation>
     </message>
     <message>
         <location line="-65"/>
@@ -5828,7 +5904,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location filename="../organizer/qsciApiManager.cpp" line="+303"/>
         <source>The python syntax documents have changed. The API has been updated.</source>
-        <translation type="unfinished">Die Python Syntaxliste hat sich geÃ¤ndert. Die API wurde aktuallisiert.</translation>
+        <translation type="unfinished">Die Python Syntaxliste hat sich geändert. Die API wurde aktuallisiert.</translation>
     </message>
     <message>
         <location line="+47"/>
@@ -5838,7 +5914,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+21"/>
         <source>The python syntax documents have changed. The API is being updated...</source>
-        <translation type="unfinished">Die Python Syntaxliste hat sich geÃ¤ndert. Die API wird aktuallisiert...</translation>
+        <translation type="unfinished">Die Python Syntaxliste hat sich geändert. Die API wird aktuallisiert...</translation>
     </message>
 </context>
 <context>
@@ -5846,7 +5922,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location filename="../widgets/scriptDockWidget.cpp" line="+544"/>
         <source>file open</source>
-        <translation>Datei Ã¶ffnen</translation>
+        <translation>Datei öffnen</translation>
     </message>
     <message>
         <location line="+27"/>
@@ -5861,7 +5937,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+12"/>
         <source>invalid file format</source>
-        <translation>UnzulÃ¤ssiges Dateiformat</translation>
+        <translation>Unzulässiges Dateiformat</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -5871,7 +5947,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+47"/>
         <source>The following files have been changed and should be safed:</source>
-        <translation>Folgende Dateien wurden geÃ¤ndert und sollten gespeichert werden:</translation>
+        <translation>Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>
     <message>
         <location line="+552"/>
@@ -5896,17 +5972,17 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+3"/>
         <source>close</source>
-        <translation>SchlieÃŸen</translation>
+        <translation>Schließen</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>close others</source>
-        <translation>Alle anderen schlieÃŸen</translation>
+        <translation>Alle anderen schließen</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>close all</source>
-        <translation>Alles schlieÃŸen</translation>
+        <translation>Alles schließen</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -5916,7 +5992,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+3"/>
         <source>undock</source>
-        <translation>LÃ¶sen</translation>
+        <translation>Lösen</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -5926,7 +6002,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+3"/>
         <source>open</source>
-        <translation>Ã–ffnen</translation>
+        <translation>Öffnen</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -5956,12 +6032,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+3"/>
         <source>paste</source>
-        <translation>EinfÃ¼gen</translation>
+        <translation>Einfügen</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>undo</source>
-        <translation>RÃ¼ckgÃ¤ngig</translation>
+        <translation>Rückgängig</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -5993,12 +6069,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+3"/>
         <source>indent</source>
-        <translation>EinrÃ¼cken</translation>
+        <translation>Einrücken</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>unindent</source>
-        <translation>AusrÃ¼cken</translation>
+        <translation>Ausrücken</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -6069,7 +6145,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+3"/>
         <source>step out</source>
-        <translation>AusfÃ¼hren bis RÃ¼cksprung</translation>
+        <translation>Ausführen bis Rücksprung</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -6095,7 +6171,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+3"/>
         <source>&amp;next bookmark</source>
-        <translation>&amp;NÃ¤chstes Lesezeichen</translation>
+        <translation>&amp;Nächstes Lesezeichen</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -6105,12 +6181,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+3"/>
         <source>&amp;clear all bookmarks</source>
-        <translation>Alle Lesezeichen &amp;lÃ¶schen</translation>
+        <translation>Alle Lesezeichen &amp;löschen</translation>
     </message>
     <message>
         <location line="+3"/>
         <source>&amp;insert codec...</source>
-        <translation>&amp;Kodierung einfÃ¼gen...</translation>
+        <translation>&amp;Kodierung einfügen...</translation>
     </message>
     <message>
         <location line="+29"/>
@@ -6227,12 +6303,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+109"/>
         <source>The following files have been changed and should be safed:</source>
-        <translation>Folgende Dateien wurden geÃ¤ndert und sollten gespeichert werden:</translation>
+        <translation>Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>remember selection for the next time (can be reverted in property dialog)</source>
-        <translation type="unfinished">Auswahl fÃ¼r das nÃ¤chste Mal merken (Einstellung kann bei den Optionen geÃ¤ndert werden)</translation>
+        <translation type="unfinished">Auswahl für das nächste Mal merken (Einstellung kann bei den Optionen geändert werden)</translation>
     </message>
 </context>
 <context>
@@ -6245,7 +6321,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+1"/>
         <source>next bookmark</source>
-        <translation type="unfinished">NÃ¤chstes Lesezeichen</translation>
+        <translation type="unfinished">Nächstes Lesezeichen</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -6255,7 +6331,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+1"/>
         <source>clear all bookmarks</source>
-        <translation type="unfinished">Alle Lesezeichen lÃ¶schen</translation>
+        <translation type="unfinished">Alle Lesezeichen löschen</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -6276,7 +6352,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+1"/>
         <source>&amp;next breakpoint</source>
-        <translation type="unfinished">&amp;NÃ¤chste Haltepunkt</translation>
+        <translation type="unfinished">&amp;Nächste Haltepunkt</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -6286,7 +6362,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+1"/>
         <source>&amp;delete all breakpoints</source>
-        <translation type="unfinished">Alle Haltepunkte &amp;lÃ¶schen</translation>
+        <translation type="unfinished">Alle Haltepunkte &amp;löschen</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -6301,12 +6377,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+1"/>
         <source>&amp;paste</source>
-        <translation type="unfinished">&amp;EinfÃ¼gen</translation>
+        <translation type="unfinished">&amp;Einfügen</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>&amp;indent</source>
-        <translation type="unfinished">Zeileneinzug ver&amp;grÃ¶ÃŸern</translation>
+        <translation type="unfinished">Zeileneinzug ver&amp;größern</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -6366,7 +6442,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+2"/>
         <source>&amp;insert codec...</source>
-        <translation type="unfinished">&amp;Kodierung einfÃ¼gen...</translation>
+        <translation type="unfinished">&amp;Kodierung einfügen...</translation>
     </message>
     <message>
         <location line="+182"/>
@@ -6376,30 +6452,30 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+502"/>
         <source>insert codec</source>
-        <translation type="unfinished">Kodierung einfÃ¼gen</translation>
+        <translation type="unfinished">Kodierung einfügen</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>Choose an encoding of the file which is added to the first line of the script</source>
-        <translation type="unfinished">Ein Kodierung fÃ¼r die erste Zeile im Skript auswÃ¤hlen</translation>
+        <translation type="unfinished">Ein Kodierung für die erste Zeile im Skript auswählen</translation>
     </message>
     <message>
         <location line="+38"/>
         <location line="+84"/>
         <location line="+48"/>
         <source>unsaved changes</source>
-        <translation type="unfinished">Ungespeicherte Ã„nderungen</translation>
+        <translation type="unfinished">Ungespeicherte Änderungen</translation>
     </message>
     <message>
         <location line="-132"/>
         <location line="+132"/>
         <source>there are unsaved changes in the current document. Do you want to save it first?</source>
-        <translation type="unfinished">Es gibt noch ungespeicherte Ã„nderungen im aktuellen Dokument. Sollen diese zuerst gespeichert werden?</translation>
+        <translation type="unfinished">Es gibt noch ungespeicherte Änderungen im aktuellen Dokument. Sollen diese zuerst gespeichert werden?</translation>
     </message>
     <message>
         <location line="-115"/>
         <source>error while opening file</source>
-        <translation type="unfinished">Fehler beim Ã–ffnen der Datei</translation>
+        <translation type="unfinished">Fehler beim Öffnen der Datei</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -6409,7 +6485,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+67"/>
         <source>there are unsaved changes in the document &apos;%1&apos;. Do you want to save it first?</source>
-        <translation type="unfinished">Im Dokument &apos;%1&apos; gibt es noch ungespeicherte Ã„nderungen. Sollen diese zuerst gespeichert werden?</translation>
+        <translation type="unfinished">Im Dokument &apos;%1&apos; gibt es noch ungespeicherte Änderungen. Sollen diese zuerst gespeichert werden?</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -6456,7 +6532,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+17"/>
         <source>The file &apos;%1&apos; has been modified by another programm.</source>
-        <translation type="unfinished">Die Datei &apos;%1&apos; wurde von einem anderen Programm geÃ¤ndert.</translation>
+        <translation type="unfinished">Die Datei &apos;%1&apos; wurde von einem anderen Programm geändert.</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -6466,7 +6542,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+161"/>
         <source>{Global Scope}</source>
-        <translation>{Globaler GÃ¼ltigkeitsbereich}</translation>
+        <translation>{Globaler Gültigkeitsbereich}</translation>
     </message>
     <message>
         <location filename="../widgets/scriptEditorWidget.h" line="+91"/>
@@ -6479,7 +6555,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location filename="../organizer/uiOrganizer.cpp" line="+293"/>
         <source>the plugin did not return a valid widget pointer.</source>
-        <translation type="unfinished">Das Plugin gibt keinen gÃ¼ltigen Widget-Pointer zurÃ¼ck.</translation>
+        <translation type="unfinished">Das Plugin gibt keinen gültigen Widget-Pointer zurück.</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -6489,7 +6565,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+57"/>
         <source>widgets of type QDockWidget are not yet implemented</source>
-        <translation type="unfinished">Widgets vom Typ &quot;QDockWidget&quot; werden nocht nicht unterstÃ¼tzt</translation>
+        <translation type="unfinished">Widgets vom Typ &quot;QDockWidget&quot; werden nocht nicht unterstützt</translation>
     </message>
     <message>
         <location line="+63"/>
@@ -6590,7 +6666,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
         <location line="+55"/>
         <location line="+61"/>
         <source>object name is not available</source>
-        <translation type="unfinished">Der Objektname ist nicht verfÃ¼gbar</translation>
+        <translation type="unfinished">Der Objektname ist nicht verfügbar</translation>
     </message>
     <message>
         <location line="-686"/>
@@ -6613,7 +6689,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
         <location line="+38"/>
         <location line="+31"/>
         <source>The attribute number is out of range.</source>
-        <translation type="unfinished">Die Anzahl der Attribute liegt auÃŸerhalb des GÃ¼ltigkeitsbereichs.</translation>
+        <translation type="unfinished">Die Anzahl der Attribute liegt außerhalb des Gültigkeitsbereichs.</translation>
     </message>
     <message>
         <location line="-22"/>
@@ -6630,17 +6706,17 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="-1363"/>
         <source>The object ID is invalid.</source>
-        <translation type="unfinished">Die ID des Datenobjekts ist ungÃ¼ltig.</translation>
+        <translation type="unfinished">Die ID des Datenobjekts ist ungültig.</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The given object ID is unknown.</source>
-        <translation type="unfinished">Die Ã¼bergebene Objekt-ID ist unbekannt.</translation>
+        <translation type="unfinished">Die übergebene Objekt-ID ist unbekannt.</translation>
     </message>
     <message>
         <location line="+238"/>
         <source>object ID is not available</source>
-        <translation type="unfinished">Die Objekt-ID ist nicht verfÃ¼gbar</translation>
+        <translation type="unfinished">Die Objekt-ID ist nicht verfügbar</translation>
     </message>
     <message>
         <location line="-408"/>
@@ -6650,7 +6726,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+6"/>
         <source>uiHandle is invalid</source>
-        <translation type="unfinished">&quot;uiHandle&quot; ist ungÃ¼ltig</translation>
+        <translation type="unfinished">&quot;uiHandle&quot; ist ungültig</translation>
     </message>
     <message>
         <location line="+38"/>
@@ -6662,7 +6738,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
         <location line="-46"/>
         <location line="+51"/>
         <source>The object ID of the parent widget is invalid.</source>
-        <translation type="unfinished">Die Objekt-ID des Ã¼bergeordneten Widget ist ungÃ¼ltig.</translation>
+        <translation type="unfinished">Die Objekt-ID des übergeordneten Widget ist ungültig.</translation>
     </message>
     <message>
         <location line="-46"/>
@@ -6698,7 +6774,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+352"/>
         <source>unsupported data type</source>
-        <translation type="unfinished">Nicht unterstÃ¼tzter Datentyp</translation>
+        <translation type="unfinished">Nicht unterstützter Datentyp</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -6715,12 +6791,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
         <location line="+34"/>
         <location line="+36"/>
         <source>figHandle %i not available.</source>
-        <translation type="unfinished">&quot;figHandle&quot; &apos;%i&apos; ist nicht verfÃ¼gbar.</translation>
+        <translation type="unfinished">&quot;figHandle&quot; &apos;%i&apos; ist nicht verfügbar.</translation>
     </message>
     <message>
         <location line="-169"/>
         <source>figure window is not available any more</source>
-        <translation type="unfinished">Grafikfenster ist nicht lÃ¤nger verfÃ¼gbar</translation>
+        <translation type="unfinished">Grafikfenster ist nicht länger verfügbar</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -6730,7 +6806,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+7"/>
         <source>handle &apos;0&apos; cannot be assigned.</source>
-        <translation type="unfinished">Handle &apos;0&apos; ist ungÃ¼ltig.</translation>
+        <translation type="unfinished">Handle &apos;0&apos; ist ungültig.</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -6909,7 +6985,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location line="+15"/>
         <source>dialog button role is unknown or not supported</source>
-        <translation type="unfinished">Die Rolle des Dialog-Buttons ist unbekannt oder wird nicht unterstÃ¼tzt</translation>
+        <translation type="unfinished">Die Rolle des Dialog-Buttons ist unbekannt oder wird nicht unterstützt</translation>
     </message>
     <message>
         <source>dialog button role is unknown</source>
@@ -6944,12 +7020,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     <message>
         <location filename="../ui/widgetPropEditorStyles.cpp" line="+137"/>
         <source>choose background color</source>
-        <translation type="unfinished">Hintergrundfarbe auswÃ¤hlen</translation>
+        <translation type="unfinished">Hintergrundfarbe auswählen</translation>
     </message>
     <message>
         <location line="+35"/>
         <source>choose foreground color</source>
-        <translation type="unfinished">Vordergrundsfarbe auswÃ¤hlen</translation>
+        <translation type="unfinished">Vordergrundsfarbe auswählen</translation>
     </message>
 </context>
 <context>
@@ -6990,11 +7066,11 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     </message>
     <message>
         <source>DataObject - Plane</source>
-        <translation type="obsolete">Datenobjekt - FlÃ¤che</translation>
+        <translation type="obsolete">Datenobjekt - Fläche</translation>
     </message>
     <message>
         <source>DataObject - Plane Stack</source>
-        <translation type="obsolete">Datenobjekt - FlÃ¤schenstapel</translation>
+        <translation type="obsolete">Datenobjekt - Fläschenstapel</translation>
     </message>
     <message>
         <source>Point Cloud</source>
@@ -7018,11 +7094,11 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prÃ¼
     </message>
     <message>
         <source>Float32</source>
-        <translation type="obsolete">FlieÃŸkomma32</translation>
+        <translation type="obsolete">Fließkomma32</translation>
     </message>
     <message>
         <source>Float64</source>
-        <translation type="obsolete">FlieÃŸkomma64</translation>
+        <translation type="obsolete">Fließkomma64</translation>
     </message>
     <message>
         <source>Complex</source>
@@ -7072,9 +7148,9 @@ Katesisch</translation>
 <context>
     <name>ito::WidgetPropGeneralApplication</name>
     <message>
-        <location filename="../ui/widgetPropGeneralApplication.cpp" line="+100"/>
+        <location filename="../ui/widgetPropGeneralApplication.cpp" line="+112"/>
         <source>load directory</source>
-        <translation type="unfinished">Verzeichnis hinzufÃ¼gen</translation>
+        <translation type="unfinished">Verzeichnis hinzufügen</translation>
     </message>
 </context>
 <context>
@@ -7117,7 +7193,7 @@ Katesisch</translation>
     <message>
         <location line="-388"/>
         <source>Invalid type attribute of xml file</source>
-        <translation>UngÃ¼ltiges Typen-Attribut der XML-Datei</translation>
+        <translation>Ungültiges Typen-Attribut der XML-Datei</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -7177,7 +7253,7 @@ Katesisch</translation>
     <message>
         <location line="+1"/>
         <source>remove from disk</source>
-        <translation>Auf der Festplatte lÃ¶schen</translation>
+        <translation>Auf der Festplatte löschen</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -7187,12 +7263,12 @@ Katesisch</translation>
     <message>
         <location line="+37"/>
         <source>Timeout: Server is not responding in time</source>
-        <translation type="unfinished">ZeitÃ¼berschreitung: Server antwortet nicht</translation>
+        <translation type="unfinished">Zeitüberschreitung: Server antwortet nicht</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>Could not delete old local version of Database</source>
-        <translation type="unfinished">Die alte Datenbankversion konnte nicht gelÃ¶scht werden</translation>
+        <translation type="unfinished">Die alte Datenbankversion konnte nicht gelöscht werden</translation>
     </message>
 </context>
 <context>
@@ -7217,7 +7293,7 @@ Katesisch</translation>
     <name>ito::WorkspaceDockWidget</name>
     <message>
         <source>delete item(s)</source>
-        <translation type="vanished">Objekt(e) lÃ¶schen</translation>
+        <translation type="vanished">Objekt(e) löschen</translation>
     </message>
     <message>
         <source>export item(s)</source>
@@ -7235,7 +7311,7 @@ Katesisch</translation>
     <message>
         <location line="-4"/>
         <source>delete selected item(s)</source>
-        <translation type="unfinished">Selektierte(s) Objekt(e) lÃ¶schen</translation>
+        <translation type="unfinished">Selektierte(s) Objekt(e) löschen</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -7260,7 +7336,7 @@ Katesisch</translation>
     <message>
         <location line="+46"/>
         <source>Do you really want to delete the selected variables?</source>
-        <translation>Sollen die markierten Variablen wirklich gelÃ¶scht werden?</translation>
+        <translation>Sollen die markierten Variablen wirklich gelöscht werden?</translation>
     </message>
     <message>
         <location line="+55"/>
@@ -7294,7 +7370,7 @@ Katesisch</translation>
     <message>
         <location line="+12"/>
         <source>timeout while renaming variables</source>
-        <translation>ZeitÃ¼berschreitung beim umbenennen der Variablen</translation>
+        <translation>Zeitüberschreitung beim umbenennen der Variablen</translation>
     </message>
 </context>
 <context>
@@ -7324,7 +7400,7 @@ Katesisch</translation>
     <message>
         <location line="+345"/>
         <source>timeout while asking python for detailed information</source>
-        <translation>ZeitÃ¼berschreitung bei der Anfrage an Python fÃ¼r detailierte Informationen</translation>
+        <translation>Zeitüberschreitung bei der Anfrage an Python für detailierte Informationen</translation>
     </message>
 </context>
 <context>
@@ -7332,7 +7408,7 @@ Katesisch</translation>
     <message>
         <location filename="../widgets/uiDebugViewer.ui" line="+17"/>
         <source>Debug-Viewer</source>
-        <translation>Debug-Ãœbersicht</translation>
+        <translation>Debug-Übersicht</translation>
     </message>
     <message>
         <location line="+43"/>
@@ -7434,7 +7510,7 @@ Katesisch</translation>
     </message>
     <message>
         <source>Reset All In Group</source>
-        <translation type="obsolete">Gruppe zurÃ¼cksetzen</translation>
+        <translation type="obsolete">Gruppe zurücksetzen</translation>
     </message>
     <message>
         <location line="+53"/>
@@ -7444,7 +7520,7 @@ Katesisch</translation>
     <message>
         <location line="+13"/>
         <source>Delete User</source>
-        <translation>Benutzer lÃ¶schen</translation>
+        <translation>Benutzer löschen</translation>
     </message>
     <message>
         <source>developer</source>
@@ -7515,7 +7591,7 @@ Katesisch</translation>
     <message>
         <location line="+7"/>
         <source>Edit Properties</source>
-        <translation type="unfinished">Optionen Ã¤ndern</translation>
+        <translation type="unfinished">Optionen ändern</translation>
     </message>
     <message>
         <location line="+7"/>
