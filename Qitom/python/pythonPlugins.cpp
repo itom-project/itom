@@ -432,7 +432,7 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
                 }
                 else
                 {
-                    std::cout << "\nMandatory parameters: Filter function has no mandatory parameters. \n";
+                    std::cout << "\nMandatory parameters: execFunction has no mandatory parameters. \n";
                 }
 
                 parameter = (*funcList)[funcNameString].paramsOpt;
@@ -445,7 +445,7 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
                 }
                 else
                 {
-                    std::cout << "\nOptional parameters: Filter function has no optional parameters. \n";
+                    std::cout << "\nOptional parameters: execFunction has no optional parameters. \n";
                 }
                 std::cout << "\n";
 
@@ -459,7 +459,7 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
                 }
                 else
                 {
-                    std::cout << "\nOutput values: Filter has no output-parameters defined. \n";
+                    std::cout << "\nOutput values: execFunction has no output-parameters defined. \n";
                 }
                 std::cout << "\n";
             
