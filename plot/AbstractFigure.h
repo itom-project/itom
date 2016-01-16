@@ -41,7 +41,6 @@
 #include <qdockwidget.h>
 
 class QPropertyEditorWidget; //forward declaration
-class MarkerLegendWidget; //forward declaration
 
 #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 
