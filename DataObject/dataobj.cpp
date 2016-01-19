@@ -7958,18 +7958,15 @@ DataObject imag(const DataObject &dObj)
 //----------------------------------------------------------------------------------------------------------------------------------
 //! low-level, templated method which copies an incontinuously organized data object to a continuously organized resulting data object
 /*!
+    this templated helper function should only be called if dObj is non-continuous. This is already checked by the calling function makeContinuous
+    The hidden data which is out of a possible roi will not be part of the new continuous matrix.
+
     \param &dObj is the source data object
     \param &resDObj is the resulting data object
     \return retOk
 */
 template<typename _Tp> RetVal MakeContinuousFunc(const DataObject &dObj, DataObject &resDObj)
 {
-    if(dObj.getContinuous())
-    {
-        resDObj = DataObject(dObj);
-        return RetVal(retOk);
-    }
-
     resDObj = DataObject(dObj.getDims() , dObj.m_size, dObj.getType() , 1);
     resDObj.m_owndata = 1;
     dObj.copyAxisTagsTo(resDObj);
@@ -7981,20 +7978,20 @@ template<typename _Tp> RetVal MakeContinuousFunc(const DataObject &dObj, DataObj
     if(newNumMats > 0)
     {
         uchar* newDataPtr = ((cv::Mat_<_Tp>*)(resDObj.m_data[0]))->data;
-        int newMatSize = sizeof(_Tp) * resDObj.m_osize[dims-2] * resDObj.m_osize[dims-1];
+        int newMatSize = sizeof(_Tp) * resDObj.m_size[dims-2] * resDObj.m_size[dims-1];
         const cv::Mat *tempMat = dObj.getCvPlaneMat(0);
 
         if (tempMat->isContinuous())
         {
             //first plane
-            memcpy((void*)newDataPtr , (void*)(tempMat->datastart), newMatSize);
+            memcpy((void*)newDataPtr , (void*)(tempMat->data), newMatSize);
             newDataPtr += newMatSize;
 
             //further planes
             for (int n = 1; n < newNumMats; ++n)
             {
                 tempMat = dObj.getCvPlaneMat(n);
-                memcpy((void*)newDataPtr , (void*)(tempMat->datastart), newMatSize);
+                memcpy((void*)newDataPtr , (void*)(tempMat->data), newMatSize);
                 newDataPtr += newMatSize;
             }
         }

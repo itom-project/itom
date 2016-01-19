@@ -9,7 +9,7 @@ class DataObjectStaticConstructors(unittest.TestCase):
     
     def test_default_types(self):
         '''all static constructors should return uint8 if not otherwise
-        indicated (like the default constructor'''
+        indicated (like the default constructor)'''
         obj = dataObject.zeros([10,10])
         self.assertEqual(obj.dtype, "uint8")
         
