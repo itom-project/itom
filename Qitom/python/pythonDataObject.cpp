@@ -752,7 +752,7 @@ char * PythonDataObject::typeNumberToName(int typeno)
 
     if (typeno < 0 || typeno >= length)
     {
-        return 0;
+        return NULL;
     }
     else
     {
@@ -765,12 +765,14 @@ RetVal PythonDataObject::PyDataObj_ParseCreateArgs(PyObject *args, PyObject *kwd
 {
     static const char *kwlist[] = {"dims","dtype","continuous", NULL};
     PyObject *dimList = NULL;
-    const char *type;
     unsigned int dims = 0;
     int tempSizes = 0;
 
-    type = typeNumberToName(typeno);
-    if (strlen(type)<4) type="uint8\0"; //default
+    const char *type = typeNumberToName(typeno);
+    if (type == NULL)
+    {
+        type = "uint8\0"; //default
+    }
 
     RetVal retValue(retOk);
 
@@ -7221,7 +7223,7 @@ Notes \n\
 For color-types (rgba32) every item / cell will be black and transparent: [r=0 g=0 b=0 a=0].");
 PyObject* PythonDataObject::PyDataObj_StaticZeros(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
-    int typeno = 0;
+    int typeno = -1;
     std::vector<unsigned int> sizes;
     sizes.clear();
     unsigned char continuous = 0;
@@ -7277,7 +7279,7 @@ Notes \n\
 For color-types (rgba32) every item / cell will be white: [r=255 g=255 b=255 a=255].");
 PyObject* PythonDataObject::PyDataObj_StaticOnes(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
-    int typeno = 0;
+    int typeno = -1;
     std::vector<unsigned int> sizes;
     sizes.clear();
     unsigned char continuous = 0;
@@ -7335,7 +7337,7 @@ See Also \n\
 randN: method for creating a matrix filled with gaussianly distributed values");
 PyObject* PythonDataObject::PyDataObj_StaticRand(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
-    int typeno = 0;
+    int typeno = -1;
     std::vector<unsigned int> sizes;
     sizes.clear();
     unsigned char continuous = 0;
@@ -7394,7 +7396,7 @@ See Also \n\
 rand: method for creating a matrix filled with unformly distributed values");
 PyObject* PythonDataObject::PyDataObj_StaticRandN(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
-    int typeno = 0;
+    int typeno = -1;
     std::vector<unsigned int> sizes;
     sizes.clear();
     unsigned char continuous = 0;
@@ -7448,54 +7450,19 @@ See Also \n\
 --------- \n\
 ones: method for creating a matrix filled with ones \n\
 zeros: method for creating a matrix filled with zeros");
-PyObject* PythonDataObject::PyDataObj_StaticEye(PyObject * /*self*/, PyObject *args /*, PyObject *kwds*/)
+PyObject* PythonDataObject::PyDataObj_StaticEye(PyObject * /*self*/, PyObject *args , PyObject *kwds)
 {
-    //static const char *kwlist[] = {"size","dtype","continuous", NULL};
-
-    int length = PyTuple_Size(args);
-
-    const char *type = 0;
+    static const char *kwlist[] = { "size", "dtype", NULL };
     int size = 0;
-    int typeno = 0;
-
-    type = typeNumberToName(typeno);
-    if (strlen(type) < 4)
-    {
-//        type = "uint8\0";
-        type = "uint8";
-    }
-
+    const char *type = "uint8";
     RetVal retValue(retOk);
 
-
-    if (length < 1)
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "i|s", const_cast<char**>(kwlist), &size, &type))
     {
-        PyErr_SetString(PyExc_TypeError, "Argument of Eye-Method must be: int size [, char dtype (optional)]");
-        return NULL;
-    }
-    else if (length == 1)
-    {
-        if (!PyArg_ParseTuple(args, "i", &size))
-        {
-            PyErr_SetString(PyExc_TypeError, "Argument of Eye-Method must be: int size [, char dtype (optional)]");
-            return NULL;
-        }
-    }
-    else if (length == 2)
-    {
-        if (!PyArg_ParseTuple(args, "is", &size, &type))
-        {
-            PyErr_SetString(PyExc_TypeError, "Argument of Eye-Method must be: int size [, char dtype (optional)]");
-            return NULL;
-        }
-    }
-    else
-    {
-        PyErr_SetString(PyExc_TypeError,"Argument of Eye-Method must be: int size [, char dtype (optional)]");
         return NULL;
     }
 
-    typeno = typeNameToNumber(type);
+    int typeno = typeNameToNumber(type);
 
     if (typeno == ito::tUInt32)
     {
@@ -7565,7 +7532,7 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"ones",(PyCFunction)PythonDataObject::PyDataObj_StaticOnes, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticOnes_doc},
         {"rand",(PyCFunction)PythonDataObject::PyDataObj_StaticRand, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticRand_doc},
         {"randN",(PyCFunction)PythonDataObject::PyDataObj_StaticRandN, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticRandN_doc},
-        {"eye",(PyCFunction)PythonDataObject::PyDataObj_StaticEye, METH_VARARGS | METH_STATIC, pyDataObjectStaticEye_doc},
+        { "eye", (PyCFunction)PythonDataObject::PyDataObj_StaticEye, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticEye_doc },
         {"__reduce__", (PyCFunction)PythonDataObject::PyDataObj_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
         {"__setstate__", (PyCFunction)PythonDataObject::PyDataObj_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
         {"__array__", (PyCFunction)PythonDataObject::PyDataObj_Array_, METH_VARARGS, dataObject_Array__doc},
