@@ -6074,27 +6074,14 @@ PyObject* PythonDataObject::PyDataObj_Array_Interface(PyDataObject *self)
         PyErr_SetString(PyExc_TypeError, "data object is NULL");
         return NULL;
     }
-
-    PyObject *item = NULL;
-
-    ito::DataObject* selfDO = self->dataObject;
-
-    if (selfDO->getContinuous() == false)
+    else if (self->dataObject->getContinuous() == false)
     {
         PyErr_SetString(PyExc_RuntimeError, "the dataObject cannot be directly converted into a numpy array since it is not continuous.");
         return NULL;
     }
 
-    /*if (selfDO->isT())
-    {
-        selfDO->unlock();
-        selfDO->lockWrite();
-        selfDO->evaluateTransposeFlag();
-        selfDO->unlock();
-        selfDO->lockRead();
-    }*/
-
-    
+    PyObject *item = NULL;
+    const ito::DataObject* selfDO = self->dataObject;
 
     int itemsize;
     char typekind;
