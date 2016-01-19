@@ -1,11 +1,13 @@
 import unittest
 import dataobject_squeeze_reshape
 import dataobject_static_constructors
+import dataobject_mapping
 
 def suite():
     suite = unittest.TestSuite()
     suite.addTest (unittest.makeSuite(dataobject_squeeze_reshape.DataObjectResize))
     suite.addTest (unittest.makeSuite(dataobject_static_constructors.DataObjectStaticConstructors))
+    suite.addTest (unittest.makeSuite(dataobject_mapping.DataObjectStaticConstructors))
     return suite
     
 if (__name__ == "__main__"):

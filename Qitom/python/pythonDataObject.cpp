@@ -5502,7 +5502,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                                 {
                                     if (map_dims_to_npdims[dims-2] >= 0)
                                     {
-                                        ind[dims-2] = row;
+                                        ind[map_dims_to_npdims[dims-2]] = row;
                                     }
                                     npPtr = PyArray_GetPtr(npArray_, ind);
                                     memcpy(mat->ptr(row), npPtr, mat->cols * mat->elemSize());
