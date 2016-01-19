@@ -485,7 +485,26 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                         {
                             paramList.append(p.getName());
                         }
-                        QString newLink = QString("filter(\"%1\",%2)").arg(fd->m_name).arg( paramList.join(", ") );
+
+                        QString returnString;
+
+                        if (params->paramsOut.size() == 1)
+                        {
+
+                            returnString = QString(params->paramsOut[0].getName()) +  " = ";
+                        }
+                        else if (params->paramsOut.size() > 1)
+                        {
+                            returnString = "[";
+                            QStringList returnList;
+                            foreach(const ito::Param &p, params->paramsOut)
+                            {
+                                returnList.append(p.getName());
+                            }
+                            returnString += returnList.join(", ") + "] = ";
+                        }
+
+                        QString newLink = QString("%1filter(\"%2\",%3)").arg(returnString).arg(fd->m_name).arg( paramList.join(", ") );
                         newLink.replace(",)",")");
                         QByteArray a = newLink.toLatin1();
 
