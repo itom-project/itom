@@ -1434,7 +1434,14 @@ void ConsoleWidget::pythonRunSelection(QString selectionText)
         int lineCount = 0;
         selectionText = formatPhytonCodePart(selectionText, lineCount);
 
-        insertAt(selectionText, startLineBeginCmd, 2);
+        if (selectionText.endsWith("\n"))
+        {
+            insertAt(selectionText, startLineBeginCmd, 2);
+        }
+        else
+        {
+            insertAt(selectionText + "\n", startLineBeginCmd, 2);
+        }
 
 //        execCommand(startLineBeginCmd, startLineBeginCmd + selectionText.count(ConsoleWidget::lineBreak, Qt::CaseInsensitive) - 1);
         execCommand(startLineBeginCmd, startLineBeginCmd + lineCount - 1);
