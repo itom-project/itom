@@ -84,7 +84,7 @@ void PyWorkspaceContainer::clear()
 //Python GIL must be locked when calling this function!
 void PyWorkspaceContainer::loadDictionary(PyObject *obj, const QString &fullNameParentItem)
 {
-#if defined _DEBUG && PY_VERSION_HEX >= 0x030400
+#if defined _DEBUG && PY_VERSION_HEX >= 0x03040000
     if (!PyGILState_Check())
     {
         std::cerr << "Python GIL must be locked when calling loadDictionaryRec\n" << std::endl;
@@ -134,7 +134,7 @@ void PyWorkspaceContainer::loadDictionary(PyObject *obj, const QString &fullName
 //-----------------------------------------------------------------------------------------------------------
 void PyWorkspaceContainer::loadDictionaryRec(PyObject *obj, const QString &fullNameParentItem, PyWorkspaceItem *parentItem, QStringList &deletedKeys)
 {
-#if defined _DEBUG && PY_VERSION_HEX >= 0x030400
+#if defined _DEBUG && PY_VERSION_HEX >= 0x03040000
     if (!PyGILState_Check())
     {
         std::cerr << "Python GIL must be locked when calling loadDictionaryRec\n" << std::endl;
