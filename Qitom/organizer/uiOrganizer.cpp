@@ -1615,7 +1615,7 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, const QVariantMap &pr
             {
                 QObject *newObj = NULL;
                 prop = m_widgetWrapper->fakeProperty(obj, i.key(), &newObj);
-                if (prop.isValid() == false)
+                if (prop.isValid() == false || !newObj)
                 {
                     errString.append(tr("property '%1' does not exist").arg(i.key()));
                 }
@@ -1639,7 +1639,7 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, const QVariantMap &pr
                     {
                         retValue += tempRet;
                     }
-                    else if (prop.write(obj, item) == false)
+                    else if (prop.write(newObj, item) == false)
                     {
                         errString.append(tr("property '%1' could not be written").arg(i.key()));
                 }
