@@ -322,7 +322,7 @@ public:
 
     static inline int createUiDescription(int uiType, int buttonBarType, bool childOfMainWindow, bool deleteOnClose, int dockWidgetArea) 
     { 
-        int v = uiType; //bits 1-8
+        int v = uiType & 0x000000FF; //bits 1-8
         v += (buttonBarType << 8); //bits 9-16
         if(childOfMainWindow) v += (1 << 16); //bits 17-24
         if(deleteOnClose) v+= (1 << 20); //bits 21-24
@@ -340,6 +340,8 @@ protected:
     static void threadSafeDeleteUi(unsigned int *handle);
 
     void startGarbageCollectorTimer();
+
+    RetVal addWidgetToOrganizer(QWidget *widget, int uiDescription, const StringMap &dialogButtons, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int>initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className);
 
 private:
     void execGarbageCollection();
@@ -370,8 +372,7 @@ signals:
 public slots:
     void pythonKeyboardInterrupt(bool checked);
 
-    RetVal loadPluginWidget(void* algoWidgetFunc, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int>initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore = NULL);
-    RetVal addWidgetToOrganizer(QWidget *widget, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int>initSlotCount, QWidget *parent = NULL, ItomSharedSemaphore *semaphore = NULL);
+    RetVal loadPluginWidget(void* algoWidgetFunc, int uiDescription, const StringMap &dialogButtons, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int>initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore = NULL);
     RetVal createNewDialog(const QString &filename, int uiDescription, const StringMap &dialogButtons, QSharedPointer<unsigned int> dialogHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore = NULL);
     RetVal deleteDialog(unsigned int handle, ItomSharedSemaphore *semaphore = NULL);
     RetVal showDialog(unsigned int handle, int modalLevel, QSharedPointer<int> retCodeIfModal, ItomSharedSemaphore *semaphore = NULL);

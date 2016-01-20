@@ -176,6 +176,7 @@ public:
     static PyObject* PyUi_getSaveFileName(PyUi *self, PyObject *args, PyObject *kwds);
 
     static PyObject* PyUi_createNewAlgoWidget(PyUi *self, PyObject *args, PyObject *kwds);
+    static PyObject* PyUi_createNewAlgoWidget2(PyUi *self, PyObject *args, PyObject *kwds);
 
     //-------------------------------------------------------------------------------------------------
     // type structures
