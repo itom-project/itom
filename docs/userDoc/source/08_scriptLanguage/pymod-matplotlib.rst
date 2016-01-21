@@ -126,16 +126,16 @@ Further examples from the official matplotlib gallery are contained in the itom 
 Embedding a matplotlib figure in your own user interface
 ---------------------------------------------------------
 
+.. figure:: images/matplotlib_gui.png
+    :scale: 80%
+    :align: center
+
 |itom| not only provides stand-alone windows for showing the result of the *matplotlib*, but it is also possible to integrate a *matplotlib* canvas into own user interfaces created by the
 QtDesigner and scripted with |python|. For more information how to do this, see :ref:`qtdesigner`.
 
 In the widget library of QtDesigner there is the widget **MatplotlibPlot** in the section **itom Plugins** (under the consumption that the corresponding designer plugin library is contained in the folder *designer* of the root directory of |itom|). Drag&Drop an instance of this widget onto your user interface. 
 
 In the following example, a new main window is created where a *MatplotlibPlot* widget (name: *plot*) is placed on the left side while two buttons (name: *btnDroppedSpines* and *btnSine*) are placed on the right side:
-
-.. figure:: images/matplotlib_gui.png
-    :scale: 80%
-    :align: center
 
 When any of the both buttons are pressed, the following example should be displayed in the figure **plot** on the left side.
 
