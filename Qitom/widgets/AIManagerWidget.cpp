@@ -831,9 +831,17 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
             *dialogHandle = 0;
             *initSlotCount = 0;
 
+            int winType = 0xff;
+            bool deleteOnClose = false;
+            bool childOfMainWindow = false;
+            Qt::DockWidgetArea dockWidgetArea = Qt::TopDockWidgetArea;
+            int buttonBarType = UserUiDialog::bbTypeNo;
+            StringMap dialogButtons;
+            int uiDescription = UiOrganizer::createUiDescription(winType, buttonBarType, childOfMainWindow, deleteOnClose, dockWidgetArea);
+
             if (uiOrganizer)
             {
-                retValue += uiOrganizer->loadPluginWidget(reinterpret_cast<void*>(awd->m_widgetFunc), &paramsMandBase, &paramsOptBase, dialogHandle, initSlotCount, objectID, className, NULL);
+                retValue += uiOrganizer->loadPluginWidget(reinterpret_cast<void*>(awd->m_widgetFunc), uiDescription, dialogButtons, &paramsMandBase, &paramsOptBase, dialogHandle, initSlotCount, objectID, className, NULL);
                 if (!retValue.containsError())
                 {
                     if (*dialogHandle > 0)

@@ -66,6 +66,8 @@ public:
     RetVal printMessage(QStringList msg, ito::tMsgType type = msgTextInfo);
     RetVal printMessage(QString msg, ito::tMsgType type = msgTextInfo);
 
+    static const QString lineBreak;
+
 protected:
     virtual void loadSettings();
     void autoAdaptLineNumberColumnWidth();
@@ -138,8 +140,6 @@ private:
     bool pythonBusy; //!< true: python is executing or debugging a script, a command...
 
     QString temporaryRemovedCommands; //!< removed text, if python busy, caused by another console instance or script.
-
-    static const QString lineBreak;
 };
 
 class DequeCommandList

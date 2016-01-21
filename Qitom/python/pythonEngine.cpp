@@ -3010,7 +3010,7 @@ called if the Python GIL is already locked.
 */
 PyObject* PythonEngine::getPyObjectByFullName(bool globalNotLocal, const QStringList &fullNameSplittedByDelimiter, QString *validVariableName /*= NULL*/)
 {
-#if defined _DEBUG && PY_VERSION_HEX >= 0x030400
+#if defined _DEBUG && (PY_VERSION_HEX >= 0x03040000)
     if (!PyGILState_Check())
     {
         std::cerr << "Python GIL must be locked when calling getPyObjectByFullName\n" << std::endl;
@@ -3325,7 +3325,7 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::emitPythonDictionary(bool emitGlobal, bool emitLocal, PyObject* globalDict, PyObject* localDict)
 {
-#if defined _DEBUG && PY_VERSION_HEX >= 0x030400
+#if defined _DEBUG && PY_VERSION_HEX >= 0x03040000
     if (!PyGILState_Check())
     {
         std::cerr << "Python GIL must be locked when calling emitPythonDictionary\n" << std::endl;

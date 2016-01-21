@@ -25,8 +25,8 @@
 #include "lastCommandDockWidget.h"
 #include "../global.h"
 #include "../AppManagement.h"
-
 #include "../organizer/scriptEditorOrganizer.h"
+#include "consoleWidget.h"
 
 #include <qheaderview.h>
 #include <qsettings.h>

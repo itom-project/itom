@@ -281,7 +281,7 @@ UiContainer* UiOrganizer::getUiDialogByHandle(unsigned int uiHandle)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::loadPluginWidget(void* algoWidgetFunc, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int>initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::loadPluginWidget(void* algoWidgetFunc, int uiDescription, const StringMap &dialogButtons, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int>initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore)
 {
     ito::RetVal retValue = ito::retOk;
     ito::AddInAlgo::t_algoWidget func = reinterpret_cast<ito::AddInAlgo::t_algoWidget>(algoWidgetFunc);
@@ -294,16 +294,42 @@ RetVal UiOrganizer::loadPluginWidget(void* algoWidgetFunc, QVector<ito::ParamBas
     }
     else
     {
-        retValue += addWidgetToOrganizer(widget, dialogHandle, initSlotCount, NULL, NULL);
+        int winType;
+        bool deleteOnClose = false;
+        bool childOfMainWindow = false;
+        int dockWidgetArea = Qt::TopDockWidgetArea;
+        int buttonBarType = UserUiDialog::bbTypeNo;
+
+        UiOrganizer::parseUiDescription(uiDescription, &winType, &buttonBarType, &childOfMainWindow, &deleteOnClose, &dockWidgetArea);
+
+        if (winType == 0xff)
+        {
+            //guess windows type
+            if (widget->inherits("QMainWindow"))
+            {
+                winType = typeMainWindow;
+            }
+            else if (widget->inherits("QDialog"))
+            {
+                winType = typeDialog;
+            }
+            else if (widget->inherits("QDockWidget"))
+            {
+                winType = typeDockWidget;
+            }
+            else
+            {
+                winType = typeDialog;
+            }
+        }
+
+        uiDescription = UiOrganizer::createUiDescription(winType, buttonBarType, childOfMainWindow, deleteOnClose, dockWidgetArea);
+
+        retValue += addWidgetToOrganizer(widget, uiDescription, dialogButtons, dialogHandle, initSlotCount, objectID, className);
 
         if (retValue.containsError())
         {
             DELETE_AND_SET_NULL(widget);
-        }
-        else
-        {
-            *objectID = addObjectToList(widget);
-            *className = widget->metaObject()->className();
         }
     }
 
@@ -317,105 +343,183 @@ RetVal UiOrganizer::loadPluginWidget(void* algoWidgetFunc, QVector<ito::ParamBas
     return retValue;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int>initSlotCount, QWidget *parent, ItomSharedSemaphore *semaphore)
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, int uiDescription, const StringMap &dialogButtons, QSharedPointer<unsigned int>dialogHandle, QSharedPointer<unsigned int>initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className)
 {
-    RetVal retValue = retOk;
-    *initSlotCount = 0;
-    *dialogHandle = 0;
-    UiContainer::tUiType widgetType = UiContainer::uiTypeUiDialog; //default widget is of type QWidget and should be display within UiDialog
-    QString className;
+    ito::RetVal retValue;
+
+    int type;
+    int buttonBarType;
+    bool childOfMainWindow;
+    int dockWidgetArea;
+    bool deleteOnClose = false;
     UiContainer *set = NULL;
     UiContainerItem containerItem;
 
-    if (parent == NULL) //take mainWindow of itom as parent
-    {
-        parent = qobject_cast<QWidget*>(AppManagement::getMainWindow());
-    }
+    UiOrganizer::parseUiDescription(uiDescription, &type, &buttonBarType, &childOfMainWindow, &deleteOnClose, &dockWidgetArea);
 
-    
-    if (widget == NULL)
+    if ((dockWidgetArea & Qt::AllDockWidgetAreas) == 0)
     {
-        retValue += RetVal(retError, 0, tr("widget is NULL").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, "dockWidgetArea is invalid");
     }
     else
     {
-        //auto-check widget-type
-        const QMetaObject *metaObject = widget->metaObject();
-        while(metaObject != NULL)
-        {
-            className = metaObject->className();
-            if (QString::compare(className, "QMainWindow", Qt::CaseInsensitive) == 0)
-            {
-                widgetType = UiContainer::uiTypeQMainWindow;
-                break;
-            }
-            else if (QString::compare(className, "QDialog", Qt::CaseInsensitive) == 0)
-            {
-                widgetType = UiContainer::uiTypeQDialog;
-                break;
-            }
-            else if (QString::compare(className, "QDockWidget", Qt::CaseInsensitive) == 0)
-            {
-                widgetType = UiContainer::uiTypeQDockWidget;
-                break;
-            }
-            else if (QString::compare(className, "QWidget", Qt::CaseInsensitive) == 0)
-            {
-                widgetType = UiContainer::uiTypeUiDialog; //default widget is of type QWidget and should be display within UiDialog
-                break;
-            }
-            
-            metaObject = metaObject->superClass();
-        }
 
-        startGarbageCollectorTimer();
-
-        switch(widgetType)
+        if (type == ito::UiOrganizer::typeDialog)
         {
-            case UiContainer::uiTypeQMainWindow:
+            //load the file and check whether it is inherited from qdialog. If so, directly load it, else stack it into a UserUiDialog
+            if (widget->inherits("QDialog"))
             {
-                set = new UiContainer(qobject_cast<QMainWindow*>(widget));
-                *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-                containerItem.container = set;
-                m_dialogList[*dialogHandle] = containerItem;
-                *initSlotCount = widget->metaObject()->methodOffset();
-                break;
-            }
-            case UiContainer::uiTypeQDialog:
-            {
+                //check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
+                setApiPointersToWidgetAndChildren(widget);
+
+                startGarbageCollectorTimer();
+
+                if (deleteOnClose)
+                {
+                    widget->setAttribute(Qt::WA_DeleteOnClose, true);
+                }
+
                 set = new UiContainer(qobject_cast<QDialog*>(widget));
                 *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
                 containerItem.container = set;
                 m_dialogList[*dialogHandle] = containerItem;
                 *initSlotCount = widget->metaObject()->methodOffset();
-                break;
+                *objectID = addObjectToList(widget);
+                *className = widget->metaObject()->className();
             }
-            case UiContainer::uiTypeQDockWidget:
+            else
             {
-                retValue += RetVal(retError, 0, tr("widgets of type QDockWidget are not yet implemented").toLatin1().data());
-                break;
+                //int type, int buttonBarType, StringMap dialogButtons, bool childOfMainWindow
+                UserUiDialog::tButtonBarType bbBarType = UserUiDialog::bbTypeNo;
+                if (buttonBarType == UserUiDialog::bbTypeHorizontal) bbBarType = UserUiDialog::bbTypeHorizontal;
+                if (buttonBarType == UserUiDialog::bbTypeVertical) bbBarType = UserUiDialog::bbTypeVertical;
+
+                QMainWindow *mainWin = childOfMainWindow ? qobject_cast<QMainWindow*>(AppManagement::getMainWindow()) : NULL;
+                UserUiDialog *dialog = new UserUiDialog(widget, bbBarType, dialogButtons, retValue, mainWin);
+
+                if (dialog == NULL)
+                {
+                    retValue += RetVal(retError, 1020, tr("dialog could not be created").toLatin1().data());
+                    widget->deleteLater();
+                }
+                else if (!retValue.containsError())
+                {
+                    //check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
+                    setApiPointersToWidgetAndChildren(dialog);
+
+                    startGarbageCollectorTimer();
+
+                    if (deleteOnClose)
+                    {
+                        dialog->setAttribute(Qt::WA_DeleteOnClose, true);
+                    }
+
+                    set = new UiContainer(dialog);
+                    *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
+                    containerItem.container = set;
+                    m_dialogList[*dialogHandle] = containerItem;
+                    *initSlotCount = dialog->metaObject()->methodOffset();
+                    *objectID = addObjectToList(dialog);
+                    *className = dialog->metaObject()->className();
+                }
+                else
+                {
+                    DELETE_AND_SET_NULL(dialog);
+                }
             }
-            default: //widget packed into UiDialog
+        }
+        else if (type == ito::UiOrganizer::typeMainWindow)
+        {
+            //check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
+            setApiPointersToWidgetAndChildren(widget);
+
+            startGarbageCollectorTimer();
+
+            QMainWindow *win = qobject_cast<QMainWindow*>(widget);
+            if (win)
             {
-                QMap<QString, QString> buttons;
-                UserUiDialog *dialog = new UserUiDialog(widget,UserUiDialog::bbTypeNo,buttons, retValue, parent);
-                set = new UiContainer(dialog);
+                if (deleteOnClose)
+                {
+                    win->setAttribute(Qt::WA_DeleteOnClose, true);
+                }
+
+                set = new UiContainer(win);
                 *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
                 containerItem.container = set;
                 m_dialogList[*dialogHandle] = containerItem;
+                *initSlotCount = win->metaObject()->methodOffset();
+                *objectID = addObjectToList(win);
+                *className = win->metaObject()->className();
+            }
+            else
+            {
+                widget->setWindowFlags(Qt::Window);
 
-                *initSlotCount = dialog->metaObject()->methodOffset();
-                break;
+                if (deleteOnClose)
+                {
+                    widget->setAttribute(Qt::WA_DeleteOnClose, true);
+                }
+
+                set = new UiContainer(widget, UiContainer::uiTypeQMainWindow);
+                *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
+                containerItem.container = set;
+                m_dialogList[*dialogHandle] = containerItem;
+                *initSlotCount = widget->metaObject()->methodOffset();
+                *objectID = addObjectToList(widget);
+                *className = widget->metaObject()->className();
             }
         }
-    }
+        else //dock widget
+        {
+            //check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
+            setApiPointersToWidgetAndChildren(widget);
 
-    if (semaphore)
-    {
-        semaphore->returnValue = retValue;
-        semaphore->release();
-        semaphore->deleteSemaphore();
+            if (widget->inherits("QDialog"))
+            {
+                retValue += RetVal(retError, 0, tr("A widget inherited from QDialog cannot be docked into the main window").toLatin1().data());
+                widget->deleteLater();
+                widget = NULL;
+            }
+            else
+            {
+                QMainWindow *mainWin = qobject_cast<QMainWindow*>(AppManagement::getMainWindow());
+                if (!mainWin)
+                {
+                    retValue += RetVal(retError, 0, tr("Main window not available for docking the user interface.").toLatin1().data());
+                    widget->deleteLater();
+                    widget = NULL;
+                }
+                else
+                {
+                    Qt::DockWidgetArea dwa = Qt::TopDockWidgetArea;
+                    if (dockWidgetArea == Qt::LeftDockWidgetArea) dwa = Qt::LeftDockWidgetArea;
+                    else if (dockWidgetArea == Qt::RightDockWidgetArea) dwa = Qt::RightDockWidgetArea;
+                    else if (dockWidgetArea == Qt::BottomDockWidgetArea) dwa = Qt::BottomDockWidgetArea;
+
+                    QDockWidget *dockWidget = NULL;
+
+                    if (widget->inherits("QDockWidget"))
+                    {
+                        dockWidget = qobject_cast<QDockWidget*>(widget);
+                    }
+                    else
+                    {
+                        dockWidget = new QDockWidget(widget->windowTitle(), mainWin);
+                        dockWidget->setWidget(widget);
+                    }
+                    
+                    mainWin->addDockWidget(dwa, dockWidget);
+                    set = new UiContainer(dockWidget);
+                    *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
+                    containerItem.container = set;
+                    m_dialogList[*dialogHandle] = containerItem;
+                    *initSlotCount = widget->metaObject()->methodOffset();
+                    *objectID = addObjectToList(widget);
+                    *className = widget->metaObject()->className();
+                }
+            }
+        }
     }
 
     return retValue;
@@ -496,26 +600,9 @@ RetVal UiOrganizer::getNewPluginWindow(const QString &pluginName, unsigned int &
 RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, const StringMap &dialogButtons, QSharedPointer<unsigned int> dialogHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<QByteArray> className, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = retOk;
-    UiContainer *set = NULL;
-    UiContainerItem containerItem;
-    QMainWindow *win = NULL;
-    QDialog *dlg = NULL;
+    
     QWidget *wid = NULL;
-//    bool found = false;
-    bool deleteOnClose = false;
     QString pluginClassName;
-
-    int type, buttonBarType;
-    bool childOfMainWindow;
-    int dockWidgetArea;
-    UiOrganizer::parseUiDescription(uiDescription, &type, &buttonBarType, &childOfMainWindow, &deleteOnClose, &dockWidgetArea);
-
-    if ((dockWidgetArea & Qt::AllDockWidgetAreas) == 0)
-    {
-        retValue += ito::RetVal(ito::retError, 0, "dockWidgetArea is invalid");
-    }
-
-    QMainWindow *mainWin = childOfMainWindow ? qobject_cast<QMainWindow*>(AppManagement::getMainWindow()) : NULL;
 
     if (filename.indexOf("itom://") == 0)
     {
@@ -575,18 +662,16 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
             QString errorMsg = tr("No internal dialog or window with name '%1' could be found.").arg(filename);
             retValue += ito::RetVal(retError, 0, errorMsg.toLatin1().data());
         }
-
-        if (retValue.containsError())
-        {
-            DELETE_AND_SET_NULL(dlg);
-            DELETE_AND_SET_NULL(win);
-        }
     }
     else
     {
         QFile file(QDir::cleanPath(filename));
         if (file.exists())
         {
+            bool childOfMainWindow;
+            UiOrganizer::parseUiDescription(uiDescription, NULL, NULL, &childOfMainWindow, NULL, NULL);
+            QMainWindow *mainWin = childOfMainWindow ? qobject_cast<QMainWindow*>(AppManagement::getMainWindow()) : NULL;
+
             //set the working directory if QLoader to the directory where the ui-file is stored. Then icons, assigned to the user-interface may be properly loaded, since their path is always saved relatively to the ui-file,too.
             file.open(QFile::ReadOnly);
             QFileInfo fileinfo(filename);
@@ -637,151 +722,7 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
 
         if (!retValue.containsError())
         {
-            if (type == ito::UiOrganizer::typeDialog)
-            {
-                //load the file and check whether it is inherited from qdialog. If so, directly load it, else stack it into a UserUiDialog
-                if (wid->inherits("QDialog"))
-                {
-                    //check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
-                    setApiPointersToWidgetAndChildren(wid);
-
-                    startGarbageCollectorTimer();
-
-                    if (deleteOnClose)
-                    {
-                        wid->setAttribute(Qt::WA_DeleteOnClose, true);
-                    }
-
-                    set = new UiContainer(qobject_cast<QDialog*>(wid));
-                    *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-                    containerItem.container = set;
-                    m_dialogList[*dialogHandle] = containerItem;
-                    *initSlotCount = wid->metaObject()->methodOffset();
-                    *objectID = addObjectToList(wid);
-                    *className = wid->metaObject()->className();
-                }
-                else
-                {
-                    //int type, int buttonBarType, StringMap dialogButtons, bool childOfMainWindow
-                    UserUiDialog::tButtonBarType bbBarType = UserUiDialog::bbTypeNo;
-                    if (buttonBarType == UserUiDialog::bbTypeHorizontal) bbBarType = UserUiDialog::bbTypeHorizontal;
-                    if (buttonBarType == UserUiDialog::bbTypeVertical) bbBarType = UserUiDialog::bbTypeVertical;
-
-                    UserUiDialog *dialog = new UserUiDialog(wid, bbBarType, dialogButtons, retValue, mainWin);
-
-                    if (dialog == NULL)
-                    {
-                        retValue += RetVal(retError, 1020, tr("dialog could not be created").toLatin1().data());
-                        wid->deleteLater();
-                    }
-                    else if (!retValue.containsError())
-                    {
-                        //check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
-                        setApiPointersToWidgetAndChildren(dialog);
-
-                        startGarbageCollectorTimer();
-
-                        if (deleteOnClose)
-                        {
-                            dialog->setAttribute(Qt::WA_DeleteOnClose, true);
-                        }
-
-                        set = new UiContainer(dialog);
-                        *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-                        containerItem.container = set;
-                        m_dialogList[*dialogHandle] = containerItem;
-                        *initSlotCount = dialog->metaObject()->methodOffset();
-                        *objectID = addObjectToList(dialog);
-                        *className = dialog->metaObject()->className();
-                    }
-                    else
-                    {
-                        DELETE_AND_SET_NULL(dialog);
-                    }
-                }
-            }
-            else if (type == ito::UiOrganizer::typeMainWindow)
-            {
-                //check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
-                setApiPointersToWidgetAndChildren(wid);
-
-                startGarbageCollectorTimer();
-
-                win = qobject_cast<QMainWindow*>(wid);
-                if (win)
-                {
-                    if (deleteOnClose)
-                    {
-                        win->setAttribute(Qt::WA_DeleteOnClose, true);
-                    }
-
-                    set = new UiContainer(win);
-                    *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-                    containerItem.container = set;
-                    m_dialogList[*dialogHandle] = containerItem;
-                    *initSlotCount = win->metaObject()->methodOffset();
-                    *objectID = addObjectToList(win);
-                    *className = win->metaObject()->className();
-                }
-                else
-                {
-                    wid->setWindowFlags(Qt::Window);
-
-                    if (deleteOnClose)
-                    {
-                        wid->setAttribute(Qt::WA_DeleteOnClose, true);
-                    }
-
-                    set = new UiContainer(wid,UiContainer::uiTypeQMainWindow);
-                    *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-                    containerItem.container = set;
-                    m_dialogList[*dialogHandle] = containerItem;
-                    *initSlotCount = wid->metaObject()->methodOffset();
-                    *objectID = addObjectToList(wid);
-                    *className = wid->metaObject()->className();
-                }
-            }
-            else //dock widget
-            {
-                //check whether any child of dialog is of type AbstractFigure and if so setApiFunctionPointers to it
-                setApiPointersToWidgetAndChildren(wid);
-
-                if (wid->inherits("QDialog"))
-                {
-                    retValue += RetVal(retError, 0, tr("A widget inherited from QDialog cannot be docked into the main window").toLatin1().data());
-                    wid->deleteLater();
-                    wid = NULL;
-                }
-                else
-                {
-                    QMainWindow *mainWin = qobject_cast<QMainWindow*>(AppManagement::getMainWindow());
-                    if (!mainWin)
-                    {
-                        retValue += RetVal(retError, 0, tr("Main window not available for docking the user interface.").toLatin1().data());
-                        wid->deleteLater();
-                        wid = NULL;
-                    }
-                    else
-                    {
-                        Qt::DockWidgetArea dwa = Qt::TopDockWidgetArea;
-                        if (dockWidgetArea == Qt::LeftDockWidgetArea) dwa = Qt::LeftDockWidgetArea;
-                        else if (dockWidgetArea == Qt::RightDockWidgetArea) dwa = Qt::RightDockWidgetArea;
-                        else if (dockWidgetArea == Qt::BottomDockWidgetArea) dwa = Qt::BottomDockWidgetArea;
-
-                        QDockWidget *dockWidget = new QDockWidget(wid->windowTitle(), mainWin);
-                        dockWidget->setWidget(wid);
-                        mainWin->addDockWidget(dwa, dockWidget);
-
-                        set = new UiContainer(dockWidget);
-                        *dialogHandle = ++UiOrganizer::autoIncUiDialogCounter;
-                        containerItem.container = set;
-                        m_dialogList[*dialogHandle] = containerItem;
-                        *initSlotCount = wid->metaObject()->methodOffset();
-                        *objectID = addObjectToList(wid);
-                        *className = wid->metaObject()->className();
-                    }
-                }
-            }
+            retValue += addWidgetToOrganizer(wid, uiDescription, dialogButtons, dialogHandle, initSlotCount, objectID, className);
         }   
     }
 
@@ -1674,7 +1615,7 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, const QVariantMap &pr
             {
                 QObject *newObj = NULL;
                 prop = m_widgetWrapper->fakeProperty(obj, i.key(), &newObj);
-                if (prop.isValid() == false)
+                if (prop.isValid() == false || !newObj)
                 {
                     errString.append(tr("property '%1' does not exist").arg(i.key()));
                 }
@@ -1698,7 +1639,7 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, const QVariantMap &pr
                     {
                         retValue += tempRet;
                     }
-                    else if (prop.write(obj, item) == false)
+                    else if (prop.write(newObj, item) == false)
                     {
                         errString.append(tr("property '%1' could not be written").arg(i.key()));
                 }

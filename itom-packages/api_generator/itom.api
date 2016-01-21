@@ -96,7 +96,7 @@ itom.dataObject.pixToPhys(values [, axes]) -> returns the physical coordinates f
 itom.dataObject.rand([dims [, dtype='uint8'[, continuous = 0]]]) -> creates new dataObject filled with uniform distributed random values.
 itom.dataObject.randN(dims [, dtype='uint8'[, continuous = 0]]) -> creates dataObject filled with gaussian distributed random values.
 itom.dataObject.real() -> return a new data object with the real part of the source
-itom.dataObject.reshape(newSizes) -> Returns reshaped shallow copy of data object
+itom.dataObject.reshape(newShape) -> return a reshaped shallow copy (if possible) of this dataObject.
 itom.dataObject.setAxisDescription(axisNum, axisDescription) -> Set the description of the specified axis.
 itom.dataObject.setAxisOffset(axisNum, axisOffset) -> Set the offset of the specified axis.
 itom.dataObject.setAxisScale(axisNum, axisScale) -> Set the scale value of the specified axis.
@@ -251,6 +251,7 @@ itom.rgba.b
 itom.rgba.g
 itom.rgba.name
 itom.rgba.r
+itom.rgba.toGray() -> returns the gray value from the color (alpha is not considered)
 itom.saveDataObject(filename, dataObject [, tagsAsBinary = False]) -> save a dataObject to harddrive in a xml-based file format.
 itom.saveIDC(filename, dict [,overwriteIfExists = True]) -> saves the given dictionary as pickled idc-file.
 itom.saveMatlabMat(filename, values[, matrixName = 'matrix']) -> save strings, numbers, arrays or combinations into a Matlab mat file.
@@ -319,6 +320,7 @@ itom.ui.TYPEDIALOG
 itom.ui.TYPEDOCKWIDGET
 itom.ui.TYPEWINDOW
 itom.ui.createNewPluginWidget(widgetName[, mandparams, optparams]) -> creates widget defined by any algorithm plugin and returns the instance of type 'ui'
+itom.ui.createNewPluginWidget2(widgetName [, paramsArgs, paramsDict, type = -1, dialogButtonBar, dialogButtons, childOfMainWindow, deleteOnClose, dockWidgetArea) -> creates widget defined by any algorithm plugin and returns the instance of type 'ui'
 itom.ui.getDouble(title, label, defaultValue [, min, max, decimals=3]) -> shows a dialog to get a double value from the user
 itom.ui.getExistingDirectory(caption, startDirectory [, options, parent]) -> opens a dialog to choose an existing directory
 itom.ui.getInt(title, label, defaultValue [, min, max, step=1]) -> shows a dialog to get an integer value from the user

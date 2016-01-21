@@ -210,7 +210,6 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, User
                 {
                     ui.radioButton_consoleOff->setChecked(true);
                 }
-
             }
         }
     }

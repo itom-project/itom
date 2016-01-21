@@ -63,7 +63,7 @@ void WidgetFindWord::on_cmdFindUp_clicked()
     bool caseSensitive = (ui.checkCaseSensitive->checkState() == Qt::Checked);
     bool wholeWord = (ui.checkWholeWord->checkState() == Qt::Checked);
     bool wrap = (ui.checkWrapAround->checkState() == Qt::Checked);
-    emit findNext( ui.txtFind->text(), regExpr, caseSensitive, wholeWord, wrap, false, true);
+    emit findNext(ui.txtFind->text(), regExpr, caseSensitive, wholeWord, wrap, false, true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -73,11 +73,11 @@ void WidgetFindWord::on_cmdFindDown_clicked()
     bool caseSensitive = (ui.checkCaseSensitive->checkState() == Qt::Checked);
     bool wholeWord = (ui.checkWholeWord->checkState() == Qt::Checked);
     bool wrap = (ui.checkWrapAround->checkState() == Qt::Checked);
-    emit findNext( ui.txtFind->text(), regExpr, caseSensitive, wholeWord, wrap, true, true);
+    emit findNext(ui.txtFind->text(), regExpr, caseSensitive, wholeWord, wrap, true, true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void WidgetFindWord::on_txtFind_textChanged ( const QString & /*text*/ )
+void WidgetFindWord::on_txtFind_textChanged (const QString & /*text*/)
 {
     ui.txtFind->setStyleSheet("background-color: white");
 }

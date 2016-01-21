@@ -4,81 +4,81 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../plot/AbstractNode.h" line="210"/>
+        <location filename="../../plot/sources/AbstractNode.cpp" line="85"/>
         <source>Live data source for plot</source>
         <translation type="unfinished">Live Datenquelle für Plot</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractDObjPCLFigure.h" line="79"/>
-        <location filename="../../plot/AbstractDObjPCLFigure.h" line="80"/>
-        <location filename="../../plot/AbstractDObjPCLFigure.h" line="81"/>
-        <location filename="../../plot/AbstractDObjPCLFigure.h" line="88"/>
-        <location filename="../../plot/AbstractDObjPCLFigure.h" line="89"/>
-        <location filename="../../plot/AbstractDObjPCLFigure.h" line="90"/>
-        <location filename="../../plot/AbstractDObjFigure.h" line="73"/>
+        <location filename="../../plot/sources/AbstractDObjPCLFigure.cpp" line="40"/>
+        <location filename="../../plot/sources/AbstractDObjPCLFigure.cpp" line="41"/>
+        <location filename="../../plot/sources/AbstractDObjPCLFigure.cpp" line="42"/>
+        <location filename="../../plot/sources/AbstractDObjPCLFigure.cpp" line="50"/>
+        <location filename="../../plot/sources/AbstractDObjPCLFigure.cpp" line="51"/>
+        <location filename="../../plot/sources/AbstractDObjPCLFigure.cpp" line="52"/>
+        <location filename="../../plot/sources/AbstractDObjFigure.cpp" line="40"/>
         <source>Source data for plot</source>
         <translation type="unfinished">Quelldaten für Plot</translation>
     </message>
     <message>
-        <location filename="../../plot/AbstractDObjFigure.h" line="74"/>
+        <location filename="../../plot/sources/AbstractDObjFigure.cpp" line="41"/>
         <source>Actual output data of plot</source>
         <translation type="unfinished">Aktuelle Ausgabedaten für Plot</translation>
     </message>
     <message>
-        <location filename="../../plot/sources/AbstractNode.cpp" line="105"/>
+        <location filename="../../plot/sources/AbstractNode.cpp" line="114"/>
         <source>Parameter: does not exist in updateParam</source>
         <translation type="unfinished">Parameter: Existiert nicht in &apos;updateParam&apos;</translation>
     </message>
     <message>
-        <location filename="../../plot/sources/AbstractNode.cpp" line="114"/>
+        <location filename="../../plot/sources/AbstractNode.cpp" line="123"/>
         <source>Running update on a locked input channel, i.e. updatePending flag is not set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/sources/AbstractNode.cpp" line="119"/>
+        <location filename="../../plot/sources/AbstractNode.cpp" line="128"/>
         <source>Channel is already updating</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/sources/AbstractNode.cpp" line="237"/>
+        <location filename="../../plot/sources/AbstractNode.cpp" line="246"/>
         <source>Not all parameters in list could not be found in channels, in updateChannels</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/sources/AbstractNode.cpp" line="276"/>
+        <location filename="../../plot/sources/AbstractNode.cpp" line="285"/>
         <source>channel is not a sender in setUpdatePending</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/sources/AbstractNode.cpp" line="281"/>
+        <location filename="../../plot/sources/AbstractNode.cpp" line="290"/>
         <source>unknown channel in setUpdatePending</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/sources/AbstractFigure.cpp" line="204"/>
-        <location filename="../../plot/sources/AbstractFigure.cpp" line="250"/>
+        <location filename="../../plot/sources/AbstractFigure.cpp" line="188"/>
+        <location filename="../../plot/sources/AbstractFigure.cpp" line="234"/>
         <source>duplicate Channel, in addChannel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/sources/AbstractFigure.cpp" line="212"/>
-        <location filename="../../plot/sources/AbstractFigure.cpp" line="219"/>
+        <location filename="../../plot/sources/AbstractFigure.cpp" line="196"/>
+        <location filename="../../plot/sources/AbstractFigure.cpp" line="203"/>
         <source>parameters incompatible, while adding channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/sources/AbstractFigure.cpp" line="224"/>
+        <location filename="../../plot/sources/AbstractFigure.cpp" line="208"/>
         <source>undefined channel direction, while adding channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/sources/AbstractFigure.cpp" line="239"/>
+        <location filename="../../plot/sources/AbstractFigure.cpp" line="223"/>
         <source>invalid child pointer, in addChannel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/sources/AbstractFigure.cpp" line="266"/>
-        <location filename="../../plot/sources/AbstractFigure.cpp" line="293"/>
+        <location filename="../../plot/sources/AbstractFigure.cpp" line="250"/>
+        <location filename="../../plot/sources/AbstractFigure.cpp" line="275"/>
         <source>channel does not exist</source>
         <translation type="unfinished"></translation>
     </message>
@@ -384,8 +384,6 @@ Type conflict for %1</source>
     </message>
     <message>
         <location filename="../../common/sources/pluginThreadCtrl.cpp" line="516"/>
-        <location filename="../../common/sources/helperActuator.cpp" line="185"/>
-        <location filename="../../common/sources/helperActuator.cpp" line="223"/>
         <source>Error during setPosRel: Vectors differ in size</source>
         <translation type="unfinished">Fehler bei setPosRel: Vektoren unterscheiden sich in der Größe</translation>
     </message>
@@ -458,43 +456,6 @@ Type conflict for %1</source>
         <location filename="../../common/sources/helperCommon.cpp" line="424"/>
         <source>invalid parameter name</source>
         <translation type="unfinished">Ungültiger Parametername</translation>
-    </message>
-    <message>
-        <location filename="../../common/sources/helperGrabber.cpp" line="81"/>
-        <location filename="../../common/sources/helperGrabber.cpp" line="368"/>
-        <location filename="../../common/sources/helperGrabber.cpp" line="388"/>
-        <location filename="../../common/sources/helperGrabber.cpp" line="408"/>
-        <location filename="../../common/sources/helperActuator.cpp" line="84"/>
-        <source>timeout while getting numaxis parameter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../common/sources/helperGrabber.cpp" line="119"/>
-        <source>Camera not correctly initialized</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../common/sources/helperGrabber.cpp" line="141"/>
-        <location filename="../../common/sources/helperActuator.cpp" line="319"/>
-        <source>Semaphore not correctly initialized</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../common/sources/helperGrabber.cpp" line="146"/>
-        <location filename="../../common/sources/helperActuator.cpp" line="147"/>
-        <location filename="../../common/sources/helperActuator.cpp" line="326"/>
-        <source>Timeout while Waiting for Semaphore</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../common/sources/helperActuator.cpp" line="138"/>
-        <source>Motor not correctly initialized</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../common/sources/helperActuator.cpp" line="154"/>
-        <source>Semaphore contained error</source>
-        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -651,12 +612,12 @@ Type conflict for %1</source>
 <context>
     <name>ito::AbstractDObjFigure</name>
     <message>
-        <location filename="../../plot/sources/AbstractDObjFigure.cpp" line="111"/>
+        <location filename="../../plot/sources/AbstractDObjFigure.cpp" line="126"/>
         <source>Function &apos;spawnLinePlot&apos; not supported from this plot widget</source>
         <translation type="unfinished">Die Funktion  &apos;spawnLinePlot&apos; wird von diesem Plot-Widget nicht unterstützt</translation>
     </message>
     <message>
-        <location filename="../../plot/sources/AbstractDObjFigure.cpp" line="232"/>
+        <location filename="../../plot/sources/AbstractDObjFigure.cpp" line="247"/>
         <source>Figure does not contain an input slot for live sources</source>
         <translation type="unfinished">Der Plot besitzt keinen Slot für Live-Quellen</translation>
     </message>
@@ -664,7 +625,7 @@ Type conflict for %1</source>
 <context>
     <name>ito::AbstractDObjPclFigure</name>
     <message>
-        <location filename="../../plot/sources/AbstractDObjPCLFigure.cpp" line="168"/>
+        <location filename="../../plot/sources/AbstractDObjPCLFigure.cpp" line="193"/>
         <source>Function &apos;spawnLinePlot&apos; not supported from this plot widget</source>
         <translation type="unfinished">Die Funktion  &apos;spawnLinePlot&apos; wird von diesem Plot-Widget nicht unterstützt</translation>
     </message>
@@ -672,7 +633,7 @@ Type conflict for %1</source>
 <context>
     <name>ito::AbstractFigure</name>
     <message>
-        <location filename="../../plot/sources/AbstractFigure.cpp" line="146"/>
+        <location filename="../../plot/sources/AbstractFigure.cpp" line="145"/>
         <source>Properties</source>
         <translation type="unfinished">Eigenschaften</translation>
     </message>
@@ -680,22 +641,22 @@ Type conflict for %1</source>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../common/addInInterface.h" line="1023"/>
+        <location filename="../../common/addInInterface.h" line="1026"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished">Nicht initialisierter Vektor für Pflichtparameter!</translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.h" line="1027"/>
+        <location filename="../../common/addInInterface.h" line="1030"/>
         <source>uninitialized vector for optional parameters!</source>
         <translation type="unfinished">Nicht initialisierter Vektor für optionale Parameter!</translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.h" line="1031"/>
+        <location filename="../../common/addInInterface.h" line="1034"/>
         <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished">Nicht initialisierter Vektor für Ausgabeparameter!</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="908"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="900"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished">Der Konstruktor muss überschrieben sein</translation>
     </message>

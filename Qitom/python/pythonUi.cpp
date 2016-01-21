@@ -1251,6 +1251,8 @@ Further hints can be (among others): \n\
 * Qt::WindowMinimizeButtonHint (0x00004000) -> adds a minimize button to the title bar \n\
 * Qt::WindowMaximizeButtonHint (0x00008000) -> adds a maximize button to the title bar \n\
 * Qt::WindowCloseButtonHint (0x00010000) -> adds a close button. \n\
+* Qt::WindowStaysOnTopHint (0x00040000) -> this ui element always stays on top of other windows \n\
+* Qt::WindowCloseButtonHint (0x08000000) -> remove this flag in order to disable the close button \n\
 \n\
 If you simply want to change one hint, get the current set of flags using **getWindowFlags**, change the necessary bitmask and \n\
 set it again using this method. \n\
@@ -1586,7 +1588,7 @@ PyObject* PythonUi::PyUiItem_getattro(PyUiItem *self, PyObject *name)
 
     if(PyUiItem == NULL)
     {
-        PyErr_SetString(PyExc_AttributeError, "Could not create uiItem of requested widget");
+        PyErr_SetString(PyExc_AttributeError, "This widget does not have a child with the desired name.");
         return NULL;
     }
 
@@ -1778,8 +1780,8 @@ PyObject* PythonUi::PyUi_new(PyTypeObject *type, PyObject * args, PyObject * kwd
         PyDict_SetItemString(self->dialogButtons, "RejectRole", text);
         Py_DECREF(text);
         text = NULL;
-        self->winType = 0;
-        self->buttonBarType = 0;
+        self->winType = UiOrganizer::typeDialog;
+        self->buttonBarType = UserUiDialog::bbTypeNo;
         self->childOfMainWindow = true; //default
         self->deleteOnClose = false; //default
         self->filename = NULL;
@@ -1844,8 +1846,6 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
 
     if(!PyArg_ParseTupleAndKeywords(args, kwds, "O&|iiO!bbi", const_cast<char**>(kwlist), &PyUnicode_FSConverter, &bytesFilename, &self->winType, &self->buttonBarType, &PyDict_Type, &dialogButtons, &self->childOfMainWindow, &self->deleteOnClose, &dockWidgetArea))
     {
-        //PyErr_SetString(PyExc_TypeError,"Arguments does not fit to required list of arguments. See help(ui)."); //message is already set by method above and the text is more specific.
-        //Py_XDECREF(bytesFilename); //error: crash if bytesFilename is deleted here. Why?
         return -1;
     }
 
@@ -1905,7 +1905,7 @@ int PythonUi::PyUi_init(PyUi *self, PyObject *args, PyObject *kwds)
             valueString = PythonQtConversion::PyObjGetString(value,true,ok);
             if(keyString.isNull() || valueString.isNull())
             {
-                std::cout << "Warning while parsing dialogButtons-dictionary. At least one element does not contain a string as key and value" << std::endl;
+                std::cout << "Warning while parsing dialogButtons-dictionary. At least one element does not contain a string as key and value\n" << std::endl;
             }
             else
             {
@@ -3076,25 +3076,40 @@ PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObje
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiCreateNewPluginWidget_doc, "createNewPluginWidget(widgetName[, mandparams, optparams]) -> creates widget defined by any algorithm plugin and returns the instance of type 'ui' \n\
+\n\
+This static class method initializes an instance of class ui from a widget, window, dialog or dockWidget that is implemented in an algorithm plugin. \n\
+Compared to the more detailed method 'createNewPluginWidget2', this method uses the following defaults for the windows appearance: \n\
+\n\
+    * the type of the widget is derived from the widget itself and cannot be adjusted \n\
+    * deleteOnClose = false, the widget or windows will only be hidden if the user clicks the close button \n\
+    * childOfMainWindow = true, the widget or windows is a child of the main window without own symbol in the task bar \n\
+    * dockWidgetArea = ui.TOPDOCKWIDGETAREA, if the widget is derived from QDockWidget, the dock widget is docked at that location \n\
+    * buttonBarType = ui.BUTTONBAR_NO, if a dialog is created (if the plugin delivers a widget and no windows, dialog or dock widget), the dialog has no automatically generated OK, Cancel, ... buttons \n\
+\n\
+If you want to have other default parameters than these ones, call 'createNewPluginWidget2'. \n\
+\n\
 Parameters \n\
 ----------- \n\
-widgetName : {}\n\
-    name algorithm widget \n\
+widgetName : {str} \n\
+    name of algorithm widget \n\
+mandparams, optparams : {arbitrary} \n\
     parameters to pass to the plugin. The parameters are parsed and unnamed parameters are used in their \
     incoming order to fill first mandatory parameters and afterwards optional parameters. Parameters may be passed \
     with name as well but after the first named parameter no more unnamed parameters are allowed.\n\
 \n\
 Returns \n\
 ------- \n\
+instance of type 'ui'. The type of the ui is mainly defined by the type of the widget. If it is derived from QMainWindow, a window is opened; if \n\
+it is derived from QDockWidget a dock widget at the top dock widget area is created, in all other cases a dialog is created. \n\
 \n\
 Notes \n\
 ----- \n\
-doctodo\n\
+Unlike it is the case at the creation of ui's from ui files, you can not directly parameterize behaviours like the \n\
+deleteOnClose flag. This can however be done using setAttribute. \n\
 \n\
 See Also \n\
 --------- \n\
-\n\
-");
+createNewPluginWidget2");
 PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
     int length = PyTuple_Size(args);
@@ -3160,6 +3175,14 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
+    int winType = 0xff;
+    bool deleteOnClose = false;
+    bool childOfMainWindow = true;
+    Qt::DockWidgetArea dockWidgetArea = Qt::TopDockWidgetArea;
+    int buttonBarType = UserUiDialog::bbTypeNo;
+    StringMap dialogButtons;
+    int uiDescription = UiOrganizer::createUiDescription(winType, buttonBarType, childOfMainWindow, deleteOnClose, dockWidgetArea);
+
     QSharedPointer<unsigned int> dialogHandle(new unsigned int);
     QSharedPointer<unsigned int> initSlotCount(new unsigned int);
     QSharedPointer<unsigned int> objectID(new unsigned int);
@@ -3167,7 +3190,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     *dialogHandle = 0;
     *initSlotCount = 0;
     *objectID = 0;
-    QMetaObject::invokeMethod(uiOrga, "loadPluginWidget", Q_ARG(void*, reinterpret_cast<void*>(def->m_widgetFunc)), Q_ARG(QVector<ito::ParamBase>*, &paramsMandBase), Q_ARG(QVector<ito::ParamBase>*, &paramsOptBase), Q_ARG(QSharedPointer<uint>, dialogHandle), Q_ARG(QSharedPointer<uint>, initSlotCount), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "loadPluginWidget", Q_ARG(void*, reinterpret_cast<void*>(def->m_widgetFunc)), Q_ARG(int, uiDescription), Q_ARG(StringMap, dialogButtons), Q_ARG(QVector<ito::ParamBase>*, &paramsMandBase), Q_ARG(QVector<ito::ParamBase>*, &paramsOptBase), Q_ARG(QSharedPointer<uint>, dialogHandle), Q_ARG(QSharedPointer<uint>, initSlotCount), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     if(!locker.getSemaphore()->wait(-1))
     {
@@ -3217,6 +3240,207 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiCreateNewPluginWidget2_doc, "createNewPluginWidget2(widgetName [, paramsArgs, paramsDict, type = -1, dialogButtonBar, dialogButtons, childOfMainWindow, deleteOnClose, dockWidgetArea) -> creates widget defined by any algorithm plugin and returns the instance of type 'ui' \n\
+\n\
+Parameters \n\
+----------- \n\
+widgetName : {str} \n\
+    name of algorithm widget \n\
+paramsArgs : {tuple of arbitrary parameters} \n\
+    see paramsDict \n\
+paramsDict : {dict of arbitrary parameters} \n\
+    The widget creation method in the plugin can depend on several mandatory or optional parameters. \n\
+    For their initialization, the mandatory and optional parameters are considered to be stacked together. \n\
+    At first, the paramsArgs sequence is used to assign a certain number of parameters beginning at \n\
+    the mandatory ones. If all paramsArgs values are assigned, the keyword-based values in paramsDict \n\
+    are tried to be assigned to not yet used mandatory or optional parameters. All mandatory parameters \n\
+    must be given (use widgetHelp(widgetName) to obtain information about all required parameters. \n\
+type : {int}, optional \n\
+    display type: \n\
+    \n\
+        * 255 (default) : type is derived from type of widget, \n\
+        * 0 (ui.TYPEDIALOG): ui-file is embedded in auto-created dialog (default), \n\
+        * 1 (ui.TYPEWINDOW): ui-file is handled as main window, \n\
+        * 2 (ui.TYPEDOCKWIDGET): ui-file is handled as dock-widget and appended to the main-window dock area \n\
+dialogButtonBar :  {int}, optional \n\
+    Only for type ui.TYPEDIALOG (0). Indicates whether buttons should automatically be added to the dialog: \n\
+    \n\
+        * 0 (ui.BUTTONBAR_NO): do not add any buttons (default) \n\
+        * 1 (ui.BUTTONBAR_HORIZONTAL): add horizontal button bar \n\
+        * 2 (ui.BUTTONBAR_VERTICAL): add vertical button bar \n\
+    dialogButtons : {dict}, optional \n\
+    every dictionary-entry is one button. key is the role, value is the button text \n\
+childOfMainWindow :  {bool}, optional \n\
+    for type TYPEDIALOG and TYPEWINDOW only. Indicates whether window should be a child of itom main window (default: True) \n\
+deleteOnClose : {bool}, optional \n\
+    Indicates whether window should be deleted if user closes it or if it is hidden (default: Hidden, False) \n\
+dockWidgetArea : {int}, optional \n\
+    Only for type ui.TYPEDOCKWIDGET (2). Indicates the position where the dock widget should be placed: \n\
+    \n\
+        * 1 (ui.LEFTDOCKWIDGETAREA) \n\
+        * 2 (ui.RIGHTDOCKWIDGETAREA) \n\
+        * 4 (ui.TOPDOCKWIDGETAREA): default \n\
+        * 8 (ui.BOTTOMDOCKWIDGETAREA) \n\
+\n\
+Returns \n\
+------- \n\
+instance of type 'ui'. The type of the ui is mainly defined by the type of the widget. If it is derived from QMainWindow, a window is opened; if \n\
+it is derived from QDockWidget a dock widget at the top dock widget area is created, in all other cases a dialog is created. \n\
+\n\
+Notes \n\
+----- \n\
+Unlike it is the case at the creation of ui's from ui files, you can not directly parameterize behaviours like the \n\
+deleteOnClose flag. This can however be done using setAttribute. \n\
+\n\
+See Also \n\
+--------- \n\
+createNewPluginWidget");
+PyObject* PythonUi::PyUi_createNewAlgoWidget2(PyUi * /*self*/, PyObject *args, PyObject *kwds)
+{
+    const char *kwlist[] = { "widgetName", "paramsArgs", "paramsDict", "type", "dialogButtonBar", "dialogButtons", "childOfMainWindow", "deleteOnClose", "dockWidgetArea", NULL };
+    PyObject *dialogButtons = NULL;
+    int dockWidgetArea = Qt::TopDockWidgetArea;
+    const char* widgetName = NULL;
+    PyObject *paramsArgs = NULL;
+    PyObject *paramsDict = NULL;
+    bool deleteOnClose = false;
+    bool childOfMainWindow = true;
+    int winType = 0xFF;
+    int buttonBarType = UserUiDialog::bbTypeNo;
+
+    if (args == NULL || PyTuple_Size(args) == 0) //empty constructor
+    {
+        return 0;
+    }
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|O!O!iiO!bbi", const_cast<char**>(kwlist), &widgetName, &PyTuple_Type, &paramsArgs, &PyDict_Type, &paramsDict, &winType, &buttonBarType, &PyDict_Type, &dialogButtons, &childOfMainWindow, &deleteOnClose, &dockWidgetArea))
+    {
+        return NULL;
+    }
+
+    QVector<ito::ParamBase> paramsMandBase, paramsOptBase;
+    QString algoWidgetName = widgetName;
+
+    ito::AddInManager *AIM = ito::AddInManager::getInstance();
+    if (!AIM)
+    {
+        PyErr_SetString(PyExc_RuntimeError, QObject::tr("no addin-manager found").toUtf8().data());
+        return NULL;
+    }
+
+    const ito::AddInAlgo::AlgoWidgetDef *def = AIM->getAlgoWidgetDef(algoWidgetName);
+    if (def == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, QObject::tr("Could not find plugin widget with name '%1'").arg(algoWidgetName).toUtf8().data());
+        return NULL;
+    }
+
+    const ito::FilterParams *filterParams = AIM->getHashedFilterParams(def->m_paramFunc);
+    if (!filterParams)
+    {
+        PyErr_SetString(PyExc_RuntimeError, QObject::tr("Could not get parameters for plugin widget '%1'").arg(algoWidgetName).toUtf8().data());
+        return NULL;
+    }
+
+    if (parseInitParams(&(filterParams->paramsMand), &(filterParams->paramsOpt), paramsArgs, paramsDict, paramsMandBase, paramsOptBase) != ito::retOk)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "error while parsing parameters.");
+        return NULL;
+    }
+
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    if (uiOrga == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
+        return NULL;
+    }
+
+    int uiDescription = UiOrganizer::createUiDescription(winType, buttonBarType, childOfMainWindow, deleteOnClose, dockWidgetArea);
+    StringMap dialogButtonMap;
+
+    if (dialogButtons)
+    {
+        //transfer dialogButtons dict to dialogButtonMap
+        PyObject *key, *value;
+        Py_ssize_t pos = 0;
+        QString keyString, valueString;
+        bool ok = false;
+
+        while (PyDict_Next(dialogButtons, &pos, &key, &value))
+        {
+            keyString = PythonQtConversion::PyObjGetString(key, true, ok);
+            valueString = PythonQtConversion::PyObjGetString(value, true, ok);
+            if (keyString.isNull() || valueString.isNull())
+            {
+                std::cout << "Warning while parsing dialogButtons-dictionary. At least one element does not contain a string as key and value\n" << std::endl;
+            }
+            else
+            {
+                dialogButtonMap[keyString] = valueString;
+            }
+        }
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    ito::RetVal retValue = retOk;
+
+    QSharedPointer<unsigned int> dialogHandle(new unsigned int);
+    QSharedPointer<unsigned int> initSlotCount(new unsigned int);
+    QSharedPointer<unsigned int> objectID(new unsigned int);
+    QSharedPointer<QByteArray> className(new QByteArray());
+    *dialogHandle = 0;
+    *initSlotCount = 0;
+    *objectID = 0;
+    QMetaObject::invokeMethod(uiOrga, "loadPluginWidget", Q_ARG(void*, reinterpret_cast<void*>(def->m_widgetFunc)), Q_ARG(int, uiDescription), Q_ARG(StringMap, dialogButtonMap), Q_ARG(QVector<ito::ParamBase>*, &paramsMandBase), Q_ARG(QVector<ito::ParamBase>*, &paramsOptBase), Q_ARG(QSharedPointer<uint>, dialogHandle), Q_ARG(QSharedPointer<uint>, initSlotCount), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<QByteArray>, className), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+    if (!locker.getSemaphore()->wait(-1))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "timeout while loading plugin widget");
+        return NULL;
+    }
+
+    retValue = locker.getSemaphore()->returnValue;
+    if (!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    PythonUi::PyUi *dialog;
+
+    PyObject *emptyTuple = PyTuple_New(0);
+    dialog = (PyUi*)PyObject_Call((PyObject*)&PyUiType, NULL, NULL); //new ref, tp_new of PyUi is called, init not
+    Py_XDECREF(emptyTuple);
+
+    if (dialog == NULL)
+    {
+        if (*dialogHandle)
+        {
+            ItomSharedSemaphoreLocker locker2(new ItomSharedSemaphore());
+            QMetaObject::invokeMethod(uiOrga, "deleteDialog", Q_ARG(uint, static_cast<unsigned int>(*dialogHandle)), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+
+            if (!locker2.getSemaphore()->wait(PLUGINWAIT))
+            {
+                PyErr_SetString(PyExc_RuntimeError, "timeout while closing dialog");
+            }
+        }
+
+        PyErr_SetString(PyExc_RuntimeError, "could not create a new instance of class ui.");
+        return NULL;
+    }
+
+    dialog->uiHandle = static_cast<int>(*dialogHandle);
+    dialog->signalMapper = new PythonQtSignalMapper(*initSlotCount);
+    dialog->uiItem.methodList = NULL;
+    dialog->uiItem.objectID = *objectID;
+    dialog->uiItem.widgetClassName = new char[className->size() + 1];
+    strcpy_s(dialog->uiItem.widgetClassName, className->size() + 1, className->data());
+
+    const char *objName = "<plugin-widget>\0";
+    dialog->uiItem.objName = new char[strlen(objName) + 1];
+    strcpy_s(dialog->uiItem.objName, strlen(objName) + 1, objName);
+
+    return (PyObject*)dialog;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyMethodDef PythonUi::PyUi_methods[] = {
         {"show", (PyCFunction)PyUi_show,     METH_VARARGS, pyUiShow_doc},
         {"hide", (PyCFunction)PyUi_hide, METH_NOARGS, pyUiHide_doc},
@@ -3234,6 +3458,7 @@ PyMethodDef PythonUi::PyUi_methods[] = {
         {"getOpenFileName", (PyCFunction)PyUi_getOpenFileName, METH_KEYWORDS | METH_VARARGS |METH_STATIC, pyUiGetOpenFileName_doc},
         {"getSaveFileName", (PyCFunction)PyUi_getSaveFileName, METH_KEYWORDS | METH_VARARGS |METH_STATIC, pyUiGetSaveFileName_doc},
         {"createNewPluginWidget", (PyCFunction)PyUi_createNewAlgoWidget, METH_KEYWORDS | METH_VARARGS |METH_STATIC, pyUiCreateNewPluginWidget_doc},
+        { "createNewPluginWidget2", (PyCFunction)PyUi_createNewAlgoWidget2, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiCreateNewPluginWidget2_doc },
         {NULL}  /* Sentinel */
 };
 
