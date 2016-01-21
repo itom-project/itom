@@ -269,9 +269,11 @@ int main(int argc, char *argv[])
     //this is for the matplotlib config file that is adapted for itom.
     mpl_itomDir = QString("MPLCONFIGDIR=%1").arg(mpl_itomDir);
     _putenv(mpl_itomDir.toLatin1().data());
+    _putenv("MPLBACKEND=module://mpl_itom.backend_itomagg"); //set the default backend for matplotlib (only taken into account for matplotlib >= 1.5) to the itom backend
 #else
     setenv("PATH", newpath, 1);
     setenv("MPLCONFIGDIR", mpl_itomDir.toLatin1().data(), 1);
+    setenv("MPLBACKEND", "module://mpl_itom.backend_itomagg", 1);
 #endif
     free(newpath);
 
