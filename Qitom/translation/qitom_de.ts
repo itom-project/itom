@@ -922,12 +922,12 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../helper/paramHelper.cpp" line="+1404"/>
+        <location filename="../helper/paramHelper.cpp" line="+1424"/>
         <source>invalid parameter name</source>
         <translation>Ungültiger Parametername</translation>
     </message>
     <message>
-        <location line="-1365"/>
+        <location line="-1385"/>
         <source>Types of parameter &apos;%s&apos; is unequal to required type of interface parameter &apos;%s&apos;</source>
         <translation type="unfinished">Der Typ des Parameters &apos;%s&apos; entspricht nicht dem geforderten Typ des Schnittstellenparameters &apos;%s&apos;</translation>
     </message>
@@ -1040,12 +1040,11 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Die Meta-Daten der Parameterschnittstelle &apos;%s&apos; sind unbekannt.</translation>
     </message>
     <message>
-        <location line="+39"/>
         <source>String &apos;%s&apos; does not fit to given string-constraints.</source>
-        <translation type="unfinished">Der String &apos;%s&apos; entspricht nicht den geforderten String-Bedingungen.</translation>
+        <translation type="obsolete">Der String &apos;%s&apos; entspricht nicht den geforderten String-Bedingungen.</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+66"/>
         <location line="+158"/>
         <source>AddIn must not be NULL</source>
         <translation>AddIn muss NULL sein</translation>
@@ -1191,10 +1190,30 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="-818"/>
         <source>AddIn does not fit to minimum required type(s).</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">AddIn erfüllt nicht die Mindestvoraussetzungen der Typ(en).</translation>
+    </message>
+    <message>
+        <location line="-165"/>
+        <source>Exact string match: (%1)</source>
+        <translation type="unfinished">Geforderter String: (%1)</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Wildcard match: (%1)</source>
+        <translation type="unfinished">Geforderter Platzhalter: (%1)</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>RegExp match: (%1)</source>
+        <translation type="unfinished">Geforderter Regulärer Ausdruck: (%1)</translation>
     </message>
     <message>
         <location line="+4"/>
+        <source>String &apos;%s&apos; does not fit to given string-constraints. %1</source>
+        <translation type="unfinished">Der Text &apos;%s&apos; entspricht nicht der String-Vorgabe. %1</translation>
+    </message>
+    <message>
+        <location line="+159"/>
         <source>AddIn must be of the following plugin: &apos;%s&apos;.</source>
         <translation type="unfinished">AddIn muss folgendes Plugin sein: &apos;%s&apos;.</translation>
     </message>
@@ -1485,27 +1504,30 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Itom DataIOPlugin-Typ in Python</translation>
     </message>
     <message>
-        <location filename="../python/pythonUi.cpp" line="+3104"/>
+        <location filename="../python/pythonUi.cpp" line="+3119"/>
         <source>no widget name specified</source>
         <translation type="unfinished">Kein Widget-Name vergeben</translation>
     </message>
     <message>
         <location line="+15"/>
+        <location line="+193"/>
         <source>no addin-manager found</source>
         <translation type="unfinished">Der &apos;AddInManager&apos; wurde nicht gefunden</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="-185"/>
         <source>the first parameter must contain the widget name as string</source>
         <translation type="unfinished">Der erste Parameter muss einen String mit dem Widget-Name enthalten</translation>
     </message>
     <message>
         <location line="+7"/>
+        <location line="+185"/>
         <source>Could not find plugin widget with name &apos;%1&apos;</source>
         <translation type="unfinished">Das Plugin-Widget mit dem Namen &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="-178"/>
+        <location line="+185"/>
         <source>Could not get parameters for plugin widget &apos;%1&apos;</source>
         <translation type="unfinished">Vom Plugin-Widget &apos;%1&apos; konnten keine Parameter gelesen werden</translation>
     </message>
@@ -2521,38 +2543,38 @@ dem Editor ein.</translation>
     <message>
         <location line="+6"/>
         <source>General timeout</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Allgemein</translation>
     </message>
     <message>
         <location line="+7"/>
         <location line="+36"/>
         <location line="+36"/>
         <source>-1 (infinity)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">-1 (endlos)</translation>
     </message>
     <message>
         <location line="-69"/>
         <location line="+36"/>
         <location line="+36"/>
         <source> ms</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="-53"/>
         <location line="+36"/>
         <location line="+36"/>
         <source>(0: no, -1: infinite timeout)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">(0: aus, -1: endlos)</translation>
     </message>
     <message>
         <location line="-65"/>
         <source>Plugin init and close timeout</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Plugins: Init und Close</translation>
     </message>
     <message>
         <location line="+36"/>
         <source>File load and save timeout</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Dateien: Speichern und Öffnen</translation>
     </message>
     <message>
         <location line="+39"/>
@@ -2562,7 +2584,7 @@ dem Editor ein.</translation>
     <message>
         <location line="+6"/>
         <source>The following paths are prepended to the PATH environment variable used by itom. It is modified before itom starts loading plugins or designer plugins. These paths do not affect the overall PATH environment variable of the operating system.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die folgenden Verzeichnisse werden beim Laden der Plugins und Designer-Plugins als Bibliotheksquellen berücksichtigt.</translation>
     </message>
     <message>
         <source>The following pathes are prepended to the PATH environment variable used by itom. It is modified before itom starts loading plugins or designer plugins. These pathes do not affect the overall PATH environment variable of the operating system.</source>
@@ -2971,7 +2993,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Derzeit können nur Benutzerschnittstellen von Plugins geöffnet werden, die keine Pflicht- oder optionale Startparameter haben</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+34"/>
         <source>User interface of plugin could not be created. Returned handle is invalid.</source>
         <translation>Benutzerschnittstelle des Plugins konnte nicht erstellt werden. Gesendetes Handle ist ungültig.</translation>
     </message>
@@ -3019,12 +3041,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="-3"/>
         <source>stay on top of all visible windows</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Alle sichtbaren Fenster im Vordergrund anzeigen</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>stay on top of main window of itom</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Hauptfenster von itom im Vordergrund anzeigen</translation>
     </message>
     <message>
         <location line="+69"/>
@@ -3545,27 +3567,27 @@ Katesisch</translation>
         <location line="+18"/>
         <location line="+8"/>
         <source>Python variable name already exists</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Variablenname existiert bereits bei Python</translation>
     </message>
     <message>
         <location line="-8"/>
         <source>The variable name %1 already exists in this workspace. Do you want to overwrite it?</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Variable &apos;%1&apos; existiert bereits in diesem Workspace. Soll diese überschrieben werden?</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>The variable name %1 already exists in this workspace. It cannot be overwritten since it is a function, method, type or class. Choose a new name.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Variable &apos;%1&apos; existiert bereits in diesem Workspace. Diese kann nicht überschrieben werden, da sie eine Funktion, Methode, Typ oder Klasse repräsentiert. Bitte einen neuen Namen wählen.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Timeout while verifiying variable name</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung während der Prüfung der Variablennamen</translation>
     </message>
     <message>
         <location line="+0"/>
         <source>A timeout occurred while checking for the existence of the variable name in Python. Please try it again.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung während der Prüfung auf existierende Variablennamen in Python. Bitte nochmals versuchen.</translation>
     </message>
     <message>
         <location line="+62"/>
@@ -4180,12 +4202,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="-333"/>
         <source>designer widget of class &apos;%s&apos; cannot plot objects of type pointCloud</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Designer-Widget der Klasse &apos;%s&apos; kann kein Objekt vom Typ PointCloud anzeigen</translation>
     </message>
     <message>
         <location line="+49"/>
         <source>designer widget of class &apos;%s&apos; cannot plot objects of type polygonMesh</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Designer-Widget der Klasse &apos;%s&apos; kann kein Objekt vom Typ  PolygonMesh anzeigen</translation>
     </message>
     <message>
         <location line="+123"/>
@@ -4508,13 +4530,13 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+30"/>
-        <location line="+52"/>
-        <location line="+133"/>
+        <location line="+71"/>
+        <location line="+141"/>
         <source>optional</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-157"/>
+        <location line="-165"/>
         <source>Unknown filter name &apos;%1&apos;</source>
         <translation type="unfinished">Unbekannter Filtername &apos;%1&apos;</translation>
     </message>
@@ -4524,7 +4546,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation type="unfinished">Unbekanntes Algorithmus-Plugin namens &apos;%1&apos;</translation>
     </message>
     <message>
-        <location line="+97"/>
+        <location line="+105"/>
         <source>unknown type</source>
         <translation type="unfinished">Unbekannter Typ</translation>
     </message>
@@ -4640,13 +4662,13 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::IOHelper</name>
     <message>
-        <location filename="../helper/IOHelper.cpp" line="+112"/>
-        <location line="+722"/>
+        <location filename="../helper/IOHelper.cpp" line="+154"/>
+        <location line="+812"/>
         <source>Multiple plugins</source>
         <translation type="unfinished">Multiple Plugins</translation>
     </message>
     <message>
-        <location line="-722"/>
+        <location line="-812"/>
         <source>Multiple plugins provide methods to load the file of type &apos;%1&apos;. Please choose one.</source>
         <translation type="unfinished">Multiple Plugins unterstüzen Methoden um Dateien des Typs &apos;%1&apos; zu laden. Bitte einen auswählen.</translation>
     </message>
@@ -4656,14 +4678,14 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Die Datei &apos;%1&apos; konnte nicht mit der verknüpften externen Anwendung geöffnet werden</translation>
     </message>
     <message>
-        <location line="+71"/>
+        <location line="+96"/>
         <source>Save selected variables as...</source>
         <translation type="unfinished">Speichern der markierten Variablen als...</translation>
     </message>
     <message>
-        <location line="+26"/>
-        <location line="+61"/>
-        <location line="+115"/>
+        <location line="+25"/>
+        <location line="+68"/>
+        <location line="+137"/>
         <source>python engine not available</source>
         <translation type="unfinished">Python-Engine ist nicht verfügbar</translation>
     </message>
@@ -4673,7 +4695,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Variablen können nicht importiert werden während Python läuft</translation>
     </message>
     <message>
-        <location line="-166"/>
+        <location line="-195"/>
         <source>timeout while getting value from workspace</source>
         <translation type="unfinished">Zeitüberschreitung beim Lesen der Werte aus dem Arbeitsbereich</translation>
     </message>
@@ -4683,14 +4705,14 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Die Anzahl der zurückgegebenen Werte aus dem Arbeitsbereich entspricht nicht der angeforderten Anzahl</translation>
     </message>
     <message>
-        <location line="+30"/>
-        <location line="+115"/>
+        <location line="+37"/>
+        <location line="+137"/>
         <source>file cannot be opened</source>
         <translation type="unfinished">Datei kann nicht geöffnet werden</translation>
     </message>
     <message>
-        <location line="-164"/>
-        <location line="+61"/>
+        <location line="-193"/>
+        <location line="+68"/>
         <source>variables cannot be exported since python is busy right now</source>
         <translation type="unfinished">Variablen können nicht exportiert werden während Python ausgeführt wird</translation>
     </message>
@@ -4706,22 +4728,22 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     </message>
     <message>
         <location line="+11"/>
-        <location line="+114"/>
+        <location line="+136"/>
         <source>suffix must be *.idc or *.mat</source>
         <translation type="unfinished">Dateiendung muss *.idc oder *.mat sein</translation>
     </message>
     <message>
-        <location line="-89"/>
+        <location line="-98"/>
         <source>Import data</source>
         <translation type="unfinished">Daten importieren</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+18"/>
         <source>file not found</source>
         <translation type="unfinished">Datei nicht gefunden</translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="+51"/>
         <source>timeout while unpickling variables</source>
         <translation type="unfinished">Zeitüberschreitung beim &quot;Unpickeln&quot; von Variablen</translation>
     </message>
@@ -4731,22 +4753,20 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Zeitüberschreitung beim Laden von Matlab-Variablen</translation>
     </message>
     <message>
-        <location line="+24"/>
         <source>open python script</source>
-        <translation type="unfinished">Python-Skript öffnen</translation>
+        <translation type="obsolete">Python-Skript öffnen</translation>
     </message>
     <message>
-        <location line="+0"/>
         <source>python (*.py)</source>
-        <translation type="unfinished">Python (*.py)</translation>
+        <translation type="obsolete">Python (*.py)</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+44"/>
         <source>timeout while opening script</source>
         <translation type="unfinished">Zeitüberschreitung beim Öffnen eines Skripts</translation>
     </message>
     <message>
-        <location line="+230"/>
+        <location line="+264"/>
         <source>PolygonMesh and PointCloud not available since support of PointCloudLibrary is disabled in this version.</source>
         <translation type="unfinished">PolygonMesh und PointCloud sind in dieser Version von PointCloudLibrary nicht verfügbar.</translation>
     </message>
@@ -4781,7 +4801,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Fehler beim Senden von Werten an Python</translation>
     </message>
     <message>
-        <location line="-702"/>
+        <location line="-776"/>
         <source>file %1 does not exist</source>
         <translation type="unfinished">Datei &apos;%1&apos; existiert nicht</translation>
     </message>
@@ -4791,7 +4811,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Datei &apos;%1&apos; kann mit dieser Anwendung nicht geöffnet werden</translation>
     </message>
     <message>
-        <location line="+623"/>
+        <location line="+697"/>
         <source>Warning while sending values to python</source>
         <translation type="unfinished">Warnung beim Senden von Werten an Python</translation>
     </message>
@@ -4806,7 +4826,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">&apos;AddInManager&apos; oder &apos;PythonEngine&apos; ist nicht verfügbar</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+46"/>
         <source>There is no plugin interface able to save the requested file type</source>
         <translation type="unfinished">Es gibt keine Plugin-Schnittstelle um diesen Dateityp zu speichern</translation>
     </message>
@@ -4879,7 +4899,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::MainApplication</name>
     <message>
-        <location filename="../mainApplication.cpp" line="+167"/>
+        <location filename="../mainApplication.cpp" line="+168"/>
         <location line="+4"/>
         <source>Version %1
 %2</source>
@@ -4941,7 +4961,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">&apos;Script Editor Organizer&apos; wird geladen...</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+42"/>
         <source>execute startup scripts...</source>
         <translation type="unfinished">Startskripts werden ausgeführt...</translation>
     </message>
@@ -5452,17 +5472,17 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <location line="+37"/>
         <location line="+23"/>
         <source>Qt error: Spin box widget could not be found</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Qt-Fehler: Spinbox-Widget wurde nicht gefunden</translation>
     </message>
     <message>
         <location line="+19"/>
         <source>Qt error: Double spin box widget could not be found</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Qt-Fehler: Double-Spinbox-Widget wurde nicht gefunden</translation>
     </message>
     <message>
         <location line="+23"/>
         <source>Qt error: String input widget could not be found</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Qt-Fehler: String-Eingabe-Widget wurde nicht gefunden</translation>
     </message>
     <message>
         <source>QT error: Spin box widget could not be found</source>
@@ -5765,7 +5785,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="obsolete">Fehler beim Löschen eines Haltepunktes im ITO-Debugger.</translation>
     </message>
     <message>
-        <location line="+2350"/>
+        <location line="+2575"/>
         <source>The number of names and values must be equal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5786,7 +5806,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2158"/>
+        <location line="-2383"/>
         <source>Error while transmitting breakpoints to debugger.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5801,7 +5821,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1903"/>
+        <location line="+2128"/>
         <source>It is not allowed to check names of variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5841,12 +5861,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>item &apos;%1&apos; does not exist in workspace.</source>
         <translation type="unfinished">Das Objekt &apos;%1&apos; existiert nicht im Workspace.</translation>
     </message>
     <message>
-        <location line="+73"/>
+        <location line="+76"/>
         <source>It is not allowed to register an AddIn-instance in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6558,22 +6578,20 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Das Plugin gibt keinen gültigen Widget-Pointer zurück.</translation>
     </message>
     <message>
-        <location line="+46"/>
         <source>widget is NULL</source>
-        <translation type="unfinished">Widget ist &apos;NULL&apos;</translation>
+        <translation type="obsolete">Widget ist &apos;NULL&apos;</translation>
     </message>
     <message>
-        <location line="+57"/>
         <source>widgets of type QDockWidget are not yet implemented</source>
-        <translation type="unfinished">Widgets vom Typ &quot;QDockWidget&quot; werden nocht nicht unterstützt</translation>
+        <translation type="obsolete">Widgets vom Typ &quot;QDockWidget&quot; werden nocht nicht unterstützt</translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="+270"/>
         <source>plugin with name &apos;%1&apos; could be found.</source>
         <translation type="unfinished">Das Plugin namens &apos;%1&apos; wurde nicht gefunden.</translation>
     </message>
     <message>
-        <location line="+105"/>
+        <location line="+88"/>
         <source>figHandle %i is no handle for a figure window.</source>
         <translation type="unfinished">&quot;figHandle&quot; &apos;%i&apos; ist kein Handle eines Grafikfensters.</translation>
     </message>
@@ -6583,7 +6601,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Es wurde kein interner Dialog oder Fenster namens &apos;%1&apos; gefunden.</translation>
     </message>
     <message>
-        <location line="+54"/>
+        <location line="+52"/>
         <source>ui-file &apos;%1&apos; could not be correctly parsed.</source>
         <translation type="unfinished">Die UI-Datei &apos;%1&apos; wurde nicht korrekt geparst.</translation>
     </message>
@@ -6593,7 +6611,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Dateiname &apos;%1&apos; existiert nicht</translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="-317"/>
         <source>dialog could not be created</source>
         <translation type="unfinished">Der Dialog kann nicht erstellt werden</translation>
     </message>
@@ -6608,7 +6626,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+131"/>
+        <location line="+343"/>
         <source>designer plugin widget (&apos;%1&apos;) could not be created</source>
         <translation type="unfinished">Das Designer-Plugin-Widget (&apos;%1&apos;) konnte nicht erstellt werden</translation>
     </message>
@@ -6784,8 +6802,8 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2700"/>
-        <location line="+2456"/>
+        <location line="-2554"/>
+        <location line="+2310"/>
         <location line="+64"/>
         <location line="+151"/>
         <location line="+34"/>
@@ -7339,7 +7357,7 @@ Katesisch</translation>
         <translation>Sollen die markierten Variablen wirklich gelöscht werden?</translation>
     </message>
     <message>
-        <location line="+55"/>
+        <location line="+97"/>
         <source>Export data</source>
         <translation>Datenexport</translation>
     </message>
@@ -7363,7 +7381,7 @@ Katesisch</translation>
 %1</translation>
     </message>
     <message>
-        <location line="+92"/>
+        <location line="+93"/>
         <source>renaming variable</source>
         <translation>Variable umbenennen</translation>
     </message>
@@ -7398,7 +7416,7 @@ Katesisch</translation>
         <translation>Lokal</translation>
     </message>
     <message>
-        <location line="+345"/>
+        <location line="+371"/>
         <source>timeout while asking python for detailed information</source>
         <translation>Zeitüberschreitung bei der Anfrage an Python für detailierte Informationen</translation>
     </message>

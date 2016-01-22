@@ -273,7 +273,7 @@ The prototype for the method *getParam* then looks like this:
         bool hasIndex = false;
         int index;
         QString suffix;
-        QMap<QString,ito::Param>::iterator it;
+        ParamMapIterator it;
         
         //parse the given parameter-name (if you support indexed or suffix-based parameters)
         retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
@@ -348,7 +348,7 @@ Finally, an exemplary (simplified) version for the method **setParam** is:
         bool hasIndex;
         int index;
         QString suffix;
-        QMap<QString, ito::Param>::iterator it;
+        ParamMapIterator it;
         
         //parse the given parameter-name (if you support indexed or suffix-based parameters)
         retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
@@ -366,11 +366,13 @@ Finally, an exemplary (simplified) version for the method **setParam** is:
 
         if(!retValue.containsError())
         {
+            //OPTION 1:
             //here the new parameter is checked whether its type corresponds or can be cast into the
             // value in m_params and whether the new type fits to the requirements of any possible
             // meta structure.
             retValue += apiValidateParam(*it, *val, false, true);
             
+            //OPTION 2 (recommended):
             //if you program for itom 1.4.0 or higher (Interface version >= 1.3.1) you should use this
             //API method instead of the one above: The difference is, that incoming parameters that are
             //compatible but do not have the same type than the corresponding m_params value are cast
