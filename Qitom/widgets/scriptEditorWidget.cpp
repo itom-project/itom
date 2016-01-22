@@ -2233,7 +2233,18 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
     classes.setMinimal(true);
 
     // regular expression for methods              |> this part might be not in the same line due multiple line parameter set
-    QRegExp methods("^(\\s*)(def)\\s(_*)(.+)\\((.*)\\):\\s*(#?.*)?");
+	//the regular expression should detect begin of definitions. This is:
+	// 1. the line starts with 0..inf numbers of whitespace characters --> (\\s*)
+	// 2. 'def' + 1 whitespace characters is following --> (def)\\s
+	// 3. optionally, 0..inf numbers of _ may come (e.g. for private methods) --> (_*)
+	// 4. 1..inf arbitrary characters will come (function name) --> (.+)
+	// 5. bracket open '(' --> \\(
+	// 6. arbitrary characters --> (.*)
+	// 7. OR combination --> (cond1|cond2)
+	// 7a. cond1: bracket close ')' followed by colon, arbitrary spaces and an optional comment starting with # --> \\):\\s*(#?.*)?
+	// 7b. backspace to indicate a newline --> \\\\  
+    QRegExp methods("^(\\s*)(def)\\s(_*)(.+)\\((.*)(\\):\\s*(#?.*)?|\\\\)");
+
     methods.setMinimal(true);
 
     // regular expresseion for decorator
