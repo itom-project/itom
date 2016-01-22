@@ -278,13 +278,13 @@ The prototype for the method *getParam* then looks like this:
         //parse the given parameter-name (if you support indexed or suffix-based parameters)
         retValue += apiParseParamName(val->getName(), key, hasIndex, index, suffix);
         
-        if(retValue == ito::retOk)
+        if (retValue == ito::retOk)
         {
             //gets the parameter key from m_params map (read-only is allowed, since we only want to get the value).
             retValue += apiGetParamFromMapByKey(m_params, key, it, false);
         }
 
-        if(!retValue.containsError())
+        if (!retValue.containsError())
         {
             //put your switch-case.. for getting the right value here
             
@@ -353,18 +353,18 @@ Finally, an exemplary (simplified) version for the method **setParam** is:
         //parse the given parameter-name (if you support indexed or suffix-based parameters)
         retValue += apiParseParamName( val->getName(), key, hasIndex, index, suffix );
         
-        if(isMotorMoving()) //this if-case is for actuators only.
+        if (isMotorMoving()) //this if-case is for actuators only.
         {
             retValue += ito::RetVal(ito::retError, 0, tr("any axis is moving. Parameters cannot be set").toLatin1().data());
         }
         
-        if(!retValue.containsError())
+        if (!retValue.containsError())
         {
             //gets the parameter key from m_params map (read-only is not allowed and leads to ito::retError).
             retValue += apiGetParamFromMapByKey(m_params, key, it, true);
         }
 
-        if(!retValue.containsError())
+        if (!retValue.containsError())
         {
             //OPTION 1:
             //here the new parameter is checked whether its type corresponds or can be cast into the
@@ -381,14 +381,14 @@ Finally, an exemplary (simplified) version for the method **setParam** is:
             retValue += apiValidateAndCastParam(*it, *val, false, true, true);
         }
         
-        if(!retValue.containsError())
+        if (!retValue.containsError())
         { 
-            if(key == "async")
+            if (key == "async")
             {
                 //check the new value and if ok, assign it to the internal parameter
                 retValue += it->copyValueFrom( &(*val) );
             }
-            else if(key == "demoKey")
+            else if (key == "demoKey")
             {
                 //check the new value and if ok, assign it to the internal parameter
                 retValue += it->copyValueFrom( &(*val) );
@@ -401,7 +401,7 @@ Finally, an exemplary (simplified) version for the method **setParam** is:
             }
         }
         
-        if(!retValue.containsError())
+        if (!retValue.containsError())
         {
             emit parametersChanged(m_params); //send changed parameters to any connected dialogs or dock-widgets
         }
@@ -454,12 +454,12 @@ An exemplary implementation of the method **execFunc** is
         ito::ParamBase *param1 = NULL;
         ito::ParamBase *param2 = NULL;
 
-        if(funcName == "saveXMLParams")
+        if (funcName == "saveXMLParams")
         {
             param1 = ito::getParamByName(&(*paramsMand), "filename", &retValue);
             param2 = ito::getParamByName(&(*paramsOpt), "overwriteIfExists", &retValue);
 
-            if(!retValue.containsError())
+            if (!retValue.containsError())
             {
                 retValue += XmlParameter::saveXmlParams( param1->getVal<char*>(), m_xmlParams, static_cast<bool>(param2->getVal<int>()));
             }
@@ -469,7 +469,7 @@ An exemplary implementation of the method **execFunc** is
             retValue += ito::RetVal::format(ito::retError,0,tr("function name '%s' does not exist").toLatin1().data(), funcName.toLatin1().data());
         }
 
-        if(waitCond)
+        if (waitCond)
         {
             waitCond->returnValue = retValue;
             waitCond->release();
@@ -536,7 +536,7 @@ As an alternative you can use the following regular expression:
     
     QString regularExpression = "^([a-zA-Z]+\\w*)(\\[(\\d+)\\]){0,1}(:(.*)){0,1}$";
     QRegExp rx(regularExpression)
-    if(rx.indexIn(yourString) == -1)
+    if (rx.indexIn(yourString) == -1)
     {
         //yourString does not match the regular expression
     }
