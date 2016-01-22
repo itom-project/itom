@@ -440,7 +440,7 @@ public slots:
     RetVal figurePickPointsInterrupt(unsigned int objectID);
     RetVal isFigureItem(unsigned int objectID,  QSharedPointer<unsigned int> isFigureItem, ItomSharedSemaphore *semaphore);
 
-    
+    RetVal getAvailableWidgetNames(QSharedPointer<QStringList> widgetNames, ItomSharedSemaphore *semaphore);
 
     void figureDestroyed(QObject *obj)
     {
