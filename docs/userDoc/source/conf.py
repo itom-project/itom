@@ -16,6 +16,7 @@ import sys, os
 import sphinx
 import itom as itomFuncs
 import __main__
+import inspect
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -24,6 +25,8 @@ import __main__
 sys.path.append(os.path.abspath('sphinxext'))
 sys.path.append(os.path.abspath('ext'))
 
+thisDir = os.path.dirname( os.path.abspath (inspect.getfile(inspect.currentframe())))
+
 # -- General configuration -----------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -31,7 +34,7 @@ sys.path.append(os.path.abspath('ext'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.pngmath', 'sphinx.ext.ifconfig', 'numpydoc', 'breathe', 'sphinx.ext.intersphinx']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.pngmath', 'sphinx.ext.ifconfig', 'numpydoc', 'breathe', 'sphinx.ext.intersphinx', 'itomext.designerplugindoc']
 #extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.pngmath', 'sphinx.ext.ifconfig', 'breathe', 'sphinx.ext.intersphinx']
 
 if sphinx.__version__ >= "0.7":
