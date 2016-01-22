@@ -8,23 +8,19 @@ Custom Designer Widgets
 Beside QtDesginer-Widgets for plots and figures (see  :ref:`PlotsAndFigures`) some further designer plugin widgets
 have been develop to enable access to useful or itom specific objects and functions in individual GUIs.
 
-* DataObjectTable
-* dObMetaDataTable
-* EvaluateGeometricsFigure
-* MotorController
-
 These widgets can be used like any other type of widget within an ui-dialog with two exceptions:
 
 1. The user interface in terms of an **ui**-file must be loaded and initilized within an itom-python context (e.g. script in itom).
 
-2. Some properties are not accessible in the QtDesigner (e.g. actuator-handles or dataObjects) and must be set
-    or read in the script. (They are marked with **DESIGNABLE false** in the **Q_PROPERTY** macro in their header file).
+2. Some properties are not accessible in the QtDesigner (e.g. actuator-handles or dataObjects) and must be set or read in the script. (They are marked with **DESIGNABLE false** in the **Q_PROPERTY** macro in their header file).
 
 To add such a widget to your ui-file, you can drag&drop them in the QtDesigner like any other widget.  
 
 The following sub-sections give an overview about some additional itom widgets:
 
 .. include-designerplugindoc:: dataObjectTable
+
+.. include-designerplugindoc:: slider2D
 
 
 

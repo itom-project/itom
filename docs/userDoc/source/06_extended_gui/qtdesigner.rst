@@ -282,6 +282,9 @@ If you use :py:meth:`~itom.uiItem.setProperty`, you always need to pass a dictio
 always is the property-name (string) and the value is the corresponding new value (type depends on corresponding C++ type).
 For more information about supported datatypes, that can be accessed by python in |itom| see :ref:`qtdesigner-datatypes`.
 
+If the property is an enumeration or a bitmask (or-combination of enumeration values), you can either pass the integer value or a string with the enumeration key name.
+In case of a flag, pass a semicolon-separated string with all values. The return value is always the integer number.
+
 .. _qtdesigner-datatypes:
 
 Supported datatypes
