@@ -25,8 +25,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef HELPERGRABBER_H
-#define HELPERGRABBER_H
+#ifndef HELPERTHREADCTRL_H
+#define HELPERTHREADCTRL_H
 
 #include "typeDefs.h"
 #include "addInInterface.h"

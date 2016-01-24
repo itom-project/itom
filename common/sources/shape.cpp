@@ -566,6 +566,17 @@ QRegion Shape::region() const
 //----------------------------------------------------------------------------------------------
 QPointF Shape::centerPoint() const
 {
+	/*
+	QRectF rect(d->m_polygon[0], d->m_polygon[1]);
+	if (applyTrafo)
+	{
+		d->m_transform.mapToPolygon(rect.toRect());
+	}
+	else
+	{
+		
+	}
+	*/
 	switch (type())
 	{
 	
@@ -598,7 +609,20 @@ QPointF Shape::centerPoint() const
 //----------------------------------------------------------------------------------------------
 double Shape::area() const
 {
-    switch (type())
+   
+	/*
+	QRectF rect(d->m_polygon[0], d->m_polygon[1]);
+	if (applyTrafo)
+	{
+	d->m_transform.mapToPolygon(rect.toRect());
+	}
+	else
+	{
+
+	}
+	*/
+
+	switch (type())
     {
     case MultiPointPick:
     case Point:
@@ -639,6 +663,19 @@ double Shape::area() const
 //----------------------------------------------------------------------------------------------
 double Shape::circumference() const
 {
+
+	/*
+	QRectF rect(d->m_polygon[0], d->m_polygon[1]);
+	if (applyTrafo)
+	{
+	d->m_transform.mapToPolygon(rect.toRect());
+	}
+	else
+	{
+
+	}
+	*/
+
     switch (type())
     {
     case MultiPointPick:
@@ -699,6 +736,18 @@ double Shape::circumference() const
 //----------------------------------------------------------------------------------------------
 double Shape::distance(const Shape &otherShape) const
 {
+	/*
+	QRectF rect(d->m_polygon[0], d->m_polygon[1]);
+	if (applyTrafo)
+	{
+	d->m_transform.mapToPolygon(rect.toRect());
+	}
+	else
+	{
+
+	}
+	*/
+
 	if (type() == Line && otherShape.type() == Line)
 	{
 		return distanceLine2Line2D(*this, otherShape);
@@ -721,8 +770,103 @@ double Shape::centerDistance(const Shape &otherShape) const
 	return distancePoint2Point2D(this->centerPoint(), otherShape.centerPoint());
 }
 //----------------------------------------------------------------------------------------------
+double Shape::radius() const
+{
+	/*
+	QRectF rect(d->m_polygon[0], d->m_polygon[1]);
+	if (applyTrafo)
+	{
+	d->m_transform.mapToPolygon(rect.toRect());
+	}
+	else
+	{
+
+	}
+	*/
+
+	if (this->rbasePoints().size() < 2)
+	{
+		return 0;
+	}
+	if (this->rbasePoints().size() > 2)
+	{
+		return std::numeric_limits<double>::signaling_NaN();
+	}
+	double res = std::fabs((this->rbasePoints()[0].x() - this->rbasePoints()[1].x()) / 2.0);
+	res += std::fabs((this->rbasePoints()[0].y() - this->rbasePoints()[1].y()) / 2.0);
+	res /= 2.0;
+	return res;
+}
+//----------------------------------------------------------------------------------------------
+double Shape::radiusX() const
+{
+	/*
+	QRectF rect(d->m_polygon[0], d->m_polygon[1]);
+	if (applyTrafo)
+	{
+	d->m_transform.mapToPolygon(rect.toRect());
+	}
+	else
+	{
+
+	}
+	*/
+
+	if (this->rbasePoints().size() < 2)
+	{
+		return 0;
+	}
+	if (this->rbasePoints().size() > 2)
+	{
+		return std::numeric_limits<double>::signaling_NaN();
+	}
+
+	double res = std::fabs((this->rbasePoints()[0].x() - this->rbasePoints()[1].x()) / 2.0);
+	return res;
+}
+//----------------------------------------------------------------------------------------------
+double Shape::radiusY() const
+{
+
+	/*
+	QRectF rect(d->m_polygon[0], d->m_polygon[1]);
+	if (applyTrafo)
+	{
+	d->m_transform.mapToPolygon(rect.toRect());
+	}
+	else
+	{
+
+	}
+	*/
+
+	if (this->rbasePoints().size() < 2)
+	{
+		return 0;
+	}
+	if (this->rbasePoints().size() > 2)
+	{
+		return std::numeric_limits<double>::signaling_NaN();
+	}
+
+	double res = std::fabs((this->rbasePoints()[0].y() - this->rbasePoints()[1].y()) / 2.0);
+	return res;
+}
+//----------------------------------------------------------------------------------------------
 double Shape::distanceLine2Point2D(const Shape &line, const QPointF &point)
 {
+	/*
+	QRectF rect(d->m_polygon[0], d->m_polygon[1]);
+	if (applyTrafo)
+	{
+	d->m_transform.mapToPolygon(rect.toRect());
+	}
+	else
+	{
+
+	}
+	*/
+
 	double result = 0.0;
 
 	QPointF dirVec = line.d->m_polygon[1] - line.d->m_polygon[0];
@@ -752,6 +896,18 @@ double Shape::distanceLine2Point2D(const Shape &line, const QPointF &point)
 //----------------------------------------------------------------------------------------------
 double Shape::distanceLine2Line2D(const Shape &line1, const Shape &line2)
 {
+	/*
+	QRectF rect(d->m_polygon[0], d->m_polygon[1]);
+	if (applyTrafo)
+	{
+	d->m_transform.mapToPolygon(rect.toRect());
+	}
+	else
+	{
+
+	}
+	*/
+
 	double result = 0.0;
 	QPointF dirVec1 = line1.d->m_polygon[1] - line1.d->m_polygon[0];
 	dirVec1 /= std::sqrt(std::pow(dirVec1.x(), 2) + pow(dirVec1.y(), 2)); 	
@@ -821,6 +977,18 @@ double Shape::distanceLine2Line2D(const Shape &line1, const Shape &line2)
 //----------------------------------------------------------------------------------------------
 double Shape::distancePoint2Point2D(const QPointF &point1, const QPointF &point2)
 {
+	/*
+	QRectF rect(d->m_polygon[0], d->m_polygon[1]);
+	if (applyTrafo)
+	{
+	d->m_transform.mapToPolygon(rect.toRect());
+	}
+	else
+	{
+
+	}
+	*/
+
 	QPointF val = point1 - point2;
 	return std::sqrt(std::pow(val.rx(), 2) + std::pow(val.ry(), 2));
 }
@@ -1178,6 +1346,32 @@ double Shape::distancePoint2Point2D(const QPointF &point1, const QPointF &point2
     return s;
 }
 
+/*static*/ QString Shape::type2QString(const int type)
+{
+	switch (type & ito::Shape::TypeMask)
+	{
+		case MultiPointPick:
+			return "Multipoint";
+		case Point:
+			return "Point";
+		case Line:
+			return "Line";
+		case Rectangle:
+			return "Rectangle";
+		case Square:
+			return "Square";
+		case Circle:
+			return "Circle";
+		case Ellipse:
+			return "Ellipse";
+		case Polygon:
+			return "Polygon";
+		break;
+		default:
+			return "N.A.";
+	}
+	return "N.A.";
+}
 
 
 } //end namespace ito
