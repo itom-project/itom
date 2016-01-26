@@ -32,8 +32,8 @@ In |itom|, the class :py:class:`~itom.dataObject` is the main array object. Arra
 Before giving a short tutorial about how to use the class :py:class:`~itom.dataObject`, the base idea and concept of the array structure should be explained. If you already now the huge |python| module **Numpy** with its base array class **numpy.array**, one will ask why another similar array class is provided by |itom|. The reasons for this are as follows:
 
 * The python class :py:class:`~itom.dataObject` is just a wrapper for the |itom| internal class **DataObject**, written in C++. This array structure is used all over |itom| and also passed to any plugin instances of |itom|. Internally, the C++ class **DataObject** is based on OpenCV-matrices, such that functionalities provided by the open-source Computer-Vision Library (OpenCV) can be used by |itom|.
-* The class **dataObject** should also be used to store real measurement data. Therefore it is possible to add tags and other meta information to every dataObject (like axes descriptions, scale and offset values, protocol entries...).
-* Usually, array classes (like the class **Numpy.array**) store the whole matrix in one non-interrupting block in memory. Due to the working principle of every operating system, it is sometimes difficult to allocate a huge block in memory. Therefore, **dataObject** only stores the sub-matrices of the last two-dimensions in single blocks in memory, while the first **n-2** dimensions of the array are represented by one vector in memory, where every cell is pointing to the corresponding sub-matrix (called plane). Using this concept, huger arrays can be allocated without causing a memory error.
+* The class **dataObject** should also be used to store real measurement data. Therefore it is possible to add tags and other meta information to every dataObject (like axis descriptions, scale and offset values, protocol entries...).
+* Usually, array classes (like the class **Numpy.array**) store the whole matrix in one continuous block in memory. Due to the working principle of every operating system, it is sometimes difficult to allocate a huge block in memory. Therefore, **dataObject** only stores the sub-matrices of the last two-dimensions in single blocks in memory, while the first **n-2** dimensions of the array are represented by one vector in memory, where every cell is pointing to the corresponding sub-matrix (called plane). Using this concept, huger arrays can be allocated without causing a memory error.
 
 Creating a dataObject
 ---------------------
@@ -106,9 +106,79 @@ is mainly the data block(s)) as long as possible, such that memory and execution
     
     
     
+Meta tags and protocol
+----------------------------------
+
+It is often required to store further meta information together with a dataObject. For this purpose, the dataObject provides arbitrary meta tags (either string or double values) or a
+string based protocol list. While the first can be used to store timestamps, system configurations, calibration states, ... the latter can be used to document filter chains that have
+already be executed.
+
+Tags are always a mapping between a string-keyword and either a double or string value. The class :py:class:`itom.dataObject` provides several functions and attributes in order
+to set or read tags:
+
+.. code-block:: python
+    :linenos:
+    
+    obj = dataObject([10,10], 'float32')
+    #add new tags:
+    obj.setTag("sensor", "confocal sensor v1.0")
+    obj.setTag("aperture", 0.6)
+    
+    #get tags:
+    print("aperture:", obj.tags["aperture"])
+    print("sensor:", obj.tags["sensor"])
+    print("num tags:", len(obj.tags))
+    
+    if obj.existTag("manufacturer"):
+        print("The tag 'manufacturer' exists")
+    else:
+        print("The tag 'manufacturer' does not exist")
+    
+    #delete tag
+    success = obj.deleteTag("aperture")
+    print("success:", success)
+    
+The output will be:
+
+.. code-block:: python
+    
+    aperture: 0.6
+    sensor: confocal sensor v1.0
+    num tags: 2
+    success: 1.0
+    
+One special tag is the 'title'-tag. If you plot a dataObject with a string-based 'title'-tag (e.g. with *itom1dqwtplot* or *itom2dqwtplot*), the title tag
+will be used as title for the plot (if the property *title* of the plot is set to **<auto>**):
+
+.. code-block:: python
+    :linenos:
+    
+    obj.setTag("title", "User-defined title")
+    plot(obj, "2D")
+    
+This code will lead to the following plot (under the assumption, that the designer plugin **itom2dqwtplot** is set as default 2D plot in the :ref:`properties dialog <gui-default-plots>`
+of |itom|):
+
+.. figure:: images/plotDataObjectTitle.png
+    :scale: 80%
+    :align: center
+    
+The attribute :py:attr:`~itom.dataObject.tags` returns a mapping object to a dictionary. This has to be considered to be a read-only dictionary, where no item can be deleted, appended
+or changed. However, it is possible to assign a new dictionary to this attribute. Then, all current tags are deleted and the new dictionary items are considered to be the new tags.
     
 
-Some text about the basic idea of the dataObject and how it works.
-Some additional pictures. 
+The protocol of a dataObject is a list of strings. Use the method :py:meth:`~itom.dataObject.addToProtocol` in order to add a new entry to the protocol. If the dataObject is
+a slice of another object, the string **ROI[...]** with the current slice parameters is prepended to each new protocol entry. Finally, the protocol is stored as tag **protocol**
+and can be requested and deleted using the methods described above.    
+
+.. note::
+    
+    It is not possible to set tags or protocol entries for empty dataObjects. Tags and the protocol is shared between two shallow copies, hence, if two dataObjects share the same
+    data, they also shared the tags and protocol.
+
+
+
+
+
 
 For a detailed methods-summery of the *dataObject* see :ref:`ITOM-Script-Reference`.

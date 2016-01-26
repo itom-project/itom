@@ -52,7 +52,7 @@ Further python packages
 ************************** 
 
 Beside the module :py:mod:`itom`, it is recommended to use the functionalities provided by the |python| packages **Numpy**, **Scipy** and **Matplotlib**. During the development of |itom| a
-high compatibility especially to those modules has been taken into account. For instance it is possible to render the **Matplotlib** figures in user defined windows, created by the class :py:class:`~itom.ui` of the module :py:mod:`itom` (see :ref:`qtdesigner`). Additionally, the **Numpy** array is compatible to the |itom| internal :py:class:`~itom.dataObject` or :py:class:`~itom.npDataObject`.
+high compatibility especially to those modules has been taken into account. For instance it is possible to render the **Matplotlib** figures in user defined windows, created by the class :py:class:`~itom.ui` of the module :py:mod:`itom` (see :ref:`qtdesigner`). Additionally, the **Numpy** array is compatible to the |itom| internal :py:class:`~itom.dataObject`.
 
 .. toctree::
     :maxdepth: 1

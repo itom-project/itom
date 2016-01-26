@@ -146,6 +146,8 @@ This page is responsible for the highlighting of reserved words, comments, ident
 Plots and Figures
 -----------------
 
+.. _gui-default-plots:
+
 Default Plots
 ^^^^^^^^^^^^^
 

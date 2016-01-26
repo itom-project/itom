@@ -56,6 +56,8 @@ class DesignerPluginDocInclude(Include):
         else:
             #not found
             text = "Documentation for designer plugin %s could not be found" % self.arguments[0]
+            tab_width = self.options.get('tab-width', self.state.document.settings.tab_width)
+            source = self.state_machine.input_lines.source(self.lineno - self.state_machine.input_offset - 1)
             lines = statemachine.string2lines(text, tab_width, convert_whitespace=True)
             self.state_machine.insert_input(lines, source)
             return []
