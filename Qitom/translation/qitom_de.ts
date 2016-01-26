@@ -2017,13 +2017,28 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+6"/>
+        <source>Copy text from console</source>
+        <translation type="unfinished">Text aus der Konsole in die Zwischenablage kopieren</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>If a command is copied from the command line, the &apos;&gt;&gt;&apos; characters (representing the start of a command) should be ignored. If so check the following option to let itom remove this characters before copying it to the clipboard.</source>
+        <translation type="unfinished">Wird Text aus der Konsole kopiert, sollten die &apos;&gt;&gt;&apos;-Zeichen, die den Start der Kommandozeile representieren, ignoriert werden. Um diese vor dem Kopieren automatisch von itom löschen zu lassen folgende Option auswählen.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Modify text from console before copying to clipboard. </source>
+        <translation type="unfinished">Text vor dem Kopieren aus der Konsole modifizieren.</translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>Paste text to console</source>
         <translation type="unfinished">Text aus der Zwischenablage in die Konsole einfügen</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>If subparts of a code are copied from any script and pasted to the console, it might happen that the whole code block is already globally indentend. The code can then not be executed. Check the following option to let itom remove the global indentation level before pasting it to the console.</source>
-        <translation type="unfinished">Wenn Teile eines Python-Codes in die Konsole eingefügt werden sollen kann es vorkommen, dass der einzufügende Code-Block bereits eingerückt ist und dadurch nicht ausgeführt werden kann. Um von itom den Code-Block automatisch anpassen zu lassen folgende Option auswählen.</translation>
+        <translation type="unfinished">Wenn Teile eines Python-Codes in die Konsole eingefügt werden sollen, kann es vorkommen, dass der einzufügende Code-Block bereits eingerückt ist und dadurch nicht ausgeführt werden kann. Um den Code-Block von itom automatisch anpassen zu lassen folgende Option auswählen.</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -6175,11 +6190,18 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     </message>
     <message>
         <location line="+3"/>
+        <location line="+5"/>
         <source>quick search...</source>
         <translation>Schnellsuche...</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+0"/>
+        <source>F3</source>
+        <comment>QShortcut</comment>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>icon &amp;browser...</source>
         <translation>Icon &amp;suchen...</translation>
     </message>
@@ -6244,7 +6266,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Symbolleiste Lesezeichen</translation>
     </message>
     <message>
-        <location line="+614"/>
+        <location line="+615"/>
         <location line="+87"/>
         <source>find and replace</source>
         <translation>Suchen und Ersetzen</translation>
@@ -6260,18 +6282,18 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>%1 Vorkommen ersetzt</translation>
     </message>
     <message>
-        <location line="-944"/>
+        <location line="-945"/>
         <source>Ctrl+H</source>
         <comment>QShortcut</comment>
         <translation></translation>
     </message>
     <message>
-        <location line="-58"/>
+        <location line="-62"/>
         <source>print...</source>
         <translation>Drucken...</translation>
     </message>
     <message>
-        <location line="+58"/>
+        <location line="+62"/>
         <source>find and replace...</source>
         <translation>Suchen und Ersetzen...</translation>
     </message>
