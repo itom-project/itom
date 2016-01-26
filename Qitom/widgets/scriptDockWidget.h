@@ -137,6 +137,7 @@ private:
     ShortcutAction *m_scriptStepOverAction;
     ShortcutAction *m_scriptStepOutAction;
     ShortcutAction *m_findTextExprAction;
+    ShortcutAction *m_findTextExprActionSC;
     ShortcutAction *m_replaceTextExprAction;
     ShortcutAction *m_gotoAction;
     ShortcutAction *m_openIconBrowser;
