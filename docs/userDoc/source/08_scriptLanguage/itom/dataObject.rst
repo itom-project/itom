@@ -174,7 +174,7 @@ and can be requested and deleted using the methods described above.
 .. note::
     
     It is not possible to set tags or protocol entries for empty dataObjects. Tags and the protocol is shared between two shallow copies, hence, if two dataObjects share the same
-    data, they also shared the tags and protocol.
+    data, they also share their tags and protocol.
 
 
 
