@@ -42,7 +42,6 @@ Content of |pyItom|
 -------------------
 
 * class **dataObject**. This is the |itom| internal matrix class, compatible to *Numpy*, and also used by any connected grabber or camera. Every matrix is extended by fixed and user-defined tags and keywords. For an introduction to the data object, see :ref:`itomDataObject`, a full reference is available under :py:class:`~itom.dataObject`. The data object is compatible to any numpy array, however the tags and keywords will get lost.
-* class **npDataObject**. This class is inherited from **numpy.array** and extends it by the tags and keywords, also available in the data object. For more information see :ref:`itomNpDataObject` or the script reference :py:class:`~itom.npDataObject`.
 * classes **ui** and **uiItem** are the main classes for creating user defined dialogs and windows in |itom| and show them using some lines of script code. For more information about their use, see :ref:`qtdesigner` or their definitions in the script reference :py:class:`~itom.ui` and :py:class:`~itom.uiItem`.
 * class **dataIO** is the class in order to access any plugin instance of type **dataIO** (cameras, grabbers, AD-converter...). The full reference can be found under :py:class:`~itom.dataIO`.
 * **class actuator** is the class in order to access any plugin instance of type **actuator**, like motor stages... The full reference can be found under :py:class:`~itom.actuator`.
@@ -58,8 +57,7 @@ Contents:
 .. toctree::
    :maxdepth: 1
    
-   itom/dataObject.rst
-   itom/npdataObject.rst   
+   itom/dataObject.rst  
    itom/pluginsPython.rst
 
 

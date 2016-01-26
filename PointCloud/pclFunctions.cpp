@@ -373,8 +373,11 @@ ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &
                     pcl::PointCloud<pcl::PointNormal>::Ptr out_points = out.toPointXYZNormal();
                     pcl::PointNormal pt;
                     pt.curvature = 0.0;
-
+#if PCL_VERSION_COMPARE(>=,1,7,0)
                     pcl::fromPCLPointCloud2(meshPtr->cloud, *points_);
+#else
+					pcl::fromROSMsg(meshPtr->cloud, *points_);
+#endif
                     has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
                     out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
                     
@@ -426,8 +429,11 @@ ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &
                     pcl::PointCloud<pcl::PointNormal>::Ptr out_points = out.toPointXYZNormal();
                     pcl::PointNormal pt;
                     float curvature;
-
+#if PCL_VERSION_COMPARE(>=,1,7,0)
                     pcl::fromPCLPointCloud2(meshPtr->cloud, *points_);
+#else
+					pcl::fromROSMsg(meshPtr->cloud, *points_);
+#endif
                     has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
                     out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
                     
@@ -485,8 +491,11 @@ ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &
                     pcl::PointCloud<pcl::PointXYZINormal>::Ptr out_points = out.toPointXYZINormal();
                     pcl::PointXYZINormal pt;
                     pt.curvature = 0.0;
-
+#if PCL_VERSION_COMPARE(>=,1,7,0)
                     pcl::fromPCLPointCloud2(meshPtr->cloud, *points_);
+#else
+					pcl::fromROSMsg(meshPtr->cloud, *points_);
+#endif
                     has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
                     out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
 
@@ -543,8 +552,11 @@ ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &
                     pcl::PointCloud<pcl::PointXYZINormal>::Ptr out_points = out.toPointXYZINormal();
                     pcl::PointXYZINormal pt;
                     float curvature;
-
+#if PCL_VERSION_COMPARE(>=,1,7,0)
                     pcl::fromPCLPointCloud2(meshPtr->cloud, *points_);
+#else
+					pcl::fromROSMsg(meshPtr->cloud, *points_);
+#endif
                     has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
                     out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
 
@@ -607,8 +619,11 @@ ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &
                     pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr out_points = out.toPointXYZRGBNormal();
                     pcl::PointXYZRGBNormal pt;
                     pt.curvature = 0.0;
-
+#if PCL_VERSION_COMPARE(>=,1,7,0)
                     pcl::fromPCLPointCloud2(meshPtr->cloud, *points_);
+#else
+					pcl::fromROSMsg(meshPtr->cloud, *points_);
+#endif
                     has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
                     out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
 
@@ -671,8 +686,11 @@ ito::RetVal POINTCLOUD_EXPORT normalsAtCogFromPolygonMesh(const PCLPolygonMesh &
                     pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr out_points = out.toPointXYZRGBNormal();
                     pcl::PointXYZRGBNormal pt;
                     float curvature;
-
+#if PCL_VERSION_COMPARE(>=,1,7,0)
                     pcl::fromPCLPointCloud2(meshPtr->cloud, *points_);
+#else
+					pcl::fromROSMsg(meshPtr->cloud, *points_);
+#endif
                     has_next = indexed_mode ? (indices.size() > next_index) : (nrPolygons > next_index);
                     out_points->reserve(indices.size() > 0 ? indices.size() : nrPolygons);
 

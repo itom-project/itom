@@ -1279,6 +1279,10 @@ void ScriptDockWidget::createActions()
     m_findTextExprAction->connectTrigger(this, SLOT(mnuFindTextExpr()));
 //    m_findTextExprAction->action()->setCheckable(true);
 
+    // To add a secound shortcut. It works, but I don't know why!
+    m_findTextExprActionSC = new ShortcutAction(QIcon(":/editor/icons/find.png"), tr("quick search..."), this, QKeySequence(tr("F3", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_findTextExprActionSC->connectTrigger(this, SLOT(mnuFindTextExpr()));
+
     m_replaceTextExprAction = new ShortcutAction(QIcon(":/editor/icons/editReplace.png"), tr("find and replace..."), this, QKeySequence(tr("Ctrl+H", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_replaceTextExprAction->connectTrigger(this, SLOT(mnuReplaceTextExpr()));
 
@@ -1946,6 +1950,7 @@ void ScriptDockWidget::mnuScriptStepOut()
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptDockWidget::mnuFindTextExpr()
 {
+    m_findTextExprActionSC->setEnabled(false);
     m_pWidgetFindWord->show();
     m_pWidgetFindWord->setCursorToTextField();
     m_findTextExprAction->action()->setChecked(true);
@@ -2255,6 +2260,8 @@ void ScriptDockWidget::findWordWidgetFinished()
     {
         sew->setFocus();
     }
+
+    m_findTextExprActionSC->setEnabled(true);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
