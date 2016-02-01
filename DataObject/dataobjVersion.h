@@ -25,6 +25,6 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#define DATAOBJ_VER_STRING  "1.4.0.1"
+#define DATAOBJ_VER_STRING  "1.5.0.0"
 
 

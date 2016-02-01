@@ -1086,7 +1086,21 @@ int DataObject::seekMat(const int matNum) const
    return seekMat(matNum, numMats);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+int DataObject::getStep(int index) const
+{
+    if (index < 0 || index >= m_dims)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "Index out of bounds", "", __FILE__, __LINE__));
+    }
 
+    int step = 1;
+    for (int i = index + 1; i < m_dims; ++i)
+    {
+        step *= m_osize[i];
+    }
+    return step;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! returns the index vector-index of m_data which corresponds to the given zero-based two-dimensional matrix-index
