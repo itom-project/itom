@@ -120,6 +120,10 @@ namespace ito
 		double distance(const Shape &otherShape) const;
 		double centerDistance(const Shape &otherShape) const;
 
+		double radius() const;
+		double radiusX() const;
+		double radiusY() const;
+
         static Shape fromRectangle(const QRectF &rect, int index = -1, QString name = "", const QTransform &trafo = QTransform());
         static Shape fromRectangle(qreal x1, qreal y1, qreal x2, qreal y2, int index = -1, QString name = "", const QTransform &trafo = QTransform());
         static Shape fromSquare(const QPointF &center, qreal sideLength, int index = -1, QString name = "", const QTransform &trafo = QTransform());
@@ -132,6 +136,8 @@ namespace ito
         static Shape fromPoint(qreal x, qreal y, int index = -1, QString name = "", const QTransform &trafo = QTransform());
         static Shape fromPolygon(const QPolygonF &polygon, int index = -1, QString name = "", const QTransform &trafo = QTransform());
         static Shape fromMultipoint(const QPolygonF &polygon, int index = -1, QString name = "", const QTransform &trafo = QTransform());
+
+		static QString type2QString(const int type);
 
 		//static ito::DataObject maskFromMultipleShapes(const ito::DataObject &dataObject, const QVector<ito::Shape> &shapes, bool inverse = false);
 		//ito::DataObject mask(const ito::DataObject &dataObject, bool inverse = false) const;

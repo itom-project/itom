@@ -281,11 +281,11 @@ public:
     ito::RetVal getPos(QVector<int> axes, QVector<double> &positions, int timeOutMS = PLUGINWAIT);         /*!< Get the position of more than one axis */
     ito::RetVal getPos(int axis, double &position, int timeOutMS = PLUGINWAIT);                            /*!< Get the position of a single axis */
 
+
     ito::RetVal checkAxis(int axisNum);                                                              /*!< Check if an axis is within the axis-range */
 };
 
 }   // end namespace ito
 
 #endif //#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)
-
 #endif //PLUGINTHREADCTRL_H
