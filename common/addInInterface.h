@@ -1099,6 +1099,7 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/1.3.1", //outdated on 2015-03-01 due to rework on data object
     "ito.AddIn.InterfaceBase/1.4.0", //outdated on 2015-07-03 due to removal of lock mechanism in data object, add of embedded line plots, qt5 incompatiblity changes and some refinements in addInInterface
     "ito.AddIn.InterfaceBase/2.0.0", //outdated on 2015-12-04 due to improvements in plot/figure interfaces, removal of deprecated classes helperActuator and helperGrabber and further removal of deprecated items
+    "ito.AddIn.InterfaceBase/2.1.0", //outdated on 2016-02-01 due to improvements in PluginThreadCtrl, ActuatorThreadCtrl and DataIoThreadCtrl (as replacement for removed classes helperActuator and helperGrabber), new method ito::DataObject::getStep and some smaller rearrangements
     NULL
 };
 
@@ -1107,10 +1108,10 @@ static const char* ito_AddInInterface_OldVersions[] = {
 #define CREATE_ADDININTERFACE_VERSION(major,minor,patch) ((major<<16)|(minor<<8)|(patch))
 
 #define ITOM_ADDININTERFACE_MAJOR 2
-#define ITOM_ADDININTERFACE_MINOR 1
+#define ITOM_ADDININTERFACE_MINOR 2
 #define ITOM_ADDININTERFACE_PATCH 0
 #define ITOM_ADDININTERFACE_VERSION CREATE_ADDININTERFACE_VERSION(ITOM_ADDININTERFACE_MAJOR,ITOM_ADDININTERFACE_MINOR,ITOM_ADDININTERFACE_PATCH)
-static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_VERSION_STR(2,1,0); //results in "ito.AddIn.InterfaceBase/x.x.x"; (the numbers 1,3,1 can not be replaced by the macros above. Does not work properly)
+static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_VERSION_STR(2,2,0); //results in "ito.AddIn.InterfaceBase/x.x.x"; (the numbers 1,3,1 can not be replaced by the macros above. Does not work properly)
 
 
 

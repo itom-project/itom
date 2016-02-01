@@ -584,6 +584,34 @@ QString AbstractPyScintillaWidget::formatPhytonCodePart(const QString &text, int
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+QString AbstractPyScintillaWidget::formatConsoleCodePart(const QString &text)
+{
+    QString res = "";
+    QString temp = "";
+    QString endlineRegExp = "[\n]";
+    QString endline = "\n";
+    QStringList commandList = text.split(QRegExp(endlineRegExp));
+    
+    for (int i = 0; i < commandList.size(); ++i)
+    {
+        if (i == commandList.size() - 1)
+        {
+            endline = "";
+        }
+
+        temp = commandList[i];
+        while (temp.size() > 0 && temp[0] == '>')
+        {
+            temp.remove(0, 1);
+        }
+
+        res += temp + endline;
+    }
+
+    return res;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //bool AbstractPyScintillaWidget::event (QEvent * event)
 //{
 //    if (event->type() == QEvent::ToolTip && !QToolTip::isVisible())

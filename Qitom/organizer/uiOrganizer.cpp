@@ -3409,6 +3409,23 @@ RetVal UiOrganizer::isFigureItem(unsigned int objectID,  QSharedPointer<unsigned
     return retval;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::getAvailableWidgetNames(QSharedPointer<QStringList> widgetNames, ItomSharedSemaphore *semaphore)
+{
+    ito::RetVal retval;
+
+    *widgetNames = m_uiLoader.availableWidgets();
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retval;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
+
+    return retval;
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ void UiOrganizer::threadSafeDeleteUi(unsigned int *handle)

@@ -1321,6 +1321,21 @@ void ConsoleWidget::copy()
     if (canCopy)
     {
         QsciScintilla::copy();
+
+        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+        settings.beginGroup("PyScintilla");
+        bool formatCopyCode = settings.value("formatCopyCode", "false").toBool();
+        settings.endGroup();
+
+        if (formatCopyCode)
+        {
+            QClipboard *clipboard = QApplication::clipboard();
+
+            if (clipboard->mimeData()->hasText()) 
+            {
+                clipboard->setText(formatConsoleCodePart(clipboard->text()));
+            }
+        }
     }
 }
 

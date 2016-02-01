@@ -545,7 +545,11 @@ public:
     std::string getFieldsList() const;
 
     //! returns vector with information about all fields contained in the specific point cloud (each info struct contains the name, offset, datatype, ... of any field)
+#if PCL_VERSION_COMPARE(>=,1,7,0)
     std::vector<pcl::PCLPointField> getFieldsInfo() const;
+#else
+	std::vector<sensor_msgs::PointField> getFieldsInfo() const;
+#endif
 
     //! returns the pointer to the first point in the current cloud or NULL if the cloud is invalid, strideBytes is the number of bytes to jump from one point to the next one.
     unsigned char* genericPointAccess(size_t &strideBytes) const;

@@ -894,6 +894,17 @@ namespace ito {
                 return m_osize[index];
             }
         }
+
+        //! returns a normalized step in the index-th axis, this is the number of values one has to walk in order to get the next value in the index-th axis.
+        /*!
+            Please consider, that this value can only be used for pointer-arithmetic operations if the dataObject is continuous.
+            Else, it only indicates the number of values, however their pixel position might be interrupted at plane boundaries.
+
+            \param index is the axis for which the step size should be determined
+            \raises Exception if index is out of bounds
+        */
+        int getStep(int index) const;
+
         
         //! gets total number of elements within the data object's ROI
         /*!

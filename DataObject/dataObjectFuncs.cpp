@@ -27,10 +27,73 @@
 
 #include "dataObjectFuncs.h"
 #include "../common/numeric.h"
+
+//! creates template defined function table for all supported data types
+#define MAKEHELPERFUNCLIST(FuncName) static t##FuncName fList##FuncName[] = \
+{                                                                           \
+   FuncName<int8>,                                                          \
+   FuncName<uint8>,                                                         \
+   FuncName<int16>,                                                         \
+   FuncName<uint16>,                                                        \
+   FuncName<int32>,                                                         \
+   FuncName<uint32>,                                                        \
+   FuncName<ito::float32>,                                                  \
+   FuncName<ito::float64>,                                                  \
+   FuncName<ito::complex64>,                                                \
+   FuncName<ito::complex128>,                                               \
+   FuncName<ito::Rgba32>                                                    \
+};
+
+//! creates function table for the function (FuncName) and both complex data types. The destination method must be templated with two template values.
+#define MAKEHELPERFUNCLIST_CMPLX_TO_REAL(FuncName) static t##FuncName fList##FuncName[] = \
+{                                                                                         \
+    FuncName<ito::complex64,float32>,                                                     \
+    FuncName<ito::complex128,float64>                                                     \
+};
+
 namespace ito 
 {
 namespace dObjHelper
 {
+    //------------------------------------------------------------------------------------------------------------------
+    // documentation in header file
+    std::string invertUnit(const std::string &oldUnit)
+    {
+        if (oldUnit.empty())
+            return oldUnit;
+
+        int found = (int)oldUnit.find('/');
+
+        if (found != std::string::npos)
+        {
+            if (found == 0)
+            {
+                return oldUnit.substr(1, oldUnit.length() - 1);
+            }
+            else if (oldUnit[0] == '1' && found == 1)
+            {
+                return oldUnit.substr(2, oldUnit.length() - 2);
+            }
+            else
+            {
+                std::string newString;
+                newString.reserve(oldUnit.length());
+                newString.append(oldUnit.substr(found + 1, oldUnit.length() - (found + 1)));
+                newString.append("/");
+                newString.append(oldUnit.substr(0, found));
+            }
+        }
+        else
+        {
+            std::string newString;
+            newString.reserve(oldUnit.length() + 2);
+            newString.append("1/");
+            newString.append(oldUnit);
+            return newString;
+        }
+        return "";
+    }
+
 
     //! Templated version of minValueFunc which calc min-value of this data object and the first position
     /*!

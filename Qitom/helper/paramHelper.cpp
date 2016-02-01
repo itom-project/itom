@@ -496,9 +496,29 @@ namespace ito {
 
             if (!found)
             {
-                return ito::RetVal::format(ito::retError, 0, QObject::tr("String '%s' does not fit to given string-constraints.").toLatin1().data(), value);
-            }
+                QString constraints;
+                QStringList items;
 
+                for (int i = 0; i < meta->getLen(); i++)
+                {
+                    items << meta->getString(i);
+                }
+
+                switch(meta->getStringType())
+                {
+                case ito::StringMeta::String:
+                    constraints = QObject::tr("Exact string match: (%1)").arg(items.join(","));
+                    break;
+                case ito::StringMeta::Wildcard:
+                    constraints = QObject::tr("Wildcard match: (%1)").arg(items.join(","));
+                    break;
+                case ito::StringMeta::RegExp:
+                    constraints = QObject::tr("RegExp match: (%1)").arg(items.join(","));
+                    break;
+                }
+
+                return ito::RetVal::format(ito::retError, 0, QObject::tr("String '%s' does not fit to given string-constraints. %1").arg(constraints).toLatin1().data(), value);
+            }
         }
 
         if (mandatory && (value == NULL))
@@ -1082,7 +1102,7 @@ namespace ito {
                             {
                                 retVal += validateDoubleMeta(dynamic_cast<const ito::DoubleMeta*>(tmplMeta), param.getVal<double>()); 
                             }
-                            else if(tmplMeta->getType() == ito::ParamMeta::rttiDoubleIntervalMeta)
+                            else if (tmplMeta->getType() == ito::ParamMeta::rttiDoubleIntervalMeta)
                             {
                                 //create a temporary set of the list (up to 2 values, more are not allowed for interval)
                                 double vals[2];
@@ -1486,7 +1506,7 @@ namespace ito {
         {
             name = QLatin1String(values[i]->getName());
 
-            if (paramMap.contains( name ))
+            if (paramMap.contains(name))
             {
                 retval += paramMap[name].copyValueFrom(values[i].data());
             }
@@ -1510,8 +1530,8 @@ namespace ito {
             //minVal - eps + R(step - eps) < value < minVal + eps + R(step + eps)
             //this leads to a comparison of R1 and R2 as follows:
             
-            int R1 = std::floor( (val - min + eps) / (step - eps)); //R for left inequation
-            int R2 = std::ceil( (val - min -eps) / (step + eps)); //R for right inequation
+            int R1 = std::floor((val - min + eps) / (step - eps)); //R for left inequation
+            int R2 = std::ceil((val - min -eps) / (step + eps)); //R for right inequation
             if (R1 != R2)
             {
                 return false;

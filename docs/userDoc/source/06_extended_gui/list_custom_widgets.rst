@@ -5,48 +5,22 @@
 Custom Designer Widgets
 ==============================================
 
-Beside QtDesginer-Widgets for plots and figures (see  :ref:`PlotsAndFigures`) some non-plotting widgets have been develop to give the user GUI-based access to itom specific objects and functions.
-The openSource-Widgets are:
+Beside QtDesginer-Widgets for plots and figures (see  :ref:`PlotsAndFigures`) some further designer plugin widgets
+have been develop to enable access to useful or itom specific objects and functions in individual GUIs.
 
-* DataObjectTable
-* dObMetaDataTable
-* EvaluateGeometricsFigure
-* MotorController
+These widgets can be used like any other type of widget within an ui-dialog with two exceptions:
 
-These widgets can be used like any other type of widget within an ui-dialog with 2 exceptions:
+1. The user interface in terms of an **ui**-file must be loaded and initilized within an itom-python context (e.g. script in itom).
 
-1. The ui-Dialog must be loaded and initilized within a itom-python context (e.g. script in itom).
-
-2. Some properties are not accesable (DESIGNABLE) in the QtDesigner (e.g. actuator-handles) and must be set during initilization in itom-python.
+2. Some properties are not accessible in the QtDesigner (e.g. actuator-handles or dataObjects) and must be set or read in the script. (They are marked with **DESIGNABLE false** in the **Q_PROPERTY** macro in their header file).
 
 To add such a widget to your ui-file, you can drag&drop them in the QtDesigner like any other widget.  
 
+The following sub-sections give an overview about some additional itom widgets:
 
-DataObjectTable
-----------------------------------------------
+.. include-designerplugindoc:: dataObjectTable
 
-The "DataObjectTable" can be used to visualize or edit a dataObject in a table based widget like in "Matlab". The widget is not inherited from a AbstractDObject and can not be used for a live plot.
-
-Properties
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-**data**: *ito::DataObject*, the dataObject to be shown
-
-**readOnly**: *bool, DESIGNABLE*, enable write protection
-
-**min**: *double, DESIGNABLE*, get/set minimum value
-
-**max**: *double, DESIGNABLE*, get/set maximum value
-
-**decimals**: *int, DESIGNABLE*, number of decimals to be shown within each cell
-
-**defaultCols**: *int, DESIGNABLE*, number of column to be shown
-
-**defaultRows**: *int, DESIGNABLE*, number of rows to be shown
-
-**horizontalLabels**: *QStringList, DESIGNABLE*, list with labels for each column row
-
-**verticalLabels**: *QStringList, DESIGNABLE*, list with labels for each shown row
+.. include-designerplugindoc:: slider2D
 
 
 
@@ -58,7 +32,7 @@ The "dObMetaDataTable" can be used to visualize the metaData of a dataObject, e.
 Properties
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-**data**: *ito::DataObject*, the dataObject to be shown
+**data**: *ito::DataObject*, the dataObject to be shown, not accessible in QtDesigner.
 
 **readOnlyEnabled**: *bool, DESIGNABLE*, enable write protection
 

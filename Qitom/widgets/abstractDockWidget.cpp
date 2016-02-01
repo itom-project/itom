@@ -830,7 +830,8 @@ void AbstractDockWidget::dockWidget()
     setWidget(m_pWindow);
     setParent(m_overallParent);
     setFloating(false);
-    QDockWidget::setVisible(true); //show();
+    QDockWidget::setVisible(true);
+    raiseAndActivate();
     m_pWindow->menuBar()->hide();
     if (m_actDock) m_actDock->setVisible(false);
     if (m_actUndock) m_actUndock->setVisible(true);

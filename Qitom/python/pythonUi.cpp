@@ -3441,6 +3441,33 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget2(PyUi * /*self*/, PyObject *args, P
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiAvailableWidgets_doc, "availableWidgets() -> return a list of currently available widgets (that can be directly loaded in ui-files at runtime)");
+PyObject* PythonUi::PyUi_availableWidgets(PyUi * /*self*/)
+{
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    if (uiOrga == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
+        return NULL;
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    ito::RetVal retValue = retOk;
+
+    QSharedPointer<QStringList> widgetNames(new QStringList);
+    QMetaObject::invokeMethod(uiOrga, "getAvailableWidgetNames",  Q_ARG(QSharedPointer<QStringList>, widgetNames), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+    if (!locker.getSemaphore()->wait(5000))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "timeout while request");
+        return NULL;
+    }
+
+    return PythonQtConversion::QStringListToPyList(*widgetNames);
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyMethodDef PythonUi::PyUi_methods[] = {
         {"show", (PyCFunction)PyUi_show,     METH_VARARGS, pyUiShow_doc},
         {"hide", (PyCFunction)PyUi_hide, METH_NOARGS, pyUiHide_doc},
@@ -3459,6 +3486,7 @@ PyMethodDef PythonUi::PyUi_methods[] = {
         {"getSaveFileName", (PyCFunction)PyUi_getSaveFileName, METH_KEYWORDS | METH_VARARGS |METH_STATIC, pyUiGetSaveFileName_doc},
         {"createNewPluginWidget", (PyCFunction)PyUi_createNewAlgoWidget, METH_KEYWORDS | METH_VARARGS |METH_STATIC, pyUiCreateNewPluginWidget_doc},
         { "createNewPluginWidget2", (PyCFunction)PyUi_createNewAlgoWidget2, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiCreateNewPluginWidget2_doc },
+        { "availableWidgets", (PyCFunction)PyUi_availableWidgets, METH_NOARGS | METH_STATIC, pyUiAvailableWidgets_doc },
         {NULL}  /* Sentinel */
 };
 

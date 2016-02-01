@@ -2481,6 +2481,12 @@ PyObject* PythonDataObject::PyDataObj_SetTag(PyDataObject *self, PyObject *args)
         }
     }
 
+    if (self->dataObject->getDims() == 0)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "an empty dataObject cannot have any tags.");
+        return NULL;
+    }
+
     std::string tagNameString(tagName);
     if (dType)
     {
@@ -2535,7 +2541,14 @@ PyObject* PythonDataObject::PyDataObj_DeleteTag(PyDataObject *self, PyObject *ar
     }
 
     std::string tagNameString(tagName);
-    return PyFloat_FromDouble(self->dataObject->deleteTag(tagNameString));
+    if (self->dataObject->deleteTag(tagNameString))
+    {
+        Py_RETURN_TRUE;
+    }
+    else
+    {
+        Py_RETURN_FALSE;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2569,7 +2582,14 @@ PyObject* PythonDataObject::PyDataObj_TagExists(PyDataObject *self, PyObject *ar
     }
 
     std::string tagNameString(tagName);
-    if (self->dataObject->existTag(tagNameString)) { Py_RETURN_TRUE; } else { Py_RETURN_FALSE; };
+    if (self->dataObject->existTag(tagNameString)) 
+    { 
+        Py_RETURN_TRUE; 
+    } 
+    else 
+    { 
+        Py_RETURN_FALSE; 
+    };
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2589,7 +2609,7 @@ PyObject* PythonDataObject::PyDataObj_GetTagListSize(PyDataObject *self)
         PyErr_SetString(PyExc_TypeError, "data object is empty.");
         return NULL;
     }
-    return PyFloat_FromDouble(self->dataObject->getTagListSize());
+    return PyLong_FromLong(self->dataObject->getTagListSize());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2611,6 +2631,11 @@ PyObject* PythonDataObject::PyDataObj_AddToProtocol(PyDataObject *self, PyObject
     if (self->dataObject == NULL)
     {
         PyErr_SetString(PyExc_TypeError, "data object is empty.");
+        return NULL;
+    }
+    else if (self->dataObject->getDims() == 0)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "an empty dataObject cannot have a protocol.");
         return NULL;
     }
 

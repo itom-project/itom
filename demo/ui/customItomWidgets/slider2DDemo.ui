@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>571</width>
+    <height>323</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Demo Slider2D</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="Slider2D" name="slider">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="xRange">
+      <pointf>
+       <x>0.000000000000000</x>
+       <y>10.000000000000000</y>
+      </pointf>
+     </property>
+     <property name="yRange">
+      <pointf>
+       <x>5.000000000000000</x>
+       <y>15.000000000000000</y>
+      </pointf>
+     </property>
+     <property name="xStepSize">
+      <double>0.200000000000000</double>
+     </property>
+     <property name="yStepSize">
+      <double>0.000000000000000</double>
+     </property>
+     <property name="xVal" stdset="0">
+      <double>6.000000000000000</double>
+     </property>
+     <property name="yVal" stdset="0">
+      <double>12.500000000000000</double>
+     </property>
+     <property name="decimals">
+      <number>2</number>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>The connections between slider and the spin boxes have been created in the QtDesigner.</string>
+       </property>
+       <property name="wordWrap">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>y-value</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QDoubleSpinBox" name="spinXValue">
+         <property name="readOnly">
+          <bool>false</bool>
+         </property>
+         <property name="value">
+          <double>6.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QDoubleSpinBox" name="spinYValue">
+         <property name="readOnly">
+          <bool>false</bool>
+         </property>
+         <property name="value">
+          <double>12.500000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>x-value</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Slider2D</class>
+   <extends>QWidget</extends>
+   <header>slider2D.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>slider</sender>
+   <signal>xValChanged(double)</signal>
+   <receiver>spinXValue</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>138</x>
+     <y>77</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>559</x>
+     <y>218</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>slider</sender>
+   <signal>yValChanged(double)</signal>
+   <receiver>spinYValue</receiver>
+   <slot>setValue(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>155</x>
+     <y>161</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>559</x>
+     <y>277</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinXValue</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>slider</receiver>
+   <slot>setX(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>493</x>
+     <y>203</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>326</x>
+     <y>191</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>spinYValue</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>slider</receiver>
+   <slot>setY(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>504</x>
+     <y>269</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>344</x>
+     <y>292</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

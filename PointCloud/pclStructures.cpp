@@ -593,7 +593,7 @@ PCLPointCloud::PCLPointCloud (const PCLPointCloud &pc)
 PCLPointCloud::PCLPointCloud (const PCLPointCloud &pc, const std::vector< int > &indices) :
     m_type(ito::pclInvalid)
 {
-    int size = pc.size();
+    size_t size = pc.size();
     if (indices.size() > size)
     {
         throw pcl::PCLException("indices vector is longer than the number of points in the given point cloud",__FILE__, "PCLPointCloud", __LINE__);
@@ -916,6 +916,7 @@ std::string PCLPointCloud::getFieldsList() const
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
+#if PCL_VERSION_COMPARE(>=,1,7,0)
 template<typename _Tp> std::vector<pcl::PCLPointField> GetFieldsInfoFunc(const ito::PCLPointCloud *pc)
 {
    const pcl::PointCloud<_Tp>* temp = getPointCloudPtrInternal<_Tp >(*pc);
@@ -937,6 +938,29 @@ std::vector<pcl::PCLPointField> PCLPointCloud::getFieldsInfo() const
     if(idx >= 0)    return fListGetFieldsInfoFunc[idx](this);
     throw pcl::PCLException("invalid point cloud",__FILE__, "header", __LINE__);
 }
+#else
+template<typename _Tp> std::vector<sensor_msgs::PointField> GetFieldsInfoFunc(const ito::PCLPointCloud *pc)
+{
+   const pcl::PointCloud<_Tp>* temp = getPointCloudPtrInternal<_Tp >(*pc);
+   if(temp)
+   {
+       std::vector<sensor_msgs::PointField> fields;
+       pcl::getFields<_Tp>(fields);
+       return fields;
+   }
+   throw pcl::PCLException("shared pointer is NULL",__FILE__, "header", __LINE__);
+}
+
+typedef std::vector<sensor_msgs::PointField> (*tGetFieldsInfoFunc)(const ito::PCLPointCloud *pc);
+PCLMAKEFUNCLIST(GetFieldsInfoFunc)
+
+std::vector<sensor_msgs::PointField> PCLPointCloud::getFieldsInfo() const
+{
+    int idx = getFuncListIndex();
+    if(idx >= 0)    return fListGetFieldsInfoFunc[idx](this);
+    throw pcl::PCLException("invalid point cloud",__FILE__, "header", __LINE__);
+}
+#endif
 
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> unsigned char* GenericPointAccessFunc(const ito::PCLPointCloud *pc, size_t &strideBytes)

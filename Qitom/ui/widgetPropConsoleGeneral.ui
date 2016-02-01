@@ -15,6 +15,32 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_4">
    <item>
+    <widget class="QGroupBox" name="groupCopyConsole">
+     <property name="title">
+      <string>Copy text from console</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>If a command is copied from the command line, the '&gt;&gt;' characters (representing the start of a command) should be ignored. If so check the following option to let itom remove this characters before copying it to the clipboard.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxFormatCopyCode">
+        <property name="text">
+         <string>Modify text from console before copying to clipboard. </string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <widget class="QGroupBox" name="groupPastConsole">
      <property name="title">
       <string>Paste text to console</string>
