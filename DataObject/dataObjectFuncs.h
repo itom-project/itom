@@ -31,29 +31,6 @@
 #include "dataobj.h"
 #include <assert.h>     /* assert */
 
-//! creates template defined function table for all supported data types
-#define MAKEHELPERFUNCLIST(FuncName) static t##FuncName fList##FuncName[] = \
-{                                                                           \
-   FuncName<int8>,                                                          \
-   FuncName<uint8>,                                                         \
-   FuncName<int16>,                                                         \
-   FuncName<uint16>,                                                        \
-   FuncName<int32>,                                                         \
-   FuncName<uint32>,                                                        \
-   FuncName<ito::float32>,                                                  \
-   FuncName<ito::float64>,                                                  \
-   FuncName<ito::complex64>,                                                \
-   FuncName<ito::complex128>,                                               \
-   FuncName<ito::Rgba32>                                                    \
-};
-
-//! creates function table for the function (FuncName) and both complex data types. The destination method must be templated with two template values.
-#define MAKEHELPERFUNCLIST_CMPLX_TO_REAL(FuncName) static t##FuncName fList##FuncName[] = \
-{                                                                                         \
-    FuncName<ito::complex64,float32>,                                                     \
-    FuncName<ito::complex128,float64>                                                     \
-};
-
 namespace ito 
 {
 namespace dObjHelper
@@ -66,43 +43,19 @@ namespace dObjHelper
         CMPLX_ARGUMENT_VALUE    = 3
     };
 
-    // Invert the unitString
-    inline std::string invertUnit(const std::string &oldUnit)
-    {
-        if(oldUnit.empty())
-            return oldUnit;
+    //! tries to return the 'inverse' of the given unit
+    /*!
+    This method tries to return the 'inverse' of the given unit. The following cases are handled:
 
-        int found = (int)oldUnit.find('/');
+    * oldUnit is empty -> an empty string is returned
+    * oldUnit does not contain a slash (/) -> "1/oldUnit" is returned
+    * oldUnit starts with "1/" -> the prefix is removed and the rest is returned
+    * oldUnit contains a slash somewhere in the middle (a/b) -> "b/a" is returned
 
-        if(found!=std::string::npos)
-        {
-            if(found == 0)
-            {
-                return oldUnit.substr(1, oldUnit.length() - 1);
-            }
-            else if(oldUnit[0] == '1' && found == 1)
-            {
-                return oldUnit.substr(2, oldUnit.length() - 2);
-            }
-            else
-            {
-                std::string newString;
-                newString.reserve(oldUnit.length());
-                newString.append(oldUnit.substr(found + 1, oldUnit.length()- (found + 1)));
-                newString.append("/");
-                newString.append(oldUnit.substr(0, found));
-            }
-        }
-        else
-        {
-            std::string newString;
-            newString.reserve(oldUnit.length()+2);
-            newString.append("1/");
-            newString.append(oldUnit);
-            return newString;    
-        }
-        return "";
-    }
+    \param[in]      oldUnit            is the old unit string
+    \return inverted unit string
+    */
+    std::string invertUnit(const std::string &oldUnit);
 
     //----------------------------------------------------------------------------------------------------------------------------------
     /** @fn     itomType2cvType
