@@ -894,6 +894,7 @@ namespace ito {
                 return m_osize[index];
             }
         }
+
         
         //! gets total number of elements within the data object's ROI
         /*!

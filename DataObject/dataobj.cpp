@@ -1086,6 +1086,8 @@ int DataObject::seekMat(const int matNum) const
    return seekMat(matNum, numMats);
 }
 
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
 //! returns the index vector-index of m_data which corresponds to the given zero-based two-dimensional matrix-index
 /*!
@@ -4557,20 +4559,86 @@ template<typename _Tp> RetVal CmpFunc(const DataObject *src1, const DataObject *
 /*!
     \throws cv::Exception since comparison is not defined for complex input types
 */
-template<> RetVal CmpFunc<ito::complex64>(const DataObject * /*src1*/, const DataObject * /*src2*/, DataObject * /*dst*/, int /*cmpOp*/)
+template<> RetVal CmpFunc<ito::complex64>(const DataObject * src1, const DataObject * src2, DataObject * dst, int cmpOp)
 {
-   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+    if (cmpOp == cv::CMP_EQ || cmpOp == cv::CMP_NE)
+    {
+        int numMats = src1->getNumPlanes();
+        const cv::Mat *src1mat;
+        const cv::Mat *src2mat;
+        cv::Mat *dest;
+        ito::uint8 *rowDest;
+        bool equal = (cmpOp == cv::CMP_EQ);
+        cv::Mat destTemp;
+        const ito::uint8 *rowVec2b;
+
+        for (int nmat = 0; nmat < numMats; nmat++)
+        {
+            src1mat = src1->get_mdata()[src1->seekMat(nmat, numMats)];
+            src2mat = src2->get_mdata()[src2->seekMat(nmat, numMats)];
+            dest = dst->get_mdata()[dst->seekMat(nmat, numMats)];
+
+            cv::compare(*src1mat, *src2mat, destTemp, cmpOp);
+
+            for (int r = 0; r < src1mat->rows; ++r)
+            {
+                rowVec2b = destTemp.ptr<ito::uint8>(r);
+                rowDest = dest->ptr<ito::uint8>(r);
+                for (int c = 0; c < src1mat->cols; ++c)
+                {
+                    *rowDest++ = *rowVec2b++ & *rowVec2b++;
+                }
+            }
+        }
+    }
+    else
+    {
+        cv::error(cv::Exception(CV_StsAssert, "complex64 is an unorderable type.", "", __FILE__, __LINE__));
+    }
+    return ito::retOk;
 }
 
 //! template specialisation for compare function of type complex128
 /*!
     \throws cv::Exception since comparison is not defined for complex input types
 */
-template<> RetVal CmpFunc<ito::complex128>(const DataObject * /*src1*/, const DataObject * /*src2*/, DataObject * /*dst*/, int /*cmpOp*/)
+template<> RetVal CmpFunc<ito::complex128>(const DataObject * src1, const DataObject * src2, DataObject * dst, int cmpOp)
 {
-   cv::error(cv::Exception(CV_StsAssert, "Not defined for input parameter type", "", __FILE__, __LINE__));
-   return 0;
+    if (cmpOp == cv::CMP_EQ || cmpOp == cv::CMP_NE)
+    {
+        int numMats = src1->getNumPlanes();
+        const cv::Mat *src1mat;
+        const cv::Mat *src2mat;
+        cv::Mat *dest;
+        ito::uint8 *rowDest;
+        bool equal = (cmpOp == cv::CMP_EQ);
+        cv::Mat destTemp;
+        const ito::uint8 *rowVec2b;
+
+        for (int nmat = 0; nmat < numMats; nmat++)
+        {
+            src1mat = src1->get_mdata()[src1->seekMat(nmat, numMats)];
+            src2mat = src2->get_mdata()[src2->seekMat(nmat, numMats)];
+            dest = dst->get_mdata()[dst->seekMat(nmat, numMats)];
+
+            cv::compare(*src1mat, *src2mat, destTemp, cmpOp);
+
+            for (int r = 0; r < src1mat->rows; ++r)
+            {
+                rowVec2b = destTemp.ptr<ito::uint8>(r);
+                rowDest = dest->ptr<ito::uint8>(r);
+                for (int c = 0; c < src1mat->cols; ++c)
+                {
+                    *rowDest++ = *rowVec2b++ & *rowVec2b++;
+                }
+            }
+        }
+    }
+    else
+    {
+        cv::error(cv::Exception(CV_StsAssert, "complex128 is an unorderable type.", "", __FILE__, __LINE__));
+    }
+    return ito::retOk;
 }
 
 typedef RetVal (*tCmpFunc)(const DataObject *src1, const DataObject *src2, DataObject *dst, int cmpOp);
