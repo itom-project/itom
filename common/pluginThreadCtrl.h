@@ -25,8 +25,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef HELPERGRABBER_H
-#define HELPERGRABBER_H
+#ifndef PLUGINTHREADCTRL_H
+#define PLUGINTHREADCTRL_H
 
 #include "typeDefs.h"
 #include "addInInterface.h"
@@ -50,7 +50,7 @@ class ITOMCOMMONQT_EXPORT PluginThreadCtrl
 {
 protected:
     ito::AddInBase *m_pPlugin;                   /*!< Handle to the plugin */
-    ito::RetVal waitForSemaphore(ItomSharedSemaphore *waitCond, int timeOutMS = PLUGINWAIT);    /*!< Wait until camera-thread has finished the last command */
+    ItomSharedSemaphoreLocker m_semaphoreLocker; /*!< Handle to the semaphore needed for thread save communication. Allocated in constructor, deleted in destructor*/    
 
 public:
     //! default constructor. No plugin instance is currently under control.
@@ -93,6 +93,8 @@ public:
 
     ito::RetVal getParam(ito::Param &val, int timeOutMS = PLUGINWAIT);      /*!< Get a parameter of the plugin */
     ito::RetVal setParam(ito::ParamBase val, int timeOutMS = PLUGINWAIT);   /*!< Set a parameter of the plugin */
+
+    ito::RetVal waitForSemaphore(int timeOutMS = PLUGINWAIT);               /*!< Wait until plugin thread has finished the last command */
 };
 
 
@@ -279,11 +281,11 @@ public:
     ito::RetVal getPos(QVector<int> axes, QVector<double> &positions, int timeOutMS = PLUGINWAIT);         /*!< Get the position of more than one axis */
     ito::RetVal getPos(int axis, double &position, int timeOutMS = PLUGINWAIT);                            /*!< Get the position of a single axis */
 
-    ito::RetVal checkAxis(int axisNum);                                                                    /*!< Check if an axis is within the axis-range */
+    ito::RetVal checkAxis(int axisNum);                                                              /*!< Check if an axis is within the axis-range */
 };
 
 }   // end namespace ito
 
 #endif //#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)
 
-#endif
+#endif //PLUGINTHREADCTRL_H

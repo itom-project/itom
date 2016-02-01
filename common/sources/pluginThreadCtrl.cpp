@@ -27,7 +27,6 @@
 
 #include "pluginThreadCtrl.h"
 
-//#include <qdebug.h>
 #include <qelapsedtimer.h>
 #include <qvector.h>
 
@@ -129,55 +128,61 @@ PluginThreadCtrl& PluginThreadCtrl::operator =(const PluginThreadCtrl &other)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
-    \detail After the invoke-command this thread must wait / be synchronize with the camera-thread.
-            Therefore the wait-Function of pMySemaphore is called. If the camera do not answer within timeOutMS and the pMyCamera is not alive anymore, the function returns a timeout.
+    \detail After the invoke-command this thread must wait / be synchronize with the plugin-thread.
+        Therefore the wait-Function of m_semaphoreLocker is called. If the plugin do not answer within timeOutMS and the pMyCamera is not alive anymore, the function returns a timeout.
 
-    \param [in] timeOutMS    TimeOut for the semaphore-wait
+    \param [in] timeOutMS    timout for the wait. -1: endless wait until the plugin finished the last invokation or it is not 'alive' anymore, 0: no wait (this method does nothing), >0: time in ms
 
-    \return retOk or retError
-    \sa threadActuator, threadCamera
+    \return retOk if semaphore was successfully released, retError if semaphore returned an error message or if a timeout occurred (error code: 256)
 */
-ito::RetVal PluginThreadCtrl::waitForSemaphore(ItomSharedSemaphore *waitCond, int timeOutMS)
+//-----------------------------------------------------------------------------------------------
+ito::RetVal PluginThreadCtrl::waitForSemaphore(int timeOutMS /*= PLUGINWAIT*/)
 {
-    ito::RetVal retval(ito::retOk);
-    bool timeout = false;
-    
+    ito::RetVal retval;
 
-    if (timeOutMS == 0)
+    if (m_semaphoreLocker.getSemaphore() != NULL && timeOutMS != 0)
     {
-        while(!timeout && waitCond->wait(PLUGINWAIT) == false)
+        ItomSharedSemaphore *waitCond = m_semaphoreLocker.getSemaphore();
+        bool timeout = false;
+
+        if (timeOutMS < 0) //endless wait until it is done or not alive anymore
         {
-            if (m_pPlugin->isAlive() == false)
+            while(waitCond->wait(PLUGINWAIT) == false)
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("Timeout while waiting for answer from camera.").toLatin1().data());
-                timeout = true;
+                if (m_pPlugin->isAlive() == false)
+                {
+                    retval += ito::RetVal(ito::retError, 256, QObject::tr("Timeout while waiting for answer from camera.").toLatin1().data());
+                    timeout = true;
+                    break;
+                }
             }
         }
-    }
-    else
-    {
-        QElapsedTimer timer;
-        timer.start();
-        int t = std::min(timeOutMS, PLUGINWAIT);
-
-        while(!timeout && waitCond->wait(t) == false)
+        else
         {
-            if (timer.elapsed() > timeOutMS)
+            QElapsedTimer timer;
+            timer.start();
+            int t = std::min(timeOutMS, PLUGINWAIT);
+
+            while(!timeout && waitCond->wait(t) == false)
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("Timeout while waiting for answer from camera.").toLatin1().data());
-                timeout = true;
-            }
-            else if (m_pPlugin->isAlive() == false)
-            {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("Timeout while waiting for answer from camera.").toLatin1().data());
-                timeout = true;
+                if (timer.elapsed() > timeOutMS)
+                {
+                    retval += ito::RetVal(ito::retError, 256, QObject::tr("Timeout while waiting for answer from camera.").toLatin1().data());
+                    timeout = true;
+                }
+                else if (m_pPlugin->isAlive() == false)
+                {
+                    retval += ito::RetVal(ito::retError, 256, QObject::tr("Timeout while waiting for answer from camera.").toLatin1().data());
+                    timeout = true;
+                }
             }
         }
-    }
         
-    if (!timeout)
-    {
-        retval += waitCond->returnValue;
+        if (!timeout)
+        {
+            retval += waitCond->returnValue;
+            m_semaphoreLocker = NULL; //delete semaphore in locker
+        }
     }
 
     return retval;
@@ -191,28 +196,32 @@ ito::RetVal PluginThreadCtrl::waitForSemaphore(ItomSharedSemaphore *waitCond, in
     \param [in] timeOutMS    TimeOut for the semaphore-wait
 
     \return retOk or retError
-    \sa threadActuator, threadCamera
 */
-ito::RetVal PluginThreadCtrl::getParam(ito::Param &val, int timeOutMS)
+ito::RetVal PluginThreadCtrl::getParam(ito::Param &val, int timeOutMS /*= PLUGINWAIT*/)
 {
     if (!m_pPlugin)
     {
         return ito::RetVal(ito::retError, 0, "no camera available");
     }
 
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    m_semaphoreLocker = new ItomSharedSemaphore();
     QSharedPointer<ito::Param> qsParam(new ito::Param(val));
-    if (!QMetaObject::invokeMethod(m_pPlugin, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+    if (!QMetaObject::invokeMethod(m_pPlugin, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking getParam");
     }
 
-    ito::RetVal retval = waitForSemaphore(locker.getSemaphore(), timeOutMS);
+    ito::RetVal retval = waitForSemaphore(timeOutMS);
 
-    if (!retval.containsError())
+    if (!retval.containsError() && timeOutMS != 0)
     {
         val = *qsParam;
     }
+    else if (timeOutMS == 0)
+    {
+        retval += ito::RetVal(ito::retWarning, 0, "no parameter can be returned if timeout = 0");
+    }
+
     return retval;
 }
 
@@ -224,23 +233,22 @@ ito::RetVal PluginThreadCtrl::getParam(ito::Param &val, int timeOutMS)
     \param [in] timeOutMS   TimeOut for the semaphore-wait
 
     \return retOk or retError
-    \sa threadActuator, threadCamera
 */
-ito::RetVal PluginThreadCtrl::setParam(ito::ParamBase val, int timeOutMS)
+ito::RetVal PluginThreadCtrl::setParam(ito::ParamBase val, int timeOutMS /*= PLUGINWAIT*/)
 {
     if (!m_pPlugin)
     {
         return ito::RetVal(ito::retError, 0, "no camera available");
     }
 
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    m_semaphoreLocker = new ItomSharedSemaphore();
     QSharedPointer<ito::ParamBase> qsParam(new ito::ParamBase(val));
-    if (!QMetaObject::invokeMethod(m_pPlugin, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+    if (!QMetaObject::invokeMethod(m_pPlugin, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking setParam");
     }
     
-    return waitForSemaphore(locker.getSemaphore(), timeOutMS);
+    return waitForSemaphore(timeOutMS);
 }
 
 
@@ -282,22 +290,22 @@ DataIOThreadCtrl::~DataIOThreadCtrl()
     \param [in] timeOutMS    TimeOut for the semaphore-wait
 
     \return retOk or retError
-    \sa threadActuator, threadCamera, threadCamera::stopDevice, threadCamera::acquire, threadCamera::getVal, threadCamera::copyVal
+    \sa DataIOThreadCtrl::stopDevice, DataIOThreadCtrl::acquire, DataIOThreadCtrl::getVal, DataIOThreadCtrl::copyVal
 */
-ito::RetVal DataIOThreadCtrl::startDevice(int timeOutMS)
+ito::RetVal DataIOThreadCtrl::startDevice(int timeOutMS /*= PLUGINWAIT*/)
 {
     if (!m_pPlugin)
     {
         return ito::RetVal(ito::retError, 0, "no camera available");
     }
 
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-    if (!QMetaObject::invokeMethod(m_pPlugin, "startDevice", Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+    m_semaphoreLocker = new ItomSharedSemaphore();
+    if (!QMetaObject::invokeMethod(m_pPlugin, "startDevice", Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking startDevice");
     }
 
-    return waitForSemaphore(locker.getSemaphore(), timeOutMS);
+    return waitForSemaphore(timeOutMS);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -307,22 +315,22 @@ ito::RetVal DataIOThreadCtrl::startDevice(int timeOutMS)
     \param [in] timeOutMS    TimeOut for the semaphore-wait
 
     \return retOk or retError
-    \sa threadActuator, threadCamera, threadCamera::startDevice, threadCamera::acquire, threadCamera::getVal, threadCamera::copyVal
+    \sa DataIOThreadCtrl::startDevice, DataIOThreadCtrl::acquire, DataIOThreadCtrl::getVal, DataIOThreadCtrl::copyVal
 */
-ito::RetVal DataIOThreadCtrl::stopDevice(int timeOutMS)
+ito::RetVal DataIOThreadCtrl::stopDevice(int timeOutMS /*= PLUGINWAIT*/)
 {
     if (!m_pPlugin)
     {
         return ito::RetVal(ito::retError, 0, "no camera available");
     }
 
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-    if (!QMetaObject::invokeMethod(m_pPlugin, "stopDevice", Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+    m_semaphoreLocker = new ItomSharedSemaphore();
+    if (!QMetaObject::invokeMethod(m_pPlugin, "stopDevice", Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking stopDevice");
     }
 
-    return waitForSemaphore(locker.getSemaphore(), timeOutMS);
+    return waitForSemaphore(timeOutMS);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -334,22 +342,22 @@ ito::RetVal DataIOThreadCtrl::stopDevice(int timeOutMS)
     \param [in] timeOutMS   TimeOut for the semaphore-wait
 
     \return retOk or retError
-    \sa threadActuator, threadCamera, threadCamera::stopDevice, threadCamera::startDevice, threadCamera::getVal, threadCamera::copyVal
+    \sa DataIOThreadCtrl::stopDevice, DataIOThreadCtrl::startDevice, DataIOThreadCtrl::getVal, DataIOThreadCtrl::copyVal
 */
-ito::RetVal DataIOThreadCtrl::acquire(const int trigger /*= 0*/, int timeOutMS)
+ito::RetVal DataIOThreadCtrl::acquire(const int trigger /*= 0*/, int timeOutMS /*= PLUGINWAIT*/)
 {
     if (!m_pPlugin)
     {
         return ito::RetVal(ito::retError, 0, "no camera available");
     }
 
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-    if (!QMetaObject::invokeMethod(m_pPlugin, "acquire", Q_ARG(int, trigger), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+    m_semaphoreLocker = new ItomSharedSemaphore();
+    if (!QMetaObject::invokeMethod(m_pPlugin, "acquire", Q_ARG(int, trigger), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking acquire");
     }
 
-    return waitForSemaphore(locker.getSemaphore(), timeOutMS);
+    return waitForSemaphore(timeOutMS);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -362,22 +370,22 @@ ito::RetVal DataIOThreadCtrl::acquire(const int trigger /*= 0*/, int timeOutMS)
     \param [in] timeOutMS   TimeOut for the semaphore-wait
 
     \return retOk or retError
-    \sa threadActuator, threadCamera, threadCamera::stopDevice, threadCamera::acquire, threadCamera::startDevice, threadCamera::copyVal
+    \sa DataIOThreadCtrl::stopDevice, DataIOThreadCtrl::acquire, DataIOThreadCtrl::startDevice, DataIOThreadCtrl::copyVal
 */
-ito::RetVal DataIOThreadCtrl::getVal(ito::DataObject &dObj, int timeOutMS)   /*! < Get a shallow-copy of the dataObject */
+ito::RetVal DataIOThreadCtrl::getVal(ito::DataObject &dObj, int timeOutMS /*= PLUGINWAIT*/)   /*! < Get a shallow-copy of the dataObject */
 {
     if (!m_pPlugin)
     {
         return ito::RetVal(ito::retError, 0, "no camera available");
     }
 
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-    if (!QMetaObject::invokeMethod(m_pPlugin, "getVal", Q_ARG(void*, (void *)&dObj), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+    m_semaphoreLocker = new ItomSharedSemaphore();
+    if (!QMetaObject::invokeMethod(m_pPlugin, "getVal", Q_ARG(void*, (void *)&dObj), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking getVal");
     }
 
-    return waitForSemaphore(locker.getSemaphore(), timeOutMS);
+    return waitForSemaphore(timeOutMS);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -390,22 +398,22 @@ ito::RetVal DataIOThreadCtrl::getVal(ito::DataObject &dObj, int timeOutMS)   /*!
     \param [in] timeOutMS   TimeOut for the semaphore-wait
 
     \return retOk or retError
-    \sa threadActuator, threadCamera, threadCamera::stopDevice, threadCamera::acquire, threadCamera::getVal, threadCamera::startDevice
+    \sa DataIOThreadCtrl::stopDevice, DataIOThreadCtrl::acquire, DataIOThreadCtrl::getVal, DataIOThreadCtrl::startDevice
 */
-ito::RetVal DataIOThreadCtrl::copyVal(ito::DataObject &dObj, int timeOutMS)  /*! < Get a deep-copy of the dataObject */
+ito::RetVal DataIOThreadCtrl::copyVal(ito::DataObject &dObj, int timeOutMS /*= PLUGINWAIT*/)  /*! < Get a deep-copy of the dataObject */
 {
     if (!m_pPlugin)
     {
         return ito::RetVal(ito::retError, 0, "no camera available");
     }
 
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-    if (!QMetaObject::invokeMethod(m_pPlugin, "copyVal", Q_ARG(void*, (void *)&dObj), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+    m_semaphoreLocker = new ItomSharedSemaphore();
+    if (!QMetaObject::invokeMethod(m_pPlugin, "copyVal", Q_ARG(void*, (void *)&dObj), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking copyVal");
     }
 
-    return waitForSemaphore(locker.getSemaphore(), timeOutMS);
+    return waitForSemaphore(timeOutMS);
 }
 
 
@@ -419,35 +427,37 @@ ito::RetVal DataIOThreadCtrl::copyVal(ito::DataObject &dObj, int timeOutMS)  /*!
     \param [out] ysize      Size of the camera in y (rows)
 
     \return retOk or retError
-    \sa threadActuator, threadCamera
 */
 
-ito::RetVal DataIOThreadCtrl::getImageParams(int &bpp, int &sizex, int &sizey, int timeOutMS)
+ito::RetVal DataIOThreadCtrl::getImageParams(int &bpp, int &sizex, int &sizey, int timeOutMS /*= PLUGINWAIT*/)
 {
     if (!m_pPlugin)
     {
         return ito::RetVal(ito::retError, 0, "no camera available");
     }
-
     
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    m_semaphoreLocker = new ItomSharedSemaphore();
     QSharedPointer<ito::Param> param1(new ito::Param("bpp", ito::ParamBase::Int));
     QSharedPointer<ito::Param> param2(new ito::Param("sizex", ito::ParamBase::Int));
     QSharedPointer<ito::Param> param3(new ito::Param("sizey", ito::ParamBase::Int));
     QVector<QSharedPointer<ito::Param> > params;
     params << param1 << param2 << param3;
-    if (!QMetaObject::invokeMethod(m_pPlugin, "getParamVector", Q_ARG(QVector<QSharedPointer<ito::Param> >, params), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+    if (!QMetaObject::invokeMethod(m_pPlugin, "getParamVector", Q_ARG(QVector<QSharedPointer<ito::Param> >, params), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking copyVal");
     }
 
-    ito::RetVal retval = waitForSemaphore(locker.getSemaphore(), timeOutMS);
+    ito::RetVal retval = waitForSemaphore(timeOutMS);
 
-    if (!retval.containsError())
+    if (!retval.containsError() && timeOutMS != 0)
     {
         bpp = params[0]->getVal<int>();
         sizex = params[1]->getVal<int>();
         sizey = params[2]->getVal<int>();
+    }
+    else if (timeOutMS == 0)
+    {
+        retval += ito::RetVal(ito::retWarning, 0, "no image parameters can be returned if timeout = 0");
     }
 
     return retval;
@@ -502,7 +512,7 @@ ActuatorThreadCtrl::~ActuatorThreadCtrl()
     \param [in] timeOutMS       TimeOut for the semaphore-wait, if (0) the waitForSemaphore is not called and must be called seperate by the algorithm
 
     \return retOk or retError
-    \sa threadActuator
+    \sa ActuatorThreadCtrl::setPosAbs
 */
 ito::RetVal ActuatorThreadCtrl::setPosRel(const QVector<int> &axes, const QVector<double> &relPositions, int timeOutMS /*= PLUGINWAIT*/)
 {
@@ -516,13 +526,13 @@ ito::RetVal ActuatorThreadCtrl::setPosRel(const QVector<int> &axes, const QVecto
         return ito::RetVal(ito::retError, 0, QObject::tr("Error during setPosRel: Vectors differ in size").toLatin1().data());
     }
 
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-    if(!QMetaObject::invokeMethod(m_pPlugin, "setPosRel", Q_ARG(QVector<int>, axes), Q_ARG(QVector<double>, relPositions), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+    m_semaphoreLocker = new ItomSharedSemaphore();
+    if(!QMetaObject::invokeMethod(m_pPlugin, "setPosRel", Q_ARG(QVector<int>, axes), Q_ARG(QVector<double>, relPositions), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking setPosRel");
     }
     
-    return waitForSemaphore(locker.getSemaphore(), timeOutMS);
+    return waitForSemaphore(timeOutMS);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -538,7 +548,7 @@ ito::RetVal ActuatorThreadCtrl::setPosRel(const QVector<int> &axes, const QVecto
     \param [in] timeOutMS       TimeOut for the semaphore-wait, if (0) the waitForSemaphore is not called and must be called seperate by the algorithm
 
     \return retOk or retError
-    \sa threadActuator
+    \sa ActuatorThreadCtrl::setPosRel
 */
 ito::RetVal ActuatorThreadCtrl::setPosAbs(const QVector<int> &axes, const QVector<double> &absPositions, int timeOutMS /*= PLUGINWAIT*/)
 {
@@ -552,14 +562,13 @@ ito::RetVal ActuatorThreadCtrl::setPosAbs(const QVector<int> &axes, const QVecto
         return ito::RetVal(ito::retError, 0, QObject::tr("Error during setPosAbs: Vectors differ in size").toLatin1().data());
     }
 
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-
-    if(!QMetaObject::invokeMethod(m_pPlugin, "setPosAbs", Q_ARG(QVector<int>, axes), Q_ARG(QVector<double>, absPositions), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+    m_semaphoreLocker = new ItomSharedSemaphore();
+    if(!QMetaObject::invokeMethod(m_pPlugin, "setPosAbs", Q_ARG(QVector<int>, axes), Q_ARG(QVector<double>, absPositions), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking setPosAbs");
     }
 
-    return waitForSemaphore(locker.getSemaphore(), timeOutMS);
+    return waitForSemaphore(timeOutMS);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -574,23 +583,22 @@ ito::RetVal ActuatorThreadCtrl::setPosAbs(const QVector<int> &axes, const QVecto
     \param [in] timeOutMS       TimeOut for the semaphore-wait, if (0) the waitForSemaphore is not called and must be called seperate by the algorithm
 
     \return retOk or retError
-    \sa threadActuator
+    \sa ActuatorThreadCtrl::setPosAbs
 */
-ito::RetVal ActuatorThreadCtrl::setPosRel(int axis, double relPosition, int timeOutMS)
+ito::RetVal ActuatorThreadCtrl::setPosRel(int axis, double relPosition, int timeOutMS /*= PLUGINWAIT*/)
 {
     if (!m_pPlugin)
     {
         return ito::RetVal(ito::retError, 0, "no actuator available");
     }
 
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-
-    if (!QMetaObject::invokeMethod(m_pPlugin, "setPosRel", Q_ARG(int, axis), Q_ARG(double, relPosition), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+    m_semaphoreLocker = new ItomSharedSemaphore();
+    if (!QMetaObject::invokeMethod(m_pPlugin, "setPosRel", Q_ARG(int, axis), Q_ARG(double, relPosition), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking setPosRel");
     }
 
-    return waitForSemaphore(locker.getSemaphore(), timeOutMS);
+    return waitForSemaphore(timeOutMS);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -605,22 +613,22 @@ ito::RetVal ActuatorThreadCtrl::setPosRel(int axis, double relPosition, int time
     \param [in] timeOutMS       TimeOut for the semaphore-wait, if (0) the waitForSemaphore is not called and must be called seperate by the algorithm
 
     \return retOk or retError
-    \sa threadActuator
+    \sa ActuatorThreadCtrl::setPosRel
 */
-ito::RetVal ActuatorThreadCtrl::setPosAbs(int axis, double absPosition, int timeOutMS)
+ito::RetVal ActuatorThreadCtrl::setPosAbs(int axis, double absPosition, int timeOutMS /*= PLUGINWAIT*/)
 {
     if (!m_pPlugin)
     {
         return ito::RetVal(ito::retError, 0, "no actuator available");
     }
 
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-    if (!QMetaObject::invokeMethod(m_pPlugin, "setPosAbs", Q_ARG(int, axis), Q_ARG(double, absPosition), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+    m_semaphoreLocker = new ItomSharedSemaphore();
+    if (!QMetaObject::invokeMethod(m_pPlugin, "setPosAbs", Q_ARG(int, axis), Q_ARG(double, absPosition), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking setPosAbs");
     }
 
-    return waitForSemaphore(locker.getSemaphore(), timeOutMS);
+    return waitForSemaphore(timeOutMS);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -632,9 +640,8 @@ ito::RetVal ActuatorThreadCtrl::setPosAbs(int axis, double absPosition, int time
     \param [in] timeOutMS    TimeOut for the semaphore-wait
 
     \return retOk or retError
-    \sa threadActuator
 */
-ito::RetVal ActuatorThreadCtrl::getPos(int axis, double &position, int timeOutMS)
+ito::RetVal ActuatorThreadCtrl::getPos(int axis, double &position, int timeOutMS /*= PLUGINWAIT*/)
 {
     if (!m_pPlugin)
     {
@@ -644,17 +651,20 @@ ito::RetVal ActuatorThreadCtrl::getPos(int axis, double &position, int timeOutMS
     QSharedPointer<double> posSP(new double);
     *posSP = 0.0;
 
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-
-    if (!QMetaObject::invokeMethod(m_pPlugin, "getPos", Q_ARG(int, (const int) axis), Q_ARG(QSharedPointer<double>, posSP), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+    m_semaphoreLocker = new ItomSharedSemaphore();
+    if (!QMetaObject::invokeMethod(m_pPlugin, "getPos", Q_ARG(int, (const int) axis), Q_ARG(QSharedPointer<double>, posSP), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking getPos");
     }
 
-    ito::RetVal retval = waitForSemaphore(locker.getSemaphore(), timeOutMS);
-    if (!retval.containsError())
+    ito::RetVal retval = waitForSemaphore(timeOutMS);
+    if (!retval.containsError() && timeOutMS != 0)
     {
         position = *posSP;
+    }
+    else if (timeOutMS == 0)
+    {
+        retval += ito::RetVal(ito::retWarning, 0, "no position value can be returned if timeout = 0");
     }
 
     return retval;
@@ -669,9 +679,8 @@ ito::RetVal ActuatorThreadCtrl::getPos(int axis, double &position, int timeOutMS
     \param [in] timeOutMS    TimeOut for the semaphore-wait
 
     \return retOk or retError
-    \sa threadActuator
 */
-ito::RetVal ActuatorThreadCtrl::getPos(QVector<int> axes, QVector<double> &positions, int timeOutMS)
+ito::RetVal ActuatorThreadCtrl::getPos(QVector<int> axes, QVector<double> &positions, int timeOutMS /*= PLUGINWAIT*/)
 {
     if (!m_pPlugin)
     {
@@ -682,18 +691,21 @@ ito::RetVal ActuatorThreadCtrl::getPos(QVector<int> axes, QVector<double> &posit
     QSharedPointer<QVector<double> > posVecSP(new QVector<double>());
     posVecSP->fill(0.0, axes.size());
 
-    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-
-    if (!QMetaObject::invokeMethod(m_pPlugin, "getPos", Q_ARG(QVector<int>, axes), Q_ARG(QSharedPointer<QVector<double> >, posVecSP), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+    m_semaphoreLocker = new ItomSharedSemaphore();
+    if (!QMetaObject::invokeMethod(m_pPlugin, "getPos", Q_ARG(QVector<int>, axes), Q_ARG(QSharedPointer<QVector<double> >, posVecSP), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
         return ito::RetVal(ito::retError, 0, "error invoking getPos");
     }
 
-    ito::RetVal retval = waitForSemaphore(locker.getSemaphore(), timeOutMS);
+    ito::RetVal retval = waitForSemaphore(timeOutMS);
 
-    if (!retval.containsError())
+    if (!retval.containsError() && timeOutMS != 0)
     {
         positions = *posVecSP;
+    }
+    else if (timeOutMS == 0)
+    {
+        retval += ito::RetVal(ito::retWarning, 0, "no position value(s) can be returned if timeout = 0");
     }
 
     return retval;
@@ -703,10 +715,9 @@ ito::RetVal ActuatorThreadCtrl::getPos(QVector<int> axes, QVector<double> &posit
 /*!
     \detail Check if a specific axis is within the axisSpace of this actuator
 
-    \param [in] axisNum    Axisnumber
+    \param [in] axisNum  axis index to be checked
 
     \return retOk or retError
-    \sa threadActuator
 */
 ito::RetVal ActuatorThreadCtrl::checkAxis(int axisNum)
 {
