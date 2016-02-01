@@ -55,7 +55,7 @@ namespace dObjHelper
     \param[in]      oldUnit            is the old unit string
     \return inverted unit string
     */
-    std::string invertUnit(const std::string &oldUnit);
+    std::string DATAOBJ_EXPORT invertUnit(const std::string &oldUnit);
 
     //----------------------------------------------------------------------------------------------------------------------------------
     /** @fn     itomType2cvType
