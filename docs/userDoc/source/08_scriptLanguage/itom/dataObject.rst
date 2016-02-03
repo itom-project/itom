@@ -75,6 +75,9 @@ In the following example, some dataObjects of different size and types are creat
     #  However consider that this is not recommended for huge
     #  matrices.
     e = dataObject([2,5,10], "complex128", continuous = True)
+    
+    #6. create a 2x3, uint16 dataObject filled with [[1,2,3],[4,5,6]]
+    f = dataObject([2,3], "uint16", data = (1,2,3,4,5,6))
 
 You can also use the copy constructor of class **dataObject** in order to create
 a dataObject from another array-like object or a sequence of numbers (tuple, list...).
@@ -103,7 +106,124 @@ is mainly the data block(s)) as long as possible, such that memory and execution
     #3. create a dataObject as shallow copy of another dataObject
     e = dataObject(d)
     
+Static constructors for dataObjects
+------------------------------------
+
+If a **dataObject** is created using one of the default constructors (without keyword *data*), the matrix is allocated to the right 
+side but the values usually have no defined content. The values are even not randomly distributed. In order to generate a pre-filled
+**dataObject**, there exist some special static methods. These are:
+
+* Use :py:meth:`~itom.dataObject.eye` to create a 2D, square, eye matrix.
+* :py:meth:`~itom.dataObject.ones` is used to created a n-dimensional dataObject filled with ones.
+* :py:meth:`~itom.dataObject.zeros` is used to created a n-dimensional dataObject filled with zeros.
+* :py:meth:`~itom.dataObject.rand` is used to created a n-dimensional dataObject filled with uniformly distributed random values: range [0,1) for floating point values, else the values are taken from the entire value range of the data type.
+* :py:meth:`~itom.dataObject.randN` is used to created a n-dimensional dataObject filled with gaussian distributed random values.
+
+.. code-block:: python
     
+    a = dataObject.ones([3,4], 'uint8')
+    a.data()
+    #returns:
+    #dataObject(size=[3x4], dtype='uint8'
+    #    [[  1,   1,   1,   1],
+    #     [  1,   1,   1,   1],
+    #     [  1,   1,   1,   1]])
+
+Print content of dataObject
+-----------------------------
+
+If you type the variable name of a **dataObject** into the command line of |itom| and press return, the short string representation with all important
+facts of the dataObject are printed in one line. This is the same result than using the :py:meth:`print` command of Python. If you want to obtain
+the full content of a **dataObject** in the command line, use the method :py:meth:`~itom.dataObject.data`:
+
+.. code-block:: python
+    
+    a = dataObject.ones([3,4], 'uint8')
+    print(a)
+    #returns:
+    #dataObject('uint8', [3 x 4], continuous: 1, owndata: 1)
+    
+    a.data()
+    #returns:
+    #dataObject(size=[3x4], dtype='uint8'
+    #    [[  1,   1,   1,   1],
+    #     [  1,   1,   1,   1],
+    #     [  1,   1,   1,   1]])
+    
+.. note::
+    
+    The string representation (using the :py:meth:`print` method) of a numpy array will print the full or cropped content of the numpy array
+    to the command line (cropped if it is too big). For **dataObjects**, the content is only print using the :py:meth:`~itom.dataObject.data` method.
+    
+Basic attributes of a dataObject
+-------------------------------------
+
+Any created **dataObject** provides some basic attributes that describe the corresponding array:
+
+* The attribute :py:attr:`~itom.dataObject.ndim` or :py:attr:`~itom.dataObject.dims` return the number of dimensions of the  **dataObject**.
+* The attribute :py:attr:`~itom.dataObject.shape` returns a tuple with the size for every axis. The size of the tuple corresponds to the number of dimensions. Remember, that the order is always (y,x), (z,y,x)...
+* The attribute :py:attr:`~itom.dataObject.dtype` returns a string with the type of the **dataObject** (e.g. uint8, float32 or complex64).
+* The attribute :py:attr:`~itom.dataObject.continuous` returns True if the data block lies continuously in memory or not (False). False is only possible for 3 or higher dimensional dataObjects. Then, the memory of the single planes lies distributed at different locations in the memory allowing to save bigger matrices in the available memory. While a continuous dataObject can share its memory with a numpy array, a non-continuous dataObject has to be converted in the continuous version before being transmitted to a numpy array (this is implicitely done).
+
+Examples:
+
+.. code-block:: python
+    
+    a = dataObject.ones([5,4,3,2], 'uint16')
+    print("dims:", a.ndim, "shape:", a.shape, "type:", a.dtype)
+    #returns:
+    #dims: 4 shape: (5, 4, 3, 2) type: uint16
+
+Value and axes descriptions, units, scaling and offset
+-------------------------------------------------------
+
+Usually, **dataObjects** and numpy arrays are quite similar and very compatible to each other. They can even share memory (if continuous) and dataObjects can usually be
+used whenever a function requires an **array-like** input type (the class :py:class:`~itom.dataObject` implements the **array-like** interface definitions). However, the
+**dataObject** has been made in order to also save protocol information, meta information as well as the physical meaning of the matrix. As one powerful feature, it is possible
+to set an arbitrary description, unit, scaling and offset to all axes as well as a description and unit to the values. If a **dataObject** is plot (e.g. by :py:meth:`itom.plot`), 
+these properties are read and considered in the plot. 
+
+In detail:
+
+* Every axis as well as the value axis can have a description (e.g. 'length')
+* Every axis as well as the value axis can have a unit (e.g. 'mm', 'm', 'nm'...). Some algorithms consider these units for special calculations.
+* Every axis (but not the value axis) can have a scaling (default: 1.0)
+* Every axis (but not the value axis) can have an offset (default: 0.0)
+
+Scaling and offset transform the pixel coordinate in the matrix (beginning with 0 in all axes) into a physical coordinate. While the values in a matrix are always addressed
+by their pixel coordinate (in integer values), the physical units are displayed in the plots (e.g. designer widget type *itom1dqwtplot* or *itom2dqwtplot*). The following
+example should explain the advantage of the scaling and offset values:
+
+Lets assume that a white-light interferometer records a 2.5D topography of an object. The distance between two adjacent pixels in 2.5 µm in both directions. Additionally, the
+start position of the x-y-stage is (20.5 mm and 47.7 mm in x and y direction, respectively). These values can then be considered in the obtained **dataObject** by the following code:
+
+.. code-block:: python
+    
+    # coding=iso-8859-15
+    # the coding is important due to the micron sign below
+    
+    record = dataObject.randN([768, 1024], 'float32')
+    #record is assumed to be a dataObject
+    record.axisScales = (0.0025, 0.0025)
+    record.axisOffsets = (-47.7 / 0.0025, -20.5 / 0.0025) #offset is given in pixel
+    record.axisUnits = ('mm', 'mm')
+    record.axisDescriptions = ('y', 'x')
+    record.valueUnit = ('µm')
+    record.valueDescription = 'height'
+    plot(record)
+    
+The output is then:
+
+.. figure:: images/plotDataObjectScaleOffset.png
+    :scale: 80%
+    :align: center
+    
+The relation between pixel coordinates and the physical coordinates is:
+
+phys = (pix - offset) * scaling
+pix = phys / scaling + offset
+
+These transformations can be done using the methods :py:meth:`~itom.dataObject.physToPix` and :py:meth:`~itom.dataObject.pixToPhys`.
     
     
 Meta tags and protocol

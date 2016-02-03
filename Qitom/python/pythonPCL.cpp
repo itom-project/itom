@@ -511,6 +511,7 @@ PyObject* PythonPCL::PyPointCloud_GetSize(PyPointCloud *self, void * /*closure*/
 //------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPointCloudHeight_doc,"returns height of point cloud if organized as regular grid (organized == true), else 1 \n\
 specifies the height of the point cloud dataset in the number of points. HEIGHT has two meanings: \n\
+\n\
     * it can specify the height (total number of rows) of an organized point cloud dataset; \n\
     * it is set to 1 for unorganized datasets (thus used to check whether a dataset is organized or not).\n\
 \n\
@@ -543,6 +544,7 @@ PyObject* PythonPCL::PyPointCloud_GetHeight(PyPointCloud *self, void * /*closure
 //------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPointCloudWidth_doc,"returns width of point cloud if organized as regular grid (organized == true), else equal to size \n\
 specifies the width of the point cloud dataset in the number of points. WIDTH has two meanings: \n\
+\n\
     * it can specify the total number of points in the cloud (equal with POINTS see below) for unorganized datasets; \n\
     * it can specify the width (total number of points in a row) of an organized point cloud dataset.\n\
 \n\

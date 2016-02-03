@@ -7346,7 +7346,7 @@ out : {dataObject} \n\
 \n\
 See Also \n\
 --------- \n\
-randN: method for creating a matrix filled with gaussianly distributed values");
+randN: method for creating a matrix filled with gaussian distributed values");
 PyObject* PythonDataObject::PyDataObj_StaticRand(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     int typeno = -1;
