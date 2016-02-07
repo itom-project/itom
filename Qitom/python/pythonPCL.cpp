@@ -1962,8 +1962,9 @@ Parameters \n\
 ----------- \n\
 X,Y,Z : {MxN data objects} \n\
     Three 2D data objects with the same size.\n\
-XYZ : {3xMxN data object} \n\
-    OR: 3xMxN data object, such that the first plane is X, the second is Y and the third is Z\n\
+XYZ : {3xMxN or Mx3 data object} \n\
+    either 3xMxN data object, such that the first plane is X, the second is Y and the third is Z, \n\
+    or: Mx3 data object, such that the point cloud consists of M points where every coordinate is given by the three values in each row. \n\
 deleteNaN : {bool} \n\
     default = false\n\
     if True all NaN values are skipped, hence, the resulting point cloud is not dense any more\n\
@@ -1998,9 +1999,10 @@ PointCloud.");
             }
             
             ito::RetVal tmpRetval = ito::dObjHelper::verify3DDataObject(XYZ.data(), "XYZ", 3, 3, 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
-            if (tmpRetval.containsWarningOrError())
+            if (tmpRetval.containsWarningOrError() && XYZ.data()->getDims() == 2)
             {
-                ito::RetVal tmpRetval = ito::dObjHelper::verify2DDataObject(XYZ.data(), "XYZ", 1, std::numeric_limits<int>::max(), 3, 3, ito::tFloat32);
+                retval += ito::dObjHelper::verify2DDataObject(XYZ.data(), "XYZ", 1, std::numeric_limits<int>::max(), 3, 3, ito::tFloat32);
+                
                 if (PythonCommon::transformRetValToPyException(retval) == false)
                 {
                     return NULL;
@@ -2019,6 +2021,13 @@ PointCloud.");
             }
             else
             {
+                retval += tmpRetval;
+
+                if (PythonCommon::transformRetValToPyException(retval) == false)
+                {
+                    return NULL;
+                }
+
                 ito::Range ranges[3] = { ito::Range(0,0), ito::Range::all(), ito::Range::all() };
 
                 ranges[0] = ito::Range(0,1);
