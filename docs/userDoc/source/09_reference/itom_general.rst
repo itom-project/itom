@@ -27,8 +27,8 @@ Adding elements to the GUI
 
 For more information about using these methods, see :ref:`toolbar-start`.
 
-Disk-IO
-----------
+Save and load dataObjects to or from file
+-------------------------------------------
 .. automodule:: itom
     :members: loadDataObject, saveDataObject, loadMatlabMat, saveMatlabMat, loadIDC, saveIDC
     
@@ -37,12 +37,18 @@ Debug-Tools
 
 .. automodule:: itom
     :members: gcEndTracking, gcStartTracking, getDebugger
+    
+Request user rights
+--------------------
+
+.. automodule:: itom
+    :members: userIsAdmin, userIsDeveloper, userIsUser, userGetInfo
 
     
 Further commands
 ----------------
 .. automodule:: itom
-    :members: scriptEditor, openScript, newScript, setCurrentPath, getAppPath, getCurrentPath, getScreenInfo, checkSignals, getDefaultScaleableUnits, processEvents, scaleValueAndUnit, clc
+    :members: scriptEditor, openScript, newScript, setCurrentPath, getAppPath, getCurrentPath, getScreenInfo, checkSignals, getDefaultScaleableUnits, processEvents, scaleValueAndUnit, setApplicationCursor, clc, autoReloader, getPalette, setPalette, getPaletteList
       
 
 .. Defines
