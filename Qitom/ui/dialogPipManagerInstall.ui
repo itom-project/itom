@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>485</width>
-    <height>364</height>
+    <width>492</width>
+    <height>362</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -98,7 +98,7 @@
       <item>
        <widget class="QCheckBox" name="checkInstallDeps">
         <property name="text">
-         <string>Install dependencies if required</string>
+         <string>Install dependencies if required (if upgrade flag is set, dependencies will be updated, too)</string>
         </property>
         <property name="checked">
          <bool>true</bool>
