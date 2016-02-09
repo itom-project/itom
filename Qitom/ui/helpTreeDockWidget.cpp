@@ -483,7 +483,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                         QStringList paramList;
                         foreach(const ito::Param &p, params->paramsMand)
                         {
-                            paramList.append(p.getName());
+                            paramList.append(QLatin1String(p.getName()));
                         }
 
                         QString returnString;
@@ -491,7 +491,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                         if (params->paramsOut.size() == 1)
                         {
 
-                            returnString = QString(params->paramsOut[0].getName()) +  " = ";
+                            returnString = QString(QLatin1String(params->paramsOut[0].getName())) + " = ";
                         }
                         else if (params->paramsOut.size() > 1)
                         {
@@ -499,7 +499,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                             QStringList returnList;
                             foreach(const ito::Param &p, params->paramsOut)
                             {
-                                returnList.append(p.getName());
+                                returnList.append(QLatin1String(p.getName()));
                             }
                             returnString += returnList.join(", ") + "] = ";
                         }
@@ -547,7 +547,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                         QStringList paramList;
                         foreach(const ito::Param &p, params->paramsMand)
                         {
-                            paramList.append(p.getName());
+                            paramList.append(QLatin1String(p.getName()));
                         }
                         QString newLink = QString("filter(\"%1\",%2)").arg(awd->m_name).arg( paramList.join(", ") );
                         newLink.replace(",)",")");
@@ -689,7 +689,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                             for (int i = 0; i < paramsMand->size(); i++)
                             {
                                 const ito::Param &p = paramsMand->at(i);
-                                paramList.append(p.getName());
+                                paramList.append(QLatin1String(p.getName()));
                             }
 
                             QString callName;
@@ -909,8 +909,8 @@ ito::RetVal HelpTreeDockWidget::parseParamVector(const QString &sectionname, con
 QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &param)
 {
     QString output = tmpl;
-    QString name = param.getName();
-    QString info = param.getInfo() ? param.getInfo() /*parseFilterWidgetContent(param.getInfo())*/ : "";
+    QString name = QLatin1String(param.getName());
+    QString info = param.getInfo() ? QLatin1String(param.getInfo()) : QLatin1String("");
     QString meta;
     
     QString type;
