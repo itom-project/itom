@@ -401,8 +401,8 @@ QWidget* ParamInputParser::renderTypeString(const ito::Param &param, int /*virtu
         int cur = -1;
         for (int i = 0; i < meta->getLen(); i++)
         {
-            cmb->addItem(meta->getString(i));
-            if (param.getVal<char*>() && strcmp(param.getVal<char*>(), meta->getString(i)) == 0)
+            cmb->addItem(QLatin1String(meta->getString(i)));
+            if (param.getVal<char*>() && (QLatin1String(param.getVal<char*>()) == QLatin1String(meta->getString(i))))
             {
                 cur = i;
             }
@@ -416,7 +416,7 @@ QWidget* ParamInputParser::renderTypeString(const ito::Param &param, int /*virtu
     else
     {
         QLineEdit *txt = new QLineEdit(parent);
-        QString value = const_cast<ito::Param&>(param).getVal<char*>();
+        QString value = QLatin1String(const_cast<ito::Param&>(param).getVal<char*>());
         value.replace('\r', "\\r");
         value.replace('\n', "\\n");
         value.replace('\t', "\\t");
