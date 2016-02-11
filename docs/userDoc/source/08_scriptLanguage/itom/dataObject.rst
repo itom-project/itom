@@ -28,6 +28,7 @@ In |itom|, the class :py:class:`~itom.dataObject` is the main array object. Arra
         "float64"    #floating point, 64 bit double precision
         "complex64"  #complex number with two float32 components
         "complex128" #complex number with two float64 components
+        "rgba32"     #color format, 4x uint8 values (alpha,r,g,b)
 
 Before giving a short tutorial about how to use the class :py:class:`~itom.dataObject`, the base idea and concept of the array structure should be explained. If you already now the huge |python| module **Numpy** with its base array class **numpy.array**, one will ask why another similar array class is provided by |itom|. The reasons for this are as follows:
 
@@ -155,6 +156,75 @@ the full content of a **dataObject** in the command line, use the method :py:met
     The string representation (using the :py:meth:`print` method) of a numpy array will print the full or cropped content of the numpy array
     to the command line (cropped if it is too big). For **dataObjects**, the content is only print using the :py:meth:`~itom.dataObject.data` method.
     
+Accessing values in a dataObject
+-------------------------------------
+
+In order to read or write single values of a dataObject, use the indexing operator:
+
+.. code-block:: python
+    
+    a = dataObject.ones([2,3], 'uint8')
+    print("first element", a[0,0])
+    print("last line:", a[1,0], a[2,0], a[3,0])
+    #write 5 to the first value:
+    a[0,0] = 5
+
+The index operator obtains *n* comma separated arguments, one for each axis. Each index starts with *0*, the order of axes is *y,x*, *z,y,x*, ...
+
+A dataObject is an iteratible object in Python, like lists, tuples, numpy.arrays, ... Therefore, it is possible to iterate through all values of
+a dataObject, whereas the iterator at first goes along the last axis (x), then along the second axis (y) and so on:
+
+.. code-block:: python 
+    
+    a = dataObject([2,3,2], 'uint8', data=(1,2,3,4,5,6,7,8,9,10,11,12))
+    a.data()
+    
+    '''returns:
+    dataObject(size=[2x3x2], dtype='uint8'
+    [0,:,:]->([[  1,   2],
+           [  3,   4],
+           [  5,   6]])
+    [1,:,:]->([[  7,   8],
+           [  9,  10],
+           [ 11,  12]])
+    '''
+    
+    for val in a:
+        print(a)
+    
+    '''returns:
+    1,2,3,4,5,6,7,8,9,10,11,12
+    '''
+    
+All fixed-point data types are represented by the python type *int*, all real floating point data types by *float*, the complex data types by *complex* and
+the color type by :py:class:`~itom.rgba`.
+
+It is not only possible to address single values within a dataObject, but the index (or mapping) operator also allows the usage of slices. Then, sub-regions
+of dataObjects can be returned in terms of another dataObject instance. However, it is very important to mention, that a slice or sub-region shares its data memory
+with the original object. Once you change one value in the original or sliced object, the corresponding value is also changed in all related objects. This is the
+main philosophy of Python and also holds for numpy.arrays. 
+
+Considering slices, the index of any axis in the indexing or mapping operator can then have the following forms:
+
+* single, zero-based integer value: Only the one value in the corresponding axis is addressed
+* start:end: A range of values in the corresponding axis is addressed, where start is the first, zero-based index that is included in the range and end is the last value that is NOT part of the range (excluded).
+* colon operator (:): All values in this axis are addressed.
+
+.. code-block:: python
+    
+    a = dataObject.ones([10,20,15])
+    
+    #get subpart
+    b = a[5:10, :, 0]
+    #b then has the size [5,20,1]
+    
+    #set all values in b to 0:
+    b[:,:,:] = 0
+    print(a[4,0,0]) #-> 1
+    print(a[5,0,0]) #-> 0
+    print(b[0,0,0]) #-> 0
+
+
 Basic attributes of a dataObject
 -------------------------------------
 
@@ -296,9 +366,109 @@ and can be requested and deleted using the methods described above.
     It is not possible to set tags or protocol entries for empty dataObjects. Tags and the protocol is shared between two shallow copies, hence, if two dataObjects share the same
     data, they also share their tags and protocol.
 
+DataObject vs. Numpy.array
+--------------------------------
 
+The most common Python package that is used for numeric calculations is **Numpy**. **Numpy** is one of the most famous and used Python packages and is the basis
+for other packages, like Scipy, Matplotlib, Scikit-image, ... Numpy is directly included in |itom| and also connected to some features of the GUI. Nevertheless,
+the main array structure of |itom| is the class :py:class:`~itom.dataObject` and not :py:class:`numpy.array`. The main reason for this is, that the basis of **dataObject**
+is a C++ class with the same name that can be used in all plugins. Further points for the class :py:class:`~itom.dataObject` are:
 
+* Numpy arrays are always stored in one continuous block in memory. This is a compact and fast structure, however huge matrices can easily run into memory errors, since the computer may have free memory, however probably not in one single block in memory. Therefore, a dataObject usually stores every plane (this is every 2d array of the last two dimensions (x-y-plane)) in one block, whereas all planes lie at arbitrary positions in memory. This is only the case, if the dataObject is created as non-continuous object (see constructor of :py:class:`~itom.dataObject`). 2D dataObjects are always continuous.
+* DataObjects are also created with respect to measurement data. Therefore, dataObjects have further meta information, like stated in the sections above.
+* Internally, every plane in a DataObject is based on OpenCV matrices (in the C++ code). Therefore, it is directly possible to apply OpenCV methods to DataObjects. Furthermore, a direct
+use of dataObjects, created in Python, in algorithms or hardware plugins is possible.
 
+Despite the stated differences, the good is, that the classes *dataObject* and *numpy.array* are compatible to each other. This is especially the case for continuous dataObjects.
+They can directly be converted to and from *numpy.arrays* even as shallow copy, such that both objects share the same matrix memory. If a 3- or higher dimensional dataObject is converted to a numpy-array, it is implicitly converted to a continuous form (such that all planes lie in adjacent blocks in the memory).
 
+Examples for these conversions are:
+
+.. code-block:: python
+    
+    import numpy as np
+    
+    dobj2d = dataObject([10,5], 'uint8')
+    np2d = np.array(dobj2d) #deep copy
+    np2d_v2 = np.array(dobj2d, copy = False) #shallow copy
+    dobj2d_v2 = dataObject(np2d) #shallow copy
+    
+    dobj3d = dataObject([10,20,30], 'uint8') #non-continuous
+    np3d = np.array(dobj3d, copy = False) #deep copy, since implicit continuous conversion
+    dobj3d_v2 = dataObject(np3d) #shallow copy of np3d
+    
+    dobj3d2 = dataObject([10,20,30], 'uint8', continuous = True)
+    np3d2 = np.array(dobj3d2, copy = False) #shallow copy
+    dobj3d2_v2 = dataObject(np3d2)
+    
+In order to understand these examples, the following things have to be mentioned or repeated: Per default, a *dataObject* with more than two dimensions is created as non-continuous
+dataObject, hence various planes (the 2d matrix spanned by the last two axes) are distributed at different locations in memory. If passing a dataObject to the constructor of a numpy.array
+a deep copy is created per default. Deep copy means, that the array data is entirely copied to another location in memory, such that both arrays are completely de-coupled. This is
+not the case if the optional parameter *copy* of the *np.array* constructor is set to *False*. If possible, a so called shallow copy is then created such that as little as
+memory has to be copied. This is the default for most python operations! If both objects are a shallow copy of each other, a change of one value in the one object also changes the other object. However, only values are changed, never types or sizes. A shallow copy is therefore only possible if no change in type or memory structure is required. If a sub-region of an object
+is copied, a shallow copy is possible. However, this is not the case if the type is changed or if a non-continuous dataObject has to be converted to a numpy.array.
+
+While the copy constructor of a *np.array* usually creates a deep copy (default setting), the copy constructor of a dataObject always tries to make a shallow copy if possible.
+
+Usually, all methods of Numpy not only work with *np.arrays* but also with **array-like** objects. These are python objects that provide a specific interface such that Numpy
+can implicitely obtain a Numpy array out of them. This is also what *dataObject* provides. Therefore you can pass every dataObject to a numpy function without a previous conversion to
+a numpy array.
+
+On the other side, |itom| often supports numpy arrays without conversion to dataObject. This is for instance the case for the method :py:meth:`itom.plot`. Only, when passing arrays
+to algorithm or hardware plugins (classes :py:class:`~itom.dataIO` or :py:class:`~itom.actuator`, method :py:meth:`~itom.filter`), usually numpy.arrays have to be converted to 
+dataObjects:
+
+.. code-block:: python
+    
+    import numpy a np
+    import itom
+    
+    a = np.array([[1,2,3],[4,5,6]])
+    itom.plot(a) #works
+    itom.filter("minValue", a) #raises an error
+    itom.filter("minValue", itom.dataObject(a)) #works
+    
+Main operations on numpy.arrays and itom.dataObjects
+----------------------------------------------------------
+
+The following list in an extract of the itom cheatsheet (http://itom.bitbucket.org/media.html) and shows major operations on numpy.arrays and itom.dataObjects:
+
+======================================= ============================================= ===========================================================================================
+np.array (import numpy as np)           itom.dataObject (import itom)
+======================================= ============================================= ===========================================================================================
+arr=np.ndarray([2,3],'uint8')           dObj = dataObject([2,3],'uint8')              create a randomly filled 2x3 array with type uint8
+arr=np.array([[1,2,3],[4,5,6]])         dObj =dataObject([2,3],data=(1,2,3,4,5,6))    create the 2x3 array [1,2,3 ; 4,5,6]
+arr=np.array(dObj, copy = False)        dObj =dataObject(arr)                         convert np.array <-> dataObject (shallow copy if possible)
+arr.ndim                                dObj.ndim                                     Returns number of dimensions (here: 2)
+arr.shape                               dObj.shape                                    Returns size tuple (here: [2,3])
+arr.shape[0]                            dObj.shape[0]                                 Returns size of first dimensions (here: y-axis)
+c=arr[0,1]; arr[0,1]=7                  dObj[0,1]; b[0,1]=7                           Gets or sets the element in the 1st row, 2nd col
+c=arr[:,1:3] or                         c=dObj[:,1:3] or                              Returns shallow copy of array containing the 2nd and 3rd columns
+c=arr[0:2,1:3]                          c= dObj [0:2,1:3]                             
+arr[:,:]=7                              dObj[:,:]=7                                   sets all values of array to value 7
+arr.transpose() (shallow copy)          dObj.trans() (deep copy)                      transpose of array
+np.dot(arr1,arr2)                       dObj1 * dObj2 (float only)                    matrix multiplication
+arr1 * arr2                             dObj1.mul(dObj2)                              element-wise multiply
+arr1 / arr2                             dObj1.div(dObj2)                              element-wise divide
+arr1 +,- arr2                           dObj1 +,- dObj2                               sum/difference of elements
+arr1 +,- scalar                         dObj1 +,- scalar                              adds/subtracts scalar from every element in array
+arr1 &,| arr2                           dObj1 &,| dObj2                               element-wise, bitwise AND/OR operator
+arr2 = arr1                             dObj2 = dObj1                                 referencing (both still point to the same array)
+arr2 = arr1.copy()                      dObj2 = dObj1.copy()                          deep copy (entire data is copied)
+arr2 = arr1.astype(newtype)             dObj2 = dObj1.astype(‘newtypestring')         type conversion
+arr = np.zeros([3,4],'float32')         dObj = dataObject.zeros([3,4], 'float32')     3x4 array filled with zeros of type float32
+arr = np.ones([3,4],'float32')          dObj = dataObject.ones([3,4], 'float32')      3x4 array filled with ones of type float32
+arr = np.eye(3,dtype='float32')         dObj = dataObject.eye(3, 'float32')           3x3 identity matrix (type: float32)
+arr2 = arr1.squeeze()                   dObj2 = dObj1.squeeze()                       converts array to an array where dims of size 1 are eliminated (deep copy if necessary)
+np.linspace(1,3,4)                      -                                             4 equally spaced samples between 1 and 3, inclusive
+[x,y] = np.meshgrid(0:2,1:5)            -                                             two 2D arrays: one of x values, the other of y values
+np.linalg.inv(a)                        -                                             inverse of square matrix a
+x=np.linalg.solve(a,b)                  -                                             solution of ax=b (using pseudo inverse)
+[U,S,V] = np.linalg.svd(a)              -                                             singular value decomposition of a (V is transposed!)
+np.fft.fft2(a), np.fft.ifft2(a)                                                       filter available (Inverse) 2D fourier transform of a
+a[a>0]=5                                -                                             sets all elements > 0 of a to 5
+arr2 = arr1.reshape([3,2])              dObj2 = dObj1.reshape([3,2])                  reshapes arr1 to new size (equal number of items)
+======================================= ============================================= ===========================================================================================
+    
 
 For a detailed methods-summery of the *dataObject* see :ref:`ITOM-Script-Reference`.
