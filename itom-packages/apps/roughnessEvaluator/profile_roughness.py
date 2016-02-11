@@ -113,8 +113,6 @@ class ProfileRoughness(ItomUi):
             self.gui.lblRoughnessWarning["visible"] = False
             warns = []
             
-            scales = {"µm":1.0, "mm":1000.0, "cm":10000.0, "nm":0.001}
-            scale = scales[self.roughness.axisUnits[1]]
             
             for param in params:
                 with warnings.catch_warnings(record = True) as w:
@@ -122,11 +120,11 @@ class ProfileRoughness(ItomUi):
                     if w:
                         warns.append("%s: %s" % (param, w[-1].message))
                 
-                result[c, 0] = temp[0] * scale
-                result[c, 1] = temp[1] * scale
-                result[c, 2] = temp[2] * scale
+                result[c, 0] = temp[0]
+                result[c, 1] = temp[1]
+                result[c, 2] = temp[2]
                 if len(temp) > 3:
-                    result[c, 3] = temp[3] * scale
+                    result[c, 3] = temp[3]
                 else:
                     result[c,3] = float('nan')
                 result[c, 4] = samples
