@@ -426,7 +426,7 @@ QWidget* ParamInputParser::renderTypeString(const ito::Param &param, int /*virtu
         {
             if (meta->getLen() == 1)
             {
-                QRegExp reg(meta->getString(0), Qt::CaseSensitive, QRegExp::Wildcard);
+                QRegExp reg(QLatin1String(meta->getString(0)), Qt::CaseSensitive, QRegExp::Wildcard);
                 txt->setValidator(new QRegExpValidator(reg, txt));
                 QString toolTip = tr("%1 [Wildcard]").arg(reg.pattern());
                 txt->setToolTip(toolTip);
@@ -436,7 +436,7 @@ QWidget* ParamInputParser::renderTypeString(const ito::Param &param, int /*virtu
         {
             if (meta->getLen() == 1)
             {
-                QRegExp reg(meta->getString(0), Qt::CaseSensitive, QRegExp::RegExp);
+                QRegExp reg(QLatin1String(meta->getString(0)), Qt::CaseSensitive, QRegExp::RegExp);
                 txt->setValidator(new QRegExpValidator(reg, txt));
                 QString toolTip = tr("%1 [Regular Expression]").arg(reg.pattern());
                 txt->setToolTip(toolTip);

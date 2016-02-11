@@ -501,7 +501,7 @@ namespace ito {
 
                 for (int i = 0; i < meta->getLen(); i++)
                 {
-                    items << meta->getString(i);
+                    items << QLatin1String(meta->getString(i));
                 }
 
                 switch(meta->getStringType())

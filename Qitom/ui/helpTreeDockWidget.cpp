@@ -992,14 +992,14 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
                 case ito::StringMeta::RegExp:
                     if (pMeta->getLen() == 1)
                     {
-                        meta = tr("RegExp: '%1'").arg(pMeta->getString(0));
+                        meta = tr("RegExp: '%1'").arg(QLatin1String(pMeta->getString(0)));
                     }
                     else if (pMeta->getLen() > 1)
                     {
                         QStringList allowed;
                         for (int i = 0; i < pMeta->getLen(); ++i)
                         {
-                            allowed += QString("'%1'").arg(pMeta->getString(i));
+                            allowed += QString("'%1'").arg(QLatin1String(pMeta->getString(i)));
                         }
                         meta = tr("RegExp: [%1]").arg(allowed.join("; "));
                     }
@@ -1011,14 +1011,14 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
                 case ito::StringMeta::String:
                     if (pMeta->getLen() == 1)
                     {
-                        meta = tr("Match: '%1'").arg(pMeta->getString(0));
+                        meta = tr("Match: '%1'").arg(QLatin1String(pMeta->getString(0)));
                     }
                     else if (pMeta->getLen() > 1)
                     {
                         QStringList allowed;
                         for (int i = 0; i < pMeta->getLen(); ++i)
                         {
-                            allowed += QString("'%1'").arg(pMeta->getString(i));
+                            allowed += QString("'%1'").arg(QLatin1String(pMeta->getString(i)));
                         }
                         meta = tr("Match: [%1]").arg(allowed.join("; "));
                     }
@@ -1030,14 +1030,14 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
                 case ito::StringMeta::Wildcard:
                     if (pMeta->getLen() == 1)
                     {
-                        meta = tr("Wildcard: '%1'").arg(pMeta->getString(0));
+                        meta = tr("Wildcard: '%1'").arg(QLatin1String(pMeta->getString(0)));
                     }
                     else if (pMeta->getLen() > 1)
                     {
                         QStringList allowed;
                         for (int i = 0; i < pMeta->getLen(); ++i)
                         {
-                            allowed += QString("'%1'").arg(pMeta->getString(i));
+                            allowed += QString("'%1'").arg(QLatin1String(pMeta->getString(i)));
                         }
                         meta = tr("Wildcard: [%1]").arg(allowed.join("; "));
                     }
