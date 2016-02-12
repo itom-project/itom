@@ -83,6 +83,7 @@ class ProfileRoughness(ItomUi):
             
             self.gui.groupSelectDisplayedRow["visible"] = (self.roughness.shape[0] > 1)
             self.gui.spinFilterRow["value"] = 0
+            self.gui.spinFilterRow["maximum"] = self.roughness.shape[0] - 1
             try:
                 self.showFilteredProfile(0)
                 self.calcRoughness()
@@ -151,9 +152,16 @@ class ProfileRoughness(ItomUi):
     def showFilteredProfile(self, row = 0):
         if self.roughness:
             obj = dataObject([3, self.roughness.shape[1]], self.roughness.dtype)
-            obj[0,:] = self.sourceObjCropped
-            obj[1,:] = self.roughness
-            obj[2,:] = self.waviness
+            
+            if self.roughness.shape[0] > 1:
+                row = self.gui.spinFilterRow["value"]
+                obj[0,:] = self.sourceObjCropped[row, :]
+                obj[1,:] = self.roughness[row, :]
+                obj[2,:] = self.waviness[row, :]
+            else:
+                obj[0,:] = self.sourceObjCropped
+                obj[1,:] = self.roughness
+                obj[2,:] = self.waviness
             obj.axisUnits =[obj.axisUnits[0], self.sourceObjCropped.axisUnits[1]]
             obj.axisDescriptions =[obj.axisDescriptions[0], self.sourceObjCropped.axisDescriptions[1]]
             obj.axisScales = [obj.axisScales[0], self.sourceObjCropped.axisScales[1]]
