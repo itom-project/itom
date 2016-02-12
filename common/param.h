@@ -300,7 +300,7 @@ namespace ito
     template<typename _Tp>
     struct ItomParamHelper
     {
-        static ito::RetVal setVal(uint32 type, char *&cVal, int &iVal, double &/*dVal*/, _Tp val, int len = 0)
+        static ito::RetVal setVal(uint32 type, char *&cVal, int &iVal, double &/*dVal*/, const _Tp val, int len = 0)
         {
             switch (type & paramTypeMask)
             {
@@ -310,7 +310,7 @@ namespace ito
                 case ito::ParamBase::PointPtr & paramTypeMask:
                 case ito::ParamBase::PolygonMeshPtr & paramTypeMask:
 //                case ito::ParamBase::Pointer & paramTypeMask:
-                    cVal = reinterpret_cast<char*>(val);
+                    cVal = (char*)(reinterpret_cast<const char*>(val));
                     return ito::retOk;
 
                 case ito::ParamBase::String & paramTypeMask:
@@ -318,7 +318,7 @@ namespace ito
                         char *cVal_ = cVal;
                         if (val)
                         {
-                            cVal = _strdup(const_cast<const char*>((char*)val));
+                            cVal = _strdup((const char*)val);
                             iVal = static_cast<int>(strlen(cVal));
                         }
                         else
