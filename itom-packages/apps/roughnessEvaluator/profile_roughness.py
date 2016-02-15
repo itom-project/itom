@@ -45,8 +45,8 @@ class ProfileRoughness(ItomUi):
         elif (not dataObj.axisUnits[1] in possibleUnits) or (not dataObj.valueUnit in possibleUnits):
             ui.msgWarning("wrong unit", "Value and horizontal axis unit must be nm, µm or mm", parent = self.gui)
         else:
-            self.sourceObj = dataObj
-            self.sourceObjCropped = self.sourceObj
+            self.sourceObj = dataObj.astype('float64')
+            self.sourceObjCropped = self.sourceObj.astype('float64')
             self.gui.plotSource2d["visible"] = self.sourceObj.shape[0] > 1
             self.gui.plotSource1d["visible"] = self.sourceObj.shape[0] <= 1
             if self.sourceObj.shape[0] > 1:
@@ -197,15 +197,15 @@ class ProfileRoughness(ItomUi):
             
     @ItomUi.autoslot("")
     def on_btnSourceCropReset_clicked(self):
-        self.sourceObjCropped = self.sourceObj
+        self.sourceObjCropped = self.sourceObj.astype('float64')
         self.filterProfile()
         
     @ItomUi.autoslot("")
     def on_btnSourceCropCurrentView_clicked(self):
         if self.gui.plotSource2d["visible"]:
-            self.sourceObjCropped = self.gui.plotSource2d["displayed"]
+            self.sourceObjCropped = self.gui.plotSource2d["displayed"].astype('float64')
         else:
-            self.sourceObjCropped = self.gui.plotSource1d["displayed"]
+            self.sourceObjCropped = self.gui.plotSource1d["displayed"].astype('float64')
         self.filterProfile()
         
     @ItomUi.autoslot("int")
