@@ -395,7 +395,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                 tempinfobuf = const_cast<char*>(p.getInfo());
                 if (tempinfobuf)
                 {
-                    temp = QString(tempinfobuf);
+                    temp = QString::fromLatin1(tempinfobuf);
                     values["description"].append(temp);
                 }
                 else

@@ -441,6 +441,7 @@ void WorkspaceDockWidget::dragEnterEvent(QDragEnterEvent *event)
         QRegExp reg;
         bool ok = false;
         reg.setPatternSyntax(QRegExp::Wildcard);
+        reg.setCaseSensitivity(Qt::CaseInsensitive);
 
         //check files
         foreach (const QUrl &url, urls)

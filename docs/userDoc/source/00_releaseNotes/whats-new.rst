@@ -269,7 +269,7 @@ Plugins
 * bugfix: avoid crash at shutdown of **glDisplay** in Debug mode, Qt5
 * **libmodbus**: modbus-function read/write coils implemented for uint8 - data objects
 * plugin **CommonVisionBlox** added to control cameras that are accessed via CommonVisionBlox from Stemmer (GenICam based).
-68fb0e0 roi of OpenCVGrabber is now adjustable
+* roi of OpenCVGrabber is now adjustable
 * plugin **PCOCamera** for the general camera SDK from PCO: parameter *roi* added
 * plugin **OpenCVFilters**: some bugfixes, filters *findHomography* added, fixes in **cvFlannBasedMatcher**
 * plugin **FittingFilters** is now compiled with *Lapacke*, filters *polyfitWeighted2DSinglePoints* and *polyval2DSinglePoints* added to FittingFilters to also fit arbitrary sets of x,y,z points.

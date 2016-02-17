@@ -962,6 +962,21 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
             for (int i = 0; i < lines.length() - 1; i++)
             {
                 temp = buffer.mid(lines[i] - 1 , lines[i+1] - lines[i]);
+
+                //remove empty (besides whitechars) lines at the end of each block, else an error can occur if the block is indented
+                while (temp.size() > 1)
+                {
+                    if (temp.last().trimmed() == "")
+                    {
+                        temp.removeLast();
+                    }
+                    else
+                    {
+                        //there is a line with content.
+                        break;
+                    }
+                }
+
                 singleLine = temp.join("\n");
 
                 if (encoding.length() > 0)

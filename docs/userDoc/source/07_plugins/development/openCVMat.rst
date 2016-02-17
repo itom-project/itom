@@ -22,10 +22,10 @@ Lets start with two-dimensional matrices
     :linenos:
     
     cv::Mat A = cv::Mat(int rows, int cols, int type);
-    cv::Mat A = cv::Mat(3,3,CV_32FC2);
+    cv::Mat A = cv::Mat(3, 3, CV_32FC2);
 
     cv::Mat A = cv::Mat(int rows, int cols, int type, const Scalar& s);
-    cv::Mat A = cv::Mat(3,3,CV_32FC3,cv::Scalar(0,0,255));
+    cv::Mat A = cv::Mat(3, 3, CV_32FC3, cv::Scalar(0, 0, 255));
 
 For three dimensional and multichannel images we first define their size: row and column count wise.
 Then we need to specify the data type to use for storing the elements and the number of channels per matrix point.
@@ -39,7 +39,7 @@ Create a multi-dimensional array: create a 100x100x100 8-bit array
     :linenos:
     
     cv::Mat A = cv::Mat(int ndims, const int* sizes, int type)
-    int Sz[] = {100,100,100}; 
+    int Sz[] = {100, 100, 100}; 
     cv::Mat A = cv::Mat(3, Sz, CV_8U, cv::Scalar::all(0)); 
     
 It passes the number of dimensions =1 to the Mat constructor but the created array will be 2-dimensional with the number of columns set to 1. So, Mat::dimsis always >= 2 (can also be 0 when the array is empty).
@@ -51,7 +51,7 @@ Another approach
     :linenos:
 
     cv::Mat A = cv::Mat(const Mat& m, const Range& rowRange, const Range& colRange)
-    cv::Mat A = cv::Mat(originalMatrix, cv::Range::all(), cv::Range(1,3));
+    cv::Mat A = cv::Mat(originalMatrix, cv::Range::all(), cv::Range(1, 3));
 
 rowRange - Range of the m rows to take. As usual, the range start is inclusive and the range end is exclusive. Use Range::all() to take all the rows.
 colRange - Range of the m columns to take. Use Range::all() to take all the columns.
@@ -75,13 +75,13 @@ The parameters which you add to the **cv::Mat**, must have a name which fits to 
     
     #. CV_8UC1 means 8-bit single-channel array,
     #. CV_32FC2 means 2-channel(i.e. complex) floating-point array
-    #. CV_8U - 8-bit unsigned integers ( 0..255 )
-    #. CV_8S - 8-bit signed integers ( -128..127 )
-    #. CV_16U - 16-bit unsigned integers ( 0..65535 )
-    #. CV_16S - 16-bit signed integers ( -32768..32767 )
-    #. CV_32S - 32-bit signed integers ( -2147483648..2147483647 )
-    #. CV_32F - 32-bit floating-point numbers ( -FLT_MAX..FLT_MAX, INF, NAN )
-    #. CV_64F - 64-bit floating-point numbers ( -DBL_MAX..DBL_MAX, INF, NAN )
+    #. CV_8U - 8-bit unsigned integers (0..255)
+    #. CV_8S - 8-bit signed integers (-128..127)
+    #. CV_16U - 16-bit unsigned integers (0..65535)
+    #. CV_16S - 16-bit signed integers (-32768..32767)
+    #. CV_32S - 32-bit signed integers (-2147483648..2147483647)
+    #. CV_32F - 32-bit floating-point numbers (-FLT_MAX..FLT_MAX, INF, NAN)
+    #. CV_64F - 64-bit floating-point numbers (-DBL_MAX..DBL_MAX, INF, NAN)
 
     The array type, use CV_8UC1, ..., CV_64FC4 to create 1-4 channel matrices, or CV_8UC(n), ..., CV_64FC(n) to create multi-channel (up to CV_MAX_CN channels) matrices
 
@@ -89,7 +89,7 @@ The parameters which you add to the **cv::Mat**, must have a name which fits to 
     :linenos:
 
     // make 7x7 complex matrix having type of 2-channel floating point array.
-    cv::Mat M(7,7,CV_32FC2);
+    cv::Mat M(7, 7, CV_32FC2);
     
 If the user tries to type same rows and columns for multiplication then,
 
@@ -97,8 +97,8 @@ If the user tries to type same rows and columns for multiplication then,
     :linenos:
     
     cv::Mat(int rows, int cols, int type)
-    cv::Mat A = cv::Mat(3,3,CV_64FC1);
-    cv::Mat B = cv::Mat(3,3,CV_64FC1);
+    cv::Mat A = cv::Mat(3, 3, CV_64FC1);
+    cv::Mat B = cv::Mat(3, 3, CV_64FC1);
     cv::Mat C = A.mul(B);
     
 The above example's answer will show in 3*3 matrix according to the types.
@@ -108,8 +108,8 @@ But if the user types
     :linenos:
     
     cv::Mat(int rows, int cols, int type)
-    cv::Mat A = cv::Mat(4,3,CV_64FC1);
-    cv::Mat B = cv::Mat(4,3,CV_64FC1);
+    cv::Mat A = cv::Mat(4, 3, CV_64FC1);
+    cv::Mat B = cv::Mat(4, 3, CV_64FC1);
     cv::Mat C = A.mul(B);
 
 Then the mul operator or '*' performs element-wise multiplication. Note that it is not a matrix multiplication.
@@ -122,7 +122,7 @@ If the user tries to type different types like CV_64FC1 or CV_32FC1 in matrix th
     :linenos:
     
     cv::Mat(int rows, int cols, int type)
-    cv::Mat A = cv::Mat(4,3,CV_64FC1 or CV_32FC1);
+    cv::Mat A = cv::Mat(4, 3, CV_64FC1 or CV_32FC1);
 
 
 If the user tries to type different rows and columns for multiplication then the error:sizes of input arguments do not match and the multiplied matrix will have the same rows and columns of any matrix.
@@ -131,8 +131,8 @@ If the user tries to type different rows and columns for multiplication then the
     :linenos:
     
     cv::Mat(int rows, int cols, int type)
-    cv::Mat A = cv::Mat(3,4,CV_64FC1);
-    cv::Mat B = cv::Mat(4,3,CV_64FC1);
+    cv::Mat A = cv::Mat(3, 4, CV_64FC1);
+    cv::Mat B = cv::Mat(4, 3, CV_64FC1);
     cv::Mat C = A.mul(B);
 
 The above example's answer will show in 4*3 matrix according to the types.
@@ -145,7 +145,7 @@ If the user uses ones command then all the elements of matrix will have value 1 
 .. code-block:: c++
     :linenos:
     
-    cv::Mat F = cv::Mat::ones(3,4,CV_32FC1)*3;
+    cv::Mat F = cv::Mat::ones(3, 4, CV_32FC1) * 3;
 
 
 If the user uses eye command then it will form identity matrix and by multiplying it with any number the user will get the multiplied value in identity matrix.
@@ -153,7 +153,7 @@ If the user uses eye command then it will form identity matrix and by multiplyin
 .. code-block:: c++
     :linenos:
     
-    cv::Mat F = cv::Mat::eye(3,4,CV_32FC1)*6;
+    cv::Mat F = cv::Mat::eye(3, 4, CV_32FC1) * 6;
 
 
 If the user uses zeros command then all the elements of matrix will have value 0.
@@ -161,7 +161,7 @@ If the user uses zeros command then all the elements of matrix will have value 0
 .. code-block:: c++
     :linenos:
     
-    cv::Mat F = cv::Mat::zeros(3,3,CV_32FC1)*3;
+    cv::Mat F = cv::Mat::zeros(3, 3, CV_32FC1) * 3;
     
 Adressing values in a matrix
 ----------------------------
@@ -170,7 +170,7 @@ Creating a big Matrix
 .. code-block:: c++
     :linenos:
     
-    cv::Mat W = cv::Mat(100,100,CV_32FC1);
+    cv::Mat W = cv::Mat(100, 100, CV_32FC1);
 
 Creating another header for the same matrix, this is an instant operation regardless of the matrix size.
 
@@ -260,8 +260,8 @@ For example, if the submatrix A is located in the first row of a parent matrix a
 
 
 
-A = cv::Mat(3,3,CV_32FC1)
-B = A(cv::Range(0,1), cv::Range(0,2)) shallow copy
+A = cv::Mat(3, 3, CV_32FC1)
+B = A(cv::Range(0, 1), cv::Range(0, 2)) shallow copy
 
 locateROI
 adjustROI...

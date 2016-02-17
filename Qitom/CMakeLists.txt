@@ -686,29 +686,29 @@ FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../docs/userDoc/source/ext       DESTINATI
 
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_MAJOR [0-9]+$")
 if (ITOM_VERSION_TMP)
-    string(REGEX REPLACE "^.*#define ITOM_ADDININTERFACE_MAJOR ([0-9]+)$" "\\1" ITOM_VERSION_MAJOR ${ITOM_VERSION_TMP})
+    string(REGEX REPLACE "^.*#define ITOM_ADDININTERFACE_MAJOR ([0-9]+)$" "\\1" ITOM_ADDININTERFACE_VERSION_MAJOR ${ITOM_VERSION_TMP})
 else (ITOM_VERSION_TMP)
     message(WARNING "#define ITOM_ADDININTERFACE_MAJOR in addInInterface.h missing. Can not detect version of itom SDK")
-    set(ITOM_VERSION_MAJOR "?")
+    set(ITOM_ADDININTERFACE_VERSION_MAJOR "?")
 endif (ITOM_VERSION_TMP)
 
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_MINOR [0-9]+$")
 if (ITOM_VERSION_TMP)
-    string(REGEX REPLACE "^.*#define ITOM_ADDININTERFACE_MINOR ([0-9]+)$" "\\1" ITOM_VERSION_MINOR ${ITOM_VERSION_TMP})
+    string(REGEX REPLACE "^.*#define ITOM_ADDININTERFACE_MINOR ([0-9]+)$" "\\1" ITOM_ADDININTERFACE_VERSION_MINOR ${ITOM_VERSION_TMP})
 else (ITOM_VERSION_TMP)
     message(WARNING "#define ITOM_ADDININTERFACE_MINOR in addInInterface.h missing. Can not detect version of itom SDK")
-    set(ITOM_VERSION_MINOR "?")
+    set(ITOM_ADDININTERFACE_VERSION_MINOR "?")
 endif (ITOM_VERSION_TMP)
 
 file(STRINGS ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h ITOM_VERSION_TMP REGEX "^.*#define ITOM_ADDININTERFACE_PATCH [0-9]+$")
 if (ITOM_VERSION_TMP)
-    string(REGEX REPLACE "^.*#define ITOM_ADDININTERFACE_PATCH ([0-9]+)$" "\\1" ITOM_VERSION_PATCH ${ITOM_VERSION_TMP})
+    string(REGEX REPLACE "^.*#define ITOM_ADDININTERFACE_PATCH ([0-9]+)$" "\\1" ITOM_ADDININTERFACE_VERSION_PATCH ${ITOM_VERSION_TMP})
 else (ITOM_VERSION_TMP)
     message(WARNING "#define ITOM_ADDININTERFACE_PATCH in addInInterface.h missing. Can not detect version of itom SDK")
-    set(ITOM_VERSION_PATCH "?")
+    set(ITOM_ADDININTERFACE_VERSION_PATCH "?")
 endif (ITOM_VERSION_TMP)
 
-SET(ITOM_VERSION_STRING_WITH_API "ito.AddIn.InterfaceBase/${ITOM_VERSION_MAJOR}.${ITOM_VERSION_MINOR}.${ITOM_VERSION_PATCH}")
+SET(ITOM_VERSION_STRING_WITH_API "ito.AddIn.InterfaceBase/${ITOM_ADDININTERFACE_VERSION_MAJOR}.${ITOM_ADDININTERFACE_VERSION_MINOR}.${ITOM_ADDININTERFACE_VERSION_PATCH}")
 
 CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/itom_sdk.h.in ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/itom_sdk.h)
 
@@ -728,26 +728,9 @@ IF(MSVC)
     CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/../itomd.bat.in ${CMAKE_CURRENT_BINARY_DIR}/../itomd.bat )
 ENDIF (MSVC)
 
-#ADD relevant and bug sensitive path to visual studio debug enviroment via qitom.vcxproj.user
-#IF(MSVC)
-#    IF(BUILD_TARGET64)
-#        CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/qitom.vcxproj.user.x64 ${CMAKE_CURRENT_BINARY_DIR}/qitom.vcxproj.user )
-#    ELSE(BUILD_TARGET64)
-#        CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/qitom.vcxproj.user.win32 ${CMAKE_CURRENT_BINARY_DIR}/qitom.vcxproj.user )
-#    ENDIF(BUILD_TARGET64)
-#ENDIF (MSVC)
-
 #Configure a RC file for MS visual studio to add version information in explorer to exe file
 if(MSVC)
     MESSAGE(STATUS "Using rc-File for version information under windows")
-    #CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/pyItomFileVersion.py.in ${CMAKE_CURRENT_BINARY_DIR}/pyItomFileVersion.py )
-    #CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/version.rctmpl ${CMAKE_CURRENT_BINARY_DIR}/version.rc )
-    #ADD_CUSTOM_COMMAND (
-    #    TARGET qitom
-    #    PRE_BUILD
-    #    COMMAND    ${PYTHON_EXECUTABLE}
-    #    ARGS       "${CMAKE_CURRENT_BINARY_DIR}/pyItomFileVersion.py"
-    #)
     CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/version.rc.in ${CMAKE_CURRENT_BINARY_DIR}/version.rc )
     
 ENDIF (MSVC)

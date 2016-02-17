@@ -511,6 +511,7 @@ PyObject* PythonPCL::PyPointCloud_GetSize(PyPointCloud *self, void * /*closure*/
 //------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPointCloudHeight_doc,"returns height of point cloud if organized as regular grid (organized == true), else 1 \n\
 specifies the height of the point cloud dataset in the number of points. HEIGHT has two meanings: \n\
+\n\
     * it can specify the height (total number of rows) of an organized point cloud dataset; \n\
     * it is set to 1 for unorganized datasets (thus used to check whether a dataset is organized or not).\n\
 \n\
@@ -543,6 +544,7 @@ PyObject* PythonPCL::PyPointCloud_GetHeight(PyPointCloud *self, void * /*closure
 //------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPointCloudWidth_doc,"returns width of point cloud if organized as regular grid (organized == true), else equal to size \n\
 specifies the width of the point cloud dataset in the number of points. WIDTH has two meanings: \n\
+\n\
     * it can specify the total number of points in the cloud (equal with POINTS see below) for unorganized datasets; \n\
     * it can specify the width (total number of points in a row) of an organized point cloud dataset.\n\
 \n\
@@ -1960,8 +1962,9 @@ Parameters \n\
 ----------- \n\
 X,Y,Z : {MxN data objects} \n\
     Three 2D data objects with the same size.\n\
-XYZ : {3xMxN data object} \n\
-    OR: 3xMxN data object, such that the first plane is X, the second is Y and the third is Z\n\
+XYZ : {3xMxN or Mx3 data object} \n\
+    either 3xMxN data object, such that the first plane is X, the second is Y and the third is Z, \n\
+    or: Mx3 data object, such that the point cloud consists of M points where every coordinate is given by the three values in each row. \n\
 deleteNaN : {bool} \n\
     default = false\n\
     if True all NaN values are skipped, hence, the resulting point cloud is not dense any more\n\
@@ -1996,9 +1999,10 @@ PointCloud.");
             }
             
             ito::RetVal tmpRetval = ito::dObjHelper::verify3DDataObject(XYZ.data(), "XYZ", 3, 3, 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
-            if (tmpRetval.containsWarningOrError())
+            if (tmpRetval.containsWarningOrError() && XYZ.data()->getDims() == 2)
             {
-                ito::RetVal tmpRetval = ito::dObjHelper::verify2DDataObject(XYZ.data(), "XYZ", 1, std::numeric_limits<int>::max(), 3, 3, ito::tFloat32);
+                retval += ito::dObjHelper::verify2DDataObject(XYZ.data(), "XYZ", 1, std::numeric_limits<int>::max(), 3, 3, ito::tFloat32);
+                
                 if (PythonCommon::transformRetValToPyException(retval) == false)
                 {
                     return NULL;
@@ -2017,6 +2021,13 @@ PointCloud.");
             }
             else
             {
+                retval += tmpRetval;
+
+                if (PythonCommon::transformRetValToPyException(retval) == false)
+                {
+                    return NULL;
+                }
+
                 ito::Range ranges[3] = { ito::Range(0,0), ito::Range::all(), ito::Range::all() };
 
                 ranges[0] = ito::Range(0,1);
