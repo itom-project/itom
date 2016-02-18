@@ -38,6 +38,7 @@
 #include <qdatetime.h>
 #include <qdir.h>
 #include <qmutex.h>
+#include <qsysinfo.h>
 
 //#include "benchmarks.h"
 
@@ -256,6 +257,24 @@ int main(int argc, char *argv[])
     newpath[0] = 0;
 #ifdef WIN32
     strcat(newpath, "path=");
+
+#if WINVER > 0x0502 
+    if (QSysInfo::windowsVersion() > QSysInfo::WV_XP)
+    {
+#if UNICODE
+        //sometimes LoadLibrary commands in plugins with files that are located in the lib folder cannot be loaded
+        //even if the lib folder is add to the path variable in this funtion, too. The SetDllDirectory
+        //is another approach to reach this (only available since Win XP).
+        wchar_t *lib_path = new wchar_t[libDir.size() + 5];
+        memset(lib_path, 0, (libDir.size() + 5) * sizeof(wchar_t));
+        libDir.toWCharArray(lib_path);
+        SetDllDirectory(lib_path);
+        delete lib_path;
+#else
+        SetDllDirectory(libDir.toLatin1().data());
+#endif
+    }
+#endif
 #else
 #endif
     strcat(newpath, libDir.toLatin1().data()); //set libDir at the beginning of the path-variable
@@ -265,6 +284,8 @@ int main(int argc, char *argv[])
     strcat(newpath, oldpath);
 #ifdef WIN32
     _putenv(newpath);
+
+    HMODULE ximeaLib2 = LoadLibrary(L"m3apiX64.dll");
 
     //this is for the matplotlib config file that is adapted for itom.
     mpl_itomDir = QString("MPLCONFIGDIR=%1").arg(mpl_itomDir);
