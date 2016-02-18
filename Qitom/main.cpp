@@ -285,8 +285,6 @@ int main(int argc, char *argv[])
 #ifdef WIN32
     _putenv(newpath);
 
-    HMODULE ximeaLib2 = LoadLibrary(L"m3apiX64.dll");
-
     //this is for the matplotlib config file that is adapted for itom.
     mpl_itomDir = QString("MPLCONFIGDIR=%1").arg(mpl_itomDir);
     _putenv(mpl_itomDir.toLatin1().data());
