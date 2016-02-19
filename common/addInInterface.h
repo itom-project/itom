@@ -414,7 +414,7 @@ namespace ito
             */
             bool hasDockWidget(void) const;
 
-            //! Returns the reference to the dock widget of this plugin or NULL, if no dock widget is provided.
+            //! Returns the reference to the dock widget of this plugin or NULL, if no dock widget is provided or if it is already deleted.
             /*
                 \sa hasDockWidget
             */
