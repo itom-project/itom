@@ -1322,6 +1322,22 @@ void ScriptEditorWidget::errorListChange(const QStringList &errorList)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+bool ScriptEditorWidget::isBookmarked() const
+{
+	int count = 0;
+
+	foreach (const BookmarkErrorEntry &e, bookmarkErrorHandles)
+	{
+		if (e.type & markerBookmark)
+		{
+			count++;
+		}
+	}
+
+	return count > 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! Sends the code to the Syntax Checker
 /*!
     This function is called to send the content of this ScriptEditorWidget to the syntax checker
@@ -1518,8 +1534,8 @@ RetVal ScriptEditorWidget::gotoNextBookmark()
     int line, index;
     int closestLine = lines();
     getCursorPosition(&line, &index);
-    QList<BookmarkErrorEntry>::iterator it;
-    it = bookmarkErrorHandles.begin();
+    QList<BookmarkErrorEntry>::iterator it = bookmarkErrorHandles.begin();
+	bool found = false;
 
     line += 1;
 
@@ -1533,17 +1549,18 @@ RetVal ScriptEditorWidget::gotoNextBookmark()
         if ((it->type & markerBookmark) && markerLine(it->handle) < closestLine && markerLine(it->handle) > line)
         {
             closestLine = markerLine(it->handle);
+			found = true;
         }
-        ++it;
-        if (it == bookmarkErrorHandles.end() && closestLine == lines())
-        { // eoF reached without finding a bookmark
-            it = bookmarkErrorHandles.begin();
-            line = 0;
-        }
+        
+		++it;
     }
-    setCursorPosAndEnsureVisible(closestLine);
+
+	if (found)
+	{
+		setCursorPosAndEnsureVisible(closestLine);
+	}
+
     return RetVal(retOk);
-//    return RetVal(retError);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1552,8 +1569,8 @@ RetVal ScriptEditorWidget::gotoPreviousBookmark()
     int line, index;
     int closestLine = 0;
     getCursorPosition(&line, &index);
-    QList<BookmarkErrorEntry>::iterator it;
-    it = bookmarkErrorHandles.begin();
+    QList<BookmarkErrorEntry>::iterator it = bookmarkErrorHandles.begin();
+	bool found = false;
 
     if (line == 0)
     {
@@ -1569,18 +1586,18 @@ RetVal ScriptEditorWidget::gotoPreviousBookmark()
         if ((it->type & markerBookmark) && markerLine(it->handle) > closestLine && markerLine(it->handle) < line)
         {
             closestLine = markerLine(it->handle);
+			found = true;
         }
 
         ++it;
-        if (it == bookmarkErrorHandles.end() && closestLine == 0)
-        { // eoF reached without finding a bookmark
-            it = bookmarkErrorHandles.begin();
-            line = lines();
-        }
     }
-    setCursorPosAndEnsureVisible(closestLine);
+
+	if (found)
+	{
+		setCursorPosAndEnsureVisible(closestLine);
+	}
+
     return RetVal(retOk);
-//    return RetVal(retError);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

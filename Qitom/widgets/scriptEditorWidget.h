@@ -87,7 +87,7 @@ public:
     inline QString getFilename() const {return m_filename; }
     inline bool hasNoFilename() const { return m_filename.isNull(); }
     inline bool getCanCopy() const { return canCopy; }
-    inline bool isBookmarked() const { return !bookmarkErrorHandles.empty(); }
+    bool isBookmarked() const;
     inline QString getUntitledName() const { return tr("Untitled%1").arg(unnamedNumber); }
     inline QString getCurrentClass() const { return m_currentClass; } //currently chosen class in class navigator for this script editor widget
     inline QString getCurrentMethod() const { return m_currentMethod; } //currently chosen method in class navigator for this script editor widget
@@ -157,7 +157,7 @@ private:
     struct BookmarkErrorEntry
     {
         int handle;
-        int type;
+        int type; //entry of enum markerType
         QString errorMessage;
         QString errorComment;
         int errorPos;
