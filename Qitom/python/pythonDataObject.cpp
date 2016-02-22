@@ -263,7 +263,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                 if (newNumpyTypeNum == -1)
                 {
                     retValue += RetVal(retError);
-                    PyErr_SetString(PyExc_TypeError,"The data type of the given ndarray (or ndDataObject) is not compatible to any data type provided by dataObject");
+                    PyErr_SetString(PyExc_TypeError,"The data type of the given np.array is not compatible to any data type provided by dataObject");
                     done = true;
                 }
                 else
@@ -276,7 +276,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                     if (ndArray == NULL)
                     {
                         retValue += RetVal(retError);
-                        PyErr_SetString(PyExc_TypeError,"An error occurred while transforming the given ndArray (or ndDataObject) to a c-contiguous array with a compatible type.");
+                        PyErr_SetString(PyExc_TypeError,"An error occurred while transforming the given np.array to a c-contiguous array with a compatible type.");
                         done = true;
                     }
                     else
@@ -288,7 +288,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                         if (typeno == -1)
                         {
                             retValue += RetVal(retError);
-                            PyErr_SetString(PyExc_TypeError,"While converting the given ndarray or ndDataObject to a compatible data type with respect to data object, an error occurred.");
+                            PyErr_SetString(PyExc_TypeError,"While converting the given np.array to a compatible data type with respect to data object, an error occurred.");
                             done = true;
                         }
                     }
@@ -5081,8 +5081,19 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
 
     if (PyDataObject_Check(key))
     {
-        mask = (PyDataObject*)(key);
+        mask = (PyDataObject*)(key); //borrowed
+        Py_INCREF(mask);
         Py_INCREF(key);
+    }
+    else if (PyArray_Check(key))
+    {
+        mask = (PyDataObject*)createPyDataObjectFromArray(key); //new reference
+        Py_INCREF(key);
+
+        if (!mask)
+        {
+            error = true;
+        }
     }
     else
     {
@@ -5230,6 +5241,7 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
     DELETE_AND_SET_NULL_ARRAY(singlePointIdx);
 
     Py_DECREF(key);
+    Py_XDECREF(mask);
 
     return retObj;
 }
@@ -5260,6 +5272,17 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
     {
         mask = (PyDataObject*)key;
         Py_INCREF(key); //increment reference
+        Py_INCREF(mask);
+    }
+    else if (PyArray_Check(key))
+    {
+        mask = (PyDataObject*)createPyDataObjectFromArray(key); //new reference
+        Py_INCREF(key);
+
+        if (!mask)
+        {
+            return -1;
+        }
     }
     else
     {
@@ -5755,6 +5778,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
     }
 
     Py_DECREF(key);
+    Py_XDECREF(mask);
     DELETE_AND_SET_NULL_ARRAY(ranges);
     DELETE_AND_SET_NULL_ARRAY(idx);
 
