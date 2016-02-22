@@ -1506,9 +1506,9 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ QVariant PythonQtConversion::QVariantCast(const QVariant &item, QVariant::Type destType, int userType, ito::RetVal &retval)
+/*static*/ QVariant PythonQtConversion::QVariantCast(const QVariant &item, int userDestType, ito::RetVal &retval)
 {
-    if (item.type() == destType)
+    if (item.userType() == userDestType)
     {
         retval += ito::retOk;
         return item;
@@ -1519,7 +1519,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 
     if (item.type() == QVariant::List)
     {
-        if (destType == QVariant::PointF)
+        if (userDestType == QVariant::PointF)
         {
             const QVariantList list = item.toList();
             if (list.size() == 2)
@@ -1538,7 +1538,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 retval += ito::RetVal(ito::retError, 0, "transformation error to PointF: 2 values required.");
             }
         }
-        else if (destType == QVariant::Point)
+        else if (userDestType == QVariant::Point)
         {
             const QVariantList list = item.toList();
             if (list.size() == 2)
@@ -1557,7 +1557,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 retval += ito::RetVal(ito::retError, 0, "transformation error to Point: 2 values required.");
             }
         }
-        else if (destType == QVariant::Rect)
+        else if (userDestType == QVariant::Rect)
         {
             const QVariantList list = item.toList();
             if (list.size() == 4)
@@ -1578,7 +1578,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 retval += ito::RetVal(ito::retError, 0, "transformation error to Rect: 4 values required.");
             }
         }
-        else if (destType == QVariant::RectF)
+        else if (userDestType == QVariant::RectF)
         {
             const QVariantList list = item.toList();
             if (list.size() == 4)
@@ -1599,7 +1599,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 retval += ito::RetVal(ito::retError, 0, "transformation error to RectF: 4 values required.");
             }
         }
-        else if (destType == QVariant::Vector2D)
+        else if (userDestType == QVariant::Vector2D)
         {
             const QVariantList list = item.toList();
             if (list.size() == 2)
@@ -1618,7 +1618,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 retval += ito::RetVal(ito::retError, 0, "transformation error to Vector2D: 2 values required.");
             }
         }
-        else if (destType == QVariant::Vector3D)
+        else if (userDestType == QVariant::Vector3D)
         {
             const QVariantList list = item.toList();
             if (list.size() == 3)
@@ -1638,7 +1638,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 retval += ito::RetVal(ito::retError, 0, "transformation error to Vector3D: 3 values required.");
             }
         }
-        else if (destType == QVariant::Vector4D)
+        else if (userDestType == QVariant::Vector4D)
         {
             const QVariantList list = item.toList();
             if (list.size() == 4)
@@ -1659,7 +1659,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 retval += ito::RetVal(ito::retError, 0, "transformation error to Vector4D: 4 values required.");
             }
         }
-        else if (destType == QVariant::Size)
+        else if (userDestType == QVariant::Size)
         {
             const QVariantList list = item.toList();
             if (list.size() == 2)
@@ -1678,7 +1678,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 retval += ito::RetVal(ito::retError, 0, "transformation error to Size: 2 values required.");
             }
         }
-        else if (destType == QVariant::UserType && userType == QMetaType::type("ito::AutoInterval"))
+        else if (userDestType == QMetaType::type("ito::AutoInterval"))
         {
             const QVariantList list = item.toList();
             if (list.size() == 2)
@@ -1700,7 +1700,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
     } //end item.type() == QVariant::List
     else if (item.type() == QVariant::String)
     {
-        if (destType == QVariant::UserType && userType == QMetaType::type("ito::AutoInterval"))
+        if (userDestType == QMetaType::type("ito::AutoInterval"))
         {
             const QString str = item.toString();
             if (QString::compare(str, "auto", Qt::CaseInsensitive) == 0 || QString::compare(str, "<auto>", Qt::CaseInsensitive) == 0)
@@ -1716,7 +1716,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             }
         }
     } //end item.type() == QVariant::String
-    else if (destType == QVariant::Color)
+    else if (userDestType == QVariant::Color)
     {
         bool ok2;
         uint value = item.toUInt(&ok2);
@@ -1730,22 +1730,15 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 
     if (!ok && !retval.containsError()) //not yet converted, try to convert it using QVariant internal conversion method
     {
-        if (item.canConvert(destType))
+        if (item.canConvert(userDestType))
         {
             result = item;
-            result.convert(destType);
+            result.convert(userDestType);
             ok = true;
         }
         else
         {
-            if (destType == QVariant::UserType)
-            {
-                retval += ito::RetVal::format(ito::retError, 0, "no conversion from QVariant type %s to %s is possible", QVariant::typeToName(item.type()), QMetaType::typeName(userType));
-            }
-            else
-            {
-                retval += ito::RetVal::format(ito::retError, 0, "no conversion from QVariant type %s to %s is possible", QVariant::typeToName(item.type()), QVariant::typeToName(destType));
-            }
+            retval += ito::RetVal::format(ito::retError, 0, "no conversion from QVariant type %s to %s is possible", QVariant::typeToName(item.userType()), QVariant::typeToName(userDestType));
         }
     }
 
@@ -2736,6 +2729,48 @@ PyObject* PythonQtConversion::DataObjectToPyObject(const ito::DataObject& dObj)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyObject* PythonQtConversion::AddInBaseToPyObject(ito::AddInBase* aib)
+{
+    if (aib->getBasePlugin()->getType() & ito::typeDataIO)
+    {
+        ito::PythonPlugins::PyDataIOPlugin *dataIOPlugin = (ito::PythonPlugins::PyDataIOPlugin*)PythonPlugins::PyDataIOPluginType.tp_new(&ito::PythonPlugins::PyDataIOPluginType, NULL, NULL); //new ref
+        if (dataIOPlugin == NULL)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "No instance of python class dataIO could be created");
+            return NULL;
+        }
+        else
+        {
+            aib->getBasePlugin()->incRef(aib);
+            dataIOPlugin->dataIOObj = (ito::AddInDataIO*)aib;
+            return (PyObject*)dataIOPlugin;
+        }
+    }
+    else if (aib->getBasePlugin()->getType() & ito::typeActuator)
+    {
+        ito::PythonPlugins::PyActuatorPlugin *actuatorPlugin = (ito::PythonPlugins::PyActuatorPlugin*)PythonPlugins::PyActuatorPluginType.tp_new(&ito::PythonPlugins::PyActuatorPluginType, NULL, NULL); //new ref
+        if (actuatorPlugin == NULL)
+        {
+            PyErr_SetString(PyExc_RuntimeError, "No instance of python class actuator could be created");
+            return NULL;
+        }
+        else
+        {
+            aib->getBasePlugin()->incRef(aib);
+            actuatorPlugin->actuatorObj = (ito::AddInActuator*)aib;
+            return (PyObject*)actuatorPlugin;
+        }
+    }
+    else
+    {
+        PyErr_SetString(PyExc_RuntimeError, "AddIn must be of type dataIO or actuator");
+    }
+
+    return NULL;
+    
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! conversion from given QVariantList to python-tuple.
 /*!
     returns new reference to python-tuple type. Each item of QVariantList is one element in tuple. The values are converted
@@ -2993,6 +3028,20 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
                 //return PyErr_SetString(PyExc_TypeError, "Internal dataObject of QSharedPointer is NULL");
             }
             return DataObjectToPyObject(*(sharedPtr->data()));
+        }
+        else if (strcmp(name, "QPointer<ito::AddInDataIO>") == 0 || strcmp(name, "QPointer<ito::AddInActuator>") == 0)
+        {
+            QPointer<ito::AddInBase> *ptr = (QPointer<ito::AddInBase>*)data;
+            if (ptr == NULL)
+            {
+                PyErr_SetString(PyExc_TypeError, "The given QPointer is NULL");
+                return NULL;
+            }
+            if (ptr->data() == NULL)
+            {
+                Py_RETURN_NONE;
+            }
+            return AddInBaseToPyObject(ptr->data());
         }
         else if (strcmp(name, "QVector<int>") == 0)
         {

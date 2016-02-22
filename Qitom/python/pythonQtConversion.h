@@ -128,7 +128,7 @@ public:
     //! it will guess from the python type
     static QVariant PyObjToQVariant(PyObject* val, int type = -1);
 
-    static QVariant QVariantCast(const QVariant &item, QVariant::Type destType, int userType, ito::RetVal &retval);
+    static QVariant QVariantCast(const QVariant &item, int QVariantCast, ito::RetVal &retval);
 
     static QVariant QVariantToEnumCast(const QVariant &item, const QMetaEnum &enumerator, ito::RetVal &retval);
 
@@ -150,6 +150,7 @@ public:
 #endif
 
     static PyObject* DataObjectToPyObject(const ito::DataObject& dObj);
+    static PyObject* AddInBaseToPyObject(ito::AddInBase* aib);
 
     static PyObject* ConvertQtValueToPythonInternal(int type, const void* data); 
 
