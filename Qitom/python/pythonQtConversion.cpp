@@ -1730,15 +1730,42 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
 
     if (!ok && !retval.containsError()) //not yet converted, try to convert it using QVariant internal conversion method
     {
+#if QT_VERSION < 0x050000
+        if (userDestType < QVariant::UserType && item.canConvert((QVariant::Type)userDestType))
+#else
         if (item.canConvert(userDestType))
+#endif
         {
             result = item;
+#if QT_VERSION < 0x050000
+            result.convert((QVariant::Type)userDestType);
+#else
             result.convert(userDestType);
+#endif
             ok = true;
         }
         else
         {
-            retval += ito::RetVal::format(ito::retError, 0, "no conversion from QVariant type %s to %s is possible", QVariant::typeToName(item.userType()), QVariant::typeToName(userDestType));
+            QString fromName, toName;
+            if (QMetaType::isRegistered(item.userType()))
+            {
+                fromName = QMetaType::typeName(item.userType());
+            }
+            else
+            {
+                fromName = "unknown";
+            }
+
+            if (QMetaType::isRegistered(userDestType))
+            {
+                toName = QMetaType::typeName(userDestType);
+            }
+            else
+            {
+                toName = "unknown";
+            }
+
+            retval += ito::RetVal::format(ito::retError, 0, "no conversion from QVariant type %s to %s is possible", fromName.toLatin1().data(), toName.toLatin1().data());
         }
     }
 
