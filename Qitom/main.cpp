@@ -38,7 +38,7 @@
 #include <qdatetime.h>
 #include <qdir.h>
 #include <qmutex.h>
-#include <qsysinfo.h>
+#include <QSysInfo>
 
 //#include "benchmarks.h"
 
