@@ -135,6 +135,11 @@ integration_time
 ================
 Integration time is probably the most often changed parameter of a grabber. And also the simplest. This parameter changes the time over which is each triggered frame is integrated.
 
+.. code-block:: python
+    :linenos:
+    
+    mygrabber.setParam("integration_time", 0.01) # integration time is set to 10ms
+
 roi
 ====
 Many grabbers support changing the region of interest (ROI). This property is set by the parameter *roi* which contains four values: x0, y0, width, height. Which are starting point and length for the respective direction. All four values have to be stated:
@@ -154,16 +159,30 @@ bpp
 ====
 If a grabber provides control over the bitdepth of the output, it is controlled by the parameter *bpp* (bits per pixel). 
 
+.. code-block:: python
+    :linenos:
+    
+    mygrabber.setParam("bpp", 10) # bpp is set to 10
+
 
 gain
 =====
 This parameter gives access to a gain factor, if it is provided by the grabber. This factor may be arbitrarily changed, or be a binary value (for example for IR-mode on PCO PixelFlys).
 
+.. code-block:: python
+    :linenos:
+    
+    mygrabber.setParam("gain", 1) # gain is set to 100%
+
 binning
 ========
-For means of noise reduction and/or speed-up, some grabbers support binning of pixels. Notation 
+For means of noise reduction and/or speed-up, some grabbers support binning of pixels.  
+
+.. code-block:: python
+    :linenos:
     
-    
+    mygrabber.setParam("binning", 202) # binning is set to 2x2
+        
     
 Use grabbers in your own GUI
 ****************************
@@ -186,13 +205,3 @@ A demo script named *cameraWindow.py* is provided, which demonstrates basic grab
     
     demoCameraWindow.rst
     
-
-kkjkj
-===============
-
-~~~~~~~~~~~~~~~~
---------------
-
-
-bllll
-aaa
