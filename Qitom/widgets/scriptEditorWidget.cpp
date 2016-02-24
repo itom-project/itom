@@ -1376,7 +1376,7 @@ bool ScriptEditorWidget::event(QEvent *event)
         int sensAreaX = QsciScintilla::marginWidth(1);
         int posX = point.rx();
         int posY = point.ry();
-        // Check that it´s in the right column (margin)
+        // Check that it is in the right column (margin)
         if (posX <= sensAreaX)
         {
             QStringList texts;
@@ -2248,7 +2248,9 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
     // regular expression for Classes
     QRegExp classes("^(\\s*)(class)\\s(.+)\\((.*)\\):\\s*(#?.*)");
     classes.setMinimal(true);
-
+    
+    QRegExp methods("^(\\s*)(def)\\s(_*)(.+)\\((.*)(\\):\\s*(#?.*)?|\\\\)");
+    methods.setMinimal(true);
     // regular expression for methods              |> this part might be not in the same line due multiple line parameter set
 	//the regular expression should detect begin of definitions. This is:
 	// 1. the line starts with 0..inf numbers of whitespace characters --> (\\s*)
@@ -2260,9 +2262,7 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
 	// 7. OR combination --> (cond1|cond2)
 	// 7a. cond1: bracket close ')' followed by colon, arbitrary spaces and an optional comment starting with # --> \\):\\s*(#?.*)?
 	// 7b. backspace to indicate a newline --> \\\\  
-    QRegExp methods("^(\\s*)(def)\\s(_*)(.+)\\((.*)(\\):\\s*(#?.*)?|\\\\)");
-
-    methods.setMinimal(true);
+    
 
     // regular expresseion for decorator
     QRegExp decorator("^(\\s*)(@)(\\S+)\\s*(#?.*)");
