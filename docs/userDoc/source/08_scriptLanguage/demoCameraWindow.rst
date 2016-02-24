@@ -153,6 +153,8 @@ Now, all we have left to do is make the GUI visible. Parameter 0 indicates, that
 
 .. code-block:: python
     :lineno-start: 49
+    
+    win.show(0)
 
 Complete script
 ***************

@@ -9,7 +9,7 @@ Introduction
 *************
 This tutorial gives a short introduction to the use of cameras and other grabbers, which are adressed by :py:class:`~itom.dataIO:Grabber`. Other IO Harware not matching the command sets of grabbers may be found in :py:class:`~itom.dataIO:RawIO`  or :py:class:`~itom.dataIO:ADDA`. 
 
-Similar tutorials are available for :ref:`itom.actuator <getStartActuator>` and :py:class:`~itom.filter`.
+Similar tutorials are available for :ref:`actuators <getStartActuator>` and :ref:`A/D converters <getStartADDA>`.
 
 
 
@@ -21,9 +21,7 @@ For this tutorial, we will focus on the standard application of grabbers: observ
 
 .. note::
     
-    As one of the major advatages of the plugin concept, all grabbers shall behave in the same manner when given the same command. There may however be some special properties of some devices, wich cause slightly different behavior in very specialised cases.  
-
-
+    As one of the major advatages of the plugin concept, all grabbers shall behave in the same manner when given the same command. There may however be some special properties of some devices, wich cause slightly different behavior in very specialised cases. For further information read the plugin documentation of your device.
 
 Start/Stop device
 =================
@@ -36,7 +34,6 @@ Before using a grabber, we have to start it. For easy use, most plugins start th
     mygrabber.startDevice()
     mygrabber.stopDevice()
     
-
 
 Autograbbing
 ============
@@ -123,8 +120,8 @@ Multi-shot example:
 
 
 Parameters
-**********
-Most grabber plugins let you control the device's settings through a set of parameters. Common parameters are *integration_time*, *roi*, *bpp*, or *binning*. Some are read only. Parameters are checked and set by *getParam* and *setParam* as seen before.
+==========
+Most grabber plugins let you control the device's settings through a set of parameters. Common parameters are *integration_time*, *roi*, *bpp*, or *binning*. Some are read only. Parameters are checked and set by *getParam* and *setParam* as seen in the section :ref:`Usage of hardware plugins <hardwareParameters>` before.
 
 .. note::
     
@@ -185,8 +182,8 @@ For means of noise reduction and/or speed-up, some grabbers support binning of p
         
     
 Use grabbers in your own GUI
-****************************
-If you are construction your own GUI and want wo use live images from a grabber, you can assign the grabber as a source for your designer widget, just like you can display dataObjects.
+================================
+If you are developing your own GUI and want wo use live images from a grabber, you can assign the grabber as a source for your designer widget, just like you can display dataObjects.
 
 .. code-block:: python
     :linenos:
@@ -196,7 +193,7 @@ If you are construction your own GUI and want wo use live images from a grabber,
     gui.myplot["source"] = mydataobject # diplaying dataObject
 
 Demo script cameraWindow.py
-***************************
+================================
 A demo script named *cameraWindow.py* is provided, which demonstrates basic grabber use. Detailed discussion of this script is found below.
 
 

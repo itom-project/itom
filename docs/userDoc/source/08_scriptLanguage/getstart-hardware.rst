@@ -114,11 +114,12 @@ Most plugins should provide configuration dialogs. The modal dialogs provide acc
     :scale: 70%
     :align: left
 
+.. _hardwareParameters:
 Usage of hardware plugins
 *****************************
 
-As a major advantage of the plugin concept, different actual devices can be interchanged easily. For example, all camera plugins (:py:class:`~itom:dataIO:grabber`) share the same basic command set. There are, however, some hardware plugins which are not easily mapped to one of these classes. Most of them are found in :py:class:`~itom.dataIO:rawIO`. 
-:py:class:`~itom:dataIO.grabber` and :py:class:`~itom.actuator` are the most common hardware plugins. Each provides a destinctive set of member functions and parameters, which are described in the respective sections below. Special hardware funtionality that is not easily mapped to these member functions and parameters, may be called by the so called *exec_funcs*.
+As a major advantage of the plugin concept, different actual devices can be interchanged easily. For example, all camera plugins (:py:class:`~itom.dataIO:grabber`) share the same basic command set. There are, however, some hardware plugins which are not easily mapped to one of these classes. Most of them are found in :py:class:`~itom.dataIO:rawIO`. 
+:py:class:`~itom.dataIO:grabber` and :py:class:`~itom.actuator` are the most common hardware plugins. Each provides a destinctive set of member functions and parameters, which are described in the respective sections below. Special hardware funtionality that is not easily mapped to these member functions and parameters, may be called by the so called *exec_funcs*.
 While you get a detailed class description using the *help* command (see above), the functions *getParamList* and *getParamListInfo* give access to a detailed description of the plugins parameters.
 
 .. code-block:: python
@@ -136,10 +137,11 @@ Once you know the name of the desired paramter, the function *getParam* tells yo
     mygrabber.setParam('integration_time', 0.1)
     mygrabber.getParam('integration_time')
 
-The most important functions and parameters of :py:class:`~itom:dataIO.grabber` and :py:class:`~itom.actuator` are described in the sections below.
+The most important functions and parameters of :py:class:`~itom.dataIO:grabber` and :py:class:`~itom.actuator` are described in the sections below.
     
 .. toctree::
     :maxdepth: 1
     
     getstart-grabber.rst
+    getstart-adda.rst
     getstart-actuator.rst
