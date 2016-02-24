@@ -101,7 +101,6 @@ If you first initialised your plugin without assigning a |python| handle, but de
     
 Configuration dialog and dock widget
 ************************************
-alle Plugins??
 
 Most plugins should provide configuration dialogs. The modal dialogs provide access to the most important parameters of a plugin. Also, most plugins come with a dock widget named plugin toolbox, which is non-modal and allows not only for parameter tuning (as the config dialog does), but also live monitoring (for example motor position). Which parameters are actually available in the config dialog and/or the toolbox, is strongly dependent on the actual hardware and its implementation in the plugin.
 
