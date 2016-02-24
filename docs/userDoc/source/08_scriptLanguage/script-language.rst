@@ -29,6 +29,7 @@ If you use |python| in |itom| the following documents might give you more inform
     pymod-problems-and-solutions.rst
     pymod-reload-modules.rst
 
+
 Python module itom
 ********************
 
@@ -45,6 +46,7 @@ More information about the module :py:mod:`itom` can be found under:
     pymod-itom.rst
     pymod-load-save-files.rst
     glossary.rst
+	
 
 The full script reference of the module :py:mod:`itom` can be found under :ref:`itom-Script-Reference`.
     
@@ -69,6 +71,13 @@ Other recommended packages are:
 
 See :ref:`python package manager <gui-pipmanager>` for more information about getting packages.
 
+
+Getting started tutorials
+*************************
+.. toctree::
+    :maxdepth: 1
+    
+    getstart-hardware.rst
 
 Tutorials, documentations about Python 3
 *****************************************
