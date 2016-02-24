@@ -34,7 +34,7 @@ Or you can use the GUI. Therefore, select **Info...** from the context menu of y
     If you don't see the help page, go to the properties dialog of |itom| (menu **File >> Properties**) and select the checkbox **Show DataIO and Actuator** in the tab **General >> Help Viewer**.
 
 Here, most important for us is to lern about the init paramaters, especially the mandatory ones.
-A more detailed description of the plugin may be found in the plugin documentation (LINK möglich??).
+A more detailed description of the plugin may be found in the plugin documentation (LINK moeglich??).
 
 Once you got an instance of your plugin running, you can get an even more detailed class description including all member functions via |python|:
 
@@ -118,8 +118,26 @@ Most plugins should provide configuration dialogs. The modal dialogs provide acc
 Usage of hardware plugins
 *****************************
 
-As a major advantage of the plugin concept, different actual devices can be interchanged easily. For example, all camera plugins (:py:class:`~itom.dataIO:grabber`) share the same basic command set. There are, however, some hardware plugins which are not easily mapped to one of these classes. Most of them are found in :py:class:`~itom.dataIO:rawIO`. 
-:py:class:`~itom.dataIO:grabber` and :py:class:`~itom.actuator` are the most common hardware plugins. Each provides a destinctive set of member functions and parameters, which are described in the respective sections below. Special hardware funtionality that is not easily mapped to these member functions and parameters, may be called by the so called *exec_funcs*.
+As a major advantage of the plugin concept, different actual devices can be interchanged easily. The class :py:class:`~itom.dataIO` can be of type **rawIO**, **grabber** and **adda**. 
+You can get the type of the plugin by the command *getType()*, which returns the c++ enumartion value:
+
+	+----------------+------------------------+
+	|plugin type     |return value {int}      |
+	+================+========================+
+	|dataIO          |1                       |
+	+----------------+------------------------+
+	|actuator        |2                       |
+	+----------------+------------------------+
+	|algorithm       |4                       |
+	+----------------+------------------------+
+	|grabber         |129                     |
+	+----------------+------------------------+
+	|adda            |257                     |
+	+----------------+------------------------+
+	|rawIO           |513                     |
+	+----------------+------------------------+
+
+:py:class:`~itom.actuator` is the class to use actuator plugins. Each provides a destinctive set of member functions and parameters, which are described in the respective sections below. Special hardware funtionality that is not easily mapped to these member functions and parameters, may be called by the so called *exec_funcs*.
 While you get a detailed class description using the *help* command (see above), the functions *getParamList* and *getParamListInfo* give access to a detailed description of the plugins parameters.
 
 .. code-block:: python

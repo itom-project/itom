@@ -7,7 +7,7 @@ Getting started with grabbers
 
 Introduction
 *************
-This tutorial gives a short introduction to the use of cameras and other grabbers, which are adressed by :py:class:`~itom.dataIO:Grabber`. Other IO Harware not matching the command sets of grabbers may be found in :py:class:`~itom.dataIO:RawIO`  or :py:class:`~itom.dataIO:ADDA`. 
+This tutorial gives a short introduction to the use of cameras and other grabbers, which are part of :py:class:`~itom.dataIO`. Other IO Harware not matching the command sets of grabbers may be found in :py:class:`~itom.dataIO`, which is the class for RawIO, Grabbers and A/D converters. 
 
 Similar tutorials are available for :ref:`actuators <getStartActuator>` and :ref:`A/D converters <getStartADDA>`.
 
@@ -38,7 +38,7 @@ Before using a grabber, we have to start it. For easy use, most plugins start th
 Autograbbing
 ============
 The autograbbing feature sets a grabber into free-run mode, which allows for live view. Depending on the plugins programming, autograbbing may be either enabled or disabled on initialisation. Therefore, it is recommended to set it explicitly to be sure.
-Status is checked and set by the functions *getAutoGrabbing* and *setAutoGrabbing*:
+Status is checked and set by the functions **getAutoGrabbing** and **setAutoGrabbing**:
 
 .. code-block:: python
     :linenos:
@@ -49,7 +49,7 @@ Status is checked and set by the functions *getAutoGrabbing* and *setAutoGrabbin
     mygrabber.setAutoGrabbing(1)
     
 
-Enabling and disabling autograbbing is also possible through functions *enableAutoGrabbing* and *disableAutoGrabbing*
+Enabling and disabling autograbbing is also possible through functions **enableAutoGrabbing** and **disableAutoGrabbing**
 
 .. code-block:: python
     :linenos:
@@ -121,11 +121,11 @@ Multi-shot example:
 
 Parameters
 ==========
-Most grabber plugins let you control the device's settings through a set of parameters. Common parameters are *integration_time*, *roi*, *bpp*, or *binning*. Some are read only. Parameters are checked and set by *getParam* and *setParam* as seen in the section :ref:`Usage of hardware plugins <hardwareParameters>` before.
+Most grabber plugins let you control the device's settings through a set of parameters. Common parameters are **integration_time**, **roi**, **bpp**, or **binning**. Some are read only. Parameters are checked and set by **getParam** and **setParam** as seen in the section :ref:`Usage of hardware plugins <hardwareParameters>` before.
 
 .. note::
     
-    If you don't know the name of the parameter you want to check, try *getParamListInfo*.
+    If you don't know the name of the parameter you want to check, try **getParamListInfo**.
 
 
 integration_time
@@ -139,7 +139,7 @@ Integration time is probably the most often changed parameter of a grabber. And 
 
 roi
 ====
-Many grabbers support changing the region of interest (ROI). This property is set by the parameter *roi* which contains four values: x0, y0, width, height. Which are starting point and length for the respective direction. All four values have to be stated:
+Many grabbers support changing the region of interest (ROI). This property is set by the parameter **roi** which contains four values: x0, y0, width, height. Which are starting point and length for the respective direction. All four values have to be stated:
 
 .. code-block:: python
     :linenos:
@@ -149,12 +149,12 @@ Many grabbers support changing the region of interest (ROI). This property is se
 
 .. note::
     
-    Though it is unlikely, you may possibly come across older plugin versions that use an outdated notation, where the ROI is set via parameters *x0*, *x1*, *y0*, *y1* defining starting end ending pixels rather than starting pixel and length.
+    Though it is unlikely, you may possibly come across older plugin versions that use an outdated notation, where the ROI is set via parameters **x0**, **x1**, **y0**, **y1** defining starting end ending pixels rather than starting pixel and length.
 
 
 bpp
 ====
-If a grabber provides control over the bitdepth of the output, it is controlled by the parameter *bpp* (bits per pixel). 
+If a grabber provides control over the bitdepth of the output, it is controlled by the parameter **bpp** (bits per pixel). 
 
 .. code-block:: python
     :linenos:
@@ -194,7 +194,7 @@ If you are developing your own GUI and want wo use live images from a grabber, y
 
 Demo script cameraWindow.py
 ================================
-A demo script named *cameraWindow.py* is provided, which demonstrates basic grabber use. Detailed discussion of this script is found below.
+A demo script named **cameraWindow.py** is provided, which demonstrates basic grabber use. Detailed discussion of this script is found below.
 
 
 .. toctree::

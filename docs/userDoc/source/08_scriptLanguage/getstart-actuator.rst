@@ -7,7 +7,8 @@ Getting started with actuators
 
 Introduction
 ************
-This tutorial gives a short introduction to the use of actuators, which are adressed by :py:class:`~itom.actuator`. Other IO Harware not matching the command sets of actuators may be found in :py:class:`~itom.dataIO:RawIO`, :py:class:`~itom.dataIO:Grabber` or :py:class:`~itom.dataIO:ADDA`. 
+This tutorial gives a short introduction to the use of actuators, which are adressed by :py:class:`~itom.actuator`. 
+
 
 Similar tutorials are available for :ref:`grabber <getStartGrabber>` and :ref:`A/D converters <getStartADDA>`.
 
@@ -83,15 +84,15 @@ This example shows how you can do the same procedure using absolute actuator pos
 
 Parameters
 ==========
-Most actuator plugins let you control the device's settings through a set of parameters. Common parameters are *speed*, *accel* or *async*. Some are read only. Parameters are checked and set by *getParam* and *setParam* as seen in the section :ref:`Usage of hardware plugins <hardwareParameters>` before.
+Most actuator plugins let you control the device's settings through a set of parameters. Common parameters are **speed**, **accel** or **async**. Some are read only. Parameters are checked and set by **getParam** and **setParam** as seen in the section :ref:`Usage of hardware plugins <hardwareParameters>` before.
 
 .. note::
     
-    If you don't know the name of the parameter you want to check, try *getParamListInfo*.
+    If you don't know the name of the parameter you want to check, try **getParamListInfo**.
 
 Synchronized/ Asynchronized move
 ================================
-As default the actuators move command waits until the actuator has arrived the target position. With the parameter *async* you can deactivate the option and the itom script will not wait until the end of the movement.  
+As default the actuators move command waits until the actuator has arrived the target position. With the parameter **async** you can deactivate the option and the itom script will not wait until the end of the movement.  
 
 .. code-block:: python
     :linenos:
