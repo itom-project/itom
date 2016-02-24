@@ -1,9 +1,9 @@
 .. include:: /include/global.inc
 
-.. _getStartGrabber:
+.. _getStartActuator:
 
 Getting started with actuators
-#############################
+##############################
 
 Introduction
 *************

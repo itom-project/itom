@@ -7,13 +7,13 @@ Getting started with grabbers
 
 Introduction
 *************
-This tutorial gives a short introduction to the use of cameras and other grabbers, which are adressed by :py:class:`~itom:dataIO:Grabber`. Other IO Harware not matching the command sets of grabbers may be found in :py:class:`~itom:dataIO:RawIO`  or :py:class:`~itom:dataIO:ADDA`. 
+This tutorial gives a short introduction to the use of cameras and other grabbers, which are adressed by :py:class:`~itom.dataIO:Grabber`. Other IO Harware not matching the command sets of grabbers may be found in :py:class:`~itom.dataIO:RawIO`  or :py:class:`~itom.dataIO:ADDA`. 
 
-Similar tutorials are available for :py:class:`~itom:actuator` and :py:class:`~itom:filter`.
---> verlinken!
+Similar tutorials are available for :ref:`itom.actuator <getStartActuator>` and :py:class:`~itom.filter`.
 
 
-Initialisation and common properties of :py:class:`~itom:dataIO` and :py:class:`~itom:actuator` are described above.
+
+Initialisation and common properties of :py:class:`~itom.dataIO` and :py:class:`~itom.actuator` are described above.
 
 Functions
 **********
