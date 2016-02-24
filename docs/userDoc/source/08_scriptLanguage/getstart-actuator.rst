@@ -1,5 +1,9 @@
 .. include:: /include/global.inc
 
+.. moduleauthor:: T. Boettcher, J. Krauter
+.. sectionauthor:: T. Boettcher, J. Krauter
+
+
 .. _getStartActuator:
 
 Getting started with actuators
@@ -7,12 +11,9 @@ Getting started with actuators
 
 Introduction
 ************
-This tutorial gives a short introduction to the use of actuators, which are adressed by :py:class:`~itom.actuator`. 
+This tutorial gives a short introduction to the use of :py:class:`~itom.actuator`. Similar tutorials are available for :ref:`grabber <getStartGrabber>` and :ref:`A/D converters <getStartADDA>`.
 
-
-Similar tutorials are available for :ref:`grabber <getStartGrabber>` and :ref:`A/D converters <getStartADDA>`.
-
-Initialisation and common properties of :py:class:`~itom.actuator` are described above.
+Initialisation and common properties of :py:class:`~itom.actuator` are described below.
 
 Functions
 *********
@@ -34,7 +35,7 @@ Before using an actuator, we have to initialise it. Some actuators may start a c
 Move actuator and take pictures
 ===============================
 
-Most times an actuator is used to move your object you want to measure and take a picture by a camera. First you need a running instance of your :py:class:`itom.actuator` and :py:class:`itom.dataIO:Grabber` (:ref:`Getting started with grabbers <getStartGrabber>`). Set the camera and actuator :ref:`parameters <hardwareParameters>` before usage. Define your dataObject to save the captured data. Then you need to define the actuator trajectory as absolute or relative positions. 
+Most times an actuator is used to move your object you want to measure and take a picture by a camera. First you need a running instance of your :py:class:`itom.actuator` and :py:class:`itom.dataIO` grabber (:ref:`Getting started with grabbers <getStartGrabber>`). Define the parameters of the camera and actuator :ref:`parameters <hardwareParameters>` before usage. Define your :py:class:`itom.dataObject` to save the captured data. Then you need to define the actuator trajectory as absolute or relative positions. 
 
 This example shows how you can move your object and take a picture at different positions using relative position steps:
 
@@ -79,16 +80,16 @@ This example shows how you can do the same procedure using absolute actuator pos
 
 .. note::
     
-    Some actuators may have only the option to move in absolute positions. Hence, here the first acquisition position is as the `currentPos` position, because the first loop has for the variable `cnt` the value `0`. 
+    Some actuators may have only the option to move in absolute positions. Hence, here the first acquisition position is as the **currentPos** position, because the first loop has for the variable **cnt** the value `0`. 
 
 
 Parameters
 ==========
-Most actuator plugins let you control the device's settings through a set of parameters. Common parameters are **speed**, **accel** or **async**. Some are read only. Parameters are checked and set by **getParam** and **setParam** as seen in the section :ref:`Usage of hardware plugins <hardwareParameters>` before.
+Most actuator plugins let you control the device's settings through a set of parameters. Common parameters are **speed**, **accel** or **async**. Some are read only. Parameters are checked and set by **getParam()** and **setParam()** as seen in the section :ref:`Usage of hardware plugins <hardwareParameters>` before.
 
 .. note::
     
-    If you don't know the name of the parameter you want to check, try **getParamListInfo**.
+    If you don't know the name of the parameter you want to check, try **getParamListInfo()**.
 
 Synchronized/ Asynchronized move
 ================================
@@ -102,7 +103,7 @@ As default the actuators move command waits until the actuator has arrived the t
 
 Use actuator in your own GUI
 ================================
-If you are developing your own GUI and want to use the current position of each actuator axis, you can assign the actuator to the design widget `MotorController`. 
+If you are developing your own GUI and want to use the current position of each actuator axis, you can assign the actuator to the design widget **MotorController**. 
 
 .. code-block:: python
     :linenos:

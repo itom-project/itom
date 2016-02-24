@@ -1,5 +1,8 @@
 .. include:: /include/global.inc
 
+.. moduleauthor:: T. Boettcher, J. Krauter
+.. sectionauthor:: T. Boettcher, J. Krauter
+
 .. _getStartGrabber:
 
 Getting started with grabbers
@@ -7,11 +10,9 @@ Getting started with grabbers
 
 Introduction
 *************
-This tutorial gives a short introduction to the use of cameras and other grabbers, which are part of :py:class:`~itom.dataIO`. Other IO Harware not matching the command sets of grabbers may be found in :py:class:`~itom.dataIO`, which is the class for RawIO, Grabbers and A/D converters. 
+This tutorial gives a short introduction to the use of cameras. Cameras, RawIO and A/D converters (adda) are a type of the class :py:class:`~itom.dataIO`. Other IO Harware not matching the command sets of grabbers is the class :py:class:`~itom.actuator`.
 
 Similar tutorials are available for :ref:`actuators <getStartActuator>` and :ref:`A/D converters <getStartADDA>`.
-
-
 
 Initialisation and common properties of :py:class:`~itom.dataIO` and :py:class:`~itom.actuator` are described above.
 
@@ -25,7 +26,7 @@ For this tutorial, we will focus on the standard application of grabbers: observ
 
 Start/Stop device
 =================
-Before using a grabber, we have to start it. For easy use, most plugins start the device at initialisation. We recommend manual starting to be sure. After usage, the device may be stopped. This is done with the functions *startDevice* and *stopDevice*:
+Before using a grabber, we have to start it. For easy use, most plugins start the device at initialisation. We recommend manual starting to be sure. After usage, the device may be stopped. This is done with the functions **startDevice()** and **stopDevice()**:
 
 .. code-block:: python
     :linenos:
@@ -38,7 +39,7 @@ Before using a grabber, we have to start it. For easy use, most plugins start th
 Autograbbing
 ============
 The autograbbing feature sets a grabber into free-run mode, which allows for live view. Depending on the plugins programming, autograbbing may be either enabled or disabled on initialisation. Therefore, it is recommended to set it explicitly to be sure.
-Status is checked and set by the functions **getAutoGrabbing** and **setAutoGrabbing**:
+Status is checked and set by the functions **getAutoGrabbing()** and **setAutoGrabbing()**:
 
 .. code-block:: python
     :linenos:
@@ -49,7 +50,7 @@ Status is checked and set by the functions **getAutoGrabbing** and **setAutoGrab
     mygrabber.setAutoGrabbing(1)
     
 
-Enabling and disabling autograbbing is also possible through functions **enableAutoGrabbing** and **disableAutoGrabbing**
+Enabling and disabling autograbbing is also possible through functions **enableAutoGrabbing()** and **disableAutoGrabbing()**
 
 .. code-block:: python
     :linenos:
@@ -66,7 +67,7 @@ Enabling and disabling autograbbing is also possible through functions **enableA
     
 LiveImage
 =========
-A grabber can provide a live image using the *liveImage* command:
+A grabber can provide a live image using the **liveImage()** command:
 
 .. code-block:: python
     :linenos:
@@ -76,12 +77,12 @@ A grabber can provide a live image using the *liveImage* command:
     
 .. note::
     
-    Calling *liveImage* starts a stopped device, but does not enable autograbbing.
+    Calling **liveImage()** starts a stopped device, but does not enable autograbbing.
     
 
 Taking pictures
 ===============
-Most times a grabber is used, one would like to acquire and store pictures. The procedure is fairly easy: once you have a running instance of your grabber, calling *acquire* triggers an image to be acquired. The image is then retrieved either by the *getVal* or the *copyVal* command. Here, *getVal* makes a shallow copy, and *copyVal* gives you a deep copy. Both methods take a dataObject as argument, which has to have suitable size and data type.
+Most times a grabber is used, one would like to acquire and store pictures. The procedure is fairly easy: once you have a running instance of your grabber, calling **acquire()** triggers an image to be acquired. The image is then retrieved either by the **getVal()** or the **copyVal()** command. Here, **getVal()** makes a shallow copy, and **copyVal()** gives you a deep copy. Both methods take a dataObject as argument, which has to have suitable size and data type.
 
 Simple example:
 
@@ -125,7 +126,7 @@ Most grabber plugins let you control the device's settings through a set of para
 
 .. note::
     
-    If you don't know the name of the parameter you want to check, try **getParamListInfo**.
+    If you don't know the name of the parameter you want to check, try **getParamListInfo()**.
 
 
 integration_time
@@ -139,7 +140,7 @@ Integration time is probably the most often changed parameter of a grabber. And 
 
 roi
 ====
-Many grabbers support changing the region of interest (ROI). This property is set by the parameter **roi** which contains four values: x0, y0, width, height. Which are starting point and length for the respective direction. All four values have to be stated:
+Many grabbers support changing of the region of interest (ROI). This property is set by the parameter **roi** which contains four values: x0, y0, width, height. All four values have to be defined:
 
 .. code-block:: python
     :linenos:

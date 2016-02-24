@@ -1,5 +1,9 @@
 .. include:: /include/global.inc
 
+.. moduleauthor:: T. Boettcher, J. Krauter
+.. sectionauthor:: T. Boettcher, J. Krauter
+
+
 .. _getStartHardware:
 
 How to use hardware plugins
@@ -8,7 +12,7 @@ How to use hardware plugins
 Introduction
 *************
 
-This tutorial is similar to the corresponding sections of the getting started tutorial, but describes the use of hardware plugins (:py:class:`~itom.actuator` and :py:class:`~itom.dataIO`) in more detail.
+This tutorial is similar to the corresponding sections of the :ref:`getting started tutorial <gettingStarted>`, but describes the use of hardware plugins (:py:class:`~itom.actuator` and :py:class:`~itom.dataIO`) in more detail.
 Many steps below can be done via |python| scripting, or by GUI interaction.
 
 
@@ -16,7 +20,7 @@ Getting informations on plugins
 *******************************
 
 Before we can start using a hardware plugin, we need to know how to use it. 
-You can use the pluginHelp command in |python| to get the neccessary information:
+You can use the **pluginHelp()** command in |python| to get the neccessary information:
 
 .. code-block:: python
     :linenos:
@@ -34,7 +38,7 @@ Or you can use the GUI. Therefore, select **Info...** from the context menu of y
     If you don't see the help page, go to the properties dialog of |itom| (menu **File >> Properties**) and select the checkbox **Show DataIO and Actuator** in the tab **General >> Help Viewer**.
 
 Here, most important for us is to lern about the init paramaters, especially the mandatory ones.
-A more detailed description of the plugin may be found in the plugin documentation (LINK moeglich??).
+A more detailed description of the plugin may be found in the plugin documentation. 
 
 Once you got an instance of your plugin running, you can get an even more detailed class description including all member functions via |python|:
 
@@ -119,7 +123,7 @@ Usage of hardware plugins
 *****************************
 
 As a major advantage of the plugin concept, different actual devices can be interchanged easily. The class :py:class:`~itom.dataIO` can be of type **rawIO**, **grabber** and **adda**. 
-You can get the type of the plugin by the command *getType()*, which returns the c++ enumartion value:
+You can get the type of the plugin by the command **getType()**, which returns the c++ enumeration value:
 
 	+----------------+------------------------+
 	|plugin type     |return value {int}      |
@@ -137,8 +141,9 @@ You can get the type of the plugin by the command *getType()*, which returns the
 	|rawIO           |513                     |
 	+----------------+------------------------+
 
-:py:class:`~itom.actuator` is the class to use actuator plugins. Each provides a destinctive set of member functions and parameters, which are described in the respective sections below. Special hardware funtionality that is not easily mapped to these member functions and parameters, may be called by the so called *exec_funcs*.
-While you get a detailed class description using the *help* command (see above), the functions *getParamList* and *getParamListInfo* give access to a detailed description of the plugins parameters.
+:py:class:`~itom.actuator` is the class to use actuator plugins. Each provides a destinctive set of member functions and parameters, which are described in the respective sections below. 
+Special hardware funtionality that is not easily mapped to these member functions and parameters, may be called by the so called **exec_funcs()**.
+While you get a detailed class description using the **help()** command (see above), the functions **getParamList()** and **getParamListInfo()** give access to a detailed description of the plugins parameters.
 
 .. code-block:: python
     :linenos:
@@ -146,7 +151,7 @@ While you get a detailed class description using the *help* command (see above),
     mygrabber = dataIO("dummyGrabber")
     mygrabber.getParamListInfo()
 
-Once you know the name of the desired paramter, the function *getParam* tells you the actual state and *setParam* changes it.
+Once you know the name of the desired paramter, the function **getParam()** tells you the actual state and **setParam()** changes it.
 
 .. code-block:: python
     :linenos:
@@ -155,7 +160,7 @@ Once you know the name of the desired paramter, the function *getParam* tells yo
     mygrabber.setParam('integration_time', 0.1)
     mygrabber.getParam('integration_time')
 
-The most important functions and parameters of :py:class:`~itom.dataIO:grabber` and :py:class:`~itom.actuator` are described in the sections below.
+The most important functions and parameters of :py:class:`~itom.dataIO` grabber, adda and :py:class:`~itom.actuator` are described in the sections below.
     
 .. toctree::
     :maxdepth: 1

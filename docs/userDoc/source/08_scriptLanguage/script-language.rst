@@ -78,6 +78,9 @@ Getting started tutorials
     :maxdepth: 1
     
     getstart-hardware.rst
+    getstart-actuator.rst
+    getstart-grabber.rst
+    getstart-adda.rst
 
 Tutorials, documentations about Python 3
 *****************************************
