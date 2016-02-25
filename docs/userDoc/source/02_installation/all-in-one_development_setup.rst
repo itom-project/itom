@@ -14,6 +14,8 @@ Using this setup tool, you can start developing |itom| or plugins within a short
 
 The all-in-one development setup comes with the following features and 3rd party packages:
 
+**Version Visual Studio 2010**
+
 * Available for Visual Studio 2010 32bit and 64bit (Visual Studio 2010 and Service Pack 1 required)
 * Git 1.9.4 (setup in package, needs to be installed)
 * Python 3.4.2 (setup in package, needs to be installed)
@@ -33,21 +35,42 @@ Optionally there is a 3rd party package that brings support for the PointCloudLi
 * VTK 6.1.0 (prebuild with Qt 5.3.2 support)
 * PCL 1.8.0 (prebuild with support of all libraries above)
 
+**Version Visual Studio 2013**
+
+* Available for Visual Studio 2013 64bit (Visual Studio 2013 required, e.g. free Community Edition)
+* Git 1.9.5 (setup in package, needs to be installed)
+* Python 3.4.2 (setup in package, needs to be installed)
+* Numpy MKL 1.8.2 (setup in package, needs to be installed)
+* Qt 5.4.1 (prebuild)
+* OpenCV 2.4.11 (prebuild for VS2013)
+* CMake 3.2.2 (prebuild)
+* QScintilla 2.9 (prebuild inside of Qt 5.4.1)
+* Doxygen
+
+Optionally there is a 3rd party package that brings support for the PointCloudLibrary for itom. This secondary archive contains the following features:
+
+* Boost 1.58.0 (prebuild)
+* Eigen 3.0.5 (prebuild)
+* Flann 1.7.1 (prebuild)
+* QHull 2012.1 (prebuild)
+* VTK 6.1.0 (prebuild with Qt 5.4.1 support)
+* PCL 1.8.0 (prebuild with support of all libraries above)
+
 Prerequisites for the development setup
 ****************************************
 
 If you want to use the development setup the following prerequisites must be fulfilled:
 
 * Windows 7 or higher (XP untested)
-* Visual Studio 2010 + Service Pack 1 must be installed on the computer
+* Visual Studio 2010 + Service Pack 1  or Visual Studio 2013 (depending on the selected package) must be installed on the computer
 
 Get and install the setup
 **************************
 
 The setup comes with one or two zip-archive files:
 
-* **itom_development_VS2010_x86.zip** or **itom_development_VS2010_x64.zip** (required)
-* **itom_development_VS2010_x86_PCLAddOn.zip** or **itom_development_VS2010_x64_PCLAddOn.zip** (optional, for compilation itom with PointCloudLibrary support, 3D visualization...)
+* **itom_development_VS2010_x86.zip**, **itom_development_VS2010_x64.zip** or similar packages for other compilers (required)
+* **itom_development_VS2010_x86_PCLAddOn.zip**, **itom_development_VS2010_x64_PCLAddOn.zip** or similar packages for other compilers (optional, for compilation itom with PointCloudLibrary support, 3D visualization...)
 
 Download the 32bit or 64bit version depending on your needs from https://sourceforge.net/projects/itom/files/all-in-one-build-setup/.
 
@@ -56,9 +79,10 @@ Then execute the following steps:
 1. Download and unpack one or both archives into the same folder. You should then have the following folder structure:
     
     .. figure:: images/all-in-one-build/unzip-archives.png
+        :figwidth: 1120
         :scale: 100%
-        :align: left
-
+        :align: center
+    
     * __install__
     * 3rdParty
     * 3rdPartyPCL (if you unpack the ..._PCLAddOn.zip as well
@@ -69,9 +93,10 @@ Then execute the following steps:
 2. Go to the **__install__** folder
     
     .. figure:: images/all-in-one-build/things-to-install.png
+        :figwidth: 1120
         :scale: 100%
-        :align: left
-
+        :align: center
+    
     If not yet available, install
     
     * Git 1.9.4
@@ -97,9 +122,12 @@ Then execute the following steps:
     This script leads you through the remaining installation process using a menu guided approach:
     
     .. figure:: images/all-in-one-build/setup_py_screenshot.png
+        :figwidth: 1120
         :scale: 100%
-        :align: left
-
+        :align: center
+    
+    |
+    
     Type any number (1-9) after the question **your input?** and press return to start the corresponding installation step. You can also execute the first six steps using the
     overall command number 7. Press 9 to quit the setup. You can continue with other steps by call **setup.py** again. Once you executed one step, an **(OK)** after the number
     shows you that the step already has been executed. An **(??)** means that no further information about a possible execution can be shown. The single step should normally be

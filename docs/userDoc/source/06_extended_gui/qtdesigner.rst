@@ -21,14 +21,14 @@ Qt Designer
 In order to start the **Qt Designer**, click on the corresponding icon in the toolbar of |itom|:
 
 .. figure:: images_userGUI/mainsymbols2.png
-    :scale: 70%
+    :scale: 100%
     :align: left
 
 or double-click on a corresponding **ui**-file in the file system widget of |itom|. In the first case, **Qt Designer** shows an initialization dialog, where you
 can choose the base type of the user interface you want to create.
 
 .. figure:: images_userGUI/designerNew.png
-    :scale: 70%
+    :scale: 100%
     :align: left
     
 .. note::
@@ -56,7 +56,9 @@ on your surface. If the **Qt Designer** is started from |itom| you will even fin
 provided by |itom| and can also be placed on your surface. The choice of these plugins depend on the designer plugins that are currently available in your installation of |itom|.
 
 .. figure:: images_userGUI/qtdesigner1.png
-    :align: left
+    :align: center
+    :figwidth: 1120
+    :scale: 100%
 
 After having placed one widget on the canvas, you will see its properties in the property toolbox of **Qt Designer**. Every widget has the common property **objectName**. If you assign
 a unique object name to any of your control elements, it is possible to access and manipulate this widget from a |python| script in |itom| using this name, too. In general many of the
@@ -94,7 +96,7 @@ at the right side or at the bottom of the dialog.
 Let us create an exemplary user interface. In **Qt Creator** the following widget has been created:
 
 .. figure:: images_userGUI/testWidget.png
-    :scale: 70%
+    :scale: 100%
     :align: left
 
 On the right side of the widget *testWidget* you see the hierarchical organization of objects that are put on the widget. At first, a group box has been placed on the widget. Inside of
@@ -128,7 +130,7 @@ that the variable *result* will be set to *0* if the user closed the dialog usin
 clicked an **OK**-button.
 
 .. figure:: images_userGUI/testWidgetItom.png
-    :scale: 70%
+    :scale: 100%
     :align: left
 
 It is also possible to open the dialog in a non-modal version or to open it in a modal style however to immediately force python to continue the script execution. This depends
@@ -139,7 +141,7 @@ Right now, you don't have the possibility to quit the dialog using any button (*
 :py:class:`itom.ui` needs to be changed. There is the choice between two different appearances of a button bar, which can be automatically added to your widget:
 
 .. figure:: images_userGUI/testWidgetButtonBar.png
-    :scale: 70%
+    :scale: 100%
     :align: left
 
 Next, you need to select which buttons should be included in the button bar. This is done by creating a python dictionary, where each elements corresponds to one button. The
@@ -173,7 +175,9 @@ If you are not interested in the exact return value of the dialog but you want t
 create an user interface based on a **dialog** or **main window** in **Qt Designer**.
 
 .. figure:: images_userGUI/testWindow.png
-    :align: left
+    :align: center
+    :figwidth: 1120
+    :scale: 100%
 
 The figure shows an exemplary user interface (**testWindow.ui**) that is based on a main window. On the right side, there have been added three buttons, nested in a vertical layout.
 On the left side, there is a list widget (objectName: **listWidget**, type: **List Widget**). Additionally a menu has been added that consists of three items.
@@ -504,7 +508,7 @@ be useful if you want to enable or disable certain widgets depending on the stat
 with a checkbox and a textfield. Let us define a signal-slot-connection, such that the textfield gets disabled if the checkbox is unchecked.
 
 .. figure:: images_userGUI/uiSignalSlot1.png
-    :scale: 70%
+    :scale: 100%
     :align: left
 
 This type of gui-internal connections are completely done in **Qt Creator**. Therefore chose the "Signal and Slots" editing mode, that is obtained by clicking the symbol |qtsignalslotmode|
@@ -512,7 +516,7 @@ in the toolbar or by pressing *F4*. Then you can make a drag&drop connection bet
 depicted in the following figure becomes visible:
 
 .. figure:: images_userGUI/uiSignalSlot2.png
-    :scale: 70%
+    :scale: 100%
     :align: left
 
 Here you can choose which signal of the emitting widget should be connected with which slot of the destination. At the beginning, only slots and signals of the specific widget classes are

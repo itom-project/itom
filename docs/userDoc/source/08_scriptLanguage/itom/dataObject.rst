@@ -285,7 +285,8 @@ start position of the x-y-stage is (20.5 mm and 47.7 mm in x and y direction, re
 The output is then:
 
 .. figure:: images/plotDataObjectScaleOffset.png
-    :scale: 80%
+    :scale: 100%
+    :figwidth: 1120
     :align: center
     
 The relation between pixel coordinates and the physical coordinates is:
@@ -350,12 +351,35 @@ This code will lead to the following plot (under the assumption, that the design
 of |itom|):
 
 .. figure:: images/plotDataObjectTitle.png
-    :scale: 80%
+    :scale: 100%
+    :figwidth: 1120
     :align: center
     
+
+Another special tag is only important for 1D-plots (using the designer plugin **itom1dqwtplot**). You can then set the legend titles for every single curve.
+This is done by the tag **legendTitleX** where X is a continuous line index starting with 0. The following example shows how to create a 2D dataObject
+with two rows and 100 columns. In the first line (row 0), a sine with an amplitude of 127 is created, in the second line (row 1), a sine with an amplitude of 60.
+Then, the dataObject is plot as 1D plot (indicated by "1D") and the property **legendPosition** is set to **Right** (per default, no legend is shown):
+
+.. code-block:: python
+    
+    import math
+    a = dataObject.zeros([2,100],'int8')
+    a[0,:] = [127 * math.sin(x * math.pi / 20) for x in range(0,100)]
+    a[1,:] = [60 * math.sin(x * math.pi / 15) for x in range(0,100)]
+    a.setTag("legendTitle0", "first line")
+    a.setTag("legendTitle1", "second line")
+    plot(a, "1D", properties = {"legendPosition":"Right"})
+    
+The result looks like this:
+
+.. figure:: images/plotDataObjectLegend.png
+    :scale: 100%
+    :figwidth: 1120
+    :align: center
+
 The attribute :py:attr:`~itom.dataObject.tags` returns a mapping object to a dictionary. This has to be considered to be a read-only dictionary, where no item can be deleted, appended
 or changed. However, it is possible to assign a new dictionary to this attribute. Then, all current tags are deleted and the new dictionary items are considered to be the new tags.
-    
 
 The protocol of a dataObject is a list of strings. Use the method :py:meth:`~itom.dataObject.addToProtocol` in order to add a new entry to the protocol. If the dataObject is
 a slice of another object, the string **ROI[...]** with the current slice parameters is prepended to each new protocol entry. Finally, the protocol is stored as tag **protocol**
@@ -466,7 +490,8 @@ np.linalg.inv(a)                        -                                       
 x=np.linalg.solve(a,b)                  -                                             solution of ax=b (using pseudo inverse)
 [U,S,V] = np.linalg.svd(a)              -                                             singular value decomposition of a (V is transposed!)
 np.fft.fft2(a), np.fft.ifft2(a)                                                       filter available (Inverse) 2D fourier transform of a
-a[a>0]=5                                -                                             sets all elements > 0 of a to 5
+a[a>0]=5                                a[a>0] = 5                                    sets all elements > 0 of a to 5
+a[np.isnan(a)]=0                        a[np.isnan(a)]=5                              sets all NaN values of a to 5
 arr2 = arr1.reshape([3,2])              dObj2 = dObj1.reshape([3,2])                  reshapes arr1 to new size (equal number of items)
 ======================================= ============================================= ===========================================================================================
     

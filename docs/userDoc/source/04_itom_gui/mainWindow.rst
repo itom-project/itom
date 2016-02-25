@@ -9,6 +9,7 @@ During the startup of |itom| a splash screen shows the current state of the load
 
 .. figure:: images/iTOM.png
     :scale: 100%
+    :figwidth: 1120
     :align: center
 
 The appearance of the application after its start may vary with respect to the depicted screenshot, since the current position, size and visibility of many toolboxes and other components of the overall graphical user interface as stored in the settings at shutdown. They are reloaded at the next startup.
@@ -26,12 +27,14 @@ The command line in the center of the main window allows executing single or mul
 
 .. figure:: images/consoleError.png
     :scale: 100%
+    :figwidth: 1120
     :align: center
 
 Usually, the last line of the command line shows the ">>" sign, that indicates that the console is ready for a new input. You can either write a single python command and press the return key in order to execute it or you can write multiline commands. In order to create a new line for this, press the Shift + Return (smooth line break). After the final command simply press the return key such that the whole command block is executed.
 
 .. figure:: images/consoleMultiLine.png
     :scale: 100%
+    :figwidth: 1120
     :align: center
 
 The current line or code-block that is executed is highlighted with a yellow background. For multi-line commands, |itom| parses the whole command block and divides it into logical blocks, such that the highlighted background switches from one block to the other one.
@@ -128,6 +131,7 @@ the loaded toolboxes. The items after the separator correspond to the toolbars, 
 
 .. figure:: images/toolboxmenu.png
     :scale: 100%
+    :figwidth: 1120
     :align: center
 
 | It is possible to (un)dock the Toolboxes to the main frame at different positions. This is done by simple drag and drop of the titel bar of the toolboxes. Another way of (un)docking can be realized by double-clicking on the title bar.

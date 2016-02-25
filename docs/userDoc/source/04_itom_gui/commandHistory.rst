@@ -5,6 +5,7 @@ Command History
 
 .. figure:: images/commandHistory.png
     :scale: 100%
+    :figwidth: 1120
     :align: center
 
 If the command history option is enabled in the properties of |itom|, every script command that is executed via the command line, 

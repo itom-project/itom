@@ -10,6 +10,7 @@ Once the python interpreter is executed in debug mode, it will stop at any defin
 
 .. figure:: images/breakpoints.png
     :scale: 100%
+    :figwidth: 1120
     :align: center
 
 The breakpoint toolbox gives you an overview about all breakpoints that are currently registered in the python debugger. These breakpoints are saved on shutdown of |itom|

@@ -13,8 +13,7 @@ Before installation, please review the minimum system requirements.
 
     * Windows XP SP3 *or*
     * Windows Vista SP1 (SP2 and platform update recommended) *or*
-    * Windows 7 *or*
-    * Windows 8 (not tested yet) *or*
+    * Windows 7 or higher (tested with 7, 8 and 10)
     * Linux based OS (tested with Debian and Ubuntu)
     * Mac OS X 10.9 (Mavericks) or later
 
@@ -46,8 +45,8 @@ Build from Sources
 
 .. note::
     
-    There is a all-in-one build development installation available (Windows, Visual Studio 2010 only). This contains all dependencies that are required to build itom and its main plugins
-    from sources. See the section `All-In-One development setup` below for more information.
+    There is a all-in-one build development installation available (Windows, several versions of Visual Studio). This contains all dependencies that are required to build itom and its main plugins
+    from sources. See the section :ref:`All-In-One development setup <install-all-in-one-dev-setup>` below for more information.
 
 Alternatively, it is possible to get the sources of |itom| (e.g. clone the latest Git repository from https://bitbucket.org/itom/itom.git) and
 compile an up-to-date version of |itom|. This is recommended for developers (e.g. plugin developers) and required for linux users. Before getting the source files,

@@ -34,7 +34,9 @@ In the figure below you can see the three columns on which |itom| is based:
 3. GUI
 
 .. figure:: 3columns.png
-    :align: left
+    :figwidth: 1120
+    :scale: 100
+    :align: center
 
 Based on these three columns you can control measurement applications, basic setups or scripted image processing.
 
@@ -56,7 +58,7 @@ About us
 | **Report issues at:**
 | https://bitbucket.org/itom/itom/issues
 
-This help has been built for itom-version |version| (SVN/Git-revision |release|).
+This help has been built for itom-version |version| (Git-revision |release|).
 
 
 Licensing
