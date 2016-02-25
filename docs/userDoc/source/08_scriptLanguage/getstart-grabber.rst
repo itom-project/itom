@@ -110,9 +110,9 @@ Multi-shot example:
     mygrabber = dataIO("dummyGrabber", 200,100,8)
     mygrabber.startDevice()
     mygrabber.setAutoGrabbing(0)
-    for i in range(0,10):
+    for cnt in range(0,10):
         mygrabber.acquire()
-        mygrabber.copyVal(dObj[i,:,:]) 
+        mygrabber.copyVal(dObj[cnt,:,:]) 
     mygrabber.stopDevice()
     
 .. note::
@@ -122,7 +122,7 @@ Multi-shot example:
 
 Parameters
 ==========
-Most grabber plugins let you control the device's settings through a set of parameters. Common parameters are **integration_time**, **roi**, **bpp**, or **binning**. Some are read only. Parameters are checked and set by **getParam** and **setParam** as seen in the section :ref:`Usage of hardware plugins <hardwareParameters>` before.
+Most grabber plugins let you control the device's settings through a set of parameters. Common parameters are **integration_time**, **roi**, **bpp**, or **binning**. Some are read only. Parameters are checked and set by **getParam()** and **setParam()** as seen in the section :ref:`Usage of hardware plugins <hardwareParameters>` before.
 
 .. note::
     
