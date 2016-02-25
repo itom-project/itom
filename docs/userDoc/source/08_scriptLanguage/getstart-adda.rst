@@ -1,5 +1,8 @@
 .. include:: /include/global.inc
 
+.. moduleauthor:: T. Boettcher, J. Krauter
+.. sectionauthor:: J. Krauter
+
 .. _getStartADDA:
 
 Getting started with A/D converters
@@ -9,11 +12,11 @@ Introduction
 *************
 This tutorial gives a short introduction to the use of A/D converters, which are adressed by the :py:class:`~itom.dataIO` class. Similar tutorials are available for :ref:`actuators <getStartActuator>` and :ref:`grabbers <getStartGrabber>`.
 
-Initialisation and common properties of :py:class:`~itom.dataIO` and :py:class:`~itom.actuator` are described above.
+Initialisation and common properties of :py:class:`~itom.dataIO` and :py:class:`~itom.actuator` are described :ref:`here <initHardware>`.
 
 Functions
 **********
-For this tutorial, we will focus on the standard application of A/D converters: detecting or applying analog signal 
+For this tutorial, we will focus on the standard application of A/D converters: detecting or applying analog signals 
 
 .. note::
     
@@ -26,7 +29,7 @@ Before using a A/D converter, we have to start it. For easy use, most plugins st
 .. code-block:: python
     :linenos:
     
-    myadda = dataIO("A/D Converter plugin")
+    myadda = dataIO("[Your plugin name]") #  i.e. "MeasurementComputing"
     myadda.startDevice()
     myadda.stopDevice()
     
@@ -34,7 +37,7 @@ Detecting analog signals
 =========================
 Most times a A/D converter is used to detect analog signal like the voltage of a photodiode receiver. The procedure is fairly easy: once you have a running instance of the converter, calling **acquire()** triggers the acquisition of the specified converter input pins. The data are then retrieved either by the **getVal()** or the **copyVal()** command. Most of the A/D converters allows the parallel acquisition of several input ports. Here, **getVal()** makes a shallow copy, and **copyVal()** gives you a deep copy. Both methods take a dataObject as argument, which has to have suitable size and data type. 
 
-Simple example for the plugin MeasurementCompting. Here the input is defined between the input port channel 0 and 3. The dataObject will be of the size 4:
+Simple example for the plugin MeasurementComputing. Here the input is defined between the input port channel 0 and 3. The dataObject will be of the size 4:
 
 .. code-block:: python
     :linenos:
@@ -50,7 +53,7 @@ Simple example for the plugin MeasurementCompting. Here the input is defined bet
     
 Setting analog output values
 ============================
-A/D converters can also be used to apply analog output voltage to the specified output ports. This example shows with the MeasurementCompting adda plugin how to do so. Depending on the plugin and devices. This may be possible by using voltage or digital values:
+A/D converters can also be used to apply analog output voltage to the specified output ports. This example shows with the MeasurementComputing adda plugin how to do so. Depending on the plugin and devices. This may be possible by using voltage or digital values:
 
 .. code-block:: python
     :linenos:

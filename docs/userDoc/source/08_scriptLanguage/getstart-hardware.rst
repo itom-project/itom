@@ -1,7 +1,7 @@
 .. include:: /include/global.inc
 
 .. moduleauthor:: T. Boettcher, J. Krauter
-.. sectionauthor:: T. Boettcher, J. Krauter
+.. sectionauthor:: T. Boettcher
 
 
 .. _getStartHardware:
@@ -45,11 +45,11 @@ Once you got an instance of your plugin running, you can get an even more detail
 .. code-block:: python
     :linenos:
     
-    mygrabber = dataIO("dummyGrabber")
+    mygrabber = dataIO("[your plugin name]") # i.e. "dummyGrabber"
     help(mygrabber)
 
 
-
+.. _initHardware:
 Initialising hardware plugins
 *****************************
 
@@ -106,7 +106,7 @@ If you first initialised your plugin without assigning a |python| handle, but de
 Configuration dialog and dock widget
 ************************************
 
-Most plugins should provide configuration dialogs. The modal dialogs provide access to the most important parameters of a plugin. Also, most plugins come with a dock widget named plugin toolbox, which is non-modal and allows not only for parameter tuning (as the config dialog does), but also live monitoring (for example motor position). Which parameters are actually available in the config dialog and/or the toolbox, is strongly dependent on the actual hardware and its implementation in the plugin.
+Most plugins should provide configuration dialogs. The modal dialogs give access to the most important parameters of a plugin. Also, most plugins come with a dock widget named plugin toolbox, which is non-modal and allows not only for parameter tuning (as the config dialog does), but also live monitoring (for example motor position). Which parameters are actually available in the config dialog and/or the toolbox, is strongly dependent on the actual hardware and its implementation in the plugin.
 
 
 .. figure:: ../08_scriptLanguage/getStart/openconfigdialog2.png
@@ -123,35 +123,35 @@ Usage of hardware plugins
 *****************************
 
 As a major advantage of the plugin concept, different actual devices can be interchanged easily. The class :py:class:`~itom.dataIO` can be of type **rawIO**, **grabber** and **adda**. 
-You can get the type of the plugin by the command **getType()**, which returns the c++ enumeration value:
+You can get the type of the plugin by the command **getType()**, which returns the c++ enumeration value. If different types are true at the same time, their enum vaule is linked via bitwise and:
 
-	+----------------+------------------------+
-	|plugin type     |return value {int}      |
-	+================+========================+
-	|dataIO          |1                       |
-	+----------------+------------------------+
-	|actuator        |2                       |
-	+----------------+------------------------+
-	|algorithm       |4                       |
-	+----------------+------------------------+
-	|grabber         |129                     |
-	+----------------+------------------------+
-	|adda            |257                     |
-	+----------------+------------------------+
-	|rawIO           |513                     |
-	+----------------+------------------------+
+	+----------------+---------------------+---------------+----------------+
+	|plugin type     |return value {int}   |c++ enum       |remark          |
+	+================+=====================+===============+================+
+	|dataIO          |1                    |0x1            |                |
+	+----------------+---------------------+---------------+----------------+
+	|actuator        |2                    |0x2            |                |
+	+----------------+---------------------+---------------+----------------+
+	|algorithm       |4                    |0x4            |                |
+	+----------------+---------------------+---------------+----------------+
+	|grabber         |129 = (128+1)        |0x80 + 0x1     |also dataIO     |
+	+----------------+---------------------+---------------+----------------+
+	|adda            |257 = (256+1)        |0x100 + 0x1    |also dataIO     |
+	+----------------+---------------------+---------------+----------------+
+	|rawIO           |513 = (512+1)        |0x200 + 0x1    |also dataIO     |
+	+----------------+---------------------+---------------+----------------+
 
 :py:class:`~itom.actuator` is the class to use actuator plugins. Each provides a destinctive set of member functions and parameters, which are described in the respective sections below. 
 Special hardware funtionality that is not easily mapped to these member functions and parameters, may be called by the so called **exec_funcs()**.
-While you get a detailed class description using the **help()** command (see above), the functions **getParamList()** and **getParamListInfo()** give access to a detailed description of the plugins parameters.
+While you get a detailed class description using the **help()** command (see above), the functions **getParamList()** and **getParamListInfo()** give access to a detailed description of the plugin's parameters.
 
 .. code-block:: python
     :linenos:
     
-    mygrabber = dataIO("dummyGrabber")
+    mygrabber = dataIO("dummyGrabber") 
     mygrabber.getParamListInfo()
 
-Once you know the name of the desired paramter, the function **getParam()** tells you the actual state and **setParam()** changes it.
+Once you know the name of the desired parameter, the function **getParam()** tells you the actual state and **setParam()** changes it.
 
 .. code-block:: python
     :linenos:

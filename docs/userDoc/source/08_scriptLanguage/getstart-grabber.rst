@@ -1,7 +1,7 @@
 .. include:: /include/global.inc
 
 .. moduleauthor:: T. Boettcher, J. Krauter
-.. sectionauthor:: T. Boettcher, J. Krauter
+.. sectionauthor:: T. Boettcher
 
 .. _getStartGrabber:
 
@@ -10,19 +10,22 @@ Getting started with grabbers
 
 Introduction
 *************
-This tutorial gives a short introduction to the use of cameras. Cameras, RawIO and A/D converters (adda) are a type of the class :py:class:`~itom.dataIO`. Other IO Harware not matching the command sets of grabbers is the class :py:class:`~itom.actuator`.
+This tutorial gives a short introduction to the use of cameras. Cameras, RawIO and A/D converters (adda) are subtypes of the class :py:class:`~itom.dataIO`. 
+
+.. kann der Satz weg?
+.. Other IO Harware not matching the command sets of grabbers is the class :py:class:`~itom.actuator`.
 
 Similar tutorials are available for :ref:`actuators <getStartActuator>` and :ref:`A/D converters <getStartADDA>`.
 
-Initialisation and common properties of :py:class:`~itom.dataIO` and :py:class:`~itom.actuator` are described above.
+Initialisation and common properties of :py:class:`~itom.dataIO` and :py:class:`~itom.actuator` are described :ref:`getting here <getStartHardware>`.
 
 Functions
 **********
-For this tutorial, we will focus on the standard application of grabbers: observe stuff, take pictures and retrieve them. 
+For this tutorial, we will focus on the standard application of grabbers: observe stuff, take images and retrieve them. 
 
 .. note::
     
-    As one of the major advatages of the plugin concept, all grabbers shall behave in the same manner when given the same command. There may however be some special properties of some devices, wich cause slightly different behavior in very specialised cases. For further information read the plugin documentation of your device.
+    As one of the major advatages of the plugin concept, all grabbers shall behave in the same manner when given the same command. There may however be some special properties of some devices, which cause slightly different behavior in very specialised cases. For further information read the plugin documentation of your device.
 
 Start/Stop device
 =================
@@ -38,7 +41,7 @@ Before using a grabber, we have to start it. For easy use, most plugins start th
 
 Autograbbing
 ============
-The autograbbing feature sets a grabber into free-run mode, which allows for live view. Depending on the plugins programming, autograbbing may be either enabled or disabled on initialisation. Therefore, it is recommended to set it explicitly to be sure.
+The autograbbing feature sets a grabber into free-run mode, which allows for live view. Depending on the plugin's programming, autograbbing may be either enabled or disabled on initialisation. Therefore, it is recommended to set it explicitly to be sure.
 Status is checked and set by the functions **getAutoGrabbing()** and **setAutoGrabbing()**:
 
 .. code-block:: python
@@ -67,7 +70,7 @@ Enabling and disabling autograbbing is also possible through functions **enableA
     
 LiveImage
 =========
-A grabber can provide a live image using the **liveImage()** command:
+A grabber can provide a live image using the **liveImage()** command (if autograbbing in on):
 
 .. code-block:: python
     :linenos:
@@ -89,7 +92,7 @@ Simple example:
 .. code-block:: python
     :linenos:
     
-    dObj = dataObject() # no need for fixed size or data type here, we be defined by getVal command
+    dObj = dataObject() # no need for fixed size or data type here, will be defined by getVal command
     mygrabber = dataIO("dummyGrabber") # use standard init values
     mygrabber.startDevice()
     mygrabber.setAutoGrabbing(0)
@@ -131,7 +134,7 @@ Most grabber plugins let you control the device's settings through a set of para
 
 integration_time
 ================
-Integration time is probably the most often changed parameter of a grabber. And also the simplest. This parameter changes the time over which is each triggered frame is integrated.
+Integration time is probably the most often changed parameter of a grabber. And also the simplest. This parameter changes the time over which each triggered frame is integrated.
 
 .. code-block:: python
     :linenos:
@@ -155,7 +158,7 @@ Many grabbers support changing of the region of interest (ROI). This property is
 
 bpp
 ====
-If a grabber provides control over the bitdepth of the output, it is controlled by the parameter **bpp** (bits per pixel). 
+If a grabber provides control over the bitdepth of the output, it is set by the parameter **bpp** (bits per pixel). 
 
 .. code-block:: python
     :linenos:

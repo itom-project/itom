@@ -1,7 +1,8 @@
 .. include:: /include/global.inc
 
 .. moduleauthor:: T. Boettcher, J. Krauter
-.. sectionauthor:: T. Boettcher, J. Krauter
+.. sectionauthor:: J. Krauter
+
 
 
 .. _getStartActuator:
@@ -11,9 +12,9 @@ Getting started with actuators
 
 Introduction
 ************
-This tutorial gives a short introduction to the use of :py:class:`~itom.actuator`. Similar tutorials are available for :ref:`grabber <getStartGrabber>` and :ref:`A/D converters <getStartADDA>`.
+This tutorial gives a short introduction to the use of the class :py:class:`~itom.actuator`. Similar tutorials are available for :ref:`grabbers <getStartGrabber>` and :ref:`A/D converters <getStartADDA>`.
 
-Initialisation and common properties of :py:class:`~itom.actuator` are described below.
+Initialisation and common properties of the :py:class:`~itom.actuator` are described below.
 
 Functions
 *********
@@ -25,17 +26,27 @@ For this tutorial, we will focus on the standard application of actuators: move 
     
 Initialisation of an actuator
 =============================
-Before using an actuator, we have to initialise it. Some actuators may start a calibration run after initialization. Ensure that there are no obstacles somewhere. 
+Before using an actuator, we have to :ref:`initialise <initHardware>` it.  
 
 .. code-block:: python
     :linenos:
     
-    myactuator = actuator("dummyMotor")
+    myactuator = actuator("[your plugin name]") # i.e. "dummyMotor"
 
+.. note::
+    
+    Some actuators may start a calibration run after initialization. Ensure that there are no obstacles somewhere.
+    
 Move actuator and take pictures
 ===============================
 
-Most times an actuator is used to move your object you want to measure and take a picture by a camera. First you need a running instance of your :py:class:`itom.actuator` and :py:class:`itom.dataIO` grabber (:ref:`Getting started with grabbers <getStartGrabber>`). Define the parameters of the camera and actuator :ref:`parameters <hardwareParameters>` before usage. Define your :py:class:`itom.dataObject` to save the captured data. Then you need to define the actuator trajectory as absolute or relative positions. 
+:Kommentar: Wollen wir das nicht erstmal trennen und später in einem Beispiel zusammenführen?
+
+
+Most times an actuator is used to move your object you want to measure and take a picture by a camera. First you need a running instance of your :py:class:`~itom.actuator` and :py:class:`~itom.dataIO` grabber (:ref:`Getting started with grabbers <getStartGrabber>`). Define the parameters of the camera and actuator :ref:`parameters <hardwareParameters>` before usage. Define your :py:class:`~itom.dataObject` to save the captured data. Then you need to define the actuator trajectory as absolute or relative positions. 
+
+:Kommentar: Warum ist da "parameters" so komisch verlinkt?
+
 
 This example shows how you can move your object and take a picture at different positions using relative position steps:
 
@@ -59,6 +70,8 @@ This example shows how you can move your object and take a picture at different 
     
     Depending on your application it may be better first to acquire the camera and then to move the actuator.
 
+:Kommentar: Jup, aber genau das sollte man hier vielleicht diskutieren: Geschwindkeiten, Nachschwingen, Uhltische, die behaupten, sie seien da, aber noch unterwegs sind.....
+    
 This example shows how you can do the same procedure using absolute actuator positions:
 
 .. code-block:: python
@@ -85,12 +98,17 @@ This example shows how you can do the same procedure using absolute actuator pos
 
 Parameters
 ==========
-Most actuator plugins let you control the device's settings through a set of parameters. Common parameters are **speed**, **accel** or **async**. Some are read only. Parameters are checked and set by **getParam()** and **setParam()** as seen in the section :ref:`Usage of hardware plugins <hardwareParameters>` before.
+Most actuator plugins let you control the device's settings through a set of parameters. Common parameters are **speed**, **accel** or **async**. Some are read only. Parameters are checked and set by **getParam()** and **setParam()** as seen :ref:`here <hardwareParameters>`
+
+.. in the section :ref:`Usage of hardware plugins <hardwareParameters>` before.
 
 .. note::
     
     If you don't know the name of the parameter you want to check, try **getParamListInfo()**.
 
+:Kommentar: Unterschiede posRel und posAbs herausstellen? calib? Status codes? Inverse Params?
+
+    
 Synchronized/ Asynchronized move
 ================================
 As default the actuators move command waits until the actuator has arrived the target position. With the parameter **async** you can deactivate the option and the itom script will not wait until the end of the movement.  
