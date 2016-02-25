@@ -16,8 +16,7 @@ body {
     margin: auto;
     padding: 0px;
     font-size: 100%;
-    //font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
-    font-family: Helvetica;
+    font-family: Helvetica, sans-serif;
     min-width: 59em;
     max-width: 70em;
     color: #000000;
@@ -49,11 +48,11 @@ div.figure.align-center {
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 15px;*/
-    float: left;
     clear: left;
     float: left;
     margin-right: 1em;
     margin-bottom: 8px;
+    width: 1120px;
 }
 
 /*Parameters, Returns, etc - Spalte*/
@@ -65,9 +64,9 @@ col.field-name{
 }
 
 tt > span.pre {
-    font-size: 10pt;
+    font-size: 11pt;
     font-weight: bold;
-    font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
+    font-family: Helvetica, sans-serif;
 }
 
 /*class.itom ... Ueberschrift*/
@@ -122,12 +121,12 @@ dl.method dt code.descname, dl.class dt code.descname {
 }
 
 dl.method, dl.staticmethod, dl.function > dt > tt {
-    font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
+    font-family: Helvetica, sans-serif;
 }
 
 div.footer {
     padding: 10px;
-    font-size: 10pt;
+    font-size: 11pt;
     text-align: center;
     letter-spacing: 0.5px;
 }
@@ -328,7 +327,7 @@ table.index a:hover, table.index a:active {
 
 div.admonition.note, div.warning, 
 div.admonition.seealso{
-    font-size: 10pt;
+    font-size: 11pt;
     margin: 1em 0 1em 0;
     border: 1px solid #86989B;
     background-color: #f7f7f7;
@@ -378,7 +377,7 @@ div.versioninfo {
     background-color: #DDEAF0;
     padding: 8px;
     line-height: 1.3em;
-    font-size: 10pt;
+    font-size: 11pt;
 }
 
 div.seealso {
@@ -474,7 +473,7 @@ div.content ul > li {
     padding-left: 10px;
     margin-bottom: 3px;
     margin-left: 10px;
-    font-size: 10pt;
+    font-size: 11pt;
 }
 
 td {
@@ -496,7 +495,7 @@ hr {
 /* -- Code Blocks -----------------------------------------------*/
 
 code {
-	font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
+    font-family: Helvetica, sans-serif;
 }
 
 td.code pre {
@@ -506,7 +505,7 @@ td.code pre {
     margin: 0 0 12px 0;
     padding: 5px 5px;
     background-color: #f0f0f0;
-    font-size: 10pt;
+    font-size: 11pt;
 }
 
 td.linenos pre {
@@ -515,7 +514,7 @@ td.linenos pre {
     border: 0;
     background-color: transparent;
     color: #aaa;
-    font-size: 10pt;
+    font-size: 11pt;
 }
 
 table.highlighttable {
@@ -555,7 +554,7 @@ table.highlighttable td {
 }
 
 .viewcode-back {
-    font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
+    font-family: Helvetica, sans-serif;
 }
 
 div.viewcode-block:target {
@@ -627,13 +626,13 @@ dl.enum > dt {
     font-weight: bold;
     font-size: 16pt;
     padding-left: 7px;
-    font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
+    font-family: Helvetica, sans-serif;
 }
 
 dl.function > dt > tt.descname {
     background-color: #E6E6E6; 
     border-top: 0px solid #000000;
     font-size: 16pt;
-    font-family: "DejaVu Sans", Arial, Helvetica, sans-serif;
+    font-family: Helvetica, sans-serif;
     font-weight: bold;
 }

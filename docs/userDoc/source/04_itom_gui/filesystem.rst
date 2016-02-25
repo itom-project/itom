@@ -9,7 +9,6 @@ The file system toolbox gives you access to the file system of your harddrive.
 
 .. figure:: images/dockFileSystem.png
     :scale: 100%
-    :figwidth: 1120
     :align: center
 
 Below the toolbar, a breadcrumb menu allows seeing the current path, where a click to any parent folder changes the current path to that folder. The current path is also printed at the right

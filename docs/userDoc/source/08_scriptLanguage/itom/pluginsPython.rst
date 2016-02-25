@@ -13,6 +13,3 @@ how to get help, ...
 ...
 
 For a detailed methods-summery of **dataIO**, **actuator**, **filter** and **widgets** see :ref:`ITOM-Script-Reference`.
-
-	
-	

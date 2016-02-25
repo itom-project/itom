@@ -13,7 +13,6 @@ The corresponding call stack is then visible in the toolbox, like depicted below
 
 .. figure:: images/callstack.png
     :scale: 100%
-    :figwidth: 1120
     :align: center
     
 A call stack shows the current function stack. At first, the debug process in |itom| is started by calling some functions in the

@@ -26,30 +26,26 @@ In the following we will guide you through the installation setup with a couple 
 
 .. figure:: images/itom_install/setup01.jpg
     :alt: Language selection
-    :scale: 70%
-    :figwidth: 1120
+    :scale: 100%
     :align: center
     
     Please select your desired language for the setup.
 
 .. figure:: images/itom_install/setup02.jpg
     :alt: Start screen
-    :scale: 70%
-    :figwidth: 1120
+    :scale: 100%
     :align: center
     
     The start screen of the setup will appear.
 
 .. figure:: images/itom_install/setup03.jpg
-    :scale: 70%
-    :figwidth: 1120
+    :scale: 100%
     :align: center
     
     Read the license text and agree to it.
 
 .. figure:: images/itom_install/setup04.jpg
-    :scale: 70%
-    :figwidth: 1120
+    :scale: 100%
     :align: center
     
     Choose where to install |itom| on your file system. If you press next, the installer checks if the
@@ -58,8 +54,7 @@ In the following we will guide you through the installation setup with a couple 
 
 .. figure:: images/itom_install/setup05.jpg
     :alt: components
-    :scale: 70%
-    :figwidth: 1120
+    :scale: 100%
     :align: center
     
     Depending on your version of the setup, you now need to (de)select some optional components.
@@ -70,29 +65,25 @@ In the following we will guide you through the installation setup with a couple 
     setup.
 
 .. figure:: images/itom_install/setup06.jpg
-    :scale: 70%
-    :figwidth: 1120
+    :scale: 100%
     :align: center
     
     Select the name of |itom| in your Windows start menu.
 
 .. figure:: images/itom_install/setup07.jpg
-    :scale: 70%
-    :figwidth: 1120
+    :scale: 100%
     :align: center
     
     Choose whether you want to have an |itom| shortcut on your desktop
 
 .. figure:: images/itom_install/setup08.jpg
-    :scale: 70%
-    :figwidth: 1120
+    :scale: 100%
     :align: center
     
     Now, a summary of the installation steps is given. Press next if you want to start the installation...
 
 .. figure:: images/itom_install/setup09.jpg
-    :scale: 70%
-    :figwidth: 1120
+    :scale: 100%
     :align: center
     
     The installation is executed now. |itom| is not copying any files in another folder than the indicated program
@@ -101,43 +92,37 @@ In the following we will guide you through the installation setup with a couple 
     |itom| already has been installed. When uninstalling |itom|, the registry entry is removed, too.
 
 .. figure:: images/itom_install/setup11.png
-    :scale: 70%
-    :figwidth: 1120
+    :scale: 100%
     :align: center
     
     If not already available, the Microsoft Visual C++ 2010 Runtime Libraries are installed now. 
 
 .. figure:: images/itom_install/setup12.png
-    :scale: 70%
-    :figwidth: 1120
+    :scale: 100%
     :align: center
     
 Depending on your selected components, python and/or any python packages are now installed:
 
 .. figure:: images/itom_install/install08.png
-    :scale: 70%
-    :figwidth: 1120
+    :scale: 100%
     :align: center
     
     Install Python 3.4.2 (or the version shipped with your setup version) for the current user or for all users.
 
 .. figure:: images/itom_install/install10.png
-    :scale: 70%
-    :figwidth: 1120
+    :scale: 100%
     :align: center
     
     Customize your Python installation. We recommend leaving everything as is.
 
 .. figure:: images/itom_install/install11.png
-    :scale: 70%
-    :figwidth: 1120
+    :scale: 100%
     :align: center
     
     You've completed the Python installation as well. We're getting getting closer.
 
 .. figure:: images/itom_install/install12.png
-    :scale: 70%
-    :figwidth: 1120
+    :scale: 100%
     :align: center
     
     Now, depending on the selected Python packages, several command lines appear that install the shipped packages 
@@ -146,15 +131,13 @@ Depending on your selected components, python and/or any python packages are now
 Finally, the entire setup is finished:
 
 .. figure:: images/itom_install/setup10.jpg
-    :scale: 70%
-    :figwidth: 1120
+    :scale: 100%
     :align: center
     
 That's it:
 
 .. figure:: images/itom_install/install21.png
     :width: 800px
-    :figwidth: 1120
     :align: center
 
 This is |itom|!

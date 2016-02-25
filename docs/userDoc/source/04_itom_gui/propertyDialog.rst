@@ -22,7 +22,6 @@ This property section is responsible for the behaviour of the "Help" dialog. If 
 
 .. figure:: images/propGeneralHelpViewer.png
     :scale: 100%
-    :figwidth: 1120
     :align: center
 
 Local and remote databases
@@ -80,21 +79,18 @@ Auto Completion
 
 .. figure:: images/propEditorAutoCompletion.png
     :scale: 100%
-    :figwidth: 1120
     :align: center
 
 The auto completion has two main functions. It offers available commands after entering some characters (number of minimum characters can be set in the "threshold" spin box).
 
 .. figure:: images/propEditorAutoCompletion_2.png
     :scale: 100%
-    :figwidth: 1120
     :align: center
 
 The other function  shows a list of available members of classes after entering a dot. 
 
 .. figure:: images/propEditorAutoCompletion_3.png
     :scale: 100%
-    :figwidth: 1120
     :align: center
 
 The three radio buttons in the group box at the bottom of the page set the source of the auto completion. Therefore take a look at API.
@@ -108,7 +104,6 @@ Calltips are tooltips that appear to display arguments of functions. They appear
 
 .. figure:: images/propEditorCalltips.png
     :scale: 100%
-    :figwidth: 1120
     :align: center
 
 .. _gui-prop-py-general:
@@ -128,7 +123,6 @@ Inside "Indentation Warning" group box it is possible to select which kind of in
 
 .. figure:: images/propEditorGeneral.png
     :scale: 100%
-    :figwidth: 1120
     :align: center
 
 The radio buttons inside the "End-of-line (EOL) mode" group box decide whether to use "", "" or "" as eol, depending on your operating system.
@@ -163,7 +157,6 @@ Default Plots
 
 .. figure:: images/propPlotsDefaultPlots.png
     :scale: 100%
-    :figwidth: 1120
     :align: center
 
 

@@ -7,7 +7,6 @@ Global and Local Workspace
 
 .. figure:: images/dockGlobalVariables.png
     :scale: 100%
-    :figwidth: 1120
     :align: center
 
 In Python, every loaded package has a global workspace, where all global variables are saved. The main workspace of |itom| is a huge

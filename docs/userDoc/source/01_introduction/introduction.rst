@@ -34,7 +34,6 @@ In the figure below you can see the three columns on which |itom| is based:
 3. GUI
 
 .. figure:: 3columns.png
-    :figwidth: 1120
     :scale: 100
     :align: center
 

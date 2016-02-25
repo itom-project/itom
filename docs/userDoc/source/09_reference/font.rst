@@ -5,4 +5,4 @@ font
 
 .. autoclass:: itom.font
     :show-inheritance:
-	:members:
+    :members:

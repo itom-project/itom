@@ -286,7 +286,6 @@ The output is then:
 
 .. figure:: images/plotDataObjectScaleOffset.png
     :scale: 100%
-    :figwidth: 1120
     :align: center
     
 The relation between pixel coordinates and the physical coordinates is:
@@ -352,7 +351,6 @@ of |itom|):
 
 .. figure:: images/plotDataObjectTitle.png
     :scale: 100%
-    :figwidth: 1120
     :align: center
     
 
@@ -375,7 +373,6 @@ The result looks like this:
 
 .. figure:: images/plotDataObjectLegend.png
     :scale: 100%
-    :figwidth: 1120
     :align: center
 
 The attribute :py:attr:`~itom.dataObject.tags` returns a mapping object to a dictionary. This has to be considered to be a read-only dictionary, where no item can be deleted, appended

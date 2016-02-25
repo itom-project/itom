@@ -334,14 +334,14 @@ pip install fails with *TypeError: unorderable types: str() < NoneType()*
 
 Open /usr/local/Cellar/python3/3.4.3/libexec/setuptools/__init__.py and change 
 
-.. code-block:: c
+.. code-block:: python
 
     self.py_version,
     self.platform,
 
 for 
 
-.. code-block:: c
+.. code-block:: python
 
     self.py_version or '',
     self.platform or '',

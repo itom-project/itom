@@ -9,7 +9,6 @@ The module **matplotlib** can be used in order to create two or three dimensiona
 
 .. figure:: images/matplotlib_intro.png
     :scale: 100%
-    :figwidth: 1120
     :align: center
 
 Since the internal plotting methods of |itom| mainly provide display widgets for plotting matrix contents and images, **matplotlib** can be
@@ -116,7 +115,6 @@ Please consider that the original source code has been changed such that the fir
 
 .. figure:: images/matplotlib_ellipseCollection.png
     :scale: 80%
-    :figwidth: 1120
     :align: center
 
 .. note::
@@ -130,7 +128,6 @@ Embedding a matplotlib figure in your own user interface
 
 .. figure:: images/matplotlib_gui.png
     :scale: 80%
-    :figwidth: 1120
     :align: center
 
 |itom| not only provides stand-alone windows for showing the result of the *matplotlib*, but it is also possible to integrate a *matplotlib* canvas into own user interfaces created by the
@@ -205,7 +202,6 @@ The result is:
 
 .. figure:: images/matplotlib_gui_result.png
     :scale: 80%
-    :figwidth: 1120
     :align: center
 
 **What happens here?**

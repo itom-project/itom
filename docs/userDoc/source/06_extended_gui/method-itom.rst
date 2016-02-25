@@ -15,7 +15,6 @@ There are three types of message boxes that you can show via a script command. T
 
 .. figure:: images/messageBoxes.png
     :align: center
-    :figwidth: 1120
     :scale: 100%
     
     Appearance of the different message boxes on a Windows 7 operating system. From left to right: *Information*, *Warning*, *Question*, *Critical*
@@ -92,7 +91,6 @@ Use :py:meth:`~itom.ui.getInt` in order to ask the user for a fixed-point number
 
 .. figure:: images/getInt.png
     :align: center
-    :figwidth: 1120
     :scale: 100%
 
 The minimum and maximum value of the input box is set to the values *min* and *max* or to the full integer range, if not otherwise stated. The
@@ -111,7 +109,6 @@ Use :py:meth:`~itom.ui.getDouble` in order to ask the user for a double-precisio
 .. figure:: images/getDouble.png
     :align: center
     :scale: 100%
-    :figwidth: 1120
 
 The minimum and maximum value of the input box is set to the values *min* and *max* or to the full double range, if not otherwise stated. In this
 case you can assign the number of decimals that are shown (default:1). The step size is always set to 1. The return tuple has the same form than for
@@ -129,7 +126,6 @@ Use :py:meth:`~itom.ui.getText` in order to ask the user for a string:
 .. figure:: images/getText.png
     :align: center
     :scale: 100%
-    :figwidth: 1120
 
 The default text can be passed as parameter *defaultValue*. The return tuple also returns the current value of the textbox and the boolean variable **True** if the dialog has been accepted, else **False**.
 
@@ -145,7 +141,6 @@ Use :py:meth:`~itom.ui.getItem` in order to let the user select an item from a g
 .. figure:: images/getItem.png
     :align: center
     :scale: 100%
-    :figwidth: 1120
 
 Use the parameter *stringList* in order to pass any sequence (tuple or list) of strings that are displayed as options, the user can choose. You can
 preselect any item by setting the parameter *currentIndex* to the item's index (zero-based, default:0). Additionally it is possible to keep the

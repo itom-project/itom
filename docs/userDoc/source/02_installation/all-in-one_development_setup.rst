@@ -79,7 +79,6 @@ Then execute the following steps:
 1. Download and unpack one or both archives into the same folder. You should then have the following folder structure:
     
     .. figure:: images/all-in-one-build/unzip-archives.png
-        :figwidth: 1120
         :scale: 100%
         :align: center
     
@@ -93,7 +92,6 @@ Then execute the following steps:
 2. Go to the **__install__** folder
     
     .. figure:: images/all-in-one-build/things-to-install.png
-        :figwidth: 1120
         :scale: 100%
         :align: center
     
@@ -122,7 +120,6 @@ Then execute the following steps:
     This script leads you through the remaining installation process using a menu guided approach:
     
     .. figure:: images/all-in-one-build/setup_py_screenshot.png
-        :figwidth: 1120
         :scale: 100%
         :align: center
     

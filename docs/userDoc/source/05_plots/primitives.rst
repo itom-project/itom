@@ -25,7 +25,6 @@ The red X ("clear button") will delete all geometric elements within the plot ei
 
 .. figure:: images/drawInto2DToolbarIcons.png
     :scale: 50%
-    :figwidth: 1120
     :align: center
 
 At the moment "itom" supports the following shapes:

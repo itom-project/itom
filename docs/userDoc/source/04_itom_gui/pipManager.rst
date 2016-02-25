@@ -12,7 +12,6 @@ are possible. Furthermore, a package might dependent on multiple other packages 
 
 .. figure:: images/pipManager1.png
     :scale: 80%
-    :figwidth: 1120
     :align: center
     
 This package manager is a graphical user interface for the python package installation and administration tool **pip** (see https://pip.pypa.io/). Pip itself is a
@@ -25,7 +24,6 @@ of a problem, text might also appear with red color in the log.
     
 .. figure:: images/pipManager2.png
     :scale: 70%
-    :figwidth: 1120
     :align: center
     
 Depending on the version of pip, each package is described by
@@ -45,7 +43,6 @@ If you want to install new packages or update an existing package, click the *in
     
 .. figure:: images/pipManager3.png
     :scale: 70%
-    :figwidth: 1120
     :align: center
     
 You have three possibilities to install a package. Choose if you want to install a package from a modern python wheel archive file (*whl*) or from a tar.gz archive. In both cases, chose the archive by clicking
@@ -67,7 +64,6 @@ website http://www.lfd.uci.edu/~gohlke/pythonlibs/:
 
 .. figure:: images/pipManager4.png
     :scale: 70%
-    :figwidth: 1120
     :align: center
 
 The packages listed by this website are only available for Windows but different versions of Python in 32bit and 64bit. Download the corresponding wheel file and use the |itom| python package manager to install it (don't forget to mark the upgrade check box if you want to update an existing package). An advantage of this site is also, that some libraries are compiled using the fast MKL compiler from Intel. Please notice that you also need to install updates for packages obtained from Gohlke by downloading the updated version as wheel file and install it. Do not mix the source from Gohlke and the python package index.

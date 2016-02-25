@@ -30,8 +30,8 @@ You can use the **pluginHelp()** command in |python| to get the neccessary infor
 Or you can use the GUI. Therefore, select **Info...** from the context menu of your plugin in order to show the help page about the plugin:
 
 .. figure:: ../03_gettingStarted/images/dummyGrabberHelp.png
-    :scale: 70%
-    :align: left
+    :align: center
+    :scale: 100%
 
 .. note::
     
@@ -80,26 +80,26 @@ The GUI way
 First, select **New Instance** from the context menu of your plugin.
 
 .. figure:: ../08_scriptLanguage/getStart/openDummyGrabber.png
-    :scale: 70%
-    :align: left
+    :align: center
+    :scale: 100%
 
 Now, decide if and how your instance should be known to |python|:
 
 .. figure:: ../08_scriptLanguage/getStart/openDummyGrabber2.png
-    :scale: 70%
-    :align: left
+    :align: center
+    :scale: 100%
 
 This window also gains access to the mandatory and optional parameters. Detailed information on the parameters and their value range are obtained by mouse hovering over the spinboxes or the blue info symbols.
 
 .. figure:: ../08_scriptLanguage/getStart/openDummyGrabber3.png
-    :scale: 70%
-    :align: left
+    :align: center
+    :scale: 100%
 
 If you first initialised your plugin without assigning a |python| handle, but decide to do so later, select *Send to Python* from the context menu and choose the variable name. 
     
 .. figure:: ../08_scriptLanguage/getStart/sendtopython.png
-    :scale: 70%
-    :align: left
+    :align: center
+    :scale: 100%
 
 
     
@@ -110,13 +110,13 @@ Most plugins should provide configuration dialogs. The modal dialogs give access
 
 
 .. figure:: ../08_scriptLanguage/getStart/openconfigdialog2.png
-    :scale: 70%
-    :align: left
+    :align: center
+    :scale: 100%
 
 
 .. figure:: ../08_scriptLanguage/getStart/showtoolbox2.png
-    :scale: 70%
-    :align: left
+    :align: center
+    :scale: 100%
 
 .. _hardwareParameters:
 Usage of hardware plugins
@@ -125,21 +125,21 @@ Usage of hardware plugins
 As a major advantage of the plugin concept, different actual devices can be interchanged easily. The class :py:class:`~itom.dataIO` can be of type **rawIO**, **grabber** and **adda**. 
 You can get the type of the plugin by the command **getType()**, which returns the c++ enumeration value. If different types are true at the same time, their enum vaule is linked via bitwise and:
 
-	+----------------+---------------------+---------------+----------------+
-	|plugin type     |return value {int}   |c++ enum       |remark          |
-	+================+=====================+===============+================+
-	|dataIO          |1                    |0x1            |                |
-	+----------------+---------------------+---------------+----------------+
-	|actuator        |2                    |0x2            |                |
-	+----------------+---------------------+---------------+----------------+
-	|algorithm       |4                    |0x4            |                |
-	+----------------+---------------------+---------------+----------------+
-	|grabber         |129 = (128+1)        |0x80 + 0x1     |also dataIO     |
-	+----------------+---------------------+---------------+----------------+
-	|adda            |257 = (256+1)        |0x100 + 0x1    |also dataIO     |
-	+----------------+---------------------+---------------+----------------+
-	|rawIO           |513 = (512+1)        |0x200 + 0x1    |also dataIO     |
-	+----------------+---------------------+---------------+----------------+
+    +----------------+---------------------+---------------+----------------+
+    |plugin type     |return value {int}   |c++ enum       |remark          |
+    +================+=====================+===============+================+
+    |dataIO          |1                    |0x1            |                |
+    +----------------+---------------------+---------------+----------------+
+    |actuator        |2                    |0x2            |                |
+    +----------------+---------------------+---------------+----------------+
+    |algorithm       |4                    |0x4            |                |
+    +----------------+---------------------+---------------+----------------+
+    |grabber         |129 = (128+1)        |0x80 + 0x1     |also dataIO     |
+    +----------------+---------------------+---------------+----------------+
+    |adda            |257 = (256+1)        |0x100 + 0x1    |also dataIO     |
+    +----------------+---------------------+---------------+----------------+
+    |rawIO           |513 = (512+1)        |0x200 + 0x1    |also dataIO     |
+    +----------------+---------------------+---------------+----------------+
 
 :py:class:`~itom.actuator` is the class to use actuator plugins. Each provides a destinctive set of member functions and parameters, which are described in the respective sections below. 
 Special hardware funtionality that is not easily mapped to these member functions and parameters, may be called by the so called **exec_funcs()**.

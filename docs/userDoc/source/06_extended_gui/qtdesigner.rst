@@ -57,7 +57,6 @@ provided by |itom| and can also be placed on your surface. The choice of these p
 
 .. figure:: images_userGUI/qtdesigner1.png
     :align: center
-    :figwidth: 1120
     :scale: 100%
 
 After having placed one widget on the canvas, you will see its properties in the property toolbox of **Qt Designer**. Every widget has the common property **objectName**. If you assign
@@ -176,7 +175,6 @@ create an user interface based on a **dialog** or **main window** in **Qt Design
 
 .. figure:: images_userGUI/testWindow.png
     :align: center
-    :figwidth: 1120
     :scale: 100%
 
 The figure shows an exemplary user interface (**testWindow.ui**) that is based on a main window. On the right side, there have been added three buttons, nested in a vertical layout.
@@ -569,35 +567,3 @@ that |itom| is executed in the main thread while |python| is moved to its own ad
 still keeps reactive. Therefore, |python| does not have access to the real main thread and it is forbidden to explicitly execute some GUI-related stuff in secondary threads. Therefore
 all methods in :py:class:`itom.ui` and :py:class:`itom.uiItem` have thread-safe implementations and communicate with an organization structure, that runs in the main thread of |itom|, in
 order to interact with all dialogs.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	

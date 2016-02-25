@@ -8,5 +8,5 @@ ParamBase - Reference
 =====================
 
 .. doxygenclass:: ito::ParamBase
-	:project: itom
-	:members:
+    :project: itom
+    :members:

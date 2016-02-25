@@ -5,4 +5,4 @@ region
 
 .. autoclass:: itom.region
     :show-inheritance:
-	:members:
+    :members:
