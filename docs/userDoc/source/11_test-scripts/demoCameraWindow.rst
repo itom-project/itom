@@ -16,7 +16,7 @@ Some sections are discussed in more detail than others. However, the complete py
 
 GUI overview
 ***************
-.. figure:: ../08_scriptLanguage/getStart/cameraWindow.png
+.. figure:: images/cameraWindow.png
     :scale: 70%
     :align: left
 

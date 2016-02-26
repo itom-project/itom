@@ -18,7 +18,7 @@ See the following sections in order to get more information about these plugins:
 If you want to program your own plugin, see the following sections of the documentation:
 
 .. toctree::
-    :maxdepth: 0
+    :maxdepth: 2
    
     development/plugin-development.rst
 

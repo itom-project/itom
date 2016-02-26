@@ -26,7 +26,6 @@ Content:
    polygonMesh.rst
    region.rst
    rgba.rst
-   shape.rst
    timer.rst
    itom_GUI.rst
 
