@@ -12,13 +12,6 @@ execute a setup script, written in Python. This script automatically downloads t
 configures the 3rd party dependencies (also provided in this package) and automatically configures and generates CMake for the single repositories.
 Using this setup tool, you can start developing |itom| or plugins within a short time.
 
-For users who want to get a development environment for itom, the main plugins and designer plugins there is an all-in-one development setup available.
-
-Using this setup, you only need to unzip one or two archives to your harddrive, install **git** and **Python** that are included in this archive and
-execute a setup script, written in Python. This script automatically downloads the current sources of |itom| and its plugins from the internet,
-configures the 3rd party dependencies (also provided in this package) and automatically configures and generates CMake for the single repositories.
-Using this setup tool, you can start developing |itom| or plugins within a short time.
-
 The all-in-one development setup comes with the following features and 3rd party packages:
 
 **Version Visual Studio 2010**
@@ -64,7 +57,7 @@ Optionally there is a 3rd party package that brings support for the PointCloudLi
 * PCL 1.8.0 (prebuild with support of all libraries above)
 
 Prerequisites for the development setup
-****************************************
+========================================
 
 If you want to use the development setup the following prerequisites must be fulfilled:
 
@@ -72,7 +65,7 @@ If you want to use the development setup the following prerequisites must be ful
 * Visual Studio 2010 + Service Pack 1  or Visual Studio 2013 (depending on the selected package) must be installed on the computer
 
 Get and install the setup
-**************************
+========================================
 
 The setup comes with one or two zip-archive files:
 
