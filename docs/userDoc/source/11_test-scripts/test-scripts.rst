@@ -12,6 +12,6 @@ The following list gives a short description of each demo.
    :maxdepth: 1
 
    test-scripts_basics.rst
-   test-scripts_plugin.rst
+   test-scripts_plugins.rst
    test-scripts_algorithm.rst
    test-scripts_ui.rst
