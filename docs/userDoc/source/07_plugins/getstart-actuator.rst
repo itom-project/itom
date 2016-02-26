@@ -8,16 +8,16 @@
 .. _getStartActuator:
 
 Getting started with actuators
-##############################
+*********************************
 
 Introduction
-************
+====================
 This tutorial gives a short introduction to the use of the class :py:class:`~itom.actuator`. Similar tutorials are available for :ref:`grabbers <getStartGrabber>` and :ref:`A/D converters <getStartADDA>`.
 
 Initialisation and common properties of the :py:class:`~itom.actuator` are described below.
 
 Functions
-*********
+====================
 For this tutorial, we will focus on the standard application of actuators: move or rotate some stage. The axis numbers of the actuator are define `0` for x, `1` for y and `2` for z. If the actuator have only one axis, the number is `0`.
 
 .. note::
@@ -25,20 +25,20 @@ For this tutorial, we will focus on the standard application of actuators: move 
     As one of the major advatages of the plugin concept, all actuators shall behave in the same manner when given the same command. There may however be some special properties of some devices, wich cause slightly different behavior in very specialised cases. For further information read the plugin documentation of your device.
     
 Initialisation of an actuator
-=============================
+----------------------------------
 Before using an actuator, we have to :ref:`initialise <initHardware>` it.  
 
 .. code-block:: python
     :linenos:
     
-    myactuator = actuator("[your plugin name]") # i.e. "dummyMotor"
+    myactuator = actuator("[your plugin name]") # e.g. "dummyMotor"
 
 .. note::
     
     Some actuators may start a calibration run after initialization. Ensure that there are no obstacles somewhere.
     
 Move actuator and take pictures
-===============================
+----------------------------------
 
 :Kommentar: Wollen wir das nicht erstmal trennen und später in einem Beispiel zusammenführen?
 
@@ -110,7 +110,7 @@ Most actuator plugins let you control the device's settings through a set of par
 
     
 Synchronized/ Asynchronized move
-================================
+----------------------------------
 As default the actuators move command waits until the actuator has arrived the target position. With the parameter **async** you can deactivate the option and the itom script will not wait until the end of the movement.  
 
 .. code-block:: python
