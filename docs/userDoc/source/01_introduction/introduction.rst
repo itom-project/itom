@@ -1,7 +1,7 @@
 .. include:: ../include/global.inc
 
 Introduction
-****************
+#########################################
 
 |itom| is a lab automation and measurement software developed, maintained and provided by the ITO (Institut for Technical Optics, University Stuttgart, Germany).
 While this software has been designed with an emphasis on developing and running optical systems, it is not limited to this field of application.
@@ -47,7 +47,7 @@ To learn more about how to control |itom| via script language or the GUI proceed
 
 
 About us
-===================
+**************
 
 | Institut fuer Technische Optik
 | Universitaet Stuttgart
@@ -61,10 +61,10 @@ This help has been built for itom-version |version| (Git-revision |release|).
 
 
 Licensing
-===================
+***********
 
 itom Licensing
-~~~~~~~~~~~~~~~
+===============
 
 The core components and the main application of |itom| are covered by the **GNU Library General Public Licence** (GNU LGPL). All components belonging to
 the SDK of |itom| (e.g. *dataObject*, *pointCloud*, *addInInterface*,...) are additionally covered by an **itom exception**. The main idea of this exception is
@@ -77,7 +77,7 @@ All plugins and designer-plugins that can be integrated into |itom| can have the
 statements of each external library (plugin).
 
 itom Exception
-~~~~~~~~~~~~~~
+=================
 
 All components (source files) which are part of |itom| SDK are not only covered by the LPGL license but also by the *itom Exception*, that provides further grants and rights
 for using these components::
@@ -113,7 +113,7 @@ for using these components::
     not need to provide source code for this classes.
 
 Package Licences
-~~~~~~~~~~~~~~~~~~~~~
+=================
 
 A standard distribution of |itom| links to the following third-party library (shared linkage):
 
