@@ -3,12 +3,12 @@
 .. _script-python-problems-solutions:
 
 Python - common problems and solutions
-========================================
+***********************************************
 
 The following list state some common problems or known issues concerning |Python| (partially in combination with |itom|):
 
 Re-Assigning a variable
--------------------------
+========================================
 
 **Problem:** If you assign an object with a limited access to anything (like a single camera) to a variable in a script, an access error might occur if you try to re-run the script:
 
@@ -37,7 +37,7 @@ regularly called and finally deletes all marked objects. In this case, force the
     cam = dataIO("IDSuEye", camera_id = 0)
     
 Variable deleted but referenced object is not closed
------------------------------------------------------
+================================================================================
 
 **Problem:** I delete a variable in |Python| but the value (e.g. a hardware instance - dataIO or actuator) is not closed.
 
@@ -79,7 +79,7 @@ Nevertheless, it might happen, that the object referenced by a variable (like a 
     gc.collect() #start the garbage collector
     
 Codec error
-------------
+========================================
 
 **Problem:** When executing a |Python| script, a syntax error with an error message similar to the following one appears:
 

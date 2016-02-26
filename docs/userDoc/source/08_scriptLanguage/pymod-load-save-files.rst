@@ -1,8 +1,8 @@
-Load and save images and other files
+Save and load images and other files
 **************************************
 
 Native file formats
-------------------------
+=============================
 
 itom has a native support to load and save various file formats. Additionally, algorithm plugins can provide further filters to load and save more file formats.
 All supported formats (native and plugin-based) are considered in the GUI such that you can open a file using the *file >> open* menu, by double-clicking a file in the file system dialog or by using the import / export buttons in the workspace.
@@ -80,7 +80,8 @@ Both export or import into / from the xml-based files **ido** (entire data objec
 data is encoded in a base64 format.
 
 Plugin-based file formats
----------------------------
+=============================
+
 Plugins can provide filters for saving or loading the following objects:
 
 * data objects
@@ -93,7 +94,7 @@ Most filters for loading any image formats are included in the plugin **dataObje
 about every single filter. Loading or saving point clouds or polygonal meshes are included in the plugin **PclTools**.
 
 Image file formats
-------------------------
+=============================
 
 As mentioned in the section above, plugins can provide filters to save or load data objects.
 The plugin **dataObjectIO** contains many filters to save into common image formats and load them back to data objects. Click **info** in the context

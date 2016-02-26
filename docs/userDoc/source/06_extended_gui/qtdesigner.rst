@@ -16,7 +16,7 @@ Qt Designer
 ==============
 
 | The Qt Designer can be used to create a GUI for interaction with the |itom| software.
-| For details see the Qt Designer documentation under http://qt-project.org/doc/qt-4.8/designer-manual.html
+| For details see the Qt Designer documentation under http://doc.qt.io/qt-5/qtdesigner-manual.html
 
 In order to start the **Qt Designer**, click on the corresponding icon in the toolbar of |itom|:
 
@@ -528,7 +528,36 @@ in this case it is more convenient the property like described in section :ref:`
 Auto-connecting signals using python decorators
 ===============================================
 
-TODO
+|itom| provides an optional approach to directly connect methods with a specific signal of a widget. An example for this approach is for instance given in the demo script **autoConnectDemo.py**
+in the **demo/ui** subfolder of the itom installation.
+
+The concept is as follows:
+
+1. import the class **ItomUi** from the module **itomUi** (located in the subfolder **itom_packages** that is part of the Python search path::
+    
+    from itomUi import ItomUi
+    
+2. Create a class that is derived from **ItomUi**
+3. In the constructor (method __init__) of your class call the constructor of the base class **ItomUi**. This constructor has the same arguments than the class :py:class:`itom.ui`. This is where you create the GUI from the ui file.
+4. The :py:class:`~itom.ui` is accessible via the member variable **gui** of your class, hence, within a member method write **self.gui** to access the user interface and its widgets.
+5. You can now connect one or multiple signals from one widget to one member method of your class.
+6. The name of the member method must be::
+    
+    def on_ObjectNameOfWidget_SignalName(self, [arg1, arg2, ...]):
+        pass
+    
+7. The argument is **self** (like it is always the case in object-oriented Python programming) followed by a series of arguments. The number of these arguments must correspond to the number of arguments the signal has.
+8. Write one or multiple decorators above the method signature, to establish the connection. The decorator looks like this::
+    
+    @ItomUi.autoslot("args")
+    
+    Hereby, *args* corresponds to a comma separated list of all type names (in C++) the Qt signal is emitting.
+    
+As an example, we want to connect the **valueChanged** signal of a spin box (object-name: spinTestBox, argument obtained from Qt  help: one **int**)::
+    
+    @ItomUi.autoslot("int")
+    def on_spinTestBox_valueChanged(self, value):
+        print("The value of the spin box changed to", value)
 
 Debugging user interfaces and slot-methods
 ==========================================

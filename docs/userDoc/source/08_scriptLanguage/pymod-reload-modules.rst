@@ -3,7 +3,7 @@
 .. _script-language-reload-modules:
 
 Reload modified modules
-==========================
+*******************************
 
 Usually, script files (hence *modules*) that are imported by another script in python are pre-compiled and cached for a faster execution once the script is loaded or imported another time.
 These cached files are always stored in a sub-folder **__pycache__** (file suffix .pyc). The advantage of this feature is a faster code execution once the pre-compiled and cached file is

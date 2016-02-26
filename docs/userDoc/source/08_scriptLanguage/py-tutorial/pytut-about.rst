@@ -1,6 +1,6 @@
-﻿.
+﻿..
 
-.. include:: /include/global.inc
+.. include:: ../../include/global.inc
 
 Python tutorial
 **********************************
@@ -29,16 +29,17 @@ The goal of this tutorial is to give prospective itom users a quick overview abo
     pytut-prompting-passing.rst
     pytut-reading-writing-files.rst
 
-
-The following resources have been used:
+The tutorial above has been created based on the following resources. Please also browse to these online tutorials (especially the first links) to
+get good introductions to Python 3 (always be careful to only read tutorials about Python 3 or be aware of the differences between Python 2 and 3):
 
 * `Python-Kurs (v3) <http://www.python-kurs.eu/python3_kurs.php>`_ (German)
 * `Python Course (v3) <http://www.python-course.eu/python3_course.php>`_ (English)
 * `Official Python 3 documentation <http://docs.python.org/3/>`_
-* `Moving from Python 2 to Python 3 (Cheatsheet) <http://ptgmedia.pearsoncmg.com/imprint_downloads/informit/promotions/python/python2python3.pdf>`_
 * `Dive into Python (v3) <http://www.diveinto.org/python3/>`_
-* `Learn Python The Hard Way (be careful: Python 2) <http://learnpythonthehardway.org/book/>`_
+* `Numpy for Matlab users <http://wiki.scipy.org/NumPy_for_Matlab_Users>`_
 * `Python Tutorial on javas2s.com (v2) <http://www.java2s.com/Tutorial/Python/CatalogPython.htm>`_
 * `Python examples (example source code) on javas2s.com (v2) <http://www.java2s.com/Code/Python/CatalogPython.htm>`_
 * `Python Tutorial on tutorialspoint.com (v2) <http://www.tutorialspoint.com/python/python_tutorial.pdf>`_
+* `Moving from Python 2 to Python 3 (Cheatsheet) <http://ptgmedia.pearsoncmg.com/imprint_downloads/informit/promotions/python/python2python3.pdf>`_
+
 

@@ -1,4 +1,4 @@
-.. include:: /include/global.inc
+.. include:: ../include/global.inc
 
 Create, execute and debug scripts
 **********************************

@@ -1,12 +1,9 @@
-.. include:: ../../include/global.inc
+.. include:: ../include/global.inc
 
 .. _itomDataObject:
 
-DataObject 
-==========
-
-.. moduleauthor:: ITO
-.. sectionauthor:: ITO
+Array class DataObject 
+=======================
 
 Introduction
 ------------
@@ -35,6 +32,17 @@ Before giving a short tutorial about how to use the class :py:class:`~itom.dataO
 * The python class :py:class:`~itom.dataObject` is just a wrapper for the |itom| internal class **DataObject**, written in C++. This array structure is used all over |itom| and also passed to any plugin instances of |itom|. Internally, the C++ class **DataObject** is based on OpenCV-matrices, such that functionalities provided by the open-source Computer-Vision Library (OpenCV) can be used by |itom|.
 * The class **dataObject** should also be used to store real measurement data. Therefore it is possible to add tags and other meta information to every dataObject (like axis descriptions, scale and offset values, protocol entries...).
 * Usually, array classes (like the class **Numpy.array**) store the whole matrix in one continuous block in memory. Due to the working principle of every operating system, it is sometimes difficult to allocate a huge block in memory. Therefore, **dataObject** only stores the sub-matrices of the last two-dimensions in single blocks in memory, while the first **n-2** dimensions of the array are represented by one vector in memory, where every cell is pointing to the corresponding sub-matrix (called plane). Using this concept, huger arrays can be allocated without causing a memory error.
+
+
+.. note::
+    In order to realize a compatible version with respect to *numpy*, *matlab*... data in a **DataObject** can also be stored *continuously*. The basic structure for
+    the data object is the same than in the *non-continuous* (default) version, but the data of each 2dim-matrix lies continuously in memory and each data-pointer
+    of each matrix just points to the first element of the corresponding matrix in this big data block in memory. 
+
+    The non-continuous representation has advantages especially in the case of huge data sets, since it is more difficult to obtain a free, big continuous block in memory without
+    reorganizing it than multiple smaller blocks of memory, which can be distributed randomly in memory.
+
+    Matrixes with only one or two dimension are automatically stored continuously.
 
 Creating a dataObject
 ---------------------
@@ -386,6 +394,8 @@ and can be requested and deleted using the methods described above.
     
     It is not possible to set tags or protocol entries for empty dataObjects. Tags and the protocol is shared between two shallow copies, hence, if two dataObjects share the same
     data, they also share their tags and protocol.
+    
+.. _itomDataObjectVsNumpyArray:
 
 DataObject vs. Numpy.array
 --------------------------------
