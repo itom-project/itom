@@ -1,5 +1,7 @@
+.. include:: ../include/global.inc
+
 point
-=====
+*******
 
 .. only:: PCL
     

@@ -1,5 +1,7 @@
+.. include:: ../include/global.inc
+
 region
-================================
+**********
 
 .. currentmodule:: itom
 

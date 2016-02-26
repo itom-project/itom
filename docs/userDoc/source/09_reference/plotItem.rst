@@ -1,5 +1,7 @@
+.. include:: ../include/global.inc
+
 plotItem
-================================
+**********
 
 .. currentmodule:: itom
 

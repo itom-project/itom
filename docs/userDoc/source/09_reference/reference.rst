@@ -10,7 +10,7 @@ This reference gives a full reference for all script commands that are contained
 Content:
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    
    itom_general.rst
    actuator.rst

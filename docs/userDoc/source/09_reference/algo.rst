@@ -1,5 +1,7 @@
+.. include:: ../include/global.inc
+
 Algorithms, Widgets and Filters
-================================
+*********************************
 
 .. currentmodule:: itom
 

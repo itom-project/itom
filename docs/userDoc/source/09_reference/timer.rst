@@ -1,5 +1,7 @@
+.. include:: ../include/global.inc
+
 timer
-=========================
+*********
 
 .. currentmodule:: itom
 
@@ -8,7 +10,7 @@ However, the :py:mod:`itom` provides the *timer* class to allow such calls:
 
     
 timer-Class
-------------------
+============
 
 .. autoclass:: itom.timer
     :member-order: groupwise
