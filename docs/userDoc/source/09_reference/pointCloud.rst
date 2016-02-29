@@ -1,5 +1,7 @@
+.. include:: ../include/global.inc
+
 pointCloud
-==========
+***********
 
 .. only:: PCL
     

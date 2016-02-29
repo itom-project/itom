@@ -1,5 +1,7 @@
 .. include:: ../include/global.inc
 
+.. _buildDocumentation:
+
 Build documentation
 ==========================
 

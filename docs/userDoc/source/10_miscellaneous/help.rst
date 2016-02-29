@@ -10,10 +10,10 @@ filter- or hardware-plugin delivered from a third party. Therefore some tools fo
 
 With help(method) you will get an online help for the method or module. 
 To get something similar for the plugin-system, the functions *filterHelp(...)*, *widgetHelp(...)* and *pluginHelp(...)* can be used.
-If you already have a plugIn of type *actuator* or *dataIO* you can get an online-help for possible *parameters* via the member method *getParamListInfo()* and for the exec-functions use *getExecFuncInfo()*.
+If you already have a plugIn of type :py:class:`~itom.actuator` or :py:class:`~itom.dataIO` you can get an online-help for possible *parameters* via the member method *getParamListInfo()* and for the exec-functions use *getExecFuncInfo()*.
 
 Rebuild the Help
-------------------
+==================
 If you think your help is not up to date and you are using the itom development environment you can rebuilt your help.
 Therefore you need the up-to-date-version of sphinx for python.
 

@@ -83,14 +83,14 @@ A sample header file of the actuator's plugin class is illustrated in the follow
         Q_OBJECT
 
         protected:
-            ~MyMotor() {};	/*! < Destructor*/
+            ~MyMotor() {};  /*! < Destructor*/
             MyMotor();/*! < Constructor*/
             
             ito::RetVal waitForDone(int timeoutMS = -1, QVector<int> axis = QVector<int>() /*if empty -> all axis*/, int flags = 0 /*for your use*/);
             
         public:
             friend class MyMotorInterface;
-            const ito::RetVal showConfDialog(void);	/*!< Opens the modal configuration dialog (called from main thread) */
+            const ito::RetVal showConfDialog(void); /*!< Opens the modal configuration dialog (called from main thread) */
             int hasConfDialog(void) { return 1; }; /*!< indicates that this plugin has got a configuration dialog */
 
         public slots:

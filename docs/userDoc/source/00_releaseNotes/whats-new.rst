@@ -8,6 +8,135 @@ This changelog only contains the most important changes taken from the commit-me
 itom
 ********
 
+**Version 2.1.0 (2016-03-01)**
+
+(more than 240 commits in itom repository)
+
+* setVal of ito::Param now also works with const pointers, e.g. const ito::DataObject*.
+* ito::autoInterval and itom.autoInterval (Python) homogenized: The default is always (-inf,+inf) and auto = True!
+* ui-properties of type dataIO and actuator can be read by python.
+* fixes of Q_WS_... and Q_OS_... symbols since Q_WS_... does not exist in Qt5.
+* bugfix in 'goto next or previous bookmark'
+* Navigator in ScriptEditorWidget can now also read multi-line definitions of methods or functions
+* AddInInterface incremented to 2.3.0. Reason: itom sometimes crashed when a dock widget of a plugin was visible, the plugin quiet busy (e.g. long integration time) and itom was closed. When closing the main window, it implicitly deleted all dock widgets while a dockWidgetVisibilityChanged signal, that was sent long before but did not arrive due to the blocked plugin, is emitted after and tries to access the deleted dock widget. Now, dock widget is guarded by QPointer in AddInInterface.cpp. For better maintaining, some private members of ito::AddInBase are not moved to a private subclass.
+* bugfix when executing selected parts in a script. If an indented block ended with one or more empty lines, an error occurred. This is fixed now.
+* file suffix check when dropping to workspace is case insensitive now.
+* RoughnessEvaluator tool added as example for the roughness filters
+* fix in version number of windows qitom(d).exe
+* incremented AddInInterface Version to 2.2.0 (improvements in pluginThreadCtrl to have the same, good things like in the deprecated classes helperActuator and helperGrabber; add of ito::DataObject::getStep, ...)
+* AbstractDockWidgets will be raised on top of a possible tabified stack if they are docked again.
+* modifications in PluginThreadCtrl for improved compatibility with old classes threadActuator and threadDataIO. Like the old classes, waitForSemaphore can be used to finally wait for the last semaphore-protected function to be finished. The merge of this branch requires an increment of the plugin interface
+* QFlags based enumeration bitmask can now also be set as property
+* :py:meth:`itom.ui.availableWidgets` added to obtain a list of available designer widgets
+* updated function validateStringMeta (paramHelper)
+* For matplotlib >= 1.5.0: if matplotlib is run within itom, the output is automatically rendered in the itom_backend now (new environment variable MPLBACKEND).
+* demo *dataObjectTableDemo* added
+* bugfix when setting fake properties (like horizontalHeaderVisible of QTableView or derived classes)
+* :py:meth:`ui.createNewPluginWidget2` added for a detailed parameterization of plugin based widgets (dockable, deleteOnClose...)
+* demos added for creating different types of GUIs with Python.
+* if available, output parameters are added to the exemplary filter call string in the help dock widget.
+* pythonPlugins.cpp: if getExecFuncsInfo is applied with keyword "detailLevel = 1", all execFunction of instance are returned. Before it was only possible to return detailLevels of each execFunc.
+* child-items from workspace widget can now directly be exported, deleted and renamed. Drag&Drop one or multiple items (also child-items) from workspace to console in order to get their full path name. If an item and its sub-item is selected, the sub-item is ignored since it is part of the parent item.
+* bugfixes in python class :py:class:`itom.rgba`. Method toGray added to itom.rgba
+* one or more pathes to python files (suffix .py) can be appended as argument to Qitom.exe. These files are then opened in a script at startup. Connect py-files with Qitom.exe to open them with a double-click.
+* html documentation updated using the read-the-docs theme
+* when loading files using algorithms, the python variable is checked for existence. If it already exists, a warning is shown and the user has to decide if the existing name should be overwritten.
+* timeouts are available via file >> Properties dialog, tab Application / General. New timeout added for file load and save operations.
+* improved and new demos about visualizing meshes, point clouds...
+* addInInterface incremented to 2.1.0: deprecated classes helperActuator, helperGrabber removed, removed unused non-const getter functions in pclStructures, improved AbstractFigure: more than one dock widget can be added to each plot, put private members to AbstractFigurePrivate class to provide better binary compatibility for the future, slight changes in other interface classes for better binary compatibility support in future releases.
+* Qt type QVector2D, QVector3D, QVector4D can be handled by QPropertyEditor
+* QObject property types QVector2D/3D/4D can now be parsed to a python sequence of 2, 3 or 4 float values.
+* timeout for plots increased in order to better debug OpenGL based figures in debug mode.
+* improvements and bugfixes in AbstractDObjPCLFigure interface without destroying the binary compatibility. The macro USE_PCL is now automatically set by find_itom_sdk in order to avoid strange crashes if PCL support is differently set in itom and plugins. This is forbidden.
+* :py:class:`itom.rgba` value can be multiplied by positive float (only r,g,b is scaled, not alpha)
+* demo "convert falseColor To gray or hotIron" added
+* improvements and fixes for matplotlib rendering: FileSaveAs and other dialogs are now displayed based on their parent widget even if the parent widget is derived from AbstractDockWidget. Saving matplotlib figures to files remembers now the filename of the last run.
+* further improvements: all special characters are now explicitly created as unicode character signs.
+* charset-independent fix in paramInputParser
+* German umlauts in source code replaced by unicode representations (e.g. for chinese operating systems)
+* demo: convertFalseColorToGray improved
+* Python package Axiovert200M added
+* pip package manager can also install from zip archive, not only tar.gz
+* commit of python package thorlabsLabJack to control the thorlabs labjack MLJ050 (requires python package FTDI)
+* :py:meth:`itom.plot` and :py:meth:`itom.liveImage` command can now also be called with the short-hand aliases '1d', '2d' or '2.5d' as className. This enables a quick plot using the default plot for the given object type depending on the desired base style (e.g. 1d plot).
+* CMake cleanup, e.g. removed SVN support since not used any more.
+* bugfix in FindITOM_SDK.cmake for detection of itom SDK compiled with MSVC2012 or MSVC2013
+* splitter position of helpTreeDockWidget is restored at restart.
+* ito::dObjHelper::verify2DDataObject and ito::dObjHelper::verify3DDataObject: if numberOfAllowedTypes is 0, all types are accepted. This is a feasible assumption since numberOfAllowedTypes == 0 would deny all dataObjects in the old implementation.
+* added error marker to ScriptEditorWidget. If an error in the command line is double-clicked, the corresponding line is opened and marked in a script editor widget.
+* ito::pclHelper::normalsAtCogFromPolygonMesh added to get an interpolated point cloud with normal vectors from a polygonal mesh. This function is used in the filter "pclGetNormalsAtCogFromMesh" from PCLTools.
+* method added to pythonDataObject to create a new PyDataObject from a numpy array (if possible)
+* unittest for ito::Rgba32 added
+* fold options added to context menu of editor
+* property fold style added to adjust the fold style of any script editor
+* about dialog modified (some owners of 3rd party libraries changed their name)
+* fix in rangeSlider for very high value ranges leading to buffer overflows.
+* python debugger: 50ms sleep inserted into while loop waiting for new debug commands at breakpoint. Without the sleep, the CPU load was very high at different computers (Qt4 and Qt5).
+* OpenCV randn and randu initialized (seed value) in main thread, python thread and all plugin threads in order to generate more random values. The seed value is thread dependent.
+* bugfix in dataobj: no exception was raised for +/-/+=/-=... operators if one of both dataObjects was empty. Unified and improved check for consistent type and size added using a #define-macro.
+* faster implementation of MSize == and != operator in dataobj (using memcmp instead of for-loop). Unittest added for this.
+* class ito::AutoInterval now makes sure, that min<=max in any cases (e.g. swap in constructor or setRange)
+* delete all breakpoints from breakpoint-toolbox could hang itom for a while in case of many breakpoints, this is fixed now: a dedicated method to delete all breakpoints in its model has been added.
+* fixes in pclFunctions concerning dense / organized status of conversions between data objects and point clouds. Dense clouds do not contain any inf/nan values, organized clouds may contain them but every point has defined neighbours.
+* clearer action titles for workspaceDockWidget (export, import, rename...)
+* fix in snapshot toolbox
+* further fix for warning handling: If warnings.simplewarning("error") is set, warnings will be correctly transformed to an exception.
+* fix: a warning stopped in some cases the script execution. This is fixed now. The warning is stacked into the Python warning stack and the script execution goes on (depending on the settings made in Python's warning module)
+* some cleanup in ItomBuildMacros.cmake
+* bugfix: long plugin info text cause itom to stall when opening new plugin instance using right mouse click on plugin in plugin explorer
+* improved error message in arguments of ui.msgInformation, ui.msgCritical... are wrong
+* bugfix: errornous optional parameter of a itom.filter-call was not always marked with an arrow due to a wrong counter variable.
+* bugfix in :py:class:`itom.region`: QRegion fails to build region is an upper limit of internal rectangles is reached. This limit crashed the code and is now handled by an exception.
+* warnings created by plugins due to a Python invocation are now transformed to a python warning (PyExc_Warn...) instead of a non-adjustable std::cerr print. The behaviour of Python warnings can be controlled via the Python module 'warnings', the default is a cerr-print, too.
+* warnings during GUI-based load of files are also shown in a message box.
+* improved error handling for invalid breakpoints in scripts (e.g. blank or comment lines). Breakpoints are now ignored, but debugger can start debugging. Dedicated error messages indicate the wrong breakpoint.
+* any button added to an itom.ui instance of type ui.TYPEDIALOG hides the dialog and returns a specific code. Before only AcceptRole and RejectRole closed the dialog.
+* numpy scalar types np.uint8, np.double,... are also converted to int or double as parameters for filters
+* some functions added to ito::PCLPointCloud in order to allow a generic access to certain fields (e.g. x,y,z,normal_x,...). This is mainly the function 'getFieldsInfo' and 'genericPointAccess'
+* bugfix in operator= of ito::PCLPointCloud if this and copy-object are the same
+* Windows: some LoadLibrary commands can not load libraries within the itom/lib folder even if it is part of the temporary path variable of itom. Therefore a workaround was added to the main.cpp that uses the Windows command SetDllDirectory to directly set the itom/lib directory as an alternative search directory for LoadLibrary commands.
+* documentation of itom designer plugins (e.g. dataObjectTable) can now be included in the main documentation (with images...)
+* improved backward compatibility of pointCloud.dll library for PCL < 1.7.0
+* :py:meth:`polygonMesh.fromTopography` and :py:meth:`pointCloud.fromTopography` added to created a polygonal mesh or a point cloud from a topography data object.
+* :py:class:`itom.pointCloud` mapping-get returns a point cloud if more than one index is requested, for one index an itom.point is returned.
+* :py:meth:`pointCloud.fromXYZ`, :py:meth:`pointCloud.fromXYZI`, :py:meth:`pointCloud.fromXYZRGBA` -> fix to return organized clouds if the incoming data objects have a height > 1
+* fixes issue #39: Add "additional search pathes" to Properties >> Application page
+* fixes issue #42: ignore trailing >> characters when copying strings from command line
+* fixes issue #43: continue a search operation in script editor widget with F3
+* indexing of :py:class:`itom.dataObject` works now also with numpy.array as mask, e.g. myDataObj[myNpArray > 0.5] = 2
+* Method *getStep* added to ito::DataObject in order to get the number of value steps one has to go in order to reach the next value in the given axis.
+* == and != comparison for ito::dataObject with type complex64 or complex128 implemented, since this operator is well defined.
+* bugfixes in return type of :py:meth:`itom.dataObject.deleteTag` and :py:class:`itom.dataObject.getTagListSize`
+* bugfix in ito::DataObject::makeContinuous for >2d data objects with an active ROI. Python unittest added for this.
+* bugfix when assigning 1d-values (e.g. tuple) to a one-dimensional ROI of a dataObject with more than 2 dimensions. Python-Unittest added.
+* :py:meth:`dataObject.zeros`, ones, eye, randN and rand returned int8 as default type, but the documentation said uint8 (like the default constructor). This was a bug. It is fixed now, all static constructors return uint8 per default.
+* bugfix in cout stream of ito::DataObject: wrong type printed.
+* :py:class:`itom.dataObject`.reshape is now working
+* bugfix in method CreateFuncWithCVPlanes of dataobj.cpp: If a roi was already set to the given CV planes, their original size was wrongly copied to the data object leading for instance to iterator errors in subsequent calls.
+* ito::DataObject::reshape added -> :py:meth:`itom.dataObject.reshape` works now and does not throw a 'not implemented' exception.
+* ito::DataObject::squeeze and :py:meth:`itom.dataObject.squeeze` can now also reduce the two last dimensions (x and y). If this is the case, a deep copy and no shallow copy is returned. Additional bugfix in cout stream of data object.
+* ito::abs(ito::DataObject...) func did not compile with various compilers for unsigned int objects. This is resolved now.
+* :py:meth:`itom.dataObject.physToPix` raises warning if pixel-value is out of axis bounds and therefore clipped to these bounds.
+* some docstring improvements in :py:class:`itom.dataObject`
+* bugfix in :py:class:`itom.dataObject` ** operator -> returned a wrong result until now. Now the methods ito::DataObject::pow and ito::DataObject::sqrt are available.
+* ito::dataObject and :py:class:`itom.dataObject` support now +,+=,-,-=,*,*= for complex128 scalar
+* __repr__ method of :py:class:`itom.dataObject` returns "dataObject(...)" instead of "DataObject(...)" for better consistency
+* better cout data method for dataObject (correct handling for complex and rgba values, too)
+* it is possible now to assign to an :py:class:`itom.dataObject` or a slice of it any structure that can be converted to an array and has the same shape and size (e.g. dataObj[0,:,1] = (2,3,4))
+* fix for ito::DataObject::convertTo function if alpha != 1 or beta != 0. Until now, alpha and beta was converted to destination type before the operation dest = src * alpha + beta was executed. If alpha was < 0.5, it was cast to 0 if destination type was uint8 or similar. This is wrong. Now, alpha and beta are casted to double, complex64 or complex128 depending on source type and then used as operands before the final saturate_cast to the destination type.
+* bugfix in :py:class:`itom.dataObject` for subtraction-operator (case scalar - dataObject)
+* like in previous commit, faster implementation of == operator of class ito::DataObject::MROI using memcmp. Binary compatibility still given.
+* ito::DataObject::rowPtr can now also be called as templated version ito::uint8* myPtr = myObj->rowPtr<ito::uint8>(0,0). This is an overloaded version of the non-templated one and follows the same concept than cv::Mat::ptr.
+* bugfix in :py:class:`itom.dataObject`: was not correctly recognized for PyIter_Check(...) in C-code
+* bugfix in DataObject::deepCopyPartial: :py:class:`itom.dataObject` and numpy.array allowed to partially copy arrays to other arrays if the type and the sequence of sizes is equal where all sizes equal to 1 are omitted. However the c-code crashed for obj5x1x1=obj1x5. This is fixed and works now. Several tests for this are added to the unittest_dataobject.
+* further improvements in convertTo method of ito::DataObject especially with respect to rgba32 type.
+* many encoding fixes (due to Qt5 introduction). Avoid German umlauts in source code for easier compilation on non-western compilers.
+* source code and user documentation improved.
+* Modified FindNumPy.cmake to work with Numpy 1.10.0b1 version numbers
+* adaptions to work with OpenCV 2.4.x and 3.x
+* introduction of the Python Interpreter Lock (GIL). This allows the execution of Python code from the modules *threading* or *concurrent*. See the demos *threadPoolExecutor.py* or *worker_thread.py* in the *demo* folder. While an itom filter is executed, the GIL is released, such that other Python threads can be run in the meantime.
+* many bugfixes
+
 **Version 2.0.0 (2015-07-20)**
 
 (more than 290 commits in itom repository)
@@ -250,6 +379,62 @@ there is no continuous changelog for these version
 Plugins
 ******************
 
+**Version 2.1.0 (2016-03-01)**
+
+(more than 140 commits in plugins repository)
+
+* LeicaMotorFocus: fixes due to operation on fast computers. Uses new readline mode of serialIO now.
+* PCOPixelFly: avoid multiple attemps to close the data stream upon stopDevice calls
+* improvements in FFTWfilters: 1D fft and ifft can be applied along any desired axis, the output is complex128 for complex128 of float64 input, else complex64; better adaptions to (non)-continuous, single or multi-plane dataObjects, improved documentation
+* Roughness: initial commit of algorithm plugin Roughness for 1D roughness evaluation. See the tool RoughnessEvaluator in the 'itom-packages/apps' folder of itom
+* bugfix in AVTVimba, corrected copyright information
+* bugfix in dispWindow: max-value of param 'numimg'
+* FireGrabber: improvements: parameter timebase inserted to adapt the possible range of the integration_time.
+* first work for plugin *libgphoto* (windows port for remote controlling dslr cameras)
+* bugfixes in AndorSDK3: integration_time cannot be changed during acquisition, fix in ROI settings.
+* MeasurementComputing: plugin for MeasurementComputing Analog Digital Converter
+* demoAlgorithms: usage of DataIOThreadCtrl and ActuatorThreadCtrl classes. Improved the demo 'demoSnapImage' in DemoAlgorithms to show a timeout based an a direct execution of a grabber in a controlled camera thread.
+* fix in filter *centroid1D*.
+* USBMotion3XIII: updates in USBMotion3XIII (workaround for USB timeout at init with slow computers, encoding fixes...)
+* rawImport: added filter *rawImport*, for reading raw images from (dslr) cameras. The filter is based on dcraw, which is left as untempered as possible.
+* VRMagic: plugin added for cameras from VRMagic.
+* BasicFilters: fix in some filters. Error message was not returned if kernel size is bigger than the input image (e.g. in case of 1xN sized images)
+* BasicFilters: spike removal filter can now also replace a spike by the mean or median filtered value (optional parameter)
+* PCLTools: filter *pclGetNormalsAtCogFromMeshParams* added. This filter returns a cloud with normals containing the center of gravity plus the normal vector for each polygonal surface element in the given polygonal mesh.
+* PCLTools: Added filter *pclFitTrimmedBSpline*. This filter will only be compiled if the PCL is compiled with BUILD_surface_on_nurbs = ON.
+* Vistek: Param integration_time inserted as alias for exposure, Binning also accepts the itom-default values 100*vertical_factor+horizontal_factor
+* DummyGrabber: rand function of DummyGrabber uses now the RNG-module from OpenCV. The previous version did not always provide random values.
+* DummyGrabber: can be initialized with a sensor height of 1 to simulate a line camera, for a 2D camera heights of 4,8,12... are required.
+* PGRFlyCapture: embedded image information (timestamp, frame counter, roi position) can be en/disabled via parameter 'metadata'
+* PGRFlyCapture: updates and fixes. crash prevention due to 100ms sleep in stopDevice, fixes in setParam(roi[x],...) with x = 0..3
+* PGRFlyCapture: more trigger modes implemented (mode 0,1,2,14 + free run)
+* Ximea camera: disable AEAG and LUT since not supported by plugin (yet).
+* workaround in Ximea: it is not possible to operate one camera by two processes. However the Ximea api allows opening the camera from two processes. It only fails at parameter setting or image acquisition. Therefore a dummy parameter set at startup should detect this situation. The ximea api does not provide a more robust and better solution!
+* serialIO: added endlineRead and readline parameters. It is now possible to configure the serial port such that getVal waits until a endlineRead character has been detected (or timeout)
+* serialIO: improved parity handling
+* serialIO: added 76800 baud as serial interface speed
+* PCOCamera: apiValidateParam replaced by apiValidateAndCastParam
+* fittingFilters: filter *subtract1DRegression* added. This filter subtracts one dimensional, fitted polynomials from all rows or columns in a data object.
+* fittingFilters: documentation of fitPolynom2D and polyfitWeighted2D / polyfitWeighted2DSinglePoints improved due to different definitions of the fit function.
+* x3pio: warnings and errors from OpenGPS are transferred more clearly to itom.
+* documentation of x3pio adapted for CodeSynthesis XSD 4.0 necessary for Visual Studio > 2010. A bugfix was added to the documentation file.
+* DataObjectIO: filter *loadFRT* added in order to load *.frt data files from Friess FRT measurement devices.
+* DataObjectIO: *loadTXT* filter improved: the load can now handle thousand group delimiter (, or . depending on decimalSign). Furthermore wrapSign was added as optional parameter, such that "'... signs optionally wrapping every value can be removed. For all this, a python based unittest was added to the sources.
+* DataObjectIO: fix in *loadSDF* if either xscale or yscale of sdf-file is set to 0.
+* DataObjectIO: savePtbPR filter added to save 1D data objects to the PR file used for the reference roughness evaluation software from PTB.
+* DataObjectIO: *safeSDF* can now also save in aISO-1.0 format in compliance with ISO25178-71 (also required by RPTB-tool)
+* DataObjectIO: file filter *savePtbPR* adapted to new requirements of RPTB-tool Version >= 2.01.
+* DataObjectIO: check for right file suffix added to saveNistSDF and savePtbPR
+* SuperlumBL: new plugin (rawIO) for super luminescence diodes from Superlum added
+* PiezosystemJena_NV40_1: plugin added for Piezosystem Jena NV40/1 CL E one axis piezo controller (final test not done yet)
+* IDSuEye: frame_rate is now correctly read from device
+* IDSuEye: possible errors during acquisition have not always been transferred to retrieveData.
+* many adaptions to work with OpenCV 2.4.x and OpenCV 3.x
+* dataObjectArithmetic: filter *localCentroidXY* added to find the local center of gravity for spots whose pixel-wise coordinate and the size of a search rectangle or circle is given.
+* dataObjectArithmetic: added omp parallelization (release only) for *localCentroidXY*
+* dataObjectArithmetic: filter *boundingBox* added
+* dataObjectArithmetic: filter *autofocusEstimate* added. This filter estimates for auto-focussing images (based on Sobel, Laplacian, Previtt, Roberts... filters). It works on 2D as well as 3D dataObjects.
+
 **Version 2.0.0 (2015-07-20)**
 
 (more than 250 commits in plugins repository)
@@ -276,7 +461,7 @@ Plugins
 * bugfix in centroid1D (**dataobjectarithmetic**) if input object has scale!=1 or offset!=0. Version: 0.0.2
 * modified version 1.0 of **DummyMotor** released (config dialog based on AbstractAddInConfigDialog)
 * fix in remote/local detection of **PIPiezoCtrl**
-* fix in load and save x3p: scale values are fixed. When loading, one can indicate the desired x,y and value units (m, cm, mm, µm, nm). When saving in x3p format, the axis and value units are parsed such that all units are scaled to meter, which is default in x3p. default units m. This is more robust since it is also the default of x3p. Other default units might lead to value multiplications that can cause overflows for certain data types; the user should consider this. z-axis must always be absolute, but can contain a offset (translation vector, z-component). z-scaling is always multiplied to values. simplifications in loading data: x3p data types are directly mapped to one dataObject type (no complex switch cases necessary).
+* fix in load and save x3p: scale values are fixed. When loading, one can indicate the desired x,y and value units (m, cm, mm, Âµm, nm). When saving in x3p format, the axis and value units are parsed such that all units are scaled to meter, which is default in x3p. default units m. This is more robust since it is also the default of x3p. Other default units might lead to value multiplications that can cause overflows for certain data types; the user should consider this. z-axis must always be absolute, but can contain a offset (translation vector, z-component). z-scaling is always multiplied to values. simplifications in loading data: x3p data types are directly mapped to one dataObject type (no complex switch cases necessary).
 * filters *calcRadialMean* and *spikeMeanFilter* added to **BasicFilters**
 * plugin **NI-DAQmx**: improvements in NI-DAQmx: device as optional parameter for initialization inserted in order to indicate the name of the device (e.g. Dev1). Tasks can now be restarted.
 * Plugin **PclTools**: filter **pclDistanceToModelDObj** and **saveVTKImageData** added (allows displaying volume plots e.g. in ParaView)
@@ -372,6 +557,46 @@ there is no continuous changelog for these version
 
 Designer Plugins
 ******************
+
+**Version 2.1.0 (2016-03-01)**
+
+(more than 50 commits in designerPlugins repository)
+
+* many encoding fixes (mainly due to changes in Qt 5) in all designerPlugins for a better representation of special characters.
+* dataObjectTable: number of decimals adjustable via the context menu
+* dataObjectTable: documentation added. This is now directly included in the main documentation of itom using special include directives.
+* dataObjectTable: arrays of type *complex64* and *complex128* can also be edited.
+* dataObjectTable: number of decimals are considered, column-specific suffix is possible, copy of selected entries to clipboard, stretch of columns or rows can be adjusted...
+* dataObjectTable: local representation of floating point numbers, copy all to clipboard also copies header data in a format that is importable in Excel.
+* dataObjectTable: alignment property added.
+* slider2D: documentation added.
+* slider2D: stepSize and decimals added as properties, valuesChanged(double, double) added as new signal
+* Qwt bug 255 merged into local Qwt files (see https://sourceforge.net/p/qwt/bugs/255/).
+* Qwt updated to the patch revision r2317 from version 6.1.2
+* vtk3dVisualizer: property 'parallelProjection' added
+* vtk3dVisualizer: toolbars redesigned and reconfigured.
+* vtk3dVisualizer: cube axis frame can now be shown
+* vtk3dVisualizer: This plugin can now be used to plot point clouds or polygon meshes using the plot(obj,"vtk3dVisualizer") command
+* vtk3dVisualizer: color modes of point cloud items adapted to those of polygonal meshes
+* vtk3dVisualizer: press 'v' when item is marked in tree to toggle its visibility (including all sub-items)
+* vtk3dVisualizer: curvature can be used as color mode for meshes
+* vtk3dVisualizer: point clouds can now be coloured depending on x,y,z,sqrt(x^2+y^2+z^2),normal_x, normal_y, normal_z, curvature or intensity value.
+* vtk3dVisualizer: slot 'addPolygon' added to vtk3dVisualizer
+* itom1dqwtplot and itom2dqwtplot: unification of all qwt plots by inserting the bases class itomQwtPlot and itomQwtDObjFigure: these classes help to save lot of code and improve the maintenance of those classes, e.g. geometric shapes, markers, panner, zoomer, magnifier, export...
+* itom1dqwtplot and itom2dqwtplot: code unifications and simplifications concerning geometric shapes.
+* itom1dqwtplot and itom2dqwtplot: added button set for dark background themes
+* itom1dqwtplot and itom2dqwtplot: improvements in copy-to-clipboard operation. The dpi of the image is properly set such that the size of the image is not too big when pasting it to other applications. Slight improvements for legend titles.
+* itom1dqwtplot: if tags "legendTitle0", "legendTitle1",... are defined, this will be use as the curve name
+* fix in itom1dqwtplot and itom2dqwtplot if plane selector has focus and user wants to abort an user interaction
+* changed tab-order in 1d and 2d scale dialog of itom1DQwtPlot and itom2DQwtPlot
+* fixes in scale dialogs of itom1DQwtPlot and itom2DQwtPlot: double spin boxes are replaced by version from itomWidgets project. Number of decimals can be adjusted via Ctrl+ or Ctrl-, the recommended size depends on the current value and not on the min/max value.
+* fix in itom1dQwtPlot: min/max values of dialog1DScale in itom1DQwtPlot is now adjusted to min/max of data type of displayed data object
+* bugfix in itom2DQwtPlot: x/y mistake in setInterval, getInterval returned min>max if yAxisFlipped = True: fixed now.
+* updated "Draw Mode" for itom1DQwtPlot
+* layout improvements in scale dialogs of itom1dqwtplot and itom2dqwtplot
+* bugfix in the routine to determine the current bounding rectangle for fixed-point data objects (itom1DQwtPlot). Some smaller speedups inserted.
+* German umlauts in source code replaced by unicode representations (e.g. for chinese operating systems)
+* improvements in matplotlibPlot: subfig config dialog is now using range widgets in order to easier visualize the borders.
 
 **Version 2.0.0 (2015-07-20)**
 

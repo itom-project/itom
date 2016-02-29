@@ -17,7 +17,7 @@ Software packages
 - CMake (recommended 2.8.9 or higher)
 - Qt-framework (4.7 or higher, 4.8 or >= 5.3 recommended)
 - QScintilla2 (2.6 or higher)
-- OpenCV 2.3 or higher (2.4 recommended)
+- OpenCV 2.3 or higher (2.4 or 3.x recommended)
 - Python 3.2 or higher
 - Git (git-scm.com) + GUI (e.g. TortoiseGit or GitExtensions) for accessing the remote repository
 - Python-Package: NumPy

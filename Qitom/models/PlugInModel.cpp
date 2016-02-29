@@ -1451,7 +1451,7 @@ bool PlugInModel::insertInstance(ito::AddInInterfaceBase* addInInterface, bool b
 *
 *
 */
-bool PlugInModel::deleteInstance(ito::AddInInterfaceBase* /*addInInterface*/, ito::AddInBase *addInInstance, const bool beginOperation)
+bool PlugInModel::deleteInstance(ito::AddInBase *addInInstance, const bool beginOperation)
 {
     if (beginOperation)
     {

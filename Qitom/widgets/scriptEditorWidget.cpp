@@ -1322,6 +1322,22 @@ void ScriptEditorWidget::errorListChange(const QStringList &errorList)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+bool ScriptEditorWidget::isBookmarked() const
+{
+	int count = 0;
+
+	foreach (const BookmarkErrorEntry &e, bookmarkErrorHandles)
+	{
+		if (e.type & markerBookmark)
+		{
+			count++;
+		}
+	}
+
+	return count > 0;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! Sends the code to the Syntax Checker
 /*!
     This function is called to send the content of this ScriptEditorWidget to the syntax checker
@@ -1360,7 +1376,7 @@ bool ScriptEditorWidget::event(QEvent *event)
         int sensAreaX = QsciScintilla::marginWidth(1);
         int posX = point.rx();
         int posY = point.ry();
-        // Check that it´s in the right column (margin)
+        // Check that it is in the right column (margin)
         if (posX <= sensAreaX)
         {
             QStringList texts;
@@ -1518,8 +1534,8 @@ RetVal ScriptEditorWidget::gotoNextBookmark()
     int line, index;
     int closestLine = lines();
     getCursorPosition(&line, &index);
-    QList<BookmarkErrorEntry>::iterator it;
-    it = bookmarkErrorHandles.begin();
+    QList<BookmarkErrorEntry>::iterator it = bookmarkErrorHandles.begin();
+	bool found = false;
 
     line += 1;
 
@@ -1533,17 +1549,18 @@ RetVal ScriptEditorWidget::gotoNextBookmark()
         if ((it->type & markerBookmark) && markerLine(it->handle) < closestLine && markerLine(it->handle) > line)
         {
             closestLine = markerLine(it->handle);
+			found = true;
         }
-        ++it;
-        if (it == bookmarkErrorHandles.end() && closestLine == lines())
-        { // eoF reached without finding a bookmark
-            it = bookmarkErrorHandles.begin();
-            line = 0;
-        }
+        
+		++it;
     }
-    setCursorPosAndEnsureVisible(closestLine);
+
+	if (found)
+	{
+		setCursorPosAndEnsureVisible(closestLine);
+	}
+
     return RetVal(retOk);
-//    return RetVal(retError);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1552,8 +1569,8 @@ RetVal ScriptEditorWidget::gotoPreviousBookmark()
     int line, index;
     int closestLine = 0;
     getCursorPosition(&line, &index);
-    QList<BookmarkErrorEntry>::iterator it;
-    it = bookmarkErrorHandles.begin();
+    QList<BookmarkErrorEntry>::iterator it = bookmarkErrorHandles.begin();
+	bool found = false;
 
     if (line == 0)
     {
@@ -1569,18 +1586,18 @@ RetVal ScriptEditorWidget::gotoPreviousBookmark()
         if ((it->type & markerBookmark) && markerLine(it->handle) > closestLine && markerLine(it->handle) < line)
         {
             closestLine = markerLine(it->handle);
+			found = true;
         }
 
         ++it;
-        if (it == bookmarkErrorHandles.end() && closestLine == 0)
-        { // eoF reached without finding a bookmark
-            it = bookmarkErrorHandles.begin();
-            line = lines();
-        }
     }
-    setCursorPosAndEnsureVisible(closestLine);
+
+	if (found)
+	{
+		setCursorPosAndEnsureVisible(closestLine);
+	}
+
     return RetVal(retOk);
-//    return RetVal(retError);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2231,10 +2248,21 @@ int ScriptEditorWidget::buildClassTree(ClassNavigatorItem *parent, int parentDep
     // regular expression for Classes
     QRegExp classes("^(\\s*)(class)\\s(.+)\\((.*)\\):\\s*(#?.*)");
     classes.setMinimal(true);
-
-    // regular expression for methods              |> this part might be not in the same line due multiple line parameter set
-    QRegExp methods("^(\\s*)(def)\\s(_*)(.+)\\((.*)\\):\\s*(#?.*)?");
+    
+    QRegExp methods("^(\\s*)(def)\\s(_*)(.+)\\((.*)(\\):\\s*(#?.*)?|\\\\)");
     methods.setMinimal(true);
+    // regular expression for methods              |> this part might be not in the same line due multiple line parameter set
+	//the regular expression should detect begin of definitions. This is:
+	// 1. the line starts with 0..inf numbers of whitespace characters --> (\\s*)
+	// 2. 'def' + 1 whitespace characters is following --> (def)\\s
+	// 3. optionally, 0..inf numbers of _ may come (e.g. for private methods) --> (_*)
+	// 4. 1..inf arbitrary characters will come (function name) --> (.+)
+	// 5. bracket open '(' --> \\(
+	// 6. arbitrary characters --> (.*)
+	// 7. OR combination --> (cond1|cond2)
+	// 7a. cond1: bracket close ')' followed by colon, arbitrary spaces and an optional comment starting with # --> \\):\\s*(#?.*)?
+	// 7b. backspace to indicate a newline --> \\\\  
+    
 
     // regular expresseion for decorator
     QRegExp decorator("^(\\s*)(@)(\\S+)\\s*(#?.*)");

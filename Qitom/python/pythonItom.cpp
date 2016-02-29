@@ -1146,17 +1146,16 @@ PyObject* PythonItom::PyPlotLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPlotHelp_doc,"plotHelp(plotName [, dictionary = False]) -> generates an online help for the specified plot.\n\
-                              Gets (also print to console) the available slots / properties of the plot specified by plotName (str, as specified in the properties window).\n\
-If `dictionary == True`, a dict with all plot slots / properties is returned and nothing is printed to the console.\n\
+PyDoc_STRVAR(pyPlotHelp_doc,"plotHelp([plotName , dictionary = False]) -> generates an online help for the specified plot.\n\
+Gets (also print to console) the available slots / properties of the plot specified by plotName (str, as specified in the properties window).\n\
 \n\
 Parameters \n\
 ----------- \n\
 plotName : {str} \n\
     is the fullname of a plot as specified in the properties window (case insensitive).\n\
-    if * or empty string is given, a list of availble widgets is returned.\n\
+    if nothing, '*' or an empty string is given, a list of available widgets is returned.\n\
 dictionary : {bool}, optional \n\
-    if `dictionary == True`, function returns a dict with plot slots and properties and does not print anything to the console (default: False)\n\
+    if True, this methods returns a dict with plot slots and properties and does not print anything to the console (default: False)\n\
 \n\
 Returns \n\
 ------- \n\
@@ -1170,14 +1169,14 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
 #if PY_VERSION_HEX < 0x03030000
     unsigned char retDict = 0;
 
-    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|b", const_cast<char**>(kwlist), &plotName, &retDict))
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "|sb", const_cast<char**>(kwlist), &plotName, &retDict))
     {
         return NULL;
     }
 #else //only python 3.3 or higher has the 'p' (bool, int) type string
     int retDict = 0; //this must be int, not bool!!! (else crash)
 
-    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "s|p", const_cast<char**>(kwlist), &plotName, &retDict))
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "|sp", const_cast<char**>(kwlist), &plotName, &retDict))
     {
         return NULL;
     }
@@ -1201,12 +1200,14 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
     if (!dwo)
     {
         PyErr_SetString(PyExc_RuntimeError, "no ui-manager found");
-        Py_RETURN_NONE;
+        return NULL;
     }
     else if(plotName == NULL || strlen(plotName) == 0 || (strlen(plotName) == 1 && plotName[0] == '*'))
     {
         bool found = false;
         QList<ito::FigurePlugin> plugins = dwo->getPossibleFigureClasses(0, 0, 0);
+
+        std::cout << "Available plots\n\----------------------------------------\n";
 
         FigurePlugin fig;
         result = PyDict_New();
@@ -1243,7 +1244,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
         if (!found)
         {
             PyErr_SetString(PyExc_RuntimeError, "figure not found");
-            Py_RETURN_NONE;
+            return NULL;
         }
 
         result = PyDict_New();
@@ -1399,10 +1400,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             locker.getSemaphore()->wait(-1);
             retval += locker.getSemaphore()->returnValue;
 
-
-
             QMap<QString, QString>::iterator mapIter;
-            
 
             if (retDict)
             {

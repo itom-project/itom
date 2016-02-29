@@ -35,7 +35,7 @@ for Ubuntu 12.04 based distributions the following command should install all ne
 
 .. code-block:: bash
 
-	sudo apt-get install git libqt4-dev libopencv-dev libopencv-highgui-dev python3-dev python3-dbg qtcreator libqscintilla2-dev python3-scipy-dbg python3-sphinx doxygen-gui libglew-dev cmake-gui qt4-dev-tools libcv-dev libhighgui-dev
+    sudo apt-get install git libqt4-dev libopencv-dev libopencv-highgui-dev python3-dev python3-dbg qtcreator libqscintilla2-dev python3-scipy-dbg python3-sphinx doxygen-gui libglew-dev cmake-gui qt4-dev-tools libcv-dev libhighgui-dev
 
 
 

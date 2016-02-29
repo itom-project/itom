@@ -2000,7 +2000,7 @@ void DataObject::secureFreeData(void)
 \param[in] dim  Axis-dimension for which the physical coordinate is calculated
 \param[in] pix  Pixel-index as double
 \param[out] isInsideImage   flag which is set to true if coordinate is within range of the image.
-\return (double)( pix / AxisScale + AxisOffset) & [0..imagesize-1]
+\return (double)( phys / AxisScale + AxisOffset) & [0..imagesize-1]
 */
 double DataObject::getPhysToPix(const unsigned int dim, const double phys, bool &isInsideImage) const
 {
@@ -2053,7 +2053,7 @@ double DataObject::getPhysToPix(const unsigned int dim, const double phys, bool 
         To avoid memory access-error, the return value is clipped within the range of the image ([0...imagesize-1])
 \param[in] dim  Axis-dimension for which the physical coordinate is calculated
 \param[in] pix  Pixel-index as double
-\return (double)( pix / AxisScale + AxisOffset) & [0..imagesize-1]
+\return (double)( phys / AxisScale + AxisOffset) & [0..imagesize-1]
 */
 double DataObject::getPhysToPix(const unsigned int dim, const double phys) const
 {

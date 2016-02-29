@@ -66,7 +66,6 @@ void ColorCombo::setColor(QColor color)
 
 void ColorCombo::currentChanged(int index)
 {
-    qDebug() << "currentChanged: " << index;
     if (itemData(index).isValid() && itemData(index) == QVariant((int)QVariant::UserType))
     {
         QColor color = QColorDialog::getColor(m_init, this);        

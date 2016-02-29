@@ -8,7 +8,7 @@ All DataTypes except "rgba32" are accepted. To plot complex objects, it is possi
 The figure does not support z-stack sectioning. The "ItomIsoGLWidget" does support neither graphic element / marker plotting nor line or pixel picking. Hence this plot will be improved and replaced by a new version for the next release.
 
 Properties
----------------
+=================
  
 **colorMap** : *QString*, Defines which color map should be used [e.g. grayMarked, hotIron].
 
@@ -29,7 +29,7 @@ Properties
 **toolbarVisible** : *bool*, Toggles the visibility of the toolbar of the plot.  **Not implemented yet**
  
 Slots
----------------
+=================
 
 **ito::RetVal setLinePlot( double x0, double y0, double x1, double y1 [, int linePlotIdx = -1])**:
 

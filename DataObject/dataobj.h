@@ -687,10 +687,17 @@ namespace ito {
         //!<  Function to set the string-value of the value description, return 1 if values does not exist
         int setValueDescription(const std::string &description);
         
-        int setAxisOffset(const unsigned int axisNum, const double offset);
+        //!< set the offset of the axisNum-th axis. Offset is in pixel. The relation is: physical unit = (pixel unit - offset) * scale
+        int setAxisOffset(const unsigned int axisNum, const double offset); 
+
+        //!< set the scaling of the axisNum-th axis. Scaling is in (physical unit / pixel). The relation is: physical unit = (pixel unit - offset) * scale
         int setAxisScale(const unsigned int axisNum, const double scale);
-        int setAxisUnit(const unsigned int axisNum, const std::string &unit); //unit must be latin1 encoded
-        int setAxisDescription(const unsigned int axisNum, const std::string &description); //description must be latin1 encoded
+
+        //!< set the unit of the axisNum-th axis as latin1 encoded string
+        int setAxisUnit(const unsigned int axisNum, const std::string &unit);
+
+        //!< set the description of the axisNum-th axis as latin1 encoded string
+        int setAxisDescription(const unsigned int axisNum, const std::string &description);
         int setTag(const std::string &key, const DataObjectTagType &value);
         bool existTag(const std::string &key) const;
         bool deleteTag(const std::string &key);

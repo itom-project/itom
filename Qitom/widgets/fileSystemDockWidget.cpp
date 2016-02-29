@@ -1097,7 +1097,7 @@ void FileSystemDockWidget::itemDoubleClicked(const QModelIndex &index)
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::showInGraphicalShell(const QString & filePath)
 {
-#ifdef Q_WS_MAC
+#ifdef __APPLE__
     QStringList args;
     args << "-e";
     args << "tell application \"Finder\"";
@@ -1110,14 +1110,14 @@ void FileSystemDockWidget::showInGraphicalShell(const QString & filePath)
     QProcess::startDetached("osascript", args);
 #endif
 
-#ifdef Q_WS_WIN
+#ifdef WIN32
     QStringList args;
     args << "/select," << QDir::toNativeSeparators(filePath);
     QProcess::startDetached("explorer", args);
 #endif
 //
 //    // Mac, Windows support folder or file.
-//#if defined(Q_OS_WIN)
+//#if defined(WIN32)
 //    const QString explorer = QProcess::systemEnvironment().searchInPath(QLatin1String("explorer.exe"));
 //    if (explorer.isEmpty()) {
 //        QMessageBox::warning(parent,

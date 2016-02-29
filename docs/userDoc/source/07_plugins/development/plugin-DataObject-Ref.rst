@@ -8,5 +8,5 @@ DataObject - Reference
 =======================
 
 .. doxygenclass:: ito::DataObject
-	:project: itom
-	:members:
+    :project: itom
+    :members:

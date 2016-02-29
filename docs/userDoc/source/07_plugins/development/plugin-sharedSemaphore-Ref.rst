@@ -8,5 +8,5 @@ ItomSharedSemaphore - Reference
 ===============================
 
 .. doxygenclass:: ItomSharedSemaphore
-	:project: itom
-	:members:
+    :project: itom
+    :members:

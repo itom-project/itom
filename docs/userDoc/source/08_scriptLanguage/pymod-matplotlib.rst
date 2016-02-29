@@ -15,7 +15,7 @@ Since the internal plotting methods of |itom| mainly provide display widgets for
 used for plotting other types of graphics like graphs, line plots, bars... A huge list of examples can be found under http://matplotlib.org/gallery.html.
 
 Set Matplotlib backend to itom
---------------------------------
+=============================================
 
 **Matplotlib 1.4.x or lower**
 
@@ -67,7 +67,7 @@ are directly rendered in the itom backend without further modifications of the c
 any more, however it can be used to set another backend.
 
 Simple Matplotlib example
---------------------------
+=============================================
 
 This example shows you that is possible to use any arbitrary matplotlib python script and execute it in |itom|. Therefore, the example **hist2d_log_demo.py** from the pylab examples
 on http://matplotlib.org is taken.
@@ -124,7 +124,7 @@ Please consider that the original source code has been changed such that the fir
 Further examples from the official matplotlib gallery are contained in the itom subfolder **demo/matplotlib**.
     
 Embedding a matplotlib figure in your own user interface
----------------------------------------------------------
+==========================================================================================
 
 .. figure:: images/matplotlib_gui.png
     :scale: 80%

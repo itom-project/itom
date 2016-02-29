@@ -1,5 +1,7 @@
+.. include:: ../include/global.inc
+
 polygonMesh
-===========
+************
 
 .. only:: PCL
     

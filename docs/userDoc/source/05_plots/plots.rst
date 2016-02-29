@@ -1,7 +1,7 @@
 .. _PlotsAndFigures:
 
 Plots and Figures
-=========================
+#################################################
 
 itom contains functionalities to plot the mainly supported data structures like data objects, compatible numpy arrays, point clouds or polygon meshes. Plots can be opened as an individual main window, they can be nested as subplots into one common figure or it is also possible to integrate plots into user-defined widgets and windows (see :ref:`qtdesigner`).
 

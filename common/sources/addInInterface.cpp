@@ -32,6 +32,8 @@
 #include <qdebug.h>
 #include <qmetaobject.h>
 #include <qcoreapplication.h>
+#include <qpointer.h>
+
 #include "abstractAddInDockWidget.h"
 #include "opencv/cv.h"
 
@@ -106,6 +108,27 @@ namespace ito
         return QObject::event(e);
     }
 
+
+    //------------------------------------------------------------------------------------------------------------------------
+    class AddInBasePrivate
+    {
+    public:
+        AddInBasePrivate() :
+            m_pThread(NULL),
+            m_pBasePlugin(NULL),
+            m_createdByGUI(0),
+            m_initialized(false)
+        {}
+
+        QPointer<QDockWidget> m_dockWidget;     //!< safe pointer to dock widget. This pointer is automatically NULL if the dock widget is deleted e.g. by a previous deletion of the main window.
+        QThread *m_pThread;                     //!< the instance's thread
+        AddInInterfaceBase *m_pBasePlugin;      //!< the AddInInterfaceBase instance of this plugin
+        int m_uniqueID;                         //!< uniqueID (automatically given by constructor of AddInBase with auto-incremented value)
+        int m_createdByGUI;                     //!< 1 if this instance has firstly been created by GUI, 0: this instance has been created by c++ or python
+        bool m_initialized;                     //!< true: init-method has been returned with any RetVal, false (default): init-method has not been finished yet
+
+    };
+
     //----------------------------------------------------------------------------------------------------------------------------------
     //! Constructor.
     /*!
@@ -119,15 +142,11 @@ namespace ito
                     finally at the beginning of in the init-method. Afterwards it is used by different organizers and GUI components.
     */
     AddInBase::AddInBase() :
-        m_pThread(NULL), 
-        m_pBasePlugin(NULL), 
-        m_uniqueID(++m_instCounter), 
         m_refCount(0), 
-        m_createdByGUI(0),
-        m_dockWidget(NULL),
-        m_alive(0),
-        m_initialized(false)
+        m_alive(0)
     {
+        aibp = new AddInBasePrivate();
+        aibp->m_uniqueID = (++m_instCounter);
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -141,23 +160,82 @@ namespace ito
     */
     AddInBase::~AddInBase() //will be called from main thread
     {
-        if (m_dockWidget)
+        if (aibp->m_dockWidget)
         {
             //the dock widget has not been destroyed yet (by deconstructor of mainWindow, where it is attached)
-            m_dockWidget->deleteLater();
-            m_dockWidget = NULL;
+            aibp->m_dockWidget->deleteLater();
         }
 
         m_params.clear();
 
         //delete own thread if not already happened
-        if (m_pThread != NULL)
+        if (aibp->m_pThread != NULL)
         {
-            m_pThread->quit();
-            m_pThread->wait(5000);
-            delete m_pThread;
-            m_pThread = NULL;
+            aibp->m_pThread->quit();
+            aibp->m_pThread->wait(5000);
+            delete aibp->m_pThread;
+            aibp->m_pThread = NULL;
         }
+
+        delete aibp;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! retrieve the uniqueID of this instance
+    int AddInBase::getID() const 
+    { 
+        return aibp->m_uniqueID; 
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! increments reference counter of this plugin (thread-safe)
+    void AddInBase::incRefCount(void)
+    {
+        m_refCountMutex.lock();
+        m_refCount++;
+        m_refCountMutex.unlock();
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! decrements reference counter of this plugin (thread-safe)
+    void AddInBase::decRefCount(void)
+    {
+        m_refCountMutex.lock();
+        m_refCount--;
+        m_refCountMutex.unlock();
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! returns true if this instance has firstly been created by the GUI
+    int AddInBase::createdByGUI() const 
+    { 
+        return aibp->m_createdByGUI;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! method to set whether this instance has been firstly created by the GUI (true) or by any other component (Python, C++, other plugin,..) (false)
+    void AddInBase::setCreatedByGUI(int value) 
+    { 
+        aibp->m_createdByGUI = value;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! returns in a thread-safe way the status of the m_initialized-member variable. This variable should be set to true at the end of the init-method.
+    bool AddInBase::isInitialized(void) const
+    {
+        //QMutexLocker locker(&m_atomicMutex);
+        return aibp->m_initialized;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! sets in a thread-safe way the status of the m_initialized-member
+    /*
+    \param [in] initialized is the value to set
+    */
+    void AddInBase::setInitialized(bool initialized)
+    {
+        //QMutexLocker locker(&m_atomicMutex);
+        aibp->m_initialized = initialized;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -224,9 +302,9 @@ namespace ito
     //! creates new thread for the class instance and moves this instance to the new thread
     ito::RetVal AddInBase::MoveToThread(void)
     {
-        m_pThread = new QThread();
-        moveToThread(m_pThread);
-        m_pThread->start();
+        aibp->m_pThread = new QThread();
+        moveToThread(aibp->m_pThread);
+        aibp->m_pThread->start();
 
 		/*set new seed for random generator of OpenCV. 
 		This is required to have real random values for any randn or randu command.
@@ -320,6 +398,19 @@ namespace ito
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
+    bool AddInBase::hasDockWidget(void) const 
+    { 
+        return !aibp->m_dockWidget.isNull(); 
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! Returns the reference to the dock widget of this plugin or NULL, if no dock widget is provided.
+    /*
+    \sa hasDockWidget
+    */
+    QDockWidget* AddInBase::getDockWidget(void) const { return aibp->m_dockWidget; }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
     //! Creates the dock-widget for this plugin
     /*
         Call this method ONLY in the constructor of your plugin, since it must be executed in the main thread.
@@ -336,20 +427,19 @@ namespace ito
     */
     void AddInBase::createDockWidget(QString title, QDockWidget::DockWidgetFeatures features, Qt::DockWidgetAreas allowedAreas, QWidget *content)
     {
-        if (m_dockWidget == NULL)
+        if (aibp->m_dockWidget.isNull())
         {
-            m_dockWidget = new QDockWidget(title + QLatin1String(" - ") + tr("Toolbox"));
-            connect(m_dockWidget, SIGNAL(destroyed()), this, SLOT(dockWidgetDestroyed())); //this signal is established in order to check if the docking widget already has been deleted while destruction of mainWindows
-            connect(m_dockWidget, SIGNAL(visibilityChanged(bool)), this, SLOT(dockWidgetVisibilityChanged(bool)));
+            aibp->m_dockWidget = QPointer<QDockWidget>(new QDockWidget(title + QLatin1String(" - ") + tr("Toolbox")));
+            connect(aibp->m_dockWidget, SIGNAL(visibilityChanged(bool)), this, SLOT(dockWidgetVisibilityChanged(bool)));
         }
-        m_dockWidget->setObjectName(title.simplified() + QLatin1String("_dockWidget#") + QString::number(m_uniqueID));
-        m_dockWidget->setFeatures(features);
-        m_dockWidget->setAllowedAreas(allowedAreas);
+        aibp->m_dockWidget->setObjectName(title.simplified() + QLatin1String("_dockWidget#") + QString::number(aibp->m_uniqueID));
+        aibp->m_dockWidget->setFeatures(features);
+        aibp->m_dockWidget->setAllowedAreas(allowedAreas);
 
         if (content) 
         {
-            m_dockWidget->setWidget(content);
-            content->setParent(m_dockWidget);
+            aibp->m_dockWidget->setWidget(content);
+            content->setParent(aibp->m_dockWidget);
         }
     }
 
@@ -358,14 +448,27 @@ namespace ito
     {
         m_identifier = identifier;
 
-        if (m_dockWidget)
+        if (aibp->m_dockWidget)
         {
-            ito::AbstractAddInDockWidget *adw = qobject_cast<ito::AbstractAddInDockWidget*>(m_dockWidget->widget());
+            ito::AbstractAddInDockWidget *adw = qobject_cast<ito::AbstractAddInDockWidget*>(aibp->m_dockWidget->widget());
             if (adw)
             {
                 QMetaObject::invokeMethod(adw, "identifierChanged", Q_ARG(const QString &, identifier));
             }
         }
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! sets the interface of this instance to base. \sa AddInInterfaceBase
+    void AddInBase::setBasePlugin(AddInInterfaceBase *base) 
+    { 
+        aibp->m_pBasePlugin = base; 
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    AddInInterfaceBase* AddInBase::getBasePlugin(void) const 
+    { 
+        return aibp->m_pBasePlugin;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -465,7 +568,7 @@ namespace ito
     */
      void AddInBase::dockWidgetDefaultStyle(bool &floating, bool &visible, Qt::DockWidgetArea &defaultArea) const
      {
-         if (m_dockWidget)
+         if (aibp->m_dockWidget)
          {
              floating = false;
              visible = false;
@@ -522,7 +625,7 @@ namespace ito
     {
         ItomSharedSemaphoreLocker locker(waitCond);
 
-        if (m_pThread) //only push this plugin to the main thread, if it currently lives in a second thread.
+        if (aibp->m_pThread) //only push this plugin to the main thread, if it currently lives in a second thread.
         {
             moveToThread(QCoreApplication::instance()->thread());
         }

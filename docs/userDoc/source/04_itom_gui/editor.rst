@@ -8,23 +8,23 @@ Script-Editor
 The script editor is one of the main windows of |itom| and allows creating, modifying and executing one or several python scripts.
 
 .. figure:: images/scripteditor.png
-	:scale: 100%
-	:align: left
+    :scale: 100%
+    :align: left
 
 Every script editor window can display one or multiple script files that are separated in different tabs at the bottom of the window.
 Click a tab to show the corresponding script in the center of the window. You can close, save, reorder or (un-)dock every single tab
 by its context menu.
 
 .. figure:: images/scripteditor-tab-context.png
-	:scale: 100%
-	:align: left
+    :scale: 100%
+    :align: left
 
 The content of the current script file is displayed in the center of the script editor window. Use this text editor to write or modify a script
 that can then be run or debugged. The menus of the script editor window provide many possibilities to edit and finally run or debug the script. The most important
 functions are also accessible via the toolbar and / or the context menu of the script area.
 
 Basic functions
-~~~~~~~~~~~~~~~~
+========================
 
 The file menu gives the opportunity to open an existing script or create a new one, to save the current script or to print or close the script.
 
@@ -42,13 +42,13 @@ Basic and advanced functions to edit the current script are contained in the **e
 .. _gui-editor-run-debug-script:
 
 Run or debug the script
-~~~~~~~~~~~~~~~~~~~~~~~~
+========================
 
 In order to run or debug the script, use the functions given in the **script** menu.
 
 .. figure:: images/editor_run_debug.png
-	:scale: 100%
-	:align: left
+    :scale: 100%
+    :align: left
 
 These are:
 
@@ -68,15 +68,15 @@ More information about breakpoints are given in the next section.
 .. _gui-editor-breakpoints:
 
 Breakpoints
-~~~~~~~~~~~~
+========================
 
 Breakpoints are red or gray points in the right side of the margin of a script window. In every valid script line, there can be at most one breakpoint.
 A breakpoint is added to a specific line by clicking the margin at the right side of the line numbers. You cannot add a breakpoint to a commented or empty line.
 If you clear or comment a line that already contains a breakpoint, the script debugger will fail with a corresponding error message.
 
 .. figure:: images/editor-breakpoints.png
-	:scale: 100%
-	:align: left
+    :scale: 100%
+    :align: left
 
 There are three different types of breakpoints:
 
@@ -85,8 +85,8 @@ There are three different types of breakpoints:
 * Red point with white cross: Special breakpoint. Right click on a breakpoint and choose **edit breakpoint** to set further settings to the breakpoints behaviour.
 
 .. figure:: images/editor-edit-breakpoints.png
-	:scale: 100%
-	:align: left
+    :scale: 100%
+    :align: left
 
 The **edit breakpoint** dialog allows configuring the following properties of a breakpoint:
 
@@ -103,7 +103,7 @@ The breakpoints of this and other scripts are all listed in the :ref:`breakpoint
 
 
 Syntax highlighting and auto completion
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+================================================
 
 A script highlighting mechanism is implemented to simplify the reading and programming of the script. You can change the styles of the syntax highlighting in the :ref:`property dialog <gui-prop-py-styles>` (tab *styles*) of |itom|.
 
@@ -122,13 +122,13 @@ Calltips always appear if you open a rounded bracket to give the arguments of a 
 .. _gui-editor-class-navigator:
 
 Direction class and method navigator
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+================================================
 
 Above every script, there are two combo boxes that are part of a class and method navigator. If these combo boxes are not available, you need to enable this navigator in the property dialog, :ref:`tab general <gui-prop-py-general>`. After a configurable number of seconds after the last change in the script, it is analyzed and the combo boxes are adapted with respect to the current structure of the script.
 
 .. figure:: images/editor-class-navigator.png
-	:scale: 100%
-	:align: left
+    :scale: 100%
+    :align: left
 
 The left combobox displays all classes and the global namespace of the script. By clicking on any class name, the cursor jumps to the class and the name is highlighted. The right combobox shows the sub-items that belong
 to the chosen class or namespace.
@@ -140,7 +140,7 @@ categorized into the global namespace (**Global Scope**).
 .. _gui-editor-syntax-check:
 
 Automatic syntax check
-~~~~~~~~~~~~~~~~~~~~~~~
+========================
 
 If desired, the current script can be checked for syntax and other errors or hints. This is done using the python package **frosted** (https://pypi.python.org/pypi/frosted/).
 You need to have this package installed in order to benefit from this service. If **frosted** is not installed, the syntax check is automatically disabled.
@@ -149,8 +149,8 @@ If **frosted** is installed, the syntax and style check can be dis- or enabled a
 hints, warnings or errors detected by **frosted** will be displayed via a bug symbol in the left margin of the script editor window:
 
 .. figure:: images/editor-syntax-check.png
-	:scale: 100%
-	:align: left
+    :scale: 100%
+    :align: left
 
 The tooltip text of every bug icon displays the reason for the bug. Since the bug icon is displayed in the same margin column than the bookmarks, there is also a combined icon
 for a bug and a bookmark in one line. Please note, that one line can also contain multiple syntax hints, they are displayed in multiple lines in the tooltip text.
@@ -168,14 +168,14 @@ for a bug and a bookmark in one line. Please note, that one line can also contai
 .. _gui-editor-iconbrowser:
 
 Icon-Browser
-~~~~~~~~~~~~~~~~
+========================
 
 To help adding icons to user defined buttons, menus or user interfaces, the icon browser of the script editor window shows a list of icons that come with |itom| or loaded plugins.
 The icon browser is opened via the menu **edit >> icon browser...** of any script editor window or the keyboard shortcut **Ctrl + B**.
 
 .. figure:: images/editorIconBrowser.png
-	:scale: 100%
-	:align: left
+    :scale: 100%
+    :align: left
 
 These icons can directly be used inside of any script by their *virtual icon path*. If you choose a specific icon, you have the following options via the buttons on the right side:
 

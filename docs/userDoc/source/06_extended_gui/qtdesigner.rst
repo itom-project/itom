@@ -16,19 +16,19 @@ Qt Designer
 ==============
 
 | The Qt Designer can be used to create a GUI for interaction with the |itom| software.
-| For details see the Qt Designer documentation under http://qt-project.org/doc/qt-4.8/designer-manual.html
+| For details see the Qt Designer documentation under http://doc.qt.io/qt-5/qtdesigner-manual.html
 
 In order to start the **Qt Designer**, click on the corresponding icon in the toolbar of |itom|:
 
 .. figure:: images_userGUI/mainsymbols2.png
-    :scale: 70%
+    :scale: 100%
     :align: left
 
 or double-click on a corresponding **ui**-file in the file system widget of |itom|. In the first case, **Qt Designer** shows an initialization dialog, where you
 can choose the base type of the user interface you want to create.
 
 .. figure:: images_userGUI/designerNew.png
-    :scale: 70%
+    :scale: 100%
     :align: left
     
 .. note::
@@ -56,7 +56,8 @@ on your surface. If the **Qt Designer** is started from |itom| you will even fin
 provided by |itom| and can also be placed on your surface. The choice of these plugins depend on the designer plugins that are currently available in your installation of |itom|.
 
 .. figure:: images_userGUI/qtdesigner1.png
-    :align: left
+    :align: center
+    :scale: 100%
 
 After having placed one widget on the canvas, you will see its properties in the property toolbox of **Qt Designer**. Every widget has the common property **objectName**. If you assign
 a unique object name to any of your control elements, it is possible to access and manipulate this widget from a |python| script in |itom| using this name, too. In general many of the
@@ -94,7 +95,7 @@ at the right side or at the bottom of the dialog.
 Let us create an exemplary user interface. In **Qt Creator** the following widget has been created:
 
 .. figure:: images_userGUI/testWidget.png
-    :scale: 70%
+    :scale: 100%
     :align: left
 
 On the right side of the widget *testWidget* you see the hierarchical organization of objects that are put on the widget. At first, a group box has been placed on the widget. Inside of
@@ -128,7 +129,7 @@ that the variable *result* will be set to *0* if the user closed the dialog usin
 clicked an **OK**-button.
 
 .. figure:: images_userGUI/testWidgetItom.png
-    :scale: 70%
+    :scale: 100%
     :align: left
 
 It is also possible to open the dialog in a non-modal version or to open it in a modal style however to immediately force python to continue the script execution. This depends
@@ -139,7 +140,7 @@ Right now, you don't have the possibility to quit the dialog using any button (*
 :py:class:`itom.ui` needs to be changed. There is the choice between two different appearances of a button bar, which can be automatically added to your widget:
 
 .. figure:: images_userGUI/testWidgetButtonBar.png
-    :scale: 70%
+    :scale: 100%
     :align: left
 
 Next, you need to select which buttons should be included in the button bar. This is done by creating a python dictionary, where each elements corresponds to one button. The
@@ -173,7 +174,8 @@ If you are not interested in the exact return value of the dialog but you want t
 create an user interface based on a **dialog** or **main window** in **Qt Designer**.
 
 .. figure:: images_userGUI/testWindow.png
-    :align: left
+    :align: center
+    :scale: 100%
 
 The figure shows an exemplary user interface (**testWindow.ui**) that is based on a main window. On the right side, there have been added three buttons, nested in a vertical layout.
 On the left side, there is a list widget (objectName: **listWidget**, type: **List Widget**). Additionally a menu has been added that consists of three items.
@@ -504,7 +506,7 @@ be useful if you want to enable or disable certain widgets depending on the stat
 with a checkbox and a textfield. Let us define a signal-slot-connection, such that the textfield gets disabled if the checkbox is unchecked.
 
 .. figure:: images_userGUI/uiSignalSlot1.png
-    :scale: 70%
+    :scale: 100%
     :align: left
 
 This type of gui-internal connections are completely done in **Qt Creator**. Therefore chose the "Signal and Slots" editing mode, that is obtained by clicking the symbol |qtsignalslotmode|
@@ -512,7 +514,7 @@ in the toolbar or by pressing *F4*. Then you can make a drag&drop connection bet
 depicted in the following figure becomes visible:
 
 .. figure:: images_userGUI/uiSignalSlot2.png
-    :scale: 70%
+    :scale: 100%
     :align: left
 
 Here you can choose which signal of the emitting widget should be connected with which slot of the destination. At the beginning, only slots and signals of the specific widget classes are
@@ -526,7 +528,36 @@ in this case it is more convenient the property like described in section :ref:`
 Auto-connecting signals using python decorators
 ===============================================
 
-TODO
+|itom| provides an optional approach to directly connect methods with a specific signal of a widget. An example for this approach is for instance given in the demo script **autoConnectDemo.py**
+in the **demo/ui** subfolder of the itom installation.
+
+The concept is as follows:
+
+1. import the class **ItomUi** from the module **itomUi** (located in the subfolder **itom_packages** that is part of the Python search path::
+    
+    from itomUi import ItomUi
+    
+2. Create a class that is derived from **ItomUi**
+3. In the constructor (method __init__) of your class call the constructor of the base class **ItomUi**. This constructor has the same arguments than the class :py:class:`itom.ui`. This is where you create the GUI from the ui file.
+4. The :py:class:`~itom.ui` is accessible via the member variable **gui** of your class, hence, within a member method write **self.gui** to access the user interface and its widgets.
+5. You can now connect one or multiple signals from one widget to one member method of your class.
+6. The name of the member method must be::
+    
+    def on_ObjectNameOfWidget_SignalName(self, [arg1, arg2, ...]):
+        pass
+    
+7. The argument is **self** (like it is always the case in object-oriented Python programming) followed by a series of arguments. The number of these arguments must correspond to the number of arguments the signal has.
+8. Write one or multiple decorators above the method signature, to establish the connection. The decorator looks like this::
+    
+    @ItomUi.autoslot("args")
+    
+    Hereby, *args* corresponds to a comma separated list of all type names (in C++) the Qt signal is emitting.
+    
+As an example, we want to connect the **valueChanged** signal of a spin box (object-name: spinTestBox, argument obtained from Qt  help: one **int**)::
+    
+    @ItomUi.autoslot("int")
+    def on_spinTestBox_valueChanged(self, value):
+        print("The value of the spin box changed to", value)
 
 Debugging user interfaces and slot-methods
 ==========================================
@@ -565,35 +596,3 @@ that |itom| is executed in the main thread while |python| is moved to its own ad
 still keeps reactive. Therefore, |python| does not have access to the real main thread and it is forbidden to explicitly execute some GUI-related stuff in secondary threads. Therefore
 all methods in :py:class:`itom.ui` and :py:class:`itom.uiItem` have thread-safe implementations and communicate with an organization structure, that runs in the main thread of |itom|, in
 order to interact with all dialogs.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	

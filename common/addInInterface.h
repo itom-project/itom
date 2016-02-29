@@ -194,6 +194,7 @@ namespace ito
 
     class AddInBase;        //!< forward declaration
     class DataObject;
+    class AddInBasePrivate; //!< forward declaration to private container class of AddInBase
 
     //----------------------------------------------------------------------------------------------------------------------------------
     /** @class AddInInterfaceBase
@@ -358,7 +359,7 @@ namespace ito
             const Param getParamRec(const QString name, bool *nameCheckOk = NULL) const;
 
             //! returns the interface of this instance. \sa AddInInterfaceBase
-            inline AddInInterfaceBase* getBasePlugin(void) const { return m_pBasePlugin; }
+            AddInInterfaceBase* getBasePlugin(void) const;
 
             //! creates new thread for the class instance and moves this instance to the new thread
             ito::RetVal MoveToThread(void);
@@ -381,7 +382,7 @@ namespace ito
             inline const ito::RetVal getExecFuncList(QMap<QString, ExecFuncParams> **funcs) { *funcs = &m_execFuncList; return ito::retOk; }
             
             //! retrieve the uniqueID of this instance
-            inline int getID() const { return m_uniqueID; }
+            int getID() const;
 
             //! retrieve the unique identifier of this instance
             inline QString getIdentifier() const { return m_identifier; }
@@ -393,10 +394,10 @@ namespace ito
             virtual const ito::RetVal showConfDialog(void);
             
             //! returns true if this instance has firstly been created by the GUI
-            inline int createdByGUI() const { return m_createdByGUI; }
+            int createdByGUI() const;
             
             //! method to set whether this instance has been firstly created by the GUI (true) or by any other component (Python, C++, other plugin,..) (false)
-            inline void setCreatedByGUI(int value) { m_createdByGUI = value; }
+            void setCreatedByGUI(int value);
 
             //! Returns the reference counter of this instance. 
             /*
@@ -411,13 +412,13 @@ namespace ito
             /*
                 \sa getDockWidget
             */
-            inline bool hasDockWidget(void) const { return m_dockWidget ? true : false; }
+            bool hasDockWidget(void) const;
 
-            //! Returns the reference to the dock widget of this plugin or NULL, if no dock widget is provided.
+            //! Returns the reference to the dock widget of this plugin or NULL, if no dock widget is provided or if it is already deleted.
             /*
                 \sa hasDockWidget
             */
-            inline QDockWidget* getDockWidget(void) const { return m_dockWidget; }
+            QDockWidget* getDockWidget(void) const;
 
             // doc in source
             virtual void dockWidgetDefaultStyle(bool &floating, bool &visible, Qt::DockWidgetArea &defaultArea) const;
@@ -452,21 +453,13 @@ namespace ito
             }
             
             //! returns in a thread-safe way the status of the m_initialized-member variable. This variable should be set to true at the end of the init-method.
-            bool isInitialized(void) const
-            { 
-//                QMutexLocker locker(&m_atomicMutex);
-                return m_initialized;
-            }
+            bool isInitialized(void) const;
             
             //! sets in a thread-safe way the status of the m_initialized-member
             /*
                 \param [in] initialized is the value to set
             */
-            void setInitialized(bool initialized) 
-            { 
-//                QMutexLocker locker(&m_atomicMutex);
-                m_initialized = initialized;
-            }
+            void setInitialized(bool initialized);
 
             //! returns vector of AddInRef instances.
             /*
@@ -495,48 +488,30 @@ namespace ito
             ito::RetVal registerExecFunc(const QString funcName, const QVector<ito::Param> &paramsMand, const QVector<ito::Param> &paramsOpt, const QVector<ito::Param> &paramsOut, const QString infoString);
 
             //! sets the interface of this instance to base. \sa AddInInterfaceBase
-            inline void setBasePlugin(AddInInterfaceBase *base) { m_pBasePlugin = base; }
+            void setBasePlugin(AddInInterfaceBase *base);
 
             QMap<QString, Param> m_params;                        //!< map of the available parameters
             
             QString m_identifier;                               //!< unique identifier (serial number, com-port...)
             
         private:
-            Q_DISABLE_COPY (AddInBase)
+            Q_DISABLE_COPY(AddInBase)
 
             //! increments reference counter of this plugin (thread-safe)
-            inline void incRefCount(void) 
-            { 
-                m_refCountMutex.lock();
-                m_refCount++;
-                m_refCountMutex.unlock();
-            }
+            inline void incRefCount(void);
 
             //! decrements reference counter of this plugin (thread-safe)
-            inline void decRefCount(void) 
-            { 
-                m_refCountMutex.lock();
-                m_refCount--;
-                m_refCountMutex.unlock();
-            }
+            void decRefCount(void);
 
-            QThread *m_pThread;                                    //!< the instance's thread
-            AddInInterfaceBase *m_pBasePlugin;                    //!< the AddInInterfaceBase instance of this plugin
-
-            int m_refCount;                                        //!< reference counter, used to avoid early deletes (0 means that one instance is holding one reference, 1 that two participants hold the reference...)
-            int m_createdByGUI;                                    //!< 1 if this instance has firstly been created by GUI, 0: this instance has been created by c++ or python
-            QVector<ito::AddInBase::AddInRef *> m_hwDecList;    //!< list of hardware that was passed to the plugin on initialisation and whose refcounter was incremented
-            QMap<QString, ExecFuncParams> m_execFuncList;        //!< map with registered additional functions. funcExec-name -> (default mandParams, default optParams, default outParams, infoString)
-
-            int m_uniqueID;                    //!< uniqueID (automatically given by constructor of AddInBase with auto-incremented value)
+            int m_refCount;                                   //!< reference counter, used to avoid early deletes (0 means that one instance is holding one reference, 1 that two participants hold the reference...)
+            QVector<ito::AddInBase::AddInRef *> m_hwDecList;  //!< list of hardware that was passed to the plugin on initialisation and whose refcounter was incremented
+            QMap<QString, ExecFuncParams> m_execFuncList;     //!< map with registered additional functions. funcExec-name -> (default mandParams, default optParams, default outParams, infoString)
+            QMutex m_refCountMutex;                           //!< mutex for making the reference counting mechanism thread-safe.
+            int m_alive;                                      //!< member to check if thread is still responsive
+            QMutex m_atomicMutex;                             //!< mutex for protecting atomic getter and setter methods (e.g. alive and initialized)
+            AddInBasePrivate *aibp;                           //!< pointer to private class of AddInBase defined in AddInInterface.cpp. This container is used to allow flexible changes in the interface without destroying the binary compatibility
             
-            QMutex m_refCountMutex;            //!< mutex for making the reference counting mechanism thread-safe.
-            QDockWidget *m_dockWidget;        //!< instance-pointer to the dock-widget of the plugin or NULL if no dock-widget instatiated in constructor of plugin
-            int m_alive;                    //!< member to check if thread is still responsive
-            QMutex m_atomicMutex;           //!< mutex for protecting atomic getter and setter methods (e.g. alive and initialized)
-            bool m_initialized;             //!< true: init-method has been returned with any RetVal, false (default): init-method has not been finished yet
-            
-            friend class AddInInterfaceBase; //!< AddInBase is friend with AddInInterfaceBase, such that the interface can access methods like the protected constructor or destructor of this plugin class.
+            friend class AddInInterfaceBase;                  //!< AddInBase is friend with AddInInterfaceBase, such that the interface can access methods like the protected constructor or destructor of this plugin class.
 
             static int m_instCounter;
 
@@ -596,14 +571,6 @@ namespace ito
                 \sa parametersChanged
             */
             virtual void dockWidgetVisibilityChanged(bool /*visible*/) {}; 
-
-            //! call this method, if the dock-widget of the plugin will be deleted.
-            /*!
-                The member variable m_dockWidget will be set to NULL.
-
-                \sa m_dockWidget
-            */
-            void dockWidgetDestroyed() { m_dockWidget = NULL; }
     };
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -1100,6 +1067,7 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/1.4.0", //outdated on 2015-07-03 due to removal of lock mechanism in data object, add of embedded line plots, qt5 incompatiblity changes and some refinements in addInInterface
     "ito.AddIn.InterfaceBase/2.0.0", //outdated on 2015-12-04 due to improvements in plot/figure interfaces, removal of deprecated classes helperActuator and helperGrabber and further removal of deprecated items
     "ito.AddIn.InterfaceBase/2.1.0", //outdated on 2016-02-01 due to improvements in PluginThreadCtrl, ActuatorThreadCtrl and DataIoThreadCtrl (as replacement for removed classes helperActuator and helperGrabber), new method ito::DataObject::getStep and some smaller rearrangements
+    "ito.AddIn.InterfaceBase/2.2.0", //outdated on 2016-02-19 due to crash fixes if the main mindow is deleted and implicitely closes dock widgets of plugins, that are currently blocked by any other operation.
     NULL
 };
 
@@ -1108,10 +1076,10 @@ static const char* ito_AddInInterface_OldVersions[] = {
 #define CREATE_ADDININTERFACE_VERSION(major,minor,patch) ((major<<16)|(minor<<8)|(patch))
 
 #define ITOM_ADDININTERFACE_MAJOR 2
-#define ITOM_ADDININTERFACE_MINOR 2
+#define ITOM_ADDININTERFACE_MINOR 3
 #define ITOM_ADDININTERFACE_PATCH 0
 #define ITOM_ADDININTERFACE_VERSION CREATE_ADDININTERFACE_VERSION(ITOM_ADDININTERFACE_MAJOR,ITOM_ADDININTERFACE_MINOR,ITOM_ADDININTERFACE_PATCH)
-static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_VERSION_STR(2,2,0); //results in "ito.AddIn.InterfaceBase/x.x.x"; (the numbers 1,3,1 can not be replaced by the macros above. Does not work properly)
+static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_VERSION_STR(2,3,0); //results in "ito.AddIn.InterfaceBase/x.x.x"; (the numbers 1,3,1 can not be replaced by the macros above. Does not work properly)
 
 
 

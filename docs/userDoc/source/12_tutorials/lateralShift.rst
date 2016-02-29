@@ -1,7 +1,7 @@
 .. include:: ../include/global.inc
 
 determine lateral image shift and show images by using itom figure plots
-=========================================================================
+*************************************************************************
 
 A lateral image shift can be determined by cross correlation. To minimize the calculation time, the inverse fourier transformed product of the fourier transformed lateral shifted images, wheras one image is complex conjugated, is calculated
 

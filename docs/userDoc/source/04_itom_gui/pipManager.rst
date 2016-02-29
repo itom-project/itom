@@ -3,7 +3,7 @@
 .. _gui-pipmanager:
 
 Python Package Manager
-=======================
+**************************
 
 Python is a very modular script language. Its functionality can be enhanced by so called packages. One package has a certain name and a version number, such that updates 
 are possible. Furthermore, a package might dependent on multiple other packages that have to be installed in order to run the package.
@@ -23,7 +23,7 @@ are also available when directly calling *pip* from the command line. The log wi
 of a problem, text might also appear with red color in the log.
     
 .. figure:: images/pipManager2.png
-    :scale: 70%
+    :scale: 100%
     :align: center
     
 Depending on the version of pip, each package is described by
@@ -42,7 +42,7 @@ Click the *check for updates* button, to screen the official python package inde
 If you want to install new packages or update an existing package, click the *install...* button:
     
 .. figure:: images/pipManager3.png
-    :scale: 70%
+    :scale: 100%
     :align: center
     
 You have three possibilities to install a package. Choose if you want to install a package from a modern python wheel archive file (*whl*) or from a tar.gz archive. In both cases, chose the archive by clicking
@@ -55,7 +55,7 @@ an alternative search location for packages using the *find links* option. Click
 It is also possible to uninstall an installed package (however if no other package depends on this package). If desired, click a package and click then the *uninstall* button.
 
 Package Sources
-------------------
+====================
 
 If you look for small packages (e.g. :ref:`frosted <gui-editor-syntax-check>`), the easiest way of installing them is the direct download from the python package index. However, there exist also more complex packages that contain for instance a huge number of
 C files. These packages require a compiler on your computer, since the source code of the C files is compiled to binary files (that can be used by the python package) at installation time at your computer. Sometimes
@@ -63,7 +63,7 @@ these packages also required further 3rd party libraries (e.g. Numpy, Scipy or M
 website http://www.lfd.uci.edu/~gohlke/pythonlibs/:
 
 .. figure:: images/pipManager4.png
-    :scale: 70%
+    :scale: 100%
     :align: center
 
 The packages listed by this website are only available for Windows but different versions of Python in 32bit and 64bit. Download the corresponding wheel file and use the |itom| python package manager to install it (don't forget to mark the upgrade check box if you want to update an existing package). An advantage of this site is also, that some libraries are compiled using the fast MKL compiler from Intel. Please notice that you also need to install updates for packages obtained from Gohlke by downloading the updated version as wheel file and install it. Do not mix the source from Gohlke and the python package index.

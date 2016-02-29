@@ -3,7 +3,7 @@
 .. _gui-mainwindow:
 
 Main Window
-============
+****************
 
 During the startup of |itom| a splash screen shows the current state of the load process. After having finished, the |itom| main window appears like in the following screenshot:
 
@@ -20,7 +20,7 @@ Further functionalities of |itom| are reached by the menu or the toolbars. It is
 .. _console:
 
 Command Line
--------------
+========================
 
 The command line in the center of the main window allows executing single or multi-line python commands. Additionally all messages, warnings and errors coming from python method calls or |itom| itself are printed in the command line widget. Errors are highlighted with a red background:
 
@@ -46,7 +46,7 @@ To clear the command line from an ordinary script, use the command :py:meth:`ito
 Instead of typing all commands in the console, write your entire python scripts in the :doc:`editor`.
 
 Main menus and toolbars
--------------------------
+========================
 
 This is an overview about the menu structure of itom
 
@@ -102,7 +102,7 @@ This is an overview about the menu structure of itom
 All the actions mentioned in the table above are accessible by either the menu of |itom| or some of them are also available in some main toolbars that come with |itom|.
    
 Toolboxes
------------
+========================
 
 Content:
 

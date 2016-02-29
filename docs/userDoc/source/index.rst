@@ -6,6 +6,8 @@
 .. |logo| image:: itomLogo2_64.png  
 
 .. toctree::
+    :numbered:
+    :caption: Table of Contents
     :maxdepth: 2
 
     00_releaseNotes/whats-new.rst

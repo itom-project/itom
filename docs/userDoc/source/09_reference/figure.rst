@@ -1,5 +1,7 @@
+.. include:: ../include/global.inc
+
 figure
-================================
+*********
 
 .. currentmodule:: itom
 

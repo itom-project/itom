@@ -699,7 +699,7 @@ void PipManager::finalizeTask()
             }
             else
             {
-                QRegExp rx("(\\S+) \\(Current: (\\S)+ Latest: (\\S+)( \\[\\S+\\])?\\)");
+                QRegExp rx("(\\S+) \\(Current: (\\S+) Latest: (\\S+)( \\[\\S+\\])?\\)"); //the style is "scipy (Current: 0.16.1 Latest: 0.17.0 [sdist])"
                 int pos = 0;
                 QMap<QString,QString> outdated;
                 QMap<QString,QString> unknown;
@@ -709,6 +709,15 @@ void PipManager::finalizeTask()
                     outdated[rx.cap(1)] = rx.cap(3);
                     pos += rx.matchedLength();
                 }
+
+                //check for style of pip >= 8.0.0
+                pos = 0;
+                rx.setPattern("(\\S+) \\((\\S+)(, \\S+)?\\) - Latest: (\\S+)( \\[\\S+\\])?"); //the style is "scipy (0.16.1) - Latest: 0.17.0 [sdist]" or "scipy (0.16.1, path-to-location) - Latest: 0.17.0 [sdist]"
+                while ((pos = rx.indexIn(output, pos)) != -1)
+                {
+                    outdated[rx.cap(1)] = rx.cap(4);
+                    pos += rx.matchedLength();
+                }
                 
                 //check for unknown (that could not been fetched)
                 pos = 0;
@@ -716,7 +725,7 @@ void PipManager::finalizeTask()
         
                 while ((pos = rx.indexIn(output, pos)) != -1)
                 {
-                    unknown[rx.cap(1)] = rx.cap(3);
+                    unknown[rx.cap(1)] = "unknown";
                     pos += rx.matchedLength();
                 }
 
@@ -728,9 +737,9 @@ void PipManager::finalizeTask()
                         m_pythonPackages[i].m_status = PythonPackage::Outdated;
                     }
                     else if (unknown.contains(m_pythonPackages[i].m_name))
-            {
-              m_pythonPackages[i].m_status = PythonPackage::Unknown;
-            }
+                    {
+                      m_pythonPackages[i].m_status = PythonPackage::Unknown;
+                    }
                     else
                     {
                         m_pythonPackages[i].m_status = PythonPackage::Uptodate;

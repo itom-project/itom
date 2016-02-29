@@ -1408,12 +1408,12 @@ namespace ito
                     retval += saveParamVals(addIn);
                 }
 
-                m_plugInModel.deleteInstance(addIn->getBasePlugin(), addIn, true); //begin remove
+                m_plugInModel.deleteInstance(addIn, true); //begin remove
 
                 retval += decRefParamPlugins(addIn);
                 retval += aib->closeInst(&addIn);
 
-                m_plugInModel.deleteInstance(addIn->getBasePlugin(), addIn, false); //end remove
+                m_plugInModel.deleteInstance(addIn, false); //end remove
             }
             else
             {

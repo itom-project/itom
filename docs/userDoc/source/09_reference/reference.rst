@@ -26,7 +26,10 @@ Content:
    polygonMesh.rst
    region.rst
    rgba.rst
+<<<<<<< HEAD
    shape.rst
+=======
+>>>>>>> master
    timer.rst
    itom_GUI.rst
 

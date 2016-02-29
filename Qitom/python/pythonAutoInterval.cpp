@@ -43,9 +43,9 @@ PyObject* PythonAutoInterval::PyAutoInterval_new(PyTypeObject *type, PyObject * 
     PyAutoInterval* self = (PyAutoInterval *)type->tp_alloc(type, 0);
     if (self != NULL)
     {
-        self->interval.rmin() = std::numeric_limits<float>::min();
-        self->interval.rmax() = std::numeric_limits<float>::max();
-        self->interval.rauto() = false;
+        self->interval.rmin() = -std::numeric_limits<float>::infinity();
+        self->interval.rmax() = std::numeric_limits<float>::infinity();
+        self->interval.rauto() = true;
     }
 
     return (PyObject *)self;
@@ -53,7 +53,7 @@ PyObject* PythonAutoInterval::PyAutoInterval_new(PyTypeObject *type, PyObject * 
 
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(autoIntervalInit_doc,"autoInterval([min=-inf, max=inf, auto=false]) -> creates a new auto interval object.\n\
+PyDoc_STRVAR(autoIntervalInit_doc,"autoInterval([min=-inf, max=inf, auto=true]) -> creates a new auto interval object.\n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -61,14 +61,14 @@ min : {float} \n\
     minimum value of interval (default: -infinity) \n\
 max : {float}, \n\
     maximum value of interval (default: +infinity) \n\
-auto : {uint8} \n\
-    0 if interval is fixed (default), 1 if the interval can be scaled automatically");
+auto : {bool} \n\
+    false if interval is fixed, true if the interval can be scaled automatically (default)");
 int PythonAutoInterval::PyAutoInterval_init(PyAutoInterval *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"min", "max", "auto", NULL};
-    self->interval.rmin() = std::numeric_limits<float>::min();
-    self->interval.rmax() = std::numeric_limits<float>::max();
-    self->interval.rauto() = false;
+    self->interval.rmin() = -std::numeric_limits<float>::infinity();
+    self->interval.rmax() = std::numeric_limits<float>::infinity();
+    self->interval.rauto() = true;
 
     if (args == NULL && kwds == NULL)
     {

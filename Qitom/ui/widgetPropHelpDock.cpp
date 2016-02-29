@@ -845,7 +845,7 @@ void WidgetPropHelpDock::mnuRemoveDatabase()
 // Highlights a file in the explorer when mnuLocateOnDisc is clicked
 void WidgetPropHelpDock::showInGraphicalShell(const QString & filePath)
 {
-    #ifdef Q_WS_MAC
+#ifdef __APPLE__
     QStringList args;
     args << "-e";
     args << "tell application \"Finder\"";
@@ -858,7 +858,7 @@ void WidgetPropHelpDock::showInGraphicalShell(const QString & filePath)
     QProcess::startDetached("osascript", args);
 #endif
 
-#ifdef Q_WS_WIN
+#ifdef WIN32
     QStringList args;
     args << "/select," << QDir::toNativeSeparators(filePath);
     QProcess::startDetached("explorer", args);
