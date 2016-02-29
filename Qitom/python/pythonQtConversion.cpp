@@ -2465,6 +2465,7 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                     #endif
                 }
             }
+#endif //#if ITOM_POINTCLOUDLIBRARY > 0
             else if (type == QMetaType::type("QVector<double>"))
             {
                 bool ok;
@@ -2491,7 +2492,6 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                     #endif
                 }
             }
-#endif //#if ITOM_POINTCLOUDLIBRARY > 0
             else
             {
                 *retPtr = NULL;
