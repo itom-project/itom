@@ -1,9 +1,9 @@
-﻿.
+﻿
 
-.. include:: ../../include/global.inc
+.. include:: ../include/global.inc
 
 Classes and Objects
--------------------------------
+======================
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
@@ -11,9 +11,8 @@ Classes and Objects
 
 .. _tut-classes:
 
-*******
 Classes
-*******
+---------
 
 Compared with other programming languages, Python's class mechanism adds classes
 with a minimum of new syntax and semantics.  It is a mixture of the class
@@ -45,7 +44,7 @@ expect that few readers have heard of it.)
 .. _tut-object:
 
 A Word About Names and Objects
-==============================
+---------------------------------
 
 Objects have individuality, and multiple names (in multiple scopes) can be bound
 to the same object.  This is known as aliasing in other languages.  This is
@@ -63,7 +62,7 @@ need for two different argument passing mechanisms as in Pascal.
 .. _tut-scopes:
 
 Python Scopes and Namespaces
-============================
+-------------------------------
 
 Before introducing classes, I first have to tell you something about Python's
 scope rules.  Class definitions play some neat tricks with namespaces, and you
@@ -213,7 +212,7 @@ You can also see that there was no previous binding for *spam* before the
 .. _tut-firstclasses:
 
 A First Look at Classes
-=======================
+-------------------------
 
 Classes introduce a little bit of new syntax, three new object types, and some
 new semantics.
@@ -222,7 +221,7 @@ new semantics.
 .. _tut-classdefinition:
 
 Class Definition Syntax
------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The simplest form of class definition looks like this::
 
@@ -260,7 +259,7 @@ example).
 .. _tut-classobjects:
 
 Class Objects
--------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Class objects support two kinds of operations: attribute references and
 instantiation.
@@ -322,7 +321,7 @@ are passed on to :meth:`__init__`.  For example, ::
 .. _tut-instanceobjects:
 
 Instance Objects
-----------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Now what can we do with instance objects?  The only operations understood by
 instance objects are attribute references.  There are two kinds of valid
@@ -360,7 +359,7 @@ is a *method object*, not a function object.
 .. _tut-methodobjects:
 
 Method Objects
---------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Usually, a method is called right after it is bound::
 
@@ -403,7 +402,7 @@ argument list.
 .. _tut-remarks:
 
 Random Remarks
-==============
+------------------
 
 .. These should perhaps be placed more carefully...
 
@@ -488,7 +487,7 @@ It is stored as ``object.__class__``.
 .. _tut-inheritance:
 
 Inheritance
-===========
+-------------
 
 Of course, a language feature would not be worthy of the name "class" without
 supporting inheritance.  The syntax for a derived class definition looks like
@@ -549,7 +548,7 @@ Python has two built-in functions that work with inheritance:
 .. _tut-multiple:
 
 Multiple Inheritance
---------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Python supports a form of multiple inheritance as well.  A class definition with
 multiple base classes looks like this::
@@ -591,7 +590,7 @@ http://www.python.org/download/releases/2.3/mro/.
 .. _tut-private:
 
 Private Variables
-=================
+--------------------
 
 "Private" instance variables that cannot be accessed except from inside an
 object don't exist in Python.  However, there is a convention that is followed
@@ -646,7 +645,7 @@ to code that is byte-compiled together.  The same restriction applies to
 .. _tut-odds:
 
 Odds and Ends
-=============
+---------------
 
 Sometimes it is useful to have a data type similar to the Pascal "record" or C
 "struct", bundling together a few named data items.  An empty class definition
@@ -681,7 +680,7 @@ corresponding to the method.
 .. _tut-exceptionclasses:
 
 Exceptions Are Classes Too
-==========================
+---------------------------
 
 User-defined exceptions are identified by classes as well.  Using this mechanism
 it is possible to create extensible hierarchies of exceptions.
@@ -730,7 +729,7 @@ converted to a string using the built-in function :func:`str`.
 .. _tut-iterators:
 
 Iterators
-=========
+-----------
 
 By now you have probably noticed that most container objects can be looped over
 using a :keyword:`for` statement::
@@ -806,7 +805,7 @@ defines :meth:`__next__`, then :meth:`__iter__` can just return ``self``::
 .. _tut-generators:
 
 Generators
-==========
+-------------
 
 :term:`Generator`\s are a simple and powerful tool for creating iterators.  They
 are written like regular functions but use the :keyword:`yield` statement
@@ -848,7 +847,7 @@ than writing a regular function.
 .. _tut-genexps:
 
 Generator Expressions
-=====================
+-----------------------
 
 Some simple generators can be coded succinctly as expressions using a syntax
 similar to list comprehensions but with parentheses instead of brackets.  These

@@ -1,9 +1,9 @@
-.
 
-.. include:: ../../include/global.inc
+
+.. include:: ../include/global.inc
 
 Numbers and math 
--------------------------------------------------
+==================
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
@@ -11,7 +11,7 @@ Numbers and math
 
 
 Python arithmetic operators:
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------
 
 Here is an overview about the basic math operators and how they are used in |Pythonv3|. You can type simple math equations (e.g. the examples from the table below) directly into the |itom| terminal to see how some of the operators work. Alternatively, you can create yourself a new |Python| script file and type in some math there.
 
@@ -35,7 +35,7 @@ Here is an overview about the basic math operators and how they are used in |Pyt
 
 
 Python comparison/boolean operators:
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------------
 
 In addition, comparison operators are shown in the following table. As displayed in the example column, they mainly serve for the comparison of two numbers and return a boolean value - *true* or *false*.
 
@@ -59,7 +59,7 @@ In addition, comparison operators are shown in the following table. As displayed
 
 
 More examples
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------
 
 Here are a few more examples to practice for yourself how the different operators work. Type in the following source code in another script file and run the code to see what happens.
 

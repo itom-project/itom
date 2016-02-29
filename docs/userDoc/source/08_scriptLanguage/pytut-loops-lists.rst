@@ -1,16 +1,16 @@
-﻿.
+﻿
 
-.. include:: ../../include/global.inc
+.. include:: ../include/global.inc
 
 Loops and Lists
--------------------------------
+===============
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
 
 
 `for` Statements
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------
 
 The ``for`` statement in Python differs a bit from what you may be used to in C or Pascal. Rather than always iterating over an arithmetic progression of numbers, or giving the user the ability to define both the iteration step and halting condition, Python's ``for`` statement iterates over the items of any sequence (a list or a string), in the order that they appear in the sequence.  For example:
 
@@ -45,7 +45,7 @@ If you need to modify the sequence you are iterating over while inside the loop 
 
 
 The range Function
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------
 
 If you do need to iterate over a sequence of numbers, the built-in function :py:func:`range` comes in handy. It generates arithmetic progressions:
 
@@ -55,13 +55,6 @@ If you do need to iterate over a sequence of numbers, the built-in function :py:
     for i in range(5):
         print(i)
 
-::
-
-    0
-    1
-    2
-    3
-    4
 
 The given end point is never part of the generated sequence; ``range(10)`` generates 10 values, the legal indices for items of a sequence of length 10. It is possible to let the range start at another number, or to specify a different increment (even negative; sometimes this is called the 'step'):
 
@@ -93,7 +86,7 @@ In most such cases, however, it is convenient to use the :py:func:`enumerate` fu
 
 
 `break` and `continue` Statements, and `else` Clauses on Loops
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------------------------------------------
 
 The `break` statement, like in C, breaks out of the smallest enclosing `for` or `while` loop.
 

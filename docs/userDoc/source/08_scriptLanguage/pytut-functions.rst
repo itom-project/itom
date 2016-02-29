@@ -1,9 +1,9 @@
-﻿.
+﻿
 
-.. include:: ../../include/global.inc
+.. include:: ../include/global.inc
 
 Functions
--------------------------------
+==========
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
@@ -11,7 +11,7 @@ Functions
 
 
 Defining Functions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------
 
 We can create a function that writes the Fibonacci series to an arbitrary
 boundary::
@@ -118,7 +118,7 @@ This example, as usual, demonstrates some new Python features:
   
   
 More on Defining Functions
-==========================
+---------------------------
 
 It is also possible to define functions with a variable number of arguments.
 There are three forms, which can be combined.
@@ -127,7 +127,7 @@ There are three forms, which can be combined.
 .. _tut-defaultargs:
 
 Default Argument Values
------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The most useful form is to specify a default value for one or more arguments.
 This creates a function that can be called with fewer arguments than it is
@@ -202,7 +202,7 @@ write the function like this instead::
 .. _tut-keywordargs:
 
 Keyword Arguments
------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Functions can also be called using :term:`keyword arguments <keyword argument>`
 of the form ``kwarg=value``.  For instance, the following function::
@@ -291,7 +291,7 @@ if this is not done, the order in which the arguments are printed is undefined.
 .. _tut-arbitraryargs:
 
 Arbitrary Argument Lists
-------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. index::
   statement: *
@@ -322,7 +322,7 @@ keywords rather than positional arguments. ::
 .. _tut-unpacking-arguments:
 
 Unpacking Argument Lists
-------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The reverse situation occurs when the arguments are already in a list or tuple
 but need to be unpacked for a function call requiring separate positional
@@ -356,7 +356,7 @@ In the same fashion, dictionaries can deliver keyword arguments with the ``**``\
 .. _tut-lambda:
 
 Lambda Forms
-------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 By popular demand, a few features commonly found in functional programming
 languages like Lisp have been added to Python.  With the :keyword:`lambda`
@@ -380,7 +380,7 @@ reference variables from the containing scope::
 .. _tut-docstrings:
 
 Documentation Strings
----------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. index::
    single: docstrings

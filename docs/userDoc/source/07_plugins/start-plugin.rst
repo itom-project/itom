@@ -1,4 +1,4 @@
-.. include:: ../../include/global.inc
+.. include:: ../include/global.inc
 
 How to start and use a plugin
 ================================
@@ -25,7 +25,7 @@ All valid plugins are listed in the plugin toolbox of |itom|
     :align: left
 
 Script-based startup
-~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^
 
 In order to start a new instance of any hardware plugin using the python scripting language, search the plugin toolbox for the desired plugin and remember
 its plugin-name (case sensitive). Every plugin instance usually needs some mandatory and optional parameters for creating a new instance. Use the command :py:func:`itom.pluginHelp`
@@ -71,6 +71,6 @@ In order to close/delete an instance of a plugin you need to delete all variable
     really done if the garbage collection process is started which happens in periodical steps. You can force it using the method :py:func:`gc.collect` from the builtin module :py:mod:`gc`.
 
 GUI-based startup
-~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^
 
 TODO

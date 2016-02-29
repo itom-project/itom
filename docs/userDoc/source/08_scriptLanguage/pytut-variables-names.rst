@@ -1,16 +1,16 @@
-﻿.
+﻿
 
-.. include:: ../../include/global.inc
+.. include:: ../include/global.inc
 
 Variables and names 
---------------------
+====================
 
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
 
 Using variables
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------
 
 Now you can output things with :py:func:`print` and you can do math. The next step is to learn about variables. In programming, a variable is nothing more than a name for something and helps making the code easier to read. In |Python| the equal sign (``=``) is used to assign a value to a variable.
 

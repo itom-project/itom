@@ -1,9 +1,9 @@
-﻿.
+﻿
 
-.. include:: ../../include/global.inc
+.. include:: ../include/global.inc
 
 Dictionaries, Lists and Tuples
--------------------------------
+===============================
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
@@ -11,13 +11,13 @@ Dictionaries, Lists and Tuples
 
 
 Dictionaries
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------
 
 One of Python's built-in datatypes is the dictionary, which defines one-to-one relationships between keys and values.
 
 
 Defining Dictionaries
-""""""""""""""""""""""""""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^
 
 It is best to think of a dictionary as an unordered set of *key: value* pairs, with the requirement that the keys are unique (within one dictionary). A pair of braces creates an empty dictionary: ``{}``. Placing a comma-separated list of key:value pairs within the braces adds initial key:value pairs to the dictionary; this is also the way dictionaries are written on output.
 
@@ -48,7 +48,7 @@ It is best to think of a dictionary as an unordered set of *key: value* pairs, w
 
 
 Modifying Dictionaries
-""""""""""""""""""""""""""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 You can not have duplicate keys in a dictionary. Assigning a value to an existing key will wipe out the old value. You can add new key-value pairs at any time. This syntax is identical to modifying existing values. Dictionaries have no concept of order among elements.
 
@@ -101,7 +101,7 @@ Dictionaries aren't just for strings. Dictionary values can be any datatype, inc
 
 
 Deleting Items From Dictionaries
-""""""""""""""""""""""""""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 
@@ -128,13 +128,13 @@ Deleting Items From Dictionaries
 
 
 Lists
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------
 
 Lists are Python's workhorse datatype. Variables can be named anything, and Python keeps track of the datatype internally. 
 
 
 Defining Lists
-""""""""""""""""""""""""""""""""""""""""""""""
+^^^^^^^^^^^^^^
 
 A list is an ordered set of elements enclosed in square brackets. It can be used like a zero-based array.
 
@@ -159,7 +159,7 @@ A list is an ordered set of elements enclosed in square brackets. It can be used
 
 
 Negative List Indices
-""""""""""""""""""""""""""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^
 
 A negative index accesses elements from the end of the list counting backwards. The last element of any non-empty list is always ``li[-1]``. If the negative index is confusing to you, think of it this way: ``li[-n] == li[len(li) - n]``.
 
@@ -181,7 +181,7 @@ A negative index accesses elements from the end of the list counting backwards. 
 
 
 Slicing a List
-""""""""""""""""""""""""""""""""""""""""""""""
+^^^^^^^^^^^^^^
 
 You can get a subset of a list, called a `slice` by specifying two indices. The return value is a new list containing all the elements of the list, in order, starting with the first slice index up to but not including the second slice index.
 
@@ -227,7 +227,7 @@ If it helps, you can think of it this way: reading the list from left to right, 
 
 
 Adding Elements to Lists
-""""""""""""""""""""""""""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 
@@ -260,7 +260,7 @@ Adding Elements to Lists
 
 
 Difference between append und extend
-""""""""""""""""""""""""""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Lists have two methods, :py:func:`extend` and :py:func:`append`, that look like they do the same thing, but are in fact completely different. :py:func:`extend` takes a single argument, which is always a list, and adds each of the elements of that list to the original list. On the other hand, :py:func:`append` takes one argument, which can be any data type, and simply adds it to the end of the list.
 
@@ -299,7 +299,7 @@ Lists have two methods, :py:func:`extend` and :py:func:`append`, that look like 
 
 
 Searching Lists
-""""""""""""""""""""""""""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 
@@ -328,7 +328,7 @@ Searching Lists
 
 
 Deleting List Elements
-""""""""""""""""""""""""""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 
@@ -365,7 +365,7 @@ Deleting List Elements
 
 
 Using List Operators
-""""""""""""""""""""""""""""""""""""""""""""""
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Lists can also be concatenated with the ``+`` operator. ``list = list + otherlist`` has the same result as ``list.extend(otherlist)``. But the ``+`` operator returns a new (concatenated) list as a value, whereas extend only alters an existing list. This means that extend is faster, especially for large lists.
    
@@ -393,7 +393,7 @@ Lists can also be concatenated with the ``+`` operator. ``list = list + otherlis
 
 
 Tuples
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------
 
 A tuple is an immutable list and can not be changed in any way once it is created. A tuple is defined in the same way as a list, except that the whole set of elements is enclosed in parentheses instead of square brackets. The elements of a tuple have a defined order and the indices are zero-based, just like a list.
 
@@ -435,7 +435,3 @@ Keep in mind that tuples have not methods.
     
     # You can use "in" to see if an element exists in the tuple.
     "z" in t
-
-::
-
-    True

@@ -1,15 +1,15 @@
-﻿.
+﻿
 
-.. include:: ../../include/global.inc
+.. include:: ../include/global.inc
 
 Strings and text 
--------------------------------
+=================
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
 
 Strings
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------
 
 Besides numbers, |Python| can also manipulate strings, which can be expressed in several ways. A string is usually a bit of text you want to display to someone, or "export" out of the program you are writing. They can be enclosed in single quotes or double quotes:
 
@@ -34,7 +34,7 @@ Besides numbers, |Python| can also manipulate strings, which can be expressed in
 
 
 String formatting
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------
 
 Additionally, Strings may contain format characters such as ``%d`` from the previous section to output or convert to integer decimals. Here are some more:
 
@@ -81,7 +81,7 @@ Here are some examples to try for yourself:
 
 
 More on strings
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------
 
 String literals can span multiple lines in several ways. Continuation lines can be used, with a backslash as the last character on the line indicating that the next line is a logical continuation of the line:
 
@@ -131,6 +131,6 @@ If we make the string literal a "raw" string, \n sequences are not converted to 
     
     
 Byte array....
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------
 
 :)

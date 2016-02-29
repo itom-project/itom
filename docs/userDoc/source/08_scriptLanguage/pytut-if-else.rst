@@ -1,9 +1,9 @@
-﻿.
+﻿
 
-.. include:: ../../include/global.inc
+.. include:: ../include/global.inc
 
 If and else statements
--------------------------------
+=======================
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
@@ -11,7 +11,7 @@ If and else statements
 
 
 `if` Statements
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------
 Perhaps the most well-known statement type is the `if` statement. For example:
 
 .. code-block:: python

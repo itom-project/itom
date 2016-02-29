@@ -1,9 +1,9 @@
-﻿.
+﻿
 
-.. include:: ../../include/global.inc
+.. include:: ../include/global.inc
 
 Modules
--------------------------------
+========
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
@@ -11,18 +11,18 @@ Modules
 
 
 Import Modules
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------
 
 Reload Modules in |itom|
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------
 
 see :ref:`here <script-language-reload-modules>` to get more information about reloading modules in |itom|.
 
 path Variablen
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------
 
 itom-packages Folder
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------
 
 .. _tut-modules:
 
@@ -90,7 +90,7 @@ If you intend to use a function often you can assign it to a local name::
 .. _tut-moremodules:
 
 More on Modules
-===============
+------------------
 
 A module can contain executable statements as well as function definitions.
 These statements are intended to initialize the module. They are executed only
@@ -144,7 +144,7 @@ use it to save typing in interactive sessions.
 .. _tut-modulesasscripts:
 
 Executing modules as scripts
-----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 When you run a Python module by executing the corresponding python script 
 the code in the module will be executed, just as if you imported it, but with
@@ -174,7 +174,7 @@ for testing purposes (running the module as a script executes a test suite).
 .. _tut-searchpath:
 
 The Module Search Path
-----------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. index:: triple: module; search; path
 
@@ -205,7 +205,7 @@ Per default, the directory **itom-packages** (sub-directory of |itom| installati
 directory, is always part of the :data:`sys.path` variable.
 
 "Compiled" Python files
------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 As an important speed-up of the start-up time for short programs that use a lot
 of standard modules, if a file called :file:`spam.pyc` exists in the directory
@@ -263,7 +263,7 @@ Some tips for experts:
 .. _tut-standardmodules:
 
 Standard Modules
-================
+-------------------
 
 .. index:: module: sys
 
@@ -305,7 +305,7 @@ operations::
 .. _tut-dir:
 
 The :func:`dir` Function
-========================
+--------------------------
 
 The built-in function :func:`dir` is used to find out which names a module
 defines.  It returns a sorted list of strings::
@@ -368,7 +368,7 @@ want a list of those, they are defined in the standard module
 .. _tut-packages:
 
 Packages
-========
+---------
 
 Packages are a way of structuring Python's module namespace by using "dotted
 module names".  For example, the module name :mod:`A.B` designates a submodule

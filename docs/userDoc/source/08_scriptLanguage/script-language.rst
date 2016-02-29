@@ -1,3 +1,5 @@
+
+
 .. include:: ../include/global.inc
 
 .. _scriptLanguage:
@@ -26,4 +28,4 @@ contains a huge tutorial about |python| which is good for newbies. This section 
     pymod-reload-modules.rst
     pymod-limitations.rst
     pymod-problems-and-solutions.rst
-    py-tutorial/pytut-about.rst
+    pytut-about.rst

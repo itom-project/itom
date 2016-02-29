@@ -1,9 +1,9 @@
-﻿.
+﻿
 
-.. include:: ../../include/global.inc
+.. include:: ../include/global.inc
 
 Reading and writing files
--------------------------------
+===========================
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 

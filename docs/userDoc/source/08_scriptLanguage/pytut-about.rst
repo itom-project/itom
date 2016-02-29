@@ -1,9 +1,9 @@
-﻿..
+﻿
 
-.. include:: ../../include/global.inc
+.. include:: ../include/global.inc
 
 Python tutorial
-**********************************
+******************
 
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
@@ -14,7 +14,7 @@ The goal of this tutorial is to give prospective itom users a quick overview abo
 **Content**
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 1
 
     pytut-runscript.rst
     pytut-numbers_math.rst
@@ -41,5 +41,3 @@ get good introductions to Python 3 (always be careful to only read tutorials abo
 * `Python examples (example source code) on javas2s.com (v2) <http://www.java2s.com/Code/Python/CatalogPython.htm>`_
 * `Python Tutorial on tutorialspoint.com (v2) <http://www.tutorialspoint.com/python/python_tutorial.pdf>`_
 * `Moving from Python 2 to Python 3 (Cheatsheet) <http://ptgmedia.pearsoncmg.com/imprint_downloads/informit/promotions/python/python2python3.pdf>`_
-
-
