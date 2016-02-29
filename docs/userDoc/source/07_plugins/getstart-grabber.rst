@@ -198,11 +198,6 @@ If you are developing your own GUI and want wo use live images from a grabber, y
 
 Demo script cameraWindow.py
 ================================
-A demo script named **cameraWindow.py** is provided, which demonstrates basic grabber use. Detailed discussion of this script is found below.
+A demo script named **cameraWindow.py** is provided, which demonstrates basic grabber use. Detailed discussion of this script is :ref:`available<demoCameraWindow>`.
 
 
-.. toctree::
-    :maxdepth: 1
-    
-    demoCameraWindow.rst
-    
