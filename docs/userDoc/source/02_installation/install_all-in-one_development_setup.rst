@@ -107,7 +107,7 @@ Then execute the following steps:
     .. note::
         
         From Qt5 on, the Visual Studio debugger is sometimes not able to show the value of QString, QVector... in the tool tip text of a variable even if the Qt-AddIn
-        is installed. If this is the case, please uncheck the option "Enable native Edit and Continue" in Visual Studio (menu -> options -> debugging -> Edit and Continue).
+        is installed. If this is the case, please uncheck the option "Enable native Edit and Continue" in Visual Studio (menu -> tools -> options -> debugging -> Edit and Continue).
         
         For more information see http://stackoverflow.com/questions/26780517/qt5-visual-studio-2012-add-in-does-not-allow-debugging-into-qstack-qvector
     

@@ -14,8 +14,8 @@ categories
 * DObjStaticLine
 
 .. figure:: images/plot1d_2.png
-    :scale: 70%
-    :align: left
+    :scale: 100%
+    :align: center
     
 This plot has been created by the following code snippet:
 
@@ -47,7 +47,7 @@ You can also use the "matplotlib"-backend to plot slices or xy-coordinates. See 
 The plot-canvas can be exported to vector and bitmap-graphics via button or menu entry or it can be exported to clipBoard via ctrl-c or a public slot.
 
 Properties
----------------
+=================
 
 **selectedGeometry** : *int*, get the currently selected geometric element within this plot
 
@@ -91,7 +91,7 @@ Properties
 
 
 Signals
----------------
+=================
 
 **plotItemsFinished(int,bool)**: Signal emitted if plotting of n-elements if finished. Use this for non-blocking synchronisation.
 
@@ -125,7 +125,7 @@ Signals
  
  
 Slots
----------------
+=================
 
 **ito::DataObject getDisplayed( )**:
 

@@ -1,8 +1,8 @@
 Quick tutorial to plots and figures
-====================================
+******************************************
 
 Plots of data objects
-----------------------
+==========================
 
 The most common way to plot an arbitrary data object is the :py:meth:`~itom.plot` command contained in the module :py:mod:`itom`.
 
@@ -81,7 +81,7 @@ the plot into the main window of itom.
 
 
 Live images of cameras and grabbers
-------------------------------------
+=========================================
 
 itom is not only able to plot data objects but can also show live streams of connected and opened cameras. Cameras are implemented as plugins of type
 dataIO that also have the grabber-type flag defined (see the section grabbers of your :ref:`plugin toolbox <gui-plugins>` in itom). If a live image of a specific camera
@@ -115,7 +115,7 @@ You can also show the live image of any camera using the GUI. Right-click on the
 .. _PlotsProperties:
     
 Properties of plots
------------------------------
+=========================================
 
 Any plots have properties defined, which indicate the appearance or currently depicted data object or camera. To access these cameras you need to get the
 instance of the plot or live image item. This is always an instance of the class :py:class:`~itom.plotItem`. This class is inherited by `~itom.uiItem` which
@@ -168,7 +168,7 @@ set some properties by passing a dictionary with all name, values pairs to the '
     plot(data2d, properties={"yAxisFlipped":True, "title":"My self configured plot"})
 
 Tags and attributes of dataObjects in plots
-----------------------------------------------
+===================================================
 
 Many plots, especially the 1D and 2D plots (type *itom1dQwtPlot*, *itom2dQwtPlot*), can read several tags and attributes from the plotted dataObject. This is in detail:
 

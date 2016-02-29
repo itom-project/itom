@@ -24,7 +24,7 @@ that can then be run or debugged. The menus of the script editor window provide 
 functions are also accessible via the toolbar and / or the context menu of the script area.
 
 Basic functions
-~~~~~~~~~~~~~~~~
+========================
 
 The file menu gives the opportunity to open an existing script or create a new one, to save the current script or to print or close the script.
 
@@ -42,7 +42,7 @@ Basic and advanced functions to edit the current script are contained in the **e
 .. _gui-editor-run-debug-script:
 
 Run or debug the script
-~~~~~~~~~~~~~~~~~~~~~~~~
+========================
 
 In order to run or debug the script, use the functions given in the **script** menu.
 
@@ -68,7 +68,7 @@ More information about breakpoints are given in the next section.
 .. _gui-editor-breakpoints:
 
 Breakpoints
-~~~~~~~~~~~~
+========================
 
 Breakpoints are red or gray points in the right side of the margin of a script window. In every valid script line, there can be at most one breakpoint.
 A breakpoint is added to a specific line by clicking the margin at the right side of the line numbers. You cannot add a breakpoint to a commented or empty line.
@@ -103,7 +103,7 @@ The breakpoints of this and other scripts are all listed in the :ref:`breakpoint
 
 
 Syntax highlighting and auto completion
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+================================================
 
 A script highlighting mechanism is implemented to simplify the reading and programming of the script. You can change the styles of the syntax highlighting in the :ref:`property dialog <gui-prop-py-styles>` (tab *styles*) of |itom|.
 
@@ -122,7 +122,7 @@ Calltips always appear if you open a rounded bracket to give the arguments of a 
 .. _gui-editor-class-navigator:
 
 Direction class and method navigator
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+================================================
 
 Above every script, there are two combo boxes that are part of a class and method navigator. If these combo boxes are not available, you need to enable this navigator in the property dialog, :ref:`tab general <gui-prop-py-general>`. After a configurable number of seconds after the last change in the script, it is analyzed and the combo boxes are adapted with respect to the current structure of the script.
 
@@ -140,7 +140,7 @@ categorized into the global namespace (**Global Scope**).
 .. _gui-editor-syntax-check:
 
 Automatic syntax check
-~~~~~~~~~~~~~~~~~~~~~~~
+========================
 
 If desired, the current script can be checked for syntax and other errors or hints. This is done using the python package **frosted** (https://pypi.python.org/pypi/frosted/).
 You need to have this package installed in order to benefit from this service. If **frosted** is not installed, the syntax check is automatically disabled.
@@ -168,7 +168,7 @@ for a bug and a bookmark in one line. Please note, that one line can also contai
 .. _gui-editor-iconbrowser:
 
 Icon-Browser
-~~~~~~~~~~~~~~~~
+========================
 
 To help adding icons to user defined buttons, menus or user interfaces, the icon browser of the script editor window shows a list of icons that come with |itom| or loaded plugins.
 The icon browser is opened via the menu **edit >> icon browser...** of any script editor window or the keyboard shortcut **Ctrl + B**.

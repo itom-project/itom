@@ -3,7 +3,7 @@
 .. _primitives:
 
 Markers, user selections and geometric shapes
-==============================================
+**************************************************
 
 The plot-widgets :ref:`itom1dqwtplot` and :ref:`itom2dqwtplot` (short: Qwt-plots) support displaying markers, geometric shapes by script or by user interaction.
 This section will give a short introduction about plotting, read- /write-functions and the corresponding plots and the internal geometric element structure.
@@ -17,14 +17,14 @@ Displaying geometric shapes or markers onto Qwt-plots can be done by three diffe
 * Get the position and size of specified shapes or markers by the user and optionally display them by script.
 
 Drawing items into a Qwt-plot
--------------------------------------
+==================================
 
 The plot functionality can be accessed by three different ways. The first way is the GUI based approach where the user presses the 
 "switch draw mode"-button in the button-bar of the plot. The button represents the current item to be plotted. 
 The red X ("clear button") will delete all geometric elements within the plot either drawn by hand or by script.
 
 .. figure:: images/drawInto2DToolbarIcons.png
-    :scale: 50%
+    :scale: 100%
     :align: center
 
 At the moment "itom" supports the following shapes:
@@ -40,7 +40,7 @@ During the design mode, a green line indicates the current position and size of 
 is finished and its color turns to the corresponding inverse color of the current color palette. 
     
 .. figure:: images/drawInto2D.png
-    :scale: 50%
+    :scale: 100%
     :align: left
 
 By clicking the **tools >> clear marker** menu, all current shapes are deleted. After creation the geometric elements can be edited by left-clicking one of the element handles which becomes high-lighted (squares) and moving the mouse.
@@ -50,7 +50,7 @@ Rectangles and ellipses will be become squares or circles according to plot coor
 To avoid confusion with plot aspect, a button for fixed axis aspect ratio ("1:1") was added to the plot bar.
 
 Script based pick and plot from / to a Qwt-widget
----------------------------------------------------------
+====================================================================
 
 To allow more complex user interaction with scripts, e.g. script based element picking, the plot functionality can be started by script either blocking or non-blocking.
 
@@ -106,7 +106,7 @@ In this case the elements are aligned column-wise. This means each column corres
 For the different definitions of the geometric elements see section "Indexing of Geometric Elements".
 
 Implemented Functions, Signals and Slots
-----------------------------------------------
+===================================================
 
 The Qwt-plot widgets functions had to be updated. The Qwt-Widgets got the following properties, respectively setter- / getter-functions related to plotting:
 
@@ -144,7 +144,7 @@ For the blocking connection the plotItem-class got the additional function drawA
     If *myGui.plotObjectName* is not an instance of :py:class:`~itom.plotItem` a runtime error is thrown. This cast is only available for itom > 1.4.0.
 
 Indexing for Geometric Elements
-----------------------------------------------
+==================================
 
 The definition of the geometric elements depends on the implementation. The "plotMarker" and its corresponding getter- / setter-function uses a Matlab orientated structure.
 The structure a dataObject with 8 rows and n columns where n depends on the number of elements. 
@@ -190,14 +190,14 @@ All other values depends on the primitive type and may change between each type.
     
     
 Evaluation of Geometric Elements 
-----------------------------------------------
+==================================
 
 The evaluateGeomtrics-widget is designed to load geometric definition stored in a float32 dataObject with a column-size of >10 elements and a row for each geometric element to display.
 Further more it allows the evaluation of geometric relations between the geometric primitives. See section :ref:`listCustomDesignerWidgets` for the widget description.
 
 
 Demo Scripts and Examples 
-----------------------------------------------
+==================================
 
 - **uiMeasureToolMain.py**
   
