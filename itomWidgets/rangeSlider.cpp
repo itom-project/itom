@@ -1111,7 +1111,7 @@ bool RangeSlider::event(QEvent* _event)
 void RangeSlider::setLimitsFromIntervalMeta(const ito::IntervalMeta &intervalMeta)
 {
     Q_D(RangeSlider);
-    qDebug() << "before: " << minimum() << maximum() <<  d->m_MinimumRange << maximumRange() << stepSizePosition() << stepSizeRange() << minimumValue() << maximumValue();
+    //qDebug() << "before: " << minimum() << maximum() <<  d->m_MinimumRange << maximumRange() << stepSizePosition() << stepSizeRange() << minimumValue() << maximumValue();
     int m = maximum();
 
     d->m_RangeIncludesLimits = !intervalMeta.isIntervalNotRange();
@@ -1129,5 +1129,5 @@ void RangeSlider::setLimitsFromIntervalMeta(const ito::IntervalMeta &intervalMet
     d->m_MinimumRange = d->boundUnsigned(0, intervalMeta.getSizeMin() + d->m_StepSizeRange, d->m_StepSizeRange, intervalMeta.getSizeMin());
     setMaximumRange( std::min(intervalMeta.getMax() - intervalMeta.getMin() + offset,intervalMeta.getSizeMax()) ); //using setMaximumRange in order to finally adapt the current values to allowed values
 
-    qDebug() << "after: " << minimum() << maximum() <<  d->m_MinimumRange << maximumRange() << stepSizePosition() << stepSizeRange() << minimumValue() << maximumValue();
+    //qDebug() << "after: " << minimum() << maximum() <<  d->m_MinimumRange << maximumRange() << stepSizePosition() << stepSizeRange() << minimumValue() << maximumValue();
 }
