@@ -421,11 +421,25 @@ void PipManager::installPackage(const PipInstall &installSettings, const PipGene
 
         if (installSettings.type == PipInstall::typeWhl)
         {
-            arguments << "--use-wheel";
+            if (m_pipVersion >= 0x070100)
+            {
+                arguments << "--only-binary=:all:";
+            }
+            else
+            {
+                arguments << "--use-wheel";
+            }
         }
         else
         {
-            arguments << "--no-use-wheel";
+            if (m_pipVersion >= 0x070100)
+            {
+                arguments << "--no-binary=:all:";
+            }
+            else
+            {
+                arguments << "--no-use-wheel";
+            }
         }
 
         arguments << parseGeneralOptions(options, false, true); //version has already been checked in listAvailablePackages. This is sufficient.
