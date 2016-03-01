@@ -136,8 +136,8 @@ is added as subitem of *Menu1*. Hence, it is appended to *Button1*. Afterwards t
 a children respectively, called *Button2* and *Button3*.
 
 .. figure:: images/menu.png
-    :scale: 70%
-    :align: left
+    :scale: 100%
+    :align: center
 
 .. note::
     
@@ -173,8 +173,8 @@ Besides assigning an external icon-file to the **icon** parameter, |itom| also g
 the |itom| application. All icons, that are included in these resources are listed in the **icon browser**:
 
 .. figure:: images/iconBrowser.png
-    :scale: 70%
-    :align: left
+    :scale: 100%
+    :align: center
 
 The icon browser is accessible in any script window by its menu **edit >> icon browser** (or Ctrl+B). If you found your desired icon, double click
 on the entry in order to copy the appropriate string to the clipboard and paste it afterwards into your script. Resource locations always start witha colon (:) sign.
