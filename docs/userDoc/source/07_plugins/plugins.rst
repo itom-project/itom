@@ -19,6 +19,7 @@ See the following sections in order to get more information about these plugins:
     getstart-grabber.rst
     getstart-adda.rst
     getstart-actuator.rst
+    getstart-filter.rst
     
 If you want to program your own plugin, see the following sections of the documentation:
 
