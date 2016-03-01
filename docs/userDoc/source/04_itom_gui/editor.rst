@@ -9,7 +9,7 @@ The script editor is one of the main windows of |itom| and allows creating, modi
 
 .. figure:: images/scripteditor.png
     :scale: 100%
-    :align: left
+    :align: center
 
 Every script editor window can display one or multiple script files that are separated in different tabs at the bottom of the window.
 Click a tab to show the corresponding script in the center of the window. You can close, save, reorder or (un-)dock every single tab
@@ -17,7 +17,7 @@ by its context menu.
 
 .. figure:: images/scripteditor-tab-context.png
     :scale: 100%
-    :align: left
+    :align: center
 
 The content of the current script file is displayed in the center of the script editor window. Use this text editor to write or modify a script
 that can then be run or debugged. The menus of the script editor window provide many possibilities to edit and finally run or debug the script. The most important
@@ -48,7 +48,7 @@ In order to run or debug the script, use the functions given in the **script** m
 
 .. figure:: images/editor_run_debug.png
     :scale: 100%
-    :align: left
+    :align: center
 
 These are:
 
@@ -76,7 +76,7 @@ If you clear or comment a line that already contains a breakpoint, the script de
 
 .. figure:: images/editor-breakpoints.png
     :scale: 100%
-    :align: left
+    :align: center
 
 There are three different types of breakpoints:
 
@@ -86,7 +86,7 @@ There are three different types of breakpoints:
 
 .. figure:: images/editor-edit-breakpoints.png
     :scale: 100%
-    :align: left
+    :align: center
 
 The **edit breakpoint** dialog allows configuring the following properties of a breakpoint:
 
@@ -128,7 +128,7 @@ Above every script, there are two combo boxes that are part of a class and metho
 
 .. figure:: images/editor-class-navigator.png
     :scale: 100%
-    :align: left
+    :align: center
 
 The left combobox displays all classes and the global namespace of the script. By clicking on any class name, the cursor jumps to the class and the name is highlighted. The right combobox shows the sub-items that belong
 to the chosen class or namespace.
@@ -150,7 +150,7 @@ hints, warnings or errors detected by **frosted** will be displayed via a bug sy
 
 .. figure:: images/editor-syntax-check.png
     :scale: 100%
-    :align: left
+    :align: center
 
 The tooltip text of every bug icon displays the reason for the bug. Since the bug icon is displayed in the same margin column than the bookmarks, there is also a combined icon
 for a bug and a bookmark in one line. Please note, that one line can also contain multiple syntax hints, they are displayed in multiple lines in the tooltip text.
@@ -175,7 +175,7 @@ The icon browser is opened via the menu **edit >> icon browser...** of any scrip
 
 .. figure:: images/editorIconBrowser.png
     :scale: 100%
-    :align: left
+    :align: center
 
 These icons can directly be used inside of any script by their *virtual icon path*. If you choose a specific icon, you have the following options via the buttons on the right side:
 
