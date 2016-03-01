@@ -156,7 +156,7 @@ itom.newScript() -> opens an empty, new script in the current script window.
 itom.numeric:: [module]
 itom.openScript(filename) -> open the given script in current script window.
 itom.plot(data, [className, properties]) -> plots a dataObject, pointCloud or polygonMesh in a new figure
-itom.plotHelp(plotName [, dictionary = False]) -> generates an online help for the specified plot.
+itom.plotHelp([plotName , dictionary = False]) -> generates an online help for the specified plot.
 itom.plotItem(figure | uiItem[, subplotIdx]) -> instance of the plot or subplot of a figure.
 itom.plotItem.PrimitiveCircle
 itom.plotItem.PrimitiveEllipse
