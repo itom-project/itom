@@ -376,19 +376,19 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="152"/>
-        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="167"/>
-        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="172"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="154"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="170"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="175"/>
         <source>Timeout while waiting for answer from camera.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="516"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="526"/>
         <source>Error during setPosRel: Vectors differ in size</source>
         <translation type="unfinished">Fehler bei setPosRel: Vektoren unterscheiden sich in der Größe</translation>
     </message>
     <message>
-        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="552"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="562"/>
         <source>Error during setPosAbs: Vectors differ in size</source>
         <translation type="unfinished">Fehler bei setPosAbs: Vektoren unterscheiden sich in der Größe</translation>
     </message>
@@ -641,22 +641,22 @@ Type conflict for %1</source>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../common/addInInterface.h" line="1026"/>
+        <location filename="../../common/addInInterface.h" line="993"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished">Nicht initialisierter Vektor für Pflichtparameter!</translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.h" line="1030"/>
+        <location filename="../../common/addInInterface.h" line="997"/>
         <source>uninitialized vector for optional parameters!</source>
         <translation type="unfinished">Nicht initialisierter Vektor für optionale Parameter!</translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.h" line="1034"/>
+        <location filename="../../common/addInInterface.h" line="1001"/>
         <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished">Nicht initialisierter Vektor für Ausgabeparameter!</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="900"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="1003"/>
         <source>Constructor must be overwritten</source>
         <translation type="unfinished">Der Konstruktor muss überschrieben sein</translation>
     </message>
@@ -664,17 +664,17 @@ Type conflict for %1</source>
 <context>
     <name>ito::AddInBase</name>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="312"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="390"/>
         <source>function execution unused in this plugin</source>
         <translation type="unfinished">Die Funktion &apos;execution&apos; wird in diesem Plugin nicht benutzt</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="341"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="432"/>
         <source>Toolbox</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="507"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="610"/>
         <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
         <translation type="unfinished">Das Plugin hat vermutlich einen Konfigurationsdialog, aber die Methode &apos;showConfDialog&apos; wurde nicht implementiert</translation>
     </message>
@@ -682,33 +682,33 @@ Type conflict for %1</source>
 <context>
     <name>ito::AddInDataIO</name>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="570"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="673"/>
         <source>listener does not have a slot </source>
         <translation type="unfinished">&apos;Listener&apos; hat keinen Slot </translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="574"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="677"/>
         <source>this object already has been registered as listener</source>
         <translation type="unfinished">Diese Objekt wurde bereits beim &apos;Listener&apos; registriert</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="586"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="689"/>
         <source>timer could not be set</source>
         <translation type="unfinished">Timer kann nicht gesetzt werden</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="611"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="714"/>
         <source>the object could not been removed from the listener list</source>
         <translation type="unfinished">Das Objekt kann nicht aus der &apos;Listener&apos;-Liste entfernt werden</translation>
     </message>
     <message>
-        <location filename="../../common/sources/addInInterface.cpp" line="705"/>
-        <location filename="../../common/sources/addInInterface.cpp" line="725"/>
-        <location filename="../../common/sources/addInInterface.cpp" line="743"/>
-        <location filename="../../common/sources/addInInterface.cpp" line="761"/>
-        <location filename="../../common/sources/addInInterface.cpp" line="779"/>
-        <location filename="../../common/sources/addInInterface.cpp" line="797"/>
-        <location filename="../../common/sources/addInInterface.cpp" line="815"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="808"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="828"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="846"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="864"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="882"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="900"/>
+        <location filename="../../common/sources/addInInterface.cpp" line="918"/>
         <source>not implemented</source>
         <translation type="unfinished">Nicht implementiert</translation>
     </message>
