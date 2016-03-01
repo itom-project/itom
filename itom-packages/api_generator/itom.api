@@ -23,7 +23,7 @@ itom.actuator.showConfiguration() -> show configuration dialog of the plugin
 itom.actuator.showToolbox() -> open toolbox of the plugin
 itom.addButton(toolbarName, buttonName, code [, icon, argtuple]) -> adds a button to a toolbar in the main window
 itom.addMenu(type, key [, name, code, icon, argtuple]) -> adds an element to the menu bar of itom.
-itom.autoInterval([min=-inf, max=inf, auto=false]) -> creates a new auto interval object.
+itom.autoInterval([min=-inf, max=inf, auto=true]) -> creates a new auto interval object.
 itom.autoInterval.auto
 itom.autoInterval.max
 itom.autoInterval.min
@@ -297,6 +297,7 @@ itom.ui.TOPDOCKWIDGETAREA
 itom.ui.TYPEDIALOG
 itom.ui.TYPEDOCKWIDGET
 itom.ui.TYPEWINDOW
+itom.ui.availableWidgets() -> return a list of currently available widgets (that can be directly loaded in ui-files at runtime)
 itom.ui.createNewPluginWidget(widgetName[, mandparams, optparams]) -> creates widget defined by any algorithm plugin and returns the instance of type 'ui'
 itom.ui.createNewPluginWidget2(widgetName [, paramsArgs, paramsDict, type = -1, dialogButtonBar, dialogButtons, childOfMainWindow, deleteOnClose, dockWidgetArea) -> creates widget defined by any algorithm plugin and returns the instance of type 'ui'
 itom.ui.getDouble(title, label, defaultValue [, min, max, decimals=3]) -> shows a dialog to get a double value from the user

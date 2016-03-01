@@ -30,6 +30,7 @@ Doku erstellen:
 2. itom starten
 3. in \Build\itom\docs\userDoc die python-Datei "create_doc.py" ausführen und Hilfe starten
 4. in \Build\itom\docs\pluginDoc die python-Datei "create_all_plugin_docs.py" ausführen, Build-Verzeichnis der freien Plugins wählen und Hilfe starten
+5. Syntax Hilfe API Datei erstellen: E:\itom\sources\itom\itom-packages\api_generator\gen_python3_api.py ausführen (dies führt dann zu einer Änderung in einer *.api Datei. Diese muss eingecheckt werden)
 
 
 CHANGE-LOG
@@ -48,3 +49,4 @@ Setup 1.2.0  - Erstellt am 27.05.2014 - AddInInterface "ito.AddIn.InterfaceBase/
 Setup 1.3.0  - Erstellt am 08.10.2014 - AddInInterface "ito.AddIn.InterfaceBase/1.3.0"
 Setup 1.4.0  - Erstellt am 17.02.2015 - AddInInterface "ito.AddIn.InterfaceBase/1.3.1"
 Setup 2.0.0  - Erstellt am 20.07.2015 - AddInInterface "ito.AddIn.InterfaceBase/2.0.0"
+Setup 2.1.0  - Erstellt am 01.03.2016 - AddInInterface "ito.AddIn.InterfaceBase/2.3.0"

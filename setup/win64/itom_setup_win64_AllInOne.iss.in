@@ -7,8 +7,9 @@
 #define SourceDirItomBuild "${CMAKE_CURRENT_BINARY_DIR}"
 #define SourceDirQT "${QT_BINARY_DIR}"
 #define SourceDirOpenCV "${OpenCV_BIN_DIR}"
-#define SourceRedistributable "W:\m\ITOM\Installationen\1. MS VisualStudio 2010 Pro"
-#define SourceDirPython "W:\m\ITOM\Installationen\5. Python 3.4\64 Bit"
+#define SourceRedistributable2010 "W:\m\ITOM\Installationen\1. MS VisualStudio 2010 Pro"
+#define SourceRedistributable2015 "W:\m\ITOM\Installationen\5. Python 3.5\64bit"
+#define SourceDirPython "W:\m\ITOM\Installationen\5. Python 3.5\64bit"
 #define SourceDirPCL "${PCL_DIR}\.."
 #define ExeName "Qitom.exe"
 #define Name "itom (x64)"
@@ -53,46 +54,55 @@ Name: "{app}\SDK"; Permissions: everyone-modify
 
 [Files]
 ; EXEs
-Source: "{#SourceRedistributable}\vcredist_x64.exe"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\python-3.4.2.amd64.msi"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\numpy-1.9.2+mkl-cp34-none-win_amd64.whl"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\scipy-0.15.1-cp34-none-win_amd64.whl"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\six-1.9.0-py2.py3-none-any.whl"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\pyparsing-2.0.3-py3-none-any.whl"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\python_dateutil-2.4.0-py2.py3-none-any.whl"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\pytz-2014.10-py2.py3-none-any.whl"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\matplotlib-1.4.3-cp34-none-win_amd64.whl"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\pies-2.6.3.tar.gz"; DestDir: "{tmp}"
+Source: "{#SourceRedistributable2010}\vcredist_x64.exe"; DestDir: "{tmp}"
+Source: "{#SourceRedistributable2015}\Redistributable für Visual Studio 2015 x64.exe"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\python-3.5.1-amd64.exe"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\numpy-1.10.4+mkl-cp35-none-win_amd64.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\scipy-0.17.0-cp35-none-win_amd64.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\six-1.10.0-py2.py3-none-any.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\pyparsing-2.1.0-py2.py3-none-any.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\python_dateutil-2.4.2-py2.py3-none-any.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\pytz-2015.7-py2.py3-none-any.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\matplotlib-1.5.1-cp35-none-win_amd64.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\pies-2.6.7.tar.gz"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\frosted-1.4.1-py2.py3-none-any.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\cycler-0.9.0-py2.py3-none-any.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\scikit_image-0.11.3-cp35-none-win_amd64.whl"; DestDir: "{tmp}"
 
 #include "itom_setup_win64_common_files.iss"
 
 [Run]
-Filename: "{tmp}\vcredist_x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2010 Redistributable Package (x64)..."; Components: CREDPACK;
-Filename: "{tmp}\python-3.4.2.amd64.msi"; Flags: shellexec waituntilterminated; StatusMsg: "Phyton 3.4..."; Components: PYTHON
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\numpy-1.9.2+mkl-cp34-none-win_amd64.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "NumPy..."; Components: NUMPY
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\scipy-0.15.1-cp34-none-win_amd64.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "SciPy..."; Components: SCIPY
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\six-1.9.0-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "Six..."; Components: SIX
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\pyparsing-2.0.3-py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "PyParsing..."; Components: PYPARSING
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\python_dateutil-2.4.0-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "DateUtil..."; Components: DATEUTIL
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\pytz-2014.10-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "PyTz..."; Components: PYTZ
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\matplotlib-1.4.3-cp34-none-win_amd64.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "MatPlotLib..."; Components: MATPLOTLIB
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\pies-2.6.3.tar.gz"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "Pies..."; Components: FROSTED
+Filename: "{tmp}\vcredist_x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2010 Redistributable Package (x64)..."; Components: CREDPACK2010;
+Filename: "{tmp}\Redistributable für Visual Studio 2015 x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2010 Redistributable Package (x64)..."; Components: CREDPACK2015;
+Filename: "{tmp}\python-3.5.1-amd64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Phyton 3.4..."; Components: PYTHON
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\numpy-1.10.4+mkl-cp35-none-win_amd64.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "NumPy..."; Components: NUMPY
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\scipy-0.17.0-cp35-none-win_amd64.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "SciPy..."; Components: SCIPY
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\six-1.10.0-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "Six..."; Components: SIX
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\pyparsing-2.1.0-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "PyParsing..."; Components: PYPARSING
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\python_dateutil-2.4.2-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "DateUtil..."; Components: DATEUTIL
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\pytz-2015.7-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "PyTz..."; Components: PYTZ
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\matplotlib-1.5.1-cp35-none-win_amd64.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "MatPlotLib..."; Components: MATPLOTLIB
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\pies-2.6.7.tar.gz"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "Pies..."; Components: FROSTED
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\frosted-1.4.1-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "Frosted..."; Components: FROSTED
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\cycler-0.9.0-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "Cycler..."; Components: CYCLER
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --use-wheel --no-index {tmp}\scikit_image-0.11.3-cp35-none-win_amd64.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "Frosted..."; Components: SCIKIT
 Filename: "{app}\{#ExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(Name, "&", "&&")}}"; Components: Main
 
 [InstallDelete]
-Type: files; Name: "{tmp}\python-3.4.2.amd64.msi"
-Type: files; Name: "{tmp}\numpy-1.9.2+mkl-cp34-none-win_amd64.whl"
-Type: files; Name: "{tmp}\scipy-0.15.1-cp34-none-win_amd64.whl"
-Type: files; Name: "{tmp}\six-1.9.0-py2.py3-none-any.whl"
-Type: files; Name: "{tmp}\pyparsing-2.0.3-py3-none-any.whl"
-Type: files; Name: "{tmp}\python_dateutil-2.4.0-py2.py3-none-any.whl"
-Type: files; Name: "{tmp}\pytz-2014.10-py2.py3-none-any.whl"
-Type: files; Name: "{tmp}\matplotlib-1.4.3-cp34-none-win_amd64.whl"
-Type: files; Name: "{tmp}\pies-2.6.3.tar.gz"
-Type: files; Name: "{tmp}\frosted-1.4.1-py2.py3-none-any.whl"
 Type: files; Name: "{tmp}\vcredist_x64.exe"
+Type: files; Name: "{tmp}\Redistributable für Visual Studio 2015 x64.exe"
+Type: files; Name: "{tmp}\python-3.5.1-amd64.exe"
+Type: files; Name: "{tmp}\numpy-1.10.4+mkl-cp35-none-win_amd64.whl"
+Type: files; Name: "{tmp}\scipy-0.17.0-cp35-none-win_amd64.whl"
+Type: files; Name: "{tmp}\six-1.10.0-py2.py3-none-any.whl"
+Type: files; Name: "{tmp}\pyparsing-2.1.0-py2.py3-none-any.whl"
+Type: files; Name: "{tmp}\python_dateutil-2.4.2-py2.py3-none-any.whl"
+Type: files; Name: "{tmp}\pytz-2015.7-py2.py3-none-any.whl"
+Type: files; Name: "{tmp}\matplotlib-1.5.1-cp35-none-win_amd64.whl"
+Type: files; Name: "{tmp}\pies-2.6.7.tar.gz"
+Type: files; Name: "{tmp}\frosted-1.4.1-py2.py3-none-any.whl"
+Type: files; Name: "{tmp}\cycler-0.9.0-py2.py3-none-any.whl"
+Type: files; Name: "{tmp}\scikit_image-0.11.3-cp35-none-win_amd64.whl"
 Type: filesandordirs; Name: "{tmp}\wheelhouse"
 
 [Types]
@@ -100,16 +110,19 @@ Name: "Install"; Description: "Installation"; Flags: iscustom
 
 [Components]
 Name: "Main"; Description: "{#Name}"; Types: Install; Flags: checkablealone fixed
-Name: "CREDPACK"; Description: "Microsoft Visual C++ 2010 Redistributable Package (x64)"; Types: Install; Flags: checkablealone fixed; Check: NeedInstallRP10({#DSetupMode})
-Name: "PYTHON"; Description: "Python 3.4.3"; Types: Install; Flags: checkablealone
-Name: "NUMPY"; Description: "numpy-1.9.2+mkl-cp34-none-win_amd64"; Types: Install; Flags: checkablealone
-Name: "SCIPY"; Description: "scipy-0.15.1-cp34-none-win_amd64"; Types: Install; Flags: checkablealone
-Name: "SIX"; Description: "six-1.9.0-py2.py3-none-any"; Types: Install; Flags: checkablealone
-Name: "PYPARSING"; Description: "pyparsing-2.0.3-py3-none-any"; Types: Install; Flags: checkablealone
-Name: "DATEUTIL"; Description: "python_dateutil-2.4.0-py2.py3-none-any"; Types: Install; Flags: checkablealone
-Name: "PYTZ"; Description: "pytz-2014.10-py2.py3-none-any"; Types: Install; Flags: checkablealone
-Name: "MATPLOTLIB"; Description: "matplotlib-1.4.3-cp34-none-win_amd64"; Types: Install; Flags: checkablealone
+Name: "CREDPACK2010"; Description: "Microsoft Visual C++ 2010 Redistributable Package (x64)"; Types: Install; Flags: checkablealone fixed; Check: NeedInstallRP10({#DSetupMode})
+Name: "CREDPACK2015"; Description: "Microsoft Visual C++ 2015 Redistributable Package (x64)"; Types: Install; Flags: checkablealone fixed; Check: NeedInstallRP15({#DSetupMode})
+Name: "PYTHON"; Description: "Python 3.5.1"; Types: Install; Flags: checkablealone
+Name: "NUMPY"; Description: "numpy-1.10.4+mkl-cp35-none-win_amd64"; Types: Install; Flags: checkablealone
+Name: "SCIPY"; Description: "scipy-0.17.0-cp35-none-win_amd64"; Types: Install; Flags: checkablealone
+Name: "SIX"; Description: "six-1.10.0-py2.py3-none-any"; Types: Install; Flags: checkablealone
+Name: "PYPARSING"; Description: "pyparsing-2.1.0-py2.py3-none-any"; Types: Install; Flags: checkablealone
+Name: "DATEUTIL"; Description: "python_dateutil-2.4.2-py2.py3-none-any"; Types: Install; Flags: checkablealone
+Name: "PYTZ"; Description: "pytz-2015.7-py2.py3-none-any"; Types: Install; Flags: checkablealone
+Name: "MATPLOTLIB"; Description: "matplotlib-1.5.1-cp35-none-win_amd64"; Types: Install; Flags: checkablealone
 Name: "FROSTED"; Description: "frosted-1.4.1-py2.py3-none-any"; Types: Install; Flags: checkablealone
+Name: "CYCLER"; Description: "cycler-0.9.0-py2.py3-none-any"; Types: Install; Flags: checkablealone
+Name: "SCIKIT"; Description: "scikit_image-0.11.3-cp35-none-win_amd64"; Types: Install; Flags: checkablealone
 Name: "SDK"; Description: "itom SDK"; Types: Install; Flags: checkablealone
 
 [UninstallDelete]
