@@ -39,7 +39,7 @@ Before using an actuator, we have to :ref:`initialise <initHardware>` it.
     
 Move actuator
 --------------
-Actuators can be moved by using the function **setPosRel()** for relative move steps and **setPosAbs()** for absolut move steps. Depending on your application one of both may be better to use. Following command moves the *axis* of your actuator to the absolute *absPos* position in global actuator coordinates. It may be useful to run the calibration before usage. 
+Actuators can be moved by using the function :py:meth:`~itom.actuator.setPosRel()` for relative move steps and :py:meth:`~itom.actuator.setPosAbs()` for absolut move steps. Depending on your application one of both may be better to use. Following command moves the *axis* of your actuator to the absolute *absPos* position in global actuator coordinates. It may be useful to run the calibration before usage. 
 
 .. code-block:: python
     :linenos:

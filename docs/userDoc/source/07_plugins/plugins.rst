@@ -17,7 +17,6 @@ See the following sections in order to get more information about these plugins:
 
     basic_concept.rst
     getstart-hardware.rst
-    ..start-plugin.rst
     getstart-grabber.rst
     getstart-adda.rst
     getstart-actuator.rst

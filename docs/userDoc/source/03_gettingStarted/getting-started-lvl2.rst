@@ -440,7 +440,7 @@ Further Information
 
 For additional information on the features and usage of the |itom| GUI, see
 GUI :ref:`gui`
-For a short introduction to the Python scripting language and use of the |itom| internal dataObject, refer to: :ref:`scriptLanguage` with more information about the dataObject :ref:`itomDataObject`
+For a short introduction to the Python scripting language and use of the |itom| internal dataObject, see the section about the :ref:`scriptLanguage` with more information about the :ref:`dataObject <itomDataObject>`
 
 
 Tutorials

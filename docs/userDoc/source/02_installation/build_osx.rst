@@ -162,6 +162,7 @@ Similar to Windows, the following folder structure is recommended:
 To create all folders in your user directory in one step, call the following bash commands:
 
 .. code-block:: bash
+    
     mkdir ~/itom; cd ~/itom; mkdir ./sources; mkdir ./build_debug; mkdir ./build_debug/itom; mkdir ./build_debug/plugins; mkdir ./build_debug/designerPlugins; mkdir ./build_release; mkdir ./build_release/itom; mkdir ./build_release/plugins; mkdir ./build_release/designerPlugins
 
 Obtain the sources
@@ -170,6 +171,7 @@ Obtain the sources
 Clone at least the core repository of |itom| (bitbucket.org/itom/itom) as well as the open source plugin and designerPlugin repository into the corresponding subfolders of the **sources** folder. You can do this by using any git client or the command 
 
 .. code-block:: bash
+    
     cd sources
     git clone https://bitbucket.org/itom/itom.git
     git clone https://bitbucket.org/itom/plugins.git
@@ -194,6 +196,7 @@ Use **CMake** to create the necessary makefiles for debug and/or release:
         * **CMAKE_BUILD_TYPE** to either **debug** or **release**
         * **CMAKE_OSX_ARCHITECTURES**: *x86_64*
         * **CMAKE_OSX_SYSROOT**: */Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk*
+        
         The suffix SDK version might also be different as well as the path.
 
 4. Push the configure button
@@ -237,7 +240,7 @@ Use **CMake** to create the necessary makefiles for debug and/or release:
     * **make**: Open a command line and switch to the **build_debug/itom** or **build_release/itom** directory. Simply call **make** such that the file **qitom** or **qitomd** (debug) is built. Start this application by calling **./qitom** or **./qitomd** in order to run |itom|.
 
     * **Xcode**: If you plan to change something in the source code it is recommended to use Xcode. Just open the **itom.xcodeproj** with Xcode and compile the project.
-    
+
 Build plugins
 ---------------
 
@@ -256,6 +259,7 @@ PyPort bug
 If you get build errors that trace back to an error like
 
 .. code-block:: bash
+    
     ... /__locale:436:15: error: C++ requires a type specifier for all declarations
         char_type toupper(char_type __c) const
                         ^~~~~~~~~~~~~~~~~~~~~~

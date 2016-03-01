@@ -40,7 +40,7 @@ Many steps below can be done via |python| scripting, or by GUI interaction.
 
 Getting informations on plugins
 ========================================
-In order to start a new instance of any hardware plugin using the python scripting language, search the plugin toolbox for the desired plugin and remember its plugin-name (case sensitive).
+In order to start a new instance of any hardware plugin using the python scripting language, search the plugin toolbox for the desired plugin and remember its plugin-name (case insensitive).
 Before we can start using a hardware plugin, we need to know how to use it. 
 You can use the :py:func:`itom.pluginHelp` command in |python| to get the neccessary information:
 
@@ -59,7 +59,7 @@ Or you can use the GUI. Therefore, select **Info...** from the context menu of y
     
     If you don't see the help page, go to the properties dialog of |itom| (menu **File >> Properties**) and select the checkbox **Show DataIO and Actuator** in the tab **General >> Help Viewer**.
 
-Here, most important for us is to lern about the init paramaters, especially the mandatory ones.
+Here, most important for us is to learn about the init paramaters, especially the mandatory ones.
 A more detailed description of the plugin may be found in the plugin documentation. 
 
 Once you got an instance of your plugin running, you can get an even more detailed class description including all member functions via |python|:
@@ -72,10 +72,11 @@ Once you got an instance of your plugin running, you can get an even more detail
 
 
 .. _initHardware:
-Initialising hardware plugins
+
+Initializing hardware plugins
 ========================================
 
-Instances of :py:class:`~itom.dataIO` or :py:class:`~itom.actuator` can be initialised either by calling the constructor in |python| or through GUI interaction. You may have multiple instances of the same plugin running. 
+Instances of :py:class:`~itom.dataIO` or :py:class:`~itom.actuator` can be initialized either by calling the constructor in |python| or through GUI interaction. You may have multiple instances of the same plugin running. 
 
 .. note::
     
@@ -83,7 +84,8 @@ Instances of :py:class:`~itom.dataIO` or :py:class:`~itom.actuator` can be initi
 
 .. note::
     
-    Most plugins can be initialised with paramaters, some of them may be mandatory (just place one value after the other one separated by commas). Optional parameter follow after the mandatory ones. Parameters can be assigned in designated order or using keyword notation.
+    Most plugins can be initialized with paramaters, some of them may be mandatory (just place one value after the other one separated by commas). 
+    Optional parameter follow after the mandatory ones. Parameters can be assigned in designated order or using keyword notation.
 
 The pythonic way
 -------------------------------------
@@ -97,7 +99,8 @@ The pythonic way
 
     
 The GUI way
--------------------------------------   
+-------------------------------------  
+ 
 First, select **New Instance** from the context menu of your plugin.
 
 .. figure:: ./images/openDummyGrabber.png
@@ -125,8 +128,13 @@ If you first initialised your plugin without assigning a |python| handle, but de
     
 Deleting a plugin instance
 -------------------------------------
+
 Once an instance of a plugin is created, the corresponding entry in the plugin toolbox obtains a new child item. In |python|, the variable you used for creating the plugin, is created and
 can now be used for controlling the plugin. As long as any variable(s) in |python| still hold a reference to this plugin, its background color in the plugin toolbox is yellow.
+
+In order to close or delete an instance of a plugin, you have to known by which way this instance has been created, namely by the GUI-based approach or a script command. Even if you
+created the instance by the GUI and sent this instance to a Python handle, this instance has originally be created by the GUI. If the instance has been created by the GUI, the background
+color of its entry in the plugins toolbox is gray, however, if at least one python handle (variable) is still referencing to this instance, the background color turns to yellow.
 
 In order to close/delete an instance of a plugin you need to delete all variables in |python| that are referencing this plugin, using the command :py:func:`del`:
 
@@ -134,6 +142,8 @@ In order to close/delete an instance of a plugin you need to delete all variable
     :linenos:
     
     del serial
+    
+Additionally, if the instance has been created by the GUI, you need to call the **Close Instance** option from the context menu of the instance entry in the plugins toolbox.
 
 .. note::
     
@@ -157,6 +167,7 @@ Most plugins should provide configuration dialogs. The modal dialogs give access
     :scale: 100%
 
 .. _hardwareParameters:
+
 Usage of hardware plugins
 ========================================
 
@@ -180,7 +191,8 @@ You can get the type of the plugin by the command **getType()**, which returns t
     +----------------+---------------------+---------------+----------------+
 
 :py:class:`~itom.actuator` is the class to use actuator plugins. Each provides a destinctive set of member functions and parameters, which are described in the respective sections below. 
-Special hardware funtionality that is not easily mapped to these member functions and parameters, may be called by the so called **exec_funcs()**.
+Special hardware funtionality that is not easily mapped to these member functions and parameters, may be called by the **exec()** member functions.
+
 While you get a detailed class description using the **help()** command (see above), the functions **getParamList()** and **getParamListInfo()** give access to a detailed description of the plugin's parameters.
 
 .. code-block:: python
@@ -197,6 +209,9 @@ Once you know the name of the desired parameter, the function **getParam()** tel
     mygrabber = dataIO("dummyGrabber")
     mygrabber.setParam('integration_time', 0.1)
     mygrabber.getParam('integration_time')
+    
+For more information about possible additional functions, call the member method :py:meth:`~itom.dataIO.getExecFuncsInfo` or :py:meth:`~itom.actuator.getExecFuncsInfo` and optionally pass
+the name or a part of the name of an **exec**-function. These functions are then called based on mandatory and optional parameters using the methods :py:meth:`~itom.dataIO.exec` or :py:meth:`~itom.actuator.exec`.
 
 The most important functions and parameters of :py:class:`~itom.dataIO` grabber, adda and :py:class:`~itom.actuator` are described in the sections below:
     
