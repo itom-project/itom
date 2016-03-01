@@ -43,8 +43,8 @@ of your **doxygen** installation. In **doxywizard** go to the *run*-tab and clic
 
 .. figure:: images/doxygen/doxywizard.png
     :alt: Doxywizard
-    :scale: 70%
-    :align: left
+    :scale: 100%
+    :align: center
 
 After the build process, a folder **xml** is created in the **doxygen** sub-folder of the **docs** folder. This **xml** folder is required afterwards.
 
