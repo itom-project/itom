@@ -37,16 +37,26 @@ Before using an actuator, we have to :ref:`initialise <initHardware>` it.
     
     Some actuators may start a calibration run after initialization. Ensure that there are no obstacles somewhere.
     
+Move actuator
+--------------
+Actuators can be moved by using the function **setPosRel()** for relative move steps and **setPosAbs()** for absolut move steps. Depending on your application one of both may be better to use. Following command moves the *axis* of your actuator to the absolute *absPos* position in global actuator coordinates. It may be useful to run the calibration before usage. 
+
+.. code-block:: python
+    :linenos:
+    
+    myactuator.setPosAbs(axis, absPos)
+    
+If you want to move only a relative step *relStep* from your current position you can do it by this command:
+
+.. code-block:: python
+    :linenos:
+    
+    myactuator.setPosRel(axis, relStep)
+    
+    
 Move actuator and take pictures
-----------------------------------
-
-:Kommentar: Wollen wir das nicht erstmal trennen und später in einem Beispiel zusammenführen?
-
-
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Most times an actuator is used to move your object you want to measure and take a picture by a camera. First you need a running instance of your :py:class:`~itom.actuator` and :py:class:`~itom.dataIO` grabber (:ref:`Getting started with grabbers <getStartGrabber>`). Define the parameters of the camera and actuator :ref:`parameters <hardwareParameters>` before usage. Define your :py:class:`~itom.dataObject` to save the captured data. Then you need to define the actuator trajectory as absolute or relative positions. 
-
-:Kommentar: Warum ist da "parameters" so komisch verlinkt?
-
 
 This example shows how you can move your object and take a picture at different positions using relative position steps:
 
@@ -68,10 +78,8 @@ This example shows how you can move your object and take a picture at different 
         
 .. note::
     
-    Depending on your application it may be better first to acquire the camera and then to move the actuator.
+    Depending on your application it may be better first to acquire the camera and then to move the actuator. 
 
-:Kommentar: Jup, aber genau das sollte man hier vielleicht diskutieren: Geschwindkeiten, Nachschwingen, Uhltische, die behaupten, sie seien da, aber noch unterwegs sind.....
-    
 This example shows how you can do the same procedure using absolute actuator positions:
 
 .. code-block:: python
@@ -105,8 +113,6 @@ Most actuator plugins let you control the device's settings through a set of par
 .. note::
     
     If you don't know the name of the parameter you want to check, try **getParamListInfo()**.
-
-:Kommentar: Unterschiede posRel und posAbs herausstellen? calib? Status codes? Inverse Params?
 
     
 Synchronized/ Asynchronized move
