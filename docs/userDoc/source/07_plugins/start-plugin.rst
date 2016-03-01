@@ -21,8 +21,8 @@ Hardware plugins are mainly divided into the following main categories:
 All valid plugins are listed in the plugin toolbox of |itom|
 
 .. figure:: ../images/pluginToolbox.png
-    :scale: 70%
-    :align: left
+    :scale: 100%
+    :align: center
 
 Script-based startup
 ^^^^^^^^^^^^^^^^^^^^^^

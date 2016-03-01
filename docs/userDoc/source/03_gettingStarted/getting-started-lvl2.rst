@@ -276,8 +276,8 @@ The window with initialisation parameters of the plugIn opens. Select the tab **
 * bpp = 8
 
 .. figure:: images/openDummyGrabber2.png
-    :scale: 70%
-    :align: left
+    :scale: 100%
+    :align: center
 
 Than check **Access instance with python** and type 'camera' into the field **variable name**. Press ok. Now you can proceed with step 2 but since you already set the grabber parameters you can also proceed with step 4.   
 
@@ -446,4 +446,4 @@ For a short introduction to the Python scripting language and use of the |itom| 
 Tutorials
 ****************
 
-You can find all scripts used here in the **demo** folder. In the :ref:`demoScripts` section of this manual you can find the overview of all demoscripts which are located in this folder and a short summary what is covered in these scripts.
+You can find all scripts used here in the **demo** folder. In the :ref:`demoScripts` section of this manual you can find the overview of all demoscripts which are located in this folder and a short summary what is covered in these scripts. Additional tutorial focusing on plugin use are found in the :ref:`plugins<plugins>` section.
