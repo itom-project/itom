@@ -17,7 +17,7 @@ The goal of this tutorial is to give prospective itom users a quick overview abo
     :maxdepth: 1
 
     pytut-runscript.rst
-    pytut-numbers_math.rst
+    pytut-numbers-math.rst
     pytut-variables-names.rst
     pytut-strings-text.rst
     pytut-dictionaries.rst

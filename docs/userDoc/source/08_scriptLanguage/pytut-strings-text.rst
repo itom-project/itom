@@ -2,6 +2,8 @@
 
 .. include:: ../include/global.inc
 
+.. _pytut_strings_text:
+
 Strings and text 
 =================
 .. moduleauthor:: PSchau
