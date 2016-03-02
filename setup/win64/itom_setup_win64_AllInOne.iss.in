@@ -74,7 +74,7 @@ Source: "{#SourceDirPython}\scikit_image-0.11.3-cp35-none-win_amd64.whl"; DestDi
 [Run]
 Filename: "{tmp}\vcredist_x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2010 Redistributable Package (x64)..."; Components: CREDPACK2010;
 Filename: "{tmp}\Redistributable Visual Studio 2015 x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2010 Redistributable Package (x64)..."; Components: CREDPACK2015;
-Filename: "{tmp}\python-3.5.1-amd64.exe"; Parameters: "TargetDir={%SystemDrive}\Python35 PrependPath=1 CompileAll=0"; Flags: shellexec waituntilterminated; StatusMsg: "Phyton 3.4..."; Components: PYTHON BeforeInstall: PythonBeforeInstall
+Filename: "{tmp}\python-3.5.1-amd64.exe"; Parameters: "TargetDir={%SystemDrive}\Python35 PrependPath=1 CompileAll=0"; Flags: shellexec waituntilterminated; StatusMsg: "Phyton 3.5..."; Components: PYTHON; BeforeInstall: PythonBeforeInstall
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --upgrade --only-binary=:all: --no-index {tmp}\pip-8.0.3-py2.py3-none-any.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "Pip..."; Components: PYTHON
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\numpy-1.10.4+mkl-cp35-none-win_amd64.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "NumPy..."; Components: NUMPY
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\scipy-0.17.0-cp35-none-win_amd64.whl"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "SciPy..."; Components: SCIPY
