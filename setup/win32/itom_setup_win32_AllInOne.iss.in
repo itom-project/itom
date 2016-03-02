@@ -36,6 +36,7 @@ OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
 LicenseFile={#SourceDirItomSource}\COPYING.txt
+AlwaysRestart=True
 
 [Dirs]
 Name: "{app}\"; Permissions: everyone-modify
