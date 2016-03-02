@@ -1,6 +1,6 @@
 [CustomMessages]
 English.PythonReboot=The Python installer will be executed now. Itom is only able to find the python library if the installation path has been added to the PATH environment variable. Please let the corresponding option checked in the setup and log off or restart the computer at the end of the setup.
-Deutsch.PythonReboot=Im Folgenden wird Python installiert. Itom kann Python nur finden, wenn es der PATH Umgebungsvariable hinzugefügt ist. Bitte die zugehörige Option im Setup von Python aktiviert lassen und am Ende der Installation einen Neustart oder eine Neuanmeldung vornehmen.
+Deutsch.PythonReboot=Im Folgenden wird Python installiert. Itom kann Python nur finden, wenn es der PATH Umgebungsvariable hinzugefuegt ist. Bitte die zugehoerige Option im Setup von Python aktiviert lassen und am Ende der Installation einen Neustart oder eine Neuanmeldung vornehmen.
 
 [Code]
 function MsiQueryProductState(ProductCode: string): integer;

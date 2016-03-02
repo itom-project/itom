@@ -58,6 +58,7 @@ Name: "{app}\SDK"; Permissions: everyone-modify
 Source: "{#SourceRedistributable2010}\vcredist_x86.exe"; DestDir: "{tmp}"
 Source: "{#SourceRedistributable2015}\Redistributable Visual Studio 2015 x86.exe"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\python-3.5.1.exe"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\pip-8.0.3-py2.py3-none-any.whl"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\numpy-1.10.4+mkl-cp35-none-win32.whl"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\scipy-0.17.0-cp35-none-win32.whl"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\six-1.10.0-py2.py3-none-any.whl"; DestDir: "{tmp}"
@@ -122,12 +123,12 @@ Name: "Install"; Description: "Installation"; Flags: iscustom
 Name: "Main"; Description: "{#Name}"; Types: Install; Flags: checkablealone fixed
 Name: "CREDPACK2010"; Description: "Microsoft Visual C++ 2010 Redistributable Package (x86)"; Types: Install; Flags: checkablealone fixed; Check: NeedInstallRP10({#DSetupMode})
 Name: "CREDPACK2015"; Description: "Microsoft Visual C++ 2015 Redistributable Package (x86)"; Types: Install; Flags: checkablealone fixed; Check: NeedInstallRP15({#DSetupMode})
-Name: "PYTHON"; Description: "python-3.5.1"; Types: Install; Flags: checkablealone
-Name: "NUMPY"; Description: "numpy-1.10.4+mkl-cp35-none-win32.whl"; Types: Install; Flags: checkablealone
-Name: "SCIPY"; Description: "scipy-0.17.0-cp35-none-win32"; Types: Install; Flags: checkablealone
-Name: "MATPLOTLIB"; Description: "matplotlib-1.5.1-cp35-none-win32"; Types: Install; Flags: checkablealone
-Name: "SCIKIT"; Description: "scikit_image-0.11.3-cp35-none-win32"; Types: Install; Flags: checkablealone
-Name: "FROSTED"; Description: "frosted-1.4.1-py2.py3-none-any"; Types: Install; Flags: checkablealone
+Name: "PYTHON"; Description: "Python 3.5.1"; Types: Install; Flags: checkablealone
+Name: "NUMPY"; Description: "NumPy 1.10.4"; Types: Install; Flags: checkablealone
+Name: "SCIPY"; Description: "SciPy 0.17.0"; Types: Install; Flags: checkablealone
+Name: "MATPLOTLIB"; Description: "Matplotlib 1.5.1"; Types: Install; Flags: checkablealone
+Name: "SCIKIT"; Description: "SciKit Image 0.11.3"; Types: Install; Flags: checkablealone
+Name: "FROSTED"; Description: "Frosted 1.4.1"; Types: Install; Flags: checkablealone
 Name: "SDK"; Description: "itom SDK"; Types: Install; Flags: checkablealone
 
 [UninstallDelete]
