@@ -1,6 +1,8 @@
 [CustomMessages]
 English.PythonReboot=The Python installer will be executed now. Itom is only able to find the python library if the installation path has been added to the PATH environment variable. Please let the corresponding option checked in the setup and log off or restart the computer at the end of the setup.
+English.PythonNotFound=Python path was not found in registry. Please select the Python directory!
 Deutsch.PythonReboot=Im Folgenden wird Python installiert. Itom kann Python nur finden, wenn es der PATH Umgebungsvariable hinzugefuegt ist. Bitte die zugehoerige Option im Setup von Python aktiviert lassen und am Ende der Installation einen Neustart oder eine Neuanmeldung vornehmen.
+Deutsch.PythonNotFound=Das Python Installationsverzeichnis konnte nicht gefunden werden. Bitte das Verzeichnis angeben!
 
 [Code]
 function MsiQueryProductState(ProductCode: string): integer;
@@ -87,16 +89,22 @@ var  PythonPath: string;
      RootKey: Integer;
 begin
   Found := True;
-  if IsWin64 then  RootKey := HKEY_LOCAL_MACHINE_64
-  else  RootKey := HKEY_LOCAL_MACHINE;
   
-  if not RegQueryStringValue(RootKey, 'SOFTWARE\Python\PythonCore\3.5\InstallPath', '', PythonPath) then begin
-    if not RegQueryStringValue(RootKey, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.5\InstallPath', '', PythonPath) then begin
-      if not RegQueryStringValue(HKEY_CURRENT_USER, 'SOFTWARE\Python\PythonCore\3.5\InstallPath', '', PythonPath) then begin
-        if not RegQueryStringValue(HKEY_CURRENT_USER, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.5\InstallPath', '', PythonPath) then begin
-//          MsgBox('Python path was not found in registry!', mbError, MB_OK);
-//          Found := False;
-          Found := BrowseForFolder('Python path was not found in registry. Please select the Python directory!', PythonPath, False);
+  if not RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Python\PythonCore\3.5\InstallPath', '', PythonPath) then begin
+    if not RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.5\InstallPath', '', PythonPath) then begin
+      if not RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Python\PythonCore\3.5-32\PythonPath', '', PythonPath) then begin
+        if not RegQueryStringValue(HKEY_LOCAL_MACHINE_64, 'SOFTWARE\Python\PythonCore\3.5\InstallPath', '', PythonPath) then begin
+          if not RegQueryStringValue(HKEY_LOCAL_MACHINE_64, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.5\InstallPath', '', PythonPath) then begin
+             if not RegQueryStringValue(HKEY_LOCAL_MACHINE_64, 'SOFTWARE\Python\PythonCore\3.5-32\PythonPath', '', PythonPath) then begin
+              if not RegQueryStringValue(HKEY_CURRENT_USER, 'SOFTWARE\Python\PythonCore\3.5\InstallPath', '', PythonPath) then begin
+                if not RegQueryStringValue(HKEY_CURRENT_USER, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.5\InstallPath', '', PythonPath) then begin
+                  if not RegQueryStringValue(HKEY_CURRENT_USER, 'SOFTWARE\Python\PythonCore\3.5-32\PythonPath', '', PythonPath) then begin
+                    Found := BrowseForFolder(CustomMessage('PythonNotFound'), PythonPath, False);
+                  end;
+                end;
+              end;
+            end;
+          end;
         end;
       end;
     end; 

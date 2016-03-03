@@ -243,17 +243,17 @@ Source: "{#SourceDirItomBuild}\lib\vrmusbcam2.dll"; DestDir: "{app}\lib"; Flags:
 Source: "{#SourceDirItomBuild}\lib\xerces-c_3_1_vc100.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\xiApi.NETX64.dll"; DestDir: "{app}\lib"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\lib\iso5436_2.xsd"; DestDir: "{app}\lib"; Flags: promptifolder
-; Libs PCL
-Source: "{#SourceDirPCL}\bin\pcl_features_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirPCL}\bin\pcl_filters_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirPCL}\bin\pcl_io_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirPCL}\bin\pcl_io_ply_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirPCL}\bin\pcl_kdtree_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirPCL}\bin\pcl_octree_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirPCL}\bin\pcl_sample_consensus_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirPCL}\bin\pcl_search_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirPCL}\bin\pcl_surface_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
-Source: "{#SourceDirPCL}\bin\pcl_visualization_release.dll"; DestDir: "{app}\lib"; Flags: promptifolder
+; app PCL
+Source: "{#SourceDirPCL}\bin\pcl_features_release.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_filters_release.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_io_release.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_io_ply_release.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_kdtree_release.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_octree_release.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_sample_consensus_release.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_search_release.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_surface_release.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_visualization_release.dll"; DestDir: "{app}"; Flags: promptifolder
 
 ; Demo
 Source: "{#SourceDirItomSource}\demo\*.*"; DestDir: "{app}\demo"; Flags: promptifolder recursesubdirs
