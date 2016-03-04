@@ -67,7 +67,7 @@ begin
   if (CurStep = ssInstall) then begin
     AppDir := ExpandConstant('{app}') + '\';
     if DirExists(AppDir + 'SDK') or DirExists(AppDir + 'lib') or DirExists(AppDir + 'plugins') or DirExists(AppDir + 'designer') then begin
-      if MsgBox(CustomMessage('PythonReboot'), mbConfirmation, MB_YESNO) = IDYES then begin
+      if MsgBox(CustomMessage('DirExistsText'), mbConfirmation, MB_YESNO) = IDYES then begin
         DeleteDirAndFiles(AppDir + 'SDK', '', True, True, True);
         DeleteDirAndFiles(AppDir + 'translation', '', True, True, True);
         DeleteDirAndFiles(AppDir + 'imageformats', '', True, True, True);
