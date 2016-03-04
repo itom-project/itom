@@ -230,7 +230,14 @@ class PluginInitParams(Directive):
         return []
     
     def parseContent(self,param):
-        if ("min" in param and "max" in param):
+        if "metaType" in param and param["metaType"] == 7: #seq. of int
+            content = "%i-%i values, each value in range [%i:%i:%i]" % (param["numMin"], param["numMax"], param["min"], param["step"], param["max"])
+        elif "metaType" in param and param["metaType"] == 8: #seq. of float
+            if param["step"] == 0.0:
+                content = "%f-%f values, each value in range [%f:%f]" % (param["numMin"], param["numMax"], param["min"], param["max"])
+            else:
+                content = "%f-%f values, each value in range [%f:%f:%f]" % (param["numMin"], param["numMax"], param["min"], param["step"], param["max"])
+        elif ("min" in param and "max" in param):
             if ("step" in param and not (param["step"] is None)):
                 content = "[%s,%s], default: %s, step: %s" % (param["min"],param["max"],param["value"],param["step"])
             else:
