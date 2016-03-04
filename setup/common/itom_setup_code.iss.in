@@ -1,6 +1,8 @@
 [CustomMessages]
+English.DirExistsText = This selected application directory contains at least one of the folders "designer", "plugins", "help" or "SDK". For a proper installation of the current itom version these folder should be cleared. Do you want this setup to clear these folders before starting the installation?
 English.PythonReboot=The Python installer will be executed now. Itom is only able to find the python library if the installation path has been added to the PATH environment variable. Please let the corresponding option checked in the setup and log off or restart the computer at the end of the setup.
 English.PythonNotFound=Python path was not found in registry. Please select the Python directory!
+Deutsch.DirExistsText = Das ausgewaehlte Verzeichnis enthaelt bereits mindestens einen der Ordner "designer", "plugins", "help" oder "SDK". Fuer eine ordnungsgemaesse Installation der aktuellen Version ins gewaehlte Verzeichnis sollten diese Ordner geloescht werden. Soll das vor der Installation gemacht werden?
 Deutsch.PythonReboot=Im Folgenden wird Python installiert. Itom kann Python nur finden, wenn es der PATH Umgebungsvariable hinzugefuegt ist. Bitte die zugehoerige Option im Setup von Python aktiviert lassen und am Ende der Installation einen Neustart oder eine Neuanmeldung vornehmen.
 Deutsch.PythonNotFound=Das Python Installationsverzeichnis konnte nicht gefunden werden. Bitte das Verzeichnis angeben!
 
@@ -60,14 +62,12 @@ begin
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
-var  AppDir, MsgText: string;
+var  AppDir: string;
 begin
   if (CurStep = ssInstall) then begin
     AppDir := ExpandConstant('{app}') + '\';
     if DirExists(AppDir + 'SDK') or DirExists(AppDir + 'lib') or DirExists(AppDir + 'plugins') or DirExists(AppDir + 'designer') then begin
-      MsgText := 'This selected application directory contains at least one of the folders "designer", "plugins", "help" or "SDK". For a proper installation of the '+
-                 'current itom version these folder should be cleared. Do you want this setup to clear these folders before starting the installation?';
-      if MsgBox(MsgText, mbConfirmation, MB_YESNO) = IDYES then begin
+      if MsgBox(CustomMessage('PythonReboot'), mbConfirmation, MB_YESNO) = IDYES then begin
         DeleteDirAndFiles(AppDir + 'SDK', '', True, True, True);
         DeleteDirAndFiles(AppDir + 'translation', '', True, True, True);
         DeleteDirAndFiles(AppDir + 'imageformats', '', True, True, True);

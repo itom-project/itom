@@ -70,6 +70,9 @@ Source: "{#SourceDirPython}\pies-2.6.7.tar.gz"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\frosted-1.4.1-py2.py3-none-any.whl"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\cycler-0.9.0-py2.py3-none-any.whl"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\scikit_image-0.11.3-cp35-none-win_amd64.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\decorator-4.0.8-py2.py3-none-any.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\networkx-1.11-py2.py3-none-any.whl"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\Pillow-3.1.1-cp35-none-win_amd64.whl"; DestDir: "{tmp}"
 
 #include "itom_setup_win64_common_files.iss"
 
