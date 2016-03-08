@@ -113,7 +113,8 @@ unsigned int UiOrganizer::autoIncObjectCounter = 1;
     this is done if the first user interface becomes being organized by this class.
 */
 UiOrganizer::UiOrganizer(ito::RetVal &retval) :
-    m_garbageCollectorTimer(0)
+    m_garbageCollectorTimer(0),
+	m_figureCounter(0)
 {
     m_dialogList.clear();
     m_objectList.clear();
@@ -3103,8 +3104,10 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
     if (!found)
     {
         startGarbageCollectorTimer();
+		m_figureCounter++;
+		QString title = "Figure " + QString::number(m_figureCounter);
 
-        FigureWidget *fig2 = new FigureWidget(tr("Figure"), false, true, *rows, *cols, NULL);
+        FigureWidget *fig2 = new FigureWidget(title, false, true, *rows, *cols, NULL);
         //fig2->setAttribute(Qt::WA_DeleteOnClose); //always delete figure window, if user closes it
         //QObject::connect(fig2,SIGNAL(destroyed(QObject*)),this,SLOT(figureDestroyed(QObject*)));
 

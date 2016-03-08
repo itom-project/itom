@@ -358,6 +358,8 @@ private:
     int m_garbageCollectorTimer;                    /*!< ID of the garbage collection timer. This timer regularly calls timerEvent in order to check m_dialogList and m_objectList for objects, which already have been destroyed. */
     QMap<QObject*, QThread*> m_watcherThreads;   /*!< map with opened watcher threads and their containing objects (e.g. UserInteractionWatcher) */
 
+	int m_figureCounter;
+
     static unsigned int autoIncUiDialogCounter;        /*!< auto incrementing counter for elements in m_dialogList */
     static unsigned int autoIncObjectCounter;        /*!< auto incrementing counter for elements in m_objectList */
 
