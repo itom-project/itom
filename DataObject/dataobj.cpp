@@ -1852,10 +1852,10 @@ template<typename _Tp> RetVal FreeFunc(DataObject *dObj)
             }
             dObj->mdata_free();
 
-            //unlock readwritelock of data block with respect to locking status of this dataObject
-            //dObj->m_objSharedDataLock->_unlock(dObj->m_objHeaderLock.getLockStatus());
+            dObj->m_pRefCount = NULL;
+            dObj->m_pDataObjectTags = NULL;
 
-            return 0;
+            return ito::retOk;
         }
         delete dObj->m_pRefCount;
         dObj->m_pRefCount = NULL;
@@ -1866,7 +1866,7 @@ template<typename _Tp> RetVal FreeFunc(DataObject *dObj)
     // yes so really clean up
     if (!dObj->mdata_size())
     {
-        return 0;
+        return ito::retOk;
     }
 
     //check if the data has been allocated "en bloc" and delete the data first.
@@ -1886,7 +1886,7 @@ template<typename _Tp> RetVal FreeFunc(DataObject *dObj)
     }
     dObj->mdata_free();
 
-    return 0;
+    return ito::retOk;
 }
 
 typedef RetVal (*tFreeFunc)(DataObject *dObj);
@@ -1938,6 +1938,9 @@ template<typename _Tp> RetVal SecureFreeFunc(DataObject *dObj)
                 }
                 dObj->mdata_free();
             }
+
+            dObj->m_pRefCount = NULL;
+            dObj->m_pDataObjectTags = NULL;
 
             return retOk;
         }
