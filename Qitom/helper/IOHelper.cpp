@@ -384,6 +384,10 @@ end:
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
 
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+                                                                         //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
+                                                                         //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
+
         QMetaObject::invokeMethod(eng, "pickleVariables", Q_ARG(bool,globalNotLocal), Q_ARG(QString,filename), Q_ARG(QStringList,varNames), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
         if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
@@ -402,6 +406,10 @@ end:
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
 
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+                                                                         //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
+                                                                         //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
+
         QMetaObject::invokeMethod(eng, "saveMatlabVariables", Q_ARG(bool,globalNotLocal), Q_ARG(QString,filename), Q_ARG(QStringList,varNames), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
         if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
@@ -521,6 +529,10 @@ end:
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
 
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+                                                                         //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
+                                                                         //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
+
         QMetaObject::invokeMethod(eng, "unpickleVariables", Q_ARG(bool,globalNotLocal), Q_ARG(QString,filename), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
         {
@@ -538,6 +550,10 @@ end:
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
 
         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+                                                                         //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
+                                                                        //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
+
         QMetaObject::invokeMethod(eng, "loadMatlabVariables", Q_ARG(bool,globalNotLocal), Q_ARG(QString,filename), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         
         if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
@@ -583,6 +599,10 @@ end:
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
 
             QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+            QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+                                                                             //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
+                                                                             //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
+
             QMetaObject::invokeMethod(seo,"openScript",Q_ARG(QString, filename),Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
             if (!locker.getSemaphore()->wait(20000))
             {
@@ -1013,6 +1033,10 @@ end:
                         if (dialog->exec() == QDialog::Accepted)
                         {
                             QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+                            QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+                                                                                             //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
+                                                                                             //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
+
                             dialog->getParameters(paramsMand, paramsOpt);
                             paramsMand = autoMand + paramsMand;
                             retval += filter->m_filterFunc(&paramsMand, &paramsOpt, &autoOut);
@@ -1024,6 +1048,10 @@ end:
                     else
                     {
                         QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+                        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+                                                                                         //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
+                                                                                         //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
+
                         retval += filter->m_filterFunc(&autoMand, &paramsOpt, &autoOut);
                         QApplication::restoreOverrideCursor();
                     }
