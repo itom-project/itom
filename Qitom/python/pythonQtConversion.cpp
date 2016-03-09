@@ -1760,7 +1760,7 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 retval += ito::RetVal(ito::retError, 0, "transformation error to AutoInterval: 2 values required.");
             }
         }
-        else if (destType == QVariant::UserType && userType == QMetaType::type("QVector<ito::Shape>"))
+        else if (userDestType == QMetaType::type("QVector<ito::Shape>"))
         {
             const QVariantList list = item.toList();
             QVector<ito::Shape> shapes;
