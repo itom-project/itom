@@ -101,7 +101,7 @@ UiContainer::~UiContainer()
 */
 
 
-unsigned int UiOrganizer::autoIncUiDialogCounter = 1;
+unsigned int UiOrganizer::autoIncUiDialogCounter = 0;
 unsigned int UiOrganizer::autoIncObjectCounter = 1;
 
 
