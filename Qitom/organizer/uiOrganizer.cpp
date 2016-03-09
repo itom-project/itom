@@ -113,8 +113,7 @@ unsigned int UiOrganizer::autoIncObjectCounter = 1;
     this is done if the first user interface becomes being organized by this class.
 */
 UiOrganizer::UiOrganizer(ito::RetVal &retval) :
-    m_garbageCollectorTimer(0),
-	m_figureCounter(0)
+    m_garbageCollectorTimer(0)
 {
     m_dialogList.clear();
     m_objectList.clear();
@@ -3104,21 +3103,8 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
     if (!found)
     {
         startGarbageCollectorTimer();
-		m_figureCounter++;
-		QString title = "Figure " + QString::number(m_figureCounter);
 
-        FigureWidget *fig2 = new FigureWidget(title, false, true, *rows, *cols, NULL);
-        //fig2->setAttribute(Qt::WA_DeleteOnClose); //always delete figure window, if user closes it
-        //QObject::connect(fig2,SIGNAL(destroyed(QObject*)),this,SLOT(figureDestroyed(QObject*)));
-
-        mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
-        if (mainWin)
-        {
-            mainWin->addAbstractDock(fig2, Qt::TopDockWidgetArea);
-        }
-
-        set = new UiContainer(fig2);
-        unsigned int *handle = new unsigned int; //will be guarded and destroyed by guardedFigureHandle below
+		unsigned int *handle = new unsigned int; //will be guarded and destroyed by guardedFigureHandle below
         if (forcedHandle == 0)
         {
             *handle = ++UiOrganizer::autoIncUiDialogCounter;
@@ -3131,6 +3117,20 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
                 UiOrganizer::autoIncObjectCounter = forcedHandle; //the next figure must always get a really new and unique handle number
             }
         }
+
+		QString title = tr("Figure %1").arg(*handle);
+        FigureWidget *fig2 = new FigureWidget(title, false, true, *rows, *cols, NULL);
+        //fig2->setAttribute(Qt::WA_DeleteOnClose); //always delete figure window, if user closes it
+        //QObject::connect(fig2,SIGNAL(destroyed(QObject*)),this,SLOT(figureDestroyed(QObject*)));
+
+        mainWin = qobject_cast<MainWindow*>(AppManagement::getMainWindow());
+        if (mainWin)
+        {
+            mainWin->addAbstractDock(fig2, Qt::TopDockWidgetArea);
+        }
+
+        set = new UiContainer(fig2);
+        
         *guardedFigureHandle = QSharedPointer<unsigned int>(handle, threadSafeDeleteUi);
         *initSlotCount = fig2->metaObject()->methodOffset();
         *objectID = addObjectToList(fig2);
