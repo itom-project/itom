@@ -294,11 +294,11 @@ void FileSystemDockWidget::createActions()
     m_pActRenameItem->connectTrigger(this, SLOT(mnuRenameItem()));
     m_pActDeleteItems = new ShortcutAction(QIcon(":/editor/icons/editDelete.png"), tr("delete"), this, QKeySequence::Delete, Qt::WidgetWithChildrenShortcut);
     m_pActDeleteItems->connectTrigger(this, SLOT(mnuDeleteItems()));
-    m_pActCutItems = new ShortcutAction(QIcon(":/editor/icons/editCut.png"), tr("cut"), this);
+    m_pActCutItems = new ShortcutAction(QIcon(":/editor/icons/editCut.png"), tr("cut"), this, QKeySequence::Cut, Qt::WidgetWithChildrenShortcut);
     m_pActCutItems->connectTrigger(this, SLOT(mnuCutItems()));
-    m_pActCopyItems = new ShortcutAction(QIcon(":/editor/icons/editCopy.png"), tr("copy"), this);
+    m_pActCopyItems = new ShortcutAction(QIcon(":/editor/icons/editCopy.png"), tr("copy"), this, QKeySequence::Copy, Qt::WidgetWithChildrenShortcut);
     m_pActCopyItems->connectTrigger(this, SLOT(mnuCopyItems()));
-    m_pActPasteItems = new ShortcutAction(QIcon(":/editor/icons/editPaste.png"), tr("paste"), this);
+    m_pActPasteItems = new ShortcutAction(QIcon(":/editor/icons/editPaste.png"), tr("paste"), this, QKeySequence::Paste, Qt::WidgetWithChildrenShortcut);
     m_pActPasteItems->connectTrigger(this, SLOT(mnuPasteItems()));
     m_pActNewDir = new ShortcutAction(QIcon(":/files/icons/newDir.png"), tr("create new folder"), this);
     m_pActNewDir->connectTrigger(this, SLOT(mnuNewDir()));

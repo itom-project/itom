@@ -2020,6 +2020,13 @@ namespace ito
         {
             m_deadPluginTimer.stop();
         }
+        else if (m_deadPluginTimer.interval() < 30000)
+        {
+            //the interval is incremented by 2000ms after each run until a max-value of 30secs. 
+            //This gives the chance to delete newly added dead plugins fast and decrease the 
+            //intents the longer it did not work.
+            m_deadPluginTimer.setInterval(m_deadPluginTimer.interval() + 2000);
+        }
 
         return retval;
     }
@@ -2036,7 +2043,7 @@ namespace ito
 
         if (m_deadPluginTimer.isActive() == false)
         {
-            m_deadPluginTimer.start(30000);
+            m_deadPluginTimer.start(2000); //the interval is incremented by 2000ms after each run until a max-value of 30secs. This gives the chance to delete newly added dead plugins fast and decrease the intents the longer it did not work.
         }
         return ito::retOk;
     }

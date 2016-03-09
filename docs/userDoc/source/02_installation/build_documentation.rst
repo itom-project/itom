@@ -23,7 +23,7 @@ In order to be able to build the documentation, you need to have some tools inst
     
     The real user documentation is created in |itom| using a python script that needs the |Python| package **Sphinx** (http://sphinx-doc.org/).
     **Sphinx** itself requires other python packages to be installed on your computer. For windows users, we therefore suggest to obtain **Sphinx** via
-    the python package tools *pip* or *easy_install*.
+    the python package tools *pip* or *easy\_install*.
     
     The easiest way to obtain **Sphinx** is using the :ref:`Python package manager <gui-pipmanager>` in the *script* menu of |itom|. Choose
     **install** and then **Sphinx** from the Python package index to obtain Sphinx including all depending packages. Select the **Upgrade** checkbox
@@ -43,8 +43,8 @@ of your **doxygen** installation. In **doxywizard** go to the *run*-tab and clic
 
 .. figure:: images/doxygen/doxywizard.png
     :alt: Doxywizard
-    :scale: 70%
-    :align: left
+    :scale: 100%
+    :align: center
 
 After the build process, a folder **xml** is created in the **doxygen** sub-folder of the **docs** folder. This **xml** folder is required afterwards.
 

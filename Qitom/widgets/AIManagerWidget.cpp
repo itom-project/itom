@@ -588,6 +588,9 @@ void AIManagerWidget::mnuCreateNewInstance()
             }
 
             QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+            QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+                                                                             //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
+                                                                             //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
             if (aib->getType() & ito::typeDataIO)
             {

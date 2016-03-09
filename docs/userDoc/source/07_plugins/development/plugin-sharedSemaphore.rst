@@ -28,7 +28,9 @@ In |itom|, the following components run into a different thread:
 
 .. _plugin-sharedSemaphore-scheme:
 .. figure:: images/itomSharedSemaphore750.png
-    :align: left
+    :scale: 100%
+    :align: center
+    
     
     Figure: Scheme of a communication between |itom| (main thread) and any plugin-method (plugin is running in another thread)
 

@@ -22,14 +22,14 @@ In order to start the **Qt Designer**, click on the corresponding icon in the to
 
 .. figure:: images_userGUI/mainsymbols2.png
     :scale: 100%
-    :align: left
+    :align: center
 
 or double-click on a corresponding **ui**-file in the file system widget of |itom|. In the first case, **Qt Designer** shows an initialization dialog, where you
 can choose the base type of the user interface you want to create.
 
 .. figure:: images_userGUI/designerNew.png
     :scale: 100%
-    :align: left
+    :align: center
     
 .. note::
     
@@ -56,8 +56,9 @@ on your surface. If the **Qt Designer** is started from |itom| you will even fin
 provided by |itom| and can also be placed on your surface. The choice of these plugins depend on the designer plugins that are currently available in your installation of |itom|.
 
 .. figure:: images_userGUI/qtdesigner1.png
-    :align: center
     :scale: 100%
+    :align: center
+
 
 After having placed one widget on the canvas, you will see its properties in the property toolbox of **Qt Designer**. Every widget has the common property **objectName**. If you assign
 a unique object name to any of your control elements, it is possible to access and manipulate this widget from a |python| script in |itom| using this name, too. In general many of the
@@ -96,7 +97,7 @@ Let us create an exemplary user interface. In **Qt Creator** the following widge
 
 .. figure:: images_userGUI/testWidget.png
     :scale: 100%
-    :align: left
+    :align: center
 
 On the right side of the widget *testWidget* you see the hierarchical organization of objects that are put on the widget. At first, a group box has been placed on the widget. Inside of
 this group box two radio buttons have been placed using a simple drag&drop from the widget library. Both radio buttons are aligned inside of the group box with a vertical layout. This
@@ -130,7 +131,7 @@ clicked an **OK**-button.
 
 .. figure:: images_userGUI/testWidgetItom.png
     :scale: 100%
-    :align: left
+    :align: center
 
 It is also possible to open the dialog in a non-modal version or to open it in a modal style however to immediately force python to continue the script execution. This depends
 on the parameters of :py:meth:`~itom.ui.show`. However only in the modal case above, the closing result can be tracked by |python|. Additionally, this is also only possible if 
@@ -141,7 +142,7 @@ Right now, you don't have the possibility to quit the dialog using any button (*
 
 .. figure:: images_userGUI/testWidgetButtonBar.png
     :scale: 100%
-    :align: left
+    :align: center
 
 Next, you need to select which buttons should be included in the button bar. This is done by creating a python dictionary, where each elements corresponds to one button. The
 key-word of the item corresponds to the role of the button (see enumeration *QDialogButtonBox::ButtonRole** of the |Qt|-library documentation) and the value is the text of the
@@ -507,7 +508,7 @@ with a checkbox and a textfield. Let us define a signal-slot-connection, such th
 
 .. figure:: images_userGUI/uiSignalSlot1.png
     :scale: 100%
-    :align: left
+    :align: center
 
 This type of gui-internal connections are completely done in **Qt Creator**. Therefore chose the "Signal and Slots" editing mode, that is obtained by clicking the symbol |qtsignalslotmode|
 in the toolbar or by pressing *F4*. Then you can make a drag&drop connection between the emitting widget and the receiver-widget. After releasing the mouse button, the connection dialog,
@@ -515,7 +516,7 @@ depicted in the following figure becomes visible:
 
 .. figure:: images_userGUI/uiSignalSlot2.png
     :scale: 100%
-    :align: left
+    :align: center
 
 Here you can choose which signal of the emitting widget should be connected with which slot of the destination. At the beginning, only slots and signals of the specific widget classes are
 visible. However, you can check the checkbox below, in order to also show the signals and slots of the inherited classes. Please make sure, that you only choose pairs of signals and
@@ -566,7 +567,8 @@ If you established a signal-slot-connection between an element of the GUI and a 
 is obtained by setting any breakpoint into the specific line and toggling the button *Run python code in debug mode* in the menu **Script** of |itom|.
 
 .. figure:: images_userGUI/runPyCodeInDebug.png
-    :align: left
+    :scale: 100%
+    :align: center
     
 Access the status bar of a main window
 =======================================

@@ -548,8 +548,12 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+10"/>
+        <source>Install dependencies if required (if upgrade flag is set, dependencies will be updated, too)</source>
+        <translation type="unfinished">Installation von abhängigen Modulen wenn nötig (bei Upgrades werden Abhängigkeiten auch upgedatet)</translation>
+    </message>
+    <message>
         <source>Install dependencies if required</source>
-        <translation type="unfinished">Installation von abhängigen Modulen wenn nötig</translation>
+        <translation type="obsolete">Installation von abhängigen Modulen wenn nötig</translation>
     </message>
     <message>
         <location line="+12"/>
@@ -3114,7 +3118,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../common/addInInterface.h" line="+1026"/>
+        <location filename="../../common/addInInterface.h" line="+993"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation>Nicht-Inizialisierte Vektoren bei Pflichtparametern!</translation>
     </message>
@@ -6128,6 +6132,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Auswahl starten</translation>
     </message>
     <message>
+        <location line="+0"/>
+        <source>Ctrl+F5</source>
+        <comment>QShortcut</comment>
+        <translation></translation>
+    </message>
+    <message>
         <location line="+3"/>
         <source>debug</source>
         <translation>Debug</translation>
@@ -6547,7 +6557,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Speichern unter...</translation>
     </message>
     <message>
-        <location line="+717"/>
+        <location line="+734"/>
         <source>Print</source>
         <translation>Drucken</translation>
     </message>
@@ -6582,7 +6592,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Soll diese neu geladen werden?</translation>
     </message>
     <message>
-        <location line="+161"/>
+        <location line="+172"/>
         <source>{Global Scope}</source>
         <translation>{Globaler Gültigkeitsbereich}</translation>
     </message>
@@ -6809,7 +6819,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <message>
         <location line="+411"/>
         <source>There exists no object with the given id.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es existiert kein Objekt mit der angegebenen ID.</translation>
     </message>
     <message>
         <location line="+352"/>

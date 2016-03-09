@@ -41,7 +41,7 @@ is finished and its color turns to the corresponding inverse color of the curren
     
 .. figure:: images/drawInto2D.png
     :scale: 100%
-    :align: left
+    :align: center
 
 By clicking the **tools >> clear marker** menu, all current shapes are deleted. After creation the geometric elements can be edited by left-clicking one of the element handles which becomes high-lighted (squares) and moving the mouse.
 By pressing the "ctrl"-button during mouse-movement the element resize behaviour will be changed depending on the element type. 

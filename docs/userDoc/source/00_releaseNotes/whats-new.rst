@@ -12,10 +12,14 @@ itom
 
 (more than 240 commits in itom repository)
 
+* user documentation enhanced
+* more demo scripts added
+* fix in package manager for pip >= 8.0.0
+* indexing of itom.dataObject works now also with numpy.array as mask, e.g. myDataObj[myNpArray > 0.5] = 2 
 * setVal of ito::Param now also works with const pointers, e.g. const ito::DataObject*.
 * ito::autoInterval and itom.autoInterval (Python) homogenized: The default is always (-inf,+inf) and auto = True!
 * ui-properties of type dataIO and actuator can be read by python.
-* fixes of Q_WS_... and Q_OS_... symbols since Q_WS_... does not exist in Qt5.
+* fixes of Q\_WS\_... and Q\_OS\_... symbols since Q\_WS\_... does not exist in Qt5.
 * bugfix in 'goto next or previous bookmark'
 * Navigator in ScriptEditorWidget can now also read multi-line definitions of methods or functions
 * AddInInterface incremented to 2.3.0. Reason: itom sometimes crashed when a dock widget of a plugin was visible, the plugin quiet busy (e.g. long integration time) and itom was closed. When closing the main window, it implicitly deleted all dock widgets while a dockWidgetVisibilityChanged signal, that was sent long before but did not arrive due to the blocked plugin, is emitted after and tries to access the deleted dock widget. Now, dock widget is guarded by QPointer in AddInInterface.cpp. For better maintaining, some private members of ito::AddInBase are not moved to a private subclass.
@@ -212,7 +216,7 @@ itom
 * Added functions to edit, add and read out color maps bases on rgba-values
 * :py:meth:`itom.addMenu` / :py:meth:`itom.removeMenu` / :py:meth:`itom.addButton` / :py:meth:`itom.removeButton`: the methods to add a button or menu element always return an unique handle to the recently added item. The methods to remove them can be called with this handle to exactly delete the element that has been added (does not remove an element with the same name that replaced the previously added one). With this change, a bug has been fixed: In some cases methods or functions connected to menu items have not been released when deleting the parent menu element.
 * observeInvocation in AbstractAddInConfigDialog and abstractAddInDockWidget now use the waitAndProcessEvents method of ItomSharedSemaphore instead of a "self-programmed" version doing the same.
-* :py:meth:`itom.addButton` returns handle to button, this handle can be used to call :py:meth:`itom.removeButton`(handle) to exactly delete this button. The existing method :py:meth:`itom.removeButton`(toolbarName, buttonName) still exists as other possibility
+* :py:meth:`itom.addButton` returns handle to button, this handle can be used to call :py:meth:`itom.removeButton` (handle) to exactly delete this button. The existing method :py:meth:`itom.removeButton` (toolbarName, buttonName) still exists as other possibility
 * AddInManager::initAddIn: let this method also processEvents when it waits for the plugin's init method to be finished. Then, the plugin can directly invoke slots from GUI-related elements of the plugin within its init method. * Bugfix in dataObject.toGray() with default parameter (type)
 * QPropertyEditor can now handle QStringList properties (with list editor dialog for editing the QStringList)
 * methods removeItem, setItemData and insertItem of QComboBox are now callable from Python (via .call(...) command)
@@ -418,7 +422,7 @@ Plugins
 * fittingFilters: documentation of fitPolynom2D and polyfitWeighted2D / polyfitWeighted2DSinglePoints improved due to different definitions of the fit function.
 * x3pio: warnings and errors from OpenGPS are transferred more clearly to itom.
 * documentation of x3pio adapted for CodeSynthesis XSD 4.0 necessary for Visual Studio > 2010. A bugfix was added to the documentation file.
-* DataObjectIO: filter *loadFRT* added in order to load *.frt data files from Friess FRT measurement devices.
+* DataObjectIO: filter *loadFRT* added in order to load \*.frt data files from Friess FRT measurement devices.
 * DataObjectIO: *loadTXT* filter improved: the load can now handle thousand group delimiter (, or . depending on decimalSign). Furthermore wrapSign was added as optional parameter, such that "'... signs optionally wrapping every value can be removed. For all this, a python based unittest was added to the sources.
 * DataObjectIO: fix in *loadSDF* if either xscale or yscale of sdf-file is set to 0.
 * DataObjectIO: savePtbPR filter added to save 1D data objects to the PR file used for the reference roughness evaluation software from PTB.
@@ -507,7 +511,7 @@ Plugins
 * fixes in plugin *PIPiezoCtrl*: parameters delayOffset, delayProp and async are now really transmitted to the device (did nothing before)
 * fixes in *PCOCamera* plugin with camera *PCO.1200s* that does not support the setPoint temperature.
 * all plugins adapted for Qt4 and Qt5.
-* plugin *dispWindow* adapted to OpenGL 3.1 and 4.0. Deprecated shader commands replaced. Parameters 'lut' and 'gamma' are now working and the gamma correction is enabled if parameter *gamma*=1
+* plugin *dispWindow* adapted to OpenGL 3.1 and 4.0. Deprecated shader commands replaced. Parameters 'lut' and 'gamma' are now working and the gamma correction is enabled if parameter *gamma* = 1
 * filter *cvUndistort* in *OpenCVFilters* can now handle every data type as input.
 * fixes some bugs when importing csv files
 * filter *cvFlipFilter* also supports multi plane flipping for 3D data objects.

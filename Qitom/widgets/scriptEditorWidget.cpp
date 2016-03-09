@@ -116,7 +116,6 @@ ScriptEditorWidget::ScriptEditorWidget(QWidget* parent) :
             {
                 breakPointAdd(bpItems.at(i), i);
             }
-
         }
     }    
 
@@ -1404,14 +1403,14 @@ bool ScriptEditorWidget::event(QEvent *event)
             }
         }
     }
-    else if(event->type() == QEvent::KeyRelease)
+    else if (event->type() == QEvent::KeyRelease)
     {
         // SyntaxCheck   
         if (m_pythonExecutable && m_syntaxCheckerEnabled)
         {
             m_syntaxTimer->start(); //starts or restarts the timer
         }
-        if(m_ClassNavigatorEnabled && m_classNavigatorTimerEnabled)
+        if (m_ClassNavigatorEnabled && m_classNavigatorTimerEnabled)
         {   // Class Navigator if Timer is active
             m_classNavigatorTimer->start();
         }
@@ -1814,7 +1813,7 @@ void ScriptEditorWidget::breakPointAdd(BreakPointItem bp, int /*row*/)
         std::list<QPair<int, int> >::iterator it;
         bool found = false;
 
-        foreach( const BPMarker &bpEntry, m_breakPointMap)
+        foreach(const BPMarker &bpEntry, m_breakPointMap)
         {
             if (bpEntry.lineNo == bp.lineno && !bpEntry.markedForDeletion)
             {
@@ -1853,7 +1852,7 @@ void ScriptEditorWidget::breakPointAdd(BreakPointItem bp, int /*row*/)
         m.bpHandle = newHandle;
         m.lineNo = bp.lineno;
         m.markedForDeletion = false;
-        m_breakPointMap.append( m );
+        m_breakPointMap.append(m);
     }
 }
 
@@ -1942,11 +1941,11 @@ void ScriptEditorWidget::print()
 
         if (hasNoFilename() == false)
         {
-            printer.setDocName( getFilename() );
+            printer.setDocName(getFilename());
         }
         else
         {
-            printer.setDocName( tr("unnamed") );
+            printer.setDocName(tr("unnamed"));
         }
 
         printer.setPageMargins(20,15,20,15,QPrinter::Millimeter);
@@ -2045,7 +2044,7 @@ void ScriptEditorWidget::nrOfLinesChanged()
     {
         if (currentLineHash[marker.bpHandle] == -1) //break point does not exist any more, delete it
         {
-            oldItemsToDelete.append( bpModel->getFirstBreakPointIndex(getFilename(), marker.lineNo) );
+            oldItemsToDelete.append(bpModel->getFirstBreakPointIndex(getFilename(), marker.lineNo));
             (const_cast<BPMarker*>(&marker))->markedForDeletion = true;
         }
         else if (currentLineHash[marker.bpHandle] != marker.lineNo) //line has been changed, if there is another breakpoint that is now in this line and that was in a smaller line number before, delete this one
@@ -2065,7 +2064,7 @@ void ScriptEditorWidget::nrOfLinesChanged()
 
             if (found) //another unchanged breakpoint was and still is in the new line of marker, therefore delete marker
             {
-                oldItemsToDelete.append( bpModel->getFirstBreakPointIndex(getFilename(), marker.lineNo) );
+                oldItemsToDelete.append(bpModel->getFirstBreakPointIndex(getFilename(), marker.lineNo));
                 (const_cast<BPMarker*>(&marker))->markedForDeletion = true;
             }
             else
@@ -2076,7 +2075,7 @@ void ScriptEditorWidget::nrOfLinesChanged()
                 item = bpModel->getBreakPoint(index);
                 item.lineno = currentLineHash[marker.bpHandle]; //new line
 
-                itemsToChange.append( QPair<QModelIndex,BreakPointItem>(index,item) );
+                itemsToChange.append(QPair<QModelIndex,BreakPointItem>(index,item));
             }
         }
     }
@@ -2436,10 +2435,10 @@ void ItomQsciPrinter::formatPage(QPainter &painter, bool drawing, QRect &area, i
     QString page = QString::number(pagenr);
     int width = area.width();
     int dateWidth = painter.fontMetrics().width(date);
-    filename = painter.fontMetrics().elidedText( filename, Qt::ElideMiddle, 0.8 * (width - dateWidth) );
+    filename = painter.fontMetrics().elidedText(filename, Qt::ElideMiddle, 0.8 * (width - dateWidth));
         
     painter.save();
-    painter.setFont( QFont("Helvetica", 10, QFont::Normal, false) );
+    painter.setFont(QFont("Helvetica", 10, QFont::Normal, false));
     painter.setPen(QColor(Qt::black)); 
     if (drawing)
     {

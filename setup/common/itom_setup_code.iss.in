@@ -1,18 +1,36 @@
+[CustomMessages]
+English.DirExistsText = This selected application directory contains at least one of the folders "designer", "plugins", "help" or "SDK". For a proper installation of the current itom version these folder should be cleared. Do you want this setup to clear these folders before starting the installation?
+English.PythonReboot=The Python installer will be executed now. Itom is only able to find the python library if the installation path has been added to the PATH environment variable. Please let the corresponding option checked in the setup and log off or restart the computer at the end of the setup.
+English.PythonNotFound=Python path was not found in registry. Please select the Python directory!
+Deutsch.DirExistsText = Das ausgewaehlte Verzeichnis enthaelt bereits mindestens einen der Ordner "designer", "plugins", "help" oder "SDK". Fuer eine ordnungsgemaesse Installation der aktuellen Version ins gewaehlte Verzeichnis sollten diese Ordner geloescht werden. Soll das vor der Installation gemacht werden?
+Deutsch.PythonReboot=Im Folgenden wird Python installiert. Itom kann Python nur finden, wenn es der PATH Umgebungsvariable hinzugefuegt ist. Bitte die zugehoerige Option im Setup von Python aktiviert lassen und am Ende der Installation einen Neustart oder eine Neuanmeldung vornehmen.
+Deutsch.PythonNotFound=Das Python Installationsverzeichnis konnte nicht gefunden werden. Bitte das Verzeichnis angeben!
+
 [Code]
 function MsiQueryProductState(ProductCode: string): integer;
   external 'MsiQueryProductStateA@msi.dll stdcall';
 
 const
   INSTALLSTATE_DEFAULT = 5;
-  INSTALLLEVEL_MAXIMUM = $ffff;
-  INSTALLSTATE_ABSENT = 2;
-  RP86 =    '{196BB40D-1578-3D01-B289-BEFC77A11A1E}';  // Visual C++ 2010 Redistributable Package (x86)
-  RP64 =    '{DA5E371C-6333-3D8A-93A4-6FD5B20BCC6E}';  // Visual C++ 2010 Redistributable Package (x64)
-  RPIA =    '{C1A35166-4301-38E9-BA67-02823AD72A1B}';  // Visual C++ 2010 Redistributable Package (ia64) 
-  RP86SP1 = '{F0C3E5D1-1ADE-321E-8167-68EF0DE699A5}';  // Visual C++ 2010 SP1 Redistributable Package (x86)
-  RP64SP1 = '{1D8E6291-B0D5-35EC-8441-6616F567A0F7}';  // Visual C++ 2010 SP1 Redistributable Package (x64)
-  RPIASP1 = '{88C73C1C-2DE5-3B01-AFB8-B46EF4AB41CD}';  // Visual C++ 2010 SP1 Redistributable Package (ia64)
+//  INSTALLLEVEL_MAXIMUM = $ffff;
+//  INSTALLSTATE_ABSENT = 2;
 
+  // Visual C++ 2010 Redistributable
+  RP10_86 =    '{196BB40D-1578-3D01-B289-BEFC77A11A1E}';  // Visual C++ 2010 Redistributable Package (x86)
+  RP10_64 =    '{DA5E371C-6333-3D8A-93A4-6FD5B20BCC6E}';  // Visual C++ 2010 Redistributable Package (x64)
+//  RP10_IA =    '{C1A35166-4301-38E9-BA67-02823AD72A1B}';  // Visual C++ 2010 Redistributable Package (ia64) 
+  RP10_86SP1 = '{F0C3E5D1-1ADE-321E-8167-68EF0DE699A5}';  // Visual C++ 2010 SP1 Redistributable Package (x86)
+  RP10_64SP1 = '{1D8E6291-B0D5-35EC-8441-6616F567A0F7}';  // Visual C++ 2010 SP1 Redistributable Package (x64)
+//  RP10_IASP1 = '{88C73C1C-2DE5-3B01-AFB8-B46EF4AB41CD}';  // Visual C++ 2010 SP1 Redistributable Package (ia64)
+
+  // Visual C++ 2015 Redistributable 14.0.23026
+  RP15_86_MIN = '{A2563E55-3BEC-3828-8D67-E5E8B9E8B675}';
+  RP15_64_MIN = '{0D3E9E15-DE7A-300B-96F1-B4AF12B96488}';
+  RP15_86_ADD = '{BE960C1C-7BAD-3DE6-8B1A-2616FE532845}';
+  RP15_64_ADD = '{BC958BD2-5DAC-3862-BB1A-C1BE0790438D}';
+  
+  // You can find product codes for other Visual Studio versions in HKEY_CLASSES_ROOT\Installer\Dependencies\, for example HKEY_CLASSES_ROOT\Installer\Dependencies\Microsoft.VS.VC_RuntimeAdditionalVSU_amd64,v14
+  
 function IsMsiProductInstalled(const ProductId: string): Boolean;
 begin
   Result := MsiQueryProductState(ProductId) = INSTALLSTATE_DEFAULT;
@@ -20,9 +38,14 @@ end;
 
 function NeedInstallRP10(SetupMode: Integer): Boolean;
 begin
-  Result := ((SetupMode = 64) and not (IsMsiProductInstalled(RP64) or IsMsiProductInstalled(RP64SP1))) or
-            ((SetupMode = 32) and not (IsMsiProductInstalled(RP86) or IsMsiProductInstalled(RP86SP1)));
-//                IsMsiProductInstalled(RPIA) or IsMsiProductInstalled(RPIASP1));
+  Result := ((SetupMode = 64) and not (IsMsiProductInstalled(RP10_64) or IsMsiProductInstalled(RP10_64SP1))) or
+            ((SetupMode = 32) and not (IsMsiProductInstalled(RP10_86) or IsMsiProductInstalled(RP10_86SP1)));
+end;
+
+function NeedInstallRP15(SetupMode: Integer): Boolean;
+begin
+  Result := ((SetupMode = 64) and not (IsMsiProductInstalled(RP15_64_MIN) or IsMsiProductInstalled(RP15_64_ADD))) or
+            ((SetupMode = 32) and not (IsMsiProductInstalled(RP15_86_MIN) or IsMsiProductInstalled(RP15_86_ADD)));
 end;
 
 procedure DeleteDirAndFiles(const Path, Filename: String; const IsDir, DeleteFiles, DeleteSubdirsAlso: Boolean);
@@ -39,14 +62,12 @@ begin
 end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
-var  AppDir, MsgText: string;
+var  AppDir: string;
 begin
   if (CurStep = ssInstall) then begin
     AppDir := ExpandConstant('{app}') + '\';
     if DirExists(AppDir + 'SDK') or DirExists(AppDir + 'lib') or DirExists(AppDir + 'plugins') or DirExists(AppDir + 'designer') then begin
-      MsgText := 'This selected application directory contains at least one of the folders "designer", "plugins", "help" or "SDK". For a proper installation of the '+
-                 'current itom version these folder should be cleared. Do you want this setup to clear these folders before starting the installation?';
-      if MsgBox(MsgText, mbConfirmation, MB_YESNO) = IDYES then begin
+      if MsgBox(CustomMessage('DirExistsText'), mbConfirmation, MB_YESNO) = IDYES then begin
         DeleteDirAndFiles(AppDir + 'SDK', '', True, True, True);
         DeleteDirAndFiles(AppDir + 'translation', '', True, True, True);
         DeleteDirAndFiles(AppDir + 'imageformats', '', True, True, True);
@@ -68,16 +89,22 @@ var  PythonPath: string;
      RootKey: Integer;
 begin
   Found := True;
-  if IsWin64 then  RootKey := HKEY_LOCAL_MACHINE_64
-  else  RootKey := HKEY_LOCAL_MACHINE;
   
-  if not RegQueryStringValue(RootKey, 'SOFTWARE\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
-    if not RegQueryStringValue(RootKey, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
-      if not RegQueryStringValue(HKEY_CURRENT_USER, 'SOFTWARE\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
-        if not RegQueryStringValue(HKEY_CURRENT_USER, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.4\InstallPath', '', PythonPath) then begin
-//          MsgBox('Python path was not found in registry!', mbError, MB_OK);
-//          Found := False;
-          Found := BrowseForFolder('Python path was not found in registry. Please select the Python directory!', PythonPath, False);
+  if not RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Python\PythonCore\3.5\InstallPath', '', PythonPath) then begin
+    if not RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.5\InstallPath', '', PythonPath) then begin
+      if not RegQueryStringValue(HKEY_LOCAL_MACHINE, 'SOFTWARE\Python\PythonCore\3.5-32\PythonPath', '', PythonPath) then begin
+        if not RegQueryStringValue(HKEY_LOCAL_MACHINE_64, 'SOFTWARE\Python\PythonCore\3.5\InstallPath', '', PythonPath) then begin
+          if not RegQueryStringValue(HKEY_LOCAL_MACHINE_64, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.5\InstallPath', '', PythonPath) then begin
+             if not RegQueryStringValue(HKEY_LOCAL_MACHINE_64, 'SOFTWARE\Python\PythonCore\3.5-32\PythonPath', '', PythonPath) then begin
+              if not RegQueryStringValue(HKEY_CURRENT_USER, 'SOFTWARE\Python\PythonCore\3.5\InstallPath', '', PythonPath) then begin
+                if not RegQueryStringValue(HKEY_CURRENT_USER, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.5\InstallPath', '', PythonPath) then begin
+                  if not RegQueryStringValue(HKEY_CURRENT_USER, 'SOFTWARE\Python\PythonCore\3.5-32\PythonPath', '', PythonPath) then begin
+                    Found := BrowseForFolder(CustomMessage('PythonNotFound'), PythonPath, False);
+                  end;
+                end;
+              end;
+            end;
+          end;
         end;
       end;
     end; 
@@ -87,4 +114,9 @@ begin
     Result := PythonPath;
 //  else
 //    MsgBox('Python path was not found!', mbError, MB_OK);
+end;
+
+procedure PythonBeforeInstall();
+begin
+  MsgBox(CustomMessage('PythonReboot'), mbInformation, MB_OK);
 end;

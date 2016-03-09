@@ -132,7 +132,7 @@ void WorkspaceDockWidget::createActions()
 {
     m_actDelete = new ShortcutAction(QIcon(":/workspace/icons/document-close-4.png"), tr("delete selected item(s)"), this, QKeySequence::Delete, Qt::WidgetWithChildrenShortcut);
     m_actDelete->connectTrigger(this, SLOT(mnuDeleteItem()));
-    m_actExport = new ShortcutAction(QIcon(":/workspace/icons/document-export.png"), tr("export selected item(s)"), this);
+    m_actExport = new ShortcutAction(QIcon(":/workspace/icons/document-export.png"), tr("export selected item(s)"), this, QKeySequence::Save, Qt::WidgetWithChildrenShortcut);
     m_actExport->connectTrigger(this, SLOT(mnuExportItem()));
     m_actImport = new ShortcutAction(QIcon(":/workspace/icons/document-import.png"), tr("import item(s)"), this);
     m_actImport->connectTrigger(this, SLOT(mnuImportItem()));

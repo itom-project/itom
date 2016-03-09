@@ -104,6 +104,6 @@ You can also combine your math/arithmetic operations with the :py:func:`print` c
 
 As you might have noticed, lines starting with the hash character ``#`` are not interpreted by |Python|. In this fashion, the programmer can render his file easier understandable for another programmer or for himself when coming back to a complex program after a while. Comments can also start behind a line of code. They extend until the end of the physical line. 
 
-Also, you can combine the :py:func:`print` command with mathematic/arithmetic operations, which is explained in more detail in chapter :doc:`Strings and text <pytut_strings_text>`.
+Also, you can combine the :py:func:`print` command with mathematic/arithmetic operations, which is explained in more detail in chapter :ref:`Strings and text <pytut_strings_text>`.
 
 .. seealso:: You can find even more math functions in the `official documentation <http://docs.python.org/py3k/library/math.html>`_.

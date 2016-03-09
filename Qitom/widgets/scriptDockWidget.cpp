@@ -119,7 +119,7 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
    
     // Layoutbox
     m_pVBox = new QVBoxLayout();
-    m_pVBox->setContentsMargins(0,0,0,0);
+    m_pVBox->setContentsMargins(0, 0, 0, 0);
     m_pVBox->setSpacing(1);
 
     // Create new Widget for Class Navigation (Bar)
@@ -131,19 +131,19 @@ ScriptDockWidget::ScriptDockWidget(const QString &title, const QString &objName,
     m_methodBox = new QComboBox(m_classMenuBar);
     m_classBox->setMinimumHeight(20);
     m_classBox->setMaxCount(500000);
-    m_classBox->setContentsMargins(2,0,2,0);
-    m_classBox->setStyleSheet("QComboBox {  border: 0px ; border-radius: 0px; padding: 0px 18px 0px 3px;}");
+    m_classBox->setContentsMargins(2, 0, 2, 0);
+    m_classBox->setStyleSheet("QComboBox {border: 0px; border-radius: 0px; padding: 0px 18px 0px 3px;}");
     m_methodBox->setMinimumHeight(20);
     m_methodBox->setMaxCount(500000);
-    m_methodBox->setContentsMargins(2,0,2,0);
-    m_methodBox->setStyleSheet("QComboBox { border: 0px ; border-radius: 0px; padding: 0px 18px 0px 3px;}");
+    m_methodBox->setContentsMargins(2, 0, 2, 0);
+    m_methodBox->setStyleSheet("QComboBox {border: 0px; border-radius: 0px; padding: 0px 18px 0px 3px;}");
 
     // Layout inside the Widget (two comboBoxes)
     QHBoxLayout *hLayoutBox = new QHBoxLayout();
     hLayoutBox->setSpacing(0);
     hLayoutBox->addWidget(m_classBox);
     hLayoutBox->addWidget(m_methodBox);
-    hLayoutBox->setContentsMargins(0,0,0,0);
+    hLayoutBox->setContentsMargins(0, 0, 0, 0);
     m_classMenuBar->setLayout(hLayoutBox);
 
     // Set Size for Widget
@@ -511,6 +511,7 @@ QStringList ScriptDockWidget::getModifiedFileNames(bool ignoreUnsavedFiles, int 
             }
         }
     }
+
     return list;
 }
 
@@ -549,6 +550,7 @@ RetVal ScriptDockWidget::openScript()
         emit (openScriptRequest(fileName, this));
         return RetVal(retOk);
     }
+
     return RetVal(retError);
 }
 
@@ -900,7 +902,10 @@ void ScriptDockWidget::scriptModificationChanged(bool /*changed*/)
 void ScriptDockWidget::tabCloseRequested(int index)
 {
     ScriptEditorWidget *sew = getEditorByIndex(index);
-    if (sew == NULL) return;
+    if (sew == NULL)
+    {
+        return;
+    }
 
     closeTab(index, true);
 }
@@ -908,7 +913,10 @@ void ScriptDockWidget::tabCloseRequested(int index)
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptDockWidget::tabCloseRequested(ScriptEditorWidget* sew, bool ignoreModifications)
 {
-    if (sew == NULL) return;
+    if (sew == NULL)
+    {
+        return;
+    }
     int index = getIndexByEditor(sew);
 
     closeTab(index, ignoreModifications);
@@ -1024,6 +1032,7 @@ int ScriptDockWidget::getIndexByEditor(const ScriptEditorWidget* sew) const
             return i;
         }
     }
+
     return -1;
 }
 
@@ -1411,7 +1420,6 @@ void ScriptDockWidget::createMenus()
     connect(this->m_lastFilesMenu, SIGNAL(aboutToShow()), this, SLOT(menuLastFilesAboutToShow()));
     // Add these menus dynamically
     
-    
     m_fileMenu->addSeparator();
     m_fileMenu->addAction(m_printAction->action());
     m_fileMenu->addSeparator();
@@ -1579,6 +1587,7 @@ bool ScriptDockWidget::activateTabByFilename(const QString &filename, int line /
             }
         }
     }
+
     return false;
 }
 
@@ -1594,6 +1603,7 @@ bool ScriptDockWidget::activeTabEnsureLineVisible(const int lineNr, bool errorMe
             return true;
         }
     }
+
     return false;
 }
 
@@ -2038,6 +2048,7 @@ void ScriptDockWidget::mnuGoto()
             sew->setCursorPosition(curLine, curIndex);
         }
     }
+
     DELETE_AND_SET_NULL(d);
 }
 

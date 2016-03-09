@@ -1,5 +1,7 @@
 .. include:: /include/global.inc
 
+.. _plugins:
+
 Plugins
 ###################
 
@@ -15,10 +17,10 @@ See the following sections in order to get more information about these plugins:
 
     basic_concept.rst
     getstart-hardware.rst
-    ..start-plugin.rst
     getstart-grabber.rst
     getstart-adda.rst
     getstart-actuator.rst
+    getstart-filter.rst
     
 If you want to program your own plugin, see the following sections of the documentation:
 
