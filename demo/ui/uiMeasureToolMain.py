@@ -6,9 +6,7 @@ import inspect
 import os.path
 import numpy as np
 
-reloadModules = 1
-
-class measureToolMain(ItomUi):
+class MeasureToolMain(ItomUi):
     
     upDating = True
     measureType = 0
@@ -28,19 +26,10 @@ class measureToolMain(ItomUi):
         ownDir = os.path.dirname(ownFilename)
         uiFile = os.path.join(ownDir, "uiMeasureToolMain.ui")
         uiFile = os.path.abspath(uiFile)
-        ItomUi.__init__(self, uiFile, ui.TYPEDIALOG, childOfMainWindow=True)
+        ItomUi.__init__(self, uiFile, ui.TYPEWINDOW, childOfMainWindow=True)
         
-        self.enumRelationName = list(self.gui.measurementTable["relationNames"])
-        #self.enumRelationName.append('Sa value')
-        #self.enumRelationName.append('Sz10 value')
-        #self.enumRelationName.append('Sq value')
-        #self.enumRelationName.append('step height')
-        
-        #self.gui.measurementTable["relationNames"] = self.enumRelationName
         self.gui.measurementTable.call('addRelationName', 'mean value')
-        
         self.enumRelationName = self.gui.measurementTable["relationNames"]
-        
         self.enumRelationIdx[0] = self.enumRelationName.index('N.A.')
         self.enumRelationIdx[1] = self.enumRelationName.index('radius (own)')
         self.enumRelationIdx[2] = self.enumRelationName.index('distance to')
@@ -49,17 +38,13 @@ class measureToolMain(ItomUi):
         self.enumRelationIdx[5] = self.enumRelationName.index('mean value')
         
         self.elementCount = 0
-        
-    def init(self):
-        ret = self.gui.dataPlot["source"] = dataObject.zeros([1,1])
-        self.upDating = False
     
     def show(self,modalLevel = 0):
         ret = self.gui.show(modalLevel)
     
     def showObject(self, newObject = None):
         
-        if(self.measureType!= 0):
+        if(self.measureType != 0):
             self.on_pushButtonCancel_clicked()
         else:
             self.gui.measurementTable.call("clearAll")
@@ -212,7 +197,7 @@ class measureToolMain(ItomUi):
     
 if(__name__ == '__main__'):
     dObj = dataObject.randN([600, 800], 'float32')
-    measurementTool = measureToolMain()
+    measurementTool = MeasureToolMain()
     measurementTool.show()
     dObj.axisScales = (0.2, 0.2)
     dObj.axisUnits = ('mm', 'mm')
