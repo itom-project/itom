@@ -33,6 +33,7 @@
 #include <qmenubar.h>
 #include <qevent.h>
 #include <qsettings.h>
+#include <qshortcut.h>
 
 #include "../../common/typeDefs.h"
 #include "../../common/addInInterface.h"
@@ -56,6 +57,7 @@ public:
     QList<QMenu*> menus;
     QList<AbstractFigure::ToolBarItem> toolbars;
     QList<AbstractFigure::ToolboxItem> toolboxes;
+    QHash<QAction*, QShortcut*> shortcutActions;
 
     QDockWidget *propertyDock;
     QPropertyEditorWidget *propertyEditorWidget;
@@ -605,6 +607,7 @@ void AbstractFigure::toolBoxDestroyed(QObject *object)
 	}
 	return;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::toolBarDestroyed(QObject *object)
 {
@@ -625,4 +628,56 @@ void AbstractFigure::toolBarDestroyed(QObject *object)
 
 	return;
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal AbstractFigure::registerShortcutActions()
+{
+    QShortcut *shortcut;
+    QAction *a;
+    QWidget *p = centralWidget();
+    foreach(QObject *o, children())
+    {
+        a = qobject_cast<QAction*>(o);
+        
+        if (a && d->shortcutActions.contains(a))
+        {
+            d->shortcutActions[a]->deleteLater(); //delete a previous shortcut
+        }
+
+        if (a && a->shortcut().isEmpty() == false)
+        {
+            shortcut = new QShortcut(a->shortcut(), p);
+            shortcut->setContext(Qt::WidgetWithChildrenShortcut);
+            connect(shortcut, SIGNAL(activated()), a, SLOT(trigger()));
+
+            QString text2 = a->text();
+            QString text3 = a->text();
+            text3.replace("&", "");
+            text2 += "\t" + a->shortcut().toString(QKeySequence::NativeText);
+            text3 += " (" + a->shortcut().toString(QKeySequence::NativeText) + ")";
+            a->setText(text2);
+            a->setToolTip(text3);
+            a->setShortcut(QKeySequence());
+            shortcut->setEnabled(a->isEnabled());
+
+            connect(a, SIGNAL(changed()), this, SLOT(actionChanged())); //to be notified if e.g. the enable property of the action changed
+            d->shortcutActions[a] = shortcut;
+        }
+    }
+
+    return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractFigure::actionChanged()
+{
+    QObject *s = sender(); //action where any property like enabled changed...
+    QAction *a = qobject_cast<QAction*>(s);
+
+    if (a && d->shortcutActions.contains(a))
+    {
+        d->shortcutActions[a]->setEnabled(a->isEnabled());
+    }
+}
+
 } //end namespace ito

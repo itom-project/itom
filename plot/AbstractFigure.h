@@ -184,6 +184,8 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
 
         RetVal initialize();
 
+        RetVal registerShortcutActions(); /*!< call this method once after all actions with shortcuts are created and after that the content widget has been created. The shortcuts of the actions will then be redirected to overall shortcuts that can be handled even if the plot is docked into the main window of itom */
+
         WindowMode m_windowMode;
         QString m_itomSettingsFile;
         QWidget *m_mainParent; //the parent of this figure is only set to m_mainParent, if the stay-on-top behaviour is set to the right value
@@ -204,6 +206,8 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
 
 		void toolBoxDestroyed(QObject *object);
 		void toolBarDestroyed(QObject *object);
+
+        void actionChanged();
 
     public slots:
 
