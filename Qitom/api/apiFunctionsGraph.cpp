@@ -342,26 +342,46 @@ QVariant apiFunctionsGraph::mgetFigureSetting(const QObject *figureClass, const 
         return defaultValue;
     }
 
-    const QMetaObject *mo = figureClass->metaObject();
+    //there are two possibilities where a figure can get a setting from:
+    //1. If the parent() of the figureClass is also inherited from ito::AbstractFigure, the parent figure will asked for
+    //   a property with the same name. If this exists, it will be taken
+    //2. Else: the settings file will be asked
     bool found = false;
     QVariant value = defaultValue;
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("DesignerPlugins");
 
-    while(mo && !found)
+    if (figureClass->parent() && qobject_cast<const AbstractFigure*>(figureClass->parent()))
     {
-        settings.beginGroup(mo->className());
-        if(settings.contains(key))
+        const QObject *par = qobject_cast<const AbstractFigure*>(figureClass->parent());
+        int idx = par->metaObject()->indexOfProperty(key.toLatin1().data());
+        if (idx >= 0)
         {
-            value = settings.value(key,defaultValue);
+            value = par->metaObject()->property(idx).read(par);
             found = true;
         }
-        settings.endGroup();
-
-        mo = mo->superClass();
     }
 
-    settings.endGroup();
+    if (!found) //check ini setting file
+    {
+        const QMetaObject *mo = figureClass->metaObject();
+        
+        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+        settings.beginGroup("DesignerPlugins");
+
+        while (mo && !found)
+        {
+            settings.beginGroup(mo->className());
+            if (settings.contains(key))
+            {
+                value = settings.value(key, defaultValue);
+                found = true;
+            }
+            settings.endGroup();
+
+            mo = mo->superClass();
+        }
+
+        settings.endGroup();
+    }
     
     return value;
 }
