@@ -43,7 +43,11 @@ PlotInfoShapes::PlotInfoShapes(QWidget* parent /*= NULL*/) : QTreeWidget(parent)
 
     clear();
 
-    this->setColumnCount(2);
+    setColumnCount(2);
+
+    QStringList headerLabels;
+    headerLabels << tr("Property") << tr("Value");
+    setHeaderLabels(headerLabels);
 
 }
 //---------------------------------------------------------------------------------------------------------
