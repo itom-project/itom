@@ -37,7 +37,7 @@ import subprocess
 
 repositoryPath = '${CMAKE_CURRENT_SOURCE_DIR}/..'
 destinationFolder = '${CMAKE_CURRENT_BINARY_DIR}/..'
-gitLocation = '${GIT_EXECUTABLE}'
+gitLocation = ['${GIT_EXECUTABLE}', 'git.exe', 'git']
 
 repDate = 'failed'
 repHash = 'failed'
@@ -45,8 +45,39 @@ repHashAbbrev = 'failed'
 repURL = 'failed'
 repIsDirty = 4
 
-#pr = subprocess.Popen([gitLocation+'/git.exe', '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'status', '--porcelain'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
-pr = subprocess.Popen([gitLocation, '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'status', '--porcelain'], cwd = os.path.dirname(gitLocation), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
+def which(program):
+    import os
+    def is_exe(fpath):
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            path = path.strip('"')
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return exe_file
+    return None
+
+gitFound = False
+
+for gitLoc in gitLocation:
+    fullpath = which(gitLoc)
+    if fullpath:
+        try:
+            pr = subprocess.Popen([fullpath, '--git-dir='+repositoryPath+'/.git', '--work-tree='+repositoryPath , 'status', '--porcelain'], cwd = os.path.dirname(fullpath), stdout=subprocess.PIPE,stderr=subprocess.PIPE,shell=False)
+            gitLocation = fullpath #for further calls in this script
+            gitFound = True
+            break
+        except (FileNotFoundError, NotADirectoryError) as ex:
+            pass
+
+if not gitFound:
+    raise RuntimeError('git path not found')
+
 (out,error)=pr.communicate()
 
 if(len(error) > 0):
