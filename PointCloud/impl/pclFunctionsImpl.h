@@ -91,6 +91,68 @@ namespace pclHelper
         return retval;
     }
 
+
+    template<typename _Tp, int _Rows, int _Cols> ito::RetVal dataObjToEigenMatrix(const DataObject &dataobj, Eigen::Matrix<_Tp,_Rows,_Cols> &mat)
+    {
+        ito::RetVal retval;
+        ito::tDataType type;
+
+        try
+        {
+            type = ito::getDataType2<_Tp*>();
+        }
+        catch(...)
+        {
+            retval += ito::RetVal(ito::retError,0,"eigen matrix type is unknown for dataObject");
+        }
+
+        if(!retval.containsError())
+        {
+            ito::DataObject dobj;
+            retval += dataobj.convertTo(dobj, type);
+        }
+        
+        if (dataobj.getDims() != 2 || dataobj.getSize(0) != _Rows || dataobj.getSize(1) != _Cols)
+        {
+            retval += ito::RetVal(ito::retError, 0, "size of dataobj does not fit to requested Eigen::Matrix size");
+        }
+
+        if (!retval.containsError())
+        {
+            _Tp *data = mat.data();
+            const _Tp *rowPtr = NULL;
+            size_t c = 0;
+            size_t rows = mat.rows();
+            size_t cols = mat.cols();
+
+            if(mat.Options & Eigen::RowMajor)
+            {
+                for(size_t m = 0 ; m < rows ; m++)
+                {
+                    rowPtr = (_Tp*)dataobj.rowPtr(0,m);
+                    for(size_t n = 0 ; n < cols ; n++)
+                    {
+                        data[c++] = rowPtr[n];
+                    }
+                }
+            }
+            else
+            {
+                for(size_t m = 0 ; m < rows ; m++)
+                {
+                    rowPtr = (_Tp*)dataobj.rowPtr(0,m);
+                    for(size_t n = 0 ; n < cols ; n++)
+                    {
+                        data[m + n * rows] = rowPtr[n];
+                    }
+                }
+            }
+
+        }
+
+        return retval;
+    }
+
 } //end namespace pclHelper
 
 } //end namespace ito
