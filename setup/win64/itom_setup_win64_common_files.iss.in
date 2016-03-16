@@ -251,6 +251,7 @@ Source: "{#SourceDirPCL}\bin\pcl_io_release.dll"; DestDir: "{app}"; Flags: promp
 Source: "{#SourceDirPCL}\bin\pcl_io_ply_release.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirPCL}\bin\pcl_kdtree_release.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirPCL}\bin\pcl_octree_release.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_recognition_release.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirPCL}\bin\pcl_sample_consensus_release.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirPCL}\bin\pcl_search_release.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirPCL}\bin\pcl_surface_release.dll"; DestDir: "{app}"; Flags: promptifolder
