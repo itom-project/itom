@@ -21,6 +21,7 @@ def fn_name(): return sys._getframe(1).f_code.co_name
 DEBUG = False
 
 cursord = {
+    -1 : -1,
     cursors.MOVE          : 9,
     cursors.HAND          : 13,
     cursors.POINTER       : 0,
@@ -499,11 +500,19 @@ class NavigationToolbar2Itom( NavigationToolbar2 ):
             figureoptions.figure_edit(axes, self)
             
     def pan( self, *args ):
+        if self._active != 'PAN':
+            self.set_cursor(cursors.MOVE)
+        else:
+            self.set_cursor(-1)
         self.itomUI().actionZoomToRect['checked'] = False
         #self.window.actionMarker['checked'] = False
         NavigationToolbar2.pan( self, *args )
 
     def zoom( self, *args ):
+        if self._active != 'ZOOM':
+            self.set_cursor(cursors.SELECT_REGION)
+        else:
+            self.set_cursor(-1)
         self.itomUI().actionPan['checked'] = False
         #self.window.actionMarker['checked'] = False
         NavigationToolbar2.zoom( self, *args )
