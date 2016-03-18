@@ -165,6 +165,9 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         # causes problems with code that uses the result of the
         # draw() to update plot elements.
         if DEBUG: print('FigureCanvasItomAgg.draw')
+        
+        if self.figure is None:
+            raise RuntimeError("figure %i does not exist any more" % self.num)
         FigureCanvasAgg.draw(self)
         self.paintEvent()
         #self.canvas.call("update")
