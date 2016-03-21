@@ -53,7 +53,6 @@ public:
 
     typedef struct
     {
-//        PyFigure() : uiItem(0), rows(0), cols(0), currentSubplotIdx(0), signalMapper(NULL) {}
         PythonUi::PyUiItem uiItem;
         QSharedPointer<unsigned int> guardedFigHandle;
         int rows;

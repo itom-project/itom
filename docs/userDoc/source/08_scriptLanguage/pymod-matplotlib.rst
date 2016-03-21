@@ -247,3 +247,35 @@ The you have the reference to the figure-instance of *matplotlib* and can go one
     or by directlly setting the corresponding property when designing the user interface in QtDesigner.
 
 This example is contained in the **demo/ui/embeddedMatplotlib** folder.
+
+Size control over Matplotlib canvas
+===================================================
+
+Usually, it is possible to control the size and dpi of the matplotlib canvas using the commands
+
+.. code-block:: python
+    
+    myfig.set_dpi(120)
+    myfig.set_size_inches(5,5,True)
+    
+However, if the matplotlib canvas is embedded in an itom user interface or in general in the itom backend (hence window management of itom),
+the size of the canvas is usually given by the outer size of the parent window and the layout of the user interface. Only, if the size
+of the canvas is increased, the size of the window may also increase. In order to provide a better size control of the canvas, the matplotlib
+widget has the property **keepSizeFixed**. If this property is true (default: false), the canvas will always have the indicated size. If one
+enlarges the outer window, the canvas will be unchanged in size and still be centered in the available area. Vice-versa, it is not possible to make
+the window smaller than the allowed canvas area.
+
+In order to axes the property **keepSizeFixed** it is necessary, to obtain the corresponding instance of class :py:class:`~itom.uiItem` from the given
+matplotlib figure handle. If the figure handle can be obtained by the current figure, the access might look like this:
+
+.. code-block:: python
+    
+    #get current figure
+    current_figure = plt.gcf()
+
+    #set the keepSizeFixed property of the plot to true:
+    current_figure.canvas.manager.itomUI["keepSizeFixed"] = True
+    #alternative:
+    #plt.get_current_fig_manager().itomUI["keepSizeFixed"]
+
+As an example see the script **hist2d_size_control.py** in the **demo/matplotlib** folder.
