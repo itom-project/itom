@@ -433,7 +433,18 @@ properties : {dict}, optional \n\
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigureMatplotlib_doc,"matplotlibFigure() -> create matplotlib canvas");
+PyDoc_STRVAR(pyFigureMatplotlib_doc,"matplotlibFigure([areaIndex, properties]) -> create matplotlib canvas \n\
+\n\
+Creates and returns a matplotlib canvas at the given area or returns an existing one. \n\
+This canvas can be used as canvas argument for pyplot.figure of matplotlib and is internally \n\
+used by the itom backend of matplotlib. \n\
+\n\
+Parameters\n\
+-----------\n\
+areaIndex: {int}, optional \n\
+    Area number where the plot should be put if subplots have been created\n\
+properties : {dict}, optional \n\
+    optional dictionary of properties that will be directly applied to the plot widget.");
 PyObject* PythonFigure::PyFigure_matplotlib(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"areaIndex", "properties", NULL};
@@ -609,8 +620,6 @@ PyObject* PythonFigure::PyFigure_hide(PyFigure *self)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyFigureSubplot_doc,"subplot(index) -> returns plotItem of desired subplot\n\
-\n\
-This method closes and deletes any specific figure (given by handle) or all opened figures. \n\
 \n\
 Parameters \n\
 ----------- \n\

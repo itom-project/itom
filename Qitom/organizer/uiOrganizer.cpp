@@ -1244,15 +1244,14 @@ RetVal UiOrganizer::showInputDialogGetText(const QString &title, const QString &
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::showMessageBox(unsigned int uiHandle, int type, const QString &title, const QString &text, int buttons, int defaultButton, QSharedPointer<int> retButton, QSharedPointer<QString> retButtonText, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::showMessageBox(unsigned int objectID, int type, const QString &title, const QString &text, int buttons, int defaultButton, QSharedPointer<int> retButton, QSharedPointer<QString> retButtonText, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = RetVal(retOk);
 
     QWidget *parent = NULL;
-    if (uiHandle > 0)
+    if (objectID > 0)
     {
-        UiContainer *ptr = getUiDialogByHandle(uiHandle);
-        if (ptr) parent = ptr->getUiWidget();
+        parent = qobject_cast<QWidget*>(getWeakObjectReference(objectID));
     }
     if (parent == NULL)
     {
@@ -1328,15 +1327,14 @@ RetVal UiOrganizer::showMessageBox(unsigned int uiHandle, int type, const QStrin
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::showFileDialogExistingDir(unsigned int uiHandle, const QString &caption, QSharedPointer<QString> directory, int options, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::showFileDialogExistingDir(unsigned int objectID, const QString &caption, QSharedPointer<QString> directory, int options, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue(retOk);
 
     QWidget *parent = NULL;
-    if (uiHandle > 0)
+    if (objectID > 0)
     {
-        UiContainer *ptr = getUiDialogByHandle(uiHandle);
-        if (ptr) parent = ptr->getUiWidget();
+        parent = qobject_cast<QWidget*>(getWeakObjectReference(objectID));
     }
     if (parent == NULL)
     {
@@ -1366,15 +1364,14 @@ RetVal UiOrganizer::showFileDialogExistingDir(unsigned int uiHandle, const QStri
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::showFileOpenDialog(unsigned int uiHandle, const QString &caption, const QString &directory, const QString &filter, QSharedPointer<QString> file, int selectedFilterIndex, int options, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::showFileOpenDialog(unsigned int objectID, const QString &caption, const QString &directory, const QString &filter, QSharedPointer<QString> file, int selectedFilterIndex, int options, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue(retOk);
 
     QWidget *parent = NULL;
-    if (uiHandle > 0)
+    if (objectID > 0)
     {
-        UiContainer *ptr = getUiDialogByHandle(uiHandle);
-        if (ptr) parent = ptr->getUiWidget();
+        parent = qobject_cast<QWidget*>(getWeakObjectReference(objectID));
     }
     if (parent == NULL)
     {
@@ -1413,15 +1410,14 @@ RetVal UiOrganizer::showFileOpenDialog(unsigned int uiHandle, const QString &cap
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::showFileSaveDialog(unsigned int uiHandle, const QString &caption, const QString &directory, const QString &filter, QSharedPointer<QString> file, int selectedFilterIndex, int options, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::showFileSaveDialog(unsigned int objectID, const QString &caption, const QString &directory, const QString &filter, QSharedPointer<QString> file, int selectedFilterIndex, int options, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue(retOk);
 
     QWidget *parent = NULL;
-    if (uiHandle > 0)
+    if (objectID > 0)
     {
-        UiContainer *ptr = getUiDialogByHandle(uiHandle);
-        if (ptr) parent = ptr->getUiWidget();
+        parent = qobject_cast<QWidget*>(getWeakObjectReference(objectID));
     }
     if (parent == NULL)
     {
