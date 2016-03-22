@@ -101,7 +101,7 @@ UiContainer::~UiContainer()
 */
 
 
-unsigned int UiOrganizer::autoIncUiDialogCounter = 0;
+unsigned int UiOrganizer::autoIncUiDialogCounter = 99; //such that itom-plots have numbers >= 100. The matplotlib figure manager always distributes figure numbers >= 1. In order to avoid conflicts, this separation is set.
 unsigned int UiOrganizer::autoIncObjectCounter = 1;
 
 
@@ -3277,7 +3277,7 @@ RetVal UiOrganizer::figureClose(unsigned int figHandle, ItomSharedSemaphore *sem
     FigureWidget *fig = NULL;
     QSharedPointer<unsigned int> empty;
 
-    if (figHandle > 0)
+    if (figHandle > 0) //delete one single figure
     {
         if (m_dialogList.contains(figHandle))
         {
@@ -3296,7 +3296,7 @@ RetVal UiOrganizer::figureClose(unsigned int figHandle, ItomSharedSemaphore *sem
             retval += RetVal::format(retError, 0, tr("figHandle %i not available.").toLatin1().data(), figHandle);
         }
     }
-    else
+    else //delete all figures
     {
         QHash<unsigned int, ito::UiContainerItem>::iterator i = m_dialogList.begin();
         FigureWidget *fig;
@@ -3308,7 +3308,6 @@ RetVal UiOrganizer::figureClose(unsigned int figHandle, ItomSharedSemaphore *sem
                 fig->setFigHandle(empty);
                 delete i.value().container;
                 i = m_dialogList.erase(i);
-                break;
             }
             else
             {
