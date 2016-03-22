@@ -83,7 +83,8 @@ FigureWidget::FigureWidget(const QString &title, bool docked, bool isDockAvailab
     //m_pCenterWidget->setStyleSheet("background-color:#ffccee");
 
     setFocusPolicy(Qt::StrongFocus);
-//    setAcceptDrops(true);
+    //setAcceptDrops(true);
+    //setAttribute(Qt::WA_DeleteOnClose, true);
     
 }
 

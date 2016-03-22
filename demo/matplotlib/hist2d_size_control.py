@@ -22,4 +22,4 @@ current_figure.canvas.manager.itomUI["keepSizeFixed"] = True
 
 #change the size
 current_figure.set_dpi(120)
-current_figure.set_size_inches(5,5,True)
+current_figure.set_size_inches(5,5,forward = True)

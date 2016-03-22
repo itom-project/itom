@@ -13,7 +13,8 @@ from .backend_itom import FigureManagerItom, FigureCanvasItom,\
      show, draw_if_interactive, \
      NavigationToolbar2Itom
      
-from itom import uiItem, ui
+from itom import uiItem
+from itom import figure as itomFigure
 
 DEBUG = False
 
@@ -26,18 +27,20 @@ def new_figure_manager( num, *args, **kwargs ):
     FigureClass = kwargs.pop('FigureClass', Figure)
     existingCanvas = kwargs.pop('canvas', None)
     if(existingCanvas is None):
-        itomUI = ui("itom://matplotlib")
+        itomFig = itomFigure(num)
+        itomUI = itomFig.matplotlibFigure() #ui("itom://matplotlib")
         #itomUI.show() #in order to get the right size
         embedded = False
     else:
+        itomFig = None
         embedded = True
         if(isinstance(existingCanvas,uiItem)):
             itomUI = existingCanvas
         else:
             raise("keyword 'canvas' must contain an instance of uiItem")
     thisFig = FigureClass( *args, **kwargs )
-    canvas = FigureCanvasItomAgg( thisFig, num, itomUI, embedded )
-    return FigureManagerItom( canvas, num, itomUI, embedded )
+    canvas = FigureCanvasItomAgg( thisFig, num, itomUI, itomFig, embedded )
+    return FigureManagerItom( canvas, num, itomUI, itomFig, embedded )
 
 class NavigationToolbar2ItomAgg(NavigationToolbar2Itom):
     def _get_canvas(self, fig):
@@ -65,9 +68,9 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
       figure - A Figure instance
    """
 
-    def __init__( self, figure, num, itomUI, embeddedCanvas ):
+    def __init__( self, figure, num, itomUI, itomFig, embeddedCanvas ):
         if DEBUG: print('FigureCanvasQtAgg: ', figure)
-        FigureCanvasItom.__init__( self, figure, num, itomUI, embeddedCanvas )
+        FigureCanvasItom.__init__( self, figure, num, itomUI, itomFig, embeddedCanvas )
         FigureCanvasAgg.__init__( self, figure )
         self.drawRect = False
         self.canvas.call("paintRect", False, 0,0,0,0)

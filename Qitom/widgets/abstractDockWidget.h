@@ -63,6 +63,7 @@ namespace ito
         Q_PROPERTY(QRect rect READ rect)
         Q_PROPERTY(QRect childrenRect READ childrenRect)
         Q_PROPERTY(QRegion childrenRegion READ childrenRegion)
+        Q_PROPERTY(QString windowTitle READ windowTitle WRITE setWindowTitle)
 
         public:
 
@@ -158,6 +159,9 @@ namespace ito
             void resize(const QSize &);
             void setGeometry(int x, int y, int w, int h);
             void setGeometry(const QRect &);
+
+            QString windowTitle();
+            void setWindowTitle(const QString &title);
 
             bool isEnabled() const;
             bool isVisible() const;

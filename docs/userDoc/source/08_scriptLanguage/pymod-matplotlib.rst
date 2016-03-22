@@ -256,7 +256,7 @@ Usually, it is possible to control the size and dpi of the matplotlib canvas usi
 .. code-block:: python
     
     myfig.set_dpi(120)
-    myfig.set_size_inches(5,5,True)
+    myfig.set_size_inches(5,5,forward = True)
     
 However, if the matplotlib canvas is embedded in an itom user interface or in general in the itom backend (hence window management of itom),
 the size of the canvas is usually given by the outer size of the parent window and the layout of the user interface. Only, if the size

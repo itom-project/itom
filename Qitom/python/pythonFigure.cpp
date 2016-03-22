@@ -433,10 +433,89 @@ properties : {dict}, optional \n\
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyFigureShow_doc,"show() -> shows figure \n\
-\n\
-\n\
-");
+PyDoc_STRVAR(pyFigureMatplotlib_doc,"matplotlibFigure() -> create matplotlib canvas");
+PyObject* PythonFigure::PyFigure_matplotlib(PyFigure *self, PyObject *args, PyObject *kwds)
+{
+    const char *kwlist[] = {"areaIndex", "properties", NULL};
+    int areaIndex = self->currentSubplotIdx;
+    PyObject* propDict = NULL;
+    bool ok = true;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|iO!", const_cast<char**>(kwlist), &areaIndex, &PyDict_Type, &propDict))
+    {
+        return NULL;
+    }
+
+    if (areaIndex > self->cols * self->rows)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "areaIndex is bigger than the maximum number of subplot areas in this figure");
+        return NULL;
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    int areaCol = areaIndex % self->cols;
+    int areaRow = (areaIndex - areaCol) / self->rows;
+
+    UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
+    QString defaultPlotClassName;
+
+    QSharedPointer<unsigned int> objectID(new unsigned int);
+    QVariantMap properties;
+    
+    if (propDict)
+    {
+        PyObject *key, *value;
+        Py_ssize_t pos = 0;
+        QVariant valueV;
+        QString keyS;
+        while (PyDict_Next(propDict, &pos, &key, &value)) 
+        {
+            keyS = PythonQtConversion::PyObjGetString(key,true,ok);
+            valueV = PythonQtConversion::PyObjToQVariant(value);
+            if(valueV.isValid())
+            {
+                properties[keyS] = valueV;
+            }
+            else
+            {
+                PyErr_SetString(PyExc_RuntimeError, "at least one property value could not be parsed to QVariant.");
+                return NULL;
+            }
+        }
+    }
+
+    QMetaObject::invokeMethod(uiOrg, "figureDesignerWidget", Q_ARG(QSharedPointer<uint>, self->guardedFigHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, "MatplotlibPlot"), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    if (!locker.getSemaphore()->wait(PLUGINWAIT))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "timeout while creating matplotlib canvas.");
+        return NULL;
+    }
+
+    if (!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue))
+    {
+        return NULL;
+    }
+    
+    //return new instance of PyUiItem
+    PyObject *args2 = PyTuple_New(0); //Py_BuildValue("OO", self, name);
+    PyObject *kwds2 = PyDict_New();
+    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PyDict_SetItemString(kwds2, "figure", (PyObject*)self);
+    PythonPlotItem::PyPlotItem *pyPlotItem = (PythonPlotItem::PyPlotItem *)PyObject_Call((PyObject *)&PythonPlotItem::PyPlotItemType, args2, kwds2);
+    Py_DECREF(args2);
+    Py_DECREF(kwds2);
+
+    if (pyPlotItem == NULL)
+    {
+        PyErr_SetString(PyExc_AttributeError, "Could not create plotItem of plot widget");
+        return NULL;
+    }
+
+    return (PyObject*)pyPlotItem;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyFigureShow_doc,"show() -> shows figure if it is currently hidden");
 PyObject* PythonFigure::PyFigure_show(PyFigure *self, PyObject *args)
 {
     int modalLevel = 0; //no modal
@@ -755,23 +834,9 @@ PyMethodDef PythonFigure::PyFigure_methods[] = {
     {"hide", (PyCFunction)PyFigure_hide, METH_NOARGS, pyFigureHide_doc},
     {"plot", (PyCFunction)PyFigure_plot, METH_VARARGS |METH_KEYWORDS, pyFigurePlot_doc},
     {"liveImage", (PyCFunction)PyFigure_liveImage, METH_VARARGS | METH_KEYWORDS, pyFigureLiveImage_doc},
+    {"matplotlibFigure", (PyCFunction)PyFigure_matplotlib, METH_VARARGS | METH_KEYWORDS, pyFigureMatplotlib_doc},
     {"subplot", (PyCFunction)PyFigure_getSubplot, METH_VARARGS, pyFigureSubplot_doc},
-
     {"close", (PyCFunction)PyFigure_close, METH_VARARGS | METH_STATIC, pyFigure_Close_doc},
-    //{"isVisible", (PyCFunction)PyUi_isVisible, METH_NOARGS, pyUiIsVisible_doc},
-    //
-    //{"getDouble",(PyCFunction)PyUi_getDouble, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiGetDouble_doc},
-    //{"getInt",(PyCFunction)PyUi_getInt, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiGetInt_doc},
-    //{"getItem",(PyCFunction)PyUi_getItem, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiGetItem_doc},
-    //{"getText",(PyCFunction)PyUi_getText, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiGetText_doc},
-    //{"msgInformation", (PyCFunction)PyUi_msgInformation, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiMsgInformation_doc},
-    //{"msgQuestion", (PyCFunction)PyUi_msgQuestion, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiMsgQuestion_doc},
-    //{"msgWarning", (PyCFunction)PyUi_msgWarning, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiMsgWarning_doc},
-    //{"msgCritical", (PyCFunction)PyUi_msgCritical, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiMsgCritical_doc},
-    //{"getExistingDirectory", (PyCFunction)PyUi_getExistingDirectory, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiGetExistingDirectory_doc},
-    //{"getOpenFileName", (PyCFunction)PyUi_getOpenFileName, METH_KEYWORDS | METH_VARARGS |METH_STATIC, pyUiGetOpenFileName_doc},
-    //{"getSaveFileName", (PyCFunction)PyUi_getSaveFileName, METH_KEYWORDS | METH_VARARGS |METH_STATIC, pyUiGetSaveFileName_doc},
-    //{"createNewPluginWidget", (PyCFunction)PyUi_createNewAlgoWidget, METH_KEYWORDS | METH_VARARGS |METH_STATIC, pyUiCreateNewPluginWidget_doc},
     {NULL}  /* Sentinel */
 };
 

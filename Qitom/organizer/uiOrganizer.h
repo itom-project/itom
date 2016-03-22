@@ -337,7 +337,7 @@ public:
 
 protected:
 
-    static void threadSafeDeleteUi(unsigned int *handle);
+    //static void threadSafeDeleteUi(unsigned int *handle);
 
     void startGarbageCollectorTimer();
 
@@ -432,8 +432,8 @@ public slots:
 
     RetVal figurePlot(ito::UiDataContainer &dataCont, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore = NULL);
     RetVal figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore = NULL);
-    
-    RetVal figureRemoveGuardedHandle(unsigned int figHandle, ItomSharedSemaphore *semaphore = NULL);
+    RetVal figureDesignerWidget(QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore = NULL);
+
     RetVal figureClose(unsigned int figHandle, ItomSharedSemaphore *semaphore = NULL);
     RetVal figurePickPoints(unsigned int objectID, QSharedPointer<ito::DataObject> coords, int maxNrPoints, ItomSharedSemaphore *semaphore);
     RetVal figureDrawGeometricElements(unsigned int objectID, QSharedPointer<ito::DataObject> coords, int elementType, int maxNrElements, ItomSharedSemaphore *semaphore);
@@ -442,10 +442,7 @@ public slots:
 
     RetVal getAvailableWidgetNames(QSharedPointer<QStringList> widgetNames, ItomSharedSemaphore *semaphore);
 
-    void figureDestroyed(QObject *obj)
-    {
-        qDebug() << obj;
-    }
+    void figureDestroyed(QObject *obj);
 
 private slots:
     void watcherThreadFinished();
