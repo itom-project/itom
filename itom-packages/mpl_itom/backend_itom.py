@@ -413,11 +413,6 @@ class FigureManagerItom( FigureManagerBase ):
                     self.itomUI.disconnect( "destroyed()", self._widgetclosed )
                 except:
                     pass
-                try:
-                    #self.itomUIDialog.hide()
-                    pass
-                except:
-                    pass
         del self.itomUI
         self.itomUI = None
         del self.itomFig

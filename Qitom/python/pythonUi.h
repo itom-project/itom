@@ -72,9 +72,6 @@ public:
         PythonQtSignalMapper *signalMapper;
     }
     PyUi;
-
-    #define PyUiItem_Check(op) PyObject_TypeCheck(op, &PythonUi::PyUiItemType)
-    #define PyUi_Check(op) PyObject_TypeCheck(op, &PythonUi::PyUiType)
     
 
     //-------------------------------------------------------------------------------------------------

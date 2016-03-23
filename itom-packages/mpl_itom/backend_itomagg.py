@@ -2,15 +2,11 @@
 Render to qt/itom from agg
 """
 
-
-import os, sys
-
 import matplotlib
 from matplotlib.figure import Figure
 
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from .backend_itom import FigureManagerItom, FigureCanvasItom,\
-     show, draw_if_interactive, \
      NavigationToolbar2Itom
      
 from itom import uiItem
@@ -115,8 +111,8 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
             #    stringBuffer = self.renderer._renderer.tostring_argb()
             #
             
-            XYrect = 0
-            WHrect = 0
+            #XYrect = 0
+            #WHrect = 0
             
             #if self.drawRect:
             #    XYrect = (int(self.rect[0]) << 16) + int(self.rect[1])
@@ -127,10 +123,14 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
             H = int(self.renderer.height)
             try:
                 self.canvas.call("paintResult", stringBuffer, X, Y, W, H, False)
-            except RuntimeError:
-                # it is possible that the figure has currently be closed by the user
-                self.signalDestroyedWidget()
-                print("Matplotlib figure is not available")
+            except RuntimeError as e:
+                try:
+                    # this is only for compatibility with older versions of the backend and matplotlib designer plugin
+                    self.canvas.call("paintResultDeprecated", stringBuffer, X, Y, W, H, False)
+                except RuntimeError:
+                    # it is possible that the figure has currently be closed by the user
+                    self.signalDestroyedWidget()
+                    print("Matplotlib figure is not available (err: %s)" % str(e))
         else:
             bbox = self.blitbox
             l, b, r, t = bbox.extents
@@ -145,14 +145,18 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
             Y = int(self.renderer.height-t)
             W = w
             H = h
-            XY = (int(l) << 16) + int(self.renderer.height-t)
-            WH = (w << 16) + h
+            #XY = (int(l) << 16) + int(self.renderer.height-t)
+            #WH = (w << 16) + h
             try:
                 self.canvas.call("paintResult", stringBuffer, X, Y, W, H, True)
-            except RuntimeError:
-                # it is possible that the figure has currently be closed by the user
-                self.signalDestroyedWidget()
-                print("Matplotlib figure is not available")
+            except RuntimeError as e:
+                try:
+                    # this is only for compatibility with older versions of the backend and matplotlib designer plugin
+                    self.canvas.call("paintResultDeprecated", stringBuffer, X, Y, W, H, True)
+                except RuntimeError:
+                    # it is possible that the figure has currently be closed by the user
+                    self.signalDestroyedWidget()
+                    print("Matplotlib figure is not available (err: %s)" % str(e))
             self.blitbox = None
         self.drawRect = False
     
@@ -179,9 +183,9 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         """
         Blit the region in bbox
         """
-        self.blitbox = bbox
-        l, b, w, h = bbox.bounds
-        t = b + h
+        #self.blitbox = bbox
+        #l, b, w, h = bbox.bounds
+        #t = b + h
         #self.repaint(l, self.renderer.height-t, w, h)
         self.paintEvent()
 

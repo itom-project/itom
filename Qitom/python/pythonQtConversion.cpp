@@ -36,6 +36,7 @@
 #include <qvector2d.h>
 #include <qvector3d.h>
 #include <qvector4d.h>
+#include <qelapsedtimer.h>
 
 #include "pythonSharedPointerGuard.h"
 
@@ -276,6 +277,56 @@ QByteArray PythonQtConversion::PyObjGetBytes(PyObject* val, bool strict, bool& o
         } 
     }
     return r;
+}
+
+QSharedPointer<char> PythonQtConversion::PyObjGetBytesShared(PyObject* val, bool strict, bool& ok) 
+{
+    // TODO: support buffer objects in general
+    ok = true;
+    if (PyBytes_Check(val)) 
+    {
+        Py_ssize_t size = PyBytes_GET_SIZE(val);
+        char *b = PyBytes_AS_STRING(val);
+        return ito::PythonSharedPointerGuard::createPythonSharedPointer<char>(b, val);
+    } 
+    else if (strict)
+    {
+        ok = false;
+    }
+    else
+    {
+        QSharedPointer<char> r;
+        if (PyUnicode_Check(val))
+        {
+            PyObject *repr2 = PyUnicodeToPyByteObject(val);
+            if (repr2 != NULL)
+            {
+                r = PyObjGetBytesShared(repr2, strict, ok);
+                Py_DECREF(repr2);
+            }
+            else
+            {
+                ok = false;
+            }
+        } 
+        else 
+        {
+            // EXTRA: could also use _Unicode, but why should we?
+            PyObject* str =  PyObject_Str(val);
+            if (str) 
+            {
+                r = PyObjGetBytesShared(str, strict, ok);
+                Py_DECREF(str);
+            } 
+            else 
+            {
+                ok = false;
+            }
+        } 
+
+        return r;
+    }
+    return QSharedPointer<char>();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2438,6 +2489,19 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                     *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&sharedBuffer));
                     #endif
                 }
+            }
+            else if (type == QMetaType::type("QSharedPointer<char>"))
+            {
+                QSharedPointer<char> text = PyObjGetBytesShared(val, strict, ok);
+                if (ok)
+                {
+                    #if QT_VERSION >= 0x050000
+                    *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&text));
+                    #else
+                    *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&text));
+                    #endif
+                }
+                break;
             }
             else if (type == QMetaType::type("ito::PCLPoint"))
             {
