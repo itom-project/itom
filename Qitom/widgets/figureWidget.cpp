@@ -656,7 +656,7 @@ QWidget *FigureWidget::getSubplot(int index) const
     if (m_pGrid)
     {
         int column = index % m_cols;
-        int row = (index - column) / m_rows;
+        int row = (index - column) / m_cols;
         QLayoutItem *item = m_pGrid->itemAtPosition(row,column); //(index);
         if (item)
         {
