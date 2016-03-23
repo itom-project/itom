@@ -251,6 +251,11 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
         PyErr_SetString(PyExc_RuntimeError, "areaIndex is bigger than the maximum number of subplot areas in this figure");
         return NULL;
     }
+    else if (areaIndex < 1)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "areaIndex must be > 0.");
+        return NULL;
+    }
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     int areaCol = areaIndex % self->cols;
@@ -366,6 +371,11 @@ properties : {dict}, optional \n\
         PyErr_SetString(PyExc_RuntimeError, "areaIndex is bigger than the maximum number of subplot areas in this figure");
         return NULL;
     }
+    else if (areaIndex < 1)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "areaIndex must be > 0.");
+        return NULL;
+    }
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     int areaCol = areaIndex % self->cols;
@@ -460,6 +470,11 @@ PyObject* PythonFigure::PyFigure_matplotlib(PyFigure *self, PyObject *args, PyOb
     if (areaIndex > self->cols * self->rows)
     {
         PyErr_SetString(PyExc_RuntimeError, "areaIndex is bigger than the maximum number of subplot areas in this figure");
+        return NULL;
+    }
+    else if (areaIndex < 1)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "areaIndex must be > 0.");
         return NULL;
     }
 
