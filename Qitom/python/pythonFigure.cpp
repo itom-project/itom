@@ -246,20 +246,15 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
         return NULL;
     }
 
-    if (areaIndex > self->cols * self->rows)
+    if (areaIndex >= self->cols * self->rows || areaIndex < 0)
     {
-        PyErr_SetString(PyExc_RuntimeError, "areaIndex is bigger than the maximum number of subplot areas in this figure");
-        return NULL;
-    }
-    else if (areaIndex < 1)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "areaIndex must be > 0.");
+        PyErr_Format(PyExc_RuntimeError, "areaIndex out of range [0, %i]. The figure has %i rows and %i columns.", (self->cols * self->rows - 1), self->rows, self->cols);
         return NULL;
     }
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     int areaCol = areaIndex % self->cols;
-    int areaRow = (areaIndex - areaCol) / self->rows;
+    int areaRow = (areaIndex - areaCol) / self->cols;
 
     UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
     QString defaultPlotClassName;
@@ -366,20 +361,15 @@ properties : {dict}, optional \n\
         return NULL;
     }
 
-    if (areaIndex > self->cols * self->rows)
+    if (areaIndex >= self->cols * self->rows || areaIndex < 0)
     {
-        PyErr_SetString(PyExc_RuntimeError, "areaIndex is bigger than the maximum number of subplot areas in this figure");
-        return NULL;
-    }
-    else if (areaIndex < 1)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "areaIndex must be > 0.");
+        PyErr_Format(PyExc_RuntimeError, "areaIndex out of range [0, %i]. The figure has %i rows and %i columns.", (self->cols * self->rows - 1), self->rows, self->cols);
         return NULL;
     }
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     int areaCol = areaIndex % self->cols;
-    int areaRow = (areaIndex - areaCol) / self->rows;
+    int areaRow = (areaIndex - areaCol) / self->cols;
 
     UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
     QString defaultPlotClassName;
@@ -467,20 +457,15 @@ PyObject* PythonFigure::PyFigure_matplotlib(PyFigure *self, PyObject *args, PyOb
         return NULL;
     }
 
-    if (areaIndex > self->cols * self->rows)
+    if (areaIndex >= self->cols * self->rows || areaIndex < 0)
     {
-        PyErr_SetString(PyExc_RuntimeError, "areaIndex is bigger than the maximum number of subplot areas in this figure");
-        return NULL;
-    }
-    else if (areaIndex < 1)
-    {
-        PyErr_SetString(PyExc_RuntimeError, "areaIndex must be > 0.");
+        PyErr_Format(PyExc_RuntimeError, "areaIndex out of range [0, %i]. The figure has %i rows and %i columns.", (self->cols * self->rows - 1), self->rows, self->cols);
         return NULL;
     }
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     int areaCol = areaIndex % self->cols;
-    int areaRow = (areaIndex - areaCol) / self->rows;
+    int areaRow = (areaIndex - areaCol) / self->cols;
 
     UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
     QString defaultPlotClassName;
