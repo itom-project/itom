@@ -31,6 +31,7 @@
 
 #include "pythonQtConversion.h"
 #include "pythonFigure.h"
+#include "pythonPlotItem.h"
 #include "AppManagement.h"
 
 #include <qsharedpointer.h>
@@ -2129,6 +2130,43 @@ PyObject* PythonUi::PyUi_isVisible(PyUi *self)
 //      STATIC METHODS OF UI
 //
 //#################################################################################################################
+
+int PyUiItem_Converter(PyObject *object, PythonUi::PyUiItem **address)
+{
+    if (object == NULL || object == Py_None)
+    {
+        *address = NULL;
+        return 1;
+    }
+
+    if (PyUiItem_Check(object))
+    {
+        *address = (PythonUi::PyUiItem*)object;
+        return 1;
+    }
+    else if (PyUi_Check(object))
+    {
+        *address = (PythonUi::PyUiItem*)object;
+        return 1;
+    }
+    else if (PyFigure_Check(object))
+    {
+        *address = (PythonUi::PyUiItem*)object;
+        return 1;
+    }
+    else if (PyPlotItem_Check(object))
+    {
+        *address = (PythonUi::PyUiItem*)object;
+        return 1;
+    }
+    else
+    {
+        PyErr_SetString(PyExc_TypeError, "argument 'parent' must be a type derived from uiItem (e.g. ui, plotItem, figure, uiItem)");
+        *address = NULL;
+        return 0;
+    }
+}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiGetDouble_doc,"getDouble(title, label, defaultValue [, min, max, decimals=3]) -> shows a dialog to get a double value from the user\n\
 \n\
@@ -2611,7 +2649,7 @@ buttons : {int}, optional\n\
     is an or-combination of ui.MsgBox[...]-constants indicating the buttons to display. Use | for the or-combination. \n\
 defaultButton : {int}, optional\n\
     is a value of ui.MsgBox[...] which indicates the default button \n\
-parent : {ui}, optional\n\
+parent : {uiItem or derived classes}, optional\n\
     is the parent dialog of the message box.\n\
 \n\
 See Also \n\
@@ -2635,7 +2673,7 @@ buttons : {int}, optional\n\
     is an or-combination of ui.MsgBox[...]-constants indicating the buttons to display. Use | for the or-combination. \n\
 defaultButton : {int}, optional\n\
     is a value of ui.MsgBox[...] which indicates the default button \n\
-parent : {ui}, optional\n\
+parent : {uiItem or derived classes}, optional\n\
     is the parent dialog of the message box.\n\
 \n\
 See Also \n\
@@ -2659,7 +2697,7 @@ buttons : {int}, optional\n\
     is an or-combination of ui.MsgBox[...]-constants indicating the buttons to display. Use | for the or-combination. \n\
 defaultButton : {int}, optional\n\
     is a value of ui.MsgBox[...] which indicates the default button \n\
-parent : {ui}, optional\n\
+parent : {uiItem or derived classes}, optional\n\
     is the parent dialog of the message box.\n\
 \n\
 See Also \n\
@@ -2683,7 +2721,7 @@ buttons : {int}, optional\n\
     is an or-combination of ui.MsgBox[...]-constants indicating the buttons to display. Use | for the or-combination. \n\
 defaultButton : {int}, optional\n\
     is a value of ui.MsgBox[...] which indicates the default button \n\
-parent : {ui}, optional\n\
+parent : {uiItem or derived classes}, optional\n\
     is the parent dialog of the message box.\n\
 \n\
 See Also \n\
@@ -2704,11 +2742,11 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
     QString text;
     int buttons = QMessageBox::Ok;
     int defaultButton = QMessageBox::NoButton;
-    PythonUi::PyUi *parentItem = NULL;
+    PythonUi::PyUiItem *parentItem = NULL;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "OO|iiO!", const_cast<char**>(kwlist), &titleObj, &textObj, &buttons, &defaultButton, &PythonUi::PyUiType, &parentItem))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO|iiO&", const_cast<char**>(kwlist), &titleObj, &textObj, &buttons, &defaultButton, &PyUiItem_Converter, &parentItem))
     {
-        PyErr_SetString(PyExc_TypeError, "arguments must be title (str), label (str), and optional buttons (combination of ui.MsgBox[...]), defaultButton (ui.MsgBox[...]), parent (any instance of class ui)");
+        PyErr_SetString(PyExc_TypeError, "arguments must be title (str), label (str), and optional buttons (combination of ui.MsgBox[...]), defaultButton (ui.MsgBox[...]), parent (any instance of type uiItem or derived types)");
         return NULL;
     }
 
@@ -2740,8 +2778,8 @@ PyObject* PythonUi::PyUi_msgGeneral(PyUi * /*self*/, PyObject *args, PyObject *k
     QSharedPointer<int> retButton(new int);
     *retButton = QMessageBox::Escape;
     QSharedPointer<QString> retButtonText(new QString());
-    unsigned int parentUiHandle = parentItem ? parentItem->uiHandle : 0;
-    QMetaObject::invokeMethod(uiOrga, "showMessageBox", Q_ARG(uint, parentUiHandle), Q_ARG(int, type), Q_ARG(QString, title), Q_ARG(QString, text), Q_ARG(int, buttons), Q_ARG(int, defaultButton), Q_ARG(QSharedPointer<int>, retButton), Q_ARG(QSharedPointer<QString>, retButtonText), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    unsigned int objectID = parentItem ? parentItem->objectID : 0;
+    QMetaObject::invokeMethod(uiOrga, "showMessageBox", Q_ARG(uint, objectID), Q_ARG(int, type), Q_ARG(QString, title), Q_ARG(QString, text), Q_ARG(int, buttons), Q_ARG(int, defaultButton), Q_ARG(QSharedPointer<int>, retButton), Q_ARG(QSharedPointer<QString>, retButtonText), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
@@ -2789,7 +2827,7 @@ options : {int}, optional\n\
         * 1: ShowDirsOnly [default] \n\
         * 2: DontResolveSymlinks \n\
         * ... (for others see Qt-Help) \n\
-parent : {ui}, optional\n\
+parent : {uiItem or derived classes}, optional\n\
     is a parent dialog or window, this dialog becomes modal.\n\
 \n\
 Returns \n\
@@ -2808,10 +2846,10 @@ PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, P
     QString caption;
     QString directory;
     int options = 1; //QFileDialog::ShowDirsOnly
-    PythonUi::PyUi *parentItem = NULL;
+    PythonUi::PyUiItem *parentItem = NULL;
 
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "OO|iO!", const_cast<char**>(kwlist), &captionObj, &directoryObj, &options, &PythonUi::PyUiType, &parentItem))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO|iO&", const_cast<char**>(kwlist), &captionObj, &directoryObj, &options, &PyUiItem_Converter, &parentItem))
     {
         return NULL;
     }
@@ -2841,10 +2879,10 @@ PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, P
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    unsigned int parentHandle = (parentItem) ? parentItem->uiHandle : 0;
+    unsigned int objectID = parentItem ? parentItem->objectID : 0;
     QSharedPointer<QString> sharedDir(new QString(directory));
 
-    QMetaObject::invokeMethod(uiOrga, "showFileDialogExistingDir", Q_ARG(uint, parentHandle), Q_ARG(QString, caption), Q_ARG(QSharedPointer<QString>, sharedDir), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(uiOrga, "showFileDialogExistingDir", Q_ARG(uint, objectID), Q_ARG(QString, caption), Q_ARG(QSharedPointer<QString>, sharedDir), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(-1))
     {
@@ -2882,7 +2920,7 @@ selectedFilterIndex : {int}, optional \n\
 options : {int}, optional\n\
     default =  0 \n\
     or-combination of enum values QFileDialog::Options \n\
-parent : {ui}, optional\n\
+parent : {uiItem or derived classes}, optional\n\
     is the parent widget of this dialog \n\
 \n\
 Returns \n\
@@ -2905,9 +2943,9 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
     QString filters;
     int selectedFilterIndex = 0;
     int options = 0;
-    PythonUi::PyUi *parentItem = NULL;
+    PythonUi::PyUiItem *parentItem = NULL;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "|OOOiiO!", const_cast<char**>(kwlist), &captionObj, &directoryObj, &filtersObj, &selectedFilterIndex, &options, &PythonUi::PyUiType, &parentItem))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOOiiO&", const_cast<char**>(kwlist), &captionObj, &directoryObj, &filtersObj, &selectedFilterIndex, &options, &PyUiItem_Converter, &parentItem))
     {
         return NULL;
     }
@@ -2943,11 +2981,11 @@ PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObje
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
-    unsigned int parentHandle = (parentItem) ? parentItem->uiHandle : 0;
+    unsigned int objectID = parentItem ? parentItem->objectID : 0;
 
     QSharedPointer<QString> file(new QString());
     //QString caption, QString directory, QString filter, QSharedPointer<QString> file, int selectedFilterIndex, int options, ItomSharedSemaphore *semaphore
-    QMetaObject::invokeMethod(uiOrga, "showFileOpenDialog", Q_ARG(uint, parentHandle), Q_ARG(QString, caption), Q_ARG(QString, directory), Q_ARG(QString, filters), Q_ARG(QSharedPointer<QString>, file), Q_ARG(int, selectedFilterIndex), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(uiOrga, "showFileOpenDialog", Q_ARG(uint, objectID), Q_ARG(QString, caption), Q_ARG(QString, directory), Q_ARG(QString, filters), Q_ARG(QSharedPointer<QString>, file), Q_ARG(int, selectedFilterIndex), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(-1))
     {
@@ -2987,7 +3025,7 @@ selectedFilterIndex : {int}, optional\n\
 options : {int}, optional\n\
     default = 0\n\
     or-combination of enum values QFileDialog::Options \n\
-parent : {ui}, optional\n\
+parent : {uiItem or derived classes}, optional\n\
     is the parent widget of this dialog\n\
 \n\
 Returns \n\
@@ -3010,9 +3048,9 @@ PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObje
     QString filters;
     int selectedFilterIndex = 0;
     int options = 0;
-    PythonUi::PyUi *parentItem = NULL;
+    PythonUi::PyUiItem *parentItem = NULL;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "|OOOiiO!", const_cast<char**>(kwlist), &captionObj, &directoryObj, &filtersObj, &selectedFilterIndex, &options, &PythonUi::PyUiType, &parentItem))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOOiiO&", const_cast<char**>(kwlist), &captionObj, &directoryObj, &filtersObj, &selectedFilterIndex, &options, &PyUiItem_Converter, &parentItem))
     {
         return NULL;
     }
@@ -3049,11 +3087,11 @@ PyObject* PythonUi::PyUi_getSaveFileName(PyUi * /*self*/, PyObject *args, PyObje
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
-    unsigned int parentHandle = (parentItem) ? parentItem->uiHandle : 0;
+    unsigned int objectID = parentItem ? parentItem->objectID : 0;
 
     QSharedPointer<QString> file(new QString());
     //QString caption, QString directory, QString filter, QSharedPointer<QString> file, int selectedFilterIndex, int options, ItomSharedSemaphore *semaphore
-    QMetaObject::invokeMethod(uiOrga, "showFileSaveDialog", Q_ARG(uint, parentHandle), Q_ARG(QString, caption), Q_ARG(QString, directory), Q_ARG(QString, filters), Q_ARG(QSharedPointer<QString>, file), Q_ARG(int, selectedFilterIndex), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(uiOrga, "showFileSaveDialog", Q_ARG(uint, objectID), Q_ARG(QString, caption), Q_ARG(QString, directory), Q_ARG(QString, filters), Q_ARG(QSharedPointer<QString>, file), Q_ARG(int, selectedFilterIndex), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(-1))
     {

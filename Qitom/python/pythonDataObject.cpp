@@ -5524,19 +5524,24 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                             int numPlanes = dataObj.getNumPlanes();
                             cv::Mat *mat;
 
+                            //the following part is inspired by DataObject::matNumToIdx:
+
                             int orgPlaneSize = 1;
 
                             for (int nDim = 1; nDim < dims - 2; nDim++)
                             {
-                                orgPlaneSize *= npArrayShape[nDim];
+                                orgPlaneSize *= dataObj.getSize(nDim);
                             }
+
+                            int tMatNum;
+                            int planeSize;
 
                             for (int plane = 0; plane < numPlanes; ++plane)
                             {
                                 mat = dataObj.getCvPlaneMat(plane);
 
-                                int tMatNum = plane;
-                                int planeSize = orgPlaneSize;
+                                tMatNum = plane;
+                                planeSize = orgPlaneSize;
                                 for (int nDim = 0; nDim < dims - 2; nDim++)
                                 {
                                     if (map_dims_to_npdims[nDim] >= 0)
@@ -5544,7 +5549,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
                                         ind[map_dims_to_npdims[nDim]] = tMatNum / planeSize;
                                     }
                                     tMatNum %= planeSize;
-                                    planeSize /= npArrayShape[nDim + 1];
+                                    planeSize /= dataObj.getSize(nDim + 1);
                                 }
 
 

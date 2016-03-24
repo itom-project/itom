@@ -250,6 +250,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     settings->beginGroup("Language");
     QString language = settings->value("language", "en").toString();
     QByteArray codec =  settings->value("codec", "ISO 8859-1").toByteArray(); //latin1 is default
+    bool setCodecForLocal = settings->value("setCodecForLocale", false).toBool();
     settings->endGroup();
     settings->sync();
 
@@ -299,8 +300,11 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     // None of these two is available in Qt5 and according to
     // Qt docu it should not have been used anyway. So 
     // we need to find another solution here
-//    QTextCodec::setCodecForCStrings(textCodec);
-//    QTextCodec::setCodecForLocale(textCodec);
+    // QTextCodec::setCodecForCStrings(textCodec);
+    if (setCodecForLocal && textCodec)
+    {
+        QTextCodec::setCodecForLocale(textCodec);
+    }
 
     if (m_guiType == standard || m_guiType == console)
     {

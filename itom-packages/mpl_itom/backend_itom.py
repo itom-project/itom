@@ -12,7 +12,8 @@ from matplotlib._pylab_helpers import Gcf
 from matplotlib.figure import Figure
 from matplotlib.widgets import SubplotTool
 
-from itom import uiItem, ui, timer
+from itom import uiItem, timer, ui
+from itom import figure as itomFigure
 
 figureoptions = None
 
@@ -21,6 +22,7 @@ def fn_name(): return sys._getframe(1).f_code.co_name
 DEBUG = False
 
 cursord = {
+    -1 : -1,
     cursors.MOVE          : 9,
     cursors.HAND          : 13,
     cursors.POINTER       : 0,
@@ -53,17 +55,19 @@ def new_figure_manager( num, *args, **kwargs ):
     existingCanvas = kwargs.pop('canvas', None)
     if(existingCanvas is None):
         embeddedCanvas = False
-        itomUI = ui("itom://matplotlib")
+        itomFig = itomFigure(num)
+        itomUI = itomFig.matplotlibFigure() #ui("itom://matplotlib")
         #itomUI.show() #in order to get the right size
     else:
         embeddedCanvas = True
+        itomFig = None
         if(isinstance(existingCanvas,uiItem)):
             itomUI = existingCanvas
         else:
             raise("keyword 'canvas' must contain an instance of uiItem")
     thisFig = FigureClass( *args, **kwargs )
-    canvas = FigureCanvasItom( thisFig, num, itomUI, embeddedCanvas )
-    manager = FigureManagerItom( canvas, num, itomUI, embeddedCanvas )
+    canvas = FigureCanvasItom( thisFig, num, itomUI, itomFig, embeddedCanvas )
+    manager = FigureManagerItom( canvas, num, itomUI, itomFig, embeddedCanvas )
     return manager
 
 class FigureCanvasItom( FigureCanvasBase ):
@@ -95,7 +99,7 @@ class FigureCanvasItom( FigureCanvasBase ):
                }
     # left 1, middle 2, right 3
     buttond = {1:1, 2:3, 4:2}
-    def __init__(self, figure, num, itomUI, embeddedCanvas):
+    def __init__(self, figure, num, itomUI, itomFig, embeddedCanvas):
         FigureCanvasBase.__init__(self, figure)
         self._idle = True
         self._idle_callback = None
@@ -107,6 +111,7 @@ class FigureCanvasItom( FigureCanvasBase ):
         self.embeddedCanvas = embeddedCanvas
         self._destroying = False
         self._timer = None
+        self.itomFig = itomFig
         
         if(embeddedCanvas == False):
             self.canvas = itomUI.canvasWidget  #this object is deleted in the destroy-method of manager, due to cyclic garbage collection
@@ -288,15 +293,16 @@ class FigureManagerItom( FigureManagerBase ):
     window      : The qt.QMainWindow
     """
 
-    def __init__( self, canvas, num, itomUI, embeddedCanvas ):
+    def __init__( self, canvas, num, itomUI, itomFig, embeddedCanvas ):
         if DEBUG: 
             print('FigureManagerItom.%s' % fn_name())
         FigureManagerBase.__init__( self, canvas, num )
         self.embeddedCanvas = embeddedCanvas
+        self.itomFig = itomFig
         
         if(embeddedCanvas == False):
             self.itomUI = itomUI
-            itomUI["windowTitle"] = ("Figure %d" % num)
+            itomFig["windowTitle"] = ("Figure %d" % num)
             itomUI["focusPolicy"] = 0x2 #QtCore.Qt.ClickFocus
             itomUI.connect("destroyed()", self._widgetclosed)
         else:
@@ -381,7 +387,7 @@ class FigureManagerItom( FigureManagerBase ):
         self.canvas.draw()
         if(self.embeddedCanvas == False):
             try:
-                self.itomUI.show()
+                self.itomFig.show()
             except RuntimeError:
                 self._widgetclosed()
             except:
@@ -407,13 +413,10 @@ class FigureManagerItom( FigureManagerBase ):
                     self.itomUI.disconnect( "destroyed()", self._widgetclosed )
                 except:
                     pass
-                try:
-                    #self.itomUIDialog.hide()
-                    pass
-                except:
-                    pass
         del self.itomUI
         self.itomUI = None
+        del self.itomFig
+        self.itomFig = None
         if self.toolbar: self.toolbar.destroy()
         if DEBUG: print("destroy figure manager (2)")
         self.canvas.destroy()
@@ -424,7 +427,7 @@ class FigureManagerItom( FigureManagerBase ):
 
     def set_window_title(self, title):
         if(self.embeddedCanvas == False):
-            self.itomUI["windowTitle"] = ("%s (Figure %d)" % (title,self.num))
+            self.itomFig["windowTitle"] = ("%s (Figure %d)" % (title,self.num))
 
 class NavigationToolbar2Itom( NavigationToolbar2 ):
     def __init__(self, figureCanvas, itomUI, embeddedCanvas, coordinates=True):
@@ -499,11 +502,19 @@ class NavigationToolbar2Itom( NavigationToolbar2 ):
             figureoptions.figure_edit(axes, self)
             
     def pan( self, *args ):
+        if self._active != 'PAN':
+            self.set_cursor(cursors.MOVE)
+        else:
+            self.set_cursor(-1)
         self.itomUI().actionZoomToRect['checked'] = False
         #self.window.actionMarker['checked'] = False
         NavigationToolbar2.pan( self, *args )
 
     def zoom( self, *args ):
+        if self._active != 'ZOOM':
+            self.set_cursor(cursors.SELECT_REGION)
+        else:
+            self.set_cursor(-1)
         self.itomUI().actionPan['checked'] = False
         #self.window.actionMarker['checked'] = False
         NavigationToolbar2.zoom( self, *args )

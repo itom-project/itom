@@ -74,8 +74,9 @@ In order to get the instance of :py:class:`itom.plotItem` of any sublot, use the
 
 .. note::
     
-    If you have an instance to a plotItem only in python and the window is closed, the window is finally deleted and the plotItem becomes invalid. In difference, a handle to a figure
-    keeps the figure alive until all references to the figure's instance are deleted. Therefore you can always show or hide a figure using its instance and the methods :py:meth:`~itom.figure.show()` or :py:meth:`~itom.figure.hide()`.
+    In itom versions <= 2.1.0, a figure is only deleted if all references to it have been deleted in Python. Even if the user closed the figure, it was only hidden if at least
+    one reference was still available in Python. In newer versions of itom, the behaviour changed and was adapted to other plots. If the user closes the figure, it is deleted
+    and the instance of :py:class:`~itom.figure` contains an invalid reference.
 
 The :py:class:`~itom.figure` also provides a static method :py:meth:`~itom.figure.close` to close and delete a figure defined by its specific integer handle or to close all figures using the string 'all' as parameter. Please note, that only these figures are finally deleted where no other python references exist to them.
 

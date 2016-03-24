@@ -1207,7 +1207,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
         bool found = false;
         QList<ito::FigurePlugin> plugins = dwo->getPossibleFigureClasses(0, 0, 0);
 
-        std::cout << "Available plots\n\----------------------------------------\n";
+        std::cout << "Available plots\n----------------------------------------\n";
 
         FigurePlugin fig;
         result = PyDict_New();
