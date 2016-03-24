@@ -298,6 +298,8 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 
     readSettings();
 
+    
+
     RetVal tretVal(retOk);
     if (!m_started)
     {
@@ -312,8 +314,36 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 #if ITOM_PYTHONMATLAB == 1
             PyImport_AppendInittab("matlab", &PyInit_matlab);
 #endif
+            //check if an alternative home directory of Python should be set:
+            QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+            settings.beginGroup("Python");
+            QString pythonHomeDirectory = settings.value("pyHome", "").toString();
+            settings.endGroup();
+
+            if (pythonHomeDirectory != "")
+            {
+                if (QDir(pythonHomeDirectory).exists())
+                {
+                    wchar_t *home = new wchar_t[pythonHomeDirectory.size() + 1];
+                    pythonHomeDirectory.toWCharArray(home);
+                    Py_SetPythonHome(home);
+                    delete[] home;
+                }
+                else
+                {
+                    qDebug() << "Settings value Python::pyHome has not been set as Python Home directory since it does not exist: " << pythonHomeDirectory;
+                }
+            }
+
+            //read directory values from Python
+            qDebug() << "Py_GetPythonHome:" << QString::fromWCharArray(Py_GetPythonHome());
+            qDebug() << "Py_GetPath:" << QString::fromWCharArray(Py_GetPath());
+            qDebug() << "Py_GetProgramName:" << QString::fromWCharArray(Py_GetProgramName());
 
             Py_Initialize();                                                        //!< must be called after any PyImport_AppendInittab-call
+
+            qDebug() << "Py_Initialize done.";
+
             PyEval_InitThreads();                                                   //!< prepare Python multithreading
 
             itomModule = PyImport_ImportModule("itom");
@@ -640,10 +670,14 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 PyErr_PrintEx(0);
             }
 
+            qDebug() << "itom specific python modules loaded.";
+
             PyThreadState *pts = PyGILState_GetThisThreadState(); //wichtige Zeile
             PyEval_ReleaseThread(pts);
 
             (*retValue) += stringEncodingChanged();
+
+            qDebug() << "python exec: from itom import *";
 
             runString("from itom import *");
 
@@ -1026,8 +1060,12 @@ ito::RetVal PythonEngine::stringEncodingChanged()
 
         if (encodingType == PythonQtConversion::other)
         {
+            qDebug() << "encodingType == PythonQtConversion::other. Try to check if python understands one of the following codecs:" << aliases;
+
             encodingType = PythonQtConversion::other;
             found = false;
+
+            PyGILState_STATE gstate = PyGILState_Ensure();
 
             foreach (const QByteArray &ba, aliases)
             {
@@ -1038,6 +1076,8 @@ ito::RetVal PythonEngine::stringEncodingChanged()
                     break;
                 }
             }
+
+            PyGILState_Release(gstate);
         
             if (!found)
             {
@@ -1064,6 +1104,8 @@ ito::RetVal PythonEngine::stringEncodingChanged()
     
     PythonQtConversion::textEncoding = encodingType;
     PythonQtConversion::textEncodingName = encodingName;
+
+    qDebug() << "Set encodings to: " << PythonQtConversion::textEncoding << ": " << PythonQtConversion::textEncodingName;
 
     return retval;
 }

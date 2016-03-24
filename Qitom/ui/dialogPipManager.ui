@@ -21,11 +21,7 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
-       <widget class="ito::QTreeViewItom" name="tablePackages">
-        <property name="itemsExpandable">
-         <bool>true</bool>
-        </property>
-       </widget>
+       <widget class="ito::QTableViewItom" name="tablePackages"/>
       </item>
       <item>
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -98,7 +94,16 @@
       <string>Log</string>
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <property name="margin">
+      <property name="leftMargin">
+       <number>3</number>
+      </property>
+      <property name="topMargin">
+       <number>3</number>
+      </property>
+      <property name="rightMargin">
+       <number>3</number>
+      </property>
+      <property name="bottomMargin">
        <number>3</number>
       </property>
       <item>
@@ -269,8 +274,8 @@ p, li { white-space: pre-wrap; }
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>ito::QTreeViewItom</class>
-   <extends>QTreeView</extends>
+   <class>ito::QTableViewItom</class>
+   <extends>QListView</extends>
    <header>widgets/itomQWidgets.h</header>
   </customwidget>
  </customwidgets>

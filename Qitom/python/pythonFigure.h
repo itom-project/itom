@@ -53,7 +53,6 @@ public:
 
     typedef struct
     {
-//        PyFigure() : uiItem(0), rows(0), cols(0), currentSubplotIdx(0), signalMapper(NULL) {}
         PythonUi::PyUiItem uiItem;
         QSharedPointer<unsigned int> guardedFigHandle;
         int rows;
@@ -83,6 +82,7 @@ public:
     static PyObject* PyFigure_hide(PyFigure *self);
     static PyObject* PyFigure_plot(PyFigure *self, PyObject *args, PyObject *kwds);
     static PyObject* PyFigure_liveImage(PyFigure *self, PyObject *args, PyObject *kwds);
+    static PyObject* PyFigure_matplotlib(PyFigure *self, PyObject *args, PyObject *kwds);
 
     static PyObject* PyFigure_getSubplot(PyFigure *self, PyObject *args);
 

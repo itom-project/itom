@@ -25,6 +25,7 @@
 #include <qmessagebox.h>
 #include <qscrollbar.h>
 #include <qdir.h>
+#include <qheaderview.h>
 
 
 #include "../global.h"
@@ -55,6 +56,16 @@ DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /
     m_pPipManager->checkPipAvailable(createOptions());
 
     ui.tablePackages->setModel(m_pPipManager);
+    ui.tablePackages->setWordWrap(false);
+    ui.tablePackages->setShowGrid(false);
+    ui.tablePackages->horizontalHeader()->setStretchLastSection(true);
+    ui.tablePackages->horizontalHeader()->setHighlightSections( false );
+    ui.tablePackages->verticalHeader()->setVisible(false);
+    ui.tablePackages->verticalHeader()->setDefaultSectionSize(17);
+    ui.tablePackages->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui.tablePackages->setSelectionMode(QAbstractItemView::SingleSelection);
+    ui.tablePackages->setColumnWidth(1, 50);
+    ui.tablePackages->setColumnWidth(2, 200);
     ui.groupPipSettings->setCollapsed(true);
 
 #if WIN32

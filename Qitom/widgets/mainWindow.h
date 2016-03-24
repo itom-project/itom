@@ -141,7 +141,7 @@ public slots:
     void addAbstractDock(AbstractDockWidget* dockWidget, Qt::DockWidgetArea area = Qt::TopDockWidgetArea);
     void removeAbstractDock(AbstractDockWidget* dockWidget);
 
-    virtual void pythonStateChanged(tPythonTransitions pyTransition);
+    void pythonStateChanged(tPythonTransitions pyTransition);
 
     void setStatusText(QString message, int timeout);
 

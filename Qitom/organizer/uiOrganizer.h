@@ -338,7 +338,7 @@ public:
 
 protected:
 
-    static void threadSafeDeleteUi(unsigned int *handle);
+    //static void threadSafeDeleteUi(unsigned int *handle);
 
     void startGarbageCollectorTimer();
 
@@ -390,11 +390,11 @@ public slots:
     RetVal showInputDialogGetInt(const QString &title, const QString &label, int defaultValue, QSharedPointer<bool> ok, QSharedPointer<int> value, int min = -2147483647, int max = 2147483647, int step = 1, ItomSharedSemaphore *semaphore = NULL );
     RetVal showInputDialogGetItem(const QString &title, const QString &label, const QStringList &stringList, QSharedPointer<bool> ok, QSharedPointer<QString> value, int currentIndex = 0, bool editable = false, ItomSharedSemaphore *semaphore = NULL );
     RetVal showInputDialogGetText(const QString &title, const QString &label, const QString &defaultString, QSharedPointer<bool> ok, QSharedPointer<QString> value, ItomSharedSemaphore *semaphore = NULL );
-    RetVal showMessageBox(unsigned int uiHandle, int type, const QString &title, const QString &text, int buttons, int defaultButton, QSharedPointer<int> retButton, QSharedPointer<QString> retButtonText, ItomSharedSemaphore *semaphore = NULL );
+    RetVal showMessageBox(unsigned int objectID, int type, const QString &title, const QString &text, int buttons, int defaultButton, QSharedPointer<int> retButton, QSharedPointer<QString> retButtonText, ItomSharedSemaphore *semaphore = NULL );
 
-    RetVal showFileDialogExistingDir(unsigned int uiHandle, const QString &caption, QSharedPointer<QString> directory, int options = QFileDialog::ShowDirsOnly, ItomSharedSemaphore *semaphore = NULL); //options are of type QFileDialog::Options
-    RetVal showFileOpenDialog(unsigned int uiHandle, const QString &caption, const QString &directory, const QString &filter, QSharedPointer<QString> file, int selectedFilterIndex = 0, int options = 0, ItomSharedSemaphore *semaphore = NULL);
-    RetVal showFileSaveDialog(unsigned int uiHandle, const QString &caption, const QString &directory, const QString &filter, QSharedPointer<QString> file, int selectedFilterIndex = 0, int options = 0, ItomSharedSemaphore *semaphore = NULL);
+    RetVal showFileDialogExistingDir(unsigned int objectID, const QString &caption, QSharedPointer<QString> directory, int options = QFileDialog::ShowDirsOnly, ItomSharedSemaphore *semaphore = NULL); //options are of type QFileDialog::Options
+    RetVal showFileOpenDialog(unsigned int objectID, const QString &caption, const QString &directory, const QString &filter, QSharedPointer<QString> file, int selectedFilterIndex = 0, int options = 0, ItomSharedSemaphore *semaphore = NULL);
+    RetVal showFileSaveDialog(unsigned int objectID, const QString &caption, const QString &directory, const QString &filter, QSharedPointer<QString> file, int selectedFilterIndex = 0, int options = 0, ItomSharedSemaphore *semaphore = NULL);
 
     RetVal exists(unsigned int objectID, QSharedPointer<bool> exists, ItomSharedSemaphore *semaphore = NULL);
     RetVal getPropertyInfos(unsigned int objectID, QSharedPointer<QVariantMap> retPropertyMap, ItomSharedSemaphore *semaphore = NULL);
@@ -433,8 +433,8 @@ public slots:
 
     RetVal figurePlot(ito::UiDataContainer &dataCont, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore = NULL);
     RetVal figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore = NULL);
-    
-    RetVal figureRemoveGuardedHandle(unsigned int figHandle, ItomSharedSemaphore *semaphore = NULL);
+    RetVal figureDesignerWidget(QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore = NULL);
+
     RetVal figureClose(unsigned int figHandle, ItomSharedSemaphore *semaphore = NULL);
     RetVal figurePickPoints(unsigned int objectID, QSharedPointer<QVector<ito::Shape> > shapes, int maxNrPoints, ItomSharedSemaphore *semaphore);
     RetVal figureDrawGeometricShapes(unsigned int objectID, QSharedPointer<QVector<ito::Shape> > shapes, int shapeType, int maxNrElements, ItomSharedSemaphore *semaphore);
@@ -443,10 +443,7 @@ public slots:
 
     RetVal getAvailableWidgetNames(QSharedPointer<QStringList> widgetNames, ItomSharedSemaphore *semaphore);
 
-    void figureDestroyed(QObject *obj)
-    {
-        qDebug() << obj;
-    }
+    void figureDestroyed(QObject *obj);
 
 private slots:
     void watcherThreadFinished();

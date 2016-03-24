@@ -2,20 +2,35 @@
 Render to qt/itom from agg
 """
 
-
-import os, sys
-
 import matplotlib
 from matplotlib.figure import Figure
 
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from .backend_itom import FigureManagerItom, FigureCanvasItom,\
-     show, draw_if_interactive, \
      NavigationToolbar2Itom
+from matplotlib.backend_bases import ShowBase
      
-from itom import uiItem, ui
+from itom import uiItem
+from itom import figure as itomFigure
 
 DEBUG = False
+
+def draw_if_interactive():
+    """
+    Is called after every pylab drawing command
+    """
+    if matplotlib.is_interactive():
+        figManager =  Gcf.get_active()
+        if figManager != None:
+            figManager.canvas.draw_idle()
+
+class Show(ShowBase):
+    def mainloop(self):
+        pass
+        #print("mainloop")
+        #QtGui.qApp.exec_()
+
+show = Show()
 
 
 def new_figure_manager( num, *args, **kwargs ):
@@ -26,18 +41,20 @@ def new_figure_manager( num, *args, **kwargs ):
     FigureClass = kwargs.pop('FigureClass', Figure)
     existingCanvas = kwargs.pop('canvas', None)
     if(existingCanvas is None):
-        itomUI = ui("itom://matplotlib")
+        itomFig = itomFigure(num)
+        itomUI = itomFig.matplotlibFigure() #ui("itom://matplotlib")
         #itomUI.show() #in order to get the right size
         embedded = False
     else:
+        itomFig = None
         embedded = True
         if(isinstance(existingCanvas,uiItem)):
             itomUI = existingCanvas
         else:
             raise("keyword 'canvas' must contain an instance of uiItem")
     thisFig = FigureClass( *args, **kwargs )
-    canvas = FigureCanvasItomAgg( thisFig, num, itomUI, embedded )
-    return FigureManagerItom( canvas, num, itomUI, embedded )
+    canvas = FigureCanvasItomAgg( thisFig, num, itomUI, itomFig, embedded )
+    return FigureManagerItom( canvas, num, itomUI, itomFig, embedded )
 
 class NavigationToolbar2ItomAgg(NavigationToolbar2Itom):
     def _get_canvas(self, fig):
@@ -65,9 +82,9 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
       figure - A Figure instance
    """
 
-    def __init__( self, figure, num, itomUI, embeddedCanvas ):
+    def __init__( self, figure, num, itomUI, itomFig, embeddedCanvas ):
         if DEBUG: print('FigureCanvasQtAgg: ', figure)
-        FigureCanvasItom.__init__( self, figure, num, itomUI, embeddedCanvas )
+        FigureCanvasItom.__init__( self, figure, num, itomUI, itomFig, embeddedCanvas )
         FigureCanvasAgg.__init__( self, figure )
         self.drawRect = False
         self.canvas.call("paintRect", False, 0,0,0,0)
@@ -112,8 +129,8 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
             #    stringBuffer = self.renderer._renderer.tostring_argb()
             #
             
-            XYrect = 0
-            WHrect = 0
+            #XYrect = 0
+            #WHrect = 0
             
             #if self.drawRect:
             #    XYrect = (int(self.rect[0]) << 16) + int(self.rect[1])
@@ -124,10 +141,14 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
             H = int(self.renderer.height)
             try:
                 self.canvas.call("paintResult", stringBuffer, X, Y, W, H, False)
-            except RuntimeError:
-                # it is possible that the figure has currently be closed by the user
-                self.signalDestroyedWidget()
-                print("Matplotlib figure is not available")
+            except RuntimeError as e:
+                try:
+                    # this is only for compatibility with older versions of the backend and matplotlib designer plugin
+                    self.canvas.call("paintResultDeprecated", stringBuffer, X, Y, W, H, False)
+                except RuntimeError:
+                    # it is possible that the figure has currently be closed by the user
+                    self.signalDestroyedWidget()
+                    print("Matplotlib figure is not available (err: %s)" % str(e))
         else:
             bbox = self.blitbox
             l, b, r, t = bbox.extents
@@ -142,14 +163,18 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
             Y = int(self.renderer.height-t)
             W = w
             H = h
-            XY = (int(l) << 16) + int(self.renderer.height-t)
-            WH = (w << 16) + h
+            #XY = (int(l) << 16) + int(self.renderer.height-t)
+            #WH = (w << 16) + h
             try:
                 self.canvas.call("paintResult", stringBuffer, X, Y, W, H, True)
-            except RuntimeError:
-                # it is possible that the figure has currently be closed by the user
-                self.signalDestroyedWidget()
-                print("Matplotlib figure is not available")
+            except RuntimeError as e:
+                try:
+                    # this is only for compatibility with older versions of the backend and matplotlib designer plugin
+                    self.canvas.call("paintResultDeprecated", stringBuffer, X, Y, W, H, True)
+                except RuntimeError:
+                    # it is possible that the figure has currently be closed by the user
+                    self.signalDestroyedWidget()
+                    print("Matplotlib figure is not available (err: %s)" % str(e))
             self.blitbox = None
         self.drawRect = False
     
@@ -165,6 +190,9 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         # causes problems with code that uses the result of the
         # draw() to update plot elements.
         if DEBUG: print('FigureCanvasItomAgg.draw')
+        
+        if self.figure is None:
+            raise RuntimeError("figure %i does not exist any more" % self.num)
         FigureCanvasAgg.draw(self)
         self.paintEvent()
         #self.canvas.call("update")
@@ -173,9 +201,9 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         """
         Blit the region in bbox
         """
-        self.blitbox = bbox
-        l, b, w, h = bbox.bounds
-        t = b + h
+        #self.blitbox = bbox
+        #l, b, w, h = bbox.bounds
+        #t = b + h
         #self.repaint(l, self.renderer.height-t, w, h)
         self.paintEvent()
 

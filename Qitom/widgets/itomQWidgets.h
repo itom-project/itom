@@ -25,6 +25,8 @@
 
 #include <qtabwidget.h>
 #include <qtreeview.h>
+#include <qlistview.h>
+#include <qtableview.h>
 #include <qtabbar.h>
 #include <qevent.h>
 
@@ -80,6 +82,70 @@ protected:
     virtual void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
     {
         QTreeView::selectionChanged(selected, deselected);
+        emit selectedItemsChanged(selected, deselected);
+    }
+
+signals:
+    void selectedItemsChanged(const QItemSelection &selected, const QItemSelection &deselected);
+};
+
+class QListViewItom : public QListView
+{
+    Q_OBJECT
+
+public:
+    QListViewItom(QWidget * parent = 0) : QListView(parent) {}
+    ~QListViewItom () {}
+
+    QModelIndexList selectedIndexes() const
+    { 
+        QModelIndexList retList;
+        for (int i = 0; i < QListView::selectedIndexes().length(); ++i)
+        {
+            if (QListView::selectedIndexes().at(i).column() == 0)
+            {
+                retList.append(QListView::selectedIndexes().at(i));
+            }
+        }
+        return retList;
+    }
+
+protected:
+    virtual void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
+    {
+        QListView::selectionChanged(selected, deselected);
+        emit selectedItemsChanged(selected, deselected);
+    }
+
+signals:
+    void selectedItemsChanged(const QItemSelection &selected, const QItemSelection &deselected);
+};
+
+class QTableViewItom : public QTableView
+{
+    Q_OBJECT
+
+public:
+    QTableViewItom(QWidget * parent = 0) : QTableView(parent) {}
+    ~QTableViewItom () {}
+
+    QModelIndexList selectedIndexes() const
+    { 
+        QModelIndexList retList;
+        for (int i = 0; i < QTableView::selectedIndexes().length(); ++i)
+        {
+            if (QTableView::selectedIndexes().at(i).column() == 0)
+            {
+                retList.append(QTableView::selectedIndexes().at(i));
+            }
+        }
+        return retList;
+    }
+
+protected:
+    virtual void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
+    {
+        QTableView::selectionChanged(selected, deselected);
         emit selectedItemsChanged(selected, deselected);
     }
 

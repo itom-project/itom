@@ -83,7 +83,8 @@ FigureWidget::FigureWidget(const QString &title, bool docked, bool isDockAvailab
     //m_pCenterWidget->setStyleSheet("background-color:#ffccee");
 
     setFocusPolicy(Qt::StrongFocus);
-//    setAcceptDrops(true);
+    //setAcceptDrops(true);
+    //setAttribute(Qt::WA_DeleteOnClose, true);
     
 }
 
@@ -655,7 +656,7 @@ QWidget *FigureWidget::getSubplot(int index) const
     if (m_pGrid)
     {
         int column = index % m_cols;
-        int row = (index - column) / m_rows;
+        int row = (index - column) / m_cols;
         QLayoutItem *item = m_pGrid->itemAtPosition(row,column); //(index);
         if (item)
         {

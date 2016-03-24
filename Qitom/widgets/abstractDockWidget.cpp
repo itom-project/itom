@@ -106,7 +106,7 @@ AbstractDockWidget::AbstractDockWidget(bool docked, bool isDockAvailable, tFloat
 
     //m_docked = docked && isDockAvailable;
 
-    setWindowTitle(title);
+    QDockWidget::setWindowTitle(title);
 
     m_actStayOnTop = new QAction(QIcon(""), tr("Stay on top"), this);
     m_actStayOnTop->setToolTip(tr("stay on top of all visible windows"));
@@ -347,6 +347,18 @@ void AbstractDockWidget::setGeometry(const QRect &rect)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+QString AbstractDockWidget::windowTitle()
+{
+    QWIDGETPROPGETTER(windowTitle)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void AbstractDockWidget::setWindowTitle(const QString &title)
+{
+    QWIDGETPROPSETTER(setWindowTitle, title)
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 bool AbstractDockWidget::isEnabled() const
 {
     QWIDGETPROPGETTER(isEnabled)
@@ -502,12 +514,12 @@ RetVal AbstractDockWidget::setAdvancedWindowTitle(QString newCompleteTitle, bool
     }
     if (!docked() && m_floatingStyle == floatingWindow)
     {
-        setWindowTitle(m_completeTitle);
+        QDockWidget::setWindowTitle(m_completeTitle);
         m_pWindow->setWindowTitle(m_completeTitle);
     }
     else
     {
-        setWindowTitle(m_completeTitle); //m_basicTitle);
+        QDockWidget::setWindowTitle(m_completeTitle); //m_basicTitle);
         m_pWindow->setWindowTitle(m_completeTitle); //m_basicTitle);
     }
     return RetVal(retOk);

@@ -94,6 +94,8 @@ public:
     static std::string PyObjGetStdStringAsLatin1(PyObject* val, bool strict, bool &ok);
     //! get bytes from py object
     static QByteArray PyObjGetBytes(PyObject* val, bool strict, bool &ok);
+    //! get bytes from py object
+    static QSharedPointer<char> PyObjGetBytesShared(PyObject* val, bool strict, bool &ok);
     //! get int from py object
     static int     PyObjGetInt(PyObject* val, bool strict, bool &ok);
     //! get int64 from py object

@@ -106,6 +106,7 @@ Source: "{#SourceDirItomSource}\Qitom\COPYING.txt"; DestDir: "{app}"; Flags: pro
 Source: "{#SourceDirItomBuild}\docs\pluginDoc\template\*.*"; DestDir: "{app}\docs\pluginDoc\template"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\demo\*.*"; DestDir: "{app}\demo"; Flags: promptifolder recursesubdirs
 Source: "{#SourceDirItomBuild}\itom-packages\*.*"; DestDir: "{app}\itom-packages"; Flags: promptifolder
+Source: "{#SourceDirItomBuild}\itom-packages\*.*"; DestDir: "{app}\itom-packages\apps"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\itom-packages\api_generator\*.*"; DestDir: "{app}\itom-packages\api_generator"; Flags: promptifolder
 Source: "{#SourceDirItomBuild}\itom-packages\abstractObjToolbar\*.*"; DestDir: "{app}\itom-packages\abstractObjToolbar"; Flags: promptifolder
 ;Source: "{#SourceDirItomBuild}\itom-packages\autostart\*.*"; DestDir: "{app}\itom-packages\autostart"; Flags: promptifolder
@@ -240,6 +241,7 @@ Source: "{#SourceDirPCL}\bin\pcl_io_release.dll"; DestDir: "{app}"; Flags: promp
 Source: "{#SourceDirPCL}\bin\pcl_io_ply_release.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirPCL}\bin\pcl_kdtree_release.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirPCL}\bin\pcl_octree_release.dll"; DestDir: "{app}"; Flags: promptifolder
+Source: "{#SourceDirPCL}\bin\pcl_recognition_release.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirPCL}\bin\pcl_sample_consensus_release.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirPCL}\bin\pcl_search_release.dll"; DestDir: "{app}"; Flags: promptifolder
 Source: "{#SourceDirPCL}\bin\pcl_surface_release.dll"; DestDir: "{app}"; Flags: promptifolder
