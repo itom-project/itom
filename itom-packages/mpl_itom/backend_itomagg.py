@@ -8,11 +8,29 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from .backend_itom import FigureManagerItom, FigureCanvasItom,\
      NavigationToolbar2Itom
+from matplotlib.backend_bases import ShowBase
      
 from itom import uiItem
 from itom import figure as itomFigure
 
 DEBUG = False
+
+def draw_if_interactive():
+    """
+    Is called after every pylab drawing command
+    """
+    if matplotlib.is_interactive():
+        figManager =  Gcf.get_active()
+        if figManager != None:
+            figManager.canvas.draw_idle()
+
+class Show(ShowBase):
+    def mainloop(self):
+        pass
+        #print("mainloop")
+        #QtGui.qApp.exec_()
+
+show = Show()
 
 
 def new_figure_manager( num, *args, **kwargs ):

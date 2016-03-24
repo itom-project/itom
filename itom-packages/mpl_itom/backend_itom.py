@@ -387,7 +387,7 @@ class FigureManagerItom( FigureManagerBase ):
         self.canvas.draw()
         if(self.embeddedCanvas == False):
             try:
-                self.itomUI.show()
+                self.itomFig.show()
             except RuntimeError:
                 self._widgetclosed()
             except:
