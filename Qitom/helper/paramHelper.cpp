@@ -465,7 +465,7 @@ namespace ito {
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    ito::RetVal ParamHelper::validateStringMeta(const ito::StringMeta *meta, const char* value, bool mandatory)
+    ito::RetVal ParamHelper::validateStringMeta(const ito::StringMeta *meta, const char* value, bool mandatory /*= false*/, const char* name /*= NULL*/)
     {
         if (meta && meta->getLen() > 0 && value)
         {
@@ -517,20 +517,20 @@ namespace ito {
                     break;
                 }
 
-                return ito::RetVal::format(ito::retError, 0, QObject::tr("String '%s' does not fit to given string-constraints. %1").arg(constraints).toLatin1().data(), value);
+                return ito::RetVal::format(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("String '%s' does not fit to given string-constraints. %1").arg(constraints)).toLatin1().data(), value);
             }
         }
 
         if (mandatory && (value == NULL))
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("AddIn must not be NULL").toLatin1().data());
+            return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("Mandatory string value is not given.")).toLatin1().data());
         }
 
         return ito::retOk;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    ito::RetVal ParamHelper::validateDoubleMeta(const ito::DoubleMeta *meta, double value)
+    ito::RetVal ParamHelper::validateDoubleMeta(const ito::DoubleMeta *meta, double value, const char* name /*= NULL*/)
     {
         if (meta)
         {
@@ -540,20 +540,20 @@ namespace ito {
 
             if (value < (minVal - eps) || value > (maxVal + eps))
             {
-                return ito::RetVal(ito::retError, 0, QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal).toLatin1().data());
+                return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal)).toLatin1().data());
             }
 
             double step = meta->getStepSize();
             if (!fitToDoubleStepSize(minVal, step, value))
             {
-                return ito::RetVal(ito::retError, 0, QObject::tr("value does not fit to given step size [%1:%2:%3]").arg(minVal).arg(step).arg(maxVal).toLatin1().data());
+                return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("value does not fit to given step size [%1:%2:%3]").arg(minVal).arg(step).arg(maxVal)).toLatin1().data());
             }
         }
         return ito::retOk;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    ito::RetVal ParamHelper::validateDoubleMetaAndRoundToStepSize(const ito::DoubleMeta *meta, ito::ParamBase &doubleParam, bool allowRounding /*= true*/)
+    ito::RetVal ParamHelper::validateDoubleMetaAndRoundToStepSize(const ito::DoubleMeta *meta, ito::ParamBase &doubleParam, bool allowRounding /*= true*/, const char* name /*= NULL*/)
     {
         if (meta)
         {
@@ -565,14 +565,14 @@ namespace ito {
 
             if (value < (minVal - eps) || value > (maxVal + eps))
             {
-                return ito::RetVal(ito::retError, 0, QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal).toLatin1().data());
+                return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal)).toLatin1().data());
             }
 
             if (!allowRounding || step < eps)
             {
                 if (!fitToDoubleStepSize(minVal, step, value))
                 {
-                    return ito::RetVal(ito::retError, 0, QObject::tr("value does not fit to given step size [%1:%2:%3]").arg(minVal).arg(step).arg(maxVal).toLatin1().data());
+                    return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("value does not fit to given step size [%1:%2:%3]").arg(minVal).arg(step).arg(maxVal)).toLatin1().data());
                 }
             }
             else
@@ -588,7 +588,7 @@ namespace ito {
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    ito::RetVal ParamHelper::validateDoubleMetaAndRoundToStepSize(const ito::DoubleMeta *meta, double &value, bool allowRounding /*= true*/)
+    ito::RetVal ParamHelper::validateDoubleMetaAndRoundToStepSize(const ito::DoubleMeta *meta, double &value, bool allowRounding /*= true*/, const char* name /*= NULL*/)
     {
         if (meta)
         {
@@ -599,14 +599,14 @@ namespace ito {
 
             if (value < (minVal - eps) || value > (maxVal + eps))
             {
-                return ito::RetVal(ito::retError, 0, QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal).toLatin1().data());
+                return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal)).toLatin1().data());
             }
 
             if (!allowRounding || step < eps)
             {
                 if (!fitToDoubleStepSize(minVal, step, value))
                 {
-                    return ito::RetVal(ito::retError, 0, QObject::tr("value does not fit to given step size [%1:%2:%3]").arg(minVal).arg(step).arg(maxVal).toLatin1().data());
+                    return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("value does not fit to given step size [%1:%2:%3]").arg(minVal).arg(step).arg(maxVal)).toLatin1().data());
                 }
             }
             else
@@ -621,7 +621,7 @@ namespace ito {
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    ito::RetVal ParamHelper::validateIntMeta(const ito::IntMeta *meta, int value)
+    ito::RetVal ParamHelper::validateIntMeta(const ito::IntMeta *meta, int value, const char* name /*= NULL*/)
     {
         if (meta)
         {
@@ -630,20 +630,20 @@ namespace ito {
 
             if (value < minVal || value > maxVal)
             {
-                return ito::RetVal(ito::retError, 0, QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal).toLatin1().data());
+                return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal)).toLatin1().data());
             }
 
             int step = meta->getStepSize();
             if (step > 1 && ((value - minVal) % step) != 0)
             {
-                return ito::RetVal(ito::retError, 0, QObject::tr("value does not fit to given step size [%1:%2:%3]").arg(minVal).arg(step).arg(maxVal).toLatin1().data());
+                return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("value does not fit to given step size [%1:%2:%3]").arg(minVal).arg(step).arg(maxVal)).toLatin1().data());
             }
         }
         return ito::retOk;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    ito::RetVal ParamHelper::validateCharMeta(const ito::CharMeta *meta, char value)
+    ito::RetVal ParamHelper::validateCharMeta(const ito::CharMeta *meta, char value, const char* name /*= NULL*/)
     {
         if (meta)
         {
@@ -652,42 +652,42 @@ namespace ito {
 
             if (value < minVal || value > maxVal)
             {
-                return ito::RetVal(ito::retError, 0, QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal).toLatin1().data());
+                return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("value out of range [%1, %2]").arg(minVal).arg(maxVal)).toLatin1().data());
             }
 
             char step = meta->getStepSize();
             if (step > 1 && ((value - minVal) % step) != 0)
             {
-                return ito::RetVal(ito::retError, 0, QObject::tr("value does not fit to given step size [%1:%2:%3]").arg(minVal).arg(step).arg(maxVal).toLatin1().data());
+                return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("value does not fit to given step size [%1:%2:%3]").arg(minVal).arg(step).arg(maxVal)).toLatin1().data());
             }
         }
         return ito::retOk;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    ito::RetVal ParamHelper::validateHWMeta(const ito::HWMeta *meta, ito::AddInBase *value, bool mandatory)
+    ito::RetVal ParamHelper::validateHWMeta(const ito::HWMeta *meta, ito::AddInBase *value, bool mandatory /*= false*/, const char* name /*= NULL*/)
     {
         if (meta && value)
         {
             int minType = meta->getMinType();
             if ((minType & value->getBasePlugin()->getType()) != minType)
             {
-                return ito::RetVal(ito::retError, 0, QObject::tr("AddIn does not fit to minimum required type(s).").toLatin1().data()); 
+                return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("AddIn does not fit to minimum required type(s).")).toLatin1().data()); 
             }
             if (!(meta->getHWAddInName().empty()) && QString::compare(QLatin1String(meta->getHWAddInName().data()), value->getBasePlugin()->objectName(), Qt::CaseInsensitive) != 0)
             {
-                return ito::RetVal::format(ito::retError, 0, QObject::tr("AddIn must be of the following plugin: '%s'.").toLatin1().data(), meta->getHWAddInName().data());
+                return ito::RetVal::format(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("AddIn must be of the following plugin: '%s'.")).toLatin1().data(), meta->getHWAddInName().data());
             }
         }
         else if (mandatory && value == NULL)
         {
-            return ito::RetVal(ito::retError, 0, QObject::tr("AddIn must not be NULL").toLatin1().data());
+            return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("AddIn must not be NULL")).toLatin1().data());
         }
         return ito::retOk;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    ito::RetVal ParamHelper::validateCharArrayMeta(const ito::ParamMeta *meta, const char* values, size_t len)
+    ito::RetVal ParamHelper::validateCharArrayMeta(const ito::ParamMeta *meta, const char* values, size_t len, const char* name /*= NULL*/)
     {
         if (meta)
         {
@@ -700,11 +700,11 @@ namespace ito {
 
                     if (len < cam->getNumMin() || len > cam->getNumMax())
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("length of char array out of range [%1, %2]").arg(cam->getNumMin()).arg(cam->getNumMax()).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("length of char array out of range [%1, %2]").arg(cam->getNumMin()).arg(cam->getNumMax())).toLatin1().data());
                     }
                     else if (steps > 1 && ((len - cam->getNumMin()) % steps) != 0)
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("length of char array does not fit to given step size [%1:%2:%3]").arg(cam->getNumMin()).arg(cam->getNumStepSize()).arg(cam->getNumMax()).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("length of char array does not fit to given step size [%1:%2:%3]").arg(cam->getNumMin()).arg(cam->getNumStepSize()).arg(cam->getNumMax())).toLatin1().data());
                     }
                     else
                     {
@@ -719,14 +719,14 @@ namespace ito {
                 }
                 break;
             default:
-                return ito::RetVal(ito::retError, 0, QObject::tr("the given meta information does not fit a an array of character values").toLatin1().data());
+                return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("the given meta information does not fit a an array of character values")).toLatin1().data());
             }
         }
         return ito::retOk;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    ito::RetVal ParamHelper::validateIntArrayMeta(const ito::ParamMeta *meta, const int* values, size_t len)
+    ito::RetVal ParamHelper::validateIntArrayMeta(const ito::ParamMeta *meta, const int* values, size_t len, const char* name /*= NULL*/)
     {
         if (meta)
         {
@@ -739,11 +739,11 @@ namespace ito {
 
                     if (len < cam->getNumMin() || len > cam->getNumMax())
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("length of integer array out of range [%1, %2]").arg(cam->getNumMin()).arg(cam->getNumMax()).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("length of integer array out of range [%1, %2]").arg(cam->getNumMin()).arg(cam->getNumMax())).toLatin1().data());
                     }
                     else if (steps > 1 && ((len - cam->getNumMin()) % steps) != 0)
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("length of integer array does not fit to given step size [%1:%2:%3]").arg(cam->getNumMin()).arg(cam->getNumStepSize()).arg(cam->getNumMax()).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("length of integer array does not fit to given step size [%1:%2:%3]").arg(cam->getNumMin()).arg(cam->getNumStepSize()).arg(cam->getNumMax())).toLatin1().data());
                     }
                     else
                     {
@@ -763,7 +763,7 @@ namespace ito {
                     const ito::IntervalMeta *drm = (const ito::IntervalMeta*)meta;
                     if (len != 2)
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("length of integer array must be 2.").toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("length of integer array must be 2.")).toLatin1().data());
                     }
                     int min = drm->getMin();
                     int max = drm->getMax();
@@ -778,44 +778,44 @@ namespace ito {
                         {
                             if (values[0] > values[1])
                             {
-                                return ito::RetVal(ito::retError, 0, QObject::tr("The given integer array [%1,%2] is considered to be an interval but the first value is bigger than the second one").arg(values[0]).arg(values[1]).toLatin1().data());
+                                return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("The given integer array [%1,%2] is considered to be an interval but the first value is bigger than the second one").arg(values[0]).arg(values[1])).toLatin1().data());
                             }
                             else
                             {
-                                return ito::RetVal(ito::retError, 0, QObject::tr("The given integer array [%1,%2] is considered to be an interval but does not fit to the limits [%3,%4]").arg(values[0]).arg(values[1]).arg(min).arg(max).toLatin1().data());
+                                return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("The given integer array [%1,%2] is considered to be an interval but does not fit to the limits [%3,%4]").arg(values[0]).arg(values[1]).arg(min).arg(max)).toLatin1().data());
                             }
                         }
                         else
                         {
                             if (values[0] > values[1])
                             {
-                                return ito::RetVal(ito::retError, 0, QObject::tr("The given integer array [%1,%2] is considered to be a range but the first value is bigger than the second one").arg(values[0]).arg(values[1]).toLatin1().data());
+                                return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("The given integer array [%1,%2] is considered to be a range but the first value is bigger than the second one").arg(values[0]).arg(values[1])).toLatin1().data());
                             }
                             else
                             {
-                                return ito::RetVal(ito::retError, 0, QObject::tr("The given integer array [%1,%2] is considered to be a range but does not fit to the limits [%3,%4]").arg(values[0]).arg(values[1]).arg(min).arg(max).toLatin1().data());
+                                return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("The given integer array [%1,%2] is considered to be a range but does not fit to the limits [%3,%4]").arg(values[0]).arg(values[1]).arg(min).arg(max)).toLatin1().data());
                             }
                         }
                     }
 
                     if (step > 1 && (((values[0] - min) % step) != 0))
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("The 1st value %1 does not fit to given step size [%2:%3:%4]").arg(values[0]).arg(min).arg(step).arg(max).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("The 1st value %1 does not fit to given step size [%2:%3:%4]").arg(values[0]).arg(min).arg(step).arg(max)).toLatin1().data());
                     }
                     else if (step > 1 && (((offset + values[1] - min) % step) != 0))
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("The 2nd value %1 does not fit to given step size [%2:%3:%4]").arg(values[1]).arg(min).arg(step).arg(max).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("The 2nd value %1 does not fit to given step size [%2:%3:%4]").arg(values[1]).arg(min).arg(step).arg(max)).toLatin1().data());
                     }
 
                     if (range < drm->getSizeMin() || range > drm->getSizeMax())
                     {
                         if (drm->isIntervalNotRange())
                         {
-                            return ito::RetVal(ito::retError, 0, QObject::tr("The given integer array [v1,v2] is considered to be an interval but the size of the interval (v2-v1) is out of bounds [%1,%2]").arg(drm->getSizeMin()).arg(drm->getSizeMax()).toLatin1().data());
+                            return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("The given integer array [v1,v2] is considered to be an interval but the size of the interval (v2-v1) is out of bounds [%1,%2]").arg(drm->getSizeMin()).arg(drm->getSizeMax())).toLatin1().data());
                         }
                         else
                         {
-                            return ito::RetVal(ito::retError, 0, QObject::tr("The given integer array [v1,v2] is considered to be a range but the size of the range (1+v2-v1) is out of bounds [%1,%2]").arg(drm->getSizeMin()).arg(drm->getSizeMax()).toLatin1().data());
+                            return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("The given integer array [v1,v2] is considered to be a range but the size of the range (1+v2-v1) is out of bounds [%1,%2]").arg(drm->getSizeMin()).arg(drm->getSizeMax())).toLatin1().data());
                         }
                     }
 
@@ -823,11 +823,11 @@ namespace ito {
                     {
                         if (drm->isIntervalNotRange())
                         {
-                            return ito::RetVal(ito::retError, 0, QObject::tr("The size of the interval (bound2-bound1) does not fit to given step size [%1:%2:%3]").arg(drm->getSizeMin()).arg(ivalStep).arg(drm->getSizeMax()).toLatin1().data());
+                            return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("The size of the interval (bound2-bound1) does not fit to given step size [%1:%2:%3]").arg(drm->getSizeMin()).arg(ivalStep).arg(drm->getSizeMax())).toLatin1().data());
                         }
                         else
                         {
-                            return ito::RetVal(ito::retError, 0, QObject::tr("The size of the range (1+bound2-bound1) does not fit to given step size [%1:%2:%3]").arg(drm->getSizeMin()).arg(ivalStep).arg(drm->getSizeMax()).toLatin1().data());
+                            return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("The size of the range (1+bound2-bound1) does not fit to given step size [%1:%2:%3]").arg(drm->getSizeMin()).arg(ivalStep).arg(drm->getSizeMax())).toLatin1().data());
                         }
                     }
                 }
@@ -848,27 +848,27 @@ namespace ito {
 
                     if (values[2] < widthMeta.getSizeMin() || values[2] > widthMax)
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("roi[2] (width) is out of range [%1,%2]").arg(widthMeta.getSizeMin()).arg(widthMax).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("roi[2] (width) is out of range [%1,%2]").arg(widthMeta.getSizeMin()).arg(widthMax)).toLatin1().data());
                     }
 
                     if (ivalStep > 1 && ((values[2] - widthMeta.getSizeMin()) % ivalStep) != 0)
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("roi[2] (width) does not fit to given step size [%1:%2:%3]").arg(widthMeta.getSizeMin()).arg(ivalStep).arg(widthMax).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("roi[2] (width) does not fit to given step size [%1:%2:%3]").arg(widthMeta.getSizeMin()).arg(ivalStep).arg(widthMax)).toLatin1().data());
                     }
 
                     if ((values[0] < min) || (values[0] > max))
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("roi[0] (x0) is out of range [%1,%2]").arg(min).arg(max).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("roi[0] (x0) is out of range [%1,%2]").arg(min).arg(max)).toLatin1().data());
                     }
 
                     if ((values[0] + values[2] - 1) > max)
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("right side of roi exceeds the maximal limit of %1 (reduce x0 or width)").arg(max).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("right side of roi exceeds the maximal limit of %1 (reduce x0 or width)").arg(max)).toLatin1().data());
                     }
 
                     if (step > 1 && (((values[0] - min) % step) != 0))
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("roi[0] (x0) does not fit to given step size [%1:%2:%3]").arg(min).arg(step).arg(max).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("roi[0] (x0) does not fit to given step size [%1:%2:%3]").arg(min).arg(step).arg(max)).toLatin1().data());
                     }
 
                     //check for height
@@ -881,39 +881,39 @@ namespace ito {
 
                     if (values[3] < heightMeta.getSizeMin() || values[3] > heightMax)
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("roi[3] (height) is out of range [%1,%2]").arg(heightMeta.getSizeMin()).arg(heightMax).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("roi[3] (height) is out of range [%1,%2]").arg(heightMeta.getSizeMin()).arg(heightMax)).toLatin1().data());
                     }
 
                     if (ivalStep > 1 && ((values[3] - heightMeta.getSizeMin()) % ivalStep) != 0)
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("roi[3] (height) does not fit to given step size [%1:%2:%3]").arg(heightMeta.getSizeMin()).arg(ivalStep).arg(heightMax).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("roi[3] (height) does not fit to given step size [%1:%2:%3]").arg(heightMeta.getSizeMin()).arg(ivalStep).arg(heightMax)).toLatin1().data());
                     }
 
                     if ((values[1] < min) || (values[1] > max))
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("roi[1] (y0) is out of range [%1,%2]").arg(min).arg(max).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("roi[1] (y0) is out of range [%1,%2]").arg(min).arg(max)).toLatin1().data());
                     }
 
                     if ((values[1] + values[3] - 1) > max)
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("bottom side of roi exceeds maximal limit of %1 (recude y0 or height)").arg(max).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("bottom side of roi exceeds maximal limit of %1 (recude y0 or height)").arg(max)).toLatin1().data());
                     }
 
                     if (step > 1 && (((values[1] - min) % step) != 0))
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("roi[1] (y0) does not fit to given step size [%1:%2:%3]").arg(min).arg(step).arg(max).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("roi[1] (y0) does not fit to given step size [%1:%2:%3]").arg(min).arg(step).arg(max)).toLatin1().data());
                     }                   
                 }
                 break;
             default:
-                return ito::RetVal(ito::retError, 0, QObject::tr("the given meta information does not fit a an array of integer values").toLatin1().data());
+                return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("the given meta information does not fit a an array of integer values")).toLatin1().data());
             }
         }
         return ito::retOk;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
-    ito::RetVal ParamHelper::validateDoubleArrayMeta(const ito::ParamMeta *meta, const double* values, size_t len)
+    ito::RetVal ParamHelper::validateDoubleArrayMeta(const ito::ParamMeta *meta, const double* values, size_t len, const char* name /*= NULL*/)
     {
         if (meta)
         {
@@ -926,11 +926,11 @@ namespace ito {
 
                     if (len < cam->getNumMin() || len > cam->getNumMax())
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("length of double array out of range [%1, %2]").arg(cam->getNumMin()).arg(cam->getNumMax()).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("length of double array out of range [%1, %2]").arg(cam->getNumMin()).arg(cam->getNumMax())).toLatin1().data());
                     }
                     else if (steps > 1 && ((len - cam->getNumMin()) % steps) != 0)
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("length of double array does not fit to given step size [%1:%2:%3]").arg(cam->getNumMin()).arg(cam->getNumStepSize()).arg(cam->getNumMax()).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("length of double array does not fit to given step size [%1:%2:%3]").arg(cam->getNumMin()).arg(cam->getNumStepSize()).arg(cam->getNumMax())).toLatin1().data());
                     }
                     else
                     {
@@ -949,7 +949,7 @@ namespace ito {
                     const ito::DoubleIntervalMeta *drm = (const ito::DoubleIntervalMeta*)meta;
                     if (len != 2)
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("length of double array must be 2.").toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("length of double array must be 2.")).toLatin1().data());
                     }
                     double min = drm->getMin();
                     double max = drm->getMax();
@@ -959,38 +959,51 @@ namespace ito {
 
                     if (values[0] > values[1])
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("The first value of the given double interval [%1,%2] is bigger than the second value.").arg(values[0]).arg(values[1]).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("The first value of the given double interval [%1,%2] is bigger than the second value.").arg(values[0]).arg(values[1])).toLatin1().data());
                     }
                     else if (values[0] < min || values[1] > max)
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("The given double array [v1=%1,v2=%2] is considered to be an interval but does not fit to v1=[%3,v2], v2=[v1,%4]").arg(values[0]).arg(values[1]).arg(min).arg(max).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("The given double array [v1=%1,v2=%2] is considered to be an interval but does not fit to v1=[%3,v2], v2=[v1,%4]").arg(values[0]).arg(values[1]).arg(min).arg(max)).toLatin1().data());
                     }
 
                     if (!fitToDoubleStepSize(min, step, values[0]))
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("The 1st value %1 does not fit to given step size [%2:%3:%4]").arg(values[0]).arg(min).arg(step).arg(max).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("The 1st value %1 does not fit to given step size [%2:%3:%4]").arg(values[0]).arg(min).arg(step).arg(max)).toLatin1().data());
                     }
                     else if (!fitToDoubleStepSize(min, step, values[1]))
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("The 2nd value %1 does not fit to given step size [%2:%3:%4]").arg(values[1]).arg(min).arg(step).arg(max).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("The 2nd value %1 does not fit to given step size [%2:%3:%4]").arg(values[1]).arg(min).arg(step).arg(max)).toLatin1().data());
                     }
 
                     if (range < drm->getSizeMin() || range > drm->getSizeMax())
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("The given double array [v1,v2] is considered to be an interval but the size of the interval (v2-v1) is out of bounds [%1,%2]").arg(drm->getSizeMin()).arg(drm->getSizeMax()).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("The given double array [v1,v2] is considered to be an interval but the size of the interval (v2-v1) is out of bounds [%1,%2]").arg(drm->getSizeMin()).arg(drm->getSizeMax())).toLatin1().data());
                     }
 
                     if (!fitToDoubleStepSize(drm->getSizeMin(), rangeStep, range))
                     {
-                        return ito::RetVal(ito::retError, 0, QObject::tr("The size of the interval (bound2-bound1) does not fit to given step size [%1:%2:%3]").arg(drm->getSizeMin()).arg(rangeStep).arg(drm->getSizeMax()).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("The size of the interval (bound2-bound1) does not fit to given step size [%1:%2:%3]").arg(drm->getSizeMin()).arg(rangeStep).arg(drm->getSizeMax())).toLatin1().data());
                     }
                 }
                 break;
             default:
-                return ito::RetVal(ito::retError, 0, QObject::tr("the given meta information does not fit a an array of character values").toLatin1().data());
+                return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("the given meta information does not fit a an array of character values")).toLatin1().data());
             }
         }
         return ito::retOk;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    QString ParamHelper::parseNamePrefix(const char *name)
+    {
+        if (name == NULL || strcmp(name, "") == 0)
+        {
+            return QString();
+        }
+        else
+        {
+            return QObject::tr("Parameter %1: ").arg(name);
+        }
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -999,6 +1012,7 @@ namespace ito {
         ito::RetVal retVal;
         bool hasIndex = false;
         int index;
+        const char *name = param.getName();
 
         //check whether param has an index
         QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\])(:(.*)){0,1}$");
@@ -1010,48 +1024,47 @@ namespace ito {
 
         if (!hasIndex && (templateParam.getType() == param.getType()))
         {
-
             switch(templateParam.getType())
             {
             case ito::ParamBase::Char:
                 {
-                    retVal += validateCharMeta(dynamic_cast<const ito::CharMeta*>(templateParam.getMeta()), param.getVal<char>()); 
+                    retVal += validateCharMeta(dynamic_cast<const ito::CharMeta*>(templateParam.getMeta()), param.getVal<char>(), name); 
                 }
                 break;
             case ito::ParamBase::Int:
                 {
-                    retVal += validateIntMeta(dynamic_cast<const ito::IntMeta*>(templateParam.getMeta()), param.getVal<int>()); 
+                    retVal += validateIntMeta(dynamic_cast<const ito::IntMeta*>(templateParam.getMeta()), param.getVal<int>(), name); 
                 }
                 break;
             case ito::ParamBase::Double:
                 {
-                    retVal += validateDoubleMeta(dynamic_cast<const ito::DoubleMeta*>(templateParam.getMeta()), param.getVal<double>()); 
+                    retVal += validateDoubleMeta(dynamic_cast<const ito::DoubleMeta*>(templateParam.getMeta()), param.getVal<double>(), name); 
                 }
                 break;
             case ito::ParamBase::CharArray:
                 {
-                    retVal += validateCharArrayMeta(templateParam.getMeta(), param.getVal<const char*>(), param.getLen());
+                    retVal += validateCharArrayMeta(templateParam.getMeta(), param.getVal<const char*>(), param.getLen(), name);
                 }
                 break;
             case ito::ParamBase::IntArray:
                 {
                     //check intArray, range, interval and rect
-                    retVal += validateIntArrayMeta(templateParam.getMeta(), param.getVal<const int*>(), param.getLen());
+                    retVal += validateIntArrayMeta(templateParam.getMeta(), param.getVal<const int*>(), param.getLen(), name);
                 }
                 break;
             case ito::ParamBase::DoubleArray:
                 {
-                    retVal += validateDoubleArrayMeta(templateParam.getMeta(), param.getVal<const double*>(), param.getLen());
+                    retVal += validateDoubleArrayMeta(templateParam.getMeta(), param.getVal<const double*>(), param.getLen(), name);
                 }
                 break;
             case ito::ParamBase::String:
                 {
-                    retVal += validateStringMeta(dynamic_cast<const ito::StringMeta*>(templateParam.getMeta()), param.getVal<char*>(), mandatory); 
+                    retVal += validateStringMeta(dynamic_cast<const ito::StringMeta*>(templateParam.getMeta()), param.getVal<char*>(), mandatory, name); 
                 }
                 break;
             case ito::ParamBase::HWRef & ito::paramTypeMask:
                 {
-                    retVal += validateHWMeta(dynamic_cast<const ito::HWMeta*>(templateParam.getMeta()), (ito::AddInBase*)param.getVal<void*>(), mandatory);
+                    retVal += validateHWMeta(dynamic_cast<const ito::HWMeta*>(templateParam.getMeta()), (ito::AddInBase*)param.getVal<void*>(), mandatory, name);
                 }
                 break;
             }
@@ -1073,14 +1086,14 @@ namespace ito {
                     case ito::ParamBase::CharArray:
                         {
                             //for charArray there is only CharArrayMeta possible, this allows only checking single values
-                            retVal += validateCharMeta(dynamic_cast<const ito::CharMeta*>(tmplMeta), param.getVal<char>()); 
+                            retVal += validateCharMeta(dynamic_cast<const ito::CharMeta*>(tmplMeta), param.getVal<char>(), name); 
                         }
                         break;
                     case ito::ParamBase::IntArray:
                         {
                             if (tmplMeta->getType() == ito::ParamMeta::rttiIntArrayMeta)
                             {
-                                retVal += validateIntMeta(dynamic_cast<const ito::IntMeta*>(tmplMeta), param.getVal<int>()); 
+                                retVal += validateIntMeta(dynamic_cast<const ito::IntMeta*>(tmplMeta), param.getVal<int>(), name); 
                             }
                             else if (tmplMeta->getType() == ito::ParamMeta::rttiRangeMeta || tmplMeta->getType() == ito::ParamMeta::rttiRectMeta || tmplMeta->getType() == ito::ParamMeta::rttiIntervalMeta)
                             {
@@ -1088,7 +1101,7 @@ namespace ito {
                                 int vals[4];
                                 memcpy(vals, templateParam.getVal<int*>(), sizeof(int) * templateParam.getLen());
                                 vals[index] = param.getVal<int>();
-                                retVal += validateIntArrayMeta(tmplMeta, vals, templateParam.getLen());
+                                retVal += validateIntArrayMeta(tmplMeta, vals, templateParam.getLen(), name);
                             }
                             else
                             {
@@ -1108,7 +1121,7 @@ namespace ito {
                                 double vals[2];
                                 memcpy(vals, templateParam.getVal<int*>(), sizeof(double) * templateParam.getLen());
                                 vals[index] = param.getVal<double>();
-                                retVal += validateDoubleArrayMeta(tmplMeta, vals, templateParam.getLen());
+                                retVal += validateDoubleArrayMeta(tmplMeta, vals, templateParam.getLen(), name);
                             }
                             else
                             {
@@ -1152,6 +1165,7 @@ namespace ito {
         ito::RetVal retVal;
         bool hasIndex = false;
         int index;
+        const char *name = param.getName();
 
         //check whether param has an index
         QRegExp rx("^([a-zA-Z]+\\w*)(\\[(\\d+)\\])(:(.*)){0,1}$");
@@ -1167,42 +1181,42 @@ namespace ito {
             {
             case ito::ParamBase::Char:
                 {
-                    retVal += validateCharMeta(dynamic_cast<const ito::CharMeta*>(templateParam.getMeta()), param.getVal<char>()); 
+                    retVal += validateCharMeta(dynamic_cast<const ito::CharMeta*>(templateParam.getMeta()), param.getVal<char>(), name); 
                 }
                 break;
             case ito::ParamBase::Int:
                 {
-                    retVal += validateIntMeta(dynamic_cast<const ito::IntMeta*>(templateParam.getMeta()), param.getVal<int>()); 
+                    retVal += validateIntMeta(dynamic_cast<const ito::IntMeta*>(templateParam.getMeta()), param.getVal<int>(), name); 
                 }
                 break;
             case ito::ParamBase::Double:
                 {
-                    retVal += validateDoubleMetaAndRoundToStepSize(dynamic_cast<const ito::DoubleMeta*>(templateParam.getMeta()), param, roundToSteps); 
+                    retVal += validateDoubleMetaAndRoundToStepSize(dynamic_cast<const ito::DoubleMeta*>(templateParam.getMeta()), param, roundToSteps, name); 
                 }
                 break;
             case ito::ParamBase::CharArray:
                 {
-                    retVal += validateCharArrayMeta(templateParam.getMeta(), param.getVal<const char*>(), param.getLen());
+                    retVal += validateCharArrayMeta(templateParam.getMeta(), param.getVal<const char*>(), param.getLen(), name);
                 }
                 break;
             case ito::ParamBase::IntArray:
                 {
-                    retVal += validateIntArrayMeta(templateParam.getMeta(), param.getVal<const int*>(), param.getLen());
+                    retVal += validateIntArrayMeta(templateParam.getMeta(), param.getVal<const int*>(), param.getLen(), name);
                 }
                 break;
             case ito::ParamBase::DoubleArray:
                 {
-                    retVal += validateDoubleArrayMeta(templateParam.getMeta(), param.getVal<const double*>(), param.getLen());
+                    retVal += validateDoubleArrayMeta(templateParam.getMeta(), param.getVal<const double*>(), param.getLen(), name);
                 }
                 break;
             case ito::ParamBase::String:
                 {
-                    retVal += validateStringMeta(dynamic_cast<const ito::StringMeta*>(templateParam.getMeta()), param.getVal<char*>(), mandatory); 
+                    retVal += validateStringMeta(dynamic_cast<const ito::StringMeta*>(templateParam.getMeta()), param.getVal<char*>(), mandatory, name); 
                 }
                 break;
             case ito::ParamBase::HWRef & ito::paramTypeMask:
                 {
-                    retVal += validateHWMeta(dynamic_cast<const ito::HWMeta*>(templateParam.getMeta()), (ito::AddInBase*)param.getVal<void*>(), mandatory);
+                    retVal += validateHWMeta(dynamic_cast<const ito::HWMeta*>(templateParam.getMeta()), (ito::AddInBase*)param.getVal<void*>(), mandatory, name);
                 }
                 break;
             }
@@ -1223,14 +1237,14 @@ namespace ito {
                 case ito::ParamBase::CharArray:
                     {
                         //for charArray there is only CharArrayMeta possible, this allows only checking single values
-                        retVal += validateCharMeta(dynamic_cast<const ito::CharMeta*>(tmplMeta), param.getVal<char>()); 
+                        retVal += validateCharMeta(dynamic_cast<const ito::CharMeta*>(tmplMeta), param.getVal<char>(), name); 
                     }
                     break;
                 case ito::ParamBase::IntArray:
                     {
                         if (tmplMeta->getType() == ito::ParamMeta::rttiIntArrayMeta)
                         {
-                            retVal += validateIntMeta(dynamic_cast<const ito::IntMeta*>(tmplMeta), param.getVal<int>()); 
+                            retVal += validateIntMeta(dynamic_cast<const ito::IntMeta*>(tmplMeta), param.getVal<int>(), name); 
                         }
                         else
                         {
@@ -1238,7 +1252,7 @@ namespace ito {
                             int *values = templateParam.getVal<int*>();
                             int old = values[index];
                             values[index] = param.getVal<int>();
-                            retVal += validateIntArrayMeta(tmplMeta, values, templateParam.getLen());
+                            retVal += validateIntArrayMeta(tmplMeta, values, templateParam.getLen(), name);
                             values[index] = old;
                         }
                     }
@@ -1247,7 +1261,7 @@ namespace ito {
                     {
                         if (tmplMeta->getType() == ito::ParamMeta::rttiDoubleArrayMeta)
                         {
-                            retVal += validateDoubleMeta(dynamic_cast<const ito::DoubleMeta*>(tmplMeta), param.getVal<double>()); 
+                            retVal += validateDoubleMeta(dynamic_cast<const ito::DoubleMeta*>(tmplMeta), param.getVal<double>(), name); 
                         }
                         else
                         {
