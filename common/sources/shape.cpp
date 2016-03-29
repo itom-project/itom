@@ -342,7 +342,7 @@ QPolygonF Shape::contour(bool applyTrafo /*= false*/, qreal tol /*= -1.0*/) cons
         QRectF rect(d->m_polygon[0], d->m_polygon[1]);
         if (applyTrafo)
         {
-            return d->m_transform.mapToPolygon(rect.toRect());
+            return d->m_transform.map(QPolygonF(rect));
         }
         else
         {
