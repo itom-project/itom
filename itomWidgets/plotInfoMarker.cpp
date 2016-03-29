@@ -95,7 +95,7 @@ void PlotInfoMarker::updateMarker(const ito::Shape element)
 			{
 				curItem->addChild(new QTreeWidgetItem());
 				int curCnt = curItem->childCount() - 1; 
-				curItem->child(curCnt)->setData(0, Qt::DisplayRole, QString("Node%1").arg(QString::number(curCnt)));
+				curItem->child(curCnt)->setData(0, Qt::DisplayRole, tr("Marker %1").arg(QString::number(curCnt)));
 				curItem->child(curCnt)->setData(1, Qt::DisplayRole, QString("%1, %2").arg(QString::number(basePoint.x()), QString::number(basePoint.y())));
 			}
 			break;
@@ -182,7 +182,7 @@ void PlotInfoMarker::removeMarker(const QString setName)
 {
 	for (int idx = 0; idx < topLevelItemCount(); idx++)
 	{
-		if (topLevelItem(idx)->data(0, Qt::UserRole).toString() == setName)
+        if (topLevelItem(idx)->data(0, Qt::DisplayRole).toString() == setName)
 		{
 			delete topLevelItem(idx);
 			break;
