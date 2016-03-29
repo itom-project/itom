@@ -1142,7 +1142,8 @@ bool DoubleSpinBox::eventFilter(QObject* obj, QEvent* event)
     if (keyEvent->modifiers() & Qt::ControlModifier)
       {
       if (keyEvent->key() == Qt::Key_Plus
-        || keyEvent->key() == Qt::Key_Equal)
+        || keyEvent->key() == Qt::Key_Equal
+        || keyEvent->key() == Qt::Key_BracketRight) //bracketRight is a workaround, since Ctrl+ is sometimes not properly recognized: http://www.qtforum.org/article/36551/wrong-value-for-ctrl-plus-in-keypressevent.html
         {
         newDecimals = this->decimals() + 1;
         }
