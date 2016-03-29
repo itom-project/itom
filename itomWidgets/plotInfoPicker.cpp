@@ -250,17 +250,16 @@ void PlotInfoPicker::removePicker(int index)
 void PlotInfoPicker::removePickers()
 {
 	QTreeWidgetItem *pickerEntry = NULL;
-	for (int idx = topLevelItemCount(); idx > 0; idx--)
+	for (int idx = topLevelItemCount() - 1; idx >= 0; idx--)
 	{
 		if (!topLevelItem(idx))
 			continue;
 
 		QVariant test = topLevelItem(idx)->data(0, Qt::UserRole);
-		//test = topLevelItem(idx)->data(0, Qt::DisplayRole);
 
 		if (!(test.toInt() & 0xF000))
 		{
-			delete topLevelItem(idx - 1);
+			delete topLevelItem(idx);
 		}
 	}
 
