@@ -3422,10 +3422,30 @@ PyObject* PythonDataObject::PyDataObj_nbAbsolute(PyObject* o1)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyObject* PythonDataObject::PyDataObj_nbInvert(PyObject* /*o1*/)
+PyObject* PythonDataObject::PyDataObj_nbInvert(PyObject* o1)
 {
-    Py_INCREF(Py_NotImplemented);
-    return Py_NotImplemented;
+    if (!checkPyDataObject(1, o1))
+    {
+        return NULL;
+    }
+
+    PyDataObject *dobj1 = (PyDataObject*)(o1);
+
+    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+    try
+    {
+        retObj->dataObject = new ito::DataObject(dobj1->dataObject->bitwise_not());  //resDataObj should always be the owner of its data, therefore base of resultObject remains None
+    }
+    catch (cv::Exception &exc)
+    {
+        Py_DECREF(retObj);
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        return NULL;
+    }
+
+    retObj->dataObject->addToProtocol("Bitwise inversion.");
+    return (PyObject*)retObj;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
