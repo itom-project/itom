@@ -1080,9 +1080,45 @@ QSize DoubleSpinBox::sizeHint() const
 //----------------------------------------------------------------------------
 QSize DoubleSpinBox::minimumSizeHint() const
 {
-  // For some reasons, Superclass::minimumSizeHint() returns the spinbox
-  // sizeHint()
-  return this->spinBox()->minimumSizeHint();
+#if QT_VERSION <0x050500 && QT_VERSION >= 0x050000
+    /*this is a workaround for < Qt 5.5. From Qt 5.5 on, minimumSizeHint
+    of QAbstractSpinBox truncates the size of the minimum and maximum values
+    of the spin box to 18 characters. Therefore, a -Inf and +Inf as minimum
+    and maximum value will not dramastically increase the minimum size of the spin box.
+    For older versions, this workaround does a similar truncation.*/
+    QDoubleSpinBox *sb = this->spinBox();
+    QSize hint = sb->minimumSizeHint();
+
+    if (hint.width() > 150)
+    {
+        const QFontMetrics fm(sb->fontMetrics());
+        int w = 0;
+
+        QString s;
+        QString fixedContent = sb->prefix() + QLatin1Char(' ');
+        s = QString::number(sb->minimum(), 'f');
+        s.truncate(18);
+        s += fixedContent;
+        w = qMax(w, fm.width(s));
+        s = QString::number(sb->maximum(), 'f');
+        s.truncate(18);
+        s += fixedContent;
+        w = qMax(w, fm.width(s));
+
+        if (sb->specialValueText().size()) {
+            s = sb->specialValueText();
+            w = qMax(w, fm.width(s));
+        }
+        w += 2; // cursor blinking space
+
+        hint.setWidth(w);
+    }
+    return hint;
+#else
+    // For some reasons, Superclass::minimumSizeHint() returns the spinbox
+    // sizeHint()
+    return this->spinBox()->minimumSizeHint();
+#endif
 }
 
 //-----------------------------------------------------------------------------
