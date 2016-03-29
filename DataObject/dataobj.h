@@ -1043,6 +1043,7 @@ namespace ito {
         DataObject & operator |= (const DataObject & rhs);
         DataObject operator ^ (const DataObject & rhs);
         DataObject & operator ^= (const DataObject & rhs);
+        DataObject bitwise_not() const; /*!< All other types will raise an exception. Compute bit-wise and element-wise inversion. For signed integer inputs, the two's complement is returned. For floating-point objects, its machine-specific bit representation is used for the operation*/
         
         // allocates matrix with zero values
         RetVal zeros(const int type);

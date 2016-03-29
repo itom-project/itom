@@ -5578,6 +5578,23 @@ DataObject DataObject::operator ^ (const DataObject & rhs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+DataObject DataObject::bitwise_not() const
+{
+    DataObject result;
+    copyTo(result, 1);
+
+    int numMats = result.getNumPlanes();
+    cv::Mat *plane;
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
+        plane = result.get_mdata()[result.seekMat(nmat, numMats)];
+        cv::bitwise_not(*plane, *plane);
+    }
+
+    return result;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! addressing method for two-dimensional data object with two given range-values. returns shallow copy of addressed regions.
 /*!
     \param rowRange is the desired rowRange which should be in the new ROI (considers any existing ROI, too)
