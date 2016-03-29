@@ -9,6 +9,7 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg
 from .backend_itom import FigureManagerItom, FigureCanvasItom,\
      NavigationToolbar2Itom
 from matplotlib.backend_bases import ShowBase
+from matplotlib._pylab_helpers import Gcf
      
 from itom import uiItem
 from itom import figure as itomFigure
