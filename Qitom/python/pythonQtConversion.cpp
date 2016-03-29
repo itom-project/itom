@@ -3205,6 +3205,10 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             }
             return temp;
         }
+        else if (strcmp(name, "ito::Shape") == 0)
+        {
+            return ito::PythonShape::createPyShape(*((ito::Shape*)data));
+        }
     }
     else
     {
