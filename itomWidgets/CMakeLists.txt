@@ -77,6 +77,7 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/itomWidgetsFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/rangeSliderFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/collapsibleGroupBoxFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/colorPickerButtonFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleRangeSliderFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleSpinBoxFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleSliderFactory.h
@@ -98,6 +99,8 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSpinBox_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/basePopupWidget_p.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/colorPickerButton.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ColorDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/checkableComboBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/comboBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/searchBox.h
@@ -164,6 +167,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/itomWidgetsFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/rangeSliderFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/collapsibleGroupBoxFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/colorPickerButtonFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleRangeSliderFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleSpinBoxFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleSliderFactory.cpp
@@ -184,6 +188,8 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/checkableModelHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/completer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rangeSlider.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/colorPickerButton.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ColorDialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/collapsibleGroupBox.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleRangeSlider.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSlider.cpp

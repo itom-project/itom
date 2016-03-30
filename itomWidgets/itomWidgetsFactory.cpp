@@ -26,6 +26,7 @@
 
 #include "factories/rangeSliderFactory.h"
 #include "factories/collapsibleGroupBoxFactory.h"
+#include "factories/colorPickerButtonFactory.h"
 #include "factories/doubleRangeSliderFactory.h"
 #include "factories/doubleSliderFactory.h"
 #include "factories/doubleSpinBoxFactory.h"
@@ -49,6 +50,7 @@ ItomWidgetsFactory::ItomWidgetsFactory(QObject *parent)
     : QObject(parent)
 {
     widgets.append(new CollapsibleGroupBoxFactory(this));
+    widgets.append(new ColorPickerButtonFactory(this));
     widgets.append(new DoubleRangeSliderFactory(this));
     widgets.append(new DoubleSliderFactory(this));
     widgets.append(new DoubleSpinBoxFactory(this));
