@@ -212,7 +212,7 @@ namespace ito
                 return -1;
             }
 
-//            inline void updateModel(void) { m_addInModel.update(); }
+
             inline void updateModel(void) { m_plugInModel.update(); }
             const RetVal saveParamVals(ito::AddInBase *plugin);
             const RetVal loadParamVals(ito::AddInBase *plugin);
@@ -257,7 +257,6 @@ namespace ito
 
             AlgoInterfaceValidator *m_algoInterfaceValidator;
 
-            //AddInModel m_addInModel;
             PlugInModel m_plugInModel;
 
             QList< QPointer<ito::AddInBase> > m_deadPlugins;
