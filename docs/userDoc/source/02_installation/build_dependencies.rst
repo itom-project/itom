@@ -146,7 +146,7 @@ Visual Studio, where you cannot install this add-in. The **Qt Visual Studio AddI
         
         gacutil.exe -i "C:\Program Files (x86)\Common Files\microsoft shared\MSEnv\PublicAssemblies\stdole.dll"
         
-** note::
+.. note::
     
     **Visual Studio Express**
     
