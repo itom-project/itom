@@ -114,7 +114,7 @@ Its source code is:
 Please consider that the original source code has been changed such that the first two lines are prepended. After executing this script, the following figure is displayed in |itom|:
 
 .. figure:: images/matplotlib_ellipseCollection.png
-    :scale: 80%
+    :scale: 100%
     :align: center
 
 .. note::
@@ -127,7 +127,7 @@ Embedding a matplotlib figure in your own user interface
 ==========================================================================================
 
 .. figure:: images/matplotlib_gui.png
-    :scale: 80%
+    :scale: 100%
     :align: center
 
 |itom| not only provides stand-alone windows for showing the result of the *matplotlib*, but it is also possible to integrate a *matplotlib* canvas into own user interfaces created by the
@@ -201,7 +201,7 @@ When any of the both buttons are pressed, the following example should be displa
 The result is:
 
 .. figure:: images/matplotlib_gui_result.png
-    :scale: 80%
+    :scale: 100%
     :align: center
 
 **What happens here?**
@@ -279,3 +279,34 @@ matplotlib figure handle. If the figure handle can be obtained by the current fi
     #plt.get_current_fig_manager().itomUI["keepSizeFixed"]
 
 As an example see the script **hist2d_size_control.py** in the **demo/matplotlib** folder.
+
+Creating an animation via Matplotlib
+=====================================
+
+Matplotlib can be used to create animation and save it as a *mp4* file. The **ffmpeg codec** is required for this feature and needs to be installed on your computer. A detailed description for the installation of the ffmpeg codec can be found `here <http://www.adaptivesamples.com/how-to-install-ffmpeg-on-windows>`_. The build version of the ffmpeg codec can be downloaded `here 
+<http://www.ffmpeg.zeranoe.com/builds>`_. Download and unzip the builds files to your harddrive. 
+
+Typically the folder is like:: 
+
+    C:\Program files\ffmpeg
+
+The bin folder of ffmpeg must be added to the path variables of your system:: 
+
+    C:\Program files\ffmpeg\bin 
+
+Finally start the command prompt and run the command::
+
+    C:\Proram files\ffmpeg\bin\ffmpeg.exe -codecs
+
+or easier:: 
+
+    ffmpeg -codecs
+    
+============================================== ==============================================
+.. figure:: ./images/matplotlibAnimation1d.gif .. figure:: ./images/matplotlibAnimation2d.gif
+
+                1d animation                                   2d animation                  
+============================================== ==============================================
+    
+In the **demo/matplotlib** folder are two demo scripts (**matplotlibAnimation1d.py, matplotlibAnimation2d.py**), which show how to create animations. 
+
