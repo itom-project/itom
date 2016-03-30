@@ -609,6 +609,12 @@ DoubleSpinBox::DoubleSpinBox(DoubleSpinBox::SetMode mode, QWidget* newParent)
   this->setSetMode(mode);
 }
 
+//TODO: uncomment this if the addinInterface is increment for the next time. (30.03.2016, M. Gronle)
+////-----------------------------------------------------------------------------
+//DoubleSpinBox::~DoubleSpinBox()
+//{
+//}
+
 //-----------------------------------------------------------------------------
 double DoubleSpinBox::value() const
 {

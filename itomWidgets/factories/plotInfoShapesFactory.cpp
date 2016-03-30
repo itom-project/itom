@@ -49,7 +49,7 @@ QString PlotInfoShapesFactory::domXml() const
 // --------------------------------------------------------------------------
 QIcon PlotInfoShapesFactory::icon() const
 {
-  return QIcon(":/icons/sliderspinbox.png");
+  return QIcon(":/icons/widget.png");
 }
 
 // --------------------------------------------------------------------------

@@ -355,6 +355,13 @@ Qt::CheckState CheckableComboBox::checkState(const QModelIndex& index)const
 }
 
 //-----------------------------------------------------------------------------
+CheckableModelHelper* CheckableComboBox::checkableModelHelper()const
+{
+    Q_D(const CheckableComboBox);
+    return d->CheckableModelHelper_;
+}
+
+//-----------------------------------------------------------------------------
 void CheckableComboBox::onDataChanged(const QModelIndex& start, const QModelIndex& end)
 {
   Q_D(CheckableComboBox);

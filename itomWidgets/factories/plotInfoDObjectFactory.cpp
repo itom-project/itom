@@ -49,7 +49,7 @@ QString PlotInfoDObjectFactory::domXml() const
 // --------------------------------------------------------------------------
 QIcon PlotInfoDObjectFactory::icon() const
 {
-  return QIcon(":/icons/sliderspinbox.png");
+  return QIcon(":/icons/widget.png");
 }
 
 // --------------------------------------------------------------------------

@@ -173,6 +173,11 @@ public:
   DoubleSpinBox(QWidget* parent = 0);
   DoubleSpinBox(DoubleSpinBox::SetMode mode, QWidget* parent = 0);
 
+  //TODO: uncomment this if the addinInterface is increment for the next time and remove the two constructors above. (30.03.2016, M. Gronle)
+  /*explicit DoubleSpinBox(QWidget* parent = 0);
+  explicit DoubleSpinBox(DoubleSpinBox::SetMode mode, QWidget* parent = 0);
+  virtual ~DoubleSpinBox();*/
+
   /// Get the spinbox current value
   /// \sa setValue(), cleanText()
   double value() const;
