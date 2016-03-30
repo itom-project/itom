@@ -1090,8 +1090,8 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
         }
         else if (val == Py_None)
         {
-            // none is invalid
-            type = QVariant::Invalid;
+            // none is PythonNone
+            type = QMetaType::type("ito::PythonNone");
         }
         else if (Py_TYPE(val) == &ito::PythonRegion::PyRegionType)
         {
@@ -1608,6 +1608,11 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
                 v = QVariant();
             }
         }
+        else if (type == QMetaType::type("ito::PythonNone"))
+        {
+            ito::PythonNone none;
+            v = qVariantFromValue<ito::PythonNone>(none);
+        }
         else
         {
             v = QVariant();
@@ -1864,6 +1869,51 @@ QVariant PythonQtConversion::PyObjToQVariant(PyObject* val, int type)
             result = QColor((value & 0xff0000) >> 16, (value & 0x00ff00) >> 8, value & 0x0000ff);
             ok = true;
         }
+    }
+    else if (item.userType() == QMetaType::type("ito::Shape"))
+    {
+        if (userDestType == QMetaType::type("QVector<ito::Shape>"))
+        {
+            QVector<ito::Shape> shapes;
+            shapes << qvariant_cast<ito::Shape>(item);
+            ok = true;
+            result = QVariant::fromValue<QVector<ito::Shape> >(shapes);
+        }
+    }
+    else if (item.userType() == QMetaType::type("ito::PythonNone"))
+    {
+        if (userDestType == QMetaType::type("QSharedPointer<ito::DataObject>"))
+        {
+            ok = true;
+            result = QVariant::fromValue<QSharedPointer<ito::DataObject> >(QSharedPointer<ito::DataObject>(new ito::DataObject()) );
+        }
+        else if (userDestType == QMetaType::type("QPointer<ito::AddInDataIO>"))
+        {
+            ok = true;
+            result = QVariant::fromValue<QPointer<ito::AddInDataIO> >(QPointer<ito::AddInDataIO>() );
+        }
+        else if (userDestType == QMetaType::type("QPointer<ito::AddInActuator>"))
+        {
+            ok = true;
+            result = QVariant::fromValue<QPointer<ito::AddInActuator> >(QPointer<ito::AddInActuator>());
+        }
+        else if (userDestType == QMetaType::type("QVector<ito::Shape>"))
+        {
+            ok = true;
+            result = QVariant::fromValue<QVector<ito::Shape> >(QVector<ito::Shape>());
+        }
+#if ITOM_POINTCLOUDLIBRARY > 0   
+        else if (userDestType == QMetaType::type("QSharedPointer<ito::PCLPointCloud>"))
+        {
+            ok = true;
+            result = QVariant::fromValue<QSharedPointer<ito::PCLPointCloud> >(QSharedPointer<ito::PCLPointCloud>(new ito::PCLPointCloud()));
+        }
+        else if (userDestType == QMetaType::type("QSharedPointer<ito::PCLPolygonMesh>"))
+        {
+            ok = true;
+            result = QVariant::fromValue<QSharedPointer<ito::PCLPolygonMesh> >(QSharedPointer<ito::PCLPolygonMesh>(new ito::PCLPolygonMesh()));
+        }
+#endif //#if ITOM_POINTCLOUDLIBRARY > 0
     }
     
 

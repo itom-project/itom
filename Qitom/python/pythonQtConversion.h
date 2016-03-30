@@ -28,6 +28,7 @@
 #include "pythonRegion.h"
 #include "pythonPCL.h"
 #include "pythonAutoInterval.h"
+#include "pythonNone.h"
 #include "datetime.h"
 
 #include "../global.h"
@@ -44,6 +45,7 @@
 #if ITOM_POINTCLOUDLIBRARY > 0
 Q_DECLARE_METATYPE(ito::PCLPointCloud)
 Q_DECLARE_METATYPE(QSharedPointer<ito::PCLPointCloud>)
+Q_DECLARE_METATYPE(QSharedPointer<ito::PCLPolygonMesh>)
 Q_DECLARE_METATYPE(ito::PCLPoint)
 Q_DECLARE_METATYPE(ito::PCLPolygonMesh)
 #endif
@@ -56,6 +58,7 @@ Q_DECLARE_METATYPE(QVector<ito::Shape>)
 
 
 Q_DECLARE_METATYPE(ito::ItomPlotHandle)
+Q_DECLARE_METATYPE(ito::PythonNone)
 
 namespace ito
 {

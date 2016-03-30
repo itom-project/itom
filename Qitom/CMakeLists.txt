@@ -171,6 +171,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItomMetaObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonMatlab.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNpDataObject.h
+	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNone.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNumeric.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlugins.h

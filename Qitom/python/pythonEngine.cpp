@@ -242,6 +242,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<ito::Shape>("ito::Shape");
     qRegisterMetaType<QVector<ito::Shape> >("QVector<ito::Shape>");
     qRegisterMetaType<QSharedPointer<QVector<ito::Shape> > >("QSharedPointer<QVector<ito::Shape>>");
+    qRegisterMetaType<ito::PythonNone>("ito::PythonNone");
 
     m_autoReload.modAutoReload = NULL;
     m_autoReload.classAutoReload = NULL;
