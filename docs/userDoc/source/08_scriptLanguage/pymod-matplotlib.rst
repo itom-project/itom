@@ -284,7 +284,7 @@ Creating an animation via Matplotlib
 =====================================
 
 Matplotlib can be used to create animation and save it as a *mp4* file. The **ffmpeg codec** is required for this feature and needs to be installed on your computer. A detailed description for the installation of the ffmpeg codec can be found `here <http://www.adaptivesamples.com/how-to-install-ffmpeg-on-windows>`_. The build version of the ffmpeg codec can be downloaded `here 
-<http://www.ffmpeg.zeranoe.com/builds>`_. Download and unzip the builds files to your harddrive. 
+<http://www.ffmpeg.zeranoe.com/builds>`_. Download and unzip the build files to your harddrive. 
 
 Typically the folder is like:: 
 
