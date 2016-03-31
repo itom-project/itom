@@ -50,7 +50,7 @@ FFMpegWriter = manimation.writers['ffmpeg']
 (value, accepted) = ui.getText("Animation title", "please type the name of the animation file", "animation")
 comment = ""            # this comment will be added the mp4 file comments 
 fps = 10                       # by variation of the fps parameter the speed of animation can be changed
-dpi_plot = 50           # dpi of the plot
+dpi_plot = 120           # dpi of the plot
 inches = 6                  # size of image
 dpi_movie = 100        # dpi of the movie
 numberImages = 100  # number of the images, which are created for the animation
@@ -61,20 +61,19 @@ x = np.linspace(0, 2, 1000)
 
 
 if accepted:
-    
-    metadata = dict(title=value, artist='Matplotlib', comment = comment)
-    writer = FFMpegWriter(fps = fps, metadata=metadata, bitrate = -1, codec = 'mpeg4')
-    writer.setup(fig, outputfile, dpi = dpi_movie)
-    
     fig = plt.figure()
     fig.set_dpi(dpi_plot)
     fig.set_size_inches(inches,inches,forward=True)
     ax = plt.axes(xlim=(0,2), ylim=(-2,2))
     line, = plt.plot([],[], lw = 2)
     
+    metadata = dict(title=value, artist='Matplotlib', comment = comment)
+    writer = FFMpegWriter(fps = fps, metadata=metadata, bitrate = -1, codec = 'mpeg4')
+    writer.setup(fig, outputfile, dpi = dpi_movie)
+    
     with writer.saving(fig, outputfile, dpi_movie):
         for cnt in range(0,numberImages):
-            y = np.sin(2 * np.pi * (x - 0.01 * cnt))
+            y = np.sin(2 * np.pi * (x - 0.02 * cnt))
             line.set_data(x, y)
             writer.grab_frame()
     
