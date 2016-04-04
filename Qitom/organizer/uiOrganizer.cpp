@@ -34,6 +34,7 @@
 #include "plot/AbstractDObjPCLFigure.h"
 #include "plot/AbstractItomDesignerPlugin.h"
 #include "designerWidgetOrganizer.h"
+#include "../helper/qpropertyHelper.h"
 
 #include "widgetWrapper.h"
 #include "userInteractionWatcher.h"
@@ -1624,11 +1625,11 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, const QVariantMap &pr
                     
                     if (prop.isEnumType())
                     {
-                        item = PythonQtConversion::QVariantToEnumCast(i.value(), prop.enumerator(), tempRet);
+                        item = QPropertyHelper::QVariantToEnumCast(i.value(), prop.enumerator(), tempRet);
                     }
                     else
                     {
-                        item = PythonQtConversion::QVariantCast(i.value(), prop.userType(), tempRet);
+                        item = QPropertyHelper::QVariantCast(i.value(), prop.userType(), tempRet);
                     }
 
                     if (tempRet.containsError())
@@ -1653,11 +1654,11 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, const QVariantMap &pr
 
                 if (prop.isEnumType())
                 {
-                    item = PythonQtConversion::QVariantToEnumCast(i.value(), prop.enumerator(), tempRet);
+                    item = QPropertyHelper::QVariantToEnumCast(i.value(), prop.enumerator(), tempRet);
                 }
                 else
                 {
-                    item = PythonQtConversion::QVariantCast(i.value(), prop.userType(), tempRet);
+                    item = QPropertyHelper::QVariantCast(i.value(), prop.userType(), tempRet);
                 }
 
                 if (tempRet.containsError())

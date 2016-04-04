@@ -434,6 +434,28 @@ namespace ito
     #define apiSendParamsToPyWorkspace \
         (* (ito::RetVal (*)(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values)) ito::ITOM_API_FUNCS[30])
 
+    //! read a property from an QObject based instance.
+    /*!
+        \param object is the object
+        \propName is the name of the property
+        \value is a reference to the obtained value
+
+        \return ito::retOk if property could be found and read, else ito::retError
+    */
+    #define apiQObjectPropertyRead \
+        (* (ito::RetVal (*)(const QObject *object, const char* propName, QVariant &value)) ito::ITOM_API_FUNCS[32])
+
+    //! write a property to an QObject based instance.
+    /*!
+    \param object is the object
+    \propName is the name of the property
+    \value is the value to set
+
+    \return ito::retOk if property could be found and written, else ito::retError
+    */
+    #define apiQObjectPropertyWrite \
+        (* (ito::RetVal (*)(QObject *object, const char* propName, const QVariant &value)) ito::ITOM_API_FUNCS[33])
+
     /** \} */
 
 

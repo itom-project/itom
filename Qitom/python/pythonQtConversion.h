@@ -42,19 +42,21 @@
 #include <qbytearray.h>
 #include <qpointer.h>
 
-#if ITOM_POINTCLOUDLIBRARY > 0
-Q_DECLARE_METATYPE(ito::PCLPointCloud)
-Q_DECLARE_METATYPE(QSharedPointer<ito::PCLPointCloud>)
-Q_DECLARE_METATYPE(QSharedPointer<ito::PCLPolygonMesh>)
-Q_DECLARE_METATYPE(ito::PCLPoint)
-Q_DECLARE_METATYPE(ito::PCLPolygonMesh)
-#endif
+#include "../helper/qpropertyHelper.h"
 
-Q_DECLARE_METATYPE(QSharedPointer<ito::DataObject>)
-Q_DECLARE_METATYPE(QPointer<ito::AddInDataIO>)
-Q_DECLARE_METATYPE(QPointer<ito::AddInActuator>)
-Q_DECLARE_METATYPE(ito::Shape)
-Q_DECLARE_METATYPE(QVector<ito::Shape>)
+//#if ITOM_POINTCLOUDLIBRARY > 0
+//Q_DECLARE_METATYPE(ito::PCLPointCloud)
+//Q_DECLARE_METATYPE(QSharedPointer<ito::PCLPointCloud>)
+//Q_DECLARE_METATYPE(QSharedPointer<ito::PCLPolygonMesh>)
+//Q_DECLARE_METATYPE(ito::PCLPoint)
+//Q_DECLARE_METATYPE(ito::PCLPolygonMesh)
+//#endif
+//
+//Q_DECLARE_METATYPE(QSharedPointer<ito::DataObject>)
+//Q_DECLARE_METATYPE(QPointer<ito::AddInDataIO>)
+//Q_DECLARE_METATYPE(QPointer<ito::AddInActuator>)
+//Q_DECLARE_METATYPE(ito::Shape)
+//Q_DECLARE_METATYPE(QVector<ito::Shape>)
 
 
 Q_DECLARE_METATYPE(ito::ItomPlotHandle)
@@ -137,10 +139,6 @@ public:
     //! convert python object to qvariant, if type is given it will try to create a qvariant of that type, otherwise
     //! it will guess from the python type
     static QVariant PyObjToQVariant(PyObject* val, int type = -1);
-
-    static QVariant QVariantCast(const QVariant &item, int QVariantCast, ito::RetVal &retval);
-
-    static QVariant QVariantToEnumCast(const QVariant &item, const QMetaEnum &enumerator, ito::RetVal &retval);
 
     //! convert python object to char* using QMetaType. if type is given it will try to create a char* of that type, otherwise
     //! it will guess from the python type. If fails, NULL is returned

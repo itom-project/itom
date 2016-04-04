@@ -1,5 +1,5 @@
 SET (target_name qitom)
-        
+         
 project(${target_name})
   
 cmake_minimum_required(VERSION 2.8.9)
@@ -144,8 +144,9 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/sharedPointerHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/sleeper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/qpropertyHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.h
-	${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.h
@@ -162,7 +163,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/widgetWrapper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userInteractionWatcher.h
-	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAutoInterval.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAutoInterval.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonCommon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonDataObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonEngine.h
@@ -171,7 +172,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItomMetaObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonMatlab.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNpDataObject.h
-	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNone.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNone.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNumeric.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlugins.h
@@ -327,9 +328,10 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/fileDownloader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/paramHelper.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.cpp    
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/helper/qpropertyHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.cpp
@@ -346,7 +348,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userInteractionWatcher.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/widgetWrapper.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAutoInterval.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAutoInterval.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonCommon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonDataObject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonEngine.cpp

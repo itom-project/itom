@@ -29,6 +29,7 @@
 #include "common/sharedFunctionsQt.h"
 #include "common/abstractAddInConfigDialog.h"
 #include "../Qitom/organizer/uiOrganizer.h"
+#include "../helper/qpropertyHelper.h"
 
 static ito::ApiFunctions singleApiFunctions; //singleton instance, forces the construction where the ITOM_API_FUNCS_ARR pointer is propagated to ITOM_API_FUNCS
 
@@ -69,6 +70,8 @@ namespace ito
         (void*)&ApiFunctions::sendParamToPyWorkspaceThreadSafe,      /* [29] */
         (void*)&ApiFunctions::sendParamsToPyWorkspaceThreadSafe,     /* [30] */
         (void*)&ApiFunctions::maddInClose,                /* [31] */
+        (void*)&QPropertyHelper::readProperty,            /* [32] */
+        (void*)&QPropertyHelper::writeProperty,           /* [33] */
         NULL
     };
 
