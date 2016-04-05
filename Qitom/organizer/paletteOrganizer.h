@@ -54,10 +54,10 @@ class ItomPaletteBase
             m_type = scr.m_type;
             m_colorStops.clear();
             m_colorStops = scr.m_colorStops;
-            m_paletteStucture = scr.m_paletteStucture;
+            m_paletteData = scr.m_paletteData;
         }
 
-        ~ItomPaletteBase() {m_colorStops.clear(); m_paletteStucture.colorStops.clear(); m_paletteStucture.colorVector256.clear();};
+        ~ItomPaletteBase() {m_colorStops.clear(); m_paletteData.colorStops.clear(); m_paletteData.colorVector256.clear();};
 /*
         enum tPalette{
             NoType      = 0x00,
@@ -77,10 +77,10 @@ class ItomPaletteBase
         double getPosLast() const {return m_colorStops[m_colorStops.size()-1].first;};
         double getPos(unsigned int color) const;
 
-        bool   setInversColorOne(const QColor color);
-        QColor getInversColorOne() const {return m_inverseColorOne;};
+        bool   setInverseColorOne(const QColor color);
+        QColor getInverseColorOne() const {return m_inverseColorOne;};
         bool   setInversColorTwo(const QColor color);
-        QColor getInversColorTwo() const {return m_inverseColorTwo;};
+        QColor getInverseColorTwo() const {return m_inverseColorTwo;};
         
         bool setInvalidColor(const QColor color);
         QColor getInvalidColor() const;
@@ -106,7 +106,7 @@ class ItomPaletteBase
         QString m_name;
         char m_type; 
         
-        ItomPalette m_paletteStucture;
+        ItomPalette m_paletteData;
 
         QColor m_inverseColorTwo;
         QColor m_inverseColorOne;
