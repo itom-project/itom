@@ -52,6 +52,7 @@ namespace ito
 
 	class ITOMSHAPE_EXPORT Shape
     {
+
     public:
 
         /** \enum ShapeType
@@ -59,19 +60,29 @@ namespace ito
         enum ShapeType
         {
             Invalid = 0,
-            MultiPointPick = 6,            /**! Multi point pick*/
-            Point = 101,          /**! Element is tPoint or order to pick points*/
-            Line = 102,          /**! Element is tLine or order to pick lines*/
-            Rectangle = 103,          /**! Element is tRectangle or order to pick rectangles*/
-            Square = 104,          /**! Element is tSquare or order to pick squares*/
-            Ellipse = 105,          /**! Element is tEllipse or order to pick ellipses*/
-            Circle = 106,          /**! Element is tCircle or order to pick circles*/
-            Polygon = 110,          /**! Element is tPolygon or order to pick polygon*/
-            MoveLock = 0x00010000,   /**! Element can not be moved */
-            RotateLock = 0x00020000,   /**! Element can not be rotated */
-            ResizeLock = 0x00040000,   /**! Element can not be resized */
-            TypeMask = 0x0000FFFF,   /**! Mask for the type space */
-            FlagMask = 0xFFFF0000    /**! Mask for the flag space */
+            MultiPointPick = 0x00000001,    /**! Multi point pick*/
+            Point = 0x00000002,             /**! Element is point in order to pick points*/
+            Line = 0x00000004,              /**! Element is line in order to pick lines*/
+            Rectangle = 0x00000008,         /**! Element is rectangle in order to pick rectangles*/
+            Square = 0x00000010,            /**! Element is square in order to pick squares*/
+            Ellipse = 0x00000020,           /**! Element is ellipse in order to pick ellipses*/
+            Circle = 0x00000040,            /**! Element is circle in order to pick circles*/
+            Polygon = 0x00000080,           /**! Element is polygon in order to pick polygon*/  
+
+            //REMARK: If this enumeration is changed, please identically change ItomQwtPlotEnums::ShapeType in the designer plugins!
+        };
+
+        enum ShapeFlag
+        {
+            MoveLock = 0x0001000,   /**! Element can not be moved */
+            RotateLock = 0x0002000, /**! Element can not be rotated */
+            ResizeLock = 0x00040000,/**! Element can not be resized */
+        };
+
+        enum ShapeMask
+        {
+            TypeMask = 0x0000FFFF,          /**! Mask for the type space */
+            FlagMask = 0xFFFF0000   /**! Mask for the flag space */
         };
 
         explicit Shape();
@@ -154,9 +165,8 @@ namespace ito
 		static double distanceLine2Line2D(const Shape &line1, const Shape &line2);
 		static double distancePoint2Point2D(const QPointF &point1, const QPointF &point2);
     };
-
-
 }
+
 
 #endif //#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC)
 
