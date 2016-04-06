@@ -24,6 +24,7 @@
 
 #include "../global.h"
 #include "pythonQtConversion.h"
+#include <qfontdatabase.h>
 
 
 
@@ -429,6 +430,44 @@ int PythonFont::PyFont_setUnderline(PyFont *self, PyObject *value, void * /*clos
 }
 
 //-----------------------------------------------------------------------------
+PyDoc_STRVAR(pyFont_isFamilyInstalled_DOC, "isFamilyInstalled(family) -> checks if the given font family is installed on this computer. \n\
+\n\
+Parameters \n\
+----------- \n\
+family : {str} \n\
+    The name of the font family that should be checked \n\
+\n\
+Return \n\
+--------- \n\
+True if family is installed, else False.");
+PyObject* PythonFont::PyFont_isFamilyInstalled(PyFont * /*self*/, PyObject *args, PyObject *kwds)
+{
+    const char *kwlist[] = { "family", NULL };
+    const char *family = NULL;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s", const_cast<char**>(kwlist), &(family)))
+    {
+        return NULL;
+    }
+
+    if (QFontDatabase().families().contains(family, Qt::CaseInsensitive))
+    {
+        Py_RETURN_TRUE;
+    }
+    else
+    {
+        Py_RETURN_FALSE;
+    }
+}
+
+//-----------------------------------------------------------------------------
+PyDoc_STRVAR(pyFont_installedFontFamilies_DOC, "installedFontFamilies() -> return a list of all installed font families.");
+PyObject* PythonFont::PyFont_installedFontFamilies(PyFont * /*self*/)
+{
+    return PythonQtConversion::QStringListToPyList(QFontDatabase().families());
+}
+
+//-----------------------------------------------------------------------------
 PyGetSetDef PythonFont::PyFont_getseters[] = {
     {"family", (getter)PyFont_getFamily,       (setter)PyFont_setFamily, font_getFamily_doc, NULL},
     {"pointSize", (getter)PyFont_getPointSize, (setter)PyFont_setPointSize, font_getPointSize_doc, NULL},
@@ -443,6 +482,8 @@ PyGetSetDef PythonFont::PyFont_getseters[] = {
 PyMethodDef PythonFont::PyFont_methods[] = {
     {"__reduce__", (PyCFunction)PyFont_Reduce, METH_VARARGS,      "__reduce__ method for handle pickling commands"},
     {"__setstate__", (PyCFunction)PyFont_SetState, METH_VARARGS,  "__setstate__ method for handle unpickling commands"},
+    { "isFamilyInstalled", (PyCFunction)PyFont_isFamilyInstalled, METH_VARARGS | METH_KEYWORDS | METH_STATIC, pyFont_isFamilyInstalled_DOC },
+    { "installedFontFamilies", (PyCFunction)PyFont_installedFontFamilies, METH_NOARGS | METH_STATIC, pyFont_installedFontFamilies_DOC },
     {NULL}  /* Sentinel */
 };
 

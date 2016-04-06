@@ -98,6 +98,12 @@ public:
     static int PyFont_setStrikeOut(PyFont *self, PyObject *value, void *closure);
 
     //-------------------------------------------------------------------------------------------------
+    // static
+    //-------------------------------------------------------------------------------------------------
+    static PyObject* PyFont_isFamilyInstalled(PyFont *self, PyObject *args, PyObject *kwds);
+    static PyObject* PyFont_installedFontFamilies(PyFont * self);
+
+    //-------------------------------------------------------------------------------------------------
     // type structures
     //------------------------------------------------------------------------------------------------- 
     //static PyMemberDef PyFont_members[];
