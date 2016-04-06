@@ -89,9 +89,6 @@ namespace ito
         int flags() const;
         void setFlags(const int &flags);
 
-        ShapeType type() const;
-        void setType(const ShapeType &type);
-
         int index() const;
         void setIndex(const int &index);
 
@@ -99,6 +96,7 @@ namespace ito
         void setName(const QString &name);
 
         int type() const;
+        void setType(const int &type);
 
         QTransform transform() const;
         QTransform &rtransform() const;

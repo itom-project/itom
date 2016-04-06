@@ -190,13 +190,13 @@ void Shape::setFlags(const int &flags)
 }
 
 //----------------------------------------------------------------------------------------------
-Shape::ShapeType Shape::type() const
+int Shape::type() const
 {
-    return (ShapeType)(d->m_type & Shape::TypeMask);
+    return d->m_type & Shape::TypeMask;
 }
 
 //----------------------------------------------------------------------------------------------
-void Shape::setType(const Shape::ShapeType &type)
+void Shape::setType(const int &type)
 {
     d->m_type = (d->m_type & Shape::FlagMask) | (type & Shape::TypeMask);
 }
@@ -223,12 +223,6 @@ QString Shape::name() const
 void Shape::setName(const QString &name)
 {
     d->m_name = name;
-}
-
-//----------------------------------------------------------------------------------------------
-int Shape::type() const
-{
-    return d->m_type & Shape::TypeMask;
 }
 
 //----------------------------------------------------------------------------------------------
