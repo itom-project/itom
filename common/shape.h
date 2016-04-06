@@ -89,6 +89,9 @@ namespace ito
         int flags() const;
         void setFlags(const int &flags);
 
+        ShapeType type() const;
+        void setType(const ShapeType &type);
+
         int index() const;
         void setIndex(const int &index);
 

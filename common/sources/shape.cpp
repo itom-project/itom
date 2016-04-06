@@ -190,6 +190,18 @@ void Shape::setFlags(const int &flags)
 }
 
 //----------------------------------------------------------------------------------------------
+Shape::ShapeType Shape::type() const
+{
+    return (ShapeType)(d->m_type & Shape::TypeMask);
+}
+
+//----------------------------------------------------------------------------------------------
+void Shape::setType(const Shape::ShapeType &type)
+{
+    d->m_type = (d->m_type & Shape::FlagMask) | (type & Shape::TypeMask);
+}
+
+//----------------------------------------------------------------------------------------------
 int Shape::index() const
 {
     return d->m_index;
