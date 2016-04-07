@@ -73,6 +73,7 @@ public:
     QTransform m_transform;
     int m_index; /*!< index of shape, -1: no specific index*/
     QString m_name; /*!< name (label) of shape */
+    ito::float64 m_userData[2]; /*!< two user defined value for further meta information */
 };
 
 //----------------------------------------------------------------------------------------------
@@ -253,6 +254,31 @@ double Shape::rotationAngleDeg() const
 double Shape::rotationAngleRad() const
 {
     return std::atan2(d->m_transform.m21(), d->m_transform.m11());
+}
+
+
+//----------------------------------------------------------------------------------------------
+ito::float64 Shape::userData1() const
+{
+    return d->m_userData[0];
+}
+
+//----------------------------------------------------------------------------------------------
+void Shape::setUserData1(const ito::float64 &userData1)
+{
+    d->m_userData[0] = userData1;
+}
+
+//----------------------------------------------------------------------------------------------
+ito::float64 Shape::userData2() const
+{
+    return d->m_userData[1];
+}
+
+//----------------------------------------------------------------------------------------------
+void Shape::setUserData2(const ito::float64 &userData2)
+{
+    d->m_userData[1] = userData2;
 }
 
 //----------------------------------------------------------------------------------------------

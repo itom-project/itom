@@ -116,6 +116,12 @@ namespace ito
         double rotationAngleDeg() const;
         double rotationAngleRad() const;
 
+        ito::float64 userData1() const;
+        void setUserData1(const ito::float64 &userData1);
+
+        ito::float64 userData2() const;
+        void setUserData2(const ito::float64 &userData2);
+
         QPolygonF basePoints() const; /*!< base points are various points that help to define the geometry in a precise description. */
         QPolygonF &rbasePoints();
         const QPolygonF &rbasePoints() const;
