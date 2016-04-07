@@ -105,7 +105,6 @@ bool FlagsProperty::setEditorData(QWidget *editor, const QVariant &data)
         if (combo = qobject_cast<CheckableComboBox*>(editor))
         {
             int value = data.toInt();
-            qDebug() << "input: " << value;
             QAbstractItemModel *aim = combo->checkableModel();
             QModelIndex index;
             Qt::CheckState checkState;
@@ -147,7 +146,6 @@ QVariant FlagsProperty::editorData(QWidget *editor)
             result |= m_enumIndices[idx.row()];
         }
 
-        qDebug() << "result: " << result;
         return QVariant(result);
     }
     else
