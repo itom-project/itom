@@ -4446,10 +4446,16 @@ ito::RetVal PythonEngine::checkVarnamesInWorkspace(bool globalNotLocal, const QS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/*
+This method tries to acquire the Python GIL before putting the values to the workspace. However, the current state of the 
+state machine is not considered. This is a first test for this behaviour and should work quite well in this case, since
+the operation will not take a lot of time. \TODO: think about similar behaviours and the role of the state machine in the context
+of the GIL.
+*/
 ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStringList &names, const QVector<SharedParamBasePointer > &values, ItomSharedSemaphore *semaphore)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
-    tPythonState oldState = pythonState;
+    //tPythonState oldState = pythonState;
     ito::RetVal retVal;
     PyObject* destinationDict = NULL;
     PyObject* value = NULL;
@@ -4461,20 +4467,20 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
     {
         retVal += ito::RetVal(ito::retError, 0, tr("The number of names and values must be equal").toLatin1().data());
     }
-    else if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    /*else if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
         retVal += ito::RetVal(ito::retError, 0, tr("It is not allowed to put variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
-    }
+    }*/
     else
     {
-        if (pythonState == pyStateIdle)
-        {
-            pythonStateTransition(pyTransBeginRun);
-        }
-        else if (pythonState == pyStateDebuggingWaiting)
-        {
-            pythonStateTransition(pyTransDebugExecCmdBegin);
-        }
+        //if (pythonState == pyStateIdle)
+        //{
+        //    pythonStateTransition(pyTransBeginRun);
+        //}
+        //else if (pythonState == pyStateDebuggingWaiting)
+        //{
+        //    pythonStateTransition(pyTransDebugExecCmdBegin);
+        //}
 
         if (globalNotLocal)
         {
@@ -4546,7 +4552,7 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
                 Py_XDECREF(varname);
             }
 
-            PyGILState_Release(gstate);
+            //PyGILState_Release(gstate);
 
             if (semaphore != NULL) 
             {
@@ -4555,7 +4561,7 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
                 released = true;
             }
 
-            gstate = PyGILState_Ensure();
+            //gstate = PyGILState_Ensure();
             if (globalNotLocal)
             {
                 emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
@@ -4567,14 +4573,14 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
             PyGILState_Release(gstate);
         }
 
-        if (oldState == pyStateIdle)
+        /*if (oldState == pyStateIdle)
         {
             pythonStateTransition(pyTransEndRun);
         }
         else if (oldState == pyStateDebuggingWaiting)
         {
             pythonStateTransition(pyTransDebugExecCmdEnd);
-        }
+        }*/
     }
 
     if (semaphore != NULL && !released) 

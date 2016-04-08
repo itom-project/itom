@@ -1982,7 +1982,7 @@ hide()");
 PyObject* PythonUi::PyUi_show(PyUi *self, PyObject *args)
 {
     int modalLevel = 0;
-
+    
     if(!PyArg_ParseTuple(args, "|i", &modalLevel))
     {
         PyErr_SetString(PyExc_RuntimeError, "Parameter modal must be a boolean value");
@@ -2011,13 +2011,11 @@ PyObject* PythonUi::PyUi_show(PyUi *self, PyObject *args)
     
     if(modalLevel == 1)
     {
-        /*while(!locker.getSemaphore()->wait(10))
-        {
-            QCoreApplication::processEvents();
-            QCoreApplication::sendPostedEvents();
-        }
-*/
+        Py_BEGIN_ALLOW_THREADS //release GIL when showing a modal dialog in order not to block background python operations during the visibility of the dialog
+
         locker.getSemaphore()->waitAndProcessEvents(-1);
+
+        Py_END_ALLOW_THREADS //re-acquire GIL to process
     }
     else
     {
@@ -2027,7 +2025,7 @@ PyObject* PythonUi::PyUi_show(PyUi *self, PyObject *args)
             return NULL;
         }
     }
-    
+
     retValue = locker.getSemaphore()->returnValue;
     if(!PythonCommon::transformRetValToPyException(retValue)) return NULL;
 
