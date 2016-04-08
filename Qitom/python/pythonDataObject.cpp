@@ -2350,7 +2350,7 @@ PyObject* PythonDataObject::PyDataObj_PixToPhys(PyDataObject *self, PyObject *ar
 {
         static const char *kwlist[] = {"values","axes", NULL};
     double value;
-    int axis = 0;
+    unsigned int axis = 0;
     PyObject *values = NULL;
     PyObject *axes = NULL;
     bool single = false;
