@@ -34,7 +34,6 @@
 
 
 //------------------------------------------------------------------------------------------------------
-
 namespace ito
 {
 
@@ -93,7 +92,7 @@ void PythonShape::PyShape_dealloc(PyShape* self)
 {
     DELETE_AND_SET_NULL(self->shape);
     Py_TYPE(self)->tp_free((PyObject*)self);
-};
+}
 
 //------------------------------------------------------------------------------------------------------
 PyObject* PythonShape::PyShape_new(PyTypeObject *type, PyObject* /*args*/, PyObject* /*kwds*/)
@@ -105,7 +104,7 @@ PyObject* PythonShape::PyShape_new(PyTypeObject *type, PyObject* /*args*/, PyObj
     }
 
     return (PyObject *)self;
-};
+}
 
 //------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -266,7 +265,7 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
     if (!PythonCommon::transformRetValToPyException(retval)) return -1;
 
     return 0;
-};
+}
 
 //-----------------------------------------------------------------------------
 /*static*/ PyObject* PythonShape::createPyShape(const Shape &shape)
@@ -499,20 +498,21 @@ PyObject* PythonShape::PyShape_getPoint1(PyShape *self, void * /*closure*/)
 
     switch (self->shape->type())
     {
-    case Shape::Point:
-    case Shape::Line:
-    case Shape::Rectangle:
-    case Shape::Square:
-    case Shape::Ellipse:
-    case Shape::Circle:
+        case Shape::Point:
+        case Shape::Line:
+        case Shape::Rectangle:
+        case Shape::Square:
+        case Shape::Ellipse:
+        case Shape::Circle:
         {
             QPointF point(self->shape->transform().map(self->shape->basePoints()[0]));
             return PointF2PyObject(point);
         }
         break;
-    case Shape::Polygon:
-    case Shape::Invalid:
-    default:
+    
+        case Shape::Polygon:
+        case Shape::Invalid:
+        default:
         break;
     }
 
@@ -534,22 +534,25 @@ int PythonShape::PyShape_setPoint1(PyShape *self, PyObject *value, void * /*clos
     {
         switch (self->shape->type())
         {
-        case Shape::Point:
-        case Shape::Line:
-        case Shape::Rectangle:
-        case Shape::Ellipse:
+            case Shape::Point:
+            case Shape::Line:
+            case Shape::Rectangle:
+            case Shape::Ellipse:
             {
                 QTransform inv = self->shape->transform().inverted();
                 self->shape->rbasePoints()[0] = inv.map(point);
             }
-        case Shape::Square:
-        case Shape::Circle:
-            retval += ito::RetVal(ito::retError, 0, "point1 cannot be changed for square and circle. Change center and width / height.");
             break;
-        case Shape::Polygon:
-        case Shape::Invalid:
-        default:
-            retval += ito::RetVal(ito::retError, 0, "This type of shape has no 'point1' defined.");
+
+            case Shape::Square:
+            case Shape::Circle:
+                retval += ito::RetVal(ito::retError, 0, "point1 cannot be changed for square and circle. Change center and width / height.");
+            break;
+
+            case Shape::Polygon:
+            case Shape::Invalid:
+            default:
+                retval += ito::RetVal(ito::retError, 0, "This type of shape has no 'point1' defined.");
             break;
         }
     }
@@ -574,20 +577,21 @@ PyObject* PythonShape::PyShape_getPoint2(PyShape *self, void * /*closure*/)
 
     switch (self->shape->type())
     {
-    case Shape::Line:
-    case Shape::Rectangle:
-    case Shape::Square:
-    case Shape::Ellipse:
-    case Shape::Circle:
+        case Shape::Line:
+        case Shape::Rectangle:
+        case Shape::Square:
+        case Shape::Ellipse:
+        case Shape::Circle:
         {
             QPointF point(self->shape->transform().map(self->shape->basePoints()[1]));
             return PointF2PyObject(point);
         }
         break;
-    case Shape::Point:
-    case Shape::Polygon:
-    case Shape::Invalid:
-    default:
+
+        case Shape::Point:
+        case Shape::Polygon:
+        case Shape::Invalid:
+        default:
         break;
     }
 
@@ -609,23 +613,25 @@ int PythonShape::PyShape_setPoint2(PyShape *self, PyObject *value, void * /*clos
     {
         switch (self->shape->type())
         {
-        case Shape::Line:
-        case Shape::Rectangle:
-        case Shape::Ellipse:
+            case Shape::Line:
+            case Shape::Rectangle:
+            case Shape::Ellipse:
             {
                 QTransform inv = self->shape->transform().inverted();
                 self->shape->rbasePoints()[1] = inv.map(point);
             }
             break;
-        case Shape::Square:
-        case Shape::Circle:
-            retval += ito::RetVal(ito::retError, 0, "point2 cannot be changed for square and circle. Change center and width / height.");
+
+            case Shape::Square:
+            case Shape::Circle:
+                retval += ito::RetVal(ito::retError, 0, "point2 cannot be changed for square and circle. Change center and width / height.");
             break;
-        case Shape::Point:
-        case Shape::Polygon:
-        case Shape::Invalid:
-        default:
-            retval += ito::RetVal(ito::retError, 0, "This type of shape has no 'point2' defined.");
+
+            case Shape::Point:
+            case Shape::Polygon:
+            case Shape::Invalid:
+            default:
+                retval += ito::RetVal(ito::retError, 0, "This type of shape has no 'point2' defined.");
             break;
         }
     }
@@ -649,25 +655,27 @@ PyObject* PythonShape::PyShape_getCenter(PyShape *self, void * /*closure*/)
 
     switch (self->shape->type())
     {
-    case Shape::Point:
+        case Shape::Point:
         {
             QPointF point(self->shape->transform().map(self->shape->basePoints()[0]));
             return PointF2PyObject(point);
         }
         break;
-    case Shape::Line:
-    case Shape::Rectangle:
-    case Shape::Square:
-    case Shape::Ellipse:
-    case Shape::Circle:
+
+        case Shape::Line:
+        case Shape::Rectangle:
+        case Shape::Square:
+        case Shape::Ellipse:
+        case Shape::Circle:
         {
             QPointF point((self->shape->transform().map(self->shape->basePoints()[0]) + self->shape->transform().map(self->shape->basePoints()[1])) / 2.0);
             return PointF2PyObject(point);
         }
         break;
-    case Shape::Polygon:
-    case Shape::Invalid:
-    default:
+
+        case Shape::Polygon:
+        case Shape::Invalid:
+        default:
         break;
     }
 
@@ -689,17 +697,18 @@ int PythonShape::PyShape_setCenter(PyShape *self, PyObject *value, void * /*clos
     {
         switch (self->shape->type())
         {
-        case Shape::Point:
+            case Shape::Point:
             {
                 QTransform inv = self->shape->transform().inverted();
                 self->shape->rbasePoints()[0] = inv.map(point);
             }
             break;
-        case Shape::Line:
-        case Shape::Rectangle:
-        case Shape::Ellipse:
-        case Shape::Square:
-        case Shape::Circle:
+
+            case Shape::Line:
+            case Shape::Rectangle:
+            case Shape::Ellipse:
+            case Shape::Square:
+            case Shape::Circle:
             {
                 QTransform inv = self->shape->transform().inverted();
                 QPointF baseCenter = inv.map(point);
@@ -708,10 +717,11 @@ int PythonShape::PyShape_setCenter(PyShape *self, PyObject *value, void * /*clos
                 self->shape->rbasePoints()[1] += (baseCenter - oldCenter);
             }
             break;
-        case Shape::Polygon:
-        case Shape::Invalid:
-        default:
-            retval += ito::RetVal(ito::retError, 0, "This type of shape has no 'center' defined.");
+
+            case Shape::Polygon:
+            case Shape::Invalid:
+            default:
+                retval += ito::RetVal(ito::retError, 0, "This type of shape has no 'center' defined.");
             break;
         }
     }
@@ -815,7 +825,7 @@ PyObject* PythonShape::PyShape_getRadius(PyShape *self, void * /*closure*/)
 
     switch (self->shape->type())
     {
-    case Shape::Ellipse:
+        case Shape::Ellipse:
         {
             QPointF point(self->shape->basePoints()[1] - self->shape->basePoints()[0]);
             PyObject *tuple = PyTuple_New(2);
@@ -824,19 +834,21 @@ PyObject* PythonShape::PyShape_getRadius(PyShape *self, void * /*closure*/)
             return tuple;
         }
         break;
-    case Shape::Circle:
+
+        case Shape::Circle:
         {
             QPointF point(self->shape->basePoints()[1] - self->shape->basePoints()[0]);
             return PyFloat_FromDouble(point.x() / 2.0);
         }
         break;
-    case Shape::Line:
-    case Shape::Rectangle:
-    case Shape::Square:
-    case Shape::Point:
-    case Shape::Polygon:
-    case Shape::Invalid:
-    default:
+
+        case Shape::Line:
+        case Shape::Rectangle:
+        case Shape::Square:
+        case Shape::Point:
+        case Shape::Polygon:
+        case Shape::Invalid:
+        default:
         break;
     }
 
@@ -855,7 +867,7 @@ int PythonShape::PyShape_setRadius(PyShape *self, PyObject *value, void * /*clos
     
     switch (self->shape->type())
     {
-    case Shape::Ellipse:
+        case Shape::Ellipse:
         {
             ito::RetVal retval;
             QPointF ab = PyObject2PointF(value, retval, "radius (a,b)");
@@ -868,7 +880,8 @@ int PythonShape::PyShape_setRadius(PyShape *self, PyObject *value, void * /*clos
             return 0;
         }
         break;
-    case Shape::Circle:
+
+        case Shape::Circle:
         {
             double radius = PythonQtConversion::PyObjGetDouble(value, false, ok);
             if (ok)
@@ -886,15 +899,16 @@ int PythonShape::PyShape_setRadius(PyShape *self, PyObject *value, void * /*clos
             }
         }
         break;
-    case Shape::Line:
-    case Shape::Rectangle:
-    case Shape::Square:
-    case Shape::Point:
-    case Shape::Polygon:
-    case Shape::Invalid:
-    default:
-        PyErr_SetString(PyExc_TypeError, "type of shape has no 'radius' defined.");
-        return -1;
+
+        case Shape::Line:
+        case Shape::Rectangle:
+        case Shape::Square:
+        case Shape::Point:
+        case Shape::Polygon:
+        case Shape::Invalid:
+        default:
+            PyErr_SetString(PyExc_TypeError, "type of shape has no 'radius' defined.");
+            return -1;
         break;
     }
 }
@@ -914,20 +928,21 @@ PyObject* PythonShape::PyShape_getWidth(PyShape *self, void * /*closure*/)
 
     switch (self->shape->type())
     {
-    case Shape::Rectangle:
-    case Shape::Square:
+        case Shape::Rectangle:
+        case Shape::Square:
         {
             QPointF point(self->shape->basePoints()[1] - self->shape->basePoints()[0]);
             return PyFloat_FromDouble(point.x());
         }
         break;
-    case Shape::Line:
-    case Shape::Ellipse:
-    case Shape::Circle:
-    case Shape::Point:
-    case Shape::Polygon:
-    case Shape::Invalid:
-    default:
+
+        case Shape::Line:
+        case Shape::Ellipse:
+        case Shape::Circle:
+        case Shape::Point:
+        case Shape::Polygon:
+        case Shape::Invalid:
+        default:
         break;
     }
 
@@ -946,7 +961,7 @@ int PythonShape::PyShape_setWidth(PyShape *self, PyObject *value, void * /*closu
     
     switch (self->shape->type())
     {
-    case Shape::Square:
+        case Shape::Square:
         {
             double width = PythonQtConversion::PyObjGetDouble(value, false, ok);
             if (ok)
@@ -965,7 +980,8 @@ int PythonShape::PyShape_setWidth(PyShape *self, PyObject *value, void * /*closu
             }
         }
         break;
-    case Shape::Rectangle:
+
+        case Shape::Rectangle:
         {
             double width = PythonQtConversion::PyObjGetDouble(value, false, ok);
             if (ok)
@@ -981,16 +997,17 @@ int PythonShape::PyShape_setWidth(PyShape *self, PyObject *value, void * /*closu
             }
         }
         break;
-    case Shape::Ellipse:
-    case Shape::Circle:
-    case Shape::Line:
-    case Shape::Point:
-    case Shape::Polygon:
-    case Shape::Invalid:
-    default:
-        PyErr_SetString(PyExc_TypeError, "type of shape has no 'width' defined.");
-        return -1;
-        break;
+
+        case Shape::Ellipse:
+        case Shape::Circle:
+        case Shape::Line:
+        case Shape::Point:
+        case Shape::Polygon:
+        case Shape::Invalid:
+        default:
+            PyErr_SetString(PyExc_TypeError, "type of shape has no 'width' defined.");
+            return -1;
+         break;
     }
 }
 
@@ -1009,20 +1026,21 @@ PyObject* PythonShape::PyShape_getHeight(PyShape *self, void * /*closure*/)
 
     switch (self->shape->type())
     {
-    case Shape::Rectangle:
-    case Shape::Square:
+        case Shape::Rectangle:
+        case Shape::Square:
         {
             QPointF point(self->shape->basePoints()[1] - self->shape->basePoints()[0]);
             return PyFloat_FromDouble(point.y());
         }
         break;
-    case Shape::Line:
-    case Shape::Ellipse:
-    case Shape::Circle:
-    case Shape::Point:
-    case Shape::Polygon:
-    case Shape::Invalid:
-    default:
+
+        case Shape::Line:
+        case Shape::Ellipse:
+        case Shape::Circle:
+        case Shape::Point:
+        case Shape::Polygon:
+        case Shape::Invalid:
+        default:
         break;
     }
 
@@ -1041,7 +1059,7 @@ int PythonShape::PyShape_setHeight(PyShape *self, PyObject *value, void * /*clos
     
     switch (self->shape->type())
     {
-    case Shape::Square:
+        case Shape::Square:
         {
             double height = PythonQtConversion::PyObjGetDouble(value, false, ok);
             if (ok)
@@ -1060,7 +1078,8 @@ int PythonShape::PyShape_setHeight(PyShape *self, PyObject *value, void * /*clos
             }
         }
         break;
-    case Shape::Rectangle:
+
+        case Shape::Rectangle:
         {
             double height = PythonQtConversion::PyObjGetDouble(value, false, ok);
             if (ok)
@@ -1076,15 +1095,16 @@ int PythonShape::PyShape_setHeight(PyShape *self, PyObject *value, void * /*clos
             }
         }
         break;
-    case Shape::Ellipse:
-    case Shape::Circle:
-    case Shape::Line:
-    case Shape::Point:
-    case Shape::Polygon:
-    case Shape::Invalid:
-    default:
-        PyErr_SetString(PyExc_TypeError, "type of shape has no 'height' defined.");
-        return -1;
+
+        case Shape::Ellipse:
+        case Shape::Circle:
+        case Shape::Line:
+        case Shape::Point:
+        case Shape::Polygon:
+        case Shape::Invalid:
+        default:
+            PyErr_SetString(PyExc_TypeError, "type of shape has no 'height' defined.");
+            return -1;
         break;
     }
 }
@@ -1538,9 +1558,6 @@ PyMethodDef PythonShape::PyShape_methods[] = {
     {NULL}  /* Sentinel */
 };
 
-
-
-
 //-----------------------------------------------------------------------------
 PyModuleDef PythonShape::PyShapeModule = {
     PyModuleDef_HEAD_INIT, "shape", "Shape (Point, Line, Rectangle, Ellipse, Polygon...)", -1,
@@ -1588,7 +1605,6 @@ PyTypeObject PythonShape::PyShapeType = {
     0,                         /* tp_alloc */ /*will be filled later before calling PyType_Ready */
     PyShape_new               /* tp_new */
 };
-
 
 
 } //end namespace ito
