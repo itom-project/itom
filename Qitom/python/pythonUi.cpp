@@ -2390,7 +2390,7 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiGetItem_doc,"getItem(title, label, stringList [, currentIndex=0, editable=True]) -> shows a dialog to let the user select an item from a string list\n\
+PyDoc_STRVAR(pyUiGetItem_doc,"getItem(title, label, stringList [, currentIndex=0, editable=True, parent]) -> shows a dialog to let the user select an item from a string list\n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -2404,6 +2404,8 @@ currentIndex : {int}, optional\n\
     defines the preselected value index (default: 0)\n\
 editable : {bool}, optional\n\
     defines whether new entries can be added (True) or not (False, default)\n\
+parent : {uiItem or derived classes}, optional\n\
+    is the parent dialog of the message box.\n\
 \n\
 Returns \n\
 ------- \n\
@@ -2415,7 +2417,7 @@ See Also \n\
 getInt, getDouble, getText");
 PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
-    const char *kwlist[] = {"title", "label", "stringList", "currentIndex", "editable", NULL};
+    const char *kwlist[] = {"title", "label", "stringList", "currentIndex", "editable","parent", NULL};
     PyObject *titleObj = NULL;
     PyObject *labelObj = NULL;
     QString title;
@@ -2425,8 +2427,9 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
     bool editable = false;
     QStringList stringListQt;
     QString temp;
+	PythonUi::PyUiItem *parentItem = NULL;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOO|ib", const_cast<char**>(kwlist), &titleObj, &labelObj, &stringList, &currentIndex, &editable))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOO|ibO&", const_cast<char**>(kwlist), &titleObj, &labelObj, &stringList, &currentIndex, &editable, &PyUiItem_Converter ,&parentItem))
     {
         return NULL;
     }
@@ -2488,8 +2491,8 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
     
     QSharedPointer<QString> retString(new QString());
     
-
-    QMetaObject::invokeMethod(uiOrga, "showInputDialogGetItem", Q_ARG(QString, title), Q_ARG(QString, label), Q_ARG(QStringList, stringListQt), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<QString>, retString), Q_ARG(int, currentIndex), Q_ARG(bool, editable), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+	unsigned int objectID = parentItem ? parentItem->objectID : 0;
+    QMetaObject::invokeMethod(uiOrga, "showInputDialogGetItem",Q_ARG(uint, objectID), Q_ARG(QString, title), Q_ARG(QString, label), Q_ARG(QStringList, stringListQt), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<QString>, retString), Q_ARG(int, currentIndex), Q_ARG(bool, editable), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key

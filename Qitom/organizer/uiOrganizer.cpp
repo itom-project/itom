@@ -1197,16 +1197,26 @@ RetVal UiOrganizer::showInputDialogGetInt(const QString &title, const QString &l
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::showInputDialogGetItem(const QString &title, const QString &label, const QStringList &stringList, QSharedPointer<bool> ok, QSharedPointer<QString> value, int currentIndex, bool editable, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::showInputDialogGetItem(unsigned int objectID, const QString &title, const QString &label, const QStringList &stringList, QSharedPointer<bool> ok, QSharedPointer<QString> value, int currentIndex, bool editable, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = RetVal(retOk);
 
-    QMainWindow *mainWin = qobject_cast<QMainWindow*>(AppManagement::getMainWindow());
+	QWidget *parent = NULL;
+    if (objectID > 0)
+    {
+        parent = qobject_cast<QWidget*>(getWeakObjectReference(objectID));
+    }
+    if (parent == NULL)
+    {
+        parent = qobject_cast<QWidget*>(AppManagement::getMainWindow());
+    }
+
+    //QMainWindow *mainWin = qobject_cast<QMainWindow*>(AppManagement::getMainWindow());
 
     bool tempOk = false;
     *ok = false;
 
-    *value = QInputDialog::getItem(mainWin, title, label, stringList, currentIndex, editable, &tempOk);
+    *value = QInputDialog::getItem(parent, title, label, stringList, currentIndex, editable, &tempOk);
 
     *ok = tempOk;
 
