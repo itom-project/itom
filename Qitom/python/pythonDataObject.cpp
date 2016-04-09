@@ -2215,6 +2215,7 @@ PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *ar
     PyObject *values = NULL;
     PyObject *axes = NULL;
     bool single = false;
+    int dims = self->dataObject->getDims();
 
     PyErr_Clear();
     if (PyArg_ParseTupleAndKeywords(args, kwds, "d|i", const_cast<char**>(kwlist), &value, &axis))
@@ -2228,9 +2229,9 @@ PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *ar
 
     if (single)
     {
-        if (self->dataObject->getDims() <= axis)
+        if (dims <= axis || (axis < 0))
         {
-            return PyErr_Format(PyExc_ValueError, "axis %i is out of bounds", axis);
+            return PyErr_Format(PyExc_ValueError, "axis %i is out of bounds [0,%i]", axis, dims - 1);
         }
         else
         {
@@ -2299,6 +2300,12 @@ PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *ar
                 axis = i;
             }
 
+            if (axis < 0 || axis >= dims)
+            {
+                Py_DECREF(result);
+                return PyErr_Format(PyExc_ValueError, "%i. axis index out of range [0,%i]", i, dims - 1);
+            }
+
             PyTuple_SetItem(result, i, PyFloat_FromDouble(self->dataObject->getPhysToPix(axis, value, isInsideImage)));
 
             if (!isInsideImage)
@@ -2350,10 +2357,11 @@ PyObject* PythonDataObject::PyDataObj_PixToPhys(PyDataObject *self, PyObject *ar
 {
         static const char *kwlist[] = {"values","axes", NULL};
     double value;
-    unsigned int axis = 0;
+    int axis = 0;
     PyObject *values = NULL;
     PyObject *axes = NULL;
     bool single = false;
+    int dims = self->dataObject->getDims();
 
     PyErr_Clear();
     if (PyArg_ParseTupleAndKeywords(args, kwds, "d|i", const_cast<char**>(kwlist), &value, &axis))
@@ -2367,9 +2375,9 @@ PyObject* PythonDataObject::PyDataObj_PixToPhys(PyDataObject *self, PyObject *ar
 
     if (single)
     {
-        if (self->dataObject->getDims() <= axis)
+        if (dims <= axis || (axis < 0))
         {
-            return PyErr_Format(PyExc_ValueError, "axis %i is out of bounds", axis);
+            return PyErr_Format(PyExc_ValueError, "axis %i is out of bounds [0,%i]", axis, dims - 1);
         }
         else
         {
@@ -2435,6 +2443,12 @@ PyObject* PythonDataObject::PyDataObj_PixToPhys(PyDataObject *self, PyObject *ar
             else
             {
                 axis = i;
+            }
+
+            if (axis < 0 || axis >= dims)
+            {
+                Py_DECREF(result);
+                return PyErr_Format(PyExc_ValueError, "%i. axis index out of range [0,%i]", i, dims - 1);
             }
 
             PyTuple_SetItem(result, i, PyFloat_FromDouble(self->dataObject->getPixToPhys(axis, value)));
