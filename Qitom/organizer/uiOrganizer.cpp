@@ -1149,16 +1149,25 @@ RetVal UiOrganizer::exists(unsigned int objectID, QSharedPointer<bool> exists, I
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::showInputDialogGetDouble(const QString &title, const QString &label, double defaultValue, QSharedPointer<bool> ok, QSharedPointer<double> value, double min, double max, int decimals, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::showInputDialogGetDouble(unsigned int objectID, const QString &title, const QString &label, double defaultValue, QSharedPointer<bool> ok, QSharedPointer<double> value, double min, double max, int decimals, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = RetVal(retOk);
 
-    QMainWindow *mainWin = qobject_cast<QMainWindow*>(AppManagement::getMainWindow());
+	QWidget *parent = NULL;
+    if (objectID > 0)
+    {
+        parent = qobject_cast<QWidget*>(getWeakObjectReference(objectID));
+    }
+    if (parent == NULL)
+    {
+        parent = qobject_cast<QWidget*>(AppManagement::getMainWindow());
+    }
+
 
     bool tempOk = false;
     *ok = false;
 
-    *value = QInputDialog::getDouble(mainWin, title, label, defaultValue, min, max, decimals, &tempOk);
+    *value = QInputDialog::getDouble(parent, title, label, defaultValue, min, max, decimals, &tempOk);
 
     *ok = tempOk;
 
@@ -1173,16 +1182,25 @@ RetVal UiOrganizer::showInputDialogGetDouble(const QString &title, const QString
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::showInputDialogGetInt(const QString &title, const QString &label, int defaultValue, QSharedPointer<bool> ok, QSharedPointer<int> value, int min, int max, int step, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::showInputDialogGetInt(unsigned int objectID, const QString &title, const QString &label, int defaultValue, QSharedPointer<bool> ok, QSharedPointer<int> value, int min, int max, int step, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = RetVal(retOk);
 
-    QMainWindow *mainWin = qobject_cast<QMainWindow*>(AppManagement::getMainWindow());
+	QWidget *parent = NULL;
+    if (objectID > 0)
+    {
+        parent = qobject_cast<QWidget*>(getWeakObjectReference(objectID));
+    }
+    if (parent == NULL)
+    {
+        parent = qobject_cast<QWidget*>(AppManagement::getMainWindow());
+    }
+
 
     bool tempOk = false;
     *ok = false;
 
-    *value = QInputDialog::getInt(mainWin, title, label, defaultValue, min, max, step, &tempOk);
+    *value = QInputDialog::getInt(parent, title, label, defaultValue, min, max, step, &tempOk);
 
     *ok = tempOk;
 
@@ -1211,7 +1229,6 @@ RetVal UiOrganizer::showInputDialogGetItem(unsigned int objectID, const QString 
         parent = qobject_cast<QWidget*>(AppManagement::getMainWindow());
     }
 
-    //QMainWindow *mainWin = qobject_cast<QMainWindow*>(AppManagement::getMainWindow());
 
     bool tempOk = false;
     *ok = false;
@@ -1231,16 +1248,24 @@ RetVal UiOrganizer::showInputDialogGetItem(unsigned int objectID, const QString 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::showInputDialogGetText(const QString &title, const QString &label, const QString &defaultString, QSharedPointer<bool> ok, QSharedPointer<QString> value, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::showInputDialogGetText(unsigned int objectID, const QString &title, const QString &label, const QString &defaultString, QSharedPointer<bool> ok, QSharedPointer<QString> value, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = RetVal(retOk);
 
-    QMainWindow *mainWin = qobject_cast<QMainWindow*>(AppManagement::getMainWindow());
+	QWidget *parent = NULL;
+    if (objectID > 0)
+    {
+        parent = qobject_cast<QWidget*>(getWeakObjectReference(objectID));
+    }
+    if (parent == NULL)
+    {
+        parent = qobject_cast<QWidget*>(AppManagement::getMainWindow());
+    }
 
     bool tempOk = false;
     *ok = false;
 
-    *value = QInputDialog::getText(mainWin, title, label, QLineEdit::Normal, defaultString, &tempOk);
+    *value = QInputDialog::getText(parent, title, label, QLineEdit::Normal, defaultString, &tempOk);
 
     *ok = tempOk;
 

@@ -2166,7 +2166,7 @@ int PyUiItem_Converter(PyObject *object, PythonUi::PyUiItem **address)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiGetDouble_doc,"getDouble(title, label, defaultValue [, min, max, decimals=3]) -> shows a dialog to get a double value from the user\n\
+PyDoc_STRVAR(pyUiGetDouble_doc,"getDouble(title, label, defaultValue [, min, max, decimals=3, parent]) -> shows a dialog to get a double value from the user\n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -2184,6 +2184,8 @@ max : {double}, optional\n\
     is the allowed maximal value\n\
 decimals : {int}, optional\n\
     the maximum number of decimal places (default: 1) \n\
+parent : {uiItem or derived classes}, optional\n\
+    is a parent dialog or window, this dialog becomes modal.\n\
 \n\
 Returns \n\
 ------- \n\
@@ -2195,7 +2197,7 @@ See Also \n\
 getInt, getText, getItem");
 PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
-    const char *kwlist[] = {"title", "label", "defaultValue", "min", "max", "decimals", NULL};
+    const char *kwlist[] = {"title", "label", "defaultValue", "min", "max", "decimals", "parent", NULL};
     PyObject *titleObj = NULL;
     PyObject *labelObj = NULL;
     QString title;
@@ -2204,10 +2206,11 @@ PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kw
     double minValue = -2147483647;
     double maxValue = 2147483647;
     int decimals = 1;
+	PythonUi::PyUiItem *parentItem = NULL;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOd|ddi", const_cast<char**>(kwlist), &titleObj, &labelObj, &defaultValue, &minValue, &maxValue, &decimals))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOd|ddiO&", const_cast<char**>(kwlist), &titleObj, &labelObj, &defaultValue, &minValue, &maxValue, &decimals,&PyUiItem_Converter, &parentItem))
     {
-        PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), default value (double), min (double, optional), max (double, optional), decimals (int, optional)");
+        PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), default value (double), min (double, optional), max (double, optional), decimals (int, optional), parent(uiItem or derived classes, optional)");
         return NULL;
     }
 
@@ -2240,8 +2243,9 @@ PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kw
     *retOk = false;
     QSharedPointer<double> retDblValue(new double);
     *retDblValue = defaultValue;
+	unsigned int objectID= parentItem ? parentItem->objectID : 0;
 
-    QMetaObject::invokeMethod(uiOrga, "showInputDialogGetDouble", Q_ARG(QString, title), Q_ARG(QString, label), Q_ARG(double, defaultValue), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<double>, retDblValue), Q_ARG(double,minValue), Q_ARG(double,maxValue), Q_ARG(int,decimals), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "showInputDialogGetDouble", Q_ARG(uint, objectID), Q_ARG(QString, title), Q_ARG(QString, label), Q_ARG(double, defaultValue), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<double>, retDblValue), Q_ARG(double,minValue), Q_ARG(double,maxValue), Q_ARG(int,decimals), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
@@ -2279,7 +2283,7 @@ PyObject* PythonUi::PyUi_getDouble(PyUi * /*self*/, PyObject *args, PyObject *kw
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiGetInt_doc,"getInt(title, label, defaultValue [, min, max, step=1]) -> shows a dialog to get an integer value from the user\n\
+PyDoc_STRVAR(pyUiGetInt_doc,"getInt(title, label, defaultValue [, min, max, step=1, parent]) -> shows a dialog to get an integer value from the user\n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -2295,6 +2299,8 @@ max : {int}, optional\n\
     is the allowed maximal value (default: 2147483647) \n\
 step : {int}, optional\n\
     is the step size if user presses the up/down arrow (default: 1)\n\
+parent : {uiItem or derived classes}, optional\n\
+    is a parent dialog or window, this dialog becomes modal.\n\
 \n\
 Returns \n\
 ------- \n\
@@ -2306,7 +2312,7 @@ See Also \n\
 getDouble, getText, getItem");
 PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
-    const char *kwlist[] = {"title", "label", "defaultValue", "min", "max", "step", NULL};
+    const char *kwlist[] = {"title", "label", "defaultValue", "min", "max", "step", "parent", NULL};
     PyObject *titleObj = NULL;
     PyObject *labelObj = NULL;
     QString title;
@@ -2315,10 +2321,11 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
     int minValue = -2147483647;
     int maxValue = 2147483647;
     int step = 1;
+	PythonUi::PyUiItem *parentItem = NULL;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOi|iii", const_cast<char**>(kwlist), &titleObj, &labelObj, &defaultValue, &minValue, &maxValue, &step))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOi|iiiO&", const_cast<char**>(kwlist), &titleObj, &labelObj, &defaultValue, &minValue, &maxValue, &step, &PyUiItem_Converter, &parentItem))
     {
-        PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), default value (int), min (int, optional), max (int, optional), step (int, optional)");
+        PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), default value (int), min (int, optional), max (int, optional), step (int, optional), parent(uiItem or derived calasses, optional)");
         return NULL;
     }
 
@@ -2351,8 +2358,9 @@ PyObject* PythonUi::PyUi_getInt(PyUi * /*self*/, PyObject *args, PyObject *kwds)
     *retOk = false;
     QSharedPointer<int> retIntValue(new int);
     *retIntValue = defaultValue;
+	unsigned int objectID = parentItem ? parentItem->objectID : 0;
 
-    QMetaObject::invokeMethod(uiOrga, "showInputDialogGetInt", Q_ARG(QString, title), Q_ARG(QString, label), Q_ARG(int, defaultValue), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<int>, retIntValue), Q_ARG(int,minValue), Q_ARG(int,maxValue), Q_ARG(int,step), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrga, "showInputDialogGetInt", Q_ARG(uint, objectID), Q_ARG(QString, title), Q_ARG(QString, label), Q_ARG(int, defaultValue), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<int>, retIntValue), Q_ARG(int,minValue), Q_ARG(int,maxValue), Q_ARG(int,step), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key
@@ -2530,7 +2538,7 @@ PyObject* PythonUi::PyUi_getItem(PyUi * /*self*/, PyObject *args, PyObject *kwds
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyUiGetText_doc,"getText(title, label, defaultString) -> opens a dialog in order to ask the user for a string \n\
+PyDoc_STRVAR(pyUiGetText_doc,"getText(title, label, defaultString [,parent]) -> opens a dialog in order to ask the user for a string \n\
 Parameters \n\
 ----------- \n\
 title : {str}\n\
@@ -2539,6 +2547,8 @@ label : {str}\n\
     is the label above the text box \n\
 defaultString : {str}\n\
     is the default string in the text box\n\
+parent : {uiItem or derived classes}, optional\n\
+    is the parent dialog of the message box.\n\
 \n\
 Returns \n\
 ------- \n\
@@ -2550,17 +2560,18 @@ See Also \n\
 getInt, getDouble, getItem");
 PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
-    const char *kwlist[] = {"title", "label", "defaultString", NULL};
+    const char *kwlist[] = {"title", "label", "defaultString", "parent", NULL};
     PyObject *titleObj = NULL;
     PyObject *labelObj = NULL;
     PyObject *defaultObj = NULL;
     QString title;
     QString label;
     QString defaultString;
+	PythonUi::PyUiItem *parentItem = NULL;
 
-    if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOO", const_cast<char**>(kwlist), &titleObj, &labelObj, &defaultObj))
+    if(!PyArg_ParseTupleAndKeywords(args, kwds, "OOO|O&", const_cast<char**>(kwlist), &titleObj, &labelObj, &defaultObj, &PyUiItem_Converter, &parentItem))
     {
-        PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), default string (string)");
+        PyErr_SetString(PyExc_TypeError, "arguments must be title (string), label (string), default string (string)[,parent(uiItem or derived calss]");
         return NULL;
     }
 
@@ -2599,8 +2610,8 @@ PyObject* PythonUi::PyUi_getText(PyUi * /*self*/, PyObject *args, PyObject *kwds
     QSharedPointer<bool> retOk(new bool);
     *retOk = false;
     QSharedPointer<QString> retStringValue(new QString(defaultString));
-
-    QMetaObject::invokeMethod(uiOrga, "showInputDialogGetText", Q_ARG(QString, title), Q_ARG(QString, label), Q_ARG(QString, defaultString), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<QString>, retStringValue), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+	unsigned int objectID = parentItem ? parentItem->objectID : 0;
+    QMetaObject::invokeMethod(uiOrga, "showInputDialogGetText",Q_ARG(uint,objectID), Q_ARG(QString, title), Q_ARG(QString, label), Q_ARG(QString, defaultString), Q_ARG(QSharedPointer<bool>, retOk), Q_ARG(QSharedPointer<QString>, retStringValue), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     //workaround for special notebook ;)
     //A simple wait(-1) sometimes lead to a deadlock when pushing any arrow key

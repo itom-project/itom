@@ -386,10 +386,10 @@ public slots:
     RetVal getDockedStatus(unsigned int uiHandle, QSharedPointer<bool> docked, ItomSharedSemaphore *semaphore = NULL);
     RetVal setDockedStatus(unsigned int uiHandle, bool docked, ItomSharedSemaphore *semaphore = NULL);
 
-    RetVal showInputDialogGetDouble(const QString &title, const QString &label, double defaultValue, QSharedPointer<bool> ok, QSharedPointer<double> value, double min = -2147483647, double max = 2147483647, int decimals = 1, ItomSharedSemaphore *semaphore = NULL );
-    RetVal showInputDialogGetInt(const QString &title, const QString &label, int defaultValue, QSharedPointer<bool> ok, QSharedPointer<int> value, int min = -2147483647, int max = 2147483647, int step = 1, ItomSharedSemaphore *semaphore = NULL );
+    RetVal showInputDialogGetDouble(unsigned int objectID, const QString &title, const QString &label, double defaultValue, QSharedPointer<bool> ok, QSharedPointer<double> value, double min = -2147483647, double max = 2147483647, int decimals = 1, ItomSharedSemaphore *semaphore = NULL );
+    RetVal showInputDialogGetInt(unsigned int objectID, const QString &title, const QString &label, int defaultValue, QSharedPointer<bool> ok, QSharedPointer<int> value, int min = -2147483647, int max = 2147483647, int step = 1, ItomSharedSemaphore *semaphore = NULL );
     RetVal showInputDialogGetItem(unsigned int objectID, const QString &title, const QString &label, const QStringList &stringList, QSharedPointer<bool> ok, QSharedPointer<QString> value, int currentIndex = 0, bool editable = false, ItomSharedSemaphore *semaphore = NULL );
-    RetVal showInputDialogGetText(const QString &title, const QString &label, const QString &defaultString, QSharedPointer<bool> ok, QSharedPointer<QString> value, ItomSharedSemaphore *semaphore = NULL );
+    RetVal showInputDialogGetText(unsigned int objectID, const QString &title, const QString &label, const QString &defaultString, QSharedPointer<bool> ok, QSharedPointer<QString> value, ItomSharedSemaphore *semaphore = NULL );
     RetVal showMessageBox(unsigned int objectID, int type, const QString &title, const QString &text, int buttons, int defaultButton, QSharedPointer<int> retButton, QSharedPointer<QString> retButtonText, ItomSharedSemaphore *semaphore = NULL );
 
     RetVal showFileDialogExistingDir(unsigned int objectID, const QString &caption, QSharedPointer<QString> directory, int options = QFileDialog::ShowDirsOnly, ItomSharedSemaphore *semaphore = NULL); //options are of type QFileDialog::Options
