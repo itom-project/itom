@@ -134,14 +134,17 @@
        </layout>
       </widget>
       <widget class="Itom2dQwtPlot" name="plot">
-       <property name="enablePlotting" stdset="0">
-        <bool>true</bool>
+       <property name="allowedGeometricShapes">
+        <set>ItomQwtPlotEnums::Circle|ItomQwtPlotEnums::Ellipse|ItomQwtPlotEnums::Polygon|ItomQwtPlotEnums::Rectangle|ItomQwtPlotEnums::Square</set>
        </property>
        <property name="colorBarVisible">
         <bool>true</bool>
        </property>
        <property name="colorMap">
         <string/>
+       </property>
+       <property name="enablePlotting" stdset="0">
+        <bool>true</bool>
        </property>
       </widget>
      </widget>
