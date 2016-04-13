@@ -171,7 +171,7 @@ void PlotInfoMarker::updateMarkers(const QVector< ito::Shape > elements)
 				}		
 
 #if QT_VERSION >= 0x050000
-				curItem->setData(1, Qt::UserRole, element.rbasePoints());
+				curItem->setData(1, Qt::UserRole, elements[curSearchIndex].basePoints());
 #else
 				curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(elements[curSearchIndex].basePoints()));
 #endif
