@@ -622,7 +622,7 @@ QPointF Shape::centerPoint() const
 		{
 			sum += curPoint;
 		}
-		return sum / d->m_polygon.length();
+		return sum / d->m_polygon.size();
 	}
 	case Line:
 	case Rectangle:
