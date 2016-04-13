@@ -33,10 +33,19 @@
 #else
 #include <QtGui/qpainter.h>
 #endif
+#include <qpolygon.h>
+
+#if QT_VERSION < 0x050000
+	Q_DECLARE_METATYPE(QPolygonF);
+#endif
 
 //---------------------------------------------------------------------------------------------------------
 PlotInfoShapes::PlotInfoShapes(QWidget* parent /*= NULL*/) : QTreeWidget(parent)
 {
+#if QT_VERSION < 0x050000
+	qRegisterMetaType<QPolygonF>("QPolygonF");
+#endif
+
     m_onlyTwoDims = true;
     setSelectionBehavior( QAbstractItemView::SelectRows );
     setAlternatingRowColors(true);
@@ -54,7 +63,11 @@ PlotInfoShapes::PlotInfoShapes(QWidget* parent /*= NULL*/) : QTreeWidget(parent)
 void PlotInfoShapes::setItem2Point(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
 	curItem->setData(0, Qt::DisplayRole, QString("Point %1").arg(QString::number(element.index())));
+#if QT_VERSION >= 0x050000
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
+#else
+	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
+#endif
 
 	while (curItem->childCount() > 1)
 	{
@@ -72,7 +85,12 @@ void PlotInfoShapes::setItem2Point(QTreeWidgetItem* curItem, const ito::Shape &e
 void PlotInfoShapes::setItem2Line(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
 	curItem->setData(0, Qt::DisplayRole, QString("Line %1").arg(QString::number(element.index())));
+#if QT_VERSION >= 0x050000
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
+#else
+	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
+#endif
+
 	while (curItem->childCount() > 3)
 	{
 		curItem->removeChild(curItem->child(curItem->childCount() - 1));
@@ -94,7 +112,12 @@ void PlotInfoShapes::setItem2Line(QTreeWidgetItem* curItem, const ito::Shape &el
 void PlotInfoShapes::setItem2Circle(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
 	curItem->setData(0, Qt::DisplayRole, QString("Circle %1").arg(QString::number(element.index())));
+#if QT_VERSION >= 0x050000
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
+#else
+	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
+#endif
+
 	while (curItem->childCount() > 2)
 	{
 		curItem->removeChild(curItem->child(curItem->childCount() - 1));
@@ -114,7 +137,12 @@ void PlotInfoShapes::setItem2Circle(QTreeWidgetItem* curItem, const ito::Shape &
 void PlotInfoShapes::setItem2Ellipse(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
 	curItem->setData(0, Qt::DisplayRole, QString("Ellipse %1").arg(QString::number(element.index())));
+#if QT_VERSION >= 0x050000
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
+#else
+	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
+#endif
+
 	while (curItem->childCount() > 3)
 	{
 		curItem->removeChild(curItem->child(curItem->childCount() - 1));
@@ -138,7 +166,12 @@ void PlotInfoShapes::setItem2Ellipse(QTreeWidgetItem* curItem, const ito::Shape 
 void PlotInfoShapes::setItem2Square(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
 	curItem->setData(0, Qt::DisplayRole, QString("Square %1").arg(QString::number(element.index())));
+#if QT_VERSION >= 0x050000
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
+#else
+	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
+#endif
+
 	while (curItem->childCount() > 2)
 	{
 		curItem->removeChild(curItem->child(curItem->childCount() - 1));
@@ -159,7 +192,11 @@ void PlotInfoShapes::setItem2Square(QTreeWidgetItem* curItem, const ito::Shape &
 void PlotInfoShapes::setItem2Rect(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
 	curItem->setData(0, Qt::DisplayRole, QString("Rectangle %1").arg(QString::number(element.index())));
+#if QT_VERSION >= 0x050000
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
+#else
+	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
+#endif
 	while (curItem->childCount() > 3)
 	{
 		curItem->removeChild(curItem->child(curItem->childCount() - 1));
@@ -183,7 +220,11 @@ void PlotInfoShapes::setItem2Rect(QTreeWidgetItem* curItem, const ito::Shape &el
 void PlotInfoShapes::setItem2Poly(QTreeWidgetItem* curItem, const ito::Shape &element)
 {
 	curItem->setData(0, Qt::DisplayRole, QString("Polygon %1").arg(QString::number(element.index())));
+#if QT_VERSION >= 0x050000
 	curItem->setData(1, Qt::UserRole, element.rbasePoints());
+#else
+	curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
+#endif
 	while (curItem->childCount() > 3)
 	{
 		curItem->removeChild(curItem->child(curItem->childCount() - 1));
@@ -198,7 +239,7 @@ void PlotInfoShapes::setItem2Poly(QTreeWidgetItem* curItem, const ito::Shape &el
 	curItem->child(1)->setData(0, Qt::DisplayRole, "Length");
 	curItem->child(1)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(element.circumference())));
 	curItem->child(2)->setData(0, Qt::DisplayRole, "Notes");
-	curItem->child(2)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(element.rbasePoints().length())));
+	curItem->child(2)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(element.rbasePoints().size())));
 }
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoShapes::updateShape(const ito::Shape element)

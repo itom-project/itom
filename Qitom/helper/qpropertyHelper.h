@@ -37,6 +37,8 @@
 
 #include <qvariant.h>
 #include <qmetaobject.h>
+#include <qpointer.h>
+#include <qsharedpointer.h>
 
 #if ITOM_POINTCLOUDLIBRARY > 0
 Q_DECLARE_METATYPE(ito::PCLPointCloud)

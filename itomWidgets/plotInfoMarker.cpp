@@ -33,9 +33,17 @@
 #include <QtGui/qpainter.h>
 #endif
 
+#if QT_VERSION < 0x050000
+	Q_DECLARE_METATYPE(QPolygonF);
+#endif
+
 //---------------------------------------------------------------------------------------------------------
 PlotInfoMarker::PlotInfoMarker(QWidget* parent /*= NULL*/) : QTreeWidget(parent)
 {
+#if QT_VERSION < 0x050000
+	qRegisterMetaType<QPolygonF>("QPolygonF");
+#endif
+
     setSelectionBehavior( QAbstractItemView::SelectRows );
     setAlternatingRowColors(true);
 
@@ -90,7 +98,12 @@ void PlotInfoMarker::updateMarker(const ito::Shape element)
 				curItem->setData(0, Qt::DisplayRole, element.name());
 			}
 			
-			curItem->setData(1, Qt::UserRole, element.basePoints());
+#if QT_VERSION >= 0x050000
+			curItem->setData(1, Qt::UserRole, element.rbasePoints());
+#else
+			curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
+#endif
+
 			for each (QPointF basePoint in element.basePoints())
 			{
 				curItem->addChild(new QTreeWidgetItem());
@@ -155,8 +168,14 @@ void PlotInfoMarker::updateMarkers(const QVector< ito::Shape > elements)
 				else
 				{
 					curItem->setData(0, Qt::DisplayRole, elements[curSearchIndex].name());
-				}				
-				curItem->setData(1, Qt::UserRole, elements[curSearchIndex].basePoints());
+				}		
+
+#if QT_VERSION >= 0x050000
+				curItem->setData(1, Qt::UserRole, element.rbasePoints());
+#else
+				curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(elements[curSearchIndex].basePoints()));
+#endif
+
 				for each (QPointF basePoint in elements[curSearchIndex].basePoints())
 				{
 					curItem->addChild(new QTreeWidgetItem());
