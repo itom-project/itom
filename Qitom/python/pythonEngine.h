@@ -258,7 +258,8 @@ private:
     PyMethodDef* PythonAdditionalModuleITOM;
 
     // decides if itom is automatically included in every source file before it is handed to the syntax checker
-    bool m_includeItom;
+    bool m_includeItomImportBeforeSyntaxCheck;
+    QString m_includeItomImportString; //!< string that is prepended to each script before syntax check (if m_includeItomImportBeforeSyntaxCheck is true)
 
     struct AutoReload
     {

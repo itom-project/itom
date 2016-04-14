@@ -176,7 +176,8 @@ PythonEngine::PythonEngine() :
     m_pyModSyntaxCheck(NULL),
     m_executeInternalPythonCodeInDebugMode(false),
     dictUnicode(NULL),
-    m_pythonThreadId(0)
+    m_pythonThreadId(0),
+    m_includeItomImportString("")
 {
     qRegisterMetaType<tPythonDbgCmd>("tPythonDbgCmd");
     qRegisterMetaType<size_t>("size_t");
@@ -682,33 +683,41 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 
             runString("from itom import *");
 
-            //// Setup for 
-            //PyObject *itomDir = PyObject_Dir(itomModule); //new ref
-            //if (itomDir && PyList_Check(itomDir))
-            //{
-            //    Py_ssize_t len = PyList_GET_SIZE(itomDir);
+            //parse the main components of module itom to generate a string like "from itom import dataObject, dataIO, ... to be prepended to each script before syntax check (only for this case)
+            PyGILState_STATE gstate = PyGILState_Ensure();
+            
+            PyObject *itomDir = PyObject_Dir(itomModule); //new ref
+            if (itomDir && PyList_Check(itomDir))
+            {
+                Py_ssize_t len = PyList_GET_SIZE(itomDir);
+                QStringList elements;
+                elements.reserve(len);
 
-            //    
-            //    m_itomMemberClasses.clear();
+                for (Py_ssize_t l = 0; l < len; ++l)
+                {
+                    PyObject *dirItem = PyList_GET_ITEM(itomDir, l); //borrowed ref
+                    bool ok;
+                    QString string = PythonQtConversion::PyObjGetString(dirItem, false, ok);
 
-            //    for (Py_ssize_t l = 0; l < len; ++l)
-            //    {
-            //        PyObject *dirItem = PyList_GET_ITEM(itomDir, l); //borrowed ref
-            //        bool ok;
-            //        QString string = PythonQtConversion::PyObjGetString(dirItem, false, ok);
-
-            //        if (ok)
-            //        {
-            //            if (!string.startsWith("__"))
-            //            {
-            //                m_itomMemberClasses.append(string + ",");
-            //            }
-            //        }
-            //    }
-            //    m_itomMemberClasses.remove(m_itomMemberClasses.length()-1, 1);
-            //}
-            //   
-            //Py_XDECREF(itomDir);
+                    if (ok)
+                    {
+                        qDebug() << string;
+                        if (!string.startsWith("__"))
+                        {
+                            elements.append(string);
+                        }
+                    }
+                }
+                
+                if (elements.size() > 0)
+                {
+                    m_includeItomImportString = QString("from itom import %1").arg(elements.join(", "));
+                }
+            }
+               
+            Py_XDECREF(itomDir);
+            PyGILState_Release(gstate);
+            //end parse main components
 
             m_started = true;
         }
@@ -727,7 +736,7 @@ void PythonEngine::readSettings()
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("PyScintilla");
 
-    m_includeItom = settings.value("syntaxIncludeItom", true).toBool();
+    m_includeItomImportBeforeSyntaxCheck = settings.value("syntaxIncludeItom", true).toBool();
 
     settings.endGroup();
 }
@@ -2000,10 +2009,10 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
     if (m_pyModSyntaxCheck)
     {
         QString firstLine;
-        if (m_includeItom)
+        if (m_includeItomImportBeforeSyntaxCheck)
         {
             //add from itom import * as first line (this is afterwards removed from results)
-            firstLine = "from itom import *\n" + code; //+ m_itomMemberClasses + "\n" + code;
+            firstLine = m_includeItomImportString + "\n" + code; //+ m_itomMemberClasses + "\n" + code;
         }
         else
         {
@@ -2032,7 +2041,7 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
             }
             else
             {   
-                if (m_includeItom)
+                if (m_includeItomImportBeforeSyntaxCheck)
                 {   // if itom is automatically included, this block is correcting the line numbers
                     QStringList sFlakes = flakes.split("\n");
                     if (sFlakes.length() > 0)
