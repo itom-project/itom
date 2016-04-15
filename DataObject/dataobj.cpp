@@ -2348,7 +2348,8 @@ template<typename _Tp> RetVal DeepCopyPartialFunc(const DataObject &lhs, DataObj
 
     int lhs_numPlanes = lhs.getNumPlanes();
     int rhs_numPlanes = rhs.getNumPlanes();
-    int dims = lhs.getDims();
+    int dims_lhs = lhs.getDims();
+	int dims_rhs = rhs.getDims();
 
     const cv::Mat **lhs_mdata = lhs.get_mdata();
     cv::Mat **rhs_mdata = rhs.get_mdata();
@@ -2357,8 +2358,9 @@ template<typename _Tp> RetVal DeepCopyPartialFunc(const DataObject &lhs, DataObj
 
     if (lhs_numPlanes == rhs_numPlanes) //both planes have the same size, line wise or block wise memcpy is possible
     {
-        int sizeX = lhs.getSize(dims - 1);
-        int sizeY = lhs.getSize(dims - 2);
+        int sizeX = lhs.getSize(dims_lhs - 1);
+        int sizeY = lhs.getSize(dims_lhs - 2);
+		int sizeX_rhs = rhs.getSize(dims_rhs - 1);
 
         int lineBytes = sizeX * sizeof(_Tp);
         int planeBytes = sizeY * lineBytes;
@@ -2375,7 +2377,7 @@ template<typename _Tp> RetVal DeepCopyPartialFunc(const DataObject &lhs, DataObj
             {
                 memcpy(rhs_mat->data, lhs_mat->data, planeBytes);
             }
-            else
+            else if (sizeX == sizeX_rhs) 
             {
                 lhs_ptr = lhs_mat->data;
                 rhs_ptr = rhs_mat->data;
@@ -2387,6 +2389,24 @@ template<typename _Tp> RetVal DeepCopyPartialFunc(const DataObject &lhs, DataObj
                     rhs_ptr += rhs_mat->step[0];
                 }
             }
+			else //so lhs has shape nXm while rhs is of shape mXn so it is necessary to loop ofer the cv:mats 
+			{
+				lhs_ptr = lhs_mat->data;
+				rhs_ptr = rhs_mat->data;
+				int row;
+				int col;
+				int res;
+				
+				for (row = 0; row < lhs_mat -> rows; ++row)
+				{
+					res = row * lineBytes;
+					for (col=0; col < lhs_mat -> cols; ++col)
+					{
+						rhs_mat->ptr(col)[row] = (lhs_ptr + res)[col];
+					}
+				}	
+
+			}
         }
     }
     else
