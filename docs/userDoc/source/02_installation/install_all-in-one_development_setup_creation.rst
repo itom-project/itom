@@ -174,6 +174,11 @@ Unzip the VTK source on your hard drive. Create a build_x64/build_x86 folder and
 * Add a new entry in CMAKE name = **"CMAKE_DEBUG_POSTFIX"**, type = **"STRING"** with the value = **"-gd"**
 * Change **CMAKE_INSTALL_PREFIX** to **${MAINDIR}/3rdPartyPCL/vtk7.0.0**
 * If an error occures with wrong Qt Version, change **VTK_QT_VERSION** to **5**
+* delete variable of **CMAKE_RC_FLAGS**, **CMAKE_STATIC_LINKER_FLAGS**
+
+.. note::
+
+    Check the Entries **Qt5_DIR**, **Qt5Core_DIR**..., if they are set to the right path. 
 
 .. note::
 
@@ -207,7 +212,14 @@ Unpack the PCL source on your hard drive. Create a build_x64/build_x86 folder an
 
 * Set **CMAKE_INSTALL_PREFIX** ${MAINDIR}/3rdPartyPCL/pcl1.8.0
 * check **BUILD_surface_on_nurbs** and **BUILD_visualization**
-* uncheck **BUILD_global_tests**, **BUILD_examples**
+* check CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE**
+* uncheck **BUILD_global_tests**, **BUILD_examples**, **BUILD_apps**, **BUILD_simulation**
+
+* delete variable of **CMAKE_RC_FLAGS**
+
+.. note:: 
+
+    paths of **Qt5Concurrent_DIR**, **Qt5OpenGl_DIR**, Qt5Widgets_DIR** must be set manually. 
     
 .. note::
 
