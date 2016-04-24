@@ -104,7 +104,7 @@ void PlotInfoMarker::updateMarker(const ito::Shape element)
 			curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(element.rbasePoints()));
 #endif
 
-			for each (QPointF basePoint in element.basePoints())
+			foreach (const QPointF &basePoint, element.basePoints())
 			{
 				curItem->addChild(new QTreeWidgetItem());
 				int curCnt = curItem->childCount() - 1; 
@@ -176,7 +176,7 @@ void PlotInfoMarker::updateMarkers(const QVector< ito::Shape > elements)
 				curItem->setData(1, Qt::UserRole, QVariant::fromValue<QPolygonF>(elements[curSearchIndex].basePoints()));
 #endif
 
-				for each (QPointF basePoint in elements[curSearchIndex].basePoints())
+				foreach (const QPointF &basePoint, elements[curSearchIndex].basePoints())
 				{
 					curItem->addChild(new QTreeWidgetItem());
 					curItem->child(curItem->childCount() - 1)->setData(1, Qt::DisplayRole, QString("%1, %2").arg(QString::number(basePoint.x()), QString::number(basePoint.y())));

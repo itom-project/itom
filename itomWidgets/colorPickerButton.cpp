@@ -30,7 +30,7 @@
 #include <QStylePainter>
 
 // CTK includes
-#include "ColorDialog.h"
+#include "colorDialog.h"
 #include "colorPickerButton.h"
 
 class ColorPickerButtonPrivate

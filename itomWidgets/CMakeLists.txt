@@ -100,7 +100,7 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/basePopupWidget_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/colorPickerButton.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ColorDialog.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/colorDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/checkableComboBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/comboBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/searchBox.h
@@ -189,7 +189,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/completer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rangeSlider.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/colorPickerButton.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/ColorDialog.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/colorDialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/collapsibleGroupBox.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleRangeSlider.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSlider.cpp

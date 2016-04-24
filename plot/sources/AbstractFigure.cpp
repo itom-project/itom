@@ -554,7 +554,7 @@ bool AbstractFigure::removeToolbox(const QString &key)
 	{ 
 		int index = 0;
 		found = false;
-		for each (ToolboxItem item in d->toolboxes)
+		foreach (ToolboxItem item, d->toolboxes)
 		{
 			if (item.toolbox == NULL)
 			{
@@ -596,7 +596,7 @@ void AbstractFigure::toolBoxDestroyed(QObject *object)
 		return;
 	}
 	int index = 0;
-	for each (ToolboxItem item in d->toolboxes)
+	foreach (ToolboxItem item, d->toolboxes)
 	{
 		if (item.toolbox == object)
 		{
@@ -616,7 +616,7 @@ void AbstractFigure::toolBarDestroyed(QObject *object)
 		return;
 	}
 	int index = 0;
-	for each (ToolBarItem item in d->toolbars)
+	foreach (ToolBarItem item, d->toolbars)
 	{
 		if (item.toolbar == object)
 		{

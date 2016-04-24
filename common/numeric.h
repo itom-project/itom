@@ -30,6 +30,7 @@
 
 #include "typeDefs.h"
 #include "color.h"
+#include <limits>
 
 // WARNING it is very EVIL to include ANY QT STUFF here!!!
 

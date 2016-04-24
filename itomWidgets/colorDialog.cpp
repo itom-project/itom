@@ -26,7 +26,7 @@
 #include <QVariant>
 
 // CTK includes
-#include "ColorDialog.h"
+#include "colorDialog.h"
 
 QList<QWidget*> ColorDialog::DefaultTabs;
 int ColorDialog::DefaultTab = -1;

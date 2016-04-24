@@ -320,7 +320,7 @@ void PlotInfoShapes::updateShape(const ito::Shape element)
 //---------------------------------------------------------------------------------------------------------
 void PlotInfoShapes::updateShapes(const QVector< ito::Shape > elements)
 {
-	for each (const ito::Shape &element in elements)
+	foreach (const ito::Shape &element, elements)
 	{
 		QTreeWidgetItem *curItem = NULL;
 
