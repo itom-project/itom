@@ -1,0 +1,13 @@
+{#
+    This file is part of quark-sphinx-theme.
+    Copyright (c) 2016 Felix Krull <f_krull@gmx.de>
+    Released under the terms of the BSD license; see LICENSE.
+#}
+
+{% extends 'basic/genindex-split.html' %}
+
+{% block sidebar1 %}
+  {% if not theme_hide_sidebar_in_index -%}
+    {{ sidebar_table() }}
+  {%- endif %}
+{% endblock %}

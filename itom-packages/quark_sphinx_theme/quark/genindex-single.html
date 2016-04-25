@@ -1,0 +1,41 @@
+{#
+    This file is part of quark-sphinx-theme.
+    Copyright (c) 2016 Felix Krull <f_krull@gmx.de>
+    Released under the terms of the BSD license; see LICENSE.
+
+    Based on code from the Sphinx project (http://sphinx-doc.org).
+    Copyright 2007-2016 by the Sphinx team.
+    Originally released under the terms of the BSD license.
+#}
+
+{% extends 'basic/genindex-single.html' %}
+
+{% block sidebar1 %}
+  {% if not theme_hide_sidebar_in_index -%}
+    {{ sidebar_table() }}
+  {%- endif %}
+{% endblock %}
+
+{% block body %}
+
+<h1 id="index">{% trans key=key %}Index &ndash; {{ key }}{% endtrans %}</h1>
+
+{#- Also set width as table and td attributes for QTextBrowser. -#}
+<table width="100%" style="width: 100%" class="indextable"><tr>
+  {%- for column in entries|slice(2) if column %}
+  <td width="50%" style="width: 50%" valign="top"><dl>
+    {%- for entryname, entry in column %}
+      {{ indexentries(entryname, entry[0]) }}
+      {%- if entry[1] %}
+      <dd><dl>
+      {%- for subentryname, subentrylinks in entry[1] %}
+        {{ indexentries(subentryname, subentrylinks) }}
+      {%- endfor %}
+      </dl></dd>
+      {%- endif -%}
+    {%- endfor %}
+  </dl></td>
+  {%- endfor %}
+</tr></table>
+
+{% endblock %}

@@ -1,0 +1,292 @@
+{#
+    This file is part of quark-sphinx-theme.
+    Copyright (c) 2016 Felix Krull <f_krull@gmx.de>
+    Released under the terms of the BSD license; see LICENSE.
+#}
+
+body {
+    color: {{ theme_text_color }};
+    {% if theme_body_font -%}
+        font-family: {{ theme_body_font }};
+    {%- endif %}
+    {% if theme_body_font_size -%}
+        font-size: {{ theme_body_font_size }};
+    {%- endif %}
+}
+
+.document {
+    margin-left: 2em;
+    margin-right: 2em;
+}
+
+li {
+    margin-top: 0.3em;
+    margin-bottom: 0.3em;
+    text-indent: {{ theme_li_extra_indent }}px;
+}
+
+{% for x in range(2, 10) -%}
+    {{ 'li ' * x }}{
+        text-indent: {{ theme_li_extra_indent | int * x }}px;
+    }
+{% endfor %}
+
+blockquote {
+    text-indent: {{ theme_li_extra_indent }}px;
+}
+
+
+
+/* header/footer navigation bar *
+ * ---------------------------- */
+.navbar {
+    background-color: {{ theme_navbar_bgcolor }};
+    /*margin: 0em;*/
+
+    width: 100%;
+}
+
+.navbar * {
+    color: {{ theme_navbar_color or 'transparent' }};
+}
+
+.navbar a {
+    {% if theme_underline_navbar_links -%}
+        text-decoration: underline;
+    {% endif %}
+}
+
+.navbar td {
+    padding: 0.2em;
+}
+
+.navbar-bottom {
+    margin-top: 2em;
+}
+
+.footer {
+    font-style: italic;
+    font-size: small;
+}
+
+
+
+/* sidebar *
+ * ------- */
+table.sidebar-table {
+    margin: 2em;
+    background-color: {{ theme_sidebar_bgcolor }};
+    float: right;
+    {% if theme_sidebar_border -%}
+        border-style: solid;
+        border-width: 1px;
+    {%- endif %}
+    border-color: {{ theme_text_color }};
+
+    width: 20%;
+}
+
+table.sidebar-table td {
+    padding: 1em;
+}
+
+{% for i in range(1, 7) -%}
+    .sphinxsidebar h{{ i }} {
+        font-size: medium;
+        font-weight: bold;
+    }
+{% endfor %}
+
+
+
+/* special index markup *
+ * -------------------- */
+table.genindextable td {
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+
+
+
+/* links *
+ * ----- */
+a {
+    color: {{ theme_link_color }};
+    text-decoration: {% if theme_underline_links -%}
+        underline
+    {%- else -%}
+        none
+    {%- endif %};
+}
+
+a.headerlink {
+    color: {{ theme_headerlink_color or theme_link_color }};
+    text-decoration: none;
+    font-size: medium;
+    font-weight: bold;
+
+    padding: 0.2em;
+}
+
+/* object references */
+a code.xref {
+    font-weight: bold;
+    color: {{ theme_xref_color or theme_link_color }};
+    text-decoration: none;
+}
+
+/* footnote references */
+a.footnote-reference {
+    font-size: small;
+}
+
+
+
+/* code listings *
+ * ------------- */
+code, pre {
+    {% if theme_code_font -%}
+        font-family: {{ theme_code_font }};
+    {%- endif %}
+    {% if theme_code_font_size -%}
+        font-size: {{ theme_code_font_size }};
+    {%- endif %}
+}
+
+code {
+    background-color: {{ theme_code_bgcolor }};
+}
+
+code.descname {
+    font-weight: bold;
+    background-color: transparent;
+}
+
+pre {
+    margin: 2em;
+    {% if theme_pre_bgcolor -%}
+        background-color: {{ theme_pre_bgcolor }} !important;
+    {%- endif %}
+}
+
+
+
+/* content tables *
+ * -------------- */
+table.docutils {
+    margin-top: 1em;
+}
+
+table.docutils td, table.docutils th {
+    padding: 0.3em;
+}
+
+
+
+/* footnotes and citations *
+ * ----------------------- */
+table.docutils.footnote, table.docutils.citation {
+    margin: 0;
+}
+
+table.docutils.footnote td, table.docutils.citation td {
+    padding: 0;
+}
+
+table.docutils.footnote td.label, table.docutils.citation td.label {
+    padding-right: 2em;
+}
+
+
+
+/* boxes -- admonitions, sidebars, topics *
+ * -------------------------------------- */
+.admonition, .sidebar, .topic {
+    margin-top: 2em;
+    margin-left: 2em;
+    margin-right: 2em;
+}
+
+.admonition p.last, .sidebar p.last, .topic p.last {
+    margin-bottom: 2em;
+}
+
+.admonition p.admonition-title, .sidebar p.sidebar-title, .topic p.topic-title {
+    font-size: large;
+    font-weight: bold;
+    background-color: transparent;
+}
+
+.sidebar p.sidebar-subtitle {
+    font-style: italic;
+}
+
+
+/* generic admonitions */
+.admonition p.admonition-title {
+    color: {{ theme_admonition_title_color }};
+    text-decoration: underline overline;
+}
+
+.admonition p {
+    background-color: {{ theme_admonition_bgcolor or 'transparent' }};
+    color: {{ theme_admonition_text_color or theme_text_color }};
+}
+
+
+/* warnings get special treatment */
+.warning p.admonition-title {
+    color: {{ theme_warning_title_color }};
+}
+
+.warning p {
+    background-color: {{ theme_warning_bgcolor or 'transparent' }};
+    color: {{ theme_warning_text_color or theme_text_color }};
+}
+
+
+
+/* misc markup *
+ * ----------- */
+.rubric {
+    font-weight: bold;
+}
+
+.versionmodified {
+    font-style: italic;
+}
+
+.field-list {
+    margin-top: 0;
+}
+
+.guilabel, .menuselection {
+    background-color: {{ theme_code_bgcolor }};
+}
+
+.accelerator {
+    text-decoration: underline;
+}
+
+.caption-text {
+    font-weight: bold;
+}
+
+
+
+{% if theme_full_browser_extras -%}
+    /* some extra hover niceties for full browsers *
+     * ------------------------------------------- */
+    a:hover {
+        text-decoration: underline;
+    }
+
+    a.headerlink:hover {
+        color: {{ theme_link_color }};
+        text-decoration: none;
+    }
+
+    .navbar a:hover {
+        color: {{ theme_link_color }};
+    }
+{%- endif %}
