@@ -189,7 +189,7 @@ Unzip the VTK source on your hard drive. Create a build_x64/build_x86 folder and
 Compile PCL
 ===========
 
-Unpack the PCL source on your hard drive. Create a build_x64/build_x86 folder and execute CMake with this folders. 
+Unpack the PCL source on your hard drive. Create a build_x64/build_x86 folder and execute CMake with this folders. After each step, you must start the CMake configuration, otherwise the new entries will not be added. 
 
 * Set **EIGEN_INCLUDE_DIR** to ${MAINDIR}/3rdPartyPCL/Eigen3.2.8
 * Set **FLANN_INCLUDE_DIR** to ${MAINDIR}/3rdPartyPCL/flann1.7.1/include
@@ -210,17 +210,17 @@ Unpack the PCL source on your hard drive. Create a build_x64/build_x86 folder an
 * Add new entry: **QVTK_LIBRARY_DEBUG** with **FILEPATH** ${MAINDIR}/3rdPartyPCL/vtk7.0.0/lib/vtkGUISupportQtOpenGL-7.0-gd.lib
 * Add new entry: **QVTK_LIBRARY_RELEASE** with **FILEPATH** ${MAINDIR}/3rdPartyPCL/vtk7.0.0/lib/vtkGUISupportQtOpenGL-7.0.lib
 
+* Set **Qt5Concurrent_DIR** to ${MAINDIR}/3rdParty/Qt5.6.0/5.6/msvc2013/lib/cmake/Qt5Concurrent
+* Set **Qt5OpenGl_DIR** to ${MAINDIR}/3rdParty/Qt5.6.0/5.6/msvc2013/lib/cmake/Qt5OpenGl_DIR
+* Set **Qt5Widgets_DIR** to ${MAINDIR}/3rdParty/Qt5.6.0/5.6/msvc2013/lib/cmake/Qt5Widgets_DIR
+
 * Set **CMAKE_INSTALL_PREFIX** ${MAINDIR}/3rdPartyPCL/pcl1.8.0
 * check **BUILD_surface_on_nurbs** and **BUILD_visualization**
-* check CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE**
+* check **CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE**
 * uncheck **BUILD_global_tests**, **BUILD_examples**, **BUILD_apps**, **BUILD_simulation**
 
 * delete variable of **CMAKE_RC_FLAGS**
 
-.. note:: 
-
-    paths of **Qt5Concurrent_DIR**, **Qt5OpenGl_DIR**, Qt5Widgets_DIR** must be set manually. 
-    
 .. note::
 
     PCL compiles only with Eigen3.2.7 version. Version 3.2.8 does not work. 

@@ -17,6 +17,7 @@ import sphinx
 import itom as itomFuncs
 import __main__
 import inspect
+import quark_sphinx_theme
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -42,6 +43,8 @@ if sphinx.__version__ >= "0.7":
 else:
     extensions.append('autosummary')
     extensions.append('only_directives')
+
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -118,13 +121,30 @@ autodoc_docstring_signature = True
 
 # -- Options for HTML output ---------------------------------------------------
 
+#get Qt version. Qt 5.6.0 only has a reduced subset of css commands in the assistant.
+#Therefore, a reduced style theme has to be used (theme quark_spinx_theme from https://bitbucket.org/fk/quark-sphinx-theme)
+qt_version = itomFuncs.version(True)["itom"]["QT_Version"]
+
+if (qt_version >= '5.6.0'):
+    #choose quark theme as main theme
+    html_theme = 'quark'
+    extensions.append('quark_sphinx_theme.ext.html_compat')
+    html_theme_options = {
+        'body_font_size':'11pt',
+        'body_font':'Helvetica'
+    }
+    html_theme_path = [quark_sphinx_theme.get_path()]
+else:
+    #choose itom theme as main theme
+    html_theme = 'itom'
+    html_theme_path = ['_themes']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #html_theme = 'default'
 #html_theme = 'agogo'
 #html_theme = 'sphinxdoc'
 #html_theme = 'haiku'
-html_theme = 'itom'
+#html_theme = 'itom'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -132,7 +152,7 @@ html_theme = 'itom'
 #html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = ['_themes']
+#html_theme_path = ['_themes']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
