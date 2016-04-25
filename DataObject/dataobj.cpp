@@ -2395,14 +2395,13 @@ template<typename _Tp> RetVal DeepCopyPartialFunc(const DataObject &lhs, DataObj
 				rhs_ptr = rhs_mat->data;
 				int row;
 				int col;
-				int res;
+				
 				
 				for (row = 0; row < lhs_mat -> rows; ++row)
 				{
-					res = row * lineBytes;
 					for (col=0; col < lhs_mat -> cols; ++col)
 					{
-						rhs_mat->ptr(col)[row] = (lhs_ptr + res)[col];
+                        rhs_mat->ptr<_Tp>(col)[row] = ((const _Tp*)((lhs_ptr + row * lineBytes)))[col];
 					}
 				}	
 
