@@ -70,20 +70,52 @@ message(STATUS ${CMAKE_CURRENT_BINARY_DIR})
 
 # check files and directories from pymatlab, if flag BUILD_WITH_PYMATLAB is set
 IF (BUILD_WITH_PYMATLAB)
-    FIND_PATH(PYMATLAB_INCLUDE_DIRS "engine.h")
-    IF (NOT PYMATLAB_INCLUDE_DIRS)
-        MESSAGE(FATAL_ERROR "BUILD_WITH_PYMATLAB is checked, but PYMATLAB_INCLUDE_DIRS could not be found")
-    ENDIF()
-    FIND_LIBRARY(PYMATLAB_LIB_ENG libeng PATHS ${MATLAB_LIBRARY_DIR})
-    FIND_LIBRARY(PYMATLAB_LIB_MX libmx PATHS ${MATLAB_LIBRARY_DIR})
-    IF (PYMATLAB_LIB_ENG AND PYMATLAB_LIB_MX)
-        SET(PYMATLAB_LIBRARIES ${PYMATLAB_LIB_ENG} ${PYMATLAB_LIB_MX})
+    IF (WIN32)
+        set(MATLAB_ROOT_PATH
+            ${MATLAB_ROOT_PATH}
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\7.0;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\7.12;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\7.14;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\8.0;MATLABROOT]"
+            "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\8.1;MATLABROOT]"
+        )
+        
+        IF(BUILD_TARGET64)
+            set(MATLAB_LIB_SUFFIXES
+                "lib/win64"
+                "lib/win64/microsoft"
+                "extern/lib/win64"
+                "extern/lib/win64/microsoft"
+            )
+        ELSE()
+            set(MATLAB_LIB_SUFFIXES
+                "lib/win32"
+                "lib/win32/microsoft"
+                "extern/lib/win32"
+                "extern/lib/win32/microsoft"
+            )
+        ENDIF()
     ELSE()
-        MESSAGE(FATAL_ERROR "The matlab libraries libeng or libmx could not be found. Indicate MATLAB_LIBRARY_DIR as directory where these libraries can be found")
+        set(MATLAB_LIB_SUFFIXES)
+    ENDIF()
+  
+    FIND_PATH(PYMATLAB_INCLUDE_DIR "engine.h" PATHS ${MATLAB_ROOT_PATH}/extern/include)
+    IF (NOT PYMATLAB_INCLUDE_DIR)
+        MESSAGE(FATAL_ERROR "BUILD_WITH_PYMATLAB is checked, but PYMATLAB_INCLUDE_DIR could not be found")
         SET(PYMATLAB_LIBRARIES "")
+    ELSE()
+        FIND_LIBRARY(PYMATLAB_LIB_ENG libeng PATHS ${MATLAB_LIBRARY_DIR} ${PYMATLAB_INCLUDE_DIR}/.. ${MATLAB_ROOT_PATH} PATH_SUFFIXES ${MATLAB_LIB_SUFFIXES})
+        FIND_LIBRARY(PYMATLAB_LIB_MX libmx PATHS PATHS ${MATLAB_LIBRARY_DIR} ${PYMATLAB_INCLUDE_DIR}/.. ${MATLAB_ROOT_PATH} PATH_SUFFIXES ${MATLAB_LIB_SUFFIXES})
+        IF (PYMATLAB_LIB_ENG AND PYMATLAB_LIB_MX)
+            #SET(PYMATLAB_LIBRARIES ${PYMATLAB_LIB_ENG} ${PYMATLAB_LIB_MX})
+            SET(PYMATLAB_LIBRARIES "")
+        ELSE()
+            MESSAGE(FATAL_ERROR "The matlab libraries libeng or libmx could not be found. Indicate MATLAB_LIBRARY_DIR as directory where these libraries can be found")
+            SET(PYMATLAB_LIBRARIES "")
+        ENDIF()
     ENDIF()
 ELSE (BUILD_WITH_PYMATLAB)
-    SET(PYMATLAB_INCLUDE_DIRS "")
+    SET(PYMATLAB_INCLUDE_DIR "")
     SET(PYMATLAB_LIBRARIES "")
 ENDIF (BUILD_WITH_PYMATLAB)
 
@@ -99,7 +131,7 @@ INCLUDE_DIRECTORIES(
     ${QSCINTILLA_INCLUDE_DIR}
     ${OpenCV_DIR}/include
     ${PCL_INCLUDE_DIRS}
-    ${PYMATLAB_INCLUDE_DIRS}
+    ${PYMATLAB_INCLUDE_DIR}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
     ../DataObject/
     ../PointCloud/
@@ -353,6 +385,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonDataObject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonEngine.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItom.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonMatlab.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNpDataObject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNumeric.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.cpp

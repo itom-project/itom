@@ -314,8 +314,9 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             PyImport_AppendInittab("itomDbgWrapper", &PythonEngine::PyInitItomDbg);  //!< add all static, known function calls to python-module itomdbg
 
 #if ITOM_PYTHONMATLAB == 1
-            PyImport_AppendInittab("matlab", &PyInit_matlab);
+            PyImport_AppendInittab("matlab", &PythonMatlab::PyInit_matlab);
 #endif
+
             //check if an alternative home directory of Python should be set:
             QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
             settings.beginGroup("Python");
