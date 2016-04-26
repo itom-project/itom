@@ -23,26 +23,6 @@
 #ifndef PYTHONMATLAB_H
 #define PYTHONMATLAB_H
 
-#if 1 || ITOM_PYTHONMATLAB == 1
-/* * *
- * Copyright 2010 Joakim Mller
- *
- * This file is part of pymatlab.
- * 
- * pymatlab is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * pymatlab is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with pymatlab.  If not, see <http://www.gnu.org/licenses/>.
- * * */
-
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 
 // see http://vtk.org/gitweb?p=VTK.git;a=commitdiff;h=7f3f750596a105d48ea84ebfe1b1c4ca03e0bab3
@@ -71,13 +51,34 @@
         #include "../Lib/site-packages/numpy/core/include/numpy/arrayobject.h" //for numpy arrays
     #endif
 #endif
+#include "structmember.h"
 
+#include "../global.h"
 
+#if ITOM_PYTHONMATLAB == 1
+/* * *
+ * Copyright 2010 Joakim Mller
+ *
+ * This file is part of pymatlab.
+ * 
+ * pymatlab is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * pymatlab is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with pymatlab.  If not, see <http://www.gnu.org/licenses/>.
+ * * */
 
-#include <engine.h>
 #include "common/retVal.h"
-
 #include <qlibrary.h>
+#include <engine.h>
+
 
 
 namespace ito

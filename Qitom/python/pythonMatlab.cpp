@@ -22,7 +22,7 @@
 
 #include "pythonMatlab.h"
 
-#include "structmember.h"
+
 #include "pythonCommon.h"
 
 

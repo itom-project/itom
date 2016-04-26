@@ -273,6 +273,7 @@ int main(int argc, char *argv[])
 #else
         SetDllDirectory(libDir.toLatin1().data());
 #endif
+
     }
 #endif
 #else
