@@ -56,6 +56,27 @@ Optionally there is a 3rd party package that brings support for the PointCloudLi
 * VTK 6.1.0 (prebuild with Qt 5.4.1 support)
 * PCL 1.8.0 (prebuild with support of all libraries above)
 
+**Version Visual Studio 2013 with Qt 5.6.0**
+
+* Available for Visual Studio 2013 32bit and 64bit (Visual Studio 2013 required, e.g. free Community Edition)
+* Git 2.8.1 (setup in package, needs to be installed)
+* Python 3.5.1 (setup in package, needs to be installed)
+* Numpy MKL 1.11.0 (setup in package, will automatically be installed)
+* Qt 5.6.0 (prebuild)
+* OpenCV 3.1.0 (prebuild for VS2013)
+* CMake 3.5.1 (prebuild)
+* QScintilla 2.9.1 (prebuild inside of Qt 5.6.0)
+* Doxygen
+
+Optionally there is a 3rd party package that brings support for the PointCloudLibrary for itom. This secondary archive contains the following features:
+
+* Boost 1.60.0 (prebuild)
+* Eigen 3.2.7 (prebuild)
+* Flann 1.7.1 (prebuild)
+* QHull 2015.2 (prebuild)
+* VTK 7.0.0 (prebuild with Qt 5.6.0 support)
+* PCL 1.8.0 (prebuild with support of all libraries above)
+
 Prerequisites for the development setup
 ========================================
 
@@ -97,9 +118,9 @@ Then execute the following steps:
     
     If not yet available, install
     
-    * Git 1.9.4
-    * Python 3.4.2
-    * Numpy 1.8.2
+    * Git 1.9.4 or similar version
+    * Python 3.4.2 or similar version
+    * Numpy 1.8.2 (Numpy 1.11.0 needs not to be installed, it is automatically installed at setup process)
     
     on your computer. This is required for the further installation. Optionally you can install the **Qt-AddIn** for Visual Studio as well as
     **TortoiseGit** from the **optional** folder. This can also be done later.
