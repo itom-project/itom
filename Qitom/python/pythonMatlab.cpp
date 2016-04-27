@@ -25,7 +25,7 @@
 
 #include "pythonCommon.h"
 
-
+#if ITOM_PYTHONMATLAB == 1
 
 #define PYMATLAB_VERSION "0.2"
 #define AUTHOR "Joakim Moller, Marc Gronle (Python 3)"
@@ -746,3 +746,5 @@ fail:
 }
 
 }
+
+#endif
