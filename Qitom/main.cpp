@@ -40,6 +40,10 @@
 #include <qmutex.h>
 #include <QSysInfo>
 
+#if WIN32
+#include <Windows.h>
+#endif
+
 //#include "benchmarks.h"
 
 //DOXYGEN FORMAT

@@ -47,6 +47,10 @@
 #include <qresource.h>
 #include <qfileinfo.h>
 
+#if WIN32
+#include <Windows.h>
+#endif
+
 namespace ito
 {
 
@@ -211,6 +215,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
 #ifdef WIN32
     if (pathes.length() > 0)
     {
+#ifdef WINVER
 #if WINVER >= 0x0602 
         //this is optional and only valid for Windows 8 or higher (at least the Windows SDK must be compatibel to this).
         //the 'lib' directory is already added to the default search pathes for LoadLibrary commands in main.cpp.
@@ -235,6 +240,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
 #endif
             }
         }
+#endif
 #endif
 
         QString p = pathes.join(";");
