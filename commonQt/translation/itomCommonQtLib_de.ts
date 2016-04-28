@@ -55,30 +55,30 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/sources/AbstractFigure.cpp" line="188"/>
-        <location filename="../../plot/sources/AbstractFigure.cpp" line="234"/>
+        <location filename="../../plot/sources/AbstractFigure.cpp" line="198"/>
+        <location filename="../../plot/sources/AbstractFigure.cpp" line="244"/>
         <source>duplicate Channel, in addChannel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/sources/AbstractFigure.cpp" line="196"/>
-        <location filename="../../plot/sources/AbstractFigure.cpp" line="203"/>
+        <location filename="../../plot/sources/AbstractFigure.cpp" line="206"/>
+        <location filename="../../plot/sources/AbstractFigure.cpp" line="213"/>
         <source>parameters incompatible, while adding channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/sources/AbstractFigure.cpp" line="208"/>
+        <location filename="../../plot/sources/AbstractFigure.cpp" line="218"/>
         <source>undefined channel direction, while adding channel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/sources/AbstractFigure.cpp" line="223"/>
+        <location filename="../../plot/sources/AbstractFigure.cpp" line="233"/>
         <source>invalid child pointer, in addChannel</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../plot/sources/AbstractFigure.cpp" line="250"/>
-        <location filename="../../plot/sources/AbstractFigure.cpp" line="275"/>
+        <location filename="../../plot/sources/AbstractFigure.cpp" line="260"/>
+        <location filename="../../plot/sources/AbstractFigure.cpp" line="285"/>
         <source>channel does not exist</source>
         <translation type="unfinished"></translation>
     </message>
@@ -633,7 +633,7 @@ Type conflict for %1</source>
 <context>
     <name>ito::AbstractFigure</name>
     <message>
-        <location filename="../../plot/sources/AbstractFigure.cpp" line="145"/>
+        <location filename="../../plot/sources/AbstractFigure.cpp" line="156"/>
         <source>Properties</source>
         <translation type="unfinished">Eigenschaften</translation>
     </message>

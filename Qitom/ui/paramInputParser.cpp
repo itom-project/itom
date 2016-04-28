@@ -350,14 +350,14 @@ QWidget* ParamInputParser::renderTypeInt(const ito::Param &param, int /*virtualI
             box->setMinimum(meta->getMin());
             box->setMaximum(meta->getMax());
             box->setSingleStep(meta->getStepSize());
-            box->setToolTip(QString("min: %1, max: %2, step: %3").arg(meta->getMin()).arg(meta->getMax()).arg(meta->getStepSize()));
+            box->setToolTip(tr("min: %1, max: %2, step: %3").arg(meta->getMin()).arg(meta->getMax()).arg(meta->getStepSize()));
         }
         else
         {
             box->setMinimum(std::numeric_limits<int>::min());
             box->setMaximum(std::numeric_limits<int>::max());
             box->setSingleStep(1);
-            box->setToolTip("unlimited");
+            box->setToolTip(tr("unlimited"));
         }
 
         box->setValue(const_cast<ito::Param&>(param).getVal<int>());
@@ -377,14 +377,14 @@ QWidget* ParamInputParser::renderTypeChar(const ito::Param &param, int /*virtual
         box->setMinimum((int)meta->getMin());
         box->setMaximum((int)meta->getMax());
         box->setSingleStep((int)meta->getStepSize());
-        box->setToolTip(QString("min: %1, max: %2, step: %3").arg(meta->getMin()).arg(meta->getMax()).arg(meta->getStepSize()));
+        box->setToolTip(tr("min: %1, max: %2, step: %3").arg(meta->getMin()).arg(meta->getMax()).arg(meta->getStepSize()));
     }
     else
     {
         box->setMinimum(std::numeric_limits<char>::min());
         box->setMaximum(std::numeric_limits<char>::max());
         box->setSingleStep(1);
-        box->setToolTip("unlimited");
+        box->setToolTip(tr("unlimited"));
     }
 
     box->setValue(const_cast<ito::Param&>(param).getVal<int>());
@@ -406,18 +406,18 @@ QWidget* ParamInputParser::renderTypeDouble(const ito::Param &param, int /*virtu
         if (meta->getStepSize() != 0.0)
         {
             box->setSingleStep(meta->getStepSize());
-            box->setToolTip(QString("min: %1, max: %2, step: %3").arg(meta->getMin()).arg(meta->getMax()).arg(meta->getStepSize()));
+            box->setToolTip(tr("min: %1, max: %2, step: %3").arg(meta->getMin()).arg(meta->getMax()).arg(meta->getStepSize()));
         }
         else
         {
-            box->setToolTip(QString("min: %1, max: %2").arg(meta->getMin()).arg(meta->getMax()));
+            box->setToolTip(tr("min: %1, max: %2").arg(meta->getMin()).arg(meta->getMax()));
         }
     }
     else
     {
         box->setMinimum(std::numeric_limits<double>::min());
         box->setMaximum(std::numeric_limits<double>::max());
-        box->setToolTip("unlimited");
+        box->setToolTip(tr("unlimited"));
     }
 
     box->setValue(const_cast<ito::Param&>(param).getVal<double>());
@@ -512,80 +512,18 @@ QWidget* ParamInputParser::renderTypeHWRef(const ito::Param & /*param*/, int vir
 //----------------------------------------------------------------------------------------------------------------------------------
 QWidget* ParamInputParser::renderTypeIntArray(const ito::Param & /*param*/, int virtualIndex, QWidget *parent)
 {
-/*    QWidget *container = new QWidget(parent);
-    QHBoxLayout *layout = new QHBoxLayout();
-    QLineEdit *txt = new QLineEdit(container);
-    txt->setObjectName(QString("ArrayInt_%1").arg(virtualIndex));
-//    txt->setText("");
-//    txt->setEnabled(false);
-
-    QToolButton *tool = new QToolButton(container);
-    tool->setIcon(QIcon(":/application/icons/list.png"));
-    connect(tool, SIGNAL(clicked()), m_pSignalMapper_browseArrayPicker, SLOT(map()));
-    m_pSignalMapper_browseArrayPicker->setMapping(tool, virtualIndex);
-
-    layout->addWidget(txt);
-    layout->addWidget(tool);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-
-    container->setLayout(layout);
-
-    return container;*/
-
     return renTypeArray(virtualIndex, parent, "ArrayInt");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 QWidget* ParamInputParser::renderTypeDoubleArray(const ito::Param & /*param*/, int virtualIndex, QWidget *parent)
 {
-/*    QWidget *container = new QWidget(parent);
-    QHBoxLayout *layout = new QHBoxLayout();
-    QLineEdit *txt = new QLineEdit(container);
-    txt->setObjectName(QString("ArrayDbl_%1").arg(virtualIndex));
-//    txt->setText("");
-//    txt->setEnabled(false);
-
-    QToolButton *tool = new QToolButton(container);
-    tool->setIcon(QIcon(":/application/icons/list.png"));
-    connect(tool, SIGNAL(clicked()), m_pSignalMapper_browseArrayPicker, SLOT(map()));
-    m_pSignalMapper_browseArrayPicker->setMapping(tool, virtualIndex);
-
-    layout->addWidget(txt);
-    layout->addWidget(tool);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-
-    container->setLayout(layout);
-
-    return container;*/
-
     return renTypeArray(virtualIndex, parent, "ArrayDbl");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 QWidget* ParamInputParser::renderTypeCharArray(const ito::Param & /*param*/, int virtualIndex, QWidget *parent)
 {
-/*    QWidget *container = new QWidget(parent);
-    QHBoxLayout *layout = new QHBoxLayout();
-    QLineEdit *txt = new QLineEdit(container);
-    txt->setObjectName(QString("ArrayChar_%1").arg(virtualIndex));
-//    txt->setText("");
-//    txt->setEnabled(false);
-
-    QToolButton *tool = new QToolButton(container);
-    tool->setIcon(QIcon(":/application/icons/list.png"));
-    connect(tool, SIGNAL(clicked()), m_pSignalMapper_browseArrayPicker, SLOT(map()));
-    m_pSignalMapper_browseArrayPicker->setMapping(tool, virtualIndex);
-
-    layout->addWidget(txt);
-    layout->addWidget(tool);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-
-    container->setLayout(layout);
-
-    return container;*/
     return renTypeArray(virtualIndex, parent, "ArrayChar");
 }
 
@@ -768,7 +706,7 @@ ito::RetVal ParamInputParser::getIntArray(ito::ParamBase &param, const ito::Para
                 value = s.toInt(&ok);
                 if (!ok)
                 {
-                    retVal += ito::RetVal(ito::retError, 0, tr("Invalid integer list of parameter '%1': Value %2 at position %3 is no integer number.") \
+                    retVal += ito::RetVal(ito::retError, 0, tr("Invalid integer list of parameter '%1': Value '%2' at position %3 is no integer number.") \
                                                                                        .arg(orgParam.getName()).arg(s).arg(i).toLatin1().data());
                     break;
                 }
@@ -822,7 +760,7 @@ ito::RetVal ParamInputParser::getDoubleArray(ito::ParamBase &param, const ito::P
                 value = s.toDouble(&ok);
                 if (!ok)
                 {
-                    retVal += ito::RetVal(ito::retError, 0, tr("Invalid double list of parameter '%1': Value %2 at position %3 is no double number.") \
+                    retVal += ito::RetVal(ito::retError, 0, tr("Invalid double list of parameter '%1': Value '%2' at position %3 is no double number.") \
                                                                                        .arg(orgParam.getName()).arg(s).arg(i).toLatin1().data());
                     break;
                 }
@@ -876,7 +814,7 @@ ito::RetVal ParamInputParser::getCharArray(ito::ParamBase &param, const ito::Par
                 value = s.toInt(&ok);
                 if (!ok)
                 {
-                    retVal += ito::RetVal(ito::retError, 0, tr("Invalid integer list of parameter '%1': Value %2 at position %3 is no integer number.") \
+                    retVal += ito::RetVal(ito::retError, 0, tr("Invalid integer list of parameter '%1': Value '%2' at position %3 is no integer number.") \
                                                                                        .arg(orgParam.getName()).arg(s).arg(i).toLatin1().data());
                     break;
                 }
@@ -1020,7 +958,10 @@ void ParamInputParser::browseArrayPicker(int i)
                     value = list[i].toInt(&ok);
                     if (!ok)
                     {
-                        // Error
+                        QMessageBox msgBox;
+                        msgBox.setText(tr("Invalid integer list: Value '%1' at position %2 is no integer number.").arg(list[i]).arg(i));
+                        msgBox.setIcon(QMessageBox::Critical);
+                        msgBox.exec();
                         break;
                     }
                 }
@@ -1048,7 +989,10 @@ void ParamInputParser::browseArrayPicker(int i)
                     value = list[i].toDouble(&ok);
                     if (!ok)
                     {
-                        // Error
+                        QMessageBox msgBox;
+                        msgBox.setText(tr("Invalid double list: Value '%1' at position %2 is no double number.").arg(list[i]).arg(i));
+                        msgBox.setIcon(QMessageBox::Critical);
+                        msgBox.exec();
                         break;
                     }
                 }
@@ -1059,7 +1003,10 @@ void ParamInputParser::browseArrayPicker(int i)
     }
     else
     {
-        // Error
+        QMessageBox msgBox;
+        msgBox.setText(tr("Unknown paramType: %1").arg(paramType));
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.exec();
         ok = false;
     }
 

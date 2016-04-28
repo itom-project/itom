@@ -140,7 +140,7 @@ ParamInputDialog::ParamInputDialog(const QStringList &stringList, const ito::Par
 
     if (paramType == intArray)
     {
-        setWindowTitle("IntArray");
+        setWindowTitle(tr("IntArray"));
         m_minVal = std::numeric_limits<int>::min();
         m_maxVal = std::numeric_limits<int>::max();
 
@@ -159,7 +159,7 @@ ParamInputDialog::ParamInputDialog(const QStringList &stringList, const ito::Par
     }
     else if (paramType == doubleArray)
     {
-        setWindowTitle("DoubleArray");
+        setWindowTitle(tr("DoubleArray"));
         m_minVal = -std::numeric_limits<double>::max();
         m_maxVal = std::numeric_limits<double>::max();
 
@@ -178,7 +178,7 @@ ParamInputDialog::ParamInputDialog(const QStringList &stringList, const ito::Par
     }
     else if (paramType == charArray)
     {
-        setWindowTitle("CharArray");
+        setWindowTitle(tr("CharArray"));
         m_minVal = std::numeric_limits<char>::min();
         m_maxVal = std::numeric_limits<char>::max();
 
