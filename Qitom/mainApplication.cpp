@@ -223,34 +223,6 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
 #ifdef WIN32
     if (appendPathes.length() > 0 || prependPathes.length() > 0)
     {
-#ifdef WINVER
-#if WINVER >= 0x0602 
-        //this is optional and only valid for Windows 8 or higher (at least the Windows SDK must be compatibel to this).
-        //the 'lib' directory is already added to the default search pathes for LoadLibrary commands in main.cpp.
-        //However, further pathes have to be added with AddDllDirectory, which is only available for Windows SDKs >= Win8!
-        //
-        if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS7) //sometimes the win8 SDK has also be propagated to Windows 7. Therefore, let Win7 be accepted, too.
-        {
-            SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
-#if UNICODE
-            //sometimes LoadLibrary commands in plugins with files that are located in the lib folder cannot be loaded
-            //even if the lib folder is add to the path variable in this funtion, too. The SetDllDirectory
-            //is another approach to reach this (only available since Win XP).
-            foreach(const QString &path, prependPathes + appendPathes)
-            {
-                wchar_t *lib_path = new wchar_t[path.size() + 5];
-                memset(lib_path, 0, (path.size() + 5) * sizeof(wchar_t));
-                path.toWCharArray(lib_path);
-                AddDllDirectory(lib_path);
-                delete lib_path;
-#else
-                AddDllDirectory(path.toLatin1().data());
-#endif
-            }
-        }
-#endif
-#endif
-
         QByteArray oldpath = getenv("path");
         QByteArray prepend = prependPathes.length() > 0 ? prependPathes.join(";").toLatin1() + ";" : "";
         QByteArray append = appendPathes.length() > 0 ? ";" + appendPathes.join("; ").toLatin1() : "";
@@ -531,6 +503,41 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     }
     settings->endGroup();
     settings->sync();
+
+#ifdef WIN32
+    //For Windows: add the append and prepend pathes to the search directories for subsequent LoadLibrary commands. This is done after
+    //having loaded all the plugins, since the 'SetDefaultDllDirectories' command will let some plugins not beeing loaded.
+    if (appendPathes.length() > 0 || prependPathes.length() > 0)
+    {
+#ifdef WINVER
+#if WINVER >= 0x0602 
+        //this is optional and only valid for Windows 8 or higher (at least the Windows SDK must be compatibel to this).
+        //the 'lib' directory is already added to the default search pathes for LoadLibrary commands in main.cpp.
+        //However, further pathes have to be added with AddDllDirectory, which is only available for Windows SDKs >= Win8!
+        //
+        if (QSysInfo::windowsVersion() >= QSysInfo::WV_WINDOWS7) //sometimes the win8 SDK has also be propagated to Windows 7. Therefore, let Win7 be accepted, too.
+        {
+            SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_DEFAULT_DIRS);
+#if UNICODE
+            //sometimes LoadLibrary commands in plugins with files that are located in the lib folder cannot be loaded
+            //even if the lib folder is add to the path variable in this funtion, too. The SetDllDirectory
+            //is another approach to reach this (only available since Win XP).
+            foreach(const QString &path, prependPathes + appendPathes)
+            {
+                wchar_t *lib_path = new wchar_t[path.size() + 5];
+                memset(lib_path, 0, (path.size() + 5) * sizeof(wchar_t));
+                path.toWCharArray(lib_path);
+                AddDllDirectory(lib_path);
+                delete lib_path;
+#else
+            AddDllDirectory(path.toLatin1().data());
+#endif
+            }
+        }
+#endif
+#endif
+    }
+#endif
 
     //try to execute startup-python scripts
     m_splashScreen->showMessage(tr("execute startup scripts..."), Qt::AlignRight | Qt::AlignBottom);
