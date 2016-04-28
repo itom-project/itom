@@ -71,6 +71,7 @@ QStringList StringListDialog::getStringList()
     {
         stringlist.append(ui.listWidget->item(i)->data(Qt::DisplayRole).toString());
     }
+
     return stringlist;
 }
 
@@ -90,9 +91,13 @@ void StringListDialog::on_newListItemButton_clicked()
     QListWidgetItem *item = new QListWidgetItem(m_newItemText);
     item->setFlags(item->flags() | Qt::ItemIsEditable);
     if (row < ui.listWidget->count())
+    {
         ui.listWidget->insertItem(row, item);
+    }
     else
+    {
         ui.listWidget->addItem(item);
+    }
 
     ui.listWidget->setCurrentItem(item);
     ui.listWidget->editItem(item);
@@ -103,16 +108,23 @@ void StringListDialog::on_deleteListItemButton_clicked()
 {
     int row = ui.listWidget->currentRow();
 
-    if (row != -1) {
+    if (row != -1)
+    {
         delete ui.listWidget->takeItem(row);
     }
 
     if (row == ui.listWidget->count())
+    {
         row--;
+    }
     if (row < 0)
+    {
         updateEditor();
+    }
     else
+    {
         ui.listWidget->setCurrentRow(row);
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -120,7 +132,9 @@ void StringListDialog::on_moveListItemUpButton_clicked()
 {
     int row = ui.listWidget->currentRow();
     if (row <= 0)
+    {
         return; // nothing to do
+    }
 
     ui.listWidget->insertItem(row - 1, ui.listWidget->takeItem(row));
     ui.listWidget->setCurrentRow(row - 1);
@@ -131,7 +145,9 @@ void StringListDialog::on_moveListItemDownButton_clicked()
 {
     int row = ui.listWidget->currentRow();
     if (row == -1 || row == ui.listWidget->count() - 1)
+    {
         return; // nothing to do
+    }
 
     ui.listWidget->insertItem(row + 1, ui.listWidget->takeItem(row));
     ui.listWidget->setCurrentRow(row + 1);
@@ -150,17 +166,24 @@ void StringListDialog::setItemData(int role, const QVariant &v)
     bool reLayout = false;
     if ((role == Qt::EditRole && (v.toString().count(QLatin1Char('\n')) != item->data(role).toString().count(QLatin1Char('\n'))))
         || role == Qt::FontRole)
-            reLayout = true;
+    {
+        reLayout = true;
+    }
+
     QVariant newValue = v;
-    if (role == Qt::FontRole && newValue.type() == QVariant::Font) {
+    if (role == Qt::FontRole && newValue.type() == QVariant::Font)
+    {
         QFont oldFont = ui.listWidget->font();
         QFont newFont = qvariant_cast<QFont>(newValue).resolve(oldFont);
         newValue = QVariant::fromValue(newFont);
         item->setData(role, QVariant()); // force the right font with the current resolve mask is set (item view bug)
     }
+
     item->setData(role, newValue);
     if (reLayout)
+    {
         ui.listWidget->doItemsLayout();
+    }
 }
 
 //-------------------------------------------------------------------------------------
@@ -178,13 +201,19 @@ void StringListDialog::updateEditor()
     bool moveRowDownEnabled = false;
 
     QListWidgetItem *item = ui.listWidget->currentItem();
-    if (item) {
+    if (item)
+    {
         currentItemEnabled = true;
         int currentRow = ui.listWidget->currentRow();
         if (currentRow > 0)
+        {
             moveRowUpEnabled = true;
+        }
+
         if (currentRow < ui.listWidget->count() - 1)
+        {
             moveRowDownEnabled = true;
+        }
     }
 
     ui.moveListItemUpButton->setEnabled(moveRowUpEnabled);

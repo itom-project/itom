@@ -29,6 +29,7 @@
 #include <qregexp.h>
 #include "../global.h"
 #include "dialogPluginPicker.h"
+#include "paramInputDialog.h"
 #include "../helper/paramHelper.h"
 
 namespace ito {
@@ -40,8 +41,11 @@ ParamInputParser::ParamInputParser(QWidget *canvas) :
     m_canvas = QPointer<QWidget>(canvas);
     m_iconInfo = QIcon(":/plugins/icons/info.png");
 
-    m_pSignalMapper = new QSignalMapper(this);
-    connect(m_pSignalMapper, SIGNAL(mapped(int)), this, SLOT(browsePluginPicker(int)));
+    m_pSignalMapper_browsePluginPicker = new QSignalMapper(this);
+    connect(m_pSignalMapper_browsePluginPicker, SIGNAL(mapped(int)), this, SLOT(browsePluginPicker(int)));
+
+    m_pSignalMapper_browseArrayPicker = new QSignalMapper(this);
+    connect(m_pSignalMapper_browseArrayPicker, SIGNAL(mapped(int)), this, SLOT(browseArrayPicker(int)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -80,8 +84,8 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param> &params)
     foreach (const ito::Param &param, params)
     {
         m_lblInfo = new QLabel(parent);
-        m_lblInfo->setMaximumSize(24,24);
-        m_lblInfo->setPixmap(m_iconInfo.pixmap(16,16));
+        m_lblInfo->setMaximumSize(24, 24);
+        m_lblInfo->setPixmap(m_iconInfo.pixmap(16, 16));
 
         QString info = QLatin1String(param.getInfo());
         if (info == "")
@@ -116,30 +120,42 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param> &params)
 
         switch(param.getType() & ito::paramTypeMask)
         {
-        case ito::ParamBase::Int:
-            m_lblType->setText(tr("[Integer]"));
-            m_content = renderTypeInt(param, i, parent);
-            break;
-        case ito::ParamBase::Char:
-            m_lblType->setText(tr("[Char]"));
-            m_content = renderTypeChar(param, i, parent);
-            break;
-        case ito::ParamBase::Double:
-            m_lblType->setText(tr("[Double]"));
-            m_content = renderTypeDouble(param, i, parent);
-            break;
-        case ito::ParamBase::String:
-            m_lblType->setText(tr("[String]"));
-            m_content = renderTypeString(param, i, parent);
-            break;
-        case ito::ParamBase::HWRef & ito::paramTypeMask:
-            m_lblType->setText(tr("[HW-Instance]"));
-            m_content = renderTypeHWRef(param, i, parent);
-            break;
-        default:
-            m_lblType->setText(tr("[unknown]"));
-            m_content = new QLabel(" - - error - - ",parent);
-            break;
+            case ito::ParamBase::Int:
+                m_lblType->setText(tr("[Integer]"));
+                m_content = renderTypeInt(param, i, parent);
+                break;
+            case ito::ParamBase::Char:
+                m_lblType->setText(tr("[Char]"));
+                m_content = renderTypeChar(param, i, parent);
+                break;
+            case ito::ParamBase::Double:
+                m_lblType->setText(tr("[Double]"));
+                m_content = renderTypeDouble(param, i, parent);
+                break;
+            case ito::ParamBase::String:
+                m_lblType->setText(tr("[String]"));
+                m_content = renderTypeString(param, i, parent);
+                break;
+            case ito::ParamBase::IntArray:
+                m_lblType->setText(tr("[IntArray]"));
+                m_content = renderTypeIntArray(param, i, parent);
+                break;
+            case ito::ParamBase::DoubleArray:
+                m_lblType->setText(tr("[DoubleArray]"));
+                m_content = renderTypeDoubleArray(param, i, parent);
+                break;
+            case ito::ParamBase::CharArray:
+                m_lblType->setText(tr("[CharArray]"));
+                m_content = renderTypeCharArray(param, i, parent);
+                break;
+            case ito::ParamBase::HWRef & ito::paramTypeMask:
+                m_lblType->setText(tr("[HW-Instance]"));
+                m_content = renderTypeHWRef(param, i, parent);
+                break;
+            default:
+                m_lblType->setText(tr("[unknown]"));
+                m_content = new QLabel(tr(" - - error - - "),parent);
+                break;
         }
 
         QSizePolicy sizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
@@ -207,6 +223,15 @@ bool ParamInputParser::validateInput(bool mandatoryValues, ito::RetVal &retValue
             break;
         case ito::ParamBase::String:
             retValue += getStringValue(tempParam, param, gridLayout->itemAtPosition(i,1)->widget(), m_internalData[i], mandatoryValues);
+            break;
+        case ito::ParamBase::IntArray:
+            retValue += getIntArray(tempParam, param, gridLayout->itemAtPosition(i,1)->widget(), m_internalData[i], mandatoryValues);
+            break;
+        case ito::ParamBase::DoubleArray:
+            retValue += getDoubleArray(tempParam, param, gridLayout->itemAtPosition(i,1)->widget(), m_internalData[i], mandatoryValues);
+            break;
+        case ito::ParamBase::CharArray:
+            retValue += getCharArray(tempParam, param, gridLayout->itemAtPosition(i,1)->widget(), m_internalData[i], mandatoryValues);
             break;
         case ito::ParamBase::HWRef & ito::paramTypeMask:
             retValue += getHWValue(tempParam, param, gridLayout->itemAtPosition(i,1)->widget(), m_internalData[i], mandatoryValues);
@@ -279,6 +304,15 @@ ito::RetVal ParamInputParser::getParameters(QVector<ito::ParamBase> &params)
             break;
         case ito::ParamBase::String:
             retValue += getStringValue(tempParam, param, gridLayout->itemAtPosition(i,1)->widget(), m_internalData[i], false);
+            break;
+        case ito::ParamBase::IntArray:
+            retValue += getIntArray(tempParam, param, gridLayout->itemAtPosition(i,1)->widget(), m_internalData[i], false);
+            break;
+        case ito::ParamBase::DoubleArray:
+            retValue += getDoubleArray(tempParam, param, gridLayout->itemAtPosition(i,1)->widget(), m_internalData[i], false);
+            break;
+        case ito::ParamBase::CharArray:
+            retValue += getCharArray(tempParam, param, gridLayout->itemAtPosition(i,1)->widget(), m_internalData[i], false);
             break;
         case ito::ParamBase::HWRef & ito::paramTypeMask:
             retValue += getHWValue(tempParam, param, gridLayout->itemAtPosition(i,1)->widget(), m_internalData[i], false);
@@ -444,6 +478,7 @@ QWidget* ParamInputParser::renderTypeString(const ito::Param &param, int /*virtu
         }
 
         txt->setText(value);
+
         return txt;
     }
 }
@@ -460,8 +495,114 @@ QWidget* ParamInputParser::renderTypeHWRef(const ito::Param & /*param*/, int vir
 
     QToolButton *tool = new QToolButton(container);
     tool->setIcon(QIcon(":/files/icons/browser.png"));
-    connect(tool, SIGNAL(clicked()), m_pSignalMapper, SLOT(map()));
-    m_pSignalMapper->setMapping(tool, virtualIndex);
+    connect(tool, SIGNAL(clicked()), m_pSignalMapper_browsePluginPicker, SLOT(map()));
+    m_pSignalMapper_browsePluginPicker->setMapping(tool, virtualIndex);
+
+    layout->addWidget(txt);
+    layout->addWidget(tool);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+
+    container->setLayout(layout);
+
+    return container;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QWidget* ParamInputParser::renderTypeIntArray(const ito::Param & /*param*/, int virtualIndex, QWidget *parent)
+{
+/*    QWidget *container = new QWidget(parent);
+    QHBoxLayout *layout = new QHBoxLayout();
+    QLineEdit *txt = new QLineEdit(container);
+    txt->setObjectName(QString("ArrayInt_%1").arg(virtualIndex));
+//    txt->setText("");
+//    txt->setEnabled(false);
+
+    QToolButton *tool = new QToolButton(container);
+    tool->setIcon(QIcon(":/application/icons/list.png"));
+    connect(tool, SIGNAL(clicked()), m_pSignalMapper_browseArrayPicker, SLOT(map()));
+    m_pSignalMapper_browseArrayPicker->setMapping(tool, virtualIndex);
+
+    layout->addWidget(txt);
+    layout->addWidget(tool);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+
+    container->setLayout(layout);
+
+    return container;*/
+
+    return renTypeArray(virtualIndex, parent, "ArrayInt");
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QWidget* ParamInputParser::renderTypeDoubleArray(const ito::Param & /*param*/, int virtualIndex, QWidget *parent)
+{
+/*    QWidget *container = new QWidget(parent);
+    QHBoxLayout *layout = new QHBoxLayout();
+    QLineEdit *txt = new QLineEdit(container);
+    txt->setObjectName(QString("ArrayDbl_%1").arg(virtualIndex));
+//    txt->setText("");
+//    txt->setEnabled(false);
+
+    QToolButton *tool = new QToolButton(container);
+    tool->setIcon(QIcon(":/application/icons/list.png"));
+    connect(tool, SIGNAL(clicked()), m_pSignalMapper_browseArrayPicker, SLOT(map()));
+    m_pSignalMapper_browseArrayPicker->setMapping(tool, virtualIndex);
+
+    layout->addWidget(txt);
+    layout->addWidget(tool);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+
+    container->setLayout(layout);
+
+    return container;*/
+
+    return renTypeArray(virtualIndex, parent, "ArrayDbl");
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QWidget* ParamInputParser::renderTypeCharArray(const ito::Param & /*param*/, int virtualIndex, QWidget *parent)
+{
+/*    QWidget *container = new QWidget(parent);
+    QHBoxLayout *layout = new QHBoxLayout();
+    QLineEdit *txt = new QLineEdit(container);
+    txt->setObjectName(QString("ArrayChar_%1").arg(virtualIndex));
+//    txt->setText("");
+//    txt->setEnabled(false);
+
+    QToolButton *tool = new QToolButton(container);
+    tool->setIcon(QIcon(":/application/icons/list.png"));
+    connect(tool, SIGNAL(clicked()), m_pSignalMapper_browseArrayPicker, SLOT(map()));
+    m_pSignalMapper_browseArrayPicker->setMapping(tool, virtualIndex);
+
+    layout->addWidget(txt);
+    layout->addWidget(tool);
+    layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0);
+
+    container->setLayout(layout);
+
+    return container;*/
+    return renTypeArray(virtualIndex, parent, "ArrayChar");
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QWidget* ParamInputParser::renTypeArray(const int virtualIndex, QWidget *parent, const QString name)
+{
+    QWidget *container = new QWidget(parent);
+    QHBoxLayout *layout = new QHBoxLayout();
+    QLineEdit *txt = new QLineEdit(container);
+    QString string = name + QString("_%1").arg(virtualIndex);
+    txt->setObjectName(name + QString("_%1").arg(virtualIndex));
+//    txt->setText("");
+//    txt->setEnabled(false);
+
+    QToolButton *tool = new QToolButton(container);
+    tool->setIcon(QIcon(":/application/icons/list.png"));
+    connect(tool, SIGNAL(clicked()), m_pSignalMapper_browseArrayPicker, SLOT(map()));
+    m_pSignalMapper_browseArrayPicker->setMapping(tool, virtualIndex);
 
     layout->addWidget(txt);
     layout->addWidget(tool);
@@ -524,6 +665,7 @@ ito::RetVal ParamInputParser::getCharValue(ito::ParamBase &param, const ito::Par
     {
         param.setVal<char>(box->value());
     }
+
     return retVal;
 }
 
@@ -543,6 +685,7 @@ ito::RetVal ParamInputParser::getDoubleValue(ito::ParamBase &param, const ito::P
     {
         param.setVal<double>(box->value());
     }
+
     return retVal;
 }
 
@@ -579,6 +722,7 @@ ito::RetVal ParamInputParser::getStringValue(ito::ParamBase &param, const ito::P
         char *temp = ba.data();
         param.setVal<char*>(temp);
     }
+
     return retVal;
 }
 
@@ -590,7 +734,170 @@ ito::RetVal ParamInputParser::getHWValue(ito::ParamBase &param, const ito::Param
     {
         param.setVal<void*>(internalData);
     }
+
     return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ParamInputParser::getIntArray(ito::ParamBase &param, const ito::Param &orgParam, QWidget* contentWidget, void* /*internalData*/, bool /*mandatory*/)
+{
+    ito::RetVal retVal;
+    QLineEdit *txt = qobject_cast<QLineEdit*>(contentWidget->layout()->itemAt(0)->widget());
+
+    if (txt == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Qt error: IntArray widget could not be found").toLatin1().data());
+    }
+    else
+    {
+        QString string = txt->text();
+
+        if (string != "")
+        {
+            QStringList list = string.split(";");
+
+            int size = list.size();
+            int *intArr = new int[size];
+            int value;
+            int i = 0;
+            bool ok;
+            foreach (QString s, list)
+            {
+                s = s.trimmed();
+                value = s.toInt(&ok);
+                if (!ok)
+                {
+                    retVal += ito::RetVal(ito::retError, 0, tr("Invalid integer list of parameter '%1': Value %2 at position %3 is no integer number.") \
+                                                                                       .arg(orgParam.getName()).arg(s).arg(i).toLatin1().data());
+                    break;
+                }
+
+                intArr[i++] = value;
+            }
+
+            if (!retVal.containsError())
+            {
+                retVal += ito::ParamHelper::validateIntArrayMeta(orgParam.getMeta(), intArr, size, orgParam.getName());
+            }
+
+            if (!retVal.containsError())
+            {
+                param.setVal<int*>(intArr, size);
+            }
+
+            DELETE_AND_SET_NULL_ARRAY(intArr);
+        }
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ParamInputParser::getDoubleArray(ito::ParamBase &param, const ito::Param &orgParam, QWidget* contentWidget, void* internalData, bool mandatory)
+{
+    ito::RetVal retVal;
+    QLineEdit *txt = qobject_cast<QLineEdit*>(contentWidget->layout()->itemAt(0)->widget());
+
+    if (txt == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Qt error: DoubleArray widget could not be found").toLatin1().data());
+    }
+    else
+    {
+        QString string = txt->text();
+
+        if (string != "")
+        {
+            QStringList list = string.split(";");
+
+            int size = list.size();
+            double *dblArr = new double[size];
+            double value;
+            int i = 0;
+            bool ok;
+            foreach (QString s, list)
+            {
+                s = s.trimmed();
+                value = s.toDouble(&ok);
+                if (!ok)
+                {
+                    retVal += ito::RetVal(ito::retError, 0, tr("Invalid double list of parameter '%1': Value %2 at position %3 is no double number.") \
+                                                                                       .arg(orgParam.getName()).arg(s).arg(i).toLatin1().data());
+                    break;
+                }
+
+                dblArr[i++] = value;
+            }
+
+            if (!retVal.containsError())
+            {
+                retVal += ito::ParamHelper::validateDoubleArrayMeta(orgParam.getMeta(), dblArr, size, orgParam.getName());
+            }
+
+            if (!retVal.containsError())
+            {
+                param.setVal<double*>(dblArr, size);
+            }
+
+            DELETE_AND_SET_NULL_ARRAY(dblArr);
+        }
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ParamInputParser::getCharArray(ito::ParamBase &param, const ito::Param &orgParam, QWidget* contentWidget, void* /*internalData*/, bool /*mandatory*/)
+{
+    ito::RetVal retVal;
+    QLineEdit *txt = qobject_cast<QLineEdit*>(contentWidget->layout()->itemAt(0)->widget());
+
+    if (txt == NULL)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Qt error: CharArray widget could not be found").toLatin1().data());
+    }
+    else
+    {
+        QString string = txt->text();
+
+        if (string != "")
+        {
+            QStringList list = string.split(";");
+
+            int size = list.size();
+            char *charArr = new char[size];
+            int value;
+            int i = 0;
+            bool ok;
+            foreach (QString s, list)
+            {
+                s = s.trimmed();
+                value = s.toInt(&ok);
+                if (!ok)
+                {
+                    retVal += ito::RetVal(ito::retError, 0, tr("Invalid integer list of parameter '%1': Value %2 at position %3 is no integer number.") \
+                                                                                       .arg(orgParam.getName()).arg(s).arg(i).toLatin1().data());
+                    break;
+                }
+
+                charArr[i++] = value;
+            }
+
+            if (!retVal.containsError())
+            {
+                retVal += ito::ParamHelper::validateCharArrayMeta(orgParam.getMeta(), charArr, size, orgParam.getName());
+            }
+
+            if (!retVal.containsError())
+            {
+                param.setVal<char*>(charArr, size);
+            }
+
+            DELETE_AND_SET_NULL_ARRAY(charArr);
+        }
+    }
+
+    return retVal;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -630,16 +937,16 @@ void ParamInputParser::browsePluginPicker(int i)
             {
                 if (aib->getIdentifier() != "")
                 {
-                    le->setText(QString("%1, Identifier: %2").arg(aib->getBasePlugin()->objectName()).arg(aib->getIdentifier()));
+                    le->setText(tr("%1, Identifier: %2").arg(aib->getBasePlugin()->objectName()).arg(aib->getIdentifier()));
                 }
                 else
                 {
-                    le->setText(QString("%1, ID: %2").arg(aib->getBasePlugin()->objectName()).arg(aib->getID()));
+                    le->setText(tr("%1, ID: %2").arg(aib->getBasePlugin()->objectName()).arg(aib->getID()));
                 }
             }
             else if (le && !aib)
             {
-                le->setText("[None]");
+                le->setText(tr("[None]"));
             }
         }
 
@@ -647,5 +954,142 @@ void ParamInputParser::browsePluginPicker(int i)
     }
 }
 
-} //end namespace ito
+//----------------------------------------------------------------------------------------------------------------------------------
+void ParamInputParser::browseArrayPicker(int i)
+{
+    ito::AddInBase *aib = NULL;
+    aib = (ito::AddInBase*)(m_internalData[i]);
 
+    tParamType paramType = none;
+    ito::Param p = m_params[i];
+    QString leString = QString::Null();
+    QLineEdit *le;
+
+    QWidget *canvas = m_canvas.data();
+    if (canvas)
+    {
+        QString name = QString("ArrayInt_%1").arg(i);
+        le = canvas->findChild<QLineEdit*>(name);
+        if (le)
+        {
+            leString = le->text();
+            paramType = intArray;
+        }
+        else
+        {
+            QString name = QString("ArrayDbl_%1").arg(i);
+            le = canvas->findChild<QLineEdit*>(name);
+            if (le)
+            {
+                leString = le->text();
+                paramType = doubleArray;
+            }
+            else
+            {
+                QString name = QString("ArrayChar_%1").arg(i);
+                le = canvas->findChild<QLineEdit*>(name);
+                if (le)
+                {
+                    leString = le->text();
+                    paramType = charArray;
+                }
+            }
+        }
+    }
+
+    QStringList list;
+    bool ok = true;
+
+    // IntArray
+    if ((paramType == intArray) || (paramType == charArray))
+    {
+        ito::IntArrayMeta* arrMeta = static_cast<ito::IntArrayMeta*>(p.getMeta());
+
+        if (leString != "")
+        {
+            list = leString.split(";");
+            int i = 0;
+            int value;
+
+            while (i < list.size())
+            {
+                list[i] = list[i].trimmed();
+                if (list[i] != "")
+                {
+                    value = list[i].toInt(&ok);
+                    if (!ok)
+                    {
+                        // Error
+                        break;
+                    }
+                }
+
+                i++;
+            }
+        }
+    }
+    // DoubleArray
+    else if (paramType == doubleArray)
+    {
+        ito::DoubleArrayMeta* arrMeta = static_cast<ito::DoubleArrayMeta*>(p.getMeta());
+
+        if (leString != "")
+        {
+            list = leString.split(";");
+            int i = 0;
+            double value;
+
+            while (i < list.size())
+            {
+                list[i] = list[i].trimmed();
+                if (list[i] != "")
+                {
+                    value = list[i].toDouble(&ok);
+                    if (!ok)
+                    {
+                        // Error
+                        break;
+                    }
+                }
+
+                i++;
+            }
+        }
+    }
+    else
+    {
+        // Error
+        ok = false;
+    }
+
+    if (ok)
+    {
+        ParamInputDialog *dialog = new ParamInputDialog(list, p.getMeta(), paramType, canvas);
+
+        if (dialog->exec() == 1) //accepted
+        {
+            QStringList retList = dialog->getStringList();
+            if (retList.size() == 0)
+            {
+                le->setText("");
+            }
+
+            QString s = "";
+
+            for (int i = 0; i < retList.size(); ++i)
+            {
+                if (s != "")
+                {
+                    s.append("; ");
+                }
+                s.append(retList[i]);
+            }
+
+            le->setText(s);
+        }
+
+        DELETE_AND_SET_NULL(dialog);
+    }
+}
+
+} //end namespace ito

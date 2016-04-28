@@ -32,6 +32,7 @@
 
 namespace ito {
 
+//----------------------------------------------------------------------------------------------------------------------------------
 DialogNewPluginInstance::DialogNewPluginInstance(QModelIndex &modelIndex, ito::AddInInterfaceBase* aib, bool allowSendToPython) :
     QDialog(),
     m_pMandParser(NULL),
@@ -44,8 +45,8 @@ DialogNewPluginInstance::DialogNewPluginInstance(QModelIndex &modelIndex, ito::A
     QIcon tempIcon;
 
     //get icon
-    QModelIndex parentIdx = model->parent( modelIndex );
-    tempIndex = model->index( modelIndex.row(), 0, parentIdx);
+    QModelIndex parentIdx = model->parent(modelIndex);
+    tempIndex = model->index(modelIndex.row(), 0, parentIdx);
     tempIcon = model->data(tempIndex, Qt::DecorationRole).value<QIcon>();
     if (tempIcon.isNull())
     {
@@ -58,67 +59,77 @@ DialogNewPluginInstance::DialogNewPluginInstance(QModelIndex &modelIndex, ito::A
     ui.lblPluginName->setText(model->data(tempIndex, Qt::DisplayRole).toString());
 
     //get type
-    tempIndex = model->index( modelIndex.row(), 1, parentIdx);
+    tempIndex = model->index(modelIndex.row(), 1, parentIdx);
     ui.lblPluginType->setText(model->data(tempIndex, Qt::DisplayRole).toString());
 
     QWidget *canvas = new QWidget();
-    ui.scrollParamsMand->setWidget( canvas );
-    m_pMandParser = new ParamInputParser( canvas );
+    ui.scrollParamsMand->setWidget(canvas);
+    m_pMandParser = new ParamInputParser(canvas);
 
     canvas = new QWidget();
-    ui.scrollParamsOpt->setWidget( canvas );
-    m_pOptParser = new ParamInputParser( canvas );
+    ui.scrollParamsOpt->setWidget(canvas);
+    m_pOptParser = new ParamInputParser(canvas);
 
     QVector<ito::Param> *params = aib->getInitParamsMand();
-    m_pMandParser->createInputMask( *params );
-    if(params->size() == 0)
+    m_pMandParser->createInputMask(*params);
+    if (params->size() == 0)
     {
         ui.tabWidget->setTabEnabled(0, false);
     }
 
     params = aib->getInitParamsOpt();
-    m_pOptParser->createInputMask( *params );
-    if(params->size() == 0)
+    m_pOptParser->createInputMask(*params);
+    if (params->size() == 0)
     {
         ui.tabWidget->setTabEnabled(1, false);
     }
 
     ui.groupPython->setVisible(allowSendToPython);
-  
-
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 DialogNewPluginInstance::~DialogNewPluginInstance()
 {
     DELETE_AND_SET_NULL(m_pMandParser);
     DELETE_AND_SET_NULL(m_pOptParser);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DialogNewPluginInstance::getFilledMandParams(QVector<ito::ParamBase> &params)
 {
     return m_pMandParser->getParameters(params);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal DialogNewPluginInstance::getFilledOptParams(QVector<ito::ParamBase> &params)
 {
     return m_pOptParser->getParameters(params);
 }
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 QString DialogNewPluginInstance::getPythonVariable()
 {
     if (ui.groupPython->isChecked() == true)
     {
         return ui.txtPythonVariable->text();
     }
+
     return QString();
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogNewPluginInstance::on_buttonBox_accepted()
 {
     ito::RetVal retValue;
-    if( !m_pMandParser->validateInput(true, retValue, true) ) return;
-    if( !m_pOptParser->validateInput(false, retValue, true) ) return;
+    if (!m_pMandParser->validateInput(true, retValue, true))
+    {
+        return;
+    }
+
+    if (!m_pOptParser->validateInput(false, retValue, true))
+    {
+        return;
+    }
     
     emit accept();
 }

@@ -50,20 +50,27 @@ public:
     inline int getItemSize() const { return m_params.size(); };
 
 protected:
-
     QWidget* renderTypeInt(const ito::Param &param, int virtualIndex, QWidget *parent = NULL);
     QWidget* renderTypeChar(const ito::Param &param, int virtualIndex, QWidget *parent = NULL);
     QWidget* renderTypeDouble(const ito::Param &param, int virtualIndex, QWidget *parent = NULL);
     QWidget* renderTypeString(const ito::Param &param, int virtualIndex, QWidget *parent = NULL);
     QWidget* renderTypeHWRef(const ito::Param &param, int virtualIndex, QWidget *parent = NULL);
+    QWidget* renderTypeIntArray(const ito::Param &param, int virtualIndex, QWidget *parent = NULL);
+    QWidget* renderTypeDoubleArray(const ito::Param &param, int virtualIndex, QWidget *parent = NULL);
+    QWidget* renderTypeCharArray(const ito::Param &param, int virtualIndex, QWidget *parent = NULL);
+    QWidget* renTypeArray(const int virtualIndex, QWidget *parent, const QString name);
 
     ito::RetVal getIntValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
     ito::RetVal getCharValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
     ito::RetVal getDoubleValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
     ito::RetVal getStringValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
     ito::RetVal getHWValue(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
+    ito::RetVal getIntArray(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
+    ito::RetVal getDoubleArray(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
+    ito::RetVal getCharArray(ito::ParamBase &param, const ito::Param &orgParam, QWidget *contentWidget, void *internalData, bool mandatory);
 
-    QSignalMapper *m_pSignalMapper;
+    QSignalMapper *m_pSignalMapper_browsePluginPicker;
+    QSignalMapper *m_pSignalMapper_browseArrayPicker;
     QVector<ito::Param> m_params;
     QVector<void*> m_internalData;
     QPointer<QWidget> m_canvas;
@@ -73,6 +80,7 @@ private:
 
 private slots:
     void browsePluginPicker(int i);
+    void browseArrayPicker(int i);
 };
 
 } //end namespace ito

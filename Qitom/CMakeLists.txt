@@ -235,6 +235,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/itomSpinBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetInfoBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.h
@@ -301,6 +302,7 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManager.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManagerInstall.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputDialog.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetInfoBox.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.ui
@@ -416,6 +418,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManagerInstall.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputDialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleLastCommand.cpp
