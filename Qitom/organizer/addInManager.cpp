@@ -314,7 +314,7 @@ namespace ito
 
         if (QLibrary::isLibrary(filename) == false)
         {
-            message = QObject::tr("filename is no AddIn-library: %1").arg(filename);
+            message = QObject::tr("filename is no itom plugin library: %1").arg(filename);
             qDebug() << message;
             retValue += RetVal(retError, 1001, message.toLatin1().data());
         }
@@ -403,7 +403,7 @@ namespace ito
                         break;
 
                     default:
-                        message = QObject::tr("AddIn with filename '%1' is unknown.").arg(filename);
+                        message = QObject::tr("Plugin with filename '%1' is unknown.").arg(filename);
                         qDebug() << message;
                         //retValue += RetVal(retError, 1003, message.toLatin1().data());
                         pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));

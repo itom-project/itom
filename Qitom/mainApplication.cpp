@@ -202,18 +202,26 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     settings->beginGroup("Application");
 
     int s = settings->beginReadArray("searchPathes");
-    QStringList pathes;
+    QStringList prependPathes;
+    QStringList appendPathes;
     for (int i = 0; i < s; ++i)
     {
         settings->setArrayIndex(i);
-        pathes.append(QDir::toNativeSeparators(settings->value("path", "").toString())); 
+        if (settings->value("prepend", true).toBool())
+        {
+            prependPathes.append(QDir::toNativeSeparators(settings->value("path", "").toString()));
+        }
+        else
+        {
+            appendPathes.append(QDir::toNativeSeparators(settings->value("path", "").toString()));
+        }
     }
 
     settings->endArray();
     settings->endGroup();
 
 #ifdef WIN32
-    if (pathes.length() > 0)
+    if (appendPathes.length() > 0 || prependPathes.length() > 0)
     {
 #ifdef WINVER
 #if WINVER >= 0x0602 
@@ -228,7 +236,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
             //sometimes LoadLibrary commands in plugins with files that are located in the lib folder cannot be loaded
             //even if the lib folder is add to the path variable in this funtion, too. The SetDllDirectory
             //is another approach to reach this (only available since Win XP).
-            foreach(const QString &path, pathes)
+            foreach(const QString &path, prependPathes + appendPathes)
             {
                 wchar_t *lib_path = new wchar_t[path.size() + 5];
                 memset(lib_path, 0, (path.size() + 5) * sizeof(wchar_t));
@@ -243,17 +251,19 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
 #endif
 #endif
 
-        QString p = pathes.join(";");
         QByteArray oldpath = getenv("path");
-        QByteArray newpath = "path=" + p.toLatin1() + ";" + oldpath; //set libDir at the beginning of the path-variable
+        QByteArray prepend = prependPathes.length() > 0 ? prependPathes.join(";").toLatin1() + ";" : "";
+        QByteArray append = appendPathes.length() > 0 ? ";" + appendPathes.join("; ").toLatin1() : "";
+        QByteArray newpath = "path=" + prepend + oldpath + append; //set libDir at the beginning of the path-variable
         _putenv(newpath.data());
     }
 #else // (defined linux) && (defined _APPLE_)
     if (pathes.length() > 0)
     {
-        QString p = pathes.join(":");
-        QByteArray oldpath = getenv("PATH");
-        QByteArray newpath = p.toLatin1() + ":" + oldpath; //set libDir at the beginning of the path-variable
+        QByteArray oldpath = getenv("path");
+        QByteArray prepend = prependPathes.length() > 0 ? prependPathes.join(";").toLatin1() + ";" : "";
+        QByteArray append = appendPathes.length() > 0 ? ";" + appendPathes.join("; ").toLatin1() : "";
+        QByteArray newpath = "path=" + prepend + oldpath + append; //set libDir at the beginning of the path-variable
         setenv("PATH", newpath.data(), 1);
     }
 #endif

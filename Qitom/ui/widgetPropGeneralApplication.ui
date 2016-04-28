@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>465</width>
-    <height>461</height>
+    <height>498</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -162,7 +162,7 @@
       <item>
        <widget class="QLabel" name="label">
         <property name="text">
-         <string>The following paths are prepended to the PATH environment variable used by itom. It is modified before itom starts loading plugins or designer plugins. These paths do not affect the overall PATH environment variable of the operating system.</string>
+         <string>The following paths are prepended or appended to the PATH environment variable used by itom. It is modified before itom starts loading plugins or designer plugins. These paths do not affect the overall PATH environment variable of the operating system. Change the order of the paths to decide if they are prepended or appended to the overall PATH environment variable.</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -228,6 +228,20 @@
              </size>
             </property>
            </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnMoveUp">
+            <property name="text">
+             <string>Move up</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="btnMoveDown">
+            <property name="text">
+             <string>Move down</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>

@@ -56,6 +56,8 @@ private slots:
     void on_listWidget_itemActivated(QListWidgetItem* item);
     void on_btnAdd_clicked();
     void on_btnRemove_clicked();
+    void on_btnMoveUp_clicked();
+    void on_btnMoveDown_clicked();
 };
 
 } //end namespace ito

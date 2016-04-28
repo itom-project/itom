@@ -38,6 +38,8 @@ WidgetPropGeneralApplication::WidgetPropGeneralApplication(QWidget *parent) :
 
     ui.btnAdd->setEnabled(true);
     ui.btnRemove->setEnabled(false);
+    ui.btnMoveUp->setEnabled(false);
+    ui.btnMoveDown->setEnabled(false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -61,14 +63,37 @@ void WidgetPropGeneralApplication::readSettings()
 	QListWidgetItem *lwi = new QListWidgetItem(QCoreApplication::applicationDirPath() + "/lib", ui.listWidget, QListWidgetItem::UserType);
     lwi->setTextColor(Qt::gray);
 
+    QStringList prepend;
+    QStringList append;
+
     int size = settings.beginReadArray("searchPathes");
     for (int i = 0; i < size; ++i) 
     {
         settings.setArrayIndex(i);
-        ui.listWidget->addItem(settings.value("path", QString()).toString());
+        if (settings.value("prepend", true).toBool())
+        {
+            prepend.append(settings.value("path", QString()).toString());
+        }
+        else
+        {
+            append.append(settings.value("path", QString()).toString());
+        }
     }
 	settings.endArray();
     settings.endGroup();
+
+    foreach(const QString &p, prepend)
+    {
+        ui.listWidget->addItem(p);
+    }
+
+    lwi = new QListWidgetItem("pathes from global PATH variable", ui.listWidget, QListWidgetItem::UserType + 1);
+    lwi->setTextColor(Qt::gray);
+
+    foreach(const QString &p, append)
+    {
+        ui.listWidget->addItem(p);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -89,13 +114,29 @@ void WidgetPropGeneralApplication::writeSettings()
     AppManagement::timeouts.pluginGeneral = ui.spinBoxTimeoutGeneral->value();
     AppManagement::timeouts.pluginFileSaveLoad = ui.spinBoxTimeoutFileSaveLoad->value();
 
+    bool prependToPath = true;
+
     settings.beginWriteArray("searchPathes");
-    for (int i = 1; i < ui.listWidget->count(); i++)
+    int counter = 0;
+    for (int i = 0; i < ui.listWidget->count(); i++)
     {
-        settings.setArrayIndex(i - 1);
-        settings.setValue("path", ui.listWidget->item(i)->text());
-        files.append(ui.listWidget->item(i)->text());
+        switch (ui.listWidget->item(i)->type())
+        {
+        case QListWidgetItem::UserType:
+            break;
+        case QListWidgetItem::UserType + 1:
+            prependToPath = false;
+            break;
+        default:
+            settings.setArrayIndex(counter);
+            settings.setValue("path", ui.listWidget->item(i)->text());
+            settings.setValue("prepend", prependToPath);
+            files.append(ui.listWidget->item(i)->text());
+            counter++;
+            break;
+        }
     }
+
     settings.endArray();
     settings.endGroup();
 }
@@ -103,7 +144,9 @@ void WidgetPropGeneralApplication::writeSettings()
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropGeneralApplication::on_listWidget_currentItemChanged(QListWidgetItem* current, QListWidgetItem* /*previous*/)
 {
-	ui.btnRemove->setEnabled(current != NULL && current->type() != QListWidgetItem::UserType);
+    ui.btnRemove->setEnabled(current != NULL && current->type() != QListWidgetItem::UserType && current->type() != QListWidgetItem::UserType + 1);
+    ui.btnMoveUp->setEnabled(current != NULL && current->type() != QListWidgetItem::UserType && ui.listWidget->row(current) > 1);
+    ui.btnMoveDown->setEnabled(current != NULL && current->type() != QListWidgetItem::UserType && ui.listWidget->row(current) < ui.listWidget->count() - 1);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -113,14 +156,48 @@ void WidgetPropGeneralApplication::on_btnAdd_clicked()
 
     if (dir != "" && ui.listWidget->findItems(dir, Qt::MatchExactly).isEmpty())
     {
-        ui.listWidget->addItem(dir);
+        ui.listWidget->insertItem(qMax(1, ui.listWidget->currentRow()), dir);
     }
+
+    on_listWidget_currentItemChanged(ui.listWidget->currentItem(), NULL);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropGeneralApplication::on_btnRemove_clicked()
 {
     qDeleteAll(ui.listWidget->selectedItems());
+
+    on_listWidget_currentItemChanged(ui.listWidget->currentItem(), NULL);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropGeneralApplication::on_btnMoveUp_clicked()
+{
+    QListWidgetItem *current = ui.listWidget->currentItem();
+    if (current)
+    {
+        int currentRow = ui.listWidget->currentRow();
+        int previousRow = currentRow - 1;
+        QListWidgetItem *take = ui.listWidget->takeItem(previousRow);
+        ui.listWidget->insertItem(currentRow, take);
+    }
+
+    on_listWidget_currentItemChanged(ui.listWidget->currentItem(), NULL);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropGeneralApplication::on_btnMoveDown_clicked()
+{
+    QListWidgetItem *current = ui.listWidget->currentItem();
+    if (current)
+    {
+        int currentRow = ui.listWidget->currentRow();
+        int nextRow = currentRow + 1;
+        QListWidgetItem *take = ui.listWidget->takeItem(nextRow);
+        ui.listWidget->insertItem(currentRow, take);
+    }
+
+    on_listWidget_currentItemChanged(ui.listWidget->currentItem(), NULL);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
