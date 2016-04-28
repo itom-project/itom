@@ -36,6 +36,7 @@
 #include <QPointer>
 class DoubleSpinBoxPrivate;
 class ValueProxy;
+class QFocusEvent;
 
 //-----------------------------------------------------------------------------
 class itomQDoubleSpinBox: public QDoubleSpinBox
@@ -70,6 +71,8 @@ public:
   void initStyleOptionSpinBox(QStyleOptionSpinBox* option);
 protected:
   DoubleSpinBoxPrivate* const d_ptr;
+
+  void focusOutEvent(QFocusEvent * event);
 
   /// If the invertedControls property is false (by default) then this function
   /// behavesLike QDoubleSpinBox::stepEnabled(). If the property is true then

@@ -21,13 +21,14 @@
 *********************************************************************** */
 
 #include "paramInputParser.h"
+
 #include <qmessagebox.h>
 #include <qspinbox.h>
 #include <qcombobox.h>
 #include <qlineedit.h>
 #include <qtoolbutton.h>
 #include <qregexp.h>
-#include "../global.h"
+
 #include "dialogPluginPicker.h"
 #include "paramInputDialog.h"
 #include "../helper/paramHelper.h"

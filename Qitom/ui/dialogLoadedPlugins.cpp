@@ -22,6 +22,8 @@
 
 #include "dialogLoadedPlugins.h"
 
+#define _USE_MATH_DEFINES
+
 #include "../AppManagement.h"
 #include "../organizer/addInManager.h"
 #include "../organizer/designerWidgetOrganizer.h"

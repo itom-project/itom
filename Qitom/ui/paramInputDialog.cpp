@@ -31,6 +31,7 @@
 #include <qlistwidget.h>
 #include <qlineedit.h>
 #include <qspinbox.h>
+#include <qtimer.h>
 #include "itomWidgets/doubleSpinBox.h"
 #include "../global.h"
 
@@ -63,10 +64,12 @@ QWidget* LineEditDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
     }
     else if (m_paramType == doubleArray)
     {
+        //DoubleSpinBox is not directly derived from QDoubleSpinBox, therefore selectAll is not directly called for this by Qt.
+        //
         DoubleSpinBox *spinbox = new DoubleSpinBox(parent);
         spinbox->setMinimum(m_minVal);
         spinbox->setMaximum(m_maxVal);
-//        spinbox->setFocus();
+        QTimer::singleShot(0, spinbox->spinBox(), SLOT(selectAll()));
         return spinbox;
     }
 

@@ -91,6 +91,15 @@ void itomQDoubleSpinBox::stepBy(int steps)
 }
 
 //----------------------------------------------------------------------------
+void itomQDoubleSpinBox::focusOutEvent(QFocusEvent * event)
+{
+    QDoubleSpinBox::focusOutEvent(event);
+    QFocusEvent e(*event);
+    QObject *p = parent();
+    QCoreApplication::sendEvent(p, &e);
+}
+
+//----------------------------------------------------------------------------
 QAbstractSpinBox::StepEnabled itomQDoubleSpinBox::stepEnabled() const
 {
   if (!this->InvertedControls)
@@ -597,6 +606,8 @@ DoubleSpinBox::DoubleSpinBox(QWidget* newParent)
 {
   Q_D(DoubleSpinBox);
   d->init();
+  setFocusProxy(d->SpinBox);
+  setFocusPolicy(Qt::NoFocus);
 }
 
 //-----------------------------------------------------------------------------
@@ -1175,9 +1186,14 @@ bool DoubleSpinBox::eventFilter(QObject* obj, QEvent* event)
       }
     return QWidget::eventFilter(obj, event);
     }
+  else if (obj == d->SpinBox && event->type() == QEvent::FocusOut)
+  {
+      // pass the event on to the parent class
+      return QWidget::eventFilter(obj, event);
+  }
   else
-    {
+  {
     // pass the event on to the parent class
     return QWidget::eventFilter(obj, event);
-    }
+  }
 }
