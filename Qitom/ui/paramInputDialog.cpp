@@ -65,7 +65,7 @@ QWidget* LineEditDelegate::createEditor(QWidget *parent, const QStyleOptionViewI
     else if (m_paramType == doubleArray)
     {
         //DoubleSpinBox is not directly derived from QDoubleSpinBox, therefore selectAll is not directly called for this by Qt.
-        //
+        //We have to do it by a 0-ms timer, to verify that the widget is properly initialized.
         DoubleSpinBox *spinbox = new DoubleSpinBox(parent);
         spinbox->setMinimum(m_minVal);
         spinbox->setMaximum(m_maxVal);
