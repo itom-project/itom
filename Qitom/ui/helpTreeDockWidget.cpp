@@ -549,7 +549,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                         {
                             paramList.append(QLatin1String(p.getName()));
                         }
-                        QString newLink = QString("filter(\"%1\",%2)").arg(awd->m_name).arg( paramList.join(", ") );
+                        QString newLink = QString("ui.createNewPluginWidget(\"%1\",%2)").arg(awd->m_name).arg( paramList.join(", ") );
                         newLink.replace(",)",")");
                         QByteArray a = newLink.toLatin1();
 
@@ -592,18 +592,38 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                             extendedInfo.append(parseFilterWidgetContent(aib->getDetailDescription()));
                         }
 
-                        extendedInfo.append("<p class=\"rubric\">This plugin contains the following algorithms:</p>");
-
-                        QHash<QString, ito::AddInAlgo::FilterDef *>::const_iterator i = filterHashTable->constBegin();
-                        while (i != filterHashTable->constEnd()) 
+                        if (filterHashTable->size() > 0)
                         {
-                            if (aib->objectName() == i.value()->m_pBasePlugin->objectName())
+                            extendedInfo.append("<p class=\"rubric\">This plugin contains the following algorithms:</p>");
+
+                            QHash<QString, ito::AddInAlgo::FilterDef *>::const_iterator i = filterHashTable->constBegin();
+                            while (i != filterHashTable->constEnd())
                             {
-                                QString link = "."+i.value()->m_pBasePlugin->objectName()+"."+i.value()->m_name;
-                                extendedInfo.append("<a id=\"HiLink\" href=\"itom://algorithm.html#Algorithms"+link.toLatin1().toPercentEncoding("",".")+"\">"+i.value()->m_name.toLatin1().toPercentEncoding("",".")+"</a><br><br>");
+                                if (aib->objectName() == i.value()->m_pBasePlugin->objectName())
+                                {
+                                    QString link = "." + i.value()->m_pBasePlugin->objectName() + "." + i.value()->m_name;
+                                    extendedInfo.append("<a id=\"HiLink\" href=\"itom://algorithm.html#Algorithms" + link.toLatin1().toPercentEncoding("", ".") + "\">" + i.value()->m_name.toLatin1().toPercentEncoding("", ".") + "</a><br><br>");
+                                }
+                                ++i;
                             }
-                            ++i;
                         }
+
+                        if (widgetHashTable->size() > 0)
+                        {
+                            extendedInfo.append("<p class=\"rubric\">This plugin contains the following widgets:</p>");
+
+                            QHash<QString, ito::AddInAlgo::AlgoWidgetDef *>::const_iterator i = widgetHashTable->constBegin();
+                            while (i != widgetHashTable->constEnd())
+                            {
+                                if (aib->objectName() == i.value()->m_pBasePlugin->objectName())
+                                {
+                                    QString link = "." + i.value()->m_pBasePlugin->objectName() + "." + i.value()->m_name;
+                                    extendedInfo.append("<a id=\"HiLink\" href=\"itom://algorithm.html#Widgets" + link.toLatin1().toPercentEncoding("", ".") + "\">" + i.value()->m_name.toLatin1().toPercentEncoding("", ".") + "</a><br><br>");
+                                }
+                                ++i;
+                            }
+                        }
+                        
 
                         docString.replace("%INFO%", extendedInfo);
 
@@ -2068,37 +2088,50 @@ void HelpTreeDockWidget::on_textBrowser_anchorClicked(const QUrl & link)
     QStringList parts = separateLink(link);
 
     if (parts.size() < 2) return;
+
+    QString parts0 = parts[0];
+    QStringList parts1 = parts[1].split(".");
         
-    if (parts[0] == "http")
+    if (parts0 == "http")
     {//WebLink
         QDesktopServices::openUrl(link);
     }
-    else if (parts[0] == "mailto")
+    else if (parts0 == "mailto")
     {//MailTo-Link
         QDesktopServices::openUrl(parts[1]);
     }
-    else if (parts[0] == "example")
+    else if (parts0 == "example")
     {//Copy an example to Clipboard
         QClipboard *clip = QApplication::clipboard();
         clip->setText(parts[1], QClipboard::Clipboard);
     }
-    else if (parts[0] == "itom")
+    else if (parts0 == "itom")
     {
-        showPluginInfo(parts[1], 1, findIndexByPath(1, parts[1].split("."), m_pMainModel->invisibleRootItem()), true);
+        showPluginInfo(parts[1], 1, findIndexByPath(1, parts1, m_pMainModel->invisibleRootItem()), true);
     }
-    else if (parts[1].split(".").length() == 1 || (parts[1].split(".")[0] == "DataIO" && parts[1].split(".").length() == 2))
+    else if (parts[1].split(".").length() == 1 || (parts1[0] == "DataIO" && parts1.length() == 2))
     {
-        showPluginInfo(parts[1], typeCategory, findIndexByPath(2, parts[1].split("."), m_pMainModel->invisibleRootItem()), true);
+        showPluginInfo(parts[1], typeCategory, findIndexByPath(2, parts1, m_pMainModel->invisibleRootItem()), true);
     }
-    else if (parts[0] == "algorithm" && parts[1].split(".").length() < 3)
-    {//Filter Plugin
-        showPluginInfo(parts[1], typeFPlugin, findIndexByPath(2, parts[1].split("."), m_pMainModel->invisibleRootItem()), true);
+    else if (parts0 == "algorithm" && parts1.length() < 3)
+    {
+        //Filter Plugin
+        showPluginInfo(parts[1], typeFPlugin, findIndexByPath(2, parts1, m_pMainModel->invisibleRootItem()), true);
     }
-    else if (parts[0] == "algorithm" && parts[1].split(".").length() >= 3)
-    {//Filter (This is a workaround for the Linklist. Without this else if the links wouldn´t work
-        showPluginInfo(parts[1], typeFilter, findIndexByPath(2, parts[1].split("."), m_pMainModel->invisibleRootItem()), true);
+    else if (parts0 == "algorithm" && parts1.length() >= 3)
+    {
+        if (parts1[0] == "Widgets")
+        {
+            //Widget (This is a workaround for the Linklist. Without this else if the links wouldn´t work
+            showPluginInfo(parts[1], typeWidget, findIndexByPath(2, parts1, m_pMainModel->invisibleRootItem()), true);
+        }
+        else
+        {
+            //Filter (This is a workaround for the Linklist. Without this else if the links wouldn´t work
+            showPluginInfo(parts[1], typeFilter, findIndexByPath(2, parts1, m_pMainModel->invisibleRootItem()), true);
+        }
     }
-    else if (parts[0] == "-1")
+    else if (parts0 == "-1")
     {
         //ui.label->setText(tr("invalid Link"));
     }
