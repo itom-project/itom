@@ -41,6 +41,10 @@ Available editions
 Changelog
 --------------------
 
+2016-04-28
+~~~~~~~~~~~~~~~~~~
+Bugfix in All-In-One Development Environment for Visual Studio 2013, x86, version Qt 5.6.0
+
 2016-04-27
 ~~~~~~~~~~~~~~~~~~
 All-In-One Development Environment for Visual Studio 2013 (tested with free Community version) created for x86 and x64 and the new Qt 5.6.0.
