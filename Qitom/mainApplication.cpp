@@ -221,20 +221,20 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     settings->endGroup();
 
 #ifdef WIN32
-    if (appendPathes.length() > 0 || prependPathes.length() > 0)
+    if (appendPathes.size() > 0 || prependPathes.size() > 0)
     {
         QByteArray oldpath = getenv("path");
-        QByteArray prepend = prependPathes.length() > 0 ? prependPathes.join(";").toLatin1() + ";" : "";
-        QByteArray append = appendPathes.length() > 0 ? ";" + appendPathes.join("; ").toLatin1() : "";
+        QByteArray prepend = prependPathes.size() > 0 ? prependPathes.join(";").toLatin1() + ";" : "";
+        QByteArray append = appendPathes.size() > 0 ? ";" + appendPathes.join("; ").toLatin1() : "";
         QByteArray newpath = "path=" + prepend + oldpath + append; //set libDir at the beginning of the path-variable
         _putenv(newpath.data());
     }
 #else // (defined linux) && (defined _APPLE_)
-    if (pathes.length() > 0)
+    if (appendPathes.size() > 0 || prependPathes.size() > 0)
     {
         QByteArray oldpath = getenv("path");
-        QByteArray prepend = prependPathes.length() > 0 ? prependPathes.join(";").toLatin1() + ";" : "";
-        QByteArray append = appendPathes.length() > 0 ? ";" + appendPathes.join("; ").toLatin1() : "";
+        QByteArray prepend = prependPathes.size() > 0 ? prependPathes.join(";").toLatin1() + ";" : "";
+        QByteArray append = appendPathes.size() > 0 ? ";" + appendPathes.join("; ").toLatin1() : "";
         QByteArray newpath = "path=" + prepend + oldpath + append; //set libDir at the beginning of the path-variable
         setenv("PATH", newpath.data(), 1);
     }
