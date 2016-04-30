@@ -33,7 +33,7 @@
 #include "common/paramMeta.h"
 
 #include <qdialog.h>
-#include <qStyledItemDelegate.h>
+#include <qstyleditemdelegate.h>
 
 //-------------------------------------------------------------------------------------
 class QListWidgetItem;
