@@ -550,7 +550,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
             forwardEvent = true;
             break;
         
-        // Loescht die aktuelle Eingabe
+        // clears the current input or interrupts an input
         case Qt::Key_Escape:
             if (isListActive() == false)
             {
