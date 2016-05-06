@@ -158,7 +158,7 @@ namespace ito
         //! sets parameter flags (parameter type remains untouched), for possible flags see \ref tParamType
         inline uint32 setFlags(const uint32 flags) { m_type = getType() | (flags & paramFlagMask); return 0; }
    
-        //! returns parameter name (string is not copid)
+        //! returns parameter name (returned string is no copy, do not delete it)
         inline const char * getName(void) const { return m_name.data(); }
         //! returns content of autosave flag - this flag determines whether the parameter value gets automagically saved to xml file
         //! when an instance of a plugin class is deleted (closed)

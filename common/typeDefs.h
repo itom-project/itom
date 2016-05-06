@@ -77,6 +77,8 @@ namespace ito
     /**
     * MsgType enumeration
     * This enum holds the possible values for any message type (for qDebugStream e.g.)
+    *
+    * This enumeration is deprecated and will be removed in future versions. It is currently unused. Don't use it again.
     */
     enum tMsgType
     { 
