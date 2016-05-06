@@ -104,9 +104,9 @@ private:
     Ui::paramInputDialog ui;
     bool m_updating;
     QString m_newItemText;
-    int m_minSize;
-    int m_maxSize;
-    int m_stepSize;
+    size_t m_minSize;
+    size_t m_maxSize;
+    size_t m_stepSize;
     double m_minVal;
     double m_maxVal;
 };

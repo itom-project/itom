@@ -104,8 +104,6 @@ void LineEditDelegate::setEditorData(QWidget *editor, const QModelIndex &index) 
 //-------------------------------------------------------------------------------------
 void LineEditDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const
 {
-    bool ok;
-
     if ((m_paramType == intArray) || (m_paramType == charArray))
     {
         QSpinBox *spinbox = qobject_cast<QSpinBox*>(editor);

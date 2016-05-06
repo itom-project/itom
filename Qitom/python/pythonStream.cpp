@@ -25,6 +25,7 @@
 #include "pythonStream.h"
 #include "pythonEngine.h"
 #include "pythonCommon.h"
+#include "pythonQtConversion.h"
 #include "structmember.h"
 
 #include "../AppManagement.h"
@@ -325,7 +326,7 @@ PyObject* PyStream::PythonStream_readline(PythonStream* self, PyObject *args)
         return NULL;
     }
 
-    return PyBytes_FromStringAndSize(buffer->constData(), buffer->size());
+    return PythonQtConversion::QByteArrayToPyUnicodeSecure(*buffer);
 }
 
 } //end namespace ito

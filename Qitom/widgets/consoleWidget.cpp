@@ -562,6 +562,15 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
                     setSelection(m_startLineBeginCmd, 2, lineTo, indexTo);
                     removeSelectedText();
                 }
+                else
+                {
+                    markerDeleteAll(m_markInputLine);
+                    m_inputStreamBuffer->clear();
+                    m_inputStreamWaitCond->release();
+                    m_inputStreamWaitCond->deleteSemaphore();
+                    m_inputStreamWaitCond = NULL;
+                    append(ConsoleWidget::lineBreak);
+                }
 
                 if (isCallTipActive())
                 {
@@ -934,6 +943,7 @@ void ConsoleWidget::startInputCommandLine(QSharedPointer<QByteArray> buffer, Ito
     m_inputStartLine = lines() - 1;
     m_inputStartCol = text(m_inputStartLine).size();
     markerAdd(m_inputStartLine, m_markInputLine);
+    setFocus();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
