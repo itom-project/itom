@@ -39,40 +39,45 @@
     #endif
 #endif
 
-
-class PyStream
+namespace ito
 {
 
-public:
-
-    //!* this struct builds the basic structure of the new python type.
-    /*
-        The struct's name is PythonStream. This python type consists of the basic elements for every python type,
-        included an integer value type, which indicates whether this stream corresponds to the stream \a cout or \a cerr.
-    */
-    typedef struct 
+    class PyStream
     {
-        PyObject_HEAD
-        int type;   /*!<  1: stream catches cout-stream, 2: stream catches cerr-stream */
-        PyObject *encoding;
-        char closed;
-    } 
-    PythonStream;
 
-    static void PythonStream_dealloc(PythonStream* self);
-    //static PyObject *PythonStream_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
-    static int PythonStream_init(PythonStream *self, PyObject *args, PyObject *kwds);
+    public:
 
-    static PyObject *PythonStream_name(PythonStream* self);
-    static PyObject *PythonStream_fileno(PythonStream* self);
-    static PyObject *PythonStream_write(PythonStream* self, PyObject *args);
-    static PyObject *PythonStream_flush(PythonStream* self, PyObject *args);
-    
-    static PyMemberDef PythonStream_members[];
-    static PyMethodDef PythonStream_methods[];
-    static PyTypeObject PythonStreamType;
-    static PyModuleDef pythonStreamModule;
-};
+        //!* this struct builds the basic structure of the new python type.
+        /*
+            The struct's name is PythonStream. This python type consists of the basic elements for every python type,
+            included an integer value type, which indicates whether this stream corresponds to the stream \a cout or \a cerr.
+            */
+        typedef struct
+        {
+            PyObject_HEAD
+                int type;   /*!<  1: stream catches cout-stream, 2: stream catches cerr-stream, 3: stream catches cin-stream */
+            PyObject *encoding;
+            char closed;
+        }
+        PythonStream;
+
+        static void PythonStream_dealloc(PythonStream* self);
+        //static PyObject *PythonStream_new(PyTypeObject *type, PyObject *args, PyObject *kwds);
+        static int PythonStream_init(PythonStream *self, PyObject *args, PyObject *kwds);
+
+        static PyObject *PythonStream_name(PythonStream* self);
+        static PyObject *PythonStream_fileno(PythonStream* self);
+        static PyObject *PythonStream_write(PythonStream* self, PyObject *args);
+        static PyObject *PythonStream_flush(PythonStream* self, PyObject *args);
+        static PyObject *PythonStream_readline(PythonStream* self, PyObject *args);
+
+        static PyMemberDef PythonStream_members[];
+        static PyMethodDef PythonStream_methods[];
+        static PyTypeObject PythonStreamType;
+        static PyModuleDef pythonStreamModule;
+    };
+
+} //end namespace ito
 
 
 #endif

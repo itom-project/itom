@@ -75,6 +75,7 @@ Q_DECLARE_METATYPE(QSharedPointer<double> )
 Q_DECLARE_METATYPE(QSharedPointer<int>)
 Q_DECLARE_METATYPE(QSharedPointer<QVector<double> >)
 Q_DECLARE_METATYPE(QSharedPointer<char>)
+Q_DECLARE_METATYPE(QSharedPointer<QByteArray>)
 Q_DECLARE_METATYPE(QSharedPointer<ito::Param>)
 Q_DECLARE_METATYPE(QSharedPointer<ito::ParamBase>)
 

@@ -62,9 +62,6 @@ class ConsoleWidget : public AbstractPyScintillaWidget
 public:
     ConsoleWidget(QWidget* parent = NULL);
     ~ConsoleWidget();
-    
-    RetVal printMessage(QStringList msg, ito::tMsgType type = msgTextInfo);
-    RetVal printMessage(QString msg, ito::tMsgType type = msgTextInfo);
 
     static const QString lineBreak;
 
@@ -76,10 +73,11 @@ public slots:
     virtual void copy();
     virtual void paste();
     virtual void cut();
-    void receiveStream(QString text, tMsgType msgType);
+    void receiveStream(QString text, ito::QDebugStream::MsgStreamType msgType);
     void pythonRunSelection(QString selectionText);
     void pythonStateChanged(tPythonTransitions pyTransition);
     void clearCommandLine();
+    void startInputCommandLine(QSharedPointer<QByteArray> buffer, ItomSharedSemaphore *inputWaitCond);
 
 signals:
     void wantToCopy();
@@ -121,25 +119,31 @@ private:
 
     int checkValidDropRegion(const QPoint &pos);
     
-    int startLineBeginCmd; //!< zero-based, first-line of actual (not evaluated command), last line which starts with ">>", -1: no command active
+    int m_startLineBeginCmd; //!< zero-based, first-line of actual (not evaluated command), last line which starts with ">>", -1: no command active
     
-    DequeCommandList *cmdList; 
+    DequeCommandList *m_pCmdList; 
 
-    std::queue<cmdQueueStruct> cmdQueue; //!< upcoming events to handle
+    std::queue<cmdQueueStruct> m_cmdQueue; //!< upcoming events to handle
 
-    bool canCopy;
-    bool canCut;
+    bool m_canCopy;
+    bool m_canCut;
 
-    QDebugStream *qout;
-    QDebugStream *qerr;
+    QDebugStream *m_pQout;
+    QDebugStream *m_pQerr;
 
-    unsigned int markErrorLine;
-    unsigned int markCurrentLine;
+    unsigned int m_markErrorLine;
+    unsigned int m_markCurrentLine;
+    unsigned int m_markInputLine;
 
-    bool waitForCmdExecutionDone; //!< true: command in this console is being executed and sends a finish-event, when done.
-    bool pythonBusy; //!< true: python is executing or debugging a script, a command...
+    bool m_waitForCmdExecutionDone; //!< true: command in this console is being executed and sends a finish-event, when done.
+    bool m_pythonBusy; //!< true: python is executing or debugging a script, a command...
 
-    QString temporaryRemovedCommands; //!< removed text, if python busy, caused by another console instance or script.
+    QString m_temporaryRemovedCommands; //!< removed text, if python busy, caused by another console instance or script.
+
+    ItomSharedSemaphore *m_inputStreamWaitCond; //!< if this is != NULL, a input(...) command is currently running in Python and the command line is ready to receive inputs from the user.
+    QSharedPointer<QByteArray> m_inputStreamBuffer;
+    int m_inputStartLine;
+    int m_inputStartCol;
 };
 
 class DequeCommandList
@@ -148,15 +152,15 @@ public:
     DequeCommandList(int maxLength);
     ~DequeCommandList();
 
-    RetVal add(QString cmd);
+    RetVal add(const QString &cmd);
     RetVal moveLast();
     QString getPrevious();
     QString getNext();
 
 private:
-    int maxItems;
-    std::deque<QString> cmdList;
-    std::deque<QString>::reverse_iterator rit;
+    int m_maxItems;
+    std::deque<QString> m_cmdList;
+    std::deque<QString>::reverse_iterator m_rit;
 };
 
 } //end namespace ito

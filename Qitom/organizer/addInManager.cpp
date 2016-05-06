@@ -1655,6 +1655,7 @@ namespace ito
         qRegisterMetaType<QSharedPointer<int> >("QSharedPointer<int>");
         qRegisterMetaType<QSharedPointer<IntVector> >("QSharedPointer<IntVector>");
         qRegisterMetaType<QSharedPointer<char*> >("QSharedPointer<char>");
+        qRegisterMetaType<QSharedPointer<QByteArray> >("QSharedPointer<QByteArray>");
         qRegisterMetaType<QSharedPointer<ito::Param> >("QSharedPointer<ito::Param>");
         qRegisterMetaType<QSharedPointer<ito::ParamBase> >("QSharedPointer<ito::ParamBase>");
 

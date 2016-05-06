@@ -40,12 +40,18 @@ class QDebugStream : public QObject, public std::basic_streambuf<char>
     Q_OBJECT
 
 public:
-    QDebugStream(std::ostream &stream, tMsgType type, const QString &lineBreak = "\n");
+    enum MsgStreamType
+    {
+        msgStreamOut = 1,
+        msgStreamErr = 2,
+        msgStreamIn = 3
+    };
+
+    QDebugStream(std::ostream &stream, ito::QDebugStream::MsgStreamType type);
     ~QDebugStream();
 
-
 signals:
-    void flushStream( QString, tMsgType ); /*!<  signal emits a string which appeared in the observed stream together with indicating the corresponding message type */
+    void flushStream(QString, ito::QDebugStream::MsgStreamType); /*!<  signal emits a string which appeared in the observed stream together with indicating the corresponding message type */
 
 protected:
 
@@ -55,11 +61,10 @@ protected:
     virtual std::streamsize xsputn(const char *p, std::streamsize n);
 
 private:
-    std::ostream &m_stream;     /*!<  standard-ostream which is observed by this instance */
-    std::streambuf *m_old_buf;  /*!<  content of stream at time when this instance starts the observation of the stream is stored here and re-given to the stream, when this instance is destroyed */
-    std::string m_string;       /*!<  buffer string, containing parts of the stream which have not been emitted yet */
-    tMsgType msg_type;          /*!<  message type of enumeration tMsgType which belongs to this instance of QDebugStream */
-    QString line_break;         /*!<  string representation of a line break (default: \n) */
+    std::ostream &m_stream;                     /*!<  standard-ostream which is observed by this instance */
+    std::streambuf *m_old_buf;                  /*!<  content of stream at time when this instance starts the observation of the stream is stored here and re-given to the stream, when this instance is destroyed */
+    std::string m_string;                       /*!<  buffer string, containing parts of the stream which have not been emitted yet */
+    ito::QDebugStream::MsgStreamType msg_type;  /*!<  message type of enumeration tMsgType which belongs to this instance of QDebugStream */
 };
 
 }; // namespace ito

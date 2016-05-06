@@ -390,6 +390,8 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("error redirecting stdout in start python engine\n").toLatin1().data());
             if ((tretVal = runString("sys.stderr = sys.__stderr__ = itom.pythonStream(2)")) != ito::retOk)
                 (*retValue) += ito::RetVal(ito::retError, 0, tr("error redirecting stderr in start python engine\n").toLatin1().data());
+            if ((tretVal = runString("sys.stdin = sys.__stdin__ = itom.pythonStream(3)")) != ito::retOk)
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("error redirecting stdin in start python engine\n").toLatin1().data());
 
 
             static wchar_t *wargv = L"";

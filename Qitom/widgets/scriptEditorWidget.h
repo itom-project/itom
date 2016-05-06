@@ -109,15 +109,6 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
 
 private:
-    enum msgType
-    {
-        msgReturnInfo,
-        msgReturnWarning,
-        msgReturnError,
-        msgTextInfo,
-        msgTextWarning,
-        msgTextError
-    };
 
     enum markerType
     {   

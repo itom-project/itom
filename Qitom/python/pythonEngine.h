@@ -307,6 +307,7 @@ signals:
     void pythonResetCursor();
     void pythonAutoReloadChanged(bool enabled, bool checkFile, bool checkCmd, bool checkFct);
     void clearCommandLine();
+    void startInputCommandLine(QSharedPointer<QByteArray> buffer, ItomSharedSemaphore *semaphore);
 
 public slots:
     void pythonRunString(QString cmd);

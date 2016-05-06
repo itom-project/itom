@@ -35,10 +35,9 @@ namespace ito {
     \return description
     \sa tMsgType
 */
-QDebugStream::QDebugStream(std::ostream &stream, tMsgType type, const QString &lineBreak) : 
+QDebugStream::QDebugStream(std::ostream &stream, ito::QDebugStream::MsgStreamType type) :
     m_stream(stream),
-    msg_type(type),
-    line_break(lineBreak)
+    msg_type(type)
 {
     m_old_buf = stream.rdbuf();
     stream.rdbuf(this);
@@ -67,19 +66,10 @@ std::streamsize QDebugStream::xsputn(const char *p, std::streamsize n)
 {
     m_string.append(p, p + n);
 
-    int pos = 0;
-    while (pos != std::string::npos)
-    {
-        pos = (int)m_string.find('\n');
-        if (pos != std::string::npos)
-        {
-            std::string tmp(m_string.begin(), m_string.begin() + pos);
-            QString str = QString::fromLatin1(tmp.c_str()); //Python stdout and stderr streams as well as std::cout streams in itom and plugins are encoded with latin1.
+    QString str = QString::fromLatin1(m_string.c_str()); //Python stdout and stderr streams as well as std::cout streams in itom and plugins are encoded with latin1.
 
-            emit flushStream(str.append(line_break), msg_type); //the c_str will be converted into QString using the codec set by QTextCodec::setCodecForCStrings(textCodec) in MainApplication
-            m_string.erase(m_string.begin(), m_string.begin() + pos + 1);
-        }
-    }
+    emit flushStream(str, msg_type); //the c_str will be converted into QString using the codec set by QTextCodec::setCodecForCStrings(textCodec) in MainApplication
+    m_string.clear();
 
     return n;
 }

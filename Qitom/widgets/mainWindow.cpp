@@ -238,6 +238,7 @@ MainWindow::MainWindow() :
         if (m_console)
         {
             connect(pyEngine, SIGNAL(clearCommandLine()), m_console, SLOT(clearCommandLine()));
+            connect(pyEngine, SIGNAL(startInputCommandLine(QSharedPointer<QByteArray>, ItomSharedSemaphore*)), m_console, SLOT(startInputCommandLine(QSharedPointer<QByteArray>, ItomSharedSemaphore*)));
         }
     }
     else
@@ -634,7 +635,7 @@ void MainWindow::createActions()
         connect(m_actions["python_global_runmode"], SIGNAL(triggered(bool)), this, SLOT(mnuToggleExecPyCodeByDebugger(bool)));
 
         a = m_actions["python_stopAction"] = new QAction(QIcon(":/script/icons/stopScript.png"), tr("stop"), this);
-        a->setShortcut(tr("Shift+F10"));
+        a->setShortcut(tr("Shift+F5"));
         a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptStop()));
 

@@ -21,8 +21,16 @@
 *********************************************************************** */
 
 #include <iostream>
+
 #include "pythonStream.h"
+#include "pythonEngine.h"
+#include "pythonCommon.h"
 #include "structmember.h"
+
+#include "../AppManagement.h"
+#include "../common/sharedStructuresQt.h"
+
+namespace ito {
 
 /*!
     \class PyStream
@@ -97,7 +105,8 @@ PyMethodDef PyStream::PythonStream_methods[] = {
     {"name", (PyCFunction)PyStream::PythonStream_name, METH_NOARGS, "name"},
     {"write", (PyCFunction)PyStream::PythonStream_write, METH_VARARGS, "write function"},
     {"flush", (PyCFunction)PyStream::PythonStream_flush, METH_VARARGS, "flush function"},
-    {"fileno", (PyCFunction)PyStream::PythonStream_fileno, METH_NOARGS, "returns the virtual file number of this stream (0: in [not supported yet], 1: out, 2: err)"},
+    { "readline", (PyCFunction)PyStream::PythonStream_readline, METH_VARARGS, "readline function" },
+    {"fileno", (PyCFunction)PyStream::PythonStream_fileno, METH_NOARGS, "returns the virtual file number of this stream (0: in [not supported yet], 1: out, 2: err, 3: in)"},
     {NULL}  /* Sentinel */
 };
 
@@ -204,14 +213,16 @@ PyObject* PyStream::PythonStream_write(PythonStream* self, PyObject *args)
             }
         }
         
+        const char* v_ = PyBytes_AsString(v);
+
         if(self->type == 1)
         {
         
-            std::cout << PyBytes_AsString(v); // endl is added directly by Python
+            std::cout << v_; // endl is added directly by Python
         }
         else
         {
-            std::cerr << PyBytes_AsString(v); // endl is added directly by Python
+            std::cerr << v_; // endl is added directly by Python
         }
 
         Py_DECREF(v);
@@ -227,7 +238,94 @@ PyObject* PyStream::PythonStream_write(PythonStream* self, PyObject *args)
 
     \return PyNone
 */
-PyObject* PyStream::PythonStream_flush(PythonStream* /*self*/, PyObject * /*args*/)
+PyObject* PyStream::PythonStream_flush(PythonStream* self, PyObject * /*args*/)
 {
+    if (self->type == 1)
+    {
+        std::cout << std::flush;
+    }
+    else if (self->type == 2)
+    {
+        std::cerr << std::flush;
+    }
+
     Py_RETURN_NONE; //args should be empty, if calling PythonStream_write from this position, garbage collector crash might occure
 }
+
+//---------------------------------------------------------------------------------
+PyObject* PyStream::PythonStream_readline(PythonStream* self, PyObject *args)
+{
+    Py_ssize_t size;
+    PyObject *arg = Py_None;
+
+    if (!PyArg_ParseTuple(args, "|O:readline", &arg))
+        return NULL;
+
+    if (PyLong_Check(arg)) {
+        size = PyLong_AsSsize_t(arg);
+        if (size == -1 && PyErr_Occurred())
+            return NULL;
+    }
+    else if (arg == Py_None) {
+        /* No size limit, by default. */
+        size = -1;
+    }
+    else {
+        PyErr_Format(PyExc_TypeError, "integer argument expected, got '%s'",
+            Py_TYPE(arg)->tp_name);
+        return NULL;
+    }
+
+    QSharedPointer<QByteArray> buffer(new QByteArray());
+
+    if (size > 0)
+    {
+        buffer->resize(size);
+        (*buffer)[0] = '\0';
+    }
+    
+    PythonEngine *pyEng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    if (pyEng)
+    {
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+
+        emit pyEng->startInputCommandLine(buffer, locker.getSemaphore());
+
+        locker->waitAndProcessEvents(-1);
+
+        if (PythonCommon::setReturnValueMessage(locker->returnValue, "command line", PythonCommon::noMsg))
+        {
+            if (buffer->size() == 0) 
+            {
+                PyErr_CheckSignals();
+                if (!PyErr_Occurred())
+                {
+                    PyErr_SetNone(PyExc_KeyboardInterrupt);
+                }
+                return NULL;
+            }
+            else 
+            {
+                if (buffer->size() > PY_SSIZE_T_MAX) 
+                {
+                    PyErr_SetString(PyExc_OverflowError, "input: input too long");
+                    return NULL;
+                }
+            }
+            
+        }
+        else
+        {
+            return NULL;
+        }
+    }
+    else
+    {
+        PyErr_Format(PyExc_RuntimeError, "Python engine not available for handling input command");
+        return NULL;
+    }
+
+    return PyBytes_FromStringAndSize(buffer->constData(), buffer->size());
+}
+
+} //end namespace ito

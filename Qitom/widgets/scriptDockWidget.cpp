@@ -1269,7 +1269,7 @@ void ScriptDockWidget::createActions()
     m_scriptDebugAction = new ShortcutAction(QIcon(":/script/icons/debugScript.png"), tr("debug"), this, QKeySequence(tr("F6", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptDebugAction->connectTrigger(this, SLOT(mnuScriptDebug()));
 
-    m_scriptStopAction = new ShortcutAction(QIcon(":/script/icons/stopScript.png"), tr("stop"), this, QKeySequence(tr("Shift+F10", "QShortcut")), Qt::WidgetWithChildrenShortcut);
+    m_scriptStopAction = new ShortcutAction(QIcon(":/script/icons/stopScript.png"), tr("stop"), this, QKeySequence(tr("Shift+F5", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptStopAction->connectTrigger(this, SLOT(mnuScriptStop()));
 
     m_scriptContinueAction = new ShortcutAction(QIcon(":/script/icons/continue.png"), tr("continue"), this, QKeySequence(tr("F6", "QShortcut")), Qt::WidgetWithChildrenShortcut);
