@@ -291,6 +291,7 @@ void AIManagerWidget::createToolBars()
     m_pMainToolbarSeparator1 = m_pMainToolbar->addSeparator();
     m_pMainToolbar->addAction(m_pActLiveImage);
     m_pMainToolbar->addAction(m_pActSnapDialog);
+    m_pMainToolbar->addAction(m_pActAutoGrabbing);
     m_pMainToolbarSeparator2 = m_pMainToolbar->addSeparator();
     m_pMainToolbar->addAction(m_pActInfo);
     m_pMainToolbar->addAction(m_pActSendToPython);
