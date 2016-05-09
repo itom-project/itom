@@ -16,6 +16,7 @@ goto :end
 echo fetch designerplugins
 cd designerplugins
 git.exe fetch --progress -v "origin" master:remotes/origin/master
+git rebase master
 cd..
 
 if /i {%ANSWER%}=={4} (goto :plugins)
@@ -26,6 +27,7 @@ goto :end
 echo fetch plugins
 cd plugins
 git.exe fetch --progress -v "origin" master:remotes/origin/master
+git rebase master
 cd..
 
 if /i {%ANSWER%}=={4} (goto :itom)
@@ -36,6 +38,7 @@ goto :end
 echo fetch itom
 cd itom
 git.exe fetch --progress -v "origin" master:remotes/origin/master
+git rebase master
 cd..
 
 goto :end
