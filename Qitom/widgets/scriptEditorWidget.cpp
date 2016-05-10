@@ -1198,7 +1198,11 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
     QString defaultPath = QDir::currentPath();
     QFile file;
 
+    //we need to block the signals from the file system watcher, since a crash will occur if this file is renamed 
+    //during the save as process (the 'remove file due to rename' dialog will appear during the save-as dialog if the signal is not blocked)
+    m_pFileSysWatcher->blockSignals(true); 
     QString tempFileName = QFileDialog::getSaveFileName(this, tr("save as..."), defaultPath, "Python (*.py)");
+    m_pFileSysWatcher->blockSignals(false);
     if (!tempFileName.isEmpty())
     {
         QDir::setCurrent(QFileInfo(tempFileName).path());
