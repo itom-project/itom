@@ -424,7 +424,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                     }
 
                     //pre-check data
-                    if (data)
+                    if (!retValue.containsError() && data)
                     {
                         if (PySequence_Check(data) && PySequence_Length(data) != totalElems)
                         {
