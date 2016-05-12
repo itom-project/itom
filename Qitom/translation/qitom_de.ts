@@ -1755,12 +1755,11 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Plugin-Ordner wurden nicht gefunden</translation>
     </message>
     <message>
-        <location line="+53"/>
         <source>filename is no AddIn-library: %1</source>
-        <translation type="unfinished">Die Datei &apos;%1&apos; ist keine AddIn-Bibliothek</translation>
+        <translation type="obsolete">Die Datei &apos;%1&apos; ist keine AddIn-Bibliothek</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+59"/>
         <source>scan and load plugins (%1)</source>
         <translation type="unfinished">Plugin &apos;%1&apos; wird gescannt und geladen</translation>
     </message>
@@ -1781,9 +1780,18 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Die Übersetzungsdatei &apos;%1&apos; kann nicht geladen werden. Diese Datei ist leer.</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="+55"/>
         <source>AddIn with filename &apos;%1&apos; is unknown.</source>
-        <translation type="unfinished">AddIn namens &apos;%1&apos; ist unbekannt.</translation>
+        <translation type="obsolete">AddIn namens &apos;%1&apos; ist unbekannt.</translation>
+    </message>
+    <message>
+        <location filename="../organizer/addInManager.cpp" line="-34"/>
+        <source>filename is no itom plugin library: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+89"/>
+        <source>Plugin with filename &apos;%1&apos; is unknown.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+23"/>
@@ -1907,7 +1915,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Zeitüberschreitung während der Initialisierung von Actuator</translation>
     </message>
     <message>
-        <location line="+735"/>
+        <location line="+736"/>
         <source>no toolbox available</source>
         <translation type="unfinished">Keine Symbolleiste verfügbar</translation>
     </message>
@@ -2611,15 +2619,29 @@ dem Editor ein.</translation>
     </message>
     <message>
         <location line="+6"/>
+        <source>The following paths are prepended or appended to the PATH environment variable used by itom. It is modified before itom starts loading plugins or designer plugins. These paths do not affect the overall PATH environment variable of the operating system. Change the order of the paths to decide if they are prepended or appended to the overall PATH environment variable.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+70"/>
+        <source>Move up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Move down</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>The following paths are prepended to the PATH environment variable used by itom. It is modified before itom starts loading plugins or designer plugins. These paths do not affect the overall PATH environment variable of the operating system.</source>
-        <translation type="unfinished">Die folgenden Verzeichnisse werden beim Laden der Plugins und Designer-Plugins als Bibliotheksquellen berücksichtigt.</translation>
+        <translation type="obsolete">Die folgenden Verzeichnisse werden beim Laden der Plugins und Designer-Plugins als Bibliotheksquellen berücksichtigt.</translation>
     </message>
     <message>
         <source>The following pathes are prepended to the PATH environment variable used by itom. It is modified before itom starts loading plugins or designer plugins. These pathes do not affect the overall PATH environment variable of the operating system.</source>
         <translation type="obsolete">Die folgenden Verzeichnisse werden beim Laden der Plugins und Designer-Plugins als Bibliotheksquellen berücksichtigt.</translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="-37"/>
         <source>Add Path</source>
         <translation type="unfinished">Hinzufügen</translation>
     </message>
@@ -2779,12 +2801,12 @@ dem Editor ein.</translation>
         <translation>Konfigurationsdialog</translation>
     </message>
     <message>
-        <location line="+288"/>
+        <location line="+289"/>
         <source>Show Plugin Toolbox</source>
         <translation>Plugin-Toolbox anzeigen</translation>
     </message>
     <message>
-        <location line="-276"/>
+        <location line="-277"/>
         <source>Close Instance</source>
         <translation>Instanz schließen</translation>
     </message>
@@ -2844,12 +2866,12 @@ dem Editor ein.</translation>
         <translation>Plugins</translation>
     </message>
     <message>
-        <location line="+81"/>
+        <location line="+82"/>
         <source>Hide Plugin Toolbox</source>
         <translation>Plugin-Toolbox ausblenden</translation>
     </message>
     <message>
-        <location line="-274"/>
+        <location line="-275"/>
         <source>Show/Hide Plugin Toolbox</source>
         <translation>Plugin-Toolbox ein-/ausblenden</translation>
     </message>
@@ -2970,7 +2992,12 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Die Python-Engine ist nicht verfügbar</translation>
     </message>
     <message>
-        <location line="-298"/>
+        <location line="+225"/>
+        <source>This instance is no grabber. Therefore no snap dialog is available.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-523"/>
         <location line="+4"/>
         <source>closing not possible</source>
         <translation>Schließen nicht möglich</translation>
@@ -3145,14 +3172,14 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInManager</name>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="-922"/>
+        <location filename="../organizer/addInManager.cpp" line="-923"/>
         <location line="+143"/>
         <location line="+136"/>
         <source>Plugin instance is invalid (NULL)</source>
         <translation>Die Plugin-Instanz ist ungültig (NULL)</translation>
     </message>
     <message>
-        <location line="+584"/>
+        <location line="+585"/>
         <source>no configuration dialog available</source>
         <translation>Kein Konfigurationsdialogs vorhanden</translation>
     </message>
@@ -3328,7 +3355,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::ConsoleWidget</name>
     <message>
-        <location filename="../widgets/consoleWidget.cpp" line="+882"/>
+        <location filename="../widgets/consoleWidget.cpp" line="+1009"/>
         <source>script execution</source>
         <translation type="unfinished">Skript wird ausgeführt</translation>
     </message>
@@ -4515,7 +4542,42 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::HelpTreeDockWidget</name>
     <message>
-        <location filename="../ui/helpTreeDockWidget.cpp" line="+377"/>
+        <location filename="../ui/helpTreeDockWidget.cpp" line="+142"/>
+        <source>Algorithms</source>
+        <translation type="unfinished">Algorithmus</translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>Widgets</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <source>DataIO</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Grabber</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>ADDA</source>
+        <translation type="unfinished">ADDA Wandler</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Raw IO</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+50"/>
+        <source>Actuator</source>
+        <translation type="unfinished">Motor</translation>
+    </message>
+    <message>
+        <location line="+96"/>
         <source>Template Error: Parameters section is only defined by either the start or end tag.</source>
         <translation type="unfinished">Vorlagenfehler: Die Parameter-Sektion ist nur definiert um entweder ein Start- oder Endzeiger zu enthalten.</translation>
     </message>
@@ -4559,17 +4621,17 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+30"/>
         <location line="+71"/>
-        <location line="+141"/>
+        <location line="+161"/>
         <source>optional</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-165"/>
+        <location line="-185"/>
         <source>Unknown filter name &apos;%1&apos;</source>
         <translation type="unfinished">Unbekannter Filtername &apos;%1&apos;</translation>
     </message>
     <message>
-        <location line="+101"/>
+        <location line="+121"/>
         <source>Unknown algorithm plugin with name &apos;%1&apos;</source>
         <translation type="unfinished">Unbekanntes Algorithmus-Plugin namens &apos;%1&apos;</translation>
     </message>
@@ -4677,7 +4739,7 @@ Meldung: &apos;%1&apos;</translation>
 Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfen</translation>
     </message>
     <message>
-        <location line="+511"/>
+        <location line="+524"/>
         <source>The protocol of the link is unknown. </source>
         <translation type="unfinished">Das Protokoll des Links ist unbekannt. </translation>
     </message>
@@ -4944,7 +5006,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation></translation>
     </message>
     <message>
-        <location line="+124"/>
+        <location line="+106"/>
         <source>load translations...</source>
         <translation>Übersetzungen werden geladen...</translation>
     </message>
@@ -4989,7 +5051,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">&apos;Script Editor Organizer&apos; wird geladen...</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+78"/>
         <source>execute startup scripts...</source>
         <translation type="unfinished">Startskripts werden ausgeführt...</translation>
     </message>
@@ -5052,7 +5114,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation></translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+37"/>
         <source>Python could not be started. itom cannot be used in the desired way.</source>
         <translation type="unfinished">Python konnte nicht gestartet werden. itom kann so nicht benutzt werden.</translation>
     </message>
@@ -5097,12 +5159,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Geladene Plugins...</translation>
     </message>
     <message>
-        <location line="-449"/>
+        <location line="-450"/>
         <source>Command History</source>
         <translation type="unfinished">Befehlsliste</translation>
     </message>
     <message>
-        <location line="+455"/>
+        <location line="+456"/>
         <source>Help...</source>
         <translation>Hilfe...</translation>
     </message>
@@ -5132,12 +5194,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Stop</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Shift+F10</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location line="+4"/>
+        <location line="+5"/>
         <source>continue</source>
         <translation type="unfinished">Fortsetzen</translation>
     </message>
@@ -5272,13 +5329,18 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Der UI-Designer (QT-Designer) konnte nicht geöffnet werden (%1).</translation>
     </message>
     <message>
-        <location line="-1629"/>
-        <location line="+609"/>
+        <location line="-1630"/>
+        <location line="+610"/>
         <source>Help</source>
         <translation type="unfinished">Hilfe</translation>
     </message>
     <message>
-        <location line="-12"/>
+        <location line="-139"/>
+        <source>Shift+F5</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+127"/>
         <source>Reload modules</source>
         <translation type="unfinished">Geladene Module</translation>
     </message>
@@ -5419,7 +5481,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::ParamInputDialog</name>
     <message>
-        <location filename="../ui/paramInputDialog.cpp" line="+143"/>
+        <location filename="../ui/paramInputDialog.cpp" line="+141"/>
         <source>IntArray</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5436,7 +5498,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <message>
         <location line="+227"/>
         <source>The number of value does not match the step size</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der angegebene Wert entspricht nicht den möglichen Werten für die Schrittgröße</translation>
     </message>
 </context>
 <context>
@@ -5836,7 +5898,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+244"/>
+        <location line="+246"/>
         <source>the module itoFunctions could not be loaded.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5943,7 +6005,13 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-2389"/>
+        <location line="-4114"/>
+        <source>error redirecting stdin in start python engine
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1725"/>
         <source>Error while transmitting breakpoints to debugger.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6273,12 +6341,6 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Stop</translation>
     </message>
     <message>
-        <location line="+0"/>
-        <source>Shift+F10</source>
-        <comment>QShortcut</comment>
-        <translation></translation>
-    </message>
-    <message>
         <location line="+3"/>
         <source>continue</source>
         <translation>Fortsetzen</translation>
@@ -6421,7 +6483,13 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Drucken...</translation>
     </message>
     <message>
-        <location line="+62"/>
+        <location line="+39"/>
+        <source>Shift+F5</source>
+        <comment>QShortcut</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
         <source>find and replace...</source>
         <translation>Suchen und Ersetzen...</translation>
     </message>
@@ -7324,7 +7392,7 @@ Katesisch</translation>
 <context>
     <name>ito::WidgetPropGeneralApplication</name>
     <message>
-        <location filename="../ui/widgetPropGeneralApplication.cpp" line="+112"/>
+        <location filename="../ui/widgetPropGeneralApplication.cpp" line="+155"/>
         <source>load directory</source>
         <translation type="unfinished">Verzeichnis hinzufügen</translation>
     </message>

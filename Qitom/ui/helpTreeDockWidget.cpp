@@ -139,10 +139,10 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
         {
             const QHash <QString, ito::AddInAlgo::FilterDef *> *filterHashTable = aim->getFilterList();
             // build Main Node
-            mainNode->setText("Algorithms");
+            mainNode->setText(tr("Algorithms"));
             mainNode->setData(typeCategory, m_urType);
             mainNode->setData("Algorithms", m_urPath);
-            mainNode->setIcon(iconGallery->value(iconFilter));
+            mainNode->setIcon(iconGallery->value(iconPluginAlgo));
             QHash<QString, ito::AddInAlgo::FilterDef *>::const_iterator i = filterHashTable->constBegin();
             while (i != filterHashTable->constEnd()) 
             {
@@ -174,7 +174,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
         {
             const QHash <QString, ito::AddInAlgo::AlgoWidgetDef *> *widgetHashTable = aim->getAlgoWidgetList();
             // Main Node zusammenbauen
-            mainNode->setText("Widgets");
+            mainNode->setText(tr("Widgets"));
             mainNode->setData(typeCategory, m_urType);
             mainNode->setData("Widgets", m_urPath);
             mainNode->setIcon(iconGallery->value(iconWidget));
@@ -208,27 +208,27 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
     case 3: //DataIO
         {
             // Main Node zusammenbauen
-            mainNode->setText("DataIO");
+            mainNode->setText(tr("DataIO"));
             mainNode->setData(typeCategory, m_urType);
             mainNode->setData(mainNode->text(), m_urPath);
             mainNode->setIcon(iconGallery->value(iconPluginDataIO));
 
             // Subcategory Node "Grabber"
-            QStandardItem *pluginGrabber = new QStandardItem("Grabber");
+            QStandardItem *pluginGrabber = new QStandardItem(tr("Grabber"));
             pluginGrabber->setEditable(false);
             pluginGrabber->setData(typeCategory, m_urType);
             pluginGrabber->setData(mainNode->text()+"."+pluginGrabber->text(), m_urPath);
             pluginGrabber->setIcon(iconGallery->value(iconPluginGrabber));
             
             // Subcategory Node "ADDA"
-            QStandardItem *pluginAdda = new QStandardItem("ADDA");
+            QStandardItem *pluginAdda = new QStandardItem(tr("ADDA"));
             pluginAdda->setEditable(false);
             pluginAdda->setData(typeCategory, m_urType);
             pluginAdda->setData(mainNode->text()+"."+pluginAdda->text(), m_urPath);
             pluginAdda->setIcon(iconGallery->value(iconPluginAdda));
             
             // Subcategory Node "Raw IO"
-            QStandardItem *pluginRawIO = new QStandardItem("Raw IO");
+            QStandardItem *pluginRawIO = new QStandardItem(tr("Raw IO"));
             pluginRawIO->setEditable(false);
             pluginRawIO->setData(typeCategory, m_urType);
             pluginRawIO->setData(mainNode->text()+"."+pluginRawIO->text(), m_urPath);
@@ -278,7 +278,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
     case 4: //Actuator
         { 
             // Main Node zusammenbauen
-            mainNode->setText("Actuator");
+            mainNode->setText(tr("Actuator"));
             mainNode->setData(typeCategory, m_urType);
             mainNode->setData(mainNode->text(), m_urPath);
             mainNode->setIcon(iconGallery->value(iconPluginActuator));

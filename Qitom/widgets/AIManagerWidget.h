@@ -98,6 +98,7 @@ namespace ito
             void mnuOpenWidget();
             void mnuToggleView();
             void mnuShowLiveImage();
+            void mnuSnapDialog();
             void mnuToggleAutoGrabbing();
             void setTreeViewHideColumns(const bool &hide, const int colCount);
             void showList();
