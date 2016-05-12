@@ -1157,11 +1157,16 @@ void ConsoleWidget::receiveStream(QString text, ito::QDebugStream::MsgStreamType
             markerAdd(i, m_markErrorLine);
         }
         moveCursorToEnd();
-        m_startLineBeginCmd = -1;
-        if (!m_pythonBusy)
+        //m_startLineBeginCmd = -1;
+        if (!m_pythonBusy && text.right(1) == ConsoleWidget::lineBreak)
         {
             startNewCommand(false);
         }
+        else
+        {
+            m_startLineBeginCmd = lines() - 1;
+        }
+
         break;
 
     case ito::QDebugStream::msgStreamOut:
@@ -1170,12 +1175,17 @@ void ConsoleWidget::receiveStream(QString text, ito::QDebugStream::MsgStreamType
         //!> insert msg after last line
         append(text);
         moveCursorToEnd();
-        m_startLineBeginCmd = -1;
+        //m_startLineBeginCmd = -1;
 
-        if (!m_pythonBusy)
+        if (!m_pythonBusy && text.right(1) == ConsoleWidget::lineBreak)
         {
             startNewCommand(false);
         }
+        else
+        {
+            m_startLineBeginCmd = lines() - 1;
+        }
+
         break;
 
         //case msgTextInfo:
