@@ -14,6 +14,8 @@
 import sys, os, inspect
 import sphinx
 import __main__
+import quark_sphinx_theme
+import itom as itomFuncs
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -114,7 +116,7 @@ autodoc_docstring_signature = True
 #html_theme = 'agogo'
 #html_theme = 'sphinxdoc'
 #html_theme = 'haiku'
-html_theme = 'itom'
+#html_theme = 'itom'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -122,11 +124,25 @@ html_theme = 'itom'
 #html_theme_options = {}
 
 # Add any paths that contain custom themes here, relative to this directory.
-html_theme_path = ['..' + os.sep + '_themes']
+qt_version = itomFuncs.version(True)["itom"]["QT_Version"]
+
+if (qt_version >= '5.6.0'):
+    #choose quark theme as main theme
+    html_theme = 'quark'
+    extensions.append('quark_sphinx_theme.ext.html_compat')
+    html_theme_options = {
+        'body_font_size' : '11pt', 
+        'body_font' : 'Helvetica'
+    }
+    html_theme_path = [quark_sphinx_theme.get_path()]
+else: 
+    #choose itom theme as main theme
+    html_theme = 'itom'
+    html_theme_path = ['..' + os.sep + '_themes']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = 'itom Documentation'
+html_title = 'itom Plugin Documentation'
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
 html_short_title = 'itom'
