@@ -638,6 +638,12 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
             mainIndexFile.replace("$firstDocTitle$", mainFileInfos[0].first.toLatin1());
             mainIndexFile.replace("$firstDocHref$", mainFileInfos[0].second.toLatin1());
 
+			QString currentYear = QDateTime::currentDateTime().toString("yyyy");
+			mainIndexFile.replace("$currentYear$", currentYear.toLatin1());
+
+			QString currentDate = QDateTime::currentDateTime().toString("MMM dd yyyy");
+			mainIndexFile.replace("$currentDate$", currentDate.toLatin1());
+
             QString sectionEntry;
             int start = mainIndexFile.indexOf("<!--$toctree_item begin$");
             int end = mainIndexFile.indexOf("$toctree_item end$-->");
@@ -657,8 +663,8 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
                     sectionEntries += "\n";
                 }
         
-                mainIndexFile.replace("<!--$toctree_item insert$-->", sectionEntries.toLatin1());
-            }
+                mainIndexFile.replace("<!--$toctree_item insert$-->", sectionEntries.toLatin1());	
+            }	
         }
 
         if (!retval.containsWarningOrError())
