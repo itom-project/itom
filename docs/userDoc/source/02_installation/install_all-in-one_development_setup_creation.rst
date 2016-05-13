@@ -17,7 +17,7 @@ Download minimum required software/packages
 
 First download alle the needed software and packages. This download links are for the current availabe software versions (April 2016). 
 
-* `MS Visual Studio 2013 Community <http://myprodscussu1.app.vssubscriptions.visualstudio.com/Downloads?pid=1901>`_ (en_visual_studio_community_2013_with_update_5_x86_dvd_6816332.iso) 
+* `MS Visual Studio 2013 Community <http://www.visualstudio.com/de-de/downloads/download-visual-studio-vs.aspx>`_ (en_visual_studio_community_2013_with_update_5_x86_dvd_6816332.iso) 
 * `Qt Visual Studio Add-in 1.2.5 <http://www.qt.io/download-open-source/#section-2/>`_ (qt-vs-addin-1.2.5.exe)
 * `Qt 5.6.0 for Windows 64-bit (VS 2013) Offline Installer <http://www.qt.io/download-open-source/#section-2/>`_ (qt-opensource-windows-x86-msvc2013_64-5.6.0.exe)
 * `CMake 3.5.1 <http://cmake.org/download/>`_ (cmake-3.5.2-win32-x86.msi)
