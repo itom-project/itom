@@ -76,7 +76,6 @@ namespace ito
         {
             foreach(obj, m_autoGrabbingListeners)
             {
-                //if (!QMetaObject::invokeMethod( obj, "dataAvailable", Q_ARG(ito::DataObject, m_data), Q_ARG(ItomSharedSemaphore*, NULL)))
                 if (!QMetaObject::invokeMethod( obj, "setSource", Q_ARG(QSharedPointer<ito::DataObject>, QSharedPointer<ito::DataObject>(new ito::DataObject(m_data))), Q_ARG(ItomSharedSemaphore*, NULL)))
                 {
                     retValue += ito::RetVal(ito::retWarning, 1001, tr("slot 'setSource' of live source node could not be invoked").toLatin1().data());
@@ -142,7 +141,7 @@ namespace ito
                 retValue += sendDataToListeners(200);
             }
 
-            if (retValue == ito::retWarning)
+            if (retValue.containsWarning())
             {
                 if (retValue.hasErrorMessage())
                 {
@@ -154,7 +153,7 @@ namespace ito
                 }
             }
 
-            if (retValue == ito::retError)
+            if (retValue.containsError())
             {
                 if (retValue.hasErrorMessage())
                 {

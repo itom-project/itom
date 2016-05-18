@@ -3762,6 +3762,119 @@ PyObject *PythonPlugins::PyDataIOPlugin_getAutoGrabbing(PyDataIOPlugin *self, Py
     }
     Py_RETURN_FALSE;
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyDataIOPlugin_setAutoGrabbingInterval_doc, "setAutoGrabbingInterval() -> Sets the current auto grabbing interval (in ms) without dis- or enabling the auto grabber\n\
+\n\
+If auto grabbing is enabled for a grabber device, a timer is set that continuously acquires data or images from the devices and sends it \n\
+to all connected windows or listeners. The timer event will occur with a certain interval (in ms). However, if the image acquisition \n\
+requires more time than the interval, several events can be omitted, such that the next image is only acquired if the grabber device \n\
+is in an idle state. Hence, the interval is considered to be a minimum value. \n\
+\n\
+Parameters \n\
+----------- \n\
+interval : {int}\n\
+    Interval in ms.  \n\
+\n\
+See Also \n\
+--------- \n\
+enableAutoGrabbing(), disableAutoGrabbing(), getAutoGrabbing(), setAutoGrabbing(), getAutoGrabbingInterval()");
+PyObject *PythonPlugins::PyDataIOPlugin_setAutoGrabbingInterval(PyDataIOPlugin *self, PyObject *args)
+{
+    ito::RetVal ret;
+
+    int val;
+
+    if (!PyArg_ParseTuple(args, "i", &val))
+    {
+        return NULL;
+    }
+    else if (val <= 0)
+    {
+        PyErr_SetString(PyExc_ValueError, "interval must be > 0.");
+        return NULL;
+    }
+
+    ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
+    QSharedPointer<int> interval(new int);
+    *interval = val;
+    QMetaObject::invokeMethod(self->dataIOObj, "setAutoGrabbingInterval", Q_ARG(QSharedPointer<int>, interval), Q_ARG(ItomSharedSemaphore*, waitCond));
+
+    bool timeout = false;
+    while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
+    {
+        if (!self->dataIOObj->isAlive())
+        {
+            timeout = true;
+            ret += ito::RetVal(ito::retError, 0, "timeout while setting the current 'autoGrabbingInterval'");
+            break;
+        }
+    }
+
+    if (!timeout)
+    {
+        ret += waitCond->returnValue;
+    }
+
+    waitCond->deleteSemaphore();
+    waitCond = NULL;
+
+    if (!PythonCommon::setReturnValueMessage(ret, "setAutoGrabbingInterval", PythonCommon::invokeFunc))
+    {
+        return NULL;
+    }
+
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(PyDataIOPlugin_getAutoGrabbingInterval_doc, "getAutoGrabbingInterval() -> Returns the current auto grabbing interval (in ms), even if auto grabbing is disabled\n\
+\n\
+If auto grabbing is enabled for a grabber device, a timer is set that continuously acquires data or images from the devices and sends it \n\
+to all connected windows or listeners. The timer event will occur with a certain interval (in ms). However, if the image acquisition \n\
+requires more time than the interval, several events can be omitted, such that the next image is only acquired if the grabber device \n\
+is in an idle state. Hence, the interval is considered to be a minimum value. \n\
+\n\
+See Also \n\
+--------- \n\
+enableAutoGrabbing(), disableAutoGrabbing(), getAutoGrabbing(), setAutoGrabbing(), setAutoGrabbingInterval()");
+PyObject *PythonPlugins::PyDataIOPlugin_getAutoGrabbingInterval(PyDataIOPlugin *self)
+{
+    ito::RetVal ret;
+
+    ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
+    QSharedPointer<int> interval(new int);
+    *interval = 0; //setAutoGrabbingInterval with interval=0 only returns the current interval
+    QMetaObject::invokeMethod(self->dataIOObj, "setAutoGrabbingInterval", Q_ARG(QSharedPointer<int>, interval), Q_ARG(ItomSharedSemaphore*, waitCond));
+    
+    bool timeout = false;
+    while (!waitCond->wait(AppManagement::timeouts.pluginGeneral))
+    {
+        if (!self->dataIOObj->isAlive())
+        {
+            timeout = true;
+            ret += ito::RetVal(ito::retError, 0, "timeout while obtaining the current 'autoGrabbingInterval'");
+            break;
+        }
+    }
+
+    if (!timeout)
+    {
+        ret += waitCond->returnValue;
+    }
+
+    waitCond->deleteSemaphore();
+    waitCond = NULL;
+
+    if (!PythonCommon::setReturnValueMessage(ret, "getAutoGrabbingInterval", PythonCommon::invokeFunc))
+    {
+        return NULL;
+    }
+
+    return Py_BuildValue("i", *interval);
+}
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(PyDataIOPlugin_getType_doc, "getType() -> returns dataIO type");
 /** returns the type of the dataIO object
@@ -3861,6 +3974,8 @@ PyMethodDef PythonPlugins::PyDataIOPlugin_methods[] = {
    {"disableAutoGrabbing", (PyCFunction)PythonPlugins::PyDataIOPlugin_disableAutoGrabbing, METH_NOARGS, PyDataIOPlugin_disableAutoGrabbing_doc},
    {"setAutoGrabbing", (PyCFunction)PythonPlugins::PyDataIOPlugin_setAutoGrabbing, METH_VARARGS, PyDataIOPlugin_setAutoGrabbing_doc},
    {"getAutoGrabbing", (PyCFunction)PythonPlugins::PyDataIOPlugin_getAutoGrabbing, METH_NOARGS, PyDataIOPlugin_getAutoGrabbing_doc},
+   {"setAutoGrabbingInterval", (PyCFunction)PythonPlugins::PyDataIOPlugin_setAutoGrabbingInterval, METH_VARARGS, PyDataIOPlugin_setAutoGrabbingInterval_doc },
+   {"getAutoGrabbingInterval", (PyCFunction)PythonPlugins::PyDataIOPlugin_getAutoGrabbingInterval, METH_NOARGS, PyDataIOPlugin_getAutoGrabbingInterval_doc },
    {"getType", (PyCFunction)PythonPlugins::PyDataIOPlugin_getType, METH_NOARGS, PyDataIOPlugin_getType_doc},
    {"exec", (PyCFunction)PythonPlugins::PyDataIOPlugin_execFunc, METH_KEYWORDS | METH_VARARGS, PyPlugin_execFunc_doc},
    {"showConfiguration", (PyCFunction)PythonPlugins::PyDataIOPlugin_showConfiguration, METH_NOARGS, pyPluginShowConfiguration_doc},

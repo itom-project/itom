@@ -254,20 +254,19 @@ ito::RetVal apiFunctionsGraph::mstopLiveData(QObject *liveDataSource, QObject *l
 
     qDebug() << "stopLiveView Thread: " << QThread::currentThreadId();
 
-    ItomSharedSemaphoreLocker locker1(new ItomSharedSemaphore());
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
 
     QCoreApplication::sendPostedEvents(liveDataSource,0);
-    QMetaObject::invokeMethod(liveDataSource, "stopDeviceAndUnregisterListener", Q_ARG(QObject*, liveDataView), Q_ARG(ItomSharedSemaphore*, locker1.getSemaphore()));
+    QMetaObject::invokeMethod(liveDataSource, "stopDeviceAndUnregisterListener", Q_ARG(QObject*, liveDataView), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     QCoreApplication::sendPostedEvents(liveDataSource,0);
 
-    if(!locker1.getSemaphore()->wait(10000))
+    if(!locker.getSemaphore()->wait(10000))
     {
         retValue += RetVal(retError, 1001, QObject::tr("timeout while unregistering live image from camera.").toLatin1().data());
     }
     else
     {
-        retValue += locker1.getSemaphore()->returnValue;
-//        m_started = false;
+        retValue += locker.getSemaphore()->returnValue;
     }
 
     qDebug() << "stopLiveView done";
@@ -309,7 +308,6 @@ ito::RetVal apiFunctionsGraph::mdisconnectLiveData(QObject *liveDataSource, QObj
     {
         if(liveDataSource->inherits("ito::AddInDataIO"))
         {
-            //retval += mstopLiveData(liveDataSource, liveDataView);
         ito::AddInManager *aim = ito::AddInManager::getInstance();
         retval += aim->decRef((ito::AddInBase**)&liveDataSource);
         }

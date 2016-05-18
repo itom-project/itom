@@ -680,7 +680,7 @@ namespace ito
         {
             retValue += startDevice(NULL);
 
-            if (m_autoGrabbingEnabled == true && m_autoGrabbingListeners.size() >= 0 && m_timerID == 0)
+            if (!retValue.containsError() && m_autoGrabbingEnabled == true && m_autoGrabbingListeners.size() >= 0 && m_timerID == 0)
             {
                 m_timerID = startTimer(m_timerIntervalMS);
 
@@ -777,6 +777,44 @@ namespace ito
         }
 
         return ito::retOk;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    ito::RetVal AddInDataIO::setAutoGrabbingInterval(QSharedPointer<int> interval, ItomSharedSemaphore *waitCond /*= NULL*/)
+    {
+        ito::RetVal retval;
+
+        if (!interval.isNull())
+        {
+            if (*interval > 0)
+            {
+                if (m_autoGrabbingEnabled)
+                {
+                    retval += disableAutoGrabbing();
+                    m_timerIntervalMS = *interval;
+                    retval += enableAutoGrabbing();
+                }
+                else
+                {
+                    m_timerIntervalMS = *interval;
+                }
+            }
+
+            *interval = m_timerIntervalMS;
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("empty interval buffer has been given").toLatin1().data());
+        }
+
+        if (waitCond)
+        {
+            waitCond->release();
+            waitCond->deleteSemaphore();
+            waitCond = NULL;
+        }
+
+        return retval;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------

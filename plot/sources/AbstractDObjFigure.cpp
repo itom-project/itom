@@ -28,6 +28,7 @@
 #include "../AbstractDObjFigure.h"
 
 #include <qmetaobject.h>
+#include <iostream>
 
 namespace ito
 {
@@ -180,6 +181,23 @@ void AbstractDObjFigure::setCamera(QPointer<ito::AddInDataIO> camera)
 
         retval += apiConnectLiveData(camera, this); //increments reference of AddInDataIO
         retval += apiStartLiveData(camera, this);
+
+        if (retval.containsError())
+        {
+            std::cerr << "Error while starting the live image.\n" << std::endl;
+            if (retval.hasErrorMessage())
+            {
+                std::cerr << retval.errorMessage() << "\n" << std::endl;
+            }
+        }
+        else if (retval.containsWarning())
+        {
+            std::cout << "Warning while starting the live image.\n" << std::endl;
+            if (retval.hasErrorMessage())
+            {
+                std::cerr << retval.errorMessage() << "\n" << std::endl;
+            }
+        }
     }
 
     updatePropertyDock();

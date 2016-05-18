@@ -648,6 +648,9 @@ namespace ito
             //! disables the timer for auto grabbing (live image) (usually this method must not be overwritten)
             ito::RetVal disableAutoGrabbing(ItomSharedSemaphore *waitCond = NULL); //consider this method as final
 
+            //! sets a new interval for the auto-grabbing timer (in ms). If interval <= 0 is passed, nothing is changed, but the current interval is returned. This method does not enable or disable the timer.
+            ito::RetVal setAutoGrabbingInterval(QSharedPointer<int> interval, ItomSharedSemaphore *waitCond = NULL); //consider this method as final
+
             //! starts device and registers obj as listener (live image). This listener must have a slot void dataAvailable(DataObject image).
             ito::RetVal startDeviceAndRegisterListener(QObject* obj, ItomSharedSemaphore *waitCond = NULL); //consider this method as final
 
