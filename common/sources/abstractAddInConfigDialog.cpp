@@ -25,7 +25,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "abstractAddInConfigDialog.h"
+#include "../abstractAddInConfigDialog.h"
 
 #include "addInInterface.h"
 

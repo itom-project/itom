@@ -25,7 +25,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "abstractAddInDockWidget.h"
+#include "../abstractAddInDockWidget.h"
 
 #include "addInInterface.h"
 
