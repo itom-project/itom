@@ -7,8 +7,8 @@ except Exception as ex:
 session = matlab.MatlabSession() #a Matlab console is opened
 #Matlab can only be properly loaded if the libraries libeng.dll and libmx.dll (or libeng.so and libmx.so under linux)
 #can be properly found in the PATH of the operating system. An itom x64 also requires a Matlab x64 version and vice-versa.
-#You can also set the Matlab bin subdirectory, containing the required libraries to the library pathes of itom (see preferences dialog,
-#tab General/Application). Restart itom after having changed these variables.
+#Re-login to your computer after having changed the PATH variable, if Qt is also contained in the PATH variable,
+#put the Matlab path after Qt since the bin folder of Matlab also contains old Qt libraries.
 #If the matlab libraries could be loaded but the session could not be started, also see this link (for Windows users):
 # http://de.mathworks.com/help/matlab/matlab_external/register-matlab-as-automation-server.html
 
@@ -23,7 +23,7 @@ session.run("curDir = cd")
 print(session.getString("curDir"))
 
 #run directly executes the command (as string). This is the same than typing this command into the command line of Matlab.
-#use this to also execute functions in Matlab. At first, send all required variables to the Matlab workspace, the execute a function
+#use this to also execute functions in Matlab. At first, send all required variables to the Matlab workspace, then execute a function
 #that uses these variables.
 
 del session #closes the session and deletes the instance

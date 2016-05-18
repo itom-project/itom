@@ -25,6 +25,7 @@ contains a huge tutorial about |python| which is good for newbies. This section 
     pymod-load-save-files.rst
     pymod-popular-python-packages.rst
     pymod-matplotlib.rst
+    pymod-matlab.rst
     pymod-reload-modules.rst
     pymod-limitations.rst
     pymod-problems-and-solutions.rst
