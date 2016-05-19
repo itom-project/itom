@@ -2,7 +2,7 @@
 
 .. _pymod-matlab:
 
-Python-module matlab
+Python-Module matlab
 *************************
 
 |itom| provides the python module **matlab** that can be used to establish a remote control to the Matlab software.
