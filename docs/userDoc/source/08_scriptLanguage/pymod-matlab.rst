@@ -53,3 +53,9 @@ The following example is also included in the demo folder (**demoMatlabEngine.py
 .. info::
     
     If Matlab is not properly installed, the opening of the MatlabSession will fail.
+    
+.. note::
+
+    If the command **matlab.MatlabSesseion()** returns the **RuntimeError: error loading matlab engine: Cannot load library libeng.dll: The specified procedure could not be found.**, there is a version conflict between librarys loaded by itom/MatlabSession.     
+    One known conflict happens (Matlab version 2015), while the libraries **icuio54.dll, icule54.dll, icuuc54.dll, icuin54.dll** are loaded by the **libeng.dll**.     
+    One possible workaround is to copy the library files **icuio54.dll, icule54.dll, icuuc54.dll, icuin54.dll** from the **{MatlabRoot}/bin/win64** folder into the **{itomRoot}/lib** folder. 
