@@ -44,7 +44,7 @@ namespace ito
 ParamBase::ParamBase(const ByteArray &name) : 
     m_type(0), 
     m_name(name),
-    m_dVal(0.0), 
+    m_dVal(0.0, 0.0), 
     m_iVal(0), 
     m_cVal(NULL)
 {
@@ -62,7 +62,7 @@ ParamBase::ParamBase(const ByteArray &name) :
 ParamBase::ParamBase(const ByteArray &name, const uint32 type) : 
     m_type(type),
     m_name(name),
-    m_dVal(0.0), 
+    m_dVal(0.0, 0.0), 
     m_iVal(0), 
     m_cVal(NULL)
 {
@@ -82,7 +82,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type) :
 ParamBase::ParamBase(const ByteArray &name, const uint32 type, const char *val) : 
     m_type(type),
     m_name(name),
-    m_dVal(0.0), 
+    m_dVal(0.0, 0.0), 
     m_iVal(-1), 
     m_cVal(NULL)
 {
@@ -115,7 +115,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const char *val) 
 ParamBase::ParamBase(const ByteArray &name, const uint32 type, const float64 val) : 
     m_type(type), 
     m_name(name),
-    m_dVal(0.0), 
+    m_dVal(0.0, 0.0), 
     m_iVal(0), 
     m_cVal(NULL)
 {
@@ -129,7 +129,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const float64 val
         break;
         case Complex:
         case Double:
-            m_dVal = val;
+            m_dVal.real = val;
         break;
         default:
             throw std::logic_error("constructor with float64 val is only callable for types Int, Complex and Double");
@@ -151,7 +151,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const float64 val
 ParamBase::ParamBase(const ByteArray &name, const uint32 type, const int32 val) : 
     m_type(type), 
     m_name(name),
-    m_dVal(0.0), 
+    m_dVal(0.0, 0.0), 
     m_iVal(0), 
     m_cVal(NULL)
 {
@@ -167,7 +167,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const int32 val) 
         break;
         case Complex & paramTypeMask:
         case Double & paramTypeMask:
-            m_dVal = (float64)val;
+            m_dVal.real = (float64)val;
         break;
         case String & paramTypeMask:
             if (val == 0)
@@ -209,14 +209,15 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const int32 val) 
 ParamBase::ParamBase(const ByteArray &name, const uint32 type, const complex128 val) : 
     m_type(type), 
     m_name(name),
-    m_dVal(0.0), 
+    m_dVal(0.0, 0.0), 
     m_iVal(0), 
     m_cVal(NULL)
 {
     switch(typeFilter(type))
     {
         case Complex:
-            m_dVal = val;
+            m_dVal.real = val.real();
+            m_dVal.imag = val.imag();
         break;
         default:
             throw std::logic_error("constructor with complex128 val is only callable for type Complex");
@@ -239,7 +240,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const complex128 
 ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned int size, const char *values) : 
     m_type(type), 
     m_name(name),
-    m_dVal(0.0), 
+    m_dVal(0.0, 0.0), 
     m_iVal(size), 
     m_cVal(NULL)
 {
@@ -345,7 +346,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned in
 ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned int size, const int32 *values) : 
     m_type(type),
     m_name(name),
-    m_dVal(0.0), 
+    m_dVal(0.0, 0.0), 
     m_iVal(size), 
     m_cVal(NULL)
 {
@@ -420,7 +421,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned in
 ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned int size, const float64 *values) : 
     m_type(type), 
     m_name(name),
-    m_dVal(0.0), 
+    m_dVal(0.0, 0.0), 
     m_iVal(size), 
     m_cVal(NULL)
 {
@@ -487,7 +488,7 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned in
 ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned int size, const complex128 *values) : 
     m_type(type), 
     m_name(name),
-    m_dVal(0.0), 
+    m_dVal(0.0, 0.0), 
     m_iVal(size), 
     m_cVal(NULL)
 {

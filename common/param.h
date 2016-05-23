@@ -56,6 +56,13 @@ namespace ito
     const uint32 paramFlagMask = 0xFFFF0000; //!< bits of type lying within this mask are flags (e.g. typeNoAutosave, typeReadonly...)
     const uint32 paramTypeMask = 0x0000FFFF; //!< bits of param type lying withing this mask describe the type (typeNoAutosave must be included there)
 
+    //! wrapper class for a complex128 value. This class is used, since the std::complex stl class is not exported over DLLs
+    struct ITOMCOMMON_EXPORT complex128_
+    {
+        complex128_(float64 r, float64 i) : real(r), imag(i) {};
+        float64 real;
+        float64 imag;
+    };
 
     class ITOMCOMMON_EXPORT ParamBase
     {
@@ -68,7 +75,7 @@ namespace ito
         static inline uint32 typeFilter(uint32 type) { return type & paramTypeMask; }
 
     private:
-        ito::complex128 m_dVal;    //!< internal value for float64 and complex128 typed values
+        complex238_ m_dVal;    //!< internal value for float64 and complex128 typed values
         ito::int32 m_iVal;         //!< internal value for integer typed values
         char *m_cVal;         //!< internal pointer for pointer type values (also strings)
 
@@ -103,7 +110,7 @@ namespace ito
         //  CONSTRUCTORS, COPY-CONSTRUCTOR, DESTRUCTOR
         //--------------------------------------------------------------------------------------------
         //! default constructor, creates "empty" ParamBase
-        ParamBase() : m_type(0), m_name(NULL), m_dVal(0.0), m_iVal(0), m_cVal(NULL) {}
+        ParamBase() : m_type(0), m_name(NULL), m_dVal(0.0, 0.0), m_iVal(0), m_cVal(NULL) {}
         ParamBase(const ByteArray &name);                                                                  // type-less ParamBase with name only
         ParamBase(const ByteArray &name, const uint32 type);                                               // constructor with type and name
         ParamBase(const ByteArray &name, const uint32 type, const char *val);                              // constructor with name and type and char val
@@ -132,7 +139,7 @@ namespace ito
         inline bool isNumeric(void) const
         {
             static int numericTypeMask = ito::ParamBase::Char | ParamBase::Int | ParamBase::Double | ParamBase::Complex;
-            return (m_type & numericTypeMask) && !(m_type & ito::ParamBase::Pointer) > 0;
+            return ((m_type & numericTypeMask) > 0) && !(m_type & ito::ParamBase::Pointer);
         }
 
         //! returns true if Param is of type char array, int array, double array or complex array
@@ -159,7 +166,7 @@ namespace ito
 
         //! returns content of autosave flag - this flag determines whether the parameter value gets automagically saved to xml file
         //! when an instance of a plugin class is deleted (closed)
-        inline bool getAutosave(void) const { return (m_type & NoAutosave); }
+        inline bool getAutosave(void) const { return (m_type & NoAutosave) > 0; }
 
         //! sets content of autosave flag - this flag determines whether the parameter value gets automagically saved to xml file
         //! when an instance of a plugin class is deleted (closed)
@@ -301,7 +308,7 @@ namespace ito
     template<typename _Tp>
     struct ItomParamHelper
     {
-        static ito::RetVal setVal(uint32 type, char *&cVal, int32 &iVal, complex128 &/*dVal*/, const _Tp val, int len = 0)
+        static ito::RetVal setVal(uint32 type, char *&cVal, int32 &iVal, complex238_ &/*dVal*/, const _Tp val, int len = 0)
         {
             switch (type & paramTypeMask)
             {
@@ -423,7 +430,7 @@ namespace ito
             }
         }
 
-        static _Tp getVal(const uint32 type, const char *cVal, const int32 &iVal, const complex128 &/*dVal*/, int &len)
+        static _Tp getVal(const uint32 type, const char *cVal, const int32 &iVal, const complex238_ &/*dVal*/, int &len)
         {
             switch (type & paramTypeMask)
             {
@@ -470,13 +477,14 @@ namespace ito
     template<>
     struct ItomParamHelper<float64>
     {
-        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex128 &dVal, float64 val, int /*len = 0*/)
+        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex238_ &dVal, float64 val, int /*len = 0*/)
         {
             switch (type & paramTypeMask)
             {
                 case ito::ParamBase::Complex & ito::paramTypeMask:
                 case ito::ParamBase::Double & ito::paramTypeMask:
-                    dVal = static_cast<float64>(val);
+                    dVal.real = static_cast<float64>(val);
+                    dVal.imag = 0.0;
                     return ito::retOk;
 
                 case ito::ParamBase::Int & ito::paramTypeMask:
@@ -489,7 +497,7 @@ namespace ito
             }
         }
 
-        static float64 getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex128 &dVal, int & /*len*/)
+        static float64 getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex238_ &dVal, int & /*len*/)
         {
             switch (type & paramTypeMask)
             {
@@ -499,7 +507,7 @@ namespace ito
                 
                 case ito::ParamBase::Complex & ito::paramTypeMask:
                 case ito::ParamBase::Double & ito::paramTypeMask:
-                    return dVal.real();
+                    return dVal.real;
 
                 default:
                     throw std::logic_error("Param::getVal<float64>: Non-matching type!");
@@ -510,13 +518,14 @@ namespace ito
     template<>
     struct ItomParamHelper<int32>
     {
-        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex128 &dVal, int32 val, int /*len = 0*/)
+        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex238_ &dVal, int32 val, int /*len = 0*/)
         {
             switch (type & paramTypeMask)
             {
                 case ito::ParamBase::Complex & ito::paramTypeMask:
                 case ito::ParamBase::Double & ito::paramTypeMask:
-                    dVal = static_cast<int32>(val);
+                    dVal.real = static_cast<float64>(val);
+                    dVal.imag = 0.0;
                     return ito::retOk;
 
                 case ito::ParamBase::Int & ito::paramTypeMask:
@@ -529,7 +538,7 @@ namespace ito
             }
         }
 
-        static int32 getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex128 &dVal, int & /*len*/)
+        static int32 getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex238_ &dVal, int & /*len*/)
         {
             switch (type & paramTypeMask)
             {
@@ -539,7 +548,7 @@ namespace ito
 
                 case ito::ParamBase::Complex & ito::paramTypeMask:
                 case ito::ParamBase::Double & ito::paramTypeMask:
-                    return static_cast<int32>(dVal.real());
+                    return static_cast<int32>(dVal.real);
 
                 case 0:
                     throw std::invalid_argument("Param::getVal<int32>: non existent parameter");
@@ -553,13 +562,14 @@ namespace ito
     template<>
     struct ItomParamHelper<char>
     {
-        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex128 &dVal, char val, int /*len = 0*/)
+        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex238_ &dVal, char val, int /*len = 0*/)
         {
             switch (type & paramTypeMask)
             {
                 case ito::ParamBase::Complex & ito::paramTypeMask:
                 case ito::ParamBase::Double & ito::paramTypeMask:
-                    dVal = static_cast<char>(val);
+                    dVal.real = static_cast<float64>(val);
+                    dVal.imag = 0.0;
                     return ito::retOk;
 
                 case ito::ParamBase::Int & ito::paramTypeMask:
@@ -572,7 +582,7 @@ namespace ito
             }
         }
 
-        static char getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex128 &dVal, int & /*len*/)
+        static char getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex238_ &dVal, int & /*len*/)
         {
             switch (type & paramTypeMask)
             {
@@ -582,7 +592,7 @@ namespace ito
 
                 case ito::ParamBase::Complex & ito::paramTypeMask:
                 case ito::ParamBase::Double & ito::paramTypeMask:
-                    return static_cast<char>(dVal.real());
+                    return static_cast<char>(dVal.real);
 
                 case 0:
                     throw std::invalid_argument("Param::getVal<char>: non existent parameter");
@@ -596,13 +606,14 @@ namespace ito
     template<>
     struct ItomParamHelper<unsigned char>
     {
-        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex128 &dVal, char val, int /*len = 0*/)
+        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex238_ &dVal, char val, int /*len = 0*/)
         {
             switch (type & paramTypeMask)
             {
                 case ito::ParamBase::Complex & ito::paramTypeMask:
                 case ito::ParamBase::Double & ito::paramTypeMask:
-                    dVal = static_cast<unsigned char>(val);
+                    dVal.real = static_cast<float64>(val);
+                    dVal.imag = 0.0;
                     return ito::retOk;
 
                 case ito::ParamBase::Int & ito::paramTypeMask:
@@ -615,7 +626,7 @@ namespace ito
             }
         }
 
-        static char getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex128 &dVal, int & /*len*/)
+        static char getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex238_ &dVal, int & /*len*/)
         {
             switch (type & paramTypeMask)
             {
@@ -625,7 +636,7 @@ namespace ito
 
                 case ito::ParamBase::Complex & ito::paramTypeMask:
                 case ito::ParamBase::Double & ito::paramTypeMask:
-                    return static_cast<unsigned char>(dVal.real());
+                    return static_cast<unsigned char>(dVal.real);
 
                 case 0:
                     throw std::invalid_argument("Param::getVal<uchar>: non existent parameter");
@@ -639,12 +650,13 @@ namespace ito
     template<>
     struct ItomParamHelper<complex128>
     {
-        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex128 &dVal, complex128 val, int /*len = 0*/)
+        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex238_ &dVal, complex128 val, int /*len = 0*/)
         {
             switch (type & paramTypeMask)
             {
                 case ito::ParamBase::Complex & ito::paramTypeMask:
-                    dVal = val;
+                    dVal.real = val.real();
+                    dVal.imag = val.imag();
                     return ito::retOk;
 
                 default:
@@ -652,7 +664,7 @@ namespace ito
             }
         }
 
-        static complex128 getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex128 &dVal, int & /*len*/)
+        static complex128 getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex238_ &dVal, int & /*len*/)
         {
             switch (type & paramTypeMask)
             {
@@ -661,10 +673,10 @@ namespace ito
                     return complex128(iVal, 0.0);
                 
                 case ito::ParamBase::Complex & ito::paramTypeMask:
-                    return dVal;
+                    return complex128(dVal.real, dVal.imag);
 
                 case ito::ParamBase::Double & ito::paramTypeMask:
-                    return dVal.real();
+                    return dVal.real;
 
                 default:
                     throw std::logic_error("Param::getVal<complex128>: Non-matching type!");
