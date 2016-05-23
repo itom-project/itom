@@ -79,6 +79,7 @@
 #include "../models/breakPointModel.h"
 #include "../../common/sharedStructuresQt.h"
 #include "../../common/addInInterface.h"
+#include "../global.h"
 
 #include "pythonWorkspace.h"
 

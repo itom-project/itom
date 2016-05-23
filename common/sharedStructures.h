@@ -46,6 +46,9 @@ namespace ito
     #define MAXVERSION                          CREATEVERSION(999999,0,0)    //maximum possible version (that means no maximum version is indicated)
     #define MINVERSION                          CREATEVERSION(0,0,0)         //minimum possible version
 
+    #define DELETE_AND_SET_NULL(pointer) if(pointer != NULL) { delete pointer; pointer = NULL;};
+    #define DELETE_AND_SET_NULL_ARRAY(pointer) if(pointer != NULL) { delete[] pointer; pointer = NULL;};
+
     #define ItomDoc_VAR(name) static char name[]
     #define ItomDoc_STRVAR(name,str) ItomDoc_VAR(name) = str
 

@@ -47,6 +47,7 @@
 
 #include "../common/sharedStructures.h"
 #include "../common/color.h"
+#include "../common/byteArray.h"
 
 
 namespace cv

@@ -50,20 +50,6 @@ namespace ito
     #define PLUGINWAIT 5000
 
     /**
-    * LogLevel enumeration
-    * This enum holds all possible LogLevel values
-    */
-    enum tLogLevel
-    {
-        logNone     = 0x0,
-        logError    = 0x1,
-        logWarning  = 0x2,
-        logInfo     = 0x4,
-        logAll      = logInfo | logWarning | logError
-    };
-
-
-    /**
     * RetValue enumeration
     * This enum holds the three possible return states Ok, Warning and Error
     */
@@ -73,59 +59,15 @@ namespace ito
         retWarning  = 0x1,  /*!< warning */ 
         retError    = 0x2   /*!< error */ 
     };
-
+    
     /**
-    * MsgType enumeration
-    * This enum holds the possible values for any message type (for qDebugStream e.g.)
-    *
-    * This enumeration is deprecated and will be removed in future versions. It is currently unused. Don't use it again.
+    * enumeration to describe the result of a parameter comparison (e.g. apiCompareParam)
     */
-    enum tMsgType
-    { 
-        msgReturnInfo, 
-        msgReturnWarning, 
-        msgReturnError, 
-        msgTextInfo,
-        msgTextWarning, 
-        msgTextError
-    };
-
-    enum tPythonDbgCmd
-    { 
-        pyDbgNone=0, 
-        pyDbgContinue=1, 
-        pyDbgStep=2, 
-        pyDbgStepOut=4, 
-        pyDbgStepOver=8,
-        pyDbgQuit=16
-    };
-
-    enum tPythonTransitions
-    {
-        pyTransBeginRun = 1,
-        pyTransEndRun = 2,
-        pyTransBeginDebug = 4,
-        pyTransEndDebug = 8,
-        pyTransDebugWaiting = 16,
-        pyTransDebugContinue = 32,
-        pyTransDebugExecCmdBegin = 64,
-        pyTransDebugExecCmdEnd = 128
-    };
-
     enum tCompareResult 
     { 
-        tCmpEqual, 
-        tCmpCompatible, 
+        tCmpEqual,
+        tCmpCompatible,
         tCmpFailed 
-    };
-
-    enum tPythonState
-    {
-        pyStateIdle = 1,
-        pyStateRunning = 2,
-        pyStateDebugging = 4,
-        pyStateDebuggingWaiting = 8,
-        pyStateDebuggingWaitingButBusy = 16
     };
 
     /**
@@ -163,9 +105,6 @@ namespace ito
     };  
 
     // data types for images should always be the same size
-    // so define them to fixed byte sizes here
-
-   // data types for images should always be the same size
     // so define them to fixed byte sizes here
 
 
@@ -209,7 +148,6 @@ namespace ito
         };
     };
 
-    #define GLOBAL_LOG_LEVEL tLogLevel(logAll)
 
 #ifndef WIN32
     #define _strdup strdup

@@ -58,9 +58,6 @@
     #define ITOM_PYTHONMATLAB 0
 #endif
 
-#define DELETE_AND_SET_NULL(pointer) if(pointer != NULL) { delete pointer; pointer = NULL;};
-#define DELETE_AND_SET_NULL_ARRAY(pointer) if(pointer != NULL) { delete[] pointer; pointer = NULL;};
-
 /* global variables (avoid) */
 typedef QMap<QString,QString> StringMap;
 typedef QList<int> IntList;
@@ -70,6 +67,59 @@ typedef QVector<ito::Param> ParamVector;
 typedef QSharedPointer<ito::ParamBase> SharedParamBasePointer;
 typedef QVector<SharedParamBasePointer> SharedParamBasePointerVector;
 typedef QVector<ito::Param> ParamBaseVector;
+
+
+namespace ito {
+
+    /**
+    * MsgType enumeration
+    * This enum holds the possible values for any message type (for qDebugStream e.g.)
+    *
+    * This enumeration is deprecated and will be removed in future versions. It is currently unused. Don't use it again.
+    */
+    enum tMsgType
+    { 
+        msgReturnInfo, 
+        msgReturnWarning, 
+        msgReturnError, 
+        msgTextInfo,
+        msgTextWarning, 
+        msgTextError
+    };
+
+
+    enum tPythonDbgCmd
+    { 
+        pyDbgNone=0, 
+        pyDbgContinue=1, 
+        pyDbgStep=2, 
+        pyDbgStepOut=4, 
+        pyDbgStepOver=8,
+        pyDbgQuit=16
+    };
+
+
+    enum tPythonTransitions
+    {
+        pyTransBeginRun = 1,
+        pyTransEndRun = 2,
+        pyTransBeginDebug = 4,
+        pyTransEndDebug = 8,
+        pyTransDebugWaiting = 16,
+        pyTransDebugContinue = 32,
+        pyTransDebugExecCmdBegin = 64,
+        pyTransDebugExecCmdEnd = 128
+    };
+
+    enum tPythonState
+    {
+        pyStateIdle = 1,
+        pyStateRunning = 2,
+        pyStateDebugging = 4,
+        pyStateDebuggingWaiting = 8,
+        pyStateDebuggingWaitingButBusy = 16
+    };
+}; //end namespace ito
 
 
 #endif

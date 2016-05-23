@@ -27,6 +27,8 @@
 
 #include "../param.h"
 
+#include "../sharedStructures.h"
+
 #include <assert.h>
 
 namespace ito
@@ -1133,11 +1135,7 @@ Param::Param(const ByteArray &name, const uint32 type, const unsigned int size, 
 //----------------------------------------------------------------------------------------------------------------------------------
 Param::~Param()
 {
-    if (m_pMeta)
-    {
-        delete m_pMeta;
-        m_pMeta = NULL;
-    }
+    DELETE_AND_SET_NULL(m_pMeta);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
