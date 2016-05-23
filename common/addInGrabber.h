@@ -38,12 +38,13 @@
 
 namespace ito
 {
+    class AddInGrabberPrivate;
+
     class ITOMCOMMONQT_EXPORT AddInGrabber : public ito::AddInDataIO
     {
         Q_OBJECT
 
     private:
-
         //! counter indicating how many times startDevice has been called
         /*!
             increment this variable every time startDevice is called (by incGrabberStarted())
@@ -52,6 +53,8 @@ namespace ito
             \sa grabberStartedCount, incGrabberStarted, decGrabberStarted, setGrabberStarted
         */
         int m_started;
+
+        AddInGrabberPrivate *dd;        
 
     protected:
         void timerEvent (QTimerEvent *event);  /*!< this method is called every time when the auto-grabbing-timer is fired. Usually you don't have to overwrite this method. */

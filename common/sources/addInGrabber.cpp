@@ -32,6 +32,12 @@
 
 namespace ito
 {
+    class AddInGrabberPrivate
+    {
+    public:
+        int m_nrLiveImageErrors; //number of consecutive errors when automatically grabbing the next image. If this number becomes bigger than a threshold, auto grabbing will be disabled.
+    };
+
     /*!
     \class AddInGrabber
     \brief Inherit from AddInGrabber if you write a camera/grabber plugin. Please call the constructor of AddInGrabber within your plugin constructor.
@@ -48,13 +54,15 @@ namespace ito
         AddInDataIO(),
         m_started(0)
     {
+        dd = new AddInGrabberPrivate();
+        dd->m_nrLiveImageErrors = 0;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
     //! destructor
     AddInGrabber::~AddInGrabber()
     {
-        m_params.clear();
+        DELETE_AND_SET_NULL(dd);
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -151,9 +159,10 @@ namespace ito
                 {
                     std::cout << "warning while sending live image." << "\n" << std::endl;
                 }
-            }
 
-            if (retValue.containsError())
+                dd->m_nrLiveImageErrors = 0;
+            }
+            else if (retValue.containsError())
             {
                 if (retValue.hasErrorMessage())
                 {
@@ -163,6 +172,19 @@ namespace ito
                 {
                     std::cout << "error while sending live image." << "\n" << std::endl;
                 }
+
+                dd->m_nrLiveImageErrors++;
+
+                if (dd->m_nrLiveImageErrors > 10)
+                {
+                    disableAutoGrabbing();
+                    dd->m_nrLiveImageErrors = 0;
+                    std::cout << "Auto grabbing of grabber " << this->getIdentifier().toLatin1().data() << " was stopped due to consecutive errors in the previous tries\n" << std::endl;
+                }
+            }
+            else
+            {
+                dd->m_nrLiveImageErrors = 0;
             }
         }
     }
@@ -213,7 +235,7 @@ namespace ito
             }
             else if (externalDataObject->getSize(dims - 2) != (unsigned int)futureHeight || externalDataObject->getSize(dims - 1) != (unsigned int)futureWidth || externalDataObject->getType() != futureType)
             {
-                return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or a uninitilized image.").toLatin1().data());
+                return ito::RetVal(ito::retError, 0, tr("Error during check data, external dataObject invalid. Object must be of right size and type or an uninitilized image.").toLatin1().data());
             }
         }
 

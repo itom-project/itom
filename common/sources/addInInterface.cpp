@@ -173,8 +173,7 @@ namespace ito
         {
             aibp->m_pThread->quit();
             aibp->m_pThread->wait(5000);
-            delete aibp->m_pThread;
-            aibp->m_pThread = NULL;
+            DELETE_AND_SET_NULL(aibp->m_pThread);
         }
 
         delete aibp;
