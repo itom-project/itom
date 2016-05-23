@@ -63,18 +63,20 @@ namespace ito
         uint32 m_type;
         ByteArray m_name;      //!< parameter name
 
-        void InOutCheck();
+        void inOutCheck();
+
+        static inline uint32 typeFilter(uint32 type) { return type & paramTypeMask; }
 
     private:
-        double m_dVal;      //!< internal value for double typed values
-        int m_iVal;         //!< internal value for integer typed values
-        char *m_cVal;       //!< internal pointer for pointer type values (also strings)
+        ito::complex128 m_dVal;    //!< internal value for float64 and complex128 typed values
+        ito::int32 m_iVal;         //!< internal value for integer typed values
+        char *m_cVal;         //!< internal pointer for pointer type values (also strings)
 
     public:
         enum Type {
             //flags (bit 17-32)
             NoAutosave      = 0x010000,
-            Readonly        = 0x020000, // this flag is not used inside tParam but you can check for it
+            Readonly        = 0x020000, // this flag is not used inside Param but you can check for it
             In              = 0x040000,
             Out             = 0x080000,
 
@@ -83,33 +85,35 @@ namespace ito
             Char            = 0x000002,
             Int             = 0x000004,
             Double          = 0x000008,
-            //DObj            = 0x000010,
+            Complex         = 0x000400,
+            DObjPtr         = 0x000010 | Pointer | NoAutosave,
             String          = 0x000020 | Pointer,
             HWRef           = 0x000040 | Pointer | NoAutosave,
-            DObjPtr         = 0x000010 | Pointer | NoAutosave,
             CharArray       = Char     | Pointer,
             IntArray        = Int      | Pointer,
             DoubleArray     = Double   | Pointer,
+            ComplexArray    = Complex  | Pointer,
             PointCloudPtr   = 0x000080 | Pointer | NoAutosave,
             PointPtr        = 0x000100 | Pointer | NoAutosave,
             PolygonMeshPtr  = 0x000200 | Pointer | NoAutosave
         };
 
-        static inline uint32 typeFilter(uint32 type) { return type & paramTypeMask; }
-
+        
         //--------------------------------------------------------------------------------------------
         //  CONSTRUCTORS, COPY-CONSTRUCTOR, DESTRUCTOR
         //--------------------------------------------------------------------------------------------
-        //! default constructor, creates "empty" tParam
+        //! default constructor, creates "empty" ParamBase
         ParamBase() : m_type(0), m_name(NULL), m_dVal(0.0), m_iVal(0), m_cVal(NULL) {}
         ParamBase(const ByteArray &name);                                                                  // type-less ParamBase with name only
         ParamBase(const ByteArray &name, const uint32 type);                                               // constructor with type and name
-        ParamBase(const ByteArray &name, const uint32 type, const char *val);                              // constructor with name and type, char val
-        ParamBase(const ByteArray &name, const uint32 type, const double val);                             // constructor with name and type, double val and optional info
-        ParamBase(const ByteArray &name, const uint32 type, const int val);                                // constructor with name and type, int val and optional info
-        ParamBase(const ByteArray &name, const uint32 type, const unsigned int size, const char *values);  // array constructor with name and type, size and array
-        ParamBase(const ByteArray &name, const uint32 type, const unsigned int size, const int *values);   // array constructor with name and type, size and array
-        ParamBase(const ByteArray &name, const uint32 type, const unsigned int size, const double *values);// array constructor with name and type, size and array
+        ParamBase(const ByteArray &name, const uint32 type, const char *val);                              // constructor with name and type and char val
+        ParamBase(const ByteArray &name, const uint32 type, const float64 val);                            // constructor with name and type and float64 val
+        ParamBase(const ByteArray &name, const uint32 type, const int32 val);                              // constructor with name and type and int32 val
+        ParamBase(const ByteArray &name, const uint32 type, const complex128 val);                         // constructor with name and type and complex128 val
+        ParamBase(const ByteArray &name, const uint32 type, const uint32 size, const char *values);        // array constructor with name and type, size and array
+        ParamBase(const ByteArray &name, const uint32 type, const uint32 size, const int32 *values);       // array constructor with name and type, size and array
+        ParamBase(const ByteArray &name, const uint32 type, const uint32 size, const float64 *values);     // array constructor with name and type, size and array
+        ParamBase(const ByteArray &name, const uint32 type, const uint32 size, const complex128 *values);  // array constructor with name and type, size and array
         virtual ~ParamBase(); //Destructor
         ParamBase(const ParamBase &copyConstr); //Copy-Constructor
 
@@ -117,55 +121,49 @@ namespace ito
         //  ASSIGNMENT AND OPERATORS
         //--------------------------------------------------------------------------------------------
         const ParamBase operator [] (const int num) const;     //!< braces operator for element-wise access in arrays
-        ParamBase& operator = (const ParamBase &rhs);          //!< assignment operator (sets values of lhs to values of rhs tParam, strings are copied)
+        ParamBase& operator = (const ParamBase &rhs);          //!< assignment operator (sets values of lhs to values of rhs Param, strings are copied)
         ito::RetVal copyValueFrom(const ito::ParamBase *rhs);  //!< just copies the value from the right-hand-side tParam (rhs) to this tParam.
 
         //--------------------------------------------------------------------------------------------
         //  SET/GET FURTHER PROPERTIES
         //--------------------------------------------------------------------------------------------
 
-        //! returns true if Param is of type char, int or double
+        //! returns true if Param is of type char, int, double or complex
         inline bool isNumeric(void) const
         {
-            static int numericTypeMask = ito::ParamBase::Char | ParamBase::Int | ParamBase::Double;
-            int type = getType();
-            return (type & numericTypeMask) && !(type & ito::ParamBase::Pointer);
+            static int numericTypeMask = ito::ParamBase::Char | ParamBase::Int | ParamBase::Double | ParamBase::Complex;
+            return (m_type & numericTypeMask) && !(m_type & ito::ParamBase::Pointer) > 0;
         }
 
-        inline ito::RetVal addNameSuffix(const char *suffix) 
-        { 
-            if (suffix)  
-            { 
-                m_name.append(suffix);
-            }
-            return ito::retWarning;
+        //! returns true if Param is of type char array, int array, double array or complex array
+        inline bool isNumericArray(void) const
+        {
+            static int numericTypeMask = ito::ParamBase::Char | ParamBase::Int | ParamBase::Double | ParamBase::Complex;
+            return (m_type & (numericTypeMask | ito::ParamBase::Pointer)) > 0;
         }
-        //! returns whether tParam contains a valid type (true) or is an empty parameter (false, type == 0). The default tParam-constructor is always an invalid tParam.
+
+        //! returns whether Param contains a valid type (true) or is an empty parameter (false, type == 0). The default tParam-constructor is always an invalid tParam.
         inline bool isValid(void) const { return m_type != 0; }
 
-        //! returns parameter type (autosave flag and optional flag are only included if filterFlags is set false)
-        inline uint32 getType(bool filterFlags = true) const 
-        { 
-            if (filterFlags) 
-                return m_type & paramTypeMask; 
-            else
-                return m_type;
-        }
+        //! returns parameter type
+        inline uint32 getType() const { return m_type & paramTypeMask; }
 
-        //! returns parameter flags (parameter type is not included)
+        //! returns parameter flags
         inline uint32 getFlags(void) const { return m_type & paramFlagMask; }
         
-        //! sets parameter flags (parameter type remains untouched), for possible flags see \ref tParamType
-        inline uint32 setFlags(const uint32 flags) { m_type = getType() | (flags & paramFlagMask); return 0; }
+        //! sets parameter flagsfor possible flags see \ref tParamType
+        inline void setFlags(const uint32 flags) { m_type = getType() | (flags & paramFlagMask); }
    
         //! returns parameter name (returned string is no copy, do not delete it)
-        inline const char * getName(void) const { return m_name.data(); }
+        inline const char* getName(void) const { return m_name.data(); }
+
         //! returns content of autosave flag - this flag determines whether the parameter value gets automagically saved to xml file
         //! when an instance of a plugin class is deleted (closed)
-        inline uint32 getAutosave(void) const { return ((m_type & NoAutosave) > 0 ? 0 : 1); }
+        inline bool getAutosave(void) const { return (m_type & NoAutosave); }
+
         //! sets content of autosave flag - this flag determines whether the parameter value gets automagically saved to xml file
         //! when an instance of a plugin class is deleted (closed)
-        inline void setAutosave(const uint32 autosave) { m_type = autosave > 0 ? m_type & ~NoAutosave : m_type | NoAutosave; return; }
+        inline void setAutosave(const bool autosave) { m_type = autosave ? (m_type & ~NoAutosave) : (m_type | NoAutosave); }
 
         //! returns length of array parameters or -1 if no array is given. For string parameter returns length of string or 0 if not given, for number parameters return 1. In all other cases -1.
         int getLen(void) const;
@@ -242,18 +240,21 @@ namespace ito
             Param(const ByteArray &name) : ParamBase(name), m_pMeta(NULL), m_info(NULL) {}                         // type-less Param with name only
             Param(const ByteArray &name, const uint32 type) : ParamBase(name, type), m_pMeta(NULL), m_info(NULL) {}   // constructor with type and name
             Param(const ByteArray &name, const uint32 type, const char *val, const char *info);                        // constructor with name and type, char val and optional info
-            Param(const ByteArray &name, const uint32 type, const double minVal, const double maxVal, const double val, const char *info); // constructor with name and type, double val, double minVal, double maxVal and optional info
-            Param(const ByteArray &name, const uint32 type, const int minVal, const int maxVal, const int val, const char *info); // constructor with name and type, int val, int minVal, int maxVal and optional info
             Param(const ByteArray &name, const uint32 type, const char minVal, const char maxVal, const char val, const char *info); // constructor with name and type, int val, int minVal, int maxVal and optional info
+            Param(const ByteArray &name, const uint32 type, const int32 minVal, const int32 maxVal, const int32 val, const char *info); // constructor with name and type, int val, int minVal, int maxVal and optional info
+            Param(const ByteArray &name, const uint32 type, const float64 minVal, const float64 maxVal, const float64 val, const char *info); // constructor with name and type, double val, double minVal, double maxVal and optional info
             Param(const ByteArray &name, const uint32 type, const unsigned int size, const char *values, const char *info);  // array constructor with name and type, size and array
-            Param(const ByteArray &name, const uint32 type, const unsigned int size, const int *values, const char *info);   // array constructor with name and type, size and array
-            Param(const ByteArray &name, const uint32 type, const unsigned int size, const double *values, const char *info);// array constructor with name and type, size and array
-            Param(const ByteArray &name, const uint32 type, const int val, ParamMeta *meta, const char *info);
-            Param(const ByteArray &name, const uint32 type, const double val, ParamMeta *meta, const char *info);
+            Param(const ByteArray &name, const uint32 type, const unsigned int size, const int32 *values, const char *info);   // array constructor with name and type, size and array
+            Param(const ByteArray &name, const uint32 type, const unsigned int size, const float64 *values, const char *info);// array constructor with name and type, size and array
+            Param(const ByteArray &name, const uint32 type, const unsigned int size, const complex128 *values, const char *info);// array constructor with name and type, size and array
             Param(const ByteArray &name, const uint32 type, const char val, ParamMeta *meta, const char *info);
-            Param(const ByteArray &name, const uint32 type, const unsigned int size, const double *values, ParamMeta *meta, const char *info);
-            Param(const ByteArray &name, const uint32 type, const unsigned int size, const int *values, ParamMeta *meta, const char *info);
+            Param(const ByteArray &name, const uint32 type, const int32 val, ParamMeta *meta, const char *info);
+            Param(const ByteArray &name, const uint32 type, const float64 val, ParamMeta *meta, const char *info);
+            Param(const ByteArray &name, const uint32 type, const complex128 val, ParamMeta *meta, const char *info);
             Param(const ByteArray &name, const uint32 type, const unsigned int size, const char *values, ParamMeta *meta, const char *info);
+            Param(const ByteArray &name, const uint32 type, const unsigned int size, const int32 *values, ParamMeta *meta, const char *info);
+            Param(const ByteArray &name, const uint32 type, const unsigned int size, const float64 *values, ParamMeta *meta, const char *info);
+            Param(const ByteArray &name, const uint32 type, const unsigned int size, const complex128 *values, ParamMeta *meta, const char *info);
             ~Param();                        //!< Destructor
             Param(const Param &copyConstr); //!< Copy-Constructor
 
@@ -292,15 +293,15 @@ namespace ito
             */
             void setMeta(ParamMeta* meta, bool takeOwnership = false);
 
-            double getMin() const;
-            double getMax() const;
+            float64 getMin() const;
+            float64 getMax() const;
     };
 
     //---------------------------------------------------------------------------------------------------------------------
     template<typename _Tp>
     struct ItomParamHelper
     {
-        static ito::RetVal setVal(uint32 type, char *&cVal, int &iVal, double &/*dVal*/, const _Tp val, int len = 0)
+        static ito::RetVal setVal(uint32 type, char *&cVal, int32 &iVal, complex128 &/*dVal*/, const _Tp val, int len = 0)
         {
             switch (type & paramTypeMask)
             {
@@ -359,8 +360,8 @@ namespace ito
                         char *cVal_ = cVal;
                         if ((val) && (len > 0))
                         {
-                            cVal = (char*)malloc(len * sizeof(int));
-                            memcpy(cVal, val, len * sizeof(int));
+                            cVal = (char*)malloc(len * sizeof(ito::int32));
+                            memcpy(cVal, val, len * sizeof(ito::int32));
                             iVal = len;
                         }
                         else
@@ -380,8 +381,29 @@ namespace ito
                         char *cVal_ = cVal;
                         if ((val) && (len > 0))
                         {
-                            cVal = (char*)malloc(len * sizeof(double));
-                            memcpy(cVal, val, len * sizeof(double));
+                            cVal = (char*)malloc(len * sizeof(ito::float64));
+                            memcpy(cVal, val, len * sizeof(ito::float64));
+                            iVal = len;
+                        }
+                        else
+                        {
+                            cVal = NULL;
+                            iVal = -1;
+                        }
+                        if (cVal_)
+                        {
+                            free(cVal_);
+                        }
+                    }
+                    return ito::retOk;
+
+                case ito::ParamBase::ComplexArray & ito::paramTypeMask:
+                    {
+                        char *cVal_ = cVal;
+                        if ((val) && (len > 0))
+                        {
+                            cVal = (char*)malloc(len * sizeof(ito::complex128));
+                            memcpy(cVal, val, len * sizeof(ito::complex128));
                             iVal = len;
                         }
                         else
@@ -401,7 +423,7 @@ namespace ito
             }
         }
 
-        static _Tp getVal(const uint32 type, const char *cVal, const int &iVal, const double &/*dVal*/, int &len)
+        static _Tp getVal(const uint32 type, const char *cVal, const int32 &iVal, const complex128 &/*dVal*/, int &len)
         {
             switch (type & paramTypeMask)
             {
@@ -409,7 +431,6 @@ namespace ito
                     if (cVal)
                     {
                         len = static_cast<int>(strlen(cVal));
-                        //return reinterpret_cast<_Tp>(_strdup(cVal));
                         return reinterpret_cast<_Tp>(const_cast<char*>(cVal));
                     }
                     else
@@ -421,6 +442,7 @@ namespace ito
                 case ito::ParamBase::CharArray & ito::paramTypeMask:
                 case ito::ParamBase::IntArray & ito::paramTypeMask:
                 case ito::ParamBase::DoubleArray & ito::paramTypeMask:
+                case ito::ParamBase::ComplexArray & ito::paramTypeMask:
                     if (cVal)
                     {
                         len = iVal;
@@ -446,52 +468,55 @@ namespace ito
     };
 
     template<>
-    struct ItomParamHelper<double>
+    struct ItomParamHelper<float64>
     {
-        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int &iVal, double &dVal, double val, int /*len = 0*/)
+        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex128 &dVal, float64 val, int /*len = 0*/)
         {
             switch (type & paramTypeMask)
             {
+                case ito::ParamBase::Complex & ito::paramTypeMask:
                 case ito::ParamBase::Double & ito::paramTypeMask:
-                    dVal = static_cast<double>(val);
+                    dVal = static_cast<float64>(val);
                     return ito::retOk;
 
                 case ito::ParamBase::Int & ito::paramTypeMask:
                 case ito::ParamBase::Char & ito::paramTypeMask:
-                    iVal = static_cast<int>(val);
+                    iVal = static_cast<int32>(val);
                     return ito::retOk;
 
                 default:
-                    return ito::RetVal(ito::retError, 0, "double value passed to setVal<double> does not match the type of the parameter");
+                    return ito::RetVal(ito::retError, 0, "float64 value passed to setVal<float64> does not match the type of the parameter");
             }
         }
 
-        static double getVal(const uint32 type, const char * /*cVal*/, const int &iVal, const double &dVal, int & /*len*/)
+        static float64 getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex128 &dVal, int & /*len*/)
         {
             switch (type & paramTypeMask)
             {
                 case ito::ParamBase::Int & ito::paramTypeMask:
                 case ito::ParamBase::Char & ito::paramTypeMask:
-                    return static_cast<double>(iVal);
-
+                    return static_cast<float64>(iVal);
+                
+                case ito::ParamBase::Complex & ito::paramTypeMask:
                 case ito::ParamBase::Double & ito::paramTypeMask:
-                    return dVal;
+                    return dVal.real();
 
                 default:
-                    throw std::logic_error("Param::getVal<double>: Non-matching type!");
+                    throw std::logic_error("Param::getVal<float64>: Non-matching type!");
             }
         }
     };
 
     template<>
-    struct ItomParamHelper<int>
+    struct ItomParamHelper<int32>
     {
-        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int &iVal, double &dVal, int val, int /*len = 0*/)
+        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex128 &dVal, int32 val, int /*len = 0*/)
         {
             switch (type & paramTypeMask)
             {
+                case ito::ParamBase::Complex & ito::paramTypeMask:
                 case ito::ParamBase::Double & ito::paramTypeMask:
-                    dVal = static_cast<int>(val);
+                    dVal = static_cast<int32>(val);
                     return ito::retOk;
 
                 case ito::ParamBase::Int & ito::paramTypeMask:
@@ -500,11 +525,11 @@ namespace ito
                     return ito::retOk;
 
                 default:
-                    return ito::RetVal(ito::retError, 0, "int value passed to setVal<int> does not match the type of the parameter");
+                    return ito::RetVal(ito::retError, 0, "int32 value passed to setVal<int32> does not match the type of the parameter");
             }
         }
 
-        static int getVal(const uint32 type, const char * /*cVal*/, const int &iVal, const double &dVal, int & /*len*/)
+        static int32 getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex128 &dVal, int & /*len*/)
         {
             switch (type & paramTypeMask)
             {
@@ -512,14 +537,15 @@ namespace ito
                 case ito::ParamBase::Char & ito::paramTypeMask:
                     return iVal;
 
+                case ito::ParamBase::Complex & ito::paramTypeMask:
                 case ito::ParamBase::Double & ito::paramTypeMask:
-                    return static_cast<int>(dVal);
+                    return static_cast<int32>(dVal.real());
 
                 case 0:
-                    throw std::invalid_argument("Param::getVal<int>: non existent parameter");
+                    throw std::invalid_argument("Param::getVal<int32>: non existent parameter");
 
                 default:
-                    throw std::logic_error("Param::getVal<int>: Non-matching type!");
+                    throw std::logic_error("Param::getVal<int32>: Non-matching type!");
             }
         }
     };
@@ -527,10 +553,11 @@ namespace ito
     template<>
     struct ItomParamHelper<char>
     {
-        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int &iVal, double &dVal, char val, int /*len = 0*/)
+        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex128 &dVal, char val, int /*len = 0*/)
         {
             switch (type & paramTypeMask)
             {
+                case ito::ParamBase::Complex & ito::paramTypeMask:
                 case ito::ParamBase::Double & ito::paramTypeMask:
                     dVal = static_cast<char>(val);
                     return ito::retOk;
@@ -545,7 +572,7 @@ namespace ito
             }
         }
 
-        static char getVal(const uint32 type, const char * /*cVal*/, const int &iVal, const double &dVal, int & /*len*/)
+        static char getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex128 &dVal, int & /*len*/)
         {
             switch (type & paramTypeMask)
             {
@@ -553,8 +580,9 @@ namespace ito
                 case ito::ParamBase::Char & ito::paramTypeMask:
                     return static_cast<char>(iVal);
 
+                case ito::ParamBase::Complex & ito::paramTypeMask:
                 case ito::ParamBase::Double & ito::paramTypeMask:
-                    return static_cast<char>(dVal);
+                    return static_cast<char>(dVal.real());
 
                 case 0:
                     throw std::invalid_argument("Param::getVal<char>: non existent parameter");
@@ -568,10 +596,11 @@ namespace ito
     template<>
     struct ItomParamHelper<unsigned char>
     {
-        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int &iVal, double &dVal, char val, int /*len = 0*/)
+        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex128 &dVal, char val, int /*len = 0*/)
         {
             switch (type & paramTypeMask)
             {
+                case ito::ParamBase::Complex & ito::paramTypeMask:
                 case ito::ParamBase::Double & ito::paramTypeMask:
                     dVal = static_cast<unsigned char>(val);
                     return ito::retOk;
@@ -586,7 +615,7 @@ namespace ito
             }
         }
 
-        static char getVal(const uint32 type, const char * /*cVal*/, const int &iVal, const double &dVal, int & /*len*/)
+        static char getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex128 &dVal, int & /*len*/)
         {
             switch (type & paramTypeMask)
             {
@@ -594,14 +623,51 @@ namespace ito
                 case ito::ParamBase::Char & ito::paramTypeMask:
                     return static_cast<unsigned char>(iVal);
 
+                case ito::ParamBase::Complex & ito::paramTypeMask:
                 case ito::ParamBase::Double & ito::paramTypeMask:
-                    return static_cast<unsigned char>(dVal);
+                    return static_cast<unsigned char>(dVal.real());
 
                 case 0:
                     throw std::invalid_argument("Param::getVal<uchar>: non existent parameter");
 
                 default:
                     throw std::logic_error("Param::getVal<uchar>: Non-matching type!");
+            }
+        }
+    };
+
+    template<>
+    struct ItomParamHelper<complex128>
+    {
+        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex128 &dVal, complex128 val, int /*len = 0*/)
+        {
+            switch (type & paramTypeMask)
+            {
+                case ito::ParamBase::Complex & ito::paramTypeMask:
+                    dVal = val;
+                    return ito::retOk;
+
+                default:
+                    return ito::RetVal(ito::retError, 0, "complex128 value passed to setVal<complex128> does not match the type of the parameter");
+            }
+        }
+
+        static complex128 getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex128 &dVal, int & /*len*/)
+        {
+            switch (type & paramTypeMask)
+            {
+                case ito::ParamBase::Int & ito::paramTypeMask:
+                case ito::ParamBase::Char & ito::paramTypeMask:
+                    return complex128(iVal, 0.0);
+                
+                case ito::ParamBase::Complex & ito::paramTypeMask:
+                    return dVal;
+
+                case ito::ParamBase::Double & ito::paramTypeMask:
+                    return dVal.real();
+
+                default:
+                    throw std::logic_error("Param::getVal<complex128>: Non-matching type!");
             }
         }
     };

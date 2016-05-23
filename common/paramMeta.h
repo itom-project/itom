@@ -144,33 +144,33 @@ namespace ito
     class ITOMCOMMON_EXPORT IntMeta : public ParamMeta
     {
     public:
-        explicit IntMeta(int minVal, int maxVal, int stepSize = 1); //!< constructor with minimum and maximum value as well as optional step size (default: 1)
+        explicit IntMeta(int32 minVal, int32 maxVal, int32 stepSize = 1); //!< constructor with minimum and maximum value as well as optional step size (default: 1)
         static IntMeta* all();                                      //!< returns a new instance of IntMeta, where the min and max are set to the full range available for integers.
-        inline int getMin() const { return m_minVal; }              //!< returns minimum value
-        inline int getMax() const { return m_maxVal; }              //!< returns maximum value
-        inline int getStepSize() const { return m_stepSize; }       //!< returns step size
+        inline int32 getMin() const { return m_minVal; }              //!< returns minimum value
+        inline int32 getMax() const { return m_maxVal; }              //!< returns maximum value
+        inline int32 getStepSize() const { return m_stepSize; }       //!< returns step size
         
         //! sets the minimum value
         /*!
             \param val is the new minimum value, if this is bigger than the current maximum value, the maximum value is changed to val, too
         */
-        void setMin(int val);
+        void setMin(int32 val);
         
         //! sets the maximum value
         /*!
             \param val is the new maximum value, if this is smaller than the current minimum value, the minimum value is changed to val, too
         */
-        void setMax(int val);
+        void setMax(int32 val);
 
         //! sets the step size
         /*!
             \param val is the new step size, hence only discrete values [minVal, minVal+stepSize, minVal+2*stepSize...,maxVal] are allowed
         */
-        void setStepSize(int val);
+        void setStepSize(int32 val);
     private:
-        int m_minVal;
-        int m_maxVal;
-        int m_stepSize; // >= 1
+        int32 m_minVal;
+        int32 m_maxVal;
+        int32 m_stepSize; // >= 1
     };
 
     /*!
@@ -186,33 +186,33 @@ namespace ito
     {
     public:
         //! constructor with minimum and maximum value
-        explicit DoubleMeta(double minVal, double maxVal, double stepSize = 0.0 /*0.0 means no specific step size*/);
+        explicit DoubleMeta(float64 minVal, float64 maxVal, float64 stepSize = 0.0 /*0.0 means no specific step size*/);
         static DoubleMeta* all();                                //!< returns a new instance of DoubleMeta, where the min and max are set to the full range available for double.
-        inline double getMin() const { return m_minVal; }        //!< returns minimum value
-        inline double getMax() const { return m_maxVal; }        //!< returns maximum value
-        inline double getStepSize() const { return m_stepSize; } //!< returns step size
+        inline float64 getMin() const { return m_minVal; }        //!< returns minimum value
+        inline float64 getMax() const { return m_maxVal; }        //!< returns maximum value
+        inline float64 getStepSize() const { return m_stepSize; } //!< returns step size
         
         //! sets the minimum value
         /*!
             \param val is the new minimum value, if this is bigger than the current maximum value, the maximum value is changed to val, too
         */
-        void setMin(double val);
+        void setMin(float64 val);
         
         //! sets the maximum value
         /*!
             \param val is the new maximum value, if this is smaller than the current minimum value, the minimum value is changed to val, too
         */
-        void setMax(double val);
+        void setMax(float64 val);
 
         //! sets the step size
         /*!
             \param val is the new step size, hence only discrete values [minVal, minVal+stepSize, minVal+2*stepSize...,maxVal] are allowed
         */
-        void setStepSize(double val);
+        void setStepSize(float64 val);
     private:
-        double m_minVal;
-        double m_maxVal;
-        double m_stepSize; // >= 0, 0.0 means no specific step size
+        float64 m_minVal;
+        float64 m_maxVal;
+        float64 m_stepSize; // >= 0, 0.0 means no specific step size
     };
 
     /*!
@@ -393,8 +393,8 @@ namespace ito
     class ITOMCOMMON_EXPORT IntArrayMeta : public IntMeta
     {
     public:
-        explicit IntArrayMeta(int minVal, int maxVal, int stepSize = 1);
-        explicit IntArrayMeta(int minVal, int maxVal, int stepSize, size_t numMin, size_t numMax, size_t numStepSize = 1);
+        explicit IntArrayMeta(int32 minVal, int32 maxVal, int stepSize = 1);
+        explicit IntArrayMeta(int32 minVal, int32 maxVal, int stepSize, size_t numMin, size_t numMax, size_t numStepSize = 1);
         inline size_t getNumMin() const { return m_numMin; }         //!< returns minimum number of values
         inline size_t getNumMax() const { return m_numMax; }         //!< returns maximum number of values
         inline size_t getNumStepSize() const { return m_numStep; }   //!< returns step size of number of values
@@ -436,8 +436,8 @@ namespace ito
     class ITOMCOMMON_EXPORT DoubleArrayMeta : public DoubleMeta
     {
     public:
-        explicit DoubleArrayMeta(double minVal, double maxVal, double stepSize = 0.0);
-        explicit DoubleArrayMeta(double minVal, double maxVal, double stepSize, size_t numMin, size_t numMax, size_t numStepSize = 1);
+        explicit DoubleArrayMeta(float64 minVal, float64 maxVal, float64 stepSize = 0.0);
+        explicit DoubleArrayMeta(float64 minVal, float64 maxVal, float64 stepSize, size_t numMin, size_t numMax, size_t numStepSize = 1);
         inline size_t getNumMin() const { return m_numMin; }         //!< returns minimum number of values
         inline size_t getNumMax() const { return m_numMax; }         //!< returns maximum number of values
         inline size_t getNumStepSize() const { return m_numStep; }   //!< returns step size of number of values
@@ -481,34 +481,34 @@ namespace ito
     class ITOMCOMMON_EXPORT DoubleIntervalMeta : public DoubleMeta
     {
     public:
-        explicit DoubleIntervalMeta(double minVal, double maxVal, double stepSize = 0.0);
-        explicit DoubleIntervalMeta(double minVal, double maxVal, double stepSize, double sizeMin, double sizeMax, double sizeStep = 0.0);
-        inline double getSizeMin() const { return m_sizeMin; }         //!< returns minimum size of range
-        inline double getSizeMax() const { return m_sizeMax; }         //!< returns maximum size of range
-        inline double getSizeStepSize() const { return m_sizeStep; }   //!< returns step size of size of range
+        explicit DoubleIntervalMeta(float64 minVal, float64 maxVal, float64 stepSize = 0.0);
+        explicit DoubleIntervalMeta(float64 minVal, float64 maxVal, float64 stepSize, float64 sizeMin, float64 sizeMax, float64 sizeStep = 0.0);
+        inline float64 getSizeMin() const { return m_sizeMin; }         //!< returns minimum size of range
+        inline float64 getSizeMax() const { return m_sizeMax; }         //!< returns maximum size of range
+        inline float64 getSizeStepSize() const { return m_sizeStep; }   //!< returns step size of size of range
 
         //! sets the minimum size of the interval (= max-min)
         /*!
             \param val is the new minimum value, if this is bigger than the current maximum value, the maximum value is changed to val, too
         */
-        void setSizeMin(double val);
+        void setSizeMin(float64 val);
         
         //! sets the maximum size of the interval (= max-min)
         /*!
             \param val is the new maximum value, if this is smaller than the current minimum value, the minimum value is changed to val, too
         */
-        void setSizeMax(double val);
+        void setSizeMax(float64 val);
 
         //! sets the step size of the size of the interval (= max-min)
         /*!
             \param val is the new step size, hence only discrete values [minVal, minVal+stepSize, minVal+2*stepSize...,maxVal] are allowed
         */
-        void setSizeStep(double val);
+        void setSizeStep(float64 val);
 
     private:
-        double m_sizeMin;
-        double m_sizeMax;
-        double m_sizeStep;
+        float64 m_sizeMin;
+        float64 m_sizeMax;
+        float64 m_sizeStep;
     };
 
 
@@ -528,8 +528,8 @@ namespace ito
     class ITOMCOMMON_EXPORT IntervalMeta : public IntMeta
     {
     public:
-        explicit IntervalMeta(int minVal, int maxVal, int stepSize = 1);
-        explicit IntervalMeta(int minVal, int maxVal, int stepSize, int sizeMin, int sizeMax, int intervalStep = 1);
+        explicit IntervalMeta(int32 minVal, int32 maxVal, int32 stepSize = 1);
+        explicit IntervalMeta(int32 minVal, int32 maxVal, int32 stepSize, int32 sizeMin, int32 sizeMax, int32 intervalStep = 1);
         inline int getSizeMin() const { return m_sizeMin; }         //!< returns minimum size of interval or range
         inline int getSizeMax() const { return m_sizeMax; }         //!< returns maximum size of interval or range
         inline int getSizeStepSize() const { return m_sizeStep; }   //!< returns step size of size of interval or range
@@ -539,24 +539,24 @@ namespace ito
         /*!
             \param val is the new minimum value, if this is bigger than the current maximum value, the maximum value is changed to val, too
         */
-        void setIntervalMin(int val);
+        void setIntervalMin(int32 val);
         
         //! sets the maximum size of the interval (= max-min)
         /*!
             \param val is the new maximum value, if this is smaller than the current minimum value, the minimum value is changed to val, too
         */
-        void setIntervalMax(int val);
+        void setIntervalMax(int32 val);
 
         //! sets the step size of the size of the interval (= max-min)
         /*!
             \param val is the new step size, hence only discrete values [minVal, minVal+stepSize, minVal+2*stepSize...,maxVal] are allowed
         */
-        void setIntervalStep(int val);
+        void setIntervalStep(int32 val);
 
     protected:
-        int m_sizeMin;
-        int m_sizeMax;
-        int m_sizeStep;
+        int32 m_sizeMin;
+        int32 m_sizeMax;
+        int32 m_sizeStep;
         bool m_isIntervalNotRange; //!< this flag describes if this object is an interval where its interval/range is (end-begin) or a range with (1+end-begin)
     };
 
@@ -581,8 +581,8 @@ namespace ito
     class ITOMCOMMON_EXPORT RangeMeta : public IntervalMeta
     {
     public:
-        explicit RangeMeta(int minVal, int maxVal, int stepSize = 1);
-        explicit RangeMeta(int minVal, int maxVal, int stepSize, int sizeMin, int sizeMax, int sizeStep = 1);
+        explicit RangeMeta(int32 minVal, int32 maxVal, int32 stepSize = 1);
+        explicit RangeMeta(int32 minVal, int32 maxVal, int32 stepSize, size_t sizeMin, size_t sizeMax, size_t sizeStep = 1);
     };
 
 

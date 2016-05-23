@@ -87,7 +87,7 @@ namespace ito
 
 
     //---------------------------------------------------------------------------------
-    IntMeta::IntMeta(int minVal, int maxVal, int stepSize /*= 1*/)
+    IntMeta::IntMeta(int32 minVal, int32 maxVal, int32 stepSize /*= 1*/)
         : ParamMeta(rttiIntMeta), 
         m_minVal(minVal), 
         m_maxVal(maxVal), 
@@ -110,21 +110,21 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    void IntMeta::setMin(int val)
+    void IntMeta::setMin(int32 val)
     { 
         m_minVal = val; 
         m_maxVal = std::max(m_maxVal,m_minVal); 
     }
     
     //---------------------------------------------------------------------------------
-    void IntMeta::setMax(int val)
+    void IntMeta::setMax(int32 val)
     { 
         m_maxVal = val; 
         m_minVal = std::min(m_maxVal,m_minVal); 
     }
 
     //---------------------------------------------------------------------------------
-    void IntMeta::setStepSize(int val)
+    void IntMeta::setStepSize(int32 val)
     { 
 #if _DEBUG
         if (val <= 0)
@@ -139,7 +139,7 @@ namespace ito
 
 
     //---------------------------------------------------------------------------------
-    DoubleMeta::DoubleMeta(double minVal, double maxVal, double stepSize /*=0.0*/ /*0.0 means no specific step size*/)
+    DoubleMeta::DoubleMeta(float64 minVal, float64 maxVal, float64 stepSize /*=0.0*/ /*0.0 means no specific step size*/)
         : ParamMeta(rttiDoubleMeta), 
         m_minVal(minVal), 
         m_maxVal(maxVal), 
@@ -158,25 +158,25 @@ namespace ito
     //---------------------------------------------------------------------------------
     DoubleMeta* DoubleMeta::all() 
     { 
-        return new DoubleMeta(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max() ); 
+        return new DoubleMeta(-std::numeric_limits<float64>::max(), std::numeric_limits<float64>::max() ); 
     }
 
     //---------------------------------------------------------------------------------
-    void DoubleMeta::setMin(double val)
+    void DoubleMeta::setMin(float64 val)
     { 
         m_minVal = val; 
         m_maxVal = std::max(m_maxVal,m_minVal); 
     }
     
     //---------------------------------------------------------------------------------
-    void DoubleMeta::setMax(double val)
+    void DoubleMeta::setMax(float64 val)
     { 
         m_maxVal = val; 
         m_minVal = std::min(m_maxVal,m_minVal); 
     }
 
     //---------------------------------------------------------------------------------
-    void DoubleMeta::setStepSize(double val)
+    void DoubleMeta::setStepSize(float64 val)
     { 
 #if _DEBUG
         if (val < 0.0)
@@ -303,7 +303,7 @@ namespace ito
 
     
     //---------------------------------------------------------------------------------
-    IntArrayMeta::IntArrayMeta(int minVal, int maxVal, int stepSize /*= 1*/) :
+    IntArrayMeta::IntArrayMeta(int32 minVal, int32 maxVal, int32 stepSize /*= 1*/) :
         IntMeta(minVal, maxVal, stepSize),
         m_numMin(0),
         m_numMax(std::numeric_limits<size_t>::max()),
@@ -313,7 +313,7 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    IntArrayMeta::IntArrayMeta(int minVal, int maxVal, int stepSize, size_t numMin, size_t numMax, size_t numStepSize /*= 1*/) :
+    IntArrayMeta::IntArrayMeta(int32 minVal, int32 maxVal, int32 stepSize, size_t numMin, size_t numMax, size_t numStepSize /*= 1*/) :
         IntMeta(minVal, maxVal, stepSize),
         m_numMin(numMin),
         m_numMax(numMax),
@@ -344,7 +344,7 @@ namespace ito
 
 
     //---------------------------------------------------------------------------------
-    DoubleArrayMeta::DoubleArrayMeta(double minVal, double maxVal, double stepSize /*= 1*/) :
+    DoubleArrayMeta::DoubleArrayMeta(float64 minVal, float64 maxVal, float64 stepSize /*= 1*/) :
         DoubleMeta(minVal, maxVal, stepSize),
         m_numMin(0),
         m_numMax(std::numeric_limits<size_t>::max()),
@@ -354,7 +354,7 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    DoubleArrayMeta::DoubleArrayMeta(double minVal, double maxVal, double stepSize, size_t numMin, size_t numMax, size_t numStepSize /*= 1*/) :
+    DoubleArrayMeta::DoubleArrayMeta(float64 minVal, float64 maxVal, float64 stepSize, size_t numMin, size_t numMax, size_t numStepSize /*= 1*/) :
         DoubleMeta(minVal, maxVal, stepSize),
         m_numMin(numMin),
         m_numMax(numMax),
@@ -390,10 +390,10 @@ namespace ito
 
 
     //---------------------------------------------------------------------------------
-    IntervalMeta::IntervalMeta(int minVal, int maxVal, int stepSize /*= 1*/) :
+    IntervalMeta::IntervalMeta(int32 minVal, int32 maxVal, int32 stepSize /*= 1*/) :
         IntMeta(minVal, maxVal, stepSize),
         m_sizeMin(0),
-        m_sizeMax(std::numeric_limits<int>::max()),
+        m_sizeMax(std::numeric_limits<int32>::max()),
         m_sizeStep(1),
         m_isIntervalNotRange(false)
     {
@@ -401,7 +401,7 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    IntervalMeta::IntervalMeta(int minVal, int maxVal, int stepSize, int intervalMin, int intervalMax, int intervalStep /*= 1*/) :
+    IntervalMeta::IntervalMeta(int32 minVal, int32 maxVal, int32 stepSize, int32 intervalMin, int32 intervalMax, int32 intervalStep /*= 1*/) :
         IntMeta(minVal, maxVal, stepSize),
         m_sizeMin(intervalMin),
         m_sizeMax(intervalMax),
@@ -412,27 +412,27 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    void IntervalMeta::setIntervalMin(int val)
+    void IntervalMeta::setIntervalMin(int32 val)
     {
         m_sizeMin = val; 
         m_sizeMax = std::max(m_sizeMin, m_sizeMax); 
     }
         
     //---------------------------------------------------------------------------------
-    void IntervalMeta::setIntervalMax(int val)
+    void IntervalMeta::setIntervalMax(int32 val)
     {
         m_sizeMax = val; 
         m_sizeMin = std::min(m_sizeMin, m_sizeMax);
     }
 
     //---------------------------------------------------------------------------------
-    void IntervalMeta::setIntervalStep(int val)
+    void IntervalMeta::setIntervalStep(int32 val)
     {
         m_sizeStep = val;
     }
 
     //---------------------------------------------------------------------------------
-    RangeMeta::RangeMeta(int minVal, int maxVal, int stepSize /*= 1*/) :
+    RangeMeta::RangeMeta(int32 minVal, int32 maxVal, int32 stepSize /*= 1*/) :
         IntervalMeta(minVal, maxVal, stepSize)
     {
         m_type = rttiRangeMeta;
@@ -440,7 +440,7 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    RangeMeta::RangeMeta(int minVal, int maxVal, int stepSize, int sizeMin, int sizeMax, int sizeStep /*= 1*/) :
+    RangeMeta::RangeMeta(int32 minVal, int32 maxVal, int32 stepSize, size_t sizeMin, size_t sizeMax, size_t sizeStep /*= 1*/) :
         IntervalMeta(minVal, maxVal, stepSize, sizeMin, sizeMax, sizeStep)
     {
         m_type = rttiRangeMeta;
@@ -449,17 +449,17 @@ namespace ito
 
 
     //---------------------------------------------------------------------------------
-    DoubleIntervalMeta::DoubleIntervalMeta(double minVal, double maxVal, double stepSize /*= 0.0*/) :
+    DoubleIntervalMeta::DoubleIntervalMeta(float64 minVal, float64 maxVal, float64 stepSize /*= 0.0*/) :
         DoubleMeta(minVal, maxVal, stepSize),
         m_sizeMin(0.0),
-        m_sizeMax(std::numeric_limits<double>::max()),
+        m_sizeMax(std::numeric_limits<float64>::max()),
         m_sizeStep(0.0)
     {
         m_type = rttiDoubleIntervalMeta;
     }
 
     //---------------------------------------------------------------------------------
-    DoubleIntervalMeta::DoubleIntervalMeta(double minVal, double maxVal, double stepSize, double sizeMin, double sizeMax, double sizeStep /*= 0.0*/) :
+    DoubleIntervalMeta::DoubleIntervalMeta(float64 minVal, float64 maxVal, float64 stepSize, float64 sizeMin, float64 sizeMax, float64 sizeStep /*= 0.0*/) :
         DoubleMeta(minVal, maxVal, stepSize),
         m_sizeMin(sizeMin),
         m_sizeMax(sizeMax),
@@ -469,21 +469,21 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    void DoubleIntervalMeta::setSizeMin(double val)
+    void DoubleIntervalMeta::setSizeMin(float64 val)
     {
         m_sizeMin = val; 
         m_sizeMax = std::max(m_sizeMin, m_sizeMax); 
     }
         
     //---------------------------------------------------------------------------------
-    void DoubleIntervalMeta::setSizeMax(double val)
+    void DoubleIntervalMeta::setSizeMax(float64 val)
     {
         m_sizeMax = val; 
         m_sizeMin = std::min(m_sizeMin, m_sizeMax);
     }
 
     //---------------------------------------------------------------------------------
-    void DoubleIntervalMeta::setSizeStep(double val)
+    void DoubleIntervalMeta::setSizeStep(float64 val)
     {
         m_sizeStep = val;
     }
