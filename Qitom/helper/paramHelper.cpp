@@ -1315,7 +1315,7 @@ namespace ito {
             {
                 if (source.isNumeric())
                 {
-                    return ito::ParamBase(source.getName(), destType, source.getVal<int>());
+                    return ito::ParamBase(source.getName(), destType, source.getVal<int32>());
                 }
                 else if (sourceType & ito::ParamBase::String)
                 {
@@ -1349,7 +1349,7 @@ namespace ito {
             {
                 if (source.isNumeric())
                 {
-                    return ito::ParamBase(source.getName(), destType, source.getVal<double>());
+                    return ito::ParamBase(source.getName(), destType, source.getVal<float64>());
                 }
                 else if (sourceType & ito::ParamBase::String)
                 {
@@ -1472,6 +1472,7 @@ namespace ito {
         case ito::ParamBase::CharArray & ito::paramTypeMask:
         case ito::ParamBase::IntArray & ito::paramTypeMask:
         case ito::ParamBase::DoubleArray & ito::paramTypeMask:
+        case ito::ParamBase::ComplexArray & ito::paramTypeMask:
             {
                 itemParam = arrayParam[index];   
                 break;
@@ -1496,7 +1497,8 @@ namespace ito {
             ito::uint32 type = param.getType();
             if (type == (ito::ParamBase::IntArray & ito::paramTypeMask) ||
                 type == (ito::ParamBase::DoubleArray & ito::paramTypeMask) ||
-                type == (ito::ParamBase::CharArray & ito::paramTypeMask))
+                type == (ito::ParamBase::CharArray & ito::paramTypeMask) ||
+                type == (ito::ParamBase::ComplexArray & ito::paramTypeMask))
             {
                 ito::Param p;
                 ret += getItemFromArray(param, index, p);

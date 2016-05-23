@@ -690,6 +690,140 @@ QVector<double> PythonQtConversion::PyObjGetDoubleArray(PyObject* val, bool stri
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! get complex from py object
+complex128  PythonQtConversion::PyObjGetComplex(PyObject* val, bool strict, bool &ok)
+{
+    complex128 d = 0;
+    ok = true;
+    if (PyComplex_Check(val)) 
+    {
+        d = complex128(PyComplex_RealAsDouble(val), PyComplex_ImagAsDouble(val));
+    } 
+    else if (!strict) 
+    {
+        if (PyLong_Check(val)) 
+        {
+            int overflow;
+            d = PyLong_AsLongAndOverflow(val, &overflow);
+            if (overflow)
+            {
+                ok = false;
+            }
+        }
+        else if (PyFloat_Check(val))
+        {
+            d = PyFloat_AS_DOUBLE(val);
+        }
+        else if (val == Py_False) 
+        {
+            d = 0.0;
+        } 
+        else if (val == Py_True) 
+        {
+            d = 1.0;
+        } 
+        else 
+        {
+            ok = false;
+        }
+    } 
+    else 
+    {
+        ok = false;
+    }
+    return d;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! get complex-array from py object
+QVector<complex128>  PythonQtConversion::PyObjGetComplexArray(PyObject* val, bool strict, bool &ok)
+{
+    ok = true;
+    QVector<complex128> v;
+    if (PySequence_Check(val) == false)
+    {
+        ok = false;
+        return v;
+    }
+
+    Py_ssize_t len = PySequence_Size(val);
+    PyObject *t = NULL;
+
+    if (strict)
+    {
+        for (Py_ssize_t i = 0; i < len; i++)
+        {
+            t = PySequence_GetItem(val, i); //new reference
+            if (PyComplex_Check(t))
+            {
+                v.append(complex128(PyComplex_RealAsDouble(t), PyComplex_ImagAsDouble(t)));
+            }
+            else
+            {
+                ok = false;
+                Py_XDECREF(t);
+                break;
+            }
+            Py_XDECREF(t);
+        }
+    }
+    else
+    {
+        int overflow;
+        for (Py_ssize_t i = 0; i < len; i++)
+        {
+            t = PySequence_GetItem(val, i); //new reference
+            
+            if (PyComplex_Check(t))
+            {
+                v.append(complex128(PyComplex_RealAsDouble(t), PyComplex_ImagAsDouble(t)));
+            }
+            else if (PyFloat_Check(t)) 
+            {
+                v.append(PyFloat_AS_DOUBLE(t));
+            } 
+            else if (PyLong_Check(t))
+            {
+                qreal v2 = PyLong_AsLongAndOverflow(t, &overflow);
+                if (overflow)
+                {
+                    v2 = PyLong_AsLongLongAndOverflow(t, &overflow);
+                    if (overflow)
+                    {
+                        ok = false;
+                        Py_XDECREF(t);
+                        break;
+                    }
+                }
+                v.append(v2);
+            }
+            else if (t == Py_False) 
+            {
+                v.append(0);
+            } 
+            else if (t == Py_True) 
+            {
+                v.append(1);
+            } 
+            else
+            {
+                ok = false;
+                Py_XDECREF(t);
+                break;
+            }
+            Py_XDECREF(t);
+        }
+    }
+
+    if (!ok)
+    {
+        v.clear();
+    }
+
+    return v;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! get int-array from py object
 QVector<int> PythonQtConversion::PyObjGetIntArray(PyObject* val, bool strict, bool &ok)
 {

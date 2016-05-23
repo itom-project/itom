@@ -111,6 +111,10 @@ public:
     static double  PyObjGetDouble(PyObject* val, bool strict, bool &ok);
     //! get double-array from py object
     static QVector<double>  PyObjGetDoubleArray(PyObject* val, bool strict, bool &ok);
+    //! get complex from py object
+    static complex128  PyObjGetComplex(PyObject* val, bool strict, bool &ok);
+    //! get complex-array from py object
+    static QVector<complex128>  PyObjGetComplexArray(PyObject* val, bool strict, bool &ok);
     //! get int-array from py object
     static QVector<int>  PyObjGetIntArray(PyObject* val, bool strict, bool &ok);
     //! get bool from py object

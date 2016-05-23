@@ -33,9 +33,6 @@ namespace ito
 /*static*/ PyObject *PythonParamConversion::ParamBaseToPyObject(const ito::ParamBase &param)
 {
     int len;
-    int *iarr = NULL;
-    double *darr = NULL;
-    char *carr = NULL;
     PyObject *result = NULL;
 
     switch(param.getType())
@@ -59,18 +56,24 @@ namespace ito
         break;
 
         case ito::ParamBase::Int & ito::paramTypeMask:
-            result = PyLong_FromLong( param.getVal<int>() );
+            result = PyLong_FromLong( param.getVal<int32>() );
         break;
 
         case ito::ParamBase::Double & ito::paramTypeMask:
-            result = PyFloat_FromDouble( param.getVal<double>());
+            result = PyFloat_FromDouble( param.getVal<float64>());
+        break;
+
+        case ito::ParamBase::Complex & ito::paramTypeMask:
+            result = PyComplex_FromDoubles( param.getVal<complex128>().real(), param.getVal<complex128>().imag());
         break;
 
         case (ito::ParamBase::CharArray & ito::paramTypeMask):
-            carr = param.getVal<char*>();
+            {
+            const char* carr = param.getVal<const char*>();
             len = param.getLen();
             if (len < 0) len = 0;
             result = PyByteArray_FromStringAndSize(carr, len);
+            }
         break;
 
         case (ito::ParamBase::IntArray & ito::paramTypeMask):
@@ -78,7 +81,7 @@ namespace ito
             if(len > 0)
             {
                 result = PyTuple_New(len);
-                iarr = param.getVal<int*>();
+                const int32 *iarr = param.getVal<const int32*>();
                 for (int n = 0; n < len; n++)
                 {
                     PyTuple_SetItem(result, n, PyLong_FromLong(iarr[n]));
@@ -95,10 +98,27 @@ namespace ito
             if(len > 0)
             {
                 result = PyTuple_New(len);
-                darr = param.getVal<double*>();
+                const float64 *darr = param.getVal<const float64*>();
                 for (int n = 0; n < len; n++)
                 {
                     PyTuple_SetItem(result, n, PyFloat_FromDouble(darr[n]));
+                }
+            }
+            else
+            {
+                result = PyTuple_New(0);
+            }
+        break;
+
+        case (ito::ParamBase::ComplexArray & ito::paramTypeMask):
+            len = param.getLen();
+            if(len > 0)
+            {
+                result = PyTuple_New(len);
+                const complex128 *darr = param.getVal<const complex128*>();
+                for (int n = 0; n < len; n++)
+                {
+                    PyTuple_SetItem(result, n, PyComplex_FromDoubles(darr[n].real(), darr[n].imag()));
                 }
             }
             else
@@ -282,6 +302,10 @@ namespace ito
         {
             paramBaseType = ito::ParamBase::Double;
         }
+        else if(PyComplex_Check(obj))
+        {
+            paramBaseType = ito::ParamBase::Complex;
+        }
         else if(PyDataObject_Check(obj))
         {
             paramBaseType = ito::ParamBase::DObjPtr;
@@ -338,7 +362,7 @@ namespace ito
         }
     case ito::ParamBase::Int:
         {
-            int i = 0;
+            int32 i = 0;
             if(obj == Py_False)
             {
                 i = 0;
@@ -359,10 +383,19 @@ namespace ito
         break;
     case ito::ParamBase::Double:
         {
-            double d = PythonQtConversion::PyObjGetDouble(obj, strict, ok);
+            float64 d = PythonQtConversion::PyObjGetDouble(obj, strict, ok);
             if(ok)
             {
                 return QSharedPointer<ito::ParamBase>( new ito::ParamBase(name, ito::ParamBase::Double, d) ); //does not require the special deleter
+            }
+        }
+        break;
+    case ito::ParamBase::Complex:
+        {
+            complex128 d = PythonQtConversion::PyObjGetComplex(obj, strict, ok);
+            if(ok)
+            {
+                return QSharedPointer<ito::ParamBase>( new ito::ParamBase(name, ito::ParamBase::Complex, d) ); //does not require the special deleter
             }
         }
         break;
@@ -377,7 +410,7 @@ namespace ito
         break;
     case ito::ParamBase::IntArray:
         {
-            QVector<int> ia = PythonQtConversion::PyObjGetIntArray(obj, strict, ok);
+            QVector<int32> ia = PythonQtConversion::PyObjGetIntArray(obj, strict, ok);
             if(ok)
             {
                 return QSharedPointer<ito::ParamBase>( new ito::ParamBase(name, ito::ParamBase::IntArray, ia.size(), ia.constData() ) );
@@ -386,10 +419,19 @@ namespace ito
         }
     case ito::ParamBase::DoubleArray:
         {
-            QVector<double> da = PythonQtConversion::PyObjGetDoubleArray(obj, strict, ok);
+            QVector<float64> da = PythonQtConversion::PyObjGetDoubleArray(obj, strict, ok);
             if(ok)
             {
                 return QSharedPointer<ito::ParamBase>( new ito::ParamBase(name, ito::ParamBase::DoubleArray, da.size(), da.constData() ) );
+            }
+            break;
+        }
+    case ito::ParamBase::ComplexArray:
+        {
+            QVector<complex128> da = PythonQtConversion::PyObjGetComplexArray(obj, strict, ok);
+            if(ok)
+            {
+                return QSharedPointer<ito::ParamBase>( new ito::ParamBase(name, ito::ParamBase::ComplexArray, da.size(), da.constData() ) );
             }
             break;
         }
