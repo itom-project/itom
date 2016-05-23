@@ -75,7 +75,7 @@ namespace ito
         static inline uint32 typeFilter(uint32 type) { return type & paramTypeMask; }
 
     private:
-        complex238_ m_dVal;    //!< internal value for float64 and complex128 typed values
+        complex128_ m_dVal;    //!< internal value for float64 and complex128 typed values
         ito::int32 m_iVal;         //!< internal value for integer typed values
         char *m_cVal;         //!< internal pointer for pointer type values (also strings)
 
@@ -308,7 +308,7 @@ namespace ito
     template<typename _Tp>
     struct ItomParamHelper
     {
-        static ito::RetVal setVal(uint32 type, char *&cVal, int32 &iVal, complex238_ &/*dVal*/, const _Tp val, int len = 0)
+        static ito::RetVal setVal(uint32 type, char *&cVal, int32 &iVal, complex128_ &/*dVal*/, const _Tp val, int len = 0)
         {
             switch (type & paramTypeMask)
             {
@@ -430,7 +430,7 @@ namespace ito
             }
         }
 
-        static _Tp getVal(const uint32 type, const char *cVal, const int32 &iVal, const complex238_ &/*dVal*/, int &len)
+        static _Tp getVal(const uint32 type, const char *cVal, const int32 &iVal, const complex128_ &/*dVal*/, int &len)
         {
             switch (type & paramTypeMask)
             {
@@ -477,7 +477,7 @@ namespace ito
     template<>
     struct ItomParamHelper<float64>
     {
-        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex238_ &dVal, float64 val, int /*len = 0*/)
+        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex128_ &dVal, float64 val, int /*len = 0*/)
         {
             switch (type & paramTypeMask)
             {
@@ -497,7 +497,7 @@ namespace ito
             }
         }
 
-        static float64 getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex238_ &dVal, int & /*len*/)
+        static float64 getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex128_ &dVal, int & /*len*/)
         {
             switch (type & paramTypeMask)
             {
@@ -518,7 +518,7 @@ namespace ito
     template<>
     struct ItomParamHelper<int32>
     {
-        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex238_ &dVal, int32 val, int /*len = 0*/)
+        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex128_ &dVal, int32 val, int /*len = 0*/)
         {
             switch (type & paramTypeMask)
             {
@@ -538,7 +538,7 @@ namespace ito
             }
         }
 
-        static int32 getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex238_ &dVal, int & /*len*/)
+        static int32 getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex128_ &dVal, int & /*len*/)
         {
             switch (type & paramTypeMask)
             {
@@ -562,7 +562,7 @@ namespace ito
     template<>
     struct ItomParamHelper<char>
     {
-        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex238_ &dVal, char val, int /*len = 0*/)
+        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex128_ &dVal, char val, int /*len = 0*/)
         {
             switch (type & paramTypeMask)
             {
@@ -582,7 +582,7 @@ namespace ito
             }
         }
 
-        static char getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex238_ &dVal, int & /*len*/)
+        static char getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex128_ &dVal, int & /*len*/)
         {
             switch (type & paramTypeMask)
             {
@@ -606,7 +606,7 @@ namespace ito
     template<>
     struct ItomParamHelper<unsigned char>
     {
-        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex238_ &dVal, char val, int /*len = 0*/)
+        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex128_ &dVal, char val, int /*len = 0*/)
         {
             switch (type & paramTypeMask)
             {
@@ -626,7 +626,7 @@ namespace ito
             }
         }
 
-        static char getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex238_ &dVal, int & /*len*/)
+        static char getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex128_ &dVal, int & /*len*/)
         {
             switch (type & paramTypeMask)
             {
@@ -650,7 +650,7 @@ namespace ito
     template<>
     struct ItomParamHelper<complex128>
     {
-        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex238_ &dVal, complex128 val, int /*len = 0*/)
+        static ito::RetVal setVal(uint32 type, char *&/*cVal*/, int32 &iVal, complex128_ &dVal, complex128 val, int /*len = 0*/)
         {
             switch (type & paramTypeMask)
             {
@@ -664,7 +664,7 @@ namespace ito
             }
         }
 
-        static complex128 getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex238_ &dVal, int & /*len*/)
+        static complex128 getVal(const uint32 type, const char * /*cVal*/, const int32 &iVal, const complex128_ &dVal, int & /*len*/)
         {
             switch (type & paramTypeMask)
             {
