@@ -77,8 +77,6 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
     ui.treeView->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     ui.treeView->setHeaderHidden(true);
 
-    
-
     QStringList iconAliasesName;
     QList<int> iconAliasesNumb;
     iconAliasesName << "class" << "const" << "routine" << "module" << "package" << "unknown" << "link_unknown" << "link_class" << "link_const" << "link_module" << "link_package" << "link_routine";
@@ -132,6 +130,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
 
     QStandardItem *mainNode = new QStandardItem();
     mainNode->setEditable(false);
+	QString mainNodeText = "";
 
     switch(fOrW)
     {
@@ -139,9 +138,10 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
         {
             const QHash <QString, ito::AddInAlgo::FilterDef *> *filterHashTable = aim->getFilterList();
             // build Main Node
+			mainNodeText = "Algorithms";
             mainNode->setText(tr("Algorithms"));
             mainNode->setData(typeCategory, m_urType);
-            mainNode->setData("Algorithms", m_urPath);
+			mainNode->setData(mainNodeText, m_urPath);
             mainNode->setIcon(iconGallery->value(iconPluginAlgo));
             QHash<QString, ito::AddInAlgo::FilterDef *>::const_iterator i = filterHashTable->constBegin();
             while (i != filterHashTable->constEnd()) 
@@ -151,7 +151,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                     QStandardItem *plugin = new QStandardItem(i.value()->m_pBasePlugin->objectName());
                     plugin->setEditable(false);
                     plugin->setData(typeFPlugin, m_urType);
-                    plugin->setData(mainNode->text()+"."+plugin->text(), m_urPath);
+					plugin->setData(mainNodeText + "." + plugin->text(), m_urPath);
                     plugin->setIcon(iconGallery->value(iconPluginAlgo));
                     plugin->setToolTip(i.value()->m_pBasePlugin->getFilename() + "; v" + QString::number(i.value()->m_pBasePlugin->getVersion()));
                     plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
@@ -161,7 +161,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                 QStandardItem *filter = new QStandardItem(i.value()->m_name);
                 filter->setEditable(false);
                 filter->setData(typeFilter, m_urType);
-                filter->setData(mainNode->text()+"."+i.value()->m_pBasePlugin->objectName()+"."+filter->text(), m_urPath);
+				filter->setData(mainNodeText + "." + i.value()->m_pBasePlugin->objectName() + "." + filter->text(), m_urPath);
                 filter->setIcon(iconGallery->value(iconPluginFilter));
                 filter->setToolTip(i.value()->m_pBasePlugin->getAuthor());
                 QStandardItem *test = plugins[i.value()->m_pBasePlugin->objectName()];
@@ -174,9 +174,10 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
         {
             const QHash <QString, ito::AddInAlgo::AlgoWidgetDef *> *widgetHashTable = aim->getAlgoWidgetList();
             // Main Node zusammenbauen
+			mainNodeText = "Widgets";
             mainNode->setText(tr("Widgets"));
             mainNode->setData(typeCategory, m_urType);
-            mainNode->setData("Widgets", m_urPath);
+			mainNode->setData(mainNodeText, m_urPath);
             mainNode->setIcon(iconGallery->value(iconWidget));
             QHash<QString, ito::AddInAlgo::AlgoWidgetDef *>::const_iterator i = widgetHashTable->constBegin();
             while (i != widgetHashTable->constEnd()) 
@@ -186,7 +187,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                     QStandardItem *plugin = new QStandardItem(i.value()->m_pBasePlugin->objectName());
                     plugin->setEditable(false);
                     plugin->setData(typeWPlugin, m_urType);
-                    plugin->setData(mainNode->text()+"."+plugin->text(), m_urPath);
+					plugin->setData(mainNodeText + "." + plugin->text(), m_urPath);
                     plugin->setIcon(iconGallery->value(iconPluginAlgo));
                     plugin->setToolTip(i.value()->m_pBasePlugin->getFilename() + "; v" + QString::number(i.value()->m_pBasePlugin->getVersion()));
                     plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
@@ -196,7 +197,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                 QStandardItem *filter = new QStandardItem(i.value()->m_name);
                 filter->setEditable(false);
                 filter->setData(typeWidget, m_urType);
-                filter->setData(mainNode->text()+"."+i.value()->m_pBasePlugin->objectName()+"."+filter->text(), m_urPath);
+				filter->setData(mainNodeText + "." + i.value()->m_pBasePlugin->objectName() + "." + filter->text(), m_urPath);
                 filter->setIcon(iconGallery->value(iconWidget));
                 filter->setToolTip(i.value()->m_pBasePlugin->getAuthor());
                 QStandardItem *test = plugins[i.value()->m_pBasePlugin->objectName()];
@@ -208,30 +209,31 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
     case 3: //DataIO
         {
             // Main Node zusammenbauen
+			mainNodeText = "DataIO";
             mainNode->setText(tr("DataIO"));
             mainNode->setData(typeCategory, m_urType);
-            mainNode->setData(mainNode->text(), m_urPath);
+			mainNode->setData(mainNodeText, m_urPath);
             mainNode->setIcon(iconGallery->value(iconPluginDataIO));
 
             // Subcategory Node "Grabber"
             QStandardItem *pluginGrabber = new QStandardItem(tr("Grabber"));
             pluginGrabber->setEditable(false);
             pluginGrabber->setData(typeCategory, m_urType);
-            pluginGrabber->setData(mainNode->text()+"."+pluginGrabber->text(), m_urPath);
+			pluginGrabber->setData(mainNodeText + ".Grabber", m_urPath);
             pluginGrabber->setIcon(iconGallery->value(iconPluginGrabber));
             
             // Subcategory Node "ADDA"
             QStandardItem *pluginAdda = new QStandardItem(tr("ADDA"));
             pluginAdda->setEditable(false);
             pluginAdda->setData(typeCategory, m_urType);
-            pluginAdda->setData(mainNode->text()+"."+pluginAdda->text(), m_urPath);
+			pluginAdda->setData(mainNodeText + ".ADDA", m_urPath);
             pluginAdda->setIcon(iconGallery->value(iconPluginAdda));
             
             // Subcategory Node "Raw IO"
             QStandardItem *pluginRawIO = new QStandardItem(tr("Raw IO"));
             pluginRawIO->setEditable(false);
             pluginRawIO->setData(typeCategory, m_urType);
-            pluginRawIO->setData(mainNode->text()+"."+pluginRawIO->text(), m_urPath);
+			pluginRawIO->setData(mainNodeText + ".Raw IO", m_urPath);
             pluginRawIO->setIcon(iconGallery->value(iconPluginRawIO));
 
             const QList<QObject*> *dataIOList = aim->getDataIOList();
@@ -249,27 +251,28 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                         case 129:
                         {// Grabber
                             plugin->setIcon(iconGallery->value(iconPluginGrabber));
-                            plugin->setData(pluginGrabber->data(m_urPath).toString()+"."+plugin->text(), m_urPath);
+                            plugin->setData(pluginGrabber->data(m_urPath).toString() + "."+plugin->text(), m_urPath);
                             pluginGrabber->appendRow(plugin);
                             break;
                         }
                         case 257:
                         {// ADDA
                             plugin->setIcon(iconGallery->value(iconPluginAdda));
-                            plugin->setData(pluginAdda->data(m_urPath).toString()+"."+plugin->text(), m_urPath);
+                            plugin->setData(pluginAdda->data(m_urPath).toString() + "."+plugin->text(), m_urPath);
                             pluginAdda->appendRow(plugin);
                             break;
                         }
                         case 513:
                         {// Raw IO
                             plugin->setIcon(iconGallery->value(iconPluginRawIO));
-                            plugin->setData(pluginRawIO->data(m_urPath).toString()+"."+plugin->text(), m_urPath);
+                            plugin->setData(pluginRawIO->data(m_urPath).toString() + "."+plugin->text(), m_urPath);
                             pluginRawIO->appendRow(plugin);
                             break;
                         }
                     }                   
                 }
             }
+
             mainNode->appendRow(pluginGrabber);
             mainNode->appendRow(pluginAdda);
             mainNode->appendRow(pluginRawIO);
@@ -278,9 +281,10 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
     case 4: //Actuator
         { 
             // Main Node zusammenbauen
+			mainNodeText = "Actuator";
             mainNode->setText(tr("Actuator"));
             mainNode->setData(typeCategory, m_urType);
-            mainNode->setData(mainNode->text(), m_urPath);
+			mainNode->setData(mainNodeText, m_urPath);
             mainNode->setIcon(iconGallery->value(iconPluginActuator));
             const QList<QObject*> *ActuatorList = aim->getActList();
             for(int i = 0; i < ActuatorList->length(); i++)
@@ -292,7 +296,7 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                     QStandardItem *plugin = new QStandardItem(aib->objectName());
                     plugin->setEditable(false);
                     plugin->setData(typeActuator, m_urType);
-                    plugin->setData(mainNode->text()+"."+plugin->text(), m_urPath);
+					plugin->setData(mainNodeText + "." + plugin->text(), m_urPath);
                     plugin->setIcon(iconGallery->value(iconPluginActuator));
                     mainNode->appendRow(plugin);             
                 }
@@ -440,7 +444,6 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
             docString.remove(start, end + QString("<!--%EXAMPLE_END%-->").size() - start);
         }
 
-
         // Build Parameter and return section
         // -------------------------------------
         if (!retval.containsError())
@@ -515,6 +518,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                     {
                     retval += ito::RetVal(ito::retError, 0, tr("Unknown filter name '%1'").arg(filter).toLatin1().data());
                     }
+
                     break;
                 }
                 case typeWidget:
@@ -550,12 +554,13 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                             paramList.append(QLatin1String(p.getName()));
                         }
                         QString newLink = QString("ui.createNewPluginWidget(\"%1\",%2)").arg(awd->m_name).arg( paramList.join(", ") );
-                        newLink.replace(",)",")");
+                        newLink.replace(",)", ")");
                         QByteArray a = newLink.toLatin1();
 
                         exampleSection.replace("<!--%EXAMPLEPLAIN%-->", newLink);
                         exampleSection.replace("<!--%EXAMPLELINK%-->", a.toPercentEncoding());
                     }
+
                     break;
                 }
                 case typeFPlugin:  // These two lines behave
@@ -623,19 +628,18 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                                 ++i;
                             }
                         }
-                        
 
                         docString.replace("%INFO%", extendedInfo);
 
                         parameterSection = "";
                         returnsSection = "";
                         exampleSection = "";
-
                     }
                     else
                     {
                     retval += ito::RetVal(ito::retError, 0, tr("Unknown algorithm plugin with name '%1'").arg(filter).toLatin1().data());
                     }
+
                     break;
                 }
                 case typeDataIO:
@@ -735,6 +739,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                     {
 
                     }
+
                     break;
                 }
                 default:
@@ -758,6 +763,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
             file.close();
             ui.textBrowser->document()->addResource(QTextDocument::StyleSheetResource, QUrl("help_style.css"), QString(cssData));          
         }
+
         if (filter == "Algorithms")
         {
             QFile file(":/helpTreeDockWidget/algo_page");
@@ -852,6 +858,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
             ui.textBrowser->document()->setHtml(docString);
         }
     }
+
     return retval;
 }
 
@@ -1065,6 +1072,7 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
                     {
                         meta = tr("Wildcard: <no pattern given>");
                     }
+
                     break;
                 }
             }
@@ -1078,6 +1086,7 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
                 ito::CharArrayMeta *m = (ito::CharArrayMeta*)(param.getMeta());
             }
         }
+
         break;
     case ito::ParamBase::IntArray & ito::paramTypeMask:
         {
@@ -1100,6 +1109,7 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
                 type = "rectangle [left, top, width, height] (integers)";
             }
         }
+
         break;
     case ito::ParamBase::DoubleArray & ito::paramTypeMask:
         {
@@ -1114,21 +1124,25 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
                 type = "interval [first, last] (float64)";
             }
         }
+
         break;
     case ito::ParamBase::DObjPtr & ito::paramTypeMask:
         {
             type = "dataObject";
         }
+
         break;
     case ito::ParamBase::PointCloudPtr & ito::paramTypeMask:
         {
             type = "pointCloud";
         }
+
         break;
     case ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask:
         {
             type = "polygonMesh";
         }
+
         break;
     case ito::ParamBase::HWRef & ito::paramTypeMask:
         {
@@ -1174,6 +1188,7 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
                 }
             }
         }
+
         break;
     }
 
@@ -1221,6 +1236,7 @@ QString HelpTreeDockWidget::minText(int minimum) const
     {
         return "-inf";
     }
+
     return QString::number(minimum);
 }
 
@@ -1237,6 +1253,7 @@ QString HelpTreeDockWidget::minText(double minimum) const
     {
         return "-inf";
     }
+
     return QString::number(minimum);
 }
 
@@ -1253,6 +1270,7 @@ QString HelpTreeDockWidget::minText(char minimum) const
     {
         return "-inf";
     }
+
     return QString::number(minimum);
 }
 
@@ -1269,6 +1287,7 @@ QString HelpTreeDockWidget::maxText(int maximum) const
     {
         return "inf";
     }
+
     return QString::number(maximum);
 }
 
@@ -1285,6 +1304,7 @@ QString HelpTreeDockWidget::maxText(double maximum) const
     {
         return "inf";
     }
+
     return QString::number(maximum);
 }
 
@@ -1301,6 +1321,7 @@ QString HelpTreeDockWidget::maxText(char maximum) const
     {
         return "inf";
     }
+
     return QString::number(maximum);
 }
 
@@ -1333,6 +1354,7 @@ bool HelpTreeDockWidget::eventFilter(QObject *obj, QEvent *event)
             return true;
         }    
     }
+
     return QObject::eventFilter(obj, event);
  }
 
@@ -1542,7 +1564,8 @@ void HelpTreeDockWidget::propertiesChanged()
     else
     {
         retval += ito::RetVal::format(ito::retWarning, 0, tr("Database %s could not be found").toLatin1().data(), file.toLatin1().data());
-    }    
+    }
+
     QSqlDatabase::removeDatabase(file);
     return retval;
 }
@@ -1572,7 +1595,6 @@ void HelpTreeDockWidget::reloadDB()
     ui.treeView->setVisible(false);
     ui.splitter->setVisible(false);
     ui.lblProcessText->setText(tr("Help database is loading..."));
-
 
     // THREAD START QtConcurrent::run
     QFuture<ito::RetVal> f1 = QtConcurrent::run(loadDBinThread, m_dbPath, m_includedDBs, m_pMainModel/*, m_pDBList*/, &m_iconGallery, m_showSelection);
@@ -1652,7 +1674,9 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
                 createItemRek(*(mainModel->invisibleRootItem()), "", sqlList, iconGallery);
             }
             else
-            {/* The Database named: m_pIncludedDBs[i] is not available anymore!!! show Error*/}
+            {
+				/* The Database named: m_pIncludedDBs[i] is not available anymore!!! show Error*/
+			}
         }
     }
 
@@ -1671,6 +1695,7 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
         createFilterWidgetNode(3, mainModel, iconGallery);
         createFilterWidgetNode(4, mainModel, iconGallery);
     }
+
     return retval;
 }
 
@@ -1778,6 +1803,7 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QS
         //file2.write(html.arg(rawContent).toLatin1());
         //file2.close();
     }
+
     return ito::retOk;
 }
 
@@ -1833,6 +1859,7 @@ ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path)
                         database.close();
                     }
                 }
+
                 QSqlDatabase::removeDatabase(temp);
             }
         }
@@ -1887,8 +1914,7 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
             result.append(link.fragment());
 #else
             result.append(QUrl::fromPercentEncoding(link.fragment().toLatin1()));
-#endif
-            
+#endif      
         }
         else
         {
@@ -1914,6 +1940,7 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
     {
         result.append("-1");
     }
+
     return result;
 }
 
