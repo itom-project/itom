@@ -606,7 +606,7 @@ DoubleSpinBox::DoubleSpinBox(QWidget* newParent)
 {
   Q_D(DoubleSpinBox);
   d->init();
-  setFocusProxy(d->SpinBox);
+  //setFocusProxy(d->SpinBox);
 }
 
 //-----------------------------------------------------------------------------
