@@ -719,7 +719,7 @@ namespace ito {
                 }
                 break;
             default:
-                return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("the given meta information does not fit a an array of character values")).toLatin1().data());
+                return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("the given meta information does not fit an array of character values")).toLatin1().data());
             }
         }
         return ito::retOk;
@@ -896,7 +896,7 @@ namespace ito {
 
                     if ((values[1] + values[3] - 1) > max)
                     {
-                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("bottom side of roi exceeds maximal limit of %1 (recude y0 or height)").arg(max)).toLatin1().data());
+                        return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("bottom side of roi exceeds maximal limit of %1 (reduce y0 or height)").arg(max)).toLatin1().data());
                     }
 
                     if (step > 1 && (((values[1] - min) % step) != 0))
@@ -987,7 +987,7 @@ namespace ito {
                 }
                 break;
             default:
-                return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("the given meta information does not fit a an array of character values")).toLatin1().data());
+                return ito::RetVal(ito::retError, 0, (parseNamePrefix(name) + QObject::tr("the given meta information does not fit an array of character values")).toLatin1().data());
             }
         }
         return ito::retOk;
