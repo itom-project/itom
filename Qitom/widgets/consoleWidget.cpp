@@ -908,7 +908,7 @@ void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)
         QString selectedText = text(line);
 
         //check for the following style '  File "x:\...py", line xxx, in ... and if found open the script at the given line to jump to the indicated error location in the script
-        if (selectedText.startsWith("  File \""))
+        if (selectedText.contains("file ", Qt::CaseInsensitive))
         {
             QRegExp rx("^  File \"(.*\\.[pP][yY])\", line (\\d+)(, in )?.*$");
             if (rx.indexIn(selectedText) >= 0)
@@ -921,6 +921,23 @@ void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)
                     if (ok)
                     {
                         seo->openScript(rx.cap(1), NULL, line - 1, true);
+                    }
+                }
+            }
+            else
+            {
+                rx.setPattern("^.*Line (\\d+) in file \"(.*\\.[pP][yY])\".*$");
+                if (rx.indexIn(selectedText) >= 0)
+                {
+                    ScriptEditorOrganizer *seo = qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+                    if (seo)
+                    {
+                        bool ok;
+                        int line = rx.cap(1).toInt(&ok);
+                        if (ok)
+                        {
+                            seo->openScript(rx.cap(2), NULL, line - 1, true);
+                        }
                     }
                 }
             }

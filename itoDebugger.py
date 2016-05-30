@@ -328,7 +328,7 @@ class itoDebugger(bdb.Bdb):
                 bp.ignore = ignoreCount
                 return 0
         else:
-            return "Cannot edit breakpoint (file '%s', line %i): Invalid line number (e.g. blank or comment line)"  % (filename, lineno)
+            return "Cannot edit breakpoint: Line %i in file \"%s\" is an invalid line number, a blank or comment line"  % (lineno, filename)
     
     def clearBreakPoint(self, bpNumber):
         """Clears breakpoint with given bpNumber.
@@ -364,12 +364,12 @@ class itoDebugger(bdb.Bdb):
             raise #reraise modified error
             
         if(line == ''):
-            raise IndexError("Line %d in file '%s' is blank or does not exist" % (lineno, filename))
+            raise IndexError("Line %d in file \"%s\" is blank or does not exist." % (lineno, filename))
         else:
             line = line.strip()
             # Don't allow setting breakpoint at a blank line
             if (not line or (line[0] == '#') or (line[:3] == '"""') or line[:3] == "'''"):
-                raise IndexError("Line %d in file '%s' is blank or is a comment." % (lineno, filename))
+                raise IndexError("Line %d in file \"%s\" is blank or is a comment." % (lineno, filename))
         
         return lineno
 
