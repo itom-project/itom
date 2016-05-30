@@ -408,6 +408,10 @@ class FigureManagerItom( FigureManagerBase ):
                     self.itomUI.hide()
                 except:
                     pass
+                try:
+                    self.itomFig.hide()
+                except:
+                    pass
             else:
                 try:
                     self.itomUI.disconnect( "destroyed()", self._widgetclosed )
