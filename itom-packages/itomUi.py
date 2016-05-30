@@ -20,6 +20,8 @@ class ItomUi():
         self.ui.pushButton.connect("clicked(bool)", self.on_pushButton_clicked)
     '''
     
+    __version__ = '2.1'
+    
     def __init__(self,filename,*args,**kwds):
         '''
         constructor with the same parameters than class 'ui':
@@ -50,8 +52,11 @@ class ItomUi():
                     try:
                         widget = eval("self.gui." + w)
                     except:
-                        print("Auto-connection failed: Widget",w,"could not be found.")
-                        continue
+                        if self.gui["objectName"] == w:
+                            widget = self.gui
+                        else:
+                            print("Auto-connection failed: Widget",w,"could not be found.")
+                            continue
                     
                     try:
                         widget.connect(s, value)
