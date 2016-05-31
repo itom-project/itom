@@ -71,6 +71,7 @@ if accepted:
     
     with writer.saving(fig, outputfile, dpi_movie):
         for cnt in range(0,numberImages):
+            fig.clear()
             plt.imshow(stack[cnt,:,:], cmap = "viridis")
             plt.show()
             writer.grab_frame()
