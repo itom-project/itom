@@ -123,12 +123,13 @@ autodoc_docstring_signature = True
 
 #get Qt version. Qt 5.6.0 only has a reduced subset of css commands in the assistant.
 #Therefore, a reduced style theme has to be used (theme quark_spinx_theme from https://bitbucket.org/fk/quark-sphinx-theme)
+#This theme was locally copied to the itom-packages folder.
 qt_version = itomFuncs.version(True)["itom"]["QT_Version"]
 
 if (qt_version >= '5.6.0'):
     #choose quark theme as main theme
     html_theme = 'quark'
-    extensions.append('quark_sphinx_theme.ext.html_compat')
+    extensions.append('quark_sphinx_theme.ext.html_rewrite')
     html_theme_options = {
         'body_font_size':'11pt',
         'body_font':'Helvetica'
