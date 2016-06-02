@@ -62,12 +62,12 @@ class MyGrabber : public ito::AddInGrabber
         friend class MyGrabberInterface;
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
+        
+        ito::DataObject bufferPtr;
 
     private:
         bool m_isgrabbing; /*!< Check if acquire was executed */
-        ito::DataObject bufferPtr;
-        ito::DataObject bufferWidth;
-        ito::DataObject bufferHeight;
+
         
     public slots:
         //!< Get Camera-Parameter
