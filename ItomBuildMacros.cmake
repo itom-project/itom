@@ -508,8 +508,13 @@ MACRO(QT5_CREATE_TRANSLATION_ITOM outputFiles tsFiles target languages)
 
             get_directory_property(_inc_DIRS INCLUDE_DIRECTORIES)
             foreach(_pro_include ${_inc_DIRS})
-                get_filename_component(_abs_include "${_pro_include}" ABSOLUTE)
-                set(_lst_file_srcs "-I${_pro_include}\n${_lst_file_srcs}")
+                # some include pathes somehow disturb lupdate, such that it requires a long time to finish.
+                # Therefore, they are excluded from the lupdate include list
+                string(FIND ${_pro_include} "boost" pos)
+                if(pos LESS 0)
+                    get_filename_component(_abs_include "${_pro_include}" ABSOLUTE)
+                    set(_lst_file_srcs "-I${_pro_include}\n${_lst_file_srcs}")
+                endif()
             endforeach()
 
             file(WRITE ${_ts_lst_file} "${_lst_file_srcs}")
