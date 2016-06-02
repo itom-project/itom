@@ -65,6 +65,9 @@ class MyGrabber : public ito::AddInGrabber
 
     private:
         bool m_isgrabbing; /*!< Check if acquire was executed */
+        ito::DataObject bufferPtr;
+        ito::DataObject bufferWidth;
+        ito::DataObject bufferHeight;
         
     public slots:
         //!< Get Camera-Parameter
