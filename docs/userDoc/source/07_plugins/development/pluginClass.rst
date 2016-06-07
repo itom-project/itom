@@ -494,6 +494,17 @@ output parameter. The corresponding registration of this method is integrated in
     pOpt << ito::Param("overwriteIfExists", ito::ParamBase::Int | ito::ParamBase::In, 0, 1, 1, tr("parameter description").toLatin1().data());
     QVector<ito::Param> pOut;
     registerExecFunc("saveXMLParams", pMand, pOpt, pOut, tr("description"));
+    
+Please consider that only the following parameter types are allowed as output parameters. It is therefore not allowed to use dataObjects as output parameters.
+In this case, pass a dataObject as optional or mandatory parameter and mark their type with the flags **ito::ParamBase::In** combined with **ito::ParamBase::Out** (by-reference):
+
+* String
+* Char
+* Integer
+* Double
+* Char-Array
+* Integer-Array
+* Double-Array
 
 .. _plugin-class-paramname:
 
