@@ -32,8 +32,6 @@
 #include "color.h"
 #include <limits>
 
-// WARNING it is very EVIL to include ANY QT STUFF here!!!
-
 namespace ito
 {
 	//! method returns whether a given variable is not equal to zero.
@@ -48,17 +46,13 @@ namespace ito
 	*/
     template<typename _Tp> inline bool isNotZero(_Tp value)
     {
-        if(value == 0)
-            return false;
-        else
-            return true;
+        return !(value == 0);
     }
 
     //! Check if a value is equal to zero for float32
     template<> inline bool isNotZero<float32>(float32 value)
     {
-        float32 lowVal = std::numeric_limits<float32>::epsilon();
-        if(fabs(value) < lowVal)
+        if (fabs(value) < std::numeric_limits<float32>::epsilon())
             return false;
         else
             return true;
@@ -67,8 +61,7 @@ namespace ito
     //! Check if a value is equal to zero for float64
     template<> inline bool isNotZero<float64>(float64 value)
     {
-        float64 lowVal = std::numeric_limits<float64>::epsilon();
-        if(fabs(value) < lowVal)
+        if (fabs(value) < std::numeric_limits<float64>::epsilon())
             return false;
         else
             return true;
@@ -261,6 +254,38 @@ namespace ito
 	{
 		return isZeroValue<ito::float64>(v.real(), epsilon.real()) && isZeroValue<ito::float64>(v.imag(), epsilon.real());
 	}
+
+
+    //! method returns whether two given numbers of the same type are equal.
+    /*!
+    
+    */
+    template<typename _Tp> inline bool areEqual(_Tp a, _Tp b)
+    {
+        //for fixed-point and Rgba32 data types
+        return a == b;
+    }
+
+    template<> inline bool areEqual(float32 a, float32 b)
+    {
+        return fabs(a - b) < std::numeric_limits<float32>::epsilon();
+    }
+
+    template<> inline bool areEqual(float64 a, float64 b)
+    {
+        return fabs(a - b) < std::numeric_limits<float64>::epsilon();
+    }
+
+    template<> inline bool areEqual(complex64 a, complex64 b)
+    {
+        return areEqual<ito::float32>(a.real(), b.real()) && areEqual<ito::float32>(a.imag(), b.imag());
+    }
+
+    template<> inline bool areEqual(complex128 a, complex128 b)
+    {
+        return areEqual<ito::float64>(a.real(), b.real()) && areEqual<ito::float64>(a.imag(), b.imag());
+    }
+
 
 } // namespace ito
 
