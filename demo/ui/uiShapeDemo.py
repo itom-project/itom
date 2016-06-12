@@ -1,3 +1,16 @@
+'''This demo shows a window with a 2D plot as center widget.
+A random dataObject is shown in the plot. The user can then
+create various geometric shapes (like points, lines, rectangles...)
+in the plot either by the toolbar of the plot or by pressing dedicated buttons.
+
+Additionally, many signals of the plot are connected to python slots
+to show what kind of information can for instance be obtained by the plot
+upon the creation of plots. There are still more signals available, however this
+demo shows a base set already. Furthermore, it is possible to force the user to
+create new shapes either in a modal or non-modal process. The first might be
+interesting if a script requires the input of a region in a plot before continuing with
+the script execution'''
+
 from itom import dataObject
 from itom import ui
 from itomUi import ItomUi
@@ -22,42 +35,57 @@ class UiShapeDemo(ItomUi):
     
     def show(self,modalLevel = 0):
         ret = self.gui.show(modalLevel)
+        
+    def drawShapeButtonsEnable(self, enabled, modal = False):
+        self.gui.btnCancel["enabled"] = (not enabled and not modal)
+        self.gui.btnAddPoint["enabled"] = enabled
+        self.gui.btnAddLine["enabled"] = enabled
+        self.gui.btnAddRect["enabled"] = enabled
+        self.gui.btnAddSquare["enabled"] = enabled
+        self.gui.btnAddEllipse["enabled"] = enabled
+        self.gui.btnAddCircle["enabled"] = enabled
+        
+    def startInteraction(self, type):
+        nrOfElements = self.gui.spinNoToAdd["value"]
+        modal = self.gui.checkModalInput["checked"]
+        self.drawShapeButtonsEnable(False, modal)
+        
+        if not modal:
+            self.gui.plot.call("userInteractionStart", type, True, nrOfElements)
+        else:
+            try:
+                #drawAndPickElements throws RuntimeError if user interrupts the process to add a new shape or new shapes
+                #drawAndPickElements is a memeber of itom.plotItem, self.gui.plot however is of its base type uiItem.
+                #Therefore, the uiItem is cast to plotItem, first.
+                shapes = plotItem(self.gui.plot).drawAndPickElements(type, nrOfElements)
+                self.gui.listLog.call("addItem", "End of modal interaction. %i shapes added:" % len(shapes))
+            except RuntimeError:
+                self.gui.listLog.call("addItem", "Modal interaction interrupted")
+            
     
     @ItomUi.autoslot("")
     def on_btnAddPoint_clicked(self):
-        nrOfElements = self.gui.spinNoToAdd["value"]
-        self.gui.plot.call("userInteractionStart", shape.Point, True, nrOfElements)
-        self.gui.btnCancel["enabled"] = True
+        self.startInteraction( shape.Point)
         
     @ItomUi.autoslot("")
     def on_btnAddLine_clicked(self):
-        nrOfElements = self.gui.spinNoToAdd["value"]
-        self.gui.plot.call("userInteractionStart", shape.Line, True, nrOfElements)
-        self.gui.btnCancel["enabled"] = True
+        self.startInteraction( shape.Line)
     
     @ItomUi.autoslot("")
     def on_btnAddRect_clicked(self):
-        nrOfElements = self.gui.spinNoToAdd["value"]
-        self.gui.plot.call("userInteractionStart", shape.Rectangle, True, nrOfElements)
-        self.gui.btnCancel["enabled"] = True
+        self.startInteraction( shape.Rectangle)
         
     @ItomUi.autoslot("")
     def on_btnAddSquare_clicked(self):
-        nrOfElements = self.gui.spinNoToAdd["value"]
-        self.gui.plot.call("userInteractionStart", shape.Square, True, nrOfElements)
-        self.gui.btnCancel["enabled"] = True
+        self.startInteraction( shape.Square)
     
     @ItomUi.autoslot("")
     def on_btnAddEllipse_clicked(self):
-        nrOfElements = self.gui.spinNoToAdd["value"]
-        self.gui.plot.call("userInteractionStart", shape.Ellipse, True, nrOfElements)
-        self.gui.btnCancel["enabled"] = True
+        self.startInteraction( shape.Ellipse)
     
     @ItomUi.autoslot("")
     def on_btnAddCircle_clicked(self):
-        nrOfElements = self.gui.spinNoToAdd["value"]
-        self.gui.plot.call("userInteractionStart", shape.Circle, True, nrOfElements)
-        self.gui.btnCancel["enabled"] = True
+        self.startInteraction( shape.Circle)
     
     @ItomUi.autoslot("bool")
     def on_checkAllowToolbar_clicked(self, checked):
@@ -80,12 +108,6 @@ class UiShapeDemo(ItomUi):
             self.gui.plot["geometryModificationModes"] = ";".join(modes)
         else:
             self.gui.plot["geometryModificationModes"] = ""
-        
-        #modify the flags of all existing shapes
-        shapes = self.gui.plot["geometricShapes"]
-        for i in range(0, len(shapes)):
-            shapes[i].flags = flags
-        self.gui.plot["geometricShapes"] = shapes
 
     @ItomUi.autoslot("bool")
     def on_checkAllowResize_clicked(self, checked):
@@ -99,6 +121,10 @@ class UiShapeDemo(ItomUi):
     @ItomUi.autoslot("")
     def on_btnClearAll_clicked(self):
         self.gui.plot.call("clearGeometricShapes")
+        
+    @ItomUi.autoslot("")
+    def on_btnClearSelected_clicked(self):
+        self.gui.plot.call("deleteGeometricShape", self.gui.plot["selectedGeometricShape"])
     
     @ItomUi.autoslot("")
     def on_plot_geometricShapesDeleted(self):
@@ -109,6 +135,27 @@ class UiShapeDemo(ItomUi):
     def on_plot_geometricShapeAdded(self, idx, shape):
         self.gui.btnCreateAndShowMask["enabled"] = True
         self.gui.btnClearAll["enabled"] = True
+        
+    @ItomUi.autoslot("ito::Shape")
+    def on_plot_geometricShapeCurrentChanged(self, shape):
+        self.gui.btnClearSelected["enabled"] = shape.valid
+        self.gui.call("statusBar").call("showMessage","Current shape changed to: %s" % str(shape),1000)
+        
+    @ItomUi.autoslot("QVector<ito::Shape>,bool")
+    def on_plot_geometricShapeFinished(self, shapes, aborted):
+        self.drawShapeButtonsEnable(True)
+        if (not aborted):
+            self.gui.listLog.call("addItem", str(shapes))
+        else:
+            self.gui.listLog.call("addItem", "adding geometric shape(s) aborted. %i shape(s) already added" % len(shapes))
+        
+    @ItomUi.autoslot("")
+    def on_btnClearLog_clicked(self):
+        self.gui.listLog.call("clear")
+        
+    @ItomUi.autoslot("")
+    def on_btnCancel_clicked(self):
+        self.gui.plot.call("userInteractionStart", -1, False, 0)
     
 if(__name__ == '__main__'):
     dObj = dataObject.randN([600, 800], 'float32')

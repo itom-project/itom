@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>974</width>
-    <height>855</height>
+    <height>700</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -149,14 +149,14 @@
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
-            <widget class="QListWidget" name="listWidget"/>
+            <widget class="QListWidget" name="listLog"/>
            </item>
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout">
              <item>
-              <widget class="QPushButton" name="pushButton">
+              <widget class="QPushButton" name="btnClearLog">
                <property name="text">
-                <string>PushButton</string>
+                <string>Clear Log</string>
                </property>
               </widget>
              </item>
@@ -236,6 +236,30 @@
             </layout>
            </item>
            <item>
+            <widget class="Line" name="line_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="checkModalInput">
+             <property name="text">
+              <string>Modal input</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="text">
+              <string>If modal, python is blocked during the entire input of one or more requested shapes. Afterwards, a list of new shapes is directly returned. Else, the plot is set into a mode to get new shapes by the user and  several signals inform about the current state.</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
             <spacer name="verticalSpacer">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -243,7 +267,7 @@
              <property name="sizeHint" stdset="0">
               <size>
                <width>20</width>
-               <height>220</height>
+               <height>40</height>
               </size>
              </property>
             </spacer>
