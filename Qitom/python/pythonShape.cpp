@@ -442,6 +442,22 @@ PyObject* PythonShape::PyShape_getType(PyShape *self, void * /*closure*/)
 }
 
 //-----------------------------------------------------------------------------
+PyDoc_STRVAR(shape_getValid_doc,  "Return true if shape is a valid geometric shape, else False");
+PyObject* PythonShape::PyShape_getValid(PyShape *self, void * /*closure*/)
+{
+    if(!self || self->shape == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "shape is not available");
+        return NULL;
+    }
+
+    if (self->shape->type() == ito::Shape::Invalid) 
+        Py_RETURN_FALSE;
+    else
+        Py_RETURN_TRUE;
+}
+
+//-----------------------------------------------------------------------------
 PyDoc_STRVAR(shape_getFlags_doc,  "Get/set bitmask with flags for this shape: Shape.MoveLock, Shape.RotateLock, Shape.ResizeLock");
 PyObject* PythonShape::PyShape_getFlags(PyShape *self, void * /*closure*/)
 {
@@ -1528,6 +1544,7 @@ QPointF PythonShape::PyObject2PointF(PyObject *value, ito::RetVal &retval, const
 
 //-----------------------------------------------------------------------------
 PyGetSetDef PythonShape::PyShape_getseters[] = {
+    {"valid",  (getter)PyShape_getValid,          (setter)NULL,                   shape_getValid_doc, NULL },
     {"type",  (getter)PyShape_getType,          (setter)NULL,                   shape_getType_doc, NULL },
     {"flags", (getter)PyShape_getFlags,         (setter)PyShape_setFlags,       shape_getFlags_doc, NULL},
     {"index", (getter)PyShape_getIndex,         (setter)PyShape_setIndex,       shape_getIndex_doc, NULL},

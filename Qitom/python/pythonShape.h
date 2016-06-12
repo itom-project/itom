@@ -89,6 +89,8 @@ public:
     //------------------------------------------------------------------------------------------------- 
     static PyObject* PyShape_getType(PyShape *self, void *closure);
 
+    static PyObject* PyShape_getValid(PyShape *self, void *closure);
+
     static PyObject* PyShape_getFlags(PyShape *self, void *closure);
     static int PyShape_setFlags(PyShape *self, PyObject *value, void *closure);
 
