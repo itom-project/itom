@@ -499,9 +499,9 @@ namespace ito
                 //mandatory parameters can be of every type, but their flags must be In Or In|Out (NOT Out)
                 if ((p.getFlags() & ito::ParamBase::Out) && !(p.getFlags() & ito::ParamBase::In))
                 {
-                    QString err = QString("Mandatory parameter '%1' cannot be defined as Out-Parameter").arg(QLatin1String(p.getName()));
+                    QString err = QString("Mandatory parameter '%1' of exec function %2 cannot be defined as out parameter only").arg(QLatin1String(p.getName()), funcName);
                     retValue += ito::RetVal(ito::retError,0,err.toLatin1().data());
-                    //throw std::logic_error(err.toLatin1().data());
+                    qDebug() << err;
                     break;
                 }
             }
@@ -510,9 +510,9 @@ namespace ito
                 //optional parameters can be of every type, but their flags must be In Or In|Out (NOT Out)
                 if ((p.getFlags() & ito::ParamBase::Out) && !(p.getFlags() & ito::ParamBase::In))
                 {
-                    QString err = QString("Optional parameter '%1' cannot be defined as Out-Parameter").arg(QLatin1String(p.getName()));
+                    QString err = QString("Optional parameter '%1' of exec function %2 cannot be defined as out parameter only").arg(QLatin1String(p.getName()), funcName);
                     retValue += ito::RetVal(ito::retError,0,err.toLatin1().data());
-                    //throw std::logic_error(err.toLatin1().data());
+                    qDebug() << err;
                     break;
                 }
             }
@@ -521,16 +521,16 @@ namespace ito
                 //output parameters must have flag Out and not In, only types Int(Array),Char(Array),Double(Array) or String are allowed
                 if ((p.getFlags() & ito::ParamBase::In) || !(p.getFlags() & ito::ParamBase::Out))
                 {
-                    QString err = QString("Output parameter '%1' must be defined as Out-Parameter").arg(QLatin1String(p.getName()));
+                    QString err = QString("Output parameter '%1' of exec function %2 must be defined as out parameter").arg(QLatin1String(p.getName()), funcName);
                     retValue += ito::RetVal(ito::retError,0,err.toLatin1().data());
-                    //throw std::logic_error(err.toLatin1().data());
+                    qDebug() << err;
                     break;
                 }
-                if ((p.getType() & (ito::ParamBase::Int | ito::ParamBase::Char | ito::ParamBase::Double)) == 0)
+                if ((p.getType() & (ito::ParamBase::Int | ito::ParamBase::Char | ito::ParamBase::Double | ito::ParamBase::String)) == 0)
                 {
-                    QString err = QString("Output parameter '%1' must be of type Int(-Array), Char(-Array), Double(-Array) or String.").arg(QLatin1String(p.getName()));
+                    QString err = QString("Output parameter '%1' of exec function %2 must be of type Int(-Array), Char(-Array), Double(-Array) or String.").arg(QLatin1String(p.getName()), funcName);
                     retValue += ito::RetVal(ito::retError,0,err.toLatin1().data());
-                    //throw std::logic_error(err.toLatin1().data());
+                    qDebug() << err;
                     break;
                 }
             }
@@ -543,6 +543,10 @@ namespace ito
                 newParam.paramsOut  = paramsOut;  //implicitly shared (see Qt-doc QVector(const QVector<T> & other))
                 newParam.infoString = infoString;
                 m_execFuncList[funcName] = newParam;
+            }
+            else
+            {
+                qDebug() << "exec function " << funcName << " was rejected due to invalid argument definitions.";
             }
         }
         else

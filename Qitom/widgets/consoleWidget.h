@@ -25,7 +25,8 @@
 
 #include <queue>
 
-#include "../common/sharedStructures.h"
+#include "common/sharedStructures.h"
+#include "common/sharedStructuresQt.h"
 #include "../python/qDebugStream.h"
 
 #include "abstractPyScintillaWidget.h"

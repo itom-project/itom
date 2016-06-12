@@ -3321,6 +3321,8 @@ RetVal UiOrganizer::figureClose(unsigned int figHandle, ItomSharedSemaphore *sem
             if (fig)
             {
                 fig->setFigHandle(empty);
+                delete m_dialogList[figHandle].container;
+                m_dialogList.remove(figHandle);
             }
             else
             {

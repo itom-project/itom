@@ -228,19 +228,26 @@ namespace ito {
             const QVariantList list = item.toList();
             QVector<ito::Shape> shapes;
 
-            foreach(const QVariant &listItem, list)
+            if (list.size() > 0)
             {
-                if (listItem.type() == QVariant::UserType && listItem.userType() == QMetaType::type("ito::Shape"))
+                foreach(const QVariant &listItem, list)
                 {
-                    shapes.append(qvariant_cast<ito::Shape>(listItem));
-                    ok = true;
+                    if (listItem.type() == QVariant::UserType && listItem.userType() == QMetaType::type("ito::Shape"))
+                    {
+                        shapes.append(qvariant_cast<ito::Shape>(listItem));
+                        ok = true;
+                    }
+                    else
+                    {
+                        retval += ito::RetVal(ito::retError, 0, "transformation error to vector of shapes: at least one item could not be interpreted as shape.");
+                        ok = false;
+                        break;
+                    }
                 }
-                else
-                {
-                    retval += ito::RetVal(ito::retError, 0, "transformation error to vector of shapes: at least one item could not be interpreted as shape.");
-                    ok = false;
-                    break;
-                }
+            }
+            else
+            {
+                ok = true;
             }
 
             if (!retval.containsError())
@@ -422,24 +429,27 @@ namespace ito {
     }
     else //
     {
-        QString str = item.toString();
-        if (str.isEmpty() == false) //string
+        if (item.canConvert(QVariant::String)) //string
         {
+            QString str = item.toString();
             if (enumerator.isFlag())
             {
                 int result_ = 0;
                 QStringList str_ = str.split(";");
                 foreach(const QString &substr, str_)
                 {
-                    val = enumerator.keyToValue(substr.toLatin1().data());
-                    if (val >= 0)
+                    if (substr.isEmpty() == false)
                     {
-                        result_ |= val;
-                    }
-                    else
-                    {
-                        retval += ito::RetVal::format(ito::retError, 0, "The key %s does not exist in the enumeration %s::%s (flags)", str.toLatin1().data(), enumerator.scope(), enumerator.name());
-                        return result;
+                        val = enumerator.keyToValue(substr.toLatin1().data());
+                        if (val >= 0)
+                        {
+                            result_ |= val;
+                        }
+                        else
+                        {
+                            retval += ito::RetVal::format(ito::retError, 0, "The key %s does not exist in the enumeration %s::%s (flags)", str.toLatin1().data(), enumerator.scope(), enumerator.name());
+                            return result;
+                        }
                     }
                 }
 
@@ -461,7 +471,7 @@ namespace ito {
         }
         else
         {
-            retval += ito::RetVal::format(ito::retError, 0, "Use an integer or a string to for a value of the enumeration %s::%s", enumerator.scope(), enumerator.name());
+            retval += ito::RetVal::format(ito::retError, 0, "Use an integer or a string for a value of the enumeration %s::%s", enumerator.scope(), enumerator.name());
             return result;
         }
     }

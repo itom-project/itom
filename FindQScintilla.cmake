@@ -16,9 +16,9 @@ UNSET(QSCINTILLA_NAMES CACHE)
 
 IF(QT5_FOUND)
 	FIND_PATH(QSCINTILLA_INCLUDE_DIR qsciglobal.h PATHS ${Qt5Core_INCLUDE_DIRS} PATH_SUFFIXES Qsci)
-	
-	find_library(QSCINTILLA_LIBRARY_DEBUG NAMES "qscintilla2d" "libqscintilla2d" "libqscintilla2-8d"  PATHS ${Qt5Core_INCLUDE_DIRS} "/usr/lib" PATH_SUFFIXES "../lib" NO_DEFAULT_PATH)
-	find_library(QSCINTILLA_LIBRARY_RELEASE NAMES "qscintilla2" "libqscintilla2" "libqscintilla2-8" PATHS ${Qt5Core_INCLUDE_DIRS} "/usr/lib" PATH_SUFFIXES "../lib" NO_DEFAULT_PATH)
+
+	find_library(QSCINTILLA_LIBRARY_DEBUG NAMES "qscintilla2d" "libqscintilla2d" "libqscintilla2-8d" "libqt5scintilla2d" "libqscintilla2d.so" "libqscintilla2-8d.so" "libqt5scintilla2d.so" PATHS ${Qt5Core_INCLUDE_DIRS} "/usr/lib" PATH_SUFFIXES "../lib" NO_DEFAULT_PATH)
+	find_library(QSCINTILLA_LIBRARY_RELEASE NAMES "qscintilla2" "libqscintilla2" "libqscintilla2-8" "libqt5scintilla2" "libqscintilla2.so" "libqscintilla2-8.so" "libqt5scintilla2.so"  PATHS ${Qt5Core_INCLUDE_DIRS} "/usr/lib" PATH_SUFFIXES "../lib" NO_DEFAULT_PATH)
 	
 	#Remove the cache value
 	set(QSCINTILLA_LIBRARY "" CACHE STRING "" FORCE)

@@ -1073,12 +1073,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+42"/>
         <source>length of char array out of range [%1, %2]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Länge des Char-Arrays liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>length of char array does not fit to given step size [%1:%2:%3]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Länge des Char-Arrays stimmt nicht mit der gegebenen Schrittweite überein [%1, %2, %3]</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -1089,7 +1089,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="-248"/>
         <source>length of integer array out of range [%1, %2]</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Länge des Integer-Arrays liegt außerhalb des Gültigkeitsbereichs [%1, %2]</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -1218,7 +1218,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+6"/>
         <source>Mandatory string value is not given.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Wert des Plficht-Strings wurde nicht angegeben.</translation>
     </message>
     <message>
         <location line="+153"/>
@@ -1298,7 +1298,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+101"/>
         <source>Parameter %1: </source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+103"/>
@@ -1572,22 +1572,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+70"/>
         <source>collection project file could not be opened</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die &apos;Collection&apos;-Projektdatei konnte nicht geöffnet werden</translation>
     </message>
     <message>
         <location line="+55"/>
         <source>error calling qcollectiongenerator</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Aufruf von QCollectiongenerator</translation>
     </message>
     <message>
         <location line="+31"/>
         <source>templates for plugin documentation not found. Directory &apos;docs/pluginDoc/template&apos; not available. Plugin documentation will not be built.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Templates für die Plugin-Dokumentation wurden nicht gefunden. Das Verzeichnis &apos;docs/pluginDoc/template&apos; ist nicht verfügbar. Die Plugin-Dokumentation wird nicht erstellt.</translation>
     </message>
     <message>
         <location line="+15"/>
         <source>folder &apos;build&apos; as subfolder of &apos;docs/pluginDoc&apos; could not be created. Plugin documentation will not be built.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Ordner &apos;build&apos; als Unterverzeichnis von &apos;docs/pluginDoc&apos; konnte nicht erstellt werden. Die Plugin-Dokumentation wird nicht erstellt.</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -1602,27 +1602,27 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+73"/>
         <source>error opening index.html of template folder</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Öffnen von index.html aus dem Template-Ordner</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>error opening itomPluginDoc.qhp of template folder</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Öffnen von itomPluginDoc.qhp aus dem Template-Ordner</translation>
     </message>
     <message>
         <location line="+47"/>
         <source>error writing index.html of template folder</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Schreiben von index.html in den Template-Ordner</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>error writing itomPluginDoc.qhp of template folder</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Schreiben von itomPluginDoc.qhp in den Template-Ordner</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>could not copy folder &apos;docs/pluginDoc/template/_static&apos; to &apos;docs/pluginDoc/build/_static&apos;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Verzeichnis &apos;docs/pluginDoc/template/_static&apos; kann nicht nach &apos;docs/pluginDoc/build/_static&apos; kopiert werden</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -1637,7 +1637,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+81"/>
         <source>The version contains unversioned files (e.g. from __pycache__-files)!</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Version enthält nicht versionierte Dateien (z. B. von __pycache__-files)!</translation>
     </message>
     <message>
         <source>Warning: The version contains locally changed code!
@@ -1786,12 +1786,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="../organizer/addInManager.cpp" line="-34"/>
         <source>filename is no itom plugin library: %1</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Datei ist keine itom-Plugin-Bibliothek: %1</translation>
     </message>
     <message>
         <location line="+89"/>
         <source>Plugin with filename &apos;%1&apos; is unknown.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Plugin mit dem Namen &apos;%1&apos; ist unbekannt.</translation>
     </message>
     <message>
         <location line="+23"/>

@@ -204,13 +204,12 @@ class FigureCanvasItom( FigureCanvasBase ):
 
     def resizeEvent( self, w, h ):
         if DEBUG: print("FigureCanvasQt.resizeEvent(", w, ",", h, ")")
-        dpival = self.figure.dpi
-        winch = w/dpival
-        hinch = h/dpival
-        self.figure.set_size_inches( winch, hinch )
-        self.draw()
-        #self.update()
-        #QtGui.QWidget.resizeEvent(self, event)
+        if not self.figure is None:
+            dpival = self.figure.dpi
+            winch = w/dpival
+            hinch = h/dpival
+            self.figure.set_size_inches( winch, hinch )
+            self.draw()
 
     def sizeHint( self ):
         w, h = self.get_width_height()
@@ -406,6 +405,10 @@ class FigureManagerItom( FigureManagerBase ):
                     pass
                 try:
                     self.itomUI.hide()
+                except:
+                    pass
+                try:
+                    self.itomFig.hide()
                 except:
                     pass
             else:

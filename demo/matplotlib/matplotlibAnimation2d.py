@@ -27,7 +27,7 @@ The bin folder of ffmpeg must be added to the path variables of your system:
 
 Finally start the command prompt and run the command: 
 
-.. C:\\Proram files\\ffmpeg\\bin\\ffmpeg.exe -codecs
+.. C:\\Program files\\ffmpeg\\bin\\ffmpeg.exe -codecs
 
 or easier: 
 
@@ -71,6 +71,7 @@ if accepted:
     
     with writer.saving(fig, outputfile, dpi_movie):
         for cnt in range(0,numberImages):
+            fig.clear()
             plt.imshow(stack[cnt,:,:], cmap = "viridis")
             plt.show()
             writer.grab_frame()

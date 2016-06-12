@@ -75,6 +75,7 @@
 #include "pythonNpDataObject.h"
 #include "pythonItom.h"
 #include "pythonProxy.h"
+#include "pythonStream.h"
 
 #include "../models/breakPointModel.h"
 #include "../../common/sharedStructuresQt.h"
@@ -294,6 +295,7 @@ private:
 
     // friend class
     friend class ito::PythonItom;
+	friend class ito::PyStream;
 
 signals:
     void pythonDebugPositionChanged(QString filename, int lineNo);

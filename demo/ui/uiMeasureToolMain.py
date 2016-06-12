@@ -68,6 +68,7 @@ class MeasureToolMain(ItomUi):
             self.measureType = 2
             self.plotElementTyp = shape.Point
             self.elementCount = self.gui.dataPlot["geometricShapesCount"]
+            self.gui.pushButtonCancel["enabled"] = True
             self.gui.dataPlot.call("userInteractionStart", self.plotElementTyp, True, 2)
         
     
@@ -77,6 +78,7 @@ class MeasureToolMain(ItomUi):
             self.measureType = 3
             self.plotElementTyp = shape.Point
             self.elementCount = self.gui.dataPlot["geometricShapesCount"]
+            self.gui.pushButtonCancel["enabled"] = True
             self.gui.dataPlot.call("userInteractionStart", self.plotElementTyp, True, 1)
         
     @ItomUi.autoslot("")
@@ -85,6 +87,7 @@ class MeasureToolMain(ItomUi):
             self.measureType = 1
             self.plotElementTyp = shape.Ellipse
             self.elementCount = self.gui.dataPlot["geometricShapesCount"]
+            self.gui.pushButtonCancel["enabled"] = True
             self.gui.dataPlot.call("userInteractionStart", self.plotElementTyp, True, 1)
     
     @ItomUi.autoslot("")
@@ -93,6 +96,7 @@ class MeasureToolMain(ItomUi):
             self.measureType = 4
             self.plotElementTyp = shape.Rectangle
             self.elementCount = self.gui.dataPlot["geometricShapesCount"]
+            self.gui.pushButtonCancel["enabled"] = True
             self.gui.dataPlot.call("userInteractionStart", self.plotElementTyp, True, 1)
     
     @ItomUi.autoslot("")
@@ -101,6 +105,7 @@ class MeasureToolMain(ItomUi):
             self.measureType = 0
             self.gui.dataPlot.call("userInteractionStart", self.plotElementTyp, False, 0)
             self.plotElementTyp = 0
+            self.gui.pushButtonCancel["enabled"] = False
         
     @ItomUi.autoslot("")
     def on_pushButtonClearAll_clicked(self):
@@ -117,9 +122,16 @@ class MeasureToolMain(ItomUi):
 #    def on_dataPlot_plotItemChanged(self, index):
 #        geometricElements = self.gui.dataPlot["geometricElements"]
 #        self.gui.measurementTable["source"] = geometricElements
+    @ItomUi.autoslot("")
+    def on_dataPlot_geometricShapesDeleted(self):
+        self.gui.pushButtonClearAll["enabled"] = False
     
-    @ItomUi.autoslot("int, bool")
-    def on_dataPlot_geometricShapeFinished(self, type, aborted):
+    @ItomUi.autoslot("int,ito::Shape")
+    def on_dataPlot_geometricShapeAdded(self, idx, shape):
+        self.gui.pushButtonClearAll["enabled"] = True
+    
+    @ItomUi.autoslot("QVector<ito::Shape>,bool")
+    def on_dataPlot_geometricShapeFinished(self, shapes, aborted):
         geometricShapes = self.gui.dataPlot["geometricShapes"]
         self.gui.measurementTable["geometricShapes"] = geometricShapes
         
@@ -194,6 +206,7 @@ class MeasureToolMain(ItomUi):
             
         self.measureType = 0
         self.elementCount = newElementCount
+        self.gui.pushButtonCancel["enabled"] = False
     
 if(__name__ == '__main__'):
     dObj = dataObject.randN([600, 800], 'float32')

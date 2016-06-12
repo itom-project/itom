@@ -380,6 +380,11 @@ ito::RetVal MyGrabber::retrieveData(ito::DataObject *externalDataObject)
 
     bool hasListeners = (m_autoGrabbingListeners.size() > 0);
     bool copyExternal = (externalDataObject != NULL);
+    
+    const int bufferWidth = m_params["sizex"].getVal<int>();
+    const int bufferHeight = m_params["sizey"].getVal<int>();
+
+
 
     if (m_isgrabbing == false)
     {
