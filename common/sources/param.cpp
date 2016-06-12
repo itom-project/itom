@@ -1351,6 +1351,10 @@ void Param::setMeta(ParamMeta* meta, bool takeOwnership)
             }
         }
     }
+    else
+    {
+        m_pMeta = NULL;
+    }
 
     if (oldMeta) 
     {

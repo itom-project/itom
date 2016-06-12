@@ -98,6 +98,21 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
         }
     break;
 
+    case ito::ParamBase::Complex & ito::paramTypeMask:
+        {
+            bool ok;
+            outParam.setVal<ito::complex128>(PythonQtConversion::PyObjGetComplex(pyObj, false, ok));
+            if (ok)
+            {
+                *set = 1;
+            }
+            else
+            {
+                return ito::RetVal(ito::retError, 0, "value could not be converted to complex");
+            }
+        }
+    break;
+
     case ito::ParamBase::CharArray & ito::paramTypeMask:
         {
             if (PyByteArray_Check(pyObj))
@@ -139,6 +154,23 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
             {
                 *set = 1;
                 outParam.setVal<int*>(v.data(), v.size());
+            }
+            else
+            {
+                return ito::retError;
+            }
+        }
+    break;
+
+    case ito::ParamBase::ComplexArray & ito::paramTypeMask:
+        {
+            bool ok;
+            QVector<ito::complex128> v = PythonQtConversion::PyObjGetComplexArray(pyObj, false, ok);
+            
+            if (ok)
+            {
+                *set = 1;
+                outParam.setVal<ito::complex128*>(v.data(), v.size());
             }
             else
             {
@@ -305,6 +337,10 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                     type = ("float");
                 break;
 
+                case ito::ParamBase::Complex & ito::paramTypeMask:
+                    type = ("complex");
+                break;
+
                 case ito::ParamBase::String & ito::paramTypeMask:
                     type = ("str");
                 break;
@@ -339,6 +375,10 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                     default:
                         type = ("seq. of float");
                     }
+                break;
+
+                case ito::ParamBase::ComplexArray & ito::paramTypeMask:
+                    type = ("seq. of complex");
                 break;
 
                 case ((ito::ParamBase::Pointer|ito::ParamBase::HWRef) & ito::paramTypeMask):

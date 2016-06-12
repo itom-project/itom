@@ -952,16 +952,16 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             {
                 if (pMeta->getStepSize() == 1)
                 {
-                    meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<int>());
+                    meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<ito::int32>());
                 }
                 else
                 {
-                    meta = tr("Range: [%1:%2:%3], Default: %4").arg(minText(pMeta->getMin())).arg(pMeta->getStepSize()).arg(maxText(pMeta->getMax())).arg(param.getVal<int>());
+                    meta = tr("Range: [%1:%2:%3], Default: %4").arg(minText(pMeta->getMin())).arg(pMeta->getStepSize()).arg(maxText(pMeta->getMax())).arg(param.getVal<ito::int32>());
                 }
             }
             else
             {
-                meta = tr("Default: %1").arg(param.getVal<int>());
+                meta = tr("Default: %1").arg(param.getVal<ito::int32>());
             }
         }
         break;
@@ -994,16 +994,31 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             {
                 if (pMeta->getStepSize() == 0.0)
                 {
-                    meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<double>());
+                    meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<ito::float64>());
                 }
                 else
                 {
-                    meta = tr("Range: [%1:%2:%3], Default: %4").arg(minText(pMeta->getMin())).arg(pMeta->getStepSize()).arg(maxText(pMeta->getMax())).arg(param.getVal<double>());
+                    meta = tr("Range: [%1:%2:%3], Default: %4").arg(minText(pMeta->getMin())).arg(pMeta->getStepSize()).arg(maxText(pMeta->getMax())).arg(param.getVal<ito::float64>());
                 }
             }
             else
             {
-                meta = tr("Default: %1").arg(param.getVal<double>());
+                meta = tr("Default: %1").arg(param.getVal<ito::float64>());
+            }
+        }
+        break;
+    case ito::ParamBase::Complex:
+        {
+            type = "complex";
+            ito::float64 real = param.getVal<ito::complex128>().real();
+            ito::float64 imag = param.getVal<ito::complex128>().imag();
+            if (imag >= 0)
+            {
+                meta = tr("Default: %1+%2i").arg(real).arg(imag);
+            }
+            else
+            {
+                meta = tr("Default: %1-%2i").arg(real).arg(-imag);
             }
         }
         break;
@@ -1123,6 +1138,12 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             {
                 type = "interval [first, last] (float64)";
             }
+        }
+
+        break;
+    case ito::ParamBase::ComplexArray & ito::paramTypeMask:
+        {
+            type = "list of complex128";
         }
 
         break;
