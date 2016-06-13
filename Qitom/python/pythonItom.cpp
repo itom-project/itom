@@ -2337,7 +2337,7 @@ PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
 {
     const char* toolbarName = NULL;
     const char* buttonName = NULL;
-    size_t buttonHandle;
+    unsigned int buttonHandle;
     bool callByNames = true;
 
     if (! PyArg_ParseTuple(pArgs, "ss", &toolbarName, &buttonName))
@@ -2605,7 +2605,7 @@ addMenu");
 PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *kwds)
 {
     const char* keyName = NULL;
-    size_t menuHandle;
+    unsigned int menuHandle;
     const char *kwlist[] = {"key", NULL};
     const char *kwlist2[] = {"menuHandle", NULL};
     bool keyNotHandle = true;
