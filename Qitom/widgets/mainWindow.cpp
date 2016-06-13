@@ -1305,6 +1305,7 @@ ito::RetVal MainWindow::removeToolbarButton(const size_t buttonHandle, bool show
         {
             removeToolBar(*it);
             m_userDefinedToolBars.remove(it.key());
+            break;
         }
     }
 
