@@ -1283,12 +1283,11 @@ ito::RetVal MainWindow::removeToolbarButton(const size_t buttonHandle, bool show
     //buttonHandle is the pointer-address to the QAction of the button
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
-    QMap<QString, QToolBar*>::iterator it = m_userDefinedToolBars.begin();
     QAction* tempAction;
 
     bool found = false;
 
-    for (it = m_userDefinedToolBars.begin(); it != m_userDefinedToolBars.end() && !found; ++it)
+    for (QMap<QString, QToolBar*>::iterator it = m_userDefinedToolBars.begin(); !found && it != m_userDefinedToolBars.end(); ++it)
     {
         foreach (tempAction, (*it)->actions())
         {
@@ -1303,8 +1302,9 @@ ito::RetVal MainWindow::removeToolbarButton(const size_t buttonHandle, bool show
 
         if (found && (*it)->actions().size() == 0) //remove this toolbar
         {
+            QString key = it.key();
             removeToolBar(*it);
-            m_userDefinedToolBars.remove(it.key());
+            m_userDefinedToolBars.remove(key);
             break;
         }
     }
