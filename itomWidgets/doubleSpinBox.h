@@ -97,6 +97,8 @@ class ITOMWIDGETS_EXPORT DoubleSpinBox : public QWidget
   /// SizeHintByMinMax by default
   /// SizeHintPolicy, sizeHintPolicy(), setSizeHintPolicy()
   Q_PROPERTY(SizeHintPolicy sizeHintPolicy READ sizeHintPolicy WRITE setSizeHintPolicy)
+  /// This property wraps the keyboardTracking property of the underlying spinbox.
+  Q_PROPERTY(bool keyboardTracking READ keyboardTracking WRITE setKeyboardTracking)
 
 public:
 
@@ -170,13 +172,9 @@ public:
 
   /// Constructor, creates a DoubleSpinBox. The look and feel
   /// are the same as of a QDoubleSpinBox
-  DoubleSpinBox(QWidget* parent = 0);
-  DoubleSpinBox(DoubleSpinBox::SetMode mode, QWidget* parent = 0);
-
-  //TODO: uncomment this if the addinInterface is increment for the next time and remove the two constructors above. (30.03.2016, M. Gronle)
-  /*explicit DoubleSpinBox(QWidget* parent = 0);
+  explicit DoubleSpinBox(QWidget* parent = 0);
   explicit DoubleSpinBox(DoubleSpinBox::SetMode mode, QWidget* parent = 0);
-  virtual ~DoubleSpinBox();*/
+  virtual ~DoubleSpinBox();
 
   /// Get the spinbox current value
   /// \sa setValue(), cleanText()
@@ -296,6 +294,9 @@ public:
   /// Reimplemented to respect the sizeHintPolicy property value.
   /// \sa sizeHintPolicy
   virtual QSize minimumSizeHint()const;
+
+  void setKeyboardTracking(bool kt);
+  bool keyboardTracking() const;
 
 public slots:
   /// Set the value of the spinbox following the current mode.

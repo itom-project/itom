@@ -619,11 +619,10 @@ DoubleSpinBox::DoubleSpinBox(DoubleSpinBox::SetMode mode, QWidget* newParent)
   this->setSetMode(mode);
 }
 
-//TODO: uncomment this if the addinInterface is increment for the next time. (30.03.2016, M. Gronle)
-////-----------------------------------------------------------------------------
-//DoubleSpinBox::~DoubleSpinBox()
-//{
-//}
+//-----------------------------------------------------------------------------
+DoubleSpinBox::~DoubleSpinBox()
+{
+}
 
 //-----------------------------------------------------------------------------
 double DoubleSpinBox::value() const
@@ -859,6 +858,20 @@ double DoubleSpinBox::round(double value) const
 {
   Q_D(const DoubleSpinBox);
   return QString::number(value, 'f', d->SpinBox->decimals()).toDouble();
+}
+
+//-----------------------------------------------------------------------------
+void DoubleSpinBox::setKeyboardTracking(bool kt)
+{
+    Q_D(const DoubleSpinBox);
+    d->SpinBox->setKeyboardTracking(kt);
+}
+
+//-----------------------------------------------------------------------------
+bool DoubleSpinBox::keyboardTracking() const
+{
+    Q_D(const DoubleSpinBox);
+    return d->SpinBox->keyboardTracking();
 }
 
 //-----------------------------------------------------------------------------

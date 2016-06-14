@@ -1071,6 +1071,7 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/2.0.0", //outdated on 2015-12-04 due to improvements in plot/figure interfaces, removal of deprecated classes helperActuator and helperGrabber and further removal of deprecated items
     "ito.AddIn.InterfaceBase/2.1.0", //outdated on 2016-02-01 due to improvements in PluginThreadCtrl, ActuatorThreadCtrl and DataIoThreadCtrl (as replacement for removed classes helperActuator and helperGrabber), new method ito::DataObject::getStep and some smaller rearrangements
     "ito.AddIn.InterfaceBase/2.2.0", //outdated on 2016-02-19 due to crash fixes if the main mindow is deleted and implicitely closes dock widgets of plugins, that are currently blocked by any other operation.
+    "ito.AddIn.InterfaceBase/2.3.0", //outdated on 2016-06-14 due to changes in signal definitions in plots, introduction of complex and complexArray types in ParamBase and further smaller changes.
     NULL
 };
 
@@ -1079,10 +1080,10 @@ static const char* ito_AddInInterface_OldVersions[] = {
 #define CREATE_ADDININTERFACE_VERSION(major,minor,patch) ((major<<16)|(minor<<8)|(patch))
 
 #define ITOM_ADDININTERFACE_MAJOR 2
-#define ITOM_ADDININTERFACE_MINOR 3
+#define ITOM_ADDININTERFACE_MINOR 4
 #define ITOM_ADDININTERFACE_PATCH 0
 #define ITOM_ADDININTERFACE_VERSION CREATE_ADDININTERFACE_VERSION(ITOM_ADDININTERFACE_MAJOR,ITOM_ADDININTERFACE_MINOR,ITOM_ADDININTERFACE_PATCH)
-static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_VERSION_STR(2,3,0); //results in "ito.AddIn.InterfaceBase/x.x.x"; (the numbers 1,3,1 can not be replaced by the macros above. Does not work properly)
+static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_VERSION_STR(2,4,0); //results in "ito.AddIn.InterfaceBase/x.x.x"; (the numbers 1,3,1 can not be replaced by the macros above. Does not work properly)
 
 
 
