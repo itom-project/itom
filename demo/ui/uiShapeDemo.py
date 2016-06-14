@@ -125,16 +125,29 @@ class UiShapeDemo(ItomUi):
     @ItomUi.autoslot("")
     def on_btnClearSelected_clicked(self):
         self.gui.plot.call("deleteGeometricShape", self.gui.plot["selectedGeometricShape"])
+        
+    @ItomUi.autoslot("")
+    def on_btnDrawShapes_clicked(self):
+        self.gui.plot.call("addGeometricShape", shape(shape.Circle, (30,10), 8)) #head
+        self.gui.plot.call("addGeometricShape", shape(shape.Rectangle, (24,15), (28,12))) #left eye
+        self.gui.plot.call("addGeometricShape", shape(shape.Rectangle, (32,15), (36,12))) #right eye
+        self.gui.plot.call("addGeometricShape", shape(shape.Ellipse, (25,5.25), (35,4.75))) #mouth
     
     @ItomUi.autoslot("")
     def on_plot_geometricShapesDeleted(self):
         self.gui.btnCreateAndShowMask["enabled"] = False
         self.gui.btnClearAll["enabled"] = False
+        self.gui.listLog.call("addItem", "all shapes deleted")
     
     @ItomUi.autoslot("int,ito::Shape")
     def on_plot_geometricShapeAdded(self, idx, shape):
         self.gui.btnCreateAndShowMask["enabled"] = True
         self.gui.btnClearAll["enabled"] = True
+        self.gui.listLog.call("addItem", "shape %i added: " % idx + str(shape))
+        
+    @ItomUi.autoslot("int,ito::Shape")
+    def on_plot_geometricShapeChanged(self, idx, shape):
+        self.gui.listLog.call("addItem", "shape %i changed: " % idx + str(shape))
         
     @ItomUi.autoslot("ito::Shape")
     def on_plot_geometricShapeCurrentChanged(self, shape):
@@ -145,9 +158,15 @@ class UiShapeDemo(ItomUi):
     def on_plot_geometricShapeFinished(self, shapes, aborted):
         self.drawShapeButtonsEnable(True)
         if (not aborted):
-            self.gui.listLog.call("addItem", str(shapes))
+            self.gui.listLog.call("addItem", "successfully finished to add or change the following shapes: " + str(shapes))
         else:
             self.gui.listLog.call("addItem", "adding geometric shape(s) aborted. %i shape(s) already added" % len(shapes))
+        self.gui.listLog.call("scrollToBottom")
+            
+    @ItomUi.autoslot("int,bool")
+    def on_plot_geometricShapeStartUserInput(self, type, userInteractionReason):
+        if userInteractionReason == False: #user selected a button in the toolbar to draw a new shape, disable buttons
+            self.drawShapeButtonsEnable(False)
         
     @ItomUi.autoslot("")
     def on_btnClearLog_clicked(self):
