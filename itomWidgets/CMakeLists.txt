@@ -99,13 +99,6 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSpinBox_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/basePopupWidget_p.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/colorPickerButton.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/colorDialog.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/checkableComboBox.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/comboBox.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/searchBox.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/treeComboBox.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/menuComboBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/menuComboBox_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoDObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoMarker.h
@@ -135,6 +128,13 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoMarker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoPicker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoShapes.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/colorPickerButton.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/colorDialog.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/checkableComboBox.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/comboBox.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/searchBox.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/treeComboBox.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/menuComboBox.h
 )
 
 
