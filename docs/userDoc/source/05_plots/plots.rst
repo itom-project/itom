@@ -31,6 +31,7 @@ Content:
    imagePlots
    isometricPlot
    primitives
+   markers
    matplotlib
 
 

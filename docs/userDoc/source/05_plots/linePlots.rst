@@ -10,8 +10,8 @@ command in order to force the data to be plotted in this plot type and / or set 
 The latter can be done in the property dialog or itom, tab **Plots and Figures >> Default Plots**. Set there the *default figure plot* to *Itom1DQwtPlot* for the
 categories
 
-* DObjLiveLine
-* DObjStaticLine
+* DObjLiveLine (live 1D visualization of a dataObject)
+* DObjStaticLine (static 1D visualization of a dataObject)
 
 .. figure:: images/plot1d_2.png
     :scale: 100%
