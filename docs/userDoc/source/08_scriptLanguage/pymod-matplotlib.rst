@@ -3,7 +3,7 @@
 .. _pymod-matplotlib:
 
 Python-Module matplotlib
-*************************
+**************************
 
 The module **matplotlib** can be used in order to create two or three dimensional plots like in these examples:
 

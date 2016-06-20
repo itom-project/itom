@@ -22,7 +22,7 @@ In order to use this **matlab** module, the following requirements have to be fu
 
 The following example is also included in the demo folder (**demoMatlabEngine.py**) and shows how to remotely control Matlab via itom:
 
-.. code-blocks:: python
+.. code-block:: python
     
     try:
         import matlab
@@ -50,7 +50,7 @@ The following example is also included in the demo folder (**demoMatlabEngine.py
 
     #session.close() only closes the session
     
-.. info::
+.. note::
     
     If Matlab is not properly installed, the opening of the MatlabSession will fail.
     

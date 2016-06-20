@@ -88,7 +88,8 @@ Plugins can provide filters for saving or loading the following objects:
 * point clouds
 * polygon meshes
 
-If any filter indicates to support the corresponding file input or file output interface, this filter is automatically recognized and integrated in the GUI. Nevertheless, these filters can be called like any other filter in |itom|.
+If any filter indicates to support the corresponding file input or file output interface, this filter is automatically recognized and integrated in the GUI. 
+Nevertheless, these filters can be called like any other filter in itom.
 
 Most filters for loading any image formats are included in the plugin **dataObjectIO**. The filter documentation of this plugin gives detailed information
 about every single filter. Loading or saving point clouds or polygonal meshes are included in the plugin **PclTools**.

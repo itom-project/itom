@@ -190,7 +190,7 @@ named *spam.py* in a list of directories given by the variable
 
 After initialization, Python programs can modify :data:`sys.path`:
 
-.. code-blocks:: python
+.. code-block:: python
     
     import sys
     sys.path.append("C:/myNewPath")
