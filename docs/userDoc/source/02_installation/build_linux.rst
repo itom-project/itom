@@ -1,9 +1,12 @@
 .. include:: ../include/global.inc
 
+.. _build-linux:
+
 Build on linux
 ================
 
-This section describes how |itom| and its plugins are built on a linux system (tested on Ubuntu 12.04 (32bit), Kubuntu (Debian, KDE, 64bit) and Lubuntu). The general approach is similar to the other documentation in the install chapter that are mainly focussed on Windows.
+This section describes how |itom| and its plugins are built on a linux system (tested on Ubuntu 12.04 (32bit), Kubuntu (Debian, KDE, 64bit) and Lubuntu). 
+The general approach is similar to the other documentation in the install chapter that are mainly focussed on Windows.
 
 Necessary packages
 -------------------
@@ -36,7 +39,6 @@ for Ubuntu 12.04 based distributions the following command should install all ne
 .. code-block:: bash
 
     sudo apt-get install git libqt4-dev libopencv-dev libopencv-highgui-dev python3-dev python3-dbg qtcreator libqscintilla2-dev python3-scipy-dbg python3-sphinx doxygen-gui libglew-dev cmake-gui qt4-dev-tools libcv-dev libhighgui-dev
-
 
 
 Recommended folder structure
@@ -100,6 +102,11 @@ If you don't want to have some of the plugins, simply uncheck them in CMake unde
 
 The plugins and designerPlugins will finally be compiled and then copy their resulting library files into the **designer** and **plugins** subfolder of |itom|. Restart |itom| and you the plugin will be loaded.
 
-        
+
+Bash-based build
+-----------------
+
+You can also get all packages, download the sources and build itom including all plugins via the bash or command line. Instructions for Debian or Ubuntu systems having Qt5 packages in the respository
+can be read at the :ref:`Raspberry Pi <build-raspi>` build instruction page.  
     
 
