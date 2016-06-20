@@ -75,7 +75,7 @@ Execute
 
 Run the file **qitom** in the *build/itom* directory. Please give itom the rights to write files in the directory, e.g. the settings.ini file.
 
-.. image:: images/screenshot_raspberry_pi.png
+.. figure:: images/screenshot_raspberry_pi.png
     :scale: 100%
     :align: center
 
