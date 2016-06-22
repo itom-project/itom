@@ -152,8 +152,14 @@ namespace ito
         //! returns whether Param contains a valid type (true) or is an empty parameter (false, type == 0). The default tParam-constructor is always an invalid tParam.
         inline bool isValid(void) const { return m_type != 0; }
 
-        //! returns parameter type
-        inline uint32 getType() const { return m_type & paramTypeMask; }
+        //! returns parameter type (autosave flag and other flags (like in, out or readonly) are only included if filterFlags is set false)
+        inline uint32 getType(bool filterFlags = true) const
+        {
+            if (filterFlags)
+                return m_type & paramTypeMask;
+            else
+                return m_type;
+        }
 
         //! returns parameter flags
         inline uint32 getFlags(void) const { return m_type & paramFlagMask; }
