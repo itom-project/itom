@@ -269,6 +269,10 @@ htmlhelp_basename = 'itom_doc'
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
 #texinfo_show_urls = 'footnote'
 
+# -----------------------------------------------------------------------------
+# Warnings
+# -----------------------------------------------------------------------------
+suppress_warnings = ["app.add_directive", "app.add_role", "app.add_node"]
 
 
 # -----------------------------------------------------------------------------
