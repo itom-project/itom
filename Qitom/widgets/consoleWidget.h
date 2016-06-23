@@ -28,6 +28,7 @@
 #include "common/sharedStructures.h"
 #include "common/sharedStructuresQt.h"
 #include "../python/qDebugStream.h"
+#include "../global.h"
 
 #include "abstractPyScintillaWidget.h"
 

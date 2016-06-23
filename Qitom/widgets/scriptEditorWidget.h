@@ -26,6 +26,7 @@
 #include "../models/breakPointModel.h"
 
 #include "abstractPyScintillaWidget.h"
+#include "../global.h"
 
 #include <qfilesystemwatcher.h>
 #include <qmutex.h>
