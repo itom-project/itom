@@ -63,16 +63,6 @@ void WidgetPropEditorGeneral::readSettings()
     ui.radioFoldingSquares->setChecked(foldStyle == "squares");
     ui.radioFoldingSquaresTree->setChecked(foldStyle == "squares_tree");
     ui.radioFoldingNone->setChecked(foldStyle == "none");
-
-    // Syntax Checker
-    ui.groupSyntaxCheck->setChecked(settings.value("syntaxChecker", true).toBool());
-    ui.checkIncludeItom->setChecked(settings.value("syntaxIncludeItom", true).toBool());
-    ui.spinSyntaxInterval->setValue(settings.value("syntaxInterval", 1.00).toDouble());
-
-    // Class Navigator
-    ui.groupClassNavigator->setChecked(settings.value("classNavigator", true).toBool());
-    ui.checkActiveClassNavigatorTimer->setChecked(settings.value("classNavigatorTimerActive", true).toBool());
-    ui.spinClassNavigatorInterval->setValue(settings.value("classNavigatorInterval", 2.00).toDouble());
     
     // Indentation
     ui.checkAutoIndent->setChecked(settings.value("autoIndent", true).toBool());
@@ -89,16 +79,21 @@ void WidgetPropEditorGeneral::readSettings()
     ui.checkIndentShowGuides->setChecked(settings.value("showIndentationGuides", true).toBool());
     ui.checkShowWhitespace->setChecked(settings.value("showWhitespace", true).toBool());
 
+    //Extends
+    ui.spinExtraAscent->setValue(settings.value("extraAscent", 0).toInt());
+    ui.spinExtraDescent->setValue(settings.value("extraDescent", 0).toInt());
+
     settings.endGroup();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorGeneral::writeSettings()
 {
-    // EOL-Mode
+    
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("PyScintilla");
-
+    
+    // EOL-Mode
     if (ui.radioEOL1->isChecked())
     {
         settings.setValue("eolMode", "EolWindows");
@@ -138,16 +133,6 @@ void WidgetPropEditorGeneral::writeSettings()
             settings.setValue("foldStyle", "none");
     }
 
-    // Syntax Checker
-    settings.setValue("syntaxInterval", ui.spinSyntaxInterval->value());
-    settings.setValue("syntaxChecker", ui.groupSyntaxCheck->isChecked());
-    settings.setValue("syntaxIncludeItom", ui.checkIncludeItom->isChecked());
-
-    // Class Navigator
-    settings.setValue("classNavigator", ui.groupClassNavigator->isChecked());
-    settings.setValue("classNavigatorTimerActive", ui.checkActiveClassNavigatorTimer->isChecked());
-    settings.setValue("classNavigatorInterval", ui.spinClassNavigatorInterval->value());
-
     // Indentation
     settings.setValue("autoIndent", ui.checkAutoIndent->isChecked());
     settings.setValue("indentationUseTabs", ui.checkIndentUseTabs->isChecked());
@@ -175,6 +160,10 @@ void WidgetPropEditorGeneral::writeSettings()
     {
         settings.setValue("indentationWarning", "Tabs");
     }
+
+    //Extends
+    settings.setValue("extraAscent", ui.spinExtraAscent->value());
+    settings.setValue("extraDescent", ui.spinExtraDescent->value());
 
     settings.endGroup();
 }

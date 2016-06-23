@@ -100,6 +100,10 @@ void AbstractPyScintillaWidget::loadSettings()
     setIndentationWidth(settings.value("indentationWidth", 4).toInt());          //numbers of whitespaces
     setIndentationGuides(settings.value("showIndentationGuides", true).toBool());
 
+    //spacing above and below each line
+    setExtraAscent(settings.value("extraAscent", 0).toInt());
+    setExtraDescent(settings.value("extraDescent", 0).toInt());
+
     QString indentationWarning = settings.value("indentationWarning", "Inconsistent").toString();
 
     if (eolMode == "Inconsistent")

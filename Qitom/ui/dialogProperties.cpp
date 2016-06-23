@@ -31,6 +31,7 @@
 #include "widgetPropEditorStyles.h"
 #include "widgetPropEditorAutoCompletion.h"
 #include "widgetPropEditorGeneral.h"
+#include "widgetPropEditorScripts.h"
 #include "widgetPropGeneralLanguage.h"
 #include "widgetPropPythonStartup.h"
 #include "widgetPropPythonGeneral.h"
@@ -148,6 +149,7 @@ void DialogProperties::initPages()
 
     m_pages["04_editor"] = PropertyPage(tr("Editor"), tr("Editor - please choose subpage"), "04_editor", NULL, QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/general"] = PropertyPage(tr("General"), tr("Editor - General"), "04_editor/general", new WidgetPropEditorGeneral(), QIcon(":/application/icons/preferences-general.png"));
+    m_pages["04_editor/scripts"] = PropertyPage(tr("Script Editors"), tr("Editor - scripts"), "04_editor/scripts", new WidgetPropEditorScripts(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/api"] = PropertyPage(tr("API"), tr("Editor - API files"), "04_editor/api", new WidgetPropEditorAPI(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/calltips"] = PropertyPage(tr("Calltips"), tr("Editor - calltips"), "04_editor/calltips", new WidgetPropEditorCalltips(), QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/autocompletion"] = PropertyPage(tr("Auto Completion"), tr("Editor - auto completion"), "04_editor/autocompletion", new WidgetPropEditorAutoCompletion(), QIcon(":/application/icons/preferences-general.png"));
