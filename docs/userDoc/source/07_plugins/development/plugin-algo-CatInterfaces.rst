@@ -181,7 +181,7 @@ Filters fitting to this interface provide the functionality to export a pointClo
 +--------------------------+----------------------+----------------------------------------------------------+--------------------------------------------------+
 | Parameters               | Type                 | Description                                              | Further limitations (meta information)           |
 +==========================+======================+==========================================================+==================================================+
-| #1 dataObject            | PointCloudPtr, In    | PointCloud that should be exported                       | None                                             |
+| #1 pointCloud            | PointCloudPtr, In    | PointCloud that should be exported                       | None                                             |
 +--------------------------+----------------------+----------------------------------------------------------+--------------------------------------------------+
 | #2 filename              | String, In           | absolute filename of the file                            | None                                             |
 +--------------------------+----------------------+----------------------------------------------------------+--------------------------------------------------+
@@ -221,7 +221,7 @@ Filters fitting to this interface provide the functionality to read a certain fi
 +--------------------------+------------------------+----------------------------------------------------------+--------------------------------------------------+
 | Parameters               | Type                   | Description                                              | Further limitations (meta information)           |
 +==========================+========================+==========================================================+==================================================+
-| #1 pointCloud            | PolygonMeshPtr, In, Out| PolygonMesh, where the file is loaded to                 | None                                             |
+| #1 polygonMesh           | PolygonMeshPtr, In, Out| PolygonMesh, where the file is loaded to                 | None                                             |
 +--------------------------+------------------------+----------------------------------------------------------+--------------------------------------------------+
 | #2 filename              | String, In             | absolute filename of the file to load                    | None                                             |
 +--------------------------+------------------------+----------------------------------------------------------+--------------------------------------------------+
