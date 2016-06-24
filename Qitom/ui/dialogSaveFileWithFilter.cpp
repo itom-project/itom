@@ -32,20 +32,26 @@
 
 namespace ito {
 
-DialogSaveFileWithFilter::DialogSaveFileWithFilter(const QString &filename, const ito::AddInAlgo::FilterDef *filter, QVector<ito::ParamBase> &autoMand, QVector<ito::ParamBase> &autoOut, QVector<ito::Param> &userMand, QVector<ito::Param> &userOpt, QWidget *parent)
-    :
+DialogSaveFileWithFilter::DialogSaveFileWithFilter(const QString &filename, const ito::AddInAlgo::FilterDef *filter, QVector<ito::ParamBase> &autoMand, QVector<ito::ParamBase> &autoOut, QVector<ito::Param> &userMand, QVector<ito::Param> &userOpt, const bool showFilename, QWidget *parent) :
     AbstractFilterDialog(autoMand,autoOut,parent),
     m_pMandParser(NULL),
     m_pOptParser(NULL),
     m_filter(NULL)
 {
     ui.setupUi(this);
-
-    QString m_filename = filename;
-    m_filter = filter;
-
     QFileInfo info(filename);
-    ui.lblFilename->setText( info.fileName() );
+
+    if (showFilename)
+    {
+        ui.lblFilename->setText(info.fileName());
+    }
+    else
+    {
+        ui.lblFilename->setVisible(false);
+        ui.lblFilenameLabel->setVisible(false);
+    }
+
+    m_filter = filter;
 
     QFileIconProvider *provider = new QFileIconProvider();
     QIcon tempIcon = provider->icon(info);

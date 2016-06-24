@@ -1029,7 +1029,7 @@ end:
 
                     if (userMand.size() > 0 || userOpt.size() > 0)
                     {
-                        DialogSaveFileWithFilter *dialog = new DialogSaveFileWithFilter(filename, filter, autoMand, autoOut, userMand, userOpt, parent);
+                        DialogSaveFileWithFilter *dialog = new DialogSaveFileWithFilter(filename, filter, autoMand, autoOut, userMand, userOpt, true, parent);
                         if (dialog->exec() == QDialog::Accepted)
                         {
                             QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));

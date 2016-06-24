@@ -446,7 +446,7 @@ void PathLineEdit::browse()
       {
       path = QFileDialog::getOpenFileName(
         this,
-        QString("Open a file"),
+        QString(tr("Open a file")),
         this->currentPath().isEmpty()? PathLineEditPrivate::sCurrentDirectory :
 	                               this->currentPath(),
         d->NameFilters.join(";;"),
@@ -462,7 +462,7 @@ void PathLineEdit::browse()
     {
     path = QFileDialog::getExistingDirectory(
       this,
-      QString("Select a directory..."),
+      QString(tr("Select a directory...")),
       this->currentPath().isEmpty() ? PathLineEditPrivate::sCurrentDirectory :
                                       this->currentPath(),
 #ifdef USE_QFILEDIALOG_OPTIONS

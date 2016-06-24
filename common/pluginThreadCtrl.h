@@ -189,6 +189,10 @@ public:
     ito::RetVal acquire(const int trigger = 0, int timeOutMS = PLUGINWAIT);  /*!< Trigger an exposure and return before image is done*/
     ito::RetVal getVal(ito::DataObject &dObj, int timeOutMS = PLUGINWAIT);   /*!< Get a shallow-copy of the dataObject */
     ito::RetVal copyVal(ito::DataObject &dObj, int timeOutMS = PLUGINWAIT);  /*!< Get a deep-copy of the dataObject */
+    ito::RetVal enableAutoGrabbing(int timeOutMS = PLUGINWAIT);              /*!< Enables the timer for auto grabbing */
+    ito::RetVal disableAutoGrabbing(int timeOutMS = PLUGINWAIT);             /*!< Disables the timer for auto grabbing */
+    ito::RetVal setAutoGrabbingInterval(QSharedPointer<int> interval, int timeOutMS = PLUGINWAIT); /*!< Sets a new interval for the auto-grabbing timer (in ms). */
+    bool getAutoGrabbing();                                                  /*!< Returns the state of m_autoGrabbingEnabled; consider this method as final */
 
     ito::RetVal getImageParams(int &bpp, int &sizex, int &sizey, int timeOutMS = PLUGINWAIT); /*!< Combined function to get the most important camera features */
 };

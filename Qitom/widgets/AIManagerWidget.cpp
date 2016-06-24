@@ -24,6 +24,7 @@
 
 #include "../organizer/addInManager.h"
 #include "../ui/dialogNewPluginInstance.h"
+#include "../ui/dialogSnapshot.h"
 
 #include "../global.h"
 #include "../AppManagement.h"
@@ -104,7 +105,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, const QString &objName, Q
     connect(m_pActSnapDialog, SIGNAL(triggered()), this, SLOT(mnuSnapDialog()));
     m_pContextMenu->addAction(m_pActSnapDialog);
 
-    m_pActAutoGrabbing = new QAction(QIcon(":/measurement/icons/itom_icons/snap.png"), tr("Auto Grabbing"), this);
+    m_pActAutoGrabbing = new QAction(QIcon(":/application/icons/shell.png"), tr("Auto Grabbing"), this);
     m_pActAutoGrabbing->setCheckable(true);
     connect(m_pActAutoGrabbing, SIGNAL(triggered()), this, SLOT(mnuToggleAutoGrabbing()));
     m_pContextMenu->addAction(m_pActAutoGrabbing);
@@ -383,7 +384,7 @@ void AIManagerWidget::updateActions()
                     m_pActCloseAllInstances->setEnabled(indexChild.isValid());
                 }
 
-                m_pActSnapDialog->setEnabled(false);  // TODO
+//                m_pActSnapDialog->setEnabled(false);  // TODO
                 m_pActInfo->setEnabled(true);
             }
         }
@@ -914,7 +915,7 @@ void AIManagerWidget::mnuShowLiveImage()
             {
                 QMessageBox msgBox;
                 msgBox.setText(QLatin1String(retval.errorMessage()));
-                msgBox.setIcon(QMessageBox::Warning);
+                msgBox.setIcon(QMessageBox::Critical);
                 msgBox.exec();
             }
             else if (retval.containsWarning())
@@ -929,7 +930,7 @@ void AIManagerWidget::mnuShowLiveImage()
         {
             QMessageBox msgBox;
             msgBox.setText(tr("This instance is no grabber. Therefore no live image is available."));
-            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.setIcon(QMessageBox::Critical);
             msgBox.exec();
         }
     }
@@ -949,19 +950,27 @@ void AIManagerWidget::mnuSnapDialog()
         ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
         if (ais && ais->inherits("ito::AddInGrabber"))
         {
+            ito::RetVal retval = ito::retOk;
+            QPointer<ito::AddInDataIO> aisPointer((ito::AddInDataIO*)ais);
+            DialogSnapshot *sanpDialog = new DialogSnapshot(this, aisPointer, retval);
+            sanpDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+            sanpDialog->show();
+//            delete sanpDialog;
+//            sanpDialog = NULL;
+
 /*            UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
             QString defaultPlotClassName;
             QSharedPointer<unsigned int> objectID(new unsigned int);
             QSharedPointer<unsigned int> figHandle(new unsigned int);
             *figHandle = 0; //new figure will be requested
 
-            ito::RetVal retval = uiOrg->figureLiveImage((ito::AddInDataIO*)ais, figHandle, objectID, 0, 0, defaultPlotClassName, QVariantMap(), NULL);
+            ito::RetVal retval = uiOrg->figureLiveImage((ito::AddInDataIO*)ais, figHandle, objectID, 0, 0, defaultPlotClassName, QVariantMap(), NULL);*/
 
             if (retval.containsError())
             {
                 QMessageBox msgBox;
                 msgBox.setText(QLatin1String(retval.errorMessage()));
-                msgBox.setIcon(QMessageBox::Warning);
+                msgBox.setIcon(QMessageBox::Critical);
                 msgBox.exec();
             }
             else if (retval.containsWarning())
@@ -970,13 +979,13 @@ void AIManagerWidget::mnuSnapDialog()
                 msgBox.setText(QLatin1String(retval.errorMessage()));
                 msgBox.setIcon(QMessageBox::Warning);
                 msgBox.exec();
-            }*/
+            }
         }
         else
         {
             QMessageBox msgBox;
             msgBox.setText(tr("This instance is no grabber. Therefore no snap dialog is available."));
-            msgBox.setIcon(QMessageBox::Warning);
+            msgBox.setIcon(QMessageBox::Critical);
             msgBox.exec();
         }
     }

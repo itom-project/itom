@@ -362,6 +362,103 @@ ito::RetVal DataIOThreadCtrl::acquire(const int trigger /*= 0*/, int timeOutMS /
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
+\detail The getAutoGrabbing function is used to get the auto grabbing setting.
+
+\return retOk or retError
+\sa DataIOThreadCtrl::stopDevice, DataIOThreadCtrl::acquire, DataIOThreadCtrl::startDevice, DataIOThreadCtrl::copyVal
+*/
+bool DataIOThreadCtrl::getAutoGrabbing()
+{
+    if (!m_pPlugin)
+    {
+        return false;
+    }
+    else
+    {
+        
+        return static_cast<ito::AddInDataIO*>(m_pPlugin)->getAutoGrabbing();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!
+\detail Enables the timer for auto grabbing (live image), if any live image has signed on.
+
+\param [in] timeOutMS   TimeOut for the semaphore-wait
+
+\return retOk or retError
+\sa DataIOThreadCtrl::stopDevice, DataIOThreadCtrl::startDevice, DataIOThreadCtrl::getVal, DataIOThreadCtrl::copyVal
+*/
+ito::RetVal DataIOThreadCtrl::enableAutoGrabbing(int timeOutMS /*= PLUGINWAIT*/)
+{
+    if (!m_pPlugin)
+    {
+        return ito::RetVal(ito::retError, 0, "no camera available");
+    }
+
+    m_semaphoreLocker = new ItomSharedSemaphore();
+    if (!QMetaObject::invokeMethod(m_pPlugin, "enableAutoGrabbing", Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
+    {
+        return ito::RetVal(ito::retError, 0, "error invoking enableAutoGrabbing");
+    }
+
+    return waitForSemaphore(timeOutMS);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!
+\detail Disables the timer for auto grabbing (live image).
+
+\param [in] timeOutMS   TimeOut for the semaphore-wait
+
+\return retOk or retError
+\sa DataIOThreadCtrl::stopDevice, DataIOThreadCtrl::startDevice, DataIOThreadCtrl::getVal, DataIOThreadCtrl::copyVal
+*/
+ito::RetVal DataIOThreadCtrl::disableAutoGrabbing(int timeOutMS /*= PLUGINWAIT*/)
+{
+    if (!m_pPlugin)
+    {
+        return ito::RetVal(ito::retError, 0, "no camera available");
+    }
+
+    m_semaphoreLocker = new ItomSharedSemaphore();
+    if (!QMetaObject::invokeMethod(m_pPlugin, "disableAutoGrabbing", Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
+    {
+        return ito::RetVal(ito::retError, 0, "error invoking disableAutoGrabbing");
+    }
+
+    return waitForSemaphore(timeOutMS);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!
+\detail Sets a new interval for the auto-grabbing timer (in ms). If interval <= 0 is passed, nothing is changed, 
+        but the current interval is returned. This method does not enable or disable the timer.
+
+\param [in] interval    Timer (in ms)
+\param [in] timeOutMS   TimeOut for the semaphore-wait
+
+\return retOk or retError
+\sa DataIOThreadCtrl::stopDevice, DataIOThreadCtrl::startDevice, DataIOThreadCtrl::getVal, DataIOThreadCtrl::copyVal
+*/
+ito::RetVal DataIOThreadCtrl::setAutoGrabbingInterval(QSharedPointer<int> interval, int timeOutMS /*= PLUGINWAIT*/)
+{
+    if (!m_pPlugin)
+    {
+        return ito::RetVal(ito::retError, 0, "no camera available");
+    }
+
+    m_semaphoreLocker = new ItomSharedSemaphore();
+    if (!QMetaObject::invokeMethod(m_pPlugin, "setAutoGrabbingInterval", Q_ARG(QSharedPointer<int>, interval), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
+    {
+        return ito::RetVal(ito::retError, 0, "error invoking setAutoGrabbingInterval");
+    }
+
+    return waitForSemaphore(timeOutMS);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*!
     \detail The getVal function is used to wait until an exposure is finished. Than it gives a shallow copy of the inner dataObject within the grabber to the dObj-argument.
             Before the getVal()-function can be used an acquire() is neccessary.
             If the content of dObj is not deepcopied to another object, the data is lost after the next acquire() - getVal() combination and overwritten by the newly captured image.

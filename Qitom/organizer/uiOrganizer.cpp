@@ -745,6 +745,8 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
 //----------------------------------------------------------------------------------------------------------------------------------
 void UiOrganizer::setApiPointersToWidgetAndChildren(QWidget *widget)
 {
+    //this method is also implemented in designerWidgetOrganizer!
+
     if (widget)
     {
         if (widget->inherits("ito::AbstractFigure"))

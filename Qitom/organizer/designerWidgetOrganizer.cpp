@@ -166,7 +166,7 @@ RetVal DesignerWidgetOrganizer::scanDesignerPlugins()
 
                 settings.beginGroup("Language");
                 QString language = settings.value("language", "en").toString();
-                QByteArray codec =  settings.value("codec", "UTF-8" ).toByteArray();
+                QByteArray codec =  settings.value("codec", "UTF-8").toByteArray();
                 settings.endGroup();
 
                 QFileInfo fileInfo(absolutePluginPath);
@@ -602,8 +602,16 @@ QWidget* DesignerWidgetOrganizer::createWidget(const QString &className, QWidget
     {
         //qDebug() << "create instance\n";
         ito::AbstractItomDesignerPlugin *fac = (ito::AbstractItomDesignerPlugin*)(factory->instance());
-        return fac->createWidgetWithMode(winMode, parentWidget);
+        QWidget *w = fac->createWidgetWithMode(winMode, parentWidget);
+        if (w)
+        {
+            //if w is a plot (hence, inherited from ito::AbstractFigure), send the API function pointers to it.
+            setApiPointersToWidgetAndChildren(w);
+        }
+
+        return w;
     }
+
     return NULL;
 }
 
@@ -785,5 +793,33 @@ QStringList DesignerWidgetOrganizer::getPlotType(const int plotType)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void DesignerWidgetOrganizer::setApiPointersToWidgetAndChildren(QWidget *widget)
+{
+    //this method is also implemented in uiOrganizer!
+
+    if (widget)
+    {
+        if (widget->inherits("ito::AbstractFigure"))
+        {
+            ((ito::AbstractFigure*)widget)->setApiFunctionGraphBasePtr(ITOM_API_FUNCS_GRAPH);
+            ((ito::AbstractFigure*)widget)->setApiFunctionBasePtr(ITOM_API_FUNCS);
+
+            //the event User+123 is emitted by UiOrganizer, if the API has been prepared and can
+            //transmitted to the plugin. This assignment cannot be done directly, since 
+            //the array ITOM_API_FUNCS is in another scope if called from itom. By sending an
+            //event from itom to the plugin, this method is called and ITOM_API_FUNCS is in the
+            //right scope. The methods above only set the pointers in the "wrong"-itom-scope (which
+            //also is necessary if any methods of the plugin are directly called from itom).
+            QEvent evt((QEvent::Type)(QEvent::User + 123));
+            QCoreApplication::sendEvent(widget, &evt);
+        }
+
+        QObjectList list = widget->children();
+        foreach(QObject *obj, list)
+        {
+            setApiPointersToWidgetAndChildren(qobject_cast<QWidget*>(obj));
+        }
+    }
+}
 
 } //end namespace ito

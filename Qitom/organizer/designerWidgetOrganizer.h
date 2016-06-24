@@ -117,6 +117,7 @@ public:
 
 protected:
     RetVal scanDesignerPlugins();
+    void setApiPointersToWidgetAndChildren(QWidget *widget);
 
 private:
     QList<FigurePlugin> m_figurePlugins;

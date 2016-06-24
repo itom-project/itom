@@ -38,7 +38,7 @@ class DialogSaveFileWithFilter : public AbstractFilterDialog
     Q_OBJECT
 
 public:
-    DialogSaveFileWithFilter(const QString &filename, const ito::AddInAlgo::FilterDef *filter, QVector<ito::ParamBase> &autoMand, QVector<ito::ParamBase> &autoOut, QVector<ito::Param> &userMand, QVector<ito::Param> &userOpt, QWidget *parent = NULL);
+    DialogSaveFileWithFilter(const QString &filename, const ito::AddInAlgo::FilterDef *filter, QVector<ito::ParamBase> &autoMand, QVector<ito::ParamBase> &autoOut, QVector<ito::Param> &userMand, QVector<ito::Param> &userOpt, const bool showFilename, QWidget *parent = NULL);
     ~DialogSaveFileWithFilter() {  };
 
     void getParameters(QVector<ito::ParamBase> &paramsMand, QVector<ito::ParamBase> &paramsOpt)
@@ -52,7 +52,6 @@ protected:
 
     ParamInputParser *m_pMandParser;
     ParamInputParser *m_pOptParser;
-    QString m_filename;
     const ito::AddInAlgo::FilterDef *m_filter;
 
 
