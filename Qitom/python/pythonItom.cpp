@@ -2957,6 +2957,8 @@ See Also \n\
 loadMatlabMat");
 PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 {
+    //if any arguments are changed in this method, consider to also change PythonEngine::saveMatlabVariables and PythonEngine::saveMatlabSingleParam.
+
     PyObject* scipyIoModule = PyImport_ImportModule("scipy.io"); // new reference
 
     if (scipyIoModule == NULL)

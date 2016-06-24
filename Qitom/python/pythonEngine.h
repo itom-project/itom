@@ -343,8 +343,10 @@ public slots:
     bool renameVariable(bool globalNotLocal, const QString &oldFullItemName, QString newKey, ItomSharedSemaphore *semaphore = NULL);
     bool deleteVariable(bool globalNotLocal, const QStringList &fullItemNames, ItomSharedSemaphore *semaphore = NULL);
     ito::RetVal pickleVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore = NULL);
+    ito::RetVal pickleSingleParam(QString filename, QSharedPointer<ito::Param> value, const QString &valueName, ItomSharedSemaphore *semaphore = NULL);
     ito::RetVal unpickleVariables(bool globalNotLocal, QString filename, ItomSharedSemaphore *semaphore = NULL);
     ito::RetVal saveMatlabVariables(bool globalNotLocal, QString filename, QStringList varNames, ItomSharedSemaphore *semaphore = NULL);
+    ito::RetVal saveMatlabSingleParam(QString filename, QSharedPointer<ito::Param> value, const QString &valueName, ItomSharedSemaphore *semaphore = NULL);
     ito::RetVal loadMatlabVariables(bool globalNotLocal, QString filename, ItomSharedSemaphore *semaphore = NULL);
     ito::RetVal registerAddInInstance(QString varname, ito::AddInBase *instance, ItomSharedSemaphore *semaphore = NULL);
     ito::RetVal getSysModules(QSharedPointer<QStringList> modNames, QSharedPointer<QStringList> modFilenames, QSharedPointer<IntList> modTypes, ItomSharedSemaphore *semaphore = NULL);

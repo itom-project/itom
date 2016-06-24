@@ -4191,7 +4191,6 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
             PyGILState_STATE gstate = PyGILState_Ensure();
 
             //build dictionary, which should be pickled
-            PyObject* pyRet;
             PyObject* pArgs = PyTuple_New(3);
             PyTuple_SetItem(pArgs,0, PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL));
             
@@ -4219,11 +4218,12 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
 
             PyTuple_SetItem(pArgs,1,valueList);
             PyTuple_SetItem(pArgs,2,keyList);
-            pyRet = ito::PythonItom::PySaveMatlabMat(NULL, pArgs);
+            PyObject* pyRet = ito::PythonItom::PySaveMatlabMat(NULL, pArgs);
 
             retVal += checkForPyExceptions();
 
             Py_XDECREF(pArgs);
+            Py_XDECREF(pyRet);
 
             PyGILState_Release(gstate);
         }
@@ -4240,6 +4240,137 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
     }
 
     if (semaphore != NULL) 
+    {
+        semaphore->returnValue = retVal;
+        semaphore->release();
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/** save a single DataObject, PointCloud or PolygonMesh to a Matlab *.mat file using the python module 'scipy'.
+*
+*  Invoke this method by another thread (e.g. any GUI) to save a single object to an 'mat' file.
+*
+*  \param filename is the filename of the mat file
+*  \param value is the given DataObject, PointCloud or PolygonMesh in terms of ito::Param
+*  \param valueName is the name of the variable in the mat file
+*  \param semaphore is the control semaphore for an asychronous call.
+*/
+ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer<ito::Param> value, const QString &valueName, ItomSharedSemaphore *semaphore)
+{
+    ItomSharedSemaphoreLocker locker(semaphore);
+
+    tPythonState oldState = pythonState;
+    RetVal retVal;
+    PyObject* dict = NULL;
+
+    if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    {
+        retVal += ito::RetVal(retError, 0, "it is not allowed to pickle a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy");
+    }
+    else
+    {
+        if (pythonState == pyStateIdle)
+        {
+            pythonStateTransition(pyTransBeginRun);
+        }
+        else if (pythonState == pyStateDebuggingWaiting)
+        {
+            pythonStateTransition(pyTransDebugExecCmdBegin);
+        }
+
+        PyObject *item = NULL;
+
+        if (value.isNull())
+        {
+            retVal += ito::RetVal(retError, 0, "Given value is empty. No save to matlab possible.");
+        }
+        else
+        {
+            switch (value->getType())
+            {
+            case (ito::ParamBase::DObjPtr & paramTypeMask) :
+            {
+                const ito::DataObject *obj = value->getVal<const ito::DataObject*>();
+                if (obj)
+                {
+                    item = PythonQtConversion::DataObjectToPyObject(*obj);
+                }
+                else
+                {
+                    retVal += ito::RetVal(retError, 0, "could not save dataObject since it is not available.");
+                }
+            }
+                                                           break;
+#if ITOM_POINTCLOUDLIBRARY > 0 
+            case (ito::ParamBase::PointCloudPtr & paramTypeMask) :
+            {
+                const ito::PCLPointCloud *cloud = value->getVal<const ito::PCLPointCloud*>();
+                if (cloud)
+                {
+                    item = PythonQtConversion::PCLPointCloudToPyObject(*cloud);
+                }
+                else
+                {
+                    retVal += ito::RetVal(retError, 0, "could not save dataObject since it is not available.");
+                }
+            }
+                                                                 break;
+
+            case (ito::ParamBase::PolygonMeshPtr & paramTypeMask) :
+            {
+                const ito::PCLPolygonMesh *mesh = value->getVal<const ito::PCLPolygonMesh*>();
+                if (mesh)
+                {
+                    item = PythonQtConversion::PCLPolygonMeshToPyObject(*mesh);
+                }
+                else
+                {
+                    retVal += ito::RetVal(retError, 0, "could not save dataObject since it is not available.");
+                }
+            }
+                                                                  break;
+#endif
+            default:
+                retVal += ito::RetVal(retError, 0, "unsupported data type to save to matlab.");
+            }
+
+            if (item == NULL)
+            {
+                retVal += ito::RetVal(retError, 0, "error converting object to Python object. Save to matlab not possible.");
+            }
+        }
+
+        if (!retVal.containsError())
+        {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
+            PyObject* pArgs = PyTuple_New(3);
+            PyTuple_SetItem(pArgs, 0, PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL)); //steals ref.
+            PyTuple_SetItem(pArgs, 1, item); //steals ref.
+            PyTuple_SetItem(pArgs, 2, PyUnicode_DecodeLatin1(valueName.toLatin1().data(), valueName.length(), NULL)); //steals ref.
+            PyObject *pyRet = ito::PythonItom::PySaveMatlabMat(NULL, pArgs);
+            retVal += checkForPyExceptions();
+            Py_XDECREF(pyRet);
+            Py_XDECREF(pArgs);
+
+            PyGILState_Release(gstate);
+        }
+
+
+        if (oldState == pyStateIdle)
+        {
+            pythonStateTransition(pyTransEndRun);
+        }
+        else if (oldState == pyStateDebuggingWaiting)
+        {
+            pythonStateTransition(pyTransDebugExecCmdEnd);
+        }
+    }
+
+    if (semaphore != NULL)
     {
         semaphore->returnValue = retVal;
         semaphore->release();
@@ -5105,6 +5236,138 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
         }
 
         PyGILState_Release(gstate);
+
+
+        if (oldState == pyStateIdle)
+        {
+            pythonStateTransition(pyTransEndRun);
+        }
+        else if (oldState == pyStateDebuggingWaiting)
+        {
+            pythonStateTransition(pyTransDebugExecCmdEnd);
+        }
+    }
+
+    if (semaphore != NULL)
+    {
+        semaphore->returnValue = retVal;
+        semaphore->release();
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/** save a single DataObject, PointCloud or PolygonMesh to an *.idc file using the python module 'pickle'.
+*
+*  Invoke this method by another thread (e.g. any GUI) to save a single object to an 'idc' file.
+*  
+*  \param filename is the filename of the idc file
+*  \param value is the given DataObject, PointCloud or PolygonMesh in terms of ito::Param
+*  \param valueName is the name of the variable in the idc file
+*  \param semaphore is the control semaphore for an asychronous call.
+*/
+ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito::Param> value, const QString &valueName, ItomSharedSemaphore *semaphore)
+{
+    ItomSharedSemaphoreLocker locker(semaphore);
+
+    tPythonState oldState = pythonState;
+    RetVal retVal;
+    PyObject* dict = NULL;
+
+    if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    {
+        retVal += ito::RetVal(retError, 0, "it is not allowed to pickle a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy");
+    }
+    else
+    {
+        if (pythonState == pyStateIdle)
+        {
+            pythonStateTransition(pyTransBeginRun);
+        }
+        else if (pythonState == pyStateDebuggingWaiting)
+        {
+            pythonStateTransition(pyTransDebugExecCmdBegin);
+        }
+
+        PyObject *item = NULL;
+
+        if (value.isNull())
+        {
+            retVal += ito::RetVal(retError, 0, "could not pickle since value is empty.");
+        }
+        else
+        {
+            switch (value->getType())
+            {
+            case (ito::ParamBase::DObjPtr & paramTypeMask) :
+            {
+                const ito::DataObject *obj = value->getVal<const ito::DataObject*>();
+                if (obj)
+                {
+                    item = PythonQtConversion::DataObjectToPyObject(*obj);
+                }
+                else
+                {
+                    retVal += ito::RetVal(retError, 0, "could not pickle dataObject since it is not available.");
+                }
+            }
+            break;
+#if ITOM_POINTCLOUDLIBRARY > 0 
+            case (ito::ParamBase::PointCloudPtr & paramTypeMask) :
+            {
+                const ito::PCLPointCloud *cloud = value->getVal<const ito::PCLPointCloud*>();
+                if (cloud)
+                {
+                    item = PythonQtConversion::PCLPointCloudToPyObject(*cloud);
+                }
+                else
+                {
+                    retVal += ito::RetVal(retError, 0, "could not pickle dataObject since it is not available.");
+                }
+            }
+            break;
+
+            case (ito::ParamBase::PolygonMeshPtr & paramTypeMask) :
+            {
+                const ito::PCLPolygonMesh *mesh = value->getVal<const ito::PCLPolygonMesh*>();
+                if (mesh)
+                {
+                    item = PythonQtConversion::PCLPolygonMeshToPyObject(*mesh);
+                }
+                else
+                {
+                    retVal += ito::RetVal(retError, 0, "could not pickle dataObject since it is not available.");
+                }
+            }
+            break;
+#endif
+            default:
+                retVal += ito::RetVal(retError, 0, "unsupported data type to pickle.");
+            }
+
+            if (item == NULL)
+            {
+                retVal += ito::RetVal(retError, 0, "error converting object to Python object. No pickle possible.");
+            }
+        }
+
+        if (!retVal.containsError())
+        {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+
+            //build dictionary, which should be pickled
+            PyObject* exportDict = PyDict_New();
+            PyDict_SetItemString(exportDict, valueName.toLatin1().data(), item);
+
+            retVal += pickleDictionary(exportDict, filename);
+
+            PyDict_Clear(exportDict);
+            Py_DECREF(exportDict);
+            exportDict = NULL;
+
+            PyGILState_Release(gstate);
+        }
 
 
         if (oldState == pyStateIdle)
