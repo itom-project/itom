@@ -109,6 +109,7 @@ MainApplication::MainApplication(tGuiType guiType) :
     m_mainWin(NULL), 
     m_paletteOrganizer(NULL),
     m_uiOrganizer(NULL), 
+    m_designerWidgetOrganizer(NULL),
     m_processOrganizer(NULL),
     m_splashScreen(NULL)
 {

@@ -50,6 +50,7 @@
 #include <qfiledialog.h>
 #include <qcoreapplication.h>
 #include <qpluginloader.h>
+#include <QtUiTools/quiloader.h>
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 5, 0))
 #include <QtDesigner/QDesignerCustomWidgetInterface>
@@ -114,7 +115,9 @@ unsigned int UiOrganizer::autoIncObjectCounter = 1;
     this is done if the first user interface becomes being organized by this class.
 */
 UiOrganizer::UiOrganizer(ito::RetVal &retval) :
-    m_garbageCollectorTimer(0)
+    m_garbageCollectorTimer(0),
+    m_widgetWrapper(NULL),
+    m_pUiLoader(NULL)
 {
     m_dialogList.clear();
     m_objectList.clear();
@@ -130,6 +133,8 @@ UiOrganizer::UiOrganizer(ito::RetVal &retval) :
     {
         retval += ito::RetVal(ito::retWarning, 0, "The user defined event id 123 could not been registered for use in UiOrganizer since it is already in use.");
     }
+
+    m_pUiLoader = new QUiLoader(this);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -140,6 +145,8 @@ UiOrganizer::UiOrganizer(ito::RetVal &retval) :
 */
 UiOrganizer::~UiOrganizer()
 {
+    DELETE_AND_SET_NULL(m_pUiLoader);
+
     QHash<unsigned int, UiContainerItem>::const_iterator i = m_dialogList.constBegin();
     while (i != m_dialogList.constEnd())
     {
@@ -706,8 +713,8 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
                 delete qtrans;
             }
 
-            m_uiLoader.setWorkingDirectory(workingDirectory);
-            wid = m_uiLoader.load(&file, mainWin);
+            m_pUiLoader->setWorkingDirectory(workingDirectory);
+            wid = m_pUiLoader->load(&file, mainWin);
             file.close();
 
             if (wid == NULL)
@@ -774,7 +781,7 @@ QWidget* UiOrganizer::loadDesignerPluginWidget(const QString &className, RetVal 
 //    QUiLoader loader; //since designerWidgetOrganizer has been loaded earlier, all figure factories are loaded and correctly initialized!
     QWidget* widget = NULL;
 
-    QStringList availableWidgets = m_uiLoader.availableWidgets();
+    QStringList availableWidgets = m_pUiLoader->availableWidgets();
 
     bool found = false;
     foreach(const QString &name, availableWidgets)
@@ -825,7 +832,7 @@ QWidget* UiOrganizer::loadDesignerPluginWidget(const QString &className, RetVal 
 
         if (widget == NULL)
         {
-            widget = m_uiLoader.createWidget(tempClassName, parent);
+            widget = m_pUiLoader->createWidget(tempClassName, parent);
         }
 
         if (widget == NULL)
@@ -3502,7 +3509,7 @@ RetVal UiOrganizer::getAvailableWidgetNames(QSharedPointer<QStringList> widgetNa
 {
     ito::RetVal retval;
 
-    *widgetNames = m_uiLoader.availableWidgets();
+    *widgetNames = m_pUiLoader->availableWidgets();
 
     if (semaphore)
     {

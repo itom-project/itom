@@ -52,9 +52,10 @@
 #include <qtimer.h>
 #include <qfiledialog.h>
 #include <qmainwindow.h>
-#include <QtUiTools/quiloader.h>
 #include <qthread.h>
 #include <qtranslator.h>
+
+class QUiLoader; //forward declaration
 
 namespace ito
 {
@@ -365,7 +366,7 @@ private:
     void setApiPointersToWidgetAndChildren(QWidget *widget);
     //moved the uiLoader object to here from loadDesignerPluginWidget and createNewDialog methods as according
     //to valgrind it causes memory leaks. So better have only one instance created and maintain mem leaks low ;-)
-    QUiLoader m_uiLoader;
+    QUiLoader *m_pUiLoader;
     QHash<QString, QTranslator*> m_transFiles;
 
 signals:
