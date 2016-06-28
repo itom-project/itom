@@ -81,7 +81,7 @@ if not gitFound:
 (out,error)=pr.communicate()
 
 if(len(error) > 0):
-    raise RuntimeError("Calling GIT for local changes failed" + error)
+    raise RuntimeError("Calling GIT for local changes failed" + str(error))
 else:
     if(len(out) < 1):
         repIsDirty = 0
