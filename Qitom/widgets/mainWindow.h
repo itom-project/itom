@@ -48,6 +48,10 @@ namespace ito {
 
 class WidgetInfoBox; //forward declaration
 
+#ifdef ITOM_USEHELPVIEWER
+class HelpViewer; //forward declaration
+#endif
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -122,6 +126,10 @@ private:
     HelpSystem *m_pHelpSystem;
 
     QLabel *m_statusLblCurrentDir; //label for showing current directory
+
+#ifdef ITOM_USEHELPVIEWER
+    HelpViewer *m_pHelpViewer;
+#endif
 
     QRect m_geometryNormalState;
 
