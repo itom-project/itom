@@ -86,27 +86,27 @@ An example with different style strings can be found in the demo script **demo/d
     angles = np.arange(0, 2*np.pi, np.pi/4)
     circles = np.vstack([50 * np.sin(angles), 50 * np.cos(angles)])
 
-    def circlesMovedTo(circles, centerX, centerY):
-        output = dataObject(circles).copy()
+    def move(points, centerX, centerY):
+        output = dataObject(points).copy()
         output[0,:] += centerX
         output[1,:] += centerY
         return output
 
     #create various markers of different shapes. All markers sets represent a circle whose center is set to different positions.
-    h.call("plotMarkers", circlesMovedTo(circles,200,300), "b.", "blue, dot, default size: 5, default line width: 1")
-    h.call("plotMarkers", circlesMovedTo(circles,400,300), "go10", "green, circle") #equal to dot
-    h.call("plotMarkers", circlesMovedTo(circles,600,300), "rs10", "red, square")
-    h.call("plotMarkers", circlesMovedTo(circles,800,300), "cd10;5", "cyan, diamond, line width: 5")
+    h.call("plotMarkers", move(circles,200,300), "b.", "blue, dot, default size: 5, default line width: 1")
+    h.call("plotMarkers", move(circles,400,300), "go10", "green, circle") #equal to dot
+    h.call("plotMarkers", move(circles,600,300), "rs10", "red, square")
+    h.call("plotMarkers", move(circles,800,300), "cd10;5", "cyan, diamond, line width: 5")
 
-    h.call("plotMarkers", circlesMovedTo(circles,200,500), "m>10", "magenta, triangle right")
-    h.call("plotMarkers", circlesMovedTo(circles,400,500), "yv10", "yellow, triangle down")
-    h.call("plotMarkers", circlesMovedTo(circles,600,500), "k^10", "black, triangle up")
-    h.call("plotMarkers", circlesMovedTo(circles,800,500), "w<10", "white, triangle left")
+    h.call("plotMarkers", move(circles,200,500), "m>10", "magenta, triangle right")
+    h.call("plotMarkers", move(circles,400,500), "yv10", "yellow, triangle down")
+    h.call("plotMarkers", move(circles,600,500), "k^10", "black, triangle up")
+    h.call("plotMarkers", move(circles,800,500), "w<10", "white, triangle left")
 
-    h.call("plotMarkers", circlesMovedTo(circles,200,700), "bx10", "blue, x")
-    h.call("plotMarkers", circlesMovedTo(circles,400,700), "g*10", "green, star")
-    h.call("plotMarkers", circlesMovedTo(circles,600,700), "r+10", "red, plus")
-    h.call("plotMarkers", circlesMovedTo(circles,800,700), "ch20", "cyan, hexagon, size: 20")
+    h.call("plotMarkers", move(circles,200,700), "bx10", "blue, x")
+    h.call("plotMarkers", move(circles,400,700), "g*10", "green, star")
+    h.call("plotMarkers", move(circles,600,700), "r+10", "red, plus")
+    h.call("plotMarkers", move(circles,800,700), "ch20", "cyan, hexagon, size: 20")
 
     #delete the marker set with the name 'green, circle':
     h.call("deleteMarkers", "green, circle")
