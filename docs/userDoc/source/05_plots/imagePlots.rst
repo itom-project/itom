@@ -1,5 +1,3 @@
-.. _itom2dqwtplot:
-
 2D image plots
 ****************
 

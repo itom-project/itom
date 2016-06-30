@@ -55,7 +55,17 @@ To put a set of markers to an existing plot handle, call the slot **plotMarkers*
     plotHandle.call("plotMarkers", points, styleString [, setName])
 
 Hereby, *points* is a *2xN*, float32, dataObject where the first row are the x-coordinates of the markers (in physical or scale
-coordinates of the plot), and the second row are the y-coordinates.
+coordinates of the plot), and the second row are the y-coordinates. *setName* is an optional string as name for the added set of points.
+
+.. note::
+    
+    If the origin of the variable *plotHandle* in the examples does not tell you something, just a reminder:
+    The commands :py:meth:`itom.plot` and :py:meth:`itom.liveImage` return a tuple (index, plotHandle), where
+    *index* is the figure index of the opened plot window and *plotHandle* is an instance of :py:class:`itom.plotItem` that
+    is used to set properties of the plot, connect to its signals or call slots of the plot. Dedicated information about the features
+    of a plot can be obtained by typing::
+        
+        plotHandle.info()
 
 To delete an existing set of markers, use the slot **deleteMarkers**:
 
