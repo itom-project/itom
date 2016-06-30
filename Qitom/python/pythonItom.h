@@ -99,7 +99,6 @@ public:
     static PyObject* PyGetDebugger(PyObject* pSelf);
     static PyObject* PyGCStartTracking(PyObject *pSelf);
     static PyObject* PyGCEndTracking(PyObject *pSelf);
-    //static PyObject* PyGetGlobalDict(PyObject *pSelf);
 
     static PyObject* PyAutoReloader(PyObject* pSelf, PyObject *args, PyObject *kwds);
 

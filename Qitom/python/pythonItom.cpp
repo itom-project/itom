@@ -243,7 +243,18 @@ className : {str}, optional \n\
 	Depending on the object, you can also use '1D', '2D' or '2.5D' for displaying the object in the default plot of \n\
 	the indicated categories. \n\
 properties : {dict}, optional \n\
-    optional dictionary of properties that will be directly applied to the plot widget.");
+    optional dictionary of properties that will be directly applied to the plot widget. \n\
+\n\
+Returns \n\
+-------- \n\
+index : {int} \n\
+    This index is the figure index of the plot figure that is opened by this command.Use *figure(index)* to get a reference to the figure window of this plot. The plot can be closed by 'close(index)'. \n\
+plotHandle: {plotItem} \n\
+    Handle of the plot.This handle is used to control the properties of the plot, connect to its signals or call slots of the plot. \n\
+\n\
+See Also \n\
+---------- \n\
+liveImage, plotItem");
 PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
     const char *kwlist[] = {"data", "className", "properties", NULL};
@@ -357,79 +368,6 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     return res;
 }
 
-////----------------------------------------------------------------------------------------------------------------------------------
-//PyDoc_STRVAR(pyCloseFigure_doc,"closeFigure(fig-handle|'all') -> closes the figure window with the given handle-number. \n\
-//\n\
-//Parameters \n\
-//----------- \n\
-//fig-handle : {int | 'all'} \n\
-//    The number (ID) of the figure to close or all to close all.\n\
-//\n\
-//Notes \n\
-//----- \n\
-//\n\
-//Closes the figure window with the given handle-number (type int) or closes all figures ('all').");
-//PyObject* PythonItom::PyCloseFigure(PyObject * /*pSelf*/, PyObject *pArgs)
-//{
-//    int handle = 0; //0 = 'all', >0 = specific figure
-//    const char* tag;
-//
-//    if (!PyArg_ParseTuple(pArgs, "I", &handle))
-//    {
-//        PyErr_Clear();
-//        if (!PyArg_ParseTuple(pArgs, "s", &tag))
-//        {
-//            PyErr_SetString(PyExc_RuntimeError, "argument has to be a figure handle (unsigned int) or the string 'all'");
-//            return NULL; 
-//        }
-//
-//        handle = 0;
-//        if (!(strcmp(tag,"all") || strcmp(tag,"All") || strcmp(tag,"ALL")))
-//        {
-//            PyErr_SetString(PyExc_RuntimeError, "argument has to be a figure handle (unsigned int) or the string 'all'");
-//            return NULL;
-//        }
-//    }
-//    else
-//    {
-//        if (handle <= 0)
-//        {
-//            PyErr_SetString(PyExc_ValueError, "figure handle must be bigger than zero");
-//            return NULL;
-//        }
-//    }
-//
-//    PyErr_SetString(PyExc_RuntimeError, "temporarily not implemented");
-//    return NULL;
-//
-//    //QObject *figureOrganizer = AppManagement::getFigureOrganizer();
-//    //ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-//
-//    //QMetaObject::invokeMethod(figureOrganizer, "closeFigure", Q_ARG(unsigned int, static_cast<unsigned int>(handle)), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
-//
-//    //if (locker.getSemaphore()->wait(PLUGINWAIT))
-//    //{
-//    //    if (locker.getSemaphore()->returnValue == retError)
-//    //    {
-//    //        PyErr_SetString(PyExc_RuntimeError, "error while closing figure: \n%s", locker.getSemaphore()->returnValue.errorMessage());
-//    //        return NULL;
-//    //    }
-//    //    else
-//    //    {
-//    //        Py_RETURN_NONE;
-//    //    }
-//    //}
-//    //else
-//    //{
-//    //    if (PyErr_CheckSignals() == -1) //!< check if key interrupt occured
-//    //    {
-//    //        return PyErr_Occurred();
-//    //    }
-//    //    PyErr_SetString(PyExc_RuntimeError, "timeout while closing figure.");
-//    //    return NULL;
-//    //}
-//}
-
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyLiveImage_doc,"liveImage(cam, [className, properties]) -> show a camera live image in a new figure\n\
 \n\
@@ -456,7 +394,18 @@ cam : {dataIO-Instance} \n\
 className : {str}, optional \n\
     class name of desired plot (if not indicated or if the className can not be found, the default plot will be used (see application settings) \n\
 properties : {dict}, optional \n\
-    optional dictionary of properties that will be directly applied to the plot widget.");
+    optional dictionary of properties that will be directly applied to the plot widget. \n\
+\n\
+Returns \n\
+------- \n\
+index : {int} \n\
+    This index is the figure index of the plot figure that is opened by this command. Use *figure(index)* to get a reference to the figure window of this live image plot. The plot can be closed by 'close(index)'. \n\
+plotHandle: {plotItem} \n\
+    Handle of the live image plot. This handle is used to control the properties of the plot, connect to its signals or call slots of the plot. \n\
+\n\
+See Also \n\
+-------- - \n\
+plot, plotItem");
 PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
     const char *kwlist[] = {"cam", "className", "properties", NULL};
@@ -3824,30 +3773,6 @@ PyObject* PythonItom::setApplicationCursor(PyObject* pSelf, PyObject* pArgs)
     Py_RETURN_NONE;
 }
 
-///*static*/ PyObject* PythonItom::PyGetGlobalDict(PyObject* /*pSelf*/)
-//{
-//    PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-//    if (pyEngine)
-//    {
-//        PyObject *dict = pyEngine->getMainDictionary();
-//        if (dict)
-//        {
-//            Py_INCREF(dict);
-//            return dict;
-//        }
-//        PyErr_SetString(PyExc_RuntimeError, "The global dictionary is not available.");
-//        return NULL;
-//    }
-//    else
-//    {
-//        PyErr_SetString(PyExc_RuntimeError, "Python Engine is not available.");
-//        return NULL;
-//    }
-//}
-
-
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyLoadIDC_doc,"loadIDC(filename) -> load a pickled idc-file and return the content as dictionary\n\
 \n\
@@ -4432,10 +4357,6 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"plot", (PyCFunction)PythonItom::PyPlotImage, METH_VARARGS | METH_KEYWORDS, pyPlotImage_doc},
     {"liveImage", (PyCFunction)PythonItom::PyLiveImage, METH_VARARGS | METH_KEYWORDS, pyLiveImage_doc},
     {"close", (PyCFunction)PythonFigure::PyFigure_close, METH_VARARGS, pyItom_FigureClose_doc}, /*class static figure.close(...)*/
-    /*{"liveLine", (PyCFunction)PythonItom::PyLiveLine, METH_VARARGS, pyLiveLine_doc},
-    {"closeFigure", (PyCFunction)PythonItom::PyCloseFigure, METH_VARARGS, pyCloseFigure_doc},
-    {"setFigParam", (PyCFunction)PythonItom::PySetFigParam, METH_VARARGS, pySetFigParam_doc},
-    {"getFigParam", (PyCFunction)PythonItom::PyGetFigParam, METH_VARARGS, pyGetFigParam_doc},*/
     {"filter", (PyCFunction)PythonItom::PyFilter, METH_VARARGS | METH_KEYWORDS, pyFilter_doc},
     {"filterHelp", (PyCFunction)PythonItom::PyFilterHelp, METH_VARARGS | METH_KEYWORDS, pyFilterHelp_doc},
     {"widgetHelp", (PyCFunction)PythonItom::PyWidgetHelp, METH_VARARGS | METH_KEYWORDS, pyWidgetHelp_doc},
