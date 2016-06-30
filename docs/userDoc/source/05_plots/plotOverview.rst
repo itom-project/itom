@@ -37,9 +37,15 @@ The result of both examples looks like this (if no other default plot class has 
 Instead of writing the full class name of a plot plugin that you want to use, you can also set the parameter *className* to some short-hand aliases.
 Depending on the alias, the default plot class (see itom's :ref:`property dialog <gui-propertydialog>`) is chosen. Possible aliases are:
 
-* dataObject: 1D, 2D, 2.5D
-* pointCloud: 2.5D
-* polygonMesh: 2.5D
+* dataObject: **1D, 2D, 2.5D**
+* pointCloud: **2.5D**
+* polygonMesh: **2.5D**
+
+Example:
+
+.. code-block:: python
+    
+    plot(data1d, '1D') #plot data1d in default plot for 1D, static plots
     
 In the following sections, you will see that any plot has various properties that can be set in the property dialog or using square brackets in Python. However, you can also
 pass various properties to the :py:meth:`~itom.plot` command such that your customized plot is displayed.

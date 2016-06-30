@@ -168,8 +168,37 @@ PyObject* PythonFigure::PyFigure_repr(PyFigure *self)
     }
     else
     {
-        result = PyUnicode_FromFormat("Figure(handle: %i)", *(self->guardedFigHandle));
+        UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
+        if (uiOrga == NULL)
+        {
+            result = PyUnicode_FromFormat("Figure(handle: %i, unknown status)", *(self->guardedFigHandle));
+        }
+        else
+        {
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            QSharedPointer<bool> exist(new bool);
+
+            QMetaObject::invokeMethod(uiOrga, "handleExist", Q_ARG(uint, *(self->guardedFigHandle)), Q_ARG(QSharedPointer<bool>, exist), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+
+            if (!locker.getSemaphore()->wait(PLUGINWAIT))
+            {
+                result = PyUnicode_FromFormat("Figure(handle: %i, unknown status)", *(self->guardedFigHandle));
+            }
+            else
+            {
+                if (*exist == true)
+                {
+                    result = PyUnicode_FromFormat("Figure(handle: %i)", *(self->guardedFigHandle));
+                }
+                else
+                {
+                    result = PyUnicode_FromFormat("Figure(handle: %i, figure is not longer available)", *(self->guardedFigHandle));
+                }
+            }
+        }
     }
+
     return result;
 }
 

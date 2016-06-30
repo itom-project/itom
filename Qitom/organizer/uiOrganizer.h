@@ -381,6 +381,7 @@ public slots:
     RetVal hideDialog(unsigned int handle, ItomSharedSemaphore *semaphore = NULL);
     RetVal setAttribute(unsigned int handle, Qt::WidgetAttribute attribute, bool on = true, ItomSharedSemaphore *semaphore = NULL);
     RetVal isVisible(unsigned int handle, QSharedPointer<bool> visible, ItomSharedSemaphore *semaphore = NULL);
+    RetVal handleExist(unsigned int handle, QSharedPointer<bool> exist, ItomSharedSemaphore *semaphore = NULL);
     
     UiContainer* getUiDialogByHandle(unsigned int uiHandle);
 

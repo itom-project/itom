@@ -956,7 +956,7 @@ RetVal UiOrganizer::showDialog(unsigned int handle, int modalLevel, QSharedPoint
     }
     else
     {
-        retValue += RetVal(retError, 1001, tr("dialog handle does not exist").toLatin1().data());
+        retValue += RetVal(retError, 1001, tr("Dialog or plot handle does (not longer) exist. Maybe it has been closed before.").toLatin1().data());
     }
 
     if (semaphore)
@@ -981,7 +981,7 @@ RetVal UiOrganizer::hideDialog(unsigned int handle, ItomSharedSemaphore *semapho
     }
     else
     {
-        retValue += RetVal(retError, 1001, tr("dialog handle does not exist").toLatin1().data());
+        retValue += RetVal(retError, 1001, tr("Dialog or plot handle does (not longer) exist. Maybe it has been closed before.").toLatin1().data());
     }
 
     if (semaphore)
@@ -1020,7 +1020,7 @@ RetVal UiOrganizer::getDockedStatus(unsigned int uiHandle, QSharedPointer<bool> 
     }
     else
     {
-        retValue += RetVal(retError, 1001, tr("dialog handle does not exist").toLatin1().data());
+        retValue += RetVal(retError, 1001, tr("Dialog or plot handle does (not longer) exist. Maybe it has been closed before.").toLatin1().data());
     }
 
     if (semaphore)
@@ -1067,7 +1067,7 @@ RetVal UiOrganizer::setDockedStatus(unsigned int uiHandle, bool docked, ItomShar
     }
     else
     {
-        retValue += RetVal(retError, 1001, tr("dialog handle does not exist").toLatin1().data());
+        retValue += RetVal(retError, 1001, tr("Dialog or plot handle does (not longer) exist. Maybe it has been closed before.").toLatin1().data());
     }
 
     if (semaphore)
@@ -1092,7 +1092,7 @@ RetVal UiOrganizer::setAttribute(unsigned int handle, Qt::WidgetAttribute attrib
     }
     else
     {
-        retValue += RetVal(retError, 1001, tr("dialog handle does not exist").toLatin1().data());
+        retValue += RetVal(retError, 1001, tr("Dialog or plot handle does (not longer) exist. Maybe it has been closed before.").toLatin1().data());
     }
 
     if (semaphore)
@@ -1117,8 +1117,26 @@ RetVal UiOrganizer::isVisible(unsigned int handle, QSharedPointer<bool> visible,
     }
     else
     {
-        retValue += RetVal(retError, 1001, tr("dialog handle does not exist").toLatin1().data());
+        retValue += RetVal(retError, 1001, tr("Dialog or plot handle does (not longer) exist. Maybe it has been closed before.").toLatin1().data());
     }
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retValue;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::handleExist(unsigned int handle, QSharedPointer<bool> exist, ItomSharedSemaphore *semaphore)
+{
+    RetVal retValue = RetVal(retOk);
+    UiContainer *ptr = getUiDialogByHandle(handle);
+
+    *exist = (ptr != NULL);
 
     if (semaphore)
     {
@@ -1528,7 +1546,7 @@ RetVal UiOrganizer::getPropertyInfos(unsigned int objectID, QSharedPointer<QVari
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("The widget is not available (any more).").toLatin1().data());
     }
 
     if (semaphore)
@@ -1621,7 +1639,7 @@ RetVal UiOrganizer::readProperties(unsigned int objectID, QSharedPointer<QVarian
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("The widget is not available (any more).").toLatin1().data());
     }
 
     if (semaphore)
@@ -1723,7 +1741,7 @@ RetVal UiOrganizer::writeProperties(unsigned int objectID, const QVariantMap &pr
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("The widget is not available (any more).").toLatin1().data());
     }
 
     if (semaphore)
@@ -1869,7 +1887,7 @@ RetVal UiOrganizer::widgetMetaObjectCounts(unsigned int objectID, QSharedPointer
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("The widget is not available (any more).").toLatin1().data());
     }
 
     if (semaphore)
@@ -1899,7 +1917,7 @@ RetVal UiOrganizer::getChildObject(unsigned int uiHandle, const QString &objectN
             }
             else
             {
-                retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
+                retValue += RetVal(retError, errorObjDoesNotExist, tr("The widget is not available (any more).").toLatin1().data());
             }
         }
         else //return reference to dialog or windows itself
@@ -1950,7 +1968,7 @@ RetVal UiOrganizer::getChildObject2(unsigned int parentObjectID, const QString &
                 }
                 else
                 {
-                    retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
+                    retValue += RetVal(retError, errorObjDoesNotExist, tr("The widget is not available (any more).").toLatin1().data());
                 }
             }
             else //return reference to dialog or windows itself
@@ -2001,7 +2019,7 @@ RetVal UiOrganizer::getChildObject3(unsigned int parentObjectID, const QString &
                 {
                     //ptr->dumpObjectInfo();
                     //ptr->dumpObjectTree();
-                    retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
+                    retValue += RetVal(retError, errorObjDoesNotExist, tr("The widget is not available (any more).").toLatin1().data());
                 }
             }
             else //return reference to dialog or windows itself
@@ -2016,7 +2034,7 @@ RetVal UiOrganizer::getChildObject3(unsigned int parentObjectID, const QString &
     }
     else
     {
-        retValue += RetVal(retError, errorUiHandleInvalid, tr("The object ID of the parent widget is unknown.").toLatin1().data());
+        retValue += RetVal(retError, errorUiHandleInvalid, tr("The parent widget is either unknown or does not exist any more.").toLatin1().data());
     }
 
     if (semaphore)
@@ -2130,7 +2148,7 @@ RetVal UiOrganizer::getSignalIndex(unsigned int objectID, const QString &signalS
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("The widget is not available (any more).").toLatin1().data());
     }
 
     if (semaphore)
@@ -2170,7 +2188,7 @@ RetVal UiOrganizer::connectWithKeyboardInterrupt(unsigned int objectID, const QS
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("The widget is not available (any more).").toLatin1().data());
     }
 
     if (semaphore)
@@ -2225,7 +2243,7 @@ RetVal UiOrganizer::callSlotOrMethod(bool slotNotMethod, unsigned int objectID, 
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("The widget is not available (any more).").toLatin1().data());
     }
 
     if (semaphore)
@@ -2286,7 +2304,7 @@ RetVal UiOrganizer::getMethodDescriptions(unsigned int objectID, QSharedPointer<
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("widget is not available (any more)").toLatin1().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("The widget is not available (any more).").toLatin1().data());
     }
 
     if (semaphore)
@@ -2630,7 +2648,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
     }
     else
     {
-        retValue += RetVal(retError, errorObjDoesNotExist, tr("There exists no object with the given id.").toLatin1().data());
+        retValue += RetVal(retError, errorObjDoesNotExist, tr("The requested widget does not exist (any more).").toLatin1().data());
     }
 
     if (semaphore)

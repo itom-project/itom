@@ -147,7 +147,14 @@ int PythonUi::PyUiItem_init(PyUiItem *self, PyObject *args, PyObject * /*kwds*/)
 
         if(*objectID == 0)
         {
-            PyErr_SetString(PyExc_RuntimeError, "attribute is no widget name of this user interface");
+            if (retValue.hasErrorMessage())
+            {
+                PyErr_SetString(PyExc_RuntimeError, retValue.errorMessage());
+            }
+            else
+            {
+                PyErr_SetString(PyExc_RuntimeError, "attribute is no widget name of this user interface");
+            }
             return -1;
         }
         else
@@ -1589,8 +1596,30 @@ PyObject* PythonUi::PyUiItem_getattro(PyUiItem *self, PyObject *name)
 
     if(PyUiItem == NULL)
     {
-        PyErr_SetString(PyExc_AttributeError, "This widget does not have a child with the desired name.");
-        return NULL;
+        //check if this uiItem exists:
+        PyObject *exists = PyUiItem_exists(self);
+
+        if (exists == Py_False)
+        {
+            Py_XDECREF(exists);
+            PyErr_SetString(PyExc_AttributeError, "This uiItem does not exist any more.");
+            return NULL;
+        }
+        else
+        {
+            Py_XDECREF(exists);
+            bool ok;
+            QByteArray name_ba = PythonQtConversion::PyObjGetBytes(name, false, ok);
+            if (ok)
+            {
+                return PyErr_Format(PyExc_AttributeError, "This uiItem has neither a child item nor a method defined with the name '%s'.", name_ba.data());
+            }
+            else
+            {
+                PyErr_SetString(PyExc_AttributeError, "This uiItem has neither a child item nor a method defined with the given name.");
+                return NULL;
+            }
+        }
     }
 
     if(PyErr_Occurred())
@@ -1607,23 +1636,6 @@ int PythonUi::PyUiItem_setattro(PyUiItem *self, PyObject *name, PyObject *value)
 {
     return PyObject_GenericSetAttr( (PyObject*)self, name, value );
 }
-
-//----------------------------------------------------------------------------------------------------------------------------------
-//returns borrowed reference to overall ui-instance or NULL, if not existing
-///*static*/ PythonUi::PyUi* PythonUi::PyUiItem_getParentUI(PyUiItem *self)
-//{
-//    PyUi *result = NULL;
-//    PyUiItem *item = self;
-//    while(item && !result)
-//    {
-//        if(PyUi_Check(item))
-//        {
-//            result = (PythonUi::PyUi*)(item);
-//        }
-//        item = (PyUiItem*)(item->baseItem);
-//    }
-//    return result;
-//}
 
 //returns borrowed reference to signal mapper of overall ui- or figure-instance or NULL, if this does not exist
 /*static*/ PythonQtSignalMapper* PythonUi::PyUiItem_getTopLevelSignalMapper(PyUiItem *self)
@@ -1954,13 +1966,62 @@ PyObject* PythonUi::PyUi_repr(PyUi *self)
     }
     else
     {
-        if(self->filename == NULL)
+        UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+
+        if (uiOrga == NULL)
         {
-            result = PyUnicode_FromFormat("Ui(handle: %i) + %U", self->uiHandle, PyUiItemType.tp_repr((PyObject*)self) );
+            if (self->filename == NULL)
+            {
+                result = PyUnicode_FromFormat("Ui(handle: %i) + %U", self->uiHandle, PyUiItemType.tp_repr((PyObject*)self));
+            }
+            else
+            {
+                result = PyUnicode_FromFormat("Ui(filename: '%s', handle: %i) + %U", self->filename, self->uiHandle, PyUiItemType.tp_repr((PyObject*)self));
+            }
         }
         else
         {
-            result = PyUnicode_FromFormat("Ui(filename: '%s', handle: %i) + %U", self->filename, self->uiHandle, PyUiItemType.tp_repr((PyObject*)self) );
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            QSharedPointer<bool> exist(new bool);
+
+            QMetaObject::invokeMethod(uiOrga, "handleExist", Q_ARG(uint, self->uiHandle), Q_ARG(QSharedPointer<bool>, exist), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+
+            if (!locker.getSemaphore()->wait(PLUGINWAIT))
+            {
+                if (self->filename == NULL)
+                {
+                    result = PyUnicode_FromFormat("Ui(handle: %i) + %U", self->uiHandle, PyUiItemType.tp_repr((PyObject*)self));
+                }
+                else
+                {
+                    result = PyUnicode_FromFormat("Ui(filename: '%s', handle: %i) + %U", self->filename, self->uiHandle, PyUiItemType.tp_repr((PyObject*)self));
+                }
+            }
+            else
+            {
+                if (*exist == true)
+                {
+                    if (self->filename == NULL)
+                    {
+                        result = PyUnicode_FromFormat("Ui(handle: %i) + %U", self->uiHandle, PyUiItemType.tp_repr((PyObject*)self));
+                    }
+                    else
+                    {
+                        result = PyUnicode_FromFormat("Ui(filename: '%s', handle: %i) + %U", self->filename, self->uiHandle, PyUiItemType.tp_repr((PyObject*)self));
+                    }
+                }
+                else
+                {
+                    if (self->filename == NULL)
+                    {
+                        result = PyUnicode_FromFormat("Ui(handle: %i, ui is not longer available) + %U", self->uiHandle, PyUiItemType.tp_repr((PyObject*)self));
+                    }
+                    else
+                    {
+                        result = PyUnicode_FromFormat("Ui(filename: '%s', handle: %i, ui is not longer available) + %U", self->filename, self->uiHandle, PyUiItemType.tp_repr((PyObject*)self));
+                    }
+                }
+            }
         }
     }
     return result;
