@@ -26,22 +26,60 @@
 #ifdef ITOM_USEHELPVIEWER
 
 #include <qurl.h>
+#include <qwebengineview.h>
+#include <qhelpengine.h>
+#include <qdockwidget.h>
+#include <qhelpcontentwidget.h>
+#include <qhelpindexwidget.h>
+#include <qdebug.h>
 
 namespace ito {
 
 //----------------------------------------------------------------------------------------
 HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
-    QMainWindow(parent)
+    QMainWindow(parent),
+    m_pView(NULL),
+    m_pHelpEngine(NULL)
 {
     m_pView = new QWebEngineView(this);
-    m_pView->load(QUrl("http://itom.bitbucket.org"));
+    //m_pView->load(QUrl("http://itom.bitbucket.org"));
     setCentralWidget(m_pView);
+
+    m_pHelpEngine = new QHelpEngine("", this);
+    
+    QHelpContentWidget *hcw = m_pHelpEngine->contentWidget();
+    QDockWidget *dockWidget = new QDockWidget("content", this);
+    dockWidget->setWidget(hcw);
+    addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
+    connect(hcw, SIGNAL(linkActivated(QUrl)), this, SLOT(showPage(QUrl)));
+
+    QHelpIndexWidget *hiw = m_pHelpEngine->indexWidget();
+    dockWidget = new QDockWidget("index", this);
+    dockWidget->setWidget(hiw);
+    addDockWidget(Qt::RightDockWidgetArea, dockWidget);
 }
 
 //----------------------------------------------------------------------------------------
 HelpViewer::~HelpViewer()
 {
+    DELETE_AND_SET_NULL(m_pHelpEngine);
     DELETE_AND_SET_NULL(m_pView);
+}
+
+//----------------------------------------------------------------------------------------
+void HelpViewer::setCollectionFile(const QString &collectionFile)
+{
+    m_pHelpEngine->setCollectionFile(collectionFile);
+    m_pHelpEngine->setupData();
+}
+
+//----------------------------------------------------------------------------------------
+void HelpViewer::showPage(const QUrl &url)
+{
+    if (m_pView)
+    {
+        m_pView->setHtml(m_pHelpEngine->fileData(url), url);
+    }
 }
 
 

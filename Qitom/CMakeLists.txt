@@ -27,7 +27,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 IF(${BUILD_WITH_HELPVIEWER})
     #requires Qt5 and Qt5WebEngine in order to built a built-in help viewer, since QtAssistant only has a limited set of rendering options since Qt5.6.
-    FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools Svg WebEngineWidgets)
+    FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools Svg WebEngineWidgets Help)
     
     IF(Qt5WebEngineWidgets_FOUND)
         ADD_DEFINITIONS(-DUSEHELPVIEWER -D_USEHELPVIEWER)
@@ -130,6 +130,7 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${Qt5Widgets_INCLUDE_DIRS}
     ${Qt5WebEngineWidgets_INCLUDE_DIRS}
+    ${Qt5Help_INCLUDE_DIRS}
     ${PYTHON_INCLUDE_DIR}
     ${NUMPY_INCLUDE_DIRS}
     ${QSCINTILLA_INCLUDE_DIR}
@@ -687,9 +688,9 @@ ENDIF(BUILD_WITH_PCL)
 
 IF (QT5_FOUND)
     if (WIN32)
-        TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${Qt5WebEngineWidgets_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets  ${PYMATLAB_LIBRARIES} shell32)
+        TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${Qt5WebEngineWidgets_LIBRARIES} ${Qt5Help_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets  ${PYMATLAB_LIBRARIES} shell32)
     else (WIN32)
-        TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${Qt5WebEngineWidgets_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets  ${PYMATLAB_LIBRARIES})
+        TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${Qt5WebEngineWidgets_LIBRARIES} ${Qt5Help_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets  ${PYMATLAB_LIBRARIES})
     endif (WIN32)
 ELSE (QT5_FOUND)
     TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets ${PYMATLAB_LIBRARIES})

@@ -1031,15 +1031,12 @@ void MainWindow::mnuShowAssistant()
     if (!retval.containsError()) //warning is ok
     {
 #ifdef ITOM_USEHELPVIEWER
-        if (m_pHelpViewer)
-        {
-            m_pHelpViewer->show();
-        }
-        else
+        if (!m_pHelpViewer)
         {
             m_pHelpViewer = new HelpViewer(NULL);
-            m_pHelpViewer->show();
         }
+        m_pHelpViewer->setCollectionFile(collectionFile);
+        m_pHelpViewer->show();
 #else
         ProcessOrganizer *po = qobject_cast<ProcessOrganizer*>(AppManagement::getProcessOrganizer());
         if (po)

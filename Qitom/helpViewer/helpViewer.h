@@ -28,8 +28,11 @@
 #ifdef ITOM_USEHELPVIEWER
 
 #include <qmainwindow.h>
+#include <qurl.h>
 
-#include <qwebengineview.h>
+
+class QWebEngineView; //forward declaration
+class QHelpEngine; //forward declaration
 
 namespace ito {
 
@@ -41,9 +44,15 @@ public:
     HelpViewer(QWidget *parent = NULL);
     ~HelpViewer();
 
+    void setCollectionFile(const QString &collectionFile);
+
 private:
     QWebEngineView *m_pView;
+    QString m_collectionFile;
+    QHelpEngine* m_pHelpEngine;
 
+private slots:
+    void showPage(const QUrl &url);
 };
 
 } //end namespace ito
