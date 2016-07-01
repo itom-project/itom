@@ -27,11 +27,15 @@
 
 #include <qurl.h>
 #include <qwebengineview.h>
+#include <qwebenginepage.h>
+#include <qwebengineprofile.h>
+#include <qwebengineurlschemehandler.h>
 #include <qhelpengine.h>
 #include <qdockwidget.h>
 #include <qhelpcontentwidget.h>
 #include <qhelpindexwidget.h>
 #include <qdebug.h>
+#include "qtHelpUrlSchemeHandler.h"
 
 namespace ito {
 
@@ -39,19 +43,27 @@ namespace ito {
 HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
     QMainWindow(parent),
     m_pView(NULL),
-    m_pHelpEngine(NULL)
+    m_pHelpEngine(NULL),
+	m_pSchemeHandler(NULL)
 {
     m_pView = new QWebEngineView(this);
     //m_pView->load(QUrl("http://itom.bitbucket.org"));
     setCentralWidget(m_pView);
 
+	QWebEnginePage *page = m_pView->page();
+	QWebEngineProfile *profile = page->profile();
+
     m_pHelpEngine = new QHelpEngine("", this);
+	m_pSchemeHandler = new QtHelpUrlSchemeHandler(m_pHelpEngine, this);
+	profile->installUrlSchemeHandler("qthelp", m_pSchemeHandler);
     
     QHelpContentWidget *hcw = m_pHelpEngine->contentWidget();
     QDockWidget *dockWidget = new QDockWidget("content", this);
     dockWidget->setWidget(hcw);
     addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
     connect(hcw, SIGNAL(linkActivated(QUrl)), this, SLOT(showPage(QUrl)));
+	connect(m_pView, SIGNAL(urlChanged(QUrl)), this, SLOT(changeIndex(QUrl)));
+
 
     QHelpIndexWidget *hiw = m_pHelpEngine->indexWidget();
     dockWidget = new QDockWidget("index", this);
@@ -64,6 +76,7 @@ HelpViewer::~HelpViewer()
 {
     DELETE_AND_SET_NULL(m_pHelpEngine);
     DELETE_AND_SET_NULL(m_pView);
+	DELETE_AND_SET_NULL(m_pSchemeHandler);
 }
 
 //----------------------------------------------------------------------------------------
@@ -80,6 +93,17 @@ void HelpViewer::showPage(const QUrl &url)
     {
         m_pView->setHtml(m_pHelpEngine->fileData(url), url);
     }
+}
+
+//----------------------------------------------------------------------------------------
+void HelpViewer::changeIndex(const QUrl &url)
+{
+	if (m_pView)
+	{
+		QHelpContentWidget *hcw = m_pHelpEngine->contentWidget();
+		QModelIndex index = hcw->indexOf(url);
+		hcw->setCurrentIndex(index);
+	}
 }
 
 

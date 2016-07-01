@@ -20,43 +20,33 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef HELPVIEWER_H
-#define HELPVIEWER_H
+#ifndef QTHELPURLSCHEMEHANDLER_H
+#define QTHELPURLSCHEMEHANDLER_H
 
 #include "../global.h"
 
 #ifdef ITOM_USEHELPVIEWER
 
-#include <qmainwindow.h>
-#include <qurl.h>
+#include <qwebengineurlschemehandler.h>
+#include <qbytearray.h>
 
-
-class QWebEngineView; //forward declaration
-class QHelpEngine; //forward declaration
+class QHelpEngine;
 
 namespace ito {
 
-class QtHelpUrlSchemeHandler;
-
-class HelpViewer : public QMainWindow
+class QtHelpUrlSchemeHandler : public QWebEngineUrlSchemeHandler
 {
-    Q_OBJECT
-
+	Q_OBJECT
 public:
-    HelpViewer(QWidget *parent = NULL);
-    ~HelpViewer();
+	QtHelpUrlSchemeHandler(QHelpEngine *helpEngine, QObject *parent = 0);
+	~QtHelpUrlSchemeHandler();
 
-    void setCollectionFile(const QString &collectionFile);
+	void requestStarted(QWebEngineUrlRequestJob* request);
 
 private:
-    QWebEngineView *m_pView;
-    QString m_collectionFile;
-    QHelpEngine* m_pHelpEngine;
-	QtHelpUrlSchemeHandler *m_pSchemeHandler;
+	QHelpEngine *m_pHelpEngine;
 
-private slots:
-    void showPage(const QUrl &url);
-	void changeIndex(const QUrl &url);
+	QByteArray mimeFromUrl(const QUrl &url);
 };
 
 } //end namespace ito

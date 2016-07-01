@@ -126,19 +126,9 @@ autodoc_docstring_signature = True
 #This theme was locally copied to the itom-packages folder.
 qt_version = itomFuncs.version(True)["itom"]["QT_Version"]
 
-if (qt_version >= '5.6.0'):
-    #choose quark theme as main theme
-    html_theme = 'quark'
-    extensions.append('quark_sphinx_theme.ext.html_rewrite')
-    html_theme_options = {
-        'body_font_size':'11pt',
-        'body_font':'Helvetica'
-    }
-    html_theme_path = [quark_sphinx_theme.get_path()]
-else:
-    #choose itom theme as main theme
-    html_theme = 'itom'
-    html_theme_path = ['_themes']
+#choose itom theme as main theme
+html_theme = 'itom'
+html_theme_path = ['_themes']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #html_theme = 'default'
