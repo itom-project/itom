@@ -62,7 +62,18 @@ min : {float} \n\
 max : {float}, \n\
     maximum value of interval (default: +infinity) \n\
 auto : {bool} \n\
-    false if interval is fixed, true if the interval can be scaled automatically (default)");
+    false if interval is fixed, true if the interval can be scaled automatically (default) \n\
+\n\
+Properties and slots of uiItems (e.g. plots) sometimes have parameters of type 'autoInterval'. It is either \n\
+possible to pass then an 'autoInterval' instance, the string 'auto' or a list or tuple with the two values [min, max] \n\
+\n\
+Example:: \n\
+\n\
+    [i,h] = plot(dataObject.randN([100,100], 'int8'))\n\
+    h['xAxisInterval'] = autoInterval(20, 80)\n\
+    h['yAxisInterval'] = 'auto' \n\
+    h['zAxisInterval'] = [-90,90] \n\
+");
 int PythonAutoInterval::PyAutoInterval_init(PyAutoInterval *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"min", "max", "auto", NULL};
