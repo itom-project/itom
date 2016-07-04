@@ -38,6 +38,14 @@
 
 #include "sharedStructures.h"
 
+//definition of some tags for signals and slots
+#ifndef Q_MOC_RUN
+    //the following tags can be placed before the definition of slots and signals, they are then obtainable via the tag() method of QMetaMethod.
+    
+    //place ITOM_PYNOTACCESSIBLE before the definition of a method to not show this method in auto-parsed listings that are dedicated to python usage.
+    #define ITOM_PYNOTACCESSIBLE
+#endif
+
 #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 
 typedef QMap<QString, ito::Param> ParamMap;

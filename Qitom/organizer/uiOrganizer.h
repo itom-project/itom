@@ -305,7 +305,7 @@ public:
         infoShowAllInheritance =0x0008
     };
 
-    typedef QMap<QString,QString> tQMapArg;
+    typedef QMultiMap<QString,QString> MultiStringMap;
 
     UiOrganizer(ito::RetVal &retval);
     ~UiOrganizer();
@@ -350,6 +350,9 @@ private:
 
     unsigned int addObjectToList(QObject* objPtr);
     QObject *getWeakObjectReference(unsigned int objectID);
+
+    QByteArray getReadableMethodSignature(const QMetaMethod &method, bool pythonNotCStyle, QByteArray *methodName = NULL, bool *valid = NULL);
+    QByteArray getReadableParameter(const QByteArray &parameter, bool pythonNotCStyle, bool *valid = NULL);
 
     void timerEvent(QTimerEvent *event);
 
@@ -416,13 +419,13 @@ public slots:
     RetVal getSignalIndex(unsigned int objectID, const QString &signalSignature, QSharedPointer<int> signalIndex, QSharedPointer<QObject*> objPtr, QSharedPointer<IntList> argTypes, ItomSharedSemaphore *semaphore = NULL);
     RetVal callSlotOrMethod(bool slotNotMethod, unsigned int objectID, int slotOrMethodIndex, QSharedPointer<FctCallParamContainer> args, ItomSharedSemaphore *semaphore = NULL);
 
-    RetVal getObjectInfo(const QString &classname, ito::UiOrganizer::tQMapArg *objInfo, ItomSharedSemaphore *semaphore = NULL);
-    RetVal getObjectInfo(const QObject *obj, int type, ito::UiOrganizer::tQMapArg* propMap, ItomSharedSemaphore *semaphore = NULL);
-    inline RetVal getObjectInfo(unsigned int objectID, int type, ito::UiOrganizer::tQMapArg *propMap, ItomSharedSemaphore *semaphore = NULL)
+    RetVal getObjectInfo(const QString &classname, bool pythonNotCStyle, ito::UiOrganizer::MultiStringMap *objInfo, ItomSharedSemaphore *semaphore = NULL);
+    RetVal getObjectInfo(const QObject *obj, int type, bool pythonNotCStyle, ito::UiOrganizer::MultiStringMap* propMap, ItomSharedSemaphore *semaphore = NULL);
+    inline RetVal getObjectInfo(unsigned int objectID, int type, bool pythonNotCStyle, ito::UiOrganizer::MultiStringMap *propMap, ItomSharedSemaphore *semaphore = NULL)
     {
-        return getObjectInfo(getWeakObjectReference(objectID), type, propMap, semaphore);
+        return getObjectInfo(getWeakObjectReference(objectID), type, pythonNotCStyle, propMap, semaphore);
     }
-    RetVal getObjectInfo(unsigned int objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);
+    RetVal getObjectAndWidgetName(unsigned int objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);
     RetVal getObjectChildrenInfo(unsigned int objectID, bool recursive, QSharedPointer<QStringList> objectNames, QSharedPointer<QStringList> classNames, ItomSharedSemaphore *semaphore = NULL);
 
     RetVal getObjectID(const QObject *obj, QSharedPointer<unsigned int> objectID, ItomSharedSemaphore *semaphore = NULL);
@@ -454,6 +457,6 @@ private slots:
 
 } //namespace ito
 
-Q_DECLARE_METATYPE(ito::UiOrganizer::tQMapArg*)
+Q_DECLARE_METATYPE(ito::UiOrganizer::MultiStringMap*)
 
 #endif

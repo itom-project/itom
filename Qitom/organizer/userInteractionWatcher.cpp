@@ -21,7 +21,6 @@
 *********************************************************************** */
 
 #include "userInteractionWatcher.h"
-#include "common/sharedStructuresPrimitives.h"
 #include <qwidget.h>
 
 namespace ito

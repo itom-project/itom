@@ -40,8 +40,6 @@
 #include "userInteractionWatcher.h"
 #include "../python/pythonQtConversion.h"
 
-#include "common/sharedStructuresPrimitives.h"
-
 #include "widgets/mainWindow.h"
 
 #include <qinputdialog.h>
@@ -126,8 +124,8 @@ UiOrganizer::UiOrganizer(ito::RetVal &retval) :
 
     qRegisterMetaType<ito::UiDataContainer>("ito::UiDataContainer");
     qRegisterMetaType<ito::UiDataContainer>("ito::UiDataContainer&");
-    qRegisterMetaType<ito::UiOrganizer::tQMapArg*>("ito::UiOrganizer::tQMapArg*");
-    qRegisterMetaType<ito::UiOrganizer::tQMapArg*>("ito::UiOrganizer::tQMapArg&");
+    qRegisterMetaType<ito::UiOrganizer::MultiStringMap*>("ito::UiOrganizer::MultiStringMap*");
+    qRegisterMetaType<ito::UiOrganizer::MultiStringMap*>("ito::UiOrganizer::MultiStringMap&");
 
     if (QEvent::registerEventType(QEvent::User+123) != QEvent::User+123)
     {
@@ -2272,7 +2270,6 @@ RetVal UiOrganizer::getMethodDescriptions(unsigned int objectID, QSharedPointer<
         for (int i=0;i<mo->methodCount();i++)
         {
             metaMethod = mo->method(i);
-            //qDebug() << metaMethod.signature();
             ok = true;
             if (metaMethod.access() == QMetaMethod::Public && (metaMethod.methodType() == QMetaMethod::Slot || metaMethod.methodType() == QMetaMethod::Method))
             {
@@ -2323,8 +2320,125 @@ void UiOrganizer::pythonKeyboardInterrupt(bool /*checked*/)
     PyErr_SetInterrupt();
 }
 
+struct PyCMap {
+    const char *ctype;
+    const char *pytype;
+} pyCMap[] = {
+    { "QString", "str" },
+    { "QByteArray", "bytearray" },
+    { "ito::Shape", "shape" },
+    { "QVector<ito::Shape>", "seq. of shape" },
+    { "QSharedPointer<ito::DataObject>", "dataObject" },
+    { "QVector<double>", "seq. of float" },
+    { "double", "float" },
+    { "QVector<float>", "seq. of float" },
+    { "QFont", "font" },
+    { "QColor", "color str or hex" },
+    { "QPointer<ito::AddInDataIO>", "dataIO" },
+    { "QPointer<ito::Actuator>", "actuator" },
+    { "QStringList", "seq. of str" },
+    { "ito::AutoInterval", "autoInterval" },
+    { "ito::ItomPlotHandle", "uiItem" },
+    { 0, 0 }
+};
+
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getObjectInfo(unsigned int objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore /*= NULL*/)
+QByteArray UiOrganizer::getReadableMethodSignature(const QMetaMethod &method, bool pythonNotCStyle, QByteArray *methodName /*= NULL*/, bool *valid /*= NULL*/)
+{
+    QByteArray name;
+#if QT_VERSION >= 0x050000
+    name = method.name();
+#else
+    QString methName = method.signature();
+    name = methName.chop(methName.length() - methName.indexOf('('));
+#endif
+
+    if (methodName)
+        *methodName = name;
+
+    QList<QByteArray> parameters;
+    QList<QByteArray> names = method.parameterNames();
+    QList<QByteArray> types = method.parameterTypes();
+
+    if (valid)
+    {
+        *valid = true;
+    }
+
+    const PyCMap *e;
+    bool found = false;
+
+    for (int i = 0; i < method.parameterCount(); ++i)
+    {
+        if (pythonNotCStyle)
+        {
+            if (valid && types[i].contains("*"))
+            {
+                *valid = false;
+            }
+            else
+            {
+                found = false;
+                e = pyCMap;
+                while (e->ctype && !found)
+                {
+                    if (types[i] == e->ctype)
+                    {
+                        parameters << (names[i] + " {" + e->pytype + "}");
+                        found = true;
+                    }
+                    ++e;
+                }
+            }
+
+            if (!found)
+            {
+                parameters << (names[i] + " {" + types[i] + "}");
+            }
+        }
+        else
+        {
+            parameters << (types[i] + " " + names[i]);
+        }
+    }
+    
+    return (name + "(" + parameters.join(", ") + ")");
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QByteArray UiOrganizer::getReadableParameter(const QByteArray &parameter, bool pythonNotCStyle, bool *valid /*= NULL*/)
+{
+    if (valid)
+    {
+        *valid = true;
+    }
+
+    if (pythonNotCStyle)
+    {
+        if (valid && parameter.contains("*"))
+        {
+            *valid = false;
+            return parameter;
+        }
+        else
+        {
+            const PyCMap *e = pyCMap;
+            while (e->ctype)
+            {
+                if (parameter == e->ctype)
+                {
+                    return e->pytype;
+                }
+                ++e;
+            }
+        }
+    }
+
+    return parameter;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::getObjectAndWidgetName(unsigned int objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retValue(retOk);
 
@@ -2350,41 +2464,16 @@ RetVal UiOrganizer::getObjectInfo(unsigned int objectID, QSharedPointer<QByteArr
     return retValue;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getObjectInfo(const QString &classname, ito::UiOrganizer::tQMapArg *objInfo, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::getObjectInfo(const QString &classname, bool pythonNotCStyle, ito::UiOrganizer::MultiStringMap *objInfo, ItomSharedSemaphore *semaphore)
 {
     ito::RetVal retval;
-    UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-    QWidget* newWidget = uiOrg->loadDesignerPluginWidget(classname, retval, ito::AbstractFigure::ModeStandaloneWindow, NULL);
+    QWidget* newWidget = loadDesignerPluginWidget(classname, retval, ito::AbstractFigure::ModeStandaloneWindow, NULL);
     if (newWidget)
     {
-        retval += uiOrg->getObjectInfo((QObject*)newWidget, UiOrganizer::infoShowItomInheritance, objInfo);
-
-        const QMetaObject *mo = newWidget->metaObject();
-        QMetaProperty prop;
-        //int flags;
-        /*
-        for (int i = 0 ; i < mo->propertyCount() ; i++)
-        {
-            prop = mo->property(i);
-            flags = 0;
-            if (prop.isValid()) flags |= UiOrganizer::propValid;
-            if (prop.isReadable()) flags |= UiOrganizer::propReadable;
-            if (prop.isWritable()) flags |= UiOrganizer::propWritable;
-            if (prop.isResettable()) flags |= UiOrganizer::propResettable;
-            if (prop.isFinal()) flags |= UiOrganizer::propFinal;
-            if (prop.isConstant()) flags |= UiOrganizer::propConstant;
-            if (objInfo)
-            {
-                objInfo->insert(QString("prop_").append(prop.name()), prop.value());
-            }
-            else
-            {
-                std::cout << prop.name() << "\n";
-            }
-        }
-        */
-        delete newWidget;
+        retval += getObjectInfo((QObject*)newWidget, UiOrganizer::infoShowItomInheritance, pythonNotCStyle, objInfo);
     }
+
+    DELETE_AND_SET_NULL(newWidget)
 
     if (semaphore)
     {
@@ -2398,10 +2487,10 @@ RetVal UiOrganizer::getObjectInfo(const QString &classname, ito::UiOrganizer::tQ
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer::tQMapArg *propMap, ItomSharedSemaphore *semaphore /*= NULL*/)
+RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCStyle, ito::UiOrganizer::MultiStringMap *propMap, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retValue(retOk);
-    QMap<QString, QString> tmpPropMap;
+    MultiStringMap tmpPropMap;
 
     if (obj)
     {
@@ -2416,6 +2505,9 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
         const QMetaObject *mo = obj->metaObject();
         className = mo->className();
         QStringList qtBaseClasses = QStringList() << "QWidget" << "QMainWindow" << "QFrame";
+        QByteArray methodName;
+        QByteArray signature;
+        bool valid;
 
         while (mo != NULL)
         {
@@ -2464,24 +2556,24 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
             for (int i = mo->propertyCount() - 1; i >= 0; i--)
             {
                 QMetaProperty prop = mo->property(i);
-                if (i >= mo->propertyOffset())
+                signature = getReadableParameter(prop.typeName(), pythonNotCStyle, &valid);
+                
+                if (i >= mo->propertyOffset() && valid)
                 {
                     if (propInfoMap.contains(prop.name()))
                     {
-                        properties.append(QString("%1 : %2; %3").arg(prop.name()).arg(prop.typeName()).arg(QString(propInfoMap[prop.name()])));
+                        properties.append(QString("%1 {%2} -> %3").arg(prop.name()).arg(QString(signature)).arg(QString(propInfoMap[prop.name()])));
                         QString str1("prop_");
                         str1.append(prop.name());
-                        QString str2(prop.typeName());
-                        str2.append("; ");
-                        str2.append(QString("%1").arg(QString(propInfoMap[prop.name()])));
+                        QString str2 = QString("{%1} -> %2").arg(QString(signature)).arg(QString(propInfoMap[prop.name()]));
                         tmpPropMap.insert(str1, str2);
                     }
                     else
                     {
-                        properties.append(QString("%1 : %2").arg(prop.name()).arg(prop.typeName()));
+                        properties.append(QString("%1 {%2}").arg(prop.name()).arg(QString(signature)));
                         QString str1("prop_");
                         str1.append(prop.name());
-                        QString str2(prop.typeName());
+                        QString str2 = QString("{%1}").arg(QString(signature));
                         tmpPropMap.insert(str1, str2);
                     }
                 }
@@ -2493,85 +2585,54 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
 
                 if (meth.methodType() == QMetaMethod::Signal)
                 {
-                    if (i >= mo->methodOffset())
+                    //if the info is rendered for python style, exclude all signals or slots that have the tag ITOM_PYNOTACCESSIBLE before their definition.
+                    if (i >= mo->methodOffset() && (!pythonNotCStyle || strcmp(meth.tag(), "ITOM_PYNOTACCESSIBLE") != 0))
                     {
-#if QT_VERSION >= 0x050000
-                        QString str1("signal_");
-                        str1.append(meth.name());
-                        QString str2(meth.methodSignature());
-                        if (signalInfoMap.contains(meth.name()) && !signalInfoMap[meth.name()].isEmpty())
+                        signature = getReadableMethodSignature(meth, pythonNotCStyle, &methodName, &valid);
+                        if (valid)
                         {
-                            str2.append(" -> ");
-                            str2.append(signalInfoMap[meth.name()]);
-                            signal.append(QString("%1 : %2").arg(meth.methodSignature().data()).arg(signalInfoMap[meth.name()].data()));
-                        }
-                        else
-                        {
-                            signal.append(meth.methodSignature());
-                        }
+                            QString str1("signal_");
+                            str1.append(methodName);
+                            QString str2(signature);
+                            if (signalInfoMap.contains(methodName) && !signalInfoMap[methodName].isEmpty())
+                            {
+                                str2.append(" -> ");
+                                str2.append(signalInfoMap[methodName]);
+                                signal.append(QString("%1 -> %2").arg(signature.data()).arg(signalInfoMap[methodName].data()));
+                            }
+                            else
+                            {
+                                signal.append(signature);
+                            }
 
-                        tmpPropMap.insert(str1, str2);
-#else
-                        QString str1("signal_");
-
-                        QString methName = meth.signature();
-                        methName.chop(methName.length() - methName.indexOf('('));
-                        str1.append(methName);
-
-                        QString str2(meth.signature());
-                        if (signalInfoMap.contains(methName.toLatin1()) && !signalInfoMap[methName.toLatin1()].isEmpty())
-                        {
-                            str2.append(" -> ");
-                            str2.append(signalInfoMap[methName.toLatin1()]);
-                            signal.append(QString("%1 : %2").arg(meth.signature()).arg(signalInfoMap[methName.toLatin1()].data()));
+                            tmpPropMap.insert(str1, str2);
                         }
-                        else
-                        {
-                            signal.append(meth.signature());
-                        }
-
-                        tmpPropMap.insert(str1, str2);
-#endif
                     }
                 }
                 else if (meth.methodType() == QMetaMethod::Slot && meth.access() == QMetaMethod::Public)
                 {
-                    if (i >= mo->methodOffset())
+                    //if the info is rendered for python style, exclude all signals or slots that have the tag ITOM_PYNOTACCESSIBLE before their definition.
+                    if (i >= mo->methodOffset() && (!pythonNotCStyle || strcmp(meth.tag(), "ITOM_PYNOTACCESSIBLE") != 0))
                     {
-#if (QT_VERSION >= 0x050000)
+                        signature = getReadableMethodSignature(meth, pythonNotCStyle, &methodName, &valid);
+                        if (valid)
+                        {
                             QString str1("slot_");
-                            str1.append(meth.name());
-                            QString str2(meth.methodSignature());
-                            if (slotInfoMap.contains(meth.name()) && !slotInfoMap[meth.name()].isEmpty())
+                            str1.append(methodName);
+                            QString str2(signature);
+                            if (signalInfoMap.contains(methodName) && !signalInfoMap[methodName].isEmpty())
                             {
                                 str2.append(" -> ");
-                                str2.append(slotInfoMap[meth.name()]);
-                                slot.append(QString("%1 : %2").arg(meth.methodSignature().data()).arg(slotInfoMap[meth.name()].data()));
+                                str2.append(signalInfoMap[methodName]);
+                                signal.append(QString("%1 -> %2").arg(signature.data()).arg(signalInfoMap[methodName].data()));
                             }
                             else
                             {
-                                slot.append(meth.methodSignature());
+                                signal.append(signature);
                             }
-                            tmpPropMap.insert(str1, str2);
-#else
-                            QString str1("slot_");
 
-                            QString methName = meth.signature();
-                            methName.chop(methName.length() - methName.indexOf('('));
-                            str1.append(methName);
-                            QString str2(meth.signature());
-                            if (slotInfoMap.contains(methName.toLatin1()) && !slotInfoMap[methName.toLatin1()].isEmpty())
-                            {
-                                str2.append(" -> ");
-                                str2.append(slotInfoMap[methName.toLatin1()]);
-                                slot.append(QString("%1 : %2").arg(meth.signature()).arg(slotInfoMap[methName.toLatin1()].data()));
-                            }
-                            else
-                            {
-                                slot.append(meth.signature());
-                            }
                             tmpPropMap.insert(str1, str2);
-#endif
+                        }
                     }
                 }
             }
@@ -2642,7 +2703,6 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, ito::UiOrganizer
         }
         else
         {
-            propMap->clear();
             *propMap = tmpPropMap;
         }
     }

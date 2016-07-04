@@ -404,7 +404,7 @@ plotHandle: {plotItem} \n\
     Handle of the live image plot. This handle is used to control the properties of the plot, connect to its signals or call slots of the plot. \n\
 \n\
 See Also \n\
--------- - \n\
+--------- \n\
 plot, plotItem");
 PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
 {
@@ -1207,7 +1207,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
         }
         else
         {
-            std::cout << "NAME:\t " << fig.classname.toLatin1().data() << "\n";
+            std::cout << "NAME:         " << fig.classname.toLatin1().data() << "\n";
         }
 
         QStringList sl;
@@ -1222,7 +1222,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
 
         else
         {
-            std::cout << "INPUT TYPE:\t " << sl.join(", ").toLatin1().data() << "\n";
+            std::cout << "INPUT TYPE:   " << sl.join(", ").toLatin1().data() << "\n";
         }
 
         sl.clear();
@@ -1236,7 +1236,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
 
         else
         {
-            std::cout << "DATA FORMATS:\t " << sl.join(", ").toLatin1().data() << "\n";
+            std::cout << "DATA FORMATS: " << sl.join(", ").toLatin1().data() << "\n";
         }
             
         sl.clear();
@@ -1250,7 +1250,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
 
         else
         {
-            std::cout << "FEATURES:\t " << sl.join(", ").toLatin1().data() << "\n";
+            std::cout << "FEATURES:     " << sl.join(", ").toLatin1().data() << "\n";
         }
 
         sl.clear();
@@ -1264,7 +1264,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
 
         else
         {
-            std::cout << "TYPE:\t " << sl.join(", ").toLatin1().data() << "\n";
+            std::cout << "TYPE:         " << sl.join(", ").toLatin1().data() << "\n";
         }
 
         if (fig.factory)
@@ -1283,7 +1283,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             }
             else
             {
-                std::cout << "VERSION:\t " << versionStr.toLatin1().data() << "\n";
+                std::cout << "VERSION:      " << versionStr.toLatin1().data() << "\n";
             }
             
 
@@ -1295,7 +1295,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             }
             else
             {
-                std::cout << "AUTHOR:\t " << fac->getAuthor().toLatin1().data() << "\n";
+                std::cout << "AUTHOR:       " << fac->getAuthor().toLatin1().data() << "\n";
             }
 
             if (retDict)
@@ -1306,7 +1306,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             }
             else
             {
-                std::cout << "INFO:\t\t " << fac->getDescription().toLatin1().data() << "\n";
+                std::cout << "INFO:         " << fac->getDescription().toLatin1().data() << "\n";
             }
 
             if (retDict)
@@ -1317,7 +1317,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             }
             else
             {
-                std::cout << "LICENSE:\t\t " << fac->getLicenseInfo().toLatin1().data() << "\n";
+                std::cout << "LICENSE:      " << fac->getLicenseInfo().toLatin1().data() << "\n";
             }
 
             if (retDict)
@@ -1328,7 +1328,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             }
             else
             {
-                std::cout << "ABOUT:\t\t " << fac->getAboutInfo().toLatin1().data() << "\n";
+                std::cout << "ABOUT:        " << fac->getAboutInfo().toLatin1().data() << "\n";
             }
                 
             if (retDict)
@@ -1343,13 +1343,14 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             }  
 
             UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-            ito::UiOrganizer::tQMapArg objInfo;
+            ito::UiOrganizer::MultiStringMap objInfo;
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-            QMetaObject::invokeMethod(uiOrg, "getObjectInfo", Q_ARG(const QString&, fig.classname), Q_ARG(ito::UiOrganizer::tQMapArg*, &objInfo), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            QMetaObject::invokeMethod(uiOrg, "getObjectInfo", Q_ARG(const QString&, fig.classname), Q_ARG(bool, true), Q_ARG(ito::UiOrganizer::MultiStringMap*, &objInfo), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
             locker.getSemaphore()->wait(-1);
             retval += locker.getSemaphore()->returnValue;
 
-            QMap<QString, QString>::iterator mapIter;
+            ito::UiOrganizer::MultiStringMap::Iterator mapIter;
+            int idx;
 
             if (retDict)
             {
@@ -1362,7 +1363,6 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
 
             for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
-
                 if (mapIter.key().startsWith("ci_"))
                 {
                     QString name = QString(mapIter.key()).remove(0, 3);
@@ -1395,7 +1395,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             {
                 if (mapIter.key().startsWith("prop_"))
                 {
-                    QString name = QString(mapIter.key()).remove(0, 5);
+                    QString name = mapIter.key().mid(5);
                     QString value = mapIter.value();
                     if (retDict)
                     {
@@ -1405,7 +1405,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
                     }
                     else
                     {
-                        std::cout << name.toLatin1().data() << " : " << value.toLatin1().data() << "\n";
+                        std::cout << name.toLatin1().data() << " " << value.toLatin1().data() << "\n";
                     }
                 }
             }
@@ -1425,7 +1425,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             {
                 if (mapIter.key().startsWith("signal_"))
                 {
-                    QString name = QString(mapIter.key()).remove(0, 7);
+                    QString name = mapIter.key().mid(7);
                     QString value = mapIter.value();
                     if (retDict)
                     {
@@ -1435,7 +1435,15 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
                     }
                     else
                     {
-                        std::cout << name.toLatin1().data() << " : " << value.toLatin1().data() << "\n";
+                        idx = value.indexOf("\n");
+                        if (idx < 0)
+                        {
+                            std::cout << value.toLatin1().data() << "\n";
+                        }
+                        else
+                        {
+                            std::cout << value.left(idx).toLatin1().data() << "...\n";
+                        }
                     }
                 }
             }
@@ -1455,7 +1463,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             {
                 if (mapIter.key().startsWith("slot_"))
                 {
-                    QString name = QString(mapIter.key()).remove(0, 5);
+                    QString name = mapIter.key().mid(5);
                     QString value = mapIter.value();
                     if (retDict)
                     {
@@ -1465,7 +1473,15 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
                     }
                     else
                     {
-                        std::cout << name.toLatin1().data() << " : " << value.toLatin1().data() << "\n";
+                        idx = value.indexOf("\n");
+                        if (idx < 0)
+                        {
+                            std::cout << value.toLatin1().data() << "\n";
+                        }
+                        else
+                        {
+                            std::cout << value.left(idx).toLatin1().data() << "...\n";
+                        }
                     }
                 }
             }

@@ -4172,11 +4172,7 @@ PyObject* PythonDataObject::PyDataObject_repr(PyDataObject *self)
 };
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectData_doc,"data() -> prints the content of the dataObject in a readable form. \n\
-\n\
-Notes \n\
------ \n\
-When calling this method, the complete content of the dataObject is printed to the standard output stream.");
+PyDoc_STRVAR(pyDataObjectData_doc,"data() -> prints the content of the dataObject to the command line in a readable form.");
 PyObject* PythonDataObject::PyDataObject_data(PyDataObject *self)
 {
     try
@@ -7259,14 +7255,14 @@ The destination data object has the same size than this data object and the real
 conversion is done using the formula : gray = 0.299 * red + 0.587 * green + 0.114 * blue.\
 \n\
 Parameters \n\
----------- - \n\
+----------- \n\
 shapes : {shape or seq. of shapes} \n\
     The union of all shapes (polygons, rectangles, squares, circles and ellipes are considered, only) are marked within the mask \n\
 inverse : {bool} \n\
     If False (default) the shape areas are marked with 255 and the outer areas with 0, if True the behaviour is vice-versa. \n\
 \n\
 Returns \n\
------- - \n\
+------- \n\
 dataObj : {dataObject} \n\
     uint8 data object as mask with the same size, scales and offsets than this object. The mask is applied to all planes.");
 PyObject* PythonDataObject::PyDataObject_createMask(PyDataObject *self, PyObject *args, PyObject* kwds)
@@ -7374,7 +7370,7 @@ Parameters \n\
 dims : {integer list} \n\
     'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns\n\
 dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','float32','float64','complex64','complex128', 'rgba32'\n\
+    'dtype' is the data type of each element, possible values: 'int8', 'uint8', ..., 'int32', 'uint32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32'\n\
 continuous : {int}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 \n\
@@ -7430,7 +7426,7 @@ Parameters \n\
 dims : {integer list} \n\
     'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns\n\
 dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','float32','float64','complex64','complex128', 'rgba32'\n\
+    'dtype' is the data type of each element, possible values: 'int8', 'uint8', ..., 'int32', 'uint32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32'\n\
 continuous : {int}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 \n\
@@ -7493,7 +7489,7 @@ Parameters \n\
 dims : {integer list} \n\
     'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns.\n\
 dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','float32','float64','complex64','complex128'\n\
+    'dtype' is the data type of each element, possible values: 'int8', 'uint8', ..., 'int32', 'uint32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32'\n\
 continuous : {int}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 \n\
@@ -7552,7 +7548,7 @@ Parameters \n\
 dims : {integer list} \n\
     'dims' is list indicating the size of each dimension, e.g. [2,3] is a matrix with 2 rows and 3 columns.\n\
 dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32', 'float32','float64','complex64','complex128'\n\
+    'dtype' is the data type of each element, possible values: 'int8', 'uint8', ..., 'int32', 'uint32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32'\n\
 continuous : {int}, optional \n\
     'continuous' [0|1] defines whether the data block should be continuously allocated in memory [1] or in different smaller blocks [0] (recommended for huge matrices).\n\
 \n\
@@ -7609,7 +7605,7 @@ Parameters \n\
 size : {int}, \n\
     the size of the square matrix (single value)\n\
 dtype : {str}, optional \n\
-    'dtype' is the data type of each element, possible values: 'int8','uint8',...,'int32','uint32','float32','float64','complex64','complex128'\n\
+    'dtype' is the data type of each element, possible values: 'int8', 'uint8', ..., 'int32', 'uint32', 'float32', 'float64', 'complex64', 'complex128', 'rgba32' \n\
 \n\
 Returns \n\
 ------- \n\

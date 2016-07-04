@@ -29,7 +29,6 @@
 
 #include "../organizer/uiOrganizer.h"
 #include "../AppManagement.h"
-#include "common/sharedStructuresPrimitives.h"
 #include "common/shape.h"
 
 namespace ito
@@ -167,7 +166,7 @@ int PythonPlotItem::PyPlotItem_init(PyPlotItem *self, PyObject *args, PyObject *
         else
         {
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-            QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, objectID), Q_ARG(QSharedPointer<QByteArray>, objectName), Q_ARG(QSharedPointer<QByteArray>, widgetClassName), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+            QMetaObject::invokeMethod(uiOrga, "getObjectAndWidgetName", Q_ARG(uint, objectID), Q_ARG(QSharedPointer<QByteArray>, objectName), Q_ARG(QSharedPointer<QByteArray>, widgetClassName), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
 
             locker.getSemaphore()->wait(-1);
             retval += locker.getSemaphore()->returnValue;

@@ -442,7 +442,7 @@ PyObject* PythonShape::PyShape_getType(PyShape *self, void * /*closure*/)
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getValid_doc,  "Return true if shape is a valid geometric shape, else False");
+PyDoc_STRVAR(shape_getValid_doc,  "Return True if shape is a valid geometric shape, else False");
 PyObject* PythonShape::PyShape_getValid(PyShape *self, void * /*closure*/)
 {
     if(!self || self->shape == NULL)
@@ -1126,7 +1126,7 @@ int PythonShape::PyShape_setHeight(PyShape *self, PyObject *value, void * /*clos
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getIndex_doc,  "Get/set index of shape. The default is -1, then a plot assigns an auto-incremented index to the shape. If >= 0 it is possible to modify an existing shape with the same index.");
+PyDoc_STRVAR(shape_getIndex_doc,  "Get/set index of shape. The default is -1, however if the shape is a geometric shape of a plot, an auto-incremented index is assigned once the shape is drawn or set. If >= 0 it is possible to modify an existing shape with the same index.");
 PyObject* PythonShape::PyShape_getIndex(PyShape *self, void * /*closure*/)
 {
     if (!self || self->shape == NULL)
@@ -1269,7 +1269,7 @@ int PythonShape::PyShape_setTransform(PyShape *self, PyObject *value, void * /*c
 }
 
 //-----------------------------------------------------------------------------
-PyDoc_STRVAR(shape_getArea_doc,  "Get area of shape.");
+PyDoc_STRVAR(shape_getArea_doc,  "Get area of shape (points and lines have an empty area).");
 PyObject* PythonShape::PyShape_getArea(PyShape *self, void * /*closure*/)
 {
     if(!self || self->shape == NULL)
