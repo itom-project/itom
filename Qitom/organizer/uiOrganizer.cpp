@@ -2411,11 +2411,11 @@ QByteArray UiOrganizer::getReadableMethodSignature(const QMetaMethod &method, bo
     {
         if (i == 0)
         {
-            p += b;
+            p += parameters[i];
         }
         else
         {
-            p += (QByteArray(", ") + b);
+            p += (QByteArray(", ") + parameters[i]);
         }
     }
 
