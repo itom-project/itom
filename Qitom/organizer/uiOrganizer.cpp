@@ -2350,7 +2350,8 @@ QByteArray UiOrganizer::getReadableMethodSignature(const QMetaMethod &method, bo
     name = method.name();
 #else
     QString methName = method.signature();
-    name = methName.chop(methName.length() - methName.indexOf('(')).toLatin1();
+    methName.chop(methName.length() - methName.indexOf('('));
+    name = methName.toLatin1();
 #endif
 
     if (methodName)
