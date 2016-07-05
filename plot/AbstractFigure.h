@@ -73,6 +73,7 @@ class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNo
     Q_CLASSINFO("prop://contextMenuEnabled", "Defines whether the context menu of the plot should be enabled or not.")
     Q_CLASSINFO("prop://renderLegend", "If this property is true, the legend are included in pixelmaps renderings.")
 
+    Q_CLASSINFO("slot://getPlotID", "Return window ID of this plot {int}.")
     Q_CLASSINFO("slot://refreshPlot", "Triggers an update of the current plot window.")
 
     public:

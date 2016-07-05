@@ -1343,13 +1343,13 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             }  
 
             UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-            ito::UiOrganizer::MultiStringMap objInfo;
+            ito::UiOrganizer::MultiStringList objInfo;
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-            QMetaObject::invokeMethod(uiOrg, "getObjectInfo", Q_ARG(const QString&, fig.classname), Q_ARG(bool, true), Q_ARG(ito::UiOrganizer::MultiStringMap*, &objInfo), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            QMetaObject::invokeMethod(uiOrg, "getObjectInfo", Q_ARG(const QString&, fig.classname), Q_ARG(bool, true), Q_ARG(ito::UiOrganizer::MultiStringList*, &objInfo), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
             locker.getSemaphore()->wait(-1);
             retval += locker.getSemaphore()->returnValue;
 
-            ito::UiOrganizer::MultiStringMap::Iterator mapIter;
+            ito::UiOrganizer::MultiStringList::Iterator mapIter;
             int idx;
 
             if (retDict)
@@ -1363,10 +1363,10 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
 
             for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
-                if (mapIter.key().startsWith("ci_"))
+                if (mapIter->first.startsWith("ci_"))
                 {
-                    QString name = QString(mapIter.key()).remove(0, 3);
-                    QString value = mapIter.value();
+                    QString name = QString(mapIter->first).remove(0, 3);
+                    QString value = mapIter->second;
                     if (retDict)
                     {
                         item = PythonQtConversion::QStringToPyObject(value); //new ref
@@ -1393,10 +1393,10 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             
             for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
-                if (mapIter.key().startsWith("prop_"))
+                if (mapIter->first.startsWith("prop_"))
                 {
-                    QString name = mapIter.key().mid(5);
-                    QString value = mapIter.value();
+                    QString name = mapIter->first.mid(5);
+                    QString value = mapIter->second;
                     if (retDict)
                     {
                         item = PythonQtConversion::QStringToPyObject(value); //new ref
@@ -1423,10 +1423,10 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
 
             for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
-                if (mapIter.key().startsWith("signal_"))
+                if (mapIter->first.startsWith("signal_"))
                 {
-                    QString name = mapIter.key().mid(7);
-                    QString value = mapIter.value();
+                    QString name = mapIter->first.mid(7);
+                    QString value = mapIter->second;
                     if (retDict)
                     {
                         item = PythonQtConversion::QStringToPyObject(value); //new ref
@@ -1461,10 +1461,10 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
 
             for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
-                if (mapIter.key().startsWith("slot_"))
+                if (mapIter->first.startsWith("slot_"))
                 {
-                    QString name = mapIter.key().mid(5);
-                    QString value = mapIter.value();
+                    QString name = mapIter->first.mid(5);
+                    QString value = mapIter->second;
                     if (retDict)
                     {
                         item = PythonQtConversion::QStringToPyObject(value); //new ref
@@ -1498,10 +1498,10 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             }
             for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
-                if (mapIter.key().startsWith("inheritance_"))
+                if (mapIter->first.startsWith("inheritance_"))
                 {
-                    QString name = QString(mapIter.key()).remove(0, 12);
-                    QString value = mapIter.value();
+                    QString name = QString(mapIter->first).remove(0, 12);
+                    QString value = mapIter->second;
                     if (retDict)
                     {
                         item = PythonQtConversion::QStringToPyObject(value); //new ref

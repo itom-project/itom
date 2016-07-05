@@ -124,8 +124,8 @@ UiOrganizer::UiOrganizer(ito::RetVal &retval) :
 
     qRegisterMetaType<ito::UiDataContainer>("ito::UiDataContainer");
     qRegisterMetaType<ito::UiDataContainer>("ito::UiDataContainer&");
-    qRegisterMetaType<ito::UiOrganizer::MultiStringMap*>("ito::UiOrganizer::MultiStringMap*");
-    qRegisterMetaType<ito::UiOrganizer::MultiStringMap*>("ito::UiOrganizer::MultiStringMap&");
+    qRegisterMetaType<ito::UiOrganizer::MultiStringList*>("ito::UiOrganizer::MultiStringList*");
+    qRegisterMetaType<ito::UiOrganizer::MultiStringList*>("ito::UiOrganizer::MultiStringList&");
 
     if (QEvent::registerEventType(QEvent::User+123) != QEvent::User+123)
     {
@@ -2350,7 +2350,7 @@ QByteArray UiOrganizer::getReadableMethodSignature(const QMetaMethod &method, bo
     name = method.name();
 #else
     QString methName = method.signature();
-    name = methName.chop(methName.length() - methName.indexOf('('));
+    name = methName.chop(methName.length() - methName.indexOf('(')).toLatin1();
 #endif
 
     if (methodName)
@@ -2368,7 +2368,7 @@ QByteArray UiOrganizer::getReadableMethodSignature(const QMetaMethod &method, bo
     const PyCMap *e;
     bool found = false;
 
-    for (int i = 0; i < method.parameterCount(); ++i)
+    for (int i = 0; i < names.count(); ++i)
     {
         if (pythonNotCStyle)
         {
@@ -2401,8 +2401,25 @@ QByteArray UiOrganizer::getReadableMethodSignature(const QMetaMethod &method, bo
             parameters << (types[i] + " " + names[i]);
         }
     }
-    
+
+#if QT_VERSION >= 0x050000
     return (name + "(" + parameters.join(", ") + ")");
+#else
+    QByteArray p;
+    for (int i = 0; i < parameters.size(); ++i)
+    {
+        if (i == 0)
+        {
+            p += b;
+        }
+        else
+        {
+            p += (QByteArray(", ") + b);
+        }
+    }
+
+    return (name + "(" + p + ")");
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2464,7 +2481,7 @@ RetVal UiOrganizer::getObjectAndWidgetName(unsigned int objectID, QSharedPointer
     return retValue;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getObjectInfo(const QString &classname, bool pythonNotCStyle, ito::UiOrganizer::MultiStringMap *objInfo, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::getObjectInfo(const QString &classname, bool pythonNotCStyle, ito::UiOrganizer::MultiStringList *objInfo, ItomSharedSemaphore *semaphore)
 {
     ito::RetVal retval;
     QWidget* newWidget = loadDesignerPluginWidget(classname, retval, ito::AbstractFigure::ModeStandaloneWindow, NULL);
@@ -2487,10 +2504,10 @@ RetVal UiOrganizer::getObjectInfo(const QString &classname, bool pythonNotCStyle
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCStyle, ito::UiOrganizer::MultiStringMap *propMap, ItomSharedSemaphore *semaphore /*= NULL*/)
+RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCStyle, ito::UiOrganizer::MultiStringList *propMap, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retValue(retOk);
-    MultiStringMap tmpPropMap;
+    MultiStringList tmpPropMap;
 
     if (obj)
     {
@@ -2544,11 +2561,11 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                     else
                     {
                         classInfo.append(QString("%1 : %2").arg(ci.name()).arg(ci.value()));
-                        tmpPropMap.insert(QString("ci: ").append(ci.name()), ci.value());
+                        tmpPropMap.append(MultiString(QString("ci: ").append(ci.name()), ci.value()));
                         QString str1("ci_");
                         str1.append(ci.name());
                         QString str2(ci.value());
-                        tmpPropMap.insert(str1, str2);
+                        tmpPropMap.append(MultiString(str1, str2));
                     }
                 }
             }
@@ -2566,7 +2583,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                         QString str1("prop_");
                         str1.append(prop.name());
                         QString str2 = QString("{%1} -> %2").arg(QString(signature)).arg(QString(propInfoMap[prop.name()]));
-                        tmpPropMap.insert(str1, str2);
+                        tmpPropMap.append(MultiString(str1, str2));
                     }
                     else
                     {
@@ -2574,7 +2591,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                         QString str1("prop_");
                         str1.append(prop.name());
                         QString str2 = QString("{%1}").arg(QString(signature));
-                        tmpPropMap.insert(str1, str2);
+                        tmpPropMap.append(MultiString(str1, str2));
                     }
                 }
             }
@@ -2605,7 +2622,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                                 signal.append(signature);
                             }
 
-                            tmpPropMap.insert(str1, str2);
+                            tmpPropMap.append(MultiString(str1, str2));
                         }
                     }
                 }
@@ -2620,18 +2637,18 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                             QString str1("slot_");
                             str1.append(methodName);
                             QString str2(signature);
-                            if (signalInfoMap.contains(methodName) && !signalInfoMap[methodName].isEmpty())
+                            if (slotInfoMap.contains(methodName) && !slotInfoMap[methodName].isEmpty())
                             {
                                 str2.append(" -> ");
-                                str2.append(signalInfoMap[methodName]);
-                                signal.append(QString("%1 -> %2").arg(signature.data()).arg(signalInfoMap[methodName].data()));
+                                str2.append(slotInfoMap[methodName]);
+                                slot.append(QString("%1 -> %2").arg(signature.data()).arg(slotInfoMap[methodName].data()));
                             }
                             else
                             {
-                                signal.append(signature);
+                                slot.append(signature);
                             }
 
-                            tmpPropMap.insert(str1, str2);
+                            tmpPropMap.append(MultiString(str1, str2));
                         }
                     }
                 }
@@ -2642,7 +2659,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                 mo = mo->superClass();
                 if (mo)
                 {
-                    tmpPropMap.insert(QString("inheritance"), mo->className());
+                    tmpPropMap.append(MultiString(QString("inheritance"), mo->className()));
                 }
             }
             else
@@ -2678,13 +2695,23 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                 std::cout << "\n" << std::endl;
             }
 
+            int idx;
+
             if (signal.size() > 0)
             {
                 std::cout << "Signals\n---------------\n";
 
                 foreach(const QString &i, signal)
                 {
-                    std::cout << " " << i.toLatin1().data() << "\n";
+                    idx = i.indexOf("\n");
+                    if (idx < 0)
+                    {
+                        std::cout << " " << i.toLatin1().data() << "\n";
+                    }
+                    else
+                    {
+                        std::cout << " " << i.left(idx).toLatin1().data() << "...\n";
+                    }
                 }
 
                 std::cout << "\n" << std::endl;
@@ -2695,7 +2722,15 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
 
                 foreach(const QString &i, slot)
                 {
-                    std::cout << " " << i.toLatin1().data() << "\n";
+                    idx = i.indexOf("\n");
+                    if (idx < 0)
+                    {
+                        std::cout << " " << i.toLatin1().data() << "\n";
+                    }
+                    else
+                    {
+                        std::cout << " " << i.left(idx).toLatin1().data() << "...\n";
+                    }
                 }
 
                 std::cout << "\n" << std::endl;

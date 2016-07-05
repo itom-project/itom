@@ -305,7 +305,8 @@ public:
         infoShowAllInheritance =0x0008
     };
 
-    typedef QMultiMap<QString,QString> MultiStringMap;
+    typedef QPair<QString, QString> MultiString;
+    typedef QList<MultiString > MultiStringList;
 
     UiOrganizer(ito::RetVal &retval);
     ~UiOrganizer();
@@ -419,9 +420,9 @@ public slots:
     RetVal getSignalIndex(unsigned int objectID, const QString &signalSignature, QSharedPointer<int> signalIndex, QSharedPointer<QObject*> objPtr, QSharedPointer<IntList> argTypes, ItomSharedSemaphore *semaphore = NULL);
     RetVal callSlotOrMethod(bool slotNotMethod, unsigned int objectID, int slotOrMethodIndex, QSharedPointer<FctCallParamContainer> args, ItomSharedSemaphore *semaphore = NULL);
 
-    RetVal getObjectInfo(const QString &classname, bool pythonNotCStyle, ito::UiOrganizer::MultiStringMap *objInfo, ItomSharedSemaphore *semaphore = NULL);
-    RetVal getObjectInfo(const QObject *obj, int type, bool pythonNotCStyle, ito::UiOrganizer::MultiStringMap* propMap, ItomSharedSemaphore *semaphore = NULL);
-    inline RetVal getObjectInfo(unsigned int objectID, int type, bool pythonNotCStyle, ito::UiOrganizer::MultiStringMap *propMap, ItomSharedSemaphore *semaphore = NULL)
+    RetVal getObjectInfo(const QString &classname, bool pythonNotCStyle, ito::UiOrganizer::MultiStringList *objInfo, ItomSharedSemaphore *semaphore = NULL);
+    RetVal getObjectInfo(const QObject *obj, int type, bool pythonNotCStyle, ito::UiOrganizer::MultiStringList* propMap, ItomSharedSemaphore *semaphore = NULL);
+    inline RetVal getObjectInfo(unsigned int objectID, int type, bool pythonNotCStyle, ito::UiOrganizer::MultiStringList *propMap, ItomSharedSemaphore *semaphore = NULL)
     {
         return getObjectInfo(getWeakObjectReference(objectID), type, pythonNotCStyle, propMap, semaphore);
     }
@@ -457,6 +458,6 @@ private slots:
 
 } //namespace ito
 
-Q_DECLARE_METATYPE(ito::UiOrganizer::MultiStringMap*)
+Q_DECLARE_METATYPE(ito::UiOrganizer::MultiStringList*)
 
 #endif
