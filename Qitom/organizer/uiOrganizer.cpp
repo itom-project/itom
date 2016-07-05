@@ -2525,6 +2525,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
         QStringList qtBaseClasses = QStringList() << "QWidget" << "QMainWindow" << "QFrame";
         QByteArray methodName;
         QByteArray signature;
+        bool readonly;
         bool valid;
 
         while (mo != NULL)
@@ -2575,23 +2576,24 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
             {
                 QMetaProperty prop = mo->property(i);
                 signature = getReadableParameter(prop.typeName(), pythonNotCStyle, &valid);
+                readonly = (prop.isWritable() == false);
                 
                 if (i >= mo->propertyOffset() && valid)
                 {
                     if (propInfoMap.contains(prop.name()))
                     {
-                        properties.append(QString("%1 {%2} -> %3").arg(prop.name()).arg(QString(signature)).arg(QString(propInfoMap[prop.name()])));
+                        properties.append(QString("%1 {%2} -> %3%4").arg(prop.name()).arg(QString(signature)).arg(QString(propInfoMap[prop.name()])).arg(readonly ? " (readonly)" : ""));
                         QString str1("prop_");
                         str1.append(prop.name());
-                        QString str2 = QString("{%1} -> %2").arg(QString(signature)).arg(QString(propInfoMap[prop.name()]));
+                        QString str2 = QString("{%1} -> %2%3").arg(QString(signature)).arg(QString(propInfoMap[prop.name()])).arg(readonly ? " (readonly)" : "");
                         tmpPropMap.append(MultiString(str1, str2));
                     }
                     else
                     {
-                        properties.append(QString("%1 {%2}").arg(prop.name()).arg(QString(signature)));
+                        properties.append(QString("%1 {%2}%3").arg(prop.name()).arg(QString(signature)).arg(readonly ? " (readonly)" : ""));
                         QString str1("prop_");
                         str1.append(prop.name());
-                        QString str2 = QString("{%1}").arg(QString(signature));
+                        QString str2 = QString("{%1}%3").arg(QString(signature)).arg(readonly ? " (readonly)" : "");
                         tmpPropMap.append(MultiString(str1, str2));
                     }
                 }
