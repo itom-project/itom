@@ -5443,10 +5443,11 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
     else
     {
         PyObject *result = NULL;
+        PyObject *version = PyLong_FromLong(3); //Use pickle protocol version 3 as default. This is readable by all itom version that have been published (default for Python 3).
         
         try
         {
-            result = PyObject_CallMethodObjArgs(pickleModule, PyUnicode_FromString("dump"), dict, fileHandle, NULL);
+            result = PyObject_CallMethodObjArgs(pickleModule, PyUnicode_FromString("dump"), dict, fileHandle, version, NULL);
         }
         catch(std::bad_alloc &/*ba*/)
         {
@@ -5467,6 +5468,8 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
         {
             retval += ito::RetVal(ito::retError,0,"Pickle error. An unspecified exception has been thrown.");  
         }
+
+        Py_DECREF(version);
 
         if (result == NULL)
         {

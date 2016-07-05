@@ -3852,6 +3852,7 @@ PyObject* PythonItom::PyLoadIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwd
 PyDoc_STRVAR(pySaveIDC_doc,"saveIDC(filename, dict [,overwriteIfExists = True]) -> saves the given dictionary as pickled idc-file.\n\
 \n\
 This method saves the given dictionary as pickled idc-file using the method dump from the builtin module pickle.\n\
+The file will be saved with the pickle protocol version 3 (default for Python 3).\n\
 \n\
 Parameters \n\
 ----------- \n\
