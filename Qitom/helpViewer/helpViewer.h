@@ -47,7 +47,6 @@ public:
     ~HelpViewer();
 
     void setCollectionFile(const QString &collectionFile);
-	void showMainPage(const QUrl &url);
 
 private:
     QWebEngineView *m_pView;
@@ -58,6 +57,8 @@ private:
 private slots:
     void showPage(const QUrl &url);
 	void changeIndex(const QUrl &url);
+	void showStartPage();
+	void expandContent();
 };
 
 } //end namespace ito

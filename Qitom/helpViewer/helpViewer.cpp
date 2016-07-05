@@ -34,8 +34,16 @@
 #include <qdockwidget.h>
 #include <qhelpcontentwidget.h>
 #include <qhelpindexwidget.h>
+#include <qhelpsearchengine.h>
+#include <qhelpsearchquerywidget.h>
+#include <qhelpsearchresultwidget.h>
 #include <qdebug.h>
+#include <qtimer.h>
 #include "qtHelpUrlSchemeHandler.h"
+#include <qlayout.h>
+#include <qtoolbar.h>
+#include <qmenu.h>
+#include <qmenubar.h>
 
 namespace ito {
 
@@ -59,16 +67,38 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
     
     QHelpContentWidget *hcw = m_pHelpEngine->contentWidget();
     QDockWidget *dockWidget = new QDockWidget("content", this);
-    dockWidget->setWidget(hcw);
+	dockWidget->setWidget(hcw);
     addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
-    connect(hcw, SIGNAL(linkActivated(QUrl)), this, SLOT(showPage(QUrl)));
+	connect(hcw, SIGNAL(linkActivated(QUrl)), this, SLOT(showPage(QUrl)));
 	connect(m_pView, SIGNAL(urlChanged(QUrl)), this, SLOT(changeIndex(QUrl)));	
-
+	connect(m_pHelpEngine, SIGNAL(setupFinished()), this, SLOT(showStartPage()));
+	QHelpContentModel *hcm = m_pHelpEngine->contentModel();
+	connect(hcm, SIGNAL(contentsCreated()), this, SLOT(expandContent()));
+	
     QHelpIndexWidget *hiw = m_pHelpEngine->indexWidget();
     dockWidget = new QDockWidget("index", this);
     dockWidget->setWidget(hiw);
     addDockWidget(Qt::RightDockWidgetArea, dockWidget);
+
+	QVBoxLayout *layout = new QVBoxLayout(this);
+	layout->addWidget(m_pHelpEngine->searchEngine()->queryWidget());
+	layout->addWidget(m_pHelpEngine->searchEngine()->resultWidget());
+	dockWidget = new QDockWidget("search", this);
+	dockWidget->setLayout(layout);
+	addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
+
+	QToolBar *toolbar = new QToolBar(this);
+	toolbar->addAction(m_pView->pageAction(QWebEnginePage::Back));
+	toolbar->addAction(m_pView->pageAction(QWebEnginePage::Forward));
+	toolbar->addAction(m_pView->pageAction(QWebEnginePage::Reload));
+	addToolBar(toolbar);
 	
+	QMenuBar *menuBar = new QMenuBar(this);
+	QMenu *fileMenu = menuBar->addMenu(tr("File").toLatin1().data());
+	QMenu *editMenu = menuBar->addMenu(tr("Edit").toLatin1().data());
+	fileMenu->addAction(m_pView->pageAction(QWebEnginePage::Back));
+	fileMenu->addAction(m_pView->pageAction(QWebEnginePage::RequestClose));
+	setMenuWidget(menuBar);
 }
 
 //----------------------------------------------------------------------------------------
@@ -82,15 +112,33 @@ HelpViewer::~HelpViewer()
 //----------------------------------------------------------------------------------------
 void HelpViewer::setCollectionFile(const QString &collectionFile)
 {
+	QHelpContentWidget *hcw = m_pHelpEngine->contentWidget();
     m_pHelpEngine->setCollectionFile(collectionFile);
     m_pHelpEngine->setupData();
 }
 
 //----------------------------------------------------------------------------------------
-void HelpViewer::showMainPage(const QUrl &url)
+void HelpViewer::showStartPage()
 {
-	showPage(url);
-	changeIndex(url);	
+	if (m_pView)
+	{
+		QHelpContentWidget *hcw = m_pHelpEngine->contentWidget();
+		QString itomVersion = QString("%1.%2.%3").arg(QString::number(ITOM_VERSION_MAJOR)).arg(QString::number(ITOM_VERSION_MINOR)).arg(QString::number(ITOM_VERSION_PATCH));
+		QUrl mainPageUrl, pluginPageUrl;
+		mainPageUrl.setUrl(tr("qthelp://org.sphinx.itomdocumentation.%1/doc/index.html").arg(itomVersion));
+		//pluginPageUrl.setUrl("qthelp://org.sphinx.itomplugindoc/doc/index.html");
+		showPage(mainPageUrl);		
+	}	
+}
+
+//----------------------------------------------------------------------------------------
+void HelpViewer::expandContent()
+{
+	if (m_pView)
+	{
+		QHelpContentWidget *hcw = m_pHelpEngine->contentWidget();
+		hcw->expandToDepth(0);
+	}
 }
 
 //----------------------------------------------------------------------------------------
@@ -99,7 +147,6 @@ void HelpViewer::showPage(const QUrl &url)
     if (m_pView)
     {
         m_pView->setHtml(m_pHelpEngine->fileData(url), url);
-		qDebug() << url;
     }
 }
 
@@ -110,7 +157,7 @@ void HelpViewer::changeIndex(const QUrl &url)
 	{
 		QHelpContentWidget *hcw = m_pHelpEngine->contentWidget();
 		QModelIndex index = hcw->indexOf(url);
-		hcw->setCurrentIndex(index);
+		QString test = url.toString();
 	}
 }
 

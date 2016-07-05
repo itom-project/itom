@@ -1038,12 +1038,6 @@ void MainWindow::mnuShowAssistant()
         m_pHelpViewer->setCollectionFile(collectionFile);
         m_pHelpViewer->show();
 
-		QString itomVersion = QString("%1.%2.%3").arg(QString::number(ITOM_VERSION_MAJOR)).arg(QString::number(ITOM_VERSION_MINOR)).arg(QString::number(ITOM_VERSION_PATCH));
-
-		QUrl mainPageUrl;
-		mainPageUrl.setUrl(tr("qthelp://org.sphinx.itomdocumentation.%1/doc/index.html").arg(itomVersion));
-		m_pHelpViewer->showMainPage(mainPageUrl);
-
 #else
         ProcessOrganizer *po = qobject_cast<ProcessOrganizer*>(AppManagement::getProcessOrganizer());
         if (po)
