@@ -99,6 +99,8 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	fileMenu->addAction(m_pView->pageAction(QWebEnginePage::Back));
 	fileMenu->addAction(m_pView->pageAction(QWebEnginePage::RequestClose));
 	setMenuWidget(menuBar);
+
+	showMaximized();
 }
 
 //----------------------------------------------------------------------------------------
@@ -157,7 +159,7 @@ void HelpViewer::changeIndex(const QUrl &url)
 	{
 		QHelpContentWidget *hcw = m_pHelpEngine->contentWidget();
 		QModelIndex index = hcw->indexOf(url);
-		QString test = url.toString();
+		hcw->setCurrentIndex(index);
 	}
 }
 
