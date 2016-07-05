@@ -1131,7 +1131,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
     }
 #endif
 
-    ito::RetVal retval = 0;
+    ito::RetVal retval;
     int pluginNum = -1;
     int plugtype = -1;
     int version = -1;
@@ -1144,6 +1144,7 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
     PyObject *result = NULL;
     PyObject *item = NULL;    
     PyObject *itemsDict = NULL;
+    QString plotName_ = (plotName != NULL) ? QLatin1String(plotName) : QString("");
 
     ito::DesignerWidgetOrganizer *dwo = qobject_cast<ito::DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
     if (!dwo)
@@ -1156,34 +1157,55 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
         bool found = false;
         QList<ito::FigurePlugin> plugins = dwo->getPossibleFigureClasses(0, 0, 0);
 
-        std::cout << "Available plots\n----------------------------------------\n";
+        if (!retDict)
+        {
+            std::cout << "Available plots\n----------------------------------------\n";
+        }
 
-        FigurePlugin fig;
-        result = PyDict_New();
+        result = PyTuple_New(plugins.size());
         int i = 0;
-        foreach (fig, plugins)
+        foreach (const FigurePlugin &fig, plugins)
         {
             if (retDict)
             {
                 item = PythonQtConversion::QStringToPyObject(fig.classname); //new ref
-                PyDict_SetItemString(result, QString::number(i).toLatin1().data(), item);
-                Py_DECREF(item);
+                PyTuple_SetItem(result, i, item); //steals a reference
             }
             else
             {
-                std::cout << "#" << i++ <<"\t" << fig.classname.toLatin1().data() << "\n";
+                std::cout << "#" << i <<"\t" << fig.classname.toLatin1().data() << "\n";
             }
-        }        
+            i += 1;
+        }     
+
+        if (i == 0 && !retDict)
+        {
+            std::cout << "No plot plugins found\n";
+        }
     }
     else
     {
+        /* if className is 1D, 2D, 2.5D or 3D, the default from the respective categories is used:*/
+        if (plotName_.compare("1d", Qt::CaseInsensitive) == 0)
+        {
+            plotName_ = dwo->getFigureClass("DObjStaticLine", "", retval);
+        }
+        else if (plotName_.compare("2d", Qt::CaseInsensitive) == 0)
+        {
+            plotName_ = dwo->getFigureClass("DObjStaticImage", "", retval);
+        }
+        else if (plotName_.compare("2.5d", Qt::CaseInsensitive) == 0)
+        {
+            plotName_ = dwo->getFigureClass("PerspectivePlot", "", retval);
+        }
+
         bool found = false;
         QList<ito::FigurePlugin> plugins = dwo->getPossibleFigureClasses(0, 0, 0);
 
         FigurePlugin fig;
         foreach (fig, plugins)
         {
-            if (QString::compare(fig.classname, QLatin1String(plotName), Qt::CaseInsensitive) == 0)
+            if (QString::compare(fig.classname, plotName_, Qt::CaseInsensitive) == 0)
             {
                 found = true;
                 break;
