@@ -62,13 +62,13 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
     dockWidget->setWidget(hcw);
     addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
     connect(hcw, SIGNAL(linkActivated(QUrl)), this, SLOT(showPage(QUrl)));
-	connect(m_pView, SIGNAL(urlChanged(QUrl)), this, SLOT(changeIndex(QUrl)));
-
+	connect(m_pView, SIGNAL(urlChanged(QUrl)), this, SLOT(changeIndex(QUrl)));	
 
     QHelpIndexWidget *hiw = m_pHelpEngine->indexWidget();
     dockWidget = new QDockWidget("index", this);
     dockWidget->setWidget(hiw);
     addDockWidget(Qt::RightDockWidgetArea, dockWidget);
+	
 }
 
 //----------------------------------------------------------------------------------------
@@ -87,11 +87,19 @@ void HelpViewer::setCollectionFile(const QString &collectionFile)
 }
 
 //----------------------------------------------------------------------------------------
+void HelpViewer::showMainPage(const QUrl &url)
+{
+	showPage(url);
+	changeIndex(url);	
+}
+
+//----------------------------------------------------------------------------------------
 void HelpViewer::showPage(const QUrl &url)
 {
     if (m_pView)
     {
         m_pView->setHtml(m_pHelpEngine->fileData(url), url);
+		qDebug() << url;
     }
 }
 

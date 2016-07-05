@@ -1037,6 +1037,10 @@ void MainWindow::mnuShowAssistant()
         }
         m_pHelpViewer->setCollectionFile(collectionFile);
         m_pHelpViewer->show();
+		QUrl firstElementUrl;
+		firstElementUrl.setUrl("qthelp://org.sphinx.itomdocumentation.2.1.0/doc/index.html");
+		m_pHelpViewer->showMainPage(firstElementUrl);
+
 #else
         ProcessOrganizer *po = qobject_cast<ProcessOrganizer*>(AppManagement::getProcessOrganizer());
         if (po)

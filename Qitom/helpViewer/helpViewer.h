@@ -47,6 +47,7 @@ public:
     ~HelpViewer();
 
     void setCollectionFile(const QString &collectionFile);
+	void showMainPage(const QUrl &url);
 
 private:
     QWebEngineView *m_pView;
