@@ -66,9 +66,9 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	profile->installUrlSchemeHandler("qthelp", m_pSchemeHandler);
     
     QHelpContentWidget *hcw = m_pHelpEngine->contentWidget();
-    QDockWidget *dockWidget = new QDockWidget("content", this);
-	dockWidget->setWidget(hcw);
-    addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
+    QDockWidget *dockWidgetContent = new QDockWidget("content", this);
+	dockWidgetContent->setWidget(hcw);
+	addDockWidget(Qt::LeftDockWidgetArea, dockWidgetContent);
 	connect(hcw, SIGNAL(linkActivated(QUrl)), this, SLOT(showPage(QUrl)));
 	connect(m_pView, SIGNAL(urlChanged(QUrl)), this, SLOT(changeIndex(QUrl)));	
 	connect(m_pHelpEngine, SIGNAL(setupFinished()), this, SLOT(showStartPage()));
@@ -76,16 +76,21 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	connect(hcm, SIGNAL(contentsCreated()), this, SLOT(expandContent()));
 	
     QHelpIndexWidget *hiw = m_pHelpEngine->indexWidget();
-    dockWidget = new QDockWidget("index", this);
-    dockWidget->setWidget(hiw);
-    addDockWidget(Qt::RightDockWidgetArea, dockWidget);
+    QDockWidget *dockWidgetIndex = new QDockWidget("index", this);
+	dockWidgetIndex->setWidget(hiw);
+	addDockWidget(Qt::LeftDockWidgetArea, dockWidgetIndex);
 
 	QVBoxLayout *layout = new QVBoxLayout(this);
 	layout->addWidget(m_pHelpEngine->searchEngine()->queryWidget());
 	layout->addWidget(m_pHelpEngine->searchEngine()->resultWidget());
-	dockWidget = new QDockWidget("search", this);
-	dockWidget->setLayout(layout);
-	addDockWidget(Qt::LeftDockWidgetArea, dockWidget);
+	QDockWidget *dockWidgetSearch = new QDockWidget("search", this);
+	dockWidgetSearch->setLayout(layout);
+	addDockWidget(Qt::LeftDockWidgetArea, dockWidgetSearch);
+
+	tabifyDockWidget(dockWidgetContent, dockWidgetIndex);
+	tabifyDockWidget(dockWidgetIndex, dockWidgetSearch);
+	setTabPosition(Qt::LeftDockWidgetArea, QTabWidget::North);
+	dockWidgetContent->raise();
 
 	QToolBar *toolbar = new QToolBar(this);
 	toolbar->addAction(m_pView->pageAction(QWebEnginePage::Back));
