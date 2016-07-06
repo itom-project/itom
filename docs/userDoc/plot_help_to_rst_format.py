@@ -12,13 +12,16 @@ def parseProperties(properties):
     output = []
     for key in properties:
         text = properties[key]
-        m = re.match(r"\{(.+)\}( -> (.+))+( \(readonly\))", text)
+        lines = text.split('\n')
+        m = re.match(r"\{(.+)\}( -> (.+))+( \(readonly\))", lines[0])
         if m:
-            d = {"name":key, "readonly":"(readonly)", "type":m.group(1), "text":indentText(m.group(3))}
+            lines[0] = m.group(3)
+            d = {"name":key, "readonly":"(readonly)", "type":m.group(1), "text":indentText('\n'.join(lines))}
         else:
-            m = re.match(r"\{(.+)\}( -> (.+))+", text)
+            m = re.match(r"\{(.+)\}( -> (.+))+", lines[0])
             try:
-                d = {"name":key, "readonly":"", "type":m.group(1), "text":indentText(m.group(3))}
+                lines[0] = m.group(3)
+                d = {"name":key, "readonly":"", "type":m.group(1), "text":indentText('\n'.join(lines))}
             except Exception:
                 pass
         

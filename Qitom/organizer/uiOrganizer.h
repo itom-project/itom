@@ -354,6 +354,7 @@ private:
 
     QByteArray getReadableMethodSignature(const QMetaMethod &method, bool pythonNotCStyle, QByteArray *methodName = NULL, bool *valid = NULL);
     QByteArray getReadableParameter(const QByteArray &parameter, bool pythonNotCStyle, bool *valid = NULL);
+    ito::UiOrganizer::MultiStringList::Iterator parseMetaPropertyForEnumerationTypes(const QMetaProperty &meth, MultiStringList &currentPropList);
 
     void timerEvent(QTimerEvent *event);
 
@@ -421,11 +422,12 @@ public slots:
     RetVal callSlotOrMethod(bool slotNotMethod, unsigned int objectID, int slotOrMethodIndex, QSharedPointer<FctCallParamContainer> args, ItomSharedSemaphore *semaphore = NULL);
 
     RetVal getObjectInfo(const QString &classname, bool pythonNotCStyle, ito::UiOrganizer::MultiStringList *objInfo, ItomSharedSemaphore *semaphore = NULL);
-    RetVal getObjectInfo(const QObject *obj, int type, bool pythonNotCStyle, ito::UiOrganizer::MultiStringList* propMap, ItomSharedSemaphore *semaphore = NULL);
-    inline RetVal getObjectInfo(unsigned int objectID, int type, bool pythonNotCStyle, ito::UiOrganizer::MultiStringList *propMap, ItomSharedSemaphore *semaphore = NULL)
+    RetVal getObjectInfo(const QObject *obj, int type, bool pythonNotCStyle, ito::UiOrganizer::MultiStringList* propertyList, ItomSharedSemaphore *semaphore = NULL);
+    inline RetVal getObjectInfo(unsigned int objectID, int type, bool pythonNotCStyle, ito::UiOrganizer::MultiStringList *propertyList, ItomSharedSemaphore *semaphore = NULL)
     {
-        return getObjectInfo(getWeakObjectReference(objectID), type, pythonNotCStyle, propMap, semaphore);
+        return getObjectInfo(getWeakObjectReference(objectID), type, pythonNotCStyle, propertyList, semaphore);
     }
+
     RetVal getObjectAndWidgetName(unsigned int objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);
     RetVal getObjectChildrenInfo(unsigned int objectID, bool recursive, QSharedPointer<QStringList> objectNames, QSharedPointer<QStringList> classNames, ItomSharedSemaphore *semaphore = NULL);
 

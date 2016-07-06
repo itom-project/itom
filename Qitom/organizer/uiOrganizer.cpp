@@ -2456,6 +2456,56 @@ QByteArray UiOrganizer::getReadableParameter(const QByteArray &parameter, bool p
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::UiOrganizer::MultiStringList::Iterator UiOrganizer::parseMetaPropertyForEnumerationTypes(const QMetaProperty &prop, MultiStringList &currentPropList)
+{ 
+    if (prop.isEnumType() || prop.isFlagType())
+    {
+        QMetaEnum e = prop.enumerator();
+        QByteArray listName;
+        if (strlen(e.scope()) > 0)
+        {
+            listName = QByteArray(prop.isFlagType() ? "flag_" : "enum_") + QByteArray(e.scope()) + "::" + QByteArray(e.name());
+        }
+        else
+        {
+            listName = QByteArray(prop.isFlagType() ? "flag_" : "enum_") + QByteArray(e.name());
+        }
+
+        bool found = false;
+        MultiStringList::Iterator it = currentPropList.begin();
+        while (it != currentPropList.end())
+        {
+            if (it->first == listName)
+            {
+                found = true;
+                break;
+            }
+            it++;
+        }
+
+        if (!found)
+        {
+            QByteArray values;
+            for (int i = 0; i < e.keyCount(); ++i)
+            {
+                if (i > 0)
+                {
+                    values += QByteArray(";");
+                }
+                values += QByteArray("'") + e.key(i) + QByteArray("' (") + QByteArray::number(e.value(i)) + QByteArray(")");
+            }
+            return currentPropList.insert(currentPropList.end(), MultiString(listName, values));
+        }
+        else
+        {
+            return it;
+        }
+    }
+
+    return currentPropList.end();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::getObjectAndWidgetName(unsigned int objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retValue(retOk);
@@ -2505,10 +2555,10 @@ RetVal UiOrganizer::getObjectInfo(const QString &classname, bool pythonNotCStyle
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCStyle, ito::UiOrganizer::MultiStringList *propMap, ItomSharedSemaphore *semaphore /*= NULL*/)
+RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCStyle, ito::UiOrganizer::MultiStringList *propertyList, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retValue(retOk);
-    MultiStringList tmpPropMap;
+    MultiStringList tmpPropList;
 
     if (obj)
     {
@@ -2575,11 +2625,11 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                     else
                     {
                         classInfo.append(QString("%1 : %2").arg(ci.name()).arg(ci.value()));
-                        tmpPropMap.append(MultiString(QString("ci: ").append(ci.name()), ci.value()));
+                        tmpPropList.append(MultiString(QString("ci: ").append(ci.name()), ci.value()));
                         QString str1("ci_");
                         str1.append(ci.name());
                         QString str2(ci.value());
-                        tmpPropMap.append(MultiString(str1, str2));
+                        tmpPropList.append(MultiString(str1, str2));
                     }
                 }
             }
@@ -2589,25 +2639,42 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                 QMetaProperty prop = mo->property(i);
                 signature = getReadableParameter(prop.typeName(), pythonNotCStyle, &valid);
                 readonly = (prop.isWritable() == false);
+                QString str2;
                 
                 if (i >= mo->propertyOffset() && valid)
                 {
+                    MultiStringList::Iterator enumIterator = parseMetaPropertyForEnumerationTypes(prop, tmpPropList);
+                    QString str1("prop_");
+                    str1 += QString(prop.name());
+                    QString enumString;
+
+                    if (enumIterator != tmpPropList.end())
+                    {
+                        if (enumIterator->first.startsWith("enum_"))
+                        {
+                            enumString = QString("\n\nThe type '%1' is an enumeration that can have one of the following values (str or int):\n\n* ").arg(QLatin1String(signature));
+                        }
+                        else
+                        {
+                            enumString = QString("\n\nThe type '%1' is a flag mask that can be a combination of one or several of the following values (or-combination number values or strings separated by '|'):\n\n* ").arg(QLatin1String(signature));
+                        }
+
+                        enumString += enumIterator->second.split(";").join("\n* ");
+                    }
+
+
                     if (propInfoMap.contains(prop.name()))
                     {
                         properties.append(QString("%1 {%2} -> %3%4").arg(prop.name()).arg(QString(signature)).arg(QString(propInfoMap[prop.name()])).arg(readonly ? " (readonly)" : ""));
-                        QString str1("prop_");
-                        str1.append(prop.name());
-                        QString str2 = QString("{%1} -> %2%3").arg(QString(signature)).arg(QString(propInfoMap[prop.name()])).arg(readonly ? " (readonly)" : "");
-                        tmpPropMap.append(MultiString(str1, str2));
+                        str2 = QString("{%1} -> %2%3%4").arg(QString(signature)).arg(QString(propInfoMap[prop.name()])).arg(readonly ? " (readonly)" : "").arg(enumString);
                     }
                     else
                     {
                         properties.append(QString("%1 {%2}%3").arg(prop.name()).arg(QString(signature)).arg(readonly ? " (readonly)" : ""));
-                        QString str1("prop_");
-                        str1.append(prop.name());
-                        QString str2 = QString("{%1}%3").arg(QString(signature)).arg(readonly ? " (readonly)" : "");
-                        tmpPropMap.append(MultiString(str1, str2));
+                        str2 = QString("{%1}%3%4").arg(QString(signature)).arg(readonly ? " (readonly)" : "").arg(enumString);
                     }
+
+                    tmpPropList.append(MultiString(str1, str2));
                 }
             }
 
@@ -2637,7 +2704,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                                 signal.append(signature);
                             }
 
-                            tmpPropMap.append(MultiString(str1, str2));
+                            tmpPropList.append(MultiString(str1, str2));
                         }
                     }
                 }
@@ -2663,7 +2730,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                                 slot.append(signature);
                             }
 
-                            tmpPropMap.append(MultiString(str1, str2));
+                            tmpPropList.append(MultiString(str1, str2));
                         }
                     }
                 }
@@ -2674,7 +2741,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                 mo = mo->superClass();
                 if (mo)
                 {
-                    tmpPropMap.append(MultiString(QString("inheritance"), mo->className()));
+                    tmpPropList.append(MultiString(QString("inheritance"), mo->className()));
                 }
             }
             else
@@ -2683,7 +2750,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
             }
         }
 
-        if (!propMap)
+        if (!propertyList)
         {
             std::cout << "WIDGET '" << className.toLatin1().data() << "'\n--------------------------\n\n" << std::endl;
             if (classInfo.size() > 0)
@@ -2753,7 +2820,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
         }
         else
         {
-            *propMap = tmpPropMap;
+            *propertyList = tmpPropList;
         }
     }
     else

@@ -1427,7 +1427,15 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
                     }
                     else
                     {
-                        std::cout << name.toLatin1().data() << " " << value.toLatin1().data() << "\n";
+                        idx = value.indexOf("\n");
+                        if (idx < 0)
+                        {
+                            std::cout << name.toLatin1().data() << " " << value.toLatin1().data() << "\n";
+                        }
+                        else
+                        {
+                            std::cout << name.toLatin1().data() << " " << value.left(idx).toLatin1().data() << "...\n";
+                        }
                     }
                 }
             }
