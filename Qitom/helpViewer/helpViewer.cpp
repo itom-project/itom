@@ -58,6 +58,7 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
     //m_pView->load(QUrl("http://itom.bitbucket.org"));
     setCentralWidget(m_pView);
 
+	// QWebEnginePage
 	QWebEnginePage *page = m_pView->page();
 	QWebEngineProfile *profile = page->profile();
 
@@ -65,6 +66,7 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	m_pSchemeHandler = new QtHelpUrlSchemeHandler(m_pHelpEngine, this);
 	profile->installUrlSchemeHandler("qthelp", m_pSchemeHandler);
     
+	//dockWidgetContent
     QHelpContentWidget *hcw = m_pHelpEngine->contentWidget();
     QDockWidget *dockWidgetContent = new QDockWidget("content", this);
 	dockWidgetContent->setWidget(hcw);
@@ -75,11 +77,13 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	QHelpContentModel *hcm = m_pHelpEngine->contentModel();
 	connect(hcm, SIGNAL(contentsCreated()), this, SLOT(expandContent()));
 	
+	//dockWidgetIndex
     QHelpIndexWidget *hiw = m_pHelpEngine->indexWidget();
     QDockWidget *dockWidgetIndex = new QDockWidget("index", this);
 	dockWidgetIndex->setWidget(hiw);
 	addDockWidget(Qt::LeftDockWidgetArea, dockWidgetIndex);
 
+	//dockWidgetSearch
 	QVBoxLayout *layout = new QVBoxLayout(this);
 	layout->addWidget(m_pHelpEngine->searchEngine()->queryWidget());
 	layout->addWidget(m_pHelpEngine->searchEngine()->resultWidget());
@@ -87,23 +91,27 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	dockWidgetSearch->setLayout(layout);
 	addDockWidget(Qt::LeftDockWidgetArea, dockWidgetSearch);
 
+	//tabs the 3 dockWidgets together and makes the dockWidgetContent on top
 	tabifyDockWidget(dockWidgetContent, dockWidgetIndex);
 	tabifyDockWidget(dockWidgetIndex, dockWidgetSearch);
 	setTabPosition(Qt::LeftDockWidgetArea, QTabWidget::North);
 	dockWidgetContent->raise();
 
+	//toolbar
 	QToolBar *toolbar = new QToolBar(this);
 	toolbar->addAction(m_pView->pageAction(QWebEnginePage::Back));
 	toolbar->addAction(m_pView->pageAction(QWebEnginePage::Forward));
 	toolbar->addAction(m_pView->pageAction(QWebEnginePage::Reload));
 	addToolBar(toolbar);
 	
+	//menubar
 	QMenuBar *menuBar = new QMenuBar(this);
 	QMenu *fileMenu = menuBar->addMenu(tr("File").toLatin1().data());
 	QMenu *editMenu = menuBar->addMenu(tr("Edit").toLatin1().data());
 	fileMenu->addAction(m_pView->pageAction(QWebEnginePage::Back));
 	fileMenu->addAction(m_pView->pageAction(QWebEnginePage::RequestClose));
 	setMenuWidget(menuBar);
+	connect(page, SIGNAL(windowCloseRequested()), this, SLOT(closeView()));
 
 	showMaximized();
 }
@@ -145,6 +153,16 @@ void HelpViewer::expandContent()
 	{
 		QHelpContentWidget *hcw = m_pHelpEngine->contentWidget();
 		hcw->expandToDepth(0);
+	}
+}
+
+
+//----------------------------------------------------------------------------------------
+void HelpViewer::closeView()
+{
+	if (m_pView)
+	{
+		this->hide();
 	}
 }
 

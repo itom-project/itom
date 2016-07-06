@@ -59,6 +59,7 @@ private slots:
 	void changeIndex(const QUrl &url);
 	void showStartPage();
 	void expandContent();
+	void closeView();
 };
 
 } //end namespace ito
