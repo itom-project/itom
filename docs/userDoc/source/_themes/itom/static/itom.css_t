@@ -116,7 +116,15 @@ dl.method dt, dl.staticmethod dt, dl.function dt{
     margin-top: 15x;
 }
 
-dl.method dt code.descname, dl.class dt code.descname {
+dl.method dt code.descname, dl.class dt code.descname, dl.function dt code.descname, dl.attribute dt code.descname {
+    font-size: 11pt;
+}
+
+dl.method dt span.sig-paren, dl.class dt span.sig-paren, dl.attribute dt span.sig-paren {
+    font-size: 11pt;
+}
+
+dl.method dt span.optional, dl.class dt span.optional, dl.attribute dt span.optional {
     font-size: 11pt;
 }
 

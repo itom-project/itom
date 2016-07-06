@@ -310,3 +310,119 @@ or easier::
     
 In the **demo/matplotlib** folder are two demo scripts (**matplotlibAnimation1d.py, matplotlibAnimation2d.py**), which show how to create animations. 
 
+Designer plugin MatplotlibPlot
+===============================
+
+If the itom backend is chosen for the Matplotlib, all matplotlib outputs are displayed in the itom designer plugin **MatplotlibPlot**.
+This widget plugin has the following properties, slots and signals that can be used to control and adjust the settings of the rendered image.
+Many of these features are also used in the documentations above:
+
+.. BEGIN The following part is obtained by the script plot_help_to_rst_format.py from the designer plugin matplotlibPlot
+
+Properties
+-------------------------
+
+
+.. py:attribute:: toolbarVisible : bool 
+    :noindex:
+    
+    Toggles the visibility of the toolbar of the plot.
+
+.. py:attribute:: renderLegend : bool 
+    :noindex:
+    
+    If this property is true, the legend are included in pixelmaps renderings.
+
+.. py:attribute:: contextMenuEnabled : bool 
+    :noindex:
+    
+    Defines whether the context menu of the plot should be enabled or not.
+
+.. py:attribute:: forceWindowResize : bool 
+    :noindex:
+    
+    If set, the plot widget / area is resized to the desired sizes given by matplotlib. Uncheck this option, if you want to keep the canvas unchanged e.g. in an user-defined GUI
+
+.. py:attribute:: keepSizeFixed : bool 
+    :noindex:
+    
+    If you want to control the size of the canvas by python / matplotlib (e.g. set_size_inches), set this to true. The canvas will then have a fixed size, that is not affected by the window size.
+
+Slots
+-------------------------
+
+
+.. py:function:: getPlotID() [slot]
+    :noindex:
+    
+    
+    Return window ID of this plot {int}.
+    
+    .. index:: 
+
+.. py:function:: replot() [slot]
+    :noindex:
+    
+    
+    forces a replot of the plot
+    
+    .. index:: 
+
+.. py:function:: setLabelText(text) [slot]
+    :noindex:
+    
+    
+    displays a text in the toolbar
+    
+    The text is displayed in the label that is usually used for coordinates of the mouse cursor....
+    
+    :param text: text to display
+    :type text: str
+    
+    .. index:: 
+
+.. py:function:: refreshPlot() [slot]
+    :noindex:
+    
+    
+    Triggers an update of the current plot window.
+    
+    .. index:: 
+
+.. py:function:: showSubplotConfig(left, top, right, bottom, wSpace, hSpace) [slot]
+    :noindex:
+    
+    
+    displays the subplot configuration dialog.
+    
+    This slot must usually not be used, since the dialog can be opened by the toolbar.
+    
+    :param left: left border of the current subplot configuration.
+    :type left: float
+    :param top: top border of the current subplot configuration.
+    :type top: float
+    :param right: right border of the current subplot configuration.
+    :type right: float
+    :param bottom: bottom border of the current subplot configuration.
+    :type bottom: float
+    :param wSpace: horizontal space between every subplot of the current configuration.
+    :type wSpace: float
+    :param hSpace: vertical space between every subplot of the current configuration.
+    :type hSpace: float
+    
+    .. index:: 
+
+Signals
+-------------------------
+
+
+.. py:function:: subplotConfigSliderChanged(type, value) [signal]
+    :noindex:
+    
+    
+    interal use between MatplotlibPlot and the subplot configuration dialog.
+    
+    .. index:: 
+
+.. END plot_help_to_rst_format.py: matplotlibPlot
+
