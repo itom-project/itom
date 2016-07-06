@@ -2548,17 +2548,29 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                     if (strstr(ci.name(), "prop://") == ci.name())
                     {
                         QByteArray prop = QByteArray(&(ci.name()[7]));
-                        propInfoMap[prop] = ci.value();
+                        if (!propInfoMap.contains(prop))
+                        {
+                            //prefer the documentation from derived classes instead of the one from base classes, due to possible function overload
+                            propInfoMap[prop] = ci.value();
+                        }
                     }
                     else if (strstr(ci.name(), "signal://") == ci.name())
                     {
                         QByteArray prop = QByteArray(&(ci.name()[9]));
-                        signalInfoMap[prop] = ci.value();
+                        if (!signalInfoMap.contains(prop))
+                        {
+                            //prefer the documentation from derived classes instead of the one from base classes, due to possible function overload
+                            signalInfoMap[prop] = ci.value();
+                        }
                     }
                     else if (strstr(ci.name(), "slot://") == ci.name())
                     {
                         QByteArray prop = QByteArray(&(ci.name()[7]));
-                        slotInfoMap[prop] = ci.value();
+                        if (!slotInfoMap.contains(prop))
+                        {
+                            //prefer the documentation from derived classes instead of the one from base classes, due to possible function overload
+                            slotInfoMap[prop] = ci.value();
+                        }
                     }
                     else
                     {
