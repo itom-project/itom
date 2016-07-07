@@ -2656,7 +2656,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                         }
                         else
                         {
-                            enumString = QString("\n\nThe type '%1' is a flag mask that can be a combination of one or several of the following values (or-combination number values or strings separated by '|'):\n\n* ").arg(QLatin1String(signature));
+                            enumString = QString("\n\nThe type '%1' is a flag mask that can be a combination of one or several of the following values (or-combination number values or semicolon separated strings):\n\n* ").arg(QLatin1String(signature));
                         }
 
                         enumString += enumIterator->second.split(";").join("\n* ");
@@ -3591,7 +3591,7 @@ RetVal UiOrganizer::figurePickPoints(unsigned int objectID, QSharedPointer<QVect
     }
    else
     {
-        retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toLatin1().data());
+        retval += RetVal(retError, 0, tr("the required widget does not exist (any more)").toLatin1().data());
     }
 
     if (semaphore && retval.containsError()) //else the semaphore is released by the userInteractionWatcher-instance, executed in a separate thread and monitoring the widget
@@ -3628,7 +3628,7 @@ RetVal UiOrganizer::figureDrawGeometricShapes(unsigned int objectID, QSharedPoin
     }
    else
     {
-        retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toLatin1().data());
+        retval += RetVal(retError, 0, tr("the required widget does not exist (any more)").toLatin1().data());
     }
 
     if (semaphore && retval.containsError()) //else the semaphore is released by the userInteractionWatcher-instance, executed in a separate thread and monitoring the widget
@@ -3659,7 +3659,7 @@ RetVal UiOrganizer::figurePickPointsInterrupt(unsigned int objectID)
     }
    else
     {
-        retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toLatin1().data());
+        retval += RetVal(retError, 0, tr("the required widget does not exist (any more)").toLatin1().data());
     }
 
     return retval;
@@ -3685,7 +3685,7 @@ RetVal UiOrganizer::isFigureItem(unsigned int objectID,  QSharedPointer<unsigned
     }
     else
     {
-        retval += RetVal(retError, 0, tr("the objectID cannot be cast to a widget").toLatin1().data());
+        retval += RetVal(retError, 0, tr("the required widget does not exist (any more)").toLatin1().data());
         *isFigureItem = 0;
     }
 
