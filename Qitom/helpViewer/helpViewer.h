@@ -51,13 +51,14 @@ public:
 private:
     QWebEngineView *m_pView;
     QString m_collectionFile;
-    QHelpEngine* m_pHelpEngine;
+	QHelpEngine *m_pHelpEngine;
 	QtHelpUrlSchemeHandler *m_pSchemeHandler;
 	qreal m_pDefaultZoomFactor;
 	qreal m_pZoomFactor;
 
 private slots:
 	void linkActivated(const QUrl &url);
+	void linkActivated(const QUrl &url, const QString &text);
 	void urlChanged(const QUrl &url);
 	void setupFinished();
 	void expandContent();
@@ -66,11 +67,13 @@ private slots:
 	void mnuZoomOutWindow();
 	void mnuDefaultZoomWindow();
 	void textChanged(const QString &text);
-	void showIndexPage(const QUrl &url, const QString &keyword);
+	void returnPressed();
 	void search();
 	void requestShowLink(const QUrl &url);
 	void searchingStarted();
-	void searchingFinished();
+	void searchingFinished(const int &hits);
+	void indexingStarted();
+	void indexingFinished();
 };
 
 } //end namespace ito

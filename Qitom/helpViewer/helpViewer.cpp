@@ -72,7 +72,7 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	m_pDefaultZoomFactor = m_pView->zoomFactor();
 	m_pZoomFactor = m_pDefaultZoomFactor;
 
-    m_pHelpEngine = new QHelpEngine("", this);
+	m_pHelpEngine = new QHelpEngine("", this);
 	m_pSchemeHandler = new QtHelpUrlSchemeHandler(m_pHelpEngine, this);
 	profile->installUrlSchemeHandler("qthelp", m_pSchemeHandler);
     
@@ -90,10 +90,11 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	//dockWidgetIndex
 	QVBoxLayout *layoutIndex = new QVBoxLayout(this);  
 	QLineEdit *indexEdit = new QLineEdit(this); 
-	//connect(indexEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
+	connect(indexEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
+	connect(indexEdit, SIGNAL(returnPressed()), this, SLOT(returnPressed()));
 	QLabel *indexText = new QLabel(tr("Search for:"), this);
 	QHelpIndexWidget *hiw = m_pHelpEngine->indexWidget();
-	//connect(hiw, SIGNAL(linkActivated(QUrl, QString)), this, SLOT(showIndexPage(QUrl, QString)));
+	connect(hiw, SIGNAL(linkActivated(QUrl, QString)), this, SLOT(linkActivated(QUrl, QString)));
 	layoutIndex->addWidget(indexText);
 	layoutIndex->addWidget(indexEdit);
 	layoutIndex->addWidget(hiw);
@@ -105,15 +106,17 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	
 	//dockWidgetSearch
 	QVBoxLayout *layoutSearch = new QVBoxLayout(this);
-	QHelpSearchEngine *serachEngine = new QHelpSearchEngine(m_pHelpEngine, this);
-	QHelpSearchResultWidget *resultWidget = serachEngine->resultWidget();
-	QHelpSearchQueryWidget *queryWidget = serachEngine->queryWidget();
+	QHelpSearchEngine *searchEngine = m_pHelpEngine->searchEngine(); // new QHelpSearchEngine(m_pHelpEngine, this);
+	QHelpSearchResultWidget *resultWidget = searchEngine->resultWidget();
+	QHelpSearchQueryWidget *queryWidget = searchEngine->queryWidget();
 
 	setFocusProxy(queryWidget);
 	connect(queryWidget, SIGNAL(search()), this, SLOT(search()));
 	connect(resultWidget, SIGNAL(requestShowLink(QUrl)), this, SLOT(requestShowLink(QUrl)));
-	connect(serachEngine, SIGNAL(searchingStarted()), this, SLOT(searchingStarted()));
-	connect(serachEngine, SIGNAL(searchingFinished()), this, SLOT(searchingFinished()));
+	connect(searchEngine, SIGNAL(searchingStarted()), this, SLOT(searchingStarted()));
+	connect(searchEngine, SIGNAL(searchingFinished(int)), this, SLOT(searchingFinished(int)));
+	connect(searchEngine, SIGNAL(indexingStarted()), this, SLOT(indexingStarted()));
+	connect(searchEngine, SIGNAL(indexingFinished()), this, SLOT(indexingFinished()));
 
 	layoutSearch->addWidget(queryWidget);
 	layoutSearch->addWidget(resultWidget);
@@ -180,9 +183,10 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 
 	//gotomenu
 	QMenu *goToMenu = menuBar->addMenu(tr("Go to"));
+	goToMenu->addAction(homeAction);
 	goToMenu->addAction(m_pView->pageAction(QWebEnginePage::Back));
 	goToMenu->addAction(m_pView->pageAction(QWebEnginePage::Forward));
-
+	
 	setMenuWidget(menuBar);
 
 	showMaximized();
@@ -191,7 +195,7 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 //----------------------------------------------------------------------------------------
 HelpViewer::~HelpViewer()
 {
-    DELETE_AND_SET_NULL(m_pHelpEngine);
+	DELETE_AND_SET_NULL(m_pHelpEngine);
     DELETE_AND_SET_NULL(m_pView);
 	DELETE_AND_SET_NULL(m_pSchemeHandler);
 }
@@ -199,28 +203,22 @@ HelpViewer::~HelpViewer()
 //----------------------------------------------------------------------------------------
 void HelpViewer::setCollectionFile(const QString &collectionFile)
 {
+	//QHelpEngineCore *hec = new QHelpEngineCore(collectionFile, this);
 	QHelpContentWidget *hcw = m_pHelpEngine->contentWidget();
-    m_pHelpEngine->setCollectionFile(collectionFile);
-    m_pHelpEngine->setupData();
+	//hec->setCollectionFile(collectionFile);
+	//hec->setupData();
+	m_pHelpEngine->setCollectionFile(collectionFile);
+	m_pHelpEngine->setupData();
 }
 
 //----------------------------------------------------------------------------------------
 void HelpViewer::search()
 {
-	QHelpSearchEngine *searchEngine = new QHelpSearchEngine(m_pHelpEngine, this);
+	QHelpSearchEngine *searchEngine = m_pHelpEngine->searchEngine();
 	QHelpSearchQueryWidget *query = searchEngine->queryWidget();
-	query->setQuery(QList<QHelpSearchQuery>());
+	//query->setQuery(QList<QHelpSearchQuery>());
 	QList<QHelpSearchQuery> queryList = query->query();
 	searchEngine->search(queryList);
-
-	foreach(const QHelpSearchQuery &s, queryList)
-	{
-		foreach(QString word, s.wordList)
-		{
-			qDebug() << "word :" << word;
-		}
-				
-	}
 
 }
 
@@ -230,19 +228,28 @@ void HelpViewer::searchingStarted()
 	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
 }
 
-
 //----------------------------------------------------------------------------------------
-void HelpViewer::searchingFinished()
+void HelpViewer::searchingFinished(const int &hits)
 {
 	QApplication::restoreOverrideCursor();
 }
 
+//----------------------------------------------------------------------------------------
+void HelpViewer::indexingStarted()
+{
+	QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+}
+
+//----------------------------------------------------------------------------------------
+void HelpViewer::indexingFinished()
+{
+	QApplication::restoreOverrideCursor();
+}
 
 //----------------------------------------------------------------------------------------
 void HelpViewer::requestShowLink(const QUrl &url)
 {
 	linkActivated(url);
-	//urlChanged(url);
 }
 
 //----------------------------------------------------------------------------------------
@@ -254,7 +261,6 @@ void HelpViewer::setupFinished()
 	mainPageUrl.setUrl(tr("qthelp://org.sphinx.itomdocumentation.%1/doc/index.html").arg(itomVersion));
 	//QUrl pluginPageUrl = pluginPageUrl.setUrl("qthelp://org.sphinx.itomplugindoc/doc/index.html");
 	linkActivated(mainPageUrl);
-	//urlChanged(mainPageUrl);
 }
 
 //----------------------------------------------------------------------------------------
@@ -265,10 +271,10 @@ void HelpViewer::expandContent()
 }
 
 //----------------------------------------------------------------------------------------
-void HelpViewer::showIndexPage(const QUrl &url, const QString &keyword)
+void HelpViewer::returnPressed()
 {
-	linkActivated(url);
-	//urlChanged(url);
+	QHelpIndexWidget *hiw = m_pHelpEngine->indexWidget();
+	hiw->activateCurrentItem();
 }
 
 //----------------------------------------------------------------------------------------
@@ -288,8 +294,8 @@ void HelpViewer::textChanged(const QString &text)
 //----------------------------------------------------------------------------------------
 void HelpViewer::mnuDefaultZoomWindow()
 {
-	QWebEnginePage *page = m_pView->page();
-	page->setZoomFactor(m_pDefaultZoomFactor);
+	//QWebEnginePage *page = m_pView->page();
+	m_pView->setZoomFactor(m_pDefaultZoomFactor);
 	m_pZoomFactor = m_pDefaultZoomFactor;
 }
 
@@ -317,6 +323,13 @@ void HelpViewer::mnuCloseWindow()
 
 //----------------------------------------------------------------------------------------
 void HelpViewer::linkActivated(const QUrl &url)
+{
+	m_pView->setHtml(m_pHelpEngine->fileData(url), url);
+	m_pView->setZoomFactor(m_pZoomFactor);
+}
+
+//----------------------------------------------------------------------------------------
+void HelpViewer::linkActivated(const QUrl &url, const QString &text)
 {
 	m_pView->setHtml(m_pHelpEngine->fileData(url), url);
 	m_pView->setZoomFactor(m_pZoomFactor);
