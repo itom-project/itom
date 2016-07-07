@@ -624,7 +624,7 @@ PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args)
         return NULL;
     }
 
-    QString signature(signalSignature);
+    QByteArray signature(signalSignature);
     QSharedPointer<int> sigId(new int);
     
     QSharedPointer<QObject*> objPtr(new (QObject*));
@@ -635,7 +635,7 @@ PyObject* PythonUi::PyUiItem_connect(PyUiItem *self, PyObject* args)
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "getSignalIndex", Q_ARG(uint, self->objectID), Q_ARG(QString, signature), Q_ARG(QSharedPointer<int>, sigId), Q_ARG(QSharedPointer<QObject*>, objPtr), Q_ARG(QSharedPointer<IntList>, argTypes), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(uiOrga, "getSignalIndex", Q_ARG(uint, self->objectID), Q_ARG(QByteArray, signature), Q_ARG(QSharedPointer<int>, sigId), Q_ARG(QSharedPointer<QObject*>, objPtr), Q_ARG(QSharedPointer<IntList>, argTypes), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -709,12 +709,12 @@ PyObject* PythonUi::PyUiItem_connectKeyboardInterrupt(PyUiItem *self, PyObject* 
         return NULL;
     }
 
-    QString signature(signalSignature);
+    QByteArray signature(signalSignature);
 
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "connectWithKeyboardInterrupt", Q_ARG(uint, self->objectID), Q_ARG(QString, signature), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(uiOrga, "connectWithKeyboardInterrupt", Q_ARG(uint, self->objectID), Q_ARG(QByteArray, signature), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -775,7 +775,7 @@ PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args)
         return NULL;
     }
 
-    QString signature(signalSignature);
+    QByteArray signature(signalSignature);
     QSharedPointer<int> sigId(new int);
     QSharedPointer<QObject*> objPtr(new (QObject*));
     QSharedPointer<IntList> argTypes(new IntList);
@@ -785,7 +785,7 @@ PyObject* PythonUi::PyUiItem_disconnect(PyUiItem *self, PyObject* args)
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     ito::RetVal retValue = retOk;
 
-    QMetaObject::invokeMethod(uiOrga, "getSignalIndex", Q_ARG(uint, self->objectID), Q_ARG(QString, signature), Q_ARG(QSharedPointer<int>, sigId), Q_ARG(QSharedPointer<QObject*>, objPtr), Q_ARG(QSharedPointer<IntList>, argTypes), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+    QMetaObject::invokeMethod(uiOrga, "getSignalIndex", Q_ARG(uint, self->objectID), Q_ARG(QByteArray, signature), Q_ARG(QSharedPointer<int>, sigId), Q_ARG(QSharedPointer<QObject*>, objPtr), Q_ARG(QSharedPointer<IntList>, argTypes), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))
     {

@@ -2111,7 +2111,7 @@ RetVal UiOrganizer::getObjectChildrenInfo(unsigned int objectID, bool recursive,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getSignalIndex(unsigned int objectID, const QString &signalSignature, QSharedPointer<int> signalIndex, QSharedPointer<QObject*> objPtr, QSharedPointer<IntList> argTypes, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::getSignalIndex(unsigned int objectID, const QByteArray &signalSignature, QSharedPointer<int> signalIndex, QSharedPointer<QObject*> objPtr, QSharedPointer<IntList> argTypes, ItomSharedSemaphore *semaphore)
 {
     *signalIndex = -1;
     argTypes->clear();
@@ -2124,7 +2124,7 @@ RetVal UiOrganizer::getSignalIndex(unsigned int objectID, const QString &signalS
     if (obj)
     {
         const QMetaObject *mo = obj->metaObject();
-        *signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature.toLatin1().data()));
+        *signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature.data()));
 
         QMetaMethod metaMethod = mo->method(*signalIndex);
         QList<QByteArray> names = metaMethod.parameterTypes();
@@ -2160,7 +2160,7 @@ RetVal UiOrganizer::getSignalIndex(unsigned int objectID, const QString &signalS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::connectWithKeyboardInterrupt(unsigned int objectID, const QString &signalSignature, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::connectWithKeyboardInterrupt(unsigned int objectID, const QByteArray &signalSignature, ItomSharedSemaphore *semaphore)
 {
     int signalIndex = -1;
     RetVal retValue(retOk);
@@ -2170,7 +2170,7 @@ RetVal UiOrganizer::connectWithKeyboardInterrupt(unsigned int objectID, const QS
     if (obj)
     {
         const QMetaObject *mo = obj->metaObject();
-        signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature.toLatin1().data()));
+        signalIndex = mo->indexOfSignal(QMetaObject::normalizedSignature(signalSignature.data()));
 
         if (signalIndex < 0)
         {
