@@ -346,8 +346,6 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     {
         return NULL;
     }
-    
-    //return Py_BuildValue("iO", *figHandle); //returns handle
 
     //return new instance of PyUiItem
     PyObject *args2 = PyTuple_New(0); //Py_BuildValue("OO", self, name);
@@ -362,6 +360,18 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
         PyErr_SetString(PyExc_AttributeError, "Could not create plotItem of plot widget");
         return NULL;
     }
+
+    //try to get figure handle of plot, to set the baseItem of the plot to the figure.
+    //this is important such that one can connect to signals of the plot (e.g. userInteractionDone) since signals can only be handled if the last item
+    //in the baseItem-chain is of type itom.ui or itom.figure
+    args2 = PyTuple_New(0);
+    kwds2 = PyDict_New();
+    PyDict_SetItemString(kwds2, "handle", PyLong_FromLong(*figHandle));
+    PythonFigure::PyFigure *pyFigure = (PythonFigure::PyFigure *)PyObject_Call((PyObject *)&PythonFigure::PyFigureType, args2, kwds2);
+    Py_XDECREF(pyPlotItem->uiItem.baseItem);
+    pyPlotItem->uiItem.baseItem = (PyObject*)pyFigure;
+    Py_DECREF(args2);
+    Py_DECREF(kwds2);
 
     PyObject *res = Py_BuildValue("iO", *figHandle, (PyObject*)pyPlotItem); //returns handle
     Py_XDECREF(pyPlotItem);
@@ -467,8 +477,6 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     {
         return NULL;
     }
-    
-    //return Py_BuildValue("i", *figHandle); //returns handle
 
     //return new instance of PyUiItem
     PyObject *args2 = PyTuple_New(0); //Py_BuildValue("OO", self, name);
@@ -483,6 +491,18 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
         PyErr_SetString(PyExc_AttributeError, "Could not create plotItem of plot widget");
         return NULL;
     }
+
+    //try to get figure handle of plot, to set the baseItem of the plot to the figure.
+    //this is important such that one can connect to signals of the plot (e.g. userInteractionDone) since signals can only be handled if the last item
+    //in the baseItem-chain is of type itom.ui or itom.figure
+    args2 = PyTuple_New(0);
+    kwds2 = PyDict_New();
+    PyDict_SetItemString(kwds2, "handle", PyLong_FromLong(*figHandle));
+    PythonFigure::PyFigure *pyFigure = (PythonFigure::PyFigure *)PyObject_Call((PyObject *)&PythonFigure::PyFigureType, args2, kwds2);
+    Py_XDECREF(pyPlotItem->uiItem.baseItem);
+    pyPlotItem->uiItem.baseItem = (PyObject*)pyFigure;
+    Py_DECREF(args2);
+    Py_DECREF(kwds2);
 
     PyObject *res = Py_BuildValue("iO", *figHandle, (PyObject*)pyPlotItem); //returns handle
     Py_XDECREF(pyPlotItem);
