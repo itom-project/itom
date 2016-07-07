@@ -53,13 +53,24 @@ private:
     QString m_collectionFile;
     QHelpEngine* m_pHelpEngine;
 	QtHelpUrlSchemeHandler *m_pSchemeHandler;
+	qreal m_pDefaultZoomFactor;
+	qreal m_pZoomFactor;
 
 private slots:
-    void showPage(const QUrl &url);
-	void changeIndex(const QUrl &url);
-	void showStartPage();
+	void linkActivated(const QUrl &url);
+	void urlChanged(const QUrl &url);
+	void setupFinished();
 	void expandContent();
-	void closeView();
+	void mnuCloseWindow();
+	void mnuZoomInWindow();
+	void mnuZoomOutWindow();
+	void mnuDefaultZoomWindow();
+	void textChanged(const QString &text);
+	void showIndexPage(const QUrl &url, const QString &keyword);
+	void search();
+	void requestShowLink(const QUrl &url);
+	void searchingStarted();
+	void searchingFinished();
 };
 
 } //end namespace ito
