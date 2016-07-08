@@ -309,8 +309,12 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
                 result = PyUnicode_FromFormat(QString("shape(Rectangle, (%1, %2) - (%3, %4), index: %5)").arg(base[0].x()).arg(base[0].y()).arg(base[1].x()).arg(base[1].y()).arg(self->shape->index()).toLatin1().data());
                 break;
             case Shape::Square:
-                result = PyUnicode_FromFormat(QString("shape(Square, (%1, %2) - (%3, %4), index: %5)").arg(base[0].x()).arg(base[0].y()).arg(base[1].x()).arg(base[1].y()).arg(self->shape->index()).toLatin1().data());
+            {
+                QPointF p = base[0] + base[1];
+                QPointF s = base[1] - base[0];
+                result = PyUnicode_FromFormat(QString("shape(Square, center (%1, %2), l: %3, index: %4)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(self->shape->index()).toLatin1().data());
                 break;
+            }
             case Shape::Polygon:
                 result = PyUnicode_FromFormat("shape(Polygon, %i points, index: %i)", base.size(), self->shape->index());
                 break;
@@ -349,19 +353,31 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
                 result = PyUnicode_FromFormat("shape(Line, (%f, %f) - (%f, %f), index: %i)", contour[0].x(), contour[0].y(), contour[1].x(), contour[1].y(), self->shape->index());
                 break;
             case Shape::Rectangle:
-                result = PyUnicode_FromFormat("shape(Rectangle, index: %i)");
+                result = PyUnicode_FromFormat(QString("shape(Rectangle, (%1, %2) - (%3, %4), index: %5)").arg(contour[0].x()).arg(contour[0].y()).arg(contour[2].x()).arg(contour[2].y()).arg(self->shape->index()).toLatin1().data());
                 break;
             case Shape::Square:
-                result = PyUnicode_FromFormat("shape(Square, index: %i)");
+            {
+                QPointF p = contour[0] + contour[2];
+                QPointF s = base[1] - base[0];
+                result = PyUnicode_FromFormat(QString("shape(Square, center (%1, %2), l: %3, index: %4)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(self->shape->index()).toLatin1().data());
+            }
                 break;
             case Shape::Polygon:
                 result = PyUnicode_FromFormat("shape(Polygon, %i points, index: %i)", base.size(), self->shape->index());
                 break;
             case Shape::Ellipse:
-                result = PyUnicode_FromFormat("shape(Ellipse, index: %i)", self->shape->index());
+            {
+                QPointF p = contour[0] + contour[2];
+                QPointF s = base[1] - base[0];
+                result = PyUnicode_FromFormat(QString("shape(Ellipse, center (%1, %2), (a=%3, b=%4), index: %5)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(s.ry() / 2).arg(self->shape->index()).toLatin1().data());
+            }
                 break;
             case Shape::Circle:
-                result = PyUnicode_FromFormat("shape(Circle, index: %i)", self->shape->index());
+            {
+                QPointF p = contour[0] + contour[2];
+                QPointF s = base[1] - base[0];
+                result = PyUnicode_FromFormat(QString("shape(Circle, center (%1, %2), l: %3, index: %4)").arg(p.rx() / 2).arg(p.ry() / 2).arg(s.rx() / 2).arg(self->shape->index()).toLatin1().data());
+            }
                 break;
             case Shape::Invalid:
                 result = PyUnicode_FromFormat("shape(Invalid)");

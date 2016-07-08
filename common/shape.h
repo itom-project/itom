@@ -74,22 +74,22 @@ namespace ito
 
         enum ShapeFlag
         {
-            MoveLock = 0x0001000,   /**! Element can not be moved */
-            RotateLock = 0x0002000, /**! Element can not be rotated */
-            ResizeLock = 0x00040000,/**! Element can not be resized */
+            MoveLock = 0x00010000,   /**! Element can not be moved */
+            RotateLock = 0x00020000, /**! Element can not be rotated */
+            ResizeLock = 0x00040000, /**! Element can not be resized */
         };
 
         enum ShapeMask
         {
-            TypeMask = 0x0000FFFF,          /**! Mask for the type space */
+            TypeMask = 0x0000FFFF,  /**! Mask for the type space */
             FlagMask = 0xFFFF0000   /**! Mask for the flag space */
         };
 
         explicit Shape();
-        explicit Shape(int type, int flags, const QPolygonF &basePoints, const QTransform &transform = QTransform());
-        explicit Shape(int type, int flags, const QPolygonF &basePoints, int index, const QTransform &transform = QTransform());
-        explicit Shape(int type, int flags, const QPolygonF &basePoints, int index, const QString &name, const QTransform &transform = QTransform());
-        explicit Shape(int type, int flags, const QPolygonF &basePoints, const QString &name, const QTransform &transform = QTransform());
+        explicit Shape(unsigned int type, unsigned int flags, const QPolygonF &basePoints, const QTransform &transform = QTransform());
+        explicit Shape(unsigned int type, unsigned int flags, const QPolygonF &basePoints, int index, const QTransform &transform = QTransform());
+        explicit Shape(unsigned int type, unsigned int flags, const QPolygonF &basePoints, int index, const QString &name, const QTransform &transform = QTransform());
+        explicit Shape(unsigned int type, unsigned int flags, const QPolygonF &basePoints, const QString &name, const QTransform &transform = QTransform());
         Shape(const Shape &other);
         virtual ~Shape();
 
@@ -97,8 +97,8 @@ namespace ito
 
         bool isValid() const;
 
-        int flags() const;
-        void setFlags(const int &flags);
+        unsigned int flags() const;
+        void setFlags(const unsigned int &flags);
 
         int index() const;
         void setIndex(const int &index);
@@ -106,8 +106,8 @@ namespace ito
         QString name() const;
         void setName(const QString &name);
 
-        int type() const;
-        void setType(const int &type);
+        unsigned int type() const;
+        void setType(const unsigned int &type);
 
         QTransform transform() const;
         QTransform &rtransform() const;

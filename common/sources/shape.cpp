@@ -41,7 +41,7 @@ namespace ito {
 
     QDataStream &operator>>(QDataStream &in, ito::Shape &obj)
     {
-        int type, flags;
+        unsigned int type, flags;
         QPolygonF polygons;
         QTransform transform;
         int index;
@@ -59,7 +59,7 @@ public:
     {
     }
 
-    int m_type;
+    unsigned int m_type;
 
     /*!< 
     * multipoint: like polygons, multiple points
@@ -83,7 +83,7 @@ Shape::Shape() : d(NULL)
 }
 
 //----------------------------------------------------------------------------------------------
-Shape::Shape(int type, int flags, const QPolygonF &basePoints, const QTransform &transform /*=QTransform()*/) : d(NULL)
+Shape::Shape(unsigned int type, unsigned int flags, const QPolygonF &basePoints, const QTransform &transform /*=QTransform()*/) : d(NULL)
 {
     d = new ShapePrivate();
     d->m_type = (type & Shape::TypeMask) | (flags & Shape::FlagMask);
@@ -94,7 +94,7 @@ Shape::Shape(int type, int flags, const QPolygonF &basePoints, const QTransform 
 }
 
 //----------------------------------------------------------------------------------------------
-Shape::Shape(int type, int flags, const QPolygonF &basePoints, int index, const QTransform &transform /*=QTransform()*/) : d(NULL)
+Shape::Shape(unsigned int type, unsigned int flags, const QPolygonF &basePoints, int index, const QTransform &transform /*=QTransform()*/) : d(NULL)
 {
     d = new ShapePrivate();
     d->m_type = (type & Shape::TypeMask) | (flags & Shape::FlagMask);
@@ -105,7 +105,7 @@ Shape::Shape(int type, int flags, const QPolygonF &basePoints, int index, const 
 }
 
 //----------------------------------------------------------------------------------------------
-Shape::Shape(int type, int flags, const QPolygonF &basePoints, int index, const QString &name, const QTransform &transform /*=QTransform()*/) : d(NULL)
+Shape::Shape(unsigned int type, unsigned int flags, const QPolygonF &basePoints, int index, const QString &name, const QTransform &transform /*=QTransform()*/) : d(NULL)
 {
     d = new ShapePrivate();
     d->m_type = (type & Shape::TypeMask) | (flags & Shape::FlagMask);
@@ -116,7 +116,7 @@ Shape::Shape(int type, int flags, const QPolygonF &basePoints, int index, const 
 }
 
 //----------------------------------------------------------------------------------------------
-Shape::Shape(int type, int flags, const QPolygonF &basePoints, const QString &name, const QTransform &transform /*=QTransform()*/) : d(NULL)
+Shape::Shape(unsigned int type, unsigned int flags, const QPolygonF &basePoints, const QString &name, const QTransform &transform /*=QTransform()*/) : d(NULL)
 {
     d = new ShapePrivate();
     d->m_type = (type & Shape::TypeMask) | (flags & Shape::FlagMask);
@@ -179,25 +179,25 @@ bool Shape::isValid() const
 }
 
 //----------------------------------------------------------------------------------------------
-int Shape::flags() const
+unsigned int Shape::flags() const
 {
     return d->m_type & Shape::FlagMask;
 }
 
 //----------------------------------------------------------------------------------------------
-void Shape::setFlags(const int &flags)
+void Shape::setFlags(const unsigned int &flags)
 {
     d->m_type = (d->m_type & Shape::TypeMask) | (flags & Shape::FlagMask);
 }
 
 //----------------------------------------------------------------------------------------------
-int Shape::type() const
+unsigned int Shape::type() const
 {
     return d->m_type & Shape::TypeMask;
 }
 
 //----------------------------------------------------------------------------------------------
-void Shape::setType(const int &type)
+void Shape::setType(const unsigned int &type)
 {
     d->m_type = (d->m_type & Shape::FlagMask) | (type & Shape::TypeMask);
 }
