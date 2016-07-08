@@ -57,7 +57,7 @@ private slots:
     void on_txtFind_textChanged ( const QString & text );
 
 public slots:
-    void setFindBarEnabled(bool enabled);
+    void setFindBarEnabled(bool enabled, bool reduced);
     void setSuccessState(bool successfull);
 
 

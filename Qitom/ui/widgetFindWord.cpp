@@ -83,16 +83,28 @@ void WidgetFindWord::on_txtFind_textChanged (const QString & /*text*/)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void WidgetFindWord::setFindBarEnabled(bool enabled)
+void WidgetFindWord::setFindBarEnabled(bool enabled, bool reduced)
 {
+	if (reduced)
+	{
+		ui.cmdMarkAll->hide();
+		ui.checkCaseSensitive->hide();
+		ui.checkRegExpr->hide();
+		ui.checkWholeWord->hide();
+		ui.checkWrapAround->hide();
+	}
+	else
+	{
+		ui.cmdMarkAll->setEnabled(enabled);
+		ui.checkCaseSensitive->setEnabled(enabled);
+		ui.checkRegExpr->setEnabled(enabled);
+		ui.checkWholeWord->setEnabled(enabled);
+		ui.checkWrapAround->setEnabled(enabled);
+	}
     ui.txtFind->setEnabled(enabled);
     ui.cmdFindDown->setEnabled(enabled);
     ui.cmdFindUp->setEnabled(enabled);
-    ui.cmdMarkAll->setEnabled(enabled);
-    ui.checkCaseSensitive->setEnabled(enabled);
-    ui.checkRegExpr->setEnabled(enabled);
-    ui.checkWholeWord->setEnabled(enabled);
-    ui.checkWrapAround->setEnabled(enabled);
+    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
