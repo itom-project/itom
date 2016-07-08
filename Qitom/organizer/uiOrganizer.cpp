@@ -2407,7 +2407,7 @@ QByteArray UiOrganizer::getReadableMethodSignature(const QMetaMethod &method, bo
         }
     }
 
-#if QT_VERSION >= 0x050000
+#if QT_VERSION >= 0x050400
     return (name + "(" + parameters.join(", ") + ")");
 #else
     QByteArray p;
