@@ -1397,15 +1397,15 @@ verbose : {int} \n\
 //    QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int,UiOrganizer::infoShowItomInheritance), Q_ARG(bool, true), Q_ARG(QSharedPointer<QVariantMap>, value), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     if (showAll >= 2)
     {
-        QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int, UiOrganizer::infoShowAllInheritance), Q_ARG(bool, true), Q_ARG(ito::UiOrganizer::MultiStringList*, NULL), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int, UiOrganizer::infoShowAllInheritance), Q_ARG(bool, true), Q_ARG(ito::UiOrganizer::ClassInfoContainerList*, NULL), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     }
     else if (showAll == 1)
     {
-        QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int, UiOrganizer::infoShowInheritanceUpToWidget), Q_ARG(bool, true), Q_ARG(ito::UiOrganizer::MultiStringList*, NULL), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int, UiOrganizer::infoShowInheritanceUpToWidget), Q_ARG(bool, true), Q_ARG(ito::UiOrganizer::ClassInfoContainerList*, NULL), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     }
     else
     {
-        QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int, UiOrganizer::infoShowItomInheritance), Q_ARG(bool, true), Q_ARG(ito::UiOrganizer::MultiStringList*, NULL), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+        QMetaObject::invokeMethod(uiOrga, "getObjectInfo", Q_ARG(uint, self->objectID), Q_ARG(int, UiOrganizer::infoShowItomInheritance), Q_ARG(bool, true), Q_ARG(ito::UiOrganizer::ClassInfoContainerList*, NULL), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     }
     
     if(!locker.getSemaphore()->wait(PLUGINWAIT))

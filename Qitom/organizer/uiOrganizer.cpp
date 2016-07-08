@@ -124,8 +124,8 @@ UiOrganizer::UiOrganizer(ito::RetVal &retval) :
 
     qRegisterMetaType<ito::UiDataContainer>("ito::UiDataContainer");
     qRegisterMetaType<ito::UiDataContainer>("ito::UiDataContainer&");
-    qRegisterMetaType<ito::UiOrganizer::MultiStringList*>("ito::UiOrganizer::MultiStringList*");
-    qRegisterMetaType<ito::UiOrganizer::MultiStringList*>("ito::UiOrganizer::MultiStringList&");
+    qRegisterMetaType<ito::UiOrganizer::ClassInfoContainerList*>("ito::UiOrganizer::ClassInfoContainerList*");
+    qRegisterMetaType<ito::UiOrganizer::ClassInfoContainerList*>("ito::UiOrganizer::ClassInfoContainerList&");
 
     if (QEvent::registerEventType(QEvent::User+123) != QEvent::User+123)
     {
@@ -2333,12 +2333,16 @@ struct PyCMap {
     { "double", "float" },
     { "QVector<float>", "seq. of float" },
     { "QFont", "font" },
-    { "QColor", "color str or hex" },
+    { "QColor", "color str, rgba or hex" },
     { "QPointer<ito::AddInDataIO>", "dataIO" },
     { "QPointer<ito::Actuator>", "actuator" },
     { "QStringList", "seq. of str" },
     { "ito::AutoInterval", "autoInterval" },
     { "ito::ItomPlotHandle", "uiItem" },
+    { "QRegion", "region" },
+    { "QTime", "datetime.time" },
+    { "QDate", "datetime.date" },
+    { "QDateTime", "datetime.datetime" },
     { 0, 0 }
 };
 
@@ -2456,26 +2460,28 @@ QByteArray UiOrganizer::getReadableParameter(const QByteArray &parameter, bool p
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::UiOrganizer::MultiStringList::Iterator UiOrganizer::parseMetaPropertyForEnumerationTypes(const QMetaProperty &prop, MultiStringList &currentPropList)
+ito::UiOrganizer::ClassInfoContainerList::Iterator UiOrganizer::parseMetaPropertyForEnumerationTypes(const QMetaProperty &prop, ClassInfoContainerList &currentPropList)
 { 
     if (prop.isEnumType() || prop.isFlagType())
     {
         QMetaEnum e = prop.enumerator();
         QByteArray listName;
+        ClassInfoContainer::Type type = prop.isFlagType() ? ClassInfoContainer::TypeFlag : ClassInfoContainer::TypeEnum;
+
         if (strlen(e.scope()) > 0)
         {
-            listName = QByteArray(prop.isFlagType() ? "flag_" : "enum_") + QByteArray(e.scope()) + "::" + QByteArray(e.name());
+            listName = QByteArray(e.scope()) + "::" + QByteArray(e.name());
         }
         else
         {
-            listName = QByteArray(prop.isFlagType() ? "flag_" : "enum_") + QByteArray(e.name());
+            listName = QByteArray(e.name());
         }
 
         bool found = false;
-        MultiStringList::Iterator it = currentPropList.begin();
+        ClassInfoContainerList::Iterator it = currentPropList.begin();
         while (it != currentPropList.end())
         {
-            if (it->first == listName)
+            if (it->m_type == type && it->m_name == listName)
             {
                 found = true;
                 break;
@@ -2494,7 +2500,7 @@ ito::UiOrganizer::MultiStringList::Iterator UiOrganizer::parseMetaPropertyForEnu
                 }
                 values += QByteArray("'") + e.key(i) + QByteArray("' (") + QByteArray::number(e.value(i)) + QByteArray(")");
             }
-            return currentPropList.insert(currentPropList.end(), MultiString(listName, values));
+            return currentPropList.insert(currentPropList.end(), ClassInfoContainer(type, listName, values, values));
         }
         else
         {
@@ -2532,13 +2538,13 @@ RetVal UiOrganizer::getObjectAndWidgetName(unsigned int objectID, QSharedPointer
     return retValue;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getObjectInfo(const QString &classname, bool pythonNotCStyle, ito::UiOrganizer::MultiStringList *objInfo, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::getObjectInfo(const QString &classname, bool pythonNotCStyle, ito::UiOrganizer::ClassInfoContainerList *objectInfo, ItomSharedSemaphore *semaphore)
 {
     ito::RetVal retval;
     QWidget* newWidget = loadDesignerPluginWidget(classname, retval, ito::AbstractFigure::ModeStandaloneWindow, NULL);
     if (newWidget)
     {
-        retval += getObjectInfo((QObject*)newWidget, UiOrganizer::infoShowItomInheritance, pythonNotCStyle, objInfo);
+        retval += getObjectInfo((QObject*)newWidget, UiOrganizer::infoShowItomInheritance, pythonNotCStyle, objectInfo);
     }
 
     DELETE_AND_SET_NULL(newWidget)
@@ -2555,18 +2561,14 @@ RetVal UiOrganizer::getObjectInfo(const QString &classname, bool pythonNotCStyle
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCStyle, ito::UiOrganizer::MultiStringList *propertyList, ItomSharedSemaphore *semaphore /*= NULL*/)
+RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCStyle, ito::UiOrganizer::ClassInfoContainerList *objectInfo, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retValue(retOk);
-    MultiStringList tmpPropList;
+    ClassInfoContainerList tmpObjectInfo;
 
     if (obj)
     {
-        QStringList classInfo;
-        QStringList properties;
-        QStringList signal;
-        QStringList slot;
-        QString className;
+        QByteArray className;
 
         QMap<QByteArray, QByteArray> propInfoMap, signalInfoMap, slotInfoMap;
 
@@ -2577,17 +2579,23 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
         QByteArray signature;
         bool readonly;
         bool valid;
+        QString description, shortDescription;
 
         while (mo != NULL)
         {
-            if ( (type & infoShowInheritanceUpToWidget) && qtBaseClasses.contains(mo->className(), Qt::CaseInsensitive) == 0)
+            if ((type & infoShowInheritanceUpToWidget) && qtBaseClasses.contains(className, Qt::CaseInsensitive) == 0)
             {
                 break;
             }
             
-            if (QString(mo->className()).startsWith("Q") && (type & infoShowItomInheritance))
+            if (className.startsWith('Q') && (type & infoShowItomInheritance))
             {
                 break;
+            }
+
+            if (mo != obj->metaObject()) //mo is already any base class
+            {
+                tmpObjectInfo.append(ClassInfoContainer(ClassInfoContainer::TypeInheritance, QLatin1String(className), "", ""));
             }
 
             for (int i = mo->classInfoCount() - 1; i >= 0; i--)
@@ -2624,12 +2632,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                     }
                     else
                     {
-                        classInfo.append(QString("%1 : %2").arg(ci.name()).arg(ci.value()));
-                        tmpPropList.append(MultiString(QString("ci: ").append(ci.name()), ci.value()));
-                        QString str1("ci_");
-                        str1.append(ci.name());
-                        QString str2(ci.value());
-                        tmpPropList.append(MultiString(str1, str2));
+                        tmpObjectInfo.append(ClassInfoContainer(ClassInfoContainer::TypeClassInfo, QLatin1String(ci.name()), QLatin1String(ci.value())));
                     }
                 }
             }
@@ -2639,18 +2642,17 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                 QMetaProperty prop = mo->property(i);
                 signature = getReadableParameter(prop.typeName(), pythonNotCStyle, &valid);
                 readonly = (prop.isWritable() == false);
-                QString str2;
                 
                 if (i >= mo->propertyOffset() && valid)
                 {
-                    MultiStringList::Iterator enumIterator = parseMetaPropertyForEnumerationTypes(prop, tmpPropList);
+                    ClassInfoContainerList::Iterator enumIterator = parseMetaPropertyForEnumerationTypes(prop, tmpObjectInfo);
                     QString str1("prop_");
                     str1 += QString(prop.name());
                     QString enumString;
 
-                    if (enumIterator != tmpPropList.end())
+                    if (enumIterator != tmpObjectInfo.end())
                     {
-                        if (enumIterator->first.startsWith("enum_"))
+                        if (enumIterator->m_type == ClassInfoContainer::TypeEnum)
                         {
                             enumString = QString("\n\nThe type '%1' is an enumeration that can have one of the following values (str or int):\n\n* ").arg(QLatin1String(signature));
                         }
@@ -2659,22 +2661,31 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                             enumString = QString("\n\nThe type '%1' is a flag mask that can be a combination of one or several of the following values (or-combination number values or semicolon separated strings):\n\n* ").arg(QLatin1String(signature));
                         }
 
-                        enumString += enumIterator->second.split(";").join("\n* ");
+                        enumString += enumIterator->m_shortDescription.split(";").join("\n* ");
                     }
 
 
                     if (propInfoMap.contains(prop.name()))
                     {
-                        properties.append(QString("%1 {%2} -> %3%4").arg(prop.name()).arg(QString(signature)).arg(QString(propInfoMap[prop.name()])).arg(readonly ? " (readonly)" : ""));
-                        str2 = QString("{%1} -> %2%3%4").arg(QString(signature)).arg(QString(propInfoMap[prop.name()])).arg(readonly ? " (readonly)" : "").arg(enumString);
+                        int idx = propInfoMap[prop.name()].indexOf("\n");
+                        if (idx < 0)
+                        {
+                            shortDescription = QString("%1 {%2} -> %3%4").arg(prop.name()).arg(QString(signature)).arg(QString(propInfoMap[prop.name()])).arg(readonly ? " (readonly)" : "");
+                        }
+                        else
+                        {
+                            shortDescription = QString("%1 {%2} -> %3 ...%4").arg(prop.name()).arg(QString(signature)).arg(QString(propInfoMap[prop.name()].left(idx))).arg(readonly ? " (readonly)" : "");
+                        }
+
+                        description = QString("{%1} -> %2%3%4").arg(QString(signature)).arg(QString(propInfoMap[prop.name()])).arg(readonly ? " (readonly)" : "").arg(enumString);
                     }
                     else
                     {
-                        properties.append(QString("%1 {%2}%3").arg(prop.name()).arg(QString(signature)).arg(readonly ? " (readonly)" : ""));
-                        str2 = QString("{%1}%3%4").arg(QString(signature)).arg(readonly ? " (readonly)" : "").arg(enumString);
+                        shortDescription = QString("%1 {%2}%3").arg(prop.name()).arg(QString(signature)).arg(readonly ? " (readonly)" : "");
+                        description = QString("{%1} -> %3%4").arg(QString(signature)).arg(readonly ? " (readonly)" : "").arg(enumString);
                     }
 
-                    tmpPropList.append(MultiString(str1, str2));
+                    tmpObjectInfo.append(ClassInfoContainer(ClassInfoContainer::TypeProperty, QLatin1String(prop.name()), shortDescription, description));
                 }
             }
 
@@ -2690,21 +2701,54 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                         signature = getReadableMethodSignature(meth, pythonNotCStyle, &methodName, &valid);
                         if (valid)
                         {
-                            QString str1("signal_");
-                            str1.append(methodName);
                             QString str2(signature);
-                            if (signalInfoMap.contains(methodName) && !signalInfoMap[methodName].isEmpty())
+
+                            if (pythonNotCStyle)
                             {
-                                str2.append(" -> ");
-                                str2.append(signalInfoMap[methodName]);
-                                signal.append(QString("%1 -> %2").arg(signature.data()).arg(signalInfoMap[methodName].data()));
+                                if (signalInfoMap.contains(methodName) && !signalInfoMap[methodName].isEmpty())
+                                {
+                                    int idx = signalInfoMap[methodName].indexOf("\n");
+                                    if (idx < 0)
+                                    {
+                                        shortDescription = QString("%1 -> %2 (connect signature: %3)").arg(QLatin1String(signature)).arg(QLatin1String(signalInfoMap[methodName])).arg(QLatin1String(meth.methodSignature()));
+                                    }
+                                    else
+                                    {
+                                        shortDescription = QString("%1 -> %2 ... (connect signature: %3)").arg(QLatin1String(signature)).arg(QLatin1String(signalInfoMap[methodName].left(idx))).arg(QLatin1String(meth.methodSignature()));
+                                    }
+
+                                    description = QString("%1 -> %2\n\nNotes\n--------------\n\nTo connect to this signal use the following signature::\n\n    yourItem.connect('%3', yourMethod)\n"). \
+                                        arg(QLatin1String(signature)).arg(QLatin1String(signalInfoMap[methodName])).arg(QLatin1String(meth.methodSignature()));
+                                }
+                                else
+                                {
+                                    description = QString("%1 -> signature for connection to this signal: %2").arg(QLatin1String(signature)).arg(QLatin1String(meth.methodSignature()));
+                                    shortDescription = QString("%1 -> signature for connection to this signal: %2").arg(QLatin1String(signature)).arg(QLatin1String(meth.methodSignature()));
+                                }
                             }
                             else
                             {
-                                signal.append(signature);
+                                if (signalInfoMap.contains(methodName) && !signalInfoMap[methodName].isEmpty())
+                                {
+                                    int idx = signalInfoMap[methodName].indexOf("\n");
+                                    if (idx < 0)
+                                    {
+                                        shortDescription = QString("%1 -> %2").arg(QLatin1String(signature)).arg(QLatin1String(signalInfoMap[methodName]));
+                                    }
+                                    else
+                                    {
+                                        shortDescription = QString("%1 -> %2 ...").arg(QLatin1String(signature)).arg(QLatin1String(signalInfoMap[methodName].left(idx)));
+                                    }
+
+                                    description = QString("%1 -> %2").arg(QLatin1String(signature)).arg(QLatin1String(slotInfoMap[methodName]));
+                                }
+                                else
+                                {
+                                    description = shortDescription = QLatin1String(signature);
+                                }
                             }
 
-                            tmpPropList.append(MultiString(str1, str2));
+                            tmpObjectInfo.append(ClassInfoContainer(ClassInfoContainer::TypeSignal, QLatin1String(methodName), shortDescription, description));
                         }
                     }
                 }
@@ -2716,21 +2760,29 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                         signature = getReadableMethodSignature(meth, pythonNotCStyle, &methodName, &valid);
                         if (valid)
                         {
-                            QString str1("slot_");
-                            str1.append(methodName);
                             QString str2(signature);
+
+
                             if (slotInfoMap.contains(methodName) && !slotInfoMap[methodName].isEmpty())
                             {
-                                str2.append(" -> ");
-                                str2.append(slotInfoMap[methodName]);
-                                slot.append(QString("%1 -> %2").arg(signature.data()).arg(slotInfoMap[methodName].data()));
+                                int idx = slotInfoMap[methodName].indexOf("\n");
+                                if (idx < 0)
+                                {
+                                    shortDescription = QString("%1 -> %2").arg(QLatin1String(signature)).arg(QLatin1String(slotInfoMap[methodName]));
+                                }
+                                else
+                                {
+                                    shortDescription = QString("%1 -> %2...").arg(QLatin1String(signature)).arg(QLatin1String(slotInfoMap[methodName].left(idx)));
+                                }
+
+                                description = QString("%1 -> %2").arg(QLatin1String(signature)).arg(QLatin1String(slotInfoMap[methodName]));
                             }
                             else
                             {
-                                slot.append(signature);
+                                shortDescription = description = QLatin1String(signature);
                             }
 
-                            tmpPropList.append(MultiString(str1, str2));
+                            tmpObjectInfo.append(ClassInfoContainer(ClassInfoContainer::TypeSlot, QLatin1String(methodName), shortDescription, description));
                         }
                     }
                 }
@@ -2741,7 +2793,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                 mo = mo->superClass();
                 if (mo)
                 {
-                    tmpPropList.append(MultiString(QString("inheritance"), mo->className()));
+                    className = mo->className();
                 }
             }
             else
@@ -2750,77 +2802,78 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
             }
         }
 
-        if (!propertyList)
+        if (!objectInfo)
         {
-            std::cout << "WIDGET '" << className.toLatin1().data() << "'\n--------------------------\n\n" << std::endl;
-            if (classInfo.size() > 0)
+            std::cout << "WIDGET '" << className.data() << "'\n--------------------------\n" << std::endl;
+            valid = false;
+            foreach(const ClassInfoContainer &c, tmpObjectInfo)
             {
-                std::cout << "Class Info\n---------------\n";
-
-                foreach(const QString &i, classInfo)
+                if (c.m_type == ClassInfoContainer::TypeClassInfo)
                 {
-                    std::cout << " " << i.toLatin1().data() << "\n";
+                    if (!valid)
+                    {
+                        std::cout << "\nClass Info\n---------------\n";
+                        valid = true;
+                    }
+
+                    std::cout << " " << c.m_shortDescription.toLatin1().data() << "\n";
+                    std::cout << "\n" << std::endl;
                 }
 
-                std::cout << "\n" << std::endl;
+                
             }
 
-            if (properties.size() > 0)
+            valid = false;
+            foreach(const ClassInfoContainer &c, tmpObjectInfo)
             {
-                std::cout << "Properties\n---------------\n";
-
-                foreach(const QString &i, properties)
+                if (c.m_type == ClassInfoContainer::TypeClassInfo)
                 {
-                    std::cout << " " << i.toLatin1().data() << "\n";
+                    if (!valid)
+                    {
+                        std::cout << "\nProperties\n---------------\n";
+                        valid = true;
+                    }
+
+                    std::cout << " " << c.m_shortDescription.toLatin1().data() << "\n";
                 }
 
-                std::cout << "\n" << std::endl;
             }
 
-            int idx;
-
-            if (signal.size() > 0)
+            valid = false;
+            foreach(const ClassInfoContainer &c, tmpObjectInfo)
             {
-                std::cout << "Signals\n---------------\n";
-
-                foreach(const QString &i, signal)
+                if (c.m_type == ClassInfoContainer::TypeSignal)
                 {
-                    idx = i.indexOf("\n");
-                    if (idx < 0)
+                    if (!valid)
                     {
-                        std::cout << " " << i.toLatin1().data() << "\n";
+                        std::cout << "\nSignals\n---------------\n";
+                        valid = true;
                     }
-                    else
-                    {
-                        std::cout << " " << i.left(idx).toLatin1().data() << "...\n";
-                    }
+
+                    std::cout << " " << c.m_shortDescription.toLatin1().data() << "\n";
                 }
 
-                std::cout << "\n" << std::endl;
             }
-            if (slot.size() > 0)
-            {
-                std::cout << "Slots\n---------------\n";
 
-                foreach(const QString &i, slot)
+            valid = false;
+            foreach(const ClassInfoContainer &c, tmpObjectInfo)
+            {
+                if (c.m_type == ClassInfoContainer::TypeSlot)
                 {
-                    idx = i.indexOf("\n");
-                    if (idx < 0)
+                    if (!valid)
                     {
-                        std::cout << " " << i.toLatin1().data() << "\n";
+                        std::cout << "\nSlots\n---------------\n";
+                        valid = true;
                     }
-                    else
-                    {
-                        std::cout << " " << i.left(idx).toLatin1().data() << "...\n";
-                    }
+                
+                    std::cout << " " << c.m_shortDescription.toLatin1().data() << "\n";
                 }
 
-                std::cout << "\n" << std::endl;
             }
         }
         else
         {
-            *propertyList = tmpPropList;
+            *objectInfo = tmpObjectInfo;
         }
     }
     else

@@ -402,6 +402,16 @@ class ItomDocString(collections.Mapping):
                 out += [':raises %s: %s' % (param, " ".join(desc))]
             out += ['']
         return out
+        
+    def _str_notes_section(self):
+        out = []
+        name = 'Notes'
+        if self[name]:
+            out += [".. note::"]
+            out += ['']
+            out += self._str_indent(self[name])
+            out += ['']
+        return out
     
     def _str_section(self, name):
         out = []
@@ -459,7 +469,8 @@ class ItomDocString(collections.Mapping):
         out += self._str_raises_list()
         out += self._str_section('Warnings')
         out += self._str_see_also(func_role)
-        for s in ('Notes', 'References', 'Examples'):
+        out += self._str_notes_section()
+        for s in ('References', 'Examples'):
             out += self._str_section(s)
         for param_list in ('Attributes', 'Methods'):
             out += self._str_param_list(param_list)

@@ -1385,13 +1385,13 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             }  
 
             UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-            ito::UiOrganizer::MultiStringList objInfo;
+            ito::UiOrganizer::ClassInfoContainerList objInfo;
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-            QMetaObject::invokeMethod(uiOrg, "getObjectInfo", Q_ARG(const QString&, fig.classname), Q_ARG(bool, true), Q_ARG(ito::UiOrganizer::MultiStringList*, &objInfo), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            QMetaObject::invokeMethod(uiOrg, "getObjectInfo", Q_ARG(const QString&, fig.classname), Q_ARG(bool, true), Q_ARG(ito::UiOrganizer::ClassInfoContainerList*, &objInfo), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
             locker.getSemaphore()->wait(-1);
             retval += locker.getSemaphore()->returnValue;
 
-            ito::UiOrganizer::MultiStringList::Iterator mapIter;
+            ito::UiOrganizer::ClassInfoContainerList::Iterator mapIter;
             int idx;
 
             if (retDict)
@@ -1405,19 +1405,17 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
 
             for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
-                if (mapIter->first.startsWith("ci_"))
+                if (mapIter->m_type == ito::ClassInfoContainer::TypeClassInfo)
                 {
-                    QString name = QString(mapIter->first).remove(0, 3);
-                    QString value = mapIter->second;
                     if (retDict)
                     {
-                        item = PythonQtConversion::QStringToPyObject(value); //new ref
-                        PyDict_SetItemString(itemsDict, name.toLatin1().data(), item);
+                        item = PythonQtConversion::QStringToPyObject(mapIter->m_description); //new ref
+                        PyDict_SetItemString(itemsDict, mapIter->m_name.toLatin1().data(), item);
                         Py_DECREF(item);
                     }
                     else
                     {
-                        std::cout << name.toLatin1().data() << " : " << value.toLatin1().data() << "\n";
+                        std::cout << mapIter->m_name.toLatin1().data() << " : " << mapIter->m_shortDescription.toLatin1().data() << "\n";
                     }
                 }
             }
@@ -1435,27 +1433,17 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             
             for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
-                if (mapIter->first.startsWith("prop_"))
+                if (mapIter->m_type == ito::ClassInfoContainer::TypeProperty)
                 {
-                    QString name = mapIter->first.mid(5);
-                    QString value = mapIter->second;
                     if (retDict)
                     {
-                        item = PythonQtConversion::QStringToPyObject(value); //new ref
-                        PyDict_SetItemString(itemsDict, name.toLatin1().data(), item);
+                        item = PythonQtConversion::QStringToPyObject(mapIter->m_description); //new ref
+                        PyDict_SetItemString(itemsDict, mapIter->m_name.toLatin1().data(), item);
                         Py_DECREF(item);
                     }
                     else
                     {
-                        idx = value.indexOf("\n");
-                        if (idx < 0)
-                        {
-                            std::cout << name.toLatin1().data() << " " << value.toLatin1().data() << "\n";
-                        }
-                        else
-                        {
-                            std::cout << name.toLatin1().data() << " " << value.left(idx).toLatin1().data() << "...\n";
-                        }
+                        std::cout << mapIter->m_shortDescription.toLatin1().data() << "\n";
                     }
                 }
             }
@@ -1473,27 +1461,17 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
 
             for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
-                if (mapIter->first.startsWith("signal_"))
+                if (mapIter->m_type == ito::ClassInfoContainer::TypeSignal)
                 {
-                    QString name = mapIter->first.mid(7);
-                    QString value = mapIter->second;
                     if (retDict)
                     {
-                        item = PythonQtConversion::QStringToPyObject(value); //new ref
-                        PyDict_SetItemString(itemsDict, name.toLatin1().data(), item);
+                        item = PythonQtConversion::QStringToPyObject(mapIter->m_description); //new ref
+                        PyDict_SetItemString(itemsDict, mapIter->m_name.toLatin1().data(), item);
                         Py_DECREF(item);
                     }
                     else
                     {
-                        idx = value.indexOf("\n");
-                        if (idx < 0)
-                        {
-                            std::cout << value.toLatin1().data() << "\n";
-                        }
-                        else
-                        {
-                            std::cout << value.left(idx).toLatin1().data() << "...\n";
-                        }
+                        std::cout << mapIter->m_shortDescription.toLatin1().data() << "\n";
                     }
                 }
             }
@@ -1511,27 +1489,17 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
 
             for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
-                if (mapIter->first.startsWith("slot_"))
+                if (mapIter->m_type == ito::ClassInfoContainer::TypeSlot)
                 {
-                    QString name = mapIter->first.mid(5);
-                    QString value = mapIter->second;
                     if (retDict)
                     {
-                        item = PythonQtConversion::QStringToPyObject(value); //new ref
-                        PyDict_SetItemString(itemsDict, name.toLatin1().data(), item);
+                        item = PythonQtConversion::QStringToPyObject(mapIter->m_description); //new ref
+                        PyDict_SetItemString(itemsDict, mapIter->m_name.toLatin1().data(), item);
                         Py_DECREF(item);
                     }
                     else
                     {
-                        idx = value.indexOf("\n");
-                        if (idx < 0)
-                        {
-                            std::cout << value.toLatin1().data() << "\n";
-                        }
-                        else
-                        {
-                            std::cout << value.left(idx).toLatin1().data() << "...\n";
-                        }
+                        std::cout << mapIter->m_shortDescription.toLatin1().data() << "\n";
                     }
                 }
             }
@@ -1548,19 +1516,17 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             }
             for (mapIter = objInfo.begin(); mapIter != objInfo.end(); ++mapIter)
             {
-                if (mapIter->first.startsWith("inheritance_"))
+                if (mapIter->m_type == ito::ClassInfoContainer::TypeInheritance)
                 {
-                    QString name = QString(mapIter->first).remove(0, 12);
-                    QString value = mapIter->second;
                     if (retDict)
                     {
-                        item = PythonQtConversion::QStringToPyObject(value); //new ref
-                        PyDict_SetItemString(itemsDict, name.toLatin1().data(), item);
+                        item = PythonQtConversion::QStringToPyObject(mapIter->m_description); //new ref
+                        PyDict_SetItemString(itemsDict, mapIter->m_name.toLatin1().data(), item);
                         Py_DECREF(item);
                     }
                     else
                     {
-                        std::cout << name.toLatin1().data() << " : " << value.toLatin1().data() << "\n";
+                        std::cout << mapIter->m_name.toLatin1().data() << "\n";
                     }
                 }
             }

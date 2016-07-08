@@ -263,6 +263,24 @@ public:
 #endif
 };
 
+struct ClassInfoContainer
+{
+    enum Type {TypeClassInfo, TypeSlot, TypeSignal, TypeProperty, TypeEnum, TypeFlag, TypeInheritance};
+    ClassInfoContainer(Type type, const QString &name, const QString &shortDescription = "", const QString &description = "") :
+        m_type(type), m_name(name), m_shortDescription(shortDescription), m_description(description)
+    {
+        if (m_description == "")
+        {
+            m_description = m_shortDescription;
+        }
+    }
+
+    Type m_type;
+    QString m_name;
+    QString m_shortDescription;
+    QString m_description;
+};
+
 class UiOrganizer : public QObject
 {
     Q_OBJECT
@@ -305,8 +323,7 @@ public:
         infoShowAllInheritance =0x0008
     };
 
-    typedef QPair<QString, QString> MultiString;
-    typedef QList<MultiString > MultiStringList;
+    typedef QList<ClassInfoContainer> ClassInfoContainerList;
 
     UiOrganizer(ito::RetVal &retval);
     ~UiOrganizer();
@@ -354,7 +371,7 @@ private:
 
     QByteArray getReadableMethodSignature(const QMetaMethod &method, bool pythonNotCStyle, QByteArray *methodName = NULL, bool *valid = NULL);
     QByteArray getReadableParameter(const QByteArray &parameter, bool pythonNotCStyle, bool *valid = NULL);
-    ito::UiOrganizer::MultiStringList::Iterator parseMetaPropertyForEnumerationTypes(const QMetaProperty &meth, MultiStringList &currentPropList);
+    ito::UiOrganizer::ClassInfoContainerList::Iterator parseMetaPropertyForEnumerationTypes(const QMetaProperty &meth, ClassInfoContainerList &currentPropList);
 
     void timerEvent(QTimerEvent *event);
 
@@ -421,11 +438,11 @@ public slots:
     RetVal getSignalIndex(unsigned int objectID, const QByteArray &signalSignature, QSharedPointer<int> signalIndex, QSharedPointer<QObject*> objPtr, QSharedPointer<IntList> argTypes, ItomSharedSemaphore *semaphore = NULL);
     RetVal callSlotOrMethod(bool slotNotMethod, unsigned int objectID, int slotOrMethodIndex, QSharedPointer<FctCallParamContainer> args, ItomSharedSemaphore *semaphore = NULL);
 
-    RetVal getObjectInfo(const QString &classname, bool pythonNotCStyle, ito::UiOrganizer::MultiStringList *objInfo, ItomSharedSemaphore *semaphore = NULL);
-    RetVal getObjectInfo(const QObject *obj, int type, bool pythonNotCStyle, ito::UiOrganizer::MultiStringList* propertyList, ItomSharedSemaphore *semaphore = NULL);
-    inline RetVal getObjectInfo(unsigned int objectID, int type, bool pythonNotCStyle, ito::UiOrganizer::MultiStringList *propertyList, ItomSharedSemaphore *semaphore = NULL)
+    RetVal getObjectInfo(const QString &classname, bool pythonNotCStyle, ito::UiOrganizer::ClassInfoContainerList *objectInfo, ItomSharedSemaphore *semaphore = NULL);
+    RetVal getObjectInfo(const QObject *obj, int type, bool pythonNotCStyle, ito::UiOrganizer::ClassInfoContainerList* objectInfo, ItomSharedSemaphore *semaphore = NULL);
+    inline RetVal getObjectInfo(unsigned int objectID, int type, bool pythonNotCStyle, ito::UiOrganizer::ClassInfoContainerList *objectInfo, ItomSharedSemaphore *semaphore = NULL)
     {
-        return getObjectInfo(getWeakObjectReference(objectID), type, pythonNotCStyle, propertyList, semaphore);
+        return getObjectInfo(getWeakObjectReference(objectID), type, pythonNotCStyle, objectInfo, semaphore);
     }
 
     RetVal getObjectAndWidgetName(unsigned int objectID, QSharedPointer<QByteArray> objectName, QSharedPointer<QByteArray> widgetClassName, ItomSharedSemaphore *semaphore = NULL);
@@ -460,6 +477,6 @@ private slots:
 
 } //namespace ito
 
-Q_DECLARE_METATYPE(ito::UiOrganizer::MultiStringList*)
+Q_DECLARE_METATYPE(ito::UiOrganizer::ClassInfoContainerList*)
 
 #endif
