@@ -171,6 +171,8 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	connect(defaultZoomAction, SIGNAL(triggered()), this, SLOT(mnuDefaultZoomWindow()));
 	toolbar->addAction(defaultZoomAction);
 
+	toolbar->addSeparator();
+
 	QAction *showFindWordBar = new QAction(QIcon(":/files/icons/fileModified.png"), tr("search text"), this);
 	connect(showFindWordBar, SIGNAL(triggered()), this, SLOT(showFindWordBar()));
 	toolbar->addAction(showFindWordBar);
