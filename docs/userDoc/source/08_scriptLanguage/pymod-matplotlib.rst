@@ -323,30 +323,30 @@ Properties
 -------------------------
 
 
-.. py:attribute:: toolbarVisible : bool 
+.. py:attribute:: keepSizeFixed : bool 
     :noindex:
     
-    Toggles the visibility of the toolbar of the plot.
+    If you want to control the size of the canvas by python / matplotlib (e.g. set_size_inches), set this to true. The canvas will then have a fixed size, that is not affected by the window size.
 
 .. py:attribute:: renderLegend : bool 
     :noindex:
     
     If this property is true, the legend are included in pixelmaps renderings.
 
-.. py:attribute:: contextMenuEnabled : bool 
-    :noindex:
-    
-    Defines whether the context menu of the plot should be enabled or not.
-
 .. py:attribute:: forceWindowResize : bool 
     :noindex:
     
     If set, the plot widget / area is resized to the desired sizes given by matplotlib. Uncheck this option, if you want to keep the canvas unchanged e.g. in an user-defined GUI
 
-.. py:attribute:: keepSizeFixed : bool 
+.. py:attribute:: toolbarVisible : bool 
     :noindex:
     
-    If you want to control the size of the canvas by python / matplotlib (e.g. set_size_inches), set this to true. The canvas will then have a fixed size, that is not affected by the window size.
+    Toggles the visibility of the toolbar of the plot.
+
+.. py:attribute:: contextMenuEnabled : bool 
+    :noindex:
+    
+    Defines whether the context menu of the plot should be enabled or not.
 
 Slots
 -------------------------
@@ -365,19 +365,6 @@ Slots
     
     
     forces a replot of the plot
-    
-    .. index:: 
-
-.. py:function:: setLabelText(text) [slot]
-    :noindex:
-    
-    
-    displays a text in the toolbar
-    
-    The text is displayed in the label that is usually used for coordinates of the mouse cursor....
-    
-    :param text: text to display
-    :type text: str
     
     .. index:: 
 
@@ -412,6 +399,19 @@ Slots
     
     .. index:: 
 
+.. py:function:: setLabelText(text) [slot]
+    :noindex:
+    
+    
+    displays a text in the toolbar
+    
+    The text is displayed in the label that is usually used for coordinates of the mouse cursor....
+    
+    :param text: text to display
+    :type text: str
+    
+    .. index:: 
+
 Signals
 -------------------------
 
@@ -421,6 +421,12 @@ Signals
     
     
     interal use between MatplotlibPlot and the subplot configuration dialog.
+    
+    .. note::
+    
+        To connect to this signal use the following signature::
+        
+            yourItem.connect('subplotConfigSliderChanged(int,int)', yourMethod)
     
     .. index:: 
 

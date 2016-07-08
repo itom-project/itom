@@ -45,14 +45,13 @@ Install Visual Studio 2013
 Install Visual Studio 2013 Community without optional features. 
 
 Creating the _install_ and 3rdParty folder
-----------------------------------------
+---------------------------------------------
 
 Create a path on your hard drive with a long, long path name called **${MAINDIR}**. Later, the all-in-one path on the destination computer must be shorter than this path name, due to the Qt patching. For example your path can be called: E:\\itom_all-in-one_development\\itom_all-in-one_development\\vs2013_qt5.6.0_x64\\. Than create the following paths relative to the **${MAINDIR}**. 3rdPartyPCL is not necessary to create a working |itom|. 
 
 .. figure:: images/all-in-one-create/folder_structure.png
-
-   :scale: 100$
-   :align: center
+    :scale: 100%
+    :align: center
 
 _install_ folder
 ================
@@ -60,8 +59,7 @@ _install_ folder
 The _install_ folder is used to execute the installation procedure of the all-in-one development. Copy the following files into **${MAINDIR}**/_install_ folder
 
 .. figure:: images/all-in-one-create/folder_install.png
-
-   :scale: 100$
+   :scale: 100%
    :align: center
 
 optional folder
@@ -70,8 +68,7 @@ optional folder
 This folder is for optional software, which is not necessary to build and compile a working |itom|. This software is required further for development purposes. Copy the following files into **${MAINDIR}**/_install_/optional folder
 
 .. figure:: images/all-in-one-create/folder_optional.png
-
-   :scale: 100$
+   :scale: 100%
    :align: center
 
 qpatch folder
@@ -80,8 +77,7 @@ qpatch folder
 The folder *qpatch* contains the files, which are needed to patch the prebuild version of Qt version. Copy following files into **${MAINDIR}**/_install_/qpatch folder.
 
 .. figure:: images/all-in-one-create/folder_qpatch.png
-
-   :scale: 100$
+   :scale: 100%
    :align: center
 
 3rdParty folder
@@ -113,15 +109,13 @@ OpenCV must be build from the source files. You should create following folder s
 * BUILD options:
 
 .. figure:: images/all-in-one-create/CMake_BUILD_OPENCV.png
-
-   :scale: 100$
+   :scale: 100%
    :align: center
        
 * WITH options:
 
 .. figure:: images/all-in-one-create/CMake_WITH_OPENCV.png
-
-   :scale: 100$
+   :scale: 100%
    :align: center
        
 * optional install CUDA Toolkit (e.g. 7.0, supported by OptiX as well). Is need for Macrosim, which runs with |itom|
@@ -240,13 +234,11 @@ First set the following variables in the beginning of the file.
 Check in the function **generateCMakeDict** the version of Visual Studio and the paths of **CMake, OpenCV, Python library version, VTK, PCL, Eigen, Flann, QHull**.
 
 .. figure:: images/all-in-one-create/Setup_packages_versions.PNG
-
-   :scale: 100$
+   :scale: 100%
    :align: center
    
 Check in the function **installNumpy**, if the numpy whl file names are right. 
 
 .. figure:: images/all-in-one-create/Setup_numpy_file.PNG
-
-   :scale: 100$
+   :scale: 100%
    :align: center

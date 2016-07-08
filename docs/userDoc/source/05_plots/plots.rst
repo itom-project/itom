@@ -30,8 +30,8 @@ Content:
    linePlots
    imagePlots
    isometricPlot
-   primitives
    markers
+   shapes
    matplotlib
 
 

@@ -7,13 +7,14 @@ Markers in plots
 
 Sometimes, it is required to place marker symbols in a plot canvas with subpixel precision. This can for instance be the case,
 if detected features or calibration marks should be indicated in the plot. Currently, the Qwt-based plot plugins 
-:ref:`itom1dqwtplot <tom1dqwtplot (1D)>` and :ref:`itom2dqwtplot <itom2dqwtplot (2D)>` support drawing markers.
+:ref:`itom1dqwtplot <itom1dqwtplot (1D)>` and :ref:`itom2dqwtplot <itom2dqwtplot (2D)>` support drawing markers.
 
 It is possible to group one or multiple markers in one set that can be assigned a set name. Afterwards it is possible to also
 delete single sets based on their name or to show the name of the set next to each marker. All markers in one set can have a certain color, shape
 and size (in pixels). These three properties are given by one style-string of the following form:
 
 .. code-block:: python
+    :linenos:
     
     styleString = "CFS"
     #where C is the color character,
@@ -70,6 +71,7 @@ coordinates of the plot), and the second row are the y-coordinates. *setName* is
 To delete an existing set of markers, use the slot **deleteMarkers**:
 
 .. code-block:: python
+    :linenos:
     
     plotHandle.call("deleteMarkers", setName) #delete markers within given set
     #or
@@ -78,6 +80,7 @@ To delete an existing set of markers, use the slot **deleteMarkers**:
 An example with different style strings can be found in the demo script **demo/demoMarkers.py**:
 
 .. code-block:: python
+    :linenos:
     
     import numpy as np
 
