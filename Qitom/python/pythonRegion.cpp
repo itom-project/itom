@@ -186,6 +186,7 @@ int PythonRegion::PyRegion_init(PyRegion *self, PyObject *args, PyObject * /*kwd
 PyDoc_STRVAR(pyRegionContains_doc,"contains(x,y[,w,h]) -> returns True if the given point or rectangle is fully contained in this region, otherwise returns False. \n\
 \n\
 This method returns True, if the given point (x,y) or region (x,y,w,h) is fully contained in this region. Otherwise returns False.\n\
+\n\
 Parameters \n\
 ----------- \n\
 x : {int} \n\
@@ -239,6 +240,7 @@ PyDoc_STRVAR(pyRegionIntersected_doc,"intersected(x,y,w,h | region) -> returns a
 \n\
 This method returns a new region, which is the intersection of this region and the given, new region. The intersection only contains points that are \n\
 part of both given regions. \n\
+\n\
 Parameters \n\
 ----------- \n\
 x : {int} \n\
@@ -287,6 +289,7 @@ You can either use the parameters 'x','y','w','h' OR 'region'.");
 PyDoc_STRVAR(pyRegionIntersects_doc,"intersects(x,y,w,h | region) -> returns True if this region intersects with the given region, else False. \n\
 \n\
 This method returns True, if this region intersects with the new region, otherwise returns False. \n\
+\n\
 Parameters \n\
 ----------- \n\
 x : {int} \n\
@@ -338,6 +341,7 @@ You can either use the parameters 'x','y','w','h' OR 'region'.");
 PyDoc_STRVAR(pyRegionSubtracted_doc,"subtracted(x,y,w,h | region) -> returns a region which is the new region subtracted from this region. \n\
 \n\
 This method returns a new region, which is the given, new region subtracted from this region. \n\
+\n\
 Parameters \n\
 ----------- \n\
 x : {int} \n\
@@ -386,6 +390,7 @@ You can either use the parameters 'x','y','w','h' OR 'region'.");
 PyDoc_STRVAR(pyRegionTranslate_doc,"translate(x,y) -> translateds this region by the given coordinates. \n\
 \n\
 This method translates this region by the given coordinates. \n\
+\n\
 Parameters \n\
 ----------- \n\
 x : {int} \n\
@@ -418,6 +423,7 @@ translated");
 PyDoc_STRVAR(pyRegionTranslated_doc,"translated(x,y) -> returns a region, translated by the given coordinates. \n\
 \n\
 This method returns a new region, which is translated by the given coordinates in x and y direction. \n\
+\n\
 Parameters \n\
 ----------- \n\
 x : {int} \n\
@@ -454,6 +460,7 @@ PyDoc_STRVAR(pyRegionUnited_doc,"united(x,y,w,h | region) -> returns a region wh
 \n\
 This method returns a new region, which is the union of this region with the region given as parameters. Union means that all values, that\n\
 are contained in any of both regions is part of the overall region, too. \n\
+\n\
 Parameters \n\
 ----------- \n\
 x : {int} \n\
@@ -502,6 +509,7 @@ You can either use the parameters 'x','y','w','h' OR 'region'.");
 PyDoc_STRVAR(pyRegionXored_doc,"xored(x,y,w,h | region) -> returns a region which is an xor combination of the given region with this region. \n\
 \n\
 This method returns a new region, which is defined by an xor-combination of this region with the region given as parameters. \n\
+\n\
 Parameters \n\
 ----------- \n\
 x : {int} \n\
