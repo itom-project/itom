@@ -14,7 +14,6 @@
 import sys, os, inspect
 import sphinx
 import __main__
-import quark_sphinx_theme
 import itom as itomFuncs
 
 # If extensions (or modules to document with autodoc) are in another directory,
@@ -126,19 +125,8 @@ autodoc_docstring_signature = True
 # Add any paths that contain custom themes here, relative to this directory.
 qt_version = itomFuncs.version(True)["itom"]["QT_Version"]
 
-if (qt_version >= '5.6.0'):
-    #choose quark theme as main theme
-    html_theme = 'quark'
-    extensions.append('quark_sphinx_theme.ext.html_compat')
-    html_theme_options = {
-        'body_font_size' : '11pt', 
-        'body_font' : 'Helvetica'
-    }
-    html_theme_path = [quark_sphinx_theme.get_path()]
-else: 
-    #choose itom theme as main theme
-    html_theme = 'itom'
-    html_theme_path = ['..' + os.sep + '_themes']
+html_theme = 'itom'
+html_theme_path = ['..' + os.sep + '_themes']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
