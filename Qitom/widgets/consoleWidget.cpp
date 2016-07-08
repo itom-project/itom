@@ -58,7 +58,8 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     m_inputStartLine(0),
     m_markErrorLine(-1),
     m_markCurrentLine(-1),
-    m_markInputLine(-1)
+    m_markInputLine(-1),
+    m_autoWheel(true)
 {
     qDebug("console widget start constructor");
     initEditor();
@@ -333,6 +334,7 @@ RetVal ConsoleWidget::startNewCommand(bool clearEditorFirst)
     {
         markerDeleteAll(m_markErrorLine);
         clear();
+        m_autoWheel = true;
     }
 
     if (text() == "")
@@ -950,6 +952,7 @@ void ConsoleWidget::clearCommandLine()
 {
     clear();
     m_startLineBeginCmd = -1;
+    m_autoWheel = true;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1007,6 +1010,7 @@ RetVal ConsoleWidget::executeCmdQueue()
         else if (value.singleLine == "clc" || value.singleLine == "clear")
         {
             clear();
+            m_autoWheel = true;
             m_startLineBeginCmd = -1;
             m_pCmdList->add(value.singleLine);
             executeCmdQueue();
@@ -1219,11 +1223,13 @@ void ConsoleWidget::receiveStream(QString text, ito::QDebugStream::MsgStreamType
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal ConsoleWidget::moveCursorToEnd()
+void ConsoleWidget::moveCursorToEnd()
 {
-    int lastLine = lines() - 1;
-    setCursorPosition(lastLine, lineLength(lastLine));
-    return RetVal(retOk);
+    if (m_autoWheel)
+    {
+        int lastLine = lines() - 1;
+        setCursorPosition(lastLine, lineLength(lastLine));
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1348,6 +1354,13 @@ void ConsoleWidget::dragMoveEvent(QDragMoveEvent * event)
             }
         }
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void ConsoleWidget::wheelEvent(QWheelEvent *event)
+{
+    m_autoWheel = false;
+    AbstractPyScintillaWidget::wheelEvent(event);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1525,8 +1538,10 @@ void ConsoleWidget::cut()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal ConsoleWidget::moveCursorToValidRegion()
+void ConsoleWidget::moveCursorToValidRegion()
 {
+    m_autoWheel = true;
+
     int lineFrom, lineTo, indexFrom, indexTo;
 
     //!< check, that selections are only in valid area
@@ -1548,8 +1563,6 @@ RetVal ConsoleWidget::moveCursorToValidRegion()
     {
         moveCursorToEnd();
     }
-
-    return RetVal(retOk);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

@@ -32,17 +32,9 @@
 
 #include "abstractPyScintillaWidget.h"
 
-//// Under Windows, define QSCINTILLA_MAKE_DLL to create a Scintilla DLL, or
-//// define QSCINTILLA_DLL to link against a Scintilla DLL, or define neither
-//// to either build or link against a static Scintilla library.
-////!< this text is coming from qsciglobal.h
-//#define QSCINTILLA_DLL  //http://www.riverbankcomputing.com/pipermail/qscintilla/2007-March/000034.html
-//
-//#include <Qsci/qsciscintilla.h>
-//#include <Qsci/qscilexerpython.h>
-//#include <Qsci/qsciapis.h>
 #include <QKeyEvent>
 #include <QDropEvent>
+#include <qevent.h>
 #include <qstring.h>
 #include <qstringlist.h>
 #include <qdebug.h>
@@ -92,6 +84,7 @@ protected:
     void dropEvent (QDropEvent *event);
     void dragEnterEvent (QDragEnterEvent *event);
     void dragMoveEvent (QDragMoveEvent *event);
+    void wheelEvent(QWheelEvent *event);
 
 private slots:
     void selChanged(); 
@@ -115,9 +108,8 @@ private:
 
     RetVal executeCmdQueue();
 
-    RetVal moveCursorToEnd();
-
-    RetVal moveCursorToValidRegion();
+    void moveCursorToEnd();
+    void moveCursorToValidRegion();
 
     int checkValidDropRegion(const QPoint &pos);
     
@@ -146,6 +138,7 @@ private:
     QSharedPointer<QByteArray> m_inputStreamBuffer;
     int m_inputStartLine;
     int m_inputStartCol;
+    bool m_autoWheel; //!< true if command line should automatically move to the last line if new lines are appended, this is set to false upon a wheel event and will be reset to true if the command line is cleared (clc) or if a new input is added
 };
 
 class DequeCommandList
