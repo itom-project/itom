@@ -36,7 +36,8 @@ class QHelpEngine; //forward declaration
 
 namespace ito {
 
-class QtHelpUrlSchemeHandler;
+class WidgetFindWord; //forward declaration
+class QtHelpUrlSchemeHandler; //forward declaration
 
 class HelpViewer : public QMainWindow
 {
@@ -50,11 +51,15 @@ public:
 
 private:
     QWebEngineView *m_pView;
+	WidgetFindWord *m_pFindWord;
     QString m_collectionFile;
 	QHelpEngine *m_pHelpEngine;
 	QtHelpUrlSchemeHandler *m_pSchemeHandler;
 	qreal m_pDefaultZoomFactor;
 	qreal m_pZoomFactor;
+
+protected:
+	void keyPressEvent(QKeyEvent *event);
 
 private slots:
 	void linkActivated(const QUrl &url);
@@ -74,6 +79,11 @@ private slots:
 	void searchingFinished(const int &hits);
 	void indexingStarted();
 	void indexingFinished();
+
+	void findNextWord(QString expr, bool regExpr, bool caseSensitive, bool wholeWord, bool wrap, bool forward, bool isQuickSeach);
+	void hideFindWordBar();
+	void showFindWordBar();
+
 };
 
 } //end namespace ito

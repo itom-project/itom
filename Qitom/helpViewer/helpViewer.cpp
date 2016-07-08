@@ -51,6 +51,8 @@
 #include <qapplication.h>
 #include <qdebug.h>
 #include <qicon.h>
+#include <ui/widgetFindWord.h>
+
 
 namespace ito {
 
@@ -58,12 +60,25 @@ namespace ito {
 HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
     QMainWindow(parent),
     m_pView(NULL),
+	m_pFindWord(NULL),
     m_pHelpEngine(NULL),
 	m_pSchemeHandler(NULL)
 {
     m_pView = new QWebEngineView(this);
     //m_pView->load(QUrl("http://itom.bitbucket.org"));
-    setCentralWidget(m_pView);
+	m_pFindWord = new WidgetFindWord(this);
+	m_pFindWord->setVisible(false);
+	m_pFindWord->setFindBarEnabled(true, true);
+	
+	connect(m_pFindWord, SIGNAL(findNext(QString, bool, bool, bool, bool, bool, bool)), this, SLOT(findNextWord(QString, bool, bool, bool, bool, bool, bool)));
+	connect(m_pFindWord, SIGNAL(hideSearchBar()), this, SLOT(hideFindWordBar()));
+	
+	QVBoxLayout *layoutCentral = new QVBoxLayout(this);
+	layoutCentral->addWidget(m_pView);
+	layoutCentral->addWidget(m_pFindWord);
+	QWidget *widgetCentral = new QWidget(this);
+	widgetCentral->setLayout(layoutCentral);
+	setCentralWidget(widgetCentral);
 
 	// QWebEnginePage
 	QWebEnginePage *page = m_pView->page();
@@ -106,10 +121,9 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	
 	//dockWidgetSearch
 	QVBoxLayout *layoutSearch = new QVBoxLayout(this);
-	QHelpSearchEngine *searchEngine = m_pHelpEngine->searchEngine(); // new QHelpSearchEngine(m_pHelpEngine, this);
+	QHelpSearchEngine *searchEngine = m_pHelpEngine->searchEngine(); 
 	QHelpSearchResultWidget *resultWidget = searchEngine->resultWidget();
 	QHelpSearchQueryWidget *queryWidget = searchEngine->queryWidget();
-
 	setFocusProxy(queryWidget);
 	connect(queryWidget, SIGNAL(search()), this, SLOT(search()));
 	connect(resultWidget, SIGNAL(requestShowLink(QUrl)), this, SLOT(requestShowLink(QUrl)));
@@ -117,10 +131,8 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	connect(searchEngine, SIGNAL(searchingFinished(int)), this, SLOT(searchingFinished(int)));
 	connect(searchEngine, SIGNAL(indexingStarted()), this, SLOT(indexingStarted()));
 	connect(searchEngine, SIGNAL(indexingFinished()), this, SLOT(indexingFinished()));
-
 	layoutSearch->addWidget(queryWidget);
 	layoutSearch->addWidget(resultWidget);
-
 	QDockWidget *dockWidgetSearch = new QDockWidget(tr("search"), this);
 	QWidget *searchWidget = new QWidget(this);
 	searchWidget->setLayout(layoutSearch);
@@ -159,6 +171,14 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	connect(defaultZoomAction, SIGNAL(triggered()), this, SLOT(mnuDefaultZoomWindow()));
 	toolbar->addAction(defaultZoomAction);
 
+	QAction *showFindWordBar = new QAction(QIcon(":/files/icons/fileModified.png"), tr("search text"), this);
+	connect(showFindWordBar, SIGNAL(triggered()), this, SLOT(showFindWordBar()));
+	toolbar->addAction(showFindWordBar);
+
+	QAction *closeHelpAction = new QAction(QIcon(":/files/icons/close.png"), tr("Exit"), this);
+	connect(closeHelpAction, SIGNAL(triggered()), this, SLOT(mnuCloseWindow()));
+	toolbar->addAction(closeHelpAction);
+
 	addToolBar(toolbar);
 	
 	//menubar
@@ -166,12 +186,11 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 
 	//filemenu
 	QMenu *fileMenu = menuBar->addMenu(tr("File"));	
-	QAction *closeHelpAction = new QAction(tr("Exit"), this);
-	connect(closeHelpAction, SIGNAL(triggered()), this, SLOT(mnuCloseWindow()));
 	fileMenu->addAction(closeHelpAction);
-
+	
 	//editmenu
-	QMenu *editMenu = menuBar->addMenu(tr("Edit"));
+	QMenu *editMenu = menuBar->addMenu(tr("Edit"));	
+	editMenu->addAction(showFindWordBar);
 
 	//viewmenu
 	QMenu *viewMenu = menuBar->addMenu(tr("View"));
@@ -198,15 +217,13 @@ HelpViewer::~HelpViewer()
 	DELETE_AND_SET_NULL(m_pHelpEngine);
     DELETE_AND_SET_NULL(m_pView);
 	DELETE_AND_SET_NULL(m_pSchemeHandler);
+	DELETE_AND_SET_NULL(m_pFindWord);
 }
 
 //----------------------------------------------------------------------------------------
 void HelpViewer::setCollectionFile(const QString &collectionFile)
 {
-	//QHelpEngineCore *hec = new QHelpEngineCore(collectionFile, this);
 	QHelpContentWidget *hcw = m_pHelpEngine->contentWidget();
-	//hec->setCollectionFile(collectionFile);
-	//hec->setupData();
 	m_pHelpEngine->setCollectionFile(collectionFile);
 	m_pHelpEngine->setupData();
 }
@@ -216,10 +233,8 @@ void HelpViewer::search()
 {
 	QHelpSearchEngine *searchEngine = m_pHelpEngine->searchEngine();
 	QHelpSearchQueryWidget *query = searchEngine->queryWidget();
-	//query->setQuery(QList<QHelpSearchQuery>());
 	QList<QHelpSearchQuery> queryList = query->query();
 	searchEngine->search(queryList);
-
 }
 
 //----------------------------------------------------------------------------------------
@@ -294,7 +309,6 @@ void HelpViewer::textChanged(const QString &text)
 //----------------------------------------------------------------------------------------
 void HelpViewer::mnuDefaultZoomWindow()
 {
-	//QWebEnginePage *page = m_pView->page();
 	m_pView->setZoomFactor(m_pDefaultZoomFactor);
 	m_pZoomFactor = m_pDefaultZoomFactor;
 }
@@ -343,6 +357,52 @@ void HelpViewer::urlChanged(const QUrl &url)
 	hcw->setCurrentIndex(index);
 	m_pView->setZoomFactor(m_pZoomFactor);
 }
+
+//----------------------------------------------------------------------------------------
+void HelpViewer::findNextWord(QString expr, bool regExpr, bool caseSensitive, bool wholeWord, bool wrap, bool forward, bool isQuickSeach)
+{
+	if (forward)
+	{
+		m_pView->findText(expr, 0);
+	}
+	else
+	{
+		m_pView->findText(expr, QWebEnginePage::FindBackward);
+	}
+	
+}
+
+//----------------------------------------------------------------------------------------
+void HelpViewer::hideFindWordBar()
+{
+	m_pFindWord->hide();
+	m_pView->findText("", 0);
+}
+
+//----------------------------------------------------------------------------------------
+void HelpViewer::showFindWordBar()
+{
+	m_pFindWord->show();
+	m_pFindWord->setCursorToTextField();
+}
+
+
+//----------------------------------------------------------------------------------------
+void HelpViewer::keyPressEvent(QKeyEvent *event)
+{
+	int key = event->key();
+	//Qt::KeyboardModifiers modifiers = event->modifiers();
+
+	if ((key == Qt::Key_F) && QApplication::keyboardModifiers() && Qt::ControlModifier &&!m_pFindWord->isVisible())
+	{
+		showFindWordBar();
+	}
+	else if ((key == Qt::Key_F) && QApplication::keyboardModifiers() && Qt::ControlModifier &&m_pFindWord->isVisible())
+	{
+		hideFindWordBar();
+	}
+}
+
 
 } //end namespace ito
 
