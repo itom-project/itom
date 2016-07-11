@@ -80,6 +80,8 @@ private slots:
 	void indexingStarted();
 	void indexingFinished();
 
+	void clicked(const QModelIndex &index);
+
 	void findNextWord(QString expr, bool regExpr, bool caseSensitive, bool wholeWord, bool wrap, bool forward, bool isQuickSeach);
 	void hideFindWordBar();
 	void showFindWordBar();

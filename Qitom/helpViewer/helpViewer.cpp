@@ -96,7 +96,8 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
     QDockWidget *dockWidgetContent = new QDockWidget(tr("content"), this);
 	dockWidgetContent->setWidget(hcw);
 	addDockWidget(Qt::LeftDockWidgetArea, dockWidgetContent);
-	connect(hcw, SIGNAL(linkActivated(QUrl)), this, SLOT(linkActivated(QUrl)));
+	connect(hcw, SIGNAL(linkActivated(QUrl)), this, SLOT(linkActivated(QUrl)));	
+	connect(hcw, SIGNAL(clicked(QModelIndex)), this, SLOT(clicked(QModelIndex)));
 	connect(m_pView, SIGNAL(urlChanged(QUrl)), this, SLOT(urlChanged(QUrl)));	
 	connect(m_pHelpEngine, SIGNAL(setupFinished()), this, SLOT(setupFinished()));
 	QHelpContentModel *hcm = m_pHelpEngine->contentModel();
@@ -221,6 +222,16 @@ HelpViewer::~HelpViewer()
 	DELETE_AND_SET_NULL(m_pSchemeHandler);
 	DELETE_AND_SET_NULL(m_pFindWord);
 }
+
+//----------------------------------------------------------------------------------------
+void HelpViewer::clicked(const QModelIndex &index)
+{
+	QHelpContentWidget *hcw = m_pHelpEngine->contentWidget();
+	QHelpContentItem *item = m_pHelpEngine->contentModel()->contentItemAt(index);
+	QUrl url = item->url();
+	emit linkActivated(url);	
+}
+
 
 //----------------------------------------------------------------------------------------
 void HelpViewer::setCollectionFile(const QString &collectionFile)
