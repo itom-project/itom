@@ -1119,10 +1119,10 @@ void ScriptDockWidget::updateEditorActions()
 
     m_scriptRunSelectionAction->setEnabled(sew != NULL && sew->getCanCopy() && (!pyEngine->isPythonBusy() || pyEngine->isPythonDebuggingAndWaiting()));
 
-//    QMetaObject::invokeMethod(m_pWidgetFindWord,"setFindBarEnabled",Q_ARG(bool,m_actTabIndex > -1));
+//    QMetaObject::invokeMethod(m_pWidgetFindWord,"setFindBarEnabled",Q_ARG(bool,m_actTabIndex > -1, false));
     if (m_pWidgetFindWord != NULL)
     {
-        m_pWidgetFindWord->setFindBarEnabled(m_actTabIndex > -1);
+        m_pWidgetFindWord->setFindBarEnabled(m_actTabIndex > -1, false);
     }
 }
 

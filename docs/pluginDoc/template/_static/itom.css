@@ -1,308 +1,666 @@
+/*
+ * itom.css_t
+ * ~~~~~~~~~~~
+ */
 
+@import url("basic.css");
+
+html {
+    margin: 0px;
+    padding: 0px;
+    background: #FFF url(bg-page.png) top left repeat-x;
+}
 
 body {
+    
+    margin: auto;
+    padding: 0px;
+    font-size: 100%;
+    font-family: Helvetica, sans-serif;
+    min-width: 59em;
+    max-width: 70em;
     color: #000000;
-    font-family: Helvetica;
+    border-style:double;
+    border-width: 0px;
+}
+
+/*div.figure {
+    width: 100%;
+    margin-bottom: 8px;
+}*/
+
+div.figure.align-left {
+    clear: left;
+    float: left;
+    margin-right: 1em;
+    margin-bottom: 8px;
+}
+
+div.figure.align-right {
+    clear: right;
+    float: right;
+    margin-left: 1em;
+    margin-bottom: 8px;
+}
+
+div.figure.align-center {
+    /*display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 15px;*/
+    clear: left;
+    float: left;
+    margin-right: 1em;
+    margin-bottom: 8px;
+    width: 1120px;
+}
+
+/*Parameters, Returns, etc - Spalte*/
+col.field-name{ 
+    background-color: #F6E3CE;
+    overflow: hidden;
+    width: 115px;
+    border-left: 2px solid #000000;
+}
+
+tt > span.pre {
+    font-size: 11pt;
+    font-weight: bold;
+    font-family: Helvetica, sans-serif;
+}
+
+/*class.itom ... Ueberschrift*/
+dl.class > dt{
+   font-size: 11pt; 
+   border-bottom: dotted thin #e0e0e0;
+}
+
+/*Das Wort "class" in der Klassenueberschrift*/
+dl.class > dt > em{
+    font-size: 11pt;  
+}
+
+dl.class > dt > tt.descname {
+    background-color:;
+    font-size: 11pt;
+    font-weight: bold;
+}
+
+dl.class dt
+
+/*Hinterlegung der gesamten Methoden*/
+dl.method, dl.staticmethod, dl.function{
+  background-color: #ffffff; /*#FBF8EF;*/
+  border: 0px solid #000000;
+}
+
+/*Hinterlegung des gesamten Attributes*/
+dl.attribute{
+  background-color: #F2FBff;
+  border: 1px solid;
+}
+
+/*Hinterlegung des Attributeheaders*/
+dl.attribute > dt{
+    background-color: #E6E6E6;
+    font-size: 11pt;
+    padding-left: 7px;
+}
+
+/*Hinterlegung des static- und Mehodenheaders*/
+dl.method dt, dl.staticmethod dt, dl.function dt{
+    background-color: #E6E6E6; 
+    border-top: 0px solid #000000;
+    font-size: 11pt;
+    padding-left: 7px;
+    margin-top: 15x;
+}
+
+dl.method dt code.descname, dl.class dt code.descname {
     font-size: 11pt;
 }
 
-.document {
-    margin-left: 2em;
-    margin-right: 2em;
+dl.method, dl.staticmethod, dl.function > dt > tt {
+    font-family: Helvetica, sans-serif;
 }
 
-li {
-    margin-top: 0.3em;
-    margin-bottom: 0.3em;
-    text-indent: 0px;
+div.footer {
+    padding: 10px;
+    font-size: 11pt;
+    text-align: center;
+    letter-spacing: 0.5px;
 }
 
-li li {
-        text-indent: 0px;
-    }
-li li li {
-        text-indent: 0px;
-    }
-li li li li {
-        text-indent: 0px;
-    }
-li li li li li {
-        text-indent: 0px;
-    }
-li li li li li li {
-        text-indent: 0px;
-    }
-li li li li li li li {
-        text-indent: 0px;
-    }
-li li li li li li li li {
-        text-indent: 0px;
-    }
-li li li li li li li li li {
-        text-indent: 0px;
-    }
+/* link colors and text decoration */
 
-
-blockquote {
-    text-indent: 0px;
-}
-
-
-
-/* header/footer navigation bar *
- * ---------------------------- */
-.navbar {
-    background-color: ;
-    /*margin: 0em;*/
-
-    width: 100%;
-}
-
-.navbar * {
-    color: #70705C;
-}
-
-.navbar a {
-    text-decoration: underline;
-    
-}
-
-.navbar td {
-    padding: 0.2em;
-}
-
-.navbar-bottom {
-    margin-top: 2em;
-}
-
-.footer {
-    font-style: italic;
-    font-size: small;
-}
-
-
-
-/* sidebar *
- * ------- */
-table.sidebar-table {
-    margin: 2em;
-    background-color: ;
-    float: right;
-    border-style: solid;
-        border-width: 1px;
-    border-color: #000000;
-
-    width: 20%;
-}
-
-table.sidebar-table td {
-    padding: 1em;
-}
-
-.sphinxsidebar h1 {
-        font-size: medium;
-        font-weight: bold;
-    }
-.sphinxsidebar h2 {
-        font-size: medium;
-        font-weight: bold;
-    }
-.sphinxsidebar h3 {
-        font-size: medium;
-        font-weight: bold;
-    }
-.sphinxsidebar h4 {
-        font-size: medium;
-        font-weight: bold;
-    }
-.sphinxsidebar h5 {
-        font-size: medium;
-        font-weight: bold;
-    }
-.sphinxsidebar h6 {
-        font-size: medium;
-        font-weight: bold;
-    }
-
-
-
-
-/* special index markup *
- * -------------------- */
-table.genindextable td {
-    padding-top: 1em;
-    padding-bottom: 1em;
-}
-
-
-
-/* links *
- * ----- */
-a {
-    color: #33658E;
+a:link {
+    font-weight: normal;
     text-decoration: none;
+    color: #dc3c01;
+}
+
+a:visited {
+    font-weight: normal;
+    text-decoration: none;
+    color: #892601;
+}
+
+a:hover, a:active {
+    text-decoration: underline;
+    color: #ff4500;
+}
+
+/* Some headers act as anchors, don't give them a hover effect */
+
+h1 a:hover, a:active {
+    text-decoration: none;
+    color: #0c3762;
+}
+
+h2 a:hover, a:active {
+    text-decoration: none;
+    color: #0c3762;
+}
+
+h3 a:hover, a:active {
+    text-decoration: none;
+    color: #0c3762;
+}
+
+h4 a:hover, a:active {
+    text-decoration: none;
+    color: #0c3762;
 }
 
 a.headerlink {
-    color: #AFAF92;
-    text-decoration: none;
-    font-size: medium;
-    font-weight: bold;
-
-    padding: 0.2em;
+    color: #a7ce38;
+    padding-left: 5px;
 }
 
-/* object references */
-a code.xref {
-    font-weight: bold;
-    color: #33658E;
-    text-decoration: none;
+a.headerlink:hover {
+    color: #a7ce38;
 }
 
-/* footnote references */
-a.footnote-reference {
-    font-size: small;
+/* basic text elements */
+
+div.content {
+    margin-top: 20px;
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-bottom: 50px;
+    font-size: 11pt;
 }
 
+/* heading and navigation */
 
-
-/* code listings *
- * ------------- */
-code, pre {
-    
-    
+div.content.div#dataobject.section.dl.class.dd.table.docutils.field-list.tbody.tr.field-odd.field.th.field-name{
+  backround: #0000FF;
 }
 
-code {
-    background-color: #EFEFE1;
+div.header {
+    position: relative;
+    left: 0px;
+    top: 0px;
+    height: 85px;
+    background: #efefef; */
+    padding: 0 40px;
 }
-
-code.descname {
-    font-weight: bold;
-    background-color: transparent;
-}
-
-pre {
-    margin: 2em;
-    
-}
-
-
-
-/* content tables *
- * -------------- */
-table.docutils {
-    margin-top: 1em;
-}
-
-table.docutils td, table.docutils th {
-    padding: 0.3em;
-}
-
-
-
-/* footnotes and citations *
- * ----------------------- */
-table.docutils.footnote, table.docutils.citation {
+div.header h1 {
+    font-size: 18pt;
+    font-weight: normal;
+    letter-spacing: 3px;
+    color: #0c3762;
+    border: 0;
     margin: 0;
+    padding-top: 15px;
+    padding-left: 10px;
+}
+div.header h1 a {
+    font-weight: normal;
+    color: #0c3762;
+}
+div.header h2 {
+    font-size: 16pt;
+    font-weight: normal;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #aaa;
+    border: 0;
+    margin-top: -3px;
+    padding: 0;
+    padding-left: 20px;
 }
 
-table.docutils.footnote td, table.docutils.citation td {
+div.header img.rightlogo {
+    float: right;
+}
+
+
+div.title {
+    font-size: 14pt;
+    font-weight: bold;
+    color: #0c3762;
+    border-bottom: dotted thin #e0e0e0;
+    margin-bottom: 25px;
+}
+div.topnav {
+    background: #e0e0e0;
+}
+div.topnav p {
+    margin-top: 0;
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-bottom: 0px;
+    text-align: right;
+    font-size: 9pt;
+}
+div.bottomnav {
+    background: #e0e0e0;
+}
+div.bottomnav p {
+    margin-right: 40px;
+    text-align: right;
+    font-size: 9pt;
+}
+
+a.uplink {
+    font-weight: normal;
+}
+
+
+/* contents box */
+
+table.index {
+    margin: 0px 0px 30px 30px;
+    padding: 1px;
+    border-width: 1px;
+    border-style: dotted;
+    border-color: #e0e0e0;
+}
+table.index tr.heading {
+    background-color: #e0e0e0;
+    text-align: center;
+    font-weight: bold;
+    font-size: 13pt;
+}
+table.index tr.index {
+    background-color: #eeeeee;
+}
+table.index td {
+    padding: 5px 20px;
+}
+
+table.index a:link, table.index a:visited {
+    font-weight: normal;
+    text-decoration: none;
+    color: #dc3c01;
+}
+table.index a:hover, table.index a:active {
+    text-decoration: underline;
+    color: #ff4500;
+}
+
+
+/* Haiku User Guide styles and layout */
+
+/* Rounded corner boxes */
+/* Common declarations */
+/*div.admonition {
+    -webkit-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    border-style: dotted;
+    border-width: thin;
+    border-color: #dcdcdc;
+    padding: 10px 15px 10px 15px;
+    margin-bottom: 15px;
+    margin-top: 15px;
+}*/
+
+
+/*div.warning {
+    padding: 10px 15px 10px 80px;
+    background: #fffbc6 url(alert_warning_32.png) 15px 15px no-repeat;
+    min-height: 42px;
+}*/
+
+div.admonition.note, div.warning, 
+div.admonition.seealso{
+    font-size: 11pt;
+    margin: 1em 0 1em 0;
+    border: 1px solid #86989B;
+    background-color: #f7f7f7;
+    padding: 0;
+    float: none;
+    clear: both;
+}
+
+div.admonition p, div.warning p {
+    margin: 0.5em 1em 0.5em 1em;
     padding: 0;
 }
 
-table.docutils.footnote td.label, table.docutils.citation td.label {
-    padding-right: 2em;
+div.admonition pre, div.warning pre {
+    margin: 0.4em 1em 0.4em 1em;
 }
 
-
-
-/* boxes -- admonitions, sidebars, topics *
- * -------------------------------------- */
-.admonition, .sidebar, .topic {
-    margin-top: 2em;
-    margin-left: 2em;
-    margin-right: 2em;
-}
-
-.admonition p.last, .sidebar p.last, .topic p.last {
-    margin-bottom: 2em;
-}
-
-.admonition p.admonition-title, .sidebar p.sidebar-title, .topic p.topic-title {
-    font-size: large;
+/*Note, Warning etc. Kasten ueberschrift*/
+div.admonition p.admonition-title,
+div.warning p.admonition-title {
+    margin: 0 0 0 0;
+    padding: 0.1em 0 0.1em 0.5em;
+    color: white;
+    border-bottom: 1px solid #86989B;
     font-weight: bold;
+    background-color: #AFC1C4;
+}
+
+div.warning {
+    border: 1px solid #940000;
+}
+
+div.warning p.admonition-title {
+    background-color: #CF0000;
+    border-bottom-color: #940000;
+}
+
+div.admonition ul, div.admonition ol,
+div.warning ul, div.warning ol {
+    margin: 0.1em 0.5em 0.5em 3em;
+    padding: 0;
+}
+
+div.versioninfo {
+    margin-top: 1em;
+    border: 1px solid #ccc;
+    background-color: #DDEAF0;
+    padding: 8px;
+    line-height: 1.3em;
+    font-size: 11pt;
+}
+
+div.seealso {
+    background: #e4ffde;
+}
+
+/* More layout and styles */
+div.content h1 {
+    font-size: 18pt;
+    color: #0c3762;
+    border-bottom: dotted thin #e0e0e0;
+    -webkit-margin-after: 20px;
+    -webkit-margin-before: 20px;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+}
+
+/*logo*/
+div.content div.section h1 img
+{
+    float:none;
+}
+    
+div.content h2 {
+    font-size: 16pt;
+    font-weight: normal;
+    color: #0c3762;
+    border-bottom: dotted thin #e0e0e0;
+    -webkit-margin-after: 10px;
+    -webkit-margin-before: 20px;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+}
+
+div.content h3 {
+    font-size: 14pt;
+    font-weight: normal;
+    color: #0c3762;
+    -webkit-margin-after: 10px;
+    -webkit-margin-before: 20px;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+}
+
+div.content h4 {
+    font-size: 13pt;
+    font-weight: normal;
+    color: #0c3762;
+    -webkit-margin-after: 0px;
+    -webkit-margin-before: 2em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+}
+
+div.content h5 {
+    font-size: 12pt;
+    font-weight: normal;
+    color: #0c3762;
+    -webkit-margin-after: 0px;
+    -webkit-margin-before: 2em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+}
+
+p {
+    text-align: justify;
+}
+
+p.caption {
+    font-size: 16pt;
+    font-weight: normal;
+    color: #0c3762;
+    border-bottom: dotted thin #e0e0e0;
+    -webkit-margin-after: 10px;
+    -webkit-margin-before: 20px;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+}
+
+span.caption-text
+{
+    font-size: 11pt;
+}
+
+p.last {
+    margin-bottom: 0;
+}
+
+/*ol {
+    padding-left: 20px;
+}*/
+
+ul {
+    padding-left: 5px;
+    margin-top: 3px;
+}
+
+li {
+    padding-left: 5px;
+    margin-top: 3px;
+}
+
+div.content ul > li {
+    -moz-background-clip:border;
+    -moz-background-inline-policy:continuous;
+    -moz-background-origin:padding;
+    list-style-image: none;
+    list-style-type: disc;
+    padding-left: 10px;
+    margin-bottom: 3px;
+    margin-left: 10px;
+    font-size: 11pt;
+}
+
+div.content ul > li.toctree-l1, div.content ul > li.toctree-l2, div.content ul > li.toctree-l3 {
+    -moz-background-clip:border;
+    -moz-background-inline-policy:continuous;
+    -moz-background-origin:padding;
+    list-style-image: none;
+    list-style-type: none;
+    padding-left: 10px;
+    margin-bottom: 3px;
+    margin-left: 10px;
+    font-size: 11pt;
+}
+
+td {
+    vertical-align: top;
+}
+
+/*Groesse aller Links*/
+/*Vorsicht, da relativ und manche Boxen dadurch extrem grosse Links*/
+
+hr {
+    border-top: 1px solid #ccc;
+    border-bottom: 0;
+    border-right: 0;
+    border-left: 0;
+    margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+/* -- Code Blocks -----------------------------------------------*/
+
+code {
+    font-family: Helvetica, sans-serif;
+}
+
+td.code pre {
+    border-color: #0c3762;
+    border-style: dotted;
+    border-width: thin;
+    margin: 0 0 12px 0;
+    padding: 5px 5px;
+    background-color: #f0f0f0;
+    font-size: 11pt;
+}
+
+td.linenos pre {
+    padding: 5px 0px;
+    margin: 0 0 12px 0;
+    border: 0;
     background-color: transparent;
+    color: #aaa;
+    font-size: 11pt;
 }
 
-.sidebar p.sidebar-subtitle {
-    font-style: italic;
+table.highlighttable {
+    margin-left: 0.5em;
 }
 
-
-/* generic admonitions */
-.admonition p.admonition-title {
-    color: #606060;
-    text-decoration: underline overline;
-}
-
-.admonition p {
-    background-color: #EEEEEE;
-    color: #000000;
+table.highlighttable td {
+    padding: 0 0.5em 0 0.5em;
 }
 
 
-/* warnings get special treatment */
-.warning p.admonition-title {
-    color: #C43838;
+/* -- printer only pretty stuff -----------------------------------------------*/
+@media print {
+    .noprint {
+        display: none;
+    }
+    /* for acronyms we want their definitions inlined at print time */
+    acronym[title]:after {
+        font-size: small;
+        content: " (" attr(title) ")";
+        font-style: italic;
+    }
+    /* and not have mozilla dotted underline */
+    acronym {
+        border: none;
+    }
+    div.topnav, div.bottomnav, div.header, table.index {
+        display: none;
+    }
+    div.content {
+        margin: 0px;
+        padding: 0px;
+    }
+    html {
+        background: #FFF;
+    }
 }
 
-.warning p {
-    background-color: #FFCCCC;
-    color: #000000;
+.viewcode-back {
+    font-family: Helvetica, sans-serif;
 }
 
+div.viewcode-block:target {
+    background-color: #f4debf;
+    border-top: 1px solid #ac9;
+    border-bottom: 1px solid #ac9;
+    margin: -1px -12px;
+    padding: 0 12px;
+}
 
+/* -- tables ---------------------------------------------------------------- */
 
-/* misc markup *
- * ----------- */
-.rubric {
+table.docutils {
+    border: 0;
+    border-collapse: collapse;
+}
+
+table.docutils td, table.docutils th {
+    padding: 1px 8px 1px 5px;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 1px solid #aaa;
+}
+
+table.field-list td, table.field-list th {
+    border: 0 !important;
+}
+
+table.footnote td, table.footnote th {
+    border: 0 !important;
+}
+
+th {
+    text-align: left;
+    padding-right: 5px;
+}
+
+table.citation {
+    border-left: solid 1px gray;
+    margin-left: 1px;
+}
+
+table.citation td {
+    border-bottom: none;
+}
+
+/* -- breathe specific styles ----------------------------------------------- */
+
+/* So enum value descriptions are displayed inline to the item */
+.breatheenumvalues li tt + p {
+    display: inline;
+}
+
+/* So parameter descriptions are displayed inline to the item */
+.breatheparameterlist li tt + p {
+    display: inline;
+}
+
+p.breathe-sectiondef-title {
+    border-bottom: dotted thin #e0e0e0;
+    font-weight: bold;
+    margin-top: 30px;
+}
+
+dl.enum > dt {
+    background-color: #E6E6E6; 
+    border-top: 0px solid #000000;
+    font-weight: bold;
+    font-size: 16pt;
+    padding-left: 7px;
+    font-family: Helvetica, sans-serif;
+}
+
+dl.function > dt > tt.descname {
+    background-color: #E6E6E6; 
+    border-top: 0px solid #000000;
+    font-size: 16pt;
+    font-family: Helvetica, sans-serif;
     font-weight: bold;
 }
-
-.versionmodified {
-    font-style: italic;
-}
-
-.field-list {
-    margin-top: 0;
-}
-
-.guilabel, .menuselection {
-    background-color: #EFEFE1;
-}
-
-.accelerator {
-    text-decoration: underline;
-}
-
-.caption-text {
-    font-weight: bold;
-}
-
-
-
-/* some extra hover niceties for full browsers *
-     * ------------------------------------------- */
-    a:hover {
-        text-decoration: underline;
-    }
-
-    a.headerlink:hover {
-        color: #33658E;
-        text-decoration: none;
-    }
-
-    .navbar a:hover {
-        color: #33658E;
-    }

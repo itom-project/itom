@@ -14,6 +14,7 @@ OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to 
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
 OPTION(BUILD_WITH_PYMATLAB "Build itom with integrated python module 'matlab' to control and use Matlab within itom." OFF)
+OPTION(BUILD_WITH_HELPVIEWER "Build itom with integrated python module 'matlab' to control and use Matlab within itom (only with Qt5)." ON)
 OPTION(CONSIDER_GIT_SVN "If ON GIT version history will be considered." ON)
 OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
@@ -24,7 +25,19 @@ include("../ItomBuildMacros.cmake")
        
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools Svg)
+IF(${BUILD_WITH_HELPVIEWER})
+    #requires Qt5 and Qt5WebEngine in order to built a built-in help viewer, since QtAssistant only has a limited set of rendering options since Qt5.6.
+    FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools Svg WebEngineWidgets Help)
+    
+    IF(Qt5WebEngineWidgets_FOUND)
+        ADD_DEFINITIONS(-DUSEHELPVIEWER -D_USEHELPVIEWER)
+    ELSE()
+        message(FATAL "Your Qt installation does not provide the component WebEngineWidgets. Disable the option BUILD_WITH_HELPVIEWER in CMAKE to proceed without the integrated help viewer")
+    ENDIF()
+ELSE()
+    #uses the old QtAssistant as help viewer.
+    FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools Svg)
+ENDIF()
 find_package(PythonLibs 3.0 REQUIRED)  
 find_package(QScintilla REQUIRED)  
 find_package(OpenCV COMPONENTS core REQUIRED)
@@ -116,6 +129,8 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${Qt5Widgets_INCLUDE_DIRS}
+    ${Qt5WebEngineWidgets_INCLUDE_DIRS}
+    ${Qt5Help_INCLUDE_DIRS}
     ${PYTHON_INCLUDE_DIR}
     ${NUMPY_INCLUDE_DIRS}
     ${QSCINTILLA_INCLUDE_DIR}
@@ -166,6 +181,8 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/sharedPointerHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/sleeper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/helpViewer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/qtHelpUrlSchemeHandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/qpropertyHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.h
@@ -356,6 +373,8 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/paramHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/qpropertyHelper.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/helpViewer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/qtHelpUrlSchemeHandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
@@ -476,6 +495,7 @@ ADD_SOURCE_GROUP(organizer)
 ADD_SOURCE_GROUP(python)
 ADD_SOURCE_GROUP(ui)
 ADD_SOURCE_GROUP(widgets)
+ADD_SOURCE_GROUP(helpViewer)
 #end add filters to visual studio
 
 if(MSVC)
@@ -670,9 +690,9 @@ ENDIF(BUILD_WITH_PCL)
 
 IF (QT5_FOUND)
     if (WIN32)
-        TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets  ${PYMATLAB_LIBRARIES} shell32)
+        TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${Qt5WebEngineWidgets_LIBRARIES} ${Qt5Help_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets  ${PYMATLAB_LIBRARIES} shell32)
     else (WIN32)
-        TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets  ${PYMATLAB_LIBRARIES})
+        TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${Qt5WebEngineWidgets_LIBRARIES} ${Qt5Help_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets  ${PYMATLAB_LIBRARIES})
     endif (WIN32)
 ELSE (QT5_FOUND)
     TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets ${PYMATLAB_LIBRARIES})

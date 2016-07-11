@@ -51,6 +51,10 @@
 #include <qdir.h>
 #include "../organizer/scriptEditorOrganizer.h"
 
+#ifdef ITOM_USEHELPVIEWER
+#include "../helpViewer/helpViewer.h"
+#endif
+
 namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -59,6 +63,9 @@ namespace ito {
     establishes widgets being part of the main window including necessary actions
 */
 MainWindow::MainWindow() :
+#ifdef ITOM_USEHELPVIEWER
+    m_pHelpViewer(NULL),
+#endif
     m_console(NULL),
     m_contentLayout(NULL),
     m_breakPointDock(NULL),
@@ -419,38 +426,16 @@ MainWindow::~MainWindow()
         disconnect(m_console, SIGNAL(sendToLastCommand(QString)), m_lastCommandDock, SLOT(addLastCommand(QString)));
     }
 
-//    delete m_pAIManagerView;
-//    delete m_pAIManagerDock;
-    if (m_pAIManagerWidget)
-    {
-        delete m_pAIManagerWidget;
-        m_pAIManagerWidget = NULL;
-    }
-    if (m_fileSystemDock)
-    {
-        delete m_fileSystemDock;
-        m_fileSystemDock = NULL;
-    }
-    if (m_helpDock)
-    {
-        delete m_helpDock;
-        m_helpDock = NULL;
-    }
-    if (m_globalWorkspaceDock)
-    {
-        delete m_globalWorkspaceDock;
-        m_globalWorkspaceDock = NULL;
-    }
-    if (m_localWorkspaceDock)
-    {
-        delete m_localWorkspaceDock;
-        m_localWorkspaceDock = NULL;
-    }
-    if (m_localWorkspaceDock)
-    {
-        delete m_localWorkspaceDock;
-        m_localWorkspaceDock = NULL;
-    }
+    DELETE_AND_SET_NULL(m_pAIManagerWidget);
+    DELETE_AND_SET_NULL(m_fileSystemDock);
+    DELETE_AND_SET_NULL(m_helpDock);
+    DELETE_AND_SET_NULL(m_globalWorkspaceDock);
+    DELETE_AND_SET_NULL(m_localWorkspaceDock);
+    DELETE_AND_SET_NULL(m_localWorkspaceDock);
+
+#ifdef ITOM_USEHELPVIEWER
+    DELETE_AND_SET_NULL(m_pHelpViewer);
+#endif
 
     //delete remaining user-defined toolbars and actions
     QMap<QString, QToolBar*>::iterator it = m_userDefinedToolBars.begin();
@@ -1045,6 +1030,15 @@ void MainWindow::mnuShowAssistant()
 
     if (!retval.containsError()) //warning is ok
     {
+#ifdef ITOM_USEHELPVIEWER
+        if (!m_pHelpViewer)
+        {
+            m_pHelpViewer = new HelpViewer(NULL);
+        }
+        m_pHelpViewer->setCollectionFile(collectionFile);
+        m_pHelpViewer->show();
+
+#else
         ProcessOrganizer *po = qobject_cast<ProcessOrganizer*>(AppManagement::getProcessOrganizer());
         if (po)
         {
@@ -1077,6 +1071,7 @@ void MainWindow::mnuShowAssistant()
         {
             retval += ito::RetVal(ito::retError,0,"Process Organizer could not be loaded");
         }
+#endif
     }
 
     if (retval != ito::retOk)

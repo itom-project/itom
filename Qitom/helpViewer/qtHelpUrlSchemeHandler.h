@@ -20,52 +20,36 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef WIDGETFINDWORD_H
-#define WIDGETFINDWORD_H
+#ifndef QTHELPURLSCHEMEHANDLER_H
+#define QTHELPURLSCHEMEHANDLER_H
 
-#include <qwidget.h>
-#include <qstring.h>
-#include <qevent.h>
+#include "../global.h"
 
-#include "ui_widgetFindWord.h"
+#ifdef ITOM_USEHELPVIEWER
 
-namespace ito
+#include <qwebengineurlschemehandler.h>
+#include <qbytearray.h>
+
+class QHelpEngine;
+
+namespace ito {
+
+class QtHelpUrlSchemeHandler : public QWebEngineUrlSchemeHandler
 {
-
-class WidgetFindWord : public QWidget 
-{
-    Q_OBJECT
-
+	Q_OBJECT
 public:
-    WidgetFindWord(QWidget *parent = NULL);
-    ~WidgetFindWord();
+	QtHelpUrlSchemeHandler(QHelpEngine *helpEngine, QObject *parent = 0);
+	~QtHelpUrlSchemeHandler();
 
-    void setCursorToTextField();
-
-protected:
-    bool eventFilter(QObject *obj, QEvent *event);
+	void requestStarted(QWebEngineUrlRequestJob* request);
 
 private:
-    
-    Ui::WidgetFindWord ui;
+	QHelpEngine *m_pHelpEngine;
 
-private slots:
-    void on_cmdClose_clicked(); 
-    void on_txtFind_returnPressed();
-    void on_cmdFindUp_clicked();
-    void on_cmdFindDown_clicked();
-    void on_txtFind_textChanged ( const QString & text );
-
-public slots:
-    void setFindBarEnabled(bool enabled, bool reduced);
-    void setSuccessState(bool successfull);
-
-
-signals:
-    void findNext(QString expr, bool regExpr, bool caseSensitive, bool wholeWord, bool wrap, bool forward = true, bool isQuickSeach = true);
-    void hideSearchBar();
+	QByteArray mimeFromUrl(const QUrl &url);
 };
 
 } //end namespace ito
 
+#endif
 #endif

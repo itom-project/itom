@@ -58,6 +58,12 @@
     #define ITOM_PYTHONMATLAB 0
 #endif
 
+#ifdef USEHELPVIEWER //Qt5 only
+#if QT_VERSION >= 0x050600
+    #define ITOM_USEHELPVIEWER 1
+#endif
+#endif
+
 /* global variables (avoid) */
 typedef QMap<QString,QString> StringMap;
 typedef QList<int> IntList;
