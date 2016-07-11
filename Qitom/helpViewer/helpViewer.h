@@ -48,6 +48,7 @@ public:
     ~HelpViewer();
 
     void setCollectionFile(const QString &collectionFile);
+	void getHelpViewer(const QWidget &helpViewer);
 
 private:
     QWebEngineView *m_pView;
@@ -79,9 +80,7 @@ private slots:
 	void searchingFinished(const int &hits);
 	void indexingStarted();
 	void indexingFinished();
-
 	void clicked(const QModelIndex &index);
-
 	void findNextWord(QString expr, bool regExpr, bool caseSensitive, bool wholeWord, bool wrap, bool forward, bool isQuickSeach);
 	void hideFindWordBar();
 	void showFindWordBar();

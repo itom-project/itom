@@ -62,6 +62,7 @@ public:
     static PyObject* PyNewScript(PyObject *pSelf, PyObject *pArgs);
     static PyObject* PyOpenScript(PyObject *pSelf, PyObject *pArgs);
     static PyObject* PyClearCommandLine(PyObject *pSelf);
+	static PyObject* PyShowHelpViewer(PyObject *pSelf, PyObject *pArgs);
 
     static PyObject* PyPlotImage(PyObject *pSelf, PyObject *pArgs, PyObject *pKwds);
     static PyObject* PyLiveImage(PyObject *pSelf, PyObject *pArgs, PyObject *pKwds);

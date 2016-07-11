@@ -93,10 +93,12 @@ for buildername in buildernames:
         ret = itom.ui.msgInformation("show result","do you want to see the result?",ui.MsgBoxYes | ui.MsgBoxNo)
         if(ret[0] == ui.MsgBoxYes):
             filenames = glob.glob("build/qthelp/[iI][tT][oO][mM][dD]ocumentation.qhc") 
-            if _platform == "darwin":   # OS X
-                subprocess.check_call(["/Applications/Assistant.app/Contents/MacOS/Assistant", "-collectionFile", os.getcwd()+'/'+filenames[0]], shell=True)
-            else:
-                subprocess.check_call(["assistant", "-collectionFile", filenames[0]])
+            showHelpViewer(filenames[0])
+            
+            #if _platform == "darwin":   # OS X
+                #subprocess.check_call(["/Applications/Assistant.app/Contents/MacOS/Assistant", "-collectionFile", os.getcwd()+'/'+filenames[0]], shell=True)
+            #else:
+                #subprocess.check_call(["assistant", "-collectionFile", filenames[0]])
             
     elif(buildername == "htmlhelp"):
         hhc = "${HTML_HELP_COMPILER}" #"C:/Program Files (x86)/HTML Help Workshop/hhc.exe"

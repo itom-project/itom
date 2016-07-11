@@ -169,6 +169,8 @@ public slots:
 
     void showInfoMessageLine( QString text, QString winKey = "" );
 
+	void showAssistant(const QString &collectionFile = "");
+
 private slots:
     void mnuAboutQitom();
     void mnuExitApplication();

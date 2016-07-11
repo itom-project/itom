@@ -203,6 +203,39 @@ PyObject* PythonItom::PyOpenScript(PyObject * /*pSelf*/, PyObject *pArgs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyShowHelpViewer_doc, "showHelpViewer([collectionFile]) -> open the user documentation in the help viewer.\n\
+\n\
+The user documentation is shown in an external help viewer. Optionally, it is possible to load a user-defined collection file \n\
+in this help viewer.\n\
+\n\
+Parameters \n\
+----------- \n\
+collectionFile : {str} \n\
+	If given, the indicated collectionFile will be loaded in the help viewer. Per default, the user documentation is loaded (pass an empty string or nothing).");
+PyObject* PythonItom::PyShowHelpViewer(PyObject *pSelf, PyObject *pArgs)
+{
+	const char* collectionFile = NULL;
+	if (!PyArg_ParseTuple(pArgs, "|s", &collectionFile))
+	{
+		return NULL;
+	}
+
+	QObject *mainWindow = AppManagement::getMainWindow();
+	if (mainWindow)
+	{
+		QString collection = (collectionFile ? QLatin1String(collectionFile) : QLatin1String(""));
+		QMetaObject::invokeMethod(mainWindow, "showAssistant", Q_ARG(QString, collection));
+	}
+	else
+	{
+		PyErr_SetString(PyExc_RuntimeError, "main window is not available");
+		return NULL;
+	}
+
+	Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonItom::PyClearCommandLine(PyObject *pSelf)
 {
     PythonEngine *pyEngine = PythonEngine::instance; //works since pythonItom is friend with pythonEngine
@@ -4387,6 +4420,7 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"scriptEditor", (PyCFunction)PythonItom::PyOpenEmptyScriptEditor, METH_NOARGS, pyOpenEmptyScriptEditor_doc},
     {"newScript", (PyCFunction)PythonItom::PyNewScript, METH_NOARGS, pyNewScript_doc},
     {"openScript", (PyCFunction)PythonItom::PyOpenScript, METH_VARARGS, pyOpenScript_doc},
+	{"showHelpViewer", (PyCFunction)PythonItom::PyShowHelpViewer, METH_VARARGS, pyShowHelpViewer_doc },
     {"plot", (PyCFunction)PythonItom::PyPlotImage, METH_VARARGS | METH_KEYWORDS, pyPlotImage_doc},
     {"liveImage", (PyCFunction)PythonItom::PyLiveImage, METH_VARARGS | METH_KEYWORDS, pyLiveImage_doc},
     {"close", (PyCFunction)PythonFigure::PyFigure_close, METH_VARARGS, pyItom_FigureClose_doc}, /*class static figure.close(...)*/

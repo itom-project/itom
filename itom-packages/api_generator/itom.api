@@ -77,7 +77,7 @@ itom.dataObject.conjugate() -> return a copy of this dataObject where every elem
 itom.dataObject.continuous
 itom.dataObject.copy(regionOnly=0) -> return a deep copy of this dataObject
 itom.dataObject.createMask(shapes [, inverse = False]) -> return a uint8 data object of the same size where all pixels belonging to any shape are masked.
-itom.dataObject.data() -> prints the content of the dataObject in a readable form.
+itom.dataObject.data() -> prints the content of the dataObject to the command line in a readable form.
 itom.dataObject.deleteTag(key) -> Delete a tag specified by key from the tag dictionary.
 itom.dataObject.dims
 itom.dataObject.div(obj) -> a.div(b) return result of element wise division of a./b
@@ -298,7 +298,9 @@ itom.shape.rotateRad(array-like object) -> Rotate shape by given angle in radian
 itom.shape.transform
 itom.shape.translate(array-like object) -> Translate shape by given (dx,dy) value.
 itom.shape.type
+itom.shape.valid
 itom.shape.width
+itom.showHelpViewer([collectionFile]) -> open the user documentation in the help viewer.
 itom.timer(interval, callbackFunc [, argTuple, singleShot]) -> new callback timer
 itom.timer.isActive() -> returns timer status
 itom.timer.setInterval(interval) -> sets timer interval in [ms]

@@ -998,98 +998,119 @@ void MainWindow::mnuOpenFile()
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuShowAssistant()
 {
+	showAssistant();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::showAssistant(const QString &collectionFile /*= ""*/)
+{
 #ifdef __APPLE__
-    QString appName = "Assistant";
+	QString appName = "Assistant";
 #else
-    QString appName = "assistant";
+	QString appName = "assistant";
 #endif
-    
-    ito::RetVal retval;
-    QString collectionFile;
 
-    if (this->m_pHelpSystem == NULL)
-    {
-        m_pHelpSystem = HelpSystem::getInstance();
-        QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-        retval += m_pHelpSystem->rebuildHelpIfNotUpToDate();
-        collectionFile = m_pHelpSystem->getHelpCollectionAbsFileName();
-        QApplication::restoreOverrideCursor();
-    }
-    else
-    {
-        collectionFile = m_pHelpSystem->getHelpCollectionAbsFileName();            
-        QFileInfo collectionFileInfo(collectionFile);
-        if (!collectionFileInfo.exists())
-        {
-            QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
-            retval += m_pHelpSystem->rebuildHelpIfNotUpToDate();
-            collectionFile = m_pHelpSystem->getHelpCollectionAbsFileName();
-            QApplication::restoreOverrideCursor();
-        }
-    }
+	ito::RetVal retval;
+	QString collectionFile_;
 
-    if (!retval.containsError()) //warning is ok
-    {
+	if (collectionFile == "") //create internal help, if not yet done
+	{
+		if (this->m_pHelpSystem == NULL)
+		{
+			m_pHelpSystem = HelpSystem::getInstance();
+			QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+			retval += m_pHelpSystem->rebuildHelpIfNotUpToDate();
+			collectionFile_ = m_pHelpSystem->getHelpCollectionAbsFileName();
+			QApplication::restoreOverrideCursor();
+		}
+		else
+		{
+			collectionFile_ = m_pHelpSystem->getHelpCollectionAbsFileName();
+			QFileInfo collectionFileInfo(collectionFile_);
+			if (!collectionFileInfo.exists())
+			{
+				QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+				retval += m_pHelpSystem->rebuildHelpIfNotUpToDate();
+				collectionFile_ = m_pHelpSystem->getHelpCollectionAbsFileName();
+				QApplication::restoreOverrideCursor();
+			}
+		}
+	}
+	else
+	{
+		QFileInfo fileInfo(collectionFile);
+		if (fileInfo.suffix() == "qhc" && fileInfo.exists())
+		{
+			collectionFile_ = collectionFile;
+		}
+		else
+		{
+			retval += ito::RetVal::format(ito::retError, 0, "The file '%s' is not a valid help collection file or does not exist.", collectionFile.toLatin1().data());
+		}
+	}
+
+	if (!retval.containsError()) //warning is ok
+	{
 #ifdef ITOM_USEHELPVIEWER
-        if (!m_pHelpViewer)
-        {
-            m_pHelpViewer = new HelpViewer(NULL);
-        }
-        m_pHelpViewer->setCollectionFile(collectionFile);
-        m_pHelpViewer->show();
+		if (!m_pHelpViewer)
+		{
+			m_pHelpViewer = new HelpViewer(NULL);
+		}
+		m_pHelpViewer->setCollectionFile(collectionFile_);
+		m_pHelpViewer->show();
 
 #else
-        ProcessOrganizer *po = qobject_cast<ProcessOrganizer*>(AppManagement::getProcessOrganizer());
-        if (po)
-        {
-            bool existingProcess = false;
-            QProcess *process = po->getProcess(appName, true, existingProcess, true);
+		ProcessOrganizer *po = qobject_cast<ProcessOrganizer*>(AppManagement::getProcessOrganizer());
+		if (po)
+		{
+			bool existingProcess = false;
+			QProcess *process = po->getProcess(appName, true, existingProcess, true);
 
-            if (existingProcess && process->state() == QProcess::Running)
-            {
-                //assistant is already loaded. try to activate it by sending the activateIdentifier command without arguments (try-and-error to find this way to activate it)
-                QByteArray ba;
-                ba.append("activateIdentifier \n");
-                process->write(ba);
-            }
-            else
-            {
-                QStringList args;
+			if (existingProcess && process->state() == QProcess::Running)
+			{
+				//assistant is already loaded. try to activate it by sending the activateIdentifier command without arguments (try-and-error to find this way to activate it)
+				QByteArray ba;
+				ba.append("activateIdentifier \n");
+				process->write(ba);
+			}
+			else
+			{
+				QStringList args;
 
-                args << QLatin1String("-collectionFile");
-                args << QLatin1String(collectionFile.toLatin1().data());
-                args << QLatin1String("-enableRemoteControl");
+				args << QLatin1String("-collectionFile");
+				args << QLatin1String(collectionFile_.toLatin1().data());
+				args << QLatin1String("-enableRemoteControl");
 
-                QString app = ProcessOrganizer::getAbsQtToolPath(appName);
+				QString app = ProcessOrganizer::getAbsQtToolPath(appName);
 
-                process->start(app, args);
+				process->start(app, args);
 
-                connect(process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(helpAssistantError(QProcess::ProcessError)));
-            }
-        }
-        else
-        {
-            retval += ito::RetVal(ito::retError,0,"Process Organizer could not be loaded");
-        }
+				connect(process, SIGNAL(error(QProcess::ProcessError)), this, SLOT(helpAssistantError(QProcess::ProcessError)));
+			}
+		}
+		else
+		{
+			retval += ito::RetVal(ito::retError, 0, "Process Organizer could not be loaded");
+		}
 #endif
-    }
+	}
 
-    if (retval != ito::retOk)
-    {
-        QString title;
-        QString text;
-        if (retval.hasErrorMessage()) text = QString("\n%1").arg(QLatin1String(retval.errorMessage()));
-        if (retval.containsError())
-        {
-            text.prepend(tr("Error when preparing help or showing assistant."));
-            QMessageBox::critical(this, tr("Error while showing assistant."), text);
-        }
-        else if (retval.containsWarning())
-        {
-            text.prepend(tr("Warning when preparing help or showing assistant."));
-            QMessageBox::warning(this, tr("Warning while showing assistant."), text);
-        }
-    }
+	if (retval != ito::retOk)
+	{
+		QString title;
+		QString text;
+		if (retval.hasErrorMessage()) text = QString("\n%1").arg(QLatin1String(retval.errorMessage()));
+		if (retval.containsError())
+		{
+			text.prepend(tr("Error when preparing help or showing assistant."));
+			QMessageBox::critical(this, tr("Error while showing assistant."), text);
+		}
+		else if (retval.containsWarning())
+		{
+			text.prepend(tr("Warning when preparing help or showing assistant."));
+			QMessageBox::warning(this, tr("Warning while showing assistant."), text);
+		}
+	}
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
