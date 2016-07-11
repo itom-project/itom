@@ -84,6 +84,7 @@ private slots:
 	void findNextWord(QString expr, bool regExpr, bool caseSensitive, bool wholeWord, bool wrap, bool forward, bool isQuickSeach);
 	void hideFindWordBar();
 	void showFindWordBar();
+	void loadFinished(const bool &ok);
 
 };
 
