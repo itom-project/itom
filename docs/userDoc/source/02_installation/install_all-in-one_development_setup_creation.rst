@@ -132,7 +132,7 @@ Replace in the line 27 **CONFIG** by:
     
     CONFIG(debug, debug|release){ TARGET = $$join(TARGET,,,d) }
     
-Open the native Visual Studio 2013 64-bit COMMAND PROMPT (or 32-bit). Set the QScintilla folder. Set the $QTDIR$ variable to the Qt Folder ${MAINDIR}\\3rxdParty\\Qt5.6.0\\msvc2013_x64. 
+Open the native Visual Studio 2013 64-bit COMMAND PROMPT (or 32-bit). Set the QScintilla folder. Set the $QTDIR$ variable to the Qt Folder ${MAINDIR}\\3rdParty\\Qt5.6.0\\msvc2013_x64. 
 
 .. note: 
 
