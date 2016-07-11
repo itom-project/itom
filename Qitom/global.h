@@ -59,7 +59,9 @@
 #endif
 
 #ifdef USEHELPVIEWER //Qt5 only
+#if QT_VERSION >= 0x050600
     #define ITOM_USEHELPVIEWER 1
+#endif
 #endif
 
 /* global variables (avoid) */

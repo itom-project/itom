@@ -154,27 +154,27 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 
 	toolbar->addSeparator();
 
-	QAction *homeAction = new QAction(QIcon(":/itomDesignerPlugins/general/icons/home.png"), tr("home"), this);
+	QAction *homeAction = new QAction(QIcon(":/itomDesignerPlugins/general/icons/home.png"), tr("Home"), this);
 	connect(homeAction, SIGNAL(triggered()), this, SLOT(setupFinished()));
 	toolbar->addAction(homeAction);
 
 	toolbar->addSeparator();
 
-	QAction *zoomInAction = new QAction(QIcon(":/qt-project.org/dialogs/qprintpreviewdialog/images/zoom-in-24.png"), tr("zoom in"), this);
+	QAction *zoomInAction = new QAction(QIcon(":/qt-project.org/dialogs/qprintpreviewdialog/images/zoom-in-24.png"), tr("Zoom in"), this);
 	connect(zoomInAction, SIGNAL(triggered()), this, SLOT(mnuZoomInWindow()));
 	toolbar->addAction(zoomInAction);
 	
-	QAction *zoomOutAction = new QAction(QIcon(":/qt-project.org/dialogs/qprintpreviewdialog/images/zoom-out-24.png"), tr("zoom out"), this);
+	QAction *zoomOutAction = new QAction(QIcon(":/qt-project.org/dialogs/qprintpreviewdialog/images/zoom-out-24.png"), tr("Zoom out"), this);
 	connect(zoomOutAction, SIGNAL(triggered()), this, SLOT(mnuZoomOutWindow()));
 	toolbar->addAction(zoomOutAction);
 
-	QAction *defaultZoomAction = new QAction(QIcon(":/plots/icons/zoom-3.png"), tr("default zoom"), this);
+	QAction *defaultZoomAction = new QAction(QIcon(":/plots/icons/zoom-3.png"), tr("Default zoom"), this);
 	connect(defaultZoomAction, SIGNAL(triggered()), this, SLOT(mnuDefaultZoomWindow()));
 	toolbar->addAction(defaultZoomAction);
 
 	toolbar->addSeparator();
 
-	QAction *showFindWordBar = new QAction(QIcon(":/files/icons/fileModified.png"), tr("search text"), this);
+	QAction *showFindWordBar = new QAction(QIcon(":/qt-project.org/styles/commonstyle/images/filecontents-32.png"), tr("Search text"), this); 
 	connect(showFindWordBar, SIGNAL(triggered()), this, SLOT(showFindWordBar()));
 	toolbar->addAction(showFindWordBar);
 
@@ -198,7 +198,6 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	//viewmenu
 	QMenu *viewMenu = menuBar->addMenu(tr("View"));
 	viewMenu->addAction(m_pView->pageAction(QWebEnginePage::Reload));
-	viewMenu->addAction(homeAction);
 	viewMenu->addAction(zoomInAction);
 	viewMenu->addAction(zoomOutAction);
 	viewMenu->addAction(defaultZoomAction);
