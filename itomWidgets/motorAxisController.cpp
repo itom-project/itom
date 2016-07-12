@@ -40,6 +40,7 @@
 #include <qmenu.h>
 #include <qaction.h>
 #include <qtoolbutton.h>
+#include <qtablewidget.h>
 
 #include "ui_motorAxisController.h"
 
