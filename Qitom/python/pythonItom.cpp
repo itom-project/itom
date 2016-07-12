@@ -1425,7 +1425,6 @@ PyObject* PythonItom::PyPlotHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObject 
             retval += locker.getSemaphore()->returnValue;
 
             ito::UiOrganizer::ClassInfoContainerList::Iterator mapIter;
-            int idx;
 
             if (retDict)
             {
