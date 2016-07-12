@@ -698,8 +698,8 @@ namespace ito
                 return false;
             }
 
-            void sendStatusUpdate(const bool statusOnly = false);
-            void sendTargetUpdate();
+            void sendStatusUpdate(const bool statusOnly = false); /* emits actuatorStatusChanged signal with the vector of currentStatus (and currentPos if statusOnly = false) to notify connected listeners about the current status (and position)*/
+            void sendTargetUpdate(); /* emits targetChanged with the vector of targetPositions to notify connected listeners about the change of the target position(s) */
 
             //! this method must be overwritten.
             /*!
