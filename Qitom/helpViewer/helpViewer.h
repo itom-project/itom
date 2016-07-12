@@ -58,6 +58,7 @@ private:
 	QtHelpUrlSchemeHandler *m_pSchemeHandler;
 	qreal m_pDefaultZoomFactor;
 	qreal m_pZoomFactor;
+	bool m_pSearched = false;
 
 protected:
 	void keyPressEvent(QKeyEvent *event);
@@ -84,6 +85,9 @@ private slots:
 	void findNextWord(QString expr, bool regExpr, bool caseSensitive, bool wholeWord, bool wrap, bool forward, bool isQuickSeach);
 	void hideFindWordBar();
 	void showFindWordBar();
+	void visibilityChangedIndexWidget(bool visible);
+	void visibilityChangedSearchWidget(bool visible);
+	void loadFinished(bool ok);
 
 };
 

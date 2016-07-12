@@ -70,6 +70,7 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	m_pFindWord->setVisible(false);
 	m_pFindWord->setFindBarEnabled(true, true);
 
+	connect(m_pView, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
 	connect(m_pFindWord, SIGNAL(findNext(QString, bool, bool, bool, bool, bool, bool)), this, SLOT(findNextWord(QString, bool, bool, bool, bool, bool, bool)));
 	connect(m_pFindWord, SIGNAL(hideSearchBar()), this, SLOT(hideFindWordBar()));
 	
@@ -105,7 +106,8 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	
 	//dockWidgetIndex
 	QVBoxLayout *layoutIndex = new QVBoxLayout(this);  
-	QLineEdit *indexEdit = new QLineEdit(this); 
+	QLineEdit *indexEdit = new QLineEdit("LineEditIndex", this);
+	indexEdit->setText("");
 	connect(indexEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
 	connect(indexEdit, SIGNAL(returnPressed()), this, SLOT(returnPressed()));
 	QLabel *indexText = new QLabel(tr("Search for:"), this);
@@ -145,6 +147,9 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	tabifyDockWidget(dockWidgetIndex, dockWidgetSearch);
 	setTabPosition(Qt::LeftDockWidgetArea, QTabWidget::North);
 	dockWidgetContent->raise();
+
+	connect(dockWidgetIndex, SIGNAL(visibilityChanged(bool)), this, SLOT(visibilityChangedIndexWidget(bool)));
+	connect(dockWidgetSearch, SIGNAL(visibilityChanged(bool)), this, SLOT(visibilityChangedSearchWidget(bool)));
 
 	//toolbar
 	QToolBar *toolbar = new QToolBar(tr("toolBar"), this);
@@ -277,9 +282,7 @@ void HelpViewer::indexingFinished()
 void HelpViewer::requestShowLink(const QUrl &url)
 {
 	linkActivated(url);
-	//QHelpSearchEngine *searchEngine = m_pHelpEngine->searchEngine();
-	//QString word = searchEngine->queryWidget()->whatsThis();
-	//findNextWord(word, false, false, false, false, true, false);
+	m_pSearched = true;
 }
 
 //----------------------------------------------------------------------------------------
@@ -391,6 +394,33 @@ void HelpViewer::findNextWord(QString expr, bool regExpr, bool caseSensitive, bo
 }
 
 //----------------------------------------------------------------------------------------
+void HelpViewer::loadFinished(bool ok)
+{
+	if (ok && m_pSearched)
+	{
+		QHelpSearchEngine *searchEngine = m_pHelpEngine->searchEngine();
+		//QHelpSearchResultWidget *resultWidget = searchEngine->resultWidget();
+		QHelpSearchQueryWidget *queryWidget = searchEngine->queryWidget();
+		QList<QLineEdit *> allLineEdits = queryWidget->findChildren<QLineEdit *>();
+		foreach(QLineEdit* lineEdit, allLineEdits)
+		{
+			QString text = lineEdit->displayText();
+			if (!text.isEmpty())
+			{
+				if (!m_pFindWord->isVisible())
+				{
+					showFindWordBar();
+				}
+
+				findNextWord(text, false, false, false, false, true, false);
+				m_pFindWord->setText(text);
+				m_pSearched = false;
+			}
+		}
+	}
+}
+
+//----------------------------------------------------------------------------------------
 void HelpViewer::hideFindWordBar()
 {
 	m_pFindWord->hide();
@@ -403,7 +433,6 @@ void HelpViewer::showFindWordBar()
 	m_pFindWord->show();
 	m_pFindWord->setCursorToTextField();
 }
-
 
 //----------------------------------------------------------------------------------------
 void HelpViewer::keyPressEvent(QKeyEvent *event)
@@ -418,6 +447,32 @@ void HelpViewer::keyPressEvent(QKeyEvent *event)
 	else if ((key == Qt::Key_F) && QApplication::keyboardModifiers() && Qt::ControlModifier &&m_pFindWord->isVisible())
 	{
 		hideFindWordBar();
+	}
+}
+
+//----------------------------------------------------------------------------------------
+void HelpViewer::visibilityChangedIndexWidget(bool visible)
+{
+	if (visible)
+	{
+		QList<QLineEdit *> allLineEdits = findChildren<QLineEdit *>();
+		foreach(QLineEdit* lineEdit, allLineEdits)
+		{
+			if (lineEdit->isVisible())
+			{
+				lineEdit->setFocus();
+			}
+				
+		}
+	}
+}
+
+//----------------------------------------------------------------------------------------
+void HelpViewer::visibilityChangedSearchWidget(bool visible)
+{
+	if (visible)
+	{
+		QList<QDockWidget *> dockWidgets = findChildren<QDockWidget *>();
 	}
 }
 
