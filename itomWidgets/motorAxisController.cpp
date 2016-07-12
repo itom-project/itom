@@ -89,13 +89,11 @@ public:
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------
-enum Columns {
-    ColCurrent = 0,
-    ColTarget = 1,
-    ColCommandAbsolute = 2,
-    ColStepSize = 3,
-    ColCommandRelative = 4,
-};
+const int ColCurrent = 0;
+const int ColTarget = 1;
+const int ColCommandAbsolute = 2;
+const int ColStepSize = 3;
+const int ColCommandRelative = 4;
 
 
 
@@ -280,7 +278,7 @@ void MotorAxisController::setNumAxis(int numAxis)
         targetPos->setDecimals(d->axisDecimals[i]);
         targetPos->setSuffix(suffixFromAxisUnit(d->axisUnit[i]));
         d->spinTargetPos[i] = targetPos;
-        d->ui.tableMovement->setCellWidget(i, Columns::ColTarget, targetPos);
+        d->ui.tableMovement->setCellWidget(i, ColTarget, targetPos);
 
         currentPos = new QDoubleSpinBox(this);
         currentPos->setReadOnly(true);
@@ -290,7 +288,7 @@ void MotorAxisController::setNumAxis(int numAxis)
         currentPos->setButtonSymbols(QAbstractSpinBox::NoButtons);
         currentPos->setSuffix(suffixFromAxisUnit(d->axisUnit[i]));
         d->spinCurrentPos[i] = currentPos;
-        d->ui.tableMovement->setCellWidget(i, Columns::ColCurrent, currentPos);
+        d->ui.tableMovement->setCellWidget(i, ColCurrent, currentPos);
 
         stepSize = new QDoubleSpinBox(this);
         stepSize->setMinimum(-std::numeric_limits<double>::max());
@@ -299,7 +297,7 @@ void MotorAxisController::setNumAxis(int numAxis)
         stepSize->setValue(baseUnitToUnit(d->defaultRelativeStepSize, d->axisUnit[i]));
         stepSize->setSuffix(suffixFromAxisUnit(d->axisUnit[i]));
         d->spinStepSize[i] = stepSize;
-        d->ui.tableMovement->setCellWidget(i, Columns::ColStepSize, stepSize);
+        d->ui.tableMovement->setCellWidget(i, ColStepSize, stepSize);
 
         stepUp = new QToolButton(this);
         stepUp->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -323,7 +321,7 @@ void MotorAxisController::setNumAxis(int numAxis)
         d->runSingleMapper->setMapping(runSingle, i);
 
         d->buttonAbsolute[i] = runSingle;
-        d->ui.tableMovement->setCellWidget(i, Columns::ColCommandAbsolute, runSingle);
+        d->ui.tableMovement->setCellWidget(i, ColCommandAbsolute, runSingle);
 
         buttonsRelative = new QWidget(this);
         layout = new QHBoxLayout();
@@ -334,7 +332,7 @@ void MotorAxisController::setNumAxis(int numAxis)
         buttonsRelative->setLayout(layout);
         d->buttonsRelative[i] = buttonsRelative;
         QWidget *w = d->buttonsRelative[i]->layout()->itemAt(0)->widget();
-        d->ui.tableMovement->setCellWidget(i, Columns::ColCommandRelative, buttonsRelative);
+        d->ui.tableMovement->setCellWidget(i, ColCommandRelative, buttonsRelative);
     }
 
     QStringList labels = d->verticalHeaderLabels;
@@ -593,24 +591,24 @@ void MotorAxisController::setMovementType(MovementType type)
         switch (type)
         {
         case MovementAbsolute:
-            d->ui.tableMovement->showColumn(Columns::ColTarget);
-            d->ui.tableMovement->hideColumn(Columns::ColStepSize);
-            d->ui.tableMovement->hideColumn(Columns::ColCommandRelative);
-            d->ui.tableMovement->showColumn(Columns::ColCommandAbsolute);
+            d->ui.tableMovement->showColumn(ColTarget);
+            d->ui.tableMovement->hideColumn(ColStepSize);
+            d->ui.tableMovement->hideColumn(ColCommandRelative);
+            d->ui.tableMovement->showColumn(ColCommandAbsolute);
             d->ui.btnStart->setVisible(true);
             break;
         case MovementRelative:
-            d->ui.tableMovement->hideColumn(Columns::ColTarget);
-            d->ui.tableMovement->showColumn(Columns::ColStepSize);
-            d->ui.tableMovement->showColumn(Columns::ColCommandRelative);
-            d->ui.tableMovement->hideColumn(Columns::ColCommandAbsolute);
+            d->ui.tableMovement->hideColumn(ColTarget);
+            d->ui.tableMovement->showColumn(ColStepSize);
+            d->ui.tableMovement->showColumn(ColCommandRelative);
+            d->ui.tableMovement->hideColumn(ColCommandAbsolute);
             d->ui.btnStart->setVisible(false);
             break;
         case MovementBoth:
-            d->ui.tableMovement->showColumn(Columns::ColTarget);
-            d->ui.tableMovement->showColumn(Columns::ColStepSize);
-            d->ui.tableMovement->showColumn(Columns::ColCommandRelative);
-            d->ui.tableMovement->showColumn(Columns::ColCommandAbsolute);
+            d->ui.tableMovement->showColumn(ColTarget);
+            d->ui.tableMovement->showColumn(ColStepSize);
+            d->ui.tableMovement->showColumn(ColCommandRelative);
+            d->ui.tableMovement->showColumn(ColCommandAbsolute);
             d->ui.btnStart->setVisible(true);
             break;
         }
