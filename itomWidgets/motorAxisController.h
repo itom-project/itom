@@ -33,6 +33,8 @@
 #include <qwidget.h>
 #include <qstring.h>
 #include <qpoint.h>
+#include <qpointer.h>
+#include <qstringlist.h>
 #include "common/retVal.h"
 
 class ItomSharedSemaphore; //forward declaration
