@@ -41,6 +41,7 @@ public:
     ~WidgetFindWord();
 
     void setCursorToTextField();
+	void setText(QString &text);
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);

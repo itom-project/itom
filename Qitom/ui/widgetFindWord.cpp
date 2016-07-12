@@ -128,6 +128,12 @@ void WidgetFindWord::setCursorToTextField()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void WidgetFindWord::setText(QString &text)
+{
+	ui.txtFind->setText(text);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 bool WidgetFindWord::eventFilter(QObject *obj, QEvent *event)
 {
     if (obj == ui.txtFind && event->type() == QEvent::KeyPress)
