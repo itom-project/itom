@@ -2692,6 +2692,11 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
             for (int i = mo->methodCount() - 1; i >= 0; i--)
             {
                 QMetaMethod meth = mo->method(i);
+#if QT_VERSION >= 0x050000                
+                QByteArray methodSignature = meth.methodSignature();
+#else
+                QByteArray methodSignature = meth.signature();
+#endif
 
                 if (meth.methodType() == QMetaMethod::Signal)
                 {
@@ -2710,20 +2715,20 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                                     int idx = signalInfoMap[methodName].indexOf("\n");
                                     if (idx < 0)
                                     {
-                                        shortDescription = QString("%1 -> %2 (connect signature: %3)").arg(QLatin1String(signature)).arg(QLatin1String(signalInfoMap[methodName])).arg(QLatin1String(meth.methodSignature()));
+                                        shortDescription = QString("%1 -> %2 (connect signature: %3)").arg(QLatin1String(signature)).arg(QLatin1String(signalInfoMap[methodName])).arg(QLatin1String(methodSignature));
                                     }
                                     else
                                     {
-                                        shortDescription = QString("%1 -> %2 ... (connect signature: %3)").arg(QLatin1String(signature)).arg(QLatin1String(signalInfoMap[methodName].left(idx))).arg(QLatin1String(meth.methodSignature()));
+                                        shortDescription = QString("%1 -> %2 ... (connect signature: %3)").arg(QLatin1String(signature)).arg(QLatin1String(signalInfoMap[methodName].left(idx))).arg(QLatin1String(methodSignature));
                                     }
 
                                     description = QString("%1 -> %2\n\nNotes\n--------------\n\nTo connect to this signal use the following signature::\n\n    yourItem.connect('%3', yourMethod)\n"). \
-                                        arg(QLatin1String(signature)).arg(QLatin1String(signalInfoMap[methodName])).arg(QLatin1String(meth.methodSignature()));
+                                        arg(QLatin1String(signature)).arg(QLatin1String(signalInfoMap[methodName])).arg(QLatin1String(methodSignature));
                                 }
                                 else
                                 {
-                                    description = QString("%1 -> signature for connection to this signal: %2").arg(QLatin1String(signature)).arg(QLatin1String(meth.methodSignature()));
-                                    shortDescription = QString("%1 -> signature for connection to this signal: %2").arg(QLatin1String(signature)).arg(QLatin1String(meth.methodSignature()));
+                                    description = QString("%1 -> signature for connection to this signal: %2").arg(QLatin1String(signature)).arg(QLatin1String(methodSignature));
+                                    shortDescription = QString("%1 -> signature for connection to this signal: %2").arg(QLatin1String(signature)).arg(QLatin1String(methodSignature));
                                 }
                             }
                             else
