@@ -1746,8 +1746,7 @@ namespace ito
             AddInInterfaceBase *aib = (qobject_cast<ito::AddInInterfaceBase *>(qaib));
             m_addInListDataIO.removeFirst();
             QPluginLoader *loader = aib->getLoader();
-//            DELETE_AND_SET_NULL(qaib);
-            loader->unload();
+            //loader->unload(); //under windows, unloading the plugin will sometimes not return. Therefore, no unload() here.
             DELETE_AND_SET_NULL(loader);
         }
 
@@ -1757,8 +1756,7 @@ namespace ito
             AddInInterfaceBase *aib = (qobject_cast<ito::AddInInterfaceBase *>(qaib));
             m_addInListAct.removeFirst();
             QPluginLoader *loader = aib->getLoader();
-//            DELETE_AND_SET_NULL(qaib);
-            loader->unload();
+            //loader->unload(); //under windows, unloading the plugin will sometimes not return. Therefore, no unload() here.
             DELETE_AND_SET_NULL(loader);
         }
 
@@ -1797,8 +1795,7 @@ namespace ito
             }
             m_addInListAlgo.removeFirst();
             QPluginLoader *loader = aib->getLoader();
-//            DELETE_AND_SET_NULL(qaib);
-            loader->unload();
+            //loader->unload(); //under windows, unloading the plugin will sometimes not return. Therefore, no unload() here.
             DELETE_AND_SET_NULL(loader);
         }
 
