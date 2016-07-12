@@ -275,8 +275,8 @@ void MotorAxisController::setNumAxis(int numAxis)
     for (int i = numExistingRows; i < numAxis; ++i)
     {
         targetPos = new QDoubleSpinBox(this);
-        targetPos->setMinimum(-std::numeric_limits<double>::infinity());
-        targetPos->setMaximum(std::numeric_limits<double>::infinity());
+        targetPos->setMinimum(-std::numeric_limits<double>::max());
+        targetPos->setMaximum(std::numeric_limits<double>::max());
         targetPos->setDecimals(d->axisDecimals[i]);
         targetPos->setSuffix(suffixFromAxisUnit(d->axisUnit[i]));
         d->spinTargetPos[i] = targetPos;
@@ -284,6 +284,8 @@ void MotorAxisController::setNumAxis(int numAxis)
 
         currentPos = new QDoubleSpinBox(this);
         currentPos->setReadOnly(true);
+        currentPos->setMinimum(-std::numeric_limits<double>::max());
+        currentPos->setMaximum(std::numeric_limits<double>::max());
         currentPos->setDecimals(d->axisDecimals[i]);
         currentPos->setButtonSymbols(QAbstractSpinBox::NoButtons);
         currentPos->setSuffix(suffixFromAxisUnit(d->axisUnit[i]));
@@ -291,8 +293,8 @@ void MotorAxisController::setNumAxis(int numAxis)
         d->ui.tableMovement->setCellWidget(i, Columns::ColCurrent, currentPos);
 
         stepSize = new QDoubleSpinBox(this);
-        stepSize->setMinimum(-std::numeric_limits<double>::infinity());
-        stepSize->setMaximum(std::numeric_limits<double>::infinity());
+        stepSize->setMinimum(-std::numeric_limits<double>::max());
+        stepSize->setMaximum(std::numeric_limits<double>::max());
         stepSize->setDecimals(d->axisDecimals[i]);
         stepSize->setValue(baseUnitToUnit(d->defaultRelativeStepSize, d->axisUnit[i]));
         stepSize->setSuffix(suffixFromAxisUnit(d->axisUnit[i]));
