@@ -70,8 +70,6 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	m_pFindWord->setVisible(false);
 	m_pFindWord->setFindBarEnabled(true, true);
 
-	connect(m_pView, SIGNAL(loadFinished(bool)), this, SLOT(loadFinished(bool)));
-
 	connect(m_pFindWord, SIGNAL(findNext(QString, bool, bool, bool, bool, bool, bool)), this, SLOT(findNextWord(QString, bool, bool, bool, bool, bool, bool)));
 	connect(m_pFindWord, SIGNAL(hideSearchBar()), this, SLOT(hideFindWordBar()));
 	
@@ -279,6 +277,9 @@ void HelpViewer::indexingFinished()
 void HelpViewer::requestShowLink(const QUrl &url)
 {
 	linkActivated(url);
+	//QHelpSearchEngine *searchEngine = m_pHelpEngine->searchEngine();
+	//QString word = searchEngine->queryWidget()->whatsThis();
+	//findNextWord(word, false, false, false, false, true, false);
 }
 
 //----------------------------------------------------------------------------------------
@@ -344,16 +345,6 @@ void HelpViewer::mnuZoomOutWindow()
 	qreal zoomFactor = page->zoomFactor();
 	m_pZoomFactor = zoomFactor - zoomFactor / 20;
 	page->setZoomFactor(m_pZoomFactor);
-}
-
-//----------------------------------------------------------------------------------------
-void HelpViewer::loadFinished(const bool &ok)
-{
-	if (ok)
-	{
-		QWebEnginePage *page = m_pView->page();
-		page->setZoomFactor(m_pZoomFactor);
-	}
 }
 
 //----------------------------------------------------------------------------------------
