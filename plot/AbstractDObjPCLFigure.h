@@ -42,11 +42,11 @@
 #include <qpixmap.h>
 
 
-#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
+#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONPLOT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 
 namespace ito {
 
-class ITOMCOMMONQT_EXPORT AbstractDObjPclFigure : public AbstractFigure
+    class ITOMCOMMONPLOT_EXPORT AbstractDObjPclFigure : public AbstractFigure
 {
     Q_OBJECT
     Q_PROPERTY(QSharedPointer<ito::DataObject> dataObject READ getDataObject WRITE setDataObject DESIGNABLE false USER false)   

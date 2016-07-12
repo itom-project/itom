@@ -28,7 +28,7 @@
 #ifndef ABSTRACTITOMDESIGNERPLUGIN_H
 #define ABSTRACTITOMDESIGNERPLUGIN_H
 
-#include "../common/commonGlobal.h"
+#include "plotCommon.h"
 #include "../common/sharedStructuresGraphics.h"
 #include "AbstractFigure.h"
 
@@ -38,11 +38,11 @@
 #include <QtUiPlugin/QDesignerCustomWidgetInterface>
 #endif
 
-#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
+#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONPLOT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
     
 namespace ito {
 
-    class ITOMCOMMONQT_EXPORT AbstractItomDesignerPlugin : public QObject, public QDesignerCustomWidgetInterface
+    class ITOMCOMMONPLOT_EXPORT AbstractItomDesignerPlugin : public QObject, public QDesignerCustomWidgetInterface
     {
     Q_OBJECT
 //    Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QDesignerCustomWidgetInterface")

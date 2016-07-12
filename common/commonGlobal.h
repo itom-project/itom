@@ -95,7 +95,6 @@
     #define ITOMCOMMONQT_EXPORT
 #endif
 
-
 /////// exchange-add operation for atomic operations on reference counters ///////
     #ifdef __GNUC__
     

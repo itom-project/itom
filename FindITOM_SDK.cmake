@@ -101,10 +101,17 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
     #Initiate the variable before the loop
     set(GLOBAL ITOM_SDK_LIBS "")
     set(ITOM_SDK_FOUND_TMP true)
+    
+    if(NOT ITOM_SDK_FIND_COMPONENTS)
+        SET(ITOM_SDK_LIB_COMPONENTS ${ITOM_SDK_LIB_COMPONENTS}) #ITOM_SDK_LIB_COMPONENTS is described in itom_sdk.cmake
+    else()
+        foreach(__ITOMLIB ${ITOM_SDK_LIB_COMPONENTS})
+            set(ITOM_SDK_LIB_COMPONENTS ${ITOM_SDK_FIND_COMPONENTS} "${__ITOMLIB}")
+        endforeach(__ITOMLIB)
+    endif()
 
     # Loop over each components
     foreach(__ITOMLIB ${ITOM_SDK_LIB_COMPONENTS})
-            
             find_library(ITOM_SDK_${__ITOMLIB}_LIBRARY_DEBUG NAMES "${__ITOMLIB}d"  PATHS "${ITOM_SDK_DIR}${ITOM_SDK_LIBSUFFIX}" NO_DEFAULT_PATH)
             find_library(ITOM_SDK_${__ITOMLIB}_LIBRARY_RELEASE NAMES "${__ITOMLIB}" PATHS "${ITOM_SDK_DIR}${ITOM_SDK_LIBSUFFIX}" NO_DEFAULT_PATH)
             
@@ -130,14 +137,11 @@ IF(EXISTS ${ITOM_SDK_CONFIG_FILE})
             
     endforeach(__ITOMLIB)
     
-    if(NOT ITOM_SDK_FIND_COMPONENTS)
-        set(ITOM_SDK_FIND_COMPONENTS ${ITOM_SDK_LIB_COMPONENTS})
-    endif(NOT ITOM_SDK_FIND_COMPONENTS)
     
     SET(ITOM_SDK_INCLUDE_DIRS ${ITOM_SDK_INCLUDE_DIR})
     
     SET (ITOM_SDK_LIBRARIES)
-    foreach(__ITOMLIB ${ITOM_SDK_FIND_COMPONENTS})
+    foreach(__ITOMLIB ${ITOM_SDK_LIB_COMPONENTS})
         
         if (ITOM_SDK_${__ITOMLIB}_LIBRARY)
             set(ITOM_SDK_LIBRARIES ${ITOM_SDK_LIBRARIES} ${ITOM_SDK_${__ITOMLIB}_LIBRARY})

@@ -28,7 +28,7 @@
 #ifndef ABSTRACTFIGURE_H
 #define ABSTRACTFIGURE_H
 
-#include "../common/commonGlobal.h"
+#include "plotCommon.h"
 #include "AbstractNode.h"
 
 #include "../common/apiFunctionsGraphInc.h"
@@ -42,7 +42,7 @@
 
 class QPropertyEditorWidget; //forward declaration
 
-#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
+#if !defined(Q_MOC_RUN) || defined(ITOMCOMMONPLOT_MOC) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 
 //place this macro in the header file of the designer plugin widget class right before the first section (e.g. public:)
 #define DESIGNER_PLUGIN_ITOM_API \
@@ -59,7 +59,7 @@ namespace ito {
 class AbstractFigure; //forward declaration
 class AbstractFigurePrivate; //forward declaration
 
-class ITOMCOMMONQT_EXPORT AbstractFigure : public QMainWindow, public AbstractNode
+class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public AbstractNode
 {
     Q_OBJECT
     Q_ENUMS(WindowMode)

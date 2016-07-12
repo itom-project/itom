@@ -1,7 +1,7 @@
-SET (target_name itomCommonQtLib)
+SET (target_name itomCommonPlotLib)
 project(${target_name}) 
     cmake_minimum_required(VERSION 2.8.9)
-     
+    
 #CMAKE Policies
 IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
     if(POLICY CMP0042)
@@ -24,7 +24,7 @@ IF(BUILD_ITOMLIBS_SHARED)
     SET(LIBRARY_TYPE SHARED)
 
     ADD_DEFINITIONS(-DITOMLIBS_SHARED -D_ITOMLIBS_SHARED)
-    ADD_DEFINITIONS(-DITOMCOMMONQT_DLL -D_ITOMCOMMONQT_DLL)
+    ADD_DEFINITIONS(-DITOMCOMMONPLOT_DLL -D_ITOMCOMMONPLOT_DLL)
 ELSE(BUILD_ITOMLIBS_SHARED)
     SET(LIBRARY_TYPE STATIC)
     
@@ -53,7 +53,7 @@ IF (BUILD_UNICODE)
     ADD_DEFINITIONS(-DUNICODE -D_UNICODE)
 ENDIF (BUILD_UNICODE)
 
-ADD_DEFINITIONS(-DITOMCOMMONQT_MOC)
+ADD_DEFINITIONS(-DITOMCOMMONPLOT_MOC)
 
 # default build types are None, Debug, Release, RelWithDebInfo and MinRelSize
 IF (DEFINED CMAKE_BUILD_TYPE)
@@ -88,34 +88,24 @@ LINK_DIRECTORIES(
     ${OpenCV_DIR}/lib
 )
 
-set(itomCommonQt_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/commonQtVersion.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInDockWidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractAddInConfigDialog.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperCommon.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/pluginThreadCtrl.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedFunctionsQt.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresGraphics.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresQt.h
+set(itomCommonPlot_HEADERS
+    ${CMAKE_CURRENT_SOURCE_DIR}/plotVersion.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/AbstractDObjFigure.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/AbstractDObjPCLFigure.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/AbstractFigure.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/AbstractItomDesignerPlugin.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/AbstractNode.h
 )
 
 IF(NOT QT5_FOUND)
-    QT4_WRAP_CPP_ITOM(itomCommonQt_HEADERS_MOC ${itomCommonQt_HEADERS})
+    QT4_WRAP_CPP_ITOM(itomCommonPlot_HEADERS_MOC ${itomCommonPlot_HEADERS})
 ENDIF(NOT QT5_FOUND)
 
-set(itomCommonQt_SOURCES 
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInGrabber.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/addInInterface.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/abstractAddInDockWidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/abstractAddInConfigDialog.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/helperCommon.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/pluginThreadCtrl.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedFunctionsQt.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresPrimitives.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresQt.cpp
+set(itomCommonPlot_SOURCES 
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/AbstractDObjFigure.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/AbstractDObjPCLFigure.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/AbstractFigure.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sources/AbstractNode.cpp
 )
 
 if(MSVC)
@@ -125,9 +115,9 @@ endif(MSVC)
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 #handle translations END STEP 1
 
-add_library(${target_name} ${LIBRARY_TYPE} ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS} ${itomCommonQt_HEADERS_MOC} ${EXISTING_TRANSLATION_FILES})
+add_library(${target_name} ${LIBRARY_TYPE} ${itomCommonPlot_SOURCES} ${itomCommonPlot_HEADERS} ${itomCommonPlot_HEADERS_MOC} ${EXISTING_TRANSLATION_FILES})
 
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} dataobject itomCommonLib itomShapeLib)
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} dataobject itomCommonLib itomShapeLib qpropertyeditor itomCommonQtLib)
 
 IF (QT5_FOUND)
     IF(CMAKE_VERSION VERSION_GREATER 3.0.0)
@@ -138,13 +128,13 @@ IF (QT5_FOUND)
 ENDIF (QT5_FOUND)
 
 #translation
-set (FILES_TO_TRANSLATE ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS})
+set (FILES_TO_TRANSLATE ${itomCommonPlot_SOURCES} ${itomCommonPlot_HEADERS})
 PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 
 FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/translation)
 
 # COPY SECTION
-set(COPY_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/translation/itomCommonQtLib_de.qm")
+set(COPY_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/translation/itomCommonPlotLib_de.qm")
 set(COPY_DESTINATIONS "${CMAKE_CURRENT_BINARY_DIR}/../translation")
 ADD_LIBRARY_TO_APPDIR_AND_SDK(${target_name} COPY_SOURCES COPY_DESTINATIONS)
 POST_BUILD_COPY_FILES(${target_name} COPY_SOURCES COPY_DESTINATIONS)
