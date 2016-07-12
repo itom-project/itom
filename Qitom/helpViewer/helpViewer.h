@@ -29,6 +29,7 @@
 
 #include <qmainwindow.h>
 #include <qurl.h>
+#include <qlineedit.h>
 
 
 class QWebEngineView; //forward declaration
@@ -58,6 +59,7 @@ private:
 	QtHelpUrlSchemeHandler *m_pSchemeHandler;
 	qreal m_pDefaultZoomFactor;
 	qreal m_pZoomFactor;
+	QLineEdit *m_plineEditIndex;
 	bool m_pSearched = false;
 
 protected:

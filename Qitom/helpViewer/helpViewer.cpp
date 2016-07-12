@@ -106,15 +106,14 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	
 	//dockWidgetIndex
 	QVBoxLayout *layoutIndex = new QVBoxLayout(this);  
-	QLineEdit *indexEdit = new QLineEdit(this);
-	indexEdit->setObjectName("indexEdit");
-	connect(indexEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
-	connect(indexEdit, SIGNAL(returnPressed()), this, SLOT(returnPressed()));
+	m_plineEditIndex = new QLineEdit(this);
+	connect(m_plineEditIndex, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
+	connect(m_plineEditIndex, SIGNAL(returnPressed()), this, SLOT(returnPressed()));
 	QLabel *indexText = new QLabel(tr("Search for:"), this);
 	QHelpIndexWidget *hiw = m_pHelpEngine->indexWidget();
 	connect(hiw, SIGNAL(linkActivated(QUrl, QString)), this, SLOT(linkActivated(QUrl, QString)));
 	layoutIndex->addWidget(indexText);
-	layoutIndex->addWidget(indexEdit);
+	layoutIndex->addWidget(m_plineEditIndex);
 	layoutIndex->addWidget(hiw);
 	QDockWidget *dockWidgetIndex = new QDockWidget(tr("index"), this);
 	QWidget *indexContent = new QWidget(this);
@@ -455,14 +454,7 @@ void HelpViewer::visibilityChangedIndexWidget(bool visible)
 {
 	if (visible)
 	{
-		QList<QLineEdit *> allLineEdits = findChildren<QLineEdit *>();
-		foreach(QLineEdit* lineEdit, allLineEdits)
-		{
-			if (lineEdit->objectName() == "indexEdit")
-			{
-				lineEdit->setFocus();
-			}
-		}				
+		m_plineEditIndex->setFocus();			
 	}
 }
 
