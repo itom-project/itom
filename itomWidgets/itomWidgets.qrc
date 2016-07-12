@@ -17,5 +17,9 @@
     <file>icons/widget.png</file>
     <file>icons/clear.svg</file>
     <file>icons/search.svg</file>
+    <file>icons/up.png</file>
+    <file>icons/down.png</file>
+    <file>icons/run.png</file>
+    <file>icons/motorAxisController.png</file>
   </qresource>
 </RCC>

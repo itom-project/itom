@@ -95,6 +95,7 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoMarkerFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoPickerFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoShapesFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/motorAxisControllerFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSpinBox_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget_p.h
@@ -135,6 +136,7 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/searchBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/treeComboBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/menuComboBox.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/motorAxisController.h
 )
 
 
@@ -185,6 +187,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoPickerFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoShapesFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/menuComboBoxFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/motorAxisControllerFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/checkableModelHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/completer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rangeSlider.cpp
@@ -212,6 +215,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoMarker.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoPicker.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoShapes.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/motorAxisController.cpp
 )
 
 #If you want to use automatical metadata for dlls under windows use the following if-case.
@@ -224,6 +228,7 @@ set(itomWidgets_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/rangeWidget.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/doubleRangeWidget.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/sliderWidget.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/motorAxisController.ui
 )
 
 IF (QT5_FOUND)
@@ -254,9 +259,9 @@ ADD_SOURCE_GROUP(helper)
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${itomWidgets_SOURCES} ${itomWidgets_HEADERS} ${itomWidgets_HEADERS_MOC} ${itomWidgets_Factory_HEADERS} ${itomWidgets_Factory_HEADERS_MOC} ${itomWidgets_UI_MOC} ${itomWidgets_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
 
 if (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${OpenCV_LIBS} itomCommonLib itomShapeLib)
+    TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${OpenCV_LIBS} itomCommonLib itomShapeLib itomCommonQtLib)
 else (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTDESIGNER_LIBRARY} ${QT_QTSVG_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} ${OpenCV_LIBS} itomCommonLib itomShapeLib)
+    TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT_QTUITOOLS_LIBRARY} ${QT_QTDESIGNER_LIBRARY} ${QT_QTSVG_LIBRARY} ${VISUALLEAKDETECTOR_LIBRARIES} ${OpenCV_LIBS} itomCommonLib itomShapeLib itomCommonQtLib)
 endif (QT5_FOUND)
 
 IF (QT5_FOUND)
