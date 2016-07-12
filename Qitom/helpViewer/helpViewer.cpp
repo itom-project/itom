@@ -58,10 +58,10 @@ namespace ito {
 
 //----------------------------------------------------------------------------------------
 HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
-    QMainWindow(parent),
-    m_pView(NULL),
+	QMainWindow(parent),
+	m_pView(NULL),
 	m_pFindWord(NULL),
-    m_pHelpEngine(NULL),
+	m_pHelpEngine(NULL),
 	m_pSchemeHandler(NULL)
 {
     m_pView = new QWebEngineView(this);
@@ -106,8 +106,8 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	
 	//dockWidgetIndex
 	QVBoxLayout *layoutIndex = new QVBoxLayout(this);  
-	QLineEdit *indexEdit = new QLineEdit("LineEditIndex", this);
-	indexEdit->setText("");
+	QLineEdit *indexEdit = new QLineEdit(this);
+	indexEdit->setObjectName("indexEdit");
 	connect(indexEdit, SIGNAL(textChanged(QString)), this, SLOT(textChanged(QString)));
 	connect(indexEdit, SIGNAL(returnPressed()), this, SLOT(returnPressed()));
 	QLabel *indexText = new QLabel(tr("Search for:"), this);
@@ -458,12 +458,12 @@ void HelpViewer::visibilityChangedIndexWidget(bool visible)
 		QList<QLineEdit *> allLineEdits = findChildren<QLineEdit *>();
 		foreach(QLineEdit* lineEdit, allLineEdits)
 		{
-			if (lineEdit->isVisible())
+			if (lineEdit->objectName() == "indexEdit")
 			{
 				lineEdit->setFocus();
 			}
-				
-		}
+			//QString string = lineEdit->objectName();
+		}				
 	}
 }
 
