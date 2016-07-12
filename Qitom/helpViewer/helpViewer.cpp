@@ -462,7 +462,6 @@ void HelpViewer::visibilityChangedIndexWidget(bool visible)
 			{
 				lineEdit->setFocus();
 			}
-			//QString string = lineEdit->objectName();
 		}				
 	}
 }
@@ -472,7 +471,8 @@ void HelpViewer::visibilityChangedSearchWidget(bool visible)
 {
 	if (visible)
 	{
-		QList<QDockWidget *> dockWidgets = findChildren<QDockWidget *>();
+		QHelpSearchQueryWidget *queryWidget = m_pHelpEngine->searchEngine()->queryWidget();
+		queryWidget->setFocus();
 	}
 }
 
