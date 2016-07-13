@@ -33,6 +33,7 @@
 #include <qfileinfo.h>
 #include <qregexp.h>
 #include <QClipboard>
+#include <qevent.h>
 
 #include "../organizer/userOrganizer.h"
 #include "../organizer/scriptEditorOrganizer.h"
@@ -1271,7 +1272,8 @@ void ConsoleWidget::dropEvent(QDropEvent * event)
     {
         QsciScintilla::dropEvent(event);
     }
-    setFocus(); //set focus to this widget such that a key-press (e.g. return) after a drop is directly executed (useful if code from callstack is dropped)
+    
+    setFocus();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1516,7 +1518,7 @@ void ConsoleWidget::paste()
         {
             clipboardSave = clipboard->text();
             int lineCount;
-            clipboard->setText(formatPhytonCodePart(clipboard->text(), lineCount));
+            clipboard->setText(formatPythonCodePart(clipboard->text(), lineCount));
         }
     }
 
@@ -1572,7 +1574,7 @@ void ConsoleWidget::pythonRunSelection(QString selectionText)
     if (selectionText.length() > 0)
     {
         int lineCount = 0;
-        selectionText = formatPhytonCodePart(selectionText, lineCount);
+        selectionText = formatPythonCodePart(selectionText, lineCount);
 
         if (selectionText.endsWith("\n"))
         {

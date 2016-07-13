@@ -63,7 +63,7 @@ protected:
 //    void mouseReleaseEvent(QMouseEvent * event);
 //    void keyReleaseEvent(QKeyEvent * event);
     void checkUserSelectionState();
-    QString formatPhytonCodePart(const QString &text, int &lineCount);
+    QString formatPythonCodePart(const QString &text, int &lineCount);
     QString formatConsoleCodePart(const QString &text);
 
     tUserSelectionState m_userSelectionState;

@@ -489,7 +489,7 @@ bool AbstractPyScintillaWidget::haveToIndention(QString s)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-QString AbstractPyScintillaWidget::formatPhytonCodePart(const QString &text, int &lineCount)
+QString AbstractPyScintillaWidget::formatPythonCodePart(const QString &text, int &lineCount)
 {
     QString res = "";
     lineCount = 0;
