@@ -112,6 +112,7 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	connect(m_plineEditIndex, SIGNAL(returnPressed()), this, SLOT(returnPressed()));
 	QLabel *indexText = new QLabel(tr("Search for:"), this);
 	QHelpIndexWidget *hiw = m_pHelpEngine->indexWidget();
+	hiw->setTabKeyNavigation(true);
 	connect(hiw, SIGNAL(linkActivated(QUrl, QString)), this, SLOT(linkActivated(QUrl, QString)));
 	layoutIndex->addWidget(indexText);
 	layoutIndex->addWidget(m_plineEditIndex);
@@ -448,7 +449,11 @@ void HelpViewer::keyPressEvent(QKeyEvent *event)
 	{
 		hideFindWordBar();
 	}
+	else if ((key == Qt::Key_Tab && m_pHelpEngine->indexWidget()->isVisible()))
+	{
+		QModelIndex currentIndex = m_pHelpEngine->indexWidget()->currentIndex();
 
+	}
 }
 
 //----------------------------------------------------------------------------------------
