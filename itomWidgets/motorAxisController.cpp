@@ -368,8 +368,16 @@ void MotorAxisController::setNumAxis(int numAxis)
     QStringList labels = d->verticalHeaderLabels;
     for (int i = labels.size(); i < numAxis; ++i)
     {
-        labels << QString::number(i);
+        if (d->verticalHeaderLabels.size() > i)
+        {
+            labels << d->verticalHeaderLabels[i];
+        }
+        else
+        {
+            labels << QString::number(i);
+        }
     }
+    d->verticalHeaderLabels = labels;
     d->ui.tableMovement->setVerticalHeaderLabels(labels);
 }
 
@@ -592,6 +600,8 @@ void MotorAxisController::setAxisNames(const QStringList &names)
     d->ui.tableMovement->setVerticalHeaderLabels(names);
 }
 
+
+
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 QStringList MotorAxisController::axisNames() const
 {
@@ -601,6 +611,36 @@ QStringList MotorAxisController::axisNames() const
         l << QString::number(i);
     }
     return l;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal MotorAxisController::setAxisName(int axisIndex, const QString &name)
+{
+    if (axisIndex >= 0 && axisIndex < d->axisEnabled.size())
+    {
+        if (d->verticalHeaderLabels[axisIndex] != name)
+        {
+            d->verticalHeaderLabels[axisIndex] = name;
+            d->ui.tableMovement->setVerticalHeaderLabels(d->verticalHeaderLabels);
+        }
+
+        return ito::retOk;
+    }
+    else
+    {
+        return ito::RetVal(ito::retError, 0, "axisIndex is out of bounds.");
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+QString MotorAxisController::axisName(int axisIndex) const
+{
+    if (axisIndex >= 0 && axisIndex < d->axisType.size())
+    {
+        return d->verticalHeaderLabels[axisIndex];
+    }
+
+    return "";
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -739,7 +779,7 @@ void MotorAxisController::actuatorStatusChanged(QVector<int> status, QVector<dou
     for (int i = 0; i < std::min(status.size(), d->spinCurrentPos.size()); ++i)
     {
         running = false;
-        d->spinTargetPos[i]->setEnabled(status[i] & ito::actuatorEnabled);
+        d->spinTargetPos[i]->setEnabled((status[i] & ito::actuatorEnabled) && d->axisEnabled[i]);
 
         if (status[i] & ito::actuatorMoving)
         {
@@ -762,8 +802,8 @@ void MotorAxisController::actuatorStatusChanged(QVector<int> status, QVector<dou
         d->spinTargetPos[i]->setStyleSheet(style);
         d->spinCurrentPos[i]->setStyleSheet(style);
         d->spinStepSize[i]->setStyleSheet(style);
-        d->buttonsRelative[i]->setEnabled(!running);
-        d->buttonAbsolute[i]->setEnabled(!running);
+        d->buttonsRelative[i]->setEnabled((status[i] & ito::actuatorEnabled) && !running && d->axisEnabled[i]);
+        d->buttonAbsolute[i]->setEnabled((status[i] & ito::actuatorEnabled) && !running && d->axisEnabled[i]);
     }
 
     d->ui.btnStart->setEnabled(!globalRunning);

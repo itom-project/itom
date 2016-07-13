@@ -116,6 +116,8 @@ public:
     void setAxisNames(const QStringList &names);
     QStringList axisNames() const;
 
+    QString axisName(int axisIndex) const;
+
     void setDefaultDecimals(int decimals);
     int defaultDecimals() const;
 
@@ -145,6 +147,7 @@ public slots:
     ito::RetVal setAxisEnabled(int axisIndex, bool enabled);
     ito::RetVal setAxisDecimals(int axisIndex, int decimals);
     ito::RetVal setAxisType(int axisIndex, AxisType type);
+    ito::RetVal setAxisName(int axisIndex, const QString &name);
 
 private slots:
     void on_btnCancel_clicked();
