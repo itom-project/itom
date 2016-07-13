@@ -2267,7 +2267,7 @@ RetVal UiOrganizer::getMethodDescriptions(unsigned int objectID, QSharedPointer<
         QMetaMethod metaMethod;
         QList<QByteArray> paramTypes;
         bool ok = false;
-        for (int i=0;i<mo->methodCount();i++)
+        for (int i = 0; i<mo->methodCount(); ++i)
         {
             metaMethod = mo->method(i);
             ok = true;
@@ -2276,7 +2276,10 @@ RetVal UiOrganizer::getMethodDescriptions(unsigned int objectID, QSharedPointer<
                 //check if args can be interpreted by QMetaType:
                 if (strcmp(metaMethod.typeName(), "") != 0)
                 {
-                    if (QMetaType::type(metaMethod.typeName()) == 0) ok = false;
+                    if (QMetaType::type(metaMethod.typeName()) == 0)
+                    {
+                        ok = false;
+                    }
                 }
                 if (ok)
                 {

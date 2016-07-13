@@ -107,6 +107,10 @@ const int ColCommandRelative = 4;
 MotorAxisController::MotorAxisController(QWidget *parent) :
     QWidget(parent)
 {
+    //register the enumerations that should be callable by slots
+    qRegisterMetaType<AxisUnit>("AxisUnit");
+    qRegisterMetaType<AxisType>("AxisType");
+
     d = new MotorAxisControllerPrivate();
 
     d->stepUpMapper = new QSignalMapper(this);
@@ -132,8 +136,8 @@ MotorAxisController::MotorAxisController(QWidget *parent) :
     header->setSectionResizeMode(ColCommandAbsolute, QHeaderView::Fixed);
     header->setSectionResizeMode(ColCommandRelative, QHeaderView::Fixed);
 #endif
-    header->resizeSection(ColCommandAbsolute, 25);
-    header->resizeSection(ColCommandRelative, 55);
+    header->resizeSection(ColCommandAbsolute, 30);
+    header->resizeSection(ColCommandRelative, 64);
 
     setMovementType(MovementAbsolute);
 
