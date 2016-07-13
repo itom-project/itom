@@ -28,12 +28,12 @@
 #ifdef ITOM_USEHELPVIEWER
 
 #include <qmainwindow.h>
-#include <qurl.h>
-#include <qlineedit.h>
-
 
 class QWebEngineView; //forward declaration
 class QHelpEngine; //forward declaration
+class QLineEdit;//forward declaration
+class QUrl;//forward declaration
+class QMainWindow;//forward declaration
 
 namespace ito {
 
