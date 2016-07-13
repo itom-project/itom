@@ -26,6 +26,20 @@ include("../ItomBuildMacros.cmake")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 IF(${BUILD_WITH_HELPVIEWER})
+    #HELPVIEWER is only available for Qt >= 5.6.0
+    #at first, get the available Qt version
+    FIND_PACKAGE_QT(ON Core)
+
+    IF(((NOT ${Qt5_FOUND}) OR (${Qt5_VERSION} VERSION_LESS 5.6.0)))
+        message(WARNING "BUILD_WITH_HELPVIEWER is set to FALSE, since it is only possible for Qt >= 5.6.0")
+        SET(BUILD_WITH_HELPVIEWER FALSE)
+    ENDIF()
+ENDIF()
+
+IF(${BUILD_WITH_HELPVIEWER})
+    #at first, get the available Qt version
+    FIND_PACKAGE_QT(ON Core)
+    message(FATAL "${Qt5_FOUND} ${Qt5_VERSION}")
     #requires Qt5 and Qt5WebEngine in order to built a built-in help viewer, since QtAssistant only has a limited set of rendering options since Qt5.6.
     FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools Svg WebEngineWidgets Help)
     
