@@ -14,7 +14,7 @@ OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to 
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
 OPTION(BUILD_WITH_PYMATLAB "Build itom with integrated python module 'matlab' to control and use Matlab within itom." OFF)
-OPTION(BUILD_WITH_HELPVIEWER "Build itom with integrated python module 'matlab' to control and use Matlab within itom (only with Qt5)." ON)
+OPTION(BUILD_WITH_HELPVIEWER "Build itom with help viewer for the itom documentation (only >= Qt 5.6.0)." ON)
 OPTION(CONSIDER_GIT_SVN "If ON GIT version history will be considered." ON)
 OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
