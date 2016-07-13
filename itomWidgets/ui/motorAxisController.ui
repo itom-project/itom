@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>387</width>
-    <height>134</height>
+    <height>255</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -95,9 +95,6 @@
      <property name="columnCount">
       <number>0</number>
      </property>
-     <attribute name="horizontalHeaderStretchLastSection">
-      <bool>true</bool>
-     </attribute>
      <attribute name="verticalHeaderDefaultSectionSize">
       <number>25</number>
      </attribute>

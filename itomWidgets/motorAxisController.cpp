@@ -55,7 +55,10 @@ public:
         defaultAxisUnit(MotorAxisController::UnitMm),
         defaultRelativeStepSize(5),
         defaultDecimals(2),
-        cancelAvailable(true)
+        cancelAvailable(true),
+        stepUpMapper(NULL),
+        stepDownMapper(NULL),
+        runSingleMapper(NULL)
     {
 
     }
@@ -68,6 +71,8 @@ public:
     QVector<MotorAxisController::AxisUnit> axisUnit;
     QVector<MotorAxisController::AxisType> axisType;
     QVector<int> axisDecimals;
+    QVector<bool> axisEnabled;
+
     int numAxis;
     bool isChanging;
 
@@ -114,19 +119,21 @@ MotorAxisController::MotorAxisController(QWidget *parent) :
     d->ui.setupUi(this);
     d->ui.tableMovement->setColumnCount(5);
     QStringList labels;
-    labels << tr("Current Pos.") << tr("Target Pos.") << tr("Absolute")  << tr("Step Size") << tr("Relative");
+    labels << tr("Current Pos.") << tr("Target Pos.") << tr("Abs.")  << tr("Step Size") << tr("Rel.");
     d->ui.tableMovement->setHorizontalHeaderLabels(labels);
 
-#if QT_VERSION >= 0x050000
     QHeaderView *header = d->ui.tableMovement->horizontalHeader();
+    header->setDefaultSectionSize(120);
+
+#if QT_VERSION >= 0x050000
     header->setSectionResizeMode(ColCurrent, QHeaderView::Stretch);
     header->setSectionResizeMode(ColTarget, QHeaderView::Stretch);
     header->setSectionResizeMode(ColStepSize, QHeaderView::Stretch);
     header->setSectionResizeMode(ColCommandAbsolute, QHeaderView::Fixed);
-    header->resizeSection(ColCommandAbsolute, 40);
     header->setSectionResizeMode(ColCommandRelative, QHeaderView::Fixed);
-    header->resizeSection(ColCommandRelative, 85);
 #endif
+    header->resizeSection(ColCommandAbsolute, 25);
+    header->resizeSection(ColCommandRelative, 55);
 
     setMovementType(MovementAbsolute);
 
@@ -250,6 +257,7 @@ void MotorAxisController::setNumAxis(int numAxis)
         d->axisType.resize(numAxis);
         d->axisUnit.resize(numAxis);
         d->axisDecimals.resize(numAxis);
+        d->axisEnabled.resize(numAxis);
     }
     else
     {
@@ -258,6 +266,7 @@ void MotorAxisController::setNumAxis(int numAxis)
             d->axisType.append(d->defaultAxisType);
             d->axisUnit.append(d->defaultAxisUnit);
             d->axisDecimals.append(d->defaultDecimals);
+            d->axisEnabled.append(true);
         }
     }
 
@@ -273,14 +282,15 @@ void MotorAxisController::setNumAxis(int numAxis)
     //add missing axes
     for (int i = numExistingRows; i < numAxis; ++i)
     {
+        //Spinbox for target position
         targetPos = new QDoubleSpinBox(this);
         targetPos->setMinimum(-std::numeric_limits<double>::max());
         targetPos->setMaximum(std::numeric_limits<double>::max());
         targetPos->setDecimals(d->axisDecimals[i]);
         targetPos->setSuffix(suffixFromAxisUnit(d->axisUnit[i]));
-        d->spinTargetPos[i] = targetPos;
-        d->ui.tableMovement->setCellWidget(i, ColTarget, targetPos);
-
+        targetPos->setEnabled(d->axisEnabled[i]);
+        
+        //Spinbox for current position
         currentPos = new QDoubleSpinBox(this);
         currentPos->setReadOnly(true);
         currentPos->setMinimum(-std::numeric_limits<double>::max());
@@ -288,18 +298,18 @@ void MotorAxisController::setNumAxis(int numAxis)
         currentPos->setDecimals(d->axisDecimals[i]);
         currentPos->setButtonSymbols(QAbstractSpinBox::NoButtons);
         currentPos->setSuffix(suffixFromAxisUnit(d->axisUnit[i]));
-        d->spinCurrentPos[i] = currentPos;
-        d->ui.tableMovement->setCellWidget(i, ColCurrent, currentPos);
-
+        currentPos->setEnabled(d->axisEnabled[i]);
+        
+        //Spinbox for single step size of relative movements
         stepSize = new QDoubleSpinBox(this);
         stepSize->setMinimum(-std::numeric_limits<double>::max());
         stepSize->setMaximum(std::numeric_limits<double>::max());
         stepSize->setDecimals(d->axisDecimals[i]);
         stepSize->setValue(baseUnitToUnit(d->defaultRelativeStepSize, d->axisUnit[i]));
         stepSize->setSuffix(suffixFromAxisUnit(d->axisUnit[i]));
-        d->spinStepSize[i] = stepSize;
-        d->ui.tableMovement->setCellWidget(i, ColStepSize, stepSize);
-
+        stepSize->setEnabled(d->axisEnabled[i]);
+        
+        //button for step up
         stepUp = new QToolButton(this);
         stepUp->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         stepUp->setText(tr("up"));
@@ -307,6 +317,7 @@ void MotorAxisController::setNumAxis(int numAxis)
         connect(stepUp, SIGNAL(clicked()), d->stepUpMapper, SLOT(map()));
         d->stepUpMapper->setMapping(stepUp, i);
 
+        //button for step down
         stepDown = new QToolButton(this);
         stepDown->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         stepDown->setText(tr("down"));
@@ -314,16 +325,7 @@ void MotorAxisController::setNumAxis(int numAxis)
         connect(stepDown, SIGNAL(clicked()), d->stepDownMapper, SLOT(map()));
         d->stepDownMapper->setMapping(stepDown, i);
 
-        runSingle = new QToolButton(this);
-        runSingle->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        runSingle->setText(tr("go"));
-        runSingle->setIcon(QIcon(":/icons/run.png"));
-        connect(runSingle, SIGNAL(clicked()), d->runSingleMapper, SLOT(map()));
-        d->runSingleMapper->setMapping(runSingle, i);
-
-        d->buttonAbsolute[i] = runSingle;
-        d->ui.tableMovement->setCellWidget(i, ColCommandAbsolute, runSingle);
-
+        //group of step down and step up buttons
         buttonsRelative = new QWidget(this);
         layout = new QHBoxLayout();
         layout->setContentsMargins(0, 0, 0, 0);
@@ -331,9 +333,32 @@ void MotorAxisController::setNumAxis(int numAxis)
         layout->addWidget(stepUp);
         layout->addWidget(stepDown);
         buttonsRelative->setLayout(layout);
+        buttonsRelative->setEnabled(d->axisEnabled[i]);
+
+        //button for single axis absolute movement
+        runSingle = new QToolButton(this);
+        runSingle->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        runSingle->setText(tr("go"));
+        runSingle->setIcon(QIcon(":/icons/run.png"));
+        connect(runSingle, SIGNAL(clicked()), d->runSingleMapper, SLOT(map()));
+        d->runSingleMapper->setMapping(runSingle, i);
+        runSingle->setEnabled(d->axisEnabled[i]);
+
+        //add all widgets to table view
+        d->spinStepSize[i] = stepSize;
+        d->ui.tableMovement->setCellWidget(i, ColStepSize, stepSize);
+
+        d->spinTargetPos[i] = targetPos;
+        d->ui.tableMovement->setCellWidget(i, ColTarget, targetPos);
+
         d->buttonsRelative[i] = buttonsRelative;
-        QWidget *w = d->buttonsRelative[i]->layout()->itemAt(0)->widget();
         d->ui.tableMovement->setCellWidget(i, ColCommandRelative, buttonsRelative);
+
+        d->buttonAbsolute[i] = runSingle;
+        d->ui.tableMovement->setCellWidget(i, ColCommandAbsolute, runSingle);
+
+        d->spinCurrentPos[i] = currentPos;
+        d->ui.tableMovement->setCellWidget(i, ColCurrent, currentPos);
     }
 
     QStringList labels = d->verticalHeaderLabels;
@@ -342,17 +367,6 @@ void MotorAxisController::setNumAxis(int numAxis)
         labels << QString::number(i);
     }
     d->ui.tableMovement->setVerticalHeaderLabels(labels);
-
-#if QT_VERSION >= 0x050000
-    QHeaderView *header = d->ui.tableMovement->horizontalHeader();
-    header->setSectionResizeMode(ColCurrent, QHeaderView::Stretch);
-    header->setSectionResizeMode(ColTarget, QHeaderView::Stretch);
-    header->setSectionResizeMode(ColStepSize, QHeaderView::Stretch);
-    header->setSectionResizeMode(ColCommandAbsolute, QHeaderView::Fixed);
-    header->resizeSection(ColCommandAbsolute, 40);
-    header->setSectionResizeMode(ColCommandRelative, QHeaderView::Fixed);
-    header->resizeSection(ColCommandRelative, 85);
-#endif
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -362,17 +376,20 @@ int MotorAxisController::numAxis() const
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void MotorAxisController::setAxisUnit(int axisIndex, AxisUnit unit)
+ito::RetVal MotorAxisController::setAxisUnit(int axisIndex, AxisUnit unit)
 {
+    ito::RetVal retval;
     if (axisIndex >= 0 && axisIndex < d->axisType.size())
     {
         if (d->axisType[axisIndex] == TypeLinear && unit == UnitDeg)
         {
             unit = UnitMm;
+            retval += ito::RetVal(ito::retWarning, 0, "type of axis is linear, the unit is set to 'mm'.");
         }
         else if (d->axisType[axisIndex] == TypeRotational && unit != UnitDeg)
         {
             unit = UnitDeg;
+            retval += ito::RetVal(ito::retWarning, 0, "type of axis is rotational, the unit is set to '°'.");
         }
 
         d->spinTargetPos[axisIndex]->setSuffix(suffixFromAxisUnit(unit));
@@ -390,6 +407,12 @@ void MotorAxisController::setAxisUnit(int axisIndex, AxisUnit unit)
 
         d->axisUnit[axisIndex] = unit;
     }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, "axisIndex is out of bounds.");
+    }
+
+    return retval;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -401,6 +424,40 @@ MotorAxisController::AxisUnit MotorAxisController::axisUnit(int axisIndex) const
     }
 
     return UnitMm;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal MotorAxisController::setAxisEnabled(int axisIndex, bool enabled)
+{
+    if (axisIndex >= 0 && axisIndex < d->axisEnabled.size())
+    {
+        if (d->axisEnabled[axisIndex] != enabled)
+        {
+            d->spinStepSize[axisIndex]->setEnabled(enabled);
+            d->spinTargetPos[axisIndex]->setEnabled(enabled);
+            d->buttonsRelative[axisIndex]->setEnabled(enabled);
+            d->buttonAbsolute[axisIndex]->setEnabled(enabled);
+            d->spinCurrentPos[axisIndex]->setEnabled(enabled);
+            d->axisEnabled[axisIndex] = enabled;
+        }
+
+        return ito::retOk;
+    }
+    else
+    {
+        return ito::RetVal(ito::retError, 0, "axisIndex is out of bounds.");
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+bool MotorAxisController::axisEnabled(int axisIndex) const
+{
+    if (axisIndex >= 0 && axisIndex < d->axisEnabled.size())
+    {
+        return d->axisEnabled[axisIndex];
+    }
+
+    return false;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -435,8 +492,10 @@ MotorAxisController::AxisUnit MotorAxisController::defaultAxisUnit() const
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void MotorAxisController::setAxisType(int axisIndex, AxisType type)
+ito::RetVal MotorAxisController::setAxisType(int axisIndex, AxisType type)
 {
+    ito::RetVal retval;
+
     if (axisIndex >= 0 && axisIndex < d->axisType.size())
     {
         if (d->axisType[axisIndex] != type)
@@ -446,13 +505,20 @@ void MotorAxisController::setAxisType(int axisIndex, AxisType type)
             if (type == TypeLinear && axisUnit(axisIndex) == UnitDeg)
             {
                 setAxisUnit(axisIndex, UnitMm);
+                retval += ito::RetVal(ito::retWarning, 0, "The unit of the axis was '°'. Due to the new type, it is set to 'mm' now.");
             }
             else if (type == TypeRotational && axisUnit(axisIndex) != UnitDeg)
             {
                 setAxisUnit(axisIndex, UnitDeg);
+                retval += ito::RetVal(ito::retWarning, 0, "The unit of the axis was 'mm', 'nm' or similar. Due to the new type, it is set to '°' now.");
             }
         }
     }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, "axisIndex is out of bounds.");
+    }
+    return retval;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -557,7 +623,7 @@ int MotorAxisController::defaultDecimals() const
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-void MotorAxisController::setDecimals(int axisIndex, int decimals)
+ito::RetVal MotorAxisController::setAxisDecimals(int axisIndex, int decimals)
 {
     if (axisIndex >= 0 && axisIndex < d->axisType.size())
     {
@@ -568,11 +634,17 @@ void MotorAxisController::setDecimals(int axisIndex, int decimals)
             d->spinTargetPos[axisIndex]->setDecimals(decimals);
             d->spinStepSize[axisIndex]->setDecimals(decimals);
         }
+
+        return ito::retOk;
+    }
+    else
+    {
+        return ito::RetVal(ito::retError, 0, "axisIndex is out of bounds.");
     }
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-int MotorAxisController::decimals(int axisIndex) const
+int MotorAxisController::axisDecimals(int axisIndex) const
 {
     if (axisIndex >= 0 && axisIndex < d->axisType.size())
     {
@@ -951,7 +1023,7 @@ void MotorAxisController::customContextMenuRequested(const QPoint &pos)
 
         QMenu *decimalsMenu = contextMenu.addMenu(tr("Decimals"));
 
-        int dec = decimals(index.row());
+        int dec = axisDecimals(index.row());
         for (int i = 0; i < 6; ++i)
         {
             a = new QAction(QString::number(i), this);
@@ -971,7 +1043,7 @@ void MotorAxisController::customContextMenuRequested(const QPoint &pos)
             int data = a->data().toInt();
             if (data >= 1000)
             {
-                setDecimals(index.row(), data - 1000);
+                setAxisDecimals(index.row(), data - 1000);
             }
             else
             {

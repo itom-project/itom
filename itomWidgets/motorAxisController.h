@@ -94,13 +94,11 @@ public:
     void setNumAxis(int numAxis);
     int numAxis() const;
 
-    void setAxisUnit(int axisIndex, AxisUnit unit);
     AxisUnit axisUnit(int axisIndex) const;
 
     void setDefaultAxisUnit(AxisUnit unit);
     AxisUnit defaultAxisUnit() const;
 
-    void setAxisType(int axisIndex, AxisType type);
     AxisType axisType(int axisIndex) const;
 
     void setDefaultAxisType(AxisType type);
@@ -121,12 +119,12 @@ public:
     void setDefaultDecimals(int decimals);
     int defaultDecimals() const;
 
-    void setDecimals(int axisIndex, int decimals);
-    int decimals(int axisIndex) const;
+    int axisDecimals(int axisIndex) const;
 
     void setMovementType(MovementType type);
     MovementType movementType() const;
 
+    bool axisEnabled(int axisIndex) const;
 
 private:
     void retValToMessageBox(const ito::RetVal &retval, const QString &methodName) const;
@@ -142,6 +140,11 @@ private:
 public slots:
     virtual void actuatorStatusChanged(QVector<int> status, QVector<double> actPosition);
     virtual void targetChanged(QVector<double> targetPositions);
+
+    ito::RetVal setAxisUnit(int axisIndex, AxisUnit unit);
+    ito::RetVal setAxisEnabled(int axisIndex, bool enabled);
+    ito::RetVal setAxisDecimals(int axisIndex, int decimals);
+    ito::RetVal setAxisType(int axisIndex, AxisType type);
 
 private slots:
     void on_btnCancel_clicked();
