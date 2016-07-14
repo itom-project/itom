@@ -202,6 +202,10 @@ void AbstractPyScintillaWidget::loadSettings()
     setAutoCompletionReplaceWord(settings.value("autoComplReplaceWord", false).toBool());
     setAutoCompletionShowSingle(settings.value("autoComplShowSingle", false).toBool());
 
+    qSciLex->setDefaultPaper(QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
+    setMarginsBackgroundColor(QColor(settings.value("marginBackgroundColor", QColor(224,224,224)).toString()));
+    setMarginsForegroundColor(QColor(settings.value("marginForegroundColor", QColor(0, 0, 0)).toString()));
+
     settings.endGroup();
 
     // ------------ styles ---------------------------------------------------------------

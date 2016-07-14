@@ -86,6 +86,14 @@ void WidgetPropEditorStyles::readSettings()
         m_styles[i].m_font = QFont(settings.value("fontFamily", m_styles[i].m_font.family()).toString(), settings.value("pointSize", m_styles[i].m_font.pointSize()).toInt(), settings.value("weight", m_styles[i].m_font.weight()).toInt(), settings.value("italic", m_styles[i].m_font.italic()).toBool());
         settings.endGroup();
     }
+
+    settings.beginGroup("PyScintilla");
+    ui.btnPaperBackground->setColor(QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
+    ui.btnMarginBackground->setColor(QColor(settings.value("marginBackgroundColor", QColor(224, 224, 224)).toString()));
+    ui.btnMarginForeground->setColor(QColor(settings.value("marginForegroundColor", QColor(0, 0, 0)).toString()));
+    settings.endGroup();
+
+    on_listWidget_currentItemChanged(ui.listWidget->currentItem(), NULL);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -108,6 +116,12 @@ void WidgetPropEditorStyles::writeSettings()
         settings.setValue("italic", entry.m_font.italic());
         settings.endGroup();
     }
+
+    settings.beginGroup("PyScintilla");
+    settings.setValue("paperBackgroundColor", ui.btnPaperBackground->color());
+    settings.setValue("marginBackgroundColor", ui.btnMarginBackground->color());
+    settings.setValue("marginForegroundColor", ui.btnMarginForeground->color());
+    settings.endGroup();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -119,10 +133,11 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
 
         ui.checkFillEOL->setChecked(m_styles[index].m_fillToEOL);
         ui.lblSampleText->setFont(m_styles[index].m_font);
-        QPalette pl = ui.lblSampleText->palette();
+        ui.lblSampleText->setStyleSheet(QString("color: %1; background-color: %2;").arg(m_styles[index].m_foregroundColor.name()).arg(m_styles[index].m_backgroundColor.name()));
+        /*QPalette pl = ui.lblSampleText->palette();
         pl.setColor(ui.lblSampleText->foregroundRole(), m_styles[index].m_foregroundColor);
         pl.setColor(ui.lblSampleText->backgroundRole(), m_styles[index].m_backgroundColor);
-        ui.lblSampleText->setPalette(pl);
+        ui.lblSampleText->setPalette(pl);*/
         ui.lblSampleText->repaint();
     }
 }
