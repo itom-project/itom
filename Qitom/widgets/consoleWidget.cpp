@@ -443,6 +443,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
         if (m_inputStreamWaitCond)
         {
             markerDeleteAll(m_markInputLine);
+            setCaretLineVisible(true);
             m_inputStreamBuffer->clear();
             m_inputStreamWaitCond->release();
             m_inputStreamWaitCond->deleteSemaphore();
@@ -572,6 +573,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
                 else
                 {
                     markerDeleteAll(m_markInputLine);
+                    setCaretLineVisible(true);
                     m_inputStreamBuffer->clear();
                     m_inputStreamWaitCond->release();
                     m_inputStreamWaitCond->deleteSemaphore();
@@ -669,6 +671,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
                     }
 
                     markerDeleteAll(m_markInputLine);
+                    setCaretLineVisible(true);
 
                     m_inputStreamWaitCond->release();
                     m_inputStreamWaitCond->deleteSemaphore();
@@ -968,6 +971,7 @@ void ConsoleWidget::startInputCommandLine(QSharedPointer<QByteArray> buffer, Ito
     m_inputStartLine = lines() - 1;
     m_inputStartCol = text(m_inputStartLine).size();
     markerAdd(m_inputStartLine, m_markInputLine);
+    setCaretLineVisible(false);
     setFocus();
 }
 

@@ -80,7 +80,7 @@ WidgetPropEditorStyles::WidgetPropEditorStyles(QWidget *parent) :
         }
     }
 
-    QListWidgetItem *separator = new QListWidgetItem("------------------------------");
+    QListWidgetItem *separator = new QListWidgetItem("------------------------------", NULL, 1000);
     separator->setFlags(Qt::ItemIsEnabled);
     ui.listWidget->addItem(separator);
 
@@ -216,9 +216,7 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
     m_changing = true;
     if (current)
     {
-        const QListWidgetItem *current = ui.listWidget->currentItem();
-
-        if (current && current->type() == 0)
+        if (current->type() == 0)
         {
             int index = ui.listWidget->currentIndex().row();
             ui.checkFillEOL->setChecked(m_styles[index].m_fillToEOL);
@@ -234,7 +232,7 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
             ui.btnFont->setEnabled(true);
             ui.checkFillEOL->setEnabled(true);
         }
-        else if (current)
+        else if (current->type() < 1000)
         {
             ui.checkFillEOL->setEnabled(false);
             ui.checkFillEOL->setChecked(false);
@@ -307,6 +305,13 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
 
             ui.btnBackgroundColor->setColor(bg);
             ui.btnForegroundColor->setColor(fg);
+        }
+        else
+        {
+            ui.btnForegroundColor->setEnabled(false);
+            ui.btnBackgroundColor->setEnabled(false);
+            ui.btnFont->setEnabled(false);
+            ui.checkFillEOL->setEnabled(false);
         }
     }
     m_changing = false;
