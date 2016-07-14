@@ -352,7 +352,10 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
             QDir styleFolder = QCoreApplication::applicationDirPath();
             if (styleFolder.exists(rccFile))
             {
-                QResource::registerResource(rccFile);
+                if (!QResource::registerResource(rccFile))
+                {
+                    qDebug() << "error loading the resource-file " << rccFile;
+                }
             }
             else
             {
