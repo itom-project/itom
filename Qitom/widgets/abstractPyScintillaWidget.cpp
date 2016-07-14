@@ -205,6 +205,14 @@ void AbstractPyScintillaWidget::loadSettings()
     qSciLex->setDefaultPaper(QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
     setMarginsBackgroundColor(QColor(settings.value("marginBackgroundColor", QColor(224,224,224)).toString()));
     setMarginsForegroundColor(QColor(settings.value("marginForegroundColor", QColor(0, 0, 0)).toString()));
+    setFoldMarginColors(QColor(settings.value("foldMarginForegroundColor", QColor(Qt::black)).toString()), \
+        QColor(settings.value("foldMarginBackgroundColor", QColor(Qt::white)).toString()));
+    setWhitespaceBackgroundColor(QColor(settings.value("whitespaceBackgroundColor", QColor(Qt::white)).toString()));
+    setWhitespaceForegroundColor(QColor(settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString()));
+    setMatchedBraceBackgroundColor(QColor(settings.value("matchedBraceBackgroundColor", QColor(Qt::white)).toString()));
+    setMatchedBraceForegroundColor(QColor(settings.value("matchedBraceForegroundColor", QColor(Qt::red)).toString()));
+    setUnmatchedBraceBackgroundColor(QColor(settings.value("unmatchedBraceBackgroundColor", QColor(Qt::white)).toString()));
+    setUnmatchedBraceForegroundColor(QColor(settings.value("unmatchedBraceForegroundColor", QColor(Qt::red)).toString()));
 
     settings.endGroup();
 

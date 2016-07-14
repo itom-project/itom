@@ -257,6 +257,10 @@ void ConsoleWidget::loadSettings()
         case 2: setWrapIndentMode(QsciScintilla::WrapIndentIndented); break;
     };
 
+    setMarkerBackgroundColor(QColor(settings.value("markerErrorForegroundColor", QColor(255, 192, 192)).toString()), m_markErrorLine);
+    setMarkerBackgroundColor(QColor(settings.value("markerCurrentBackgroundColor", QColor(255, 255, 128)).toString()), m_markCurrentLine);
+    setMarkerBackgroundColor(QColor(settings.value("markerInputForegroundColor", QColor(179, 222, 171)).toString()), m_markInputLine);
+
     settings.endGroup();
 
     AbstractPyScintillaWidget::loadSettings();

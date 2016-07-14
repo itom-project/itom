@@ -35,9 +35,20 @@
 namespace ito
 {
 
+const int PAPERCOLOR = 1;
+const int FOLDMARGINCOLOR = 2;
+const int MARGINCOLOR = 3;
+const int WHITESPACECOLOR = 4;
+const int UNMATCHEDBRACECOLOR = 5;
+const int MATCHEDBRACECOLOR = 6;
+const int MARKERERRORCOLOR = 7;
+const int MARKERCURRENTCOLOR = 8;
+const int MARKERINPUTCOLOR = 9;
+
 //----------------------------------------------------------------------------------------------------------------------------------
 WidgetPropEditorStyles::WidgetPropEditorStyles(QWidget *parent) :
-    AbstractPropertyPageWidget(parent)
+    AbstractPropertyPageWidget(parent),
+    m_changing(false)
 {
     ui.setupUi(this);
 
@@ -65,6 +76,25 @@ WidgetPropEditorStyles::WidgetPropEditorStyles(QWidget *parent) :
             m_styles.push_back(entry);
         }
     }
+
+    QListWidgetItem *separator = new QListWidgetItem("------------------------------");
+    separator->setFlags(Qt::ItemIsEnabled);
+    ui.listWidget->addItem(separator);
+
+    ui.listWidget->addItem(new QListWidgetItem(tr("Paper Color"), NULL, PAPERCOLOR));
+    ui.listWidget->addItem(new QListWidgetItem(tr("Fold margin color"), NULL, FOLDMARGINCOLOR));
+    ui.listWidget->addItem(new QListWidgetItem(tr("Margin color"), NULL, MARGINCOLOR));
+    ui.listWidget->addItem(new QListWidgetItem(tr("Whitespace color"), NULL, WHITESPACECOLOR));
+    ui.listWidget->addItem(new QListWidgetItem(tr("Unmatched brace color"), NULL, UNMATCHEDBRACECOLOR));
+    ui.listWidget->addItem(new QListWidgetItem(tr("Matched brace color"), NULL, MATCHEDBRACECOLOR));
+    ui.listWidget->addItem(new QListWidgetItem(tr("Command line: Background for error messages"), NULL, MARKERERRORCOLOR));
+    ui.listWidget->addItem(new QListWidgetItem(tr("Command line: Background for currently executed line"), NULL, MARKERCURRENTCOLOR));
+    ui.listWidget->addItem(new QListWidgetItem(tr("Command line: Background for python input"), NULL, MARKERINPUTCOLOR));
+
+    ui.btnForegroundColor->setEnabled(false);
+    ui.btnBackgroundColor->setEnabled(false);
+    ui.btnFont->setEnabled(false);
+    ui.checkFillEOL->setEnabled(false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -107,9 +137,21 @@ void WidgetPropEditorStyles::writeSettingsInternal(const QString &filename)
     }
 
     settings.beginGroup("PyScintilla");
-    settings.setValue("paperBackgroundColor", ui.btnPaperBackground->color());
-    settings.setValue("marginBackgroundColor", ui.btnMarginBackground->color());
-    settings.setValue("marginForegroundColor", ui.btnMarginForeground->color());
+    settings.setValue("paperBackgroundColor", m_paperBgcolor);
+    settings.setValue("marginBackgroundColor", m_marginBgcolor);
+    settings.setValue("marginForegroundColor", m_marginFgcolor);
+    settings.setValue("foldMarginBackgroundColor", m_foldMarginBgcolor);
+    settings.setValue("foldMarginForegroundColor", m_foldMarginFgcolor);
+    settings.setValue("markerCurrentBackgroundColor", m_markerCurrentBgcolor);
+    settings.setValue("markerInputForegroundColor", m_markerInputBgcolor);
+    settings.setValue("markerErrorForegroundColor", m_markerErrorBgcolor);
+    settings.setValue("whitespaceBackgroundColor", m_whitespaceBgcolor);
+    settings.setValue("whitespaceForegroundColor", m_whitespaceFgcolor);
+    settings.setValue("unmatchedBraceBackgroundColor", m_unmatchedBraceBgcolor);
+    settings.setValue("unmatchedBraceForegroundColor", m_unmatchedBraceFgcolor);
+    settings.setValue("matchedBraceBackgroundColor", m_matchedBraceBgcolor);
+    settings.setValue("matchedBraceForegroundColor", m_matchedBraceFgcolor);
+
     settings.endGroup();
 }
 
@@ -132,9 +174,21 @@ void WidgetPropEditorStyles::readSettingsInternal(const QString &filename)
 
     settings.beginGroup("PyScintilla");
     //the following default values are also written in on_btnReset_clicked()
-    ui.btnPaperBackground->setColor(QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
-    ui.btnMarginBackground->setColor(QColor(settings.value("marginBackgroundColor", QColor(224, 224, 224)).toString()));
-    ui.btnMarginForeground->setColor(QColor(settings.value("marginForegroundColor", QColor(0, 0, 0)).toString()));
+    m_paperBgcolor = QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString());
+    m_marginBgcolor = QColor(settings.value("marginBackgroundColor", QColor(224, 224, 224)).toString());
+    m_marginFgcolor = QColor(settings.value("marginForegroundColor", QColor(Qt::black)).toString());
+    m_foldMarginBgcolor = QColor(settings.value("foldMarginBackgroundColor", QColor(Qt::white)).toString());
+    m_foldMarginFgcolor = QColor(settings.value("foldMarginForegroundColor", QColor(Qt::black)).toString());
+    m_markerCurrentBgcolor = QColor(settings.value("markerCurrentBackgroundColor", QColor(255, 255, 128)).toString());
+    m_markerInputBgcolor = QColor(settings.value("markerInputForegroundColor", QColor(179, 222, 171)).toString());
+    m_markerErrorBgcolor = QColor(settings.value("markerErrorForegroundColor", QColor(255, 192, 192)).toString());
+    m_whitespaceBgcolor = QColor(settings.value("whitespaceBackgroundColor", QColor(Qt::white)).toString());
+    m_whitespaceFgcolor = QColor(settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString());
+    m_unmatchedBraceBgcolor = QColor(settings.value("unmatchedBraceBackgroundColor", QColor(Qt::white)).toString());
+    m_unmatchedBraceFgcolor = QColor(settings.value("unmatchedBraceForegroundColor", QColor(128, 0, 0)).toString());
+    m_matchedBraceBgcolor = QColor(settings.value("matchedBraceBackgroundColor", QColor(Qt::white)).toString());
+    m_matchedBraceFgcolor = QColor(settings.value("matchedBraceForegroundColor", QColor(Qt::red)).toString());
+
     settings.endGroup();
 
     on_listWidget_currentItemChanged(ui.listWidget->currentItem(), NULL);
@@ -143,34 +197,181 @@ void WidgetPropEditorStyles::readSettingsInternal(const QString &filename)
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem * /* previous */)
 {
+    m_changing = true;
     if (current)
     {
-        int index = ui.listWidget->currentIndex().row();
+        const QListWidgetItem *current = ui.listWidget->currentItem();
 
-        ui.checkFillEOL->setChecked(m_styles[index].m_fillToEOL);
-        ui.lblSampleText->setFont(m_styles[index].m_font);
-        ui.lblSampleText->setStyleSheet(QString("color: %1; background-color: %2;").arg(m_styles[index].m_foregroundColor.name()).arg(m_styles[index].m_backgroundColor.name()));
-        /*QPalette pl = ui.lblSampleText->palette();
-        pl.setColor(ui.lblSampleText->foregroundRole(), m_styles[index].m_foregroundColor);
-        pl.setColor(ui.lblSampleText->backgroundRole(), m_styles[index].m_backgroundColor);
-        ui.lblSampleText->setPalette(pl);*/
-        ui.lblSampleText->repaint();
+        if (current && current->type() == 0)
+        {
+            int index = ui.listWidget->currentIndex().row();
+            ui.checkFillEOL->setChecked(m_styles[index].m_fillToEOL);
+            ui.btnBackgroundColor->setColor(m_styles[index].m_backgroundColor);
+            ui.btnForegroundColor->setColor(m_styles[index].m_foregroundColor);
+
+            ui.lblSampleText->setFont(m_styles[index].m_font);
+            ui.lblSampleText->setStyleSheet(QString("color: %1; background-color: %2;").arg(m_styles[index].m_foregroundColor.name()).arg(m_styles[index].m_backgroundColor.name()));
+            ui.lblSampleText->repaint();
+            
+            ui.btnForegroundColor->setEnabled(true);
+            ui.btnBackgroundColor->setEnabled(true);
+            ui.btnFont->setEnabled(true);
+            ui.checkFillEOL->setEnabled(true);
+        }
+        else if (current)
+        {
+            ui.checkFillEOL->setEnabled(false);
+            ui.checkFillEOL->setChecked(false);
+            ui.btnFont->setEnabled(false);
+            ui.btnBackgroundColor->setEnabled(true);
+            QColor bg;
+            QColor fg(Qt::black);
+
+            switch (current->type())
+            {
+            case PAPERCOLOR:
+                bg = m_paperBgcolor;
+                ui.btnForegroundColor->setEnabled(false);
+                break;
+            case FOLDMARGINCOLOR:
+                bg = m_foldMarginBgcolor;
+                fg = m_foldMarginFgcolor;
+                ui.btnForegroundColor->setEnabled(true);
+                break;
+            case MARGINCOLOR:
+                bg = m_marginBgcolor;
+                fg = m_marginFgcolor;
+                ui.btnForegroundColor->setEnabled(true);
+                break;
+            case WHITESPACECOLOR:
+                bg = m_whitespaceBgcolor;
+                fg = m_whitespaceFgcolor;
+                ui.btnForegroundColor->setEnabled(true);
+                break;
+            case UNMATCHEDBRACECOLOR:
+                bg = m_unmatchedBraceBgcolor;
+                fg = m_unmatchedBraceFgcolor;
+                ui.btnForegroundColor->setEnabled(true);
+                break;
+            case MATCHEDBRACECOLOR:
+                bg = m_matchedBraceBgcolor;
+                fg = m_matchedBraceFgcolor;
+                ui.btnForegroundColor->setEnabled(true);
+                break;
+            case MARKERERRORCOLOR:
+                bg = m_markerErrorBgcolor;
+                ui.btnForegroundColor->setEnabled(false);
+                break;
+            case MARKERCURRENTCOLOR:
+                bg = m_markerCurrentBgcolor;
+                ui.btnForegroundColor->setEnabled(false);
+                break;
+            case MARKERINPUTCOLOR:
+                bg = m_markerInputBgcolor;
+                ui.btnForegroundColor->setEnabled(false);
+                break;
+            }
+
+            ui.lblSampleText->setStyleSheet(QString("color: %1; background-color: %2;").arg(fg.name()).arg(bg.name()));
+            ui.lblSampleText->repaint();
+
+            ui.btnBackgroundColor->setColor(bg);
+            ui.btnForegroundColor->setColor(fg);
+        }
+    }
+    m_changing = false;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropEditorStyles::on_btnBackgroundColor_colorChanged(QColor color)
+{
+    if (!m_changing)
+    {
+        QListWidgetItem *current = ui.listWidget->currentItem();
+        int index = ui.listWidget->currentIndex().row();
+        if (index >= 0 && current->type() == 0)
+        {
+            if (color.isValid())
+            {
+                m_styles[index].m_backgroundColor = color;
+                on_listWidget_currentItemChanged(current, NULL);
+            }
+        }
+        else if (current->type() > 0)
+        {
+            switch (current->type())
+            {
+            case PAPERCOLOR:
+                m_paperBgcolor = color;
+                break;
+            case FOLDMARGINCOLOR:
+                m_foldMarginBgcolor = color;
+                break;
+            case MARGINCOLOR:
+                m_marginBgcolor = color;
+                break;
+            case WHITESPACECOLOR:
+                m_whitespaceBgcolor = color;
+                break;
+            case UNMATCHEDBRACECOLOR:
+                m_unmatchedBraceBgcolor = color;
+                break;
+            case MATCHEDBRACECOLOR:
+                m_matchedBraceBgcolor = color;
+                break;
+            case MARKERERRORCOLOR:
+                m_markerErrorBgcolor = color;
+                break;
+            case MARKERCURRENTCOLOR:
+                m_markerCurrentBgcolor = color;
+                break;
+            case MARKERINPUTCOLOR:
+                m_markerInputBgcolor = color;
+                break;
+            }
+
+            on_listWidget_currentItemChanged(current, NULL);
+        }
     }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void WidgetPropEditorStyles::on_btnBackgroundColor_clicked()
+void WidgetPropEditorStyles::on_btnForegroundColor_colorChanged(QColor color)
 {
-    int index = ui.listWidget->currentIndex().row();
-    if (index >= 0)
+    if (!m_changing)
     {
-        QColor color = m_styles[index].m_backgroundColor;
-        color = QColorDialog::getColor(color, this, tr("choose background color"), QColorDialog::ShowAlphaChannel);
-
-        if (color.isValid())
+        QListWidgetItem *current = ui.listWidget->currentItem();
+        int index = ui.listWidget->currentIndex().row();
+        if (index >= 0 && current->type() == 0)
         {
-            m_styles[index].m_backgroundColor = color;
-            on_listWidget_currentItemChanged(ui.listWidget->currentItem(), NULL);
+            if (color.isValid())
+            {
+                m_styles[index].m_foregroundColor = color;
+                on_listWidget_currentItemChanged(current, NULL);
+            }
+        }
+        else if (current->type() > 0)
+        {
+            switch (current->type())
+            {
+            case FOLDMARGINCOLOR:
+                m_foldMarginFgcolor = color;
+                break;
+            case MARGINCOLOR:
+                m_marginFgcolor = color;
+                break;
+            case WHITESPACECOLOR:
+                m_whitespaceFgcolor = color;
+                break;
+            case UNMATCHEDBRACECOLOR:
+                m_unmatchedBraceFgcolor = color;
+                break;
+            case MATCHEDBRACECOLOR:
+                m_matchedBraceFgcolor = color;
+                break;
+            }
+
+            on_listWidget_currentItemChanged(current, NULL);
         }
     }
 }
@@ -179,7 +380,7 @@ void WidgetPropEditorStyles::on_btnBackgroundColor_clicked()
 void WidgetPropEditorStyles::on_btnFont_clicked()
 {
     int index = ui.listWidget->currentIndex().row();
-    if (index >= 0)
+    if (index >= 0 && index < m_styles.size())
     {
         QFont font = m_styles[index].m_font;
         bool ok;
@@ -194,27 +395,10 @@ void WidgetPropEditorStyles::on_btnFont_clicked()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void WidgetPropEditorStyles::on_btnForegroundColor_clicked()
-{
-    int index = ui.listWidget->currentIndex().row();
-    if (index >= 0)
-    {
-        QColor color = m_styles[index].m_foregroundColor;
-        color = QColorDialog::getColor(color, this, tr("choose foreground color"), QColorDialog::ShowAlphaChannel);
-
-        if (color.isValid())
-        {
-            m_styles[index].m_foregroundColor = color;
-            on_listWidget_currentItemChanged(ui.listWidget->currentItem(), NULL);
-        }
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorStyles::on_checkFillEOL_stateChanged(int state)
 {
     int index = ui.listWidget->currentIndex().row();
-    if (index >= 0)
+    if (index >= 0 && index < m_styles.size())
     {
         m_styles[index].m_fillToEOL = (state != Qt::Unchecked);
     }
@@ -264,19 +448,26 @@ void WidgetPropEditorStyles::on_btnReset_clicked()
             m_styles[pos].m_backgroundColor = qSciLex->defaultPaper(i);
             m_styles[pos].m_foregroundColor = qSciLex->defaultColor(i);
             m_styles[pos].m_font = qSciLex->defaultFont(i);
-
-            if (pos == selectedRow)
-            {
-                on_listWidget_currentItemChanged(ui.listWidget->currentItem(), NULL);
-            }
-
             ++pos;
         }
     }
 
-    ui.btnPaperBackground->setColor(Qt::white);
-    ui.btnMarginBackground->setColor(QColor(224, 224, 224));
-    ui.btnMarginForeground->setColor(Qt::black);
+    m_paperBgcolor = QColor(Qt::white);
+    m_marginBgcolor = QColor(224, 224, 224);
+    m_marginFgcolor = QColor(Qt::black);
+    m_foldMarginBgcolor = QColor(Qt::white);
+    m_foldMarginFgcolor = QColor(Qt::black);
+    m_markerCurrentBgcolor = QColor(255, 255, 128);
+    m_markerInputBgcolor = QColor(179, 222, 171);
+    m_markerErrorBgcolor = QColor(255, 192, 192);
+    m_whitespaceBgcolor = QColor(Qt::white);
+    m_whitespaceFgcolor = QColor(Qt::black);
+    m_unmatchedBraceBgcolor = QColor(Qt::white);
+    m_unmatchedBraceFgcolor = QColor(128, 0, 0);
+    m_matchedBraceBgcolor = QColor(Qt::white);
+    m_matchedBraceFgcolor = QColor(Qt::red);
+
+    on_listWidget_currentItemChanged(ui.listWidget->currentItem(), NULL);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -362,10 +553,7 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
 
                                     while (xml.readNextStartElement())
                                     {
-                                        if (xml.name() == "WidgetStyle" &&  \
-                                            (xml.attributes().value("name") == "Global override" \
-                                            || xml.attributes().value("name") == "Default Style" \
-                                            || xml.attributes().value("name") == "Line number margin"))
+                                        if (xml.name() == "WidgetStyle")
                                         {
                                             globalStyles.append(xml.attributes());
                                         }
@@ -412,7 +600,7 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
 
                         foreach(const QXmlStreamAttributes &attr, globalStyles)
                         {
-                            if (attr.hasAttribute("styleID") && attr.value("styleID") == "0")
+                            if (attr.hasAttribute("name") && attr.value("name") == "Global override")
                             {
                                 globalForegroundColor = QColor(QString("#%1").arg(attr.value("fgColor").toString()));
                                 globalBackgroundColor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
@@ -431,14 +619,34 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                                     globalOverrideFont.setPointSize(attr.value("fontSize").toInt());
                                 }
                             }
-                            else if (attr.hasAttribute("styleID") && attr.value("styleID") == "32") //Default Style
+                            else if (attr.hasAttribute("name") && attr.value("name") == "Default Style")
                             {
-                                ui.btnPaperBackground->setColor(QColor(QString("#%1").arg(attr.value("bgColor").toString())));
+                                m_paperBgcolor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
                             }
-                            else if (attr.hasAttribute("styleID") && attr.value("styleID") == "33") //Line Number Margin
+                            else if (attr.hasAttribute("name") && attr.value("name") == "Line number margin")
                             {
-                                ui.btnMarginBackground->setColor(QColor(QString("#%1").arg(attr.value("bgColor").toString())));
-                                ui.btnMarginForeground->setColor(QColor(QString("#%1").arg(attr.value("fgColor").toString())));
+                                m_marginBgcolor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
+                                m_marginFgcolor = QColor(QString("#%1").arg(attr.value("fgColor").toString()));
+                            }
+                            else if (attr.hasAttribute("name") && attr.value("name") == "Fold margin")
+                            {
+                                m_foldMarginBgcolor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
+                                m_foldMarginFgcolor = QColor(QString("#%1").arg(attr.value("fgColor").toString()));
+                            }
+                            else if (attr.hasAttribute("name") && attr.value("name") == "Brace highlight style")
+                            {
+                                m_matchedBraceBgcolor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
+                                m_matchedBraceFgcolor = QColor(QString("#%1").arg(attr.value("fgColor").toString()));
+                            }
+                            else if (attr.hasAttribute("name") && attr.value("name") == "Bad brace colour")
+                            {
+                                m_unmatchedBraceBgcolor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
+                                m_unmatchedBraceFgcolor = QColor(QString("#%1").arg(attr.value("fgColor").toString()));
+                            }
+                            else if (attr.hasAttribute("name") && attr.value("name") == "White space symbol")
+                            {
+                                m_whitespaceBgcolor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
+                                m_whitespaceFgcolor = QColor(QString("#%1").arg(attr.value("fgColor").toString()));
                             }
                         }
 

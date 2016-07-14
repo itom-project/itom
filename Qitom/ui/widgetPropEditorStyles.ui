@@ -69,28 +69,22 @@
          <number>3</number>
         </property>
         <item>
-         <widget class="QPushButton" name="btnForegroundColor">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
+         <widget class="ColorPickerButton" name="btnForegroundColor">
           <property name="text">
            <string>Foreground color</string>
+          </property>
+          <property name="displayColorName">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="btnBackgroundColor">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
+         <widget class="ColorPickerButton" name="btnBackgroundColor">
           <property name="text">
            <string>Background color</string>
+          </property>
+          <property name="displayColorName">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -190,7 +184,7 @@
      <item>
       <widget class="QGroupBox" name="groupBox_3">
        <property name="title">
-        <string>Global General Settings</string>
+        <string>General Settings</string>
        </property>
        <property name="flat">
         <bool>true</bool>
@@ -208,48 +202,6 @@
         <property name="bottomMargin">
          <number>3</number>
         </property>
-        <item>
-         <widget class="ColorPickerButton" name="btnPaperBackground">
-          <property name="text">
-           <string>Paper background</string>
-          </property>
-          <property name="displayColorName">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="ColorPickerButton" name="btnMarginBackground">
-          <property name="text">
-           <string>Margin background</string>
-          </property>
-          <property name="displayColorName">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="ColorPickerButton" name="btnMarginForeground">
-          <property name="text">
-           <string>Margin foreground</string>
-          </property>
-          <property name="checked">
-           <bool>false</bool>
-          </property>
-          <property name="autoDefault">
-           <bool>false</bool>
-          </property>
-          <property name="default">
-           <bool>false</bool>
-          </property>
-          <property name="flat">
-           <bool>false</bool>
-          </property>
-          <property name="displayColorName">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
         <item>
          <widget class="QPushButton" name="btnReset">
           <property name="sizePolicy">

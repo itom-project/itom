@@ -80,11 +80,27 @@ private:
     QVector<StyleNode> m_styles;
 
     QsciLexerPython* qSciLex;
+    bool m_changing;
     
     void setFontSizeGeneral(const int fontSizeAdd);
 
     void writeSettingsInternal(const QString &filename);
     void readSettingsInternal(const QString &filename);
+
+    QColor m_paperBgcolor;
+    QColor m_foldMarginFgcolor;
+    QColor m_foldMarginBgcolor;
+    QColor m_marginFgcolor;
+    QColor m_marginBgcolor;
+    QColor m_markerCurrentBgcolor;
+    QColor m_markerInputBgcolor;
+    QColor m_markerErrorBgcolor;
+    QColor m_whitespaceFgcolor;
+    QColor m_whitespaceBgcolor;
+    QColor m_matchedBraceFgcolor;
+    QColor m_matchedBraceBgcolor;
+    QColor m_unmatchedBraceFgcolor;
+    QColor m_unmatchedBraceBgcolor;
 
 signals:
 
@@ -92,9 +108,9 @@ public slots:
 
 private slots:
     void on_listWidget_currentItemChanged(QListWidgetItem *current, QListWidgetItem *previous);
-    void on_btnBackgroundColor_clicked();
+    void on_btnBackgroundColor_colorChanged(QColor color);
     void on_btnFont_clicked();
-    void on_btnForegroundColor_clicked();
+    void on_btnForegroundColor_colorChanged(QColor color);
     void on_checkFillEOL_stateChanged(int state);
     void on_btnFontSizeDec_clicked();
     void on_btnFontSizeInc_clicked();
