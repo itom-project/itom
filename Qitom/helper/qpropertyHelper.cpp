@@ -45,9 +45,10 @@ namespace ito {
 
     if (item.type() == QVariant::List)
     {
+        const QVariantList list = item.toList();
+
         if (userDestType == QVariant::PointF)
         {
-            const QVariantList list = item.toList();
             if (list.size() == 2)
             {
                 bool ok2;
@@ -66,7 +67,6 @@ namespace ito {
         }
         else if (userDestType == QVariant::Point)
         {
-            const QVariantList list = item.toList();
             if (list.size() == 2)
             {
                 bool ok2;
@@ -85,7 +85,6 @@ namespace ito {
         }
         else if (userDestType == QVariant::Rect)
         {
-            const QVariantList list = item.toList();
             if (list.size() == 4)
             {
                 bool ok2, ok3, ok4;
@@ -106,7 +105,6 @@ namespace ito {
         }
         else if (userDestType == QVariant::RectF)
         {
-            const QVariantList list = item.toList();
             if (list.size() == 4)
             {
                 bool ok2, ok3, ok4;
@@ -127,7 +125,6 @@ namespace ito {
         }
         else if (userDestType == QVariant::Vector2D)
         {
-            const QVariantList list = item.toList();
             if (list.size() == 2)
             {
                 bool ok2;
@@ -146,7 +143,6 @@ namespace ito {
         }
         else if (userDestType == QVariant::Vector3D)
         {
-            const QVariantList list = item.toList();
             if (list.size() == 3)
             {
                 bool ok2, ok3;
@@ -166,7 +162,6 @@ namespace ito {
         }
         else if (userDestType == QVariant::Vector4D)
         {
-            const QVariantList list = item.toList();
             if (list.size() == 4)
             {
                 bool ok2, ok3, ok4;
@@ -187,7 +182,6 @@ namespace ito {
         }
         else if (userDestType == QVariant::Size)
         {
-            const QVariantList list = item.toList();
             if (list.size() == 2)
             {
                 bool ok2;
@@ -206,7 +200,6 @@ namespace ito {
         }
         else if (userDestType == QMetaType::type("ito::AutoInterval"))
         {
-            const QVariantList list = item.toList();
             if (list.size() == 2)
             {
                 bool ok2;
@@ -225,7 +218,6 @@ namespace ito {
         }
         else if (userDestType == QMetaType::type("QVector<ito::Shape>"))
         {
-            const QVariantList list = item.toList();
             QVector<ito::Shape> shapes;
 
             if (list.size() > 0)
@@ -253,6 +245,32 @@ namespace ito {
             if (!retval.containsError())
             {
                 result = QVariant::fromValue<QVector<ito::Shape> >(shapes);
+            }
+        }
+        else if (userDestType == QMetaType::type("QVector<int>"))
+        {
+            QVector<int> values;
+            bool ok_;
+            ok = true;
+
+            if (list.size() > 0)
+            {
+                foreach(const QVariant &listItem, list)
+                {
+                    values << listItem.toInt(&ok_);
+
+                    if (!ok_)
+                    {
+                        retval += ito::RetVal(ito::retError, 0, "transformation error to QVector<int>: at least one value could not be transformed to int.");
+                        ok = false;
+                        break;
+                    }
+                }
+            }
+
+            if (!retval.containsError())
+            {
+                result = QVariant::fromValue<QVector<int> >(values);
             }
         }
     } //end item.type() == QVariant::List
@@ -368,7 +386,7 @@ namespace ito {
                 toName = "unknown";
             }
 
-            retval += ito::RetVal::format(ito::retError, 0, "no conversion from QVariant type %s to %s is possible", fromName.toLatin1().data(), toName.toLatin1().data());
+            retval += ito::RetVal::format(ito::retError, 0, "no conversion from QVariant type '%s' to '%s' is possible", fromName.toLatin1().data(), toName.toLatin1().data());
         }
     }
 
