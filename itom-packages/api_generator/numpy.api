@@ -5,7 +5,6 @@ numpy.ComplexWarning(??) [doc: ]
 numpy.DataSource(??) [doc: ]
 numpy.ERR_CALL
 numpy.ERR_DEFAULT
-numpy.ERR_DEFAULT2
 numpy.ERR_IGNORE
 numpy.ERR_LOG
 numpy.ERR_PRINT
@@ -21,6 +20,7 @@ numpy.Inf
 numpy.Infinity
 numpy.MAXDIMS
 numpy.MachAr(??) [doc: ]
+numpy.ModuleDeprecationWarning(??) [doc: Module deprecation warning.]
 numpy.NAN
 numpy.NINF
 numpy.NZERO
@@ -39,11 +39,14 @@ numpy.Tester(??) [doc: ]
 numpy.True_
 numpy.UFUNC_BUFSIZE_DEFAULT
 numpy.UFUNC_PYVALS_NAME
+numpy.VisibleDeprecationWarning(??) [doc: Visible deprecation warning.]
 numpy.WRAP
+numpy._NoValue(??) [doc: Special keyword value.]
 numpy._import_tools:: [module]
 numpy._mat:: [module]
 numpy.abs
 numpy.absolute(x[, out])
+numpy.absolute_import
 numpy.add(x1, x2[, out])
 numpy.add_docstring(obj, docstring)
 numpy.add_newdoc(??) [doc: Adds documentation to obj which is in module place.]
@@ -53,7 +56,7 @@ numpy.alen(??) [doc: ]
 numpy.all(??) [doc: ]
 numpy.allclose(??) [doc: ]
 numpy.alltrue(??) [doc: ]
-numpy.alterdot
+numpy.alterdot(??) [doc: ]
 numpy.amax(??) [doc: ]
 numpy.amin(??) [doc: ]
 numpy.angle(??) [doc: ]
@@ -71,6 +74,7 @@ numpy.arctan2(x1, x2[, out])
 numpy.arctanh(x[, out])
 numpy.argmax(??) [doc: ]
 numpy.argmin(??) [doc: ]
+numpy.argpartition(??) [doc: ]
 numpy.argsort(??) [doc: ]
 numpy.argwhere(??) [doc: ]
 numpy.around(??) [doc: ]
@@ -81,9 +85,9 @@ numpy.array_equiv(??) [doc: ]
 numpy.array_repr(??) [doc: ]
 numpy.array_split(??) [doc: ]
 numpy.array_str(??) [doc: ]
-numpy.asanyarray(??) [doc: ]
-numpy.asarray(??) [doc: ]
-numpy.asarray_chkfinite(??) [doc: ]
+numpy.asanyarray(??) [doc: Convert the input to an ndarray, but pass ndarray subclasses through.]
+numpy.asarray(??) [doc: Convert the input to an array.]
+numpy.asarray_chkfinite(??) [doc: Convert the input to an array, checking for NaNs or Infs.]
 numpy.ascontiguousarray(??) [doc: ]
 numpy.asfarray(??) [doc: ]
 numpy.asfortranarray(??) [doc: ]
@@ -109,6 +113,7 @@ numpy.bool8(??) [doc: Numpy's Boolean type.  Character code: ``?``.  Alias: bool
 numpy.bool_(??) [doc: Numpy's Boolean type.  Character code: ``?``.  Alias: bool8]
 numpy.broadcast(??) [doc: Produce an object that mimics broadcasting.]
 numpy.broadcast_arrays(??) [doc: ]
+numpy.broadcast_to(??) [doc: Broadcast an array to a new shape.]
 numpy.busday_count(begindates, enddates, weekmask='1111100', holidays=[], busdaycal=None, out=None)
 numpy.busday_offset(dates, offsets, roll='raise', weekmask='1111100', holidays=None, busdaycal=None, out=None)
 numpy.busdaycalendar(weekmask='1111100', holidays=None)
@@ -119,6 +124,7 @@ numpy.bytes_(??) [class]
 numpy.c_
 numpy.can_cast(from, totype, casting = 'safe')
 numpy.cast
+numpy.cbrt(x[, out])
 numpy.cdouble(??) [doc: Composed of two 64 bit floats]
 numpy.ceil(x[, out])
 numpy.cfloat(??) [doc: Composed of two 64 bit floats]
@@ -145,7 +151,7 @@ numpy.conjugate(x[, out])
 numpy.convolve(??) [doc: ]
 numpy.copy(??) [doc: ]
 numpy.copysign(x1, x2[, out])
-numpy.copyto(dst, src, casting='same_kind', where=None, preservena=False)
+numpy.copyto(dst, src, casting='same_kind', where=None)
 numpy.core:: [module]
 numpy.corrcoef(??) [doc: ]
 numpy.correlate(??) [doc: ]
@@ -176,6 +182,7 @@ numpy.diff(??) [doc: ]
 numpy.digitize(x, bins, right=False)
 numpy.disp(??) [doc: ]
 numpy.divide
+numpy.division
 numpy.dot(a, b, out=None)
 numpy.double(??) [doc: 64-bit floating-point number. Character code 'd'. Python float compatible.]
 numpy.dsplit(??) [doc: ]
@@ -189,6 +196,7 @@ numpy.empty(shape, dtype=float, order='C')
 numpy.empty_like(a, dtype=None, order='K', subok=True)
 numpy.equal(x1, x2[, out])
 numpy.errstate(??) [doc: ]
+numpy.euler_gamma
 numpy.exp(x[, out])
 numpy.exp2(x[, out])
 numpy.expand_dims(??) [doc: ]
@@ -227,12 +235,13 @@ numpy.fromiter(iterable, dtype, count=-1)
 numpy.frompyfunc(func, nin, nout)
 numpy.fromregex(??) [doc: ]
 numpy.fromstring(string, dtype=float, count=-1, sep='')
+numpy.full(??) [doc: ]
+numpy.full_like(??) [doc: ]
 numpy.fv(??) [doc: ]
 numpy.generic(??) [doc: Base class for numpy scalar types.]
 numpy.genfromtxt(??) [doc: ]
 numpy.get_array_wrap(??) [doc: Find the wrapper for the array with the highest priority.]
 numpy.get_include(??) [doc: ]
-numpy.get_numarray_include(??) [doc: ]
 numpy.get_printoptions(??) [doc: ]
 numpy.getbufsize(??) [doc: ]
 numpy.geterr(??) [doc: ]
@@ -263,8 +272,8 @@ numpy.info(??) [doc: ]
 numpy.infty
 numpy.inner(a, b)
 numpy.insert(??) [doc: ]
-numpy.int(x[, base]) -> integer
-numpy.int0(??) [class]
+numpy.int(x=0) -> integer
+numpy.int0(??) [doc: 64-bit integer. Character code 'l'. Python int compatible.]
 numpy.int16(??) [doc: 16-bit integer. Character code ``h``. C short compatible.]
 numpy.int32(??) [doc: 32-bit integer. Character code 'i'. C int compatible.]
 numpy.int64(??) [doc: 64-bit integer. Character code 'l'. Python int compatible.]
@@ -275,7 +284,7 @@ numpy.intc(??) [class]
 numpy.integer(??) [class]
 numpy.interp(??) [doc: ]
 numpy.intersect1d(??) [doc: ]
-numpy.intp(??) [class]
+numpy.intp(??) [doc: 64-bit integer. Character code 'l'. Python int compatible.]
 numpy.invert(x[, out])
 numpy.ipmt(??) [doc: ]
 numpy.irr(??) [doc: ]
@@ -310,7 +319,7 @@ numpy.linalg:: [module]
 numpy.linspace(??) [doc: ]
 numpy.little_endian
 numpy.load(??) [doc: ]
-numpy.loads(input, *, fix_imports=True, encoding='ASCII', errors='strict') -> object
+numpy.loads
 numpy.loadtxt(??) [doc: ]
 numpy.log(x[, out])
 numpy.log10(x[, out])
@@ -323,7 +332,7 @@ numpy.logical_not(x[, out])
 numpy.logical_or(x1, x2[, out])
 numpy.logical_xor(x1, x2[, out])
 numpy.logspace(??) [doc: ]
-numpy.long(??) [doc: 32-bit integer. Character code 'i'. C int compatible.]
+numpy.long(??) [doc: int(x=0) -> integer]
 numpy.longcomplex(??) [doc: Composed of two 64 bit floats]
 numpy.longdouble(??) [class]
 numpy.longfloat(??) [class]
@@ -334,15 +343,16 @@ numpy.mafromtxt(??) [doc: ]
 numpy.mask_indices(??) [doc: ]
 numpy.mat(??) [doc: ]
 numpy.math:: [module]
+numpy.matmul(a, b, out=None)
 numpy.matrix(??) [doc: ]
 numpy.matrixlib:: [module]
 numpy.max(??) [doc: ]
 numpy.maximum(x1, x2[, out])
 numpy.maximum_sctype(??) [doc: ]
-numpy.may_share_memory(??) [doc: ]
+numpy.may_share_memory
 numpy.mean(??) [doc: ]
 numpy.median(??) [doc: ]
-numpy.memmap(??) [doc: ]
+numpy.memmap(??) [doc: Create a memory-map to an array stored in a *binary* file on disk.]
 numpy.meshgrid(??) [doc: ]
 numpy.mgrid
 numpy.min(??) [doc: ]
@@ -359,8 +369,14 @@ numpy.nan_to_num(??) [doc: ]
 numpy.nanargmax(??) [doc: ]
 numpy.nanargmin(??) [doc: ]
 numpy.nanmax(??) [doc: ]
+numpy.nanmean(??) [doc: ]
+numpy.nanmedian(??) [doc: ]
 numpy.nanmin(??) [doc: ]
+numpy.nanpercentile(??) [doc: ]
+numpy.nanprod(??) [doc: ]
+numpy.nanstd(??) [doc: ]
 numpy.nansum(??) [doc: ]
+numpy.nanvar(??) [doc: ]
 numpy.nbytes
 numpy.ndarray(??) [doc: ndarray(shape, dtype=float, buffer=None, offset=0,]
 numpy.ndenumerate(??) [doc: ]
@@ -376,17 +392,20 @@ numpy.nonzero(??) [doc: ]
 numpy.not_equal(x1, x2[, out])
 numpy.nper(??) [doc: ]
 numpy.npv(??) [doc: ]
+numpy.numarray
 numpy.number(??) [class]
 numpy.obj2sctype(??) [doc: ]
 numpy.object(??) [doc: The most base type]
 numpy.object0(??) [doc: Any Python object.  Character code: 'O'.]
 numpy.object_(??) [doc: Any Python object.  Character code: 'O'.]
 numpy.ogrid
+numpy.oldnumeric
 numpy.ones(??) [doc: ]
 numpy.ones_like(??) [doc: ]
 numpy.outer(??) [doc: ]
 numpy.packbits(myarray, axis=None)
 numpy.pad(??) [doc: ]
+numpy.partition(??) [doc: ]
 numpy.percentile(??) [doc: ]
 numpy.pi
 numpy.piecewise(??) [doc: ]
@@ -406,6 +425,7 @@ numpy.polysub(??) [doc: ]
 numpy.polyval(??) [doc: ]
 numpy.power(x1, x2[, out])
 numpy.ppmt(??) [doc: ]
+numpy.print_function
 numpy.prod(??) [doc: ]
 numpy.product(??) [doc: ]
 numpy.promote_types(type1, type2)
@@ -419,12 +439,12 @@ numpy.radians(x[, out])
 numpy.random:: [module]
 numpy.rank(??) [doc: ]
 numpy.rate(??) [doc: ]
-numpy.ravel(??) [doc: ]
+numpy.ravel(??) [doc: Return a contiguous flattened array.]
 numpy.ravel_multi_index(multi_index, dims, mode='raise', order='C')
 numpy.real(??) [doc: ]
 numpy.real_if_close(??) [doc: ]
 numpy.rec:: [module]
-numpy.recarray(??) [doc: ]
+numpy.recarray(??) [doc: Construct an ndarray that allows field access using attributes.]
 numpy.recfromcsv(??) [doc: ]
 numpy.recfromtxt(??) [doc: ]
 numpy.reciprocal(x[, out])
@@ -434,7 +454,7 @@ numpy.repeat(??) [doc: ]
 numpy.require(??) [doc: ]
 numpy.reshape(??) [doc: ]
 numpy.resize(??) [doc: ]
-numpy.restoredot
+numpy.restoredot(??) [doc: ]
 numpy.result_type(*arrays_and_dtypes)
 numpy.right_shift(x1, x2[, out])
 numpy.rint(x[, out])
@@ -487,14 +507,16 @@ numpy.split(??) [doc: ]
 numpy.sqrt(x[, out])
 numpy.square(x[, out])
 numpy.squeeze(??) [doc: ]
+numpy.stack(??) [doc: ]
 numpy.std(??) [doc: ]
-numpy.str(string[, encoding[, errors]]) -> str
+numpy.str(object='') -> str
 numpy.str0(??) [class]
 numpy.str_(??) [class]
 numpy.string_(??) [class]
 numpy.subtract(x1, x2[, out])
 numpy.sum(??) [doc: ]
 numpy.swapaxes(??) [doc: ]
+numpy.sys:: [module]
 numpy.take(??) [doc: ]
 numpy.tan(x[, out])
 numpy.tanh(x[, out])
@@ -531,7 +553,7 @@ numpy.uint8(??) [class]
 numpy.uintc(??) [class]
 numpy.uintp(??) [class]
 numpy.ulonglong(??) [class]
-numpy.unicode(??) [class]
+numpy.unicode(??) [doc: str(object='') -> str]
 numpy.unicode_(??) [class]
 numpy.union1d(??) [doc: ]
 numpy.unique(??) [doc: ]

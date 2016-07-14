@@ -635,7 +635,7 @@ void ConsoleWidget::keyPressEvent(QKeyEvent* event)
 
         case Qt::Key_Return:
         case Qt::Key_Enter:
-            if ((modifiers & Qt::ShiftModifier) == 0)
+            if ((modifiers & Qt::ShiftModifier) == 0 && !isListActive())
             {
                 //!> return pressed
                 if (m_startLineBeginCmd >= 0 && !m_pythonBusy)

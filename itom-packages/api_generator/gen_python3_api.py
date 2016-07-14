@@ -314,6 +314,12 @@ if add_package_modules or add_other_modules:
 # sorting
 print('sorting api file ...', end=' ')
 apilist = list(api.values())
+
+#exclude itom.clc() from api, since clc should never open the autoCompletion list
+#such that pressing Return immediately executes the clc command and does not close the
+#auto completion list before.
+apilist = [l for l in apilist if not l.startswith('itom.clc')]
+
 apilist.sort()
 print('done')
 

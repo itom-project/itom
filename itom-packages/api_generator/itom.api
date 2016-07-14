@@ -30,7 +30,6 @@ itom.autoInterval.min
 itom.autoInterval.name
 itom.autoReloader(enabled [,checkFileExec = True, checkCmdExec = True, checkFctExec = False]) -> dis-/enables the module to automatically reload changed modules
 itom.checkSignals
-itom.clc() -> clears the itom command line (if available)
 itom.close(handle|'all') -> method to close any specific or all open figures (unless any figure-instance still keeps track of them)
 itom.compressData(str) -> compresses the given string using the method qCompress
 itom.dataIO(name[, mandparams, optparams]) -> creates new instance of dataIO plugin 'name'
