@@ -2834,7 +2834,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
             valid = false;
             foreach(const ClassInfoContainer &c, tmpObjectInfo)
             {
-                if (c.m_type == ClassInfoContainer::TypeClassInfo)
+                if (c.m_type == ClassInfoContainer::TypeProperty)
                 {
                     if (!valid)
                     {
