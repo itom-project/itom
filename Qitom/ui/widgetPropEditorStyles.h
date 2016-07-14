@@ -83,6 +83,9 @@ private:
     
     void setFontSizeGeneral(const int fontSizeAdd);
 
+    void writeSettingsInternal(const QString &filename);
+    void readSettingsInternal(const QString &filename);
+
 signals:
 
 public slots:
@@ -96,6 +99,8 @@ private slots:
     void on_btnFontSizeDec_clicked();
     void on_btnFontSizeInc_clicked();
     void on_btnReset_clicked();
+    void on_btnImport_clicked();
+    void on_btnExport_clicked();
 };
 
 } //end namespace ito

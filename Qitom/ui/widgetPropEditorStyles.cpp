@@ -26,8 +26,11 @@
 
 #include <qcolordialog.h>
 #include <qfontdialog.h>
+#include <qfiledialog.h>
 #include <qpalette.h>
 #include <qsettings.h>
+#include <qxmlstream.h>
+#include <qmessagebox.h>
 
 namespace ito
 {
@@ -73,7 +76,47 @@ WidgetPropEditorStyles::~WidgetPropEditorStyles()
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorStyles::readSettings()
 {
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    readSettingsInternal(AppManagement::getSettingsFile());
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropEditorStyles::writeSettings()
+{
+    writeSettingsInternal(AppManagement::getSettingsFile());
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropEditorStyles::writeSettingsInternal(const QString &filename)
+{
+    QSettings settings(filename, QSettings::IniFormat);
+
+    StyleNode entry;
+    foreach(entry, m_styles)
+    {
+        settings.beginGroup("PyScintilla_LexerStyle" + QString().setNum(entry.m_index));
+        settings.setValue("backgroundColor", entry.m_backgroundColor.name());
+        settings.setValue("backgroundColorAlpha", entry.m_backgroundColor.alpha());
+        settings.setValue("foregroundColor", entry.m_foregroundColor.name());
+        settings.setValue("foregroundColorAlpha", entry.m_foregroundColor.alpha());
+        settings.setValue("fillToEOL", entry.m_fillToEOL);
+        settings.setValue("fontFamily", entry.m_font.family()),
+            settings.setValue("pointSize", entry.m_font.pointSize()),
+            settings.setValue("weight", entry.m_font.weight()),
+            settings.setValue("italic", entry.m_font.italic());
+        settings.endGroup();
+    }
+
+    settings.beginGroup("PyScintilla");
+    settings.setValue("paperBackgroundColor", ui.btnPaperBackground->color());
+    settings.setValue("marginBackgroundColor", ui.btnMarginBackground->color());
+    settings.setValue("marginForegroundColor", ui.btnMarginForeground->color());
+    settings.endGroup();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropEditorStyles::readSettingsInternal(const QString &filename)
+{
+    QSettings settings(filename, QSettings::IniFormat);
 
     for (int i = 0; i < m_styles.size(); i++)
     {
@@ -88,40 +131,13 @@ void WidgetPropEditorStyles::readSettings()
     }
 
     settings.beginGroup("PyScintilla");
+    //the following default values are also written in on_btnReset_clicked()
     ui.btnPaperBackground->setColor(QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
     ui.btnMarginBackground->setColor(QColor(settings.value("marginBackgroundColor", QColor(224, 224, 224)).toString()));
     ui.btnMarginForeground->setColor(QColor(settings.value("marginForegroundColor", QColor(0, 0, 0)).toString()));
     settings.endGroup();
 
     on_listWidget_currentItemChanged(ui.listWidget->currentItem(), NULL);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-void WidgetPropEditorStyles::writeSettings()
-{
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-
-    StyleNode entry;
-    foreach(entry, m_styles)
-    {
-        settings.beginGroup("PyScintilla_LexerStyle" + QString().setNum(entry.m_index));
-        settings.setValue("backgroundColor", entry.m_backgroundColor.name());
-        settings.setValue("backgroundColorAlpha", entry.m_backgroundColor.alpha());
-        settings.setValue("foregroundColor", entry.m_foregroundColor.name());
-        settings.setValue("foregroundColorAlpha", entry.m_foregroundColor.alpha());
-        settings.setValue("fillToEOL", entry.m_fillToEOL);
-        settings.setValue("fontFamily", entry.m_font.family()), 
-        settings.setValue("pointSize", entry.m_font.pointSize()), 
-        settings.setValue("weight", entry.m_font.weight()), 
-        settings.setValue("italic", entry.m_font.italic());
-        settings.endGroup();
-    }
-
-    settings.beginGroup("PyScintilla");
-    settings.setValue("paperBackgroundColor", ui.btnPaperBackground->color());
-    settings.setValue("marginBackgroundColor", ui.btnMarginBackground->color());
-    settings.setValue("marginForegroundColor", ui.btnMarginForeground->color());
-    settings.endGroup();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -256,6 +272,269 @@ void WidgetPropEditorStyles::on_btnReset_clicked()
 
             ++pos;
         }
+    }
+
+    ui.btnPaperBackground->setColor(Qt::white);
+    ui.btnMarginBackground->setColor(QColor(224, 224, 224));
+    ui.btnMarginForeground->setColor(Qt::black);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropEditorStyles::on_btnImport_clicked()
+{
+    static QString importFilePath;
+
+    QString filename = QFileDialog::getOpenFileName(this, tr("Import style file"), importFilePath, "All supported style files (*.ini *.xml);;itom style file (*.ini);;Notepad++ styles (*.xml)");
+
+    if (!filename.isEmpty())
+    {
+        QFileInfo fileinfo(filename);
+
+        if (!fileinfo.exists())
+        {
+            QMessageBox::critical(this, tr("File does not exist."), tr("The file '%1' does not exist.").arg(filename));
+        }
+        else if (fileinfo.suffix() == "ini")
+        {
+            //read the style from a QSettings ini file
+            readSettingsInternal(filename);
+        }
+        else
+        {
+            //read the style from a notepad++ xml style file
+            QFile file(filename);
+            if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+            {
+                QMessageBox::critical(this, tr("File does readable."), tr("The file '%1' cannot be opened.").arg(filename));
+            }
+            else
+            {
+                QXmlStreamReader xml(&file);
+
+                if (xml.atEnd())
+                {
+                    QMessageBox::critical(this, tr("Error reading xml file."), tr("The content of the file '%1' seems to be corrupt.").arg(filename));
+                }
+                else
+                {
+                    bool LexerStylesFound = false;
+                    bool PythonLexerFound = false;
+                    bool GlobalStylesFound = false;
+                    QVector<QXmlStreamAttributes> pythonStyles;
+                    QVector<QXmlStreamAttributes> globalStyles;
+
+                    if (xml.readNextStartElement())
+                    {
+                        if (xml.name() == "NotepadPlus")
+                        {
+                            while (xml.readNextStartElement())
+                            {
+                                if (xml.name() == "LexerStyles")
+                                {
+                                    LexerStylesFound = true;
+                                    
+                                    while (xml.readNextStartElement())
+                                    {
+                                        if (xml.name() == "LexerType" && xml.attributes().value("name") == "python")
+                                        {
+                                            PythonLexerFound = true;
+
+                                            while (xml.readNextStartElement())
+                                            {
+                                                if (xml.name() == "WordsStyle")
+                                                {
+                                                    pythonStyles.append(xml.attributes());
+                                                }
+
+                                                xml.skipCurrentElement();
+                                            }
+
+                                            break;
+                                        }
+
+                                        xml.skipCurrentElement();
+                                    }
+
+                                }
+                                else if (xml.name() == "GlobalStyles")
+                                {
+                                    GlobalStylesFound = true;
+
+                                    while (xml.readNextStartElement())
+                                    {
+                                        if (xml.name() == "WidgetStyle" &&  \
+                                            (xml.attributes().value("name") == "Global override" \
+                                            || xml.attributes().value("name") == "Default Style" \
+                                            || xml.attributes().value("name") == "Line number margin"))
+                                        {
+                                            globalStyles.append(xml.attributes());
+                                        }
+
+                                        xml.skipCurrentElement();
+                                    }
+                                    break;
+                                }
+
+                                xml.skipCurrentElement();
+                            }
+
+                            if (!LexerStylesFound)
+                            {
+                                xml.raiseError(tr("Missing node 'LexerStyles' as child of 'NotepadPlus' in xml file."));
+                            }
+
+                            if (!PythonLexerFound)
+                            {
+                                xml.raiseError(tr("Missing node 'LexerType' with name 'python' as child of 'LexerStyles' in xml file."));
+                            }
+
+                            if (!GlobalStylesFound)
+                            {
+                                xml.raiseError(tr("Missing node 'GlobalStyles' as child of 'NotepadPlus' in xml file."));
+                            }
+                        }
+                        else
+                        {
+                            xml.raiseError(tr("The file is not a Notepad++ style file."));
+                        }
+                    }
+
+                    QXmlStreamReader::Error err = xml.error();
+                    if (err != QXmlStreamReader::NoError)
+                    {
+                        QMessageBox::critical(this, tr("Error reading xml file."), tr("The content of the file '%1' could not be properly analyzed (%2): %3").arg(filename).arg(err).arg(xml.errorString()));
+                    }
+                    else
+                    {
+                        QFont globalOverrideFont;
+                        QColor globalForegroundColor;
+                        QColor globalBackgroundColor;
+
+                        foreach(const QXmlStreamAttributes &attr, globalStyles)
+                        {
+                            if (attr.hasAttribute("styleID") && attr.value("styleID") == "0")
+                            {
+                                globalForegroundColor = QColor(QString("#%1").arg(attr.value("fgColor").toString()));
+                                globalBackgroundColor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
+                                if (attr.hasAttribute("fontStyle"))
+                                {
+                                    globalOverrideFont.setBold(attr.value("fontStyle").toInt() & 1);
+                                    globalOverrideFont.setItalic(attr.value("fontStyle").toInt() & 2);
+                                    globalOverrideFont.setUnderline(attr.value("fontStyle").toInt() & 4);
+                                }
+                                if (attr.hasAttribute("fontName"))
+                                {
+                                    globalOverrideFont.setFamily(attr.value("fontName").toString());
+                                }
+                                if (attr.hasAttribute("fontSize"))
+                                {
+                                    globalOverrideFont.setPointSize(attr.value("fontSize").toInt());
+                                }
+                            }
+                            else if (attr.hasAttribute("styleID") && attr.value("styleID") == "32") //Default Style
+                            {
+                                ui.btnPaperBackground->setColor(QColor(QString("#%1").arg(attr.value("bgColor").toString())));
+                            }
+                            else if (attr.hasAttribute("styleID") && attr.value("styleID") == "33") //Line Number Margin
+                            {
+                                ui.btnMarginBackground->setColor(QColor(QString("#%1").arg(attr.value("bgColor").toString())));
+                                ui.btnMarginForeground->setColor(QColor(QString("#%1").arg(attr.value("fgColor").toString())));
+                            }
+                        }
+
+                        QVector<int> stylesFound;
+                        bool ok;
+                        foreach(const QXmlStreamAttributes &attr, pythonStyles)
+                        {
+                            for (int i = 0; i < m_styles.size(); ++i)
+                            {
+                                if (m_styles[i].m_index == attr.value("styleID").toInt(&ok) && ok)
+                                {
+                                    stylesFound << m_styles[i].m_index;
+                                    m_styles[i].m_fillToEOL = false;
+                                    if (attr.hasAttribute("bgColor") && !attr.value("bgColor").isEmpty())
+                                    {
+                                        m_styles[i].m_backgroundColor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
+                                    }
+                                    else
+                                    {
+                                        m_styles[i].m_backgroundColor = globalBackgroundColor;
+                                    }
+
+                                    if (attr.hasAttribute("fgColor") && !attr.value("fgColor").isEmpty())
+                                    {
+                                        m_styles[i].m_foregroundColor = QColor(QString("#%1").arg(attr.value("fgColor").toString()));
+                                    }
+                                    else
+                                    {
+                                        m_styles[i].m_foregroundColor = globalForegroundColor;
+                                    }
+
+                                    if (attr.hasAttribute("fontStyle"))
+                                    {
+                                        m_styles[i].m_font.setBold(attr.value("fontStyle").toInt() & 1);
+                                        m_styles[i].m_font.setItalic(attr.value("fontStyle").toInt() & 2);
+                                        m_styles[i].m_font.setUnderline(attr.value("fontStyle").toInt() & 4);
+                                    }
+                                    if (attr.hasAttribute("fontName") && !attr.value("fontName").isEmpty())
+                                    {
+                                        m_styles[i].m_font.setFamily(attr.value("fontName").toString());
+                                    }
+                                    else
+                                    {
+                                        m_styles[i].m_font.setFamily(globalOverrideFont.family());
+                                    }
+
+                                    if (attr.hasAttribute("fontSize") && !attr.value("fontSize").isEmpty())
+                                    {
+                                        m_styles[i].m_font.setPointSize(attr.value("fontSize").toInt());
+                                    }
+                                    else
+                                    {
+                                        m_styles[i].m_font.setPointSize(globalOverrideFont.pointSizeF());
+                                    }
+                                }
+                            }
+                        }
+
+                        //set all unfound styles to the global overwrite style
+                        for (int i = 0; i < m_styles.size(); ++i)
+                        {
+                            if (!stylesFound.contains(m_styles[i].m_index))
+                            {
+                                m_styles[i].m_fillToEOL = false;
+                                m_styles[i].m_backgroundColor = globalBackgroundColor;
+                                m_styles[i].m_foregroundColor = globalForegroundColor;
+                                m_styles[i].m_font = globalOverrideFont.family();
+                            }
+                        }
+
+                        on_listWidget_currentItemChanged(ui.listWidget->currentItem(), NULL);
+                    }
+
+                    xml.clear();
+                }
+
+                file.close();
+            } 
+        }
+
+        importFilePath = QFileInfo(filename).canonicalPath();
+    }
+}
+
+
+//-----------------------------------------------------------------------------------------------
+void WidgetPropEditorStyles::on_btnExport_clicked()
+{
+    static QString exportFilePath;
+
+    QString filename = QFileDialog::getSaveFileName(this, tr("Export style data"), exportFilePath, "itom style file (*.ini)");
+
+    if (filename != "")
+    {
+        writeSettingsInternal(filename);
+        exportFilePath = QFileInfo(filename).canonicalPath();
     }
 }
 
