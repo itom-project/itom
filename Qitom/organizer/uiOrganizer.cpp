@@ -2346,6 +2346,7 @@ struct PyCMap {
     { "QTime", "datetime.time" },
     { "QDate", "datetime.date" },
     { "QDateTime", "datetime.datetime" },
+    { "QVector<int>", "seq. of int" },
     { 0, 0 }
 };
 
