@@ -400,7 +400,6 @@ void HelpViewer::loadFinished(bool ok)
 	if (ok && m_pSearched)
 	{
 		QHelpSearchEngine *searchEngine = m_pHelpEngine->searchEngine();
-		//QHelpSearchResultWidget *resultWidget = searchEngine->resultWidget();
 		QHelpSearchQueryWidget *queryWidget = searchEngine->queryWidget();
 		QList<QLineEdit *> allLineEdits = queryWidget->findChildren<QLineEdit *>();
 		foreach(QLineEdit* lineEdit, allLineEdits)
@@ -448,11 +447,6 @@ void HelpViewer::keyPressEvent(QKeyEvent *event)
 	else if ((key == Qt::Key_F) && QApplication::keyboardModifiers() && Qt::ControlModifier &&m_pFindWord->isVisible())
 	{
 		hideFindWordBar();
-	}
-	else if ((key == Qt::Key_Tab && m_pHelpEngine->indexWidget()->isVisible()))
-	{
-		QModelIndex currentIndex = m_pHelpEngine->indexWidget()->currentIndex();
-
 	}
 }
 
