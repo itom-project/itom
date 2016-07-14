@@ -213,6 +213,13 @@ void AbstractPyScintillaWidget::loadSettings()
     setMatchedBraceForegroundColor(QColor(settings.value("matchedBraceForegroundColor", QColor(Qt::red)).toString()));
     setUnmatchedBraceBackgroundColor(QColor(settings.value("unmatchedBraceBackgroundColor", QColor(Qt::white)).toString()));
     setUnmatchedBraceForegroundColor(QColor(settings.value("unmatchedBraceForegroundColor", QColor(Qt::red)).toString()));
+    setCaretLineBackgroundColor(QColor(settings.value("caretBackgroundColor", QColor(Qt::white)).toString()));
+    setCaretForegroundColor(QColor(settings.value("caretForegroundColor", QColor(Qt::black)).toString()));
+    setCaretLineVisible(true);
+
+    setIndicatorForegroundColor(QColor(settings.value("markerSameStringBackgroundColor", QColor(Qt::green)).toString()), m_textIndicatorNr);
+    setSelectionBackgroundColor(QColor(settings.value("selectionBackgroundColor", QColor(51, 153, 255)).toString()));
+    setSelectionForegroundColor(QColor(settings.value("selectionForegroundColor", QColor(Qt::white)).toString()));
 
     settings.endGroup();
 

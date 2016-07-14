@@ -101,6 +101,11 @@ private:
     QColor m_matchedBraceBgcolor;
     QColor m_unmatchedBraceFgcolor;
     QColor m_unmatchedBraceBgcolor;
+    QColor m_caretBgcolor;
+    QColor m_caretFgcolor;
+    QColor m_selectionBgcolor;
+    QColor m_selectionFgcolor;
+    QColor m_markerSameStringBgcolor;
 
 signals:
 
