@@ -45,6 +45,7 @@
 #include <QStyleOptionButton>
 #include <QStylePainter>
 #include <QToolBar>
+#include <QAbstractItemModel>
 
 // CTK includes
 #include "checkableComboBox.h"
@@ -416,4 +417,37 @@ void CheckableComboBox::paintEvent(QPaintEvent *)
 
   // draw the icon and text
   painter.drawControl(QStyle::CE_ComboBoxLabel, opt);
+}
+
+//-----------------------------------------------------------------------------
+void CheckableComboBox::setCheckedIndices(const QVector<int> &indices)
+{
+    Q_D(CheckableComboBox);
+    QAbstractItemModel *m = model();
+
+    for (int i = 0; i < count(); ++i)
+    {
+        if (indices.contains(i))
+        {
+            d->CheckableModelHelper_->setCheckState(m->index(i, 0, rootModelIndex()), Qt::Checked);
+        }
+        else
+        {
+            d->CheckableModelHelper_->setCheckState(m->index(i, 0, rootModelIndex()), Qt::Unchecked);
+        }
+    }
+
+    ;
+}
+
+//-----------------------------------------------------------------------------
+QVector<int> CheckableComboBox::getCheckedIndices() const
+{
+    QModelIndexList indices = checkedIndexes();
+    QVector<int> i;
+    foreach(const QModelIndex &mi, indices)
+    {
+        i << mi.row();
+    }
+    return i;
 }

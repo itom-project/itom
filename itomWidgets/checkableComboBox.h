@@ -44,7 +44,9 @@ class CheckableComboBoxPrivate;
 /// CheckableComboBox is a QComboBox that allow its items to be checkable
 class ITOMWIDGETS_EXPORT CheckableComboBox : public QComboBox
 {
-  Q_OBJECT
+    Q_OBJECT
+
+    Q_PROPERTY(QVector<int> checkedIndices READ getCheckedIndices WRITE setCheckedIndices);
 
 public:
   CheckableComboBox(QWidget *parent = 0);
@@ -72,6 +74,10 @@ public:
   
   /// Reimplemented for internal reasons
   bool eventFilter(QObject *o, QEvent *e);
+
+  void setCheckedIndices(const QVector<int> &indices);
+  QVector<int> getCheckedIndices() const;
+
   
 Q_SIGNALS:
   void checkedIndexesChanged();
