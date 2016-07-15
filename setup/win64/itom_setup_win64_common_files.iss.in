@@ -88,6 +88,10 @@ Source: "{#SourceDirQT}\..\plugins\printsupport\windowsprintersupport.dll"; Dest
 Source: "{#SourceDirItomBuild}\itoDebugger.py"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\itoFunctions.py"; DestDir: "{app}"; Flags: ignoreversion
 
+; Icon-Sets
+Source: "{#SourceDirItomBuild}\iconThemeBright.rcc"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\iconThemeDark.rcc"; DestDir: "{app}"; Flags: ignoreversion
+
 ; Hilfe
 Source: "{#SourceDirItomBuild}\docs\userDoc\build\qthelp\*.qch"; DestDir: "{app}\docs\userDoc\build\qthelp"; Flags: ignoreversion
 Source: "{#SourceDirQT}\assistant.exe"; DestDir: "{app}"; Flags: ignoreversion

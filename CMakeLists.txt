@@ -39,6 +39,7 @@ ADD_SUBDIRECTORY(QPropertyEditor)
 ADD_SUBDIRECTORY(plot)
 ADD_SUBDIRECTORY(itomWidgets)
 ADD_SUBDIRECTORY(Qitom)
+ADD_SUBDIRECTORY(iconThemes)
  
 IF(BUILD_UNITTEST)
     #put this as last, since gtest is globally changing many compiler flags

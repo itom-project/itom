@@ -331,7 +331,26 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
         QString styleName = settings->value("style", "").toString();
         QString cssFile = settings->value("cssFile", "").toString();
         QString rccFile = settings->value("rccFile", "").toString();
+        QString iconThemeFile = settings->value("iconThemeFile", "iconThemeBright.rcc").toString();
         settings->endGroup();
+
+#if QT_VERSION >= 0x050000
+        QDir iconTheme(QCoreApplication::applicationDirPath());
+        if (iconThemeFile != "" && iconTheme.exists(iconThemeFile))
+        {
+            if (!QResource::registerResource(iconTheme.absoluteFilePath(iconThemeFile)))
+            {
+                qDebug() << "error loading the icon theme file " << iconTheme.absoluteFilePath(iconThemeFile);
+            }
+        }
+        else
+        {
+            if (!QResource::registerResource(iconTheme.absoluteFilePath("iconThemeBright.rcc")))
+            {
+                qDebug() << "error loading the icon theme file " << iconTheme.absoluteFilePath("iconThemeBright.rcc");
+            }
+        }
+#endif
 
         if (styleName != "")
         {

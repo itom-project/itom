@@ -372,6 +372,7 @@ set(qitom_rcc
 IF (QT5_FOUND)
     QT5_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
 ELSE (QT5_FOUND)
+    set(qitom_rcc ${qitom_rcc} ${CMAKE_CURRENT_SOURCE_DIR}/iconThemeBright.qrc)
     QT4_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
 ENDIF (QT5_FOUND)
 
