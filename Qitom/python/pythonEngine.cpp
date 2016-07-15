@@ -289,7 +289,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
     PyObject *itomDbgDict = NULL;
 
     m_pythonThreadId = QThread::currentThreadId ();
-    qDebug() << "python in thread: " << m_pythonThreadId;
+    //qDebug() << "python in thread: " << m_pythonThreadId;
 
 	/*set new seed for random generator of OpenCV. 
 	This is required to have real random values for any randn or randu command.
@@ -704,7 +704,6 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 
                     if (ok)
                     {
-                        qDebug() << string;
                         if (!string.startsWith("__"))
                         {
                             elements.append(string);

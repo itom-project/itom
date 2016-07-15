@@ -145,14 +145,8 @@ AbstractDockWidget::~AbstractDockWidget()
 void AbstractDockWidget::init()
 {
     m_pWindow = new QMainWindow(this);
-
-    qDebug() << "init1. Windows flags: QDockWidget:" << this->windowFlags() << " QMainWindow:" << m_pWindow->windowFlags();
-
     m_pWindow->installEventFilter(this);
-
     m_pWindow->setWindowFlags(modifyFlags(m_pWindow->windowFlags(), Qt::Widget, Qt::Window));
-
-    qDebug() << "init2. Windows flags: QDockWidget:" << this->windowFlags() << " QMainWindow:" << m_pWindow->windowFlags();
     
     //m_pWindow->menuBar()->setNativeMenuBar(true);
     //linux: in some linux distributions, the menu bar did not appear if it is displayed
@@ -167,8 +161,6 @@ void AbstractDockWidget::init()
     
     setWidget(m_pWindow);
 
-    qDebug() << "init3. Windows flags: QDockWidget:" << this->windowFlags() << " QMainWindow:" << m_pWindow->windowFlags();
-
     QDockWidget::DockWidgetFeatures features = QDockWidget::DockWidgetClosable;
 
     if (m_floatingStyle == floatingStandard)
@@ -180,16 +172,12 @@ void AbstractDockWidget::init()
         //nothing
     }
 
-    qDebug() << "init4. Windows flags: QDockWidget:" << this->windowFlags() << " QMainWindow:" << m_pWindow->windowFlags();
-
     if (m_movingStyle == movingEnabled)
     {
         features |= QDockWidget::DockWidgetMovable;
     }
 
     setFeatures(features);
-
-    qDebug() << "init5. Windows flags: QDockWidget:" << this->windowFlags() << " QMainWindow:" << m_pWindow->windowFlags();
 
     if (m_floatingStyle == floatingWindow && m_dockAvailable) //only show dock-toolbar, if this widget is able to be a full-window in undocked mode
     {
@@ -224,8 +212,6 @@ void AbstractDockWidget::init()
     createMenus();
     createToolBars();
     createStatusBar();
-
-    qDebug() << "init6. Windows flags: QDockWidget:" << this->windowFlags() << " QMainWindow:" << m_pWindow->windowFlags();
 
     if (parent())
     {
@@ -851,7 +837,6 @@ void AbstractDockWidget::dockWidget()
     //TODO: check if the docking behaviour works well under all systems.
     setWindowFlags(modifyFlags(windowFlags(), Qt::Widget, Qt::Window));
 #endif
-    qDebug() << "widget docked1. Windows flags: QDockWidget:" << this->windowFlags() << " QMainWindow:" << m_pWindow->windowFlags();
 
     Qt::WindowFlags flags = m_pWindow->windowFlags();
     flags &= (~Qt::WindowStaysOnTopHint); //delete WindowStaysOnTopHint
@@ -859,19 +844,13 @@ void AbstractDockWidget::dockWidget()
     //flags &= (~Qt::Window); //delete Window
     //flags |= Qt::Widget; //add Qt::Widget flag
     m_pWindow->setWindowFlags(flags);
-    qDebug() << "widget docked2. Windows flags: QDockWidget:" << this->windowFlags() << " QMainWindow:" << m_pWindow->windowFlags();
     m_pWindow->setParent(this);
     setWidget(m_pWindow);
-    qDebug() << "widget docked3. Windows flags: QDockWidget:" << this->windowFlags() << " QMainWindow:" << m_pWindow->windowFlags();
     setParent(m_overallParent);
-    qDebug() << "widget docked4. Windows flags: QDockWidget:" << this->windowFlags() << " QMainWindow:" << m_pWindow->windowFlags();
     setFloating(false);
-    qDebug() << "widget docked5. Windows flags: QDockWidget:" << this->windowFlags() << " QMainWindow:" << m_pWindow->windowFlags();
     QDockWidget::setVisible(true);
-    qDebug() << "widget docked6. Windows flags: QDockWidget:" << this->windowFlags() << " QMainWindow:" << m_pWindow->windowFlags();
     raiseAndActivate();
 
-    qDebug() << "widget docked. Windows flags: QDockWidget:" << this->windowFlags() << " QMainWindow:" << m_pWindow->windowFlags();
     m_pWindow->menuBar()->hide();
     if (m_actDock) m_actDock->setVisible(false);
     if (m_actUndock) m_actUndock->setVisible(true);
@@ -1015,8 +994,6 @@ void AbstractDockWidget::undockWidget(bool show_it /*= true*/)
     {
         m_dockToolbar->setMinimumWidth(55);
     }
-
-    qDebug() << "widget undocked. Windows flags: QDockWidget:" << this->windowFlags() << " QMainWindow:" << m_pWindow->windowFlags();
 
     setAdvancedWindowTitle();
 }
