@@ -27,6 +27,7 @@
 
 #include <qdialog.h>
 #include <qlist.h>
+#include <qcolor.h>
 #include <qtreewidget.h>
 #include <qfileiconprovider.h>
 
@@ -40,6 +41,8 @@ class DialogLoadedPlugins : public QDialog
 {
     Q_OBJECT
 
+    Q_PROPERTY(QColor pluginBackgroundColor READ pluginBackgroundColor WRITE setPluginBackgroundColor DESIGNABLE true);
+
 public:
     DialogLoadedPlugins(QWidget *parent = NULL);
     ~DialogLoadedPlugins();
@@ -48,6 +51,9 @@ protected:
     void init();
     void filter();
     void setSortChar(int column, QTreeWidgetItem &item);
+
+    QColor pluginBackgroundColor() const { return m_pluginBackgroundColor; }
+    void setPluginBackgroundColor(const QColor &color);
     
     Ui::DialogLoadedPlugins ui;
     QList<PluginLoadStatus> m_content;
@@ -58,6 +64,7 @@ protected:
     QString m_cmdWarning;
     QString m_cmdError;
     QString m_cmdIgnored;
+    QColor m_pluginBackgroundColor;
 
 private slots:
     void on_onlyCompatibleCheck_clicked(bool /*value*/) { filter(); };

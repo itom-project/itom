@@ -36,7 +36,8 @@ namespace ito {
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogLoadedPlugins::DialogLoadedPlugins(QWidget *parent) :
     QDialog(parent),
-    m_fileIconProvider(NULL)
+    m_fileIconProvider(NULL),
+    m_pluginBackgroundColor(QColor(0xB4, 0xCD, 0xCD))
 {
     ui.setupUi(this);
     m_fileIconProvider = new QFileIconProvider();
@@ -102,13 +103,13 @@ void DialogLoadedPlugins::init()
         plugin->setData(5, Qt::DisplayRole, info.fileName());
         plugin->setData(5, Qt::ToolTipRole, info.absoluteFilePath());
         plugin->setData(0, Qt::DecorationRole, m_fileIconProvider->icon(info));
-        QColor bckRnd = QColor(0xB4,0xCD,0xCD);
-        plugin->setBackgroundColor(0, bckRnd);
-        plugin->setBackgroundColor(1, bckRnd);
-        plugin->setBackgroundColor(2, bckRnd);
-        plugin->setBackgroundColor(3, bckRnd);
-        plugin->setBackgroundColor(4, bckRnd);
-        plugin->setBackgroundColor(5, bckRnd);
+        
+        plugin->setBackgroundColor(0, m_pluginBackgroundColor);
+        plugin->setBackgroundColor(1, m_pluginBackgroundColor);
+        plugin->setBackgroundColor(2, m_pluginBackgroundColor);
+        plugin->setBackgroundColor(3, m_pluginBackgroundColor);
+        plugin->setBackgroundColor(4, m_pluginBackgroundColor);
+        plugin->setBackgroundColor(5, m_pluginBackgroundColor);
         //bool pluginOK = true;
 
         QChar sortElement = ' '; // This character is only in a column if there is an icon... this makes it easy to sort with the standard function
@@ -173,6 +174,24 @@ void DialogLoadedPlugins::init()
         }
         m_items.append(QPair<int,QTreeWidgetItem*>(overallStatus, plugin));
         ui.tree->addTopLevelItem(plugin);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogLoadedPlugins::setPluginBackgroundColor(const QColor &color)
+{
+    m_pluginBackgroundColor = color;
+    QTreeWidgetItem* t;
+
+    for (int i = 0; i < ui.tree->topLevelItemCount(); ++i)
+    {
+        t = ui.tree->topLevelItem(i);
+        t->setBackgroundColor(0, m_pluginBackgroundColor);
+        t->setBackgroundColor(1, m_pluginBackgroundColor);
+        t->setBackgroundColor(2, m_pluginBackgroundColor);
+        t->setBackgroundColor(3, m_pluginBackgroundColor);
+        t->setBackgroundColor(4, m_pluginBackgroundColor);
+        t->setBackgroundColor(5, m_pluginBackgroundColor);
     }
 }
 

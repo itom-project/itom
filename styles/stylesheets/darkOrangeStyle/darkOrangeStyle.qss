@@ -1,12 +1,17 @@
 ito--FileSystemDockWidget
 {
-    qproperty-linkColor: rgb(255,255,255); //link color of breadcrumb menu in fileSystemDockWidget
+    qproperty-linkColor: rgb(255,255,255);
 }
 
 ito--DialogPipManager
 {
-    qproperty-colorMessage: rgb(255,255,255); //message color in PipManager
-    qproperty-colorError: rgb(255,0,0); //error color in PipManager
+    qproperty-colorMessage: rgb(255,255,255);
+    qproperty-colorError: rgb(255,0,0);
+}
+
+ito--DialogLoadedPlugins
+{
+    qproperty-pluginBackgroundColor: rgb(0,0,0);
 }
 
 QToolTip
