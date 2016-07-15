@@ -85,7 +85,7 @@ WidgetPropEditorStyles::WidgetPropEditorStyles(QWidget *parent) :
     ui.listWidget->addItem(separator);
 
     ui.listWidget->addItem(new QListWidgetItem(tr("Paper color"), NULL, PAPERCOLOR));
-    ui.listWidget->addItem(new QListWidgetItem(tr("Caret color"), NULL, CARETCOLOR));
+    ui.listWidget->addItem(new QListWidgetItem(tr("Caret color (Foreground: cursor color, Background: color of current line)"), NULL, CARETCOLOR));
     ui.listWidget->addItem(new QListWidgetItem(tr("Fold margin color"), NULL, FOLDMARGINCOLOR));
     ui.listWidget->addItem(new QListWidgetItem(tr("Margin color"), NULL, MARGINCOLOR));
     ui.listWidget->addItem(new QListWidgetItem(tr("Whitespace color"), NULL, WHITESPACECOLOR));
@@ -288,6 +288,7 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
                 bg = m_caretBgcolor;
                 fg = m_caretFgcolor;
                 ui.btnForegroundColor->setEnabled(true);
+                break;
             case SELECTIONCOLOR:
                 bg = m_selectionBgcolor;
                 fg = m_selectionFgcolor;
