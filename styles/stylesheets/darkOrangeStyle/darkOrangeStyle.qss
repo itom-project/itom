@@ -14,13 +14,28 @@ ito--DialogLoadedPlugins
     qproperty-pluginBackgroundColor: rgb(0,0,0);
 }
 
+ItomQwtDObjFigure
+{
+    qproperty-buttonSet: StyleDark;
+    qproperty-backgroundColor: #323232;
+    qproperty-axisColor: #ffffff;
+    qproperty-textColor: #ffffff;
+    qproperty-canvasColor: #ffffff;
+}
+
+QTextBrowser#helpTreeContent
+{
+    background-color: #ffffff;
+    color: #000000;
+}
+
 QToolTip
 {
      border: 1px solid black;
      background-color: #ffa02f;
      padding: 1px;
      border-radius: 3px;
-     opacity: 100;
+     opacity: 255;
 }
 
 QWidget

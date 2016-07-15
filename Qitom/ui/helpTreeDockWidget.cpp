@@ -67,7 +67,7 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
     ui.commandLinkButton->setVisible(false);
     //ui.commandLinkButton->installEventFilter(this);
     ui.treeView->installEventFilter(this);
-    ui.textBrowser->installEventFilter(this);
+    ui.helpTreeContent->installEventFilter(this);
 
     m_previewMovie = new QMovie(":/application/icons/loader32x32trans.gif", QByteArray(), this);
     ui.lblProcessMovie->setMovie(m_previewMovie);
@@ -97,7 +97,7 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
     m_iconGallery[iconPluginAdda] = QIcon(":/helpTreeDockWidget/pluginAdda");
     m_iconGallery[iconPluginRawIO] = QIcon(":/helpTreeDockWidget/pluginRawIO");
     m_iconGallery[iconPluginActuator] = QIcon(":/helpTreeDockWidget/pluginActuator");
-    //ui.textBrowser->setLineWrapMode(QTextEdit::NoWrap);
+    //ui.helpTreeContent->setLineWrapMode(QTextEdit::NoWrap);
 
     loadIni();
     m_forced = true;
@@ -322,12 +322,12 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
     ito::AddInManager *aim = static_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     const QHash  <QString, ito::AddInAlgo::FilterDef     *> *filterHashTable = aim->getFilterList();
     const QHash  <QString, ito::AddInAlgo::AlgoWidgetDef *> *widgetHashTable = aim->getAlgoWidgetList();
-    ui.textBrowser->clear();
+    ui.helpTreeContent->clear();
     QFile file(":/helpTreeDockWidget/help_style");
     if (file.open(QIODevice::ReadOnly))
     {
         QByteArray cssData = file.readAll();
-        ui.textBrowser->document()->addResource(QTextDocument::StyleSheetResource, QUrl("help_style.css"), QString(cssData));
+        ui.helpTreeContent->document()->addResource(QTextDocument::StyleSheetResource, QUrl("help_style.css"), QString(cssData));
         file.close();
     }
 
@@ -755,13 +755,13 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
     }
     else
     {
-        ui.textBrowser->clear();
+        ui.helpTreeContent->clear();
         QFile file(":/helpTreeDockWidget/help_style");
         if (file.open(QIODevice::ReadOnly))
         {
             QByteArray cssData = file.readAll();
             file.close();
-            ui.textBrowser->document()->addResource(QTextDocument::StyleSheetResource, QUrl("help_style.css"), QString(cssData));          
+            ui.helpTreeContent->document()->addResource(QTextDocument::StyleSheetResource, QUrl("help_style.css"), QString(cssData));
         }
 
         if (filter == "Algorithms")
@@ -851,11 +851,11 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
     {   // Create html document
         if (m_plaintext)
         {
-            ui.textBrowser->document()->setPlainText(docString);
+            ui.helpTreeContent->document()->setPlainText(docString);
         }
         else
         {
-            ui.textBrowser->document()->setHtml(docString);
+            ui.helpTreeContent->document()->setHtml(docString);
         }
     }
 
@@ -1367,7 +1367,7 @@ bool HelpTreeDockWidget::eventFilter(QObject *obj, QEvent *event)
             showTreeview();
         }
     }
-    else if (obj == ui.textBrowser && event->type() == QEvent::Enter)
+    else if (obj == ui.helpTreeContent && event->type() == QEvent::Enter)
     {
         if (m_pParent && !m_pParent->isFloating())
         {
@@ -1839,7 +1839,7 @@ ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path)
 { 
     ito::RetVal retval = ito::retOk;
 
-    ui.textBrowser->clear();
+    ui.helpTreeContent->clear();
     bool ok = false;
     bool found = false;
 
@@ -1875,7 +1875,7 @@ ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path)
                                 doc = qUncompress(docCompressed);
                             }
 
-                            highlightContent(query.value(1).toString(), query.value(2).toString(), query.value(3).toString(), query.value(4).toString(), doc, query.value(6).toString(), ui.textBrowser->document());
+                            highlightContent(query.value(1).toString(), query.value(2).toString(), query.value(3).toString(), query.value(4).toString(), doc, query.value(6).toString(), ui.helpTreeContent->document());
                         }
                         database.close();
                     }
