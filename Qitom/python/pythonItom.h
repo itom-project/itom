@@ -109,6 +109,7 @@ public:
     static PyObject* scaleValueAndUnit(PyObject* pSelf, PyObject* pArgs, PyObject *pKwds);
 
     static PyObject* getAppPath(PyObject* pSelf);
+    static PyObject* getQtToolPath(PyObject* pSelf, PyObject* pArgs);
     static PyObject* getCurrentPath(PyObject* pSelf);
     static PyObject* setCurrentPath(PyObject* pSelf, PyObject* pArgs);
 

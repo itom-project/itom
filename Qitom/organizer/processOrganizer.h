@@ -52,7 +52,7 @@ public:
 
     bool bringWindowsOnTop(const QString &windowName);
 
-    static QString getAbsQtToolPath(const QString &binaryName);
+    static QString getAbsQtToolPath(const QString &binaryName, bool *found = NULL);
 
 protected:
 

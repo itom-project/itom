@@ -1986,7 +1986,7 @@ axisOffset : {double}\n\
 \n\
 Raises \n\
 ------- \n\
-Runtime error : \n\
+RuntimeError : \n\
     if the given axisNum is invalid (out of range) \n\
 \n\
 See Also \n\
@@ -2043,7 +2043,7 @@ axisScale : {double}\n\
 \n\
 Raises \n\
 ------- \n\
-Runtime error : \n\
+RuntimeError : \n\
     if the given axisNum is invalid (out of range) \n\
 \n\
 See Also \n\
@@ -2088,7 +2088,7 @@ axisDescription : {str}\n\
 \n\
 Raises \n\
 ------- \n\
-Runtime error : \n\
+RuntimeError : \n\
     if the given axisNum is invalid (out of range) \n\
 \n\
 See Also \n\
@@ -2141,7 +2141,7 @@ axisUnit : {str}\n\
 \n\
 Raises \n\
 ------- \n\
-Runtime error : \n\
+RuntimeError : \n\
     if the given axisNum is invalid (out of range) \n\
 \n\
 See Also \n\

@@ -110,7 +110,7 @@ ProcessOrganizer::~ProcessOrganizer()
     \param binaryName
     \return QString
 */
-/*static*/ QString ProcessOrganizer::getAbsQtToolPath(const QString &binaryName)
+/*static*/ QString ProcessOrganizer::getAbsQtToolPath(const QString &binaryName, bool *found /*= NULL*/)
 {
     QList<QDir> dirList;    // Possible directories
     QList<QString> binList; // Possible binary names
@@ -118,9 +118,18 @@ ProcessOrganizer::~ProcessOrganizer()
     // Define binary names and possible directories
 #ifdef __APPLE__
     binList.append( binaryName);                                                    // unchanges file name
-    if( !binaryName.endsWith(".app")){ binList.append( binaryName + ".app");}       // .app added
-    binList.append( binaryName); binList[2][0] = binList.at(2).at(0).toUpper();     // capitalize first letter
-    if( !binaryName.endsWith(".app")){ binList.append( binList.at(2) + ".app");}    // capitalize first letter and .app added
+    if( !binaryName.endsWith(".app"))
+    { 
+        // .app added
+        binList.append( binaryName + ".app");
+    }       
+    binList.append( binaryName); 
+    binList[2][0] = binList.at(2).at(0).toUpper();     // capitalize first letter
+    if( !binaryName.endsWith(".app"))
+    { 
+        // capitalize first letter and .app added
+        binList.append( binList.at(2) + ".app");
+    }    
     
     dirList.append( QDir( QCoreApplication::applicationDirPath()));                 // itom app dir
     dirList.append( QDir( QLibraryInfo::location( QLibraryInfo::BinariesPath)));    // Qt bin dir
@@ -134,13 +143,25 @@ ProcessOrganizer::~ProcessOrganizer()
     dirList.append( QDir( QCoreApplication::applicationDirPath()));                 // itom app dir
     dirList.append( QDir( QLibraryInfo::location( QLibraryInfo::BinariesPath)));    // Qt bin dir
 #else // WIN32
-    if( binaryName.endsWith(".exe")){ binList.append( binaryName);}                 // unchanges file name
-    else{ binList.append( binaryName + ".exe");}                                    // .exe added
+    if( binaryName.endsWith(".exe"))
+    { 
+        // unchanges file name
+        binList.append( binaryName);
+    }                 
+    else
+    { 
+        // .exe added
+        binList.append( binaryName + ".exe");
+    }                                    
     
     dirList.append( QDir( QCoreApplication::applicationDirPath()));                 // itom app dir
     dirList.append( QDir( QLibraryInfo::location( QLibraryInfo::BinariesPath)));    // Qt bin dir
     QByteArray qtdirenv = qgetenv( "QTDIR" );
-    if(qtdirenv.size() > 0){ dirList.append( QDir( (QString)qtdirenv));}            // Qt dir from global defines
+    if(qtdirenv.size() > 0)
+    { 
+        // Qt dir from global defines
+        dirList.append( QDir( (QString)qtdirenv));
+    }            
 #endif
     
     // Loop through possible directories
@@ -153,6 +174,10 @@ ProcessOrganizer::~ProcessOrganizer()
 #ifdef WIN32
             if( directory.exists(binary))
             {
+                if (found)
+                {
+                    *found = true;
+                }
                 return directory.absoluteFilePath(binary);
             }
 #else // linux || __APPLE__
@@ -163,10 +188,19 @@ ProcessOrganizer::~ProcessOrganizer()
             #endif
             if(entryList.contains(binary))
             {
+                if (found)
+                {
+                    *found = true;
+                }
                 return directory.absoluteFilePath(binary);
             }
 #endif
         }
+    }
+
+    if (found)
+    {
+        *found = false;
     }
 
     // nothing found, return as is

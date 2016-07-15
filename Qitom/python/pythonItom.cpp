@@ -42,6 +42,7 @@
 #include "../organizer/userOrganizer.h"
 #include "../organizer/paletteOrganizer.h"
 #include "../organizer/designerWidgetOrganizer.h"
+#include "../organizer/processOrganizer.h"
 
 #include <qdir.h>
 #include <qcoreapplication.h>
@@ -2232,7 +2233,7 @@ handle : {int} \n\
 \n\
 Raises \n\
 ------- \n\
-Runtime error : \n\
+RuntimeError : \n\
     if the main window is not available \n\
 \n\
 See Also \n\
@@ -2340,7 +2341,7 @@ buttonName : {str} \n\
 \n\
 Raises \n\
 ------- \n\
-Runtime error : \n\
+RuntimeError : \n\
     if the main window is not available or the given button could not be found. \n\
 \n\
 See Also \n\
@@ -2451,7 +2452,7 @@ handle : {int} \n\
 \n\
 Raises \n\
 ------- \n\
-Runtime error : \n\
+RuntimeError : \n\
     if the main window is not available or the given button could not be found. \n\
 \n\
 See Also \n\
@@ -2609,7 +2610,7 @@ handle : {int}, optional \n\
 \n\
 Raises \n\
 ------- \n\
-Runtime error : \n\
+RuntimeError : \n\
     if the main window is not available or the given button could not be found. \n\
 \n\
 See Also \n\
@@ -3690,6 +3691,46 @@ PyObject* PythonItom::getAppPath(PyObject* /*pSelf*/)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(getQtToolPath_doc, "getQtToolPath(toolname) -> get the absolute path of the Qt tool \n\
+\n\
+Parameters \n\
+----------- \n\
+toolname : {str} \n\
+    The filename of the tool that should be searched (e.g. qcollectiongenerator; suffix is not required)\n\
+\n\
+Returns \n\
+------- \n\
+path : {str} \n\
+    Absolute path to the Qt tool \n\
+\n\
+Raises \n\
+------- \n\
+FileExistsError : \n\
+    if the given toolname could not be found \n\
+");
+PyObject* PythonItom::getQtToolPath(PyObject* /*pSelf*/, PyObject* pArgs)
+{
+    char *toolname = NULL;
+    if (!PyArg_ParseTuple(pArgs, "s", &toolname))
+    {
+        return NULL;
+    }
+
+    bool found;
+    QString name = ProcessOrganizer::getAbsQtToolPath(QLatin1String(toolname), &found);
+
+    if (found)
+    {
+        return PythonQtConversion::QStringToPyObject(name);
+    }
+    else
+    {
+        PyErr_SetString(PyExc_FileExistsError, "absolute path to desired binary could not be found.");
+        return NULL;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(getCurrentPath_doc,"getCurrentPath() -> returns absolute path of current working directory.\n\
 \n\
 Returns \n\
@@ -4442,6 +4483,7 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"scaleValueAndUnit", (PyCFunction)PythonItom::scaleValueAndUnit, METH_VARARGS | METH_KEYWORDS, scaleValueAndUnit_doc},
     {"getDefaultScaleableUnits", (PyCFunction)PythonItom::getDefaultScaleableUnits, METH_NOARGS, getDefaultScaleableUnits_doc},
     {"getAppPath", (PyCFunction)PythonItom::getAppPath, METH_NOARGS, getAppPath_doc},
+    {"getQtToolPath", (PyCFunction)PythonItom::getQtToolPath, METH_VARARGS, getQtToolPath_doc },
     {"getCurrentPath", (PyCFunction)PythonItom::getCurrentPath, METH_NOARGS, getCurrentPath_doc},
     {"setCurrentPath", (PyCFunction)PythonItom::setCurrentPath, METH_VARARGS, setCurrentPath_doc},
     {"checkSignals", (PyCFunction)PythonItom::PyCheckSignals, METH_NOARGS, NULL},
