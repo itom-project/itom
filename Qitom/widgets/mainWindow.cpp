@@ -487,7 +487,20 @@ void MainWindow::addAbstractDock(AbstractDockWidget* dockWidget, Qt::DockWidgetA
 {
     if (dockWidget)
     {
+        bool hadParent = dockWidget->parent();
         dockWidget->setParent(this);
+
+        if (!hadParent)
+        {
+            if (dockWidget->docked())
+            {
+                dockWidget->dockWidget();
+            }
+            else
+            {
+                dockWidget->undockWidget();
+            }
+        }
 
         if (area == Qt::NoDockWidgetArea)
         {
@@ -500,6 +513,8 @@ void MainWindow::addAbstractDock(AbstractDockWidget* dockWidget, Qt::DockWidgetA
             dockWidget->setFloating(false);
             //qDebug() << "restoreDockWidget:" << restoreDockWidget(dockWidget); //does not work until now, since the state of docked script windows is not saved. they are deleted before destructing the main window.
         }
+
+        
     }
 }
 
