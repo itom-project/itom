@@ -205,7 +205,7 @@ void AbstractPyScintillaWidget::loadSettings()
     qSciLex->setDefaultPaper(QColor(settings.value("paperBackgroundColor", QColor(Qt::white)).toString()));
     setMarginsBackgroundColor(QColor(settings.value("marginBackgroundColor", QColor(224,224,224)).toString()));
     setMarginsForegroundColor(QColor(settings.value("marginForegroundColor", QColor(0, 0, 0)).toString()));
-    setFoldMarginColors(QColor(settings.value("foldMarginForegroundColor", QColor(Qt::black)).toString()), \
+    setFoldMarginColors(QColor(settings.value("foldMarginForegroundColor", QColor(233,233,233)).toString()), \
         QColor(settings.value("foldMarginBackgroundColor", QColor(Qt::white)).toString()));
     setWhitespaceBackgroundColor(QColor(settings.value("whitespaceBackgroundColor", QColor(Qt::white)).toString()));
     setWhitespaceForegroundColor(QColor(settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString()));

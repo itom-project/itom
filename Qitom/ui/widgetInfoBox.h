@@ -45,12 +45,7 @@ public:
         ui.btnClose->setText("");
         ui.btnClose->setIconSize( QSize(12, 12) );
 
-        //setStyleSheet( "QWidget { background-color: blue; }" );
-        //this->setPalette( QPalette(Qt::red) );
-        setAutoFillBackground(true);
-        QPalette pal = this->palette();
-        pal.setColor(QPalette::Window, QColor(255,255,166 ) );
-        this->setPalette(pal);
+        setStyleSheet(QString("background-color: %1").arg(QColor(255, 255, 166).name()));
     }
 
     ~WidgetInfoBox(){}

@@ -189,7 +189,7 @@ void WidgetPropEditorStyles::readSettingsInternal(const QString &filename)
     m_marginBgcolor = QColor(settings.value("marginBackgroundColor", QColor(224, 224, 224)).toString());
     m_marginFgcolor = QColor(settings.value("marginForegroundColor", QColor(Qt::black)).toString());
     m_foldMarginBgcolor = QColor(settings.value("foldMarginBackgroundColor", QColor(Qt::white)).toString());
-    m_foldMarginFgcolor = QColor(settings.value("foldMarginForegroundColor", QColor(Qt::black)).toString());
+    m_foldMarginFgcolor = QColor(settings.value("foldMarginForegroundColor", QColor(233, 233, 233)).toString());
     m_markerCurrentBgcolor = QColor(settings.value("markerCurrentBackgroundColor", QColor(255, 255, 128)).toString());
     m_markerInputBgcolor = QColor(settings.value("markerInputForegroundColor", QColor(179, 222, 171)).toString());
     m_markerErrorBgcolor = QColor(settings.value("markerErrorForegroundColor", QColor(255, 192, 192)).toString());
@@ -506,7 +506,7 @@ void WidgetPropEditorStyles::on_btnReset_clicked()
     m_marginBgcolor = QColor(224, 224, 224);
     m_marginFgcolor = QColor(Qt::black);
     m_foldMarginBgcolor = QColor(Qt::white);
-    m_foldMarginFgcolor = QColor(Qt::black);
+    m_foldMarginFgcolor = QColor(233, 233, 233);
     m_markerCurrentBgcolor = QColor(255, 255, 128);
     m_markerInputBgcolor = QColor(179, 222, 171);
     m_markerErrorBgcolor = QColor(255, 192, 192);
@@ -658,7 +658,7 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                             if (attr.hasAttribute("name") && attr.value("name") == "Global override")
                             {
                                 globalForegroundColor = QColor(QString("#%1").arg(attr.value("fgColor").toString()));
-                                globalBackgroundColor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
+                                
                                 if (attr.hasAttribute("fontStyle"))
                                 {
                                     globalOverrideFont.setBold(attr.value("fontStyle").toInt() & 1);
@@ -673,12 +673,12 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                                 {
                                     globalOverrideFont.setPointSize(attr.value("fontSize").toInt());
                                 }
-
-                                m_selectionFgcolor = globalBackgroundColor;
                             }
                             else if (attr.hasAttribute("name") && attr.value("name") == "Default Style")
                             {
                                 m_paperBgcolor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
+                                globalBackgroundColor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
+                                m_selectionFgcolor = globalBackgroundColor;
                             }
                             else if (attr.hasAttribute("name") && attr.value("name") == "Line number margin")
                             {
@@ -709,15 +709,7 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                             }
                             else if (attr.hasAttribute("name") && attr.value("name") == "White space symbol")
                             {
-                                if (attr.hasAttribute("bgColor") && !attr.value("bgColor").isEmpty())
-                                {
-                                    m_whitespaceBgcolor = QColor(QString("#%1").arg(attr.value("bgColor").toString()));
-                                }
-                                else
-                                {
-                                    m_whitespaceBgcolor = globalBackgroundColor;
-                                }
-
+                                m_whitespaceBgcolor = globalBackgroundColor;
                                 m_whitespaceFgcolor = QColor(QString("#%1").arg(attr.value("fgColor").toString()));
                             }
                             else if (attr.hasAttribute("name") && attr.value("name") == "Caret colour")
