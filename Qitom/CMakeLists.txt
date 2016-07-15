@@ -281,6 +281,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropFigurePlugins.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralApplication.h    
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralLanguage.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralStyles.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropHelpDock.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonGeneral.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonStartup.h
@@ -349,6 +350,7 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropFigurePlugins.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralApplication.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralLanguage.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralStyles.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropHelpDock.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonStartup.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonGeneral.ui
@@ -468,6 +470,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropFigurePlugins.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralApplication.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralLanguage.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralStyles.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropHelpDock.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonStartup.cpp

@@ -41,6 +41,7 @@
 #include "widgetPropFigurePlugins.h"
 #include "widgetPropGeneralApplication.h"
 #include "widgetPropHelpDock.h"
+#include "widgetPropGeneralStyles.h"
 
 #include "AppManagement.h"
 
@@ -165,6 +166,7 @@ void DialogProperties::initPages()
     m_pages["00_general/language"] = PropertyPage(tr("Language"), tr("General - language"), "00_general/language", new WidgetPropGeneralLanguage(), QIcon(":/application/icons/itomicon/itomIcon32"));
     m_pages["00_general/application"] = PropertyPage(tr("Application"), tr("General - application"), "00_general/application", new WidgetPropGeneralApplication(), QIcon(":/application/icons/itomicon/itomIcon32"));
     m_pages["00_general/helpViewer"]  = PropertyPage(tr("Help Viewer"), tr("General - Help Viewer"), "00_general/helpViewer" , new WidgetPropHelpDock(), QIcon(":/application/icons/itomicon/itomIcon32"));
+    m_pages["00_general/styles"] = PropertyPage(tr("Styles and Themes"), tr("General - Styles and Themes"), "00_general/styles", new WidgetPropGeneralStyles(), QIcon(":/application/icons/color-icon.png"));
     m_pages["05_plots"] = PropertyPage(tr("Plots and Figures"), tr("Plots and Figures - please choose subpage"), "05_plots", NULL, QIcon(":/plots/icons/itom_icons/3d.png"));
     m_pages["05_plots/defaults"] = PropertyPage(tr("Default Plots"), tr("Plots and Figures - Defaults"), "05_plots/defaults", new WidgetPropFigurePlugins(), QIcon(":/plots/icons/itom_icons/2d.png"));
     PropertyPage page;
@@ -175,10 +177,10 @@ void DialogProperties::initPages()
         pathes = page.m_fullname.split("/");
         addPage(page, m_pCategories->invisibleRootItem(), pathes);
 
-        if (page.m_widget)
+        /*if (page.m_widget)
         {
             page.m_widget->readSettings();
-        }
+        }*/
     }
 }
 
@@ -233,31 +235,6 @@ void DialogProperties::addPage(PropertyPage page, QTreeWidgetItem *parent, QStri
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogProperties::setPageTitle()
-{
-    bool found = false;
-
-    QMap<QString, PropertyPage>::iterator it = m_pages.find(m_CurrentPropertyKey);
-
-    if (it != m_pages.end())
-    {
-        m_pPageTitle->setText(it->m_title);
-
-        if (it->m_widget)
-        {
-            it->m_visited = true;
-            m_pStackedWidget->setCurrentWidget(qobject_cast<QWidget*>(it->m_widget));
-            found = true;
-        }
-    }
-
-    if (!found)
-    {
-        m_pStackedWidget->setCurrentWidget(m_pEmptyPage);
-    }
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 bool DialogProperties::selectTabByKey(QString &key, QTreeWidgetItem *parent /*= NULL*/)
 {
     bool found = false;
@@ -272,6 +249,7 @@ bool DialogProperties::selectTabByKey(QString &key, QTreeWidgetItem *parent /*= 
         if (QString::compare(key, currentKey, Qt::CaseInsensitive) == 0)
         {
             found = true;
+
             m_pCategories->setCurrentItem(parent);
         }
     }
@@ -307,7 +285,13 @@ void DialogProperties::categoryChanged(QTreeWidgetItem *current, QTreeWidgetItem
 
             if (it->m_widget)
             {
+                if (it->m_visited == false && it->m_widget)
+                {
+                    it->m_widget->readSettings();
+                }
+
                 it->m_visited = true;
+
                 m_pStackedWidget->setCurrentWidget(qobject_cast<QWidget*>(it->m_widget));
                 found = true;
             }

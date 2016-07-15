@@ -66,6 +66,7 @@
         <file>icons/empty.png</file>
         <file>icons/pin.png</file>
         <file>icons/pinChecked.png</file>
+        <file>icons/color-icon.png</file>
     </qresource>
     <qresource prefix="/arrows">
         <file>icons/2downarrow.png</file>

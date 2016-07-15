@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>WidgetPropGeneralStyles</class>
+ <widget class="QWidget" name="WidgetPropGeneralStyles">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>529</width>
+    <height>239</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_5">
+   <item>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="title">
+      <string>Stylesheets</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QRadioButton" name="radioNoStyle">
+        <property name="text">
+         <string>no stylesheet</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QRadioButton" name="radioPredefinedStyle">
+          <property name="text">
+           <string>Pre-defined stylesheet:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="comboPredefinedStyle">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QRadioButton" name="radioUserdefinedStyle">
+          <property name="text">
+           <string>User-defined stylesheet:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QLabel" name="label_2">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Stylesheet file (*.qss):</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="PathLineEdit" name="pathStylesheet">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="nameFilters">
+           <stringlist>
+            <string>Stylesheet file (*.qss)</string>
+           </stringlist>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLabel" name="label_3">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Resource file (*.rcc)</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="PathLineEdit" name="pathResource">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="filters">
+           <set>PathLineEdit::AllEntries|PathLineEdit::Dirs|PathLineEdit::Drives|PathLineEdit::Files|PathLineEdit::NoDot|PathLineEdit::NoDotDot|PathLineEdit::Readable</set>
+          </property>
+          <property name="nameFilters">
+           <stringlist>
+            <string>Resource file (*.rcc)</string>
+           </stringlist>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Icon Theme</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Selected icon theme:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="comboIconTheme">
+        <item>
+         <property name="text">
+          <string>icon theme for bright background [default]</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>icon theme for dark background</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Changes to styles and themes will only be applied after a restart of the application!</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PathLineEdit</class>
+   <extends>QWidget</extends>
+   <header>pathLineEdit.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>radioPredefinedStyle</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>comboPredefinedStyle</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>163</x>
+     <y>73</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>288</x>
+     <y>67</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioUserdefinedStyle</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>label_2</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>128</x>
+     <y>94</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>236</x>
+     <y>94</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioUserdefinedStyle</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>label_3</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>75</x>
+     <y>93</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>210</x>
+     <y>122</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioUserdefinedStyle</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>pathResource</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>64</x>
+     <y>97</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>312</x>
+     <y>116</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioUserdefinedStyle</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>pathStylesheet</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>54</x>
+     <y>95</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>296</x>
+     <y>88</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

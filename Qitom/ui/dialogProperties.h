@@ -90,7 +90,6 @@ signals:
 public slots:
 
 private slots:
-    void setPageTitle();
     void categoryChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
     void accepted();
     void rejected();

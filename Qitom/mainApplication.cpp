@@ -323,7 +323,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
 
     if (m_guiType == standard || m_guiType == console)
     {
-        m_splashScreen->showMessage(tr("load style..."), Qt::AlignRight | Qt::AlignBottom);
+        m_splashScreen->showMessage(tr("load themes and styles..."), Qt::AlignRight | Qt::AlignBottom);
         QCoreApplication::processEvents();
 
         //set styles (if available)
@@ -331,24 +331,20 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
         QString styleName = settings->value("style", "").toString();
         QString cssFile = settings->value("cssFile", "").toString();
         QString rccFile = settings->value("rccFile", "").toString();
-        QString iconThemeFile = settings->value("iconThemeFile", "iconThemeBright.rcc").toString();
+        QString iconTheme = settings->value("iconTheme", "bright").toString();
         settings->endGroup();
 
 #if QT_VERSION >= 0x050000
-        QDir iconTheme(QCoreApplication::applicationDirPath());
-        if (iconThemeFile != "" && iconTheme.exists(iconThemeFile))
+        QDir iconThemeDir(QCoreApplication::applicationDirPath());
+        QString iconThemeFile = "iconThemeBright.rcc";
+        if (iconTheme.compare("dark", Qt::CaseInsensitive) == 0)
         {
-            if (!QResource::registerResource(iconTheme.absoluteFilePath(iconThemeFile)))
-            {
-                qDebug() << "error loading the icon theme file " << iconTheme.absoluteFilePath(iconThemeFile);
-            }
+            iconThemeFile = "iconThemeDark.rcc";
         }
-        else
+
+        if (!QResource::registerResource(iconThemeDir.absoluteFilePath(iconThemeFile)))
         {
-            if (!QResource::registerResource(iconTheme.absoluteFilePath("iconThemeBright.rcc")))
-            {
-                qDebug() << "error loading the icon theme file " << iconTheme.absoluteFilePath("iconThemeBright.rcc");
-            }
+            qDebug() << "error loading the icon theme file " << iconThemeDir.absoluteFilePath(iconThemeFile);
         }
 #endif
 
