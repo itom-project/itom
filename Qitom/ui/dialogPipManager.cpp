@@ -41,7 +41,9 @@ DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /
     m_pPipManager(NULL),
     m_lastLogEntry(-1),
     m_outputSilent(false),
-    m_standalone(standalone)
+    m_standalone(standalone),
+    m_colorMessage(Qt::black),
+    m_colorError(Qt::red)
 {
     ui.setupUi(this);
 
@@ -80,6 +82,18 @@ DialogPipManager::~DialogPipManager()
 }
 
 //--------------------------------------------------------------------------------
+void DialogPipManager::setColorMessage(const QColor &color)
+{
+    m_colorMessage = color;
+}
+
+//--------------------------------------------------------------------------------
+void DialogPipManager::setColorError(const QColor &color)
+{
+    m_colorError = color;
+}
+
+//--------------------------------------------------------------------------------
 PipGeneralOptions DialogPipManager::createOptions() const
 {
     PipGeneralOptions pgo;
@@ -110,13 +124,13 @@ void DialogPipManager::outputReceived(const QString &text, bool success)
             switch (m_lastLogEntry)
             {
             case -1:
-                logHtml = QString("<p style='color:#000000;'>%1").arg(text_html);
+                logHtml = QString("<p class='message'>%1").arg(text_html);
                 break;
             case 0:
                 logHtml += text_html;
                 break;
             default:
-                logHtml += QString("</p><p style='color:#000000;'>%1").arg(text_html);
+                logHtml += QString("</p><p class='message'>%1").arg(text_html);
                 break;
             }
 
@@ -128,20 +142,20 @@ void DialogPipManager::outputReceived(const QString &text, bool success)
         switch (m_lastLogEntry)
         {
         case -1:
-            logHtml = QString("<p style='color:#ff0000;'>%1").arg(text_html);
+            logHtml = QString("<p class='error'>%1").arg(text_html);
             break;
         case 1:
             logHtml += text_html;
             break;
         default:
-            logHtml += QString("</p><p style='color:#ff0000;'>%1").arg(text_html);
+            logHtml += QString("</p><p class='error'>%1").arg(text_html);
             break;
         }
 
         m_lastLogEntry = 1;
     }
     QString output;
-    output = QString("<html><head></head><body style='font-size:8pt; font-weight:400; font-style:normal;'>%1</p></body></html>").arg(logHtml);
+    output = QString("<html><head></head><body style='font-size:8pt; font-weight:400; font-style:normal; p.message {color:%2;}; p.error {color:%3;}'>%1</p></body></html>").arg(logHtml).arg(m_colorMessage.name()).arg(m_colorError.name());
     ui.txtLog->setHtml(output);
     QScrollBar *sb = ui.txtLog->verticalScrollBar();
     sb->setValue(sb->maximum());

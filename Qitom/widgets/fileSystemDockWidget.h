@@ -53,9 +53,14 @@ namespace ito
     {
         Q_OBJECT
 
+            Q_PROPERTY(QColor linkColor READ linkColor WRITE setLinkColor DESIGNABLE true);
+
         public:
             FileSystemDockWidget(const QString &title, const QString &objName, QWidget *parent = NULL, bool docked = true, bool isDockAvailable = true, tFloatingStyle floatingStyle = floatingNone, tMovingStyle movingStyle = movingEnabled, const QString &baseDirectory = QDir::currentPath());
             ~FileSystemDockWidget();
+
+            QColor linkColor() { return m_linkColor; }
+            void setLinkColor(const QColor &color);
 
         protected:
             void createActions();
@@ -88,6 +93,7 @@ namespace ito
             QMutex baseDirChangeMutex;
             QList<QUrl> m_clipboardCutData; //this mime-data has recently be selected by a cut action and is no available in QClipboard
             int *m_pColumnWidth;
+            QColor m_linkColor;
 
             ShortcutAction* m_pActMoveCDUp;
             ShortcutAction* m_pActSelectCD;

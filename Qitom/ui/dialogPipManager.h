@@ -31,6 +31,7 @@
 #include <qdialog.h>
 #include <qvector.h>
 #include <qevent.h>
+#include <qcolor.h>
 
 #include "ui_dialogPipManager.h"
 
@@ -40,9 +41,18 @@ class DialogPipManager : public QDialog
 {
     Q_OBJECT
 
+    Q_PROPERTY(QColor colorMessage READ colorMessage WRITE setColorMessage DESIGNABLE true);
+    Q_PROPERTY(QColor colorError READ colorError WRITE setColorError DESIGNABLE true);
+
 public:
     DialogPipManager(QWidget *parent = NULL, bool standalone = false);
     ~DialogPipManager();
+
+    QColor colorMessage() { return m_colorMessage; }
+    void setColorMessage(const QColor &color);
+
+    QColor colorError() { return m_colorError; }
+    void setColorError(const QColor &color);
 
 protected:
     void closeEvent(QCloseEvent *e);
@@ -58,6 +68,8 @@ private:
     int m_lastLogEntry; //-1: nothing yet, 0: standard text, 1: error text
     bool m_outputSilent;
     bool m_standalone;
+    QColor m_colorMessage;
+    QColor m_colorError;
 
 private slots:
     void pipVersion(const QString &version);

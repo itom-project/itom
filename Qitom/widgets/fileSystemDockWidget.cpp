@@ -73,7 +73,8 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pActNewPyFile(NULL),
     m_pViewList(NULL),
     m_pViewDetails(NULL),
-    m_lastMovedShowDirAction(NULL)
+    m_lastMovedShowDirAction(NULL),
+    m_linkColor(Qt::blue)
 {
     int size = 0;
     QAction *act = NULL;
@@ -271,6 +272,21 @@ FileSystemDockWidget::~FileSystemDockWidget()
     DELETE_AND_SET_NULL(m_pShowDirListMenu);
     DELETE_AND_SET_NULL(m_pFileSystemSettingMenu);
     DELETE_AND_SET_NULL(m_newDirSelectedMapper);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FileSystemDockWidget::setLinkColor(const QColor &color)
+{
+    //write in a qss file:
+    /*
+    ito--FileSystemDockWidget
+    {
+        qproperty-linkColor: rgb(255, 0, 0);
+    }
+
+    to influence the link color
+    */
+    m_linkColor = color;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1270,7 +1286,12 @@ QString FileSystemDockWidget::getHtmlTag(const QString &tag)
 
     QString link = "";
     QStringList tagList = tag.split("/");
-    QString text = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.0//EN' 'http://www.w3.org/TR/REC-html40/strict.dtd'>\n<html><head><meta name='qrichtext' content='1' /><style type='text/css'>\np, li { white-space: pre-wrap; }\n</style></head><body style=' font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;'>\n<p style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'><span style=' font-size:8pt;'>";
+    QString text = QString("<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.0//EN' 'http://www.w3.org/TR/REC-html40/strict.dtd'>\n\
+<html><head><meta name='qrichtext' content='1' /><style type='text/css'>\n\
+p, li { white-space: pre-wrap; }\n\
+a { color: %1; }\n\
+</style></head><body style=' font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;'>\n\
+<p style=' margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;'><span style=' font-size:8pt;'>").arg(m_linkColor.name());
     for (int x = 0; x < tagList.size(); x++)
     {
         if (x > 0)
