@@ -364,8 +364,18 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
 
         if (rccFile != "")
         {
-            QDir styleFolder = QCoreApplication::applicationDirPath();
-            if (styleFolder.exists(rccFile))
+            QDir appFolder = QCoreApplication::applicationDirPath();
+            QDir dir(rccFile);
+            if (dir.isRelative())
+            {
+                rccFile = QDir::cleanPath(appFolder.absoluteFilePath(rccFile));
+            }
+            else
+            {
+                rccFile = QDir::cleanPath(rccFile);
+            }
+
+            if (appFolder.exists(rccFile))
             {
                 if (!QResource::registerResource(rccFile))
                 {
@@ -381,10 +391,20 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
 
         if (cssFile != "")
         {
-            QDir styleFolder = QCoreApplication::applicationDirPath();
-            if (styleFolder.exists(cssFile))
+            QDir appFolder = QCoreApplication::applicationDirPath();
+            QDir dir(cssFile);
+            if (dir.isRelative())
             {
-                QFile css(styleFolder.filePath(cssFile));
+                cssFile = QDir::cleanPath(appFolder.absoluteFilePath(cssFile));
+            }
+            else
+            {
+                cssFile = QDir::cleanPath(cssFile);
+            }
+
+            if (appFolder.exists(cssFile))
+            {
+                QFile css(appFolder.filePath(cssFile));
                 if (css.open(QFile::ReadOnly))
                 {
                     QString cssContent(css.readAll());
