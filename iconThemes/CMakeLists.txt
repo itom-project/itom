@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.9)
-     
+    
 #CMAKE Policies
 IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
     if(POLICY CMP0042)
@@ -33,7 +33,8 @@ ELSE(CMAKE_BUILD_TYPE)
     SET (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: None(CMAKE_CXX_FLAGS or CMAKE_C_FLAGS used) Debug Release RelWithDebInfo MinSizeRel.")
 ENDIF (DEFINED CMAKE_BUILD_TYPE)
 
-IF(${Qt5_FOUND})
+message(send_fatal ${Qt5Core_RCC_EXECUTABLE})
+IF (QT5_FOUND AND (${Qt5_VERSION} VERSION_GREATER 5.4.99))
     qt5_add_binary_resources(iconThemeBright ${CMAKE_CURRENT_SOURCE_DIR}/../Qitom/iconThemeBright.qrc DESTINATION ${ITOM_APP_DIR}/iconThemeBright.rcc)
     qt5_add_binary_resources(iconThemeDark ${CMAKE_CURRENT_SOURCE_DIR}/../Qitom/iconThemeDark.qrc DESTINATION ${ITOM_APP_DIR}/iconThemeDark.rcc)
 ENDIF() #for Qt4, the bright theme is directly included in the itom application (no choice available)

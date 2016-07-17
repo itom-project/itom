@@ -39,7 +39,6 @@ ENDIF()
 IF(${BUILD_WITH_HELPVIEWER})
     #at first, get the available Qt version
     FIND_PACKAGE_QT(ON Core)
-    message(FATAL "${Qt5_FOUND} ${Qt5_VERSION}")
     #requires Qt5 and Qt5WebEngine in order to built a built-in help viewer, since QtAssistant only has a limited set of rendering options since Qt5.6.
     FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL LinguistTools Svg WebEngineWidgets Help)
     
@@ -371,12 +370,16 @@ set(qitom_rcc
     ${CMAKE_CURRENT_SOURCE_DIR}/qitom.qrc
 )
 
-IF (QT5_FOUND)
+IF (QT5_FOUND AND (${Qt5_VERSION} VERSION_GREATER 5.4.99))
     QT5_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
-ELSE (QT5_FOUND)
+ELSE ()
     set(qitom_rcc ${qitom_rcc} ${CMAKE_CURRENT_SOURCE_DIR}/iconThemeBright.qrc)
-    QT4_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
-ENDIF (QT5_FOUND)
+    IF (QT5_FOUND)
+        QT5_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
+    ELSE()
+        QT4_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
+    ENDIF()
+ENDIF ()
 
 set(qitom_SOURCES 
     ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.cpp
