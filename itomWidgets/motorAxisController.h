@@ -63,6 +63,7 @@ class ITOMWIDGETS_EXPORT MotorAxisController : public QWidget
     Q_PROPERTY(QStringList axisNames READ axisNames WRITE setAxisNames)
     Q_PROPERTY(int defaultDecimals READ defaultDecimals WRITE setDefaultDecimals)
     Q_PROPERTY(MovementType movementType READ movementType WRITE setMovementType)
+    Q_PROPERTY(bool movementTypeVisible READ movementTypeVisible WRITE setMovementTypeVisible)
 
 public:
     enum AxisUnit {
@@ -82,7 +83,8 @@ public:
     enum MovementType {
         MovementAbsolute = 0,
         MovementRelative = 1,
-        MovementBoth = 2
+        MovementBoth = 2,
+        MovementNo = 3
     };
 
     MotorAxisController(QWidget *parent = NULL);
@@ -91,41 +93,20 @@ public:
     void setActuator(const QPointer<ito::AddInActuator> &actuator);
     QPointer<ito::AddInActuator> actuator() const;
 
-    void setNumAxis(int numAxis);
     int numAxis() const;
-
     AxisUnit axisUnit(int axisIndex) const;
-
-    void setDefaultAxisUnit(AxisUnit unit);
     AxisUnit defaultAxisUnit() const;
-
     AxisType axisType(int axisIndex) const;
-
-    void setDefaultAxisType(AxisType type);
     AxisType defaultAxisType() const;
-
-    void setRefreshAvailable(bool available);
     bool refreshAvailable() const;
-
-    void setCancelAvailable(bool available);
     bool cancelAvailable() const;
-
-    void setDefaultRelativeStepSize(double defaultRelativeStepSize); /*in mm or degree*/
     double defaultRelativeStepSize() const;
-
-    void setAxisNames(const QStringList &names);
     QStringList axisNames() const;
-
     QString axisName(int axisIndex) const;
-
-    void setDefaultDecimals(int decimals);
     int defaultDecimals() const;
-
     int axisDecimals(int axisIndex) const;
-
-    void setMovementType(MovementType type);
     MovementType movementType() const;
-
+    bool movementTypeVisible() const;
     bool axisEnabled(int axisIndex) const;
 
 private:
@@ -148,6 +129,17 @@ public slots:
     ito::RetVal setAxisDecimals(int axisIndex, int decimals);
     ito::RetVal setAxisType(int axisIndex, AxisType type);
     ito::RetVal setAxisName(int axisIndex, const QString &name);
+
+    void setDefaultAxisUnit(AxisUnit unit);
+    void setMovementTypeVisible(bool visible);
+    void setMovementType(MovementType type);
+    void setDefaultDecimals(int decimals);
+    void setAxisNames(const QStringList &names);
+    void setDefaultRelativeStepSize(double defaultRelativeStepSize); /*in mm or degree*/
+    void setCancelAvailable(bool available);
+    void setRefreshAvailable(bool available);
+    void setDefaultAxisType(AxisType type);
+    void setNumAxis(int numAxis);
 
 private slots:
     void on_btnCancel_clicked();

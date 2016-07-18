@@ -517,12 +517,12 @@ ito::RetVal MotorAxisController::setAxisType(int axisIndex, AxisType type)
             if (type == TypeLinear && axisUnit(axisIndex) == UnitDeg)
             {
                 setAxisUnit(axisIndex, UnitMm);
-                retval += ito::RetVal(ito::retWarning, 0, "The unit of the axis was '°'. Due to the new type, it is set to 'mm' now.");
+                //retval += ito::RetVal(ito::retWarning, 0, "The unit of the axis was '°'. Due to the new type, it is set to 'mm' now.");
             }
             else if (type == TypeRotational && axisUnit(axisIndex) != UnitDeg)
             {
                 setAxisUnit(axisIndex, UnitDeg);
-                retval += ito::RetVal(ito::retWarning, 0, "The unit of the axis was 'mm', 'nm' or similar. Due to the new type, it is set to '°' now.");
+                //retval += ito::RetVal(ito::retWarning, 0, "The unit of the axis was 'mm', 'nm' or similar. Due to the new type, it is set to '°' now.");
             }
         }
     }
@@ -728,6 +728,13 @@ void MotorAxisController::setMovementType(MovementType type)
             d->ui.tableMovement->showColumn(ColCommandAbsolute);
             d->ui.btnStart->setVisible(true);
             break;
+        case MovementNo:
+            d->ui.tableMovement->showColumn(ColTarget);
+            d->ui.tableMovement->hideColumn(ColStepSize);
+            d->ui.tableMovement->hideColumn(ColCommandRelative);
+            d->ui.tableMovement->hideColumn(ColCommandAbsolute);
+            d->ui.btnStart->setVisible(false);
+            break;
         }
 
         d->movementType = type;
@@ -762,6 +769,18 @@ void MotorAxisController::setCancelAvailable(bool available)
 bool MotorAxisController::cancelAvailable() const
 {
     return d->cancelAvailable;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void MotorAxisController::setMovementTypeVisible(bool visible)
+{
+    d->ui.comboType->setVisible(visible);
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+bool MotorAxisController::movementTypeVisible() const
+{
+    return d->ui.comboType->isVisible();
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------

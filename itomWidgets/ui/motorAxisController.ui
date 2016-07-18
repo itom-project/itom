@@ -17,7 +17,10 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Thorlabs ISM</string>
+   <string>MotorAxisController</string>
+  </property>
+  <property name="windowOpacity">
+   <double>1.000000000000000</double>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <property name="leftMargin">
@@ -47,6 +50,11 @@
      <item>
       <property name="text">
        <string>All movements</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Only monitor</string>
       </property>
      </item>
     </widget>
@@ -111,7 +119,7 @@
      <item>
       <widget class="QPushButton" name="btnStart">
        <property name="text">
-        <string>Start</string>
+        <string>Start all axes</string>
        </property>
       </widget>
      </item>
