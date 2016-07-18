@@ -88,7 +88,7 @@ WidgetPropEditorStyles::WidgetPropEditorStyles(QWidget *parent) :
     ui.listWidget->addItem(new QListWidgetItem(tr("Caret color (Foreground: cursor color, Background: color of current line)"), NULL, CARETCOLOR));
     ui.listWidget->addItem(new QListWidgetItem(tr("Fold margin color"), NULL, FOLDMARGINCOLOR));
     ui.listWidget->addItem(new QListWidgetItem(tr("Margin color"), NULL, MARGINCOLOR));
-    ui.listWidget->addItem(new QListWidgetItem(tr("Whitespace color"), NULL, WHITESPACECOLOR));
+    ui.listWidget->addItem(new QListWidgetItem(tr("Whitespace color (if whitespace characters are visible)"), NULL, WHITESPACECOLOR));
     ui.listWidget->addItem(new QListWidgetItem(tr("Unmatched brace color"), NULL, UNMATCHEDBRACECOLOR));
     ui.listWidget->addItem(new QListWidgetItem(tr("Matched brace color"), NULL, MATCHEDBRACECOLOR));
     ui.listWidget->addItem(new QListWidgetItem(tr("Command line: Background for error messages"), NULL, MARKERERRORCOLOR));
@@ -155,7 +155,6 @@ void WidgetPropEditorStyles::writeSettingsInternal(const QString &filename)
     settings.setValue("markerCurrentBackgroundColor", m_markerCurrentBgcolor);
     settings.setValue("markerInputForegroundColor", m_markerInputBgcolor);
     settings.setValue("markerErrorForegroundColor", m_markerErrorBgcolor);
-    settings.setValue("whitespaceBackgroundColor", m_whitespaceBgcolor);
     settings.setValue("whitespaceForegroundColor", m_whitespaceFgcolor);
     settings.setValue("unmatchedBraceBackgroundColor", m_unmatchedBraceBgcolor);
     settings.setValue("unmatchedBraceForegroundColor", m_unmatchedBraceFgcolor);
@@ -196,7 +195,6 @@ void WidgetPropEditorStyles::readSettingsInternal(const QString &filename)
     m_markerCurrentBgcolor = QColor(settings.value("markerCurrentBackgroundColor", QColor(255, 255, 128)).toString());
     m_markerInputBgcolor = QColor(settings.value("markerInputForegroundColor", QColor(179, 222, 171)).toString());
     m_markerErrorBgcolor = QColor(settings.value("markerErrorForegroundColor", QColor(255, 192, 192)).toString());
-    m_whitespaceBgcolor = QColor(settings.value("whitespaceBackgroundColor", QColor(Qt::white)).toString());
     m_whitespaceFgcolor = QColor(settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString());
     m_unmatchedBraceBgcolor = QColor(settings.value("unmatchedBraceBackgroundColor", QColor(Qt::white)).toString());
     m_unmatchedBraceFgcolor = QColor(settings.value("unmatchedBraceForegroundColor", QColor(128, 0, 0)).toString());
@@ -227,6 +225,7 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
             ui.btnBackgroundColor->setColor(m_styles[index].m_backgroundColor);
             ui.btnForegroundColor->setColor(m_styles[index].m_foregroundColor);
 
+            ui.lblSampleText->setText(tr("Sample Text"));
             ui.lblSampleText->setFont(m_styles[index].m_font);
             ui.lblSampleText->setStyleSheet(QString("color: %1; background-color: %2;").arg(m_styles[index].m_foregroundColor.name()).arg(m_styles[index].m_backgroundColor.name()));
             ui.lblSampleText->repaint();
@@ -264,7 +263,7 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
                 ui.btnForegroundColor->setEnabled(true);
                 break;
             case WHITESPACECOLOR:
-                bg = m_whitespaceBgcolor;
+                ui.btnBackgroundColor->setEnabled(false);
                 fg = m_whitespaceFgcolor;
                 ui.btnForegroundColor->setEnabled(true);
                 break;
@@ -308,11 +307,28 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
 
             }
 
-            ui.lblSampleText->setStyleSheet(QString("color: %1; background-color: %2;").arg(fg.name()).arg(bg.name()));
-            ui.lblSampleText->repaint();
+            if (ui.btnForegroundColor->isEnabled())
+            {
+                ui.lblSampleText->setText(tr("Sample Text"));
+                ui.btnForegroundColor->setColor(fg);
+            }
+            else
+            {
+                ui.lblSampleText->setText(tr(""));
+                ui.btnForegroundColor->setColor(fg);
+            }
 
-            ui.btnBackgroundColor->setColor(bg);
-            ui.btnForegroundColor->setColor(fg);
+            if (ui.btnBackgroundColor->isEnabled())
+            {
+                ui.lblSampleText->setStyleSheet(QString("color: %1; background-color: %2;").arg(fg.name()).arg(bg.name()));
+                ui.btnBackgroundColor->setColor(bg);
+            }
+            else
+            {
+                ui.lblSampleText->setStyleSheet(QString("color: %1; background-color: %2;").arg(fg.name()).arg(m_paperBgcolor.name()));
+                ui.btnBackgroundColor->setColor(m_paperBgcolor);
+            }
+            ui.lblSampleText->repaint();
         }
         else
         {
@@ -352,9 +368,6 @@ void WidgetPropEditorStyles::on_btnBackgroundColor_colorChanged(QColor color)
                 break;
             case MARGINCOLOR:
                 m_marginBgcolor = color;
-                break;
-            case WHITESPACECOLOR:
-                m_whitespaceBgcolor = color;
                 break;
             case UNMATCHEDBRACECOLOR:
                 m_unmatchedBraceBgcolor = color;
@@ -518,7 +531,6 @@ void WidgetPropEditorStyles::on_btnReset_clicked()
     m_markerCurrentBgcolor = QColor(255, 255, 128);
     m_markerInputBgcolor = QColor(179, 222, 171);
     m_markerErrorBgcolor = QColor(255, 192, 192);
-    m_whitespaceBgcolor = QColor(Qt::white);
     m_whitespaceFgcolor = QColor(Qt::black);
     m_unmatchedBraceBgcolor = QColor(Qt::white);
     m_unmatchedBraceFgcolor = QColor(128, 0, 0);
@@ -529,6 +541,7 @@ void WidgetPropEditorStyles::on_btnReset_clicked()
     m_selectionBgcolor = QColor(51, 153, 255);
     m_selectionFgcolor = QColor(Qt::white);
     m_markerSameStringBgcolor = QColor(Qt::green);
+    ui.checkShowCaretBackground->setChecked(false);
 
     on_listWidget_currentItemChanged(ui.listWidget->currentItem(), NULL);
 }
@@ -717,7 +730,6 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                             }
                             else if (attr.hasAttribute("name") && attr.value("name") == "White space symbol")
                             {
-                                m_whitespaceBgcolor = globalBackgroundColor;
                                 m_whitespaceFgcolor = QColor(QString("#%1").arg(attr.value("fgColor").toString()));
                             }
                             else if (attr.hasAttribute("name") && attr.value("name") == "Caret colour")

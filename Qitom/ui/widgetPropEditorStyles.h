@@ -96,7 +96,6 @@ private:
     QColor m_markerInputBgcolor;
     QColor m_markerErrorBgcolor;
     QColor m_whitespaceFgcolor;
-    QColor m_whitespaceBgcolor;
     QColor m_matchedBraceFgcolor;
     QColor m_matchedBraceBgcolor;
     QColor m_unmatchedBraceFgcolor;

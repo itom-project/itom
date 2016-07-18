@@ -207,7 +207,7 @@ void AbstractPyScintillaWidget::loadSettings()
     setMarginsForegroundColor(QColor(settings.value("marginForegroundColor", QColor(0, 0, 0)).toString()));
     setFoldMarginColors(QColor(settings.value("foldMarginForegroundColor", QColor(233,233,233)).toString()), \
         QColor(settings.value("foldMarginBackgroundColor", QColor(Qt::white)).toString()));
-    setWhitespaceBackgroundColor(QColor(settings.value("whitespaceBackgroundColor", QColor(Qt::white)).toString()));
+    setWhitespaceBackgroundColor(QColor()); //invalid color -> default from lexer is user!
     setWhitespaceForegroundColor(QColor(settings.value("whitespaceForegroundColor", QColor(Qt::black)).toString()));
     setMatchedBraceBackgroundColor(QColor(settings.value("matchedBraceBackgroundColor", QColor(Qt::white)).toString()));
     setMatchedBraceForegroundColor(QColor(settings.value("matchedBraceForegroundColor", QColor(Qt::red)).toString()));
