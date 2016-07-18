@@ -14,6 +14,12 @@ ito--DialogLoadedPlugins
     qproperty-pluginBackgroundColor: rgb(0,0,0);
 }
 
+ito--DialogAboutQItom
+{
+    qproperty-textColor: #eff0f1;
+    qproperty-linkColor: #ff8c1a;
+}
+
 ItomQwtDObjFigure
 {
     qproperty-buttonSet: StyleDark;

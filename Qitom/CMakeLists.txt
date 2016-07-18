@@ -370,15 +370,11 @@ set(qitom_rcc
     ${CMAKE_CURRENT_SOURCE_DIR}/qitom.qrc
 )
 
-IF (QT5_FOUND AND (${Qt5_VERSION} VERSION_GREATER 5.4.99))
+IF (QT5_FOUND)
     QT5_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
 ELSE ()
     set(qitom_rcc ${qitom_rcc} ${CMAKE_CURRENT_SOURCE_DIR}/iconThemeBright.qrc)
-    IF (QT5_FOUND)
-        QT5_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
-    ELSE()
-        QT4_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
-    ENDIF()
+    QT4_ADD_RESOURCES(qitom_rcc_MOC ${qitom_rcc})
 ENDIF ()
 
 set(qitom_SOURCES 

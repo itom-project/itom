@@ -263,6 +263,7 @@
     <qresource prefix="/license">
         <file>about.html</file>
         <file>contributors.html</file>
+        <file>address.html</file>
         <file>COPYING.txt</file>
     </qresource>
 </RCC>

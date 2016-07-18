@@ -31,19 +31,20 @@ namespace ito
 {
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap)
+DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap) :
+    m_textColor(Qt::black),
+    m_linkColor(Qt::blue)
 {
-    QString tabText;
-
     m_VersionString.clear();
     QFile file(":/license/about.html"); //:/license/about.html");
     if (!file.open(QIODevice::ReadOnly)) 
     {
-        tabText = tr("Could not load file %1. Reason: %2.").arg("about.html").arg(file.errorString());
+        m_aboutText = tr("Could not load file %1. Reason: %2.").arg("about.html").arg(file.errorString());
     }
 
     QTextStream in(&file);
-    tabText = in.readAll();
+    m_aboutText = in.readAll();
+
     file.close();
 
     bool hasGIT = false;
@@ -60,9 +61,9 @@ DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap)
 
         m_VersionString.append(QString("%1: %2\n").arg(i.key(), i.value()));
         QString keyWord = QString("$%1$").arg(i.key());
-        if (tabText.contains(keyWord))
+        if (m_aboutText.contains(keyWord))
         {
-            tabText = tabText.replace(keyWord, QString(i.value()).replace('\n', "<p>"));
+            m_aboutText = m_aboutText.replace(keyWord, QString(i.value()).replace('\n', "<p>"));
         }
         if (i.key() == "itom_GIT_Rev" && i.value() != "")
         {
@@ -70,60 +71,112 @@ DialogAboutQItom::DialogAboutQItom(const QMap<QString, QString> &versionMap)
         }
     }
 
-    int x0 = tabText.indexOf("$USINGGIT$");
-    int x1 = tabText.lastIndexOf("$USINGGIT$");
+    int x0 = m_aboutText.indexOf("$USINGGIT$");
+    int x1 = m_aboutText.lastIndexOf("$USINGGIT$");
     if (!hasGIT)
     {
-        tabText.remove(x0, x1 - x0 + 10);
+        m_aboutText.remove(x0, x1 - x0 + 10);
     }
     else
     {
-        tabText.remove(x0, 10);
-        tabText.remove(x1 - 10, 10);    
+        m_aboutText.remove(x0, 10);
+        m_aboutText.remove(x1 - 10, 10);
     }
 
-    x0 = tabText.indexOf("$WITHPCL$");
-    x1 = tabText.lastIndexOf("$WITHPCL$");
+    x0 = m_aboutText.indexOf("$WITHPCL$");
+    x1 = m_aboutText.lastIndexOf("$WITHPCL$");
 #if ITOM_POINTCLOUDLIBRARY > 0
-    tabText.remove(x0, 9);
-    tabText.remove(x1 - 9, 9);
+    m_aboutText.remove(x0, 9);
+    m_aboutText.remove(x1 - 9, 9);
 #else
-    tabText.remove(x0, x1 - x0 + 9);
+    m_aboutText.remove(x0, x1 - x0 + 9);
 #endif
 
 
-    ui.txtBasic->setHtml(tabText);
+    ui.txtBasic->setHtml(m_aboutText);
 
 
     //contributors
     file.setFileName(":/license/contributors.html");
     if (!file.open(QIODevice::ReadOnly)) 
     {
-        tabText = tr("Could not load file %1. Reason: %2.").arg("contributors.html").arg(file.errorString());
+        m_contributorsText = tr("Could not load file %1. Reason: %2.").arg("contributors.html").arg(file.errorString());
     }
     else
     {
-        tabText = QTextStream(&file).readAll();
+        m_contributorsText = QTextStream(&file).readAll();
         file.close();
     }
 
-    ui.txtContributors->setHtml(tabText);
+    ui.txtContributors->setHtml(m_contributorsText);
 
+    QString licenseText;
     //license
     file.setFileName(":/license/COPYING.txt");
     if (!file.open(QIODevice::ReadOnly)) 
     {
-        tabText = tr("Could not load file %1. Reason: %2.").arg("COPYING.txt").arg(file.errorString());
+        licenseText = tr("Could not load file %1. Reason: %2.").arg("COPYING.txt").arg(file.errorString());
     }
     else
     {
-        tabText = QTextStream(&file).readAll();
+        licenseText = QTextStream(&file).readAll();
         file.close();
     }
 
-    ui.txtLicense->setText(tabText);
+    ui.txtLicense->setText(licenseText);
 
+    //address
+    file.setFileName(":/license/address.html");
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        m_addressText = tr("Could not load file %1. Reason: %2.").arg("address.html").arg(file.errorString());
+    }
+    else
+    {
+        m_addressText = QTextStream(&file).readAll();
+        file.close();
+    }
+
+    ui.itoText->setText(m_addressText);
 };
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DialogAboutQItom::styleTexts()
+{
+    QString cssCode = QString("p, li, b { color: %1 }; \n a { color: %2; }\n").arg(m_textColor.name(), m_linkColor.name());
+
+    QString temp;
+    temp = m_aboutText;
+    temp.replace("/*styleinclude*/", cssCode);
+    temp.replace("#textColor", m_textColor.name());
+    temp.replace("#linkColor", m_linkColor.name());
+    ui.txtBasic->setHtml(temp);
+
+    temp = m_contributorsText;
+    temp.replace("/*styleinclude*/", cssCode);
+    temp.replace("#textColor", m_textColor.name());
+    temp.replace("#linkColor", m_linkColor.name());
+    ui.txtContributors->setHtml(temp);
+    
+    temp = m_addressText;
+    temp.replace("#textColor", m_textColor.name());
+    temp.replace("#linkColor", m_linkColor.name());
+    ui.itoText->setHtml(temp);
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DialogAboutQItom::setLinkColor(const QColor &color)
+{
+    m_linkColor = color;
+    styleTexts();
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void DialogAboutQItom::setTextColor(const QColor &color)
+{
+    m_textColor = color;
+    styleTexts();
+}
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void DialogAboutQItom::on_pushButtonCopy_clicked()

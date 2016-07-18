@@ -25,8 +25,7 @@
 
 #include <QtGui>
 #include <qdialog.h>
-//#include <qpair>
-//#include <qlist>
+#include <qcolor.h>
 
 #include "ui_dialogAbout.h"
 
@@ -37,14 +36,33 @@ class DialogAboutQItom : public QDialog
 {
     Q_OBJECT
 
+    Q_PROPERTY(QColor textColor READ textColor WRITE setTextColor DESIGNABLE true);
+    Q_PROPERTY(QColor linkColor READ linkColor WRITE setLinkColor DESIGNABLE true);
+
     public:
         DialogAboutQItom(const QMap<QString, QString> &versionMap);
 
         ~DialogAboutQItom() {m_VersionString.clear();};
 
+        QColor linkColor() { return m_linkColor; }
+        void setLinkColor(const QColor &color);
+
+        QColor textColor() { return m_textColor; }
+        void setTextColor(const QColor &color);
+
     private:
+        void styleTexts();
+
         Ui::DialogAboutQItom ui;
         QString m_VersionString;
+
+        QColor m_textColor;
+        QColor m_linkColor;
+
+        QString m_aboutText;
+        QString m_contributorsText;
+        QString m_adddressText;
+        QString m_addressText;
 
     public slots:
 
