@@ -2284,7 +2284,7 @@ RetVal UiOrganizer::getMethodDescriptions(unsigned int objectID, QSharedPointer<
                 if (ok)
                 {
                     paramTypes = metaMethod.parameterTypes();
-                    for (int j=0;j<paramTypes.size();j++)
+                    for (int j = 0; j < paramTypes.size(); ++j)
                     {
                         if (QMetaType::type(paramTypes[j].data()) == 0)
                         {
@@ -2338,7 +2338,7 @@ struct PyCMap {
     { "QFont", "font" },
     { "QColor", "color str, rgba or hex" },
     { "QPointer<ito::AddInDataIO>", "dataIO" },
-    { "QPointer<ito::Actuator>", "actuator" },
+    { "QPointer<ito::AddInActuator>", "actuator" },
     { "QStringList", "seq. of str" },
     { "ito::AutoInterval", "autoInterval" },
     { "ito::ItomPlotHandle", "uiItem" },
