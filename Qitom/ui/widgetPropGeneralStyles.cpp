@@ -97,7 +97,7 @@ void WidgetPropGeneralStyles::readSettings()
         }
     }
 
-    if (!qss.exists())
+    if (!qss.exists() || !qss.isFile() || qss.suffix() != "qss")
     {
         ui.radioNoStyle->setChecked(true);
     }

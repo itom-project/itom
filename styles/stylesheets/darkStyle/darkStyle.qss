@@ -64,7 +64,7 @@ QToolTip
     border: 1px solid #76797C;
     background-color: rgb(90, 102, 117);;
     color: white;
-    padding: 5px;
+    padding: 0px;
     opacity: 255;
 }
 
@@ -81,7 +81,7 @@ QWidget
 
 QWidget:item:hover
 {
-    background-color: #3daee9;
+    background-color: #5ebbed;
     color: #eff0f1;
 }
 
@@ -267,19 +267,24 @@ QMenu
 
 QMenu::icon
 {
-    margin: 5px;
+    margin: 2px;
 }
 
 QMenu::item
 {
-    padding: 5px 30px 5px 30px;
-    margin-left: 5px;
+    padding: 3px 25px 3px 20px;
+    margin-left: 0px;
     border: 1px solid transparent; /* reserve space for selection border */
 }
 
 QMenu::item:selected
 {
     color: #eff0f1;
+}
+
+QMenu::item:disabled
+{
+    color: #74808b;
 }
 
 QMenu::separator {
@@ -605,6 +610,7 @@ QToolBar {
     border: 1px transparent #393838;
     background: 1px solid #31363b;
     font-weight: bold;
+    spacing:0px;
 }
 
 QToolBar::handle:horizontal {
@@ -620,6 +626,8 @@ QToolBar::separator:vertical {
     image: url(:/qss_icons/rc/Vsepartoolbars.png);
 }
 
+
+
 QPushButton
 {
     color: #eff0f1;
@@ -627,7 +635,7 @@ QPushButton
     border-width: 1px;
     border-color: #76797C;
     border-style: solid;
-    padding: 5px;
+    padding: 6px;
     border-radius: 2px;
     outline: none;
 }
@@ -993,7 +1001,7 @@ QTreeView::branch:open:has-children:has-siblings:hover  {
     }
 
 QListView::item:!selected:hover, QListView::item:!selected:hover, QTreeView::item:!selected:hover  {
-    background: rgba(0, 0, 0, 0);
+    background: #5ebbed;
     outline: 0;
     color: #eff0f1
 }
@@ -1037,47 +1045,80 @@ QSlider::handle:vertical {
     border-radius: 9px;
 }
 
-QToolButton {
+QToolBarExtension#qt_toolbar_ext_button {
+    background-color: #808080;
+     border-radius: 5px;
+    padding:2px;
+}
+
+.QToolButton {
     background-color: transparent;
     border: 1px transparent #76797C;
-    border-radius: 2px;
+    border-radius:2px;
     margin: 3px;
-    padding: 5px;
+    padding: 3px;
 }
 
-QToolButton[popupMode="1"] { /* only for MenuButtonPopup */
- padding-right: 20px; /* make way for the popup button */
- border: 1px #76797C;
- border-radius: 5px;
+.QToolButton[popupMode="1"] { /* only for MenuButtonPopup */
+    padding-right: 20px; /* make way for the popup button*/
+    border-radius: 2px;
+    border: 1px transparent #76797C;
 }
 
-QToolButton[popupMode="2"] { /* only for InstantPopup */
- padding-right: 10px; /* make way for the popup button */
- border: 1px #76797C;
+.QToolButton[popupMode="2"] { /* only for InstantPopup */
+    
+     padding-right: 10px; /* make way for the popup button */
+    border: 1px solid #76797C;
 }
 
-
-QToolButton:hover, QToolButton::menu-button:hover {
+.QToolButton[popupMode="1"]:hover {
     background-color: transparent;
     border: 1px solid #3daee9;
-    padding: 5px;
+    padding-right: 20px;
+    border-radius: 2px;
 }
 
-QToolButton:checked, QToolButton:pressed,
+.QToolButton[popupMode="1"]:checked, .QToolButton[popupMode="1"]:pressed {
+    background-color: #3daee9;
+    border: 1px solid #3daee9;
+    padding-right: 20px;
+    border-radius: 2px;
+}
+
+.QToolButton[popupMode="1"]::menu-button:hover {
+    background-color: transparent;
+    border: 1px solid #3daee9;
+    padding: 0px;
+}
+
+.QToolButton[popupMode="1"]::menu-button:pressed {
+    background-color: #3daee9;
+    border: 1px solid #3daee9;
+    padding: 0px;
+}
+
+
+.QToolButton:hover, .QToolButton::menu-button:hover {
+    background-color: transparent;
+    border: 1px solid #3daee9;
+    padding: 3px;
+}
+
+.QToolButton:checked, .QToolButton:pressed,
         QToolButton::menu-button:pressed {
     background-color: #3daee9;
     border: 1px solid #3daee9;
-    padding: 5px;
+    padding: 3px;
 }
 
 /* the subcontrol below is used only in the InstantPopup or DelayedPopup mode */
-QToolButton::menu-indicator {
+.QToolButton::menu-indicator {
     image: url(:/qss_icons/rc/down_arrow.png);
     top: -7px; left: -2px; /* shift it a bit */
 }
 
 /* the subcontrols below are used only in the MenuButtonPopup mode */
-QToolButton::menu-button {
+.QToolButton::menu-button {
     border: 1px transparent #76797C;
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
@@ -1086,11 +1127,11 @@ QToolButton::menu-button {
     outline: none;
 }
 
-QToolButton::menu-arrow {
+.QToolButton::menu-arrow {
     image: url(:/qss_icons/rc/down_arrow.png);
 }
 
-QToolButton::menu-arrow:open {
+.QToolButton::menu-arrow:open {
     border: 1px solid #76797C;
 }
 
