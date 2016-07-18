@@ -699,7 +699,7 @@ QModelIndexList BreakPointModel::getBreakPointIndizes(const QString &filename, i
 
         for (int row = 0; row < m_breakpoints.size(); ++row)
         {
-            if (QString::compare(m_breakpoints[row].filename, filename) == 0)
+			if (QString::compare(m_breakpoints[row].filename, filename, m_filenameCaseSensitivity) == 0)
             {
                 count++;
 
