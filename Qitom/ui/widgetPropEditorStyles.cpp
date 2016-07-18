@@ -101,6 +101,7 @@ WidgetPropEditorStyles::WidgetPropEditorStyles(QWidget *parent) :
     ui.btnBackgroundColor->setEnabled(false);
     ui.btnFont->setEnabled(false);
     ui.checkFillEOL->setEnabled(false);
+    ui.checkShowCaretBackground->setVisible(false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -148,6 +149,7 @@ void WidgetPropEditorStyles::writeSettingsInternal(const QString &filename)
     settings.setValue("marginForegroundColor", m_marginFgcolor);
     settings.setValue("caretBackgroundColor", m_caretBgcolor);
     settings.setValue("caretForegroundColor", m_caretFgcolor);
+    settings.setValue("caretBackgroundShow", ui.checkShowCaretBackground->isChecked());
     settings.setValue("foldMarginBackgroundColor", m_foldMarginBgcolor);
     settings.setValue("foldMarginForegroundColor", m_foldMarginFgcolor);
     settings.setValue("markerCurrentBackgroundColor", m_markerCurrentBgcolor);
@@ -162,6 +164,7 @@ void WidgetPropEditorStyles::writeSettingsInternal(const QString &filename)
     settings.setValue("selectionBackgroundColor", m_selectionBgcolor);
     settings.setValue("selectionForegroundColor", m_selectionFgcolor);
     settings.setValue("markerSameStringBackgroundColor", m_markerSameStringBgcolor);
+    
 
     settings.endGroup();
 }
@@ -201,6 +204,7 @@ void WidgetPropEditorStyles::readSettingsInternal(const QString &filename)
     m_matchedBraceFgcolor = QColor(settings.value("matchedBraceForegroundColor", QColor(Qt::red)).toString());
     m_caretBgcolor = QColor(settings.value("caretBackgroundColor", QColor(Qt::white)).toString());
     m_caretFgcolor = QColor(settings.value("caretForegroundColor", QColor(Qt::black)).toString());
+    ui.checkShowCaretBackground->setChecked(settings.value("caretBackgroundShow", false).toBool());
     m_selectionBgcolor = QColor(settings.value("selectionBackgroundColor", QColor(51, 153, 255)).toString());
     m_selectionFgcolor = QColor(settings.value("selectionForegroundColor", QColor(Qt::white)).toString());
     m_markerSameStringBgcolor = QColor(settings.value("markerSameStringBackgroundColor", QColor(Qt::green)).toString());
@@ -231,6 +235,7 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
             ui.btnBackgroundColor->setEnabled(true);
             ui.btnFont->setEnabled(true);
             ui.checkFillEOL->setEnabled(true);
+            ui.checkShowCaretBackground->setVisible(false);
         }
         else if (current->type() < 1000)
         {
@@ -238,6 +243,7 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
             ui.checkFillEOL->setChecked(false);
             ui.btnFont->setEnabled(false);
             ui.btnBackgroundColor->setEnabled(true);
+            ui.checkShowCaretBackground->setVisible(false);
             QColor bg;
             QColor fg(Qt::black);
 
@@ -288,6 +294,7 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
                 bg = m_caretBgcolor;
                 fg = m_caretFgcolor;
                 ui.btnForegroundColor->setEnabled(true);
+                ui.checkShowCaretBackground->setVisible(true);
                 break;
             case SELECTIONCOLOR:
                 bg = m_selectionBgcolor;

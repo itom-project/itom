@@ -108,6 +108,13 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QCheckBox" name="checkShowCaretBackground">
+          <property name="text">
+           <string>Highlight current line</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </item>
