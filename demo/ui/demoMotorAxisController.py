@@ -11,10 +11,10 @@ c["defaultRelativeStepSize"] = 0.010 #always in mm or deg
 c["axisNames"] = ("x","y","z","alpha")
 c["defaultDecimals"] = 2
 
-if itom.version(1)["itom"]["QT_Version"] < "5.0.0":
+if version(1)["itom"]["QT_Version"] < "5.0.0":
     raise Warning("It is not possible to call slots with enumeration data types as arguments with Qt < 5.0.0")
 #the fourth axis is a rotational axis:
-if itom.version(1)["itom"]["QT_Version"]>="5.5.0":
+if version(1)["itom"]["QT_Version"]>="5.5.0":
     c.call("setAxisType", 3, "TypeRotational")
     c.call("setAxisUnit", 3, "UnitDeg")
 else:
