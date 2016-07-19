@@ -245,7 +245,16 @@ ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
     }
 
     // 09/02/15 ck changed default role to developer
-    UserInfoStruct uis(m_strConstStdUser, "itom.ini", QDir::cleanPath(appDir.absoluteFilePath("itom.ini")), userRoleDeveloper, ~UserFeatures(), true);
+    QString itomIniPath = QDir::cleanPath(appDir.absoluteFilePath("itom.ini"));
+    UserInfoStruct uis(m_strConstStdUser, "itom.ini", itomIniPath, userRoleDeveloper, ~UserFeatures(), true);
+
+    QFileInfo fi(itomIniPath);
+    if (fi.exists() && fi.lastModified() > youngestModificationDate)
+    {
+        youngestModificationDate = fi.lastModified();
+        m_lastOpenedUserName = uis.name;
+    }
+
     m_userModel->addUser(uis);
 
     return retval;
