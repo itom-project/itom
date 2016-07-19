@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>562</width>
-    <height>320</height>
+    <height>443</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,17 @@
     <item>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="MotorAxisController" name="controller"/>
+       <widget class="MotorAxisController" name="controller">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="numAxis">
+         <number>2</number>
+        </property>
+       </widget>
       </item>
       <item>
        <spacer name="verticalSpacer_2">

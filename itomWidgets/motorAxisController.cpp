@@ -142,6 +142,10 @@ MotorAxisController::MotorAxisController(QWidget *parent) :
     setMovementType(MovementAbsolute);
 
     connect(d->ui.tableMovement, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(customContextMenuRequested(QPoint)));
+
+#if QT_VERSION >= 0x050200
+    d->ui.tableMovement->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+#endif
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
