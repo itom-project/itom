@@ -128,7 +128,11 @@ ito::RetVal UserOrganizer::loadSettings(const QString &defUserName)
 
         if (defUserName.isEmpty())
         {
-            userDialog.selectUser(curSysUser);
+            if (!userDialog.selectUser(curSysUser))
+            {
+                //no profile found with the current user
+                userDialog.selectUser(m_lastOpenedUserName);
+            }
         }
         else
         {
@@ -155,7 +159,8 @@ ito::RetVal UserOrganizer::loadSettings(const QString &defUserName)
         m_settingsFile = settingsFile;
 
         QString uid;
-        retval += readUserDataFromFile(settingsFile, m_userName, uid, m_features, m_userRole);
+        QDateTime modified;
+        retval += readUserDataFromFile(settingsFile, m_userName, uid, m_features, m_userRole, modified);
     }
     else
     {
@@ -208,6 +213,8 @@ ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
     QStringList iniList = appDir.entryList(QStringList("itom_*.ini"));
     bool userExists;
     QString absfile;
+    QDateTime lastModified;
+    QDateTime youngestModificationDate;
 
     foreach(QString iniFile, iniList) 
     {
@@ -224,8 +231,14 @@ ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
             UserInfoStruct uis;
             uis.iniFile = absfile;
             uis.standardUser = false;
-            if (readUserDataFromFile(absfile, uis.name, uis.id, uis.features, uis.role) == ito::retOk)
+            if (readUserDataFromFile(absfile, uis.name, uis.id, uis.features, uis.role, lastModified) == ito::retOk)
             {
+                if (youngestModificationDate.isNull() || (youngestModificationDate < lastModified))
+                {
+                    youngestModificationDate = lastModified;
+                    m_lastOpenedUserName = uis.name;
+                }
+
                 m_userModel->addUser(uis);
             }
         }
@@ -239,13 +252,15 @@ ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal UserOrganizer::readUserDataFromFile(const QString &filename, QString &username, QString &uid, UserFeatures &features, UserRole &role)
+ito::RetVal UserOrganizer::readUserDataFromFile(const QString &filename, QString &username, QString &uid, UserFeatures &features, UserRole &role, QDateTime &lastModified)
 {
     ito::RetVal retval;
     QFileInfo fi(filename);
 
     if (fi.exists())
     {
+        lastModified = fi.lastModified();
+
         QSettings settings(filename, QSettings::IniFormat);
         settings.beginGroup("ITOMIniFile");
 
@@ -307,6 +322,7 @@ ito::RetVal UserOrganizer::readUserDataFromFile(const QString &filename, QString
     else
     {
         retval += ito::RetVal::format(ito::retError, 0, "file '%s' does not exist", filename.toLatin1().data());
+        lastModified = QDateTime();
     }
     
     return retval;

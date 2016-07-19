@@ -173,7 +173,8 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, User
             QString uid;
             UserFeatures features;
             UserRole role;
-            if (uio->readUserDataFromFile(filename, username, uid, features, role) == ito::retOk)
+            QDateTime modified;
+            if (uio->readUserDataFromFile(filename, username, uid, features, role, modified) == ito::retOk)
             {
                 ui.lineEdit_name->setText(username);
                 

@@ -25,6 +25,7 @@
 
 #include "../global.h"
 #include <qobject.h>
+#include <qdatetime.h>
 
 #include "models/UserModel.h"
 
@@ -46,7 +47,7 @@ class UserOrganizer : public QObject
         inline UserModel* getUserModel() const { return m_userModel; }
         
 
-        ito::RetVal readUserDataFromFile(const QString &filename, QString &username, QString &uid, UserFeatures &features, UserRole &role);
+        ito::RetVal readUserDataFromFile(const QString &filename, QString &username, QString &uid, UserFeatures &features, UserRole &role, QDateTime &lastModified);
         ito::RetVal writeUserDataToFile(const QString &username, const QString &uid, const UserFeatures &features, const UserRole &role);
 
         UserFeatures getUserFeatures(void) const { return m_features; }
@@ -74,6 +75,7 @@ class UserOrganizer : public QObject
         QString m_settingsFile;
 
         QString m_strConstStdUser;
+        QString m_lastOpenedUserName;
 
         UserModel *m_userModel;
         
