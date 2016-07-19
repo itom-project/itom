@@ -1883,21 +1883,30 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
             }
             else
             {
-                QString d = PyObjGetString(val, strict, ok);
+                QString s = PyObjGetString(val, strict, ok);
                 if (ok)
                 {
                     ito::RetVal retval;
                     QMetaType mt(type);
                     const QMetaObject *mo = mt.metaObject();
-                    int idx = mo ? mo->indexOfEnumerator(QMetaType::typeName(type)) : -1;
-                    int d;
-                    
-                    if (idx >= 0)
+                    if (mo)
                     {
-                        d = QPropertyHelper::QVariantToEnumCast(d, mo->enumerator(idx), retval).toInt(&ok);
-                        if (ok)
+                        QByteArray name = QMetaType::typeName(type);
+                        int idx = name.indexOf("::");
+                        if (idx >= 0)
                         {
-                            *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&d));
+                            name = name.mid(idx + 2);
+                        }
+
+                        idx = mo->indexOfEnumerator(name.data());
+
+                        if (idx >= 0)
+                        {
+                            int d = QPropertyHelper::QVariantToEnumCast(s, mo->enumerator(idx), retval).toInt(&ok);
+                            if (ok && !retval.containsError())
+                            {
+                                *retPtr = METATYPE_CONSTRUCT(type, reinterpret_cast<char*>(&d));
+                            }
                         }
                     }
                 }

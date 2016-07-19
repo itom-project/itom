@@ -2653,19 +2653,23 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                     QString str1("prop_");
                     str1 += QString(prop.name());
                     QString enumString;
+                    QString enumStringShort;
 
                     if (enumIterator != tmpObjectInfo.end())
                     {
                         if (enumIterator->m_type == ClassInfoContainer::TypeEnum)
                         {
                             enumString = QString("\n\nThe type '%1' is an enumeration that can have one of the following values (str or int):\n\n* ").arg(QLatin1String(signature));
+                            enumStringShort = QLatin1String(" Enumeration values: ");
                         }
                         else
                         {
                             enumString = QString("\n\nThe type '%1' is a flag mask that can be a combination of one or several of the following values (or-combination number values or semicolon separated strings):\n\n* ").arg(QLatin1String(signature));
+                            enumStringShort = QLatin1String(" Flag values (combination possible): ");
                         }
 
                         enumString += enumIterator->m_shortDescription.split(";").join("\n* ");
+                        enumStringShort += enumIterator->m_shortDescription;
                     }
 
 
@@ -2682,12 +2686,24 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
                         }
 
                         description = QString("{%1} -> %2%3%4").arg(QString(signature)).arg(QString(propInfoMap[prop.name()])).arg(readonly ? " (readonly)" : "").arg(enumString);
+
+                        if (enumStringShort.isEmpty() == false)
+                        {
+                            shortDescription += enumStringShort;
+                        }
                     }
                     else
                     {
                         shortDescription = QString("%1 {%2}%3").arg(prop.name()).arg(QString(signature)).arg(readonly ? " (readonly)" : "");
                         description = QString("{%1} -> %3%4").arg(QString(signature)).arg(readonly ? " (readonly)" : "").arg(enumString);
+
+                        if (enumStringShort.isEmpty() == false)
+                        {
+                            shortDescription += (QString(" ->") + enumStringShort);
+                        }
                     }
+
+                    
 
                     tmpObjectInfo.append(ClassInfoContainer(ClassInfoContainer::TypeProperty, QLatin1String(prop.name()), shortDescription, description));
                 }
