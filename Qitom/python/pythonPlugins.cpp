@@ -388,7 +388,7 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"funcName", "detailLevel", NULL};
     char* funcName = NULL;
-    int detailLevel = 0;
+    int detailLevel = 0; //0: show text in std::cout, 1: return dict or list with items
 
     PyObject *result = NULL;
     QString funcNameString("");
@@ -399,6 +399,7 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
     }
 
     QMap<QString, ExecFuncParams> *funcList = NULL;
+    bool printToStream = (detailLevel != 1);
 
     aib->getExecFuncList(&funcList);
     result = PyDict_New();
@@ -421,54 +422,68 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
                 (*funcList)[funcNameString].paramsMand;
                 (*funcList)[funcNameString].paramsOpt;
 
-                std::cout << "\nParameters for the execFunction '"<< funcNameString.toLatin1().data() <<"' are :\n";
-                QVector<ito::Param> parameter = (*funcList)[funcNameString].paramsMand;
-                if (parameter.size())
+                if (printToStream)
                 {
-                    std::cout << "\nMandatory parameters:\n";
-                    execFuncslist = PrntOutParams(&parameter, false, true, -1);
+                    std::cout << "Parameters\n-----------------\n";
+                }
+                const QVector<ito::Param> *parameter = &((*funcList)[funcNameString].paramsMand);
+                if (parameter->size() > 0)
+                {
+                    if (printToStream)
+                    {
+                        std::cout << "\nMandatory parameters:\n";
+                    }
+                    execFuncslist = PrntOutParams(parameter, false, true, -1, printToStream);
                     PyDict_SetItemString(result, "Mandatory Parameters", execFuncslist);
                     Py_DECREF(execFuncslist);
                 }
-                else
+                else if (printToStream)
                 {
-                    std::cout << "\nMandatory parameters: execFunction has no mandatory parameters. \n";
+                    std::cout << "\nMandatory parameters:\n- no mandatory parameters -";
                 }
 
-                parameter = (*funcList)[funcNameString].paramsOpt;
-                if (parameter.size())
+                parameter = &((*funcList)[funcNameString].paramsOpt);
+                if (parameter->size() > 0)
                 {
-                    std::cout << "\nOptional parameters:\n";
-                    execFuncslist = PrntOutParams(&parameter, false, true, -1);
+                    if (printToStream)
+                    {
+                        std::cout << "\nOptional parameters:\n";
+                    }
+                    execFuncslist = PrntOutParams(parameter, false, true, -1, printToStream);
                     PyDict_SetItemString(result, "Optional Parameters", execFuncslist);
                     Py_DECREF(execFuncslist);
                 }
-                else
+                else if (printToStream)
                 {
-                    std::cout << "\nOptional parameters: execFunction has no optional parameters. \n";
+                    std::cout << "\nOptional parameters:\n- no optional parameters -";
                 }
                 std::cout << "\n";
 
-                parameter = (*funcList)[funcNameString].paramsOut;
-                if (parameter.size())
+                parameter = &((*funcList)[funcNameString].paramsOut);
+                if (parameter->size())
                 {
-                    std::cout << "\nOutput values:\n";
-                    execFuncslist = PrntOutParams(&parameter, false, true, -1);
+                    if (printToStream)
+                    {
+                        std::cout << "\nOutput values:\n";
+                    }
+                    execFuncslist = PrntOutParams(parameter, false, true, -1, printToStream);
                     PyDict_SetItemString(result, "Output Parameters", execFuncslist);
                     Py_DECREF(execFuncslist);
                 }
-                else
+                else if (printToStream)
                 {
-                    std::cout << "\nOutput values: execFunction has no output-parameters defined. \n";
+                    std::cout << "\nOutput values:\n- no output parameters -";
                 }
-                std::cout << "\n";
             
             }
             else
             {
                 execFuncs.sort();
                 
-                std::cout << "\nPlugin execFunctions are:\n\n";
+                if (printToStream)
+                {
+                    std::cout << "Plugin 'exec' functions are:\n\n";
+                }
 
                 QList<QPair<QString, QString> > outPut;
                 outPut.clear();
@@ -487,33 +502,39 @@ PyObject * getExecFuncsInfo(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
                     text = NULL;
                 }
                 longname+= 3;
-                std::cout << "No " << QString("Name").leftJustified(longname, ' ', false).toLatin1().data() << "   \tInfostring\n"; 
-                for (int funcs = 0; funcs < outPut.size(); funcs++)
+                if (printToStream)
                 {
-                    std::cout << funcs << "  " << outPut.value(funcs).first.leftJustified(longname, ' ', false).toLatin1().data() << "  \t'" << outPut.value(funcs).second.toLatin1().data() << "'\n"; 
-                }    
+                    std::cout << "No " << QString("Name").leftJustified(longname, ' ', false).toLatin1().data() << "   \tInfostring\n";
+
+                    for (int funcs = 0; funcs < outPut.size(); funcs++)
+                    {
+                        std::cout << funcs << "  " << outPut.value(funcs).first.leftJustified(longname, ' ', false).toLatin1().data() << "  \t'" << outPut.value(funcs).second.toLatin1().data() << "'\n";
+                    }
+
+                    std::cout << "\nUse inst.getExecFuncsInfo('execfuncname') to get detailed information about one 'exec' function.\n";
+                }
             }
         }
-        else
+        else if (printToStream)
         {
-            std::cout << " \nPlugin has no execFunctions! \n";        
+            std::cout << " \nPlugin has no additional 'exec' functions. \n";        
         }
 
     }
-    else
+    else if (printToStream)
     {
-        std::cout << " \nPlugin has no execFunctions! \n";
+        std::cout << " \nPlugin has no additional 'exec' functions. \n";
     }
 
-    std::cout << "\n";
-
-    if ((funcName == NULL) && (detailLevel < 1))
+    if (printToStream)
     {
         Py_DECREF(result);
         Py_RETURN_NONE;
     }
     else
+    {
         return result;
+    }
 
 }
 
@@ -974,7 +995,7 @@ funcName : {str}, optional \n\
     is the fullname or a part of any execFunc-name which should be displayed. \n\
     If funcName is none or no execFunc matches funcName casesensitiv a list with all suitable execFuncs is given. \n\
 detailLevel : {dict}, optional \n\
-    if `detailLevel == 1`, function returns a dictionary with parameters [default: 0]. \n\
+    if `detailLevel == 1`, function returns a dictionary with parameters, else information is print to the command line [default: 0]. \n\
 \n\
 Returns \n\
 ------- \n\
