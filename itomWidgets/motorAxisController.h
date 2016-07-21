@@ -67,6 +67,7 @@ class ITOMWIDGETS_EXPORT MotorAxisController : public QWidget
     Q_PROPERTY(int defaultDecimals READ defaultDecimals WRITE setDefaultDecimals)
     Q_PROPERTY(MovementType movementType READ movementType WRITE setMovementType)
     Q_PROPERTY(bool movementTypeVisible READ movementTypeVisible WRITE setMovementTypeVisible)
+    Q_PROPERTY(QString arbitraryUnit READ arbitraryUnit WRITE setArbitraryUnit)
 
 public:
     enum AxisUnit {
@@ -75,7 +76,8 @@ public:
         UnitMm,
         UnitCm,
         UnitM,
-        UnitDeg
+        UnitDeg,
+        UnitAU /*Arbitrary unit*/
     };
 
     enum AxisType {
@@ -119,6 +121,7 @@ public:
     MovementType movementType() const;
     bool movementTypeVisible() const;
     bool axisEnabled(int axisIndex) const;
+    QString arbitraryUnit() const;
 
 private:
     void retValToMessageBox(const ito::RetVal &retval, const QString &methodName) const;
@@ -151,6 +154,7 @@ public slots:
     void setRefreshAvailable(bool available);
     void setDefaultAxisType(AxisType type);
     void setNumAxis(int numAxis);
+    void setArbitraryUnit(const QString &unit);
 
 private slots:
     void on_btnCancel_clicked();

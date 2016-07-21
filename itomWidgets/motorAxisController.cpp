@@ -58,7 +58,8 @@ public:
         cancelAvailable(true),
         stepUpMapper(NULL),
         stepDownMapper(NULL),
-        runSingleMapper(NULL)
+        runSingleMapper(NULL),
+        arbitraryUnit("a.u.")
     {
 
     }
@@ -92,6 +93,7 @@ public:
     bool cancelAvailable;
 
     MotorAxisController::MovementType movementType;
+    QString arbitraryUnit;
 };
 
 //------------------------------------------------------------------------------------------------------------------------------------------------
@@ -200,6 +202,8 @@ QString MotorAxisController::suffixFromAxisUnit(const AxisUnit &unit)
         return " nm";
     case UnitDeg:
         return QLatin1String(" °");
+    case UnitAU:
+        return QString(" %s").arg(d->arbitraryUnit);
     }
 
     return "";
@@ -221,6 +225,7 @@ double MotorAxisController::unitToBaseUnit(const double &value, const AxisUnit &
     case UnitNm:
         return value * 1.e-6;
     case UnitDeg:
+    case UnitAU:
         return value;
     }
 
@@ -243,6 +248,7 @@ double MotorAxisController::baseUnitToUnit(const double &value, const AxisUnit &
     case UnitNm:
         return value * 1.e6;
     case UnitDeg:
+    case UnitAU:
         return value;
     }
 
@@ -402,7 +408,7 @@ ito::RetVal MotorAxisController::setAxisUnit(int axisIndex, AxisUnit unit)
             unit = UnitMm;
             retval += ito::RetVal(ito::retWarning, 0, "type of axis is linear, the unit is set to 'mm'.");
         }
-        else if (d->axisType[axisIndex] == TypeRotational && unit != UnitDeg)
+        else if (d->axisType[axisIndex] == TypeRotational && unit != UnitDeg && unit != UnitAU)
         {
             unit = UnitDeg;
             retval += ito::RetVal(ito::retWarning, 0, "type of axis is rotational, the unit is set to '°'.");
@@ -523,7 +529,7 @@ ito::RetVal MotorAxisController::setAxisType(int axisIndex, AxisType type)
                 setAxisUnit(axisIndex, UnitMm);
                 //retval += ito::RetVal(ito::retWarning, 0, "The unit of the axis was '°'. Due to the new type, it is set to 'mm' now.");
             }
-            else if (type == TypeRotational && axisUnit(axisIndex) != UnitDeg)
+            else if (type == TypeRotational && (axisUnit(axisIndex) != UnitDeg && axisUnit(axisIndex) != UnitAU))
             {
                 setAxisUnit(axisIndex, UnitDeg);
                 //retval += ito::RetVal(ito::retWarning, 0, "The unit of the axis was 'mm', 'nm' or similar. Due to the new type, it is set to '°' now.");
@@ -633,6 +639,24 @@ ito::RetVal MotorAxisController::setAxisName(int axisIndex, const QString &name)
     else
     {
         return ito::RetVal(ito::retError, 0, "axisIndex is out of bounds.");
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+QString MotorAxisController::arbitraryUnit() const
+{
+    return d->arbitraryUnit;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void MotorAxisController::setArbitraryUnit(const QString &unit)
+{
+    if (d->arbitraryUnit != unit)
+    {
+        for (int i = 0; i < d->spinStepSize.size(); ++i)
+        {
+            setAxisUnit(i, axisUnit(i));
+        }
     }
 }
 
@@ -1030,61 +1054,64 @@ void MotorAxisController::customContextMenuRequested(const QPoint &pos)
         QMenu contextMenu;
         QAction *a;
 
-        QMenu *unitMenu = contextMenu.addMenu(tr("Unit"));
-        if (axisType(index.row()) == TypeLinear)
+        if (axisUnit(index.row()) != UnitAU)
         {
-            a = new QAction("m", this);
-            a->setCheckable(true);
-            a->setData(UnitM);
-            if (axisUnit(index.row()) == UnitM)
+            QMenu *unitMenu = contextMenu.addMenu(tr("Unit"));
+            if (axisType(index.row()) == TypeLinear)
             {
-                a->setChecked(true);
-            }
-            unitMenu->addAction(a);
+                a = new QAction("m", this);
+                a->setCheckable(true);
+                a->setData(UnitM);
+                if (axisUnit(index.row()) == UnitM)
+                {
+                    a->setChecked(true);
+                }
+                unitMenu->addAction(a);
 
-            a = new QAction("cm", this);
-            a->setCheckable(true);
-            a->setData(UnitCm);
-            if (axisUnit(index.row()) == UnitCm)
-            {
-                a->setChecked(true);
-            }
-            unitMenu->addAction(a);
+                a = new QAction("cm", this);
+                a->setCheckable(true);
+                a->setData(UnitCm);
+                if (axisUnit(index.row()) == UnitCm)
+                {
+                    a->setChecked(true);
+                }
+                unitMenu->addAction(a);
 
-            a = new QAction("mm", this);
-            a->setCheckable(true);
-            a->setData(UnitMm);
-            if (axisUnit(index.row()) == UnitMm)
-            {
-                a->setChecked(true);
-            }
-            unitMenu->addAction(a);
+                a = new QAction("mm", this);
+                a->setCheckable(true);
+                a->setData(UnitMm);
+                if (axisUnit(index.row()) == UnitMm)
+                {
+                    a->setChecked(true);
+                }
+                unitMenu->addAction(a);
 
-            a = new QAction(QLatin1String("µm"), this);
-            a->setCheckable(true);
-            a->setData(UnitMum);
-            if (axisUnit(index.row()) == UnitMum)
-            {
-                a->setChecked(true);
-            }
-            unitMenu->addAction(a);
+                a = new QAction(QLatin1String("µm"), this);
+                a->setCheckable(true);
+                a->setData(UnitMum);
+                if (axisUnit(index.row()) == UnitMum)
+                {
+                    a->setChecked(true);
+                }
+                unitMenu->addAction(a);
 
-            a = new QAction("nm", this);
-            a->setCheckable(true);
-            a->setData(UnitNm);
-            if (axisUnit(index.row()) == UnitNm)
-            {
-                a->setChecked(true);
+                a = new QAction("nm", this);
+                a->setCheckable(true);
+                a->setData(UnitNm);
+                if (axisUnit(index.row()) == UnitNm)
+                {
+                    a->setChecked(true);
+                }
+                unitMenu->addAction(a);
             }
-            unitMenu->addAction(a);
-        }
-        else
-        {
-            a = new QAction(QLatin1String("°"), this);
-            a->setCheckable(true);
-            a->setChecked(true);
-            a->setData(UnitDeg);
-            unitMenu->addAction(a);
+            else
+            {
+                a = new QAction(QLatin1String("°"), this);
+                a->setCheckable(true);
+                a->setChecked(true);
+                a->setData(UnitDeg);
+                unitMenu->addAction(a);
+            }
         }
 
 
