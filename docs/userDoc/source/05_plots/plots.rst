@@ -27,6 +27,7 @@ Content:
    
    plotOverview
    figureManagement
+   plotClasses
    linePlots
    imagePlots
    isometricPlot
