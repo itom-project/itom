@@ -4,8 +4,7 @@
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 OPTION(BUILD_OPENCV_SHARED "Use the shared version of OpenCV (default: ON)." ON)
 SET (BUILD_QTVERSION "auto" CACHE STRING "auto: automatically detects Qt4 or Qt5, else use Qt4 or Qt5")
-
-
+OPTION(BUILD_OPENMP_ENABLE "Use OpenMP parallelization if available. If TRUE, the definition USEOPENMP is set. This is only the case if OpenMP is generally available and if the build is release." ON)
 
 IF(BUILD_OPENCV_SHARED)
     SET(OpenCV_STATIC FALSE)
@@ -82,9 +81,13 @@ ENDIF (MSVC)
 find_package(OpenMP QUIET)
 
 IF (OPENMP_FOUND)
-    message(STATUS "OpenMP found and enabled for release compilation")
-    SET ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${OpenMP_CXX_FLAGS} -D USEOPENMP" )
-    SET ( CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${OpenMP_C_FLAGS} -D USEOPENMP" )
+    IF (BUILD_OPENMP_ENABLE)
+        message(STATUS "OpenMP found and enabled for release compilation")
+        SET ( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${OpenMP_CXX_FLAGS} -DUSEOPENMP" )
+        SET ( CMAKE_C_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${OpenMP_C_FLAGS} -DUSEOPENMP" )
+    ELSE (BUILD_OPENMP_ENABLE)
+        message(STATUS "OpenMP found but not enabled for release compilation")
+    ENDIF (BUILD_OPENMP_ENABLE)
 ELSE(OPENMP_FOUND)
     message(STATUS "OpenMP not found.")
 ENDIF(OPENMP_FOUND)

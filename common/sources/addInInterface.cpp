@@ -44,6 +44,7 @@
 namespace ito
 {
     int AddInBase::m_instCounter = 0;
+    int AddInBase::maxThreadCount = QThread::idealThreadCount();
 
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInInterfaceBase::~AddInInterfaceBase()
@@ -466,6 +467,34 @@ namespace ito
     void AddInBase::setBasePlugin(AddInInterfaceBase *base) 
     { 
         aibp->m_pBasePlugin = base; 
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    /*static*/ int AddInBase::getMaximumThreadCount()
+    {
+        return maxThreadCount;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    /*static*/ RetVal AddInBase::setMaximumThreadCount(int threadCount)
+    {
+        if (QThread::idealThreadCount() > 0)
+        {
+            if (threadCount < 1 || threadCount > QThread::idealThreadCount())
+            {
+                maxThreadCount = QThread::idealThreadCount();
+                return ito::RetVal::format(ito::retWarning, 0, "The threadCount is out of bounds and has been set to the maximum number of %i", QThread::idealThreadCount());
+            }
+            else
+            {
+                maxThreadCount = threadCount;
+            }
+        }
+        else
+        {
+            maxThreadCount = threadCount;
+        }
+        return ito::retOk;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------

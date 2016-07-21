@@ -471,6 +471,9 @@ namespace ito
             */
             QVector<ito::AddInBase::AddInRef *> * getArgAddIns(void) { return &m_hwDecList; }
 
+            static int getMaximumThreadCount();
+            static RetVal setMaximumThreadCount(int threadCount);
+
         protected:
             // constructor (doc in source)
             AddInBase();
@@ -494,6 +497,7 @@ namespace ito
             
             QString m_identifier;                               //!< unique identifier (serial number, com-port...)
             
+            
         private:
             Q_DISABLE_COPY(AddInBase)
 
@@ -514,6 +518,7 @@ namespace ito
             friend class AddInInterfaceBase;                  //!< AddInBase is friend with AddInInterfaceBase, such that the interface can access methods like the protected constructor or destructor of this plugin class.
 
             static int m_instCounter;
+            static int maxThreadCount;                        //!< maximum number of threads algorithms can use e.g. with OpenMP parallelization. This is a number between 1 and QThread::idealThreadCount()
 
         signals:
             //! This signal usually is emitted if the vector m_params is changed.

@@ -25,4 +25,4 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#define COMMON_QT_VER_STRING  "2.3.0.0"
+#define COMMON_QT_VER_STRING  "2.4.0.0"

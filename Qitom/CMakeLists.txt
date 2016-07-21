@@ -1,7 +1,7 @@
 SET (target_name qitom)
          
 project(${target_name})
-  
+   
 cmake_minimum_required(VERSION 2.8.9)
 
 #CMAKE Policies

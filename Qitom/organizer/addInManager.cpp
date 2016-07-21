@@ -43,6 +43,8 @@
 #include <QDebug>
 #include <QDirIterator>
 #include <qaction.h>
+#include <qsettings.h>
+#include <qnumeric.h>
 
 //#include "./memoryCheck/setDebugNew.h"
 //#include "./memoryCheck/reportingHook.h"
@@ -1673,6 +1675,18 @@ namespace ito
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
 
         m_deadPlugins.clear();
+
+        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+        settings.beginGroup("AddInManager");
+        if (QThread::idealThreadCount() < 0)
+        {
+            ito::AddInBase::setMaximumThreadCount(qBound(1, settings.value("maximumThreadCount", 2).toInt(), 2));
+        }
+        else
+        {
+            ito::AddInBase::setMaximumThreadCount(qBound(1, settings.value("maximumThreadCount", QThread::idealThreadCount()).toInt(), QThread::idealThreadCount()));
+        }
+        settings.endGroup();
 
         connect(&m_deadPluginTimer, SIGNAL(timeout()), this, SLOT(closeDeadPlugins()));
 
