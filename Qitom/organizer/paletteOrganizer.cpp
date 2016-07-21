@@ -22,15 +22,13 @@
 
 #include "paletteOrganizer.h"
 
-//#include "opencv2/core/core.hpp"
-//#include "opencv2/core/operations.hpp"
-
 //----------------------------------------------------------------------------------------------------------------------------------
 inline uchar saturate_cast(float v)
 { 
     int iv = (int)(v + (v >= 0 ? 0.5 : -0.5));
     return (uchar)((unsigned)iv <= UCHAR_MAX ? iv : iv > 0 ? UCHAR_MAX : 0);
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 namespace ito
 {
