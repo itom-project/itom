@@ -716,7 +716,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
         }
 		else
 		{
-			std::cerr << "The plugin parameter at position " << n << " contains neither type or name. This is an invalid parameter. Please check the plugin\n" << std::endl;
+			std::cerr << "The plugin parameter at position " << n + 1 << " contains neither type or name. This is an invalid parameter. Please check the plugin\n" << std::endl;
 			//this is an error case, params vector contains a type-less element. Check the plugin, this must not happen.
 			Py_INCREF(Py_None);
 			PyTuple_SetItem(pVector, n, Py_None); //steals reference of Py_None
