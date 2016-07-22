@@ -86,14 +86,14 @@ namespace ito
     //! Check if a value is finite float32 values
     template<> inline bool isFinite<float32>(float32 value)
     {
-        uchar *ch = (uchar *)&value;
+        unsigned char *ch = (unsigned char *)&value;
         return (ch[3] & 0x7f) != 0x7f || (ch[2] & 0x80) != 0x80;
     }
 
     //! Check if a value is finite float64 values
     template<> inline bool isFinite<float64>(float64 value)
     {
-        uchar *ch = (uchar *)&value;
+        unsigned char *ch = (unsigned char *)&value;
         return (ch[7] & 0x7f) != 0x7f || (ch[6] & 0xf0) != 0xf0;
     }
 
@@ -102,8 +102,8 @@ namespace ito
     {
         float32 realVal = value.real();
         float32 imagVal = value.real();
-        uchar *chreal = (uchar *)&realVal;
-        uchar *chimag = (uchar *)&imagVal;
+        unsigned char *chreal = (unsigned char *)&realVal;
+        unsigned char *chimag = (unsigned char *)&imagVal;
         return ((chreal[3] & 0x7f) != 0x7f || (chreal[2] & 0x80) != 0x80) && ((chimag[3] & 0x7f) != 0x7f || (chimag[2] & 0x80) != 0x80);
     }
 
@@ -112,8 +112,8 @@ namespace ito
     {
         float64 realVal = value.real();
         float64 imagVal = value.real();
-        uchar *chreal = (uchar *)&realVal;
-        uchar *chimag = (uchar *)&imagVal;
+        unsigned char *chreal = (unsigned char *)&realVal;
+        unsigned char *chimag = (unsigned char *)&imagVal;
         return ((chreal[7] & 0x7f) != 0x7f || (chreal[6] & 0xf0) != 0xf0) && ((chimag[7] & 0x7f) != 0x7f || (chimag[6] & 0xf0) != 0xf0);
     }
 
@@ -135,13 +135,13 @@ namespace ito
     //! Check if a value is isNaN float32 values
     template<> inline bool isNaN<float32>(float32 value)
     {
-        uchar *ch = (uchar *)&value;
+        unsigned char *ch = (unsigned char *)&value;
         return (ch[3] & 0x7f) == 0x7f && ch[2] > 0x80;
     }
     //! Check if a value is isNaN float64 values
     template<> inline bool isNaN<float64>(float64 value)
     {
-        uchar *ch = (uchar *)&value;
+        unsigned char *ch = (unsigned char *)&value;
         return (ch[7] & 0x7f) == 0x7f && ch[6] > 0xf0;
     }
 
@@ -150,8 +150,8 @@ namespace ito
     {
         float32 realVal = value.real();
         float32 imagVal = value.real();
-        uchar *chreal = (uchar *)&realVal;
-        uchar *chimag = (uchar *)&imagVal;
+        unsigned char *chreal = (unsigned char *)&realVal;
+        unsigned char *chimag = (unsigned char *)&imagVal;
         return ((chreal[3] & 0x7f) == 0x7f && chreal[2] > 0x80) || ((chimag[3] & 0x7f) == 0x7f && chimag[2] > 0x80);
     }
 
@@ -160,8 +160,8 @@ namespace ito
     {
         float64 realVal = value.real();
         float64 imagVal = value.real();
-        uchar *chreal = (uchar *)&realVal;
-        uchar *chimag = (uchar *)&imagVal;
+        unsigned char *chreal = (unsigned char *)&realVal;
+        unsigned char *chimag = (unsigned char *)&imagVal;
         return ((chreal[7] & 0x7f) == 0x7f && chreal[6] > 0xf0) || ((chimag[7] & 0x7f) == 0x7f && chimag[6] > 0xf0);
     }
 
@@ -183,14 +183,14 @@ namespace ito
     //! Check if a value is infinite float32 values
     template<> inline bool isInf<float32>(float32 value)
     {
-        uchar *ch = (uchar *)&value;
+        unsigned char *ch = (unsigned char *)&value;
         return (ch[3] & 0x7f) == 0x7f && ch[2] == 0x80;
     }
 
     //! Check if a value is infinite float64 values
     template<> inline bool isInf<float64>(float64 value)
     {
-        uchar *ch = (uchar *)&value;
+        unsigned char *ch = (unsigned char *)&value;
         return (ch[7] & 0x7f) == 0x7f && ch[6] == 0xf0;
     }
 
@@ -199,8 +199,8 @@ namespace ito
     {
         float32 realVal = value.real();
         float32 imagVal = value.real();
-        uchar *chreal = (uchar *)&realVal;
-        uchar *chimag = (uchar *)&imagVal;
+        unsigned char *chreal = (unsigned char *)&realVal;
+        unsigned char *chimag = (unsigned char *)&imagVal;
         return ((chreal[3] & 0x7f) == 0x7f && chreal[2] == 0x80) || ((chimag[3] & 0x7f) == 0x7f && chimag[2] == 0x80);
     }
 
@@ -209,8 +209,8 @@ namespace ito
     {
         float64 realVal = value.real();
         float64 imagVal = value.real();
-        uchar *chreal = (uchar *)&realVal;
-        uchar *chimag = (uchar *)&imagVal;
+        unsigned char *chreal = (unsigned char *)&realVal;
+        unsigned char *chimag = (unsigned char *)&imagVal;
         return ((chreal[7] & 0x7f) == 0x7f && chreal[6] == 0xf0) || ((chimag[7] & 0x7f) == 0x7f && chimag[6] == 0xf0);
     }    
 

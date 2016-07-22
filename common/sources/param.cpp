@@ -30,6 +30,7 @@
 #include "../sharedStructures.h"
 
 #include <assert.h>
+#include "../numeric.h"
 
 namespace ito
 {
@@ -649,6 +650,103 @@ ParamBase::ParamBase(const ParamBase &copyConstr) : m_type(copyConstr.m_type), m
 
         default:
         break;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+bool ParamBase::operator == (const ParamBase &rhs) const
+{
+    if ((m_type & paramTypeMask) == (rhs.m_type & paramTypeMask))
+    {
+        switch (m_type & paramTypeMask)
+        {
+        case Int & ito::paramTypeMask:
+        case Char & ito::paramTypeMask:
+            return (m_iVal == rhs.m_iVal);
+
+        case Double & ito::paramTypeMask:
+        case Complex & ito::paramTypeMask:
+            return ito::areEqual(m_dVal.real, rhs.m_dVal.real) && ito::areEqual(m_dVal.imag, rhs.m_dVal.imag);
+
+        case String & paramTypeMask:
+            if (m_cVal && rhs.m_cVal)
+            {
+                return (strcmp(m_cVal, rhs.m_cVal) == 0);
+            }
+            else
+            {
+                return m_cVal == rhs.m_cVal;
+            }
+
+        case CharArray & paramTypeMask:
+            if (m_iVal > 0 && rhs.m_iVal > 0)
+            {
+                return (memcmp(m_cVal, rhs.m_cVal, m_iVal * sizeof(char)) == 0);
+            }
+            else
+            {
+                return (m_iVal <= 0) && (rhs.m_iVal <= 0);
+            }
+
+        case IntArray & paramTypeMask:
+            if (m_iVal > 0 && rhs.m_iVal > 0)
+            {
+                return (memcmp(m_cVal, rhs.m_cVal, m_iVal * sizeof(int32)) == 0);
+            }
+            else
+            {
+                return (m_iVal <= 0) && (rhs.m_iVal <= 0);
+            }
+
+        case DoubleArray & paramTypeMask:
+            if (m_iVal > 0 && rhs.m_iVal > 0)
+            {
+                for (int i = 0; i < m_iVal; ++i)
+                {
+                    if (!ito::areEqual(((float64*)m_cVal)[i], ((float64*)rhs.m_cVal)[i]))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            else
+            {
+                return (m_iVal <= 0) && (rhs.m_iVal <= 0);
+            }
+
+        case ComplexArray & paramTypeMask:
+            if (m_iVal > 0 && rhs.m_iVal > 0)
+            {
+                for (int i = 0; i < m_iVal; ++i)
+                {
+                    if (!ito::areEqual(((complex128*)m_cVal)[i], ((complex128*)rhs.m_cVal)[i]))
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            else
+            {
+                return (m_iVal <= 0) && (rhs.m_iVal <= 0);
+            }
+
+        case HWRef & paramTypeMask:
+        case DObjPtr & paramTypeMask:
+        case Pointer & paramTypeMask:
+        case PointCloudPtr & paramTypeMask:
+        case PointPtr & paramTypeMask:
+        case PolygonMeshPtr & paramTypeMask:
+            return (m_cVal == rhs.m_cVal);
+
+        default:
+            return false;
+        }
+    }
+    else
+    {
+        return false; //type is not equal
     }
 }
 

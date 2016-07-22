@@ -132,6 +132,16 @@ namespace ito
         ito::RetVal copyValueFrom(const ito::ParamBase *rhs);  //!< just copies the value from the right-hand-side tParam (rhs) to this tParam.
 
         //--------------------------------------------------------------------------------------------
+        // COMPARISON OPERATORS (two values are equal if both their type and the content is equal)
+        //--------------------------------------------------------------------------------------------
+        bool operator ==(const ParamBase &rhs) const;
+
+        inline bool operator !=(const ParamBase &rhs) const
+        {
+            return !(*this == rhs);
+        }
+
+        //--------------------------------------------------------------------------------------------
         //  SET/GET FURTHER PROPERTIES
         //--------------------------------------------------------------------------------------------
 
