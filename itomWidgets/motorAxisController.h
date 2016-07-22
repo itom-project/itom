@@ -128,9 +128,9 @@ public:
 
 private:
     void retValToMessageBox(const ito::RetVal &retval, const QString &methodName) const;
-    QString suffixFromAxisUnit(const AxisUnit &unit);
-    double baseUnitToUnit(const double &value, const AxisUnit &unit);
-    double unitToBaseUnit(const double &value, const AxisUnit &unit);
+    QString suffixFromAxisUnit(const AxisUnit &unit) const;
+    double baseUnitToUnit(const double &value, const AxisUnit &unit) const;
+    double unitToBaseUnit(const double &value, const AxisUnit &unit) const;
     ito::RetVal observeInvocation(ItomSharedSemaphore *waitCond) const;
     void moveRelOrAbs(int axis, double value, bool relNotAbs);
     

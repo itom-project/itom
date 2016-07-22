@@ -188,7 +188,7 @@ QPointer<ito::AddInActuator> MotorAxisController::actuator() const
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-QString MotorAxisController::suffixFromAxisUnit(const AxisUnit &unit)
+QString MotorAxisController::suffixFromAxisUnit(const AxisUnit &unit) const
 {
     switch (unit)
     {
@@ -212,7 +212,7 @@ QString MotorAxisController::suffixFromAxisUnit(const AxisUnit &unit)
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-double MotorAxisController::unitToBaseUnit(const double &value, const AxisUnit &unit)
+double MotorAxisController::unitToBaseUnit(const double &value, const AxisUnit &unit) const
 {
     switch (unit)
     {
@@ -235,7 +235,7 @@ double MotorAxisController::unitToBaseUnit(const double &value, const AxisUnit &
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
-double MotorAxisController::baseUnitToUnit(const double &value, const AxisUnit &unit)
+double MotorAxisController::baseUnitToUnit(const double &value, const AxisUnit &unit) const
 {
     switch (unit)
     {
@@ -421,13 +421,35 @@ ito::RetVal MotorAxisController::setAxisUnit(int axisIndex, AxisUnit unit)
         d->spinStepSize[axisIndex]->setSuffix(suffixFromAxisUnit(unit));
 
         double baseUnitValue = unitToBaseUnit(d->spinTargetPos[axisIndex]->value(), d->axisUnit[axisIndex]);
+        double maximum = d->spinTargetPos[axisIndex]->maximum();
+        double minimum = d->spinTargetPos[axisIndex]->minimum();
         d->spinTargetPos[axisIndex]->setValue(baseUnitToUnit(baseUnitValue, unit));
+        if (maximum < std::numeric_limits<double>::max())
+        {
+            d->spinTargetPos[axisIndex]->setMaximum(baseUnitToUnit(unitToBaseUnit(maximum, d->axisUnit[axisIndex]), unit));
+        }
+        if (minimum > -std::numeric_limits<double>::max())
+        {
+            d->spinTargetPos[axisIndex]->setMinimum(baseUnitToUnit(unitToBaseUnit(minimum, d->axisUnit[axisIndex]), unit));
+        }
         
         baseUnitValue = unitToBaseUnit(d->spinStepSize[axisIndex]->value(), d->axisUnit[axisIndex]);
+        maximum = d->spinStepSize[axisIndex]->maximum();
+        minimum = d->spinStepSize[axisIndex]->minimum();
         d->spinStepSize[axisIndex]->setValue(baseUnitToUnit(baseUnitValue, unit));
+        if (maximum < std::numeric_limits<double>::max())
+        {
+            d->spinStepSize[axisIndex]->setMaximum(baseUnitToUnit(unitToBaseUnit(maximum, d->axisUnit[axisIndex]), unit));
+        }
+        if (minimum > -std::numeric_limits<double>::max())
+        {
+            d->spinStepSize[axisIndex]->setMinimum(baseUnitToUnit(unitToBaseUnit(minimum, d->axisUnit[axisIndex]), unit));
+        }
 
         baseUnitValue = unitToBaseUnit(d->spinCurrentPos[axisIndex]->value(), d->axisUnit[axisIndex]);
         d->spinCurrentPos[axisIndex]->setValue(baseUnitToUnit(baseUnitValue, unit));
+
+
 
         d->axisUnit[axisIndex] = unit;
     }
@@ -741,7 +763,7 @@ ito::AutoInterval MotorAxisController::stepSizeInterval(int axisIndex) const
         }
         else
         {
-            return ito::AutoInterval(d->spinStepSize[axisIndex]->minimum(), d->spinStepSize[axisIndex]->maximum());
+            return ito::AutoInterval(unitToBaseUnit(d->spinStepSize[axisIndex]->minimum(), axisUnit(axisIndex)), unitToBaseUnit(d->spinStepSize[axisIndex]->maximum(), axisUnit(axisIndex)));
         }
     }
 
@@ -760,7 +782,7 @@ ito::AutoInterval MotorAxisController::targetInterval(int axisIndex) const
         }
         else
         {
-            return ito::AutoInterval(d->spinTargetPos[axisIndex]->minimum(), d->spinTargetPos[axisIndex]->maximum());
+            return ito::AutoInterval(unitToBaseUnit(d->spinTargetPos[axisIndex]->minimum(), axisUnit(axisIndex)), unitToBaseUnit(d->spinTargetPos[axisIndex]->maximum(), axisUnit(axisIndex)));
         }
     }
 
@@ -779,8 +801,8 @@ ito::RetVal MotorAxisController::setStepSizeInterval(int axisIndex, const ito::A
         }
         else
         {
-            d->spinStepSize[axisIndex]->setMinimum(interval.minimum());
-            d->spinStepSize[axisIndex]->setMaximum(interval.maximum());
+            d->spinStepSize[axisIndex]->setMinimum(baseUnitToUnit(interval.minimum(), axisUnit(axisIndex)));
+            d->spinStepSize[axisIndex]->setMaximum(baseUnitToUnit(interval.maximum(), axisUnit(axisIndex)));
         }
     }
 
@@ -799,8 +821,8 @@ ito::RetVal MotorAxisController::setTargetInterval(int axisIndex, const ito::Aut
         }
         else
         {
-            d->spinTargetPos[axisIndex]->setMinimum(interval.minimum());
-            d->spinTargetPos[axisIndex]->setMaximum(interval.maximum());
+            d->spinTargetPos[axisIndex]->setMinimum(baseUnitToUnit(interval.minimum(), axisUnit(axisIndex)));
+            d->spinTargetPos[axisIndex]->setMaximum(baseUnitToUnit(interval.maximum(), axisUnit(axisIndex)));
         }
     }
 
