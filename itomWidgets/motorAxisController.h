@@ -36,6 +36,7 @@
 #include <qpointer.h>
 #include <qstringlist.h>
 #include "common/retVal.h"
+#include "common/interval.h"
 
 class ItomSharedSemaphore; //forward declaration
 
@@ -62,6 +63,7 @@ class ITOMWIDGETS_EXPORT MotorAxisController : public QWidget
     Q_PROPERTY(AxisType defaultAxisType READ defaultAxisType WRITE setDefaultAxisType)
     Q_PROPERTY(bool refreshAvailable READ refreshAvailable WRITE setRefreshAvailable)
     Q_PROPERTY(bool cancelAvailable READ cancelAvailable WRITE setCancelAvailable)
+    Q_PROPERTY(bool startAllAvailable READ startAllAvailable WRITE setStartAllAvailable)
     Q_PROPERTY(double defaultRelativeStepSize READ defaultRelativeStepSize WRITE setDefaultRelativeStepSize)
     Q_PROPERTY(QStringList axisNames READ axisNames WRITE setAxisNames)
     Q_PROPERTY(int defaultDecimals READ defaultDecimals WRITE setDefaultDecimals)
@@ -113,6 +115,7 @@ public:
     AxisType defaultAxisType() const;
     bool refreshAvailable() const;
     bool cancelAvailable() const;
+    bool startAllAvailable() const;
     double defaultRelativeStepSize() const;
     QStringList axisNames() const;
     QString axisName(int axisIndex) const;
@@ -130,7 +133,6 @@ private:
     double unitToBaseUnit(const double &value, const AxisUnit &unit);
     ito::RetVal observeInvocation(ItomSharedSemaphore *waitCond) const;
     void moveRelOrAbs(int axis, double value, bool relNotAbs);
-
     
     MotorAxisControllerPrivate *d;
 
@@ -151,10 +153,18 @@ public slots:
     void setAxisNames(const QStringList &names);
     void setDefaultRelativeStepSize(double defaultRelativeStepSize); /*in mm or degree*/
     void setCancelAvailable(bool available);
+    void setStartAllAvailable(bool available);
     void setRefreshAvailable(bool available);
     void setDefaultAxisType(AxisType type);
     void setNumAxis(int numAxis);
     void setArbitraryUnit(const QString &unit);
+
+    ito::AutoInterval stepSizeInterval(int axisIndex) const;
+    ito::AutoInterval targetInterval(int axisIndex) const;
+
+    ito::RetVal setStepSizeInterval(int axisIndex, const ito::AutoInterval &interval);
+    ito::RetVal setTargetInterval(int axisIndex, const ito::AutoInterval &interval);
+
 
 private slots:
     void on_btnCancel_clicked();

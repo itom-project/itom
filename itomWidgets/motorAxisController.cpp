@@ -56,10 +56,11 @@ public:
         defaultRelativeStepSize(5),
         defaultDecimals(2),
         cancelAvailable(true),
+        startAllAvailable(true),
         stepUpMapper(NULL),
         stepDownMapper(NULL),
         runSingleMapper(NULL),
-        arbitraryUnit("a.u.")
+        arbitraryUnit(" a.u.")
     {
 
     }
@@ -91,6 +92,7 @@ public:
     QPointer<ito::AddInActuator> actuator;
     Ui::MotorAxisController ui;
     bool cancelAvailable;
+    bool startAllAvailable;
 
     MotorAxisController::MovementType movementType;
     QString arbitraryUnit;
@@ -203,7 +205,7 @@ QString MotorAxisController::suffixFromAxisUnit(const AxisUnit &unit)
     case UnitDeg:
         return QLatin1String(" °");
     case UnitAU:
-        return QString(" %s").arg(d->arbitraryUnit);
+        return d->arbitraryUnit;
     }
 
     return "";
@@ -645,14 +647,15 @@ ito::RetVal MotorAxisController::setAxisName(int axisIndex, const QString &name)
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 QString MotorAxisController::arbitraryUnit() const
 {
-    return d->arbitraryUnit;
+    return d->arbitraryUnit.mid(1); //the first char is a space
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void MotorAxisController::setArbitraryUnit(const QString &unit)
 {
-    if (d->arbitraryUnit != unit)
+    if (d->arbitraryUnit.mid(1) != unit)
     {
+        d->arbitraryUnit = QString(" %1").arg(unit);
         for (int i = 0; i < d->spinStepSize.size(); ++i)
         {
             setAxisUnit(i, axisUnit(i));
@@ -727,6 +730,84 @@ int MotorAxisController::axisDecimals(int axisIndex) const
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
+ito::AutoInterval MotorAxisController::stepSizeInterval(int axisIndex) const
+{
+    if (axisIndex >= 0 && axisIndex < d->axisType.size())
+    {
+        if ((d->spinStepSize[axisIndex]->minimum() == -std::numeric_limits<double>::max()) && \
+            (d->spinStepSize[axisIndex]->maximum() == std::numeric_limits<double>::max()))
+        {
+            return ito::AutoInterval(); //auto
+        }
+        else
+        {
+            return ito::AutoInterval(d->spinStepSize[axisIndex]->minimum(), d->spinStepSize[axisIndex]->maximum());
+        }
+    }
+
+    return ito::AutoInterval();
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+ito::AutoInterval MotorAxisController::targetInterval(int axisIndex) const
+{
+    if (axisIndex >= 0 && axisIndex < d->axisType.size())
+    {
+        if ((d->spinTargetPos[axisIndex]->minimum() == -std::numeric_limits<double>::max()) && \
+            (d->spinTargetPos[axisIndex]->maximum() == std::numeric_limits<double>::max()))
+        {
+            return ito::AutoInterval(); //auto
+        }
+        else
+        {
+            return ito::AutoInterval(d->spinTargetPos[axisIndex]->minimum(), d->spinTargetPos[axisIndex]->maximum());
+        }
+    }
+
+    return ito::AutoInterval();
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal MotorAxisController::setStepSizeInterval(int axisIndex, const ito::AutoInterval &interval)
+{
+    if (axisIndex >= 0 && axisIndex < d->axisType.size())
+    {
+        if (interval.isAuto())
+        {
+            d->spinStepSize[axisIndex]->setMinimum(-std::numeric_limits<double>::max());
+            d->spinStepSize[axisIndex]->setMaximum(std::numeric_limits<double>::max());
+        }
+        else
+        {
+            d->spinStepSize[axisIndex]->setMinimum(interval.minimum());
+            d->spinStepSize[axisIndex]->setMaximum(interval.maximum());
+        }
+    }
+
+    return ito::RetVal(ito::retError, 0, "axisIndex is out of bounds.");
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal MotorAxisController::setTargetInterval(int axisIndex, const ito::AutoInterval &interval)
+{
+    if (axisIndex >= 0 && axisIndex < d->axisType.size())
+    {
+        if (interval.isAuto())
+        {
+            d->spinTargetPos[axisIndex]->setMinimum(-std::numeric_limits<double>::max());
+            d->spinTargetPos[axisIndex]->setMaximum(std::numeric_limits<double>::max());
+        }
+        else
+        {
+            d->spinTargetPos[axisIndex]->setMinimum(interval.minimum());
+            d->spinTargetPos[axisIndex]->setMaximum(interval.maximum());
+        }
+    }
+
+    return ito::RetVal(ito::retError, 0, "axisIndex is out of bounds.");
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
 void MotorAxisController::setMovementType(MovementType type)
 {
     if (type != d->movementType)
@@ -740,7 +821,7 @@ void MotorAxisController::setMovementType(MovementType type)
             d->ui.tableMovement->hideColumn(ColStepSize);
             d->ui.tableMovement->hideColumn(ColCommandRelative);
             d->ui.tableMovement->showColumn(ColCommandAbsolute);
-            d->ui.btnStart->setVisible(true);
+            d->ui.btnStart->setVisible(d->startAllAvailable);
             break;
         case MovementRelative:
             d->ui.tableMovement->hideColumn(ColTarget);
@@ -754,7 +835,7 @@ void MotorAxisController::setMovementType(MovementType type)
             d->ui.tableMovement->showColumn(ColStepSize);
             d->ui.tableMovement->showColumn(ColCommandRelative);
             d->ui.tableMovement->showColumn(ColCommandAbsolute);
-            d->ui.btnStart->setVisible(true);
+            d->ui.btnStart->setVisible(d->startAllAvailable);
             break;
         case MovementNo:
             d->ui.tableMovement->showColumn(ColTarget);
@@ -790,13 +871,44 @@ bool MotorAxisController::refreshAvailable() const
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void MotorAxisController::setCancelAvailable(bool available)
 {
-    d->cancelAvailable = available;
+    if (d->cancelAvailable != available)
+    {
+        d->cancelAvailable = available;
+        d->ui.btnCancel->setVisible(d->cancelAvailable);
+    }
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 bool MotorAxisController::cancelAvailable() const
 {
     return d->cancelAvailable;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void MotorAxisController::setStartAllAvailable(bool available)
+{
+    if (d->startAllAvailable != available)
+    {
+        d->startAllAvailable = available;
+
+        switch (d->movementType)
+        {
+        case MovementAbsolute:
+        case MovementBoth:
+            d->ui.btnStart->setVisible(d->startAllAvailable);
+            break;
+        case MovementNo:
+        case MovementRelative:
+            d->ui.btnStart->setVisible(false);
+            break;
+        }
+    }
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+bool MotorAxisController::startAllAvailable() const
+{
+    return d->startAllAvailable;
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -853,7 +965,7 @@ void MotorAxisController::actuatorStatusChanged(QVector<int> status, QVector<dou
         d->buttonAbsolute[i]->setEnabled((status[i] & ito::actuatorEnabled) && !running && d->axisEnabled[i]);
     }
 
-    d->ui.btnStart->setEnabled(!globalRunning);
+    d->ui.btnStart->setEnabled(!globalRunning && d->startAllAvailable);
     d->ui.btnCancel->setVisible(globalRunning && d->cancelAvailable);
 }
 
