@@ -62,6 +62,10 @@ WorkspaceDockWidget::WorkspaceDockWidget(const QString &title, const QString &ob
     m_actRename(NULL),
     m_actExport(NULL),
     m_actImport(NULL),
+    m_dObjPlot1d(NULL),
+    m_dObjPlot2d(NULL),
+    m_dObjPlot25d(NULL),
+    m_separatorSpecialActions(NULL),
     m_pMainToolBar(NULL),
     m_pContextMenu(NULL),
     m_firstCurrentItem(NULL),
@@ -138,6 +142,13 @@ void WorkspaceDockWidget::createActions()
     m_actImport->connectTrigger(this, SLOT(mnuImportItem()));
     m_actRename = new ShortcutAction(QIcon(":/workspace/icons/edit-rename.png"), tr("rename selected item"), this, QKeySequence(tr("F2")), Qt::WidgetWithChildrenShortcut);
     m_actRename->connectTrigger(this, SLOT(mnuRenameItem()));
+
+    m_dObjPlot1d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/1d.png"), tr("plot 1D"), this);
+    //m_dObjPlot1d->connectTrigger(this, SLOT(mnuRenameItem()));
+    m_dObjPlot2d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/2d.png"), tr("plot 2D"), this);
+    //m_dObjPlot2d->connectTrigger(this, SLOT(mnuRenameItem()));
+    m_dObjPlot25d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/3d.png"), tr("plot 2.5D"), this);
+    //m_dObjPlot25d->connectTrigger(this, SLOT(mnuRenameItem()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -170,13 +181,16 @@ void WorkspaceDockWidget::createMenus()
     m_pContextMenu->addSeparator();
     m_pContextMenu->addAction(m_actExport->action());
     m_pContextMenu->addAction(m_actImport->action());
+    m_separatorSpecialActions = m_pContextMenu->addSeparator();
+    m_pContextMenu->addAction(m_dObjPlot1d->action());
+    m_pContextMenu->addAction(m_dObjPlot2d->action());
+    m_pContextMenu->addAction(m_dObjPlot25d->action());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void WorkspaceDockWidget::treeViewContextMenuRequested(const QPoint & /*pos*/)
 {
     updateActions();
-//    m_pContextMenu->exec(pos + m_firstCurrentItem->mapToGlobal(m_firstCurrentItem->pos()));
     m_pContextMenu->exec(QCursor::pos());
 }
 
@@ -351,10 +365,45 @@ void WorkspaceDockWidget::updateActions()
 
         if (num > 0)
         {
+            QList<QTreeWidgetItem*> items = m_pWorkspaceWidget->selectedItems();
+
             m_firstCurrentItem = NULL;
-            while(m_firstCurrentItem == NULL && i < m_pWorkspaceWidget->selectedItems().count())
+            while (m_firstCurrentItem == NULL && i < items.count())
             {
-                m_firstCurrentItem = m_pWorkspaceWidget->selectedItems()[i++];
+                m_firstCurrentItem = items[i++];
+            }
+
+            if (num > 1)
+            {
+                m_separatorSpecialActions->setVisible(false);
+                m_dObjPlot1d->setVisible(false);
+                m_dObjPlot2d->setVisible(false);
+                m_dObjPlot25d->setVisible(false);
+            }
+            else
+            {
+                bool ok;
+
+                int compatibleTypes = items[0]->data(0, WorkspaceWidget::RoleCompatibleTypes).toInt(&ok);
+                if (!ok)
+                {
+                    compatibleTypes = 0;
+                }
+
+                if (compatibleTypes == ito::ParamBase::DObjPtr)
+                {
+                    m_separatorSpecialActions->setVisible(true);
+                    m_dObjPlot1d->setVisible(true);
+                    m_dObjPlot2d->setVisible(true);
+                    m_dObjPlot25d->setVisible(true);
+                }
+                else
+                {
+                    m_separatorSpecialActions->setVisible(false);
+                    m_dObjPlot1d->setVisible(false);
+                    m_dObjPlot2d->setVisible(false);
+                    m_dObjPlot25d->setVisible(false);
+                }
             }
         }
         else
@@ -369,6 +418,8 @@ void WorkspaceDockWidget::updateActions()
             m_actExport->setEnabled(num > 0 && pythonFree);
             m_actImport->setEnabled(pythonFree);
             m_actRename->setEnabled(numToBeRenamed == 1 && pythonFree);
+
+            
         }
         else
         {

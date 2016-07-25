@@ -65,6 +65,12 @@ private:
     ShortcutAction *m_actExport;
     ShortcutAction *m_actImport;
 
+    //special actions
+    QAction *m_separatorSpecialActions;
+    ShortcutAction *m_dObjPlot1d;
+    ShortcutAction *m_dObjPlot2d;
+    ShortcutAction *m_dObjPlot25d;
+
     QToolBar *m_pMainToolBar;
     QMenu* m_pContextMenu;
     QTreeWidgetItem* m_firstCurrentItem;
