@@ -26,6 +26,7 @@
 #include "../widgets/scriptDockWidget.h"
 #include "../common/sharedStructuresQt.h"
 
+
 namespace ito
 {
 QDataStream &operator<<(QDataStream &out, const ito::ScriptEditorStorage &obj); 
@@ -46,6 +47,8 @@ public:
     RetVal restoreScriptState();
 
     const QStringList &getRecentlyUsedFiles() const { return m_recentlyUsedFiles; }
+
+    QStringList openedScripts() const;
 
 protected:
     ScriptDockWidget* createEmptyScriptDock(bool docked, Qt::DockWidgetArea area = Qt::TopDockWidgetArea, const QString &objectName = QString());

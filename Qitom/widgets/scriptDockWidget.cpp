@@ -516,6 +516,35 @@ QStringList ScriptDockWidget::getModifiedFileNames(bool ignoreUnsavedFiles, int 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+//! returns a list of all filenames of all opened scripts (besides new scripts)
+/*!
+\return string list
+*/
+QStringList ScriptDockWidget::getAllFilenames() const
+{
+    QStringList list;
+    ScriptEditorWidget* sew;
+
+    for (int i = 0; i < m_tab->count(); i++)
+    {
+        sew = getEditorByIndex(i);
+        if (sew != NULL)
+        {
+            if (!sew->hasNoFilename())
+            {
+                list.append(sew->getFilename());
+            }
+            else
+            {
+                list.append(sew->getUntitledName());
+            }
+        }
+    }
+
+    return list;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! creates new instance of ScriptEditorWidget and appends it to the tab-widget
 /*!
     \return result of method appendEditor
@@ -1347,15 +1376,17 @@ void ScriptDockWidget::menuLastFilesAboutToShow()
             }
             else
             {
+                ShortcutAction *a;
+
                 // Create new menus
                 foreach (const QString &path, sEO->getRecentlyUsedFiles()) 
                 {
                     QString displayedPath = path;
                     IOHelper::elideFilepathMiddle(displayedPath, 200);
-                    m_lastFileAct = new ShortcutAction(QIcon(":/files/icons/filePython.png"), displayedPath, this);
-                    m_lastFilesMenu->addAction(m_lastFileAct->action());
-                    m_lastFileAct->connectTrigger(m_lastFilesMapper, SLOT(map()));
-                    m_lastFilesMapper->setMapping(m_lastFileAct->action(), path);
+                    a = new ShortcutAction(QIcon(":/files/icons/filePython.png"), displayedPath, this);
+                    m_lastFilesMenu->addAction(a->action());
+                    a->connectTrigger(m_lastFilesMapper, SLOT(map()));
+                    m_lastFilesMapper->setMapping(a->action(), path);
                 }
             }
         }
@@ -1574,6 +1605,21 @@ bool ScriptDockWidget::activateTabByFilename(const QString &filename, int line /
             temp = finfo1.canonicalFilePath().toLower();
                 temp2 = finfo2.canonicalFilePath().toLower();
             if (filename2 == finfo2.canonicalFilePath().toLower())
+            {
+                m_tab->setCurrentIndex(i);
+                raiseAndActivate();
+
+                if (line >= 0)
+                {
+                    sew->pythonDebugPositionChanged(filename2, line);
+                }
+
+                return true;
+            }
+        }
+        else
+        {
+            if (filename == sew->getUntitledName())
             {
                 m_tab->setCurrentIndex(i);
                 raiseAndActivate();
