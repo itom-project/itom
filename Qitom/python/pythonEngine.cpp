@@ -635,7 +635,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             itomFunctions = PyImport_ImportModule("itoFunctions"); // new reference
             if (itomFunctions == NULL)
             {
-                (*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoFunctions could not be loaded.").toLatin1().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoFunctions could not be loaded. Make sure that the script itoFunctions.py is available in the itom root directory.").toLatin1().data());
                 std::cerr << "the module itoFunctions could not be loaded." << std::endl;
                 PyErr_PrintEx(0);
                 PyErr_Clear();
@@ -645,7 +645,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             itomDbgModule = PyImport_ImportModule("itoDebugger"); // new reference
             if (itomDbgModule == NULL)
             {
-                (*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoDebugger could not be loaded.").toLatin1().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoDebugger could not be loaded. Make sure that the script itoDebugger.py is available in the itom root directory.").toLatin1().data());
                 std::cerr << "the module itoDebugger could not be loaded." <<std::endl;
                 PyErr_PrintEx(0);
             }
@@ -656,7 +656,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 itomDbgDict = NULL;
                 if (itomDbgClass == NULL)
                 {
-                    (*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoDebugger could not be loaded.").toLatin1().data());
+                    (*retValue) += ito::RetVal(ito::retError, 0, tr("the class itoDebugger in the module itoDebugger could not be loaded.").toLatin1().data());
                     PyErr_PrintEx(0);
                     //printPythonError(PySys_GetObject("stderr"));
                 }
@@ -670,7 +670,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             m_autoReload.modAutoReload = PyImport_ImportModule("autoreload");
             if (m_autoReload.modAutoReload == NULL)
             {
-                (*retValue) += ito::RetVal(ito::retError, 0, tr("the module 'autoreload' could not be loaded.").toLatin1().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("the module 'autoreload' could not be loaded. Make sure that the script autoreload.py is available in the itom-packages directory.").toLatin1().data());
                 std::cerr << "the module 'autoreload' could not be loaded." <<std::endl;
                 PyErr_PrintEx(0);
             }
