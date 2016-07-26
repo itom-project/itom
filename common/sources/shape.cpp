@@ -28,6 +28,7 @@
 #include "../shape.h"
 #define _USE_MATH_DEFINES
 #include "math.h"
+#include <qrect.h>
 
 #include "numeric.h"
 
@@ -1006,6 +1007,7 @@ double Shape::distanceLine2Line2D(const Shape &line1, const Shape &line2)
 	
 	return result;
 }
+
 //----------------------------------------------------------------------------------------------
 double Shape::distancePoint2Point2D(const QPointF &point1, const QPointF &point2)
 {
@@ -1024,6 +1026,35 @@ double Shape::distancePoint2Point2D(const QPointF &point1, const QPointF &point2
 	QPointF val = point1 - point2;
 	return std::sqrt(std::pow(val.rx(), 2) + std::pow(val.ry(), 2));
 }
+
+//----------------------------------------------------------------------------------------------
+Shape Shape::normalized() const
+{
+    Shape out = *this;
+
+    switch (type())
+    {
+    case Rectangle:
+    case Square:
+    case Ellipse:
+    case Circle:
+    {
+        QRectF rect(basePoints()[0], basePoints()[1]);
+        if (rect.width() < 0 || rect.height() < 0)
+        {
+            rect = rect.normalized();
+            out.rbasePoints()[0] = rect.topLeft();
+            out.rbasePoints()[1] = rect.bottomRight();
+        }
+        break;
+    }
+    default:
+        break;
+    }
+
+    return out;
+}
+
 //----------------------------------------------------------------------------------------------
 //ito::DataObject Shape::mask(const ito::DataObject &dataObject, bool inverse /*= false*/) const
 //{
@@ -1356,7 +1387,7 @@ double Shape::distancePoint2Point2D(const QPointF &point1, const QPointF &point2
 /*static*/ Shape Shape::fromSquare(const QPointF &center, qreal sideLength, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)
 {
     Shape s;
-    QPointF dist(sideLength / 2, sideLength / 2);
+    QPointF dist(std::abs(sideLength) / 2, std::abs(sideLength) / 2);
     s.d->m_type = Square;
     s.d->m_polygon << (center - dist) << (center + dist);
     s.d->m_transform = trafo;
@@ -1369,7 +1400,7 @@ double Shape::distancePoint2Point2D(const QPointF &point1, const QPointF &point2
 /*static*/ Shape Shape::fromCircle(const QPointF &center, qreal radius, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)
 {
     Shape s;
-    QPointF dist(radius, radius);
+    QPointF dist(std::abs(radius), std::abs(radius));
     s.d->m_type = Circle;
     s.d->m_polygon << (center - dist) << (center + dist);
     s.d->m_transform = trafo;
@@ -1378,6 +1409,7 @@ double Shape::distancePoint2Point2D(const QPointF &point1, const QPointF &point2
     return s;
 }
 
+//----------------------------------------------------------------------------------------------
 /*static*/ QString Shape::type2QString(const int type)
 {
 	switch (type & ito::Shape::TypeMask)

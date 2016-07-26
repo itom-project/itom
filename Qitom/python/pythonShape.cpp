@@ -1495,6 +1495,23 @@ PyObject* PythonShape::PyShape_contour(PyShape *self, PyObject *args, PyObject *
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(shape_normalized_doc, "normalized() -> return a normalized shape (this has only an impact on rectangles, squares, ellipses and circles) \n\
+\n\
+The normalized shape guarantees that the bounding box of the shape never has a non-negative width or height. Therefore, the \n\
+order or position of the two corner points (base points) is switched or changed, if necessary. Shapes different than \n\
+rectangle, square, circle or ellipse are not affected by this and are returned as they are.");
+/*static*/ PyObject* PythonShape::PyShape_normalized(PyShape *self)
+{
+    if (!self || self->shape == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "shape is not available");
+        return NULL;
+    }
+
+    return createPyShape(self->shape->normalized());
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------
 PyObject* PythonShape::PointF2PyObject(const QPointF &point)
 {
     PyObject *tuple = PyTuple_New(2);
@@ -1588,6 +1605,7 @@ PyMethodDef PythonShape::PyShape_methods[] = {
     { "translate", (PyCFunction)PyShape_translate, METH_VARARGS, shape_translate_doc },
     { "region", (PyCFunction)PyShape_region, METH_NOARGS, shape_region_doc },
     { "contour", (PyCFunction)PyShape_contour, METH_VARARGS | METH_KEYWORDS, shape_contour_doc },
+    { "normalized", (PyCFunction)PyShape_normalized, METH_NOARGS, shape_normalized_doc },
     {NULL}  /* Sentinel */
 };
 
