@@ -148,6 +148,11 @@ RetVal UserUiDialog::init(QWidget *contentWidget, tButtonBarType buttonBarType, 
         retValue += RetVal(retError, 1007, tr("content-widget is empty.").toLatin1().data());
     }
 
+    QSize uiWidgetSize(0, 0);
+    QMargins margins = this->contentsMargins();
+    uiWidgetSize.rheight() += (margins.top() + margins.bottom());
+    uiWidgetSize.rwidth() += (margins.left() + margins.right());
+
     if (buttonBarType & (UserUiDialog::bbTypeHorizontal | UserUiDialog::bbTypeVertical))
     {
         m_dialogBtnBox = new QDialogButtonBox(this);
@@ -169,26 +174,40 @@ RetVal UserUiDialog::init(QWidget *contentWidget, tButtonBarType buttonBarType, 
         if (buttonBarType & UserUiDialog::bbTypeHorizontal) //horizontal
         {
             m_dialogBtnBox->setOrientation(Qt::Horizontal);
+            uiWidgetSize.rheight() += m_dialogBtnBox->height();
             m_boxLayout = new QVBoxLayout();
+            uiWidgetSize.rheight() += m_boxLayout->spacing();
         }
         else //vertical
         {
             m_dialogBtnBox->setOrientation(Qt::Vertical);
+            uiWidgetSize.rwidth() += m_dialogBtnBox->width();
             m_boxLayout = new QHBoxLayout();
+            uiWidgetSize.rwidth() += m_boxLayout->spacing();
         }
 
-        //m_boxLayout->setContentsMargins(2,2,2,2);
-        if (m_uiWidget) m_boxLayout->addWidget(m_uiWidget);
+        
+
+        if (m_uiWidget)
+        {
+            uiWidgetSize += m_uiWidget->size();
+            m_boxLayout->addWidget(m_uiWidget);
+        }
         m_boxLayout->addWidget(m_dialogBtnBox);
     }
     else //no button bar
     {
         m_boxLayout = new QVBoxLayout();
-        //m_boxLayout->setContentsMargins(2,2,2,2);
-        if (m_uiWidget) m_boxLayout->addWidget(m_uiWidget);
+        if (m_uiWidget)
+        {
+            uiWidgetSize += m_uiWidget->size();
+            m_boxLayout->addWidget(m_uiWidget);
+        }
     }
 
     this->setLayout(m_boxLayout);
+
+    resize(uiWidgetSize);
 
     return retValue;
 }
