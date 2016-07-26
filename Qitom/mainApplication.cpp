@@ -466,6 +466,14 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     retValue += pyRetValue;
     if (pyRetValue.containsError())
     {
+        if (pyRetValue.hasErrorMessage())
+        {
+            qDebug() << "..python engine destroyed since python could not be properly initialized. Reason:" << pyRetValue.errorMessage();
+        }
+        else
+        {
+            qDebug() << "..python engine destroyed since python could not be properly initialized. Unknown reason";
+        }
         DELETE_AND_SET_NULL(m_pyEngine);
         AppManagement::setPythonEngine(NULL);
     }
