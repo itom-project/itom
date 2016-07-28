@@ -380,7 +380,7 @@ PaletteOrganizer::PaletteOrganizer()
     //declare "gray"
     newPalette = ItomPaletteBase("gray", ito::tPaletteGray | ito::tPaletteRGB | ito::tPaletteLinear | ito::tPaletteIndexed, QColor::fromRgb(0, 0, 0), QColor::fromRgb(255, 255, 255));
     newPalette.setInverseColorOne(Qt::blue);
-    newPalette.setInversColorTwo(Qt::cyan);
+    newPalette.setInversColorTwo("#e31a1c"); //dark red
     newPalette.setWriteProtection();
     //set "gray"
     m_colorBars.append(newPalette);
@@ -393,7 +393,7 @@ PaletteOrganizer::PaletteOrganizer()
     newPalette.insertColorStop(0.0, Qt::black);
     newPalette.insertColorStop(1.0, Qt::red);
     newPalette.setInverseColorOne(Qt::blue);
-    newPalette.setInversColorTwo(Qt::cyan);
+    newPalette.setInversColorTwo(Qt::green);
     newPalette.setWriteProtection();
     //set "grayMarked"
     m_colorBars.append(newPalette);
@@ -437,8 +437,8 @@ PaletteOrganizer::PaletteOrganizer()
     newPalette = ItomPaletteBase("hotIron", ito::tPaletteFC | ito::tPaletteLinear | ito::tPaletteIndexed, Qt::black, Qt::white);
     newPalette.insertColorStop(0.33, Qt::red);
     newPalette.insertColorStop(0.67, QColor::fromRgb(255, 129, 0));
-    newPalette.setInverseColorOne(Qt::green);
-    newPalette.setInversColorTwo(Qt::gray);
+    newPalette.setInverseColorOne(Qt::blue);
+    newPalette.setInversColorTwo(Qt::green);
     newPalette.setWriteProtection();
     //set "hotIron"
     m_colorBars.append(newPalette);
@@ -448,7 +448,7 @@ PaletteOrganizer::PaletteOrganizer()
 
     //declare "red"
     newPalette = ItomPaletteBase(ItomPaletteBase("red", ito::tPaletteGray | ito::tPaletteLinear | ito::tPaletteIndexed, QColor::fromRgb(0, 0, 0), QColor::fromRgb(255, 0, 0)));
-    newPalette.setInverseColorOne(Qt::white);
+    newPalette.setInverseColorOne(Qt::blue);
     newPalette.setInversColorTwo(Qt::green);
     newPalette.setWriteProtection();
     //set "red"
@@ -459,7 +459,7 @@ PaletteOrganizer::PaletteOrganizer()
 
     //declare "blue"
     newPalette = ItomPaletteBase(ItomPaletteBase("blue", ito::tPaletteGray | ito::tPaletteLinear | ito::tPaletteIndexed, QColor::fromRgb(0, 0, 0), QColor::fromRgb(0, 0, 255)));
-    newPalette.setInverseColorOne(Qt::white);
+    newPalette.setInverseColorOne("#e31a1c"); //dark red
     newPalette.setInversColorTwo(Qt::green);
     newPalette.setWriteProtection();
     //set "blue"
@@ -470,8 +470,8 @@ PaletteOrganizer::PaletteOrganizer()
 
     //declare "green"
     newPalette = ItomPaletteBase(ItomPaletteBase("green", ito::tPaletteGray | ito::tPaletteLinear | ito::tPaletteIndexed, QColor::fromRgb(0, 0, 0), QColor::fromRgb(0, 255, 0)));
-    newPalette.setInverseColorOne(Qt::white);
-    newPalette.setInversColorTwo(Qt::red);
+    newPalette.setInverseColorOne(Qt::blue);
+    newPalette.setInversColorTwo("#e31a1c"); //dark red
     newPalette.setWriteProtection();
     //set "green"
     m_colorBars.append(newPalette);
@@ -500,8 +500,8 @@ PaletteOrganizer::PaletteOrganizer()
     newPalette.insertColorStop(0.85, QColor::fromRgb(155, 217, 60));
     newPalette.insertColorStop(0.90, QColor::fromRgb(189, 223, 38));
     newPalette.insertColorStop(0.95, QColor::fromRgb(221, 227, 24));
-    newPalette.setInverseColorOne(Qt::red);
-    newPalette.setInversColorTwo(Qt::green);
+    newPalette.setInverseColorOne("#ff7f00"); //dark orange
+    newPalette.setInversColorTwo("#e31a1c"); //dark red
     newPalette.setWriteProtection();
     //set "viridis"
     m_colorBars.append(newPalette);
