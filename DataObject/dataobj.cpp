@@ -728,8 +728,12 @@ DObjIterator DObjIterator::operator ++(int)
         /*both objects have at least dimension two (same number of planes, and this->m_dims > 0).*/ \
         /*but the size of both planes (last two dimensions) is not equal.*/ \
         cv::error(cv::Exception(CV_StsUnmatchedSizes, "dataObjects differ in size (non equal size of each plane)", "", __FILE__, __LINE__)); \
+    } \
+    else if (m_size.m_p[0] == 0 || m_size.m_p[1] == 0) \
+    { \
+        /*One of the matrix dimensions is zeros, so matrix operations are meaningless*/ \
+        cv::error(cv::Exception(CV_StsOutOfRange, "one of the matrices dimension is zero, meaningless operation", "", __FILE__, __LINE__)); \
     }
-
 
 
 //! constructor for empty data object
