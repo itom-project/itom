@@ -929,4 +929,19 @@ void ScriptEditorOrganizer::pythonDebugPositionChanged(QString filename, int lin
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+QStringList ScriptEditorOrganizer::openedScripts() const
+{
+    QStringList openedScripts;
+
+    foreach(const ito::ScriptDockWidget *sdw, scriptDockElements)
+    {
+        openedScripts << sdw->getAllFilenames();
+    }
+
+    openedScripts.sort(Qt::CaseInsensitive);
+    openedScripts.removeDuplicates();
+    return openedScripts; //return list with all filenames of all opened scripts
+}
+
 } //end namespace ito

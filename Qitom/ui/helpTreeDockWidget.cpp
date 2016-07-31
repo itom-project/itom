@@ -2130,7 +2130,7 @@ void HelpTreeDockWidget::collapseTree()
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Link inside Textbrowser is clicked
-void HelpTreeDockWidget::on_textBrowser_anchorClicked(const QUrl & link)
+void HelpTreeDockWidget::on_helpTreeContent_anchorClicked(const QUrl & link)
 {
     QString t = link.toString();
     QStringList parts = separateLink(link);

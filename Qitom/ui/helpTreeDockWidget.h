@@ -56,7 +56,7 @@ public slots:
 
 private slots:
     void on_splitter_splitterMoved ( int pos, int index );
-    void on_textBrowser_anchorClicked(const QUrl & link);   
+    void on_helpTreeContent_anchorClicked(const QUrl & link);
 
     void dbLoaderFinished(int index);
 

@@ -76,6 +76,7 @@ public:
     static PyObject* PyShape_rotateRad(PyShape *self, PyObject *args);
     static PyObject* PyShape_translate(PyShape *self, PyObject *args);
     static PyObject* PyShape_region(PyShape *self);
+    static PyObject* PyShape_normalized(PyShape *self);
     static PyObject* PyShape_contour(PyShape *self, PyObject *args, PyObject *kwds);
 
     //-------------------------------------------------------------------------------------------------

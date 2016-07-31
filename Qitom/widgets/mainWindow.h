@@ -97,6 +97,7 @@ private:
     AIManagerWidget* m_pAIManagerWidget;
 
     QSignalMapper *m_lastFilesMapper;       /*!<  Maps signal from the "last opened files" buttons */
+    QSignalMapper *m_openScriptsMapper;       /*!<  Maps signal from the opened scripts" actions */
 
     QToolBar* m_aboutToolBar;
     QToolBar* m_appToolBar;
@@ -112,7 +113,6 @@ private:
     QAction *m_appFileOpen;
     QAction *m_aboutQt;
     QAction *m_aboutQitom;
-    QAction *m_lastFileAct;
 
     QMap<QString, QAction*> m_actions;
 
@@ -204,13 +204,9 @@ private slots:
 
     void menuLastFilesAboutToShow();
     void lastFileOpen(const QString &path);
-
-    //void mnuRestore()
-    //{
-    //    QSettings settings;
-    //    restoreGeometry(settings.value("geometry").toByteArray());
-    //    restoreState(settings.value("windowState").toByteArray());
-    //}
+    void openScript(const QString &filename);
+    
+    void mnuViewAboutToShow();
 
 };
 

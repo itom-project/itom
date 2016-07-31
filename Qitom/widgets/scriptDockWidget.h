@@ -52,6 +52,7 @@ public:
     ~ScriptDockWidget();
 
     QStringList getModifiedFileNames(bool ignoreNewScripts = false, int excludeIndex = -1) const;
+    QStringList getAllFilenames() const;
 
     RetVal newScript();
     RetVal openScript();
@@ -145,7 +146,6 @@ private:
     ShortcutAction *m_bookmarkNext;
     ShortcutAction *m_bookmarkPrevious;
     ShortcutAction *m_bookmarkClearAll;
-    ShortcutAction *m_lastFileAct;
     ShortcutAction *m_insertCodecAct;
 
     QMenu *m_tabContextMenu;

@@ -94,6 +94,9 @@ namespace ito
         virtual ~Shape();
 
         Shape& operator =(const Shape &other);
+        
+        /* Returns a normalized shape; i.e., a rectangle, square, circle or ellipse that has a non-negative width and height. */
+        Shape normalized() const; 
 
         bool isValid() const;
 

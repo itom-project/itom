@@ -96,7 +96,9 @@ MainWindow::MainWindow() :
     m_pythonDebugMode(false),
     m_pythonInWaitingMode(false),
     m_isFullscreen(false),
-    m_userDefinedActionCounter(0)
+    m_userDefinedActionCounter(0),
+    m_lastFilesMapper(NULL),
+    m_openScriptsMapper(NULL)
 {
     //qDebug() << "mainWindow. Thread: " << QThread::currentThreadId ();
 #ifdef __APPLE__
@@ -250,7 +252,7 @@ MainWindow::MainWindow() :
     }
     else
     {
-        showInfoMessageLine(tr("Python could not be started. itom cannot be used in the desired way."));
+        showInfoMessageLine(tr("Python could not be started. itom cannot be used in the desired way. \nStart itom again with the argument 'log' and look-up the error message in the file itomlog.txt."));
         m_console->setReadOnly(true);
     }
 
@@ -264,6 +266,9 @@ MainWindow::MainWindow() :
     // Signalmapper for dynamic lastFile Menu
     m_lastFilesMapper = new QSignalMapper(this);
     connect(m_lastFilesMapper, SIGNAL(mapped(const QString &)), this, SLOT(lastFileOpen(const QString &)));
+
+    m_openScriptsMapper = new QSignalMapper(this);
+    connect(m_openScriptsMapper, SIGNAL(mapped(const QString &)), this, SLOT(openScript(const QString &)));
 
     //
     createActions();
@@ -742,13 +747,7 @@ void MainWindow::createMenus()
     m_pMenuFile->addAction(m_actions["exit"]);
 
     m_pMenuView = menuBar()->addMenu(tr("View"));
-    QMenu *dockWidgets = createPopupMenu();
-    if (dockWidgets)
-    {
-        dockWidgets->menuAction()->setIcon(QIcon(":/application/icons/preferences-general.png"));
-        dockWidgets->menuAction()->setText(tr("Toolboxes"));
-        m_pMenuView->addMenu(dockWidgets);
-    }
+    connect(m_pMenuView, SIGNAL(aboutToShow()), this, SLOT(mnuViewAboutToShow()));
 
     if (uOrg->hasFeature(featDeveloper))
     {
@@ -821,16 +820,67 @@ void MainWindow::menuLastFilesAboutToShow()
             }
             else
             {
+                QAction *a;
+
                 // Create new menus
                 foreach (const QString &path, sEO->getRecentlyUsedFiles()) 
                 {
                     QString displayedPath = path;
                     IOHelper::elideFilepathMiddle(displayedPath, 200);
-                    m_lastFileAct = new QAction(QIcon(":/files/icons/filePython.png"), displayedPath, this);
-                    m_plastFilesMenu->addAction(m_lastFileAct);
-                    connect(m_lastFileAct, SIGNAL(triggered()), m_lastFilesMapper, SLOT(map()));
-                    m_lastFilesMapper->setMapping(m_lastFileAct, path);
+                    a = new QAction(QIcon(":/files/icons/filePython.png"), displayedPath, this);
+                    m_plastFilesMenu->addAction(a);
+                    connect(a, SIGNAL(triggered()), m_lastFilesMapper, SLOT(map()));
+                    m_lastFilesMapper->setMapping(a, path);
                 }
+            }
+        }
+    }
+}
+
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/*Slot aboutToOpen*/
+void MainWindow::mnuViewAboutToShow()
+{
+    if (m_pMenuView)
+    {
+        m_pMenuView->clear();
+        
+        QMenu *dockWidgets = createPopupMenu();
+        if (dockWidgets)
+        {
+            dockWidgets->menuAction()->setIcon(QIcon(":/application/icons/preferences-general.png"));
+            dockWidgets->menuAction()->setText(tr("Toolboxes"));
+            m_pMenuView->addMenu(dockWidgets);
+            m_pMenuView->addSeparator();
+        }
+
+        ito::ScriptEditorOrganizer *sew = qobject_cast<ito::ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+        QAction *a;
+
+        if (sew != NULL)
+        {
+            QStringList filenames = sew->openedScripts();
+            QString filenameElided;
+
+            if (filenames.size() > 0)
+            {
+                foreach(const QString &filename, filenames)
+                {
+                    filenameElided = filename;
+                    IOHelper::elideFilepathMiddle(filenameElided, 200);
+                    a = new QAction(QIcon(":/files/icons/filePython.png"), filenameElided, this);
+                    m_pMenuView->addAction(a);
+                    connect(a, SIGNAL(triggered()), m_openScriptsMapper, SLOT(map()));
+                    m_openScriptsMapper->setMapping(a, filename);
+                }
+            }
+            else
+            {
+                a = m_plastFilesMenu->addAction(tr("no opened scripts"));
+                a->setEnabled(false);
+                m_pMenuView->addAction(a);
             }
         }
     }
@@ -851,6 +901,16 @@ void MainWindow::lastFileOpen(const QString &path)
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::openScript(const QString &filename)
+{
+    ito::ScriptEditorOrganizer *sew = qobject_cast<ito::ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
+
+    if (sew)
+    {
+        sew->openScript(filename);
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! initializes status bar
