@@ -105,6 +105,7 @@ void WidgetWrapper::initMethodHash()
         qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("selectedRows()"), "QVector<int>", 2003, ok );
         qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("selectedTexts()"), "QStringList", 2004, ok );
         qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("selectRows(QVector<int>)"), "void", 2005, ok );
+        qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("takeItem(int)"), "QString", 2006, ok);
         methodHash["QListWidget"] = qListWidgetList;
 
         //QComboBox
@@ -270,17 +271,19 @@ bool WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
             if(object2 == NULL) return false;
             switch(methodIndex)
             {
-            case 2001: //addItem
-                object2->addItem((*reinterpret_cast< const QString(*)>(_a[1])));
-                //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
-                return true;
+                case 2001: //addItem
+                    object2->addItem((*reinterpret_cast< const QString(*)>(_a[1])));
+                    //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
+                    return true;
                 break;
-            case 2002: //addItems
-                object2->addItems((*reinterpret_cast< const QStringList(*)>(_a[1])));
-                //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
-                return true;
+            
+                case 2002: //addItems
+                    object2->addItems((*reinterpret_cast< const QStringList(*)>(_a[1])));
+                    //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
+                    return true;
                 break;
-            case 2003: //selectedRows
+            
+                case 2003: //selectedRows
                 {
                     QVector<int> _r;
                     for (int i = 0; i < object2->count(); ++i)
@@ -294,7 +297,8 @@ bool WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                 }
                 return true;
                 break;
-            case 2004: //selectedTexts
+            
+                case 2004: //selectedTexts
                 {
                     QStringList _r;
                     QListWidgetItem *_item;
@@ -310,7 +314,8 @@ bool WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                 }
                 return true;
                 break;
-            case 2005: //selectRows
+
+                case 2005: //selectRows
                 {
                     const QVector<int> *vals = reinterpret_cast< const QVector<int>(*)>(_a[1]);
                     QListWidgetItem *_item;
@@ -321,6 +326,16 @@ bool WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                     }
                 }
                 //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
+                return true;
+                break;
+
+                case 2006: //takeItem
+                {
+                    QListWidgetItem *_r;
+                    _r = object2->takeItem((*reinterpret_cast< const int(*)>(_a[1])));
+                    (*reinterpret_cast< QString*>(_a[0])) = _r->text();
+//                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
+                }
                 return true;
                 break;
             }
