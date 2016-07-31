@@ -1423,6 +1423,52 @@ RetVal UiOrganizer::showFileDialogExistingDir(unsigned int objectID, const QStri
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::showFilesOpenDialog(unsigned int objectID, const QString &caption, const QString &directory, const QString &filter, QSharedPointer<QStringList> files, int selectedFilterIndex, int options, ItomSharedSemaphore *semaphore)
+{
+    RetVal retValue(retOk);
+
+    QWidget *parent = NULL;
+    if (objectID > 0)
+    {
+        parent = qobject_cast<QWidget*>(getWeakObjectReference(objectID));
+    }
+    if (parent == NULL)
+    {
+        parent = qobject_cast<QWidget*>(AppManagement::getMainWindow());
+    }
+    //if parent is inherited from AbstractDockWidget, the currently visible component
+    //of parent is either the dock widget or the main widget. This is obtained
+    //by getActiveInstance. This is necessary, since an invisible parent is ignored.
+    else if (parent && parent->inherits("ito::AbstractDockWidget"))
+    {
+        parent = ((ito::AbstractDockWidget*)parent)->getActiveInstance();
+    }
+
+    QFileDialog::Options opt = 0;
+    opt = (~opt) & options;
+    QStringList filters = filter.split(";;");
+    QString *selectedFilter = NULL;
+    if (selectedFilterIndex >= 0 && selectedFilterIndex < filters.size())
+    {
+        selectedFilter = new QString(filters[selectedFilterIndex]);
+    }
+
+    QStringList result = QFileDialog::getOpenFileNames(parent, caption, directory, filter, selectedFilter, opt);
+    *files = result;
+
+    DELETE_AND_SET_NULL(selectedFilter);
+
+    if (semaphore)
+    {
+        semaphore->returnValue = retValue;
+        semaphore->release();
+        semaphore->deleteSemaphore();
+    }
+
+    return retValue;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 RetVal UiOrganizer::showFileOpenDialog(unsigned int objectID, const QString &caption, const QString &directory, const QString &filter, QSharedPointer<QString> file, int selectedFilterIndex, int options, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue(retOk);
