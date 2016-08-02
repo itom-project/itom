@@ -56,6 +56,18 @@ void WidgetPropPythonGeneral::readSettings()
     int index = settings.value("saveScriptStateBeforeExecution", 0).toInt();
     ui.comboSaveScriptBeforeExecution->setCurrentIndex(index);
 
+    QString pythonHomeDirectory = settings.value("pyHome", "").toString();
+    if (pythonHomeDirectory == "" || QDir(pythonHomeDirectory).exists() == false)
+    {
+        ui.groupPyHome->setChecked(false);
+        ui.pathLineEditPyHome->setCurrentPath("");
+    }
+    else
+    {
+        ui.groupPyHome->setChecked(true);
+        ui.pathLineEditPyHome->setCurrentPath(pythonHomeDirectory);
+    }
+
     settings.endGroup();
 }
 
@@ -67,6 +79,15 @@ void WidgetPropPythonGeneral::writeSettings()
     settings.beginGroup("Python");
 
     settings.setValue("saveScriptStateBeforeExecution", ui.comboSaveScriptBeforeExecution->currentIndex());
+
+    if (ui.groupPyHome->isChecked())
+    {
+        settings.setValue("pyHome", ui.pathLineEditPyHome->currentPath());
+    }
+    else
+    {
+        settings.setValue("pyHome", "");
+    }
 
     settings.endGroup();
 }

@@ -263,6 +263,8 @@ private:
     bool m_includeItomImportBeforeSyntaxCheck;
     QString m_includeItomImportString; //!< string that is prepended to each script before syntax check (if m_includeItomImportBeforeSyntaxCheck is true)
 
+    wchar_t *m_pUserDefinedPythonHome;
+
     struct AutoReload
     {
         PyObject *modAutoReload;

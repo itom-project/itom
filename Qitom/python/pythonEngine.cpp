@@ -177,7 +177,8 @@ PythonEngine::PythonEngine() :
     m_executeInternalPythonCodeInDebugMode(false),
     dictUnicode(NULL),
     m_pythonThreadId(0),
-    m_includeItomImportString("")
+    m_includeItomImportString(""),
+    m_pUserDefinedPythonHome(NULL)
 {
     qRegisterMetaType<tPythonDbgCmd>("tPythonDbgCmd");
     qRegisterMetaType<size_t>("size_t");
@@ -280,6 +281,12 @@ PythonEngine::~PythonEngine()
     QMutexLocker locker(&PythonEngine::instancePtrProtection);
     PythonEngine::instance = NULL;
     locker.unlock();
+
+    if (m_pUserDefinedPythonHome)
+    {
+        PyMem_RawFree(m_pUserDefinedPythonHome);
+        m_pUserDefinedPythonHome = NULL;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -307,16 +314,6 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
     {
         if (PythonEngine::instatiated.tryLock(5000))
         {
-            dictUnicode = PyUnicode_FromString("__dict__");
-
-            PyImport_AppendInittab("itom", &PythonItom::PyInitItom);                //!< add all static, known function calls to python-module itom
-
-            PyImport_AppendInittab("itomDbgWrapper", &PythonEngine::PyInitItomDbg);  //!< add all static, known function calls to python-module itomdbg
-
-#if ITOM_PYTHONMATLAB == 1
-            PyImport_AppendInittab("matlab", &PythonMatlab::PyInit_matlab);
-#endif
-
             //check if an alternative home directory of Python should be set:
             QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
             settings.beginGroup("Python");
@@ -327,10 +324,9 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             {
                 if (QDir(pythonHomeDirectory).exists())
                 {
-                    wchar_t *home = new wchar_t[pythonHomeDirectory.size() + 1];
-                    pythonHomeDirectory.toWCharArray(home);
-                    Py_SetPythonHome(home);
-                    delete[] home;
+                    //the python home path given to Py_SetPythonHome must persisent for the whole Python session
+                    m_pUserDefinedPythonHome = Py_DecodeLocale(pythonHomeDirectory.toLatin1().data(), NULL);
+                    Py_SetPythonHome(m_pUserDefinedPythonHome);
                 }
                 else
                 {
@@ -342,6 +338,43 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             qDebug() << "Py_GetPythonHome:" << QString::fromWCharArray(Py_GetPythonHome());
             qDebug() << "Py_GetPath:" << QString::fromWCharArray(Py_GetPath());
             qDebug() << "Py_GetProgramName:" << QString::fromWCharArray(Py_GetProgramName());
+
+            //check PythonHome to prevent crash upon initialization of Python:
+            QString pythonHome = QString::fromWCharArray(Py_GetPythonHome());
+            QStringList pythonPath = QString::fromWCharArray(Py_GetPath()).split(";");
+            QDir pythonHomeDir(pythonHome);
+            bool pythonPathValid = false;
+            if (!pythonHomeDir.exists() && pythonHome != "")
+            {
+                (*retValue) += RetVal::format(retError, 0, "The home directory of Python is currently set to the non-existing directory '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the preferences dialog of itom.", pythonHomeDir.absolutePath().toLatin1().data());
+                return;
+            }
+
+            foreach(const QString &path, pythonPath)
+            {
+                QDir pathDir(path);
+                if (pathDir.exists("os.py") || pathDir.exists("os.pyc"))
+                {
+                    pythonPathValid = true;
+                    break;
+                }
+            }
+
+            if (!pythonPathValid)
+            {
+                (*retValue) += RetVal::format(retError, 0, "The built-in library path of Python could not be found. The current home directory is '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the preferences dialog of itom.", pythonHomeDir.absolutePath().toLatin1().data());
+                return;
+            }
+
+            dictUnicode = PyUnicode_FromString("__dict__");
+
+            PyImport_AppendInittab("itom", &PythonItom::PyInitItom);                //!< add all static, known function calls to python-module itom
+
+            PyImport_AppendInittab("itomDbgWrapper", &PythonEngine::PyInitItomDbg);  //!< add all static, known function calls to python-module itomdbg
+
+#if ITOM_PYTHONMATLAB == 1
+            PyImport_AppendInittab("matlab", &PythonMatlab::PyInit_matlab);
+#endif
 
             Py_Initialize();                                                        //!< must be called after any PyImport_AppendInittab-call
 
