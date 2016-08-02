@@ -365,6 +365,19 @@ RetVal ConsoleWidget::startNewCommand(bool clearEditorFirst)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void ConsoleWidget::clearAndStartNewCommand()
+{
+    if (m_pythonBusy)
+    {
+        clearCommandLine();
+    }
+    else
+    {
+        startNewCommand(true);
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::autoAdaptLineNumberColumnWidth()
 {
     int l = lines();
@@ -1020,7 +1033,7 @@ RetVal ConsoleWidget::executeCmdQueue()
         {
             clear();
             m_autoWheel = true;
-            m_startLineBeginCmd = -1;
+            m_startLineBeginCmd = -1; 
             m_pCmdList->add(value.singleLine);
             executeCmdQueue();
             emit sendToLastCommand(value.singleLine);
@@ -1594,6 +1607,55 @@ void ConsoleWidget::pythonRunSelection(QString selectionText)
         }
 
         execCommand(m_startLineBeginCmd, m_startLineBeginCmd + lineCount - 1);
+    }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+// Re-implemented from qscintilla
+void ConsoleWidget::contextMenuEvent(QContextMenuEvent *e)
+{
+    bool read_only = isReadOnly();
+    bool has_selection = hasSelectedText();
+    QMenu *menu = new QMenu(this);
+    QAction *action;
+
+    if (!read_only)
+    {
+        action = menu->addAction(QIcon(":/editor/icons/editUndo.png"), tr("&undo"), this, SLOT(undo()));
+        action->setEnabled(isUndoAvailable());
+
+        action = menu->addAction(QIcon(":/editor/icons/editRedo.png"), tr("&redo"), this, SLOT(redo()));
+        action->setEnabled(isRedoAvailable());
+
+        menu->addSeparator();
+
+        action = menu->addAction(QIcon(":/editor/icons/editCut.png"), tr("&cut"), this, SLOT(cut()));
+        action->setEnabled(has_selection && m_canCut);
+    }
+
+    action = menu->addAction(QIcon(":/editor/icons/editCopy.png"), tr("cop&y"), this, SLOT(copy()));
+    action->setEnabled(has_selection && m_canCopy);
+
+    if (!read_only)
+    {
+        action = menu->addAction(QIcon(":/editor/icons/editPaste.png"), tr("&paste"), this, SLOT(paste()));
+        action->setEnabled(SendScintilla(SCI_CANPASTE));
+
+        action = menu->addAction(QIcon(":/editor/icons/editDelete.png"), tr("clear command line"), this, SLOT(clearAndStartNewCommand()));
+        action->setEnabled(length() != 0);
+    }
+
+    if (!menu->isEmpty())
+        menu->addSeparator();
+
+    action = menu->addAction(tr("select all"), this, SLOT(selectAll()));
+    action->setEnabled(length() != 0);
+
+    if (menu)
+    {
+        menu->setAttribute(Qt::WA_DeleteOnClose);
+        menu->popup(e->globalPos());
     }
 }
 

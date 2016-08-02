@@ -468,7 +468,7 @@ RetVal ScriptEditorWidget::preShowContextMenuEditor()
     editorMenuActions["copy"]->setEnabled(lineFrom != -1);
     //editorMenuActions["iconBrowser"]->setEnabled(!pythonBusy);
     //editorMenuActions["save"]->setEnabled(isModified());
-    editorMenuActions["paste"]->setEnabled(contextMenuLine >= 0);
+    editorMenuActions["paste"]->setEnabled(contextMenuLine >= 0 && SendScintilla(SCI_CANPASTE));
     //editorMenuActions["save"]->setEnabled(isModified());
 
     editorMenuActions["runScript"]->setEnabled(!pythonBusy);
