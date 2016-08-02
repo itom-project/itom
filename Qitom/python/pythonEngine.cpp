@@ -341,7 +341,11 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 
             //check PythonHome to prevent crash upon initialization of Python:
             QString pythonHome = QString::fromWCharArray(Py_GetPythonHome());
+#if WIN32
             QStringList pythonPath = QString::fromWCharArray(Py_GetPath()).split(";");
+#else
+            QStringList pythonPath = QString::fromWCharArray(Py_GetPath()).split(":");
+#endif
             QDir pythonHomeDir(pythonHome);
             bool pythonPathValid = false;
             if (!pythonHomeDir.exists() && pythonHome != "")
@@ -2032,7 +2036,7 @@ ito::RetVal PythonEngine::debugString(const QString &command)
 //! public slot invoked by the scriptEditorWidget
 /*!
     This function calls the frosted python module. This module is able to check the syntax.
-    It´s called from ScriptEditorWidget::checkSyntax() and delivers the results by 
+    It\B4s called from ScriptEditorWidget::checkSyntax() and delivers the results by 
     calling ScriptEditorWidget::syntaxCheckResult(...).
 
     \param code This QString contains the code that frosted is supposed to check
