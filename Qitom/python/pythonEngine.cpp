@@ -2110,11 +2110,13 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
                 QMetaObject::invokeMethod(s, "syntaxCheckResult", Q_ARG(QString, unexpectedErrors), Q_ARG(QString, flakes));
             }
         }
+#ifdef _DEBUG
         else if (!result)
         {
             std::cerr << "Error when calling the syntax check module of python\n" << std::endl;
             PyErr_PrintEx(0);
         }
+#endif
 
         Py_XDECREF(result);
 
