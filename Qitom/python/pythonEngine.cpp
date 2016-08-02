@@ -341,7 +341,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 
             //check PythonHome to prevent crash upon initialization of Python:
             QString pythonHome = QString::fromWCharArray(Py_GetPythonHome());
-#if WIN32
+#ifdef WIN32
             QStringList pythonPath = QString::fromWCharArray(Py_GetPath()).split(";");
 #else
             QStringList pythonPath = QString::fromWCharArray(Py_GetPath()).split(":");
