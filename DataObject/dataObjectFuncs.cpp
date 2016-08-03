@@ -1433,6 +1433,204 @@ namespace dObjHelper
         }
         return retval;
     }
+
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! returns mean-value of the data object
+    /*!
+    NaN-Values & Inf-Value handling depends on NaN-flag. If ignoreNaN == true, both are ignored else not.
+    The function does not check if dObj != NULL &&  dObj.type != tComplexXX
+
+    \param[in]      dObj                handle to the dataObject
+    \param[out]     meanResult          float64-type mean value
+    \param[in]      ignoreNaN           Ignore NaN-Values && Inf-Values
+
+    \return retOK
+    */
+    template<typename _Tp> RetVal medianValueFunc(const DataObject *dObj, float64 &medianResult, bool ignoreNaN)
+    {
+        ito::DataObject temp;
+        std::vector<_Tp> temp2;
+        _Tp* values;
+        int num;
+        if (!ignoreNaN)
+        {
+            num = dObj->getTotal();
+
+            if (num > 0)
+            {
+                temp = ito::makeContinuous(*dObj); //always a copy
+                values = temp.rowPtr<_Tp>(0, 0);
+            }
+        }
+        else
+        {
+            temp2.reserve(dObj->getTotal());
+            const cv::Mat *mat;
+            const _Tp* rowPtr;
+            for (int p = 0; p < dObj->getNumPlanes(); ++p)
+            {
+                mat = dObj->getCvPlaneMat(p);
+                for (int r = 0; r < mat->rows; ++r)
+                {
+                    rowPtr = mat->ptr<_Tp>(r);
+                    for (int c = 0; c < mat->cols; ++c)
+                    {
+                        if (ito::isFinite(rowPtr[c]))
+                        {
+                            temp2.push_back(rowPtr[c]);
+                        }
+                    }
+                }
+            }
+            num = temp2.size();
+            values = temp2.data();
+        }
+
+        //this algorithms seems to be like the following: http://www.i-programmer.info/babbages-bag/505-quick-median.html?start=1
+        ito::uint32 halfKernSize = num / 2;
+        ito::uint32 leftElement = 0;
+        ito::uint32 rightElement = num - 1;
+        ito::uint32 leftPos, rightPos;
+        _Tp a;
+        _Tp tempValue;
+        while (leftElement < rightElement)
+        {
+            a = values[halfKernSize];
+            leftPos = leftElement;
+            rightPos = rightElement;
+            do
+            {
+                while (values[leftPos] < a)
+                {
+                    leftPos++;
+                }
+                while (values[rightPos] > a)
+                {
+                    rightPos--;
+                }
+                if (leftPos <= rightPos)
+                {
+                    tempValue = values[leftPos];
+                    values[leftPos] = values[rightPos];
+                    values[rightPos] = tempValue;
+                    leftPos++;
+                    rightPos--;
+                }
+            } while (leftPos <= rightPos);
+
+            if (rightPos < halfKernSize)
+            {
+                leftElement = leftPos;
+            }
+            if (halfKernSize < leftPos)
+            {
+                rightElement = rightPos;
+            }
+        }
+        medianResult = values[halfKernSize];
+        
+        return ito::retOk;
+    }
+
+    template<> RetVal medianValueFunc<complex64>(const ito::DataObject * /*dObj*/, float64 & /*meanResult*/, bool /*ignoreNaN*/)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "medianValueFunc not defined for complex type", "", __FILE__, __LINE__));
+        return retError;
+    }
+
+    template<> RetVal medianValueFunc<complex128>(const ito::DataObject * /*dObj*/, float64 & /*meanResult*/, bool /*ignoreNaN*/)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "medianValueFunc not defined for complex type", "", __FILE__, __LINE__));
+        return retError;
+    }
+
+    template<> RetVal medianValueFunc<Rgba32>(const ito::DataObject * /*dObj*/, float64 & /*meanResult*/, bool /*ignoreNaN*/)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "medianValueFunc not defined for rgba32 type", "", __FILE__, __LINE__));
+        return retError;
+    }
+
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    //! returns median-value of the data object
+    /*!
+    NaN-Values & Inf-Value handling depends on NaN-flag. If ignoreNaN == true, both are ignored else not.
+    The function checks if dObj != NULL &&  dObj.type != tComplexXX
+
+    \param[in]      dObj                handle to the dataObject
+    \param[out]     meanResult          float64-type mean value
+    \param[in]      ignoreNaN           Ignore NaN-Values && Inf-Values
+
+    \return retOK or in case dObj == NULL || firstMinLocation == NULL || firstMinLocation == NULL it returns retError
+    */
+    RetVal medianValue(const DataObject *dObj, float64 &medianResult, bool ignoreNaN)
+    {
+        ito::RetVal retval = ito::retOk;
+
+        int dims = dObj->getDims();
+
+        if (dObj == NULL || dims == 0)
+            return ito::RetVal(retError, 0, "DataObjectPointer is invalid");
+
+        if (dObj->getType() == tComplex64 || dObj->getType() == tComplex128)
+        {
+            return ito::RetVal(retError, 0, "source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64");
+        }
+
+        medianResult = std::numeric_limits<float64>::max();
+
+        switch (dObj->getType())
+        {
+        case tUInt8:
+        {
+            retval += medianValueFunc<uint8>(dObj, medianResult, false);
+            break;
+        }
+        case tInt8:
+        {
+            retval += medianValueFunc<int8>(dObj, medianResult, false);
+            break;
+        }
+
+        case tUInt16:
+        {
+            retval += medianValueFunc<uint16>(dObj, medianResult, false);
+            break;
+        }
+        case tInt16:
+        {
+            retval += medianValueFunc<int16>(dObj, medianResult, false);
+            break;
+        }
+        case tUInt32:
+        {
+            retval += medianValueFunc<uint32>(dObj, medianResult, false);
+            break;
+        }
+        case tInt32:
+        {
+            retval += medianValueFunc<int32>(dObj, medianResult, false);
+            break;
+        }
+        case tFloat32:
+        {
+            retval += medianValueFunc<float32>(dObj, medianResult, ignoreNaN);
+            break;
+        }
+        case tFloat64:
+        {
+            retval += medianValueFunc<float64>(dObj, medianResult, ignoreNaN);
+            break;
+        }
+        default:
+        {
+            retval += ito::RetVal(retError, 0, "data type not supported");
+            break;
+        }
+        }
+        return retval;
+    }
     
 
     //----------------------------------------------------------------------------------------------------------------------------------

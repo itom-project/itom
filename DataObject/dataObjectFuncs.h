@@ -385,6 +385,9 @@ namespace dObjHelper
     template<typename _Tp, typename _BufTp> RetVal meanValueFunc(const DataObject *dObj, float64 &meanResult, bool ignoreNaN = true);
     RetVal DATAOBJ_EXPORT meanValue(const DataObject *dObj, float64 &meanResult, bool ignoreNaN = true);
 
+    template<typename _Tp> RetVal medianValueFunc(const DataObject *dObj, float64 &meanResult, bool ignoreNaN = true);
+    RetVal DATAOBJ_EXPORT medianValue(const DataObject *dObj, float64 &medianResult, bool ignoreNaN = true);
+
     template<typename _Tp, typename _BufTp> RetVal devValueFunc(const ito::DataObject *dObj, const int devTypFlag, float64 &meanResult, float64 &devResult, bool ignoreNaN = true);
     RetVal DATAOBJ_EXPORT devValue(const DataObject *dObj, const int devTypFlag, float64 &meanResult, float64 &devResult, bool ignoreNaN = true);
 
