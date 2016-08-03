@@ -324,8 +324,14 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             {
                 if (QDir(pythonHomeDirectory).exists())
                 {
-                    //the python home path given to Py_SetPythonHome must persisent for the whole Python session
+                    //the python home path given to Py_SetPythonHome must be persistent for the whole Python session
+#if PY_VERSION_HEX < 0x03050000
+					m_pUserDefinedPythonHome = (wchar_t*)PyMem_RawMalloc((pythonHomeDirectory.size() + 10) * sizeof(wchar_t));
+					memset(m_pUserDefinedPythonHome, 0, (pythonHomeDirectory.size() + 10) * sizeof(wchar_t));
+					pythonHomeDirectory.toWCharArray(m_pUserDefinedPythonHome);
+#else
                     m_pUserDefinedPythonHome = Py_DecodeLocale(pythonHomeDirectory.toLatin1().data(), NULL);
+#endif
                     Py_SetPythonHome(m_pUserDefinedPythonHome);
                 }
                 else
@@ -350,7 +356,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             bool pythonPathValid = false;
             if (!pythonHomeDir.exists() && pythonHome != "")
             {
-                (*retValue) += RetVal::format(retError, 0, "The home directory of Python is currently set to the non-existing directory '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the preferences dialog of itom.", pythonHomeDir.absolutePath().toLatin1().data());
+                (*retValue) += RetVal::format(retError, 0, "The home directory of Python is currently set to the non-existing directory '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the property dialog of itom.", pythonHomeDir.absolutePath().toLatin1().data());
                 return;
             }
 
