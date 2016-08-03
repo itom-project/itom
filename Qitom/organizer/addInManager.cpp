@@ -1676,21 +1676,13 @@ namespace ito
 
         m_deadPlugins.clear();
 
-        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-        settings.beginGroup("AddInManager");
-        if (QThread::idealThreadCount() < 0)
-        {
-            ito::AddInBase::setMaximumThreadCount(qBound(1, settings.value("maximumThreadCount", 2).toInt(), 2));
-        }
-        else
-        {
-            ito::AddInBase::setMaximumThreadCount(qBound(1, settings.value("maximumThreadCount", QThread::idealThreadCount()).toInt(), QThread::idealThreadCount()));
-        }
-        settings.endGroup();
+        propertiesChanged();
 
         connect(&m_deadPluginTimer, SIGNAL(timeout()), this, SLOT(closeDeadPlugins()));
 
         m_algoInterfaceValidator = new AlgoInterfaceValidator(retValue);
+
+        connect(AppManagement::getMainApplication(), SIGNAL(propertiesChanged()), this, SLOT(propertiesChanged()));
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -1814,6 +1806,22 @@ namespace ito
         }
 
         DELETE_AND_SET_NULL(m_algoInterfaceValidator);
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void AddInManager::propertiesChanged()
+    {
+        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+        settings.beginGroup("AddInManager");
+        if (QThread::idealThreadCount() < 0)
+        {
+            ito::AddInBase::setMaximumThreadCount(qBound(1, settings.value("maximumThreadCount", 2).toInt(), 2));
+        }
+        else
+        {
+            ito::AddInBase::setMaximumThreadCount(qBound(1, settings.value("maximumThreadCount", QThread::idealThreadCount()).toInt(), QThread::idealThreadCount()));
+        }
+        settings.endGroup();
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------

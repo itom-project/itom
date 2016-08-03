@@ -42,6 +42,7 @@
 #include "widgetPropGeneralApplication.h"
 #include "widgetPropHelpDock.h"
 #include "widgetPropGeneralStyles.h"
+#include "widgetPropPluginsAlgorithms.h"
 
 #include "AppManagement.h"
 
@@ -167,8 +168,10 @@ void DialogProperties::initPages()
     m_pages["00_general/application"] = PropertyPage(tr("Application"), tr("General - application"), "00_general/application", new WidgetPropGeneralApplication(), QIcon(":/application/icons/itomicon/itomIcon32"));
     m_pages["00_general/helpViewer"]  = PropertyPage(tr("Help Viewer"), tr("General - Help Viewer"), "00_general/helpViewer" , new WidgetPropHelpDock(), QIcon(":/application/icons/itomicon/itomIcon32"));
     m_pages["00_general/styles"] = PropertyPage(tr("Styles and Themes"), tr("General - Styles and Themes"), "00_general/styles", new WidgetPropGeneralStyles(), QIcon(":/application/icons/color-icon.png"));
-    m_pages["05_plots"] = PropertyPage(tr("Plots and Figures"), tr("Plots and Figures - please choose subpage"), "05_plots", NULL, QIcon(":/plots/icons/itom_icons/3d.png"));
-    m_pages["05_plots/defaults"] = PropertyPage(tr("Default Plots"), tr("Plots and Figures - Defaults"), "05_plots/defaults", new WidgetPropFigurePlugins(), QIcon(":/plots/icons/itom_icons/2d.png"));
+    m_pages["06_plots"] = PropertyPage(tr("Plots and Figures"), tr("Plots and Figures - please choose subpage"), "06_plots", NULL, QIcon(":/plots/icons/itom_icons/3d.png"));
+    m_pages["06_plots/defaults"] = PropertyPage(tr("Default Plots"), tr("Plots and Figures - Defaults"), "06_plots/defaults", new WidgetPropFigurePlugins(), QIcon(":/plots/icons/itom_icons/2d.png"));
+    m_pages["05_plugins"] = PropertyPage(tr("Plugins"), tr("Plugins - please choose subpage"), "05_plugins", NULL, QIcon(":/plugins/icons/plugin.png"));
+    m_pages["05_plugins/algorithms"] = PropertyPage(tr("Algorithms and Filters"), tr("Plugins - Algorithms and filters"), "05_plugins/algorithms", new WidgetPropPluginsAlgorithms(), QIcon(":/plugins/icons/pluginAlgo.png"));
     PropertyPage page;
     QStringList pathes;
 
