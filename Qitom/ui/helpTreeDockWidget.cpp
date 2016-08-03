@@ -952,16 +952,16 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             {
                 if (pMeta->getStepSize() == 1)
                 {
-                    meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<ito::int32>());
+                    meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(minmaxText(param.getVal<ito::int32>()));
                 }
                 else
                 {
-                    meta = tr("Range: [%1:%2:%3], Default: %4").arg(minText(pMeta->getMin())).arg(pMeta->getStepSize()).arg(maxText(pMeta->getMax())).arg(param.getVal<ito::int32>());
+                    meta = tr("Range: [%1:%2:%3], Default: %4").arg(minText(pMeta->getMin())).arg(pMeta->getStepSize()).arg(maxText(pMeta->getMax())).arg(minmaxText(param.getVal<ito::int32>()));
                 }
             }
             else
             {
-                meta = tr("Default: %1").arg(param.getVal<ito::int32>());
+                meta = tr("Default: %1").arg(minmaxText(param.getVal<ito::int32>()));
             }
         }
         break;
@@ -973,16 +973,16 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             {
                 if (pMeta->getStepSize() == 1)
                 {
-                    meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<char>());
+                    meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(minmaxText(param.getVal<char>()));
                 }
                 else
                 {
-                    meta = tr("Range: [%1:%2:%3], Default: %4").arg(minText(pMeta->getMin())).arg(pMeta->getStepSize()).arg(maxText(pMeta->getMax())).arg(param.getVal<char>());
+                    meta = tr("Range: [%1:%2:%3], Default: %4").arg(minText(pMeta->getMin())).arg(pMeta->getStepSize()).arg(maxText(pMeta->getMax())).arg(minmaxText(param.getVal<char>()));
                 }
             }
             else
             {
-                meta = tr("Default: %1").arg(param.getVal<char>());
+                meta = tr("Default: %1").arg(minmaxText(param.getVal<char>()));
             }
         }
         break;
@@ -994,16 +994,16 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
             {
                 if (pMeta->getStepSize() == 0.0)
                 {
-                    meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(param.getVal<ito::float64>());
+                    meta = tr("Range: [%1,%2], Default: %3").arg(minText(pMeta->getMin())).arg(maxText(pMeta->getMax())).arg(minmaxText(param.getVal<ito::float64>()));
                 }
                 else
                 {
-                    meta = tr("Range: [%1:%2:%3], Default: %4").arg(minText(pMeta->getMin())).arg(pMeta->getStepSize()).arg(maxText(pMeta->getMax())).arg(param.getVal<ito::float64>());
+                    meta = tr("Range: [%1:%2:%3], Default: %4").arg(minText(pMeta->getMin())).arg(pMeta->getStepSize()).arg(maxText(pMeta->getMax())).arg(minmaxText(param.getVal<ito::float64>()));
                 }
             }
             else
             {
-                meta = tr("Default: %1").arg(param.getVal<ito::float64>());
+                meta = tr("Default: %1").arg(minmaxText(param.getVal<ito::float64>()));
             }
         }
         break;
@@ -1344,6 +1344,69 @@ QString HelpTreeDockWidget::maxText(char maximum) const
     }
 
     return QString::number(maximum);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! This function detects if a range minimum or maximum of a variable is equal to the minimum or maximum of the type
+/*! For example if a range is max 255 and it´s a byte, this function returns inf
+
+\param value
+\return maximum as String, -inf or inf
+*/
+QString HelpTreeDockWidget::minmaxText(int value) const
+{
+    if (value == std::numeric_limits<int>::max())
+    {
+        return "inf";
+    }
+    else if (value == std::numeric_limits<int>::min())
+    {
+        return "-inf";
+    }
+
+    return QString::number(value);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! This function detects if a range minimum or maximum of a variable is equal to the minimum or maximum of the type
+/*! For example if a range is max 255 and it´s a byte, this function returns inf
+
+\param value
+\return maximum as String, -inf or inf
+*/
+QString HelpTreeDockWidget::minmaxText(double value) const
+{
+    if (std::abs(value - std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon())
+    {
+        return "inf";
+    }
+    else if (std::abs(value + std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon())
+    {
+        return "-inf";
+    }
+
+    return QString::number(value);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! This function detects if a range minimum or maximum of a variable is equal to the minimum or maximum of the type
+/*! For example if a range is max 255 and it´s a byte, this function returns inf
+
+\param value
+\return maximum as String, -inf or inf
+*/
+QString HelpTreeDockWidget::minmaxText(char value) const
+{
+    if (value == std::numeric_limits<char>::max())
+    {
+        return "inf";
+    }
+    else if (value == std::numeric_limits<int>::min())
+    {
+        return "-inf";
+    }
+
+    return QString::number(value);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

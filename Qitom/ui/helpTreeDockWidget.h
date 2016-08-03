@@ -112,6 +112,9 @@ private:
     QString maxText(int minimum) const;
     QString maxText(double minimum) const;
     QString maxText(char minimum) const;
+    QString minmaxText(int value) const;
+    QString minmaxText(double value) const;
+    QString minmaxText(char value) const;
     
     // Variables
     Ui::HelpTreeDockWidget   ui;                
