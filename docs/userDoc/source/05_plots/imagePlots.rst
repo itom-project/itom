@@ -32,6 +32,16 @@ See section :ref:`primitives` for a short introduction.
 * Drawing of geometrical elements and markers by script and user interaction.
 * Images are displayed either mathematically ([0,0] lower left) or in windows-style ([0,0] upper left) (Property: 'yAxisFlipped')
 
+**Available colorMaps:**
+
++-----------------------------------------------------+---------------------------------------------------+---------------------------------------------------+
+| .. figure:: images/plot2d_colorMap_gray.png         | .. figure:: images/plot2d_colorMap_grayMarked.png | .. figure:: images/plot2d_colorMap_falseColor.png |
++-----------------------------------------------------+---------------------------------------------------+---------------------------------------------------+
++ .. figure:: images/plot2d_colorMap_falseColorIR.png | .. figure:: images/plot2d_colorMap_HotIron.png    | .. figure:: images/plot2d_colorMap_red.png        |
++-----------------------------------------------------+---------------------------------------------------+---------------------------------------------------+
+| .. figure:: images/plot2d_colorMap_blue.png         | .. figure:: images/plot2d_colorMap_green.png      | .. figure:: images/plot2d_colorMap_viridis.png    |
++-----------------------------------------------------+---------------------------------------------------+---------------------------------------------------+
+
 .. _itom2dqwtplot-ref:
 
 .. BEGIN The following part is obtained by the script plot_help_to_rst_format.py from the designer plugin itom2dqwtplot
