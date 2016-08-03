@@ -4164,14 +4164,14 @@ DataObject DataObject::operator - (const complex128 &value)
 */
 template<typename _Tp> RetVal OpMulFunc(const DataObject *dObj1, const DataObject *dObj2, DataObject *dObjRes)
 {
-   int nmat = 0;
-   int srcTmat1 = 0;
-   int srcTmat2 = 0;
-   int dstTmat = 0;
-   int numMats = dObj1->getNumPlanes();
-   const cv::Mat_<_Tp> *cvSrcTmat1 = NULL;
-   const cv::Mat_<_Tp> *cvSrcTmat2 = NULL;
-   cv::Mat_<_Tp> *cvDstTmat = NULL;
+    int nmat = 0;
+    int srcTmat1 = 0;
+    int srcTmat2 = 0;
+    int dstTmat = 0;
+    int numMats = dObj1->getNumPlanes();
+    const cv::Mat_<_Tp> *cvSrcTmat1 = NULL;
+    const cv::Mat_<_Tp> *cvSrcTmat2 = NULL;
+    cv::Mat_<_Tp> *cvDstTmat = NULL;
   
     for (nmat = 0; nmat < numMats; nmat++)
     {
@@ -4184,15 +4184,7 @@ template<typename _Tp> RetVal OpMulFunc(const DataObject *dObj1, const DataObjec
         *cvDstTmat = *cvSrcTmat1 * *cvSrcTmat2;
     }
 
-   cv::Size msize = dObjRes->get_mdata()[0]->size(); //for dObjRes, the transpose flag is 0.
-   dObjRes->getSize().m_p[dObjRes->getDims() - 1] = msize.width;
-
-   if(dObjRes->getDims() >= 2)
-   {
-    dObjRes->getSize().m_p[dObjRes->getDims() - 2] = msize.height;
-   }
-
-   return retOk;
+    return retOk;
 }
 
 typedef RetVal (*tOpMulFunc)(const DataObject *src1, const DataObject *src2, DataObject *dst);
@@ -4200,57 +4192,135 @@ typedef RetVal (*tOpMulFunc)(const DataObject *src1, const DataObject *src2, Dat
 MAKEFUNCLIST(OpMulFunc);
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! brief description
+//! inplace matrix multiplication of this dataObject with rhs (this *= rhs)
 /*!
-    \todo think about definition for this operator
+    This multiplication is only implemented for float32 and float64. The matrix multiplication is only executed plane-by-plane,
+    hence, the multiplication is done separately for each plane. This operation is only inplace, if the second matrix is squared 
+    and both matrices have the same number of columns. Else, this dataObject is reallocated to the new size.
+
+    For an element wise multiplication use the mul-method.
 */
 DataObject & DataObject::operator *= (const DataObject &rhs)
 {
-   if (this->m_type != rhs.m_type)
-   {
-      cv::error(cv::Exception(CV_StsAssert, "Data type of objects different", "", __FILE__, __LINE__));
-      return *this;
-   }
+    if (this->m_type != rhs.m_type)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "Data type of objects are different.", "", __FILE__, __LINE__));
+        return *this;
+    }
 
-   if ((m_size[m_dims - 1] != rhs.m_size[rhs.m_dims - 2]) || (m_dims > 2) || (rhs.m_dims > 2))
-   {
-      cv::error(cv::Exception(CV_StsAssert,"DataObject - matrix dimensions inapropriate for matrix multiplication","", __FILE__, __LINE__));
-   }
+    if (m_dims != rhs.m_dims)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "Number of dimensions of objects are different.", "", __FILE__, __LINE__));
+        return *this;
+    }
 
-   if(this->m_type != ito::tFloat32 && this->m_type != ito::tFloat64)
-   {
-       cv::error(cv::Exception(CV_StsAssert,"matrix multiplication is only implemented for float32 and float64 (due to openCV or BLAS restrictions)","",__FILE__,__LINE__));
-   }
+    if (m_dims < 2)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "DataObjects must be at least two-dimensional.", "", __FILE__, __LINE__));
+        return *this;
+    }
 
-   fListOpMulFunc[m_type](this, &rhs, this);
+    if ((m_size[m_dims - 1] != rhs.m_size[m_dims - 2]))
+    {
+        cv::error(cv::Exception(CV_StsAssert, "DataObject - matrix dimensions inapropriate for matrix multiplication.", "", __FILE__, __LINE__));
+        return *this;
+    }
 
-   return *this;
+    for (int i = 0; i < m_dims - 2; ++i)
+    {
+        if (getSize(i) != rhs.getSize(i))
+        {
+            cv::error(cv::Exception(CV_StsAssert, "DataObject - the first n-2 dimensions of both objects must be the same for matrix multiplication (n is the number of total dimensions).", "", __FILE__, __LINE__));
+            return *this;
+        }
+    }
+
+    if (this->m_type != ito::tFloat32 && this->m_type != ito::tFloat64)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "matrix multiplication is only implemented for float32 and float64 (due to OpenCV or BLAS restrictions)", "", __FILE__, __LINE__));
+    }
+
+    if (m_size[m_dims - 1] == rhs.m_size[m_dims - 1]) //The shape of the multiplication result has the same shape than this matrix. Inplace is possible.
+    {
+        fListOpMulFunc[m_type](this, &rhs, this);
+        return *this;
+    }
+    else
+    {
+        int *sizes = new int[m_dims];
+        for (int i = 0; i < m_dims - 2; ++i)
+        {
+            sizes[i] = m_size[i];
+        }
+        sizes[m_dims - 2] = m_size[m_dims - 2];
+        sizes[m_dims - 1] = rhs.m_size[m_dims - 1];
+        DataObject result(m_dims, sizes, m_type);
+        delete[] sizes;
+        fListOpMulFunc[m_type](this, &rhs, &result);
+        *this = result;
+        return *this;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! brief description
+//! matrix multiplication of this dataObject with rhs. The result is returned.
 /*!
-    \todo think about definition for this operator
+    This multiplication is only implemented for float32 and float64. The matrix multiplication is only executed plane-by-plane,
+    hence, the multiplication is done separately for each plane. 
+
+    For an element wise multiplication use the mul-method.
 */
 DataObject DataObject::operator * (const DataObject &rhs)
 {
-   if ((m_size[m_dims - 1] != rhs.m_size[rhs.m_dims - 2]) || (m_dims > 2) || (rhs.m_dims > 2))
-   {
-      cv::error(cv::Exception(CV_StsAssert,"DataObject - matrix dimensions inapropriate for matrix multiplication","", __FILE__, __LINE__));
-      return *this;
-   }
+    if (this->m_type != rhs.m_type)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "Data type of objects are different.", "", __FILE__, __LINE__));
+        return *this;
+    }
 
-   if(this->m_type != ito::tFloat32 && this->m_type != ito::tFloat64)
-   {
-       cv::error(cv::Exception(CV_StsAssert,"matrix multiplication is only implemented for float32 and float64 (due to openCV or BLAS restrictions)","",__FILE__,__LINE__));
-   }
+    if (m_dims != rhs.m_dims)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "Number of dimensions of objects are different.", "", __FILE__, __LINE__));
+        return *this;
+    }
 
-   DataObject result;
-   result.m_continuous = rhs.m_continuous;
-   this->copyTo(result, 1);
+    if (m_dims < 2)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "DataObjects must be at least two-dimensional.", "", __FILE__, __LINE__));
+        return *this;
+    }
 
-   result *= rhs;
-   return result;
+    if ((m_size[m_dims - 1] != rhs.m_size[m_dims - 2]))
+    {
+        cv::error(cv::Exception(CV_StsAssert,"DataObject - matrix dimensions inapropriate for matrix multiplication.","", __FILE__, __LINE__));
+        return *this;
+    }
+
+    for (int i = 0; i < m_dims - 2; ++i)
+    {
+        if (getSize(i) != rhs.getSize(i))
+        {
+            cv::error(cv::Exception(CV_StsAssert, "DataObject - the first n-2 dimensions of both objects must be the same for matrix multiplication (n is the number of total dimensions).", "", __FILE__, __LINE__));
+            return *this;
+        }
+    }
+
+    if(this->m_type != ito::tFloat32 && this->m_type != ito::tFloat64)
+    {
+        cv::error(cv::Exception(CV_StsAssert,"matrix multiplication is only implemented for float32 and float64 (due to OpenCV or BLAS restrictions)","",__FILE__,__LINE__));
+    }
+
+    int *sizes = new int[m_dims];
+    for (int i = 0; i < m_dims - 2; ++i)
+    {
+        sizes[i] = m_size[i];
+    }
+    sizes[m_dims - 2] = m_size[m_dims - 2];
+    sizes[m_dims - 1] = rhs.m_size[m_dims - 1];
+    DataObject result(m_dims, sizes, m_type);
+    delete[] sizes;
+    fListOpMulFunc[m_type](this, &rhs, &result);
+    return result;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
