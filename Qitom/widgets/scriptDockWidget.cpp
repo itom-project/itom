@@ -1146,7 +1146,7 @@ void ScriptDockWidget::updateEditorActions()
     m_bookmarkPrevious->setEnabled(sew != NULL && sew->isBookmarked());
     m_bookmarkClearAll->setEnabled(sew != NULL && sew->isBookmarked());
 
-    m_scriptRunSelectionAction->setEnabled(sew != NULL && sew->getCanCopy() && (!pyEngine->isPythonBusy() || pyEngine->isPythonDebuggingAndWaiting()));
+    m_scriptRunSelectionAction->setEnabled(pyEngine && sew != NULL && sew->getCanCopy() && (!pyEngine->isPythonBusy() || pyEngine->isPythonDebuggingAndWaiting()));
 
 //    QMetaObject::invokeMethod(m_pWidgetFindWord,"setFindBarEnabled",Q_ARG(bool,m_actTabIndex > -1, false));
     if (m_pWidgetFindWord != NULL)
