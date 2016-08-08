@@ -871,8 +871,13 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
 */
 QString HelpTreeDockWidget::parseFilterWidgetContent(const QString &input)
 {
+#if QT_VERSION < 0x050000
     QString output = input;
+#else
+    QString output = input.toHtmlEscaped();
+#endif
     output.replace("\n", "<br>");
+    output.replace("    ", "&nbsp;&nbsp;&nbsp;&nbsp;");
     return output;
 }
 
