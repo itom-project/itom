@@ -1631,27 +1631,33 @@ RetVal ScriptEditorWidget::toggleBreakpoint(int line)
 
     //!< markerLine(handle) returns -1, if marker doesn't exist any more (because lines have been deleted...)
     std::list<QPair<int, int> >::iterator it;
-    BreakPointModel *bpModel = PythonEngine::getInstance()->getBreakPointModel();
-    QModelIndexList indexList = bpModel->getBreakPointIndizes(getFilename(), line);
-
-    if (indexList.size()>0)
+    const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    if (pyEngine)
     {
-        bpModel->deleteBreakPoints(indexList);
-    }
-    else if (lineAcceptsBPs(line))
-    {
-        BreakPointItem bp;
-        bp.filename = getFilename();
-        bp.lineno = line;
-        bp.conditioned = false;
-        bp.condition = "";
-        bp.enabled = true;
-        bp.temporary = false;
-        bp.ignoreCount = 0;
-        bpModel->addBreakPoint(bp);
+        BreakPointModel *bpModel = pyEngine->getBreakPointModel();
+        QModelIndexList indexList = bpModel->getBreakPointIndizes(getFilename(), line);
+
+        if (indexList.size() > 0)
+        {
+            bpModel->deleteBreakPoints(indexList);
+        }
+        else if (lineAcceptsBPs(line))
+        {
+            BreakPointItem bp;
+            bp.filename = getFilename();
+            bp.lineno = line;
+            bp.conditioned = false;
+            bp.condition = "";
+            bp.enabled = true;
+            bp.temporary = false;
+            bp.ignoreCount = 0;
+            bpModel->addBreakPoint(bp);
+        }
+
+        return RetVal(retOk);
     }
 
-    return RetVal(retOk);
+    return retError;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1659,19 +1665,23 @@ RetVal ScriptEditorWidget::toggleEnableBreakpoint(int line)
 {
     if (getFilename() == "") return RetVal(retError);
 
-    BreakPointModel *bpModel = PythonEngine::getInstance()->getBreakPointModel();
-    QModelIndexList indexList = bpModel->getBreakPointIndizes(getFilename() , line);
-    BreakPointItem item;
-
-    if (indexList.size()>0)
+    const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    if (pyEngine)
     {
-        for (int i = 0; i < indexList.size(); i++)
+        BreakPointModel *bpModel = pyEngine->getBreakPointModel();
+        QModelIndexList indexList = bpModel->getBreakPointIndizes(getFilename(), line);
+        BreakPointItem item;
+
+        if (indexList.size() > 0)
         {
-            item = bpModel->getBreakPoint(indexList.at(i));
-            item.enabled = !item.enabled;
-            bpModel->changeBreakPoint(indexList.at(i), item);
+            for (int i = 0; i < indexList.size(); i++)
+            {
+                item = bpModel->getBreakPoint(indexList.at(i));
+                item.enabled = !item.enabled;
+                bpModel->changeBreakPoint(indexList.at(i), item);
+            }
+            return RetVal(retOk);
         }
-        return RetVal(retOk);
     }
 
     return RetVal(retError);
@@ -1682,32 +1692,36 @@ RetVal ScriptEditorWidget::editBreakpoint(int line)
 {
     if (getFilename() == "") return RetVal(retError);
 
-    BreakPointModel *bpModel = PythonEngine::getInstance()->getBreakPointModel();
-    QModelIndex index;
-    BreakPointItem item;
-    RetVal retValue(retOk);
-
-    if (markersAtLine(line) & markMaskBreakpoints)
+    const PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    if (pyEngine)
     {
-        index = bpModel->getFirstBreakPointIndex(getFilename(), line);
+        BreakPointModel *bpModel = pyEngine->getBreakPointModel();
+        QModelIndex index;
+        BreakPointItem item;
+        RetVal retValue(retOk);
 
-        if (index.isValid())
+        if (markersAtLine(line) & markMaskBreakpoints)
         {
-            item = bpModel->getBreakPoint(index);
+            index = bpModel->getFirstBreakPointIndex(getFilename(), line);
 
-            DialogEditBreakpoint *dlg = new DialogEditBreakpoint(item.filename, line+1, item.enabled, item.temporary , item.ignoreCount, item.condition);
-            dlg->exec();
-            if (dlg->result() == QDialog::Accepted)
+            if (index.isValid())
             {
-                dlg->getData(item.enabled, item.temporary, item.ignoreCount, item.condition);
-                item.conditioned = (item.condition != "") || (item.ignoreCount > 0) || item.temporary;
+                item = bpModel->getBreakPoint(index);
 
-                bpModel->changeBreakPoint(index, item);
+                DialogEditBreakpoint *dlg = new DialogEditBreakpoint(item.filename, line + 1, item.enabled, item.temporary, item.ignoreCount, item.condition);
+                dlg->exec();
+                if (dlg->result() == QDialog::Accepted)
+                {
+                    dlg->getData(item.enabled, item.temporary, item.ignoreCount, item.condition);
+                    item.conditioned = (item.condition != "") || (item.ignoreCount > 0) || item.temporary;
+
+                    bpModel->changeBreakPoint(index, item);
+                }
+
+                DELETE_AND_SET_NULL(dlg);
+
+                return RetVal(retOk);
             }
-
-            DELETE_AND_SET_NULL(dlg);
-
-            return RetVal(retOk);
         }
     }
 
