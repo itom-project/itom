@@ -51,10 +51,10 @@ private:
 
 signals:
 
-public slots:
+    public slots :
 
-private slots:
-
+    private slots :
+        void on_comboEdgeMode_currentIndexChanged(int index);
 };
 
 } //end namespace ito

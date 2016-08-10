@@ -27,6 +27,7 @@
 #include <qmenu.h>
 
 #include <qsettings.h>
+#include <qsciscintilla.h>
 
 namespace ito
 {
@@ -59,6 +60,24 @@ void WidgetPropEditorScripts::readSettings()
     ui.checkActiveClassNavigatorTimer->setChecked(settings.value("classNavigatorTimerActive", true).toBool());
     ui.spinClassNavigatorInterval->setValue(settings.value("classNavigatorInterval", 2.00).toDouble());
 
+    //edge mode
+    switch ((QsciScintilla::EdgeMode)(settings.value("edgeMode", QsciScintilla::EdgeNone).toInt()))
+    {
+    case QsciScintilla::EdgeNone:
+        ui.comboEdgeMode->setCurrentIndex(0);
+        break;
+    case QsciScintilla::EdgeLine:
+        ui.comboEdgeMode->setCurrentIndex(1);
+        break;
+    case QsciScintilla::EdgeBackground:
+        ui.comboEdgeMode->setCurrentIndex(2);
+        break;
+    }
+
+    on_comboEdgeMode_currentIndexChanged(ui.comboEdgeMode->currentIndex());
+
+    ui.spinEdgeColumn->setValue(settings.value("edgeColumn", 0).toInt());
+    ui.colorEdgeBg->setColor(settings.value("edgeColor", QColor(Qt::black)).value<QColor>());
     
 
     settings.endGroup();
@@ -80,7 +99,45 @@ void WidgetPropEditorScripts::writeSettings()
     settings.setValue("classNavigatorTimerActive", ui.checkActiveClassNavigatorTimer->isChecked());
     settings.setValue("classNavigatorInterval", ui.spinClassNavigatorInterval->value());
 
+    //edge mode
+    //edge mode
+    int idx = ui.comboEdgeMode->currentIndex();
+    settings.setValue("edgeMode", idx == 0 ? QsciScintilla::EdgeNone : (idx == 1 ? QsciScintilla::EdgeLine : QsciScintilla::EdgeBackground));
+    settings.setValue("edgeColumn", ui.spinEdgeColumn->value());
+    settings.setValue("edgeColor", ui.colorEdgeBg->color());
+
     settings.endGroup();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropEditorScripts::on_comboEdgeMode_currentIndexChanged(int index)
+{
+    switch (index)
+    {
+    case 0:
+        ui.comboEdgeMode->setCurrentIndex(0);
+        ui.spinEdgeColumn->setVisible(false);
+        ui.lblEdgeColumn->setVisible(false);
+        ui.colorEdgeBg->setVisible(false);
+        ui.lblEdgeBg->setVisible(false);
+        break;
+    case 1:
+        ui.comboEdgeMode->setCurrentIndex(1);
+        ui.spinEdgeColumn->setVisible(true);
+        ui.lblEdgeColumn->setVisible(true);
+        ui.colorEdgeBg->setVisible(true);
+        ui.lblEdgeBg->setVisible(true);
+        ui.lblEdgeBg->setText(tr("Line color:"));
+        break;
+    case 2:
+        ui.comboEdgeMode->setCurrentIndex(2);
+        ui.spinEdgeColumn->setVisible(true);
+        ui.lblEdgeColumn->setVisible(true);
+        ui.colorEdgeBg->setVisible(true);
+        ui.lblEdgeBg->setVisible(true);
+        ui.lblEdgeBg->setText(tr("Background color:"));
+        break;
+    }
 }
 
 } //end namespace ito

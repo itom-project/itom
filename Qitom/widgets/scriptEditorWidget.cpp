@@ -275,6 +275,10 @@ void ScriptEditorWidget::loadSettings()
         break;
     }
 
+    setEdgeMode((QsciScintilla::EdgeMode)(settings.value("edgeMode", edgeMode()).toInt()));
+    setEdgeColumn(settings.value("edgeColumn", edgeColumn()).toInt());
+    setEdgeColor(settings.value("edgeColor", edgeColor()).value<QColor>());
+
     settings.endGroup();
 
     AbstractPyScintillaWidget::loadSettings();

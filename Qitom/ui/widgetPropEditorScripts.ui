@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>505</width>
-    <height>211</height>
+    <width>474</width>
+    <height>279</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -153,18 +153,77 @@
         </item>
        </layout>
       </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Edge Mode</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <spacer name="verticalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
+       <widget class="QComboBox" name="comboEdgeMode">
+        <item>
+         <property name="text">
+          <string>Long lines are not marked in the script editor (no edge mode)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>A vertical line is drawn at a given column position (recommended for monspace fonts)</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Set the background color of characters after the column limit to a specific color</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="lblEdgeColumn">
+          <property name="text">
+           <string>Edge column:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSpinBox" name="spinEdgeColumn">
+          <property name="maximum">
+           <number>1000</number>
+          </property>
+          <property name="value">
+           <number>80</number>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="lblEdgeBg">
+          <property name="text">
+           <string>Background color:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="ColorPickerButton" name="colorEdgeBg"/>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
@@ -184,6 +243,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ColorPickerButton</class>
+   <extends>QPushButton</extends>
+   <header>colorPickerButton.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
