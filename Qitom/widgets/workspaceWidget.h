@@ -68,6 +68,8 @@ public:
         RoleType     = Qt::UserRole + 3
     };
 
+    QString getPythonReadableName(const QTreeWidgetItem *item) const;
+
 protected:
     QStringList mimeTypes() const;
     QMimeData * mimeData(const QList<QTreeWidgetItem *> items) const;

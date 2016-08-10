@@ -26,6 +26,8 @@
 #include "../helper/IOHelper.h"
 #include "../global.h"
 #include "../AppManagement.h"
+#include "../organizer/uiOrganizer.h"
+#include "../common/typeDefs.h"
 
 #include <qmessagebox.h>
 #include <qapplication.h>
@@ -143,12 +145,12 @@ void WorkspaceDockWidget::createActions()
     m_actRename = new ShortcutAction(QIcon(":/workspace/icons/edit-rename.png"), tr("rename selected item"), this, QKeySequence(tr("F2")), Qt::WidgetWithChildrenShortcut);
     m_actRename->connectTrigger(this, SLOT(mnuRenameItem()));
 
-    m_dObjPlot1d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/1d.png"), tr("plot 1D"), this);
-    //m_dObjPlot1d->connectTrigger(this, SLOT(mnuRenameItem()));
-    m_dObjPlot2d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/2d.png"), tr("plot 2D"), this);
-    //m_dObjPlot2d->connectTrigger(this, SLOT(mnuRenameItem()));
-    m_dObjPlot25d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/3d.png"), tr("plot 2.5D"), this);
-    //m_dObjPlot25d->connectTrigger(this, SLOT(mnuRenameItem()));
+    m_dObjPlot1d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/1d.png"), tr("plot as 1D line plot"), this);
+    m_dObjPlot1d->connectTrigger(this, SLOT(mnuPlot1D()));
+    m_dObjPlot2d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/2d.png"), tr("plot 2D image plot"), this);
+    m_dObjPlot2d->connectTrigger(this, SLOT(mnuPlot2D()));
+    m_dObjPlot25d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/3d.png"), tr("plot 2.5D isometric plot"), this);
+    m_dObjPlot25d->connectTrigger(this, SLOT(mnuPlot25D()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -348,6 +350,189 @@ void WorkspaceDockWidget::mnuRenameItem()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+void WorkspaceDockWidget::mnuPlot1D()
+{
+    mnuPlotGeneric("1d");
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WorkspaceDockWidget::mnuPlot2D()
+{
+    mnuPlotGeneric("2d");
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WorkspaceDockWidget::mnuPlot25D()
+{
+    mnuPlotGeneric("2.5d");
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WorkspaceDockWidget::mnuPlotGeneric(const QString &plotClass)
+{
+    //try to open it with filters
+    RetVal retVal;
+    QSharedPointer<ito::ParamBase> value;
+    PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    QStringList keyList;
+    QVector<int> compatibleParamBaseTypes; //Type of ParamBase, which is compatible to this value, or 0 if not compatible
+    QStringList keyListFinal;
+    QVector<int> compatibleParamBaseTypesFinal;
+    QVector<const QTreeWidgetItem*> items;
+    QVector<const QTreeWidgetItem*> itemsFinal;
+
+    if (eng == NULL)
+    {
+        retVal += RetVal(retError, 1, tr("python engine not available").toLatin1().data());
+    }
+    else if (eng->isPythonBusy() && !eng->isPythonDebuggingAndWaiting())
+    {
+        retVal += RetVal(retError, 2, tr("variables cannot be plot since python is busy right now").toLatin1().data());
+    }
+    else if (!m_pWorkspaceWidget)
+    {
+        retVal += RetVal(retError, 3, tr("workspace not available").toLatin1().data());
+    }
+    else if (m_pWorkspaceWidget->numberOfSelectedItems() == 0)
+    {
+        retVal += RetVal(retError, 5, tr("nothing selected").toLatin1().data());
+    }
+    else
+    {
+        QList<QTreeWidgetItem*> itemList = m_pWorkspaceWidget->selectedItems();
+        QTreeWidgetItem * parent;
+        bool ignore;
+        foreach(const QTreeWidgetItem *item, itemList)
+        {
+            if (item->parent() == NULL)
+            {
+                keyList.append(item->data(0, WorkspaceWidget::RoleFullName).toString());
+                compatibleParamBaseTypes.append(item->data(0, WorkspaceWidget::RoleCompatibleTypes).toInt());
+                items.append(item);
+            }
+            else //check if parent or parent of parent is also selected. If so, ignore item
+            {
+                parent = item->parent();
+                ignore = false;
+                while (parent && !ignore)
+                {
+                    if (itemList.contains(parent))
+                    {
+                        ignore = true;
+                    }
+
+                    parent = parent->parent();
+                }
+
+                if (!ignore)
+                {
+                    keyList.append(item->data(0, WorkspaceWidget::RoleFullName).toString());
+                    compatibleParamBaseTypes.append(item->data(0, WorkspaceWidget::RoleCompatibleTypes).toInt());
+                    items.append(item);
+                }
+            }
+        }
+    }
+
+    if (!retVal.containsError())
+    {
+        keyListFinal.reserve(keyList.size());
+        compatibleParamBaseTypesFinal.reserve(compatibleParamBaseTypesFinal.size());
+        itemsFinal.reserve(items.size());
+
+        //check that only dataObjects are plot
+        for (int i = 0; i < keyList.size(); ++i)
+        {
+            if (compatibleParamBaseTypes[i] == ito::ParamBase::DObjPtr)
+            {
+                keyListFinal.append(keyList[i]);
+                compatibleParamBaseTypesFinal.append(compatibleParamBaseTypes[i]);
+                itemsFinal.append(items[i]);
+            }
+            else
+            {
+                retVal += ito::RetVal(ito::retWarning, 0, tr("At least one variable cannot be plotted since it is no dataObject or numpy.array. These values are ignored.").toLatin1().data());
+            }
+        }
+    }
+
+    if (!retVal.containsError())
+    {
+        //get values from workspace
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        QSharedPointer<SharedParamBasePointerVector> values(new SharedParamBasePointerVector());
+        QMetaObject::invokeMethod(eng, "getParamsFromWorkspace", Q_ARG(bool, m_globalNotLocal), Q_ARG(QStringList, keyListFinal), Q_ARG(QVector<int>, compatibleParamBaseTypesFinal), Q_ARG(QSharedPointer<SharedParamBasePointerVector>, values), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        if (!locker.getSemaphore()->wait(5000))
+        {
+            retVal += RetVal(retError, 0, tr("timeout while getting value from workspace").toLatin1().data());
+        }
+        else
+        {
+            retVal += locker.getSemaphore()->returnValue;
+        }
+
+        if (values->size() != keyListFinal.size())
+        {
+            retVal += RetVal(retError, 0, tr("the number of values returned from workspace does not correspond to requested number").toLatin1().data());
+        }
+
+        if (!retVal.containsError())
+        {
+            QVariantMap properties;
+            int areaCol = 0;
+            int areaRow = 0;
+            const ito::DataObject *obj;
+            int idx;
+
+            for (int i = 0; i < values->size(); ++i)
+            {
+                ItomSharedSemaphoreLocker locker2(new ItomSharedSemaphore());
+
+                QSharedPointer<unsigned int> figHandle(new unsigned int);
+                *figHandle = 0; //new figure will be requested
+
+                UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
+                obj = (*values)[i]->getVal<const ito::DataObject*>();
+                ito::UiDataContainer dataCont(QSharedPointer<ito::DataObject>(new ito::DataObject(*obj)));
+
+                if (obj->existTag("title") == false)
+                {
+                    properties["title"] = m_pWorkspaceWidget->getPythonReadableName(itemsFinal[i]);
+                }
+                else
+                {
+                    properties.remove("title");
+                }
+
+                QSharedPointer<unsigned int> objectID(new unsigned int);
+
+                QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, plotClass), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore()));
+                if (!locker2.getSemaphore()->wait(PLUGINWAIT * 5))
+                {
+                    retVal += RetVal(retError, 0, tr("Timeout while plotting dataObject or numpy.array").toLatin1().data());
+                    break;
+                }
+            }
+        }
+    }
+
+    if (retVal.containsError())
+    {
+        const char *errorMsg = retVal.errorMessage();
+        QString message = QString();
+        if (errorMsg) message = errorMsg;
+        QMessageBox::critical(this, tr("Plot data"), tr("Error while plotting value(s):\n%1").arg(message));
+    }
+    else if (retVal.containsWarning())
+    {
+        const char *errorMsg = retVal.errorMessage();
+        QString message = QString();
+        if (errorMsg) message = errorMsg;
+        QMessageBox::warning(this, tr("Plot data"), tr("Warning while plotting value(s):\n%1").arg(message));
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! updates the status of all actions of this widget
 /*!
     The update concerns mainly the visible and enabled-status of each action,
@@ -375,10 +560,28 @@ void WorkspaceDockWidget::updateActions()
 
             if (num > 1)
             {
+                bool ok;
+                bool plotOk = true;
+                int compatibleTypes;
+                for (int i = 0; i < num; ++i)
+                {
+                    compatibleTypes = items[0]->data(0, WorkspaceWidget::RoleCompatibleTypes).toInt(&ok);
+                    if (!ok)
+                    {
+                        compatibleTypes = 0;
+                    }
+
+                    if (compatibleTypes != ito::ParamBase::DObjPtr)
+                    {
+                        plotOk = false;
+                        break;
+                    }
+                }
+
                 m_separatorSpecialActions->setVisible(false);
-                m_dObjPlot1d->setVisible(false);
-                m_dObjPlot2d->setVisible(false);
-                m_dObjPlot25d->setVisible(false);
+                m_dObjPlot1d->setVisible(plotOk);
+                m_dObjPlot2d->setVisible(plotOk);
+                m_dObjPlot25d->setVisible(plotOk);
             }
             else
             {

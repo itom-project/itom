@@ -130,19 +130,24 @@ QMimeData * WorkspaceWidget::mimeData(const QList<QTreeWidgetItem *> items) cons
     QMimeData *mimeData = QTreeWidget::mimeData(items);
     QStringList texts;
 
-    //QByteArray encoded = mimeData->data("application/x-qabstractitemmodeldatalist");
-    //QDataStream stream(&encoded, QIODevice::ReadOnly);
-
-    QString name;
-    QSharedPointer<QString> tempValue;
-    const QTreeWidgetItem *tempItem = NULL;
-    QString fullName("empty item");
-    QByteArray type;
-
     foreach(const QTreeWidgetItem *item, items)
     {
-        fullName = item->data(0, RoleFullName).toString();
-        type = item->data(0, RoleType).toByteArray();
+        texts.append(getPythonReadableName(item));
+    }
+
+    mimeData->setData("text/plain", texts.join("\n").toLatin1() );
+    return mimeData;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QString WorkspaceWidget::getPythonReadableName(const QTreeWidgetItem *item) const
+{
+    QString name;
+    const QTreeWidgetItem *tempItem = NULL;
+
+    if (item)
+    {
+        QByteArray type = item->data(0, RoleType).toByteArray();
 
         if (item->parent() == NULL)
         {
@@ -151,7 +156,7 @@ QMimeData * WorkspaceWidget::mimeData(const QList<QTreeWidgetItem *> items) cons
         else
         {
             tempItem = item;
-            while(tempItem->parent() != NULL)
+            while (tempItem->parent() != NULL)
             {
                 type = tempItem->data(0, RoleType).toByteArray();
 
@@ -159,35 +164,24 @@ QMimeData * WorkspaceWidget::mimeData(const QList<QTreeWidgetItem *> items) cons
                 {
                     if (type[1] == PY_NUMBER)
                     {
-                        name.prepend( "[" + tempItem->text(0) + "]" );
+                        name.prepend("[" + tempItem->text(0) + "]");
                     }
                     else
                     {
-                        name.prepend( "[\"" + tempItem->text(0) + "\"]" );
+                        name.prepend("[\"" + tempItem->text(0) + "\"]");
                     }
                 }
                 else if (type[0] == PY_ATTR)
                 {
-                    name.prepend( "." + tempItem->text(0) );
+                    name.prepend("." + tempItem->text(0));
                 }
                 tempItem = tempItem->parent();
             }
-            name.prepend( tempItem->text(0) );
+            name.prepend(tempItem->text(0));
         }
-
-        texts.append(name);
     }
 
-    //while (!stream.atEnd())
-    //{
-    //    int row, col;
-    //    QMap<int,  QVariant> roleDataMap;
-    //    stream >> row >> col >> roleDataMap;
-    //    texts.append( roleDataMap[0].toString() );
-    //}
-
-    mimeData->setData("text/plain", texts.join("\n").toLatin1() );
-    return mimeData;
+    return name;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

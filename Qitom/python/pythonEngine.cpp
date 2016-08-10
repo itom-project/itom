@@ -4785,7 +4785,6 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
     ItomSharedSemaphoreLocker locker(semaphore);
     tPythonState oldState = pythonState;
     ito::RetVal retVal;
-    PyObject* sourceDict = NULL;
     PyObject* value = NULL;
     bool released = false;
     QSharedPointer<ito::ParamBase> param;
@@ -4812,16 +4811,7 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
             pythonStateTransition(pyTransDebugExecCmdBegin);
         }
 
-        if (globalNotLocal)
-        {
-            sourceDict = getGlobalDictionary();
-        }
-        else
-        {
-            sourceDict = getLocalDictionary();
-        }
-
-        if (sourceDict == NULL)
+        if ((globalNotLocal && getGlobalDictionary() == NULL) || (!globalNotLocal && getLocalDictionary() == NULL))
         {
             retVal += ito::RetVal(ito::retError, 0, tr("values cannot be obtained since workspace dictionary not available.").toLatin1().data());
         }
@@ -4866,17 +4856,6 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
                 semaphore->release();
                 released = true;
             }
-
-            gstate = PyGILState_Ensure();
-            if (globalNotLocal)
-            {
-                emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
-            }
-            else
-            {
-                emitPythonDictionary(false, true, NULL, getLocalDictionary());
-            }
-            PyGILState_Release(gstate);
         }
 
         if (oldState == pyStateIdle)

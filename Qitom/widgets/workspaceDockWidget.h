@@ -76,11 +76,16 @@ private:
     QTreeWidgetItem* m_firstCurrentItem;
     QString m_firstCurrentItemKey;
 
+    void mnuPlotGeneric(const QString &plotClass);
+
 private slots:
     void mnuDeleteItem();
     void mnuExportItem();
     void mnuImportItem();
     void mnuRenameItem();
+    void mnuPlot1D();
+    void mnuPlot2D();
+    void mnuPlot25D();
 
     void treeWidgetItemSelectionChanged() { updateActions(); };
     void treeWidgetItemChanged(QTreeWidgetItem * item, int column);
