@@ -69,3 +69,19 @@ website http://www.lfd.uci.edu/~gohlke/pythonlibs/:
 The packages listed by this website are only available for Windows but different versions of Python in 32bit and 64bit. Download the corresponding wheel file and use the |itom| python package manager to install it (don't forget to mark the upgrade check box if you want to update an existing package). An advantage of this site is also, that some libraries are compiled using the fast MKL compiler from Intel. Please notice that you also need to install updates for packages obtained from Gohlke by downloading the updated version as wheel file and install it. Do not mix the source from Gohlke and the python package index.
 
 Under Linux, it is also worth and possible to install common packages, like Numpy, Scipy or Matplotlib from the package managers of your Linux distribution. This is the way to obtain prebuild binaries under Linux. The above mentioned website only provides Windows binaries.
+
+Start Package Manager only
+==============================
+
+It is possible to directly start the Pip Package Manager without the GUI of itom.
+This is useful especially if you want to upgrade or re-install Numpy, since Numpy is used by itom and can therefore not be changed after that
+Python has been loaded in itom. If you want to directly start the package manager, call the application **qitom** or **qitom.exe** with 
+the argument **pipManager**:
+
+.. code-blocks::
+    
+    qitom.exe pipManager
+
+Alternatively, put an empty file **restart_itom_with_pip_manager.txt** into the application folder of *itom*. The package manager is then started
+at the next startup of *itom*. Afterwards the file is automatically removed. This is done, once you try to install *Numpy* in an ordinary instance
+of itom. Then, this text file is created and you have to restart itom in order to get a pure instance of the package manager.
