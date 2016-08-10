@@ -58,17 +58,17 @@ namespace ito
 */
 DesignerWidgetOrganizer::DesignerWidgetOrganizer(ito::RetVal &retValue)
 {
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    /*QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("DesignerPlugins");
     settings.beginGroup("ito::AbstractDObjFigure");
     if (settings.contains("zoomRubberBandPen") == false) settings.setValue("zoomRubberBandPen", QPen(QBrush(Qt::red), 2, Qt::DashLine));
     if (settings.contains("trackerPen") == false) settings.setValue("trackerPen", QPen(QBrush(Qt::red), 2));
     if (settings.contains("trackerFont") == false) settings.setValue("trackerFont", QFont("Verdana", 10));
-    if (settings.contains("trackerBackground") == false) settings.setValue("trackerBackground", QBrush(QColor(255, 255, 255, 155), Qt::SolidPattern));
-    if (settings.contains("centerMarkerSize") == false) settings.setValue("centerMarkerSize", QSize(10, 10));
+    if (settings.contains("trackerBackground") == false) settings.setValue("trackerBackground", QBrush(QColor(255, 255, 255, 255), Qt::SolidPattern));
+    if (settings.contains("centerMarkerSize") == false) settings.setValue("centerMarkerSize", QSize(25, 25));
     if (settings.contains("centerMarkerPen") == false) settings.setValue("centerMarkerPen", QPen(QBrush(Qt::red), 1));
     settings.endGroup();
-    settings.endGroup();
+    settings.endGroup();*/
 
     //create figure categories (for property dialog...)
    ito::PlotDataFormats allFormats = ~(ito::PlotDataFormats(0)); //(~ito::Format_Gray8); // | ito::Format_Gray8; //(ito::PlotDataFormats(0));

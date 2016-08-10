@@ -192,11 +192,9 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         # draw() to update plot elements.
         if DEBUG: print('FigureCanvasItomAgg.draw')
         
-        if self.figure is None:
-            raise RuntimeError("figure %i does not exist any more" % self.num)
-        FigureCanvasAgg.draw(self)
-        self.paintEvent()
-        #self.canvas.call("update")
+        if not self.figure is None:
+            FigureCanvasAgg.draw(self)
+            self.paintEvent()
 
     def blit(self, bbox=None):
         """

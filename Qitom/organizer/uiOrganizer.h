@@ -418,6 +418,7 @@ public slots:
 
     RetVal showFileDialogExistingDir(unsigned int objectID, const QString &caption, QSharedPointer<QString> directory, int options = QFileDialog::ShowDirsOnly, ItomSharedSemaphore *semaphore = NULL); //options are of type QFileDialog::Options
     RetVal showFileOpenDialog(unsigned int objectID, const QString &caption, const QString &directory, const QString &filter, QSharedPointer<QString> file, int selectedFilterIndex = 0, int options = 0, ItomSharedSemaphore *semaphore = NULL);
+    RetVal showFilesOpenDialog(unsigned int objectID, const QString &caption, const QString &directory, const QString &filter, QSharedPointer<QStringList> files, int selectedFilterIndex = 0, int options = 0, ItomSharedSemaphore *semaphore = NULL);
     RetVal showFileSaveDialog(unsigned int objectID, const QString &caption, const QString &directory, const QString &filter, QSharedPointer<QString> file, int selectedFilterIndex = 0, int options = 0, ItomSharedSemaphore *semaphore = NULL);
 
     RetVal exists(unsigned int objectID, QSharedPointer<bool> exists, ItomSharedSemaphore *semaphore = NULL);

@@ -266,6 +266,7 @@ namespace ito
             private:
                 QAction *m_action;
                 QShortcut *m_shortcut;
+                
             };
 
             //! eventFilter for m_pWindow
@@ -360,11 +361,7 @@ namespace ito
             QSize m_oldMinSize;
             QSize m_oldMaxSize;
             QRect m_lastUndockedSize;
-    
-        //signals:
-        //    void addDockToMainWindow(AbstractDockWidget *widget);       /*!<  signal emitted if widget should be docked to main window */
-        //    void removeDockFromMainWindow(AbstractDockWidget *widget);  
-        //    void dockCloseRequest(AbstractDockWidget *widget);
+            QByteArray m_pendingGeometryState; //if the window has a loaded geometry state from the settings file, but has been hidden at startup, the geometry is saved here and applied once the window becomes visible. Then, this variable is cleared.
 
         public slots:
             virtual void dockedToMainWindow(AbstractDockWidget * /*widget*/){}

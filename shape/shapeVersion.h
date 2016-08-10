@@ -25,4 +25,4 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#define SHAPE_VER_STRING  "1.3.0.0"
+#define SHAPE_VER_STRING  "1.4.0.0"

@@ -450,11 +450,18 @@ void AbstractDockWidget::restoreState(const QString &iniName)
             QVariant visible = settings.value("visible");
             if (visible.isValid())
             {
-                setVisible(visible.toBool());
+                if (visible.toBool())
+                {
+                    setVisible(true);
+                    m_pWindow->restoreGeometry(settings.value("geometry").toByteArray());
+                    //see also bug-report https://bugreports.qt.io/browse/QTBUG-21371 (fixed in >= Qt 5.3.0). 
+                }
+                else
+                {
+                    setVisible(false);
+                    m_pendingGeometryState = settings.value("geometry").toByteArray();
+                }
             }
-
-            m_pWindow->restoreGeometry(settings.value("geometry").toByteArray());
-            //see also bug-report https://bugreports.qt.io/browse/QTBUG-21371 (fixed in >= Qt 5.3.0). 
         }
         else
         {
@@ -1084,6 +1091,12 @@ void AbstractDockWidget::raiseAndActivate()
         m_pWindow->raise(); //for MacOS
         m_pWindow->activateWindow(); //for Windows
         m_pWindow->show();
+
+        if (m_pendingGeometryState != "")
+        {
+            m_pWindow->restoreGeometry(m_pendingGeometryState);
+            m_pendingGeometryState = "";
+        }
     }
     else
     {

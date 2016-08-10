@@ -1146,7 +1146,7 @@ void ScriptDockWidget::updateEditorActions()
     m_bookmarkPrevious->setEnabled(sew != NULL && sew->isBookmarked());
     m_bookmarkClearAll->setEnabled(sew != NULL && sew->isBookmarked());
 
-    m_scriptRunSelectionAction->setEnabled(sew != NULL && sew->getCanCopy() && (!pyEngine->isPythonBusy() || pyEngine->isPythonDebuggingAndWaiting()));
+    m_scriptRunSelectionAction->setEnabled(pyEngine && sew != NULL && sew->getCanCopy() && (!pyEngine->isPythonBusy() || pyEngine->isPythonDebuggingAndWaiting()));
 
 //    QMetaObject::invokeMethod(m_pWidgetFindWord,"setFindBarEnabled",Q_ARG(bool,m_actTabIndex > -1, false));
     if (m_pWidgetFindWord != NULL)
@@ -1174,9 +1174,9 @@ void ScriptDockWidget::updatePythonActions()
     bool busy1 = pythonBusy();
     bool busy2 = busy1 && pythonDebugMode() && pythonInWaitingMode();
 
-    m_scriptRunAction->setEnabled(!busy1);
+    m_scriptRunAction->setEnabled(pyEngine && !busy1);
     m_scriptRunSelectionAction->setEnabled(lineFrom != -1 && pyEngine && (!pyEngine->isPythonBusy() || pyEngine->isPythonDebuggingAndWaiting()));
-    m_scriptDebugAction->setEnabled(!busy1);
+    m_scriptDebugAction->setEnabled(pyEngine && !busy1);
     m_scriptStopAction->setEnabled(busy1);
     m_scriptContinueAction->setEnabled(busy2);
     m_scriptStepAction->setEnabled(busy2);
@@ -1488,8 +1488,8 @@ void ScriptDockWidget::createMenus()
     m_editMenu->addSeparator();
     m_bookmark = m_editMenu->addMenu(QIcon(":/bookmark/icons/bookmark.png"), tr("bookmark"));
     m_bookmark->addAction(m_bookmarkToggle->action());
-    m_bookmark->addAction(m_bookmarkNext->action());
     m_bookmark->addAction(m_bookmarkPrevious->action());
+    m_bookmark->addAction(m_bookmarkNext->action());
     m_bookmark->addAction(m_bookmarkClearAll->action());
 
     m_scriptMenu = getMenuBar()->addMenu(tr("&Script"));
@@ -1568,8 +1568,8 @@ void ScriptDockWidget::createToolBars()
     m_bookmarkToolBar = new QToolBar(tr("bookmark toolbar"), this);
     addToolBar(m_bookmarkToolBar, "bookmarkToolBar");
     m_bookmarkToolBar->addAction(m_bookmarkToggle->action());
-    m_bookmarkToolBar->addAction(m_bookmarkNext->action());
     m_bookmarkToolBar->addAction(m_bookmarkPrevious->action());
+    m_bookmarkToolBar->addAction(m_bookmarkNext->action());
     m_bookmarkToolBar->addAction(m_bookmarkClearAll->action());
     m_bookmarkToolBar->setFloatable(false);
 }

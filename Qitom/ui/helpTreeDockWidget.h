@@ -56,7 +56,7 @@ public slots:
 
 private slots:
     void on_splitter_splitterMoved ( int pos, int index );
-    void on_textBrowser_anchorClicked(const QUrl & link);   
+    void on_helpTreeContent_anchorClicked(const QUrl & link);
 
     void dbLoaderFinished(int index);
 
@@ -112,6 +112,9 @@ private:
     QString maxText(int minimum) const;
     QString maxText(double minimum) const;
     QString maxText(char minimum) const;
+    QString minmaxText(int value) const;
+    QString minmaxText(double value) const;
+    QString minmaxText(char value) const;
     
     // Variables
     Ui::HelpTreeDockWidget   ui;                

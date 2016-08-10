@@ -171,6 +171,7 @@ public:
     static PyObject* PyUi_msgGeneral(PyUi *self, PyObject *args, PyObject *kwds, int type);
 
     static PyObject* PyUi_getExistingDirectory(PyUi *self, PyObject *args, PyObject *kwds);
+    static PyObject* PyUi_getOpenFileNames(PyUi *self, PyObject *args, PyObject *kwds);
     static PyObject* PyUi_getOpenFileName(PyUi *self, PyObject *args, PyObject *kwds);
     static PyObject* PyUi_getSaveFileName(PyUi *self, PyObject *args, PyObject *kwds);
 

@@ -2977,6 +2977,109 @@ PyObject* PythonUi::PyUi_getExistingDirectory(PyUi * /*self*/, PyObject *args, P
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyUiGetOpenFileNames_doc, "getOpenFileNames([caption, startDirectory, filters, selectedFilterIndex, options, parent]) -> opens dialog for chosing existing files. \n\
+\n\
+Parameters \n\
+----------- \n\
+caption : {str}, optional\n\
+    This is the optional title of the dialog, default: no title \n\
+startDirectory {str}, optional\n\
+    optional, if not indicated currentDirectory will be taken\n\
+filters : {str}, optional\n\
+    default = 0\n\
+    possible filter list, entries should be separated by ;; , e.g. 'Images (*.png *.jpg);;Text files (*.txt)' \n\
+    selectedFilterIndex : {int}, optional \n\
+    is the index of filters which is set by default (0 is first entry) \n\
+options : {int}, optional\n\
+    default =  0 \n\
+    or-combination of enum values QFileDialog::Options \n\
+parent : {uiItem or derived classes}, optional\n\
+    is the parent widget of this dialog \n\
+\n\
+Returns \n\
+------- \n\
+out : {strlist, None} \n\
+    filenames as stringList or None if dialog has been aborted.\n\
+\n\
+See Also \n\
+--------- \n\
+getOpenFileName,\n\
+getSaveFileName"); 
+PyObject* PythonUi::PyUi_getOpenFileNames(PyUi * /*self*/, PyObject *args, PyObject *kwds)
+{
+    const char *kwlist[] = { "caption", "startDirectory", "filters", "selectedFilterIndex", "options", "parent", NULL };
+    PyObject *captionObj = NULL;
+    PyObject *directoryObj = NULL;
+    PyObject *filtersObj = NULL;
+    QString caption;
+    QString directory;
+    QString filters;
+    int selectedFilterIndex = 0;
+    int options = 0;
+    PythonUi::PyUiItem *parentItem = NULL;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|OOOiiO&", const_cast<char**>(kwlist), &captionObj, &directoryObj, &filtersObj, &selectedFilterIndex, &options, &PyUiItem_Converter, &parentItem))
+    {
+        return NULL;
+    }
+
+    bool ok = true;
+    caption = captionObj ? PythonQtConversion::PyObjGetString(captionObj, true, ok) : "";
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "caption must be a string.");
+        return NULL;
+    }
+
+    directory = directoryObj ? PythonQtConversion::PyObjGetString(directoryObj, true, ok) : "";
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "directory must be a string.");
+        return NULL;
+    }
+
+    filters = filtersObj ? PythonQtConversion::PyObjGetString(filtersObj, true, ok) : "";
+    if (!ok)
+    {
+        PyErr_SetString(PyExc_TypeError, "filters must be a string.");
+        return NULL;
+    }
+
+    UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+    if (uiOrga == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Instance of UiOrganizer not available");
+        return NULL;
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    ito::RetVal retValue = retOk;
+    unsigned int objectID = parentItem ? parentItem->objectID : 0;
+
+    QSharedPointer<QStringList> files(new QStringList());
+    //QString caption, QString directory, QString filter, QSharedPointer<QString> file, int selectedFilterIndex, int options, ItomSharedSemaphore *semaphore
+    QMetaObject::invokeMethod(uiOrga, "showFilesOpenDialog", Q_ARG(uint, objectID), Q_ARG(QString, caption), Q_ARG(QString, directory), Q_ARG(QString, filters), Q_ARG(QSharedPointer<QStringList>, files), Q_ARG(int, selectedFilterIndex), Q_ARG(int, options), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
+
+    if (!locker.getSemaphore()->wait(-1))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "timeout while showing dialog");
+        return NULL;
+    }
+
+    retValue = locker.getSemaphore()->returnValue;
+    if (!PythonCommon::transformRetValToPyException(retValue)) return NULL;
+
+    if (files->isEmpty())
+    {
+        Py_RETURN_NONE;
+    }
+    else
+    {
+        return Py_BuildValue("N", PythonQtConversion::QStringListToPyObject(*files)); //"N" -> Py_BuildValue steals reference from QStringToPyObject
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyUiGetOpenFileName_doc,"getOpenFileName([caption, startDirectory, filters, selectedFilterIndex, options, parent]) -> opens dialog for chosing an existing file. \n\
 \n\
 Parameters \n\
@@ -3003,6 +3106,7 @@ out : {str, None} \n\
 \n\
 See Also \n\
 --------- \n\
+getOpenFileNames,\n\
 getSaveFileName");
 PyObject* PythonUi::PyUi_getOpenFileName(PyUi * /*self*/, PyObject *args, PyObject *kwds)
 {
@@ -3594,6 +3698,7 @@ PyMethodDef PythonUi::PyUi_methods[] = {
         {"msgCritical", (PyCFunction)PyUi_msgCritical, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiMsgCritical_doc},
         {"getExistingDirectory", (PyCFunction)PyUi_getExistingDirectory, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiGetExistingDirectory_doc},
         {"getOpenFileName", (PyCFunction)PyUi_getOpenFileName, METH_KEYWORDS | METH_VARARGS |METH_STATIC, pyUiGetOpenFileName_doc},
+        {"getOpenFileNames", (PyCFunction)PyUi_getOpenFileNames, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiGetOpenFileNames_doc },
         {"getSaveFileName", (PyCFunction)PyUi_getSaveFileName, METH_KEYWORDS | METH_VARARGS |METH_STATIC, pyUiGetSaveFileName_doc},
         {"createNewPluginWidget", (PyCFunction)PyUi_createNewAlgoWidget, METH_KEYWORDS | METH_VARARGS |METH_STATIC, pyUiCreateNewPluginWidget_doc},
         { "createNewPluginWidget2", (PyCFunction)PyUi_createNewAlgoWidget2, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyUiCreateNewPluginWidget2_doc },

@@ -20,75 +20,54 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "widgetPropPythonGeneral.h"
+#include "widgetPropPluginsAlgorithms.h"
 #include "../global.h"
 #include "../AppManagement.h"
 
 #include <qsettings.h>
-#include <qcoreapplication.h>
-#include <qfiledialog.h>
-#include <qstringlist.h>
-#include <qdir.h>
-#include <qfileinfo.h>
+#include <qthread.h>
 
 namespace ito
 {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-WidgetPropPythonGeneral::WidgetPropPythonGeneral(QWidget *parent) :
+WidgetPropPluginsAlgorithms::WidgetPropPluginsAlgorithms(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
 {
     ui.setupUi(this);
+    
+    ui.txtMaxNumThreads->setText(QString::number(QThread::idealThreadCount()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-WidgetPropPythonGeneral::~WidgetPropPythonGeneral()
+WidgetPropPluginsAlgorithms::~WidgetPropPluginsAlgorithms()
 {
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void WidgetPropPythonGeneral::readSettings()
+void WidgetPropPluginsAlgorithms::readSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("Python");
-
-    // Save script state before execution (0: ask user, 1: always save, 2: never save)
-    int index = settings.value("saveScriptStateBeforeExecution", 0).toInt();
-    ui.comboSaveScriptBeforeExecution->setCurrentIndex(index);
-
-    QString pythonHomeDirectory = settings.value("pyHome", "").toString();
-    if (pythonHomeDirectory == "" || QDir(pythonHomeDirectory).exists() == false)
+    settings.beginGroup("AddInManager");
+    if (QThread::idealThreadCount() < 0)
     {
-        ui.groupPyHome->setChecked(false);
-        ui.pathLineEditPyHome->setCurrentPath("");
+        ui.spinMaxNumThreads->setMaximum(1);
+        ui.spinMaxNumThreads->setValue(qBound(1, settings.value("maximumThreadCount", 2).toInt(), 2));
     }
     else
     {
-        ui.groupPyHome->setChecked(true);
-        ui.pathLineEditPyHome->setCurrentPath(pythonHomeDirectory);
+        ui.spinMaxNumThreads->setMaximum(QThread::idealThreadCount());
+        ui.spinMaxNumThreads->setValue(qBound(1, settings.value("maximumThreadCount", 2).toInt(), QThread::idealThreadCount()));
     }
-
     settings.endGroup();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void WidgetPropPythonGeneral::writeSettings()
+void WidgetPropPluginsAlgorithms::writeSettings()
 {
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    QStringList files;
-    settings.beginGroup("Python");
-
-    settings.setValue("saveScriptStateBeforeExecution", ui.comboSaveScriptBeforeExecution->currentIndex());
-
-    if (ui.groupPyHome->isChecked())
-    {
-        settings.setValue("pyHome", ui.pathLineEditPyHome->currentPath());
-    }
-    else
-    {
-        settings.setValue("pyHome", "");
-    }
-
+    settings.beginGroup("AddInManager");
+    settings.setValue("maximumThreadCount", ui.spinMaxNumThreads->value() );
     settings.endGroup();
 }
 

@@ -296,6 +296,7 @@ namespace ito
 
         private slots:
             RetVal closeDeadPlugins();
+            void propertiesChanged();
     };
 } //namespace ito
 

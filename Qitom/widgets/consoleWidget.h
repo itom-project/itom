@@ -85,10 +85,12 @@ protected:
     void dragEnterEvent (QDragEnterEvent *event);
     void dragMoveEvent (QDragMoveEvent *event);
     void wheelEvent(QWheelEvent *event);
+    void contextMenuEvent(QContextMenuEvent *event);
 
 private slots:
     void selChanged(); 
     void textDoubleClicked(int position, int line, int modifiers);
+    void clearAndStartNewCommand();
 
 private:
     struct cmdQueueStruct

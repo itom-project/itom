@@ -30,7 +30,6 @@ import inspect
 import traceback
 import linecache
 
-
 class Restart(Exception):
     """Causes a debugger to be restarted for the debugged python program."""
     pass
@@ -214,10 +213,10 @@ class itoDebugger(bdb.Bdb):
         exc_type, exc_value, exc_traceback = exc_info
         frame.f_locals['__exception__'] = exc_type, exc_value, exc_traceback
         
-        if issubclass(exc_type, SyntaxError):
+        #if issubclass(exc_type, SyntaxError):
             #this is a hack, since exc_value is no instance of an error, but only a tuple with the arguments
             #However, in case of a SyntaxError, format_exception_only below needs an instance of SyntaxError
-            exc_value = SyntaxError(exc_value[0], exc_value[1])
+            #exc_value = SyntaxError(exc_value[0], exc_value[1])
         
         if(not exc_traceback is None):
             print("exception raised in method '" + exc_traceback.tb_frame.f_code.co_name + "', line " + str(exc_traceback.tb_frame.f_lineno))
@@ -719,6 +718,29 @@ class itoDebugger(bdb.Bdb):
             else:
                 del(__main__.__dict__["__file__"])
     
+    def parseUnicodeError(self, err):
+        import re
+        m = re.match(r"\(unicode error\) (.*) can't decode byte (0x[0-9a-zA-Z]{1,2}) in position (\d+): (.*)", err.msg)
+        if m:
+            if err.filename is None or err.filename == "" or err.lineno <= 0:
+                err.msg = "(unicode error) %s cannot decode byte '%s' in line %i, position %i: %s. \nThe line possibly contains an invalid character. Please remove them or add a coding hint in the first line (menu option 'insert codec...')" \
+                    % (m.group(1), m.group(2), err.lineno, int(m.group(3)), m.group(4))
+            else:
+                wrongByte = int(m.group(2), 16)
+                fp = open(err.filename, "rb")
+                text = fp.read()
+                fp.close()
+                lines = text.split(b"\n")
+                if len(lines) >= err.lineno:
+                    err.msg = "(unicode error) %s cannot decode byte '%s' in line %i, position %i: %s. \nThe line possibly contains an invalid character. Please remove them or add a coding hint in the first line (menu option 'insert codec...')" \
+                        % (m.group(1), m.group(2), err.lineno, lines[err.lineno - 1].index(wrongByte) + 1, m.group(4))
+                else:
+                    err.msg = "(unicode error) %s cannot decode byte '%s' in line %i, position %i: %s. \nThe line possibly contains an invalid character. Please remove them or add a coding hint in the first line (menu option 'insert codec...')" \
+                        % (m.group(1), m.group(2), err.lineno, int(m.group(3)), m.group(4))
+            raise #reraise exception
+        else:
+            raise #reraise exception
+        
     def debugScript(self, filename):
         # The script has to run in __main__ namespace (or imports from
         # __main__ will break).
@@ -749,34 +771,16 @@ class itoDebugger(bdb.Bdb):
             self.run(statement,  __main__.__dict__)
             self.clear_all_breaks()
             self.reset()
+        except SyntaxError as err:
+            if err.msg.startswith('(unicode error)'):
+                self.parseUnicodeError(err)
+            else:
+                raise
         finally:    
             if(tempFilename != ""):
                 __main__.__dict__.update({"__file__" : tempFilename})
             else:
                 del(__main__.__dict__["__file__"])
-        
-        
-#        # So we clear up the __main__ and set several special variables
-#        # (this gets rid of pdb's globals and cleans old variables on restarts).
-#        import __main__
-#        __main__.__dict__.clear()
-#        __main__.__dict__.update({"__name__"    : "__main__",
-#                                  "__file__"    : filename,
-#                                  "__builtins__": __builtins__,
-#                                 })
-#
-#        # When bdb sets tracing, a number of call and line events happens
-#        # BEFORE debugger even reaches user's code (and the exact sequence of
-#        # events depends on python version). So we take special measures to
-#        # avoid stopping before we reach the main script (see user_line and
-#        # user_call for details).
-#        self._wait_for_mainpyfile = True
-#        self.mainpyfile = self.canonic(filename)
-#        self._user_requested_quit = False
-#        with open(filename, "rb") as fp:
-#            statement = "exec(compile(%r, %r, 'exec'))" % \
-#                        (fp.read(), self.mainpyfile)
-#        self.run(statement)
         
         
     def runScript(self,  filename):
@@ -798,32 +802,16 @@ class itoDebugger(bdb.Bdb):
                         (fp.read(), self.mainpyfile)
         try:
             exec(statement,  __main__.__dict__)
+        except SyntaxError as err:
+            if err.msg.startswith('(unicode error)'):
+                self.parseUnicodeError(err)
+            else:
+                raise
         finally:    
             if(tempFilename != ""):
                 __main__.__dict__.update({"__file__" : tempFilename})
             else:
                 del(__main__.__dict__["__file__"])
-
-        
-        #version, copied from pdb:
-        #import __main__
-        #__main__.__dict__.clear()
-        #__main__.__dict__.update({"__name__"    : "__main__",
-        #                          "__file__"    : filename,
-        #                          "__builtins__": __builtins__,
-        #                         })
-
-        # When bdb sets tracing, a number of call and line events happens
-        # BEFORE debugger even reaches user's code (and the exact sequence of
-        # events depends on python version). So we take special measures to
-        # avoid stopping before we reach the main script (see user_line and
-        # user_call for details).
-        
-        #with open(filename, "rb") as fp:
-        #    statement = "exec(compile(%r, %r, 'exec'))" % \
-        #                (fp.read(), self.mainpyfile)
-        #exec(statement)
- 
         
     def compileScript(self,  filename):
         
