@@ -86,6 +86,7 @@ protected:
     void dragMoveEvent (QDragMoveEvent *event);
     void wheelEvent(QWheelEvent *event);
     void contextMenuEvent(QContextMenuEvent *event);
+    bool canInsertFromMimeData(const QMimeData *source) const;
 
 private slots:
     void selChanged(); 

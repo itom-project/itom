@@ -540,19 +540,15 @@ RetVal ScriptEditorWidget::preShowContextMenuMargin()
 //----------------------------------------------------------------------------------------------------------------------------------
 bool ScriptEditorWidget::canInsertFromMimeData(const QMimeData *source) const
 {
-    //test = source->has
-    //qDebug() << "MIME-Type:" << source->formats();
-//    qDebug() << "URL:" << source->urls();
     if ((source->hasFormat("FileName") || source->hasFormat("text/uri-list")))
     {
         if (source->urls().length() == 1)
         {
             QString fext = QFileInfo(source->urls().at(0).toString()).suffix().toLower();
-//            qDebug() << fext.toLatin1().data();
             if ((fext == "txt") || (fext == "py") || (fext == "c") || (fext == "cpp")
                 || (fext == "h") || (fext == "hpp") || (fext == "cxx") || (fext == "hxx"))
             {
-                return 1;
+                return true;
             }
         }
     }
@@ -567,7 +563,6 @@ bool ScriptEditorWidget::canInsertFromMimeData(const QMimeData *source) const
 //----------------------------------------------------------------------------------------------------------------------------------
 void ScriptEditorWidget::dropEvent(QDropEvent *event)
 {
-//    qDebug() << "MIME-Type2:" << event->mimeData()->formats();
     QObject *sew = AppManagement::getScriptEditorOrganizer();
 
     if (sew != NULL)
@@ -577,7 +572,6 @@ void ScriptEditorWidget::dropEvent(QDropEvent *event)
             if (event->mimeData()->urls().length() == 1)
             {
                 QString fext = QFileInfo(event->mimeData()->urls().at(0).toString()).suffix().toLower();
-    //            qDebug() << fext.toLatin1().data();
                 if ((fext == "txt") || (fext == "py") || (fext == "c") || (fext == "cpp")
                     || (fext == "h") || (fext == "hpp") || (fext == "cxx") || (fext == "hxx"))
                 {

@@ -37,6 +37,7 @@
 
 #include "../organizer/userOrganizer.h"
 #include "../organizer/scriptEditorOrganizer.h"
+#include "../helper/IOHelper.h"
 
 namespace ito
 {
@@ -1255,6 +1256,12 @@ void ConsoleWidget::moveCursorToEnd()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+bool ConsoleWidget::canInsertFromMimeData(const QMimeData *source) const
+{
+    return source->hasText() || source->hasUrls();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::dropEvent(QDropEvent * event)
 {
     const QMimeData *md = event->mimeData();
@@ -1263,7 +1270,6 @@ void ConsoleWidget::dropEvent(QDropEvent * event)
 //    if (md->hasText() == false && (md->hasFormat("FileName") || md->hasFormat("text/uri-list")))
     if ((md->hasFormat("FileName") || md->hasFormat("text/uri-list")))
     {
-        QObject *sew = AppManagement::getScriptEditorOrganizer();
         ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
 
         if (uOrg->hasFeature(featDeveloper))
@@ -1275,16 +1281,9 @@ void ConsoleWidget::dropEvent(QDropEvent * event)
                     break;
                 }
 
-                QFileInfo file(url.toLocalFile());
-                QString suffix = file.suffix().toLower();
-                if (suffix != "py")
+                if (IOHelper::openGeneralFile(url.toLocalFile(), false, true, this, NULL, true).containsError())
                 {
                     break;
-                }
-
-                if (sew != NULL)
-                {
-                    QMetaObject::invokeMethod(sew, "openScript", Q_ARG(QString,QString(file.absoluteFilePath())), Q_ARG(ItomSharedSemaphore*,NULL));
                 }
             }   
         }

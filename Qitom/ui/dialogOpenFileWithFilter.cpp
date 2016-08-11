@@ -210,6 +210,7 @@ void DialogOpenFileWithFilter::on_tabWidget_currentChanged(int index)
     }
 }
 
+//------------------------------------------------------------------------------------------------------------
 void DialogOpenFileWithFilter::on_cmdReload_clicked()
 {
     if( filterCall.isRunning() == false)
@@ -251,7 +252,16 @@ ito::RetVal DialogOpenFileWithFilter::executeFilter()
             ui.buttonBox->setEnabled(false);
             ui.lblProcessMovie->setVisible(true);
             ui.lblProcessText->setVisible(true);
+            ui.groupPython->setEnabled(false);
+            ui.scrollParamsMand->setEnabled(false);
+            ui.scrollParamsOpt->setEnabled(false);
 
+            QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
+            QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers); //the WaitCursor only becomes visible if the event loop of the main thread is called once. 
+                                                                             //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
+                                                                             //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
+
+            //starts loading the file in another thread. If this is done, filterCallFinished is executed
             filterCall = QtConcurrent::run(m_filter->m_filterFunc, &paramsMand, &paramsOpt, &m_autoOut);
             filterCallWatcher.setFuture(filterCall);
         }
@@ -279,6 +289,7 @@ void DialogOpenFileWithFilter::filterCallFinished()
     ito::RetVal retValue =  filterCall.result();
     ui.lblProcessMovie->setVisible(false);
     ui.lblProcessText->setVisible(false);
+    QApplication::restoreOverrideCursor();
 
     if(retValue.containsError())
     {
@@ -317,6 +328,9 @@ void DialogOpenFileWithFilter::filterCallFinished()
 
     ui.cmdReload->setEnabled(true);
     ui.buttonBox->setEnabled(true);
+    ui.groupPython->setEnabled(true);
+    ui.scrollParamsMand->setEnabled(true);
+    ui.scrollParamsOpt->setEnabled(true);
 }
 
 //------------------------------------------------------------------------------------------------------------
