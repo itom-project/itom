@@ -1,5 +1,4 @@
 <RCC>
-
     <qresource prefix="/helpTreeDockWidget">
         <file alias="actuator_page">styles/help/actuator_page.html</file>
         <file alias="filter_tmpl">styles/help/filter_widget_plugin.html</file>
@@ -21,25 +20,31 @@
         <file alias="pluginAdda">icons/pluginADDA.png</file>
         <file alias="pluginRawIO">icons/pluginRawIO.png</file>
         <file alias="pluginActuator">icons/pluginActuator.png</file>
-      
         <file alias="wrongScheme">icons/wrongScheme.png</file>
         <file alias="localDatabase">icons/localDatabase.png</file>
         <file alias="upToDate">icons/upToDate.png</file>
         <file alias="downloadUpdate">icons/downloadUpdate.png</file>
         <file alias="deleteDatabase">icons/delete_database.png</file>
+        <file alias="help_style">styles/help/help_style.css</file>
+        <file alias="algo_page">styles/help/algorithms_page.html</file>
+        <file alias="widg_page">styles/help/widgets_page.html</file>
+        <file alias="dataIO_page">styles/help/dataio_page.html</file>
+        <file alias="dataGr_page">styles/help/grabber_page.html</file>
+        <file alias="dataAD_page">styles/help/adda_page.html</file>
+        <file alias="dataRa_page">styles/help/rawio_page.html</file>
+        <file alias="actuator_page">styles/help/actuator_page.html</file>
+        <file alias="filter_tmpl">styles/help/filter_widget_plugin.html</file>
     </qresource>
-
     <qresource prefix="/classNavigator">
-      <file>icons/class.png</file>
-      <file>icons/method.png</file>
-      <file>icons/method_private.png</file>
-      <file>icons/method_clmethod.png</file>
-      <file>icons/method_clmethod_private.png</file>
-      <file>icons/method_static.png</file>
-      <file>icons/method_static_private.png</file>
-      <file>icons/global.png</file>
+        <file>icons/class.png</file>
+        <file>icons/method.png</file>
+        <file>icons/method_private.png</file>
+        <file>icons/method_clmethod.png</file>
+        <file>icons/method_clmethod_private.png</file>
+        <file>icons/method_static.png</file>
+        <file>icons/method_static_private.png</file>
+        <file>icons/global.png</file>
     </qresource>
-  
     <qresource prefix="/application">
         <file>icons/helpAboutQt.png</file>
         <file>icons/help.png</file>
@@ -229,6 +234,7 @@
         <file>icons/preferences-orbit.png</file>
         <file>icons/itom_icons/bulb_dir.png</file>
         <file>icons/User.png</file>
+        <file>icons/shell.png</file>
     </qresource>
     <qresource prefix="/measurement">
         <file>icons/itom_icons/meas.png</file>
@@ -247,19 +253,6 @@
         <file>icons/matplotlib/subplots.png</file>
         <file>icons/matplotlib/zoom_to_rect.png</file>
     </qresource>
-
-    <qresource prefix="/helpTreeDockWidget">
-        <file alias="help_style">styles/help/help_style.css</file>
-        <file alias="algo_page">styles/help/algorithms_page.html</file>
-        <file alias="widg_page">styles/help/widgets_page.html</file>
-        <file alias="dataIO_page">styles/help/dataio_page.html</file>
-        <file alias="dataGr_page">styles/help/grabber_page.html</file>
-        <file alias="dataAD_page">styles/help/adda_page.html</file>
-        <file alias="dataRa_page">styles/help/rawio_page.html</file>
-        <file alias="actuator_page">styles/help/actuator_page.html</file>
-        <file alias="filter_tmpl">styles/help/filter_widget_plugin.html</file>
-    </qresource>
-
     <qresource prefix="/license">
         <file>about.html</file>
         <file>contributors.html</file>

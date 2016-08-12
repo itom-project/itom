@@ -105,7 +105,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, const QString &objName, Q
     connect(m_pActSnapDialog, SIGNAL(triggered()), this, SLOT(mnuSnapDialog()));
     m_pContextMenu->addAction(m_pActSnapDialog);
 
-    m_pActAutoGrabbing = new QAction(QIcon(":/application/icons/shell.png"), tr("Auto Grabbing"), this);
+    m_pActAutoGrabbing = new QAction(QIcon(":/misc/icons/shell.png"), tr("Auto Grabbing"), this);
     m_pActAutoGrabbing->setCheckable(true);
     connect(m_pActAutoGrabbing, SIGNAL(triggered()), this, SLOT(mnuToggleAutoGrabbing()));
     m_pContextMenu->addAction(m_pActAutoGrabbing);
