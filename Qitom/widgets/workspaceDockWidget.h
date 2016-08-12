@@ -70,6 +70,7 @@ private:
     ShortcutAction *m_dObjPlot1d;
     ShortcutAction *m_dObjPlot2d;
     ShortcutAction *m_dObjPlot25d;
+    ShortcutAction *m_dObjPlot3d;
 
     QToolBar *m_pMainToolBar;
     QMenu* m_pContextMenu;

@@ -151,6 +151,8 @@ void WorkspaceDockWidget::createActions()
     m_dObjPlot2d->connectTrigger(this, SLOT(mnuPlot2D()));
     m_dObjPlot25d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/3d.png"), tr("plot 2.5D isometric plot"), this);
     m_dObjPlot25d->connectTrigger(this, SLOT(mnuPlot25D()));
+    m_dObjPlot3d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/3d.png"), tr("plot 3D cloud or mesh"), this);
+    m_dObjPlot3d->connectTrigger(this, SLOT(mnuPlot25D()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -187,6 +189,7 @@ void WorkspaceDockWidget::createMenus()
     m_pContextMenu->addAction(m_dObjPlot1d->action());
     m_pContextMenu->addAction(m_dObjPlot2d->action());
     m_pContextMenu->addAction(m_dObjPlot25d->action());
+    m_pContextMenu->addAction(m_dObjPlot3d->action());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -443,7 +446,9 @@ void WorkspaceDockWidget::mnuPlotGeneric(const QString &plotClass)
         //check that only dataObjects are plot
         for (int i = 0; i < keyList.size(); ++i)
         {
-            if (compatibleParamBaseTypes[i] == ito::ParamBase::DObjPtr)
+            if ((compatibleParamBaseTypes[i] == ito::ParamBase::DObjPtr) || \
+                (compatibleParamBaseTypes[i] == ito::ParamBase::PointCloudPtr) || \
+                (compatibleParamBaseTypes[i] == ito::ParamBase::PolygonMeshPtr))
             {
                 keyListFinal.append(keyList[i]);
                 compatibleParamBaseTypesFinal.append(compatibleParamBaseTypes[i]);
@@ -481,7 +486,11 @@ void WorkspaceDockWidget::mnuPlotGeneric(const QString &plotClass)
             QVariantMap properties;
             int areaCol = 0;
             int areaRow = 0;
-            const ito::DataObject *obj;
+            const ito::DataObject *obj = NULL;
+#ifdef ITOM_POINTCLOUDLIBRARY
+            const ito::PCLPointCloud *cloud = NULL;
+            const ito::PCLPolygonMesh *mesh = NULL;
+#endif
             int idx;
 
             for (int i = 0; i < values->size(); ++i)
@@ -492,10 +501,34 @@ void WorkspaceDockWidget::mnuPlotGeneric(const QString &plotClass)
                 *figHandle = 0; //new figure will be requested
 
                 UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-                obj = (*values)[i]->getVal<const ito::DataObject*>();
-                ito::UiDataContainer dataCont(QSharedPointer<ito::DataObject>(new ito::DataObject(*obj)));
+                ito::UiDataContainer dataCont;
 
-                if (obj->existTag("title") == false)
+                if (values->at(i)->getType() == (ito::ParamBase::DObjPtr & ito::paramTypeMask))
+                {
+                    obj = (*values)[i]->getVal<const ito::DataObject*>();
+                    dataCont = ito::UiDataContainer(QSharedPointer<ito::DataObject>(new ito::DataObject(*obj)));
+                }
+#ifdef ITOM_POINTCLOUDLIBRARY
+                else if (values->at(i)->getType() == (ito::ParamBase::PointCloudPtr & ito::paramTypeMask))
+                {
+                    cloud = (*values)[i]->getVal<const ito::PCLPointCloud*>();
+                    dataCont = ito::UiDataContainer(QSharedPointer<ito::PCLPointCloud>(new ito::PCLPointCloud(*cloud)));
+                    obj = NULL;
+                }
+                else if (values->at(i)->getType() == (ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask))
+                {
+                    mesh = (*values)[i]->getVal<const ito::PCLPolygonMesh*>();
+                    dataCont = ito::UiDataContainer(QSharedPointer<ito::PCLPolygonMesh>(new ito::PCLPolygonMesh(*mesh)));
+                    obj = NULL;
+                }
+#endif
+                else
+                {
+                    retVal += RetVal(retError, 0, tr("Invalid or unsupported data type for plotting.").toLatin1().data());
+                    break;
+                }
+
+                if (obj && !obj->existTag("title"))
                 {
                     properties["title"] = m_pWorkspaceWidget->getPythonReadableName(itemsFinal[i]);
                 }
@@ -561,7 +594,8 @@ void WorkspaceDockWidget::updateActions()
             if (num > 1)
             {
                 bool ok;
-                bool plotOk = true;
+                bool plotDObjOk = true;
+                bool plotCloudOk = true;
                 int compatibleTypes;
                 for (int i = 0; i < num; ++i)
                 {
@@ -573,15 +607,19 @@ void WorkspaceDockWidget::updateActions()
 
                     if (compatibleTypes != ito::ParamBase::DObjPtr)
                     {
-                        plotOk = false;
-                        break;
+                        plotDObjOk = false;
+                    }
+                    else if (compatibleTypes != ito::ParamBase::PointCloudPtr && compatibleTypes != ito::ParamBase::PolygonMeshPtr)
+                    {
+                        plotCloudOk = false;
                     }
                 }
 
-                m_separatorSpecialActions->setVisible(false);
-                m_dObjPlot1d->setVisible(plotOk);
-                m_dObjPlot2d->setVisible(plotOk);
-                m_dObjPlot25d->setVisible(plotOk);
+                m_separatorSpecialActions->setVisible(plotDObjOk || plotCloudOk);
+                m_dObjPlot1d->setVisible(plotDObjOk);
+                m_dObjPlot2d->setVisible(plotDObjOk);
+                m_dObjPlot25d->setVisible(plotDObjOk);
+                m_dObjPlot3d->setVisible(plotCloudOk);
             }
             else
             {
@@ -599,6 +637,15 @@ void WorkspaceDockWidget::updateActions()
                     m_dObjPlot1d->setVisible(true);
                     m_dObjPlot2d->setVisible(true);
                     m_dObjPlot25d->setVisible(true);
+                    m_dObjPlot3d->setVisible(false);
+                }
+                else if (compatibleTypes == ito::ParamBase::PointCloudPtr || compatibleTypes == ito::ParamBase::PolygonMeshPtr)
+                {
+                    m_separatorSpecialActions->setVisible(true);
+                    m_dObjPlot1d->setVisible(false);
+                    m_dObjPlot2d->setVisible(false);
+                    m_dObjPlot25d->setVisible(false);
+                    m_dObjPlot3d->setVisible(true);
                 }
                 else
                 {
@@ -606,6 +653,7 @@ void WorkspaceDockWidget::updateActions()
                     m_dObjPlot1d->setVisible(false);
                     m_dObjPlot2d->setVisible(false);
                     m_dObjPlot25d->setVisible(false);
+                    m_dObjPlot3d->setVisible(false);
                 }
             }
         }
