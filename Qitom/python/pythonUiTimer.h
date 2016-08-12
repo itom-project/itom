@@ -58,7 +58,6 @@ public:
     {
         PyObject_HEAD
         QTimer *timer;
-        PyObject* base;
         TimerCallback *callbackFunc;
     }
     PyTimer;
