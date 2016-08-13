@@ -4306,21 +4306,21 @@ polygons : {array-like, MxN} \n\
 }
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPolygonMeshFromTopography_docs, "fromTopography(topography [, triangulationType = 0]) -> creates a polygon mesh from a dataObject whose values are the z-components. \n\
+PyDoc_STRVAR(pyPolygonMeshFromTopography_docs, "fromTopography(topography [, triangulationType = 1]) -> creates a polygon mesh from a dataObject whose values are the z-components. \n\
 \n\
-The polygons are created either as rectangles (quads) or triangles. \n\
+The polygons are created either as rectangles (quads) or triangles. Some other algorithms only support meshes with triangles. \n\
 This method is the same than calling polygonMesh.fromOrganizedCloud(pointCloud.fromTopography(topography)). \n\
 \n\
 Parameters \n\
 ----------- \n\
 topography : {dataObject} \n\
-    the input point cloud (must be organized, see attribute organized of a cloud) \n\
+    the input data object. The grid of the data object including its axisScales and axisOffsets value indicate the X and Y values whereas the Z values are given by the data object \n\
 triangulationType : {int} \n\
-    type of triangulation. 0: quads [default], 1: triangles");
+    type of triangulation. 0: quads, 1: triangles [default]");
 /*static*/ PyObject* PythonPCL::PyPolygonMesh_FromTopography(PyObject * /*self*/, PyObject *args, PyObject *kwds)
 {
     PythonDataObject::PyDataObject *topography = NULL;
-    unsigned char triangulationType = 0;
+    unsigned char triangulationType = 1;
     const char *kwlist[] = { "topography", "triangulationType", NULL };
 
     if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|b", const_cast<char**>(kwlist), &PythonDataObject::PyDataObjectType, &topography, &triangulationType))
