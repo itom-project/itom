@@ -83,6 +83,7 @@ itom.dataObject.div(obj) -> a.div(b) return result of element wise division of a
 itom.dataObject.dtype
 itom.dataObject.existTag(key) -> return True if tag with given key exists, else False
 itom.dataObject.eye(size [, dtype='uint8']) -> creates a 2D, square, eye-matrix.
+itom.dataObject.fromNumpyColor(array) -> creates a rgba32 dataObject from a three-dimensional numpy array whose liast dimension has the size 3 or 4.
 itom.dataObject.getTagListSize() -> returns the number of tags in the tag dictionary
 itom.dataObject.imag() -> return a new data object with the imaginary part of the source
 itom.dataObject.locateROI() -> returns information about the current region of interest of this data object
@@ -152,6 +153,7 @@ itom.getDebugger() -> returns new reference to debugger instance
 itom.getDefaultScaleableUnits() -> Get a list with the strings of the standard scalable units.
 itom.getPalette(name) -> get the palette for color bars defined by name.
 itom.getPaletteList(typefilter) -> get a list of color bars / palettes.
+itom.getQtToolPath(toolname) -> get the absolute path of the Qt tool
 itom.getScreenInfo() -> returns dictionary with information about all available screens.
 itom.liveImage(cam, [className, properties]) -> show a camera live image in a new figure
 itom.loadDataObject(filename, dataObject [, doNotAppendIDO]) -> load a dataObject from the harddrive.
@@ -217,7 +219,7 @@ itom.polygonMesh([mesh, polygons]) -> creates a polygon mesh.
 itom.polygonMesh.data
 itom.polygonMesh.fromCloudAndPolygons(cloud, polygons) -> creates a polygon mesh from cloud and polygons.
 itom.polygonMesh.fromOrganizedCloud(cloud [, triangulationType = 1]) -> creates a polygon mesh from an organized cloud using triangles.
-itom.polygonMesh.fromTopography(topography [, triangulationType = 0]) -> creates a polygon mesh from a dataObject whose values are the z-components.
+itom.polygonMesh.fromTopography(topography [, triangulationType = 1]) -> creates a polygon mesh from a dataObject whose values are the z-components.
 itom.polygonMesh.getCloud(pointType = point.PointInvalid) -> returns the point cloud of this polygon mesh converted to the desired type.
 itom.polygonMesh.getPolygons() ->
 itom.polygonMesh.name
@@ -288,6 +290,7 @@ itom.shape.flags
 itom.shape.height
 itom.shape.index
 itom.shape.name
+itom.shape.normalized() -> return a normalized shape (this has only an impact on rectangles, squares, ellipses and circles)
 itom.shape.point1
 itom.shape.point2
 itom.shape.radius
@@ -345,6 +348,7 @@ itom.ui.getExistingDirectory(caption, startDirectory [, options, parent]) -> ope
 itom.ui.getInt(title, label, defaultValue [, min, max, step=1, parent]) -> shows a dialog to get an integer value from the user
 itom.ui.getItem(title, label, stringList [, currentIndex=0, editable=True, parent]) -> shows a dialog to let the user select an item from a string list
 itom.ui.getOpenFileName([caption, startDirectory, filters, selectedFilterIndex, options, parent]) -> opens dialog for chosing an existing file.
+itom.ui.getOpenFileNames([caption, startDirectory, filters, selectedFilterIndex, options, parent]) -> opens dialog for chosing existing files.
 itom.ui.getSaveFileName([caption, startDirectory, filters, selectedFilterIndex, options, parent]) -> opens dialog for chosing a file to save.
 itom.ui.getText(title, label, defaultString [,parent]) -> opens a dialog in order to ask the user for a string
 itom.ui.hide() -> hides initialized user interface

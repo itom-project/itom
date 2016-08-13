@@ -245,7 +245,7 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
             if (typeno > -1)
             {
                 //verify that ndArray is c-contiguous
-                ndArray = PyArray_GETCONTIGUOUS(ndArray); //now we always have an increased reference of ndArray (either referen of old ndArray or new object with new reference)
+                ndArray = PyArray_GETCONTIGUOUS(ndArray); //now we always have an increased reference of ndArray (either reference of old ndArray or new object with new reference)
                 if (ndArray == NULL)
                 {
                     retValue += RetVal(retError);
@@ -271,9 +271,9 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                 else
                 {
 #if (NPY_FEATURE_VERSION < NPY_1_7_API_VERSION)
-                    ndArray = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)ndArray, newNumpyTypeNum, NPY_C_CONTIGUOUS); //now we always have an increased reference of ndArray (either referen of old ndArray or new object with new reference)
+                    ndArray = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)ndArray, newNumpyTypeNum, NPY_C_CONTIGUOUS); //now we always have an increased reference of ndArray (either reference of old ndArray or new object with new reference)
 #else
-                    ndArray = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)ndArray, newNumpyTypeNum, NPY_ARRAY_C_CONTIGUOUS); //now we always have an increased reference of ndArray (either referen of old ndArray or new object with new reference)
+                    ndArray = (PyArrayObject*)PyArray_FROM_OTF((PyObject*)ndArray, newNumpyTypeNum, NPY_ARRAY_C_CONTIGUOUS); //now we always have an increased reference of ndArray (either reference of old ndArray or new object with new reference)
 #endif
                     if (ndArray == NULL)
                     {
@@ -7662,6 +7662,114 @@ PyObject* PythonDataObject::PyDataObj_StaticEye(PyObject * /*self*/, PyObject *a
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectStaticFromNumpyColor_doc,"fromNumpyColor(array) -> creates a rgba32 dataObject from a three-dimensional numpy array whose liast dimension has the size 3 or 4.\n\
+\n\
+Static method for creating a two-dimensional dataObject of type 'rgba32' from a three-dimensional numpy.array (uint8 only). \n\
+The size of the dataObject corresponds to the first two dimensions of the numpy.array. The last dimension of \n\
+the numpy.array must have a size of 3 (blue, green, red and alpha = 255) or 4 (blue, green, red, alpha). \n\
+\n\
+This method can especially be used to convert numpy.arrays that are obtained by methods from packages like OpenCV (cv2) \n\
+or PIL to dataObjects. \n\
+\n\
+Parameters \n\
+----------- \n\
+array : {numpy.array}, \n\
+    [MxNx3] or [MxNx4], uint8 numpy.array\n\
+\n\
+Returns \n\
+------- \n\
+I : {dataObject} of shape (M,N) and type 'rgba32'\n\
+    The last dimension of the numpy.array corresponds to blue, green, red and optional alpha of the rgba32 value.");
+PyObject* PythonDataObject::PyDataObj_StaticFromNumpyColor(PyObject *self, PyObject *args, PyObject *kwds)
+{
+    static const char *kwlist[] = { "array", NULL };
+    PyObject *obj = NULL;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!", const_cast<char**>(kwlist), &PyArray_Type, &obj)) // obj is a borrowed reference
+    {
+        return NULL;
+    }
+
+    PyArrayObject *ndArray = (PyArrayObject*)obj; 
+    PyArray_Descr *descr = PyArray_DESCR(ndArray);
+    unsigned char dimensions = -1;
+    int typeno = -1;
+    uchar* data = NULL;
+
+    //at first, check copyObject. there are three cases: 1. we can take it as it is, 2. it is compatible but has to be converted, 3. it is incompatible
+    if (! (descr->byteorder == '<' || descr->byteorder == '|' || (descr->byteorder == '=' && NPY_NATBYTE == NPY_LITTLE)))
+    {
+        PyErr_SetString(PyExc_TypeError,"Given numpy array has wrong byteorder (litte endian desired), which cannot be transformed to dataObject");
+        return NULL;
+    }
+    else
+    {
+        //check whether type of ndarray exists for data object
+        typeno = parseTypeNumberInverse(descr->kind , PyArray_ITEMSIZE(ndArray));
+
+        if (typeno != ito::tUInt8)
+        {
+            PyErr_SetString(PyExc_TypeError, "Only numpy arrays of type uint8 can be transformed to a rgba32 dataObject");
+            return NULL;
+        }
+
+        //verify that ndArray is c-contiguous
+        ndArray = PyArray_GETCONTIGUOUS(ndArray); //now we always have an increased reference of ndArray (either reference of old ndArray or new object with new reference)
+        if (ndArray == NULL)
+        {
+            PyErr_SetString(PyExc_TypeError,"An error occurred while transforming the given numpy array to a c-contiguous array.");
+            return NULL;
+        }
+        
+        dimensions = PyArray_NDIM(ndArray); //->nd;
+        npy_intp* npsizes = PyArray_DIMS(ndArray);
+        npy_intp *npsteps = (npy_intp *)PyArray_STRIDES(ndArray); //number of bytes to jump from one element in one dimension to the next one
+        
+        if (dimensions != 3 || (npsizes[2] != 3 && npsizes[2] != 4))
+        {
+            PyErr_SetString(PyExc_ValueError, "The numpy.array must have three dimensions whereas the size of the last dimension must be three or four");
+            Py_DECREF(ndArray);
+            return NULL;
+        }
+
+        PyDataObject* pyDataObject = createEmptyPyDataObject();
+        int sizes[] = {npsizes[0], npsizes[1]};
+        int steps[] = {npsteps[0], npsteps[1], npsteps[2]};
+        int chn = npsizes[2];
+        data = (uchar*)PyArray_DATA(ndArray);
+
+        if (chn == 4 && npsteps[2] == PyArray_ITEMSIZE(ndArray))
+        {
+            
+            pyDataObject->dataObject = new ito::DataObject(2, sizes, ito::tRGBA32, data, steps);
+        }
+        else //3
+        {
+            pyDataObject->dataObject = new ito::DataObject(2, sizes, ito::tRGBA32);
+            ito::Rgba32 *destRow;
+            const uchar* srcRow;
+
+            for (int r = 0; r < sizes[0]; ++r)
+            {
+                srcRow = data + (r * steps[0]);
+                destRow = pyDataObject->dataObject->rowPtr<ito::Rgba32>(0, r);
+                for (int c = 0; c < sizes[1]; ++c)
+                {
+                    destRow[c].b = srcRow[0];
+                    destRow[c].g = srcRow[steps[2]];
+                    destRow[c].r = srcRow[2*steps[2]];
+                    destRow[c].a = (chn == 3) ? 255 : srcRow[3*steps[2]];
+                    srcRow += steps[1];
+                }
+            }
+        }
+
+        Py_DECREF(ndArray);
+        return (PyObject*)pyDataObject;
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"name", (PyCFunction)PythonDataObject::PyDataObject_name, METH_NOARGS, pyDataObjectName_doc},
         {"data", (PyCFunction)PythonDataObject::PyDataObject_data, METH_NOARGS, pyDataObjectData_doc},
@@ -7699,6 +7807,7 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"rand",(PyCFunction)PythonDataObject::PyDataObj_StaticRand, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticRand_doc},
         {"randN",(PyCFunction)PythonDataObject::PyDataObj_StaticRandN, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticRandN_doc},
         { "eye", (PyCFunction)PythonDataObject::PyDataObj_StaticEye, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticEye_doc },
+        {"fromNumpyColor", (PyCFunction)PythonDataObject::PyDataObj_StaticFromNumpyColor, METH_KEYWORDS | METH_VARARGS | METH_STATIC, pyDataObjectStaticFromNumpyColor_doc},
         {"__reduce__", (PyCFunction)PythonDataObject::PyDataObj_Reduce, METH_VARARGS, "__reduce__ method for handle pickling commands"},
         {"__setstate__", (PyCFunction)PythonDataObject::PyDataObj_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
         {"__array__", (PyCFunction)PythonDataObject::PyDataObj_Array_, METH_VARARGS, dataObject_Array__doc},
