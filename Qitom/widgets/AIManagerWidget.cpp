@@ -24,7 +24,7 @@
 
 #include "../organizer/addInManager.h"
 #include "../ui/dialogNewPluginInstance.h"
-#include "../ui/dialogSnapshot.h"
+//#include "../ui/dialogSnapshot.h"
 
 #include "../global.h"
 #include "../AppManagement.h"
@@ -952,19 +952,9 @@ void AIManagerWidget::mnuSnapDialog()
         {
             ito::RetVal retval = ito::retOk;
             QPointer<ito::AddInDataIO> aisPointer((ito::AddInDataIO*)ais);
-            DialogSnapshot *sanpDialog = new DialogSnapshot(this, aisPointer, retval);
+            /*DialogSnapshot *sanpDialog = new DialogSnapshot(this, aisPointer, retval);
             sanpDialog->setAttribute(Qt::WA_DeleteOnClose, true);
-            sanpDialog->show();
-//            delete sanpDialog;
-//            sanpDialog = NULL;
-
-/*            UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-            QString defaultPlotClassName;
-            QSharedPointer<unsigned int> objectID(new unsigned int);
-            QSharedPointer<unsigned int> figHandle(new unsigned int);
-            *figHandle = 0; //new figure will be requested
-
-            ito::RetVal retval = uiOrg->figureLiveImage((ito::AddInDataIO*)ais, figHandle, objectID, 0, 0, defaultPlotClassName, QVariantMap(), NULL);*/
+            sanpDialog->show();*/
 
             if (retval.containsError())
             {

@@ -259,7 +259,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReplace.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManagerInstall.h
@@ -332,7 +332,7 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReplace.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.ui
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.ui
+    #${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManager.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManagerInstall.ui
@@ -454,7 +454,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReplace.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManagerInstall.cpp
