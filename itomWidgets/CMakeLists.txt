@@ -96,6 +96,7 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoPickerFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoShapesFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/motorAxisControllerFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/statusLedFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSpinBox_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget_p.h
@@ -137,6 +138,7 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/treeComboBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/menuComboBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/motorAxisController.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/statusLed.h
 )
 
 
@@ -188,6 +190,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoShapesFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/menuComboBoxFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/motorAxisControllerFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/statusLedFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/checkableModelHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/completer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rangeSlider.cpp
@@ -216,6 +219,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoPicker.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoShapes.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/motorAxisController.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/statusLed.cpp
 )
 
 #If you want to use automatical metadata for dlls under windows use the following if-case.

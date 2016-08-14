@@ -46,6 +46,8 @@
 #include "factories/plotInfoPickerFactory.h"
 #include "factories/plotInfoShapesFactory.h"
 #include "factories/motorAxisControllerFactory.h"
+#include "factories/statusLedFactory.h"
+
 //------------------------------------------------------------------------------------------------
 ItomWidgetsFactory::ItomWidgetsFactory(QObject *parent)
     : QObject(parent)
@@ -71,6 +73,7 @@ ItomWidgetsFactory::ItomWidgetsFactory(QObject *parent)
 	widgets.append(new PlotInfoPickerFactory(this));
 	widgets.append(new PlotInfoShapesFactory(this));
     widgets.append(new MotorAxisControllerFactory(this));
+    widgets.append(new StatusLedFactory(this));
 }
 
 //------------------------------------------------------------------------------------------------

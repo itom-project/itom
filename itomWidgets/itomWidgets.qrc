@@ -21,5 +21,6 @@
     <file>icons/down.png</file>
     <file>icons/run.png</file>
     <file>icons/motorAxisController.png</file>
+    <file>icons/statusLed.png</file>
   </qresource>
 </RCC>
