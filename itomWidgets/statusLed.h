@@ -24,8 +24,6 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-    This file is a port and modified version of the 
-    LGPL library QSint (https://sourceforge.net/p/qsint)
 *********************************************************************** */
 
 #ifndef STATUSLED_H
@@ -34,6 +32,8 @@
 #include <QWidget>
 
 #include "commonWidgets.h"
+
+class StatusLedPrivate; // forward declare
 
 /**
     \brief Round LED-style widget with gradient fill.
@@ -44,32 +44,54 @@
 class ITOMWIDGETS_EXPORT StatusLed : public QWidget
 {
     Q_OBJECT
+
+    Q_PROPERTY(QColor colorOnEdge READ colorOnEdge WRITE setColorOnEdge);
+    Q_PROPERTY(QColor colorOnCenter READ colorOnCenter WRITE setColorOnCenter);
+    Q_PROPERTY(QColor colorOffEdge READ colorOffEdge WRITE setColorOffEdge);
+    Q_PROPERTY(QColor colorOffCenter READ colorOffCenter WRITE setColorOffCenter);
+    Q_PROPERTY(bool checked READ checked WRITE setChecked);
+
 public:
+
     explicit StatusLed(QWidget *parent = 0);
+    virtual ~StatusLed();
+
+    virtual QSize sizeHint() const
+    { 
+        return QSize(24,24); 
+    }
 
     virtual QSize minimumSizeHint() const
-    { return QSize(12,12); }
+    { 
+        return QSize(12,12); 
+    }
 
     virtual int heightForWidth(int w) const
-    { return w; }
+    { 
+        return w; 
+    }
+
+    bool checked() const;
+    QColor colorOnEdge() const;
+    QColor colorOnCenter() const;
+    QColor colorOffEdge() const;
+    QColor colorOffCenter() const;
 
 public Q_SLOTS:
-    /**
-     * @brief setColor Funtion sets color of LED to \a ledColor. Highlight color is set to Qt::white.
-     * @param ledColor Color to set (Qt::gray is the default value).
-     */
-    void setColor(const QColor &ledColor);
-    /**
-     * @brief setColors Funtion sets color of LED to \a ledColor and its highlight color to \a blickColor.
-     * @param ledColor (Qt::gray is the default value).
-     * @param highlightColor (Qt::white is the default value).
-     */
-    void setColors(const QColor &ledColor, const QColor &highlightColor);
+    void setColorOnEdge(const QColor &color);
+    void setColorOnCenter(const QColor &color);
+    void setColorOffEdge(const QColor &color);
+    void setColorOffCenter(const QColor &color);
+    void setChecked(bool checked);
 
 protected:
     virtual void paintEvent(QPaintEvent *event);
 
-    QRadialGradient m_gradient;
+    QScopedPointer<StatusLedPrivate> d_ptr; // QScopedPointer to forward declared class
+
+private:
+    Q_DECLARE_PRIVATE(StatusLed);
+    Q_DISABLE_COPY(StatusLed);
 };
 
 #endif // STATUSLED_H

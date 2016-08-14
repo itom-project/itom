@@ -24,38 +24,144 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 
-    This file is a port and modified version of the 
-    LGPL library QSint (https://sourceforge.net/p/qsint)
 *********************************************************************** */
 
 #include "statusLed.h"
 
 #include <QtGui/QPainter>
 
+class StatusLedPrivate
+{
+  Q_DECLARE_PUBLIC(StatusLed);
+protected:
+  StatusLed* const q_ptr;
+public:
+
+  StatusLedPrivate(StatusLed& object);
+
+  QRadialGradient m_gradientOn;
+  QRadialGradient m_gradientOff;
+  QColor m_colorsOn[2];
+  QColor m_colorsOff[2];
+  bool m_status;
+
+private:
+  Q_DISABLE_COPY(StatusLedPrivate);
+};
+
+// --------------------------------------------------------------------------
+StatusLedPrivate::StatusLedPrivate(StatusLed& object)
+  :q_ptr(&object)
+{
+    m_colorsOn[0] = Qt::white;
+    m_colorsOff[0] = Qt::white;
+    m_colorsOn[1] = Qt::green;
+    m_colorsOff[1] = Qt::red;
+    m_gradientOn.setColorAt(0.0, m_colorsOn[0]);
+    m_gradientOn.setColorAt(1.0, m_colorsOn[1]);
+    m_gradientOff.setColorAt(0.0, m_colorsOff[0]);
+    m_gradientOff.setColorAt(1.0, m_colorsOff[1]);
+    m_status = false; //Off
+}
+
 //---------------------------------------------------------------------------
 StatusLed::StatusLed(QWidget *parent) :
-    QWidget(parent)
+    QWidget(parent),
+    d_ptr(new StatusLedPrivate(*this))
 {
-    setColor(Qt::gray);
+    Q_D(StatusLed);
 }
 
 //---------------------------------------------------------------------------
-void StatusLed::setColor(const QColor &ledColor)
+StatusLed::~StatusLed()
 {
-    m_gradient.setColorAt(0.0, Qt::white);
-    m_gradient.setColorAt(1.0, ledColor);
 }
 
 //---------------------------------------------------------------------------
-void StatusLed::setColors(const QColor &ledColor, const QColor &highlightColor)
+bool StatusLed::checked() const
 {
-    m_gradient.setColorAt(0.0, highlightColor);
-    m_gradient.setColorAt(1.0, ledColor);
+    Q_D(const StatusLed);
+    return d->m_status;
+}
+
+//---------------------------------------------------------------------------
+QColor StatusLed::colorOnEdge() const
+{
+    Q_D(const StatusLed);
+    return d->m_colorsOn[1];
+}
+
+//---------------------------------------------------------------------------
+QColor StatusLed::colorOnCenter() const
+{
+    Q_D(const StatusLed);
+    return d->m_colorsOn[0];
+}
+
+//---------------------------------------------------------------------------
+QColor StatusLed::colorOffEdge() const
+{
+    Q_D(const StatusLed);
+    return d->m_colorsOff[1];
+}
+
+//---------------------------------------------------------------------------
+QColor StatusLed::colorOffCenter() const
+{
+    Q_D(const StatusLed);
+    return d->m_colorsOff[0];
+}
+
+
+//---------------------------------------------------------------------------
+void StatusLed::setColorOnEdge(const QColor &color)
+{
+    Q_D(StatusLed);
+    d->m_colorsOn[1] = color;
+    d->m_gradientOn.setColorAt(1.0, color);
+    update();
+}
+
+//---------------------------------------------------------------------------
+void StatusLed::setColorOnCenter(const QColor &color)
+{
+    Q_D(StatusLed);
+    d->m_colorsOn[0] = color;
+    d->m_gradientOn.setColorAt(0.0, color);
+    update();
+}
+
+//---------------------------------------------------------------------------
+void StatusLed::setColorOffEdge(const QColor &color)
+{
+    Q_D(StatusLed);
+    d->m_colorsOff[1] = color;
+    d->m_gradientOff.setColorAt(1.0, color);
+    update();
+}
+
+//---------------------------------------------------------------------------
+void StatusLed::setColorOffCenter(const QColor &color)
+{
+    Q_D(StatusLed);
+    d->m_colorsOff[0] = color;
+    d->m_gradientOff.setColorAt(0.0, color);
+    update();
+}
+
+//---------------------------------------------------------------------------
+void StatusLed::setChecked(bool checked)
+{
+    Q_D(StatusLed);
+    d->m_status = checked;
+    update();
 }
 
 //---------------------------------------------------------------------------
 void StatusLed::paintEvent(QPaintEvent * /*event*/)
 {
+    Q_D(StatusLed);
+
     QPainter p(this);
 
     p.setPen(QPen(Qt::black));
@@ -63,11 +169,26 @@ void StatusLed::paintEvent(QPaintEvent * /*event*/)
 
     int radius = qMin(rect().width(), rect().height()) / 2 - 2;
 
-    m_gradient.setCenter(rect().center());
-    m_gradient.setFocalPoint(rect().center() - QPoint(radius / 2, radius / 2));
-    m_gradient.setRadius(radius);
+    if (isEnabled())
+    {
+        QRadialGradient *g = d->m_status ? &(d->m_gradientOn) : &(d->m_gradientOff);
+        g->setCenter(rect().center());
+        g->setFocalPoint(rect().center() - QPoint(radius / 2, radius / 2));
+        g->setRadius(radius);
 
-    p.setBrush(m_gradient);
+        p.setBrush(*g);
+    }
+    else
+    {
+        QRadialGradient gradient;
+        gradient.setColorAt(0.0, Qt::white);
+        gradient.setColorAt(1.0, Qt::gray);
+        gradient.setCenter(rect().center());
+        gradient.setFocalPoint(rect().center() - QPoint(radius / 2, radius / 2));
+        gradient.setRadius(radius);
+
+        p.setBrush(gradient);
+    }
 
     p.drawEllipse(rect().center(), radius, radius);
 }
