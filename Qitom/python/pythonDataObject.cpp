@@ -7055,6 +7055,81 @@ dataObj : {dataObject} \n\
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObj_ToNumpyColor_doc, "toNumpyColor([addAlphaChannel = 0]) -> convert a 2D dataObject of type 'rgba32' to a 3D 'uint8' numpy.array whose last dimension is 3 (no alpha channel) or 4.\n\
+\n\
+Whereas the class 'dataObject' has a specific type 'rgba32' for colour values (which is internally a uint32 value with 4 times 8bit values for blue, green, red and alpha), \n\
+numpy.arrays don't have this. Therefore, several python packages like cv2 (OpenCV) or PIL store colour values in 3D numpy.arrays whereas the last dimension has a size of 3 \n\
+(without alpha value) or 4. This method returns the coloured version of a numpy.array from the rgba32 dataObject. \n\
+\n\
+Parameters \n\
+----------- \n\
+addAlphaChannel : {int} \n\
+    If 0, the last dimension of the returned numpy.array has a size of 3 and contains the blue, green and red value, whereas 1 adds the alpha value as fourth value. \n\
+    \n\
+Returns \n\
+------- \n\
+arr : {numpy.array} \n\
+    converted 2D numpy.array of type 'uint8' that can for instance be used in methods of packages like cv2 (OpenCV) or PIL.");
+PyObject* PythonDataObject::PyDataObj_ToNumpyColor(PyDataObject *self, PyObject *args, PyObject *kwds)
+{
+    int addAlphaChannel = 0;
+
+    const char *kwlist[] = { "addAlphaChannel", NULL };
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|i", const_cast<char**>(kwlist), &addAlphaChannel))
+    {
+        return NULL;
+    }
+
+    if (self->dataObject == NULL)
+    {
+        return PyErr_Format(PyExc_TypeError, "This dataObject is empty");
+    }
+    else if (self->dataObject->getType() != ito::tRGBA32)
+    {
+        return PyErr_Format(PyExc_TypeError, "This dataObject must have the type 'rgba32' to be converted to a coloured numpy.array.");
+    }
+    else if (self->dataObject->getNumPlanes() != 1)
+    {
+        return PyErr_Format(PyExc_TypeError, "This dataObject must be two-dimensional.");
+    }
+
+    int dims = self->dataObject->getDims();
+    npy_intp sizes[] = { self->dataObject->getSize(dims - 2), self->dataObject->getSize(dims - 1), addAlphaChannel ? 4 : 3 };
+    PyObject *npArray = PyArray_EMPTY(3, sizes, NPY_UBYTE, 0);
+
+    if (npArray)
+    {
+        npy_intp* npsizes = PyArray_DIMS((PyArrayObject*)npArray);
+        npy_intp *npsteps = (npy_intp *)PyArray_STRIDES((PyArrayObject*)npArray); //number of bytes to jump from one element in one dimension to the next one
+        uchar *data = (uchar*)PyArray_DATA((PyArrayObject*)npArray);
+
+        const ito::Rgba32 *srcRow;
+        uchar* destRow;
+        const cv::Mat *src = self->dataObject->getCvPlaneMat(0);
+
+        for (int r = 0; r < sizes[0]; ++r)
+        {
+            srcRow = src->ptr<ito::Rgba32>(r);
+            destRow = data + (r * npsteps[0]);
+            for (int c = 0; c < sizes[1]; ++c)
+            {
+                destRow[0] = srcRow[c].b;
+                destRow[npsteps[2]] = srcRow[c].g;
+                destRow[2 * npsteps[2]] = srcRow[c].r;
+                if (addAlphaChannel)
+                {
+                    destRow[3 * npsteps[2]] = srcRow[c].a;
+                }
+                destRow += npsteps[1];
+            }
+        }
+    }
+
+    return npArray;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyDataObjectToList_doc, "tolist() -> return the data object as a (possibly nested) list\n\
 \n\
 This method returns a nested list with all values of this data object. The recursion level of this nested list \
@@ -7820,6 +7895,7 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
 
         {"tolist", (PyCFunction)PythonDataObject::PyDataObj_ToList, METH_NOARGS, pyDataObjectToList_doc}, //"returns nested list of content of data object"
         {"toGray", (PyCFunction)PythonDataObject::PyDataObj_ToGray, METH_KEYWORDS | METH_VARARGS, pyDataObj_ToGray_doc},
+        {"toNumpyColor", (PyCFunction)PythonDataObject::PyDataObj_ToNumpyColor, METH_KEYWORDS | METH_VARARGS, pyDataObj_ToGray_doc },
         {NULL}  /* Sentinel */
     };
 

@@ -110,6 +110,7 @@ itom.dataObject.size([index]) -> returns the size of this dataObject (tuple of t
 itom.dataObject.squeeze() -> return a squeezed shallow copy (if possible) of this dataObject.
 itom.dataObject.tags
 itom.dataObject.toGray([destinationType='uint8']) -> returns the rgba32 color data object as a gray-scale object
+itom.dataObject.toNumpyColor
 itom.dataObject.tolist() -> return the data object as a (possibly nested) list
 itom.dataObject.trans() -> return a plane-wise transposed dataObject
 itom.dataObject.value

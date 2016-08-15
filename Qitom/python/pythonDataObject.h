@@ -194,6 +194,7 @@ class PythonDataObject
         static PyObject* PyDataObject_imag(PyDataObject *self);
 
         static PyObject* PyDataObj_ToGray(PyDataObject *self, PyObject *args, PyObject *kwds);
+        static PyObject* PyDataObj_ToNumpyColor(PyDataObject *self, PyObject *args, PyObject *kwds);
 
         static PyObject* PyDataObj_ToList(PyDataObject *self);
         static PyObject* PyDataObj_At(ito::DataObject *dataObj, unsigned int *idx);
