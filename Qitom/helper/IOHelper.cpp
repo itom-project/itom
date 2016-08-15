@@ -518,7 +518,14 @@ end:
 
     if (eng->isPythonBusy() && !eng->isPythonDebuggingAndWaiting())
     {
-        return RetVal(retError, 2, tr("variables cannot be imported since python is busy right now").toLatin1().data());
+        //if multiple files are dragged into the workspace, the python-free signal is sometimes received in the upcoming event-lopp. Therefore, process this and verify
+        //again if python is still busy.
+
+        QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers);
+        if (eng->isPythonBusy() && !eng->isPythonDebuggingAndWaiting())
+        {
+            return RetVal(retError, 2, tr("variables cannot be imported since python is busy right now").toLatin1().data());
+        }
     }
 
     QFileInfo info(file);
