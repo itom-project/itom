@@ -491,7 +491,6 @@ void WorkspaceDockWidget::mnuPlotGeneric(const QString &plotClass)
             const ito::PCLPointCloud *cloud = NULL;
             const ito::PCLPolygonMesh *mesh = NULL;
 #endif
-            int idx;
 
             for (int i = 0; i < values->size(); ++i)
             {

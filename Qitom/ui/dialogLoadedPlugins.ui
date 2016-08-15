@@ -286,13 +286,15 @@
   </layout>
  </widget>
  <tabstops>
+  <tabstop>onlyCompatibleCheck</tabstop>
+  <tabstop>collapseButton</tabstop>
+  <tabstop>expandButton</tabstop>
+  <tabstop>tree</tabstop>
   <tabstop>filterEdit</tabstop>
   <tabstop>cmdMessage</tabstop>
   <tabstop>cmdWarning</tabstop>
   <tabstop>cmdError</tabstop>
   <tabstop>cmdIgnored</tabstop>
-  <tabstop>buttonBox</tabstop>
-  <tabstop>tree</tabstop>
  </tabstops>
  <resources/>
  <connections>

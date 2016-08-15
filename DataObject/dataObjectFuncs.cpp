@@ -1452,7 +1452,7 @@ namespace dObjHelper
         ito::DataObject temp;
         std::vector<_Tp> temp2;
         _Tp* values;
-        int num;
+        size_t num;
         if (!ignoreNaN)
         {
             num = dObj->getTotal();
@@ -2180,7 +2180,7 @@ namespace dObjHelper
                 }
             }
 
-            int len = strlen(expected);
+            size_t len = strlen(expected);
             if (len > 2)
             {
                 expected[len - 2] = '\0'; //cut last ', '

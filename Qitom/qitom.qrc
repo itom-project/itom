@@ -32,8 +32,6 @@
         <file alias="dataGr_page">styles/help/grabber_page.html</file>
         <file alias="dataAD_page">styles/help/adda_page.html</file>
         <file alias="dataRa_page">styles/help/rawio_page.html</file>
-        <file alias="actuator_page">styles/help/actuator_page.html</file>
-        <file alias="filter_tmpl">styles/help/filter_widget_plugin.html</file>
     </qresource>
     <qresource prefix="/classNavigator">
         <file>icons/class.png</file>

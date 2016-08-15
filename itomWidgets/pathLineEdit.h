@@ -74,7 +74,6 @@ class ITOMWIDGETS_EXPORT PathLineEdit: public QWidget
   Q_FLAGS(Filters)
   Q_PROPERTY ( QString label READ label WRITE setLabel )
 
-  Q_PROPERTY ( QStringList nameFilters READ nameFilters WRITE setNameFilters)
   Q_PROPERTY ( Filters filters READ filters WRITE setFilters)
   Q_PROPERTY ( QString currentPath READ currentPath WRITE setCurrentPath USER true )
   /// Qt versions prior to 4.7.0 didn't expose QFileDialog::Options in the
