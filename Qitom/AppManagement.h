@@ -27,7 +27,7 @@
 #include <qobject.h>
 #include <qmutex.h>
 
-class QTextCode;
+class QTextCodec;
 
 namespace ito
 {
