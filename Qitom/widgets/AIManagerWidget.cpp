@@ -24,7 +24,7 @@
 
 #include "../organizer/addInManager.h"
 #include "../ui/dialogNewPluginInstance.h"
-//#include "../ui/dialogSnapshot.h"
+#include "../ui/dialogSnapshot.h"
 
 #include "../global.h"
 #include "../AppManagement.h"
@@ -952,9 +952,9 @@ void AIManagerWidget::mnuSnapDialog()
         {
             ito::RetVal retval = ito::retOk;
             QPointer<ito::AddInDataIO> aisPointer((ito::AddInDataIO*)ais);
-            /*DialogSnapshot *sanpDialog = new DialogSnapshot(this, aisPointer, retval);
+            DialogSnapshot *sanpDialog = new DialogSnapshot(this, aisPointer, retval);
             sanpDialog->setAttribute(Qt::WA_DeleteOnClose, true);
-            sanpDialog->show();*/
+            sanpDialog->show();
 
             if (retval.containsError())
             {
