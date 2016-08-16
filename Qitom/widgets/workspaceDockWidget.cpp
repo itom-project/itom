@@ -487,7 +487,7 @@ void WorkspaceDockWidget::mnuPlotGeneric(const QString &plotClass)
             int areaCol = 0;
             int areaRow = 0;
             const ito::DataObject *obj = NULL;
-#ifdef ITOM_POINTCLOUDLIBRARY
+#if ITOM_POINTCLOUDLIBRARY > 0
             const ito::PCLPointCloud *cloud = NULL;
             const ito::PCLPolygonMesh *mesh = NULL;
 #endif
@@ -507,7 +507,7 @@ void WorkspaceDockWidget::mnuPlotGeneric(const QString &plotClass)
                     obj = (*values)[i]->getVal<const ito::DataObject*>();
                     dataCont = ito::UiDataContainer(QSharedPointer<ito::DataObject>(new ito::DataObject(*obj)));
                 }
-#ifdef ITOM_POINTCLOUDLIBRARY
+#if ITOM_POINTCLOUDLIBRARY > 0
                 else if (values->at(i)->getType() == (ito::ParamBase::PointCloudPtr & ito::paramTypeMask))
                 {
                     cloud = (*values)[i]->getVal<const ito::PCLPointCloud*>();
