@@ -18,7 +18,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab1">
        <attribute name="title">
@@ -175,9 +175,6 @@
             <enum>Qt::Vertical</enum>
            </property>
            <widget class="Itom1DQwtPlot" name="plotFiltering">
-            <property name="grid">
-             <bool>true</bool>
-            </property>
             <property name="legendPosition">
              <enum>Itom1DQwtPlot::Right</enum>
             </property>
@@ -187,6 +184,9 @@
               <string>Roughness</string>
               <string>Waviness</string>
              </stringlist>
+            </property>
+            <property name="grid">
+             <enum>Itom1DQwtPlot::GridNo</enum>
             </property>
            </widget>
            <widget class="QWidget" name="layoutWidget">
@@ -414,6 +414,32 @@
                  <item>
                   <property name="text">
                    <string>8000</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_9">
+                 <property name="text">
+                  <string>Filter method:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="comboMode">
+                 <item>
+                  <property name="text">
+                   <string>auto (usually Ls by convolution, Lc by DFT)</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>convolution</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>dft</string>
                   </property>
                  </item>
                 </widget>

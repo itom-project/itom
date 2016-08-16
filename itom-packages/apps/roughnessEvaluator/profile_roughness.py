@@ -45,7 +45,7 @@ class ProfileRoughness(ItomUi):
         elif (not dataObj.axisUnits[1] in possibleUnits) or (not dataObj.valueUnit in possibleUnits):
             ui.msgWarning("wrong unit", "Value and horizontal axis unit must be nm, µm or mm", parent = self.gui)
         else:
-            self.sourceObj = dataObj.astype('float64')
+            self.sourceObj = dataObj.astype('float64').copy()
             self.sourceObjCropped = self.sourceObj.astype('float64')
             self.gui.plotSource2d["visible"] = self.sourceObj.shape[0] > 1
             self.gui.plotSource1d["visible"] = self.sourceObj.shape[0] <= 1
@@ -79,7 +79,13 @@ class ProfileRoughness(ItomUi):
             periodicity = 1
             if self.gui.radioFilterNonPeriodic["checked"]:
                 periodicity = 0
-            self.endeffect = filter("calcRoughnessProfile",self.sourceObjCropped, self.roughness, self.waviness, Lc, Ls, mode = "auto", periodicity = periodicity, cutoff_factor = 1.0)
+            if "auto" in self.gui.comboMode["currentText"]:
+                mode = "auto"
+            elif "dft" in self.gui.comboMode["currentText"]:
+                mode = "dft"
+            else:
+                mode = "convolution"
+            self.endeffect = filter("calcRoughnessProfile",self.sourceObjCropped, self.roughness, self.waviness, Lc, Ls, mode = mode, periodicity = periodicity, cutoff_factor = 1.0)
             
             self.gui.groupSelectDisplayedRow["visible"] = (self.roughness.shape[0] > 1)
             self.gui.spinFilterRow["value"] = 0
