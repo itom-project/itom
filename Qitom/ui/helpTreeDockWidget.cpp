@@ -872,7 +872,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
 QString HelpTreeDockWidget::parseFilterWidgetContent(const QString &input)
 {
 #if QT_VERSION < 0x050000
-    QString output = input;
+    QString output = Qt::escape(input);
 #else
     QString output = input.toHtmlEscaped();
 #endif
@@ -1237,14 +1237,13 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
 #if QT_VERSION < 0x050000
     output.replace("%PARAMNAME%", Qt::escape(name));
     output.replace("%PARAMTYPE%", Qt::escape(type));
-    output.replace("%PARAMINFO%", parseFilterWidgetContent(Qt::escape(info)));
     output.replace("%PARAMMETA%", Qt::escape(meta));
 #else
     output.replace("%PARAMNAME%", QString(name).toHtmlEscaped());
     output.replace("%PARAMTYPE%", QString(type).toHtmlEscaped());
-    output.replace("%PARAMINFO%", parseFilterWidgetContent(QString(info).toHtmlEscaped()));
     output.replace("%PARAMMETA%", QString(meta).toHtmlEscaped());
 #endif
+    output.replace("%PARAMINFO%", parseFilterWidgetContent(info));
 
     return output;
 }
