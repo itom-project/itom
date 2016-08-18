@@ -145,13 +145,13 @@ void WorkspaceDockWidget::createActions()
     m_actRename = new ShortcutAction(QIcon(":/workspace/icons/edit-rename.png"), tr("rename selected item"), this, QKeySequence(tr("F2")), Qt::WidgetWithChildrenShortcut);
     m_actRename->connectTrigger(this, SLOT(mnuRenameItem()));
 
-    m_dObjPlot1d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/1d.png"), tr("plot as 1D line plot"), this);
+    m_dObjPlot1d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/1d.png"), tr("1D line plot"), this);
     m_dObjPlot1d->connectTrigger(this, SLOT(mnuPlot1D()));
-    m_dObjPlot2d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/2d.png"), tr("plot 2D image plot"), this);
+    m_dObjPlot2d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/2d.png"), tr("2D image plot"), this);
     m_dObjPlot2d->connectTrigger(this, SLOT(mnuPlot2D()));
-    m_dObjPlot25d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/3d.png"), tr("plot 2.5D isometric plot"), this);
+    m_dObjPlot25d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/3d.png"), tr("2.5D isometric plot"), this);
     m_dObjPlot25d->connectTrigger(this, SLOT(mnuPlot25D()));
-    m_dObjPlot3d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/3d.png"), tr("plot 3D cloud or mesh"), this);
+    m_dObjPlot3d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/3d.png"), tr("3D cloud or mesh visualization"), this);
     m_dObjPlot3d->connectTrigger(this, SLOT(mnuPlot25D()));
 }
 
