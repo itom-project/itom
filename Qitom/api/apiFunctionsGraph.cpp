@@ -180,6 +180,16 @@ ito::RetVal apiFunctionsGraph::mgetFigure(const QString &figCategoryName, const 
             if(!retval.containsError())
             {
                 retval += uiOrg->getNewPluginWindow(className, UID, figure, parent);
+
+                if (*figure)
+                {
+                    //minimum size of a new figure window (see also uiOrganizer::figurePlot)
+                    QSize minimumFigureSize(700, 400);
+                    QSize sz = (*figure)->sizeHint();
+                    sz.rwidth() = qMax(minimumFigureSize.width(), sz.width());
+                    sz.rheight() = qMax(minimumFigureSize.height(), sz.height());
+                    (*figure)->resize(sz);
+                }
             }
         }
         else if(!dwOrg)

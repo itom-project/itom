@@ -171,6 +171,9 @@ namespace ito
 
             void synchronizeTopLevelState();
 
+            virtual QSize sizeHint() const;
+            virtual QSize minimumSizeHint() const;
+
         public Q_SLOTS:
             void setEnabled(bool);
             virtual void setVisible(bool visible);

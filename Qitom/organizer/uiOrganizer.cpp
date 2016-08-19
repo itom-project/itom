@@ -3308,13 +3308,20 @@ ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, QSharedPoint
 
                 if (!retval.containsError())
                 {                                
-                *objectID = addObjectToList(destWidget);
+                    *objectID = addObjectToList(destWidget);
 
-                if (properties.size() > 0)
-                {
-                    retval += writeProperties(*objectID, properties, NULL);
+                    if (properties.size() > 0)
+                    {
+                        retval += writeProperties(*objectID, properties, NULL);
+                    }
+
+                    //minimum size of a new figure window (see also apiFunctionsGraph::mgetFigure)
+                    QSize minimumFigureSize(700, 400);
+                    QSize sz = fig->sizeHint();
+                    sz.rwidth() = qMax(minimumFigureSize.width(), sz.width());
+                    sz.rheight() = qMax(minimumFigureSize.height(), sz.height());
+                    fig->resize(sz);
                 }
-            }
             }
             else
             {

@@ -1191,4 +1191,30 @@ void AbstractDockWidget::synchronizeTopLevelState()
     }
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+QSize AbstractDockWidget::sizeHint() const
+{
+    if (m_docked)
+    {
+        return QDockWidget::sizeHint();
+    }
+    else
+    {
+        return m_pWindow->sizeHint();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QSize AbstractDockWidget::minimumSizeHint() const
+{
+    if (m_docked)
+    {
+        return QDockWidget::minimumSizeHint();
+    }
+    else
+    {
+        return m_pWindow->minimumSizeHint();
+    }
+}
+
 } //end namespace ito
