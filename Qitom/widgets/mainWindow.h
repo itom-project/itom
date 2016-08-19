@@ -192,6 +192,7 @@ private slots:
     void mnuPyReloadModules();
     void mnuShowLoadedPlugins();
     void mnuPyPipManager();
+	void mnuPyTimerManager();
 
     void mnuPyAutoReloadTriggered(bool checked);
 

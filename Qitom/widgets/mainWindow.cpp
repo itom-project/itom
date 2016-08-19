@@ -39,6 +39,7 @@
 #include "../ui/dialogLoadedPlugins.h"
 #include "../ui/widgetInfoBox.h"
 #include "../ui/dialogPipManager.h"
+#include "../ui/dialogTimerManager.h"
 
 #include "../helper/versionHelper.h"
 
@@ -685,6 +686,9 @@ void MainWindow::createActions()
 
         a = m_actions["py_packageManager"] = new QAction(tr("Package Manager..."), this);
         connect(a, SIGNAL(triggered()), this, SLOT(mnuPyPipManager()));
+
+		a = m_actions["python_timerManager"] = new QAction(tr("Timer Manager..."), this);
+		connect(a, SIGNAL(triggered()), this, SLOT(mnuPyTimerManager()));
     }
 }
 
@@ -771,6 +775,7 @@ void MainWindow::createMenus()
         m_pMenuReloadModule->addAction(m_actions["python_reloadModules"]);
 
         m_pMenuPython->addAction(m_actions["py_packageManager"]);
+		m_pMenuPython->addAction(m_actions["python_timerManager"]);
     }
 
     m_pMenuHelp = menuBar()->addMenu(tr("Help"));
@@ -1958,6 +1963,13 @@ void MainWindow::mnuPyReloadModules()
     DialogReloadModule *dlgReloadModules = new DialogReloadModule(this);
     dlgReloadModules->exec();
     DELETE_AND_SET_NULL(dlgReloadModules);
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::mnuPyTimerManager()
+{
+	DialogTimerManager *dlgTimerManager = new DialogTimerManager(this);
+	dlgTimerManager->exec();
+	DELETE_AND_SET_NULL(dlgTimerManager);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

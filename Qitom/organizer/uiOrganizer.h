@@ -281,6 +281,12 @@ struct ClassInfoContainer
     QString m_description;
 };
 
+struct TimerContainer
+{
+	QPointer<QTimer> timer;
+	QString name;
+};
+
 class UiOrganizer : public QObject
 {
     Q_OBJECT
@@ -355,6 +361,8 @@ public:
 
     QWidget* loadDesignerPluginWidget(const QString &name, RetVal &retValue, AbstractFigure::WindowMode winMode, QWidget *parent = NULL);
 
+	QList<TimerContainer> getRegisteredTimers();
+
 protected:
 
     //static void threadSafeDeleteUi(unsigned int *handle);
@@ -390,6 +398,7 @@ private:
     //to valgrind it causes memory leaks. So better have only one instance created and maintain mem leaks low ;-)
     QUiLoader *m_pUiLoader;
     QHash<QString, QTranslator*> m_transFiles;
+	QList<TimerContainer> m_timers;
 
 signals:
 
@@ -469,10 +478,15 @@ public slots:
 
     RetVal getAvailableWidgetNames(QSharedPointer<QStringList> widgetNames, ItomSharedSemaphore *semaphore);
 
+	RetVal registerActiveTimer(const QPointer<QTimer> &timer, const QString &name, ItomSharedSemaphore *semaphore = NULL);
+
+
+
     void figureDestroyed(QObject *obj);
 
 private slots:
     void watcherThreadFinished();
+	RetVal timerDestroyed(ItomSharedSemaphore *semaphore = NULL);
 
 };
 

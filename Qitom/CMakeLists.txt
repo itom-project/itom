@@ -451,6 +451,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPluginPicker.cpp    
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogProperties.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReloadModule.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogTimerManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReplace.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.cpp
