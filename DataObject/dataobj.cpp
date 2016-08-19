@@ -2093,10 +2093,22 @@ double DataObject::getPhysToPix(const unsigned int dim, const double phys) const
 }
 
 /**
-\brief Function returns the not rounded pixel index of a physical coordinate
-    */
+\brief Function returns the not rounded pixel index of a physical coordinate. 
+
+This method only considers the x- and y-coordinates (last two dimensions of the dataObject).
+
+\param physY is the physical coordinate of the y axis
+\param tPxY [byRef] contains the corresponding pixel coordinate of physY after the function has been called
+\param isInsideImageY [byRef] is true if physY is inside of the dataObject area, else false
+\param physX is the physical coordinate of the x axis
+\param tPxX [byRef] contains the corresponding pixel coordinate of physX after the function has been called
+\param isInsideImageX [byRef] is true if physX is inside of the dataObject area, else false
+\return 0 (always)
+*/
 int DataObject::getPhysToPix2D(const double physY, double &tPxY, bool &isInsideImageY, const double physX, double &tPxX, bool &isInsideImageX) const
 {
+    isInsideImageX = isInsideImageY = true;
+
     if(m_dims < 2)
     {           
             tPxY = physY;
@@ -2134,7 +2146,7 @@ int DataObject::getPhysToPix2D(const double physY, double &tPxY, bool &isInsideI
             if(tPxX > m_size[m_dims - 1] - 1)
             {
                 isInsideImageX = false;
-                tPxY = static_cast<double>(m_size[m_dims - 1] - 1);
+                tPxX = static_cast<double>(m_size[m_dims - 1] - 1);
             }                
     }
 
