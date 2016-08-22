@@ -486,7 +486,7 @@ public slots:
 
 private slots:
     void watcherThreadFinished();
-	RetVal timerDestroyed(ItomSharedSemaphore *semaphore = NULL);
+	RetVal unregisterActiveTimer(ItomSharedSemaphore *semaphore = NULL);
 
 };
 

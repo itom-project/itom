@@ -3898,6 +3898,7 @@ RetVal UiOrganizer::registerActiveTimer(const QPointer<QTimer>& timer, const QSt
 		timerContainer.timer = timer;
 		timerContainer.name = name;
 		m_timers.append(timerContainer);
+		connect(timer.data(), SIGNAL(destroyed()), this, SLOT(unregisterActiveTimer()));
 	}
 	else
 	{
@@ -3916,7 +3917,7 @@ RetVal UiOrganizer::registerActiveTimer(const QPointer<QTimer>& timer, const QSt
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//!  returns a QList with the TiimerContainers inside. This function is for instance by 'timer dialog'
+//!  returns a QList with the TimerContainers inside. This function is for instance by 'timer dialog'
 /*!
 This method is usually called by the Python 'active timer dialog'  and is rquired for updating the sialog
 
@@ -3927,8 +3928,19 @@ QList<TimerContainer> UiOrganizer::getRegisteredTimers()
 	return m_timers;
 }
 
+//! unregisterActiveTimer scans the m_timers qList for NULL pointers 
+/*!
+This private slot is usually connected to the destroyed signal of a timer registered in m_timers. mTimers provides the 
+active timers which are needed for the timer manager. If a timer is deleted the pointer in m_timers will be NULL. In this
+slot the list is scanned for pointers equal to NULL.
+
+
+\param semaphore is the optional semaphore for thread-based calls (or NULL)
+\return ito::retOk if active timer was valid and could be registered (e.g. for active timer dialog), else ito::retError
+\sa registerActiveTimer
+*/
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::timerDestroyed(ItomSharedSemaphore *semaphore  /*= NULL*/)
+RetVal UiOrganizer::unregisterActiveTimer(ItomSharedSemaphore *semaphore  /*= NULL*/)
 {
 	ito::RetVal retval;
 	int i;
