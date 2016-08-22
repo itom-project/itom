@@ -42,19 +42,35 @@ namespace ito
 	//----------------------------------------------------------------------------------------------------------------------------------
 	void DialogTimerManager::updateTimerList()
 	{
+		ui.listWidget->clear();
 		UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
 		QList<TimerContainer> list(uiOrg->getRegisteredTimers());
 		int i;
 		for (i = 0; i<list.length(); ++i)
 		{
-			if (!list.at(i).timer.data()->isSingleShot())
+			if (!list.at(i).timer->isSingleShot())
 			{
-				ui.listWidget->addItem(QStringLiteral("TimerID: %1; Interval: %2").arg(list.at(i).name).arg(list.at(i).timer.data()->interval()));
-			}
+				if (list.at(i).timer->isActive())
+				{
+					ui.listWidget->addItem(QStringLiteral("TimerID: %1; Interval: %2; Active").arg(list.at(i).name).arg(list.at(i).timer.data()->interval()));
+				}
+				else
+				{
+					ui.listWidget->addItem(QStringLiteral("TimerID: %1; Interval: %2; Inactive").arg(list.at(i).name).arg(list.at(i).timer.data()->interval()));
+				}
+				}
 			else
 			{
-				ui.listWidget->addItem(QStringLiteral("TimerID: %1; Interval: %2 (single-shot)").arg(list.at(i).name).arg(list.at(i).timer.data()->interval()));
-			}
+				if (list.at(i).timer->isActive())
+				{
+					ui.listWidget->addItem(QStringLiteral("TimerID: %1; Interval: %2; Active (single-shot)").arg(list.at(i).name).arg(list.at(i).timer.data()->interval()));
+				}
+				else
+				{
+					ui.listWidget->addItem(QStringLiteral("TimerID: %1; Interval: %2; Inactive (single-shot)").arg(list.at(i).name).arg(list.at(i).timer.data()->interval()));
+				}
+
+				}
 		}
 
 	}
@@ -69,8 +85,15 @@ namespace ito
 		foreach(item, selection)
 		{
 			row = ui.listWidget->row(item);
-			list.at(row).timer.data()->stop();
-
+			list.at(row).timer->stop();
+			if (!list.at(row).timer->isSingleShot())
+			{
+				item->setText(QStringLiteral("TimerID: %1; Interval: %2; Inactive").arg(list.at(row).name).arg(list.at(row).timer.data()->interval()));
+			}
+			else
+			{
+				item->setText(QStringLiteral("TimerID: %1; Interval: %2; Inactive (single-shot)").arg(list.at(row).name).arg(list.at(row).timer.data()->interval()));
+			}
 		}
 	}
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -87,8 +110,17 @@ namespace ito
 			row = ui.listWidget->row(item);
 			QMetaObject::invokeMethod(list.at(row).timer.data(), "start");
 			
+			if (!list.at(row).timer->isSingleShot())
+			{
+				item->setText(QStringLiteral("TimerID: %1; Interval: %2; Active").arg(list.at(row).name).arg(list.at(row).timer.data()->interval()));
+			}
+			else
+			{
+				item->setText(QStringLiteral("TimerID: %1; Interval: %2; Active (single-shot").arg(list.at(row).name).arg(list.at(row).timer.data()->interval()));
+			}
 		}
 	}
+//----------------------------------------------------------------------------------------------------------------------------------
 	void DialogTimerManager::on_btnStopAll_clicked()
 	{
 		UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
@@ -98,6 +130,7 @@ namespace ito
 		{
 			list.at(i).timer -> stop();
 		}
+		updateTimerList();
 	}
 }
 
