@@ -143,10 +143,10 @@ p, li { white-space: pre-wrap; }
      <property name="checked">
       <bool>false</bool>
      </property>
-     <property name="collapsed" stdset="0">
+     <property name="collapsed">
       <bool>true</bool>
      </property>
-     <property name="collapsedHeight" stdset="0">
+     <property name="collapsedHeight">
       <number>16</number>
      </property>
      <layout class="QFormLayout" name="formLayout">
@@ -256,6 +256,20 @@ p, li { white-space: pre-wrap; }
       </spacer>
      </item>
      <item>
+      <widget class="QPushButton" name="btnExit">
+       <property name="text">
+        <string>Exit</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnStartItom">
+       <property name="text">
+        <string>Start itom</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="btnOk">
        <property name="text">
         <string>OK</string>
@@ -288,12 +302,44 @@ p, li { white-space: pre-wrap; }
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>568</x>
-     <y>484</y>
+     <x>788</x>
+     <y>639</y>
     </hint>
     <hint type="destinationlabel">
      <x>599</x>
      <y>466</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btnStartItom</sender>
+   <signal>clicked()</signal>
+   <receiver>DialogPipManager</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>684</x>
+     <y>633</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>609</x>
+     <y>580</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>btnExit</sender>
+   <signal>clicked()</signal>
+   <receiver>DialogPipManager</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>566</x>
+     <y>626</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>545</x>
+     <y>579</y>
     </hint>
    </hints>
   </connection>

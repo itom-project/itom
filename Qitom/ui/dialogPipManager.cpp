@@ -47,6 +47,10 @@ DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /
 {
     ui.setupUi(this);
 
+    ui.btnExit->setVisible(standalone);
+    ui.btnStartItom->setVisible(standalone);
+    ui.btnOk->setVisible(!standalone);
+
     m_pPipManager = new PipManager(this);
 
     connect(m_pPipManager, SIGNAL(pipVersion(QString)), this, SLOT(pipVersion(QString)));
@@ -278,13 +282,18 @@ void DialogPipManager::installOrUpdatePackage()
              msgBox.setText(tr("Warning installing Numpy if itom is already running."));
              msgBox.setInformativeText(tr("If you try to install / upgrade Numpy if itom is already running, \
 a file access error might occur, since itom already uses parts of Numpy. \n\n\
-Click ignore if you want to try to continue the installation or click OK in order to stop the \
-installation. \n\n\
-In the latter case, the file 'restart_itom_with_pip_manager.txt' is created in the directory '%1', \
-such that the pip manager is started one time as standalone application once you restart itom. \
-Then, close all instances of itom or other software accessing Numpy, restart itom and try \
-to upgrade Numpy.").arg(QDir::tempPath()));
-             msgBox.setStandardButtons(QMessageBox::Ignore | QMessageBox::Ok);
+You have now two possibilities: \n\
+1. Try to continue the installation in spite of possible problems by clicking 'Ignore' \n\
+2. Click 'OK', close and restart itom. Then this package manager is opened as standalone application \
+and you can install or upgrade Numpy and other packages. After another restart, itom is restarted as usual. \n\
+3. Click 'Cancel' to cancel the installation process without any changes. \n\
+\n\
+Informationen: \n\
+If the case of the restart ('OK'), an empty file 'restart_itom_with_pip_manager.txt' is created in the directory '%1'. \
+If itom locates this file at startup, the pip manager is directly started. \n\
+\n\
+It is also possible to directly start the package manager by calling the itom application with the argument 'pipManager'.").arg(QDir::tempPath()));
+             msgBox.setStandardButtons(QMessageBox::Ignore | QMessageBox::Ok | QMessageBox::Cancel);
              msgBox.setDefaultButton(QMessageBox::Ok);
              int ret = msgBox.exec();
 
@@ -300,7 +309,7 @@ to upgrade Numpy.").arg(QDir::tempPath()));
                      }
                  }
              }
-             else
+             else if (ret == QMessageBox::Ignore)
              {
                  m_pPipManager->installPackage(install, createOptions());
              }

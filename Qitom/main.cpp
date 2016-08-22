@@ -334,11 +334,11 @@ int main(int argc, char *argv[])
         4. start the application's main loop
         5. finalizeApplication() if itom is closed
     */
-    int ret;
+    int ret = QDialog::Accepted;
     ito::MainApplication m(ito::MainApplication::standard);
     if (ito::UserOrganizer::getInstance()->loadSettings(defUserName) != ito::retOk)
     {
-        ret = 0; 
+        ret = QDialog::Rejected; 
         qDebug("load program aborted, possibly unknown username (check argument name=...)");
     }
     else if (args.contains("pipManager"))
@@ -349,7 +349,7 @@ int main(int argc, char *argv[])
         }
         else
         {
-            ret = 0; 
+            ret = QDialog::Rejected; 
             qDebug("chosen user has no rights to start the Python Pip Manager");
         }
 
@@ -362,7 +362,8 @@ int main(int argc, char *argv[])
             }
         }
     }
-    else
+    
+    if (ret == QDialog::Accepted)
     {
         //check if args contains entries with .py at the end, these files should be opened as scripts at startup
         QStringList scriptsToOpen;
