@@ -79,6 +79,7 @@ public:
     static PyObject *PyTimer_stop(PyTimer *self);
     static PyObject *PyTimer_isActive(PyTimer *self);
     static PyObject *PyTimer_setInterval(PyTimer *self, PyObject *args);
+
 };
 
 }; //end namespace ito

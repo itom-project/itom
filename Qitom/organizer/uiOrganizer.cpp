@@ -36,6 +36,7 @@
 #include "designerWidgetOrganizer.h"
 #include "../helper/qpropertyHelper.h"
 
+
 #include "widgetWrapper.h"
 #include "userInteractionWatcher.h"
 #include "../python/pythonQtConversion.h"
@@ -126,6 +127,8 @@ UiOrganizer::UiOrganizer(ito::RetVal &retval) :
     qRegisterMetaType<ito::UiDataContainer>("ito::UiDataContainer&");
     qRegisterMetaType<ito::UiOrganizer::ClassInfoContainerList*>("ito::UiOrganizer::ClassInfoContainerList*");
     qRegisterMetaType<ito::UiOrganizer::ClassInfoContainerList*>("ito::UiOrganizer::ClassInfoContainerList&");
+	qRegisterMetaType<QPointer<QTimer>>("QPointer<QTimer>");
+	
 
     if (QEvent::registerEventType(QEvent::User+123) != QEvent::User+123)
     {
@@ -3881,6 +3884,91 @@ void UiOrganizer::watcherThreadFinished()
             m_watcherThreads.remove(sender);
         }
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! registerActiveTimer can be used to register a running timer instance for the 'active timer dialog' of the main window
+/*!
+This method is usually invoked by the Python class pyTimer such that the timer instance can be shown in the active timer
+dialog of the main window where it can also be stopped by the user.
+
+\param timer is the weak pointer to the active QTimer instance
+\param name is a name that describes the timer (e.g. its timer id)
+\param semaphore is the optional semaphore for thread-based calls (or NULL)
+\return ito::retOk if active timer was valid and could be registered (e.g. for active timer dialog), else ito::retError
+\sa unregisterActiveTimer
+*/
+RetVal UiOrganizer::registerActiveTimer(const QPointer<QTimer>& timer, const QString &name, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+	ito::RetVal retval;
+	if (timer.data())
+	{
+		TimerContainer timerContainer;
+		timerContainer.timer = timer;
+		timerContainer.name = name;
+		m_timers.append(timerContainer);
+		connect(timer.data(), SIGNAL(destroyed()), this, SLOT(unregisterActiveTimer()));
+	}
+	else
+	{
+		retval += ito::RetVal(ito::retError, 0, "timer is invalid");
+	}
+
+	if (semaphore)
+	{
+		semaphore->returnValue = retval;
+		semaphore->release();
+		semaphore->deleteSemaphore();
+	}
+
+	return retval;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//!  returns a QList with the TimerContainers inside. This function is for instance by 'timer dialog'
+/*!
+This method is usually called by the Python 'active timer dialog'  and is rquired for updating the sialog
+
+\return QList<TimerContainer> 
+*/
+QList<TimerContainer> UiOrganizer::getRegisteredTimers()
+{
+	return m_timers;
+}
+
+//! unregisterActiveTimer scans the m_timers qList for NULL pointers 
+/*!
+This private slot is usually connected to the destroyed signal of a timer registered in m_timers. mTimers provides the 
+active timers which are needed for the timer manager. If a timer is deleted the pointer in m_timers will be NULL. In this
+slot the list is scanned for pointers equal to NULL.
+
+
+\param semaphore is the optional semaphore for thread-based calls (or NULL)
+\return ito::retOk if active timer was valid and could be registered (e.g. for active timer dialog), else ito::retError
+\sa registerActiveTimer
+*/
+//----------------------------------------------------------------------------------------------------------------------------------
+RetVal UiOrganizer::unregisterActiveTimer(ItomSharedSemaphore *semaphore  /*= NULL*/)
+{
+	ito::RetVal retval;
+	int i;
+	for (i = m_timers.length() - 1; i >= 0; --i)
+	{
+		if (m_timers.at(i).timer == NULL)
+		{
+			m_timers.removeAt(i);
+		}
+	}
+	if (semaphore)
+	{
+		semaphore->returnValue = retval;
+		semaphore->release();
+		semaphore->deleteSemaphore();
+	}
+
+	return retval;
+
 }
 
 } //end namespace ito

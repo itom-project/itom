@@ -24,6 +24,7 @@
 
 #include "structmember.h"
 #include "../global.h"
+#include "../organizer/uiOrganizer.h"
 #include "pythonEngineInc.h"
 #include "AppManagement.h"
 #include <iostream>
@@ -226,6 +227,10 @@ int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
 
     self->timer->setSingleShot(singleShot > 0);
     self->timer->start();
+	UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
+	QPointer<QTimer> qTimerPtr(self->timer);
+	QString timerID(QString::number(self->timer->timerId()));
+	QMetaObject::invokeMethod(uiOrg, "registerActiveTimer", Q_ARG(QPointer<QTimer>, qTimerPtr), Q_ARG(QString, timerID));
     return 0;
 }
 
