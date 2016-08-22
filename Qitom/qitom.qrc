@@ -67,6 +67,8 @@
         <file>icons/pin.png</file>
         <file>icons/pinChecked.png</file>
         <file>icons/color-icon.png</file>
+		<file>icons/timerStop.png</file>
+		<file>icons/timerRun.png</file>
     </qresource>
     <qresource prefix="/arrows">
         <file>icons/2downarrow.png</file>

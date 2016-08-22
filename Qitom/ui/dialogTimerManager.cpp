@@ -42,6 +42,7 @@ namespace ito
 	//----------------------------------------------------------------------------------------------------------------------------------
 	void DialogTimerManager::updateTimerList()
 	{
+
 		ui.listWidget->clear();
 		UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
 		QList<TimerContainer> list(uiOrg->getRegisteredTimers());
@@ -52,26 +53,27 @@ namespace ito
 			{
 				if (list.at(i).timer->isActive())
 				{
-					ui.listWidget->addItem(QStringLiteral("TimerID: %1; Interval: %2; Active").arg(list.at(i).name).arg(list.at(i).timer.data()->interval()));
+					ui.listWidget->addItem(new QListWidgetItem(QIcon(":/application/icons/timerRun.png"), QStringLiteral("TimerID: %1; Interval: %2").arg(list.at(i).name).arg(list.at(i).timer.data()->interval())));
 				}
 				else
 				{
-					ui.listWidget->addItem(QStringLiteral("TimerID: %1; Interval: %2; Inactive").arg(list.at(i).name).arg(list.at(i).timer.data()->interval()));
+					ui.listWidget->addItem(new QListWidgetItem(QIcon(":/application/icons/timerStop.png"), QStringLiteral("TimerID: %1; Interval: %2").arg(list.at(i).name).arg(list.at(i).timer.data()->interval())));
 				}
 				}
 			else
 			{
 				if (list.at(i).timer->isActive())
 				{
-					ui.listWidget->addItem(QStringLiteral("TimerID: %1; Interval: %2; Active (single-shot)").arg(list.at(i).name).arg(list.at(i).timer.data()->interval()));
+					ui.listWidget->addItem(new QListWidgetItem(QIcon(":/application/icons/timerRun.png"), QStringLiteral("TimerID: %1; Interval: %2 (single-shot)").arg(list.at(i).name).arg(list.at(i).timer.data()->interval())));
 				}
 				else
 				{
-					ui.listWidget->addItem(QStringLiteral("TimerID: %1; Interval: %2; Inactive (single-shot)").arg(list.at(i).name).arg(list.at(i).timer.data()->interval()));
+					ui.listWidget->addItem(new QListWidgetItem(QIcon(":/application/icons/timerStop.png"), QStringLiteral("TimerID: %1; Interval: %2 (single-shot)").arg(list.at(i).name).arg(list.at(i).timer.data()->interval())));
 				}
 
 				}
 		}
+
 
 	}
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -86,15 +88,12 @@ namespace ito
 		{
 			row = ui.listWidget->row(item);
 			list.at(row).timer->stop();
-			if (!list.at(row).timer->isSingleShot())
-			{
-				item->setText(QStringLiteral("TimerID: %1; Interval: %2; Inactive").arg(list.at(row).name).arg(list.at(row).timer.data()->interval()));
-			}
-			else
-			{
-				item->setText(QStringLiteral("TimerID: %1; Interval: %2; Inactive (single-shot)").arg(list.at(row).name).arg(list.at(row).timer.data()->interval()));
-			}
+			item->setData(Qt::DecorationRole, QIcon((":/application/icons/timerStop.png")));
+			
 		}
+		ui.btnStart->setEnabled(true);
+		ui.btnStop->setEnabled(false);
+
 	}
 //----------------------------------------------------------------------------------------------------------------------------------
 	void DialogTimerManager::on_btnStart_clicked()
@@ -109,16 +108,10 @@ namespace ito
 
 			row = ui.listWidget->row(item);
 			QMetaObject::invokeMethod(list.at(row).timer.data(), "start");
-			
-			if (!list.at(row).timer->isSingleShot())
-			{
-				item->setText(QStringLiteral("TimerID: %1; Interval: %2; Active").arg(list.at(row).name).arg(list.at(row).timer.data()->interval()));
-			}
-			else
-			{
-				item->setText(QStringLiteral("TimerID: %1; Interval: %2; Active (single-shot").arg(list.at(row).name).arg(list.at(row).timer.data()->interval()));
-			}
+			item->setData(Qt::DecorationRole, QIcon((":/application/icons/timerRun.png")));
 		}
+		ui.btnStart->setEnabled(false);
+		ui.btnStop->setEnabled(true);
 	}
 //----------------------------------------------------------------------------------------------------------------------------------
 	void DialogTimerManager::on_btnStopAll_clicked()
@@ -129,8 +122,56 @@ namespace ito
 		for (i = 0; i < list.length(); ++i)
 		{
 			list.at(i).timer -> stop();
+			ui.listWidget->item(i)->setData(Qt::DecorationRole, QIcon((":/application/icons/timerStop.png")));
+
 		}
-		updateTimerList();
+		ui.btnStart->setEnabled(true);
+		ui.btnStop->setEnabled(false);
 	}
+//----------------------------------------------------------------------------------------------------------------------------------
+	void DialogTimerManager::on_listWidget_itemSelectionChanged()
+	{
+
+			bool sameState(true); //marks if the whole selection has the same state
+			bool first(false);
+			bool state;
+			UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
+			QList<QListWidgetItem*> selection(ui.listWidget->selectedItems());
+			QList<TimerContainer> list(uiOrg->getRegisteredTimers());
+			QListWidgetItem* item;
+			foreach(item, selection)
+			{
+				if (first)
+				{
+					if (list.at(ui.listWidget->row(item)).timer->isActive() != state)
+					{
+						sameState = false;
+					}
+				}
+				first = true;
+				state = list.at(ui.listWidget->row(item)).timer->isActive();
+			}
+			if (sameState && first)//first as arguument to avióid crash if no curve is selected
+			{
+				if (state)
+				{
+					ui.btnStart->setEnabled(false);
+					ui.btnStop->setEnabled(true);
+				}
+				else
+				{
+					ui.btnStart->setEnabled(true);
+					ui.btnStop->setEnabled(false);
+
+				}
+			}
+			else
+			{
+				ui.btnStart->setEnabled(true);
+				ui.btnStop->setEnabled(true);
+			}
+
+		}
+	
 }
 

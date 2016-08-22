@@ -40,11 +40,13 @@ namespace ito
 		Ui::DialogTimerManager ui;
 		
 		void updateTimerList();
+
 	
 	private slots:
 		void on_btnStop_clicked();
 		void on_btnStart_clicked();
 		void on_btnStopAll_clicked();
+		void on_listWidget_itemSelectionChanged();
 
 
 	};
