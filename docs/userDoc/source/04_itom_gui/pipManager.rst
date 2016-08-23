@@ -81,7 +81,10 @@ the argument **pipManager**:
 .. code-blocks::
     
     qitom.exe pipManager
+    
+Under Windows, you can also create a shortcut of the **qitom.exe** application. Then right-click the shortcut, choose *properties* and append
+*pipManager* to the path in the text field *destination* (e.g. C:/itom/qitom.exe pipManager). Double-click the shortcut to open the package manager.
 
-Alternatively, put an empty file **restart_itom_with_pip_manager.txt** into the application folder of *itom*. The package manager is then started
+Alternatively, put an empty file **restart_itom_with_pip_manager.txt** into the temp folder of your operating system (e.g. C:/Users/username/AppData/Local/Temp). The package manager is then started
 at the next startup of *itom*. Afterwards the file is automatically removed. This is done, once you try to install *Numpy* in an ordinary instance
 of itom. Then, this text file is created and you have to restart itom in order to get a pure instance of the package manager.
