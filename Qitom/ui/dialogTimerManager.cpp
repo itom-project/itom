@@ -53,22 +53,22 @@ namespace ito
 			{
 				if (list.at(i).timer->isActive())
 				{
-					ui.listWidget->addItem(new QListWidgetItem(QIcon(":/application/icons/timerRun.png"), QStringLiteral("TimerID: %1; Interval: %2").arg(list.at(i).name).arg(list.at(i).timer.data()->interval())));
+					ui.listWidget->addItem(new QListWidgetItem(QIcon(":/application/icons/timerRun.png"), QStringLiteral("TimerID: %1; Interval: %2 ms").arg(list.at(i).name).arg(list.at(i).timer.data()->interval())));
 				}
 				else
 				{
-					ui.listWidget->addItem(new QListWidgetItem(QIcon(":/application/icons/timerStop.png"), QStringLiteral("TimerID: %1; Interval: %2").arg(list.at(i).name).arg(list.at(i).timer.data()->interval())));
+					ui.listWidget->addItem(new QListWidgetItem(QIcon(":/application/icons/timerStop.png"), QStringLiteral("TimerID: %1; Interval: %2 ms").arg(list.at(i).name).arg(list.at(i).timer.data()->interval())));
 				}
 				}
 			else
 			{
 				if (list.at(i).timer->isActive())
 				{
-					ui.listWidget->addItem(new QListWidgetItem(QIcon(":/application/icons/timerRun.png"), QStringLiteral("TimerID: %1; Interval: %2 (single-shot)").arg(list.at(i).name).arg(list.at(i).timer.data()->interval())));
+					ui.listWidget->addItem(new QListWidgetItem(QIcon(":/application/icons/timerRun.png"), QStringLiteral("TimerID: %1; Interval: %2 ms (single-shot)").arg(list.at(i).name).arg(list.at(i).timer.data()->interval())));
 				}
 				else
 				{
-					ui.listWidget->addItem(new QListWidgetItem(QIcon(":/application/icons/timerStop.png"), QStringLiteral("TimerID: %1; Interval: %2 (single-shot)").arg(list.at(i).name).arg(list.at(i).timer.data()->interval())));
+					ui.listWidget->addItem(new QListWidgetItem(QIcon(":/application/icons/timerStop.png"), QStringLiteral("TimerID: %1; Interval: %2 ms (single-shot)").arg(list.at(i).name).arg(list.at(i).timer.data()->interval())));
 				}
 
 				}
