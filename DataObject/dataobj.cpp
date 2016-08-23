@@ -297,6 +297,10 @@ void DObjConstIterator::seekAbs(int ofs)
         int matIndex;
         int dims = dObj->getDims();
 
+        // crash running iterator on empty dataObject
+        if (dims <= 0)
+            return;
+
         if(ofs <= 0) //begin
         {
             //ptr = dObj->rowPtr(0,0);
