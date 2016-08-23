@@ -774,8 +774,9 @@ void MainWindow::createMenus()
         m_pMenuReloadModule->addSeparator();
         m_pMenuReloadModule->addAction(m_actions["python_reloadModules"]);
 
+        m_pMenuPython->addAction(m_actions["python_timerManager"]);
         m_pMenuPython->addAction(m_actions["py_packageManager"]);
-		m_pMenuPython->addAction(m_actions["python_timerManager"]);
+		
     }
 
     m_pMenuHelp = menuBar()->addMenu(tr("Help"));
