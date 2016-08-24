@@ -44,6 +44,11 @@ ito--DialogAboutQItom
     qproperty-linkColor: #ffffff;
 }
 
+ito--FigureWidget
+{
+    qproperty-currentBorderColor: #fffff;
+}
+
 ItomQwtDObjFigure
 {
     qproperty-buttonSet: StyleDark;

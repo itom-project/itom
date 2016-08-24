@@ -47,6 +47,7 @@ class FigureWidget : public AbstractDockWidget
     Q_OBJECT
 
     Q_PROPERTY(QRect geometry READ geometry WRITE setGeometry)
+    Q_PROPERTY(QColor currentBorderColor READ currentBorderColor WRITE setCurrentBorderColor)
 
 
 public:
@@ -75,9 +76,13 @@ public:
     inline int rows() const { return m_rows; };
     inline int cols() const { return m_cols; };
 
+    QColor currentBorderColor() const { return m_currentBorderColor; }
+    void setCurrentBorderColor(QColor color);
+
 protected:
 
     QWidget* prepareWidget(const QString &plotClassName, int areaRow, int areaCol, RetVal &retval);
+    void setMenusVisible(const QWidget *widget, bool visible);
 
     void createActions();
     void createMenus();
@@ -106,7 +111,9 @@ private:
     int m_cols;
     int m_curIdx;
 
-    QSharedPointer<unsigned int> m_guardedFigHandle; //this figure holds it own reference, this is deleted if this figure is closed by a close-event or if the close-method is called.
+    QColor m_currentBorderColor;
+
+    QSharedPointer<unsigned int> m_guardedFigHandle; //this figure holds its own reference, this is deleted if this figure is closed by a close-event or if the close-method is called.
 
     QMap< QObject*, QList<QAction*> > m_menuStack;
 

@@ -46,7 +46,8 @@ FigureWidget::FigureWidget(const QString &title, bool docked, bool isDockAvailab
     m_firstSysAction(NULL),
     m_rows(rows),
     m_cols(cols),
-    m_curIdx(-1)
+    m_curIdx(-1),
+    m_currentBorderColor(QColor(41, 128, 185)) /*blue from start screen of itom*/
 {
 
     AbstractDockWidget::init();
@@ -67,6 +68,7 @@ FigureWidget::FigureWidget(const QString &title, bool docked, bool isDockAvailab
         for (int c = 0; c < cols; c++)
         {
             temp = new QWidget(m_pCenterWidget);
+            temp->setContentsMargins(1, 1, 1, 1); //for margin of selected subplot area
             temp->setObjectName(QString("emptyWidget%1").arg(m_cols * r + c));
             m_widgets[idx] = temp;
             m_pGrid->addWidget(m_widgets[idx], r, c);
@@ -80,21 +82,22 @@ FigureWidget::FigureWidget(const QString &title, bool docked, bool isDockAvailab
 
     setContentWidget(m_pCenterWidget);
     m_pCenterWidget->setContentsMargins(0,0,0,0);
-    //m_pCenterWidget->setStyleSheet("background-color:#ffccee");
-
     setFocusPolicy(Qt::StrongFocus);
-    //setAcceptDrops(true);
-    //setAttribute(Qt::WA_DeleteOnClose, true);
-    
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! destructor
 /*!
-    cancels connections and closes every tab.
+    
 */
 FigureWidget::~FigureWidget()
 {
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void FigureWidget::setCurrentBorderColor(QColor color)
+{
+    m_currentBorderColor = color;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------------
@@ -582,6 +585,7 @@ QWidget* FigureWidget::prepareWidget(const QString &plotClassName, int areaRow, 
                 if (newWidget)
                 {
                     newWidget->setObjectName(QString("plot%1x%2").arg(areaRow).arg(areaCol));
+                    newWidget->setContentsMargins(1, 1, 1, 1); //for margin of selected subplot area
 
                     ito::AbstractFigure *figWidget = NULL;
                     if (newWidget->inherits("ito::AbstractFigure"))
@@ -610,6 +614,8 @@ QWidget* FigureWidget::prepareWidget(const QString &plotClassName, int areaRow, 
                                 getCanvas()->addDockWidget(t.area, t.toolbox);
                             }
                         }
+
+                        setMenusVisible(figWidget, false);
                     }
 
                     if (m_pSubplotActions)
@@ -706,17 +712,28 @@ QSharedPointer<ito::Param> FigureWidget::getParamByInvoke(ito::AddInBase* addIn,
 //{
 //    switch(event->type())
 //    {
-//    case QEvent::KeyPress:
-//    case QEvent::KeyRelease:
 //    case QEvent::MouseButtonDblClick:
 //    case QEvent::MouseButtonPress:
 //    case QEvent::MouseButtonRelease:
 //    case QEvent::MouseMove:
-//        return true; //don't forward event to plot widgets
+//        return false; //don't forward event to plot widgets
 //    }
 //
 //    return QObject::eventFilter(obj,event);
 //}
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+void FigureWidget::setMenusVisible(const QWidget *widget, bool visible)
+{
+    if (m_menuStack.contains((QObject*)widget))
+    {
+        QList<QAction*> actions = m_menuStack[(QObject*)widget];
+        foreach(QAction *a, actions)
+        {
+            a->setVisible(visible);
+        }
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------------
 RetVal FigureWidget::changeCurrentSubplot(int newIndex)
@@ -756,10 +773,12 @@ RetVal FigureWidget::changeCurrentSubplot(int newIndex)
                 
                 if (m_rows > 1 || m_cols > 1)
                 {
-                    widget->setStyleSheet(QString("QWidget#%1 { border: 2px solid blue } ").arg(widget->objectName()));
+                    widget->setStyleSheet(QString("QWidget#%1 { border: 1px solid %2 } ").arg(widget->objectName()).arg(m_currentBorderColor.name()));
                 }
 
                 if (m_pSubplotActions) m_pSubplotActions->actions()[ idx ]->setChecked(true);
+
+                setMenusVisible(widget, true);
             }
             else if (widget)
             {
@@ -783,8 +802,11 @@ RetVal FigureWidget::changeCurrentSubplot(int newIndex)
 
                 if (m_rows > 1 || m_cols > 1)
                 {
+                    widget->setContentsMargins(2, 2, 2, 2);
                     widget->setStyleSheet(QString("QWidget#%1 { border: 2px none } ").arg(widget->objectName()));
                 }
+
+                setMenusVisible(widget, false);
             }
         }
     }
