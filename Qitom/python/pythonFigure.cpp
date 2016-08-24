@@ -231,7 +231,12 @@ areaIndex: {int}, optional \n\
 className : {str}, optional \n\
     class name of desired plot (if not indicated default plot will be used, see application settings) \n\
 properties : {dict}, optional \n\
-    optional dictionary of properties that will be directly applied to the plot widget.");
+    optional dictionary of properties that will be directly applied to the plot widget.\n\
+\n\
+Returns \n\
+-------- \n\
+plotHandle: {plotItem} \n\
+    Handle of the subplot. This handle is used to control the properties of the plot, connect to its signals or call slots of the subplot.");
 PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"data", "areaIndex", "className", "properties", NULL};
@@ -375,7 +380,12 @@ areaIndex: {int}, optional \n\
 className : {str}, optional \n\
     class name of desired plot (if not indicated default plot will be used (see application settings) \n\
 properties : {dict}, optional \n\
-    optional dictionary of properties that will be directly applied to the plot widget.");
+    optional dictionary of properties that will be directly applied to the plot widget.\n\
+\n\
+Returns \n\
+-------- \n\
+plotHandle: {plotItem} \n\
+    Handle of the subplot. This handle is used to control the properties of the plot, connect to its signals or call slots of the subplot.");
 /*static*/ PyObject* PythonFigure::PyFigure_liveImage(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"cam", "areaIndex", "className", "properties", NULL};
@@ -473,7 +483,12 @@ Parameters\n\
 areaIndex: {int}, optional \n\
     Area number where the plot should be put if subplots have been created\n\
 properties : {dict}, optional \n\
-    optional dictionary of properties that will be directly applied to the plot widget.");
+    optional dictionary of properties that will be directly applied to the plot widget.\n\
+\n\
+Returns \n\
+-------- \n\
+plotHandle: {plotItem} \n\
+    Handle of the subplot. This handle is used to control the properties of the plot, connect to its signals or call slots of the subplot.");
 PyObject* PythonFigure::PyFigure_matplotlib(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     const char *kwlist[] = {"areaIndex", "properties", NULL};

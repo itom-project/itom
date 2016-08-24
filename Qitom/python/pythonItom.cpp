@@ -282,9 +282,9 @@ properties : {dict}, optional \n\
 Returns \n\
 -------- \n\
 index : {int} \n\
-    This index is the figure index of the plot figure that is opened by this command.Use *figure(index)* to get a reference to the figure window of this plot. The plot can be closed by 'close(index)'. \n\
+    This index is the figure index of the plot figure that is opened by this command. Use *figure(index)* to get a reference to the figure window of this plot. The plot can be closed by 'close(index)'. \n\
 plotHandle: {plotItem} \n\
-    Handle of the plot.This handle is used to control the properties of the plot, connect to its signals or call slots of the plot. \n\
+    Handle of the plot. This handle is used to control the properties of the plot, connect to its signals or call slots of the plot. \n\
 \n\
 See Also \n\
 ---------- \n\
