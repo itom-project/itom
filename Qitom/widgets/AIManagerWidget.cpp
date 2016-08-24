@@ -952,9 +952,9 @@ void AIManagerWidget::mnuSnapDialog()
         {
             ito::RetVal retval = ito::retOk;
             QPointer<ito::AddInDataIO> aisPointer((ito::AddInDataIO*)ais);
-            DialogSnapshot *sanpDialog = new DialogSnapshot(this, aisPointer, retval);
-            sanpDialog->setAttribute(Qt::WA_DeleteOnClose, true);
-            sanpDialog->show();
+            DialogSnapshot *snapDialog = new DialogSnapshot(this, aisPointer, retval);
+            snapDialog->setAttribute(Qt::WA_DeleteOnClose, true);
+            snapDialog->show();
 
             if (retval.containsError())
             {

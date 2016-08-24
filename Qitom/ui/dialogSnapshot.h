@@ -26,9 +26,13 @@
 #include "../global.h"
 #include <qdialog.h>
 #include "../common/addInInterface.h"
+#include "../DataObject/dataobj.h"
 #include "../organizer/addInManager.h"
 
 #include "ui_dialogSnapshot.h"
+
+class QTimerEvent; //forward declaration
+class QCloseEvent; //forward declaration
 
 namespace ito {
 
@@ -44,6 +48,15 @@ public:
 
 protected:
     void init();
+
+    void checkRetval(const ito::RetVal retval);
+    void setBtnOptions(const bool checking);
+    void acquisitionStart();
+    void acquisitionEnd();
+
+    void timerEvent(QTimerEvent *event);
+    void closeEvent(QCloseEvent *event);
+
     QString m_path;
     QList<ito::AddInAlgo::FilterDef*> m_filterPlugins;
 
@@ -53,10 +66,11 @@ protected:
     QVector<ito::ParamBase> m_paramsOpt;
     QVector<ito::ParamBase> m_paramsMand;
     QVector<ito::ParamBase> m_autoOut;
-
-
-    void checkRetval(const ito::RetVal retval);
-    void setBtnOptions(const bool checking);
+    int m_totalSnaps;
+    int m_numSnapsDone;
+    int m_timerID;
+    bool m_wasAutoGrabbing;
+    QList<ito::DataObject> m_acquiredImages;
 
 private slots:
 	void on_btnSnap_clicked();

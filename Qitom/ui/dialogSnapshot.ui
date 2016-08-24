@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>854</width>
-    <height>616</height>
+    <width>847</width>
+    <height>659</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -47,7 +47,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QGroupBox" name="groupBox_3">
+       <widget class="QGroupBox" name="groupSaveData">
         <property name="title">
          <string>Save Data</string>
         </property>
@@ -110,10 +110,28 @@
          <string>Acquire</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_2">
-         <item row="6" column="0">
-          <widget class="QPushButton" name="btnClose">
-           <property name="text">
-            <string>Close</string>
+         <item row="7" column="0">
+          <widget class="QProgressBar" name="progress">
+           <property name="maximum">
+            <number>50</number>
+           </property>
+           <property name="value">
+            <number>24</number>
+           </property>
+           <property name="textVisible">
+            <bool>true</bool>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="invertedAppearance">
+            <bool>false</bool>
+           </property>
+           <property name="textDirection">
+            <enum>QProgressBar::TopToBottom</enum>
+           </property>
+           <property name="format">
+            <string>%p%</string>
            </property>
           </widget>
          </item>
@@ -124,8 +142,15 @@
            </property>
           </widget>
          </item>
+         <item row="4" column="0">
+          <widget class="QCheckBox" name="checkAutograbbing">
+           <property name="text">
+            <string>Auto grabbing</string>
+           </property>
+          </widget>
+         </item>
          <item row="3" column="0">
-          <widget class="QGroupBox" name="groupBox_5">
+          <widget class="QGroupBox" name="groupMultishot">
            <property name="title">
             <string>Multishot</string>
            </property>
@@ -175,7 +200,7 @@
                <number>1</number>
               </property>
               <property name="maximum">
-               <number>400</number>
+               <number>4000</number>
               </property>
              </widget>
             </item>
@@ -222,10 +247,10 @@
            </layout>
           </widget>
          </item>
-         <item row="4" column="0">
-          <widget class="QCheckBox" name="checkAutograbbing">
+         <item row="8" column="0">
+          <widget class="QLabel" name="lblProgress">
            <property name="text">
-            <string>Auto grabbing</string>
+            <string>progress...</string>
            </property>
           </widget>
          </item>
@@ -245,6 +270,13 @@
         </property>
        </spacer>
       </item>
+      <item>
+       <widget class="QPushButton" name="btnClose">
+        <property name="text">
+         <string>Exit</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
    </layout>
@@ -254,8 +286,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>854</width>
-     <height>18</height>
+     <width>847</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>
@@ -269,7 +301,6 @@
   <tabstop>spinMulti</tabstop>
   <tabstop>comboColor</tabstop>
   <tabstop>btnSnap</tabstop>
-  <tabstop>btnClose</tabstop>
  </tabstops>
  <resources/>
  <connections/>

@@ -41,52 +41,7 @@ bool cmpStringIntPair(const QPair<QString, int> &a, const QPair<QString, int> &b
     return a.first < b.first;
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
-void DialogSnapshot::checkRetval(const ito::RetVal retval)
-{
-    if (retval.containsError())
-    {
-        QMessageBox msgBox;
-        msgBox.setText(QLatin1String(retval.errorMessage()));
-        msgBox.setIcon(QMessageBox::Critical);
-        msgBox.exec();
-    }
-    else if (retval.containsWarning())
-    {
-        QMessageBox msgBox;
-        msgBox.setText(QLatin1String(retval.errorMessage()));
-        msgBox.setIcon(QMessageBox::Warning);
-        msgBox.exec();
-    }
-}
 
-//----------------------------------------------------------------------------------------------------------------------------------
-void DialogSnapshot::setBtnOptions(const bool checking)
-{
-    bool isOptions = checking;
-    if (isOptions)
-    {
-        int filterIndex = ui.comboType->itemData(ui.comboType->currentIndex()).toInt();
-        isOptions = filterIndex > -1;
-
-        if (isOptions)
-        {
-            ito::AddInManager *AIM = static_cast<ito::AddInManager*>(AppManagement::getAddInManager());
-
-            if (AIM)
-            {
-                const ito::FilterParams *fp = AIM->getHashedFilterParams(m_filterPlugins[filterIndex]->m_paramFunc);
-                isOptions = fp->paramsMand.size() + fp->paramsOpt.size() > 2;
-            }
-            else
-            {
-                isOptions = false;
-            }
-        }
-    }
-
-    ui.btnOptions->setEnabled(isOptions);
-}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogSnapshot::DialogSnapshot(QWidget *parent, QPointer<ito::AddInDataIO> cam, ito::RetVal &retval) :
@@ -95,7 +50,11 @@ DialogSnapshot::DialogSnapshot(QWidget *parent, QPointer<ito::AddInDataIO> cam, 
     m_paramsOpt(NULL),
     m_paramsMand(NULL),
     m_pCamera(NULL),
-    addComboItem(false)
+    addComboItem(false),
+    m_totalSnaps(0),
+    m_numSnapsDone(0),
+    m_timerID(-1),
+    m_wasAutoGrabbing(true)
 {
     retval = ito::retOk;
     ui.setupUi(this);
@@ -169,6 +128,9 @@ DialogSnapshot::DialogSnapshot(QWidget *parent, QPointer<ito::AddInDataIO> cam, 
 
         ui.checkAutograbbing->setChecked(cam->getAutoGrabbing());
     }
+
+    ui.lblProgress->setVisible(false);
+    ui.progress->setVisible(false);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -178,57 +140,220 @@ DialogSnapshot::~DialogSnapshot()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogSnapshot::on_btnSnap_clicked()
+void DialogSnapshot::checkRetval(const ito::RetVal retval)
 {
-    if (ui.checkAutograbbing->isChecked())
+    if (retval.containsError())
+    {
+        QMessageBox msgBox;
+        msgBox.setText(QLatin1String(retval.errorMessage()));
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.exec();
+    }
+    else if (retval.containsWarning())
+    {
+        QMessageBox msgBox;
+        msgBox.setText(QLatin1String(retval.errorMessage()));
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogSnapshot::timerEvent(QTimerEvent *event)
+{
+    ito::RetVal retval = m_pCamera->acquire();
+    
+    if (!retval.containsError())
+    {
+        ui.lblProgress->setText(tr("acquire image %1 from %2").arg(m_numSnapsDone+1).arg(m_totalSnaps));
+        m_numSnapsDone ++;
+        ito::DataObject image;
+        retval += m_pCamera->getVal(image);
+        ui.progress->setValue(ui.progress->value() + 1);
+        m_acquiredImages << image;
+    
+        if (m_numSnapsDone >= m_totalSnaps)
+        {
+            acquisitionEnd();
+        }
+    }
+
+    checkRetval(retval);
+
+    if (retval.containsError())
+    {
+        acquisitionEnd();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogSnapshot::closeEvent(QCloseEvent *event)
+{
+    if (m_timerID == -1) 
+    {
+        event->accept();
+    } 
+    else 
+    {
+        QMessageBox msgBox;
+        msgBox.setText(tr("Please stop the acquisition before closing the dialog"));
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.exec();
+        event->ignore();
+    }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogSnapshot::acquisitionStart()
+{
+    if (m_timerID >= 0)
+    {
+        killTimer(m_timerID);
+        m_timerID = -1;
+    }
+
+    if (m_wasAutoGrabbing = m_pCamera->getAutoGrabbing())
     {
         m_pCamera->disableAutoGrabbing();
     }
 
-    m_pCamera->acquire();
-    ito::DataObject image;
-    m_pCamera->getVal(image);
+    m_totalSnaps = (ui.checkMulti->isChecked()) ? ui.spinMulti->value() : 1;
+    m_numSnapsDone = 0;
 
-    QDir dir(m_path);
-    QStringList filters;
-    filters << "pic_" + ui.comboType->currentText();
-    dir.setNameFilters(filters);
-    dir.setSorting(QDir::Name);
-    QStringList list = dir.entryList();
-    int fileIndex = 1;
-    if (list.size() > 0)
+    if (m_totalSnaps > 1)
     {
-        QString fn = list[list.size() - 1];
-        fileIndex = fn.mid(4, fn.indexOf(".") - 4).toInt() + 1;
+        ui.progress->setVisible(true);
     }
+    ui.lblProgress->setVisible(true);
+    ui.groupMultishot->setEnabled(false);
+    ui.groupSaveData->setEnabled(false);
+    ui.checkAutograbbing->setEnabled(false);
+    ui.btnClose->setEnabled(false);
+    ui.progress->setMaximum(ui.checkSaveAfterSnap->isChecked() ? m_totalSnaps * 2 : m_totalSnaps);
+    ui.progress->setValue(0);
+    
 
-    int index = ui.comboType->itemData(ui.comboType->currentIndex()).toInt();
-    if (index > -1)
+    if (m_totalSnaps > 1)
     {
-        ito::AddInAlgo::FilterDef *filter = m_filterPlugins[index];
-        QString fileExt = ui.comboType->currentText();
-        fileExt.replace("*", "");
-        QString fileNo = QString("%1").arg(fileIndex, 3, 10, QLatin1Char('0'));
-        QString fileName = m_path + "/pic_" + fileNo + fileExt;
-        m_paramsMand[1].setVal<char*>(fileName.toLatin1().data());
-        m_paramsMand[0].setVal<ito::DataObject*>(&image);
-        ito::RetVal retval = filter->m_filterFunc(&m_paramsMand, &m_paramsOpt, &m_autoOut);
-        checkRetval(retval);
-    }
-    else if (index == -1)
-    {
-        // idc
-
+        ui.btnSnap->setText(tr("Stop"));
+        int interval = ui.checkTimer->isChecked() ? ui.spinTimer->value() : 0;
+        timerEvent(NULL);
+        m_timerID = startTimer(interval, Qt::PreciseTimer);
     }
     else
     {
-        // mat
+        ui.btnSnap->setEnabled(false);
+        timerEvent(NULL);
 
     }
+}
 
-    if (ui.checkAutograbbing->isChecked())
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogSnapshot::acquisitionEnd()
+{
+    if (m_timerID >= 0)
+    {
+        killTimer(m_timerID);
+        m_timerID = -1;
+    }
+
+    if (m_totalSnaps == m_numSnapsDone && \
+        ui.checkSaveAfterSnap->isChecked() \
+        && m_acquiredImages.size() > 0)
+    {
+        QDir dir(m_path);
+        QStringList filters;
+        filters << "pic_" + ui.comboType->currentText();
+        dir.setNameFilters(filters);
+        dir.setSorting(QDir::Name);
+        QStringList list = dir.entryList();
+        int fileIndex = 1;
+        if (list.size() > 0)
+        {
+            QString fn = list[list.size() - 1];
+            fileIndex = fn.mid(4, fn.indexOf(".") - 4).toInt() + 1;
+        }
+
+        int index = ui.comboType->itemData(ui.comboType->currentIndex()).toInt();
+        if (index > -1)
+        {
+            ito::AddInAlgo::FilterDef *filter = m_filterPlugins[index];
+            QString fileExt = ui.comboType->currentText();
+            fileExt.replace("*", "");
+            QString fileNo = QString("%1").arg(fileIndex, 3, 10, QLatin1Char('0'));
+            QString fileName = m_path + "/pic_" + fileNo + fileExt;
+            m_paramsMand[1].setVal<char*>(fileName.toLatin1().data());
+            m_paramsMand[0].setVal<ito::DataObject*>(&(m_acquiredImages[0]));
+            ito::RetVal retval = filter->m_filterFunc(&m_paramsMand, &m_paramsOpt, &m_autoOut);
+            checkRetval(retval);
+        }
+        else if (index == -1)
+        {
+            // idc
+
+        }
+        else
+        {
+            // mat
+
+        }
+    }
+
+    ui.lblProgress->setVisible(false);
+    ui.progress->setVisible(false);
+    ui.groupMultishot->setEnabled(true);
+    ui.groupSaveData->setEnabled(true);
+    ui.btnSnap->setEnabled(true);
+    ui.checkAutograbbing->setEnabled(true);
+    ui.btnClose->setEnabled(true);
+    ui.btnSnap->setText(tr("Snapshot"));
+
+    if (m_wasAutoGrabbing)
     {
         m_pCamera->enableAutoGrabbing();
+    }
+
+    m_acquiredImages.clear();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogSnapshot::setBtnOptions(const bool checking)
+{
+    bool isOptions = checking;
+    if (isOptions)
+    {
+        int filterIndex = ui.comboType->itemData(ui.comboType->currentIndex()).toInt();
+        isOptions = filterIndex > -1;
+
+        if (isOptions)
+        {
+            ito::AddInManager *AIM = static_cast<ito::AddInManager*>(AppManagement::getAddInManager());
+
+            if (AIM)
+            {
+                const ito::FilterParams *fp = AIM->getHashedFilterParams(m_filterPlugins[filterIndex]->m_paramFunc);
+                isOptions = fp->paramsMand.size() + fp->paramsOpt.size() > 2;
+            }
+            else
+            {
+                isOptions = false;
+            }
+        }
+    }
+
+    ui.btnOptions->setEnabled(isOptions);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void DialogSnapshot::on_btnSnap_clicked()
+{
+    if (m_timerID == -1)
+    {
+        acquisitionStart();
+    }
+    else
+    {
+        acquisitionEnd();
     }
 }
 
