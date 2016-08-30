@@ -5,7 +5,6 @@ This file contains a toolbar with basic live image and snap shot interactions
 
 from abstractObjToolbar.abstractObjToolbar import abstractObjInteractionToolBar
 import itom
-reloadModules = 1
 
 class camToolbar(abstractObjInteractionToolBar):
     '''
@@ -389,6 +388,6 @@ class camToolbar(abstractObjInteractionToolBar):
     
 
 if(__name__ == '__main__'):
-    toolBarCam = camToolbar("Camera Access", not(userIsUser()))
+    toolbarCamera = camToolbar("Camera Access", not(userIsUser()))
 
 # Tobias Boettcher, ITO, & Wolfram Lyda, twip optical solutions 
