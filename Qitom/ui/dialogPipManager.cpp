@@ -43,7 +43,8 @@ DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /
     m_outputSilent(false),
     m_standalone(standalone),
     m_colorMessage(Qt::black),
-    m_colorError(Qt::red)
+    m_colorError(Qt::red),
+    m_currentTask(PipManager::taskNo)
 {
     ui.setupUi(this);
 
@@ -51,32 +52,49 @@ DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /
     ui.btnStartItom->setVisible(standalone);
     ui.btnOk->setVisible(!standalone);
 
-    m_pPipManager = new PipManager(this);
+    ito::RetVal retval;
+    m_pPipManager = new PipManager(retval, this);
 
-    connect(m_pPipManager, SIGNAL(pipVersion(QString)), this, SLOT(pipVersion(QString)));
-    connect(m_pPipManager, SIGNAL(outputAvailable(QString,bool)), this, SLOT(outputReceived(QString,bool)));
-    connect(m_pPipManager, SIGNAL(pipRequestStarted(PipManager::Task,QString,bool)), this, SLOT(pipRequestStarted(PipManager::Task,QString,bool)));
-    connect(m_pPipManager, SIGNAL(pipRequestFinished(PipManager::Task,QString,bool)), this, SLOT(pipRequestFinished(PipManager::Task,QString,bool)));
-    connect(ui.tablePackages, SIGNAL(selectedItemsChanged(QItemSelection,QItemSelection)), this, SLOT(treeViewSelectionChanged(QItemSelection,QItemSelection)));
+    if (!retval.containsError())
+    {
+        connect(m_pPipManager, SIGNAL(pipVersion(QString)), this, SLOT(pipVersion(QString)));
+        connect(m_pPipManager, SIGNAL(outputAvailable(QString, bool)), this, SLOT(outputReceived(QString, bool)));
+        connect(m_pPipManager, SIGNAL(pipRequestStarted(PipManager::Task, QString, bool)), this, SLOT(pipRequestStarted(PipManager::Task, QString, bool)));
+        connect(m_pPipManager, SIGNAL(pipRequestFinished(PipManager::Task, QString, bool)), this, SLOT(pipRequestFinished(PipManager::Task, QString, bool)));
+        connect(ui.tablePackages, SIGNAL(selectedItemsChanged(QItemSelection, QItemSelection)), this, SLOT(treeViewSelectionChanged(QItemSelection, QItemSelection)));
 
-    m_pPipManager->checkPipAvailable(createOptions());
+        m_pPipManager->checkPipAvailable(createOptions());
 
-    ui.tablePackages->setModel(m_pPipManager);
-    ui.tablePackages->setWordWrap(false);
-    ui.tablePackages->setShowGrid(false);
-    ui.tablePackages->horizontalHeader()->setStretchLastSection(true);
-    ui.tablePackages->horizontalHeader()->setHighlightSections( false );
-    ui.tablePackages->verticalHeader()->setVisible(false);
-    ui.tablePackages->verticalHeader()->setDefaultSectionSize(17);
-    ui.tablePackages->setSelectionBehavior(QAbstractItemView::SelectRows);
-    ui.tablePackages->setSelectionMode(QAbstractItemView::SingleSelection);
-    ui.tablePackages->setColumnWidth(1, 50);
-    ui.tablePackages->setColumnWidth(2, 200);
-    ui.groupPipSettings->setCollapsed(true);
+        ui.tablePackages->setModel(m_pPipManager);
+        ui.tablePackages->setWordWrap(false);
+        ui.tablePackages->setShowGrid(false);
+        ui.tablePackages->horizontalHeader()->setStretchLastSection(true);
+        ui.tablePackages->horizontalHeader()->setHighlightSections(false);
+        ui.tablePackages->verticalHeader()->setVisible(false);
+        ui.tablePackages->verticalHeader()->setDefaultSectionSize(17);
+        ui.tablePackages->setSelectionBehavior(QAbstractItemView::SelectRows);
+        ui.tablePackages->setSelectionMode(QAbstractItemView::SingleSelection);
+        ui.tablePackages->setColumnWidth(1, 50);
+        ui.tablePackages->setColumnWidth(2, 200);
+        ui.groupPipSettings->setCollapsed(true);
 
 #if WIN32
-    ui.btnSudoUninstall->setVisible(false);
+        ui.btnSudoUninstall->setVisible(false);
 #endif
+    }
+    else
+    {
+        ui.tablePackages->setEnabled(false);
+        ui.btnInstall->setEnabled(false);
+        ui.btnUpdate->setEnabled(false);
+        ui.btnUninstall->setEnabled(false);
+        ui.btnSudoUninstall->setEnabled(false);
+        ui.btnReload->setEnabled(false);
+        ui.btnOk->setEnabled(false);
+        ui.btnCheckForUpdates->setEnabled(false);
+
+        QMessageBox::critical(this, tr("Python initialization error"), retval.errorMessage());
+    }
 }
 
 //--------------------------------------------------------------------------------

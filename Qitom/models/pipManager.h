@@ -74,7 +74,7 @@ class PipManager : public QAbstractItemModel
     Q_OBJECT
 
     public:
-        PipManager(QObject *parent = 0);
+        PipManager(ito::RetVal &retval, QObject *parent = 0);
         ~PipManager();
 
         enum Task {taskNo, taskCheckAvailable, taskListPackages1, taskListPackages2, taskCheckUpdates, taskInstall, taskUninstall};
@@ -96,7 +96,7 @@ class PipManager : public QAbstractItemModel
         void checkPackageUpdates(const PipGeneralOptions &options = PipGeneralOptions());
         void installPackage(const PipInstall &installSettings, const PipGeneralOptions &options = PipGeneralOptions());
         void uninstallPackage(const QString &packageName, bool runAsSudo, const PipGeneralOptions &options = PipGeneralOptions());
-        void finalizeTask();
+        void finalizeTask(int exitCode = 0);
 
         void interruptPipProcess();
 
@@ -106,6 +106,7 @@ class PipManager : public QAbstractItemModel
     private:
         QStringList parseGeneralOptions(const PipGeneralOptions &options, bool ignoreRetries = false, bool ignoreVersionCheck = true) const;
         void clearBuffers();
+        ito::RetVal initPythonIfStandalone();
 
         QList<QString> m_headers;               //!<  string list of names of column headers
         QList<QVariant> m_alignment;            //!<  list of alignments for the corresponding headers
@@ -118,6 +119,7 @@ class PipManager : public QAbstractItemModel
         PipGeneralOptions m_generalOptionsCache;
         QString m_pythonPath;
         int m_pipVersion; //form 0x060100 for 6.1.0
+        wchar_t *m_pUserDefinedPythonHome; //only used for standalone usage
     
     private slots:
         void processError(QProcess::ProcessError error);

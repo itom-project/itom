@@ -29,93 +29,113 @@
 #include "../../common/sharedStructures.h"
 #include "../AppManagement.h"
 #include <qdir.h>
+#include <qsettings.h>
+#include <QProcessEnvironment>
 
-namespace ito 
+namespace ito
 {
 
-//----------------------------------------------------------------------------------------------------------------------------------
-/** constructor
-*
-*   contructor, creating column headers for the tree view
-*/
-PipManager::PipManager(QObject *parent /*= 0*/) :
-    QAbstractItemModel(parent),
-    m_currentTask(taskNo),
-    m_pipAvailable(false),
-    m_pipVersion(0x000000)
-{
-    m_headers << tr("Name") << tr("Version") << tr("Location") << tr("Requires") << tr("Updates") << tr("Summary") << tr("Homepage") << tr("License");
-    m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft);
-
-    connect(&m_pipProcess, SIGNAL(error(QProcess::ProcessError)), this, SLOT(processError(QProcess::ProcessError)));
-    connect(&m_pipProcess, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(processFinished(int,QProcess::ExitStatus)));
-    connect(&m_pipProcess, SIGNAL(readyReadStandardError()), this, SLOT(processReadyReadStandardError()));
-    connect(&m_pipProcess, SIGNAL(readyReadStandardOutput()), this, SLOT(processReadyReadStandardOutput()));
-
-    const PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
-    if (pyeng)
+    //----------------------------------------------------------------------------------------------------------------------------------
+    /** constructor
+    *
+    *   contructor, creating column headers for the tree view
+    */
+    PipManager::PipManager(ito::RetVal &retval, QObject *parent /*= 0*/) :
+        QAbstractItemModel(parent),
+        m_currentTask(taskNo),
+        m_pipAvailable(false),
+        m_pipVersion(0x000000),
+        m_pUserDefinedPythonHome(NULL)
     {
-        m_pythonPath = pyeng->getPythonExecutable(); 
-    }
-    else
-    {
-        //Pip Manager has been started as standalone application to update packages like Numpy that cannot be updated if itom is running and the Python Engine has been entirely started.
-        Py_Initialize();
-        if (Py_IsInitialized())
+        m_headers << tr("Name") << tr("Version") << tr("Location") << tr("Requires") << tr("Updates") << tr("Summary") << tr("Homepage") << tr("License");
+        m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft);
+
+        connect(&m_pipProcess, SIGNAL(error(QProcess::ProcessError)), this, SLOT(processError(QProcess::ProcessError)));
+        connect(&m_pipProcess, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(processFinished(int, QProcess::ExitStatus)));
+        connect(&m_pipProcess, SIGNAL(readyReadStandardError()), this, SLOT(processReadyReadStandardError()));
+        connect(&m_pipProcess, SIGNAL(readyReadStandardOutput()), this, SLOT(processReadyReadStandardOutput()));
+
+        const PythonEngine *pyeng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+        if (pyeng)
         {
+            m_pythonPath = pyeng->getPythonExecutable();
+        }
+        else
+        {
+            retval += initPythonIfStandalone();
+
+            if (!retval.containsError())
+            {
+                //Pip Manager has been started as standalone application to update packages like Numpy that cannot be updated if itom is running and the Python Engine has been entirely started.
+                Py_Initialize();
+                if (Py_IsInitialized())
+                {
 #if defined WIN32
-            //on windows, sys.executable returns the path of qitom.exe. The absolute path to python.exe is given by sys.exec_prefix
-            PyObject *python_path_prefix = PySys_GetObject("exec_prefix"); //borrowed reference
-            if (python_path_prefix)
-            {
-                bool ok;
-                m_pythonPath = PythonQtConversion::PyObjGetString(python_path_prefix, true, ok);
-                if (ok)
-                {
-                    QDir pythonPath(m_pythonPath);
-                    if (pythonPath.exists())
+                    //on windows, sys.executable returns the path of qitom.exe. The absolute path to python.exe is given by sys.exec_prefix
+                    PyObject *python_path_prefix = PySys_GetObject("exec_prefix"); //borrowed reference
+                    if (python_path_prefix)
                     {
-                        m_pythonPath = pythonPath.absoluteFilePath("python.exe");
+                        bool ok;
+                        m_pythonPath = PythonQtConversion::PyObjGetString(python_path_prefix, true, ok);
+                        if (ok)
+                        {
+                            QDir pythonPath(m_pythonPath);
+                            if (pythonPath.exists())
+                            {
+                                m_pythonPath = pythonPath.absoluteFilePath("python.exe");
+                            }
+                            else
+                            {
+                                m_pythonPath = QString();
+                            }
+                        }
+                        else
+                        {
+                            m_pythonPath = QString();
+                        }
                     }
-                    else
-                    {
-                        m_pythonPath = QString();
-                    }
-                }
-                else
-                {
-                    m_pythonPath = QString();
-                }
-            }
 #elif defined linux
-            //on linux, sys.executable returns the absolute path to the python application, even in an embedded mode.
-            PyObject *python_executable = PySys_GetObject("executable"); //borrowed reference
-            if (python_executable)
-            {
-                bool ok;
-                m_pythonPath = PythonQtConversion::PyObjGetString(python_executable, true, ok);
-                if (!ok)
-                {
-                    m_pythonPath = QString();
-                }
-            }
+                    //on linux, sys.executable returns the absolute path to the python application, even in an embedded mode.
+                    PyObject *python_executable = PySys_GetObject("executable"); //borrowed reference
+                    if (python_executable)
+                    {
+                        bool ok;
+                        m_pythonPath = PythonQtConversion::PyObjGetString(python_executable, true, ok);
+                        if (!ok)
+                        {
+                            m_pythonPath = QString();
+                        }
+                    }
 #else //APPLE
-            //on apple, sys.executable returns the absolute path to the python application, even in an embedded mode. (TODO: Check this assumption)
-            PyObject *python_executable = PySys_GetObject("executable"); //borrowed reference
-            if (python_executable)
-            {
-                bool ok;
-                m_pythonPath = PythonQtConversion::PyObjGetString(python_executable, true, ok);
-                if (!ok)
-                {
-                    m_pythonPath = QString();
+                    //on apple, sys.executable returns the absolute path to the python application, even in an embedded mode. (TODO: Check this assumption)
+                    PyObject *python_executable = PySys_GetObject("executable"); //borrowed reference
+                    if (python_executable)
+                    {
+                        bool ok;
+                        m_pythonPath = PythonQtConversion::PyObjGetString(python_executable, true, ok);
+                        if (!ok)
+                        {
+                            m_pythonPath = QString();
+                        }
+                    }
+#endif
+                    Py_Finalize();
                 }
             }
-#endif
-        Py_Finalize();
+        }
+
+        if (!retval.containsError())
+        {
+            QString pythonHome = QString::fromWCharArray(Py_GetPythonHome());
+            if (pythonHome != "")
+            {
+                QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+                env.insert("PYTHONHOME", pythonHome); // Add an environment variable
+                m_pipProcess.setProcessEnvironment(env);
+            }
+            
         }
     }
-}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** destructor - clean up, clear header and alignment list
@@ -128,6 +148,77 @@ PipManager::~PipManager()
         m_pipProcess.kill();
         m_pipProcess.waitForFinished(2000);
     }
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PipManager::initPythonIfStandalone()
+{
+    ito::RetVal retval;
+
+    //check if an alternative home directory of Python should be set:
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("Python");
+    QString pythonHomeDirectory = settings.value("pyHome", "").toString();
+    settings.endGroup();
+
+    if (pythonHomeDirectory != "")
+    {
+        if (QDir(pythonHomeDirectory).exists())
+        {
+            //the python home path given to Py_SetPythonHome must be persistent for the whole Python session
+#if PY_VERSION_HEX < 0x03050000
+            m_pUserDefinedPythonHome = (wchar_t*)PyMem_RawMalloc((pythonHomeDirectory.size() + 10) * sizeof(wchar_t));
+            memset(m_pUserDefinedPythonHome, 0, (pythonHomeDirectory.size() + 10) * sizeof(wchar_t));
+            pythonHomeDirectory.toWCharArray(m_pUserDefinedPythonHome);
+#else
+            m_pUserDefinedPythonHome = Py_DecodeLocale(pythonHomeDirectory.toLatin1().data(), NULL);
+#endif
+            Py_SetPythonHome(m_pUserDefinedPythonHome);
+        }
+        else
+        {
+            qDebug() << "Settings value Python::pyHome has not been set as Python Home directory since it does not exist: " << pythonHomeDirectory;
+        }
+    }
+
+    //read directory values from Python
+    qDebug() << "Py_GetPythonHome:" << QString::fromWCharArray(Py_GetPythonHome());
+    qDebug() << "Py_GetPath:" << QString::fromWCharArray(Py_GetPath());
+    qDebug() << "Py_GetProgramName:" << QString::fromWCharArray(Py_GetProgramName());
+
+    //check PythonHome to prevent crash upon initialization of Python:
+    QString pythonHome = QString::fromWCharArray(Py_GetPythonHome());
+#ifdef WIN32
+    QStringList pythonPath = QString::fromWCharArray(Py_GetPath()).split(";");
+#else
+    QStringList pythonPath = QString::fromWCharArray(Py_GetPath()).split(":");
+#endif
+    QDir pythonHomeDir(pythonHome);
+    bool pythonPathValid = false;
+    if (!pythonHomeDir.exists() && pythonHome != "")
+    {
+        retval += RetVal::format(retError, 0, "The home directory of Python is currently set to the non-existing directory '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the property dialog of itom.", pythonHomeDir.absolutePath().toLatin1().data());
+        return retval;
+    }
+
+    foreach(const QString &path, pythonPath)
+    {
+        QDir pathDir(path);
+        if (pathDir.exists("os.py") || pathDir.exists("os.pyc"))
+        {
+            pythonPathValid = true;
+            break;
+        }
+    }
+
+    if (!pythonPathValid)
+    {
+        retval += RetVal::format(retError, 0, "The built-in library path of Python could not be found. The current home directory is '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the preferences dialog of itom.", pythonHomeDir.absolutePath().toLatin1().data());
+        return retval;
+    }
+
+    return retval;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -556,7 +647,8 @@ void PipManager::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
     }
     else
     {
-        finalizeTask();
+        qDebug() << "pip exit code:" << m_pipProcess.exitCode();
+        finalizeTask(m_pipProcess.exitCode());
     }
 }
 
@@ -583,7 +675,7 @@ void PipManager::processReadyReadStandardOutput()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void PipManager::finalizeTask()
+void PipManager::finalizeTask(int exitCode /*= 0*/)
 {
     Task temp = m_currentTask;
     m_currentTask = taskNo;
@@ -598,19 +690,32 @@ void PipManager::finalizeTask()
 
         if (temp == taskCheckAvailable)
         {
-            QRegExp reg("pip ((\\d+)\\.(\\d+)\\.(\\d+)) from(.*)");
-            if (reg.indexIn(output) != -1)
+            if (exitCode == 0)
             {
-                m_pipVersion = CREATEVERSION(reg.cap(2).toInt(), reg.cap(3).toInt(), reg.cap(4).toInt());
-                QString version = reg.cap(1);
-                emit pipVersion(version);
-                m_pipAvailable = true;
-                emit pipRequestFinished(temp, "", true);
+                QRegExp reg("pip ((\\d+)\\.(\\d+)\\.(\\d+)) from(.*)");
+                if (reg.indexIn(output) != -1)
+                {
+                    m_pipVersion = CREATEVERSION(reg.cap(2).toInt(), reg.cap(3).toInt(), reg.cap(4).toInt());
+                    QString version = reg.cap(1);
+                    emit pipVersion(version);
+                    m_pipAvailable = true;
+                    emit pipRequestFinished(temp, "", true);
+                }
+                else
+                {
+                    m_pipAvailable = false;
+                    emit pipRequestFinished(temp, "Package pip is not available. Install Python pip first (see https://pip.pypa.io/en/latest/installing.html).\n", false);
+                }
+            }
+            else if (exitCode == 3)
+            {
+                m_pipAvailable = false;
+                emit pipRequestFinished(temp, "Python returned with the error code 3 (no such process). Possibly, the PYTHONHOME environment variable or the corresponding setting in the property dialog of itom is not correctly set to the base directory of Python. Please correct this.", false);
             }
             else
             {
                 m_pipAvailable = false;
-                emit pipRequestFinished(temp, "Package pip is not available. Install Python pip first (see https://pip.pypa.io/en/latest/installing.html).\n", false);
+                emit pipRequestFinished(temp, QString("Python returned with the exit code %1. Please see the module 'errno' for error codes.").arg(exitCode), false);
             }
         }
         else if (temp == taskListPackages1)
