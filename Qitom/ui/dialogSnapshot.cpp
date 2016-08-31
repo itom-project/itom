@@ -220,10 +220,7 @@ void DialogSnapshot::acquisitionStart()
     m_totalSnaps = (ui.checkMulti->isChecked()) ? ui.spinMulti->value() : 1;
     m_numSnapsDone = 0;
 
-    if (m_totalSnaps > 1)
-    {
-        ui.progress->setVisible(true);
-    }
+    ui.progress->setVisible(m_totalSnaps > 1);
     ui.lblProgress->setVisible(true);
     ui.groupMultishot->setEnabled(false);
     ui.groupSaveData->setEnabled(false);
@@ -231,7 +228,6 @@ void DialogSnapshot::acquisitionStart()
     ui.btnClose->setEnabled(false);
     ui.progress->setMaximum(ui.checkSaveAfterSnap->isChecked() ? m_totalSnaps * 2 : m_totalSnaps);
     ui.progress->setValue(0);
-    
 
     if (m_totalSnaps > 1)
     {
@@ -244,7 +240,6 @@ void DialogSnapshot::acquisitionStart()
     {
         ui.btnSnap->setEnabled(false);
         timerEvent(NULL);
-
     }
 }
 
@@ -257,9 +252,7 @@ void DialogSnapshot::acquisitionEnd()
         m_timerID = -1;
     }
 
-    if (m_totalSnaps == m_numSnapsDone && \
-        ui.checkSaveAfterSnap->isChecked() \
-        && m_acquiredImages.size() > 0)
+    if (m_totalSnaps == m_numSnapsDone && ui.checkSaveAfterSnap->isChecked() && m_acquiredImages.size() > 0)
     {
         QDir dir(m_path);
         QStringList filters;
