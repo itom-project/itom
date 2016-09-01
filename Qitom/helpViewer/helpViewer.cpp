@@ -75,7 +75,7 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 	connect(m_pFindWord, SIGNAL(findNext(QString, bool, bool, bool, bool, bool, bool)), this, SLOT(findNextWord(QString, bool, bool, bool, bool, bool, bool)));
 	connect(m_pFindWord, SIGNAL(hideSearchBar()), this, SLOT(hideFindWordBar()));
 	
-	QVBoxLayout *layoutCentral = new QVBoxLayout(this);
+	QVBoxLayout *layoutCentral = new QVBoxLayout(NULL);
 	layoutCentral->addWidget(m_pView);
 	layoutCentral->addWidget(m_pFindWord);
 	QWidget *widgetCentral = new QWidget(this);
