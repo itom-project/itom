@@ -1,5 +1,3 @@
-﻿
-
 .. include:: ../include/global.inc
 
 Python tutorial
@@ -8,7 +6,6 @@ Python tutorial
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
-
 The goal of this tutorial is to give prospective itom users a quick overview about the basic |Pythonv3| commands and how to use them within |itom|. 
 
 **Content**
@@ -16,18 +13,18 @@ The goal of this tutorial is to give prospective itom users a quick overview abo
 .. toctree::
     :maxdepth: 1
 
-    pytut-runscript.rst
-    pytut-numbers-math.rst
-    pytut-variables-names.rst
-    pytut-strings-text.rst
-    pytut-dictionaries.rst
-    pytut-if-else.rst
-    pytut-loops-lists.rst
-    pytut-classes-objects.rst
-    pytut-functions.rst
-    pytut-modules.rst
-    pytut-prompting-passing.rst
-    pytut-reading-writing-files.rst
+    pytutorial-runscript.rst
+    pytutorial-numbers-math.rst
+    pytutorial-variables-names.rst
+    pytutorial-strings-text.rst
+    pytutorial-dictionaries.rst
+    pytutorial-if-else.rst
+    pytutorial-loops-lists.rst
+    pytutorial-classes-objects.rst
+    pytutorial-functions.rst
+    pytutorial-modules.rst
+    pytutorial-prompting-passing.rst
+    pytutorial-reading-writing-files.rst
 
 The tutorial above has been created based on the following resources. Please also browse to these online tutorials (especially the first links) to
 get good introductions to Python 3 (always be careful to only read tutorials about Python 3 or be aware of the differences between Python 2 and 3):

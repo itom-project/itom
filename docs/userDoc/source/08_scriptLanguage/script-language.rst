@@ -29,4 +29,4 @@ contains a huge tutorial about |python| which is good for newbies. This section 
     pymod-reload-modules.rst
     pymod-limitations.rst
     pymod-problems-and-solutions.rst
-    pytut-about.rst
+    pytutorial.rst

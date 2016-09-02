@@ -1,12 +1,11 @@
-﻿
+
 
 .. include:: ../include/global.inc
 
-Reading and writing files
-===========================
+Prompting and passing
+======================
 .. moduleauthor:: PSchau
 .. sectionauthor:: PSchau
 
 
 
-Pickle -> load / dump
