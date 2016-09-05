@@ -27,7 +27,7 @@
 #include <qmenu.h>
 
 #include <qsettings.h>
-#include <qsciscintilla.h>
+#include <Qsci/qsciscintilla.h>
 
 namespace ito
 {

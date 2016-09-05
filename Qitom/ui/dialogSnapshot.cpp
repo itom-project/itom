@@ -31,7 +31,7 @@
 
 #include "../plot/AbstractDObjFigure.h"
 #include <qdir.h>
-#include <QFileDialog.h>
+#include <qfiledialog.h>
 #include <qpair.h>
 
 namespace ito {

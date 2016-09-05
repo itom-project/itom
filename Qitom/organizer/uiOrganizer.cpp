@@ -127,7 +127,7 @@ UiOrganizer::UiOrganizer(ito::RetVal &retval) :
     qRegisterMetaType<ito::UiDataContainer>("ito::UiDataContainer&");
     qRegisterMetaType<ito::UiOrganizer::ClassInfoContainerList*>("ito::UiOrganizer::ClassInfoContainerList*");
     qRegisterMetaType<ito::UiOrganizer::ClassInfoContainerList*>("ito::UiOrganizer::ClassInfoContainerList&");
-	qRegisterMetaType<QPointer<QTimer>>("QPointer<QTimer>");
+	qRegisterMetaType<QPointer<QTimer> >("QPointer<QTimer>");
 	
 
     if (QEvent::registerEventType(QEvent::User+123) != QEvent::User+123)
