@@ -73,3 +73,23 @@ In order to insert the name of a variable into the :ref:`command line <console>`
 .. |vardelete| image:: images/vardelete.png
 .. |varrename| image:: images/varrename.png
 
+Plot from workspace
+======================
+
+It is possible to directly plot variables of type :py:class:`~itom.dataObject`, numpy.ndarray, `~itom.pointCloud` or `~itom.polygonMesh` from the workspace.
+Open the context menu of any variable in order to get a context menu.
+
+.. figure:: images/plotFromWorkspace.png
+    :scale: 100%
+    :align: center
+    
+The last entries of this context menu are sensitive to the corresponding type of the variable. For :py:class:`~itom.dataObject` (or numpy.ndarray),
+the following options are available:
+
+* 1D line plot (corresponds to the script command *plot(object, '1d')*)
+* 2D image plot (corresponds to the script command *plot(object, '2d')*)
+* 2.5D isometric plot (corresponds to the script command *plot(object, '2.5d')*)
+
+For :py:class:`~itom.pointCloud` or  `~itom.polygonMesh`, the available options are:
+
+* 3D cloud or mesh visualization (corresponds to the script command *plot(object, '2.5d')*)
