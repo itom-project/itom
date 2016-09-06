@@ -31,6 +31,7 @@ Content:
    linePlots
    imagePlots
    isometricPlot
+   vtk3dplot
    markers
    shapes
    matplotlib
