@@ -276,6 +276,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAPI.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAutoCompletion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCalltips.h
+	${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropWorkspaceUnpack.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorStyles.h
@@ -348,9 +349,11 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAPI.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAutoCompletion.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCalltips.ui
+	${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorStyles.ui
+	${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropWorkspaceUnpack.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropFigurePlugins.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralApplication.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralLanguage.ui
@@ -471,10 +474,12 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAPI.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAutoCompletion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCalltips.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorStyles.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropFigurePlugins.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropWorkspaceUnpack.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralApplication.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralLanguage.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralStyles.cpp

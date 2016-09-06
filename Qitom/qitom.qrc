@@ -166,6 +166,7 @@
         <file>icons/document-export.png</file>
         <file>icons/document-import.png</file>
         <file>icons/edit-rename.png</file>
+		<file>icons/import-prop-icon.png</file>
     </qresource>
     <qresource prefix="/plots">
         <file>icons/lineDash.png</file>
