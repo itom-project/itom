@@ -1,6 +1,6 @@
 .. include:: ../include/global.inc
 
-Actuator
+actuator
 *********
 
 This section contains the script reference to the class *actuator*, used to access any actuator or motor hardware in itom. 

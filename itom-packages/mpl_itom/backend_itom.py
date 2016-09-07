@@ -288,8 +288,10 @@ class FigureManagerItom( FigureManagerBase ):
 
     canvas      : The FigureCanvas instance
     num         : The Figure number
-    toolbar     : The qt.QToolBar
-    window      : The qt.QMainWindow
+    embeddedCanvas : True if figure is embedded in another user interface (ui), False if it is standalone
+    itomFig        : instance of itom.figure for the figure windows, None if embedded
+    itomUI         : instance of itom.plotItem (class: 'MatplotlibPlot') of the figure widget
+    toolbar        : instance of the toolbar
     """
 
     def __init__( self, canvas, num, itomUI, itomFig, embeddedCanvas ):

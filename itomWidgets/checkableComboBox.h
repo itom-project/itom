@@ -82,6 +82,9 @@ public:
 Q_SIGNALS:
   void checkedIndexesChanged();
 
+public Q_SLOTS:
+	void setIndexState(int index, bool state);
+
 protected Q_SLOTS:
   void onDataChanged(const QModelIndex& topLeft, const QModelIndex& bottomRight);
 

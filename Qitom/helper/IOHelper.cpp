@@ -49,6 +49,7 @@
 #include <QtNetwork/qhostaddress.h>
 #include <qinputdialog.h>
 #include <qmessagebox.h>
+#include <qsettings.h>
 
 namespace ito {
 
@@ -531,6 +532,39 @@ end:
     QFileInfo info(file);
     QString suffix = info.suffix().toLower();
 
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("Workspace");
+    bool unpackDict = settings.value("importIdcMatUnpackDict", "true").toBool();
+    QString packedVarname = "";
+    settings.endGroup();
+
+    if (!unpackDict)
+    {
+        QRegExp regExp("^[a-zA-Z][a-zA-Z0-9_]*$");
+        QString defaultName = info.baseName();
+        if (regExp.indexIn(defaultName) == -1)
+        {
+            defaultName.prepend("var");
+            defaultName.replace("-", "_");
+            if (regExp.indexIn(defaultName) == -1)
+            {
+                defaultName = "varName";
+            }
+        }
+
+        bool ok = true;
+        packedVarname = QInputDialog::getText(NULL, tr("variable name of imported dictionary"), tr("Please indicate a variable name for the dictionary in file '%1' (name must start with a letter followed by numbers or letters).").arg(info.fileName()), QLineEdit::Normal, defaultName, &ok);
+        if (!ok)
+        {
+            return ito::retOk;
+        }
+
+        if (regExp.indexIn(packedVarname) == -1)
+        {
+            return RetVal(retError, 0, tr("invalid variable name").toLatin1().data());
+        }
+    }
+
     if (suffix == "idc")
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
@@ -540,7 +574,7 @@ end:
                                                                          //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
                                                                          //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
-        QMetaObject::invokeMethod(eng, "unpickleVariables", Q_ARG(bool,globalNotLocal), Q_ARG(QString,filename), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        QMetaObject::invokeMethod(eng, "unpickleVariables", Q_ARG(bool,globalNotLocal), Q_ARG(QString,filename), Q_ARG(QString,packedVarname), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
         {
             retValue += RetVal(retError, 2, tr("timeout while unpickling variables").toLatin1().data());
@@ -561,7 +595,7 @@ end:
                                                                          //(it is not allowed to filter  QEventLoop::ExcludeUserInputEvents here out, since mouse events
                                                                         //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
-        QMetaObject::invokeMethod(eng, "loadMatlabVariables", Q_ARG(bool,globalNotLocal), Q_ARG(QString,filename), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+        QMetaObject::invokeMethod(eng, "loadMatlabVariables", Q_ARG(bool, globalNotLocal), Q_ARG(QString, filename), Q_ARG(QString, packedVarname), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         
         if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
         {
