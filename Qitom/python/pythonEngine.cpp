@@ -803,7 +803,7 @@ PyObject* PythonEngine::setPyErrFromException(const std::exception &exc)
         const char* errorStr = cvErrorStr(p_cvexc->code);
         return PyErr_Format(PyExc_RuntimeError, "OpenCV Error: %s (%s) in %s, file %s, line %d",
             errorStr, p_cvexc->err.c_str(), p_cvexc->func.size() > 0 ?
-            p_cvexc->func.c_str() : "unknown function", p_cvexc->file.c_str(), p_cvexc->line );
+            p_cvexc->func.c_str() : "unknown function", p_cvexc->file.c_str(), p_cvexc->line);
     }
     else
     {
@@ -1136,7 +1136,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
         
             if (!found)
             {
-                if(codec->name().isEmpty())
+                if (codec->name().isEmpty())
                 {
                     retval += RetVal(ito::retWarning, 0, tr("Qt text encoding not compatible to python. Python encoding is set to latin 1").toLatin1().data());
                 }
@@ -2073,13 +2073,13 @@ void PythonEngine::pythonSyntaxCheck(const QString &code, QPointer<QObject> send
             QString flakes;
 
             bool ok;
-            unexpectedErrors = PythonQtConversion::PyObjGetString( PyList_GetItem(result,0), false, ok);
+            unexpectedErrors = PythonQtConversion::PyObjGetString(PyList_GetItem(result, 0), false, ok);
             if (!ok)
             {
                 unexpectedErrors = "<<error>>";
             }
 
-            flakes = PythonQtConversion::PyObjGetString( PyList_GetItem(result,1), false, ok);
+            flakes = PythonQtConversion::PyObjGetString(PyList_GetItem(result, 1), false, ok);
             if (!ok)
             {
                 flakes = "<<error>>";
@@ -2374,8 +2374,8 @@ ito::RetVal PythonEngine::checkForPyExceptions()
         PyErr_Fetch(&pyErrType, &pyErrValue, &pyErrTrace); //new references
         PyErr_NormalizeException(&pyErrType, &pyErrValue, &pyErrTrace);
 
-        errType = PythonQtConversion::PyObjGetString( pyErrType );
-        errText = PythonQtConversion::PyObjGetString( pyErrValue );
+        errType = PythonQtConversion::PyObjGetString(pyErrType);
+        errText = PythonQtConversion::PyObjGetString(pyErrValue);
 
         retval += ito::RetVal::format(ito::retError, 0, "%s (%s)", errText.toLatin1().data(), errType.toLatin1().data());
 
@@ -4340,42 +4340,49 @@ ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer
                 const ito::DataObject *obj = value->getVal<const ito::DataObject*>();
                 if (obj)
                 {
+                    PyGILState_STATE gstate = PyGILState_Ensure();
                     item = PythonQtConversion::DataObjectToPyObject(*obj);
+                    PyGILState_Release(gstate);
                 }
                 else
                 {
                     retVal += ito::RetVal(retError, 0, "could not save dataObject since it is not available.");
                 }
             }
-                                                           break;
+            break;
+
 #if ITOM_POINTCLOUDLIBRARY > 0 
             case (ito::ParamBase::PointCloudPtr & paramTypeMask) :
             {
                 const ito::PCLPointCloud *cloud = value->getVal<const ito::PCLPointCloud*>();
                 if (cloud)
                 {
+                    PyGILState_STATE gstate = PyGILState_Ensure();
                     item = PythonQtConversion::PCLPointCloudToPyObject(*cloud);
+                    PyGILState_Release(gstate);
                 }
                 else
                 {
                     retVal += ito::RetVal(retError, 0, "could not save dataObject since it is not available.");
                 }
             }
-                                                                 break;
+            break;
 
             case (ito::ParamBase::PolygonMeshPtr & paramTypeMask) :
             {
                 const ito::PCLPolygonMesh *mesh = value->getVal<const ito::PCLPolygonMesh*>();
                 if (mesh)
                 {
+                    PyGILState_STATE gstate = PyGILState_Ensure();
                     item = PythonQtConversion::PCLPolygonMeshToPyObject(*mesh);
+                    PyGILState_Release(gstate);
                 }
                 else
                 {
                     retVal += ito::RetVal(retError, 0, "could not save dataObject since it is not available.");
                 }
             }
-                                                                  break;
+            break;
 #endif
             default:
                 retVal += ito::RetVal(retError, 0, "unsupported data type to save to matlab.");
@@ -4550,8 +4557,6 @@ ito::RetVal PythonEngine::checkVarnamesInWorkspace(bool globalNotLocal, const QS
     ito::RetVal retVal;
     PyObject* destinationDict = NULL;
     PyObject* value = NULL;
-
-
     bool released = false;
 
     if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
@@ -4648,6 +4653,92 @@ ito::RetVal PythonEngine::checkVarnamesInWorkspace(bool globalNotLocal, const QS
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PythonEngine::getVarnamesListInWorkspace(bool globalNotLocal, const QString &find, QSharedPointer<QStringList> varnameList, ItomSharedSemaphore *semaphore /*= NULL*/)
+{
+    ItomSharedSemaphoreLocker locker(semaphore);
+    tPythonState oldState = pythonState;
+    ito::RetVal retVal;
+    PyObject* destinationDict = NULL;
+    PyObject* value = NULL;
+    bool released = false;
+
+    if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
+    {
+        retVal += ito::RetVal(ito::retError, 0, tr("It is not allowed to check names of variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
+    }
+    else
+    {
+        if (pythonState == pyStateIdle)
+        {
+            pythonStateTransition(pyTransBeginRun);
+        }
+        else if (pythonState == pyStateDebuggingWaiting)
+        {
+            pythonStateTransition(pyTransDebugExecCmdBegin);
+        }
+
+        if (globalNotLocal)
+        {
+            destinationDict = getGlobalDictionary();
+        }
+        else
+        {
+            destinationDict = getLocalDictionary();
+        }
+
+        if (destinationDict == NULL)
+        {
+            retVal += ito::RetVal(ito::retError, 0, tr("values cannot be saved since workspace dictionary not available.").toLatin1().data());
+        }
+        else
+        {
+            PyGILState_STATE gstate = PyGILState_Ensure();
+            varnameList->clear();
+            PyObject *key, *value;
+            Py_ssize_t pos = 0;
+            QRegExp rx(find);
+            rx.setPatternSyntax(QRegExp::Wildcard);
+            bool ok;
+
+            while (PyDict_Next(destinationDict, &pos, &key, &value))
+            {
+                QString qstringKey = PythonQtConversion::PyObjGetString(key, true, ok);
+                if (ok && rx.exactMatch(qstringKey))
+                {
+                    varnameList->append(qstringKey);
+                }
+            }
+
+            PyGILState_Release(gstate);
+
+            if (semaphore != NULL)
+            {
+                semaphore->returnValue = retVal;
+                semaphore->release();
+                released = true;
+            }
+        }
+
+        if (oldState == pyStateIdle)
+        {
+            pythonStateTransition(pyTransEndRun);
+        }
+        else if (oldState == pyStateDebuggingWaiting)
+        {
+            pythonStateTransition(pyTransDebugExecCmdEnd);
+        }
+    }
+
+    if (semaphore != NULL && !released)
+    {
+        semaphore->returnValue = retVal;
+        semaphore->release();
+    }
+
+    return retVal;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 /*
 This method tries to acquire the Python GIL before putting the values to the workspace. However, the current state of the 
 state machine is not considered. This is a first test for this behaviour and should work quite well in this case, since
@@ -4661,8 +4752,6 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
     ito::RetVal retVal;
     PyObject* destinationDict = NULL;
     PyObject* value = NULL;
-
-
     bool released = false;
 
     if (names.size() != values.size())
@@ -5343,7 +5432,9 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
                 const ito::DataObject *obj = value->getVal<const ito::DataObject*>();
                 if (obj)
                 {
+                    PyGILState_STATE gstate = PyGILState_Ensure();
                     item = PythonQtConversion::DataObjectToPyObject(*obj);
+                    PyGILState_Release(gstate);
                 }
                 else
                 {
@@ -5357,7 +5448,9 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
                 const ito::PCLPointCloud *cloud = value->getVal<const ito::PCLPointCloud*>();
                 if (cloud)
                 {
+                    PyGILState_STATE gstate = PyGILState_Ensure();
                     item = PythonQtConversion::PCLPointCloudToPyObject(*cloud);
+                    PyGILState_Release(gstate);
                 }
                 else
                 {
@@ -5371,7 +5464,9 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
                 const ito::PCLPolygonMesh *mesh = value->getVal<const ito::PCLPolygonMesh*>();
                 if (mesh)
                 {
+                    PyGILState_STATE gstate = PyGILState_Ensure();
                     item = PythonQtConversion::PCLPolygonMeshToPyObject(*mesh);
+                    PyGILState_Release(gstate);
                 }
                 else
                 {
@@ -5396,7 +5491,7 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
 
             //build dictionary, which should be pickled
             PyObject* exportDict = PyDict_New();
-            PyDict_SetItemString(exportDict, valueName.toLatin1().data(), item);
+            PyDict_SetItemString(exportDict, valueName.toLatin1().data(), item); //creates new reference for item
 
             retVal += pickleDictionary(exportDict, filename);
 
@@ -5407,6 +5502,7 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
             PyGILState_Release(gstate);
         }
 
+        Py_XDECREF(item);
 
         if (oldState == pyStateIdle)
         {
@@ -5465,13 +5561,13 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
 
     PyObject* pyFileName = PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL);
     
-    if(pyFileName != NULL)
+    if (pyFileName != NULL)
     {
         fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, NULL);
         Py_DECREF(pyFileName);
     }
     
-    if(pyMode) Py_DECREF(pyMode);
+    if (pyMode) Py_DECREF(pyMode);
 
 
     if (fileHandle == NULL)
@@ -5665,13 +5761,13 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
 
     PyObject* pyFileName = PyUnicode_DecodeLatin1(filename.toLatin1().data(), filename.length(), NULL);
     
-    if(pyFileName != NULL)
+    if (pyFileName != NULL)
     {
         fileHandle = PyObject_CallFunctionObjArgs(openMethod, pyFileName, pyMode, NULL);
         Py_DECREF(pyFileName);
     }
     
-    if(pyMode) Py_DECREF(pyMode);
+    if (pyMode) Py_DECREF(pyMode);
 
     if (fileHandle == NULL)
     {

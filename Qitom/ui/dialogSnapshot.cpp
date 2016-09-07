@@ -21,12 +21,14 @@
 *********************************************************************** */
 
 #include "dialogSnapshot.h"
+
 #include "../AppManagement.h"
 #include "../organizer/userOrganizer.h"
 #include "../organizer/designerWidgetOrganizer.h"
 #include "../common/pluginThreadCtrl.h"
 #include "../common/addInInterface.h"
 #include "../ui/dialogSaveFileWithFilter.h"
+
 #include <qmessagebox.h>
 
 #include "../plot/AbstractDObjFigure.h"
@@ -40,8 +42,6 @@ bool cmpStringIntPair(const QPair<QString, int> &a, const QPair<QString, int> &b
 {
     return a.first < b.first;
 }
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DialogSnapshot::DialogSnapshot(QWidget *parent, QPointer<ito::AddInDataIO> cam, ito::RetVal &retval) :
@@ -117,6 +117,7 @@ DialogSnapshot::DialogSnapshot(QWidget *parent, QPointer<ito::AddInDataIO> cam, 
         std::sort(list.begin(), list.end(), cmpStringIntPair);
 
         addComboItem = true;
+        ui.comboType->addItem(tr("Workspace"), -3);
         ui.comboType->addItem("*.idc", -1);
         ui.comboType->addItem("*.mat", -2);
 
@@ -129,6 +130,12 @@ DialogSnapshot::DialogSnapshot(QWidget *parent, QPointer<ito::AddInDataIO> cam, 
         ui.checkAutograbbing->setChecked(cam->getAutoGrabbing());
     }
 
+    QRegExp regExp("^[a-zA-Z][a-zA-Z0-9_]*$");
+    QRegExpValidator *validator = new QRegExpValidator(regExp, ui.leFilename);
+    ui.leFilename->setValidator(validator);
+    ui.leFilename->setToolTip(tr("The name must start with a letter followed by numbers or letters [a-z] or [A-Z]"));
+
+    ui.btnFolder->setEnabled(false);
     ui.lblProgress->setVisible(false);
     ui.progress->setVisible(false);
 }
@@ -165,13 +172,58 @@ void DialogSnapshot::timerEvent(QTimerEvent *event)
     
     if (!retval.containsError())
     {
+        bool acquireStack = (ui.comboType->itemData(ui.comboType->currentIndex()).toInt() < 0 && ui.comboSingleStack->currentIndex() == 1);
         ui.lblProgress->setText(tr("acquire image %1 from %2").arg(m_numSnapsDone+1).arg(m_totalSnaps));
-        m_numSnapsDone ++;
-        ito::DataObject image;
-        retval += m_pCamera->getVal(image);
+
+        if (!acquireStack)
+        {
+            ito::DataObject image;
+            retval += m_pCamera->copyVal(image);
+
+            m_acquiredImages << image;
+            //m_acquiredImages.append(image);
+        }
+        else
+        {
+            if (m_acquiredImages.size() == 0)
+            {
+                //acquire first image to check for size and type
+                ito::DataObject image;
+                retval += m_pCamera->copyVal(image);
+
+                if (image.getDims() == 2)
+                {
+                    //create 3D data object
+                    ito::DataObject stack(m_totalSnaps, image.getSize(0), image.getSize(1), image.getType());
+                    
+                    //get shallow copy of first plane in stack
+                    ito::Range ranges[] = { ito::Range(0, 1), ito::Range::all(), ito::Range::all() };
+                    ito::DataObject plane0 = stack.at(ranges);
+                    image.deepCopyPartial(plane0);
+
+                    m_acquiredImages << stack;
+                }
+                else
+                {
+                    retval += ito::RetVal(ito::retError, 0, "The acquired image must be two-dimensional for a stack-acquisition");
+                }
+            }
+            else if (m_acquiredImages.size() == 1 && m_acquiredImages[0].getDims() == 3 && m_acquiredImages[0].getSize(0) > m_numSnapsDone)
+            {
+                //get shallow copy of first plane in stack
+                ito::Range ranges[] = { ito::Range(m_numSnapsDone, m_numSnapsDone + 1), ito::Range::all(), ito::Range::all() };
+                ito::DataObject plane = m_acquiredImages[0].at(ranges);
+                retval += m_pCamera->copyVal(plane);
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, "Acquisition could not be finished. Wrong allocated stack size.");
+            }
+        }
+
+        m_numSnapsDone++;
+        
         ui.progress->setValue(ui.progress->value() + 1);
-        m_acquiredImages << image;
-    
         if (m_numSnapsDone >= m_totalSnaps)
         {
             acquisitionEnd();
@@ -246,6 +298,8 @@ void DialogSnapshot::acquisitionStart()
 //----------------------------------------------------------------------------------------------------------------------------------
 void DialogSnapshot::acquisitionEnd()
 {
+    ito::RetVal retval = ito::retOk;
+
     if (m_timerID >= 0)
     {
         killTimer(m_timerID);
@@ -254,41 +308,153 @@ void DialogSnapshot::acquisitionEnd()
 
     if (m_totalSnaps == m_numSnapsDone && ui.checkSaveAfterSnap->isChecked() && m_acquiredImages.size() > 0)
     {
-        QDir dir(m_path);
-        QStringList filters;
-        filters << "pic_" + ui.comboType->currentText();
-        dir.setNameFilters(filters);
-        dir.setSorting(QDir::Name);
-        QStringList list = dir.entryList();
-        int fileIndex = 1;
-        if (list.size() > 0)
-        {
-            QString fn = list[list.size() - 1];
-            fileIndex = fn.mid(4, fn.indexOf(".") - 4).toInt() + 1;
-        }
+        ui.lblProgress->setText(tr("save image"));
+        QCoreApplication::processEvents();
 
         int index = ui.comboType->itemData(ui.comboType->currentIndex()).toInt();
-        if (index > -1)
-        {
-            ito::AddInAlgo::FilterDef *filter = m_filterPlugins[index];
-            QString fileExt = ui.comboType->currentText();
-            fileExt.replace("*", "");
-            QString fileNo = QString("%1").arg(fileIndex, 3, 10, QLatin1Char('0'));
-            QString fileName = m_path + "/pic_" + fileNo + fileExt;
-            m_paramsMand[1].setVal<char*>(fileName.toLatin1().data());
-            m_paramsMand[0].setVal<ito::DataObject*>(&(m_acquiredImages[0]));
-            ito::RetVal retval = filter->m_filterFunc(&m_paramsMand, &m_paramsOpt, &m_autoOut);
-            checkRetval(retval);
-        }
-        else if (index == -1)
-        {
-            // idc
 
+        if (index == -3)
+        {
+            QObject *pyEngine = AppManagement::getPythonEngine();
+            if (!pyEngine)
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("Python was not found").toLatin1().data());
+                checkRetval(retval);
+                return;
+            }
+            QSharedPointer<IntList> existing;
+
+            QSharedPointer<QStringList> list(new QStringList());
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            QString imageName = ui.leFilename->text();
+
+            QMetaObject::invokeMethod(pyEngine, "getVarnamesListInWorkspace", Q_ARG(bool, true), Q_ARG(QString, imageName + "*"),
+                Q_ARG(QSharedPointer<QStringList>, list), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+            if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
+            {
+                retval += ito::RetVal(ito::retError, 0, tr("Timeout while seaching file name at workspace").toLatin1().data());
+                checkRetval(retval);
+            }
+
+            if (!retval.containsError())
+            {
+                list->sort();
+                int fileIndex = 1;
+
+                if (list->size() > 0)
+                {
+                    QString fn = list->at(list->size() - 1);
+                    fileIndex = fn.mid(imageName.size(), fn.indexOf(".") - imageName.size()).toInt() + 1;
+                }
+
+                ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+                QStringList varNames;
+                QVector<SharedParamBasePointer> values;
+                SharedParamBasePointer paramBasePointer;
+
+                for (int i = 0; i < m_acquiredImages.size(); ++i)
+                {
+                    QString fileNo = QString("%1").arg(fileIndex++, 3, 10, QLatin1Char('0'));
+                    varNames.append(imageName + fileNo);
+                    paramBasePointer = QSharedPointer<ito::ParamBase>(new ito::ParamBase("image", ito::ParamBase::DObjPtr, (char*)&(m_acquiredImages[i])));
+                    values.append(paramBasePointer);
+                }
+
+                QMetaObject::invokeMethod(pyEngine, "putParamsToWorkspace", Q_ARG(bool, true), Q_ARG(QStringList, varNames),
+                    Q_ARG(QVector<SharedParamBasePointer>, values), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+                if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
+                {
+                    retval += ito::RetVal(ito::retError, 0, tr("Timeout while writing picture to workspace").toLatin1().data());
+                    checkRetval(retval);
+                }
+            }
         }
         else
         {
-            // mat
+            QString imageName = ui.leFilename->text();
+            QDir dir(m_path);
+            QStringList filters;
+            filters << imageName + ui.comboType->currentText();
+            dir.setNameFilters(filters);
+            dir.setSorting(QDir::Name);
+            QStringList list = dir.entryList();
+            int fileIndex = 1;
 
+            if (list.size() > 0)
+            {
+                QString fn = list[list.size() - 1];
+                fileIndex = fn.mid(imageName.size(), fn.indexOf(".") - imageName.size()).toInt() + 1;
+            }
+
+            QString fileExt = ui.comboType->currentText();
+            fileExt.replace("*", "");
+
+            if (index > -1)
+            {
+                ito::AddInAlgo::FilterDef *filter = m_filterPlugins[index];
+
+                for (int i = 0; i < m_acquiredImages.size(); ++i)
+                {
+                    ui.lblProgress->setText(tr("save image %1 from %2").arg(i + 1).arg(m_acquiredImages.size()));
+
+                    QString fileNo = QString("%1").arg(fileIndex++, 3, 10, QLatin1Char('0'));
+                    QString fileName = m_path + "/" + imageName + fileNo + fileExt;
+                    m_paramsMand[1].setVal<char*>(fileName.toLatin1().data());
+                    m_paramsMand[0].setVal<ito::DataObject*>(&(m_acquiredImages[i]));
+                    retval = filter->m_filterFunc(&m_paramsMand, &m_paramsOpt, &m_autoOut);
+                    checkRetval(retval);
+
+                    if (retval.containsError())
+                    {
+                        break;
+                    }
+                    ui.progress->setValue(ui.progress->value() + 1);
+                    QCoreApplication::processEvents();
+                }
+            }
+            else
+            {
+                // Workspace, idc & mat
+                QObject *pyEngine = AppManagement::getPythonEngine();
+                if (!pyEngine)
+                {
+                    retval += ito::RetVal(ito::retError, 0, tr("Python was not found").toLatin1().data());
+                    checkRetval(retval);
+                    return;
+                }
+
+                QByteArray funcName;
+                if (index == -1)
+                {
+                    funcName = "pickleSingleParam";
+                }
+                else if (index == -2)
+                {
+                    funcName = "saveMatlabSingleParam";
+                }
+
+                QSharedPointer<ito::Param> param(new ito::Param("image", ito::ParamBase::DObjPtr, NULL, ""));
+
+                for (int i = 0; i < m_acquiredImages.size(); ++i)
+                {
+                    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+                    QString fileNo = QString("%1").arg(fileIndex++, 3, 10, QLatin1Char('0'));
+                    QString fileName = m_path + "/" + imageName + fileNo + fileExt;
+
+                    param->setVal<ito::DataObject*>(&(m_acquiredImages[i]));
+                    QMetaObject::invokeMethod(pyEngine, funcName.data(), Q_ARG(QString, fileName), Q_ARG(QSharedPointer<ito::Param>, param),
+                        Q_ARG(QString, imageName + fileNo), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+
+                    if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
+                    {
+                        retval += ito::RetVal(ito::retError, 0, tr("Timeout while saving picture").toLatin1().data());
+                        checkRetval(retval);
+                        break;
+                    }
+                }
+            }
         }
     }
 
@@ -420,7 +586,9 @@ void DialogSnapshot::on_comboType_currentIndexChanged(int index)
 {
     if (!addComboItem)
     {
-        ui.comboColor->setEnabled(ui.comboType->currentText() == "*.idc" && ui.checkMulti->isChecked());
+        int index = ui.comboType->itemData(ui.comboType->currentIndex()).toInt();
+        ui.comboSingleStack->setEnabled(index < 0 && ui.checkMulti->isChecked());
+        ui.btnFolder->setEnabled(index != -3);
         setBtnOptions(ui.checkSaveAfterSnap->isChecked());
 
         ito::AddInManager *AIM = static_cast<ito::AddInManager*>(AppManagement::getAddInManager());
@@ -462,7 +630,7 @@ void DialogSnapshot::on_checkMulti_stateChanged(int state)
 {
     bool checking = ui.checkMulti->isChecked();
     ui.spinMulti->setEnabled(checking);
-    ui.comboColor->setEnabled(ui.comboType->currentText() == "*.idc" && checking);
+    ui.comboSingleStack->setEnabled(ui.comboType->itemData(ui.comboType->currentIndex()).toInt() < 0 && checking);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

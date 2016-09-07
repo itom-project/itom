@@ -110,45 +110,6 @@
          <string>Acquire</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_2">
-         <item row="7" column="0">
-          <widget class="QProgressBar" name="progress">
-           <property name="maximum">
-            <number>50</number>
-           </property>
-           <property name="value">
-            <number>24</number>
-           </property>
-           <property name="textVisible">
-            <bool>true</bool>
-           </property>
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="invertedAppearance">
-            <bool>false</bool>
-           </property>
-           <property name="textDirection">
-            <enum>QProgressBar::TopToBottom</enum>
-           </property>
-           <property name="format">
-            <string>%p%</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="0">
-          <widget class="QPushButton" name="btnSnap">
-           <property name="text">
-            <string>Snapshot</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QCheckBox" name="checkAutograbbing">
-           <property name="text">
-            <string>Auto grabbing</string>
-           </property>
-          </widget>
-         </item>
          <item row="3" column="0">
           <widget class="QGroupBox" name="groupMultishot">
            <property name="title">
@@ -205,9 +166,12 @@
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="QComboBox" name="comboColor">
+             <widget class="QComboBox" name="comboSingleStack">
               <property name="enabled">
                <bool>false</bool>
+              </property>
+              <property name="currentIndex">
+               <number>1</number>
               </property>
               <item>
                <property name="text">
@@ -247,10 +211,63 @@
            </layout>
           </widget>
          </item>
-         <item row="8" column="0">
+         <item row="11" column="0">
+          <widget class="QCheckBox" name="checkAutograbbing">
+           <property name="text">
+            <string>Auto grabbing</string>
+           </property>
+          </widget>
+         </item>
+         <item row="12" column="0">
+          <widget class="QPushButton" name="btnSnap">
+           <property name="text">
+            <string>Snapshot</string>
+           </property>
+          </widget>
+         </item>
+         <item row="14" column="0">
+          <widget class="QProgressBar" name="progress">
+           <property name="maximum">
+            <number>50</number>
+           </property>
+           <property name="value">
+            <number>24</number>
+           </property>
+           <property name="textVisible">
+            <bool>true</bool>
+           </property>
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="invertedAppearance">
+            <bool>false</bool>
+           </property>
+           <property name="textDirection">
+            <enum>QProgressBar::TopToBottom</enum>
+           </property>
+           <property name="format">
+            <string>%p%</string>
+           </property>
+          </widget>
+         </item>
+         <item row="15" column="0">
           <widget class="QLabel" name="lblProgress">
            <property name="text">
             <string>progress...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLineEdit" name="leFilename">
+           <property name="text">
+            <string>pic_</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="labelSource_2">
+           <property name="text">
+            <string>File name</string>
            </property>
           </widget>
          </item>
@@ -287,7 +304,7 @@
      <x>0</x>
      <y>0</y>
      <width>847</width>
-     <height>21</height>
+     <height>18</height>
     </rect>
    </property>
   </widget>
@@ -299,7 +316,7 @@
   <tabstop>btnFolder</tabstop>
   <tabstop>checkMulti</tabstop>
   <tabstop>spinMulti</tabstop>
-  <tabstop>comboColor</tabstop>
+  <tabstop>comboSingleStack</tabstop>
   <tabstop>btnSnap</tabstop>
  </tabstops>
  <resources/>
