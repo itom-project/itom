@@ -13,7 +13,27 @@ except Exception as ex:
 - text at arbitrary 3D positions
 '''
 
-[i,h] = plot(mesh_quads, "vtk3dvisualizer")
+#load a polygonal mesh of a bunny, transform it (this has to be done by extracting the point cloud and polygons
+#from the polygonal mesh, transforming the cloud and merging both together again to a mesh
+bunny = polygonMesh()
+filter("loadPolygonMesh", bunny, "bunny.obj")
+bunny_cloud = bunny.getCloud()
+bunny_polygons = bunny.getPolygons()
+trafo = dataObject.eye(4,'float32')
+trafo[1,1] = 0
+trafo[2,2] = 0
+trafo[1,2] = 1
+trafo[2,1] = 1
+trafo[0:3,3] = (0,0,-2)
+filter("pclTransformAffine", bunny_cloud, bunny_cloud, trafo)
+bunny_transformed_mesh = polygonMesh.fromCloudAndPolygons(bunny_cloud, bunny_polygons)
+
+
+[i,h] = plot(bunny_transformed_mesh, "vtk3dvisualizer")
+
+#configure the mesh (called 'source_mesh')
+h.call("setItemProperty", "source_mesh", "ColorMode", "Z")
+h.call("setItemProperty", "source_mesh", "ColorMap", "falseColor")
 
 #a cylinder is added to the canvas. The axis of symmetry is given by a start point and an orientation vector.
 #The length of the orientation vector defines the height of the cylinder, its radius is given by the third parameter.
