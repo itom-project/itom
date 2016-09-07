@@ -451,3 +451,16 @@ QVector<int> CheckableComboBox::getCheckedIndices() const
     }
     return i;
 }
+
+//-----------------------------------------------------------------------------
+void CheckableComboBox::setIndexState(int index, bool state)
+{
+	Q_D(CheckableComboBox);
+	QAbstractItemModel *m = model();
+
+	if (state)
+		d->CheckableModelHelper_->setCheckState(m->index(index, 0, rootModelIndex()), Qt::Checked);
+	else
+		d->CheckableModelHelper_->setCheckState(m->index(index, 0, rootModelIndex()), Qt::Unchecked);
+	
+}
