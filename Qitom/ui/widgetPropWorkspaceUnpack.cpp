@@ -41,7 +41,6 @@ namespace ito
 		QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 		settings.beginGroup("Workspace");
 		ui.checkBoxUnpackDictionary->setChecked(settings.value("importIdcMatUnpackDict", "true").toBool());
-		QString packedVarname = "";
 		settings.endGroup();
 
 	}
