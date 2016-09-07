@@ -553,7 +553,7 @@ end:
         }
 
         bool ok = true;
-        packedVarname = QInputDialog::getText(NULL, tr("variable name of imported dictionary"), tr("Please indicate a variable name for the dictionary in file '%1' (name must start with a letter followed by numbers or letters).").arg(info.fileName()), QLineEdit::Normal, defaultName, &ok);
+        packedVarname = QInputDialog::getText(NULL, tr("variable name of imported dictionary"), tr("Please indicate a variable name for the dictionary in file '%1' \n(name must start with a letter followed by numbers or letters).").arg(info.fileName()), QLineEdit::Normal, defaultName, &ok);
         if (!ok)
         {
             return ito::retOk;

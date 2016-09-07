@@ -17,13 +17,23 @@
    <item row="0" column="0">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>import dataObject and mat</string>
+      <string>Import IDC and MAT files to workspace</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0" colspan="2">
+      <item row="1" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBoxUnpackDictionary">
         <property name="text">
          <string>unpack dictionary</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>When importing an *.idc or *.mat file to the workspace, it is either possible to unpack all values within the file and load them as separate variables to the workspace or to load the content of the file as one single dictionary (name of the dictionary will be requested by an input dialog)</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
         </property>
        </widget>
       </item>

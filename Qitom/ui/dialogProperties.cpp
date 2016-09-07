@@ -169,12 +169,13 @@ void DialogProperties::initPages()
     m_pages["00_general/02language"] = PropertyPage(tr("Language"), tr("General - language"), "00_general/02language", new WidgetPropGeneralLanguage(), QIcon(":/application/icons/itomicon/itomIcon32"));
     m_pages["00_general/03helpViewer"]  = PropertyPage(tr("Help Viewer"), tr("General - Help Viewer"), "00_general/03helpViewer" , new WidgetPropHelpDock(), QIcon(":/application/icons/itomicon/itomIcon32"));
     m_pages["00_general/04styles"] = PropertyPage(tr("Styles and Themes"), tr("General - Styles and Themes"), "00_general/04styles", new WidgetPropGeneralStyles(), QIcon(":/application/icons/color-icon.png"));
-    m_pages["07_plots"] = PropertyPage(tr("Plots and Figures"), tr("Plots and Figures - please choose subpage"), "07_plots", NULL, QIcon(":/plots/icons/itom_icons/3d.png"));
-    m_pages["07_plots/01defaults"] = PropertyPage(tr("Default Plots"), tr("Plots and Figures - Defaults"), "07_plots/01defaults", new WidgetPropFigurePlugins(), QIcon(":/plots/icons/itom_icons/2d.png"));
+    m_pages["05_workspace"] = PropertyPage(tr("Workspace"), tr("Workspace - please choose subpage"), "05_workspace", NULL, QIcon(":/workspace/icons/import-prop-icon.png"));
+    m_pages["05_workspace/01unpack"] = PropertyPage(tr("Import to workspace"), tr("Workspace - Import"), "05_workspace/01unpack", new WidgetPropWorkspaceUnpack(), QIcon(":/workspace/icons/import-prop-icon.png"));
     m_pages["06_plugins"] = PropertyPage(tr("Plugins"), tr("Plugins - please choose subpage"), "06_plugins", NULL, QIcon(":/plugins/icons/plugin.png"));
     m_pages["06_plugins/02algorithms"] = PropertyPage(tr("Algorithms and Filters"), tr("Plugins - Algorithms and filters"), "06_plugins/02algorithms", new WidgetPropPluginsAlgorithms(), QIcon(":/plugins/icons/pluginAlgo.png"));
-	m_pages["05_workspace"] = PropertyPage(tr("Workspace"), tr("Workspace - please choose subpage"), "05_workspace", NULL, QIcon(":/workspace/icons/import-prop-icon.png"));
-	m_pages["05_workspace/01unpack"] = PropertyPage(tr("Unpack"), tr("Workspace - Unpack"), "05_workspace/01unpack", new WidgetPropWorkspaceUnpack(), QIcon(":/workspace/icons/import-prop-icon.png"));
+    m_pages["07_plots"] = PropertyPage(tr("Plots and Figures"), tr("Plots and Figures - please choose subpage"), "07_plots", NULL, QIcon(":/plots/icons/itom_icons/3d.png"));
+    m_pages["07_plots/01defaults"] = PropertyPage(tr("Default Plots"), tr("Plots and Figures - Defaults"), "07_plots/01defaults", new WidgetPropFigurePlugins(), QIcon(":/plots/icons/itom_icons/2d.png"));
+    
 	PropertyPage page;
     QStringList pathes;
 
