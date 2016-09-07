@@ -4424,7 +4424,10 @@ ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filename, ItomSharedSemaphore *semaphore)
+/*
+\param packedVarName -> if this string is != "", the dictionary loaded from the mat file will be kept as dictionary and saved in the workspace under this variable name
+*/
+ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filename, QString packedVarName, ItomSharedSemaphore *semaphore)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
     tPythonState oldState = pythonState;
@@ -4476,12 +4479,24 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
             }
             else
             {
-                PyObject *key, *value;
-                Py_ssize_t pos = 0;
-
-                while (PyDict_Next(dict, &pos, &key, &value)) //returns borrowed references to key and value.
+                if (packedVarName != "")
                 {
-                    PyDict_SetItem(destinationDict, key, value);
+                    PyObject *key = PythonQtConversion::QStringToPyObject(packedVarName); //new ref
+                    if (key)
+                    {
+                        PyDict_SetItem(destinationDict, key, dict);
+                    }
+                    Py_XDECREF(key);
+                }
+                else
+                {
+                    PyObject *key, *value;
+                    Py_ssize_t pos = 0;
+
+                    while (PyDict_Next(dict, &pos, &key, &value)) //returns borrowed references to key and value.
+                    {
+                        PyDict_SetItem(destinationDict, key, value);
+                    }
                 }
             }
 
@@ -5515,7 +5530,10 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filename, ItomSharedSemaphore *semaphore)
+/*
+\param packedVarName -> if this string is != "", the dictionary loaded from the idc file will be kept as dictionary and saved in the workspace under this variable name
+*/
+ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filename, QString packedVarName, ItomSharedSemaphore *semaphore)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
     tPythonState oldState = pythonState;
@@ -5553,7 +5571,25 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
         }
         else
         {
-            retVal += unpickleDictionary(destinationDict, filename, true);
+            if (packedVarName != "")
+            {
+                PyObject *dict = PyDict_New();
+                retVal += unpickleDictionary(dict, filename, true);
+                if (!retVal.containsError())
+                {
+                    PyObject *key = PythonQtConversion::QStringToPyObject(packedVarName);
+                    if (key)
+                    {
+                        PyDict_SetItem(destinationDict, key, dict);
+                    }
+                    Py_XDECREF(key);
+                }
+                Py_XDECREF(dict);
+            }
+            else
+            {
+                retVal += unpickleDictionary(destinationDict, filename, true);
+            }
 
             if (semaphore && !released)
             {
