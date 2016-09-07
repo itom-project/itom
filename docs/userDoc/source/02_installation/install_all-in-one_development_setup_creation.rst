@@ -187,27 +187,21 @@ Unpack the PCL source on your hard drive. Create a build_x64/build_x86 folder an
 
 * Set **EIGEN_INCLUDE_DIR** to ${MAINDIR}/3rdPartyPCL/Eigen3.2.8
 * Set **FLANN_INCLUDE_DIR** to ${MAINDIR}/3rdPartyPCL/flann1.7.1/include
-* Set **LANN_LIBRARY** to ${MAINDIR}/3rdPartyPCL/flann1.7.1/lib/flann_cpp_s.lib
+* Set **FLANN_LIBRARY** to ${MAINDIR}/3rdPartyPCL/flann1.7.1/lib/flann_cpp_s.lib
 * set **FLANN_LIBRARAY_DEBUG** to ${MAINDIR}/3rdPartyPCL/flann1.7.1/lib/flann_cpp_s-gd.lib
-
-* Set **Boost_INCLUDE_DIR** to ${MAINDIR}/3rdPartyPCL/boost1.60.0 (Boost libraray must be named libboost... *.lib) 
-* Add new entry: **Boost_LIBRARY_DIR** with path ${MAINDIR}/3rdParty/boost1.60.0/lib64-msvc-12.0
-
+* Set **Boost_INCLUDE_DIR** to ${MAINDIR}/3rdPartyPCL/boost1.60.0 (Boost library must be named libboost... *.lib) 
+* Add new entry: **Boost_LIBRARY_DIR** with path ${MAINDIR}/3rdPartyPCL/boost1.60.0/lib64-msvc-12.0
 * Set **QHULL_INCLUDE_DIR** include dir to ${MAINDIR}/3rdPartyPCL/qhull-2012.1/include
 * Set **QHULL_LIBRARY** dir to ${MAINDIR}/3rdPartyPCL/qhull-2012.1/lib/qhullstatic.lib
 * Set **QHULL_LIBRARY_DEBURG** dir to ${MAINDIR}/3rdPartyPCL/qhull-2012.1/lib/qhullstatic_d.lib
-
 * Set **GLEW_GLEW_LIBRARY** ${MAINDIR}/3rdPartyPCL/glew-1.13.0/lib/Release/x64/glew32.lib
-* Set **GLEW_INCLUDE_DIR*** ${MAINDIR}/3rdParty/glew-1.13.0/include
-
+* Set **GLEW_INCLUDE_DIR** ${MAINDIR}/3rdParty/glew-1.13.0/include
 * Set **VTK_DIR** to ${MAINDIR}/3rdPartyPCL/vtk7.0.0/lib/cmake/vtk-7.0
 * Add new entry: **QVTK_LIBRARY_DEBUG** with **FILEPATH** ${MAINDIR}/3rdPartyPCL/vtk7.0.0/lib/vtkGUISupportQtOpenGL-7.0-gd.lib
 * Add new entry: **QVTK_LIBRARY_RELEASE** with **FILEPATH** ${MAINDIR}/3rdPartyPCL/vtk7.0.0/lib/vtkGUISupportQtOpenGL-7.0.lib
-
 * Set **Qt5Concurrent_DIR** to ${MAINDIR}/3rdParty/Qt5.6.0/5.6/msvc2013/lib/cmake/Qt5Concurrent
 * Set **Qt5OpenGl_DIR** to ${MAINDIR}/3rdParty/Qt5.6.0/5.6/msvc2013/lib/cmake/Qt5OpenGl_DIR
 * Set **Qt5Widgets_DIR** to ${MAINDIR}/3rdParty/Qt5.6.0/5.6/msvc2013/lib/cmake/Qt5Widgets_DIR
-
 * Set **CMAKE_INSTALL_PREFIX** ${MAINDIR}/3rdPartyPCL/pcl1.8.0
 * check **BUILD_surface_on_nurbs** and **BUILD_visualization**
 * check **CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE**
