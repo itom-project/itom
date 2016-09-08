@@ -41,11 +41,11 @@ Data is plotted as follows:
 * Complex types: This is the same than for real data types, however you can choose whether the *absolute*, *phase*, *real* or *imaginary* part of the complex values is plotted.
 * color type: Coloured data objects will be represented by either 3 or 4 lines (red, green and blue, alpha optional) that correspond to the three colour channels or by one line representing the converted gray values.
 
-Using Python or the properties toolbox (View >> properties or via right click on the toolbar), it is possible to adjust many properties like stated in the section :ref:`itom1dqwtplot`.
+Using Python or the properties toolbox (View >> properties or via right click on the toolbar), it is possible to adjust many properties like stated in the section Properties below.
 
 The plot allows value and min/max-picking via place-able marker.
 
-The plot supports geometric element and marker interaction via **drawAndPickElements(...)** and **call("userInteractionStart",...)**. See section Properties below for a short introduction.
+The plot supports geometric element and marker interaction via **drawAndPickElements(...)** and **call("userInteractionStart",...)**. See section :ref:`primitives` for a short introduction.
 
 You can also use the "matplotlib"-backend to plot slices or xy-coordinates. See section :ref:`pymod-matplotlib` for more information about how to use "matplotlib".
 
