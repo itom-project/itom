@@ -148,6 +148,8 @@ PyObject* PythonItom::PyOpenScript(PyObject * /*pSelf*/, PyObject *pArgs)
     QByteArray filename2;
     if (PyArg_ParseTuple(pArgs, "s", &filename) == false)
     {
+        PyErr_Clear();
+
         //check if argument is a PyObject with a __file__ argument
         PyObject *obj = NULL;
         if (!PyArg_ParseTuple(pArgs, "O", &obj))
