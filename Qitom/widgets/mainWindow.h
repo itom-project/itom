@@ -128,7 +128,7 @@ private:
     QLabel *m_statusLblCurrentDir; //label for showing current directory
 
 #ifdef ITOM_USEHELPVIEWER
-    HelpViewer *m_pHelpViewer;
+    QPointer<HelpViewer> m_helpViewer;
 #endif
 
     QRect m_geometryNormalState;

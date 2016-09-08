@@ -63,43 +63,40 @@ namespace ito {
 /*!
     establishes widgets being part of the main window including necessary actions
 */
-MainWindow::MainWindow() :
-#ifdef ITOM_USEHELPVIEWER
-    m_pHelpViewer(NULL),
-#endif
-    m_console(NULL),
-    m_contentLayout(NULL),
-    m_breakPointDock(NULL),
-    m_lastCommandDock(NULL),
-    m_helpDock(NULL),
-    m_globalWorkspaceDock(NULL),
-    m_localWorkspaceDock(NULL),
-    m_callStackDock(NULL),
-    m_fileSystemDock(NULL),
-    m_pAIManagerWidget(NULL),
-    m_aboutToolBar(NULL),
-    m_appToolBar(NULL),
-    m_toolToolBar(NULL),
-    m_pythonToolBar(NULL),
-    m_userDefinedSignalMapper(NULL),
-    m_appFileNew(NULL),
-    m_appFileOpen(NULL),
-    m_aboutQt(NULL),
-    m_aboutQitom(NULL),
-    m_pMenuHelp(NULL),
-    m_pMenuFile(NULL),
-    m_pMenuPython(NULL),
-    m_pMenuReloadModule(NULL),
-    m_pMenuView(NULL),
-    m_pHelpSystem(NULL),
-    m_statusLblCurrentDir(NULL),
-    m_pythonBusy(false),
-    m_pythonDebugMode(false),
-    m_pythonInWaitingMode(false),
-    m_isFullscreen(false),
-    m_userDefinedActionCounter(0),
-    m_lastFilesMapper(NULL),
-    m_openScriptsMapper(NULL)
+	MainWindow::MainWindow() :
+	m_console(NULL),
+	m_contentLayout(NULL),
+	m_breakPointDock(NULL),
+	m_lastCommandDock(NULL),
+	m_helpDock(NULL),
+	m_globalWorkspaceDock(NULL),
+	m_localWorkspaceDock(NULL),
+	m_callStackDock(NULL),
+	m_fileSystemDock(NULL),
+	m_pAIManagerWidget(NULL),
+	m_aboutToolBar(NULL),
+	m_appToolBar(NULL),
+	m_toolToolBar(NULL),
+	m_pythonToolBar(NULL),
+	m_userDefinedSignalMapper(NULL),
+	m_appFileNew(NULL),
+	m_appFileOpen(NULL),
+	m_aboutQt(NULL),
+	m_aboutQitom(NULL),
+	m_pMenuHelp(NULL),
+	m_pMenuFile(NULL),
+	m_pMenuPython(NULL),
+	m_pMenuReloadModule(NULL),
+	m_pMenuView(NULL),
+	m_pHelpSystem(NULL),
+	m_statusLblCurrentDir(NULL),
+	m_pythonBusy(false),
+	m_pythonDebugMode(false),
+	m_pythonInWaitingMode(false),
+	m_isFullscreen(false),
+	m_userDefinedActionCounter(0),
+	m_lastFilesMapper(NULL),
+	m_openScriptsMapper(NULL)
 {
     //qDebug() << "mainWindow. Thread: " << QThread::currentThreadId ();
 #ifdef __APPLE__
@@ -440,7 +437,8 @@ MainWindow::~MainWindow()
     DELETE_AND_SET_NULL(m_localWorkspaceDock);
 
 #ifdef ITOM_USEHELPVIEWER
-    DELETE_AND_SET_NULL(m_pHelpViewer);
+		HelpViewer *hv = m_helpViewer.data();
+		DELETE_AND_SET_NULL(hv);
 #endif
 
     //delete remaining user-defined toolbars and actions
@@ -1133,12 +1131,13 @@ void MainWindow::showAssistant(const QString &collectionFile /*= ""*/)
 	if (!retval.containsError()) //warning is ok
 	{
 #ifdef ITOM_USEHELPVIEWER
-		if (!m_pHelpViewer)
+		if (m_helpViewer.isNull())
 		{
-			m_pHelpViewer = new HelpViewer(NULL);
+			m_helpViewer = QPointer<HelpViewer>(new HelpViewer(NULL));
+			m_helpViewer->setAttribute(Qt::WA_DeleteOnClose, true);
 		}
-		m_pHelpViewer->setCollectionFile(collectionFile_);
-		m_pHelpViewer->show();
+		m_helpViewer->setCollectionFile(collectionFile_);
+		m_helpViewer->show();
 
 #else
 		ProcessOrganizer *po = qobject_cast<ProcessOrganizer*>(AppManagement::getProcessOrganizer());
