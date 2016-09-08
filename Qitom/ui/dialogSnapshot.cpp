@@ -205,7 +205,7 @@ void DialogSnapshot::timerEvent(QTimerEvent *event)
                 }
                 else
                 {
-                    retval += ito::RetVal(ito::retError, 0, "The acquired image must be two-dimensional for a stack-acquisition");
+                    retval += ito::RetVal(ito::retError, 0, tr("The acquired image must be two-dimensional for a stack-acquisition").toLatin1().data());
                 }
             }
             else if (m_acquiredImages.size() == 1 && m_acquiredImages[0].getDims() == 3 && m_acquiredImages[0].getSize(0) > m_numSnapsDone)
@@ -217,7 +217,7 @@ void DialogSnapshot::timerEvent(QTimerEvent *event)
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, "Acquisition could not be finished. Wrong allocated stack size.");
+                retval += ito::RetVal(ito::retError, 0, tr("Acquisition could not be finished. Wrong allocated stack size.").toLatin1().data());
             }
         }
 
