@@ -41,15 +41,51 @@ Data is plotted as follows:
 * Complex types: This is the same than for real data types, however you can choose whether the *absolute*, *phase*, *real* or *imaginary* part of the complex values is plotted.
 * color type: Coloured data objects will be represented by either 3 or 4 lines (red, green and blue, alpha optional) that correspond to the three colour channels or by one line representing the converted gray values.
 
-Using Python or the properties toolbox (View >> properties or via right click on the toolbar), it is possible to adjust many properties like stated below.
+Using Python or the properties toolbox (View >> properties or via right click on the toolbar), it is possible to adjust many properties like stated in the section :ref:`itom1dqwtplot`.
 
 The plot allows value and min/max-picking via place-able marker.
 
-The plot supports geometric element and marker interaction via **drawAndPickElements(...)** and **call("userInteractionStart",...)**. See section :ref:`primitives` for a short introduction.
+The plot supports geometric element and marker interaction via **drawAndPickElements(...)** and **call("userInteractionStart",...)**. See section Properties below for a short introduction.
 
 You can also use the "matplotlib"-backend to plot slices or xy-coordinates. See section :ref:`pymod-matplotlib` for more information about how to use "matplotlib".
 
 The plot-canvas can be exported to vector and bitmap-graphics via button or menu entry or it can be exported to clipBoard via ctrl-c or a public slot.
+
+Setting properties
+-------------------------
+
+If you want to modify the lines, ploted in the :ref:`itom1dqwtplot`, individually you can do this with the help of Python or the curve properties widget (View >> curve properties or via right click on the toolbar).
+The following line properties are acessable via Python:
+
+* **visible**
+* **lineStyle**
+* **lineWidth**
+* **lineColor**
+* **lineJoinStyle**
+* **lineCapStyle**
+* **lineSymbolSize**
+* **lineSymbolStyle**
+* **legendVisible**
+
+A propertie of a line can be acessed as followed:
+
+.. code-block:: python
+    
+    plotHandle.call("setCurveProperty", index, property, value) 
+
+with the *index* (int) of the curve, the name of the *property* (str) and the value (various) the property will be set to. For a detailed description of the properties read the section below. In the file :file:`itom/demo/plots/demoPlot1DLineProperties.py` 
+a short demonstration of how to set the properties is given.
+
+For acessing the propties via the user interface the line properties widget can be used. Additional to the properties listed above the legend name, the legend visibility and the symbol color can be set.  
+
+.. figure:: images/curveProperties.png
+    :scale: 100%
+    :align: center
+This shows the curve Properties widget.
+
+If you want to set a propertie global for all curves you can also use the properties widget (View >> properties or via right click on the toolbar)
+	
+ 
 
 .. _itom1dqwtplot-ref:
 
