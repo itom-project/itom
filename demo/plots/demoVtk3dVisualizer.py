@@ -33,7 +33,7 @@ bunny_transformed_mesh = polygonMesh.fromCloudAndPolygons(bunny_cloud, bunny_pol
 
 #configure the mesh (called 'source_mesh')
 h.call("setItemProperty", "source_mesh", "ColorMode", "Z")
-h.call("setItemProperty", "source_mesh", "ColorMap", "falseColor")
+h.call("setItemProperty", "source_mesh", "ColorMap", "viridis")
 
 #a cylinder is added to the canvas. The axis of symmetry is given by a start point and an orientation vector.
 #The length of the orientation vector defines the height of the cylinder, its radius is given by the third parameter.
