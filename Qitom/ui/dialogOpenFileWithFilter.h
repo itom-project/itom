@@ -70,6 +70,9 @@ private:
     bool m_acceptedClicked;
     CheckVarname m_checkVarname;
 
+    QVector<ito::ParamBase> m_paramsMand;
+    QVector<ito::ParamBase> m_paramsOpt;
+
 private slots:
     void on_buttonBox_accepted();
     void on_tabWidget_currentChanged(int index);

@@ -134,7 +134,8 @@ QTreeWidgetItem* AbstractFilterDialog::renderParam( const ito::ParamBase &p ) co
 
     case ito::ParamBase::DObjPtr & ito::paramTypeMask:
         {
-            static const char* types[] = { "Int8", "UInt8", "Int16", "UInt16", "Int32", "UInt32", "Float32", "Float64", "Complex64", "Complex128" };
+            
+            static const char* types[] = { "Int8", "UInt8", "Int16", "UInt16", "Int32", "UInt32", "Float32", "Float64", "Complex64", "Complex128", "Rgba32" };
 
             root->setData(0, Qt::DisplayRole, "DataObject");
             ito::DataObject *dObj = (ito::DataObject*)(p.getVal<void*>());
@@ -145,6 +146,10 @@ QTreeWidgetItem* AbstractFilterDialog::renderParam( const ito::ParamBase &p ) co
                 item = new QTreeWidgetItem( l );
                 root->addChild( item );
                 l.clear();
+#ifdef _DEBUG
+                int maxTypeNum = 10; //number of items in types[] list - 1
+                Q_ASSERT(dObj->getType() >= 0 && dObj->getType() <= maxTypeNum);
+#endif
                 l << tr("type") << types[dObj->getType()];
                 item = new QTreeWidgetItem( l );
                 root->addChild( item );

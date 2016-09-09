@@ -237,11 +237,11 @@ ito::RetVal DialogOpenFileWithFilter::executeFilter()
     }
     else
     {
-        static QVector<ito::ParamBase> paramsMand;
-        static QVector<ito::ParamBase> paramsOpt;
-        retVal += m_pMandParser->getParameters(paramsMand);
-        paramsMand =  m_autoMand + paramsMand;
-        retVal += m_pOptParser->getParameters(paramsOpt);
+        m_paramsMand.clear();
+        m_paramsOpt.clear();
+        retVal += m_pMandParser->getParameters(m_paramsMand);
+        m_paramsMand = m_autoMand + m_paramsMand;
+        retVal += m_pOptParser->getParameters(m_paramsOpt);
         if(retVal.containsError())
         {
             ui.treePreview->clear();
@@ -262,7 +262,7 @@ ito::RetVal DialogOpenFileWithFilter::executeFilter()
                                                                              //have to be passed to the operating system. Else the cursor is not changed. - at least with Windows)
 
             //starts loading the file in another thread. If this is done, filterCallFinished is executed
-            filterCall = QtConcurrent::run(m_filter->m_filterFunc, &paramsMand, &paramsOpt, &m_autoOut);
+            filterCall = QtConcurrent::run(m_filter->m_filterFunc, &m_paramsMand, &m_paramsOpt, &m_autoOut);
             filterCallWatcher.setFuture(filterCall);
         }
     }
