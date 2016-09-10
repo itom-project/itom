@@ -2026,55 +2026,32 @@ ito::RetVal pointCloudToDObj(const PCLPointCloud *pc, DataObject &out)
 //------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal dataObj4x4ToEigenAffine3f(const DataObject *in, Eigen::Affine3f &out)
 {
-
     RetVal retval;
-    ito::DataObject* in2 = NULL;
 
     if (in)
     {
-        retval += ito::dObjHelper::verify2DDataObject(in, "transform", 4, 4, 4, 4, 7, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tUInt32, ito::tFloat32);
+        ito::DataObject in2 = ito::dObjHelper::squeezeConvertCheck2DDataObject(in, "transform", ito::Range(4, 4), ito::Range(4, 4), retval, ito::tFloat32, 8, ito::tInt8, ito::tUInt8, ito::tInt16, ito::tUInt16, ito::tInt32, ito::tUInt32, ito::tFloat32, ito::tFloat64);
+        
         if (!retval.containsError())
         {
-            const ito::float32* r0 = (const ito::float32*)in->rowPtr(0, 0);
-            const ito::float32* r1 = (const ito::float32*)in->rowPtr(0, 1);
-            const ito::float32* r2 = (const ito::float32*)in->rowPtr(0, 2);
-            const ito::float32* r3 = (const ito::float32*)in->rowPtr(0, 3);
+            const ito::float32* r0 = in2.rowPtr<ito::float32>(0, 0);
+            const ito::float32* r1 = in2.rowPtr<ito::float32>(0, 1);
+            const ito::float32* r2 = in2.rowPtr<ito::float32>(0, 2);
+            const ito::float32* r3 = in2.rowPtr<ito::float32>(0, 3);
 
-            if (in->getType() != ito::tFloat32)
-            {
-                in2 = new ito::DataObject();
-                retval += in->convertTo(*in2, ito::tFloat32);
+            Eigen::Matrix4f homMat;
 
-                if (retval == retOk)
-                {
-                    r0 = (const ito::float32*)in2->rowPtr(0, 0);
-                    r1 = (const ito::float32*)in2->rowPtr(0, 1);
-                    r2 = (const ito::float32*)in2->rowPtr(0, 2);
-                    r3 = (const ito::float32*)in2->rowPtr(0, 3);
-                }
-            }
+            homMat << r0[0], r0[1], r0[2], r0[3],
+                        r1[0], r1[1], r1[2], r1[3],
+                        r2[0], r2[1], r2[2], r2[3],
+                        r3[0], r3[1], r3[2], r3[3];
 
-            if (!retval.containsError())
-            {
-                Eigen::Matrix4f homMat;
-
-                homMat << r0[0], r0[1], r0[2], r0[3],
-                          r1[0], r1[1], r1[2], r1[3],
-                          r2[0], r2[1], r2[2], r2[3],
-                          r3[0], r3[1], r3[2], r3[3];
-
-                out = homMat;
-            }
+            out = homMat;
         }
     }
     else
     {
-        retval += RetVal(retError,0,"dataObject must not be NULL");
-    }
-
-    if (in2)
-    {
-        delete in2;
+        retval += RetVal(retError,0,"dataObject 'transform' must not be NULL");
     }
 
     return retval;
