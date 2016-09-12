@@ -5673,12 +5673,14 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
                 retVal += unpickleDictionary(dict, filename, true);
                 if (!retVal.containsError())
                 {
+                    PyGILState_STATE gstate = PyGILState_Ensure();
                     PyObject *key = PythonQtConversion::QStringToPyObject(packedVarName);
                     if (key)
                     {
                         PyDict_SetItem(destinationDict, key, dict);
                     }
                     Py_XDECREF(key);
+                    PyGILState_Release(gstate);
                 }
                 Py_XDECREF(dict);
             }
