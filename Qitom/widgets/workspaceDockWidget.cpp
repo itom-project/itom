@@ -159,7 +159,7 @@ void WorkspaceDockWidget::createActions()
     m_dObjPlot3d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/3d.png"), tr("3D cloud or mesh visualization"), this);
     m_dObjPlot3d->connectTrigger(this, SLOT(mnuPlot25D()));
 
-    m_actUnpack = new QAction(QIcon(":/application/icons/unpack.png"), tr("unpack dictionary"), this);
+    m_actUnpack = new QAction(QIcon(":/application/icons/unpack.png"), tr("unpack loaded dictionary from idc or mat files to workspace"), this);
     m_actUnpack->setCheckable(true);
     connect(m_actUnpack, SIGNAL(triggered()), this, SLOT(mnuToggleUnpack()));
     checkToggleUnpack();
