@@ -419,8 +419,7 @@ PyDoc_STRVAR(pyPointCloudType_doc,"returns point type of point cloud\n\
 \n\
 Notes \n\
 ----- \n\
-{} : ReadOnly ReadWrite \n\
-");
+This attribute is readonly");
 PyObject* PythonPCL::PyPointCloud_GetType(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -485,8 +484,7 @@ PyDoc_STRVAR(pyPointCloudSize_doc,"returns number of points in point cloud\n\
 \n\
 Notes \n\
 ----- \n\
-{} : ReadOnly ReadWrite \n\
-");
+This attribute is readonly");
 PyObject* PythonPCL::PyPointCloud_GetSize(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -517,8 +515,7 @@ specifies the height of the point cloud dataset in the number of points. HEIGHT 
 \n\
 Notes \n\
 ----- \n\
-{} : ReadOnly ReadWrite \n\
-");
+This attribute is readonly");
 PyObject* PythonPCL::PyPointCloud_GetHeight(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -550,8 +547,7 @@ specifies the width of the point cloud dataset in the number of points. WIDTH ha
 \n\
 Notes \n\
 ----- \n\
-{} : ReadOnly ReadWrite \n\
-");
+This attribute is readonly");
 PyObject* PythonPCL::PyPointCloud_GetWidth(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -579,8 +575,7 @@ PyDoc_STRVAR(pyPointCloudEmpty_doc,"returns whether this point cloud is empty, h
 \n\
 Notes \n\
 ----- \n\
-{} : ReadOnly ReadWrite \n\
-");
+This attribute is readonly");
 PyObject* PythonPCL::PyPointCloud_GetEmpty(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -609,8 +604,7 @@ PyDoc_STRVAR(pyPointCloudOrganized_doc,"returns whether this point cloud is orga
 \n\
 Notes \n\
 ----- \n\
-{} : ReadOnly ReadWrite \n\
-");
+This attribute is readonly");
 PyObject* PythonPCL::PyPointCloud_GetOrganized(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -635,12 +629,7 @@ PyObject* PythonPCL::PyPointCloud_GetOrganized(PyPointCloud *self, void * /*clos
 }
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudDense_doc,"specifies if all the data in points is finite (true), or whether it might contain Inf/NaN values (false).\n\
-\n\
-Notes \n\
------ \n\
-{bool} : ReadOnly ReadWrite \n\
-");
+PyDoc_STRVAR(pyPointCloudDense_doc,"specifies if all the data in points is finite (true), or whether it might contain Inf/NaN values (false)");
 PyObject* PythonPCL::PyPointCloud_GetDense(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -709,8 +698,7 @@ PyDoc_STRVAR(pyPointCloudFields_doc,"get available field names of point cloud\n\
 \n\
 Notes \n\
 ----- \n\
-{} : ReadOnly ReadWrite \n\
-");
+This attribute is readonly");
 PyObject* PythonPCL::PyPointCloud_GetFields(PyPointCloud *self, void * /*closure*/)
 {
     if (self->data == NULL)
@@ -745,11 +733,47 @@ PyObject* PythonPCL::PyPointCloud_GetFields(PyPointCloud *self, void * /*closure
 }
 
 //------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyPointCloudAppend_doc,"append(point) -> appends point at the end of the point cloud. \n\
+PyDoc_STRVAR(pyPointCloudScaleXYZ_doc, "scaleXYZ(x = 1.0, y = 1.0, z = 1.0) -> scale the x, y and z components of every point by the given values . \n\
 \n\
 Parameters \n\
 ----------- \n\
-point : {point???}, optional \n\
+x : {float}, optional \n\
+    scaling factor for x-component (default: 1.0) \n\
+y : {float}, optional \n\
+    scaling factor for y-component (default: 1.0) \n\
+z : {float}, optional \n\
+    scaling factor for z-component (default: 1.0)");
+PyObject* PythonPCL::PyPointCloud_scaleXYZ(PyPointCloud *self, PyObject *args, PyObject *kwds)
+{
+    if (self->data == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "point cloud is NULL");
+        return NULL;
+    }
+
+    //check if args contains only one point cloud
+    static char *kwlist[] = { "x", "y", "z", NULL };
+    ito::float32 x = 1.0;
+    ito::float32 y = 1.0;
+    ito::float32 z = 1.0;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|fff", kwlist, &x, &y, &z))
+    {
+        return NULL;
+    }
+
+    self->data->scaleXYZ(x, y, z);
+
+    Py_RETURN_NONE;
+}
+
+//------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCloudAppend_doc,"append(point) -> appends point or all points from given pointCloud at the end of the point cloud. \n\
+\n\
+Parameters \n\
+----------- \n\
+point : {point or pointCloud} \n\
+    point or points from pointCloud that should be appended at the list of points of this pointCloud. \n\
 \n\
 Notes \n\
 ----- \n\
@@ -1746,16 +1770,7 @@ cloud : {pointCloud}\n\
 
     if (result && self->data)
     {
-        //this is an inefficient implementation of a real deep copy constructor!
-        DELETE_AND_SET_NULL(result->data);
-        std::vector<int> indices;
-        indices.resize(self->data->size());
-        for (size_t i = 0; i < self->data->size(); ++i)
-        {
-            indices[i] = i;
-        }
-
-        result->data = new PCLPointCloud(*(self->data), indices);
+        result->data = new PCLPointCloud(self->data->copy());
     }
 
     return (PyObject*)result;
@@ -2513,6 +2528,7 @@ PyGetSetDef PythonPCL::PyPointCloud_getseters[] = {
 //---------------------------------------------------------------------------------------
 PyMethodDef PythonPCL::PyPointCloud_methods[] = {
     {"name",          (PyCFunction)PyPointCloud_name, METH_NOARGS, "name"},
+    {"scaleXYZ",      (PyCFunction)PyPointCloud_scaleXYZ, METH_KEYWORDS | METH_VARARGS, pyPointCloudScaleXYZ_doc },
     {"append",        (PyCFunction)PyPointCloud_append, METH_KEYWORDS | METH_VARARGS, pyPointCloudAppend_doc},
     {"clear",         (PyCFunction)PyPointCloud_clear, METH_NOARGS, pyPointCloudClear_doc},
     {"insert",        (PyCFunction)PyPointCloud_insert, METH_VARARGS, pyPointCloudInsert_doc},

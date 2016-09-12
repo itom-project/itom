@@ -492,6 +492,9 @@ public:
     //! assigment operator
     PCLPointCloud & operator= (const PCLPointCloud &copy);
 
+    //! make a deep copy of this point cloud
+    PCLPointCloud copy() const; 
+
     //! returns point at given position n.
     /*!
     \throws pcl::PCLException if cloud is invalid or n is out of bounds
@@ -533,6 +536,9 @@ public:
 
     //! setter to set the dense property of this point cloud
     void set_dense(bool dense);
+
+    //! setter to set the dense property of this point cloud
+    void scaleXYZ(float32 scaleX, float32 scaleY, float32 scaleZ);
 
     //! returns the header structure of this point cloud for a conversion to the old pcl::PCLPointCloud2 structure used in the pcl::PolygonMesh.
 #if PCL_VERSION_COMPARE(>=,1,7,0)
@@ -636,6 +642,7 @@ private:
     template<typename _Tp> friend void ClearFunc(ito::PCLPointCloud *pc);
     template<typename _Tp> friend void EraseFunc(ito::PCLPointCloud *pc, uint32_t startIndex, uint32_t endIndex);
     template<typename _Tp> friend void InsertFunc(ito::PCLPointCloud *pc, uint32_t index, const ito::PCLPoint& point);
+    template<typename _Tp> friend void ScaleXYZFunc(ito::PCLPointCloud *pc, ito::float32 scaleX, ito::float32 scaleY, ito::float32 scaleZ);
     template<typename _Tp> friend std::string GetFieldsListFunc(const ito::PCLPointCloud *pc);
 
 

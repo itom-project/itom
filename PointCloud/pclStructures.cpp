@@ -632,6 +632,21 @@ PCLPointCloud::PCLPointCloud (const PCLPointCloud &pc, const std::vector< int > 
 }
 
 //---------------------------------------------------------------------------------------------------------------
+//! make a deep copy of this point cloud
+PCLPointCloud PCLPointCloud::copy() const
+{
+    //this is an inefficient way to do a deep-copy
+    std::vector<int> indices;
+    indices.resize(size());
+    for (size_t i = 0; i < size(); ++i)
+    {
+        indices[i] = i;
+    }
+
+    return PCLPointCloud(*this, indices);
+}
+
+//---------------------------------------------------------------------------------------------------------------
 void PCLPointCloud::setInvalid()
 {
     createEmptyPointCloud(ito::pclInvalid);
@@ -755,7 +770,8 @@ PCLMAKEFUNCLIST(GetSizeFunc)
 size_t PCLPointCloud::size() const
 {
     int idx = getFuncListIndex();
-    if(idx >= 0)    return fListGetSizeFunc[idx](this);
+    if(idx >= 0)    
+        return fListGetSizeFunc[idx](this);
     return 0;
 }
 
@@ -842,6 +858,32 @@ void PCLPointCloud::set_dense(bool dense)
     int idx = getFuncListIndex();
     if(idx >= 0)    return fListSetDenseFunc[idx](this, dense);
     throw pcl::PCLException("invalid point cloud",__FILE__, "set_dense", __LINE__);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> void ScaleXYZFunc(ito::PCLPointCloud *pc, ito::float32 scaleX, ito::float32 scaleY, ito::float32 scaleZ)
+{
+   pcl::PointCloud<_Tp>* temp = getPointCloudPtrInternal<_Tp >(*pc);
+   if(temp)
+   {
+       for (int i = 0; i < temp->points.size(); ++i)
+       {
+           temp->points[i].x *= scaleX;
+           temp->points[i].y *= scaleY;
+           temp->points[i].z *= scaleZ;
+       }
+       return;
+   }
+   throw pcl::PCLException("shared pointer is NULL",__FILE__, "scaleXYZ", __LINE__);
+}
+
+typedef void(*tScaleXYZFunc)(ito::PCLPointCloud *pc, ito::float32 scaleX, ito::float32 scaleY, ito::float32 scaleZ);
+PCLMAKEFUNCLIST(ScaleXYZFunc)
+void PCLPointCloud::scaleXYZ(float32 scaleX, float32 scaleY, float32 scaleZ)
+{
+    int idx = getFuncListIndex();
+    if (idx >= 0)    return fListScaleXYZFunc[idx](this, scaleX, scaleY, scaleZ);
+    throw pcl::PCLException("invalid point cloud",__FILE__, "scaleXYZ", __LINE__);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
