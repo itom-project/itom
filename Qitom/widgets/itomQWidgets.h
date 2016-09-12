@@ -33,6 +33,7 @@
 namespace ito
 {
 
+//----------------------------------------------------------------------------------------------------------------------------------
 /*!
     This class inherits QTabWidget and only has the additional inline function to get the member tabBar of QTabWidget.
     In QTabWidget this member is protected.
@@ -40,117 +41,120 @@ namespace ito
 class QTabWidgetItom : public QTabWidget
 {
     Q_OBJECT
-public:
-    QTabWidgetItom(QWidget * parent = 0) : QTabWidget(parent) {};
+
+    public:
+        QTabWidgetItom(QWidget * parent = 0) : QTabWidget(parent) {};
  
-    inline QTabBar* getTabBar() {return tabBar(); };
+        inline QTabBar* getTabBar() {return tabBar(); };
 
-protected:
-    void contextMenuEvent (QContextMenuEvent * event)
-    {
-        emit tabContextMenuEvent(event);
-        event->accept();
-    };
+    protected:
+        void contextMenuEvent (QContextMenuEvent * event)
+        {
+            emit tabContextMenuEvent(event);
+            event->accept();
+        };
 
-signals:
-    void tabContextMenuEvent (QContextMenuEvent *event);
+    signals:
+        void tabContextMenuEvent (QContextMenuEvent *event);
 };
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 class QTreeViewItom : public QTreeView
 {
     Q_OBJECT
 
-public:
-    QTreeViewItom(QWidget * parent = 0) : QTreeView(parent) {}
-    ~QTreeViewItom () {}
+    public:
+        QTreeViewItom(QWidget * parent = 0) : QTreeView(parent) {}
+        ~QTreeViewItom () {}
 
-    QModelIndexList selectedIndexes() const
-    { 
-        QModelIndexList retList;
-        for (int i = 0; i < QTreeView::selectedIndexes().length(); ++i)
-        {
-            if (QTreeView::selectedIndexes().at(i).column() == 0)
+        QModelIndexList selectedIndexes() const
+        { 
+            QModelIndexList retList;
+            for (int i = 0; i < QTreeView::selectedIndexes().length(); ++i)
             {
-                retList.append(QTreeView::selectedIndexes().at(i));
+                if (QTreeView::selectedIndexes().at(i).column() == 0)
+                {
+                    retList.append(QTreeView::selectedIndexes().at(i));
+                }
             }
+            return retList;
         }
-        return retList;
-    }
 
-protected:
-    virtual void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
-    {
-        QTreeView::selectionChanged(selected, deselected);
-        emit selectedItemsChanged(selected, deselected);
-    }
+    protected:
+        virtual void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
+        {
+            QTreeView::selectionChanged(selected, deselected);
+            emit selectedItemsChanged(selected, deselected);
+        }
 
-signals:
-    void selectedItemsChanged(const QItemSelection &selected, const QItemSelection &deselected);
+    signals:
+        void selectedItemsChanged(const QItemSelection &selected, const QItemSelection &deselected);
 };
 
+//----------------------------------------------------------------------------------------------------------------------------------
 class QListViewItom : public QListView
 {
     Q_OBJECT
 
-public:
-    QListViewItom(QWidget * parent = 0) : QListView(parent) {}
-    ~QListViewItom () {}
+    public:
+        QListViewItom(QWidget * parent = 0) : QListView(parent) {}
+        ~QListViewItom () {}
 
-    QModelIndexList selectedIndexes() const
-    { 
-        QModelIndexList retList;
-        for (int i = 0; i < QListView::selectedIndexes().length(); ++i)
-        {
-            if (QListView::selectedIndexes().at(i).column() == 0)
+        QModelIndexList selectedIndexes() const
+        { 
+            QModelIndexList retList;
+            for (int i = 0; i < QListView::selectedIndexes().length(); ++i)
             {
-                retList.append(QListView::selectedIndexes().at(i));
+                if (QListView::selectedIndexes().at(i).column() == 0)
+                {
+                    retList.append(QListView::selectedIndexes().at(i));
+                }
             }
+            return retList;
         }
-        return retList;
-    }
 
-protected:
-    virtual void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
-    {
-        QListView::selectionChanged(selected, deselected);
-        emit selectedItemsChanged(selected, deselected);
-    }
+    protected:
+        virtual void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
+        {
+            QListView::selectionChanged(selected, deselected);
+            emit selectedItemsChanged(selected, deselected);
+        }
 
-signals:
-    void selectedItemsChanged(const QItemSelection &selected, const QItemSelection &deselected);
+    signals:
+        void selectedItemsChanged(const QItemSelection &selected, const QItemSelection &deselected);
 };
 
+//----------------------------------------------------------------------------------------------------------------------------------
 class QTableViewItom : public QTableView
 {
     Q_OBJECT
 
-public:
-    QTableViewItom(QWidget * parent = 0) : QTableView(parent) {}
-    ~QTableViewItom () {}
+    public:
+        QTableViewItom(QWidget * parent = 0) : QTableView(parent) {}
+        ~QTableViewItom () {}
 
-    QModelIndexList selectedIndexes() const
-    { 
-        QModelIndexList retList;
-        for (int i = 0; i < QTableView::selectedIndexes().length(); ++i)
-        {
-            if (QTableView::selectedIndexes().at(i).column() == 0)
+        QModelIndexList selectedIndexes() const
+        { 
+            QModelIndexList retList;
+            for (int i = 0; i < QTableView::selectedIndexes().length(); ++i)
             {
-                retList.append(QTableView::selectedIndexes().at(i));
+                if (QTableView::selectedIndexes().at(i).column() == 0)
+                {
+                    retList.append(QTableView::selectedIndexes().at(i));
+                }
             }
+            return retList;
         }
-        return retList;
-    }
 
-protected:
-    virtual void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
-    {
-        QTableView::selectionChanged(selected, deselected);
-        emit selectedItemsChanged(selected, deselected);
-    }
+    protected:
+        virtual void selectionChanged(const QItemSelection & selected, const QItemSelection & deselected)
+        {
+            QTableView::selectionChanged(selected, deselected);
+            emit selectedItemsChanged(selected, deselected);
+        }
 
-signals:
-    void selectedItemsChanged(const QItemSelection &selected, const QItemSelection &deselected);
+    signals:
+        void selectedItemsChanged(const QItemSelection &selected, const QItemSelection &deselected);
 };
 
 } //end namespace ito

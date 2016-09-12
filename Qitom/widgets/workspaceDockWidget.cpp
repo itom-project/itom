@@ -34,6 +34,7 @@
 #include <qurl.h>
 #include <qfileinfo.h>
 #include <qmimedata.h>
+#include <qsettings.h>
 
 namespace ito {
 
@@ -67,7 +68,8 @@ WorkspaceDockWidget::WorkspaceDockWidget(const QString &title, const QString &ob
     m_dObjPlot1d(NULL),
     m_dObjPlot2d(NULL),
     m_dObjPlot25d(NULL),
-    m_separatorSpecialActions(NULL),
+    m_separatorSpecialActionsToolBar(NULL),
+    m_separatorSpecialActionsContextMenu(NULL),
     m_pMainToolBar(NULL),
     m_pContextMenu(NULL),
     m_firstCurrentItem(NULL),
@@ -84,6 +86,7 @@ WorkspaceDockWidget::WorkspaceDockWidget(const QString &title, const QString &ob
     connect(m_pWorkspaceWidget, SIGNAL(itemSelectionChanged()), this, SLOT(treeWidgetItemSelectionChanged()));
     connect(m_pWorkspaceWidget, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(treeWidgetItemChanged(QTreeWidgetItem*, int)));
     connect(m_pWorkspaceWidget, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(treeViewContextMenuRequested(const QPoint &)));
+    connect(AppManagement::getMainApplication(), SIGNAL(propertiesChanged()), this, SLOT(propertiesChanged()));
 
     ito::PyWorkspaceContainer *cont = m_pWorkspaceWidget->getWorkspaceContainer();
     PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
@@ -97,7 +100,7 @@ WorkspaceDockWidget::WorkspaceDockWidget(const QString &title, const QString &ob
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! constructor
+//! destructor
 /*!
     long description
 
@@ -109,6 +112,8 @@ WorkspaceDockWidget::~WorkspaceDockWidget()
 {
     disconnect(m_pWorkspaceWidget, SIGNAL(itemSelectionChanged()), this, SLOT(treeWidgetItemSelectionChanged()));
     disconnect(m_pWorkspaceWidget, SIGNAL(itemChanged(QTreeWidgetItem*, int)), this, SLOT(treeWidgetItemChanged(QTreeWidgetItem*, int)));
+    disconnect(m_pWorkspaceWidget, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(treeViewContextMenuRequested(const QPoint &)));
+    disconnect(AppManagement::getMainApplication(), SIGNAL(propertiesChanged()), this, SLOT(propertiesChanged()));
 
     ito::PyWorkspaceContainer *cont = m_pWorkspaceWidget->getWorkspaceContainer();
     PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
@@ -153,6 +158,11 @@ void WorkspaceDockWidget::createActions()
     m_dObjPlot25d->connectTrigger(this, SLOT(mnuPlot25D()));
     m_dObjPlot3d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/3d.png"), tr("3D cloud or mesh visualization"), this);
     m_dObjPlot3d->connectTrigger(this, SLOT(mnuPlot25D()));
+
+    m_actUnpack = new QAction(QIcon(":/application/icons/unpack.png"), tr("unpack dictionary"), this);
+    m_actUnpack->setCheckable(true);
+    connect(m_actUnpack, SIGNAL(triggered()), this, SLOT(mnuToggleUnpack()));
+    checkToggleUnpack();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -172,20 +182,28 @@ void WorkspaceDockWidget::createToolBars()
 
     m_pMainToolBar->addAction(m_actImport->action());
     m_pMainToolBar->addAction(m_actExport->action());
+    m_pMainToolBar->addAction(m_actUnpack);
+    m_pMainToolBar->addSeparator();
     m_pMainToolBar->addAction(m_actDelete->action());
     m_pMainToolBar->addAction(m_actRename->action());
+    m_separatorSpecialActionsToolBar = m_pMainToolBar->addSeparator();
+    m_pMainToolBar->addAction(m_dObjPlot1d->action());
+    m_pMainToolBar->addAction(m_dObjPlot2d->action());
+    m_pMainToolBar->addAction(m_dObjPlot25d->action());
+    m_pMainToolBar->addAction(m_dObjPlot3d->action());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void WorkspaceDockWidget::createMenus()
 {
     m_pContextMenu = new QMenu(this);
+    m_pContextMenu->addAction(m_actImport->action());
+    m_pContextMenu->addAction(m_actExport->action());
+    m_pContextMenu->addAction(m_actUnpack);
+    m_pContextMenu->addSeparator();
     m_pContextMenu->addAction(m_actDelete->action());
     m_pContextMenu->addAction(m_actRename->action());
-    m_pContextMenu->addSeparator();
-    m_pContextMenu->addAction(m_actExport->action());
-    m_pContextMenu->addAction(m_actImport->action());
-    m_separatorSpecialActions = m_pContextMenu->addSeparator();
+    m_separatorSpecialActionsContextMenu = m_pContextMenu->addSeparator();
     m_pContextMenu->addAction(m_dObjPlot1d->action());
     m_pContextMenu->addAction(m_dObjPlot2d->action());
     m_pContextMenu->addAction(m_dObjPlot25d->action());
@@ -350,6 +368,20 @@ void WorkspaceDockWidget::mnuRenameItem()
     {
         m_firstCurrentItemKey = QString::Null();
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! slot invoked if the unpack dictionary button has been clicked in the menu
+/*!
+    when importing an *.idc or *.mat file to the workspace, it is either possible to unpack all values within the file and load them as separate variables 
+    to the workspace or to load the content of the file as one single dictionary (name of the dictionary will be requested by an input dialog)
+*/
+void WorkspaceDockWidget::mnuToggleUnpack()
+{
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("Workspace");
+    settings.setValue("importIdcMatUnpackDict", m_actUnpack->isChecked());
+    settings.endGroup();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -578,10 +610,11 @@ void WorkspaceDockWidget::updateActions()
     {
         int num = m_pWorkspaceWidget->numberOfSelectedItems();
         int numToBeRenamed = m_pWorkspaceWidget->numberOfSelectedItems(true);
-        int i=0;
+        int i = 0;
 
         if (num > 0)
         {
+//            actDeleteEnabled = m_actDelete->en
             QList<QTreeWidgetItem*> items = m_pWorkspaceWidget->selectedItems();
 
             m_firstCurrentItem = NULL;
@@ -614,7 +647,7 @@ void WorkspaceDockWidget::updateActions()
                     }
                 }
 
-                m_separatorSpecialActions->setVisible(plotDObjOk || plotCloudOk);
+                m_separatorSpecialActionsToolBar->setVisible(plotDObjOk || plotCloudOk);
                 m_dObjPlot1d->setVisible(plotDObjOk);
                 m_dObjPlot2d->setVisible(plotDObjOk);
                 m_dObjPlot25d->setVisible(plotDObjOk);
@@ -632,7 +665,7 @@ void WorkspaceDockWidget::updateActions()
 
                 if (compatibleTypes == ito::ParamBase::DObjPtr)
                 {
-                    m_separatorSpecialActions->setVisible(true);
+                    m_separatorSpecialActionsToolBar->setVisible(true);
                     m_dObjPlot1d->setVisible(true);
                     m_dObjPlot2d->setVisible(true);
                     m_dObjPlot25d->setVisible(true);
@@ -640,7 +673,7 @@ void WorkspaceDockWidget::updateActions()
                 }
                 else if (compatibleTypes == ito::ParamBase::PointCloudPtr || compatibleTypes == ito::ParamBase::PolygonMeshPtr)
                 {
-                    m_separatorSpecialActions->setVisible(true);
+                    m_separatorSpecialActionsToolBar->setVisible(true);
                     m_dObjPlot1d->setVisible(false);
                     m_dObjPlot2d->setVisible(false);
                     m_dObjPlot25d->setVisible(false);
@@ -648,7 +681,7 @@ void WorkspaceDockWidget::updateActions()
                 }
                 else
                 {
-                    m_separatorSpecialActions->setVisible(false);
+                    m_separatorSpecialActionsToolBar->setVisible(false);
                     m_dObjPlot1d->setVisible(false);
                     m_dObjPlot2d->setVisible(false);
                     m_dObjPlot25d->setVisible(false);
@@ -659,7 +692,13 @@ void WorkspaceDockWidget::updateActions()
         else
         {
             m_firstCurrentItem = NULL;
+            m_separatorSpecialActionsToolBar->setVisible(false);
+            m_dObjPlot1d->setVisible(false);
+            m_dObjPlot2d->setVisible(false);
+            m_dObjPlot25d->setVisible(false);
+            m_dObjPlot3d->setVisible(false);
         }
+        m_separatorSpecialActionsContextMenu->setVisible(m_separatorSpecialActionsToolBar->isVisible());
 
         if (m_globalNotLocal)
         {
@@ -668,8 +707,6 @@ void WorkspaceDockWidget::updateActions()
             m_actExport->setEnabled(num > 0 && pythonFree);
             m_actImport->setEnabled(pythonFree);
             m_actRename->setEnabled(numToBeRenamed == 1 && pythonFree);
-
-            
         }
         else
         {
@@ -700,7 +737,6 @@ void WorkspaceDockWidget::treeWidgetItemChanged(QTreeWidgetItem * item, int /*co
         PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
         if (eng)
         {
-
             ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore(1));
 
             QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -767,9 +803,11 @@ void WorkspaceDockWidget::dragEnterEvent(QDragEnterEvent *event)
                 }
             }
 
-            if (!ok) return;
+            if (!ok)
+            {
+                return;
+            }
         }
-
 
         event->acceptProposedAction();
     }
@@ -787,6 +825,21 @@ void WorkspaceDockWidget::dropEvent(QDropEvent *event)
         localFile = url.toLocalFile();
         IOHelper::openGeneralFile(localFile, false, true, this, 0, m_globalNotLocal);
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WorkspaceDockWidget::checkToggleUnpack()
+{
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("Workspace");
+    m_actUnpack->setChecked(settings.value("importIdcMatUnpackDict", "true").toBool());
+    settings.endGroup();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WorkspaceDockWidget::propertiesChanged()
+{
+    checkToggleUnpack();
 }
 
 } //end namespace ito

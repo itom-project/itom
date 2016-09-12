@@ -42,8 +42,8 @@ namespace ito
 		settings.beginGroup("Workspace");
 		ui.checkBoxUnpackDictionary->setChecked(settings.value("importIdcMatUnpackDict", "true").toBool());
 		settings.endGroup();
-
 	}
+
 //----------------------------------------------------------------------------------------------------------------------------------
 	void WidgetPropWorkspaceUnpack::writeSettings()
 	{
@@ -51,8 +51,6 @@ namespace ito
 		settings.beginGroup("Workspace");
 		settings.setValue("importIdcMatUnpackDict", ui.checkBoxUnpackDictionary->isChecked());
 		settings.endGroup();
-
-
 	}
 
 }//endNamespace ito

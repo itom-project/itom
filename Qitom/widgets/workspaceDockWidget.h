@@ -64,9 +64,11 @@ private:
     ShortcutAction *m_actRename;
     ShortcutAction *m_actExport;
     ShortcutAction *m_actImport;
+    QAction *m_actUnpack;
 
     //special actions
-    QAction *m_separatorSpecialActions;
+    QAction *m_separatorSpecialActionsToolBar;
+    QAction *m_separatorSpecialActionsContextMenu;
     ShortcutAction *m_dObjPlot1d;
     ShortcutAction *m_dObjPlot2d;
     ShortcutAction *m_dObjPlot25d;
@@ -84,6 +86,7 @@ private slots:
     void mnuExportItem();
     void mnuImportItem();
     void mnuRenameItem();
+    void mnuToggleUnpack();
     void mnuPlot1D();
     void mnuPlot2D();
     void mnuPlot25D();
@@ -91,6 +94,10 @@ private slots:
     void treeWidgetItemSelectionChanged() { updateActions(); };
     void treeWidgetItemChanged(QTreeWidgetItem * item, int column);
     void treeViewContextMenuRequested(const QPoint &pos);
+
+public slots:
+    void checkToggleUnpack();
+    void propertiesChanged();
 
 signals:
     void setStatusInformation(QString text, int timeout = 0);

@@ -44,7 +44,7 @@
         <file>icons/global.png</file>
     </qresource>
     <qresource prefix="/application">
-        <file>icons/helpAboutQt.png</file>
+        <file alias="unpack">icons/helpAboutQt.png</file>
         <file>icons/help.png</file>
         <file>icons/scriptReference.png</file>
         <file>icons/preferences-general.png</file>
@@ -70,8 +70,9 @@
         <file>icons/pin.png</file>
         <file>icons/pinChecked.png</file>
         <file>icons/color-icon.png</file>
-		<file>icons/timerStop.png</file>
-		<file>icons/timerRun.png</file>
+        <file>icons/timerStop.png</file>
+        <file>icons/timerRun.png</file>
+        <file>icons/unpack.png</file>
     </qresource>
     <qresource prefix="/arrows">
         <file>icons/2downarrow.png</file>
@@ -166,7 +167,7 @@
         <file>icons/document-export.png</file>
         <file>icons/document-import.png</file>
         <file>icons/edit-rename.png</file>
-		<file>icons/import-prop-icon.png</file>
+        <file>icons/import-prop-icon.png</file>
     </qresource>
     <qresource prefix="/plots">
         <file>icons/lineDash.png</file>
