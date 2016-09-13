@@ -684,7 +684,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
 							QString detaileddesc = aib->getDetailDescription();
 							if (detaileddesc != NULL)
 							{
-								desc.append("<br><br>");
+								desc.append("\n\n");
 								desc.append(detaileddesc);
 							}
                             docString.replace("%INFO%", parseFilterWidgetContent(desc));
