@@ -1,3 +1,5 @@
+.. include:: /include/global.inc
+
 .. sectionauthor:: Marc Gronle
 
 .. _todo:

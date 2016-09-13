@@ -25,6 +25,8 @@ from sys import platform as _platform
 #def process_signature(app, what, name, obj, options, signature, return_annotation):
 #    pass
 
+clc()
+
 all_files = True
 filenames = False
 confoverrides = {}

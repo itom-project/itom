@@ -28,5 +28,6 @@ If you want to program your own plugin, see the following sections of the docume
     :maxdepth: 2
    
     development/plugin-development.rst
+    development/openCVMat.rst
 
  

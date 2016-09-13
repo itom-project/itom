@@ -19,7 +19,7 @@ to many main functionalities of |itom|. Additionally, every opened hardware plug
 can also be docked into |itom|'s main window.
 
 Further functionalities of |itom| are reached by the menu or the toolbars. It is possible to add further user defined 
-menus and toolbars using the python scripting language (see toolbar-start_).
+menus and toolbars using the python scripting language (see :ref:`toolbar-start`).
 
 .. _console:
 

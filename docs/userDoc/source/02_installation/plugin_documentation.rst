@@ -23,7 +23,7 @@ be written in the so called reStructured-Text format rst (see http://sphinx-doc.
 
 3. If the plugin is build, its build folder will get a **docs** subfolder, too. This subfolder consists of a file **plugin_doc_config.cfg**.
 
-If these requirements are given, start |itom| and execute the script **create_plugin_doc.py** in the **docs/pluginDoc** directory of the build directory of |itom|.
+If these requirements are given, start |itom| and execute the script **create_plugin_doc.py** in the **docs/pluginDoc** directory of the build directory of |itom| .
 Then select the *.cfg-file describing the plugin documentation in its specific build folder.
 
 In order to simultaneously create the documentations of many plugins, execute **create_all_plugin_docs.py** and indicate the build folder that contains the build-subfolders

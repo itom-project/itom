@@ -9,3 +9,4 @@ figure
     :show-inheritance:
     :member-order: groupwise
     :members:
+    :noindex:

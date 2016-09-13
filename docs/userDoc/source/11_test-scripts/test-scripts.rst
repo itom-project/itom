@@ -15,3 +15,4 @@ The following list gives a short description of each demo.
    test-scripts_plugins.rst
    test-scripts_algorithm.rst
    test-scripts_ui.rst
+   demoCameraWindow.rst

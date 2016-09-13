@@ -1,5 +1,7 @@
 .. include:: ../include/global.inc
 
+.. |star| unicode:: U+002A
+
 .. _install-all-in-one-dev-setup_creation:
 
 All-In-One development creation
@@ -91,7 +93,7 @@ For a working |itom| development environment only a prebuild version of Qt is ne
 * Install Qt into the **${MAINDIR}**/3rdParty/Qt5.6.0 with the components msvc2013 64-bit, Qt WebView, Qt WebEngine. Qt Creator is not necessary, but can not be unchecked
 * After the installation copy the folder to another location (**${MAINDIR}**/3rdParty/Qt5.6.0_backup) and uninstall Qt in the Windows program settings
 * Rename Qt5.6.0_backup back to Qt5.6.0
-* From Qt5.6.0/Docs/Qt-5.6 copy all *.qch files (only in the main folder) to Qt5.6.0/5.6/msvc2013_64/doc 
+* From Qt5.6.0/Docs/Qt-5.6 copy all |star| .qch files (only in the main folder) to Qt5.6.0/5.6/msvc2013_64/doc 
 * From Qt5.6.0 delete the following things: 
     * folder: dist, Examples, Tools, vcredist, Docs (after having copied the qch files)
     * files: all files in the main folder, e. g. components.xml...

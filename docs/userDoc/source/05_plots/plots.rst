@@ -35,6 +35,7 @@ Content:
    markers
    shapes
    matplotlib
+   primitives
 
 
 There are further custom widgets for the QtDesigner which realized itom specific non-plotting functions. See section :ref:`listCustomDesignerWidgets` for the widget description.

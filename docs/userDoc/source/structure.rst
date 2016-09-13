@@ -1,3 +1,5 @@
+.. include:: /include/global.inc
+
 Structure of the manual
 =======================
 

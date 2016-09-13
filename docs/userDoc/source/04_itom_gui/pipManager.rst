@@ -78,7 +78,7 @@ This is useful especially if you want to upgrade or re-install Numpy, since Nump
 Python has been loaded in itom. If you want to directly start the package manager, call the application **qitom** or **qitom.exe** with 
 the argument **pipManager**:
 
-.. code-blocks::
+.. code-block::
     
     qitom.exe pipManager
     
