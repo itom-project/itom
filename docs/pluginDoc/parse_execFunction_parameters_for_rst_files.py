@@ -1,5 +1,7 @@
 import itom
 
+clc()
+
 #choose instance
 varnames = [name for name in dir() if (type(globals()[name]) is itom.actuator or type(globals()[name]) is itom.dataIO)]
 [name,success] = ui.getItem("Choose instance", "Choose actuator or dataIO instance", varnames, editable=False)
