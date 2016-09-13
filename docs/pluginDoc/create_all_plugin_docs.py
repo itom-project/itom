@@ -2,6 +2,8 @@ import fnmatch
 import os
 import create_plugin_doc
 
+clc()
+
 try:
     if (defaultDir is None):
         defaultDir = ""
