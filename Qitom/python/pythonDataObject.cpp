@@ -7895,7 +7895,7 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
 
         {"tolist", (PyCFunction)PythonDataObject::PyDataObj_ToList, METH_NOARGS, pyDataObjectToList_doc}, //"returns nested list of content of data object"
         {"toGray", (PyCFunction)PythonDataObject::PyDataObj_ToGray, METH_KEYWORDS | METH_VARARGS, pyDataObj_ToGray_doc},
-        {"toNumpyColor", (PyCFunction)PythonDataObject::PyDataObj_ToNumpyColor, METH_KEYWORDS | METH_VARARGS, pyDataObj_ToGray_doc },
+        {"toNumpyColor", (PyCFunction)PythonDataObject::PyDataObj_ToNumpyColor, METH_KEYWORDS | METH_VARARGS, pyDataObj_ToNumpyColor_doc },
         {NULL}  /* Sentinel */
     };
 
