@@ -7270,13 +7270,15 @@ DataObject DataObject::splitColor(const char* destinationColor, const int& dtype
     {
         cv::error(cv::Exception(CV_StsAssert, "data type of dataObject must be rgba32.", "", __FILE__, __LINE__));
     }
-
-    if (destinationColor[0] != 'b' && destinationColor[0] != 'r' \
-        && destinationColor[0] != 'g' && destinationColor[0] != 'a')
+    int numChannels = strlen(destinationColor);
+    for (int channel = 0; channel < numChannels; ++channel)
     {
-        cv::error(cv::Exception(CV_StsAssert, "unknown color.", "", __FILE__, __LINE__));
+        if (destinationColor[channel] != 'b' && destinationColor[channel] != 'r' \
+            && destinationColor[channel] != 'g' && destinationColor[channel] != 'a')
+        {
+            cv::error(cv::Exception(CV_StsAssert, "unknown color.", "", __FILE__, __LINE__));
+        }
     }
-
     DataObject resObj;
     
     switch (dtype)
