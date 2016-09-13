@@ -7053,6 +7053,64 @@ dataObj : {dataObject} \n\
 
     return (PyObject*)retObj;
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObj_SplitColor_doc, "splitColor(color, [destinationType='uint8']) -> returns a seperated color channel of a rgba32 color data object\n\
+\n\
+The destination data object has the same size than this data object if only one color is extracted. The output will have one dimension more if there are more than one colors extracted.\
+Each elemt of the new dimension corrspomnds to one color. \
+The type can given by destinationType.\
+\n\
+Parameters \n\
+----------- \n\
+color : {str} \n\
+    Color string indicating the color(s) to be extracted ('b','r','g','a'). It is possible to combine the colors for ex. 'rgb', \n\
+so that each color corresponds to one elemnt of the first dimension of the output dataObject\n\
+\n\
+destinationType : {str} \n\
+    Type string indicating the new real type ('int8',...'float32','float64' - no complex) \n\
+\n\
+Returns \n\
+------- \n\
+dataObj : {dataObject} \n\
+    containing the selected channel values");
+/*static*/ PyObject* PythonDataObject::PyDataObj_SplitColor(PyDataObject *self, PyObject *args, PyObject *kwds)
+{
+    int typeno = ito::tUInt8;
+    const char* type = NULL;
+    const char* color = NULL;
+    const char *kwlist[] = { "color", "destinationType", NULL };
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "s|s", const_cast<char**>(kwlist), &color, &type))
+    {
+        return NULL;
+    }
+    if (type)
+    {
+        typeno = typeNameToNumber(type);
+    }
+    if (typeno == -1)
+    {
+        PyErr_Format(PyExc_TypeError, "The given type string '%s' is unknown", type);
+        return NULL;
+    }
+    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+    try
+    {
+        retObj->dataObject = new ito::DataObject(self->dataObject->splitColor(color , typeno));
+    }
+    catch (cv::Exception &exc)
+    {
+        Py_DECREF(retObj);
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        return NULL;
+    }
+    if (!retObj->dataObject->getOwnData())
+    {
+        PyDataObject_SetBase(retObj, (PyObject*)self);
+    }
+    if (retObj) retObj->dataObject->addToProtocol("Extracted color data from RGBA32-type dataObject.");
+
+    return (PyObject*)retObj;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyDataObj_ToNumpyColor_doc, "toNumpyColor([addAlphaChannel = 0]) -> convert a 2D dataObject of type 'rgba32' to a 3D 'uint8' numpy.array whose last dimension is 3 (no alpha channel) or 4.\n\
@@ -7896,6 +7954,7 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"tolist", (PyCFunction)PythonDataObject::PyDataObj_ToList, METH_NOARGS, pyDataObjectToList_doc}, //"returns nested list of content of data object"
         {"toGray", (PyCFunction)PythonDataObject::PyDataObj_ToGray, METH_KEYWORDS | METH_VARARGS, pyDataObj_ToGray_doc},
         {"toNumpyColor", (PyCFunction)PythonDataObject::PyDataObj_ToNumpyColor, METH_KEYWORDS | METH_VARARGS, pyDataObj_ToNumpyColor_doc },
+        {"splitColor", (PyCFunction)PythonDataObject::PyDataObj_SplitColor, METH_KEYWORDS | METH_VARARGS, pyDataObj_SplitColor_doc},
         {NULL}  /* Sentinel */
     };
 

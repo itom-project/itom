@@ -85,6 +85,8 @@ class PythonRgba
 
         static PyObject *PyRgba_toGray(PyRgba *self);
 
+        static PyObject *PyRgba_toColor(PyRgba *self);
+
         static PyObject* PyRgba_RichCompare(PyRgba *self, PyObject *other, int cmp_op);
 
         static PyGetSetDef PyRgba_getseters[];

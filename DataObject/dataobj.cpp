@@ -7055,15 +7055,15 @@ template<typename _Tp> RetVal GrayScaleCastFunc(const DataObject *dObj, DataObje
         {
             srcMat = dObj->getCvPlaneMat(nmat);
             dstMat = resObj->getCvPlaneMat(nmat);
-            for (int y = 0; y < sizey; y++)
-            {
-                dstPtr = dstMat->ptr<_Tp>(y);
-                srcPtr = srcMat->ptr<const ito::Rgba32>(y);
-                for (int x = 0; x < sizex; x++)
-                {
-                    dstPtr[x] = cv::saturate_cast<_Tp>(0.299 * srcPtr[x].r + 0.587 * srcPtr[x].g + 0.114 * srcPtr[x].b);
-                }
-            }
+for (int y = 0; y < sizey; y++)
+{
+    dstPtr = dstMat->ptr<_Tp>(y);
+    srcPtr = srcMat->ptr<const ito::Rgba32>(y);
+    for (int x = 0; x < sizex; x++)
+    {
+        dstPtr[x] = cv::saturate_cast<_Tp>(0.299 * srcPtr[x].r + 0.587 * srcPtr[x].g + 0.114 * srcPtr[x].b);
+    }
+}
         }
     }
     else
@@ -7095,52 +7095,52 @@ template<typename _Tp> RetVal GrayScaleCastFunc(const DataObject *dObj, DataObje
     \throws cv::Exception if cast failed, e.g. if cast not possible or types unknown
     \return cast data object
     \sa convertTo, CastFunc
-*/
+    */
 DataObject DataObject::toGray(const int destinationType /*= ito::tUInt8*/) const
 {
     if (this->m_type != ito::tRGBA32)
     {
-        cv::error(cv::Exception(CV_StsAssert,"data type of dataObject must be rgba32.","", __FILE__, __LINE__));
+        cv::error(cv::Exception(CV_StsAssert, "data type of dataObject must be rgba32.", "", __FILE__, __LINE__));
     }
     else if (destinationType == ito::tComplex64 || destinationType == ito::tComplex128)
     {
-        cv::error(cv::Exception(CV_StsAssert,"destinationType must be real.","", __FILE__, __LINE__));
+        cv::error(cv::Exception(CV_StsAssert, "destinationType must be real.", "", __FILE__, __LINE__));
     }
-    
+
     DataObject resObj = DataObject(m_dims, m_size, destinationType);
 
     switch (destinationType)
     {
-        case ito::tInt8:
-            GrayScaleCastFunc<int8>(this, &resObj);
+    case ito::tInt8:
+        GrayScaleCastFunc<int8>(this, &resObj);
         break;
 
-        case ito::tUInt8:
-            GrayScaleCastFunc<uint8>(this, &resObj);
+    case ito::tUInt8:
+        GrayScaleCastFunc<uint8>(this, &resObj);
         break;
 
-        case ito::tInt16:
-            GrayScaleCastFunc<int16>(this, &resObj);
+    case ito::tInt16:
+        GrayScaleCastFunc<int16>(this, &resObj);
         break;
 
-        case ito::tUInt16:
-            GrayScaleCastFunc<uint16>(this, &resObj);
+    case ito::tUInt16:
+        GrayScaleCastFunc<uint16>(this, &resObj);
         break;
 
-        case ito::tInt32:
-            GrayScaleCastFunc<uint32>(this, &resObj);
+    case ito::tInt32:
+        GrayScaleCastFunc<uint32>(this, &resObj);
         break;
 
-        case ito::tFloat32:
-            GrayScaleCastFunc<float32>(this, &resObj);
+    case ito::tFloat32:
+        GrayScaleCastFunc<float32>(this, &resObj);
         break;
 
-        case ito::tFloat64:
-            GrayScaleCastFunc<float64>(this, &resObj);
+    case ito::tFloat64:
+        GrayScaleCastFunc<float64>(this, &resObj);
         break;
 
-        default:
-            cv::error(cv::Exception(CV_StsAssert, "destinationType must be real.", "", __FILE__, __LINE__));
+    default:
+        cv::error(cv::Exception(CV_StsAssert, "destinationType must be real.", "", __FILE__, __LINE__));
         break;
     }
 
@@ -7148,6 +7148,175 @@ DataObject DataObject::toGray(const int destinationType /*= ito::tUInt8*/) const
     copyAxisTagsTo(resObj);
 
     return resObj;
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> void extractColor(const DataObject *dObj, DataObject &resObj, const char *color, const int &type)
+{
+    int numChannels = strlen(color);
+
+    switch (numChannels)
+    {
+    case 1:
+        resObj = DataObject(dObj->getDims(), dObj->getSize(), type);
+        break;
+    case 0:
+        return;
+        break;
+    default:
+        {
+        int *sizes = new int[dObj->getDims() + 1];
+        for (int i = 0; i < dObj->getDims(); ++i)
+        {
+            sizes[i + 1] = dObj->getSize(i);
+        }
+        sizes[0] = numChannels;
+        resObj = DataObject(dObj->getDims() + 1, sizes, type); 
+        delete sizes;
+        break;    
+        }
+    }
+
+    int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
+    int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
+
+    const cv::Mat * srcMat = NULL;
+    cv::Mat * dstMat = NULL;
+    const ito::Rgba32* srcPtr;
+    _Tp* dstPtr;
+
+    int numMats = dObj->getNumPlanes();
+
+    for (int channel = 0; channel < numChannels; ++channel)
+    {
+        if (color[channel] == 'b')
+        {
+            for (int nmat = 0; nmat < numMats; nmat++)
+            {
+                srcMat = dObj->getCvPlaneMat(nmat);
+                dstMat = resObj.getCvPlaneMat(channel * numMats + nmat);
+                for (int y = 0; y < sizey; ++y)
+                {
+                    dstPtr = dstMat->ptr<_Tp>(y);
+                    srcPtr = srcMat->ptr<const ito::Rgba32>(y);
+                    for (int x = 0; x < sizex; ++x)
+                    {
+                        dstPtr[x] = cv::saturate_cast<_Tp>(srcPtr[x].b);
+                    }
+                }
+            }
+        }
+        else if (color[channel] == 'r')
+        {
+            for (int nmat = 0; nmat < numMats; nmat++)
+            {
+                srcMat = dObj->getCvPlaneMat(nmat);
+                dstMat = resObj.getCvPlaneMat(channel * numMats + nmat);
+                for (int y = 0; y < sizey; ++y)
+                {
+                    dstPtr = dstMat->ptr<_Tp>(y);
+                    srcPtr = srcMat->ptr<const ito::Rgba32>(y);
+                    for (int x = 0; x < sizex; ++x)
+                    {
+                        dstPtr[x] = cv::saturate_cast<_Tp>(srcPtr[x].r);
+                    }
+                }
+            }
+        }
+        else if (color[channel] == 'g')
+        {
+            for (int nmat = 0; nmat < numMats; nmat++)
+            {
+                srcMat = dObj->getCvPlaneMat(nmat);
+                dstMat = resObj.getCvPlaneMat(channel * numMats + nmat);
+                for (int y = 0; y < sizey; y++)
+                {
+                    dstPtr = dstMat->ptr<_Tp>(y);
+                    srcPtr = srcMat->ptr<const ito::Rgba32>(y);
+                    for (int x = 0; x < sizex; x++)
+                    {
+                        dstPtr[x] = cv::saturate_cast<_Tp>(srcPtr[x].g);
+                    }
+                }
+            }
+        }
+        else if (color[channel] == 'a')
+        {
+            for (int nmat = 0; nmat < numMats; nmat++)
+            {
+                srcMat = dObj->getCvPlaneMat(nmat);
+                dstMat = resObj.getCvPlaneMat(channel * numMats + nmat);
+                for (int y = 0; y < sizey; y++)
+                {
+                    dstPtr = dstMat->ptr<_Tp>(y);
+                    srcPtr = srcMat->ptr<const ito::Rgba32>(y);
+                    for (int x = 0; x < sizex; x++)
+                    {
+                        dstPtr[x] = cv::saturate_cast<_Tp>(srcPtr[x].a);
+                    }
+                }
+            }
+        }
+    }
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+//! returns a color channel of a color image (rgba32)
+/*!
+\throws cv::Exception if cast failed, e.g. if cast not possible or types unknown
+\return data object
+*/
+DataObject DataObject::splitColor(const char* destinationColor, const int& dtype /*= ito::tUInt8*/) const
+{
+    if (this->m_type != ito::tRGBA32)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "data type of dataObject must be rgba32.", "", __FILE__, __LINE__));
+    }
+
+    if (destinationColor[0] != 'b' && destinationColor[0] != 'r' \
+        && destinationColor[0] != 'g' && destinationColor[0] != 'a')
+    {
+        cv::error(cv::Exception(CV_StsAssert, "unknown color.", "", __FILE__, __LINE__));
+    }
+
+    DataObject resObj;
+    
+    switch (dtype)
+    {
+    case ito::tUInt8:
+        extractColor<uint8>(this, resObj, destinationColor, dtype);
+        break;
+
+    case ito::tInt16:
+        extractColor<int16>(this, resObj, destinationColor, dtype);
+        break;
+
+    case ito::tUInt16:
+        extractColor<uint16>(this, resObj, destinationColor, dtype);
+        break;
+
+    case ito::tInt32:
+        extractColor<uint32>(this, resObj, destinationColor, dtype);
+        break;
+
+    case ito::tFloat32:
+        extractColor<float32>(this, resObj, destinationColor, dtype);
+        break;
+
+    case ito::tFloat64:
+        extractColor<float64>(this, resObj, destinationColor, dtype);
+        break;
+
+    default:
+        cv::error(cv::Exception(CV_StsAssert, "destinationType must be real.", "", __FILE__, __LINE__));
+        break;
+    }
+  
+
+
+    copyTagMapTo(resObj);
+    copyAxisTagsTo(resObj);
+
+    return resObj;
+
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
