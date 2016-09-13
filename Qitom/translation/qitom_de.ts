@@ -6,7 +6,7 @@
     <message>
         <location filename="../ui/dialogAbout.ui" line="+73"/>
         <source>itom logo</source>
-        <translation>ITOM Logo</translation>
+        <translation>itom Logo</translation>
     </message>
     <message>
         <location line="+256"/>
@@ -2620,17 +2620,17 @@ dem Editor ein.</translation>
     <message>
         <location line="+6"/>
         <source>The following paths are prepended or appended to the PATH environment variable used by itom. It is modified before itom starts loading plugins or designer plugins. These paths do not affect the overall PATH environment variable of the operating system. Change the order of the paths to decide if they are prepended or appended to the overall PATH environment variable.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die folgenden Verzeichnisse werden beim Laden der Plugins und Designer-Plugins als Bibliotheksquellen in der gegebenen Reihenfolge berücksichtigt.</translation>
     </message>
     <message>
         <location line="+70"/>
         <source>Move up</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Nach Oben</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Move down</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Nach Unten</translation>
     </message>
     <message>
         <source>The following paths are prepended to the PATH environment variable used by itom. It is modified before itom starts loading plugins or designer plugins. These paths do not affect the overall PATH environment variable of the operating system.</source>
@@ -2994,7 +2994,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+225"/>
         <source>This instance is no grabber. Therefore no snap dialog is available.</source>
-        <translation type="unfinished"></translation>
+        <translation>Diese Instanz ist kein Grabber. Daher ist kein Aufnahmedialog verfügbar.</translation>
     </message>
     <message>
         <location line="-523"/>
