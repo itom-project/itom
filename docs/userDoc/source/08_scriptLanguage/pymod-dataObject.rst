@@ -486,7 +486,7 @@ arr1 +,- scalar                         dObj1 +,- scalar                        
 arr1 &,| arr2                           dObj1 &,| dObj2                               element-wise, bitwise AND/OR operator
 arr2 = arr1                             dObj2 = dObj1                                 referencing (both still point to the same array)
 arr2 = arr1.copy()                      dObj2 = dObj1.copy()                          deep copy (entire data is copied)
-arr2 = arr1.astype(newtype)             dObj2 = dObj1.astype(‘newtypestring')         type conversion
+arr2 = arr1.astype(newtype)             dObj2 = dObj1.astype('newtypestring')         type conversion
 arr = np.zeros([3,4],'float32')         dObj = dataObject.zeros([3,4], 'float32')     3x4 array filled with zeros of type float32
 arr = np.ones([3,4],'float32')          dObj = dataObject.ones([3,4], 'float32')      3x4 array filled with ones of type float32
 arr = np.eye(3,dtype='float32')         dObj = dataObject.eye(3, 'float32')           3x3 identity matrix (type: float32)
