@@ -632,7 +632,7 @@ void WorkspaceDockWidget::updateActions()
                 int compatibleTypes;
                 for (int i = 0; i < num; ++i)
                 {
-                    compatibleTypes = items[0]->data(0, WorkspaceWidget::RoleCompatibleTypes).toInt(&ok);
+                    compatibleTypes = items[i]->data(0, WorkspaceWidget::RoleCompatibleTypes).toInt(&ok);
                     if (!ok)
                     {
                         compatibleTypes = 0;
@@ -642,7 +642,7 @@ void WorkspaceDockWidget::updateActions()
                     {
                         plotDObjOk = false;
                     }
-                    else if (compatibleTypes != ito::ParamBase::PointCloudPtr && compatibleTypes != ito::ParamBase::PolygonMeshPtr)
+                    if (compatibleTypes != ito::ParamBase::PointCloudPtr && compatibleTypes != ito::ParamBase::PolygonMeshPtr)
                     {
                         plotCloudOk = false;
                     }
