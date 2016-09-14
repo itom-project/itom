@@ -3,6 +3,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import ctypes
 import sys
 from os import path
 from sphinx.util import format_exception_cut_frames, save_traceback
@@ -119,6 +120,9 @@ for buildername in buildernames:
             print("HTML Help Workshop is obtained by http://www.microsoft.com/en-us/download/details.aspx?id=21138")
             
     elif(buildername == "latex"):
+        if ctypes.windll.shell32.IsUserAnAdmin() == 0:
+            raise RuntimeError("Latex file can only be modified, if itom is executed as admin.")
+            
         pdflatex  = "${PDFLATEX_COMPILER}" #"C:/Programme/MiKTeX 2.9/miktex/bin/pdflatex.exe"
         texfolder = outdir #"F:/itom-git/build/itom/docs/userDoc/build/latex"
         
