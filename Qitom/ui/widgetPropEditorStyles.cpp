@@ -320,12 +320,12 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
 
             if (ui.btnBackgroundColor->isEnabled())
             {
-                ui.lblSampleText->setStyleSheet(QString("color: %1; background-color: %2;").arg(fg.name()).arg(bg.name()));
+                ui.lblSampleText->setStyleSheet(tr("color: %1; background-color: %2;").arg(fg.name()).arg(bg.name()));
                 ui.btnBackgroundColor->setColor(bg);
             }
             else
             {
-                ui.lblSampleText->setStyleSheet(QString("color: %1; background-color: %2;").arg(fg.name()).arg(m_paperBgcolor.name()));
+                ui.lblSampleText->setStyleSheet(tr("color: %1; background-color: %2;").arg(fg.name()).arg(m_paperBgcolor.name()));
                 ui.btnBackgroundColor->setColor(m_paperBgcolor);
             }
             ui.lblSampleText->repaint();

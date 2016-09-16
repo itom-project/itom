@@ -26,7 +26,7 @@ public:
     HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget *dock = 0, Qt::WindowFlags flags = 0);
     ~HelpTreeDockWidget();
 
-    enum itemType {typeSqlItem = 1, typeFilter = 2, typeWidget = 3, typeFPlugin = 4, typeWPlugin = 5, typeCategory = 6, typeDataIO = 7, typeActuator = 8};
+    enum itemType { typeSqlItem = 1, typeFilter = 2, typeWidget = 3, typeFPlugin = 4, typeWPlugin = 5, typeCategory = 6, typeDataIO = 7, typeActuator = 8 };
 
     enum iconType 
     {
@@ -66,7 +66,6 @@ private slots:
     void selectedItemChanged(const QModelIndex &current, const QModelIndex &previous);
 
 private:
-
     struct SqlItem
     {
         int type;

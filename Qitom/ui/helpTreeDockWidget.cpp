@@ -44,7 +44,7 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
     : QWidget(parent, flags),
     m_historyIndex(-1),
     m_pMainModel(NULL),
-    m_dbPath(qApp->applicationDirPath()+"/help"),
+    m_dbPath(qApp->applicationDirPath() + "/help"),
     m_pParent(dock),
     m_internalCall(false),
     m_doingExpandAll(false)
@@ -138,8 +138,8 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
         {
             const QHash <QString, ito::AddInAlgo::FilterDef *> *filterHashTable = aim->getFilterList();
             // build Main Node
-			mainNodeText = "Algorithms";
-            mainNode->setText(tr("Algorithms"));
+            mainNodeText = tr("Algorithms");
+            mainNode->setText(mainNodeText);
             mainNode->setData(typeCategory, m_urType);
 			mainNode->setData(mainNodeText, m_urPath);
             mainNode->setIcon(iconGallery->value(iconPluginAlgo));
@@ -174,8 +174,8 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
         {
             const QHash <QString, ito::AddInAlgo::AlgoWidgetDef *> *widgetHashTable = aim->getAlgoWidgetList();
             // Main Node zusammenbauen
-			mainNodeText = "Widgets";
-            mainNode->setText(tr("Widgets"));
+            mainNodeText = tr("Widgets");
+            mainNode->setText(mainNodeText);
             mainNode->setData(typeCategory, m_urType);
 			mainNode->setData(mainNodeText, m_urPath);
             mainNode->setIcon(iconGallery->value(iconWidget));
@@ -209,8 +209,8 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
     case 3: //DataIO
         {
             // Main Node zusammenbauen
-			mainNodeText = "DataIO";
-            mainNode->setText(tr("DataIO"));
+            mainNodeText = tr("DataIO");
+            mainNode->setText(mainNodeText);
             mainNode->setData(typeCategory, m_urType);
 			mainNode->setData(mainNodeText, m_urPath);
             mainNode->setIcon(iconGallery->value(iconPluginDataIO));
@@ -219,21 +219,21 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
             QStandardItem *pluginGrabber = new QStandardItem(tr("Grabber"));
             pluginGrabber->setEditable(false);
             pluginGrabber->setData(typeCategory, m_urType);
-			pluginGrabber->setData(mainNodeText + ".Grabber", m_urPath);
+            pluginGrabber->setData(mainNodeText + "." + tr("Grabber"), m_urPath);
             pluginGrabber->setIcon(iconGallery->value(iconPluginGrabber));
             
             // Subcategory Node "ADDA"
             QStandardItem *pluginAdda = new QStandardItem(tr("ADDA"));
             pluginAdda->setEditable(false);
             pluginAdda->setData(typeCategory, m_urType);
-			pluginAdda->setData(mainNodeText + ".ADDA", m_urPath);
+            pluginAdda->setData(mainNodeText + "." + tr("ADDA"), m_urPath);
             pluginAdda->setIcon(iconGallery->value(iconPluginAdda));
             
             // Subcategory Node "Raw IO"
             QStandardItem *pluginRawIO = new QStandardItem(tr("Raw IO"));
             pluginRawIO->setEditable(false);
             pluginRawIO->setData(typeCategory, m_urType);
-			pluginRawIO->setData(mainNodeText + ".Raw IO", m_urPath);
+            pluginRawIO->setData(mainNodeText + "." + tr("Raw IO"), m_urPath);
             pluginRawIO->setIcon(iconGallery->value(iconPluginRawIO));
 
             const QList<QObject*> *dataIOList = aim->getDataIOList();
@@ -281,8 +281,8 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
     case 4: //Actuator
         { 
             // Main Node zusammenbauen
-			mainNodeText = "Actuator";
-            mainNode->setText(tr("Actuator"));
+            mainNodeText = tr("Actuator");
+            mainNode->setText(mainNodeText);
             mainNode->setData(typeCategory, m_urType);
 			mainNode->setData(mainNodeText, m_urPath);
             mainNode->setIcon(iconGallery->value(iconPluginActuator));
@@ -599,7 +599,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
 
                         if (filterHashTable->size() > 0)
                         {
-                            extendedInfo.append("<p class=\"rubric\">This plugin contains the following algorithms:</p>");
+                            extendedInfo.append("<p class=\"rubric\">" + tr("This plugin contains the following") + " " + tr("Algorithms") + ":</p>");
 
                             QHash<QString, ito::AddInAlgo::FilterDef *>::const_iterator i = filterHashTable->constBegin();
                             while (i != filterHashTable->constEnd())
@@ -615,7 +615,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
 
                         if (widgetHashTable->size() > 0)
                         {
-                            extendedInfo.append("<p class=\"rubric\">This plugin contains the following widgets:</p>");
+                            extendedInfo.append("<p class=\"rubric\">" + tr("This plugin contains the following") + " " + tr("Widgets") + ":</p>");
 
                             QHash<QString, ito::AddInAlgo::AlgoWidgetDef *>::const_iterator i = widgetHashTable->constBegin();
                             while (i != widgetHashTable->constEnd())
@@ -720,11 +720,11 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
 
                             if (type == typeDataIO)
                             {
-                                callName = "dataIO";
+                                callName = tr("dataIO");
                             }
                             else
                             {
-                                callName = "actuator";
+                                callName = tr("actuator");
                             }
 
                             QString newLink = QString("%1(\"%2\",%3)").arg(callName).arg(aib->objectName()).arg( paramList.join(", ") );
@@ -764,79 +764,79 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
             ui.helpTreeContent->document()->addResource(QTextDocument::StyleSheetResource, QUrl("help_style.css"), QString(cssData));
         }
 
-        if (filter == "Algorithms")
+        if (filter == tr("Algorithms"))
         {
             QFile file(":/helpTreeDockWidget/algo_page");
             if (file.open(QIODevice::ReadOnly))
             {
                 QByteArray htmlData = file.readAll();
-                docString.replace("%BREADCRUMB%","Algorithms");
+                docString.replace("%BREADCRUMB%", "Algorithms");
                 docString = htmlData;
                 file.close();
             }
         }
-        else if (filter == "Widgets")
+        else if (filter == tr("Widgets"))
         {
             QFile file(":/helpTreeDockWidget/widg_page");
             if (file.open(QIODevice::ReadOnly))
             {
                 QByteArray htmlData = file.readAll();
-                docString.replace("%BREADCRUMB%","Widgets");
+                docString.replace("%BREADCRUMB%", "Widgets");
                 docString = htmlData;
                 file.close();
             }
         }
-        else if (filter == "DataIO")
+        else if (filter == tr("DataIO"))
         {
             QFile file(":/helpTreeDockWidget/dataIO_page");
             if (file.open(QIODevice::ReadOnly))
             {
                 QByteArray htmlData = file.readAll();
-                docString.replace("%BREADCRUMB%","DataIO");
+                docString.replace("%BREADCRUMB%", "DataIO");
                 docString = htmlData;
                 file.close();
             }
         }
-        else if (filter == "Grabber")
+        else if (filter == tr("Grabber"))
         {
             QFile file(":/helpTreeDockWidget/dataGr_page");
             if (file.open(QIODevice::ReadOnly))
             {
                 QByteArray htmlData = file.readAll();
-                docString.replace("%BREADCRUMB%","Grabber");
+                docString.replace("%BREADCRUMB%", "Grabber");
                 docString = htmlData;
                 file.close();
             }
         }
-        else if (filter == "ADDA")
+        else if (filter == tr("ADDA"))
         {
             QFile file(":/helpTreeDockWidget/dataAD_page");
             if (file.open(QIODevice::ReadOnly))
             {
                 QByteArray htmlData = file.readAll();
-                docString.replace("%BREADCRUMB%","ADDA");
+                docString.replace("%BREADCRUMB%", "ADDA");
                 docString = htmlData;
                 file.close();
             }
         }
-        else if (filter == "Raw IO")
+        else if (filter == tr("Raw IO"))
         {
             QFile file(":/helpTreeDockWidget/dataRa_page");
             if (file.open(QIODevice::ReadOnly))
             {
                 QByteArray htmlData = file.readAll();
-                docString.replace("%BREADCRUMB%","Raw IO");
+                docString.replace("%BREADCRUMB%", "RawIO");
                 docString = htmlData;
                 file.close();
             }
         }
-        else if (filter == "Actuator")
+        else if (filter == tr("Actuator"))
         {
             QFile file(":/helpTreeDockWidget/actuator_page");
             if (file.open(QIODevice::ReadOnly))
             {
                 QByteArray htmlData = file.readAll();
-                docString.replace("%BREADCRUMB%","Actuator");
+                docString.replace("%BREADCRUMB%", "Actuator");
                 docString = htmlData;
                 file.close();
             }
@@ -1179,38 +1179,39 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
                 ito::ByteArray name = pMeta->getHWAddInName();
                 if (name.length() > 0)
                 {
-                    meta = "Only plugin '"+QString(name.data())+"' is allowed.";
+                    meta = tr("Only plugin '%1' is allowed.").arg(name.data());
                 }
                 else
                 {
-                    meta = "Plugin of type: ";
+                    meta = "";
                     
                     if (pMeta->getMinType() & ito::typeActuator)
                     {
-                        meta.append("Actuator, ");
+                        meta.append(tr("Actuator") + ", ");
                     }
                     if (pMeta->getMinType() & ito::typeAlgo)
                     {
-                        meta.append("Algo, ");
+                        meta.append(tr("Algorithms") + ", ");
                     }
                     if (pMeta->getMinType() & ito::typeGrabber)
                     {
-                        meta.append("DataIO (Grabber), ");
+                        meta.append(tr("DataIO") + " " + tr("Grabber") + ", ");
                     }
                     else if (pMeta->getMinType() & ito::typeADDA)
                     {
-                        meta.append("DataIO (ADDA), ");
+                        meta.append(tr("DataIO") + " " + tr("ADDA") + ", ");
                     }
                     else if (pMeta->getMinType() & ito::typeRawIO)
                     {
-                        meta.append("DataIO (RawIO), ");
+                        meta.append(tr("DataIO") + " " + tr("Raw IO") + ", ");
                     }
                     else if (pMeta->getMinType() & ito::typeDataIO)
                     {
-                        meta.append("DataIO, ");
+                        meta.append(tr("DataIO") + ", ");
                     }
 
-                    meta.append(" are allowed.");
+                    meta = meta.mid(0, meta.size() - 2);
+                    meta = tr("Plugin of type '%1' are allowed.").arg(meta);
                 }
             }
         }
