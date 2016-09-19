@@ -105,8 +105,6 @@ const int ColCommandAbsolute = 2;
 const int ColStepSize = 3;
 const int ColCommandRelative = 4;
 
-
-
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 MotorAxisController::MotorAxisController(QWidget *parent) :
     QWidget(parent)
@@ -455,7 +453,7 @@ ito::RetVal MotorAxisController::setAxisUnit(int axisIndex, AxisUnit unit)
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, "axisIndex is out of bounds.");
+        retval += ito::RetVal(ito::retError, 0, tr("axisIndex is out of bounds.").toLatin1().data());
     }
 
     return retval;
@@ -491,7 +489,7 @@ ito::RetVal MotorAxisController::setAxisEnabled(int axisIndex, bool enabled)
     }
     else
     {
-        return ito::RetVal(ito::retError, 0, "axisIndex is out of bounds.");
+        return ito::RetVal(ito::retError, 0, tr("axisIndex is out of bounds.").toLatin1().data());
     }
 }
 
@@ -562,7 +560,7 @@ ito::RetVal MotorAxisController::setAxisType(int axisIndex, AxisType type)
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, "axisIndex is out of bounds.");
+        retval += ito::RetVal(ito::retError, 0, tr("axisIndex is out of bounds.").toLatin1().data());
     }
     return retval;
 }
@@ -662,7 +660,7 @@ ito::RetVal MotorAxisController::setAxisName(int axisIndex, const QString &name)
     }
     else
     {
-        return ito::RetVal(ito::retError, 0, "axisIndex is out of bounds.");
+        return ito::RetVal(ito::retError, 0, tr("axisIndex is out of bounds.").toLatin1().data());
     }
 }
 
@@ -736,7 +734,7 @@ ito::RetVal MotorAxisController::setAxisDecimals(int axisIndex, int decimals)
     }
     else
     {
-        return ito::RetVal(ito::retError, 0, "axisIndex is out of bounds.");
+        return ito::RetVal(ito::retError, 0, tr("axisIndex is out of bounds.").toLatin1().data());
     }
 }
 
@@ -806,7 +804,7 @@ ito::RetVal MotorAxisController::setStepSizeInterval(int axisIndex, const ito::A
         }
     }
 
-    return ito::RetVal(ito::retError, 0, "axisIndex is out of bounds.");
+    return ito::RetVal(ito::retError, 0, tr("axisIndex is out of bounds.").toLatin1().data());
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -826,7 +824,7 @@ ito::RetVal MotorAxisController::setTargetInterval(int axisIndex, const ito::Aut
         }
     }
 
-    return ito::RetVal(ito::retError, 0, "axisIndex is out of bounds.");
+    return ito::RetVal(ito::retError, 0, tr("axisIndex is out of bounds.").toLatin1().data());
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1017,7 +1015,7 @@ void MotorAxisController::on_btnRefresh_clicked()
         retval += ito::RetVal(ito::retError, 0, tr("pointer to plugin is invalid.").toLatin1().data());
     }
 
-    retValToMessageBox(retval, "refresh");
+    retValToMessageBox(retval,tr( "refresh"));
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1029,7 +1027,7 @@ void MotorAxisController::on_btnCancel_clicked()
     }
     else
     {
-        retValToMessageBox(ito::RetVal(ito::retError, 0, "Actuator not available"), "interrupt movement");
+        retValToMessageBox(ito::RetVal(ito::retError, 0, tr("Actuator not available").toLatin1().data()), tr("interrupt movement"));
     }
 }
 
@@ -1060,10 +1058,10 @@ void MotorAxisController::on_btnStart_clicked()
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, "Actuator not available");
+        retval += ito::RetVal(ito::retError, 0, tr("Actuator not available").toLatin1().data());
     }
 
-    retValToMessageBox(retval, "start movement");
+    retValToMessageBox(retval, tr("start movement"));
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1088,10 +1086,10 @@ void MotorAxisController::moveRelOrAbs(int axis, double value, bool relNotAbs)
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, "Actuator not available");
+        retval += ito::RetVal(ito::retError, 0, tr("Actuator not available").toLatin1().data());
     }
 
-    retValToMessageBox(retval, "start movement");
+    retValToMessageBox(retval, tr("start movement"));
 }
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1148,7 +1146,6 @@ void MotorAxisController::retValToMessageBox(const ito::RetVal &retval, const QS
     }
 }
 
-
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void MotorAxisController::on_comboType_currentIndexChanged(int index)
 {
@@ -1159,7 +1156,6 @@ void MotorAxisController::on_comboType_currentIndexChanged(int index)
         d->isChanging = false;
     }
 }
-
 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void MotorAxisController::stepUpClicked(int index)
@@ -1247,7 +1243,6 @@ void MotorAxisController::customContextMenuRequested(const QPoint &pos)
                 unitMenu->addAction(a);
             }
         }
-
 
         QMenu *decimalsMenu = contextMenu.addMenu(tr("Decimals"));
 

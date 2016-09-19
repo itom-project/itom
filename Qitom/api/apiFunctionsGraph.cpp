@@ -94,7 +94,7 @@ ito::RetVal apiFunctionsGraph::mgetColorBarName(const QString &name, ito::ItomPa
     }
     else
     {
-        return ito::RetVal::format(ito::retError,0,"color map '%s' not found", name.toLatin1().data());
+        return ito::RetVal::format(ito::retError, 0, QObject::tr("color map '%s' not found").toLatin1().data(), name.toLatin1().data());
     }
 }
 
@@ -127,7 +127,7 @@ ito::RetVal apiFunctionsGraph::mgetColorBarIdxFromName(const QString &name, ito:
     }
     else
     {
-        return ito::RetVal::format(ito::retError,0,"color map '%s' not found", name.toLatin1().data());
+        return ito::RetVal::format(ito::retError, 0, QObject::tr("color map '%s' not found").toLatin1().data(), name.toLatin1().data());
     }
 }
 
@@ -194,12 +194,12 @@ ito::RetVal apiFunctionsGraph::mgetFigure(const QString &figCategoryName, const 
         }
         else if(!dwOrg)
         {
-            retval += ito::RetVal(ito::retError,0,"designerWidgetOrganizer is not available");
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("designerWidgetOrganizer is not available").toLatin1().data());
         }
     }
     else
     {
-        retval += ito::RetVal(ito::retError,0,"uiOrganizer is not available");
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("uiOrganizer is not available").toLatin1().data());
     }
 
     return retval;
@@ -298,12 +298,12 @@ ito::RetVal apiFunctionsGraph::mconnectLiveData(QObject *liveDataSource, QObject
         }
         else
         {
-            retval += ito::RetVal(ito::retError,0,"liveDataSource is no instance of ito::AddInDataIO");
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("liveDataSource is no instance of ito::AddInDataIO").toLatin1().data());
         }
     }
     else
     {
-        retval += ito::RetVal(ito::retError,0,"liveDataSource or liveDataView are NULL");
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("liveDataSource or liveDataView are NULL").toLatin1().data());
     }
 
     return retval;
@@ -323,12 +323,12 @@ ito::RetVal apiFunctionsGraph::mdisconnectLiveData(QObject *liveDataSource, QObj
         }
         else
         {
-            retval += ito::RetVal(ito::retError,0,"liveDataSource is no instance of ito::AddInDataIO");
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("liveDataSource is no instance of ito::AddInDataIO").toLatin1().data());
         }
     }
     else
     {
-        retval += ito::RetVal(ito::retError,0,"liveDataSource or liveDataView are NULL");
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("liveDataSource or liveDataView are NULL").toLatin1().data());
     }
 
     return retval;
@@ -341,12 +341,12 @@ QVariant apiFunctionsGraph::mgetFigureSetting(const QObject *figureClass, const 
 {
     if(!figureClass)
     {
-        if(retval) (*retval) += ito::RetVal(ito::retError,0,"figureClass is NULL. No settings could be retrieved");
+        if (retval) (*retval) += ito::RetVal(ito::retError, 0, QObject::tr("figureClass is NULL. No settings could be retrieved").toLatin1().data());
         return defaultValue;
     }
     else if(figureClass->inherits("ito::AbstractFigure") == false)
     {
-        if(retval) (*retval) += ito::RetVal(ito::retError,0,"figureClass is not inherited from AbstractFigure. No settings could be retrieved");
+        if (retval) (*retval) += ito::RetVal(ito::retError, 0, QObject::tr("figureClass is not inherited from AbstractFigure. No settings could be retrieved").toLatin1().data());
         return defaultValue;
     }
 
@@ -470,7 +470,7 @@ ito::RetVal apiFunctionsGraph::mgetFigureUIDByHandle(QObject *figure, ito::uint3
     }
     else
     {
-        retval += ito::RetVal(ito::retError,0,"uiOrganizer is not available");
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("uiOrganizer is not available").toLatin1().data());
     }
 
     return retval;
@@ -493,12 +493,12 @@ ito::RetVal apiFunctionsGraph::mgetPlotHandleByID(const ito::uint32 &figureUID, 
         }
         else
         {
-            retval += ito::RetVal(ito::retError,0,"plot widget does not exist.");
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("plot widget does not exist.").toLatin1().data());
         }
     }
     else
     {
-        retval += ito::RetVal(ito::retError,0,"uiOrganizer is not available");
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("uiOrganizer is not available").toLatin1().data());
     }
 
     return retval;

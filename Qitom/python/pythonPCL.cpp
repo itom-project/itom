@@ -1827,22 +1827,22 @@ PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/
         }
         catch(std::bad_alloc &/*ba*/)
         {
-            retval += RetVal(retError, 0, "No more memory available when saving point cloud");
+            retval += RetVal(retError, 0, QObject::tr("No more memory available when saving point cloud").toLatin1().data());
         }
         catch(std::exception &exc)
         {
             if (exc.what())
             {
-                retval += ito::RetVal::format(ito::retError,0,"The exception '%s' has been thrown when saving a point cloud.", exc.what()); 
+                retval += ito::RetVal::format(ito::retError, 0, QObject::tr("The exception '%s' has been thrown when saving a point cloud.").toLatin1().data(), exc.what());
             }
             else
             {
-                retval += ito::RetVal(ito::retError,0,"An unspecified exception has been thrown when saving a point cloud."); 
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("An unspecified exception has been thrown when saving a point cloud.").toLatin1().data());
             }
         }
         catch (...)
         {
-            retval += ito::RetVal(ito::retError,0,"An unspecified exception has been thrown when saving a point cloud.");  
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("An unspecified exception has been thrown when saving a point cloud.").toLatin1().data());
         }
 
         if (PythonCommon::transformRetValToPyException(retval) == false)
@@ -1853,7 +1853,7 @@ PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/
         tempFile2.setFileName(tempFilename);
         if (tempFile2.open(QIODevice::ReadOnly) == false)
         {
-            PyErr_SetString(PyExc_RuntimeError, "Temporary file for writing point cloud binary data could not be opened");
+            PyErr_SetString(PyExc_RuntimeError, QObject::tr("Temporary file for writing point cloud binary data could not be opened").toLatin1().data());
             return NULL;
         }
 
@@ -1895,7 +1895,7 @@ PyObject* PythonPCL::PyPointCloud_SetState(PyPointCloud *self, PyObject *args)
         char *buf = tmpnam(NULL);
         if (buf == NULL)
         {
-            PyErr_SetString(PyExc_RuntimeError, "Temporary file for writing point cloud binary data could not be created");
+            PyErr_SetString(PyExc_RuntimeError, QObject::tr("Temporary file for writing point cloud binary data could not be created").toLatin1().data());
             return NULL;
         }
 
@@ -1912,7 +1912,7 @@ PyObject* PythonPCL::PyPointCloud_SetState(PyPointCloud *self, PyObject *args)
         QFile tempFile2(tempFilename);
         if (tempFile2.open(QIODevice::WriteOnly) == false)
         {
-            PyErr_SetString(PyExc_RuntimeError, "temporary file could not be opened (II)");
+            PyErr_SetString(PyExc_RuntimeError, QObject::tr("temporary file could not be opened (II)").toLatin1().data());
             return NULL;
         }
         tempFile2.write(PyBytes_AsString(data), PyBytes_GET_SIZE(data));
@@ -1934,22 +1934,22 @@ PyObject* PythonPCL::PyPointCloud_SetState(PyPointCloud *self, PyObject *args)
         }
         catch(std::bad_alloc &/*ba*/)
         {
-            retval += RetVal(retError, 0, "No more memory available when loading point cloud");
+            retval += RetVal(retError, 0, QObject::tr("No more memory available when loading point cloud").toLatin1().data());
         }
         catch(std::exception &exc)
         {
             if (exc.what())
             {
-                retval += ito::RetVal::format(ito::retError,0,"The exception '%s' has been thrown when loading a point cloud.", exc.what()); 
+                retval += ito::RetVal::format(ito::retError, 0, QObject::tr("The exception '%s' has been thrown when loading a point cloud.").toLatin1().data(), exc.what());
             }
             else
             {
-                retval += ito::RetVal(ito::retError,0,"An unspecified exception has been thrown when loading a point cloud."); 
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("An unspecified exception has been thrown when loading a point cloud.").toLatin1().data());
             }
         }
         catch (...)
         {
-            retval += ito::RetVal(ito::retError,0,"An unspecified exception has been thrown when loading a point cloud.");  
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("An unspecified exception has been thrown when loading a point cloud.").toLatin1().data());
         }
 
         tempFile2.remove();
@@ -1961,7 +1961,7 @@ PyObject* PythonPCL::PyPointCloud_SetState(PyPointCloud *self, PyObject *args)
     }
     else
     {
-        PyErr_SetString(PyExc_RuntimeError, "The pickled data must be a byte array for establishing the pointCloud.");
+        PyErr_SetString(PyExc_RuntimeError, QObject::tr("The pickled data must be a byte array for establishing the pointCloud.").toLatin1().data());
         return NULL;
     }
 

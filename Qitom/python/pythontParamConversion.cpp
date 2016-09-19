@@ -324,7 +324,7 @@ namespace ito
 
     if(paramBaseType <= 0)
     {
-        retVal += ito::RetVal(ito::retError,0,"type of ParamBase could not be guessed with given PyObject.");
+        retVal += ito::RetVal(ito::retError, 0, QObject::tr("type of ParamBase could not be guessed with given PyObject.").toLatin1().data());
         return QSharedPointer<ito::ParamBase>();
     }
     
@@ -483,14 +483,14 @@ namespace ito
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
     default:
         {
-        retVal += ito::RetVal(ito::retError,0,"given paramBaseType is unsupported.");
+            retVal += ito::RetVal(ito::retError, 0, QObject::tr("given paramBaseType is unsupported.").toLatin1().data());
         return QSharedPointer<ito::ParamBase>();
         }
     }
 
     if(!ok)
     {
-        retVal += ito::RetVal(ito::retError,0,"error while converting value from PyObject to ParamBase");
+        retVal += ito::RetVal(ito::retError, 0, QObject::tr("error while converting value from PyObject to ParamBase").toLatin1().data());
     }
     return QSharedPointer<ito::ParamBase>();
 

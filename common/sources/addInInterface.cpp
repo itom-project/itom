@@ -584,7 +584,7 @@ namespace ito
         }
         else
         {
-            retValue += ito::RetVal(ito::retError,0,"function with this name is already registered.");
+            retValue += ito::RetVal(ito::retError, 0, tr("function with this name is already registered.").toLatin1().data());
         }
 
         return retValue;
@@ -885,7 +885,7 @@ namespace ito
 
         if (waitCond)
         {
-            waitCond->returnValue += ito::RetVal(ito::retError,0,"method startDevice() is not implemented in this plugin");
+            waitCond->returnValue += ito::RetVal(ito::retError, 0, tr("method startDevice() is not implemented in this plugin").toLatin1().data());
             waitCond->release();
             
             return waitCond->returnValue;
@@ -903,7 +903,7 @@ namespace ito
 
         if (waitCond)
         {
-            waitCond->returnValue += ito::RetVal(ito::retError,0,"method stopDevice() is not implemented in this plugin");
+            waitCond->returnValue += ito::RetVal(ito::retError, 0, tr("method stopDevice() is not implemented in this plugin").toLatin1().data());
             waitCond->release();
             
             return waitCond->returnValue;
@@ -921,7 +921,7 @@ namespace ito
 
         if (waitCond)
         {
-            waitCond->returnValue += ito::RetVal(ito::retError,0,"method acquire() is not implemented in this plugin");
+            waitCond->returnValue += ito::RetVal(ito::retError, 0, tr("method acquire() is not implemented in this plugin").toLatin1().data());
             waitCond->release();
             
             return waitCond->returnValue;
@@ -939,7 +939,7 @@ namespace ito
 
         if (waitCond)
         {
-            waitCond->returnValue += ito::RetVal(ito::retError,0,"method getVal(void*, ItomSharedSemaphore*) is not implemented in this plugin");
+            waitCond->returnValue += ito::RetVal(ito::retError, 0, tr("method getVal(void*, ItomSharedSemaphore*) is not implemented in this plugin").toLatin1().data());
             waitCond->release();
             
             return waitCond->returnValue;
@@ -957,7 +957,7 @@ namespace ito
 
         if (waitCond)
         {
-            waitCond->returnValue += ito::RetVal(ito::retError,0,"method getVal(QSharedPointer<char>, QSharedPointer<int>, ItomSharedSemaphore*) is not implemented in this plugin");
+            waitCond->returnValue += ito::RetVal(ito::retError, 0, tr("method getVal(QSharedPointer<char>, QSharedPointer<int>, ItomSharedSemaphore*) is not implemented in this plugin").toLatin1().data());
             waitCond->release();
             
             return waitCond->returnValue;
@@ -975,7 +975,7 @@ namespace ito
 
         if (waitCond)
         {
-            waitCond->returnValue += ito::RetVal(ito::retError,0,"method copyVal(void*,ItomSharedSemaphore*) is not implemented in this plugin");
+            waitCond->returnValue += ito::RetVal(ito::retError, 0, tr("method copyVal(void*,ItomSharedSemaphore*) is not implemented in this plugin").toLatin1().data());
             waitCond->release();
             
             return waitCond->returnValue;
@@ -993,7 +993,7 @@ namespace ito
 
         if (waitCond)
         {
-            waitCond->returnValue += ito::RetVal(ito::retError,0,"method setVal(const char*, const int, ItomSharedSemaphore*) is not implemented in this plugin");
+            waitCond->returnValue += ito::RetVal(ito::retError, 0, tr("method setVal(const char*, const int, ItomSharedSemaphore*) is not implemented in this plugin").toLatin1().data());
             waitCond->release();
             
             return waitCond->returnValue;

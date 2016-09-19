@@ -185,7 +185,7 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
         dbl = param2 ? PythonQtConversion::PyObjGetDouble(param2, false, ok) : 0.0;
         if (!ok)
         {
-            retval += ito::RetVal(ito::retError, 0, "param2 must be a double value.");
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("param2 must be a double value.").toLatin1().data());
         }
 
         if (!retval.containsError())
@@ -248,7 +248,7 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
         dbl = param2 ? PythonQtConversion::PyObjGetDouble(param2, false, ok) : 0.0;
         if (!ok)
         {
-            retval += ito::RetVal(ito::retError, 0, "param2 must be a double value.");
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("param2 must be a double value.").toLatin1().data());
         }
 
         if (!retval.containsError())
@@ -578,13 +578,13 @@ int PythonShape::PyShape_setPoint1(PyShape *self, PyObject *value, void * /*clos
 
             case Shape::Square:
             case Shape::Circle:
-                retval += ito::RetVal(ito::retError, 0, "point1 cannot be changed for square and circle. Change center and width / height.");
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("point1 cannot be changed for square and circle. Change center and width / height.").toLatin1().data());
             break;
 
             case Shape::Polygon:
             case Shape::Invalid:
             default:
-                retval += ito::RetVal(ito::retError, 0, "This type of shape has no 'point1' defined.");
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("This type of shape has no 'point1' defined.").toLatin1().data());
             break;
         }
     }
@@ -656,14 +656,14 @@ int PythonShape::PyShape_setPoint2(PyShape *self, PyObject *value, void * /*clos
 
             case Shape::Square:
             case Shape::Circle:
-                retval += ito::RetVal(ito::retError, 0, "point2 cannot be changed for square and circle. Change center and width / height.");
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("point2 cannot be changed for square and circle. Change center and width / height.").toLatin1().data());
             break;
 
             case Shape::Point:
             case Shape::Polygon:
             case Shape::Invalid:
             default:
-                retval += ito::RetVal(ito::retError, 0, "This type of shape has no 'point2' defined.");
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("This type of shape has no 'point2' defined.").toLatin1().data());
             break;
         }
     }
@@ -753,7 +753,7 @@ int PythonShape::PyShape_setCenter(PyShape *self, PyObject *value, void * /*clos
             case Shape::Polygon:
             case Shape::Invalid:
             default:
-                retval += ito::RetVal(ito::retError, 0, "This type of shape has no 'center' defined.");
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("This type of shape has no 'center' defined.").toLatin1().data());
             break;
         }
     }
@@ -1525,7 +1525,7 @@ QPointF PythonShape::PyObject2PointF(PyObject *value, ito::RetVal &retval, const
 {
     if (!value)
     {
-        retval += ito::RetVal::format(ito::retError, 0, "%s missing", paramName);
+        retval += ito::RetVal::format(ito::retError, 0, QObject::tr("%s missing", paramName).toLatin1().data());
         return QPointF();
     }
 
@@ -1569,7 +1569,7 @@ QPointF PythonShape::PyObject2PointF(PyObject *value, ito::RetVal &retval, const
 
     if (!ok)
     {
-        retval += ito::RetVal::format(ito::retError, 0, "%s: float64 array with two elements required (x,y)", paramName);
+        retval += ito::RetVal::format(ito::retError, 0, QObject::tr("%s: float64 array with two elements required (x,y)").toLatin1().data(), paramName);
     }
 
     return point;

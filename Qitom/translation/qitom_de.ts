@@ -1076,9 +1076,8 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>QLibrary</name>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="+462"/>
         <source>The file &apos;%1&apos; is not a valid Qt plugin.</source>
-        <translation>Die Datei &apos;%1&apos; ist kein gültiges Qt Plugin.</translation>
+        <translation type="vanished">Die Datei &apos;%1&apos; ist kein gültiges Qt Plugin.</translation>
     </message>
 </context>
 <context>
@@ -1503,6 +1502,11 @@ p, li { white-space: pre-wrap; }
         <translation>&apos;Param&apos; ist kein Array</translation>
     </message>
     <message>
+        <location line="+50"/>
+        <source>Parameter &apos;%s&apos; does not exist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../python/pythonCommon.cpp" line="+268"/>
         <location filename="../api/apiFunctions.cpp" line="+157"/>
         <source>Unknown parameter type</source>
@@ -1585,7 +1589,100 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Die Größe der %i. Dimension übersteigt die aktuelle Begrenzung [%i, %i]</translation>
     </message>
     <message>
-        <location filename="../python/pythonCommon.cpp" line="+989"/>
+        <location line="+52"/>
+        <source>error invoking &apos;sendParameterRequest&apos; of the plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>the signal/slot &apos;parametersChanged&apos; could not be connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>timeout while sending variables to python workspace. Python is maybe busy. Try it later again.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Python is not available.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../python/pythonCommon.cpp" line="-187"/>
+        <source>value could not be converted to integer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>value could not be converted to double</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>value could not be converted to complex</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+79"/>
+        <source>error while converting python object to string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+711"/>
+        <source>wrong number of parameters. Mandatory parameters are:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>optional parameters are:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <location line="+116"/>
+        <source>wrong number of parameters (%i given, %i mandatory and %i optional required)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-92"/>
+        <source>parameter %d - %s passed as arg and keyword!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>optional parameter %d - %s passed as arg and keyword!</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+45"/>
+        <source>there are keyword arguments that does not exist in mandatory or optional parameters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>wrong number of parameters
+ Mandatory parameters are:
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+31"/>
+        <location line="+30"/>
+        <location line="+30"/>
+        <location line="+36"/>
+        <source>wrong parameter type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+50"/>
+        <location line="+21"/>
+        <location line="+21"/>
+        <source>paramVecIn is NULL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
         <source>Keyword autoLoadParams not of integer type</source>
         <translation type="unfinished">Schlüsselwort autoLoadParams ist nicht vom Typ Integer</translation>
     </message>
@@ -1595,12 +1692,182 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Schlüsselwort kann nicht gelöscht werden: autoLoadParams</translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="+561"/>
+        <location line="+25"/>
+        <location line="+13"/>
+        <source>unknown parameter of type QVariant</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+404"/>
+        <source>- unknown message -</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+40"/>
+        <source>%s with message: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>%s with unspecified error.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Could not load plugin %s with error message: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Could not load plugin %s with unspecified error.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Error executing function %s with error message: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Error executing function %s with unspecified error.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Error invoking function %s with error message: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Unspecified error invoking function %s.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Error while getting property info %s with error message: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Unspecified error while getting property info %s.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Error invoking exec-function %s with error message: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Error invoking exec-function %s with unspecified error.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Warning while %s: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>%s with unspecified warning.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Warning while loading plugin %s: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Unspecified warning while loading plugin %s.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Warning while executing function %s: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Unspecified warning while executing function %s.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Warning while invoking function %s: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Unspecified warning while invoking function %s.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Warning while getting property info %s: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Unspecified warning while getting property info %s.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Warning while invoking exec-function %s: 
+%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Unspecified warning invoking exec-function %s.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../python/pythonPlugins.cpp" line="+292"/>
+        <source>plugin has no configuration dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+31"/>
+        <source>timeout while showing toolbox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <location line="+37"/>
+        <source>Member &apos;showDockWidget&apos; of plugin could not be invoked (error in signal/slot connection).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-9"/>
+        <source>timeout while hiding toolbox</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+201"/>
         <source>timeout while getting name parameter</source>
         <translation type="unfinished">Zeitüberschreitung beim Lesen des Parameternamens</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+13"/>
+        <location line="+223"/>
+        <source>Member &apos;getParam&apos; of plugin could not be invoked (error in signal/slot connection).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-194"/>
         <source>you must provide at least one parameter with the name of the function</source>
         <translation type="unfinished">Es muss mindestens ein Parameter für dem Funktionsnamen unterstützt werden</translation>
     </message>
@@ -1620,7 +1887,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Zeitüberschreitung beim Aufruf spezifischer Funktionen im Plugin.</translation>
     </message>
     <message>
-        <location line="+136"/>
+        <location line="+13"/>
+        <source>Member &apos;execFunc&apos; of plugin could not be invoked (error in signal/slot connection).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+123"/>
         <source>timeout while getting parameter</source>
         <translation type="unfinished">Zeitüberschreitung beim Lesen der Parameter</translation>
     </message>
@@ -1630,47 +1902,193 @@ p, li { white-space: pre-wrap; }
         <translation>Zeitüberschreitung.</translation>
     </message>
     <message>
-        <location line="+482"/>
+        <location line="+13"/>
+        <source>Member &apos;setParam&apos; of plugin could not be invoked (error in signal/slot connection).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+53"/>
+        <source>Member &apos;closeAddIn&apos; of plugin could not be invoked (error in signal/slot connection).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+173"/>
+        <location line="+1275"/>
+        <source>Member &apos;initAddIn&apos; of plugin could not be invoked (error in signal/slot connection).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-1032"/>
         <source>timeout while calibration</source>
         <translation type="unfinished">Zeitüberschreitung bei der Kalibrierung</translation>
     </message>
     <message>
-        <location line="+117"/>
+        <location line="+13"/>
+        <source>Member &apos;calib&apos; of plugin could not be invoked (error in signal/slot connection).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+104"/>
         <source>timeout while setting origin</source>
         <translation type="unfinished">Zeitüberschreitung beim Setzen auf den Nullpunkt</translation>
     </message>
     <message>
-        <location line="+89"/>
+        <location line="+12"/>
+        <source>Member &apos;setOrigin&apos; of plugin could not be invoked (error in signal/slot connection).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+77"/>
         <source>timeout while getting Status</source>
         <translation type="unfinished">Zeitüberschreitung beim Lesen des Status</translation>
     </message>
     <message>
-        <location line="+133"/>
+        <location line="+13"/>
+        <source>Member &apos;getStatus&apos; of plugin could not be invoked (error in signal/slot connection).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+120"/>
         <source>timeout while getting position values</source>
         <translation type="unfinished">Zeitüberschreitung beim Lesen der Positionswerte</translation>
     </message>
     <message>
-        <location line="+289"/>
+        <location line="+13"/>
+        <source>Member &apos;getPos&apos; of plugin could not be invoked (error in signal/slot connection).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+276"/>
         <source>timeout while setting absolute position</source>
         <translation type="unfinished">Zeitüberschreitung beim setzen der absoluten Position</translation>
     </message>
     <message>
-        <location line="+87"/>
+        <location line="+13"/>
+        <source>Member &apos;setPosAbs&apos; of plugin could not be invoked (error in signal/slot connection).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+74"/>
         <source>timeout while setting relative position</source>
         <translation type="unfinished">Zeitüberschreitung beim Setzten der relativen Position</translation>
     </message>
     <message>
-        <location line="+56"/>
+        <location line="+13"/>
+        <source>Member &apos;setPosRel&apos; of plugin could not be invoked (error in signal/slot connection).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+43"/>
         <source>Itom ActuatorPlugin type in python</source>
         <translation type="unfinished">Itom ActuatorPlugin-Typ in Python</translation>
     </message>
     <message>
-        <location line="+971"/>
+        <location line="+464"/>
+        <source>timeout while calling &apos;startDevice&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Member &apos;startDevice&apos; of plugin could not be invoked (error in signal/slot connection).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+70"/>
+        <location line="+41"/>
+        <source>timeout while stopping device</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-28"/>
+        <source>Member &apos;stopDevice&apos; of plugin could not be invoked (error in signal/slot connection).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+102"/>
+        <source>timeout while calling &apos;acquire&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Member &apos;acquire&apos; of plugin could not be invoked (error in signal/slot connection).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+134"/>
+        <source>timeout while calling &apos;getVal&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+104"/>
+        <location line="+43"/>
+        <source>timeout while calling &apos;copyVal&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-31"/>
+        <location line="+41"/>
+        <source>Member &apos;copyVal&apos; of plugin could not be invoked (error in signal/slot connection).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>copyVal function only implemented for typeADDA and typeGrabber</source>
         <translation type="unfinished">Die Funktion &apos;copyVal&apos; wurde nur für ADDA-Wandler und Grabber implementiert</translation>
     </message>
     <message>
-        <location line="+668"/>
+        <location line="+80"/>
+        <location line="+106"/>
+        <source>timeout while calling &apos;setVal&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-94"/>
+        <location line="+106"/>
+        <source>Member &apos;setVal&apos; of plugin could not be invoked (error in signal/slot connection).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+49"/>
+        <source>timeout while calling &apos;enableAutoGrabbing&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Member &apos;enableAutoGrabbing&apos; of plugin could not be invoked (error in signal/slot connection).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+49"/>
+        <source>timeout while calling &apos;disableAutoGrabbing&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Member &apos;disableAutoGrabbing&apos; of plugin could not be invoked (error in signal/slot connection).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+62"/>
+        <source>timeout while calling &apos;enable/disableAutoGrabbing&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Member &apos;enableAutoGrabbing&apos; or &apos;disableAutoGrabbing&apos; of plugin could not be invoked (error in signal/slot connection).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+91"/>
+        <source>timeout while setting the current &apos;autoGrabbingInterval&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+47"/>
+        <source>timeout while obtaining the current &apos;autoGrabbingInterval&apos;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+135"/>
         <source>Itom DataIOPlugin type in python</source>
         <translation type="unfinished">Itom DataIOPlugin-Typ in Python</translation>
     </message>
@@ -1861,16 +2279,113 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Ein Menüelement vom Typ &apos;menu&apos; kann keine Funktionen oder Methoden ausführen. Der Code wird ignoriert.</translation>
     </message>
     <message>
+        <location line="+841"/>
+        <source>error while parsing parameters.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>OpenCV Error: %s (%s) in %s, file %s, line %d</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>unknown function</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>The exception &apos;%s&apos; has been thrown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>The exception &apos;&lt;unknown&gt;&apos; has been thrown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>An unspecified exception has been thrown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1120"/>
+        <source>no code is given</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Given argument must be of type tuple or list.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>Proxy object of function or method could not be created.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>code is no function or method call and no executable code string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <location line="+35"/>
+        <location line="+32"/>
+        <source>Python engine is not available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Live data source for plot</source>
         <translation type="obsolete">Live Datenquelle für Anzeige</translation>
     </message>
     <message>
-        <location filename="../api/apiFunctionsGraph.cpp" line="+275"/>
+        <location filename="../api/apiFunctionsGraph.cpp" line="+97"/>
+        <location line="+33"/>
+        <source>color map &apos;%s&apos; not found</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+67"/>
+        <source>designerWidgetOrganizer is not available</source>
+        <translation type="unfinished">&apos;designerWidgetOrganizer&apos; ist nicht verfügbar</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <location line="+271"/>
+        <location line="+28"/>
+        <source>uiOrganizer is not available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-226"/>
         <source>timeout while unregistering live image from camera.</source>
         <translation type="unfinished">Zeitüberschreitung beim Stoppen des Livebilds der Kamera.</translation>
     </message>
     <message>
-        <location line="+145"/>
+        <location line="+26"/>
+        <location line="+25"/>
+        <source>liveDataSource is no instance of ito::AddInDataIO</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-20"/>
+        <location line="+25"/>
+        <source>liveDataSource or liveDataView are NULL</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>figureClass is NULL. No settings could be retrieved</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>figureClass is not inherited from AbstractFigure. No settings could be retrieved</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+71"/>
         <source>timeout while loading plugin widget</source>
         <translation type="unfinished">Zeitüberschreitung beim Laden der Plugin-Widgets</translation>
     </message>
@@ -1895,6 +2410,11 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">&apos;UI-Organizer&apos; ist nicht verfügbar!</translation>
     </message>
     <message>
+        <location line="+44"/>
+        <source>plot widget does not exist.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>Source data for plot</source>
         <translation type="obsolete">Quelldaten für Plot</translation>
     </message>
@@ -1903,23 +2423,20 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">Aktuelle Ausgabedaten des Plots</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="-201"/>
         <source>directory &apos;%1&apos; could not be found</source>
-        <translation type="unfinished">Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
+        <translation type="obsolete">Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>plugins folder could not be found</source>
-        <translation type="unfinished">Plugin-Ordner wurden nicht gefunden</translation>
+        <translation type="obsolete">Plugin-Ordner wurden nicht gefunden</translation>
     </message>
     <message>
         <source>filename is no AddIn-library: %1</source>
         <translation type="obsolete">Die Datei &apos;%1&apos; ist keine AddIn-Bibliothek</translation>
     </message>
     <message>
-        <location line="+59"/>
         <source>scan and load plugins (%1)</source>
-        <translation type="unfinished">Plugin &apos;%1&apos; wird gescannt und geladen</translation>
+        <translation type="obsolete">Plugin &apos;%1&apos; wird gescannt und geladen</translation>
     </message>
     <message>
         <source>Unable to load translation file &apos;%1&apos;.</source>
@@ -1927,13 +2444,11 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="../organizer/designerWidgetOrganizer.cpp" line="+201"/>
-        <location filename="../organizer/addInManager.cpp" line="+40"/>
         <source>Unable to find translation file.</source>
         <translation type="unfinished">Übersetzungsdatei wurde nicht gefunden.</translation>
     </message>
     <message>
         <location line="-11"/>
-        <location filename="../organizer/addInManager.cpp" line="-12"/>
         <source>Unable to load translation file &apos;%1&apos;. Translation file is empty.</source>
         <translation type="unfinished">Die Übersetzungsdatei &apos;%1&apos; kann nicht geladen werden. Diese Datei ist leer.</translation>
     </message>
@@ -1942,83 +2457,67 @@ p, li { white-space: pre-wrap; }
         <translation type="obsolete">AddIn namens &apos;%1&apos; ist unbekannt.</translation>
     </message>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="-34"/>
         <source>filename is no itom plugin library: %1</source>
-        <translation type="unfinished">Die Datei ist keine itom-Plugin-Bibliothek: %1</translation>
+        <translation type="obsolete">Die Datei ist keine itom-Plugin-Bibliothek: %1</translation>
     </message>
     <message>
-        <location line="+89"/>
         <source>Plugin with filename &apos;%1&apos; is unknown.</source>
-        <translation type="unfinished">Das Plugin mit dem Namen &apos;%1&apos; ist unbekannt.</translation>
+        <translation type="obsolete">Das Plugin mit dem Namen &apos;%1&apos; ist unbekannt.</translation>
     </message>
     <message>
-        <location line="+23"/>
         <source>AddIn &apos;%1&apos; fits to the obsolete interface %2. The AddIn interface of this version of &apos;itom&apos; is %3.</source>
-        <translation type="unfinished">AddIn &apos;%1&apos; ist neuer als die veraltete AddIn-Schnittstelle %2. Die AddIn-Schnittstelle dieser itom-Version ist %3.</translation>
+        <translation type="obsolete">AddIn &apos;%1&apos; ist neuer als die veraltete AddIn-Schnittstelle %2. Die AddIn-Schnittstelle dieser itom-Version ist %3.</translation>
     </message>
     <message>
-        <location line="+7"/>
         <source>AddIn &apos;%1&apos; fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of &apos;itom&apos; is %2.</source>
-        <translation type="unfinished">AddIn &apos;%1&apos; wurde für eine neuere AddIn-Schnittstelle erstellt, die aktuell nicht unterstützt wird. Die aktuelle ITOM-Version ist %2.</translation>
+        <translation type="obsolete">AddIn &apos;%1&apos; wurde für eine neuere AddIn-Schnittstelle erstellt, die aktuell nicht unterstützt wird. Die aktuelle ITOM-Version ist %2.</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>AddIn &apos;%1&apos; does not fit to the general interface AddInInterfaceBase</source>
-        <translation type="unfinished">AddIn &apos;%1&apos; passt nicht zur AddInInterfaceBase</translation>
+        <translation type="obsolete">AddIn &apos;%1&apos; passt nicht zur AddInInterfaceBase</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>AddIn &apos;%1&apos; is not derived from class QObject.</source>
-        <translation type="unfinished">AddIn &apos;%1&apos; wurde nicht von der Klasse QObject abgeleitet.</translation>
+        <translation type="obsolete">AddIn &apos;%1&apos; wurde nicht von der Klasse QObject abgeleitet.</translation>
     </message>
     <message>
-        <location line="+19"/>
         <source>Library &apos;%1&apos; was ignored. Message: %2</source>
-        <translation type="unfinished">Bibliothek &apos;%1&apos; wurde ignoriert. Meldung: %2</translation>
+        <translation type="obsolete">Bibliothek &apos;%1&apos; wurde ignoriert. Meldung: %2</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <location line="+9"/>
         <source>AddIn &apos;%1&apos; could not be loaded. Error message: %2</source>
-        <translation type="unfinished">AddIn &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: %2</translation>
+        <translation type="obsolete">AddIn &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: %2</translation>
     </message>
     <message>
-        <location line="+27"/>
         <source>%1 (DataIO) loaded</source>
-        <translation type="unfinished">%1 (DataIO) geladen</translation>
+        <translation type="obsolete">%1 (DataIO) geladen</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>Plugin %1 (DataIO) already exists. Duplicate rejected.</source>
-        <translation type="unfinished">Plugin %1 (DataIO) existiert bereits. Duplikat entfernt.</translation>
+        <translation type="obsolete">Plugin %1 (DataIO) existiert bereits. Duplikat entfernt.</translation>
     </message>
     <message>
-        <location line="+16"/>
         <source>%1 (Actuator) loaded</source>
-        <translation type="unfinished">%1 (Motor) geladen</translation>
+        <translation type="obsolete">%1 (Motor) geladen</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>Plugin %1 (Actuator) already exists. Duplicate rejected.</source>
-        <translation type="unfinished">Plugin %1 (Motor) existiert bereits. Duplikat entfernt.</translation>
+        <translation type="obsolete">Plugin %1 (Motor) existiert bereits. Duplikat entfernt.</translation>
     </message>
     <message>
-        <location line="+24"/>
         <source>error initializing plugin: %1</source>
-        <translation type="unfinished">Fehler beim Initialisieren der Plugins: %1</translation>
+        <translation type="obsolete">Fehler beim Initialisieren der Plugins: %1</translation>
     </message>
     <message>
-        <location line="+23"/>
         <source>Filter &apos;%1&apos; rejected since a filter with the same name already exists in global filter list</source>
-        <translation type="unfinished">Filter &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Filter dieses namens in der globalen Filterliste</translation>
+        <translation type="obsolete">Filter &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Filter dieses namens in der globalen Filterliste</translation>
     </message>
     <message>
-        <location line="+36"/>
         <source>Filter %1 loaded</source>
-        <translation type="unfinished">Filter %1 geladen</translation>
+        <translation type="obsolete">Filter %1 geladen</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location filename="../organizer/addInManager.cpp" line="+676"/>
         <source>Widget &apos;%1&apos; rejected since widget with the same name already exists in global plugin widget list</source>
         <translation type="unfinished">Widget &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Widget dieses namens in der globalen Plugin-Widget-Liste</translation>
     </message>
@@ -2028,59 +2527,339 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Widget %1 geladen</translation>
     </message>
     <message>
-        <location line="+87"/>
         <source>invalid plugin type. Only typeDataIO, typeActuator or typeAlgo are allowed.</source>
-        <translation type="unfinished">Ungültiger Plugin-Typ. Nur &apos;typeDataIO&apos;, &apos;typeActuator&apos; und &apos;typeAlgo&apos; sind erlaubt.</translation>
+        <translation type="obsolete">Ungültiger Plugin-Typ. Nur &apos;typeDataIO&apos;, &apos;typeActuator&apos; und &apos;typeAlgo&apos; sind erlaubt.</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>Plugin &apos;%1&apos; not found in list of given type</source>
-        <translation type="unfinished">Plugin &apos;%1&apos; wurde in der übergebenen Liste nicht gefunden</translation>
+        <translation type="obsolete">Plugin &apos;%1&apos; wurde in der übergebenen Liste nicht gefunden</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+116"/>
         <source>plugin not found</source>
         <translation type="unfinished">Plugin nicht gefunden</translation>
     </message>
     <message>
-        <location line="+180"/>
-        <location line="+143"/>
-        <location line="+137"/>
         <source>Wrong plugin name</source>
-        <translation type="unfinished">Falscher Plugin-Name</translation>
+        <translation type="obsolete">Falscher Plugin-Name</translation>
     </message>
     <message>
-        <location line="-257"/>
-        <location line="+143"/>
         <source>Base plugin or appropriate plugin type not indicated for this plugin.</source>
-        <translation type="unfinished">Für dieses Plugin wurde kein Basis-Plugin oder geeigneter Plugin-Typ gefunden.</translation>
+        <translation type="obsolete">Für dieses Plugin wurde kein Basis-Plugin oder geeigneter Plugin-Typ gefunden.</translation>
     </message>
     <message>
-        <location line="-118"/>
         <source>timeout while initializing dataIO</source>
-        <translation type="unfinished">Zeitüberschreitung während der Initialisierung von DataIO</translation>
+        <translation type="obsolete">Zeitüberschreitung während der Initialisierung von DataIO</translation>
     </message>
     <message>
-        <location line="+43"/>
-        <location line="+141"/>
-        <location line="+86"/>
         <source>Parameter has own parameter management. Keyword &apos;autoLoadParams&apos; is ignored.</source>
-        <translation type="unfinished">Parameter haben ein eigenes Management. Schlüsselwort &apos;autoLoadParams&apos; wurde ignoriert.</translation>
+        <translation type="obsolete">Parameter haben ein eigenes Management. Schlüsselwort &apos;autoLoadParams&apos; wurde ignoriert.</translation>
     </message>
     <message>
-        <location line="-127"/>
         <source>timeout while initializing actuator</source>
-        <translation type="unfinished">Zeitüberschreitung während der Initialisierung von Actuator</translation>
+        <translation type="obsolete">Zeitüberschreitung während der Initialisierung von Actuator</translation>
     </message>
     <message>
-        <location line="+753"/>
         <source>no toolbox available</source>
-        <translation type="unfinished">Keine Symbolleiste verfügbar</translation>
+        <translation type="obsolete">Keine Symbolleiste verfügbar</translation>
+    </message>
+    <message>
+        <source>plugin not available</source>
+        <translation type="obsolete">Plugin ist nicht verfügbar</translation>
+    </message>
+    <message>
+        <location filename="../helper/qpropertyHelper.cpp" line="+60"/>
+        <source>transformation error to PointF: at least one value could not be transformed to float.</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+5"/>
-        <source>plugin not available</source>
-        <translation type="unfinished">Plugin ist nicht verfügbar</translation>
+        <source>transformation error to PointF: 2 values required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>transformation error to Point: at least one value could not be transformed to integer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>transformation error to Point: 2 values required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>transformation error to Rect: at least one value could not be transformed to integer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>transformation error to Rect: 4 values required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>transformation error to RectF: at least one value could not be transformed to float.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>transformation error to RectF: 4 values required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>transformation error to Vector2D: at least one value could not be transformed to float.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>transformation error to Vector2D: 2 values required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>transformation error to Vector3D: at least one value could not be transformed to float.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>transformation error to Vector3D: 3 values required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>transformation error to Vector4D: at least one value could not be transformed to float.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>transformation error to Vector4D: 4 values required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>transformation error to Size: at least one value could not be transformed to integer.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>transformation error to Size: 2 values required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>transformation error to AutoInterval: at least one value could not be transformed to float.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>transformation error to AutoInterval: 2 values required.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>transformation error to vector of shapes: at least one item could not be interpreted as shape.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>transformation error to QVector&lt;int&gt;: at least one value could not be transformed to int.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>transformation error to AutoInterval: value must be [min,max] or &apos;auto&apos;.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+86"/>
+        <location line="+9"/>
+        <source>unknown</source>
+        <translation type="unfinished">unbekannt</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>no conversion from QVariant type &apos;%s&apos; to &apos;%s&apos; is possible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+42"/>
+        <source>The value %i contains a bitmask that is not fully covered by an or-combination of the enumeration %s::%s (flags)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The value %i does not exist in the enumeration %s::%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>The key %s does not exist in the enumeration %s::%s (flags)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>The key %s does not exist in the enumeration %s::%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <source>Use an integer or a string for a value of the enumeration %s::%s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>property &apos;%s&apos; could not be read</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>invalid object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+29"/>
+        <source>Property &apos;%s&apos; is not writeable.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Property &apos;%s&apos; could not be set. Maybe wrong input type.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Property &apos;%s&apos; does not exist.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Invalid object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../python/pythonPlotItem.cpp" line="+236"/>
+        <source>data object cannot be converted to a shared data object</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>pick points operation interrupted by user</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+106"/>
+        <source>draw points operation interrupted by user</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../python/pythonShape.cpp" line="+188"/>
+        <location line="+63"/>
+        <source>param2 must be a double value.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+330"/>
+        <source>point1 cannot be changed for square and circle. Change center and width / height.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>This type of shape has no &apos;point1&apos; defined.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+72"/>
+        <source>point2 cannot be changed for square and circle. Change center and width / height.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>This type of shape has no &apos;point2&apos; defined.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+90"/>
+        <source>This type of shape has no &apos;center&apos; defined.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+772"/>
+        <source>%s missing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+44"/>
+        <source>%s: float64 array with two elements required (x,y)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../python/pythontParamConversion.cpp" line="+327"/>
+        <source>type of ParamBase could not be guessed with given PyObject.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+159"/>
+        <source>given paramBaseType is unsupported.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>error while converting value from PyObject to ParamBase</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../python/pythonPCL.cpp" line="+1830"/>
+        <source>No more memory available when saving point cloud</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The exception &apos;%s&apos; has been thrown when saving a point cloud.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <location line="+5"/>
+        <source>An unspecified exception has been thrown when saving a point cloud.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Temporary file for writing point cloud binary data could not be opened</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+42"/>
+        <source>Temporary file for writing point cloud binary data could not be created</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>temporary file could not be opened (II)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
+        <source>No more memory available when loading point cloud</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The exception &apos;%s&apos; has been thrown when loading a point cloud.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <location line="+5"/>
+        <source>An unspecified exception has been thrown when loading a point cloud.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>The pickled data must be a byte array for establishing the pointCloud.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3590,16 +4369,231 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInManager</name>
     <message>
-        <location filename="../organizer/addInManager.cpp" line="-940"/>
+        <location filename="../organizer/addInManager.cpp" line="-561"/>
+        <source>directory &apos;%1&apos; could not be found</source>
+        <translation type="unfinished">Verzeichnis &apos;%1&apos; wurde nicht gefunden</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>plugins folder could not be found</source>
+        <translation type="unfinished">Plugin-Ordner wurden nicht gefunden</translation>
+    </message>
+    <message>
+        <location line="+53"/>
+        <source>filename is no itom plugin library: %1</source>
+        <translation type="unfinished">Die Datei ist keine itom-Plugin-Bibliothek: %1</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>scan and load plugins (%1)</source>
+        <translation type="unfinished">Plugin &apos;%1&apos; wird gescannt und geladen</translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>Unable to load translation file &apos;%1&apos;. Translation file is empty.</source>
+        <translation type="unfinished">Die Übersetzungsdatei &apos;%1&apos; kann nicht geladen werden. Diese Datei ist leer.</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Unable to find translation file.</source>
+        <translation type="unfinished">Übersetzungsdatei wurde nicht gefunden.</translation>
+    </message>
+    <message>
+        <location line="+43"/>
+        <source>Plugin with filename &apos;%1&apos; is unknown.</source>
+        <translation type="unfinished">Das Plugin mit dem Namen &apos;%1&apos; ist unbekannt.</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>AddIn &apos;%1&apos; fits to the obsolete interface %2. The AddIn interface of this version of &apos;itom&apos; is %3.</source>
+        <translation type="unfinished">AddIn &apos;%1&apos; ist neuer als die veraltete AddIn-Schnittstelle %2. Die AddIn-Schnittstelle dieser itom-Version ist %3.</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>AddIn &apos;%1&apos; fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of &apos;itom&apos; is %2.</source>
+        <translation type="unfinished">AddIn &apos;%1&apos; wurde für eine neuere AddIn-Schnittstelle erstellt, die aktuell nicht unterstützt wird. Die aktuelle ITOM-Version ist %2.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>AddIn &apos;%1&apos; does not fit to the general interface AddInInterfaceBase</source>
+        <translation type="unfinished">AddIn &apos;%1&apos; passt nicht zur AddInInterfaceBase</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>AddIn &apos;%1&apos; is not derived from class QObject.</source>
+        <translation type="unfinished">AddIn &apos;%1&apos; wurde nicht von der Klasse QObject abgeleitet.</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>The file &apos;%1&apos; is not a valid Qt plugin.</source>
+        <translation type="unfinished">Die Datei &apos;%1&apos; ist kein gültiges Qt Plugin.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Library &apos;%1&apos; was ignored. Message: %2</source>
+        <translation type="unfinished">Bibliothek &apos;%1&apos; wurde ignoriert. Meldung: %2</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <location line="+9"/>
+        <source>AddIn &apos;%1&apos; could not be loaded. Error message: %2</source>
+        <translation type="unfinished">AddIn &apos;%1&apos; konnte nicht geladen werden. Fehlermeldung: %2</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>%1 (DataIO) loaded</source>
+        <translation type="unfinished">%1 (DataIO) geladen</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Plugin %1 (DataIO) already exists. Duplicate rejected.</source>
+        <translation type="unfinished">Plugin %1 (DataIO) existiert bereits. Duplikat entfernt.</translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>%1 (Actuator) loaded</source>
+        <translation type="unfinished">%1 (Motor) geladen</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Plugin %1 (Actuator) already exists. Duplicate rejected.</source>
+        <translation type="unfinished">Plugin %1 (Motor) existiert bereits. Duplikat entfernt.</translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>error initializing plugin: %1</source>
+        <translation type="unfinished">Fehler beim Initialisieren der Plugins: %1</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Filter &apos;%1&apos; rejected since a filter with the same name already exists in global filter list</source>
+        <translation type="unfinished">Filter &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Filter dieses namens in der globalen Filterliste</translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>Filter %1 loaded</source>
+        <translation type="unfinished">Filter %1 geladen</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Filter %1 rejected. The filter parameters could not be loaded: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Filter %1 rejected. The filter parameters could not be loaded.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Filter %1 rejected. It does not correspond to the algorithm interface: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Filter %1 rejected. It does not correspond to the algorithm interface.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+56"/>
+        <source>Widget %1 rejected. It does not correspond to the algorithm interface: %2</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Widget %q rejected. It does not correspond to the algorithm interface.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+76"/>
+        <source>invalid plugin type. Only typeDataIO, typeActuator or typeAlgo are allowed.</source>
+        <translation type="unfinished">Ungültiger Plugin-Typ. Nur &apos;typeDataIO&apos;, &apos;typeActuator&apos; und &apos;typeAlgo&apos; sind erlaubt.</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Plugin &apos;%1&apos; not found in list of given type</source>
+        <translation type="unfinished">Plugin &apos;%1&apos; wurde in der übergebenen Liste nicht gefunden</translation>
+    </message>
+    <message>
+        <location line="+204"/>
+        <location line="+143"/>
+        <location line="+137"/>
+        <source>Wrong plugin name</source>
+        <translation type="unfinished">Falscher Plugin-Name</translation>
+    </message>
+    <message>
+        <location line="-271"/>
         <location line="+143"/>
         <location line="+136"/>
         <source>Plugin instance is invalid (NULL)</source>
         <translation>Die Plugin-Instanz ist ungültig (NULL)</translation>
     </message>
     <message>
-        <location line="+602"/>
+        <location line="-270"/>
+        <location line="+143"/>
+        <location line="+136"/>
+        <source>reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-274"/>
+        <location line="+143"/>
+        <source>Base plugin or appropriate plugin type not indicated for this plugin.</source>
+        <translation type="unfinished">Für dieses Plugin wurde kein Basis-Plugin oder geeigneter Plugin-Typ gefunden.</translation>
+    </message>
+    <message>
+        <location line="-118"/>
+        <source>timeout while initializing dataIO</source>
+        <translation type="unfinished">Zeitüberschreitung während der Initialisierung von DataIO</translation>
+    </message>
+    <message>
+        <location line="+43"/>
+        <location line="+141"/>
+        <location line="+86"/>
+        <source>Parameter has own parameter management. Keyword &apos;autoLoadParams&apos; is ignored.</source>
+        <translation type="unfinished">Parameter haben ein eigenes Management. Schlüsselwort &apos;autoLoadParams&apos; wurde ignoriert.</translation>
+    </message>
+    <message>
+        <location line="-127"/>
+        <source>timeout while initializing actuator</source>
+        <translation type="unfinished">Zeitüberschreitung während der Initialisierung von Actuator</translation>
+    </message>
+    <message>
+        <location line="+172"/>
+        <location line="+33"/>
+        <source>timeout while pulling plugin back to main thread.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-27"/>
+        <location line="+33"/>
+        <source>error invoking method &apos;moveBackToApplicationThread&apos; of plugin.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-21"/>
+        <source>timeout while closing plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+460"/>
+        <source>Reference counter not zero. Only unused plugins can be reloaded.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+49"/>
         <source>no configuration dialog available</source>
         <translation>Kein Konfigurationsdialogs vorhanden</translation>
+    </message>
+    <message>
+        <location line="+54"/>
+        <source>no toolbox available</source>
+        <translation type="unfinished">Keine Symbolleiste verfügbar</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>plugin not available</source>
+        <translation type="unfinished">Plugin ist nicht verfügbar</translation>
     </message>
 </context>
 <context>
@@ -3651,7 +4645,32 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Polygon [ein]</translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location line="+105"/>
+        <source>interface could not be added since its enumeration ID already has been added</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>The parameters of the filter does not fit to the requirements given by the specified filter interface.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The filter does not have the required tags defined.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>The parameters of the widget does not fit to the requirements given by the specified widget interface.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The widget does not have the required tags defined.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+35"/>
         <source>Number of mandatory parameters of given algorithm exceed the maximum value, given by algorithm interface.</source>
         <translation>Die Anzahl der Pflichtparameter überschreitet den Maximalwert für die angegebene Algorithmusschnittstelle.</translation>
     </message>
@@ -3750,6 +4769,21 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+2"/>
         <source>no</source>
         <translation>nein</translation>
+    </message>
+    <message>
+        <location line="+427"/>
+        <source>given modelIndex of breakpoint is invalid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>filename must not be changed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>given modelIndex is no model index of a breakpoint</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -6552,7 +7586,21 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <translation>Lizenz</translation>
     </message>
     <message>
-        <location line="+243"/>
+        <location line="+151"/>
+        <source>The home directory of Python is currently set to the non-existing directory &apos;%s&apos;
+Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
+or correct the base directory in the property dialog of itom.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>The built-in library path of Python could not be found. The current home directory is &apos;%s&apos;
+Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
+or correct the base directory in the preferences dialog of itom.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+76"/>
         <source>up to date</source>
         <translation>aktuell</translation>
     </message>
@@ -6682,7 +7730,7 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
 <context>
     <name>ito::PythonEngine</name>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="+428"/>
+        <location filename="../python/pythonEngine.cpp" line="+430"/>
         <source>error importing sys in start python engine
 </source>
         <translation type="unfinished"></translation>
@@ -6731,7 +7779,17 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+191"/>
+        <location line="+164"/>
+        <source>An automatic reload cannot be executed since auto reloader is not enabled.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>An automatic reload cannot be executed since module &apos;autoreload&apos; could not be loaded.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
         <source>main dictionary is empty</source>
         <translation type="unfinished">Hauptwörterbuch ist leer</translation>
     </message>
@@ -6781,7 +7839,7 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <translation type="obsolete">Fehler beim Löschen eines Haltepunktes im ITO-Debugger.</translation>
     </message>
     <message>
-        <location line="+2818"/>
+        <location line="+2823"/>
         <source>The number of names and values must be equal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6798,7 +7856,32 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4350"/>
+        <location line="-4435"/>
+        <source>The home directory of Python is currently set to the non-existing directory &apos;%s&apos;
+Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
+or correct the base directory in the property dialog of itom.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>The built-in library path of Python could not be found. The current home directory is &apos;%s&apos;
+Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
+or correct the base directory in the preferences dialog of itom.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+40"/>
+        <source>numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.
+</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+22"/>
         <source>error redirecting stdin in start python engine
 </source>
         <translation type="unfinished"></translation>
@@ -6829,17 +7912,112 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+69"/>
-        <source>Error while editing breakpoint in debugger.</source>
+        <location line="+2"/>
+        <source>Exception raised while adding breakpoint in debugger.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+53"/>
-        <source>Error while clearing breakpoint in debugger.</source>
+        <location line="+10"/>
+        <source>Adding breakpoint to file &apos;%s&apos;, line %i failed in Python debugger (invalid breakpoint id).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2279"/>
+        <location line="+19"/>
+        <source>Adding breakpoint to file &apos;%s&apos;, line %i in Python debugger returned unknown error string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <location line="+67"/>
+        <source>Debugger not available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-46"/>
+        <source>Exception raised while editing breakpoint in debugger.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Editing breakpoint (file &apos;%s&apos;, line %i) in Python debugger returned error code %i</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Editing breakpoint (file &apos;%s&apos;, line %i) in Python debugger returned unknown error string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>Breakpoint in file &apos;%s&apos;, line %i could not be edited since it has no valid Python breakpoint number (maybe a comment or blank line in script)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Exception raised while clearing breakpoint in debugger.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Deleting breakpoint in Python debugger returned error code %i</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Deleting breakpoint in Python debugger returned unknown error string</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1900"/>
+        <source>it is not allowed to save a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>variables can not be saved since dictionary is not available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+84"/>
+        <location line="+993"/>
+        <location line="+99"/>
+        <source>it is not allowed to pickle a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-1075"/>
+        <source>Given value is empty. No save to matlab possible.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <location line="+17"/>
+        <location line="+16"/>
+        <source>could not save dataObject since it is not available.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>unsupported data type to save to matlab.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>error converting object to Python object. Save to matlab not possible.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+54"/>
+        <source>it is not allowed to load matlab variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>variables can not be load since dictionary is not available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+93"/>
         <location line="+103"/>
         <source>It is not allowed to check names of variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
         <translation type="unfinished"></translation>
@@ -6936,6 +8114,86 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <location line="+78"/>
         <source>error while reloading the modules</source>
         <translation type="unfinished">Fehler beim erneuten Laden der Module</translation>
+    </message>
+    <message>
+        <location line="+71"/>
+        <source>variables can not be pickled since dictionary is not available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+90"/>
+        <source>could not pickle since value is empty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <location line="+16"/>
+        <location line="+16"/>
+        <source>could not pickle dataObject since it is not available.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>unsupported data type to pickle.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>error converting object to Python object. No pickle possible.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+49"/>
+        <location line="+204"/>
+        <source>mainModule is empty or cannot be accessed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-149"/>
+        <source>No more memory available during pickling.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The exception &apos;%s&apos; has been thrown during pickling.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <location line="+5"/>
+        <source>Pickle error. An unspecified exception has been thrown.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <source>it is not allowed to unpickle a data collection in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
+        <source>variables can not be unpickled since dictionary is not available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+121"/>
+        <source>No more memory available during unpickling.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>The exception &apos;%s&apos; has been thrown during unpickling.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <location line="+5"/>
+        <source>Unpickling error. An unspecified exception has been thrown.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>unpickling error. This file contains no dictionary as base element.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -7648,7 +8906,12 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <translation type="unfinished">Der Dialog kann nicht erstellt werden</translation>
     </message>
     <message>
-        <location line="+77"/>
+        <location line="-40"/>
+        <source>dockWidgetArea is invalid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+117"/>
         <source>A widget inherited from QDialog cannot be docked into the main window</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7716,11 +8979,16 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location line="+90"/>
+        <source>timer is invalid</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>object name is not available</source>
         <translation type="obsolete">Der Objektname ist nicht verfügbar</translation>
     </message>
     <message>
-        <location line="-2155"/>
+        <location line="-2245"/>
         <location line="+56"/>
         <source>property &apos;%1&apos; does not exist</source>
         <translation type="unfinished">Die Eigenschaft &apos;%1&apos; existiert nicht</translation>
@@ -7907,6 +9175,30 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
     </message>
 </context>
 <context>
+    <name>ito::UserInteractionWatcher</name>
+    <message>
+        <location filename="../organizer/userInteractionWatcher.cpp" line="+43"/>
+        <source>The given shape storage is NULL.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <location line="+11"/>
+        <source>The given widget does not have the necessary signals and slots for a user interaction.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+36"/>
+        <source>User interaction terminated due to deletion of plot.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+39"/>
+        <source>User interaction aborted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>ito::UserModel</name>
     <message>
         <location filename="../models/UserModel.cpp" line="+36"/>
@@ -8024,7 +9316,12 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <translation>Standardbenutzer</translation>
     </message>
     <message>
-        <location line="+292"/>
+        <location line="+276"/>
+        <source>file &apos;%s&apos; does not exist</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+16"/>
         <source>itomSettings directory not found, aborting!</source>
         <translation>Das Verzeichnis &quot;itomSettings&quot; wurde nicht gefunden! Vorgang abgebrochen!</translation>
     </message>
@@ -8573,6 +9870,11 @@ Katesisch</translation>
     </message>
     <message>
         <location line="+3"/>
+        <source>unpack loaded dictionary</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
         <source>unpack loaded dictionary from idc or mat files to workspace</source>
         <translation>Entpacke importierte idc- oder mat-Dateien in ein neues &apos;Dictionary&apos; des Workspaces</translation>
     </message>

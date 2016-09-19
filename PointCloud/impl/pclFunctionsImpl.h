@@ -51,7 +51,7 @@ namespace pclHelper
         }
         catch(...)
         {
-            retval += ito::RetVal(ito::retError,0,"eigen matrix type cannot be converted to dataObject");
+            retval += ito::RetVal(ito::retError, 0, tr("eigen matrix type cannot be converted to dataObject").toLatin1().data());
         }
 
         if(!retval.containsError())
@@ -103,7 +103,7 @@ namespace pclHelper
         }
         catch(...)
         {
-            retval += ito::RetVal(ito::retError,0,"eigen matrix type is unknown for dataObject");
+            retval += ito::RetVal(ito::retError, 0, tr("eigen matrix type is unknown for dataObject").toLatin1().data());
         }
 
         if(!retval.containsError())
@@ -114,7 +114,7 @@ namespace pclHelper
         
         if (dataobj.getDims() != 2 || dataobj.getSize(0) != _Rows || dataobj.getSize(1) != _Cols)
         {
-            retval += ito::RetVal(ito::retError, 0, "size of dataobj does not fit to requested Eigen::Matrix size");
+            retval += ito::RetVal(ito::retError, 0, tr("size of dataobj does not fit to requested Eigen::Matrix size").toLatin1().data());
         }
 
         if (!retval.containsError())

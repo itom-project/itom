@@ -369,7 +369,7 @@ RetVal UiOrganizer::addWidgetToOrganizer(QWidget *widget, int uiDescription, con
 
     if ((dockWidgetArea & Qt::AllDockWidgetAreas) == 0)
     {
-        retValue += ito::RetVal(ito::retError, 0, "dockWidgetArea is invalid");
+        retValue += ito::RetVal(ito::retError, 0, tr("dockWidgetArea is invalid").toLatin1().data());
     }
     else
     {
@@ -3004,7 +3004,7 @@ RetVal UiOrganizer::getObjectID(const QObject *obj, QSharedPointer<unsigned int>
 //    DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
 //    if (dwo == NULL)
 //    {
-//        retval += ito::RetVal(ito::retError, 0, "DesignerWidgetOrganizer is not available");
+//        retval += ito::RetVal(ito::retError, 0, tr("DesignerWidgetOrganizer is not available").toLatin1().data());
 //    }
 //    else
 //    {
@@ -3124,7 +3124,7 @@ RetVal UiOrganizer::getObjectID(const QObject *obj, QSharedPointer<unsigned int>
 //    DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
 //    if (dwo == NULL)
 //    {
-//        retval += ito::RetVal(ito::retError, 0, "DesignerWidgetOrganizer is not available");
+//        retval += ito::RetVal(ito::retError, 0, tr("DesignerWidgetOrganizer is not available").toLatin1().data());
 //    }
 //    else
 //    {
@@ -3198,7 +3198,7 @@ RetVal UiOrganizer::getObjectID(const QObject *obj, QSharedPointer<unsigned int>
 //    DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
 //    if (dwo == NULL)
 //    {
-//        retval += ito::RetVal(ito::retError, 0, "DesignerWidgetOrganizer is not available");
+//        retval += ito::RetVal(ito::retError, 0, tr("DesignerWidgetOrganizer is not available").toLatin1().data());
 //    }
 //    else
 //    {
@@ -3912,7 +3912,7 @@ RetVal UiOrganizer::registerActiveTimer(const QPointer<QTimer>& timer, const QSt
 	}
 	else
 	{
-		retval += ito::RetVal(ito::retError, 0, "timer is invalid");
+        retval += ito::RetVal(ito::retError, 0, tr("timer is invalid").toLatin1().data());
 	}
 
 	if (semaphore)

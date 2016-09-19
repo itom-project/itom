@@ -233,7 +233,7 @@ maxNrPoints: {int}, optional \n\
 
     if (!ok)
     {
-        retval += ito::RetVal(ito::retError,0,"data object cannot be converted to a shared data object");
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("data object cannot be converted to a shared data object").toLatin1().data());
     }
     else
     {
@@ -247,7 +247,7 @@ maxNrPoints: {int}, optional \n\
         {
             if (PythonEngine::isInterruptQueued())
             {
-                retval += ito::RetVal(ito::retError,0,"pick points operation interrupted by user");
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("pick points operation interrupted by user").toLatin1().data());
                 QMetaObject::invokeMethod(uiOrga, "figurePickPointsInterrupt", Q_ARG(uint, self->uiItem.objectID)); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
                 finished = locker.getSemaphore()->wait(2000);
             }
@@ -353,7 +353,7 @@ Tuple of class itom.shape for all created geometric shapes.");
         {
             if (PythonEngine::isInterruptQueued()) //PyErr_CheckSignals())
             {
-                retval += ito::RetVal(ito::retError,0,"draw points operation interrupted by user");
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("draw points operation interrupted by user").toLatin1().data());
                 QMetaObject::invokeMethod(uiOrga, "figurePickPointsInterrupt", Q_ARG(uint, self->uiItem.objectID)); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
                 finished = locker.getSemaphore()->wait(2000);
             }

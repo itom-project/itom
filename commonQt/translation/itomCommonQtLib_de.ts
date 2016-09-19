@@ -313,6 +313,16 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="63"/>
+        <source>no or invalid plugin given.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="77"/>
+        <source>no or invalid plugin given</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../common/sources/pluginThreadCtrl.cpp" line="154"/>
         <location filename="../../common/sources/pluginThreadCtrl.cpp" line="170"/>
         <location filename="../../common/sources/pluginThreadCtrl.cpp" line="175"/>
@@ -320,14 +330,134 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="623"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="204"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="241"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="299"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="324"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="351"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="395"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="420"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="447"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="475"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="503"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="530"/>
+        <source>no camera available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="211"/>
+        <source>error invoking getParam</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="222"/>
+        <source>no parameter can be returned if timeout = 0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="248"/>
+        <source>error invoking setParam</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="305"/>
+        <source>error invoking startDevice</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="330"/>
+        <source>error invoking stopDevice</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="357"/>
+        <source>error invoking acquire</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="401"/>
+        <source>error invoking enableAutoGrabbing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="426"/>
+        <source>error invoking disableAutoGrabbing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="453"/>
+        <source>error invoking setAutoGrabbingInterval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="481"/>
+        <source>error invoking getVal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="509"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="541"/>
+        <source>error invoking copyVal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="554"/>
+        <source>no image parameters can be returned if timeout = 0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="612"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="648"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="683"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="713"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="739"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="778"/>
+        <source>no actuator available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="617"/>
         <source>Error during setPosRel: Vectors differ in size</source>
         <translation type="unfinished">Fehler bei setPosRel: Vektoren unterscheiden sich in der Größe</translation>
     </message>
     <message>
-        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="659"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="623"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="689"/>
+        <source>error invoking setPosRel</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="653"/>
         <source>Error during setPosAbs: Vectors differ in size</source>
         <translation type="unfinished">Fehler bei setPosAbs: Vektoren unterscheiden sich in der Größe</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="659"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="719"/>
+        <source>error invoking setPosAbs</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="748"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="788"/>
+        <source>error invoking getPos</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="758"/>
+        <source>no position value can be returned if timeout = 0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="799"/>
+        <source>no position value(s) can be returned if timeout = 0</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="825"/>
+        <location filename="../../common/sources/pluginThreadCtrl.cpp" line="831"/>
+        <source>failed to ask for number of axes of actuator</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../common/sources/helperCommon.cpp" line="47"/>
@@ -582,6 +712,11 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../common/sources/addInInterface.cpp" line="587"/>
+        <source>function with this name is already registered.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../common/sources/addInInterface.cpp" line="646"/>
         <source>Your plugin is supposed to have a configuration dialog, but you did not implement the showConfDialog-method</source>
         <translation type="unfinished">Das Plugin hat vermutlich einen Konfigurationsdialog, aber die Methode &apos;showConfDialog&apos; wurde nicht implementiert</translation>
@@ -624,6 +759,41 @@ Type conflict for %1</source>
         <location filename="../../common/sources/addInInterface.cpp" line="992"/>
         <source>not implemented</source>
         <translation type="unfinished">Nicht implementiert</translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/addInInterface.cpp" line="888"/>
+        <source>method startDevice() is not implemented in this plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/addInInterface.cpp" line="906"/>
+        <source>method stopDevice() is not implemented in this plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/addInInterface.cpp" line="924"/>
+        <source>method acquire() is not implemented in this plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/addInInterface.cpp" line="942"/>
+        <source>method getVal(void*, ItomSharedSemaphore*) is not implemented in this plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/addInInterface.cpp" line="960"/>
+        <source>method getVal(QSharedPointer&lt;char&gt;, QSharedPointer&lt;int&gt;, ItomSharedSemaphore*) is not implemented in this plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/addInInterface.cpp" line="978"/>
+        <source>method copyVal(void*,ItomSharedSemaphore*) is not implemented in this plugin</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../common/sources/addInInterface.cpp" line="996"/>
+        <source>method setVal(const char*, const int, ItomSharedSemaphore*) is not implemented in this plugin</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

@@ -124,6 +124,26 @@
         <source>Decimals</source>
         <translation type="unfinished">Dezimal</translation>
     </message>
+    <message>
+        <source>axisIndex is out of bounds.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>refresh</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Actuator not available</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>interrupt movement</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>start movement</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PathLineEdit</name>

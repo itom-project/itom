@@ -1528,7 +1528,7 @@ namespace ito {
             }
             else
             {
-                retval += ito::RetVal::format(ito::retError, 0, "Parameter '%s' does not exist", name.toLatin1().data());
+                retval += ito::RetVal::format(ito::retError, 0, QObject::tr("Parameter '%s' does not exist").toLatin1().data(), name.toLatin1().data());
             }
         }
 
