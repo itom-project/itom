@@ -203,7 +203,7 @@ class FigureCanvasItom( FigureCanvasBase ):
             if DEBUG: print('key release', key)
 
     def resizeEvent( self, w, h ):
-        if DEBUG: print("FigureCanvasQt.resizeEvent(", w, ",", h, ")")
+        if DEBUG: print("FigureCanvasItom.resizeEvent(", w, ",", h, ")")
         if not self.figure is None:
             dpival = self.figure.dpi
             winch = w/dpival
