@@ -4031,6 +4031,12 @@ bool PythonEngine::renameVariable(bool globalNotLocal, const QString &oldFullIte
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+/*
+    delete one or multiple variables from python global or local workspace
+
+    \param globalNotLocal is true, if deletion from global workspace, else: local workspace
+    \param fullItemNames is a list of full item names to all python variables that should be deleted from workspace. This list must not contain child values if the parent is part of the list, too.
+*/
 bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullItemNames, ItomSharedSemaphore *semaphore)
 {
     ItomSharedSemaphoreLocker locker(semaphore);
@@ -4074,38 +4080,11 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullIt
         {
             PyGILState_STATE gstate = PyGILState_Ensure();
 
-            //filter fullItemNames such that only parent names are deleted,
-            //example, in globals() is the dictionary b = {"c":1, "d":2}
-            //One desires to delete b and d. d is a child of b and b should be deleted,
-            //therefore d has to be removed from deletion list.
-
-            QStringList modifiedFullItemNames;
-            bool unique;
-
-            for (int i = 0; i < fullItemNames.size(); ++i)
-            {
-                unique = true;
-
-                for (int j = 0; j < fullItemNames.size(); ++j)
-                {
-                    if (i != j && fullItemNames[i].startsWith(fullItemNames[j]))
-                    {
-                        unique = false;
-                        break;
-                    }
-                }
-
-                if (unique)
-                {
-                    modifiedFullItemNames << fullItemNames[i];
-                }
-            }
-
             QStringList fullNameSplit;
             PyObject *parentContainer = NULL;
             PyObject *name = NULL;
 
-            foreach(const QString &fullItemName, modifiedFullItemNames)
+            foreach(const QString &fullItemName, fullItemNames)
             {
                 fullNameSplit = fullItemName.split(PyWorkspaceContainer::delimiter);
                 if (fullNameSplit.size() > 0 && fullNameSplit[0] == "")
