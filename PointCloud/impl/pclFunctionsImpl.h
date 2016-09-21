@@ -51,7 +51,7 @@ namespace pclHelper
         }
         catch(...)
         {
-            retval += ito::RetVal(ito::retError,0,"eigen matrix type cannot be converted to dataObject");
+            retval += ito::RetVal(ito::retError, 0, "eigen matrix type cannot be converted to dataObject");
         }
 
         if(!retval.containsError())
@@ -103,7 +103,7 @@ namespace pclHelper
         }
         catch(...)
         {
-            retval += ito::RetVal(ito::retError,0,"eigen matrix type is unknown for dataObject");
+            retval += ito::RetVal(ito::retError, 0, "eigen matrix type is unknown for dataObject");
         }
 
         if(!retval.containsError())

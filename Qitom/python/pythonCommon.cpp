@@ -78,7 +78,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
             }
             else
             {
-                return ito::RetVal(ito::retError, 0, "value could not be converted to integer");
+                return ito::RetVal(ito::retError, 0, QObject::tr("value could not be converted to integer").toLatin1().data());
             }
         }
     break;
@@ -93,7 +93,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
             }
             else
             {
-                return ito::RetVal(ito::retError, 0, "value could not be converted to double");
+                return ito::RetVal(ito::retError, 0, QObject::tr("value could not be converted to double").toLatin1().data());
             }
         }
     break;
@@ -108,7 +108,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
             }
             else
             {
-                return ito::RetVal(ito::retError, 0, "value could not be converted to complex");
+                return ito::RetVal(ito::retError, 0, QObject::tr("value could not be converted to complex").toLatin1().data());
             }
         }
     break;
@@ -187,7 +187,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
             QByteArray ba = PythonQtConversion::PyObjGetBytes(pyObj,false,ok);
             if (ok == false)
             {
-                return ito::RetVal(ito::retError, 0, "error while converting python object to string");
+                return ito::RetVal(ito::retError, 0, QObject::tr("error while converting python object to string").toLatin1().data());
             }
             outParam.setVal<char *>(ba.data());
         }
@@ -898,19 +898,20 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
     if (((argsLen + kwdsLen) < numMandParams)
         || ((argsLen + kwdsLen) > (numMandParams + numOptParams)))
     {
-            errOutInitParams(defaultParamListMand, -1, "wrong number of parameters. Mandatory parameters are:");
-            errOutInitParams(defaultParamListOpt, -1, "optional parameters are:");
-            if (mandPParsed)
-            {
-                free(mandPParsed);
-                mandPParsed = NULL;
-            }
-            if (optPParsed)
-            {
-                free(optPParsed);
-                optPParsed = NULL;
-            }
-            return ito::RetVal::format(ito::retError,0,"wrong number of parameters (%i given, %i mandatory and %i optional required)",argsLen + kwdsLen, numMandParams, numOptParams);
+        errOutInitParams(defaultParamListMand, -1, QObject::tr("wrong number of parameters. Mandatory parameters are:").toLatin1().data());
+        errOutInitParams(defaultParamListOpt, -1, QObject::tr("optional parameters are:").toLatin1().data());
+        if (mandPParsed)
+        {
+            free(mandPParsed);
+            mandPParsed = NULL;
+        }
+        if (optPParsed)
+        {
+            free(optPParsed);
+            optPParsed = NULL;
+        }
+        return ito::RetVal::format(ito::retError, 0, QObject::tr("wrong number of parameters (%i given, %i mandatory and %i optional required)").toLatin1().data(), 
+            argsLen + kwdsLen, numMandParams, numOptParams);
     }
 
     len = argsLen > numMandParams ? numMandParams : argsLen;
@@ -933,7 +934,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
                     free(optPParsed);
                     optPParsed = NULL;
                 }
-                return ito::RetVal::format(ito::retError, 0, "parameter %d - %s passed as arg and keyword!", n, tkey);
+                return ito::RetVal::format(ito::retError, 0, QObject::tr("parameter %d - %s passed as arg and keyword!").toLatin1().data(), n, tkey);
             }
         }
         for (int n = len; n < argsLen; n++)
@@ -951,7 +952,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
                     free(optPParsed);
                     optPParsed = NULL;
                 }
-                return ito::RetVal::format(ito::retError, 0, "optional parameter %d - %s passed as arg and keyword!", n, tkey);
+                return ito::RetVal::format(ito::retError, 0, QObject::tr("optional parameter %d - %s passed as arg and keyword!").toLatin1().data(), n, tkey);
             }
         }
     }
@@ -996,7 +997,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
             std::cerr << "there are keyword arguments that does not exist in mandatory or optional parameters." << std::endl;
             errOutInitParams(defaultParamListMand, -1, "Mandatory parameters are:");
             errOutInitParams(defaultParamListOpt, -1, "Optional parameters are:");
-            return ito::RetVal(ito::retError, 0, "there are keyword arguments that does not exist in mandatory or optional parameters.");
+            return ito::RetVal(ito::retError, 0, QObject::tr("there are keyword arguments that does not exist in mandatory or optional parameters.").toLatin1().data());
         }
     }
 
@@ -1014,7 +1015,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
         }
         if ((argsLen + mandKwd) < numMandParams)
         {
-            errOutInitParams(defaultParamListMand, -1, "wrong number of parameters\n Mandatory parameters are:\n");
+            errOutInitParams(defaultParamListMand, -1, QObject::tr("wrong number of parameters\n Mandatory parameters are:\n").toLatin1().data());
             if (mandPParsed)
             {
                 free(mandPParsed);
@@ -1025,7 +1026,8 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
                 free(optPParsed);
                 optPParsed = NULL;
             }
-            return ito::RetVal::format(ito::retError,0,"wrong number of parameters (%i given, %i mandatory and %i optional required)", argsLen + kwdsLen, numMandParams, numOptParams);
+            return ito::RetVal::format(ito::retError, 0, QObject::tr("wrong number of parameters (%i given, %i mandatory and %i optional required)").toLatin1().data(), 
+                argsLen + kwdsLen, numMandParams, numOptParams);
         }
     }
 
@@ -1044,7 +1046,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
         {
             if (retval.hasErrorMessage() == false)
             {
-                errOutInitParams(defaultParamListMand, n, "wrong parameter type");
+                errOutInitParams(defaultParamListMand, n, QObject::tr("wrong parameter type").toLatin1().data());
             }
             else
             {
@@ -1074,7 +1076,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
         {
             if (retval.hasErrorMessage() == false)
             {
-                errOutInitParams(defaultParamListMand, n, "wrong parameter type");
+                errOutInitParams(defaultParamListMand, n, QObject::tr("wrong parameter type").toLatin1().data());
             }
             else
             {
@@ -1104,7 +1106,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
         {
             if (retval.hasErrorMessage() == false)
             {
-                errOutInitParams(defaultParamListOpt, n - numMandParams, "wrong parameter type");
+                errOutInitParams(defaultParamListOpt, n - numMandParams, QObject::tr("wrong parameter type").toLatin1().data());
             }
             else
             {
@@ -1140,7 +1142,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
                     }
                     else
                     {
-                        errOutInitParams(defaultParamListOpt, n, "wrong parameter type");
+                        errOutInitParams(defaultParamListOpt, n, QObject::tr("wrong parameter type").toLatin1().data());
                     }
                     if (mandPParsed)
                     {
@@ -1190,7 +1192,7 @@ ito::RetVal copyParamVector(const QVector<ito::ParamBase> *paramVecIn, QVector<i
 
         return ito::retOk;
     }
-    return ito::RetVal(ito::retError, 0, "paramVecIn is NULL");
+    return ito::RetVal(ito::retError, 0, QObject::tr("paramVecIn is NULL").toLatin1().data());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1211,7 +1213,7 @@ ito::RetVal copyParamVector(const QVector<ito::Param> *paramVecIn, QVector<ito::
 
         return ito::retOk;
     }
-    return ito::RetVal(ito::retError, 0, "paramVecIn is NULL");
+    return ito::RetVal(ito::retError, 0, QObject::tr("paramVecIn is NULL").toLatin1().data());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1232,7 +1234,7 @@ ito::RetVal copyParamVector(const QVector<ito::Param> *paramVecIn, QVector<ito::
 
         return ito::retOk;
     }
-    return ito::RetVal(ito::retError, 0, "paramVecIn is NULL");
+    return ito::RetVal(ito::retError, 0, QObject::tr("paramVecIn is NULL").toLatin1().data());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1283,7 +1285,7 @@ PyObject* buildFilterOutputValues(QVector<QVariant> *outVals, ito::RetVal &retVa
         tuple = PythonQtConversion::QVariantToPyObject(*elem);
         if (tuple == NULL)
         {
-            PyErr_SetString(PyExc_RuntimeError, "unknown parameter of type QVariant");
+            PyErr_SetString(PyExc_RuntimeError, QObject::tr("unknown parameter of type QVariant").toLatin1().data());
         }
     }
     else
@@ -1296,7 +1298,7 @@ PyObject* buildFilterOutputValues(QVector<QVariant> *outVals, ito::RetVal &retVa
             temp = PythonQtConversion::QVariantToPyObject(*elem);
             if (temp == NULL)
             {
-                PyErr_SetString(PyExc_RuntimeError, "unknown parameter of type QVariant");
+                PyErr_SetString(PyExc_RuntimeError, QObject::tr("unknown parameter of type QVariant").toLatin1().data());
             }
             else
             {
@@ -1700,7 +1702,7 @@ bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *e
         const char *temp = retVal.errorMessage();
         if (temp == NULL)
         {
-            msg = QString("- unknown message -").toUtf8();
+            msg = QObject::tr("- unknown message -").toUtf8();
         }
         else
         {
@@ -1740,28 +1742,28 @@ bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &obj
         {
             case PythonCommon::noMsg:
             default:
-                msgSpecified = "%s with message: \n%s";
-                msgUnspecified = "%s with unspecified error.";
+                msgSpecified = QObject::tr("%s with message: \n%s").toLatin1().data();
+                msgUnspecified = QObject::tr("%s with unspecified error.").toLatin1().data();
                 break;
             case PythonCommon::loadPlugin:
-                msgSpecified = "Could not load plugin %s with error message: \n%s";
-                msgUnspecified = "Could not load plugin %s with unspecified error.";
+                msgSpecified = QObject::tr("Could not load plugin %s with error message: \n%s").toLatin1().data();
+                msgUnspecified = QObject::tr("Could not load plugin %s with unspecified error.").toLatin1().data();
                 break;
             case PythonCommon::runFunc:
-                msgSpecified = "Error executing function %s with error message: \n%s";
-                msgUnspecified = "Error executing function %s with unspecified error.";
+                msgSpecified = QObject::tr("Error executing function %s with error message: \n%s").toLatin1().data();
+                msgUnspecified = QObject::tr("Error executing function %s with unspecified error.").toLatin1().data();
                 break;
             case PythonCommon::invokeFunc:
-                msgSpecified = "Error invoking function %s with error message: \n%s";
-                msgUnspecified = "Unspecified error invoking function %s.";
+                msgSpecified = QObject::tr("Error invoking function %s with error message: \n%s").toLatin1().data();
+                msgUnspecified = QObject::tr("Unspecified error invoking function %s.").toLatin1().data();
                 break;
             case PythonCommon::getProperty:
-                msgSpecified = "Error while getting property info %s with error message: \n%s";
-                msgUnspecified = "Unspecified error while getting property info %s.";
+                msgSpecified = QObject::tr("Error while getting property info %s with error message: \n%s").toLatin1().data();
+                msgUnspecified = QObject::tr("Unspecified error while getting property info %s.").toLatin1().data();
                 break;
             case PythonCommon::execFunc:
-                msgSpecified = "Error invoking exec-function %s with error message: \n%s";
-                msgUnspecified = "Error invoking exec-function %s with unspecified error.";
+                msgSpecified = QObject::tr("Error invoking exec-function %s with error message: \n%s").toLatin1().data();
+                msgUnspecified = QObject::tr("Error invoking exec-function %s with unspecified error.").toLatin1().data();
                 break;
         }
 
@@ -1781,28 +1783,28 @@ bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal, const QString &obj
         {
             case PythonCommon::noMsg:
             default:
-                msgSpecified = "Warning while %s: \n%s";
-                msgUnspecified = "%s with unspecified warning.";
+                msgSpecified = QObject::tr("Warning while %s: \n%s").toLatin1().data();
+                msgUnspecified = QObject::tr("%s with unspecified warning.").toLatin1().data();
                 break;
             case PythonCommon::loadPlugin:
-                msgSpecified = "Warning while loading plugin %s: \n%s";
-                msgUnspecified = "Unspecified warning while loading plugin %s.";
+                msgSpecified = QObject::tr("Warning while loading plugin %s: \n%s").toLatin1().data();
+                msgUnspecified = QObject::tr("Unspecified warning while loading plugin %s.").toLatin1().data();
                 break;
             case PythonCommon::runFunc:
-                msgSpecified = "Warning while executing function %s: \n%s";
-                msgUnspecified = "Unspecified warning while executing function %s.";
+                msgSpecified = QObject::tr("Warning while executing function %s: \n%s").toLatin1().data();
+                msgUnspecified = QObject::tr("Unspecified warning while executing function %s.").toLatin1().data();
                 break;
             case PythonCommon::invokeFunc:
-                msgSpecified = "Warning while invoking function %s: \n%s";
-                msgUnspecified = "Unspecified warning while invoking function %s.";
+                msgSpecified = QObject::tr("Warning while invoking function %s: \n%s").toLatin1().data();
+                msgUnspecified = QObject::tr("Unspecified warning while invoking function %s.").toLatin1().data();
                 break;
             case PythonCommon::getProperty:
-                msgSpecified = "Warning while getting property info %s: \n%s";
-                msgUnspecified = "Unspecified warning while getting property info %s.";
+                msgSpecified = QObject::tr("Warning while getting property info %s: \n%s").toLatin1().data();
+                msgUnspecified = QObject::tr("Unspecified warning while getting property info %s.").toLatin1().data();
                 break;
             case PythonCommon::execFunc:
-                msgSpecified = "Warning while invoking exec-function %s: \n%s";
-                msgUnspecified = "Unspecified warning invoking exec-function %s.";
+                msgSpecified = QObject::tr("Warning while invoking exec-function %s: \n%s").toLatin1().data();
+                msgUnspecified = QObject::tr("Unspecified warning invoking exec-function %s.").toLatin1().data();
                 break;
         }
 

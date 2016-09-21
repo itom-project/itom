@@ -330,7 +330,7 @@ ito::RetVal UserOrganizer::readUserDataFromFile(const QString &filename, QString
     }
     else
     {
-        retval += ito::RetVal::format(ito::retError, 0, "file '%s' does not exist", filename.toLatin1().data());
+        retval += ito::RetVal::format(ito::retError, 0, tr("file '%s' does not exist").toLatin1().data(), filename.toLatin1().data());
         lastModified = QDateTime();
     }
     

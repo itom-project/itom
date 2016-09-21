@@ -114,13 +114,13 @@ OpenCV must be build from the source files. You should create following folder s
    :scale: 100%
    :align: center
        
-* WITH options:
+WITH options:
 
 .. figure:: images/all-in-one-create/CMake_WITH_OPENCV.png
    :scale: 100%
    :align: center
        
-* optional install CUDA Toolkit (e.g. 7.0, supported by OptiX as well). Is need for Macrosim, which runs with |itom|
+optional install CUDA Toolkit (e.g. 7.0, supported by OptiX as well). Is need for Macrosim, which runs with |itom|.
 
 
 Compile QScintilla
@@ -204,12 +204,14 @@ Unpack the PCL source on your hard drive. Create a build_x64/build_x86 folder an
 * Set **Qt5Concurrent_DIR** to ${MAINDIR}/3rdParty/Qt5.6.0/5.6/msvc2013/lib/cmake/Qt5Concurrent
 * Set **Qt5OpenGl_DIR** to ${MAINDIR}/3rdParty/Qt5.6.0/5.6/msvc2013/lib/cmake/Qt5OpenGl_DIR
 * Set **Qt5Widgets_DIR** to ${MAINDIR}/3rdParty/Qt5.6.0/5.6/msvc2013/lib/cmake/Qt5Widgets_DIR
-* Set **CMAKE_INSTALL_PREFIX** ${MAINDIR}/3rdPartyPCL/pcl1.8.0
 * check **BUILD_surface_on_nurbs** and **BUILD_visualization**
 * check **CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE**
 * uncheck **BUILD_global_tests**, **BUILD_examples**, **BUILD_apps**, **BUILD_simulation**
+* Set **CMAKE_INSTALL_PREFIX** ${MAINDIR}/3rdPartyPCL/pcl1.8.0
 
-* delete variable of **CMAKE_RC_FLAGS**
+.. note::
+    
+    The created *exe*-files are not needed to run |itom|. Delete all exe-files in the *${MAINDIR}/3rdPartyPCL/pcl1.8.0/bin* folder. 
 
 .. note::
 

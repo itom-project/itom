@@ -842,7 +842,7 @@ RetVal BreakPointModel::changeBreakPoint(const QModelIndex index, BreakPointItem
 
     if (!index.isValid())
     {
-        retval += ito::RetVal(ito::retError, 0, "given modelIndex of breakpoint is invalid");
+        retval += ito::RetVal(ito::retError, 0, tr("given modelIndex of breakpoint is invalid").toLatin1().data());
     }
     else if (index.internalPointer() != NULL)
     {
@@ -853,7 +853,7 @@ RetVal BreakPointModel::changeBreakPoint(const QModelIndex index, BreakPointItem
         {
             if (m_breakpoints[idx].filename != bp.filename)
             {
-                retval += ito::RetVal(ito::retError, 0, "filename must not be changed");
+                retval += ito::RetVal(ito::retError, 0, tr("filename must not be changed").toLatin1().data());
             }
             else
             {
@@ -871,7 +871,7 @@ RetVal BreakPointModel::changeBreakPoint(const QModelIndex index, BreakPointItem
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, "given modelIndex is no model index of a breakpoint");
+        retval += ito::RetVal(ito::retError, 0, tr("given modelIndex is no model index of a breakpoint").toLatin1().data());
     }
     
     return retval;

@@ -306,7 +306,16 @@ or easier::
 .. figure:: ./images/matplotlibAnimation1d.gif .. figure:: ./images/matplotlibAnimation2d.gif
 
                 1d animation                                   2d animation                  
+                
 ============================================== ==============================================
+
+.. figure:: images/matplotlibAnimation1d.png
+    :scale: 0%
+    
+.. figure:: images/matplotlibAnimation2d.png
+    :scale: 0%
+
+    
     
 In the **demo/matplotlib** folder are two demo scripts (**matplotlibAnimation1d.py, matplotlibAnimation2d.py**), which show how to create animations. 
 

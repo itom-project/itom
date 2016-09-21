@@ -71,7 +71,7 @@
             <bool>true</bool>
            </property>
            <property name="text">
-            <string>Change Folder..</string>
+            <string>Change Folder...</string>
            </property>
           </widget>
          </item>
@@ -94,7 +94,7 @@
                <bool>false</bool>
               </property>
               <property name="text">
-               <string>Options..</string>
+               <string>Options...</string>
               </property>
              </widget>
             </item>

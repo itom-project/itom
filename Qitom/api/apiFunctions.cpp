@@ -535,7 +535,7 @@ ito::RetVal ApiFunctions::mshowConfigurationDialog(ito::AddInBase *plugin, ito::
     {
         if (!QMetaObject::invokeMethod(plugin, "sendParameterRequest"))
         {
-            retval += ito::RetVal(ito::retError, 0, "error invoking 'sendParameterRequest' of the plugin");
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("error invoking 'sendParameterRequest' of the plugin").toLatin1().data());
         }
         else
         {
@@ -552,7 +552,7 @@ ito::RetVal ApiFunctions::mshowConfigurationDialog(ito::AddInBase *plugin, ito::
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, "the signal/slot 'parametersChanged' could not be connected");
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("the signal/slot 'parametersChanged' could not be connected").toLatin1().data());
     }
 
     configDialogInstance->deleteLater();
@@ -588,13 +588,13 @@ ito::RetVal ApiFunctions::mshowConfigurationDialog(ito::AddInBase *plugin, ito::
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, "timeout while sending variables to python workspace. Python is maybe busy. Try it later again.");
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while sending variables to python workspace. Python is maybe busy. Try it later again.").toLatin1().data());
             }
         }
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, "Python is not available.");
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("Python is not available.").toLatin1().data());
     }
 
     return retval;

@@ -3387,7 +3387,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
 
     if (ret.containsError())
     {
-        PyErr_SetString(PyExc_RuntimeError, "error while parsing parameters.");
+        PyErr_SetString(PyExc_RuntimeError, QObject::tr("error while parsing parameters.").toLatin1().data());
         return NULL;
     }
 
@@ -3401,9 +3401,9 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     {
         const char* errorStr = cvErrorStr(exc.code);
 
-        ret += ito::RetVal::format(ito::retError,0,"OpenCV Error: %s (%s) in %s, file %s, line %d",
+        ret += ito::RetVal::format(ito::retError, 0, QObject::tr("OpenCV Error: %s (%s) in %s, file %s, line %d").toLatin1().data(),
             errorStr, exc.err.c_str(), exc.func.size() > 0 ?
-            exc.func.c_str() : "unknown function", exc.file.c_str(), exc.line );
+            exc.func.c_str() : QObject::tr("unknown function").toLatin1().data(), exc.file.c_str(), exc.line);
         //see also cv::setBreakOnError(true) -> then cv::error(...) forces an access to 0x0000 (throws access error, the debugger stops and you can debug it)
 
         //use this to raise an access error that forces the IDE to break in this line (replaces cv::setBreakOnError(true)).
@@ -3416,11 +3416,11 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     {
         if (exc.what())
         {
-            ret += ito::RetVal::format(ito::retError,0,"The exception '%s' has been thrown", exc.what()); 
+            ret += ito::RetVal::format(ito::retError, 0, QObject::tr("The exception '%s' has been thrown").toLatin1().data(), exc.what());
         }
         else
         {
-            ret += ito::RetVal(ito::retError,0,"The exception '<unknown>' has been thrown"); 
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("The exception '<unknown>' has been thrown").toLatin1().data());
         }
 #if defined _DEBUG
         static volatile int* p = 0; //if your debugger stops in this line, another exception has been raised and you have now the chance to see your callstack for debugging.
@@ -3429,7 +3429,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     }
     catch (...)
     {
-        ret += ito::RetVal(ito::retError,0,"An unspecified exception has been thrown");  
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("An unspecified exception has been thrown").toLatin1().data());
 #if defined _DEBUG
         static volatile int* p = 0; //if your debugger stops in this line, another exception has been raised and you have now the chance to see your callstack for debugging.
         *p = 0;
@@ -4549,7 +4549,7 @@ PyObject* PythonItom::PyInitItom(void)
     {
         if (!code)
         {
-            retval += ito::RetVal(ito::retError, 0, "no code is given");
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("no code is given").toLatin1().data());
         }
         else if (PyMethod_Check(code) || PyFunction_Check(code))
         {
@@ -4574,7 +4574,7 @@ PyObject* PythonItom::PyInitItom(void)
                     }
                     else
                     {
-                        retval += RetVal(retError, 0, "Given argument must be of type tuple or list.");
+                        retval += RetVal(retError, 0, QObject::tr("Given argument must be of type tuple or list.").toLatin1().data());
                         Py_DECREF(proxy);
                     }
                 }
@@ -4592,7 +4592,7 @@ PyObject* PythonItom::PyInitItom(void)
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, "Proxy object of function or method could not be created.");
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("Proxy object of function or method could not be created.").toLatin1().data());
             }
         }
         else
@@ -4601,13 +4601,13 @@ PyObject* PythonItom::PyInitItom(void)
             codeString = PythonQtConversion::PyObjGetString(code, true, ok);
             if (!ok)
             {
-                retval += ito::RetVal(ito::retError, 0, "code is no function or method call and no executable code string");
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("code is no function or method call and no executable code string").toLatin1().data());
             }
         }
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, "Python engine is not available");
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("Python engine is not available").toLatin1().data());
     }
 
     return ref;
@@ -4642,7 +4642,7 @@ PyObject* PythonItom::PyInitItom(void)
         return ito::retOk;
     }
 
-    return ito::RetVal(ito::retError, 0, "Python engine is not available");
+    return ito::RetVal(ito::retError, 0, QObject::tr("Python engine is not available").toLatin1().data());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -4674,7 +4674,7 @@ PyObject* PythonItom::PyInitItom(void)
         return ito::retOk;
     }
 
-    return ito::RetVal(ito::retError, 0, "Python engine is not available");
+    return ito::RetVal(ito::retError, 0, QObject::tr("Python engine is not available").toLatin1().data());
 }
 
 } //end namespace ito

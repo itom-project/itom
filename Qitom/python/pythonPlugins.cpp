@@ -289,7 +289,7 @@ PyObject* plugin_showConfiguration(ito::AddInBase *aib)
         }
         else
         {
-            retval += ito::RetVal(ito::retError,0,"plugin has no configuration dialog");
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("plugin has no configuration dialog").toLatin1().data());
         }
     }
 
@@ -320,7 +320,7 @@ PyObject* plugin_showToolbox(ito::AddInBase *aib)
         {
             if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
             {
-                retval += ito::RetVal(ito::retError,0,"timeout while showing toolbox");
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while showing toolbox").toLatin1().data());
             }
             else
             {
@@ -329,7 +329,7 @@ PyObject* plugin_showToolbox(ito::AddInBase *aib)
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 0, "Member 'showDockWidget' of plugin could not be invoked (error in signal/slot connection).");
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("Member 'showDockWidget' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
         }
     }
     if (!PythonCommon::setReturnValueMessage(retval, "showToolbox", PythonCommon::invokeFunc))
@@ -357,7 +357,7 @@ PyObject* plugin_hideToolbox(ito::AddInBase *aib)
         {
             if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
             {
-                retval += ito::RetVal(ito::retError, 0, "timeout while hiding toolbox");
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while hiding toolbox").toLatin1().data());
             }
             else
             {
@@ -366,7 +366,7 @@ PyObject* plugin_hideToolbox(ito::AddInBase *aib)
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 0, "Member 'showDockWidget' of plugin could not be invoked (error in signal/slot connection).");
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("Member 'showDockWidget' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
         }
     }
     if (!PythonCommon::setReturnValueMessage(retval, "hideToolbox", PythonCommon::invokeFunc))
@@ -571,7 +571,7 @@ PyObject* getName(ito::AddInBase *addInObj)
     }
     else
     {
-        ret += ito::RetVal(ito::retError, 0, "Member 'getParam' of plugin could not be invoked (error in signal/slot connection).");
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'getParam' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
     }
 
     if (!PythonCommon::setReturnValueMessage(ret, "getName", PythonCommon::invokeFunc))
@@ -600,7 +600,7 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
 
     if (argsLength < 1)
     {
-        ret += ito::RetVal(ito::retError,0,QObject::tr("you must provide at least one parameter with the name of the function").toLatin1().data());
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("you must provide at least one parameter with the name of the function").toLatin1().data());
     }
     else
     {
@@ -608,7 +608,7 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
         name = PythonQtConversion::PyObjGetString(pyObj,true,ok);
         if (!ok)
         {
-            ret += ito::RetVal(ito::retError,0,QObject::tr("the first function name parameter can not be interpreted as string").toLatin1().data());
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("the first function name parameter can not be interpreted as string").toLatin1().data());
         }
     }
     
@@ -619,7 +619,7 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
 
         if (it == funcList->constEnd())
         {
-            ret += ito::RetVal::format(ito::retError,0,QObject::tr("plugin does not provide an execution of function '%s'").toLatin1().data(),name.toLatin1().data());
+            ret += ito::RetVal::format(ito::retError, 0, QObject::tr("plugin does not provide an execution of function '%s'").toLatin1().data(),name.toLatin1().data());
         }
         else
         {
@@ -658,7 +658,7 @@ PyObject* execFunc(ito::AddInBase *aib, PyObject *args, PyObject *kwds)
                 }
                 else
                 {
-                    ret += ito::RetVal(ito::retError, 0, "Member 'execFunc' of plugin could not be invoked (error in signal/slot connection).");
+                    ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'execFunc' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
                 }
             }
 
@@ -794,7 +794,7 @@ PyObject* getParam(ito::AddInBase *addInObj, PyObject *args)
     }
     else
     {
-        ret += ito::RetVal(ito::retError, 0, "Member 'getParam' of plugin could not be invoked (error in signal/slot connection).");
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'getParam' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
     }
 
     result = ito::PythonParamConversion::ParamBaseToPyObject(*qsParam);
@@ -1130,7 +1130,7 @@ PyObject* setParam(ito::AddInBase *addInObj, PyObject *args)
         }
         else
         {
-            ret += ito::RetVal(ito::retError, 0, "Member 'setParam' of plugin could not be invoked (error in signal/slot connection).");
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'setParam' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
         }
 
          waitCond->deleteSemaphore();
@@ -1183,7 +1183,7 @@ void PythonPlugins::PyActuatorPlugin_dealloc(PyActuatorPlugin* self)
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, "Member 'closeAddIn' of plugin could not be invoked (error in signal/slot connection).");
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("Member 'closeAddIn' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
             }
 
             waitCond->deleteSemaphore();
@@ -1356,7 +1356,7 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 0, "Member 'initAddIn' of plugin could not be invoked (error in signal/slot connection).");
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("Member 'initAddIn' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
         }
 
         waitCond->deleteSemaphore();
@@ -1612,7 +1612,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_calib(PyActuatorPlugin* self, PyObject
     }
     else
     {
-        ret += ito::RetVal(ito::retError, 0, "Member 'calib' of plugin could not be invoked (error in signal/slot connection).");
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'calib' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
     }
 
     freeParams(length, cargt, cargs);
@@ -1728,7 +1728,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setOrigin(PyActuatorPlugin* self, PyOb
     }
     else
     {
-        ret += ito::RetVal(ito::retError, 0, "Member 'setOrigin' of plugin could not be invoked (error in signal/slot connection).");
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'setOrigin' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
     }
 
     freeParams(length, cargt, cargs);
@@ -1818,7 +1818,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getStatus(PyActuatorPlugin* self, PyOb
     }
     else
     {
-        ret += ito::RetVal(ito::retError, 0, "Member 'getStatus' of plugin could not be invoked (error in signal/slot connection).");
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'getStatus' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
     }
 
     if (!PythonCommon::setReturnValueMessage(ret, "getStatus", PythonCommon::invokeFunc))
@@ -1951,7 +1951,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_getPos(PyActuatorPlugin* self, PyObjec
     }
     else
     {
-        ret += ito::RetVal(ito::retError, 0, "Member 'getPos' of plugin could not be invoked (error in signal/slot connection).");
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'getPos' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
     }
 
     if (length > 1)
@@ -2240,7 +2240,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosAbs(PyActuatorPlugin* self, PyOb
     }
     else
     {
-        ret += ito::RetVal(ito::retError, 0, "Member 'setPosAbs' of plugin could not be invoked (error in signal/slot connection).");
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'setPosAbs' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
     }
 
     freeParams(length, cargt, cargs);
@@ -2327,7 +2327,7 @@ PyObject* PythonPlugins::PyActuatorPlugin_setPosRel(PyActuatorPlugin* self, PyOb
     }
     else
     {
-        ret += ito::RetVal(ito::retError, 0, "Member 'setPosRel' of plugin could not be invoked (error in signal/slot connection).");
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'setPosRel' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
     }
 
     freeParams(length, cargt, cargs);
@@ -2631,7 +2631,7 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 0, "Member 'initAddIn' of plugin could not be invoked (error in signal/slot connection).");
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("Member 'initAddIn' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
         }
 
         waitCond->deleteSemaphore();
@@ -2834,7 +2834,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_startDevice(PyDataIOPlugin *self, PyObje
             {
                 if (!self->dataIOObj->isAlive())
                 {
-                    ret += ito::RetVal(ito::retError,0,"timeout while calling 'startDevice'");
+                    ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling 'startDevice'").toLatin1().data());
                     timeout = true;
                     break;
                 }
@@ -2847,7 +2847,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_startDevice(PyDataIOPlugin *self, PyObje
         }
         else
         {
-            ret += ito::RetVal(ito::retError, 0, "Member 'startDevice' of plugin could not be invoked (error in signal/slot connection).");
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'startDevice' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
         }
 
         waitCond->deleteSemaphore();
@@ -2917,7 +2917,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
                 {
                     if (!self->dataIOObj->isAlive())
                     {
-                        ret += ito::RetVal(ito::retError,0,"timeout while stopping device");
+                        ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while stopping device").toLatin1().data());
                         timeout = true;
                         break;
                     }
@@ -2930,7 +2930,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
             }
             else
             {
-                ret += ito::RetVal(ito::retError, 0, "Member 'stopDevice' of plugin could not be invoked (error in signal/slot connection).");
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'stopDevice' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
             }
 
             waitCond->deleteSemaphore();
@@ -2958,7 +2958,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_stopDevice(PyDataIOPlugin *self, PyObjec
             {
                 if (!self->dataIOObj->isAlive())
                 {
-                    ret += ito::RetVal(ito::retError,0,"timeout while stopping device");
+                    ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while stopping device").toLatin1().data());
                     timeout = true;
                     break;
                 }
@@ -3032,7 +3032,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_acquire(PyDataIOPlugin *self, PyObject *
         {
             if (!self->dataIOObj->isAlive())
             {
-                ret += ito::RetVal(ito::retError,0,"timeout while calling 'acquire'");
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling 'acquire'").toLatin1().data());
                 timeout = true;
                 break;
             }
@@ -3045,7 +3045,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_acquire(PyDataIOPlugin *self, PyObject *
     }
     else
     {
-        ret += ito::RetVal(ito::retError, 0, "Member 'acquire' of plugin could not be invoked (error in signal/slot connection).");
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'acquire' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
     }
 
     waitCond->deleteSemaphore();
@@ -3179,7 +3179,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_getVal(PyDataIOPlugin *self, PyObject *a
     {
         if (!self->dataIOObj->isAlive())
         {
-            ret += ito::RetVal(ito::retError,0,"timeout while calling 'getVal'");
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling 'getVal'").toLatin1().data());
             timeout = true;
             break;
         }
@@ -3283,7 +3283,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
                 if (!self->dataIOObj->isAlive())
                 {
                     timeout = true;
-                    ret += ito::RetVal(ito::retError,0,"timeout while calling 'copyVal'");
+                    ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling 'copyVal'").toLatin1().data());
                     break;
                 }
             }
@@ -3295,7 +3295,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
         }
         else
         {
-            ret += ito::RetVal(ito::retError, 0, "Member 'copyVal' of plugin could not be invoked (error in signal/slot connection).");
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'copyVal' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
         }
 
     }
@@ -3326,7 +3326,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
                 if (!self->dataIOObj->isAlive())
                 {
                     timeout = true;
-                    ret += ito::RetVal(ito::retError,0,"timeout while calling 'copyVal'");
+                    ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling 'copyVal'").toLatin1().data());
                     break;
                 }
             }
@@ -3336,7 +3336,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
         }
         else
         {
-            ret += ito::RetVal(ito::retError, 0, "Member 'copyVal' of plugin could not be invoked (error in signal/slot connection).");
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'copyVal' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
         }
     }
     else
@@ -3421,7 +3421,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
                 if (!self->dataIOObj->isAlive())
                 {
                     timeout = true;
-                    ret += ito::RetVal(ito::retError,0,"timeout while calling 'setVal'");
+                    ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling 'setVal'").toLatin1().data());
                     break;
                 }
             }
@@ -3433,7 +3433,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
         }
         else
         {
-            ret += ito::RetVal(ito::retError, 0, "Member 'setVal' of plugin could not be invoked (error in signal/slot connection).");
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'setVal' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
         }
 
         waitCond->deleteSemaphore();
@@ -3527,7 +3527,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
                 if (!self->dataIOObj->isAlive())
                 {
                     timeout = true;
-                    ret += ito::RetVal(ito::retError,0,"timeout while calling 'setVal'");
+                    ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling 'setVal'").toLatin1().data());
                     break;
                 }
             }
@@ -3539,7 +3539,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_setVal(PyDataIOPlugin *self, PyObject *a
         }
         else
         {
-            ret += ito::RetVal(ito::retError, 0, "Member 'setVal' of plugin could not be invoked (error in signal/slot connection).");
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'setVal' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
         }
 
         waitCond->deleteSemaphore();
@@ -3588,7 +3588,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_enableAutoGrabbing(PyDataIOPlugin *self,
             if (!self->dataIOObj->isAlive())
             {
                 timeout = true;
-                ret += ito::RetVal(ito::retError,0,"timeout while calling 'enableAutoGrabbing'");
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling 'enableAutoGrabbing'").toLatin1().data());
                 break;
             }
         }
@@ -3600,7 +3600,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_enableAutoGrabbing(PyDataIOPlugin *self,
     }
     else
     {
-        ret += ito::RetVal(ito::retError, 0, "Member 'enableAutoGrabbing' of plugin could not be invoked (error in signal/slot connection).");
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'enableAutoGrabbing' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
     }
 
     waitCond->deleteSemaphore();
@@ -3649,7 +3649,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_disableAutoGrabbing(PyDataIOPlugin *self
         {
             if (!self->dataIOObj->isAlive())
             {
-                ret += ito::RetVal(ito::retError,0,"timeout while calling 'disableAutoGrabbing'");
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling 'disableAutoGrabbing'").toLatin1().data());
                 timeout = true;
                 break;
             }
@@ -3662,7 +3662,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_disableAutoGrabbing(PyDataIOPlugin *self
     }
     else
     {
-        ret += ito::RetVal(ito::retError, 0, "Member 'disableAutoGrabbing' of plugin could not be invoked (error in signal/slot connection).");
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'disableAutoGrabbing' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
     }
 
     waitCond->deleteSemaphore();
@@ -3724,7 +3724,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_setAutoGrabbing(PyDataIOPlugin *self, Py
             if (!self->dataIOObj->isAlive())
             {
                 timeout = true;
-                ret += ito::RetVal(ito::retError,0,"timeout while calling 'enable/disableAutoGrabbing'");
+                ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while calling 'enable/disableAutoGrabbing'").toLatin1().data());
                 break;
             }
         }
@@ -3736,7 +3736,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_setAutoGrabbing(PyDataIOPlugin *self, Py
     }
     else
     {
-        ret += ito::RetVal(ito::retError, 0, "Member 'enableAutoGrabbing' or 'disableAutoGrabbing' of plugin could not be invoked (error in signal/slot connection).");
+        ret += ito::RetVal(ito::retError, 0, QObject::tr("Member 'enableAutoGrabbing' or 'disableAutoGrabbing' of plugin could not be invoked (error in signal/slot connection).").toLatin1().data());
     }
 
     waitCond->deleteSemaphore();
@@ -3827,7 +3827,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_setAutoGrabbingInterval(PyDataIOPlugin *
         if (!self->dataIOObj->isAlive())
         {
             timeout = true;
-            ret += ito::RetVal(ito::retError, 0, "timeout while setting the current 'autoGrabbingInterval'");
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while setting the current 'autoGrabbingInterval'").toLatin1().data());
             break;
         }
     }
@@ -3874,7 +3874,7 @@ PyObject *PythonPlugins::PyDataIOPlugin_getAutoGrabbingInterval(PyDataIOPlugin *
         if (!self->dataIOObj->isAlive())
         {
             timeout = true;
-            ret += ito::RetVal(ito::retError, 0, "timeout while obtaining the current 'autoGrabbingInterval'");
+            ret += ito::RetVal(ito::retError, 0, QObject::tr("timeout while obtaining the current 'autoGrabbingInterval'").toLatin1().data());
             break;
         }
     }

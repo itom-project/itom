@@ -68,7 +68,7 @@ Main menus and toolbars
 This is an overview about the menu structure of itom
 
 +------------+--------------------+----------------------+--------------------------------------------------------------------------------------------+
-|Structure   |                    |                      |                                                                                            |
+| **Structure**                                                                                                                                       |
 +============+====================+======================+============================================================================================+
 | **File**   | New Script         | |mainnew| Ctrl+N     | Opens a new Python script in the :doc:`editor`                                             |
 +------------+--------------------+----------------------+--------------------------------------------------------------------------------------------+
@@ -98,9 +98,9 @@ This is an overview about the menu structure of itom
 +------------+--------------------+----------------------+--------------------------------------------------------------------------------------------+
 |            | Reload modules     |                      | :ref:`Reload imported python packages <script-language-reload-modules>` (e.g. import numpy)|
 +------------+--------------------+----------------------+--------------------------------------------------------------------------------------------+
-+            | Timer Manager...   |                      | :ref:`timer manager <gui-timermanager>` to list, stop or restart timer instances           |
+|            | Timer Manager...   |                      | :ref:`timer manager <gui-timermanager>` to list, stop or restart timer instances           |
 +------------+--------------------+----------------------+--------------------------------------------------------------------------------------------+
-+            | Package Manager... |                      | :ref:`python package manager <gui-pipmanager>` to install python packages                  |
+|            | Package Manager... |                      | :ref:`python package manager <gui-pipmanager>` to install python packages                  |
 +------------+--------------------+----------------------+--------------------------------------------------------------------------------------------+
 | **Help**   | Assistant          | |mainhelp| F1        | Opens this documentation                                                                   |
 +------------+--------------------+----------------------+--------------------------------------------------------------------------------------------+

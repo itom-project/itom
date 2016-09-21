@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>474</width>
-    <height>279</height>
+    <width>479</width>
+    <height>281</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -171,7 +171,7 @@
         </item>
         <item>
          <property name="text">
-          <string>A vertical line is drawn at a given column position (recommended for monspace fonts)</string>
+          <string>A vertical line is drawn at a given column position (recommended for monospace fonts)</string>
          </property>
         </item>
         <item>

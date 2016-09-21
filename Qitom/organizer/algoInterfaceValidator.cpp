@@ -256,7 +256,7 @@ namespace ito
         }
         else
         {
-            return ito::RetVal(ito::retError,0,"interface could not be added since its enumeration ID already has been added");
+            return ito::RetVal(ito::retError, 0, tr("interface could not be added since its enumeration ID already has been added").toLatin1().data());
         }
         return ito::retOk;
     }
@@ -281,13 +281,13 @@ namespace ito
         bool valid = isValid(filter.m_interface, filter.m_paramFunc, ret);
         if (!valid && !ret.containsError())
         {
-            ret += ito::RetVal(ito::retError,0,"The parameters of the filter does not fit to the requirements given by the specified filter interface.");
+            ret += ito::RetVal(ito::retError, 0, tr("The parameters of the filter does not fit to the requirements given by the specified filter interface.").toLatin1().data());
         }
 
         bool valid2 = getTags(filter.m_interface, filter.m_interfaceMeta, tags);
         if (!valid2 && !ret.containsError())
         {
-            ret += ito::RetVal(ito::retError,0,"The filter does not have the required tags defined.");
+            ret += ito::RetVal(ito::retError, 0, tr("The filter does not have the required tags defined.").toLatin1().data());
         }
 
         return valid && valid2;
@@ -312,13 +312,13 @@ namespace ito
         bool valid = isValid(widget.m_interface, widget.m_paramFunc, ret);
         if (!valid && !ret.containsError())
         {
-            ret += ito::RetVal(ito::retError,0,"The parameters of the widget does not fit to the requirements given by the specified widget interface.");
+            ret += ito::RetVal(ito::retError, 0, tr("The parameters of the widget does not fit to the requirements given by the specified widget interface.").toLatin1().data());
         }
 
         bool valid2 = getTags(widget.m_interface, widget.m_interfaceMeta, tags);
         if (!valid2 && !ret.containsError())
         {
-            ret += ito::RetVal(ito::retError,0,"The widget does not have the required tags defined.");
+            ret += ito::RetVal(ito::retError, 0, tr("The widget does not have the required tags defined.").toLatin1().data());
         }
 
         return valid && valid2;
@@ -353,19 +353,19 @@ namespace ito
 
             if((int)paramsMand.size() > it->maxNumMand)
             {
-                ret += ito::RetVal(ito::retError,0,tr("Number of mandatory parameters of given algorithm exceed the maximum value, given by algorithm interface.").toLatin1().data());
+                ret += ito::RetVal(ito::retError, 0, tr("Number of mandatory parameters of given algorithm exceed the maximum value, given by algorithm interface.").toLatin1().data());
                 return false;
             }
 
             if((int)paramsOpt.size() > it->maxNumOpt)
             {
-                ret += ito::RetVal(ito::retError,0,tr("Number of optional parameters of given algorithm exceed the maximum value, given by algorithm interface.").toLatin1().data());
+                ret += ito::RetVal(ito::retError, 0, tr("Number of optional parameters of given algorithm exceed the maximum value, given by algorithm interface.").toLatin1().data());
                 return false;
             }
 
             if((int)paramsOut.size() > it->maxNumOut)
             {
-                ret += ito::RetVal(ito::retError,0,tr("Number of output parameters of given algorithm exceed the maximum value, given by algorithm interface.").toLatin1().data());
+                ret += ito::RetVal(ito::retError, 0, tr("Number of output parameters of given algorithm exceed the maximum value, given by algorithm interface.").toLatin1().data());
                 return false;
             }
 
@@ -373,7 +373,7 @@ namespace ito
             
             for(int i=0; i < it->mandParams.size(); i++)
             {
-                result = ParamHelper::compareParam( it->mandParams[i], (paramsMand)[i], ret);
+                result = ParamHelper::compareParam(it->mandParams[i], (paramsMand)[i], ret);
                 if(result == tCmpFailed)
                 {
                     return false;
@@ -392,7 +392,7 @@ namespace ito
         }
         else
         {
-            ret += ito::RetVal(ito::retError,0,tr("The given algorithm interface is unknown").toLatin1().data());
+            ret += ito::RetVal(ito::retError, 0, tr("The given algorithm interface is unknown").toLatin1().data());
             return false;
         }
         return true;

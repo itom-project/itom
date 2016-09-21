@@ -40,7 +40,7 @@ namespace ito
     {
         if (m_pSemaphore)
         {
-            m_pSemaphore->returnValue += ito::RetVal(ito::retError,0,"The given shape storage is NULL.");
+            m_pSemaphore->returnValue += ito::RetVal(ito::retError, 0, tr("The given shape storage is NULL.").toLatin1().data());
             m_pSemaphore->release();
             m_pSemaphore->deleteSemaphore();
             m_pSemaphore = NULL;
@@ -53,7 +53,7 @@ namespace ito
     {
         if (m_pSemaphore)
         {
-            m_pSemaphore->returnValue += ito::RetVal(ito::retError,0,"The given widget does not have the necessary signals and slots for a user interaction.");
+            m_pSemaphore->returnValue += ito::RetVal(ito::retError, 0, tr("The given widget does not have the necessary signals and slots for a user interaction.").toLatin1().data());
             m_pSemaphore->release();
             m_pSemaphore->deleteSemaphore();
             m_pSemaphore = NULL;
@@ -64,7 +64,7 @@ namespace ito
     {
         if (m_pSemaphore)
         {
-            m_pSemaphore->returnValue += ito::RetVal(ito::retError,0,"The given widget does not have the necessary signals and slots for a user interaction.");
+            m_pSemaphore->returnValue += ito::RetVal(ito::retError, 0, tr("The given widget does not have the necessary signals and slots for a user interaction.").toLatin1().data());
             m_pSemaphore->release();
             m_pSemaphore->deleteSemaphore();
             m_pSemaphore = NULL;
@@ -100,7 +100,7 @@ void UserInteractionWatcher::plotWidgetDestroyed(QObject *obj)
     {
         if (m_waiting)
         {
-            m_pSemaphore->returnValue += ito::RetVal(ito::retError,0,"User interaction terminated due to deletion of plot.");
+            m_pSemaphore->returnValue += ito::RetVal(ito::retError, 0, tr("User interaction terminated due to deletion of plot.").toLatin1().data());
         }
         m_pSemaphore->release();
         m_pSemaphore->deleteSemaphore();
@@ -139,7 +139,7 @@ void UserInteractionWatcher::userInteractionDone(int type, bool aborted, QVector
     {
         if (aborted)
         {
-            m_pSemaphore->returnValue += ito::RetVal(ito::retError,0,"User interaction aborted.");
+            m_pSemaphore->returnValue += ito::RetVal(ito::retError, 0, tr("User interaction aborted.").toLatin1().data());
         }
         m_pSemaphore->release();
         m_pSemaphore->deleteSemaphore();
@@ -148,8 +148,5 @@ void UserInteractionWatcher::userInteractionDone(int type, bool aborted, QVector
 
     emit finished();
 }
-
-
-
 
 } //end namespace ito

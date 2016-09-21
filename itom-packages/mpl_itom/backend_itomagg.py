@@ -38,7 +38,7 @@ def new_figure_manager( num, *args, **kwargs ):
     """
     Create a new figure manager instance
     """
-    if DEBUG: print('backend_qtagg.new_figure_manager')
+    if DEBUG: print('FigureCanvasQtAgg.new_figure_manager')
     FigureClass = kwargs.pop('FigureClass', Figure)
     existingCanvas = kwargs.pop('canvas', None)
     if(existingCanvas is None):
@@ -91,9 +91,7 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         self.canvas.call("paintRect", False, 0,0,0,0)
         self.rect = []
         self.blitbox = None
-        #self.setAttribute(QtCore.Qt.WA_OpaquePaintEvent)
-        self.canvas.connect("eventPaintRequest()", self.paintEvent)
-        self.canvas["enabled"]=True #only if enabled is true, the widget starts to trigger the eventPaintRequest-signal
+        self.canvas["enabled"]=True
 
     def drawRectangle( self, rect ):
         if DEBUG: print('FigureCanvasItomAgg.drawRect: ', rect)

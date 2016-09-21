@@ -60,7 +60,7 @@ PluginThreadCtrl::PluginThreadCtrl(const ito::ParamBase &pluginParameter, ito::R
     {
         if (retval)
         {
-            (*retval) += ito::RetVal(ito::retError, 0, "no or invalid plugin given.");
+            (*retval) += ito::RetVal(ito::retError, 0, QObject::tr("no or invalid plugin given.").toLatin1().data());
         }
         return;
     }
@@ -74,7 +74,7 @@ PluginThreadCtrl::PluginThreadCtrl(ito::AddInBase *plugin, ito::RetVal *retval /
     {
         if (retval)
         {
-            (*retval) += ito::RetVal(ito::retError, 0, "no or invalid plugin given");
+            (*retval) += ito::RetVal(ito::retError, 0, QObject::tr("no or invalid plugin given").toLatin1().data());
         }
         return;
     }
@@ -201,14 +201,14 @@ ito::RetVal PluginThreadCtrl::getParam(ito::Param &val, int timeOutMS /*= PLUGIN
 {
     if (!m_pPlugin)
     {
-        return ito::RetVal(ito::retError, 0, "no camera available");
+        return ito::RetVal(ito::retError, 0, QObject::tr("no camera available").toLatin1().data());
     }
 
     m_semaphoreLocker = new ItomSharedSemaphore();
     QSharedPointer<ito::Param> qsParam(new ito::Param(val));
     if (!QMetaObject::invokeMethod(m_pPlugin, "getParam", Q_ARG(QSharedPointer<ito::Param>, qsParam), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
-        return ito::RetVal(ito::retError, 0, "error invoking getParam");
+        return ito::RetVal(ito::retError, 0, QObject::tr("error invoking getParam").toLatin1().data());
     }
 
     ito::RetVal retval = waitForSemaphore(timeOutMS);
@@ -219,7 +219,7 @@ ito::RetVal PluginThreadCtrl::getParam(ito::Param &val, int timeOutMS /*= PLUGIN
     }
     else if (timeOutMS == 0)
     {
-        retval += ito::RetVal(ito::retWarning, 0, "no parameter can be returned if timeout = 0");
+        retval += ito::RetVal(ito::retWarning, 0, QObject::tr("no parameter can be returned if timeout = 0").toLatin1().data());
     }
 
     return retval;
@@ -238,14 +238,14 @@ ito::RetVal PluginThreadCtrl::setParam(ito::ParamBase val, int timeOutMS /*= PLU
 {
     if (!m_pPlugin)
     {
-        return ito::RetVal(ito::retError, 0, "no camera available");
+        return ito::RetVal(ito::retError, 0, QObject::tr("no camera available").toLatin1().data());
     }
 
     m_semaphoreLocker = new ItomSharedSemaphore();
     QSharedPointer<ito::ParamBase> qsParam(new ito::ParamBase(val));
     if (!QMetaObject::invokeMethod(m_pPlugin, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
-        return ito::RetVal(ito::retError, 0, "error invoking setParam");
+        return ito::RetVal(ito::retError, 0, QObject::tr("error invoking setParam").toLatin1().data());
     }
     
     return waitForSemaphore(timeOutMS);
@@ -296,13 +296,13 @@ ito::RetVal DataIOThreadCtrl::startDevice(int timeOutMS /*= PLUGINWAIT*/)
 {
     if (!m_pPlugin)
     {
-        return ito::RetVal(ito::retError, 0, "no camera available");
+        return ito::RetVal(ito::retError, 0, QObject::tr("no camera available").toLatin1().data());
     }
 
     m_semaphoreLocker = new ItomSharedSemaphore();
     if (!QMetaObject::invokeMethod(m_pPlugin, "startDevice", Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
-        return ito::RetVal(ito::retError, 0, "error invoking startDevice");
+        return ito::RetVal(ito::retError, 0, QObject::tr("error invoking startDevice").toLatin1().data());
     }
 
     return waitForSemaphore(timeOutMS);
@@ -321,13 +321,13 @@ ito::RetVal DataIOThreadCtrl::stopDevice(int timeOutMS /*= PLUGINWAIT*/)
 {
     if (!m_pPlugin)
     {
-        return ito::RetVal(ito::retError, 0, "no camera available");
+        return ito::RetVal(ito::retError, 0, QObject::tr("no camera available").toLatin1().data());
     }
 
     m_semaphoreLocker = new ItomSharedSemaphore();
     if (!QMetaObject::invokeMethod(m_pPlugin, "stopDevice", Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
-        return ito::RetVal(ito::retError, 0, "error invoking stopDevice");
+        return ito::RetVal(ito::retError, 0, QObject::tr("error invoking stopDevice").toLatin1().data());
     }
 
     return waitForSemaphore(timeOutMS);
@@ -348,13 +348,13 @@ ito::RetVal DataIOThreadCtrl::acquire(const int trigger /*= 0*/, int timeOutMS /
 {
     if (!m_pPlugin)
     {
-        return ito::RetVal(ito::retError, 0, "no camera available");
+        return ito::RetVal(ito::retError, 0, QObject::tr("no camera available").toLatin1().data());
     }
 
     m_semaphoreLocker = new ItomSharedSemaphore();
     if (!QMetaObject::invokeMethod(m_pPlugin, "acquire", Q_ARG(int, trigger), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
-        return ito::RetVal(ito::retError, 0, "error invoking acquire");
+        return ito::RetVal(ito::retError, 0, QObject::tr("error invoking acquire").toLatin1().data());
     }
 
     return waitForSemaphore(timeOutMS);
@@ -375,7 +375,6 @@ bool DataIOThreadCtrl::getAutoGrabbing()
     }
     else
     {
-        
         return static_cast<ito::AddInDataIO*>(m_pPlugin)->getAutoGrabbing();
     }
 }
@@ -393,13 +392,13 @@ ito::RetVal DataIOThreadCtrl::enableAutoGrabbing(int timeOutMS /*= PLUGINWAIT*/)
 {
     if (!m_pPlugin)
     {
-        return ito::RetVal(ito::retError, 0, "no camera available");
+        return ito::RetVal(ito::retError, 0, QObject::tr("no camera available").toLatin1().data());
     }
 
     m_semaphoreLocker = new ItomSharedSemaphore();
     if (!QMetaObject::invokeMethod(m_pPlugin, "enableAutoGrabbing", Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
-        return ito::RetVal(ito::retError, 0, "error invoking enableAutoGrabbing");
+        return ito::RetVal(ito::retError, 0, QObject::tr("error invoking enableAutoGrabbing").toLatin1().data());
     }
 
     return waitForSemaphore(timeOutMS);
@@ -418,13 +417,13 @@ ito::RetVal DataIOThreadCtrl::disableAutoGrabbing(int timeOutMS /*= PLUGINWAIT*/
 {
     if (!m_pPlugin)
     {
-        return ito::RetVal(ito::retError, 0, "no camera available");
+        return ito::RetVal(ito::retError, 0, QObject::tr("no camera available").toLatin1().data());
     }
 
     m_semaphoreLocker = new ItomSharedSemaphore();
     if (!QMetaObject::invokeMethod(m_pPlugin, "disableAutoGrabbing", Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
-        return ito::RetVal(ito::retError, 0, "error invoking disableAutoGrabbing");
+        return ito::RetVal(ito::retError, 0, QObject::tr("error invoking disableAutoGrabbing").toLatin1().data());
     }
 
     return waitForSemaphore(timeOutMS);
@@ -445,13 +444,13 @@ ito::RetVal DataIOThreadCtrl::setAutoGrabbingInterval(QSharedPointer<int> interv
 {
     if (!m_pPlugin)
     {
-        return ito::RetVal(ito::retError, 0, "no camera available");
+        return ito::RetVal(ito::retError, 0, QObject::tr("no camera available").toLatin1().data());
     }
 
     m_semaphoreLocker = new ItomSharedSemaphore();
     if (!QMetaObject::invokeMethod(m_pPlugin, "setAutoGrabbingInterval", Q_ARG(QSharedPointer<int>, interval), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
-        return ito::RetVal(ito::retError, 0, "error invoking setAutoGrabbingInterval");
+        return ito::RetVal(ito::retError, 0, QObject::tr("error invoking setAutoGrabbingInterval").toLatin1().data());
     }
 
     return waitForSemaphore(timeOutMS);
@@ -473,13 +472,13 @@ ito::RetVal DataIOThreadCtrl::getVal(ito::DataObject &dObj, int timeOutMS /*= PL
 {
     if (!m_pPlugin)
     {
-        return ito::RetVal(ito::retError, 0, "no camera available");
+        return ito::RetVal(ito::retError, 0, QObject::tr("no camera available").toLatin1().data());
     }
 
     m_semaphoreLocker = new ItomSharedSemaphore();
     if (!QMetaObject::invokeMethod(m_pPlugin, "getVal", Q_ARG(void*, (void *)&dObj), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
-        return ito::RetVal(ito::retError, 0, "error invoking getVal");
+        return ito::RetVal(ito::retError, 0, QObject::tr("error invoking getVal").toLatin1().data());
     }
 
     return waitForSemaphore(timeOutMS);
@@ -501,19 +500,17 @@ ito::RetVal DataIOThreadCtrl::copyVal(ito::DataObject &dObj, int timeOutMS /*= P
 {
     if (!m_pPlugin)
     {
-        return ito::RetVal(ito::retError, 0, "no camera available");
+        return ito::RetVal(ito::retError, 0, QObject::tr("no camera available").toLatin1().data());
     }
 
     m_semaphoreLocker = new ItomSharedSemaphore();
     if (!QMetaObject::invokeMethod(m_pPlugin, "copyVal", Q_ARG(void*, (void *)&dObj), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
-        return ito::RetVal(ito::retError, 0, "error invoking copyVal");
+        return ito::RetVal(ito::retError, 0, QObject::tr("error invoking copyVal").toLatin1().data());
     }
 
     return waitForSemaphore(timeOutMS);
 }
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
@@ -530,7 +527,7 @@ ito::RetVal DataIOThreadCtrl::getImageParams(int &bpp, int &sizex, int &sizey, i
 {
     if (!m_pPlugin)
     {
-        return ito::RetVal(ito::retError, 0, "no camera available");
+        return ito::RetVal(ito::retError, 0, QObject::tr("no camera available").toLatin1().data());
     }
     
     m_semaphoreLocker = new ItomSharedSemaphore();
@@ -541,7 +538,7 @@ ito::RetVal DataIOThreadCtrl::getImageParams(int &bpp, int &sizex, int &sizey, i
     params << param1 << param2 << param3;
     if (!QMetaObject::invokeMethod(m_pPlugin, "getParamVector", Q_ARG(QVector<QSharedPointer<ito::Param> >, params), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
-        return ito::RetVal(ito::retError, 0, "error invoking copyVal");
+        return ito::RetVal(ito::retError, 0, QObject::tr("error invoking copyVal").toLatin1().data());
     }
 
     ito::RetVal retval = waitForSemaphore(timeOutMS);
@@ -554,13 +551,11 @@ ito::RetVal DataIOThreadCtrl::getImageParams(int &bpp, int &sizex, int &sizey, i
     }
     else if (timeOutMS == 0)
     {
-        retval += ito::RetVal(ito::retWarning, 0, "no image parameters can be returned if timeout = 0");
+        retval += ito::RetVal(ito::retWarning, 0, QObject::tr("no image parameters can be returned if timeout = 0").toLatin1().data());
     }
 
     return retval;
 }
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 ActuatorThreadCtrl::ActuatorThreadCtrl() :
@@ -595,7 +590,6 @@ ActuatorThreadCtrl::~ActuatorThreadCtrl()
 {
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
     \detail Move the axis in axisVec with a distance defined in stepSizeVec relative to current position.
@@ -615,7 +609,7 @@ ito::RetVal ActuatorThreadCtrl::setPosRel(const QVector<int> &axes, const QVecto
 {
     if (!m_pPlugin)
     {
-        return ito::RetVal(ito::retError, 0, "no actuator available");
+        return ito::RetVal(ito::retError, 0, QObject::tr("no actuator available").toLatin1().data());
     }
 
     if (relPositions.size() != axes.size())
@@ -626,7 +620,7 @@ ito::RetVal ActuatorThreadCtrl::setPosRel(const QVector<int> &axes, const QVecto
     m_semaphoreLocker = new ItomSharedSemaphore();
     if(!QMetaObject::invokeMethod(m_pPlugin, "setPosRel", Q_ARG(QVector<int>, axes), Q_ARG(QVector<double>, relPositions), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
-        return ito::RetVal(ito::retError, 0, "error invoking setPosRel");
+        return ito::RetVal(ito::retError, 0, QObject::tr("error invoking setPosRel").toLatin1().data());
     }
     
     return waitForSemaphore(timeOutMS);
@@ -651,7 +645,7 @@ ito::RetVal ActuatorThreadCtrl::setPosAbs(const QVector<int> &axes, const QVecto
 {
     if (!m_pPlugin)
     {
-        return ito::RetVal(ito::retError, 0, "no actuator available");
+        return ito::RetVal(ito::retError, 0, QObject::tr("no actuator available").toLatin1().data());
     }
 
     if (absPositions.size() != axes.size())
@@ -662,7 +656,7 @@ ito::RetVal ActuatorThreadCtrl::setPosAbs(const QVector<int> &axes, const QVecto
     m_semaphoreLocker = new ItomSharedSemaphore();
     if(!QMetaObject::invokeMethod(m_pPlugin, "setPosAbs", Q_ARG(QVector<int>, axes), Q_ARG(QVector<double>, absPositions), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
-        return ito::RetVal(ito::retError, 0, "error invoking setPosAbs");
+        return ito::RetVal(ito::retError, 0, QObject::tr("error invoking setPosAbs").toLatin1().data());
     }
 
     return waitForSemaphore(timeOutMS);
@@ -686,13 +680,13 @@ ito::RetVal ActuatorThreadCtrl::setPosRel(int axis, double relPosition, int time
 {
     if (!m_pPlugin)
     {
-        return ito::RetVal(ito::retError, 0, "no actuator available");
+        return ito::RetVal(ito::retError, 0, QObject::tr("no actuator available").toLatin1().data());
     }
 
     m_semaphoreLocker = new ItomSharedSemaphore();
     if (!QMetaObject::invokeMethod(m_pPlugin, "setPosRel", Q_ARG(int, axis), Q_ARG(double, relPosition), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
-        return ito::RetVal(ito::retError, 0, "error invoking setPosRel");
+        return ito::RetVal(ito::retError, 0, QObject::tr("error invoking setPosRel").toLatin1().data());
     }
 
     return waitForSemaphore(timeOutMS);
@@ -716,13 +710,13 @@ ito::RetVal ActuatorThreadCtrl::setPosAbs(int axis, double absPosition, int time
 {
     if (!m_pPlugin)
     {
-        return ito::RetVal(ito::retError, 0, "no actuator available");
+        return ito::RetVal(ito::retError, 0, QObject::tr("no actuator available").toLatin1().data());
     }
 
     m_semaphoreLocker = new ItomSharedSemaphore();
     if (!QMetaObject::invokeMethod(m_pPlugin, "setPosAbs", Q_ARG(int, axis), Q_ARG(double, absPosition), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
-        return ito::RetVal(ito::retError, 0, "error invoking setPosAbs");
+        return ito::RetVal(ito::retError, 0, QObject::tr("error invoking setPosAbs").toLatin1().data());
     }
 
     return waitForSemaphore(timeOutMS);
@@ -742,7 +736,7 @@ ito::RetVal ActuatorThreadCtrl::getPos(int axis, double &position, int timeOutMS
 {
     if (!m_pPlugin)
     {
-        return ito::RetVal(ito::retError, 0, "no actuator available");
+        return ito::RetVal(ito::retError, 0, QObject::tr("no actuator available").toLatin1().data());
     }
 
     QSharedPointer<double> posSP(new double);
@@ -751,7 +745,7 @@ ito::RetVal ActuatorThreadCtrl::getPos(int axis, double &position, int timeOutMS
     m_semaphoreLocker = new ItomSharedSemaphore();
     if (!QMetaObject::invokeMethod(m_pPlugin, "getPos", Q_ARG(int, (const int) axis), Q_ARG(QSharedPointer<double>, posSP), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
-        return ito::RetVal(ito::retError, 0, "error invoking getPos");
+        return ito::RetVal(ito::retError, 0, QObject::tr("error invoking getPos").toLatin1().data());
     }
 
     ito::RetVal retval = waitForSemaphore(timeOutMS);
@@ -761,7 +755,7 @@ ito::RetVal ActuatorThreadCtrl::getPos(int axis, double &position, int timeOutMS
     }
     else if (timeOutMS == 0)
     {
-        retval += ito::RetVal(ito::retWarning, 0, "no position value can be returned if timeout = 0");
+        retval += ito::RetVal(ito::retWarning, 0, QObject::tr("no position value can be returned if timeout = 0").toLatin1().data());
     }
 
     return retval;
@@ -781,7 +775,7 @@ ito::RetVal ActuatorThreadCtrl::getPos(QVector<int> axes, QVector<double> &posit
 {
     if (!m_pPlugin)
     {
-        return ito::RetVal(ito::retError, 0, "no actuator available");
+        return ito::RetVal(ito::retError, 0, QObject::tr("no actuator available").toLatin1().data());
     }
 
     positions.resize(axes.size());
@@ -791,7 +785,7 @@ ito::RetVal ActuatorThreadCtrl::getPos(QVector<int> axes, QVector<double> &posit
     m_semaphoreLocker = new ItomSharedSemaphore();
     if (!QMetaObject::invokeMethod(m_pPlugin, "getPos", Q_ARG(QVector<int>, axes), Q_ARG(QSharedPointer<QVector<double> >, posVecSP), Q_ARG(ItomSharedSemaphore*, m_semaphoreLocker.getSemaphore())))
     {
-        return ito::RetVal(ito::retError, 0, "error invoking getPos");
+        return ito::RetVal(ito::retError, 0, QObject::tr("error invoking getPos").toLatin1().data());
     }
 
     ito::RetVal retval = waitForSemaphore(timeOutMS);
@@ -802,7 +796,7 @@ ito::RetVal ActuatorThreadCtrl::getPos(QVector<int> axes, QVector<double> &posit
     }
     else if (timeOutMS == 0)
     {
-        retval += ito::RetVal(ito::retWarning, 0, "no position value(s) can be returned if timeout = 0");
+        retval += ito::RetVal(ito::retWarning, 0, QObject::tr("no position value(s) can be returned if timeout = 0").toLatin1().data());
     }
 
     return retval;
@@ -828,13 +822,13 @@ ito::RetVal ActuatorThreadCtrl::checkAxis(int axisNum)
         }
         else
         {
-            return ito::RetVal(ito::retError, 0, "failed to ask for number of axes of actuator");
+            return ito::RetVal(ito::retError, 0, QObject::tr("failed to ask for number of axes of actuator").toLatin1().data());
         }
     }
 
     if (m_numAxes == -1)
     {
-        return ito::RetVal(ito::retError, 0, "failed to ask for number of axes of actuator");
+        return ito::RetVal(ito::retError, 0, QObject::tr("failed to ask for number of axes of actuator").toLatin1().data());
     }
 
     if (axisNum < 0 || axisNum >= m_numAxes)

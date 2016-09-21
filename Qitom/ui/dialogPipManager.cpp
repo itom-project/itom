@@ -300,13 +300,13 @@ void DialogPipManager::installOrUpdatePackage()
              msgBox.setText(tr("Warning installing Numpy if itom is already running."));
              msgBox.setInformativeText(tr("If you try to install / upgrade Numpy if itom is already running, \
 a file access error might occur, since itom already uses parts of Numpy. \n\n\
-You have now two possibilities: \n\
+You have now three possibilities: \n\
 1. Try to continue the installation in spite of possible problems by clicking 'Ignore' \n\
 2. Click 'OK', close and restart itom. Then this package manager is opened as standalone application \
 and you can install or upgrade Numpy and other packages. After another restart, itom is restarted as usual. \n\
 3. Click 'Cancel' to cancel the installation process without any changes. \n\
 \n\
-Informationen: \n\
+Information: \n\
 If the case of the restart ('OK'), an empty file 'restart_itom_with_pip_manager.txt' is created in the directory '%1'. \
 If itom locates this file at startup, the pip manager is directly started. \n\
 \n\

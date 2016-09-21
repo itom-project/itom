@@ -85,3 +85,11 @@ If you want to access the optional camera of the Raspberry Pi, you can do this u
 to start the v4l2 camera driver process (every time the raspi is started, or place it in the autostart script)::
     
     sudo modprobe bcm2835-v4l2
+    
+Keyboard issues with remote desktop
+------------------------------------
+
+If the keyboard layout does not correctly work, especially in a remote desktop environment, try to apply the following command in a shell before
+starting itom (from the same shell)::
+    
+    export XKB_DEFAULT_RULES=base
