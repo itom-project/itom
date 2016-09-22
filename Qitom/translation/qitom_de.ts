@@ -9115,12 +9115,12 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+1"/>
         <source>Caret color (Foreground: cursor color, Background: color of current line)</source>
-        <translation type="unfinished"></translation>
+        <translation>Farbe des Text-Cursors (Fordergrund: Cursor-Farbe, Hintergrund: Farbe der aktuellen Zeile)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Fold margin color</source>
-        <translation type="unfinished"></translation>
+        <translation>Farbe der Gliederungsspalte</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -9130,32 +9130,32 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+1"/>
         <source>Whitespace color (if whitespace characters are visible)</source>
-        <translation type="unfinished"></translation>
+        <translation>Farbe der Leerräume (wenn Leerräume sichtbar sind)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Unmatched brace color</source>
-        <translation type="unfinished"></translation>
+        <translation>Farbe der Klammer (bei fehlender Gegenklammer)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Matched brace color</source>
-        <translation type="unfinished"></translation>
+        <translation>Farbe der Klammern (Gegenklammer vorhanden)</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Command line: Background for error messages</source>
-        <translation type="unfinished"></translation>
+        <translation>Kommandozeile: Hintergrundfarbe von Fehlermeldungen</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Command line: Background for currently executed line</source>
-        <translation type="unfinished"></translation>
+        <translation>Kommandozeile: Hintergrundfarbe der aktuell ausgeführten Zeile</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Command line: Background for python input</source>
-        <translation type="unfinished"></translation>
+        <translation>Kommandozeile: Hintergrundfarbe einer Eingabezeile (Python-Befehl: input)</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -9165,7 +9165,8 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+1"/>
         <source>Background color of words equal to the currently selected string</source>
-        <translation type="unfinished"></translation>
+        <translation> Hintergrundfarbe aller Wörter, die identisch zu dem aktuell ausgewählten Wort sind
+</translation>
     </message>
     <message>
         <location line="+130"/>
