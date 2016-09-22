@@ -709,12 +709,12 @@ Type conflict for %1</source>
     <message>
         <location filename="../../common/sources/addInInterface.cpp" line="435"/>
         <source>Toolbox</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Werkzeuge</translation>
     </message>
     <message>
         <location filename="../../common/sources/addInInterface.cpp" line="587"/>
         <source>function with this name is already registered.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es existiert bereits eine Funktion mit diesem Namen.</translation>
     </message>
     <message>
         <location filename="../../common/sources/addInInterface.cpp" line="646"/>
@@ -763,37 +763,37 @@ Type conflict for %1</source>
     <message>
         <location filename="../../common/sources/addInInterface.cpp" line="888"/>
         <source>method startDevice() is not implemented in this plugin</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Methode &apos;startDevice&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>
     <message>
         <location filename="../../common/sources/addInInterface.cpp" line="906"/>
         <source>method stopDevice() is not implemented in this plugin</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Methode &apos;stopDevice&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>
     <message>
         <location filename="../../common/sources/addInInterface.cpp" line="924"/>
         <source>method acquire() is not implemented in this plugin</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Methode &apos;acquire&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>
     <message>
         <location filename="../../common/sources/addInInterface.cpp" line="942"/>
         <source>method getVal(void*, ItomSharedSemaphore*) is not implemented in this plugin</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Methode &apos;getVal(void*, ItomSharedSemaphore*)&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>
     <message>
         <location filename="../../common/sources/addInInterface.cpp" line="960"/>
         <source>method getVal(QSharedPointer&lt;char&gt;, QSharedPointer&lt;int&gt;, ItomSharedSemaphore*) is not implemented in this plugin</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Methode &apos;getVal(QSharedPointer&lt;char&gt;, QSharedPointer&lt;int&gt;, ItomSharedSemaphore*)&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>
     <message>
         <location filename="../../common/sources/addInInterface.cpp" line="978"/>
         <source>method copyVal(void*,ItomSharedSemaphore*) is not implemented in this plugin</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Methode &apos;copyVal(void*,ItomSharedSemaphore*)&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>
     <message>
         <location filename="../../common/sources/addInInterface.cpp" line="996"/>
         <source>method setVal(const char*, const int, ItomSharedSemaphore*) is not implemented in this plugin</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Methode &apos;setVal(const char*, const int, ItomSharedSemaphore*)&apos; wurde in diesem Plugin nicht implementiert</translation>
     </message>
 </context>
 <context>

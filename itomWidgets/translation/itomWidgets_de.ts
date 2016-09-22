@@ -126,23 +126,23 @@
     </message>
     <message>
         <source>axisIndex is out of bounds.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Achsenindex liegt außerhalb des Gültigkeitsbereichs.</translation>
     </message>
     <message>
         <source>refresh</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Aktualisieren</translation>
     </message>
     <message>
         <source>Actuator not available</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Motor ist nicht verfügbar</translation>
     </message>
     <message>
         <source>interrupt movement</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fahrt unterbrochen</translation>
     </message>
     <message>
         <source>start movement</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fahrt starten</translation>
     </message>
 </context>
 <context>
@@ -153,11 +153,11 @@
     </message>
     <message>
         <source>Open a file</source>
-        <translation type="unfinished">Datei öffnen</translation>
+        <translation>Datei öffnen</translation>
     </message>
     <message>
         <source>Select a directory...</source>
-        <translation type="unfinished">Ein Verzeichnis auswählen...</translation>
+        <translation>Ein Verzeichnis auswählen...</translation>
     </message>
 </context>
 <context>
@@ -179,7 +179,7 @@
     </message>
     <message>
         <source>Marker %1</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>

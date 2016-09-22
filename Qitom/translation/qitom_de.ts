@@ -818,21 +818,9 @@ p, li { white-space: pre-wrap; }
         <translation>Name</translation>
     </message>
     <message>
-        <source>Role</source>
-        <translation type="obsolete">Rolle</translation>
-    </message>
-    <message>
-        <source>Ini-File</source>
-        <translation type="obsolete">INI-Datei</translation>
-    </message>
-    <message>
         <location line="-53"/>
         <source>Run itom as...</source>
         <translation>Unter folgendem Benutzer starten...</translation>
-    </message>
-    <message>
-        <source>User</source>
-        <translation type="obsolete">Benutzer</translation>
     </message>
     <message>
         <location line="+21"/>
@@ -1040,17 +1028,6 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
-    <name>FileDownloader</name>
-    <message>
-        <source>no network reply instance available</source>
-        <translation type="vanished">Fehler beim Herunterladen: Keine Antwort erhalten</translation>
-    </message>
-    <message>
-        <source>Requested URL forces a redirection. Maximum number of redirections exceeded.</source>
-        <translation type="vanished">Angefragte URL erfordert eine Weiterleitung. Anzahl maximaler Weiterleitungen wurde jedoch überschritten.</translation>
-    </message>
-</context>
-<context>
     <name>HelpTreeDockWidget</name>
     <message>
         <location filename="../ui/helpTreeDockWidget.ui" line="+26"/>
@@ -1071,13 +1048,6 @@ p, li { white-space: pre-wrap; }
         <location line="+7"/>
         <source>Help database is loading...</source>
         <translation>Hilfedatenbank wird geladen...</translation>
-    </message>
-</context>
-<context>
-    <name>QLibrary</name>
-    <message>
-        <source>The file &apos;%1&apos; is not a valid Qt plugin.</source>
-        <translation type="vanished">Die Datei &apos;%1&apos; ist kein gültiges Qt Plugin.</translation>
     </message>
 </context>
 <context>
@@ -2863,29 +2833,6 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
-    <name>UserUiDialog</name>
-    <message>
-        <source>filename &apos;%s&apos; does not exist</source>
-        <translation type="vanished">Dateiname &apos;%s&apos; existiert nicht</translation>
-    </message>
-    <message>
-        <source>ui-file could not be correctly parsed.</source>
-        <translation type="vanished">UI-Datei konnte nicht korrekt geparst werden.</translation>
-    </message>
-    <message>
-        <source>itom</source>
-        <translation type="vanished">itom</translation>
-    </message>
-    <message>
-        <source>content-widget is empty.</source>
-        <translation type="vanished">Element ist leer.</translation>
-    </message>
-    <message>
-        <source>dialog button role is unknown</source>
-        <translation type="vanished">Unbekannte Rolle des Dialog-Button</translation>
-    </message>
-</context>
-<context>
     <name>WidgetFindWord</name>
     <message>
         <location filename="../ui/widgetFindWord.ui" line="+14"/>
@@ -3390,39 +3337,6 @@ p, li { white-space: pre-wrap; }
         <source>None</source>
         <translation>Nichts</translation>
     </message>
-    <message>
-        <source>Python Syntax-Checker (uses Python-Module &quot;frosted&quot;)</source>
-        <translation type="vanished">Python-Syntax-Checker (mit Python-Modul &quot;frosted&quot;)</translation>
-    </message>
-    <message>
-        <source>Automatically include itom module for syntax checker</source>
-        <translation type="vanished">itom-Modul für den Syntax-Checker automatisch hinzufügen</translation>
-    </message>
-    <message>
-        <source>Check intervall [sec]:</source>
-        <extracomment>The timer is started when entering a new line</extracomment>
-        <translation type="obsolete">Prüfintervall [Sek]:</translation>
-    </message>
-    <message>
-        <source>Check interval:</source>
-        <extracomment>The timer is started when entering a new line</extracomment>
-        <translation type="vanished">Prüfintervall:</translation>
-    </message>
-    <message>
-        <source>Class Navigator</source>
-        <translation type="vanished">Klassennavigator</translation>
-    </message>
-    <message>
-        <source>This feature enables two comboboxes with 
- class- and method-navigation above the editor.</source>
-        <translation type="vanished">Diese Funktion blendet zwei Combo-Boxen zur 
-Navigation der Klassen und Methoden über 
-dem Editor ein.</translation>
-    </message>
-    <message>
-        <source>Activate timer</source>
-        <translation type="vanished">Timer aktivieren</translation>
-    </message>
 </context>
 <context>
     <name>WidgetPropEditorScripts</name>
@@ -3589,14 +3503,6 @@ dem Editor ein.</translation>
         <source>Export style...</source>
         <translation>Style exportieren...</translation>
     </message>
-    <message>
-        <source>Overall font size:</source>
-        <translation type="vanished">Generelle Schriftgröße:</translation>
-    </message>
-    <message>
-        <source>Reset to Default</source>
-        <translation type="vanished">Auf Standard zurücksetzen</translation>
-    </message>
 </context>
 <context>
     <name>WidgetPropFigurePlugins</name>
@@ -3698,14 +3604,6 @@ dem Editor ein.</translation>
         <location line="+7"/>
         <source>Move down</source>
         <translation>Nach Unten</translation>
-    </message>
-    <message>
-        <source>The following paths are prepended to the PATH environment variable used by itom. It is modified before itom starts loading plugins or designer plugins. These paths do not affect the overall PATH environment variable of the operating system.</source>
-        <translation type="obsolete">Die folgenden Verzeichnisse werden beim Laden der Plugins und Designer-Plugins als Bibliotheksquellen berücksichtigt.</translation>
-    </message>
-    <message>
-        <source>The following pathes are prepended to the PATH environment variable used by itom. It is modified before itom starts loading plugins or designer plugins. These pathes do not affect the overall PATH environment variable of the operating system.</source>
-        <translation type="obsolete">Die folgenden Verzeichnisse werden beim Laden der Plugins und Designer-Plugins als Bibliotheksquellen berücksichtigt.</translation>
     </message>
     <message>
         <location line="-37"/>
@@ -3931,7 +3829,7 @@ dem Editor ein.</translation>
     <message>
         <location line="+21"/>
         <source>User-defined Python home directory</source>
-        <translation>Benutzerdefiniertes Python-Home-Verzeichnis</translation>
+        <translation>Benutzerdefiniertes Python-Stammverzeichnis</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -4278,17 +4176,9 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Im Vordergrund anzeigen</translation>
     </message>
     <message>
-        <source>Stay on top of all visible windows</source>
-        <translation type="obsolete">Alle sichtbaren Fenster im Vordergrund anzeigen</translation>
-    </message>
-    <message>
         <location line="+4"/>
         <source>Stay on top of main window</source>
         <translation>Hauptfenster im Vordergrund anzeigen</translation>
-    </message>
-    <message>
-        <source>Stay on top of main window of itom</source>
-        <translation type="obsolete">Hauptfenster im Vordergrund von itom anzeigen</translation>
     </message>
     <message>
         <location line="-3"/>
@@ -4318,12 +4208,12 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+407"/>
         <source>toolbar &apos;%1&apos; is already available</source>
-        <translation>Toolbar &apos;%1&apos; ist bereits vorhanden</translation>
+        <translation>Die Symbolleiste &apos;%1&apos; ist bereits vorhanden</translation>
     </message>
     <message>
         <location line="+122"/>
         <source>toolbar &apos;%1&apos; not found</source>
-        <translation>Toolbar &apos;%1&apos; wurde nicht gefunden</translation>
+        <translation>Die Symbolleiste &apos;%1&apos; wurde nicht gefunden</translation>
     </message>
 </context>
 <context>
@@ -4467,42 +4357,42 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+23"/>
         <source>Filter &apos;%1&apos; rejected since a filter with the same name already exists in global filter list</source>
-        <translation type="unfinished">Filter &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Filter dieses namens in der globalen Filterliste</translation>
+        <translation type="unfinished">Der Filter &apos;%1&apos; wurde abgelehnt. Es befindet sich bereits ein Filter dieses namens in der globalen Filterliste</translation>
     </message>
     <message>
         <location line="+36"/>
         <source>Filter %1 loaded</source>
-        <translation type="unfinished">Filter %1 geladen</translation>
+        <translation type="unfinished">Der Filter &apos;%1&apos; wurde geladen</translation>
     </message>
     <message>
         <location line="+13"/>
-        <source>Filter %1 rejected. The filter parameters could not be loaded: %2</source>
-        <translation type="unfinished"></translation>
+        <source>Filter &apos;%1&apos; rejected. The filter parameters could not be loaded: %2</source>
+        <translation type="unfinished">Der Filter &apos;%1&apos; wurde abgelehnt, da die Parameter nicht geladen werden konnten: %2</translation>
     </message>
     <message>
         <location line="+4"/>
-        <source>Filter %1 rejected. The filter parameters could not be loaded.</source>
-        <translation type="unfinished"></translation>
+        <source>Filter &apos;%1&apos; rejected. The filter parameters could not be loaded.</source>
+        <translation type="unfinished">Der Filter &apos;%1&apos; wurde abgelehnt, da die Parameter nicht geladen werden konnten.</translation>
     </message>
     <message>
         <location line="+11"/>
-        <source>Filter %1 rejected. It does not correspond to the algorithm interface: %2</source>
-        <translation type="unfinished"></translation>
+        <source>Filter &apos;%1&apos; rejected. It does not correspond to the algorithm interface: %2</source>
+        <translation type="unfinished">Der Filter &apos;%1&apos; wurde abgelehnt, da sich dieser nicht mit der Algorithmus-Schnittstelle deckt: %2</translation>
     </message>
     <message>
         <location line="+4"/>
-        <source>Filter %1 rejected. It does not correspond to the algorithm interface.</source>
-        <translation type="unfinished"></translation>
+        <source>Filter &apos;%1&apos; rejected. It does not correspond to the algorithm interface.</source>
+        <translation type="unfinished">Der Filter &apos;%1&apos; wurde abgelehnt, da sich dieser nicht mit der Algorithmus-Schnittstelle deckt.</translation>
     </message>
     <message>
         <location line="+56"/>
-        <source>Widget %1 rejected. It does not correspond to the algorithm interface: %2</source>
-        <translation type="unfinished"></translation>
+        <source>Widget &apos;%1&apos; rejected. It does not correspond to the algorithm interface: %2</source>
+        <translation type="unfinished">Der Filter &apos;%1&apos; wurde abgelehnt, da sich dieser nicht mit der Algorithmus-Schnittstelle deckt: %2</translation>
     </message>
     <message>
         <location line="+4"/>
-        <source>Widget %q rejected. It does not correspond to the algorithm interface.</source>
-        <translation type="unfinished"></translation>
+        <source>Widget &apos;%1&apos; rejected. It does not correspond to the algorithm interface.</source>
+        <translation type="unfinished">Der Filter &apos;%1&apos; wurde abgelehnt, da sich dieser nicht mit der Algorithmus-Schnittstelle deckt.</translation>
     </message>
     <message>
         <location line="+76"/>
@@ -4533,7 +4423,7 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+143"/>
         <location line="+136"/>
         <source>reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Referenzzähler des Plugins muss mit Null inizialisiert werden. Bei diesem Plugin ist das jedoch nicht der Fall. (Bitte den Plugin-Entwickler kontaktieren!).</translation>
     </message>
     <message>
         <location line="-274"/>
@@ -4562,23 +4452,23 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+172"/>
         <location line="+33"/>
         <source>timeout while pulling plugin back to main thread.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung beim Versuch das Plugin in den Haupt-Thread zurückzuführen.</translation>
     </message>
     <message>
         <location line="-27"/>
         <location line="+33"/>
         <source>error invoking method &apos;moveBackToApplicationThread&apos; of plugin.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler beim Ausführen der Methode &apos;moveBackToApplicationThread&apos; des Plugins.</translation>
     </message>
     <message>
         <location line="-21"/>
         <source>timeout while closing plugin</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zeitüberschreitung beim Schließen des Plugins</translation>
     </message>
     <message>
         <location line="+460"/>
         <source>Reference counter not zero. Only unused plugins can be reloaded.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Referenzzähler ist nicht Null. Nur unbenutzte Plugins können neugeladen werden.</translation>
     </message>
     <message>
         <location line="+49"/>
@@ -4647,27 +4537,27 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+105"/>
         <source>interface could not be added since its enumeration ID already has been added</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Schnittstelle konnte nicht hinzugefügt werden, da die Aufzählungs-ID bereits hinzugefügt wurde</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>The parameters of the filter does not fit to the requirements given by the specified filter interface.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Parameter des Filters stimmen nicht mit den erforderlichen Parameter der Filterschnittstelle überein.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>The filter does not have the required tags defined.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Filter hat nicht die erforderlichen Tags.</translation>
     </message>
     <message>
         <location line="+25"/>
         <source>The parameters of the widget does not fit to the requirements given by the specified widget interface.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Parameter des Widgets stimmen nicht mit den erforderlichen Parameter der Widget-Schnittstelle überein.</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>The widget does not have the required tags defined.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Widget hat nicht die erforderlichen Tags.</translation>
     </message>
     <message>
         <location line="+35"/>
@@ -4688,14 +4578,6 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+27"/>
         <source>The given algorithm interface is unknown</source>
         <translation>Die angegebene Algorithmusschnittstelle ist unbekannt</translation>
-    </message>
-    <message>
-        <source>Types of parameter &apos;%s&apos; is unequal to required type of interface parameter &apos;%s&apos;</source>
-        <translation type="obsolete">Der Typ des Parameters &apos;%s&apos; entspricht nicht dem geforderten Typ des Schnittstellenparameters &apos;%s&apos;</translation>
-    </message>
-    <message>
-        <source>meta data of interface parameter &apos;%s&apos; is unknown.</source>
-        <translation type="obsolete">Die Meta-Daten der Parameterschnittstelle &apos;%s&apos; sind unbekannt.</translation>
     </message>
 </context>
 <context>
@@ -4773,17 +4655,17 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+427"/>
         <source>given modelIndex of breakpoint is invalid</source>
-        <translation type="unfinished"></translation>
+        <translation>Der übergebene &apos;modelIndex&apos; des Haltepunkts ist ungültig</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>filename must not be changed</source>
-        <translation type="unfinished"></translation>
+        <translation>Der Dateiname darf nicht geändert werden</translation>
     </message>
     <message>
         <location line="+18"/>
         <source>given modelIndex is no model index of a breakpoint</source>
-        <translation type="unfinished"></translation>
+        <translation>Der übergebene &apos;modelIndex&apos; ist kein Index eines Haltepunkts</translation>
     </message>
 </context>
 <context>
@@ -5227,18 +5109,6 @@ Hinweis:
 Nach dem Klick auf &apos;OK&apos; wird die Datei &apos;restart_itom_with_pip_manager.txt&apos; im Verzeichnis &apos;%1&apos; erstellt. Wird diese beim nächsten itom-Start entdeckt, startet der Pip-Manager direkt.
 
 Es ist ebenfalls möglich über das Argument &apos;pipManager&apos; beim Programmstart den Paket-Manager direkt zu starten.</translation>
-    </message>
-    <message>
-        <source>If you try to install / upgrade Numpy if itom is already running, a file access error might occur, since itom already uses parts of Numpy. 
-
-Click ignore if you want to try to continue the installation or click OK in order to stop the installation. 
-
-In the latter case, the file &apos;restart_itom_with_pip_manager.txt&apos; is created in the directory &apos;%1&apos;, such that the pip manager is started one time as standalone application once you restart itom. Then, close all instances of itom or other software accessing Numpy, restart itom and try to upgrade Numpy.</source>
-        <translation type="obsolete">Die Installation oder das Updaten von Numpy im laufenden itom könnte einen Fehler verursachen, wenn Teile von Numby bereits verwendet werden. 
-
-Soll die Installation dennoch ausgeführt werden kann mit &apos;Ignorieren&apos; fortgesetzt werden oder mit Ok die Installation gestopt werden. 
-
-Wenn die Datei &apos;restart_itom_with_pip_manager.txt&apos; im Verzeichnis &apos;%1&apos; erstellt wurde, wird der Pip-Manager beim nächsten Programmstart in einem &apos;Standalone&apos;-Modus geöffnet und es kann versucht werden Numpy zu updaten.</translation>
     </message>
     <message>
         <location line="+54"/>
@@ -5764,18 +5634,6 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DialogUserManagement</name>
     <message>
-        <source>Error</source>
-        <translation type="obsolete">Fehler</translation>
-    </message>
-    <message>
-        <source>UserID is empty! Cannot create user!</source>
-        <translation type="obsolete">Die Benutzer-ID ist leer! Der Benutzer kann nicht erstellt werden!</translation>
-    </message>
-    <message>
-        <source>UserID already exists! Cannot create user!</source>
-        <translation type="obsolete">Die Benutzer-ID wurde bereits vergeben! Benutzer kann nicht erstellt werden!</translation>
-    </message>
-    <message>
         <location filename="../widgets/userManagement.cpp" line="+172"/>
         <location line="+7"/>
         <location line="+7"/>
@@ -5784,22 +5642,6 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+4"/>
         <source>Warning</source>
         <translation>Warnung</translation>
-    </message>
-    <message>
-        <source>No or invalid group entered, setting to developer!</source>
-        <translation type="obsolete">Es wurde keine oder eine ungültige Gruppe ausgewählt. Als Gruppe wurde &apos;Entwickler&apos; eingestellt!</translation>
-    </message>
-    <message>
-        <source>No user name entered, creating user with empty name!</source>
-        <translation type="obsolete">Es wurde kein Benutzername eingegeben. Das Konto wurde mit einem leeren Namen erstellt!</translation>
-    </message>
-    <message>
-        <source>Standard itom ini file not found, aborting!</source>
-        <translation type="obsolete">Die Standard-Ini-Datei von itom wurde nicht gefunden! Der Vorgang wurde abgebrochen!</translation>
-    </message>
-    <message>
-        <source>Could not copy standard itom ini file!</source>
-        <translation type="obsolete">Die Standard-Ini-Datei von itom konnte nicht kopiert werden!</translation>
     </message>
     <message>
         <location line="-150"/>
@@ -5862,14 +5704,6 @@ Meldung: &apos;%1&apos;</translation>
         <location line="+62"/>
         <source>UserOrganizer not found!</source>
         <translation>&quot;UserOrganizer&quot; wurde nicht gefunden!</translation>
-    </message>
-    <message>
-        <source>ItomSettings directory not found, aborting!</source>
-        <translation type="obsolete">Das Verzeichnis &quot;itomSettings&quot; wurde nicht gefunden! Vorgang wird abgebrochen!</translation>
-    </message>
-    <message>
-        <source>Could not copy standard itom ini file!</source>
-        <translation type="obsolete">Die Standard-Ini-Datei von itom konnte nicht kopiert werden!</translation>
     </message>
     <message>
         <location line="+33"/>
@@ -6648,14 +6482,6 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Zeitüberschreitung beim Laden von Matlab-Variablen</translation>
     </message>
     <message>
-        <source>open python script</source>
-        <translation type="obsolete">Python-Skript öffnen</translation>
-    </message>
-    <message>
-        <source>python (*.py)</source>
-        <translation type="obsolete">Python (*.py)</translation>
-    </message>
-    <message>
         <location line="+48"/>
         <source>timeout while opening script</source>
         <translation>Zeitüberschreitung beim Öffnen eines Skripts</translation>
@@ -6833,10 +6659,6 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Übersetzungen werden geladen...</translation>
     </message>
     <message>
-        <source>load style...</source>
-        <translation type="obsolete">Style wird geladen...</translation>
-    </message>
-    <message>
         <location line="+43"/>
         <source>load themes and styles...</source>
         <translation>Themen und Stile werden geladen...</translation>
@@ -6938,10 +6760,6 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <location line="+14"/>
         <source>Plugins</source>
         <translation></translation>
-    </message>
-    <message>
-        <source>Python could not be started. itom cannot be used in the desired way.</source>
-        <translation type="obsolete">Python konnte nicht gestartet werden. itom kann so nicht benutzt werden.</translation>
     </message>
     <message>
         <location line="+378"/>
@@ -7093,7 +6911,7 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
     <message>
         <location line="+4"/>
         <source>Package Manager...</source>
-        <translation>Package-Manager...</translation>
+        <translation>Python Paket-Manager...</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -7234,33 +7052,9 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <translation>Der Hilfeassistent konnte nicht gestartet werden.</translation>
     </message>
     <message>
-        <source>The toolbar &apos;</source>
-        <translation type="obsolete">Die Symbolleiste &apos;</translation>
-    </message>
-    <message>
-        <source>&apos; could not be found</source>
-        <translation type="obsolete">&apos; wurde nicht gefunden</translation>
-    </message>
-    <message>
         <location line="+228"/>
         <source>one single menu element must be of type MENU [2]</source>
         <translation>Das Menüelement muss vom Typ &apos;menu&apos; sein [2]</translation>
-    </message>
-    <message>
-        <source>no menu element is indicated</source>
-        <translation type="obsolete">Es wurde kein Menüelement erkannt</translation>
-    </message>
-    <message>
-        <source>The menu item &apos;%s&apos; does already exist but is no menu type</source>
-        <translation type="obsolete">Das Menüelement &apos;%s&apos;  existiert bereits, ist jedoch nicht Typ von MENU</translation>
-    </message>
-    <message>
-        <source>menu item already exists.</source>
-        <translation type="obsolete">Das Menüelement existiert bereits.</translation>
-    </message>
-    <message>
-        <source>Invalid typeID.</source>
-        <translation type="obsolete">Ungültige Typ-ID.</translation>
     </message>
     <message>
         <location line="+103"/>
@@ -7275,10 +7069,6 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <translation>Menüelement löschen</translation>
     </message>
     <message>
-        <source>A user-defined menu with the key sequence &apos;%1&apos; could not be found</source>
-        <translation type="obsolete">Das Benutzerdefiniertes Menü mit dem Schlüssel &apos;%1&apos; konnte nicht gefunden werden</translation>
-    </message>
-    <message>
         <location line="+69"/>
         <source>Current Directory: %1</source>
         <translation>Aktuelles Verzeichnis: %1</translation>
@@ -7287,14 +7077,6 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <location line="+29"/>
         <source>Python is not available. This action cannot be executed.</source>
         <translation>Python ist nicht verfügbar. Diese Anwendung kann nicht ausgeführt werden.</translation>
-    </message>
-    <message>
-        <source>there is no python code associated to this action.</source>
-        <translation type="obsolete">Zu dieser &apos;Action&apos; existiert kein Python-Code.</translation>
-    </message>
-    <message>
-        <source>The UI designer (Qt designer) could not be started.</source>
-        <translation type="obsolete">Der UI-Designer (Qt designer) konnte nicht gestartet werden.</translation>
     </message>
 </context>
 <context>
@@ -7530,18 +7312,6 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <source>Unknown paramType: %1</source>
         <translation>Unbekannter Parametertyp: %1</translation>
     </message>
-    <message>
-        <source>QT error: Spin box widget could not be found</source>
-        <translation type="obsolete">QT-Fehler: QSpinBox wurde nicht gefunden</translation>
-    </message>
-    <message>
-        <source>QT error: Double spin box widget could not be found</source>
-        <translation type="obsolete">QT-Fehler: QDoubleSpinBox wurde nicht gefunden</translation>
-    </message>
-    <message>
-        <source>QT error: String input widget could not be found</source>
-        <translation type="obsolete">QT-Fehler: String Input Widget wurde nicht gefunden</translation>
-    </message>
 </context>
 <context>
     <name>ito::PipManager</name>
@@ -7590,14 +7360,18 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <source>The home directory of Python is currently set to the non-existing directory &apos;%s&apos;
 Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
 or correct the base directory in the property dialog of itom.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Stammverzeichnis von Python ist aktuell auf ein nicht existierendes Verzeichnis gesetzt (&apos;%s&apos;)
+Python kann nicht gestartet werden. Bitte entweder im System die Umgebungsvariable &apos;PYTHONHOME&apos; mit dem Stammverzeichnis von Python setzen
+oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>The built-in library path of Python could not be found. The current home directory is &apos;%s&apos;
 Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
 or correct the base directory in the preferences dialog of itom.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Verzeichnis zur &apos;built-in library&apos; von Python wurde nicht gefunden. Der aktuelle Pfad des Python-Stammverzeichnisses lautet &apos;%s&apos;
+Python kann nicht gestartet werden. Bitte entweder im System die Umgebungsvariable &apos;PYTHONHOME&apos; mit dem Stammverzeichnis von Python setzen
+oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     </message>
     <message>
         <location line="+76"/>
@@ -7827,19 +7601,7 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation type="unfinished">Fehler beim Löschen aller Haltepunkte im ITO-Debugger.</translation>
     </message>
     <message>
-        <source>Error while transmitting breakpoints to itoDebugger.</source>
-        <translation type="obsolete">Fehler beim Übermitteln der Haltepunkte zum ITO-Debugger.</translation>
-    </message>
-    <message>
-        <source>Error while editing breakpoint in itoDebugger.</source>
-        <translation type="obsolete">Fehler beim Editiern eines Haltepunktes im ITO-Debugger.</translation>
-    </message>
-    <message>
-        <source>Error while clearing breakpoint in itoDebugger.</source>
-        <translation type="obsolete">Fehler beim Löschen eines Haltepunktes im ITO-Debugger.</translation>
-    </message>
-    <message>
-        <location line="+2823"/>
+        <location line="+2802"/>
         <source>The number of names and values must be equal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7856,18 +7618,22 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4435"/>
+        <location line="-4414"/>
         <source>The home directory of Python is currently set to the non-existing directory &apos;%s&apos;
 Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
 or correct the base directory in the property dialog of itom.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Stammverzeichnis von Python ist aktuell auf ein nicht existierendes Verzeichnis gesetzt (&apos;%s&apos;)
+Python kann nicht gestartet werden. Bitte entweder im System die Umgebungsvariable &apos;PYTHONHOME&apos; mit dem Stammverzeichnis von Python setzen
+oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     </message>
     <message>
         <location line="+17"/>
         <source>The built-in library path of Python could not be found. The current home directory is &apos;%s&apos;
 Python cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python 
 or correct the base directory in the preferences dialog of itom.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Verzeichnis zur &apos;built-in library&apos; von Python wurde nicht gefunden. Der aktuelle Pfad des Python-Stammverzeichnisses lautet &apos;%s&apos;
+Python kann nicht gestartet werden. Bitte entweder im System die Umgebungsvariable &apos;PYTHONHOME&apos; mit dem Stammverzeichnis von Python setzen
+oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     </message>
     <message>
         <location line="+40"/>
@@ -7968,7 +7734,7 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1900"/>
+        <location line="+1879"/>
         <source>it is not allowed to save a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8868,14 +8634,6 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation type="unfinished">Das Plugin gibt keinen gültigen Widget-Pointer zurück.</translation>
     </message>
     <message>
-        <source>widget is NULL</source>
-        <translation type="obsolete">Widget ist &apos;NULL&apos;</translation>
-    </message>
-    <message>
-        <source>widgets of type QDockWidget are not yet implemented</source>
-        <translation type="obsolete">Widgets vom Typ &quot;QDockWidget&quot; werden nocht nicht unterstützt</translation>
-    </message>
-    <message>
         <location line="+270"/>
         <source>plugin with name &apos;%1&apos; could be found.</source>
         <translation type="unfinished">Das Plugin namens &apos;%1&apos; wurde nicht gefunden.</translation>
@@ -8908,17 +8666,17 @@ or correct the base directory in the preferences dialog of itom.</source>
     <message>
         <location line="-40"/>
         <source>dockWidgetArea is invalid</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das &apos;dockWidgetArea&apos; ist ungültig</translation>
     </message>
     <message>
         <location line="+117"/>
         <source>A widget inherited from QDialog cannot be docked into the main window</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Ein Widget, welches von QDialog abgeleitet wurde, kann nicht an das Hauptfenster angedockt werden</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Main window not available for docking the user interface.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Hauptfenster ist zum Andocken nicht verfügbar.</translation>
     </message>
     <message>
         <location line="+345"/>
@@ -8928,7 +8686,7 @@ or correct the base directory in the preferences dialog of itom.</source>
     <message>
         <location line="+9"/>
         <source>No designer plugin with className &apos;%s&apos; could be found. Please make sure that this plugin is compiled and the corresponding DLL and header files are in the designer folder</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es wurde kein Designer-Plugin mit dem &apos;className&apos; &apos;%s&apos; gefunden. Bitte stellen sie sicher, dass das Plugin kompiliert ist und die DLL mit der Header-Datei im Designer-Verzeichnis steht</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -8943,7 +8701,7 @@ or correct the base directory in the preferences dialog of itom.</source>
         <location line="+25"/>
         <location line="+25"/>
         <source>Dialog or plot handle does (not longer) exist. Maybe it has been closed before.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Dialog- oder Plot-Handle existiert nicht (mehr). Vielleicht wurde es zuvor geschlossen.</translation>
     </message>
     <message>
         <location line="-102"/>
@@ -8958,17 +8716,17 @@ or correct the base directory in the preferences dialog of itom.</source>
     <message>
         <location line="+265"/>
         <source>defaultButton must be within enum QMessageBox::StandardButton</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der &apos;defaultButton&apos; muss innerhalb der Enumeration &apos;QMessageBox::StandardButton&apos; liegen</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>buttons must be within enum QMessageBox::StandardButtons</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&apos;buttons&apos; muss innerhalb der Enumeration &apos;QMessageBox::StandardButton&apos; liegen</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>defaultButton must appear in buttons, too.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der &apos;defaultButton&apos; muss ebenfalls in &apos;buttons&apos; erscheinen.</translation>
     </message>
     <message>
         <location line="+2381"/>
@@ -8976,16 +8734,12 @@ or correct the base directory in the preferences dialog of itom.</source>
         <location line="+31"/>
         <location line="+26"/>
         <source>the required widget does not exist (any more)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das erforderliche Widget existiert nicht (mehr)</translation>
     </message>
     <message>
         <location line="+90"/>
         <source>timer is invalid</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>object name is not available</source>
-        <translation type="obsolete">Der Objektname ist nicht verfügbar</translation>
+        <translation type="unfinished">Der Timer ist ungültig</translation>
     </message>
     <message>
         <location line="-2245"/>
@@ -9016,12 +8770,12 @@ or correct the base directory in the preferences dialog of itom.</source>
         <location line="+25"/>
         <location line="+24"/>
         <source>the objectID cannot be cast to a widget</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Objekt-ID kann nicht auf ein Widget &apos;gecastet&apos; werden</translation>
     </message>
     <message>
         <location line="+180"/>
         <source>The parent widget is either unknown or does not exist any more.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Entweder existiert der &apos;Parent&apos; des Widgets nicht mehr oder ist unbekannt.</translation>
     </message>
     <message>
         <location line="+60"/>
@@ -9041,7 +8795,7 @@ or correct the base directory in the preferences dialog of itom.</source>
     <message>
         <location line="-603"/>
         <source>could not get reference to main dialog or window</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Es ist keine Referenz zum Hauptdialog oder -Fenster verfügbar</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -9063,7 +8817,7 @@ or correct the base directory in the preferences dialog of itom.</source>
     <message>
         <location line="-46"/>
         <source>The object ID of the parent widget is unknown.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Objekt-ID der &apos;Parent&apos;-Widgets ist unbekannt.</translation>
     </message>
     <message>
         <location line="+156"/>
@@ -9078,16 +8832,12 @@ or correct the base directory in the preferences dialog of itom.</source>
     <message>
         <location line="+6"/>
         <source>signal could not be connected to slot throwing a python keyboard interrupt.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Signal konnte nicht mit einem Slot verbunden werden.</translation>
     </message>
     <message>
         <location line="+55"/>
         <source>slot could not be found</source>
         <translation type="unfinished">Slot konnte nicht gefunden werden</translation>
-    </message>
-    <message>
-        <source>There exists no object with the given id.</source>
-        <translation type="obsolete">Es existiert kein Objekt mit der angegebenen ID.</translation>
     </message>
     <message>
         <location line="+1021"/>
@@ -9099,7 +8849,7 @@ or correct the base directory in the preferences dialog of itom.</source>
         <location line="+64"/>
         <location line="+64"/>
         <source>figHandle %i is not handle for a figure window.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&quot;figHandle&quot; &apos;%i&apos; ist kein Handle eines Grafikfensters.</translation>
     </message>
     <message>
         <location line="+96"/>
@@ -9129,12 +8879,12 @@ or correct the base directory in the preferences dialog of itom.</source>
         <location line="+55"/>
         <location line="+63"/>
         <source>The widget is not available (any more).</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das Widget ist (nicht länger) verfügbar.</translation>
     </message>
     <message>
         <location line="+600"/>
         <source>The requested widget does not exist (any more).</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das angeforderte Widget existiert nicht (mehr).</translation>
     </message>
     <message>
         <location line="+559"/>
@@ -9152,13 +8902,9 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation type="unfinished">Handle &apos;0&apos; ist ungültig.</translation>
     </message>
     <message>
-        <source>Figure</source>
-        <translation type="vanished">Abbildung</translation>
-    </message>
-    <message>
         <location line="+96"/>
         <source>subplot at indexed position %i is not available</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Subplot an der indizierten Position %i ist nicht verfügbar</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -9171,7 +8917,7 @@ or correct the base directory in the preferences dialog of itom.</source>
         <location line="+37"/>
         <location line="+37"/>
         <source>The desired widget has no signals/slots defined that enable the pick points interaction</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das gewünschte Widget hat keine gekoppelten Signale definiert, welche die Interaktion mit Pickern ermöglichen würden</translation>
     </message>
 </context>
 <context>
@@ -9179,23 +8925,23 @@ or correct the base directory in the preferences dialog of itom.</source>
     <message>
         <location filename="../organizer/userInteractionWatcher.cpp" line="+43"/>
         <source>The given shape storage is NULL.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die übergebene geometrische Form hat den Wert NULL.</translation>
     </message>
     <message>
         <location line="+13"/>
         <location line="+11"/>
         <source>The given widget does not have the necessary signals and slots for a user interaction.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Das übergebene Widget hat nicht die nötigen Signale und Slots für die Interaktion.</translation>
     </message>
     <message>
         <location line="+36"/>
         <source>User interaction terminated due to deletion of plot.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Benutzer-Interaktion wurde beendet da der Plot gelöscht wurde.</translation>
     </message>
     <message>
         <location line="+39"/>
         <source>User interaction aborted.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Die Benutzer-Interaktion wurde abgebrochen.</translation>
     </message>
 </context>
 <context>
@@ -9275,42 +9021,6 @@ or correct the base directory in the preferences dialog of itom.</source>
 <context>
     <name>ito::UserOrganizer</name>
     <message>
-        <source>Developer</source>
-        <translation type="obsolete">Entwickler</translation>
-    </message>
-    <message>
-        <source>File System</source>
-        <translation type="obsolete">Dateisystem</translation>
-    </message>
-    <message>
-        <source>User Management</source>
-        <translation type="obsolete">Benutzerverwaltung</translation>
-    </message>
-    <message>
-        <source>Addin Manager (Plugins)</source>
-        <translation type="obsolete">Addin-Manager (Plugins)</translation>
-    </message>
-    <message>
-        <source>Console</source>
-        <translation type="obsolete">Konsole</translation>
-    </message>
-    <message>
-        <source>Console (Read Only)</source>
-        <translation type="obsolete">Kondole (nur lesend)</translation>
-    </message>
-    <message>
-        <source>Properties</source>
-        <translation type="obsolete">Optionen</translation>
-    </message>
-    <message>
-        <source>Role</source>
-        <translation type="obsolete">Rolle</translation>
-    </message>
-    <message>
-        <source>User</source>
-        <translation type="obsolete">Benutzer</translation>
-    </message>
-    <message>
         <location filename="../organizer/userOrganizer.cpp" line="+57"/>
         <source>Standard User</source>
         <translation>Standardbenutzer</translation>
@@ -9318,7 +9028,7 @@ or correct the base directory in the preferences dialog of itom.</source>
     <message>
         <location line="+276"/>
         <source>file &apos;%s&apos; does not exist</source>
-        <translation type="unfinished"></translation>
+        <translation>Die Datei &apos;%s&apos; existiert nicht</translation>
     </message>
     <message>
         <location line="+16"/>
@@ -9357,10 +9067,6 @@ or correct the base directory in the preferences dialog of itom.</source>
         <location line="+20"/>
         <source>dialog button role is unknown or not supported</source>
         <translation>Die Rolle des Dialog-Buttons ist unbekannt oder wird nicht unterstützt</translation>
-    </message>
-    <message>
-        <source>dialog button role is unknown</source>
-        <translation type="obsolete">Unbekannte Rolle des Dialog-Button</translation>
     </message>
 </context>
 <context>
@@ -9401,14 +9107,6 @@ or correct the base directory in the preferences dialog of itom.</source>
 </context>
 <context>
     <name>ito::WidgetPropEditorStyles</name>
-    <message>
-        <source>choose background color</source>
-        <translation type="obsolete">Hintergrundfarbe auswählen</translation>
-    </message>
-    <message>
-        <source>choose foreground color</source>
-        <translation type="obsolete">Vordergrundsfarbe auswählen</translation>
-    </message>
     <message>
         <location filename="../ui/widgetPropEditorStyles.cpp" line="+87"/>
         <source>Paper color</source>
@@ -9581,75 +9279,6 @@ or correct the base directory in the preferences dialog of itom.</source>
         <translation>Plugin-Datei</translation>
     </message>
     <message>
-        <source>DataObject - Line</source>
-        <translation type="obsolete">Datenobjekt - Linie</translation>
-    </message>
-    <message>
-        <source>DataObject - Plane</source>
-        <translation type="obsolete">Datenobjekt - Fläche</translation>
-    </message>
-    <message>
-        <source>DataObject - Plane Stack</source>
-        <translation type="obsolete">Datenobjekt - Fläschenstapel</translation>
-    </message>
-    <message>
-        <source>Point Cloud</source>
-        <translation type="obsolete">Punktewolke</translation>
-    </message>
-    <message>
-        <source>PolygonMesh</source>
-        <translation type="obsolete">Polygon</translation>
-    </message>
-    <message>
-        <source>Gray8</source>
-        <translation type="obsolete">Grau8</translation>
-    </message>
-    <message>
-        <source>Gray16</source>
-        <translation type="obsolete">Grau16</translation>
-    </message>
-    <message>
-        <source>Gray32</source>
-        <translation type="obsolete">Grau32</translation>
-    </message>
-    <message>
-        <source>Float32</source>
-        <translation type="obsolete">Fließkomma32</translation>
-    </message>
-    <message>
-        <source>Float64</source>
-        <translation type="obsolete">Fließkomma64</translation>
-    </message>
-    <message>
-        <source>Complex</source>
-        <translation type="obsolete">Komplex</translation>
-    </message>
-    <message>
-        <source>Static</source>
-        <translation type="obsolete">Statisch</translation>
-    </message>
-    <message>
-        <source>Cartesian</source>
-        <translation type="obsolete">
-Katesisch</translation>
-    </message>
-    <message>
-        <source>Cylindrical</source>
-        <translation type="obsolete">Zylindrisch</translation>
-    </message>
-    <message>
-        <source>Line Plot</source>
-        <translation type="obsolete">Linien-Plot</translation>
-    </message>
-    <message>
-        <source>Image Plot</source>
-        <translation type="obsolete">Bild-Plot</translation>
-    </message>
-    <message>
-        <source>Isometric Plot</source>
-        <translation type="obsolete">Isometrischer Plot</translation>
-    </message>
-    <message>
         <location line="+38"/>
         <source>category</source>
         <translation>Kategorie</translation>
@@ -9753,7 +9382,7 @@ Katesisch</translation>
     <message>
         <location line="+63"/>
         <source>Remote</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
     <message>
         <location line="+141"/>
@@ -9778,7 +9407,7 @@ Katesisch</translation>
     <message>
         <location line="+11"/>
         <source>Remote database update...</source>
-        <translation type="unfinished">Remote Datenbank-Update...</translation>
+        <translation>Remote Datenbank-Update...</translation>
     </message>
     <message>
         <location line="+37"/>
@@ -9812,21 +9441,9 @@ Katesisch</translation>
 <context>
     <name>ito::WorkspaceDockWidget</name>
     <message>
-        <source>delete item(s)</source>
-        <translation type="vanished">Objekt(e) löschen</translation>
-    </message>
-    <message>
-        <source>export item(s)</source>
-        <translation type="vanished">Objekt(e) exportieren</translation>
-    </message>
-    <message>
         <location filename="../widgets/workspaceDockWidget.cpp" line="+148"/>
         <source>import item(s)</source>
         <translation>Objekt(e) importieren</translation>
-    </message>
-    <message>
-        <source>rename item</source>
-        <translation type="vanished">Objekt umbenennen</translation>
     </message>
     <message>
         <location line="-4"/>
@@ -9871,7 +9488,7 @@ Katesisch</translation>
     <message>
         <location line="+3"/>
         <source>unpack loaded dictionary</source>
-        <translation type="unfinished"></translation>
+        <translation>In  &apos;Dictionary&apos; entpacken</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -10110,61 +9727,9 @@ Katesisch</translation>
 <context>
     <name>userManagement</name>
     <message>
-        <source>Enable All</source>
-        <translation type="obsolete">Alle aktivieren</translation>
-    </message>
-    <message>
-        <source>Disable All</source>
-        <translation type="obsolete">Alle deaktivieren</translation>
-    </message>
-    <message>
-        <source>Main Application Features</source>
-        <translation type="obsolete">Hauptanwendung</translation>
-    </message>
-    <message>
-        <source>Developer Tools
-(Workspace, Breakpoints,
- Ui-Designer, Call Stack)</source>
-        <translation type="obsolete">Entwickler-Tools
-(Workspace, Haltepunkte,
- Ui-Designer, Call Stack)</translation>
-    </message>
-    <message>
-        <source>Edit Properties</source>
-        <translation type="obsolete">Editor-Eigentschaften</translation>
-    </message>
-    <message>
-        <source>File System Widget</source>
-        <translation type="obsolete">Dateisystem</translation>
-    </message>
-    <message>
-        <source>Addin Manager Widget</source>
-        <translation type="obsolete">AddIn-Manager</translation>
-    </message>
-    <message>
-        <source>Console</source>
-        <translation type="obsolete">Konsole</translation>
-    </message>
-    <message>
-        <source>read only</source>
-        <translation type="obsolete">nur lesen</translation>
-    </message>
-    <message>
-        <source>off</source>
-        <translation type="obsolete">aus</translation>
-    </message>
-    <message>
-        <source>User / Group</source>
-        <translation type="obsolete">Benutzer / Gruppen</translation>
-    </message>
-    <message>
         <location filename="../widgets/userManagement.ui" line="+67"/>
         <source>Name</source>
         <translation>Name</translation>
-    </message>
-    <message>
-        <source>Group</source>
-        <translation type="obsolete">Gruppe</translation>
     </message>
     <message>
         <location line="+30"/>
@@ -10177,10 +9742,6 @@ Katesisch</translation>
         <translation>Ini-Datei</translation>
     </message>
     <message>
-        <source>Reset All In Group</source>
-        <translation type="obsolete">Gruppe zurücksetzen</translation>
-    </message>
-    <message>
         <location line="+53"/>
         <source>New User</source>
         <translation>Neuer Benutzer erstellen</translation>
@@ -10189,18 +9750,6 @@ Katesisch</translation>
         <location line="+13"/>
         <source>Delete User</source>
         <translation>Benutzer löschen</translation>
-    </message>
-    <message>
-        <source>developer</source>
-        <translation type="obsolete">Entwickler</translation>
-    </message>
-    <message>
-        <source>admin</source>
-        <translation type="obsolete">Administrator</translation>
-    </message>
-    <message>
-        <source>user</source>
-        <translation type="obsolete">Benutzer</translation>
     </message>
     <message>
         <location line="-126"/>

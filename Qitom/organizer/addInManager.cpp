@@ -635,11 +635,11 @@ namespace ito
                                 algoInst->rejectFilter(it.key() );
                                 if (validRet.hasErrorMessage())
                                 {
-                                    message = tr("Filter %1 rejected. The filter parameters could not be loaded: %2").arg(it.key()).arg(QLatin1String(validRet.errorMessage()));
+                                    message = tr("Filter '%1' rejected. The filter parameters could not be loaded: %2").arg(it.key()).arg(QLatin1String(validRet.errorMessage()));
                                 }
                                 else
                                 {
-                                    message = tr("Filter %1 rejected. The filter parameters could not be loaded.").arg(it.key());
+                                    message = tr("Filter '%1' rejected. The filter parameters could not be loaded.").arg(it.key());
                                 }
                                 qDebug() << message;
                                 pluginLoadStatus.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
@@ -650,11 +650,11 @@ namespace ito
                             algoInst->rejectFilter(it.key());
                             if (validRet.hasErrorMessage())
                             {
-                                message = tr("Filter %1 rejected. It does not correspond to the algorithm interface: %2").arg(it.key()).arg(QLatin1String(validRet.errorMessage()));
+                                message = tr("Filter '%1' rejected. It does not correspond to the algorithm interface: %2").arg(it.key()).arg(QLatin1String(validRet.errorMessage()));
                             }
                             else
                             {
-                                message = tr("Filter %1 rejected. It does not correspond to the algorithm interface.").arg(it.key());
+                                message = tr("Filter '%1' rejected. It does not correspond to the algorithm interface.").arg(it.key());
                             }
                             qDebug() << message;
                             pluginLoadStatus.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
@@ -710,11 +710,11 @@ namespace ito
                             algoInst->rejectAlgoWidget(jt.key());
                             if (validRet.hasErrorMessage())
                             {
-                                message = tr("Widget %1 rejected. It does not correspond to the algorithm interface: %2").arg(jt.key()).arg(QLatin1String(validRet.errorMessage()));
+                                message = tr("Widget '%1' rejected. It does not correspond to the algorithm interface: %2").arg(jt.key()).arg(QLatin1String(validRet.errorMessage()));
                             }
                             else
                             {
-                                message = tr("Widget %q rejected. It does not correspond to the algorithm interface.").arg(jt.key());
+                                message = tr("Widget '%1' rejected. It does not correspond to the algorithm interface.").arg(jt.key());
                             }
                             qDebug() << message;
                             pluginLoadStatus.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
