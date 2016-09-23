@@ -403,7 +403,43 @@ void AbstractDockWidget::saveState(const QString &iniName) const
         settings.setValue("docked", docked());
         if (m_floatingStyle == floatingWindow)
         {
-            settings.setValue("geometry", m_pWindow->saveGeometry());
+            QByteArray geometry = m_pWindow->saveGeometry();
+
+#ifdef _DEBUG
+            {
+                QDataStream stream(geometry);
+                stream.setVersion(QDataStream::Qt_4_0);
+
+                const quint32 magicNumber = 0x1D9D0CB;
+                quint32 storedMagicNumber;
+                stream >> storedMagicNumber;
+
+                const quint16 currentMajorVersion = 2;
+                quint16 majorVersion = 0;
+                quint16 minorVersion = 0;
+
+                stream >> majorVersion >> minorVersion;
+
+                // (Allow all minor versions.)
+
+                QRect restoredFrameGeometry;
+                QRect restoredNormalGeometry;
+                qint32 restoredScreenNumber;
+                quint8 maximized;
+                quint8 fullScreen;
+                qint32 restoredScreenWidth = 0;
+
+                stream >> restoredFrameGeometry
+                    >> restoredNormalGeometry
+                    >> restoredScreenNumber
+                    >> maximized
+                    >> fullScreen;
+
+                qDebug() << "saved geometry state: " << objectName() << restoredFrameGeometry << restoredNormalGeometry << restoredScreenNumber << maximized << fullScreen;
+            }
+#endif
+
+            settings.setValue("geometry", geometry);
             if (!docked())
             {
                 settings.setValue("visible", isVisible());
@@ -429,6 +465,8 @@ void AbstractDockWidget::restoreState(const QString &iniName)
         if (m_floatingStyle == floatingWindow)
         {
             QVariant docked = settings.value("docked");
+            QVariant visible_ = settings.value("visible");
+            bool visible = visible_.isValid() ? visible_.toBool() : true;
             if (docked.isValid())
             {
                 if (docked.toBool())
@@ -442,24 +480,59 @@ void AbstractDockWidget::restoreState(const QString &iniName)
                 {
                     if (m_docked)
                     {
-                        undockWidget();
+                        undockWidget(visible);
                     }
                 }
             }
 
-            QVariant visible = settings.value("visible");
-            if (visible.isValid())
+            if (visible_.isValid())
             {
-                if (visible.toBool())
+                QByteArray geometry = settings.value("geometry").toByteArray();
+
+#ifdef _DEBUG
+                {
+                    QDataStream stream(geometry);
+                    stream.setVersion(QDataStream::Qt_4_0);
+
+                    const quint32 magicNumber = 0x1D9D0CB;
+                    quint32 storedMagicNumber;
+                    stream >> storedMagicNumber;
+
+                    const quint16 currentMajorVersion = 2;
+                    quint16 majorVersion = 0;
+                    quint16 minorVersion = 0;
+
+                    stream >> majorVersion >> minorVersion;
+
+                    // (Allow all minor versions.)
+
+                    QRect restoredFrameGeometry;
+                    QRect restoredNormalGeometry;
+                    qint32 restoredScreenNumber;
+                    quint8 maximized;
+                    quint8 fullScreen;
+                    qint32 restoredScreenWidth = 0;
+
+                    stream >> restoredFrameGeometry
+                        >> restoredNormalGeometry
+                        >> restoredScreenNumber
+                        >> maximized
+                        >> fullScreen;
+
+                    qDebug() << "loaded geometry state: " << objectName() << restoredFrameGeometry << restoredNormalGeometry << restoredScreenNumber << maximized << fullScreen;
+                }
+#endif
+
+                if (visible)
                 {
                     setVisible(true);
-                    m_pWindow->restoreGeometry(settings.value("geometry").toByteArray());
+                    m_pWindow->restoreGeometry(geometry);
                     //see also bug-report https://bugreports.qt.io/browse/QTBUG-21371 (fixed in >= Qt 5.3.0). 
                 }
                 else
                 {
                     setVisible(false);
-                    m_pendingGeometryState = settings.value("geometry").toByteArray();
+                    m_pendingGeometryState = geometry;
                 }
             }
         }
