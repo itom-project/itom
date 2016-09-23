@@ -628,7 +628,7 @@ RetVal UiOrganizer::createNewDialog(const QString &filename, int uiDescription, 
             *row = 1;
             QSharedPointer<int> col(new int);
             *col = 1;
-            retValue += createFigure(guardedFigHandle, initSlotCount, figObjectID, row, col, NULL);
+            retValue += createFigure(guardedFigHandle, initSlotCount, figObjectID, row, col, QPoint(), QSize(), NULL);
             if (!retValue.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
             {
                 *dialogHandle = *(*guardedFigHandle);
@@ -3272,7 +3272,7 @@ ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, QSharedPoint
         *row = areaRow + 1;
         QSharedPointer<int> col(new int);
         *col = areaCol + 1;
-        retval += createFigure(guardedFigHandle, initSlotCount, figObjectID, row, col, NULL);
+        retval += createFigure(guardedFigHandle, initSlotCount, figObjectID, row, col, QPoint(), QSize(), NULL);
         if (!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
         {
             *figHandle = *(*guardedFigHandle);
@@ -3364,7 +3364,7 @@ RetVal UiOrganizer::figureLiveImage(AddInDataIO* dataIO, QSharedPointer<unsigned
         *row = areaRow + 1;
         QSharedPointer<int> col(new int);
         *col = areaCol + 1;
-        retval += createFigure(guardedFigHandle, initSlotCount, figObjectID, row, col, NULL);
+        retval += createFigure(guardedFigHandle, initSlotCount, figObjectID, row, col, QPoint(), QSize(), NULL);
         if (!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
         {
             *figHandle = *(*guardedFigHandle);
@@ -3428,7 +3428,7 @@ RetVal UiOrganizer::figureDesignerWidget(QSharedPointer<unsigned int> figHandle,
         *row = areaRow + 1;
         QSharedPointer<int> col(new int);
         *col = areaCol + 1;
-        retval += createFigure(guardedFigHandle, initSlotCount, figObjectID, row, col, NULL);
+        retval += createFigure(guardedFigHandle, initSlotCount, figObjectID, row, col, QPoint(), QSize(), NULL);
         if (!retval.containsError()) //if the figure window is created by this method, it is assumed, that no figure-instance keeps track of this figure, therefore its guardedFigHandle is given to the figure itsself
         {
             *figHandle = *(*guardedFigHandle);
@@ -3476,10 +3476,9 @@ RetVal UiOrganizer::figureDesignerWidget(QSharedPointer<unsigned int> figHandle,
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<int> rows, QSharedPointer<int> cols, ItomSharedSemaphore *semaphore)
+RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > guardedFigureHandle, QSharedPointer<unsigned int> initSlotCount, QSharedPointer<unsigned int> objectID, QSharedPointer<int> rows, QSharedPointer<int> cols, QPoint offset /*= QPoint()*/, QSize size /*= QSize()*/, ItomSharedSemaphore *semaphore)
 {
     RetVal retValue = retOk;
-    const FigureWidget *fig = NULL;
     unsigned int h;
     UiContainerItem containerItem;
     UiContainer *set = NULL;
@@ -3502,9 +3501,18 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
             containerItem = m_dialogList[h];
             if (containerItem.container->getType() == UiContainer::uiTypeFigure)
             {
-                fig = qobject_cast<const FigureWidget*>(containerItem.container->getUiWidget());
+                FigureWidget *fig = qobject_cast<FigureWidget*>(containerItem.container->getUiWidget());
                 if (fig)
                 {
+                    if (size.isValid())
+                    {
+                        fig->resize(size);
+                    }
+
+                    if (offset.isNull() == false)
+                    {
+                        fig->move(offset);
+                    }
                     *rows = fig->rows();
                     *cols = fig->cols();
                     *guardedFigureHandle = (containerItem.guardedHandle).toStrongRef();
@@ -3562,6 +3570,16 @@ RetVal UiOrganizer::createFigure(QSharedPointer< QSharedPointer<unsigned int> > 
         if (mainWin)
         {
             mainWin->addAbstractDock(fig2, Qt::TopDockWidgetArea);
+        }
+
+        if (size.isValid())
+        {
+            fig2->resize(size);
+        }
+
+        if (offset.isNull() == false)
+        {
+            fig2->move(offset);
         }
 
         set = new UiContainer(fig2);

@@ -85,6 +85,11 @@ Subplots are arranged in a regular grid whose size is defined by the optional pa
 instance with a given handle, the instance is either a reference to an existing figure that has got this handle or if it does not exist, \n\
 a new figure with the desired handle is opened and the handle is returned, too. \n\
 \n\
+Using the parameters width and height, it is possible to control the size of the figure. If one of both parameters are not set or <= 0 (default), \n\
+no size adjustment is done at all. \n\
+\n\
+The size and position control can afterwards done using the property 'geometry' of the figure. \n\
+\n\
 Parameters \n\
 ------------- \n\
 handle : {int} \n\
@@ -92,18 +97,30 @@ handle : {int} \n\
 rows : {int, default: 1} \n\
     number of rows this figure should have (defines the size of the subplot-grid) \n\
 cols : {int, default: 1} \n\
-    number of columns this figure should have (defines the size of the subplot-grid)");
+    number of columns this figure should have (defines the size of the subplot-grid) \n\
+x0 : {int, default: -1} \n\
+    horizontal position of figure \n\
+y0 : {int, default: -1} \n\
+    vertical position of figure \n\
+width : {int, default: -1} \n\
+    width of figure or -1 if the width should be unchanged \n\
+height : {int, default: -1} \n\
+    height of figure or -1 if the width should be unchanged");
 int PythonFigure::PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds)
 {
     UiOrganizer *uiOrga = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
 
-    const char *kwlist[] = {"handle", "rows", "cols", NULL};
+    const char *kwlist[] = { "handle", "rows", "cols", "x0", "y0", "width", "height", NULL };
 
     int handle = -1;
     unsigned int rows = 1;
     unsigned int cols = 1;
+    int x0 = std::numeric_limits<int>::min();
+    int y0 = x0;
+    int width = -1;
+    int height = -1;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds,"|iII",const_cast<char**>(kwlist), &handle, &rows, &cols))
+    if (!PyArg_ParseTupleAndKeywords(args, kwds,"|iIIiiii",const_cast<char**>(kwlist), &handle, &rows, &cols, &x0, &y0, &width, &height))
     {
         return -1;
     }
@@ -127,7 +144,19 @@ int PythonFigure::PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds)
     *rows_ = rows;
     *cols_ = cols;
 
-    QMetaObject::invokeMethod(uiOrga, "createFigure",Q_ARG(QSharedPointer<QSharedPointer<uint> >,guardedFigHandle), Q_ARG(QSharedPointer<uint>, initSlotCount), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<int>,rows_), Q_ARG(QSharedPointer<int>,cols_), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    QSize size;
+    if (width >= 1 && width >= 1)
+    {
+        size = QSize(width, height);
+    }
+
+    QPoint offset;
+    if (x0 > std::numeric_limits<int>::min() && y0 > std::numeric_limits<int>::min())
+    {
+        offset = QPoint(x0, y0);
+    }
+
+    QMetaObject::invokeMethod(uiOrga, "createFigure",Q_ARG(QSharedPointer<QSharedPointer<uint> >,guardedFigHandle), Q_ARG(QSharedPointer<uint>, initSlotCount), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(QSharedPointer<int>,rows_), Q_ARG(QSharedPointer<int>,cols_), Q_ARG(QPoint, offset), Q_ARG(QSize, size), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
     
     if (!locker.getSemaphore()->wait(60000))
     {
