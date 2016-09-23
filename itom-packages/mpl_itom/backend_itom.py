@@ -1,23 +1,100 @@
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
+from matplotlib.externals import six
+
+import itom
+from itom import uiItem, timer, ui
+from itom import figure as itomFigure
+
 import os
+import re
 import sys
 import weakref
-import itom
+from matplotlib.externals.six import unichr
 
 import matplotlib
-from matplotlib.backend_bases import FigureManagerBase, FigureCanvasBase, \
-     NavigationToolbar2, cursors
+
+from matplotlib.cbook import is_string_like
+from matplotlib.backend_bases import FigureManagerBase
+from matplotlib.backend_bases import FigureCanvasBase
+from matplotlib.backend_bases import NavigationToolbar2
+
+from matplotlib.backend_bases import cursors
+from matplotlib.backend_bases import TimerBase
 from matplotlib.backend_bases import ShowBase
 
 from matplotlib._pylab_helpers import Gcf
 from matplotlib.figure import Figure
-from matplotlib.widgets import SubplotTool
 
-from itom import uiItem, timer, ui
-from itom import figure as itomFigure
+from matplotlib.widgets import SubplotTool
 
 figureoptions = None
 
-def fn_name(): return sys._getframe(1).f_code.co_name
+backend_version = "2.0.0"
+
+# SPECIAL_KEYS are keys that do *not* return their unicode name
+# instead they have manually specified names
+SPECIAL_KEYS = {0x01000021: 'control',
+                0x01000020: 'shift',
+                0x01000023: 'alt',
+                0x01000022: 'super',
+                0x01000005: 'enter',
+                0x01000012: 'left',
+                0x01000013: 'up',
+                0x01000014: 'right',
+                0x01000015: 'down',
+                0x01000000: 'escape',
+                0x01000030: 'f1',
+                0x01000031: 'f2',
+                0x01000032: 'f3',
+                0x01000033: 'f4',
+                0x01000034: 'f5',
+                0x01000035: 'f6',
+                0x01000036: 'f7',
+                0x01000037: 'f8',
+                0x01000038: 'f9',
+                0x01000039: 'f10',
+                0x0100003a: 'f11',
+                0x0100003b: 'f12',
+                0x01000010: 'home',
+                0x01000011: 'end',
+                0x01000016: 'pageup',
+                0x01000017: 'pagedown',
+                0x01000001: 'tab',
+                0x01000003: 'backspace',
+                0x01000005: 'enter',
+                0x01000006: 'insert',
+                0x01000007: 'delete',
+                0x01000008: 'pause',
+                0x0100000a: 'sysreq',
+                0x0100000b: 'clear', }
+
+# define which modifier keys are collected on keyboard events.
+# elements are (mpl names, Modifier Flag, Qt Key) tuples
+SUPER = 0
+ALT = 1
+CTRL = 2
+SHIFT = 3
+MODIFIER_KEYS = [('super', 0x10000000, 0x01000022),
+                 ('alt', 0x08000000, 0x01000023),
+                 ('ctrl', 0x04000000, 0x01000021),
+                 ('shift', 0x02000000, 0x01000020),
+                 ]
+
+if sys.platform == 'darwin':
+    # in OSX, the control and super (aka cmd/apple) keys are switched, so
+    # switch them back.
+    SPECIAL_KEYS.update({0x01000021: 'super',  # cmd/apple key
+                         0x01000022: 'control',
+                         })
+    MODIFIER_KEYS[0] = ('super', 0x04000000,
+                        0x01000021)
+    MODIFIER_KEYS[2] = ('ctrl', 0x10000000,
+                        0x01000022)
+
+
+def fn_name():
+    return sys._getframe(1).f_code.co_name
 
 DEBUG = False
 
@@ -29,24 +106,24 @@ cursord = {
     cursors.SELECT_REGION : 2,
     }
 
+
 def draw_if_interactive():
     """
     Is called after every pylab drawing command
     """
     if matplotlib.is_interactive():
-        figManager =  Gcf.get_active()
-        if figManager != None:
+        figManager = Gcf.get_active()
+        if figManager is not None:
             figManager.canvas.draw_idle()
 
 class Show(ShowBase):
     def mainloop(self):
         pass
-        #print("mainloop")
-        #QtGui.qApp.exec_()
 
 show = Show()
 
-def new_figure_manager( num, *args, **kwargs ):
+
+def new_figure_manager(num, *args, **kwargs):
     """
     Create a new figure manager instance
     """
@@ -56,7 +133,7 @@ def new_figure_manager( num, *args, **kwargs ):
     if(existingCanvas is None):
         embeddedCanvas = False
         itomFig = itomFigure(num)
-        itomUI = itomFig.matplotlibFigure() #ui("itom://matplotlib")
+        itomUI = itomFig.matplotlibFigure()
         #itomUI.show() #in order to get the right size
     else:
         embeddedCanvas = True
@@ -70,48 +147,73 @@ def new_figure_manager( num, *args, **kwargs ):
     manager = FigureManagerItom( canvas, num, itomUI, itomFig, embeddedCanvas )
     return manager
 
-class FigureCanvasItom( FigureCanvasBase ):
-    keyvald = { 0x01000021 : 'control',
-                0x01000020 : 'shift',
-                0x01000023 : 'alt',
-                0x01000004 : 'enter',
-                0x01000012 : 'left',
-                0x01000013 : 'up',
-                0x01000014 : 'right',
-                0x01000015 : 'down',
-                0x01000000 : 'escape',
-                0x01000030 : 'f1',
-                0x01000031 : 'f2',
-                0x01000032 : 'f3',
-                0x01000033 : 'f4',
-                0x01000034 : 'f5',
-                0x01000035 : 'f6',
-                0x01000036 : 'f7',
-                0x01000037 : 'f8',
-                0x01000038 : 'f9',
-                0x01000039 : 'f10',
-                0x0100003a : 'f11',
-                0x0100003b : 'f12',
-                0x01000010 : 'home',
-                0x01000011 : 'end',
-                0x01000016 : 'pageup',
-                0x01000017 : 'pagedown',
-               }
+
+class TimerItom(TimerBase):
+    '''
+    Subclass of :class:`backend_bases.TimerBase` that uses itom timer events.
+
+    Attributes:
+    * interval: The time between timer events in milliseconds. Default
+        is 1000 ms.
+    * single_shot: Boolean flag indicating whether this timer should
+        operate as single shot (run once and then stop). Defaults to False.
+    * callbacks: Stores list of (func, args) tuples that will be called
+        upon timer events. This list can be manipulated directly, or the
+        functions add_callback and remove_callback can be used.
+    '''
+
+    def __init__(self, *args, **kwargs):
+        TimerBase.__init__(self, *args, **kwargs)
+
+        # Create a new timer and connect the timeout() signal to the
+        # _on_timer method.
+        self._timer = itom.timer(self._interval, self._on_timer, singleShot = self._single)
+        self._timer_set_interval()
+
+    def __del__(self):
+        # Probably not necessary in practice, but is good behavior to
+        # disconnect
+        try:
+            TimerBase.__del__(self)
+            self._timer = None
+        except RuntimeError:
+            # Timer C++ object already deleted
+            pass
+
+    def _timer_set_single_shot(self):
+        self._timer = itom.timer(self._interval, self._on_timer, singleShot = self._single)
+
+    def _timer_set_interval(self):
+        self._timer.setInterval(self._interval)
+
+    def _timer_start(self):
+        self._timer.start()
+
+    def _timer_stop(self):
+        self._timer.stop()
+
+
+class FigureCanvasItom(FigureCanvasBase):
+
+    # map Qt button codes to MouseEvent's ones:
     # left 1, middle 2, right 3
-    buttond = {1:1, 2:3, 4:2}
+    buttond = {1: 1,
+               2: 3,
+               4: 2,
+               }
+
     def __init__(self, figure, num, itomUI, itomFig, embeddedCanvas):
-        FigureCanvasBase.__init__(self, figure)
-        self._idle = True
-        self._idle_callback = None
+        if DEBUG:
+            print('FigureCanvasItom: ', figure)
+        
+        FigureCanvasBase.__init__(self, figure=figure)
         self.num = num
-        t1,t2,w,h = self.figure.bbox.bounds
-        w, h = int(w), int(h)
         
         self.initialized = False
         self.embeddedCanvas = embeddedCanvas
         self._destroying = False
-        self._timer = None
         self.itomFig = itomFig
+        #self.showEnable = False #this will be set to True if the draw() command has been called for the first time e.g. by show() of the manager
         
         if(embeddedCanvas == False):
             self.canvas = itomUI.canvasWidget  #this object is deleted in the destroy-method of manager, due to cyclic garbage collection
@@ -122,19 +224,16 @@ class FigureCanvasItom( FigureCanvasBase ):
         else:
             self.canvas = itomUI.canvasWidget
             itomUI["mouseTracking"] = False #by default, the itom-widget only sends mouse-move events if at least one button is pressed or the tracker-button is is checked-state
-            
-        #dpival = self.figure.dpi
-        #winch = self.canvas["width"]/dpival
-        #hinch = self.canvas["height"]/dpival
-        #self.figure.set_size_inches( winch, hinch )
         
         self.canvas.connect("eventLeaveEnter(bool)", self.leaveEnterEvent)
         self.canvas.connect("eventMouse(int,int,int,int)", self.mouseEvent)
         self.canvas.connect("eventWheel(int,int,int,int)", self.wheelEvent)
-        self.canvas.connect("eventKey(int,int,QString,bool)", self.keyEvent)
+        self.canvas.connect("eventKey(int,int,int,bool)", self.keyEvent)
         self.canvas.connect("eventResize(int,int)", self.resizeEvent)
         self.canvas.connect("eventIdle()", self.idle_event)
         
+        w, h = self.get_width_height()
+        self.resize(w, h)
         self.initialized = True
         
     def destroy(self):
@@ -147,17 +246,13 @@ class FigureCanvasItom( FigureCanvasBase ):
             #self.itomUIDialog = None
             
         self.initialized = False
-    
-    def __timerEvent(self, event):
-        # hide until we can test and fix
-        self.mpl_idle_event(event)
 
     def leaveEnterEvent(self, enter):
         if(enter):
             FigureCanvasBase.enter_notify_event(self, None)
         else:
             FigureCanvasBase.leave_notify_event(self, None)
-    
+
     def mouseEvent(self, type, x, y, button):
         # flipy so y=0 is bottom of canvas
         y = self.figure.bbox.height - y
@@ -181,7 +276,7 @@ class FigureCanvasItom( FigureCanvasBase ):
         except RuntimeError:
             self.signalDestroyedWidget()
 
-    def wheelEvent( self, x, y, delta, orientation ):
+    def wheelEvent(self, event):
         # flipy so y=0 is bottom of canvas
         y = self.figure.bbox.height - y
         # from QWheelEvent::delta doc
@@ -189,9 +284,9 @@ class FigureCanvasItom( FigureCanvasBase ):
         if (orientation == 1): #vertical
             FigureCanvasBase.scroll_event( self, x, y, steps)
             if DEBUG: print('scroll event : delta = %i, steps = %i ' % (delta,steps))
-    
-    def keyEvent(self, type, keyId, keyString, autoRepeat):
-        key = self._get_key(keyId, keyString, autoRepeat)
+
+    def keyEvent(self, type, key, modifiers, autoRepeat):
+        key = self._get_key(key, modifiers, autoRepeat)
         if(key is None):
             return
         
@@ -202,63 +297,83 @@ class FigureCanvasItom( FigureCanvasBase ):
             FigureCanvasBase.key_release_event( self, key )
             if DEBUG: print('key release', key)
 
-    def resizeEvent( self, w, h ):
-        if DEBUG: print("FigureCanvasItom.resizeEvent(", w, ",", h, ")")
+    def resizeEvent(self, w, h, draw = True):
+        if DEBUG: print("FigureCanvasQt.resizeEvent(", w, ",", h, ")")
         if not self.figure is None:
             dpival = self.figure.dpi
-            winch = w/dpival
-            hinch = h/dpival
-            self.figure.set_size_inches( winch, hinch )
-            self.draw()
+            winch = w / dpival
+            hinch = h / dpival
+            self.figure.set_size_inches(winch, hinch)
+            FigureCanvasBase.resize_event(self)
+            if draw:
+                self.draw_idle()
 
-    def sizeHint( self ):
-        w, h = self.get_width_height()
-        return w, h
-
-    def minumumSizeHint( self ):
-        return 10, 10
-
-    def _get_key( self, keyId, keyString, autoRepeat ):
+    def _get_key(self, event_key, event_mods, autoRepeat):
         if autoRepeat:
             return None
-        if keyId < 256:
-            key = str(keyString)
-        elif keyId in self.keyvald:
-            key = self.keyvald[ keyId ]
-        else:
-            key = None
 
-        return key
+        # get names of the pressed modifier keys
+        # bit twiddling to pick out modifier keys from event_mods bitmask,
+        # if event_key is a MODIFIER, it should not be duplicated in mods
+        mods = [name for name, mod_key, qt_key in MODIFIER_KEYS
+                if event_key != qt_key and (event_mods & mod_key) == mod_key]
+        try:
+            # for certain keys (enter, left, backspace, etc) use a word for the
+            # key, rather than unicode
+            key = SPECIAL_KEYS[event_key]
+        except KeyError:
+            # unicode defines code points up to 0x0010ffff
+            # QT will use Key_Codes larger than that for keyboard keys that are
+            # are not unicode characters (like multimedia keys)
+            # skip these
+            # if you really want them, you should add them to SPECIAL_KEYS
+            MAX_UNICODE = 0x10ffff
+            if event_key > MAX_UNICODE:
+                return None
+
+            key = unichr(event_key)
+            # qt delivers capitalized letters.  fix capitalization
+            # note that capslock is ignored
+            if 'shift' in mods:
+                mods.remove('shift')
+            else:
+                key = key.lower()
+
+        mods.reverse()
+        return '+'.join(mods + [key])
+
+    def new_timer(self, *args, **kwargs):
+        """
+        Creates a new backend-specific subclass of
+        :class:`backend_bases.Timer`.  This is useful for getting
+        periodic events through the backend's native event
+        loop. Implemented only for backends with GUIs.
+
+        optional arguments:
+
+        *interval*
+            Timer interval in milliseconds
+
+        *callbacks*
+            Sequence of (func, args, kwargs) where func(*args, **kwargs)
+            will be executed by the timer every *interval*.
+
+    """
+        return TimerItom(*args, **kwargs)
 
     def flush_events(self):
-        #QtGui.qApp.processEvents()
         pass
 
-    def start_event_loop(self,timeout):
-        FigureCanvasBase.start_event_loop_default(self,timeout)
-    start_event_loop.__doc__=FigureCanvasBase.start_event_loop_default.__doc__
+    def start_event_loop(self, timeout):
+        FigureCanvasBase.start_event_loop_default(self, timeout)
+
+    start_event_loop.__doc__ = \
+                             FigureCanvasBase.start_event_loop_default.__doc__
 
     def stop_event_loop(self):
         FigureCanvasBase.stop_event_loop_default(self)
-    stop_event_loop.__doc__=FigureCanvasBase.stop_event_loop_default.__doc__
-    
-    def idle_draw(self):
-        if self._timer:
-            self._timer.stop()
-        self.draw()
-        self._idle = True
 
-    def draw_idle(self):
-        'update drawing area only if idle'
-        d = self._idle
-        self._idle = False
-        
-        if d: 
-            if not self._timer:
-                self._timer = timer(0, self.idle_draw) #auto-start, continuous mode
-            else:
-                self._timer.start()
-            #print("singleShot draw_idle timer")
+    stop_event_loop.__doc__ = FigureCanvasBase.stop_event_loop_default.__doc__
     
     def signalDestroyedWidget(self):
         '''
@@ -279,8 +394,8 @@ class FigureCanvasItom( FigureCanvasBase ):
                 # It seems that when the python session is killed,
                 # Gcf can get destroyed before the Gcf.destroy
                 # line is run, leading to a useless AttributeError.
-            
-        
+
+
 
 class FigureManagerItom( FigureManagerBase ):
     """
@@ -300,6 +415,7 @@ class FigureManagerItom( FigureManagerBase ):
         FigureManagerBase.__init__( self, canvas, num )
         self.embeddedCanvas = embeddedCanvas
         self.itomFig = itomFig
+        self._shown = False
         
         if(embeddedCanvas == False):
             self.itomUI = itomUI
@@ -347,8 +463,10 @@ class FigureManagerItom( FigureManagerBase ):
                self.toolbar.update()
         self.canvas.figure.add_axobserver( notify_axes_change )
 
+    def _show_message(self, s):
+        raise RuntimeError("not yet implemented: _show_message")
 
-    def _widgetclosed( self ):
+    def _widgetclosed(self):
         if DEBUG: print("_widgetclosed called")
         if self.canvas._destroying: return
         self.canvas._destroying = True
@@ -360,13 +478,10 @@ class FigureManagerItom( FigureManagerBase ):
             # Gcf can get destroyed before the Gcf.destroy
             # line is run, leading to a useless AttributeError.
 
-
     def _get_toolbar(self, figureCanvas):
         # must be inited after the window, drawingArea and figure
         # attrs are set
-        if matplotlib.rcParams['toolbar'] == 'classic':
-            print("Classic toolbar is not supported")
-        elif matplotlib.rcParams['toolbar'] == 'toolbar2':
+        if matplotlib.rcParams['toolbar'] == 'toolbar2':
             toolbar = NavigationToolbar2Itom(figureCanvas, self.itomUI, self.embeddedCanvas, True)
         else:
             toolbar = None
@@ -374,18 +489,10 @@ class FigureManagerItom( FigureManagerBase ):
 
     def resize(self, width, height):
         'set the canvas size in pixels'
-        #print("resize: ", width, height)
-        #win = self.window.win()
-        
         self.canvas.canvas.call("externalResize",width,height)
-        self.canvas.resizeEvent(width,height)
+        self.canvas.resizeEvent(width,height, draw =self._shown)
 
     def show(self):
-        
-        #experimental:
-        itom.processEvents()
-        
-        self.canvas.draw()
         if(self.embeddedCanvas == False):
             try:
                 self.itomFig.show()
@@ -393,6 +500,8 @@ class FigureManagerItom( FigureManagerBase ):
                 self._widgetclosed()
             except:
                 pass
+        self.canvas.draw_idle()
+        self._shown = True
 
     def destroy( self, *args ):
         if DEBUG: print("destroy figure manager (1)")
@@ -426,13 +535,18 @@ class FigureManagerItom( FigureManagerBase ):
         if DEBUG: print("destroy figure manager (2)")
         self.canvas.destroy()
         self.canvas._destroying = True
-        
-        
-        #f.close()
+
+    def get_window_title(self):
+        try:
+            return six.text_type(self.windowTitle)
+        except Exception:
+            return ""
 
     def set_window_title(self, title):
+        self.windowTitle = title
         if(self.embeddedCanvas == False):
             self.itomFig["windowTitle"] = ("%s (Figure %d)" % (title,self.num))
+
 
 class NavigationToolbar2Itom( NavigationToolbar2 ):
     def __init__(self, figureCanvas, itomUI, embeddedCanvas, coordinates=True):
@@ -505,31 +619,29 @@ class NavigationToolbar2Itom( NavigationToolbar2 ):
                     return
 
             figureoptions.figure_edit(axes, self)
-            
-    def pan( self, *args ):
-        if self._active != 'PAN':
+    
+    def _update_buttons_checked(self):
+        # sync button checkstates to match active mode
+        self.itomUI().actionPan['checked'] = (self._active == 'PAN')
+        self.itomUI().actionZoomToRect['checked'] = (self._active == 'ZOOM')
+        if self._active == 'PAN':
             self.set_cursor(cursors.MOVE)
-        else:
-            self.set_cursor(-1)
-        self.itomUI().actionZoomToRect['checked'] = False
-        #self.window.actionMarker['checked'] = False
-        NavigationToolbar2.pan( self, *args )
-
-    def zoom( self, *args ):
-        if self._active != 'ZOOM':
+        elif self._active == 'ZOOM':
             self.set_cursor(cursors.SELECT_REGION)
         else:
             self.set_cursor(-1)
-        self.itomUI().actionPan['checked'] = False
-        #self.window.actionMarker['checked'] = False
-        NavigationToolbar2.zoom( self, *args )
+        
+            
+    def pan( self, *args ):
+        super(NavigationToolbar2Itom, self).pan(*args)
+        self._update_buttons_checked()
+
+    def zoom( self, *args ):
+        super(NavigationToolbar2Itom, self).zoom(*args)
+        self._update_buttons_checked()
 
     def dynamic_update( self ):
-        d = self._idle
-        self._idle = False
-        if d:
-            self.canvas.draw()
-            self._idle = True
+        self.canvas.draw_idle()
 
     def set_message( self, s ):
         if self.coordinates:
@@ -553,6 +665,9 @@ class NavigationToolbar2Itom( NavigationToolbar2 ):
         
         rect = [ int(val) for val in (min(x0,x1), min(y0, y1), w, h) ]
         self.canvas.drawRectangle( rect )
+    
+    def remove_rubberband(self):
+        self.canvas.drawRectangle(None)
 
     def configure_subplots(self):
         if(self.subplotConfigDialog is None):
@@ -608,16 +723,38 @@ class NavigationToolbar2Itom( NavigationToolbar2 ):
     def destroy(self):
         del self.canvas #in base class
         self.canvas = None
-        
 
-class SubplotToolItom( SubplotTool ):
+
+class SubplotToolItom(SubplotTool):
     def __init__(self, targetfig, itomUI, embeddedCanvas):
+        #SubplotTool.__init__(self, targetfig, targetfig)
+
         self.targetfig = targetfig
-        self.embeddedCanvas = embeddedCanvas        
+        self.embeddedCanvas = embeddedCanvas
         self.itomUI = weakref.ref(itomUI)
         itomUI.connect("subplotConfigSliderChanged(int,int)", self.funcgeneral)
+        itomUI.connect("subplotConfigTight()", self.functight)
+        itomUI.connect("subplotConfigReset()", self.reset)
+        
+    def _setSliderPositions(self):
+        valLeft = int(self.targetfig.subplotpars.left*1000)
+        valBottom = int(self.targetfig.subplotpars.bottom*1000)
+        valRight = int(self.targetfig.subplotpars.right*1000)
+        valTop = int(self.targetfig.subplotpars.top*1000)
+        valWSpace = int(self.targetfig.subplotpars.wspace*1000)
+        valHSpace = int(self.targetfig.subplotpars.hspace*1000)
+        
+        r = self.itomUI()
+        if(not r is None):
+            r.call("modifySubplotSliders", valLeft, valTop, valRight, valBottom, valWSpace, valHSpace)
         
     def showDialog(self):
+        self.defaults = {}
+        for attr in ('left', 'bottom', 'right', 'top', 'wspace', 'hspace', ):
+            val = getattr(self.targetfig.subplotpars, attr)
+            self.defaults[attr] = val
+        self._setSliderPositions()
+        
         valLeft = int(self.targetfig.subplotpars.left*1000)
         valBottom = int(self.targetfig.subplotpars.bottom*1000)
         valRight = int(self.targetfig.subplotpars.right*1000)
@@ -647,37 +784,49 @@ class SubplotToolItom( SubplotTool ):
         #if val == self.sliderright.value():
         #    val -= 1
         self.targetfig.subplots_adjust(left=val/1000.)
-        if self.drawon: self.targetfig.canvas.draw()
+        if self.drawon: 
+            self.targetfig.canvas.draw_idle()
 
     def funcright(self, val):
         #if val == self.sliderleft.value():
         #    val += 1
         self.targetfig.subplots_adjust(right=val/1000.)
-        if self.drawon: self.targetfig.canvas.draw()
+        if self.drawon: 
+            self.targetfig.canvas.draw_idle()
 
     def funcbottom(self, val):
         #if val == self.slidertop.value():
         #    val -= 1
         self.targetfig.subplots_adjust(bottom=val/1000.)
-        if self.drawon: self.targetfig.canvas.draw()
+        if self.drawon: 
+            self.targetfig.canvas.draw_idle()
 
     def functop(self, val):
         #if val == self.sliderbottom.value():
         #    val += 1
         self.targetfig.subplots_adjust(top=val/1000.)
-        if self.drawon: self.targetfig.canvas.draw()
+        if self.drawon: 
+            self.targetfig.canvas.draw_idle()
 
     def funcwspace(self, val):
         self.targetfig.subplots_adjust(wspace=val/1000.)
-        if self.drawon: self.targetfig.canvas.draw()
+        if self.drawon: 
+            self.targetfig.canvas.draw_idle()
 
     def funchspace(self, val):
         self.targetfig.subplots_adjust(hspace=val/1000.)
-        if self.drawon: self.targetfig.canvas.draw()
+        if self.drawon: 
+            self.targetfig.canvas.draw_idle()
 
-        
+    def functight(self):
+        self.targetfig.tight_layout()
+        self._setSliderPositions()
+        self.targetfig.canvas.draw_idle()
+
+    def reset(self):
+        self.targetfig.subplots_adjust(**self.defaults)
+        self._setSliderPositions()
+        self.targetfig.canvas.draw_idle()
+
+FigureCanvas = FigureCanvasItom
 FigureManager = FigureManagerItom
-
-
-
-

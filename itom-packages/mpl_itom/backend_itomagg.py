@@ -1,50 +1,44 @@
 """
-Render to qt/itom from agg
+Render to qt from agg
 """
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
-import matplotlib
+from matplotlib.externals import six
+
+import sys
+from itom import ui
+from itom import uiItem
+from itom import figure as itomFigure
+from itom import timer as itomTimer
+
 from matplotlib.figure import Figure
 
 from matplotlib.backends.backend_agg import FigureCanvasAgg
-from .backend_itom import FigureManagerItom, FigureCanvasItom,\
-     NavigationToolbar2Itom
-from matplotlib.backend_bases import ShowBase
-from matplotlib._pylab_helpers import Gcf
-     
-from itom import uiItem
-from itom import figure as itomFigure
+from .backend_itom import FigureManagerItom
+from .backend_itom import NavigationToolbar2Itom
+##### Modified itom backend import
+from .backend_itom import FigureCanvasItom
+##### not used
+from .backend_itom import show
+from .backend_itom import draw_if_interactive
+from .backend_itom import backend_version
+######
 
 DEBUG = False
 
-def draw_if_interactive():
-    """
-    Is called after every pylab drawing command
-    """
-    if matplotlib.is_interactive():
-        figManager =  Gcf.get_active()
-        if figManager != None:
-            figManager.canvas.draw_idle()
 
-class Show(ShowBase):
-    def mainloop(self):
-        pass
-        #print("mainloop")
-        #QtGui.qApp.exec_()
-
-show = Show()
-
-
-def new_figure_manager( num, *args, **kwargs ):
+def new_figure_manager(num, *args, **kwargs):
     """
     Create a new figure manager instance
     """
-    if DEBUG: print('FigureCanvasQtAgg.new_figure_manager')
+    if DEBUG: print('backend_itomagg.new_figure_manager')
     FigureClass = kwargs.pop('FigureClass', Figure)
     existingCanvas = kwargs.pop('canvas', None)
     if(existingCanvas is None):
-        itomFig = itomFigure(num)
-        itomUI = itomFig.matplotlibFigure() #ui("itom://matplotlib")
-        #itomUI.show() #in order to get the right size
+        #make the figure 'small' such that the first resize will really increase the size
+        itomFig = itomFigure(num, width = 240, height = 160)
+        itomUI = itomFig.matplotlibFigure()
         embedded = False
     else:
         itomFig = None
@@ -57,21 +51,6 @@ def new_figure_manager( num, *args, **kwargs ):
     canvas = FigureCanvasItomAgg( thisFig, num, itomUI, itomFig, embedded )
     return FigureManagerItom( canvas, num, itomUI, itomFig, embedded )
 
-class NavigationToolbar2ItomAgg(NavigationToolbar2Itom):
-    def _get_canvas(self, fig):
-        return FigureCanvasItomAgg(fig)
-
-class FigureManagerItomAgg(FigureManagerItom):
-    def _get_toolbar(self, canvas, parent):
-        # must be inited after the window, drawingArea and figure
-        # attrs are set
-        if matplotlib.rcParams['toolbar']=='classic':
-            print("Classic toolbar is not supported")
-        elif matplotlib.rcParams['toolbar']=='toolbar2':
-            toolbar = NavigationToolbar2ItomAgg(canvas, parent)
-        else:
-            toolbar = None
-        return toolbar
 
 class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
     """
@@ -92,48 +71,50 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         self.rect = []
         self.blitbox = None
         self.canvas["enabled"]=True
+        self._agg_draw_pending = None
+        self.canvasInitialized = False #will be set to True once the paintEvent has been called for the first time
 
-    def drawRectangle( self, rect ):
-        if DEBUG: print('FigureCanvasItomAgg.drawRect: ', rect)
-        self.rect = rect
-        self.drawRect = True
-        
+    def drawRectangle(self, rect):
+        if DEBUG: print('FigureCanvasItomAggBase.drawRect: ', rect)
         try:
-            self.canvas.call("paintRect", True, rect[0], rect[1], rect[2], rect[3])
+            if rect:
+                self.canvas.call("paintRect", True, rect[0], rect[1], rect[2], rect[3])
+            else:
+                self.canvas.call("paintRect", False, 0,0,0,0)
         except RuntimeError:
             # it is possible that the figure has currently be closed by the user
             self.signalDestroyedWidget()
             print("Matplotlib figure is not available")
 
-    def paintEvent( self):
+    def paintEvent(self):
         """
         Copy the image from the Agg canvas to the qt.drawable.
         In Qt, all drawing should be done inside of here when a widget is
         shown onscreen.
         """
+        # if the canvas does not have a renderer, then give up and wait for
+        # FigureCanvasAgg.draw(self) to be called
+        if not hasattr(self, 'renderer'):
+            return
+            
+        if not self.canvasInitialized:
+            self.canvasInitialized = True
+            #try:
+            self.canvas["updatePlotOnResize"] = True
+            #except Exception:
+            #    pass
 
-        #FigureCanvasItom.paintEvent( self, e )
-        if DEBUG: print('FigureCanvasItomAgg.paintEvent: ', self, \
-           self.get_width_height())
-        
+        if DEBUG:
+            print('FigureCanvasItomAgg.paintEvent: ', self,
+                  self.get_width_height())
+
         if self.blitbox is None:
             # matplotlib is in rgba byte order.  QImage wants to put the bytes
             # into argb format and is in a 4 byte unsigned int.  Little endian
             # system is LSB first and expects the bytes in reverse order
             # (bgra).
-            
-            #if QtCore.QSysInfo.ByteOrder == QtCore.QSysInfo.LittleEndian:
             stringBuffer = self.renderer._renderer.tostring_bgra()
-            #else:
-            #    stringBuffer = self.renderer._renderer.tostring_argb()
-            #
-            
-            #XYrect = 0
-            #WHrect = 0
-            
-            #if self.drawRect:
-            #    XYrect = (int(self.rect[0]) << 16) + int(self.rect[1])
-            #    WHrect = (int(self.rect[2]) << 16) + int(self.rect[3])
+
             X = 0
             Y = 0
             W = int(self.renderer.width)
@@ -141,13 +122,9 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
             try:
                 self.canvas.call("paintResult", stringBuffer, X, Y, W, H, False)
             except RuntimeError as e:
-                try:
-                    # this is only for compatibility with older versions of the backend and matplotlib designer plugin
-                    self.canvas.call("paintResultDeprecated", stringBuffer, X, Y, W, H, False)
-                except RuntimeError:
-                    # it is possible that the figure has currently be closed by the user
-                    self.signalDestroyedWidget()
-                    print("Matplotlib figure is not available (err: %s)" % str(e))
+                # it is possible that the figure has currently be closed by the user
+                self.signalDestroyedWidget()
+                print("Matplotlib figure is not available (err: %s)" % str(e))
         else:
             bbox = self.blitbox
             l, b, r, t = bbox.extents
@@ -156,54 +133,64 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
             t = int(b) + h
             reg = self.copy_from_bbox(bbox)
             stringBuffer = reg.to_string_argb()
-            #stringBuffer = reg.to_string_bgra()
-            
             X = int(l)
             Y = int(self.renderer.height-t)
             W = w
             H = h
-            #XY = (int(l) << 16) + int(self.renderer.height-t)
-            #WH = (w << 16) + h
             try:
                 self.canvas.call("paintResult", stringBuffer, X, Y, W, H, True)
             except RuntimeError as e:
-                try:
-                    # this is only for compatibility with older versions of the backend and matplotlib designer plugin
-                    self.canvas.call("paintResultDeprecated", stringBuffer, X, Y, W, H, True)
-                except RuntimeError:
-                    # it is possible that the figure has currently be closed by the user
-                    self.signalDestroyedWidget()
-                    print("Matplotlib figure is not available (err: %s)" % str(e))
+                # it is possible that the figure has currently be closed by the user
+                self.signalDestroyedWidget()
+                print("Matplotlib figure is not available (err: %s)" % str(e))
             self.blitbox = None
-        self.drawRect = False
-    
 
-        
-    
-    def draw( self ):
+    def draw(self):
         """
-        Draw the figure with Agg, and queue a request
-        for a Qt draw.
+        Draw the figure with Agg, and queue a request for a Qt draw.
         """
-        # The Agg draw is done here; delaying it until the paintEvent
-        # causes problems with code that uses the result of the
-        # draw() to update plot elements.
-        if DEBUG: print('FigureCanvasItomAgg.draw')
-        
-        if not self.figure is None:
+        # The Agg draw is done here; delaying causes problems with code that
+        # uses the result of the draw() to update plot elements.
+        self.__draw_idle_agg()
+
+    def draw_idle(self):
+        """
+        Queue redraw of the Agg buffer and request Qt paintEvent.
+        """
+        # The Agg draw needs to be handled by the same thread matplotlib
+        # modifies the scene graph from. Post Agg draw request to the
+        # current event loop in order to ensure thread affinity and to
+        # accumulate multiple draw requests from event handling.
+        # TODO: queued signal connection might be safer than singleShot
+        if not self._agg_draw_pending:
+            self._agg_draw_pending = itomTimer(0, self.__draw_idle_agg, singleShot = True)
+
+    def __draw_idle_agg(self, *args):
+        #if self.height() < 0 or self.width() < 0:
+        #    self._agg_draw_pending = None
+        #    return
+        try:
             FigureCanvasAgg.draw(self)
             self.paintEvent()
+        finally:
+            self._agg_draw_pending = None
 
     def blit(self, bbox=None):
         """
         Blit the region in bbox
         """
-        #self.blitbox = bbox
-        #l, b, w, h = bbox.bounds
-        #t = b + h
-        #self.repaint(l, self.renderer.height-t, w, h)
+        # If bbox is None, blit the entire canvas. Otherwise
+        # blit only the area defined by the bbox.
+        if bbox is None and self.figure:
+            bbox = self.figure.bbox
+
+        self.blitbox = bbox
         self.paintEvent()
 
     def print_figure(self, *args, **kwargs):
         FigureCanvasAgg.print_figure(self, *args, **kwargs)
         self.draw()
+
+
+FigureCanvas = FigureCanvasItomAgg
+FigureManager = FigureManagerItom
