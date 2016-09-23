@@ -63,7 +63,7 @@ class MyGrabber : public ito::AddInGrabber
         const ito::RetVal showConfDialog(void);
         int hasConfDialog(void) { return 1; }; //!< indicates that this plugin has got a configuration dialog
         
-        ito::DataObject bufferPtr;
+        char* bufferPtr; //this can be a pointer holding the image array from the camera. This buffer is then copied to the dataObject m_data (defined in AddInGrabber)
 
     private:
         bool m_isgrabbing; /*!< Check if acquire was executed */
