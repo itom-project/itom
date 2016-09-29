@@ -14,7 +14,7 @@ Plotting and camera
 Camera plugins have the special method *liveImage*. 
 
 .. automodule:: itom
-    :members: liveImage, plot
+    :members: liveImage, plot, close
 
 Using algorithms and filters
 ============================
@@ -66,7 +66,7 @@ Further commands
 Some further commands. 
 
 .. automodule:: itom
-    :members: scriptEditor, openScript, newScript, setCurrentPath, getAppPath, getCurrentPath, getScreenInfo, checkSignals, getDefaultScaleableUnits, processEvents, scaleValueAndUnit, setApplicationCursor, clc, autoReloader, getPalette, setPalette, getPaletteList
+    :members: scriptEditor, openScript, newScript, setCurrentPath, getAppPath, getCurrentPath, getScreenInfo, checkSignals, getDefaultScaleableUnits, processEvents, scaleValueAndUnit, setApplicationCursor, clc, autoReloader, getPalette, setPalette, getPaletteList, showHelpViewer, getQtToolPath
       
 
 .. Defines
