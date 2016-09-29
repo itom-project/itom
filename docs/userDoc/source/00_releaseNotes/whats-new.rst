@@ -385,6 +385,54 @@ there is no continuous changelog for these version
 Plugins
 ******************
 
+**Version 2.2.0 (2016-10-01)**
+
+(more than 160 commits in plugins repository)
+
+* all plugins: ito::dObjHelper::isXYZ replaced by ito::isXYZ (e.g. isFinite)
+* PclTools: fix in *pclRandomSample* to avoid large subareas without selected samples
+* PclTools: filters *meshTransformAffine* and *pclTrimmedICP* added to apply a coordinate transform to a polygonal mesh
+* PclTools: EIGEN2_SUPPORT define removed from PclTools since unused. If this symbol is defined, newer Eigen libraries cannot be used.
+* FirgelliLac: Plugin added for stepper motor from Firgelli
+* Ximea: plugins compiles now under linux
+* Ximea: built with API version 4.10.0, fixes inserted for using SDK 4.06 and 4.04
+* Ximea: disable gammaColor parameter for monochrome cameras, plugin is ready to used color cameras now
+* PGRFlyCapture: timestamp bugfix for very long acquisitions in PointGrey FlyCapture
+* OpenCVGrabber: can now also be opened with a video file or stream url
+* MSMediaFoundation: fixes mainly for controlling the integration time (in seconds)
+* IDSuEye is now shipped with driver 4.80.2 (Windows) and compiles under linux
+* IDSuEye: bugfix in max. roi size with newer cameras, extended integration time mode set to readonly if not available
+* ThorlabsDCxCam: plugin initially pushed to support IDS OEM cameras from Thorlabs. This plugin is very similar to IDSuEye, but has not finally been tested, yet.
+* AVTVimba: build with SDK version 2.0
+* FittingFilters: filter *subtractRegressionPlane* has now the same parameters than *fitPlane*
+* FittingFilters: new filter *fillInvalidAreas* added to fill small invalid areas in topography data using interpolation based on all surrounding values.
+* NanotecStepMotor: compiles now under Linux and Windows. init parameter 'axisSteps' has no step size constraint for each axis.
+* x3pio: bugfix if xyUnit or valueUnit is set to 'µm': wrong detection of µm string due to encoding problems
+* x3pio: fix in x3p for saving line based data
+* BasicFilters, OpenCVFilters, DataObjectArithmetic and others: docstrings of filters improved
+* BasicFilters: filter *sobelOpt* added for improved version of sobel filter (named Scharr filter)
+* BasicFilters use now the global setting for the maximum number of threads for OpenMP parallelization
+* BasicFilters: bugfix for lowPassFilter and big dataObjects with big kernel sizes
+* OpenCVFilters: filter *cvCvtColor* to color conversion (using OpenCV's method cvtColor), filter *cvCannyEdge* added, filter *cvProjectPoints* added
+* DataObjectArithmetic: filter *medianValue* added which is much faster than np.nanmedian due to the quick median implementation
+* Roughness: filter plugin for line-wise roughness calculation added (Ra, Rq, Rsk, Rz...)
+* SuperlumBS: changed to dataIO plugin type
+* DataObjectIO: filter *loadZygoMetroPro* added to load metro pro files from Zygo interferometers
+* DataObjectIO: SDF file format can now also be read as binary data
+* DataObjectIO: import filter for Avantes files (spectrometers) added
+* DataObjectIO: filter *loadNanoscopeIII* added to load Bruker (Veeko) AFM data files
+* AvantesAvaSpec: many fixes to operate with many different devices from Avantes (improved handling of dark pixel correction, output with or without correction in double or original integer precision, timestamps added...)
+* dispWindow: display of *dataObjects* allowed. If number of phaseshifts are set, the period is adjusted to the next possible value.
+* FFTWfilters: filters *fftshift* and *ifftshift* added. They can now also operate along the y- or x- axis only (or both axes)
+* FringeProj: filters *calcPhaseMap4* and *calcPhaseMapN* corrected to show the same result for N = 4 (same shape and start-phase).
+* DummyMotor: redesign to used MotorAxisController in its dock widget
+* CyUSB Plugin added for USB communication via Cypress USB interface
+* PIPiezoCtrl: plugin bugfix: If checkFlags are set to 0, the current Pos of the actuator was 0 after a move. m_currentPos[0] will not be set to 0, now.
+* ThorlabsISM plugin based on Kinesis 1.7.0 added (Thorlabs Integrated Stepper Motor)
+* ThorlabsBP plugin based on Kinesis 1.7.0 added (Thorlabs brushless piezo). This plugin has some known bugs that are described in the documentation due to errors in Kinesis.
+* Build plugins *dispWindow* and *glDisplay* only if OpenGL is available (not the case for older version of Raspberry). Only OpenGL >= 2.0 allowed.
+* Many filters have been adapted to the new shape class of itom (see :py:ref:`itom.shape`)
+
 **Version 2.1.0 (2016-03-01)**
 
 (more than 140 commits in plugins repository)
