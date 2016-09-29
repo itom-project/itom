@@ -1012,7 +1012,7 @@ void ScriptEditorWidget::menuInsertCodec()
     QStringList items;
     bool ok;
     items << "ascii (English, us-ascii)" << "latin1 (West Europe, iso-8859-1)" << "iso-8859-15 (Western Europe)" << "utf8 (all languages)";
-    QString codec = QInputDialog::getItem(this, tr("insert codec"), tr("Choose an encoding of the file which is added to the first line of the script"), items, 2, true, &ok);
+    QString codec = QInputDialog::getItem(this, tr("insert codec"), tr("Choose an encoding of the file which is added to the first line of the script"), items, 2, false, &ok);
 
     if (codec != "" && ok)
     {
