@@ -39,6 +39,9 @@
 #include <qdesktopwidget.h>
 #include <qapplication.h>
 
+#include <iostream>
+#include <sstream>
+
 namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -401,6 +404,7 @@ void AbstractDockWidget::saveState(const QString &iniName) const
         settings.beginGroup(iniName);
         settings.setValue("state", m_pWindow->saveState());
         settings.setValue("docked", docked());
+
         if (m_floatingStyle == floatingWindow)
         {
             QByteArray geometry = m_pWindow->saveGeometry();
@@ -449,6 +453,12 @@ void AbstractDockWidget::saveState(const QString &iniName) const
                 settings.setValue("visible", QVariant()); //invalidate setting 'visible' since it is always false if docked (saveState is called in destructor, where visible is already false)
             }
         }
+
+		if (!settings.contains("geometry"))
+		{
+			std::cout << "settings do not contains geometry\n" << std::endl;
+		}
+
         settings.endGroup();
     }
 }
@@ -485,6 +495,12 @@ void AbstractDockWidget::restoreState(const QString &iniName)
                 }
             }
 
+			if (!settings.contains("geometry"))
+			{
+				std::cout << "settings do not contains geometry\n" << std::endl;
+			}
+
+
             if (visible_.isValid())
             {
                 QByteArray geometry = settings.value("geometry").toByteArray();
@@ -516,10 +532,11 @@ void AbstractDockWidget::restoreState(const QString &iniName)
                     stream >> restoredFrameGeometry
                         >> restoredNormalGeometry
                         >> restoredScreenNumber
-                        >> maximized
+                        >> maximized 
                         >> fullScreen;
 
                     qDebug() << "loaded geometry state: " << objectName() << restoredFrameGeometry << restoredNormalGeometry << restoredScreenNumber << maximized << fullScreen;
+
                 }
 #endif
 

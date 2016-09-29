@@ -184,6 +184,7 @@ int PythonFigure::PyFigure_init(PyFigure *self, PyObject *args, PyObject *kwds)
     int result = PythonUi::PyUiItemType.tp_init((PyObject*)self,args2,NULL);
     Py_DECREF(args2);
 
+
     return result;
 }
 
@@ -568,6 +569,12 @@ PyObject* PythonFigure::PyFigure_matplotlib(PyFigure *self, PyObject *args, PyOb
         }
     }
 
+	if (self->guardedFigHandle.isNull() || *(self->guardedFigHandle) <= 0)
+	{
+		PyErr_SetString(PyExc_RuntimeError, "invalid figure");
+		return NULL;
+	}
+
     QMetaObject::invokeMethod(uiOrg, "figureDesignerWidget", Q_ARG(QSharedPointer<uint>, self->guardedFigHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, "MatplotlibPlot"), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -616,7 +623,7 @@ PyObject* PythonFigure::PyFigure_show(PyFigure *self, PyObject *args)
         return NULL;
     }
 
-    if (*(self->guardedFigHandle) <= 0)
+	if (self->guardedFigHandle.isNull() || *(self->guardedFigHandle) <= 0)
     {
         PyErr_SetString(PyExc_RuntimeError, "No valid figure handle.");
         return NULL;
@@ -665,7 +672,7 @@ PyObject* PythonFigure::PyFigure_hide(PyFigure *self)
         return NULL;
     }
 
-    if (*(self->guardedFigHandle) <= 0)
+	if (self->guardedFigHandle.isNull() || *(self->guardedFigHandle) <= 0)
     {
         PyErr_SetString(PyExc_RuntimeError, "No valid figure handle.");
         return NULL;
