@@ -641,7 +641,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>&lt;click on item to see information&gt;</source>
-        <translation></translation>
+        <translation>&lt;für Informationen oben einen Eintrag auswählen&gt;</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -853,7 +853,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+7"/>
         <source>Live Image</source>
-        <translation>Live Bild</translation>
+        <translation>Live-Bild</translation>
     </message>
     <message>
         <location line="+15"/>
@@ -928,7 +928,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+10"/>
         <source>Auto grabbing</source>
-        <translation>Automatische Aufnahme</translation>
+        <translation>Live-Anzeige</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1670,7 +1670,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+404"/>
         <source>- unknown message -</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">- unbekannte Nachricht -</translation>
     </message>
     <message>
         <location line="+40"/>
@@ -4171,7 +4171,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AbstractDockWidget</name>
     <message>
-        <location filename="../widgets/abstractDockWidget.cpp" line="+112"/>
+        <location filename="../widgets/abstractDockWidget.cpp" line="+115"/>
         <source>Stay on top</source>
         <translation>Im Vordergrund anzeigen</translation>
     </message>
@@ -4206,7 +4206,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Fenster ausdocken</translation>
     </message>
     <message>
-        <location line="+407"/>
+        <location line="+494"/>
         <source>toolbar &apos;%1&apos; is already available</source>
         <translation>Die Symbolleiste &apos;%1&apos; ist bereits vorhanden</translation>
     </message>
@@ -5823,7 +5823,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location filename="../widgets/fileSystemDockWidget.cpp" line="+88"/>
         <source>last used directories</source>
-        <translation>Zuletzt verwendetet Verzeichnisse</translation>
+        <translation>Zuletzt verwendete Verzeichnisse</translation>
     </message>
     <message>
         <location line="+50"/>
@@ -6602,7 +6602,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <location line="+0"/>
         <location line="+4"/>
         <source>Itom Data Collection (*.idc)</source>
-        <translation>itom Datensammlung (*.idc)</translation>
+        <translation>itom Datencontainer (*.idc)</translation>
     </message>
     <message>
         <location line="-4"/>
@@ -6789,7 +6789,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <message>
         <location line="+4"/>
         <source>About Qt...</source>
-        <translation>Über QT...</translation>
+        <translation>Über Qt...</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -8729,7 +8729,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished">Der &apos;defaultButton&apos; muss ebenfalls in &apos;buttons&apos; erscheinen.</translation>
     </message>
     <message>
-        <location line="+2381"/>
+        <location line="+2399"/>
         <location line="+37"/>
         <location line="+31"/>
         <location line="+26"/>
@@ -8742,7 +8742,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished">Der Timer ist ungültig</translation>
     </message>
     <message>
-        <location line="-2245"/>
+        <location line="-2263"/>
         <location line="+56"/>
         <source>property &apos;%1&apos; does not exist</source>
         <translation type="unfinished">Die Eigenschaft &apos;%1&apos; existiert nicht</translation>
@@ -8852,22 +8852,22 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished">&quot;figHandle&quot; &apos;%i&apos; ist kein Handle eines Grafikfensters.</translation>
     </message>
     <message>
-        <location line="+96"/>
+        <location line="+104"/>
         <source>Figure %1</source>
         <translation></translation>
     </message>
     <message>
-        <location line="-2891"/>
+        <location line="-2899"/>
         <location line="+2672"/>
         <location line="+64"/>
         <location line="+64"/>
-        <location line="+170"/>
+        <location line="+188"/>
         <location line="+38"/>
         <source>figHandle %i not available.</source>
         <translation type="unfinished">&quot;figHandle&quot; &apos;%i&apos; ist nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="-2075"/>
+        <location line="-2093"/>
         <location line="+93"/>
         <location line="+102"/>
         <location line="+146"/>
@@ -8887,7 +8887,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished">Das angeforderte Widget existiert nicht (mehr).</translation>
     </message>
     <message>
-        <location line="+559"/>
+        <location line="+567"/>
         <source>figure window is not available any more</source>
         <translation type="unfinished">Grafikfenster ist nicht länger verfügbar</translation>
     </message>
@@ -8902,7 +8902,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished">Handle &apos;0&apos; ist ungültig.</translation>
     </message>
     <message>
-        <location line="+96"/>
+        <location line="+106"/>
         <source>subplot at indexed position %i is not available</source>
         <translation type="unfinished">Der Subplot an der indizierten Position %i ist nicht verfügbar</translation>
     </message>

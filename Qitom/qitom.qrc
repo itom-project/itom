@@ -44,7 +44,7 @@
         <file>icons/global.png</file>
     </qresource>
     <qresource prefix="/application">
-        <file alias="unpack">icons/helpAboutQt.png</file>
+        <file>icons/helpAboutQt.png</file>
         <file>icons/help.png</file>
         <file>icons/scriptReference.png</file>
         <file>icons/preferences-general.png</file>
