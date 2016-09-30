@@ -520,6 +520,7 @@ class FigureManagerItom( FigureManagerBase ):
                     pass
                 try:
                     self.itomFig.hide()
+                    itom.close(self.itomFig.handle)
                 except:
                     pass
             else:
