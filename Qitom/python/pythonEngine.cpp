@@ -5512,6 +5512,14 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filename)
 {
+#if defined _DEBUG && PY_VERSION_HEX >= 0x03040000
+	if (!PyGILState_Check())
+	{
+		std::cerr << "Python GIL must be locked when calling pickleDictionary\n" << std::endl;
+		return ito::retError;
+	}
+#endif
+
     RetVal retval;
 
     if (mainModule == NULL)
@@ -5519,14 +5527,11 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
         return RetVal(retError, 0, tr("mainModule is empty or cannot be accessed").toLatin1().data());
     }
 
-    PyGILState_STATE gstate = PyGILState_Ensure();
-
     PyObject* pickleModule = PyImport_AddModule("pickle"); // borrowed reference
 
     if (pickleModule == NULL)
     {
         retval += checkForPyExceptions();
-        PyGILState_Release(gstate);
         return retval;
     }
 
@@ -5535,7 +5540,6 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
     if (builtinsModule == NULL)
     {
         retval += checkForPyExceptions();
-        PyGILState_Release(gstate);
         return retval;
     }
 
@@ -5606,8 +5610,6 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
 
     Py_XDECREF(fileHandle);
 
-    PyGILState_Release(gstate);
-
     return retval;
 }
 
@@ -5653,20 +5655,19 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
         }
         else
         {
+			PyGILState_STATE gstate = PyGILState_Ensure();
             if (packedVarName != "")
             {
                 PyObject *dict = PyDict_New();
                 retVal += unpickleDictionary(dict, filename, true);
                 if (!retVal.containsError())
                 {
-                    PyGILState_STATE gstate = PyGILState_Ensure();
                     PyObject *key = PythonQtConversion::QStringToPyObject(packedVarName);
                     if (key)
                     {
                         PyDict_SetItem(destinationDict, key, dict);
                     }
                     Py_XDECREF(key);
-                    PyGILState_Release(gstate);
                 }
                 Py_XDECREF(dict);
             }
@@ -5674,6 +5675,7 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
             {
                 retVal += unpickleDictionary(destinationDict, filename, true);
             }
+			PyGILState_Release(gstate);
 
             if (semaphore && !released)
             {
@@ -5682,7 +5684,7 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
                 released = true;
             }
 
-            PyGILState_STATE gstate = PyGILState_Ensure();
+            gstate = PyGILState_Ensure();
             if (globalNotLocal)
             {
                 emitPythonDictionary(true, false, getGlobalDictionary(), NULL);
@@ -5716,14 +5718,20 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
 //----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QString &filename, bool overwrite)
 {
+#if defined _DEBUG && PY_VERSION_HEX >= 0x03040000
+	if (!PyGILState_Check())
+	{
+		std::cerr << "Python GIL must be locked when calling unpickleDictionary\n" << std::endl;
+		return ito::retError;
+	}
+#endif
+
     RetVal retval;
 
     if (mainModule == NULL)
     {
         return RetVal(retError, 0, tr("mainModule is empty or cannot be accessed").toLatin1().data());
     }
-
-    PyGILState_STATE gstate = PyGILState_Ensure();
 
     PyObject* pickleModule = PyImport_AddModule("pickle"); // borrowed reference
 
@@ -5835,10 +5843,7 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
         Py_XDECREF(unpickledItem);
     }
 
-    PyGILState_Release(gstate);
-
     return retval;
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

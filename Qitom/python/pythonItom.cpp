@@ -3916,7 +3916,7 @@ PyObject* PythonItom::PyLoadIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwd
 
         if (info.exists())
         {
-            PyObject *dict = PyDict_New();
+            PyObject *dict = PyDict_New(); //new reference
             RetVal retval = pyEngine->unpickleDictionary(dict, filename, true);
 
             if (!PythonCommon::transformRetValToPyException(retval))
@@ -3991,7 +3991,6 @@ PyObject* PythonItom::PySaveIDC(PyObject* pSelf, PyObject* pArgs, PyObject *pKwd
 
             if (!PythonCommon::transformRetValToPyException(retval))
             {
-                Py_DECREF(dict);
                 return NULL;
             }
 
