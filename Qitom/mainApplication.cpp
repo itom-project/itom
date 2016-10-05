@@ -293,11 +293,17 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     QCoreApplication::instance()->installTranslator(&m_qtTranslator);
 
     //2. load itom-specific translation file
-    m_Translator.load("qitom_" + local.name(), itomTranslationFolder);
-    QCoreApplication::instance()->installTranslator(&m_Translator);
+    m_translator.load("qitom_" + local.name(), itomTranslationFolder);
+    QCoreApplication::instance()->installTranslator(&m_translator);
 
     m_commonQtTranslator.load("itomCommonQtLib_" + local.name(), itomTranslationFolder);
     QCoreApplication::instance()->installTranslator(&m_commonQtTranslator);
+
+    m_commonPlotTranslator.load("itomCommonPlotLib_" + local.name(), itomTranslationFolder);
+    QCoreApplication::instance()->installTranslator(&m_commonPlotTranslator);
+
+    m_widgetsTranslator.load("itomWidgets_" + local.name(), itomTranslationFolder);
+    QCoreApplication::instance()->installTranslator(&m_widgetsTranslator);
 
     //3. set default encoding codec
     QTextCodec *textCodec = QTextCodec::codecForName(codec);

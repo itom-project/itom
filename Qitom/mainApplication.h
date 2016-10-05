@@ -81,9 +81,11 @@ class MainApplication : public QObject
         ito::ProcessOrganizer* m_processOrganizer;            /*!< pointer to processOrganizer */
 //        bool m_hasGIL;                                        /*!< python global interpreter lock GIL */
 
-        QTranslator m_Translator;                             /*!< pointer to a language-translation, different than the standard language (en) */
+        QTranslator m_translator;                             /*!< pointer to a language-translation, different than the standard language (en) */
         QTranslator m_qtTranslator;
         QTranslator m_commonQtTranslator;
+        QTranslator m_commonPlotTranslator;
+        QTranslator m_widgetsTranslator;
 
         QSplashScreen *m_splashScreen;
 

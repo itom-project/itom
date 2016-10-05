@@ -65,6 +65,7 @@ public:
 	QObject *propertyObservedObject;
     bool toolbarsVisible;
 };
+
 //----------------------------------------------------------------------------------------------------------------------------------
 AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windowMode, QWidget *parent) : 
     QMainWindow(parent),
@@ -472,6 +473,7 @@ bool AbstractFigure::event(QEvent *e)
         //importItomPlotApi(m_apiFunctionsGraphBasePtr);
         init();
     }   
+
     return QMainWindow::event(e);
 }
 
@@ -492,6 +494,7 @@ void AbstractFigure::setToolbarVisible(bool visible)
     d->toolbarsVisible = visible;
     updatePropertyDock();
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 bool AbstractFigure::getToolbarVisible() const 
 { 
@@ -503,6 +506,7 @@ QDockWidget* AbstractFigure::getPropertyDockWidget() const
 { 
     return d->propertyDock; 
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 QList<AbstractFigure::ToolboxItem> AbstractFigure::getToolboxes() const
 {
@@ -545,6 +549,8 @@ void AbstractFigure::addToolbox(QDockWidget *toolbox, const QString &key, Qt::Do
         break;
     }
 }
+
+
 //----------------------------------------------------------------------------------------------------------------------------------
 bool AbstractFigure::removeToolbox(const QString &key)
 {
@@ -578,8 +584,10 @@ bool AbstractFigure::removeToolbox(const QString &key)
 			index++;
 		}
 	}
+
 	return state;
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::mnuShowProperties(bool checked) 
 { 
@@ -588,6 +596,7 @@ void AbstractFigure::mnuShowProperties(bool checked)
         d->propertyDock->setVisible(checked);
     } 
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------
 void AbstractFigure::toolBoxDestroyed(QObject *object)
 {
@@ -605,7 +614,6 @@ void AbstractFigure::toolBoxDestroyed(QObject *object)
 		}
 		index++;
 	}
-	return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -625,8 +633,6 @@ void AbstractFigure::toolBarDestroyed(QObject *object)
 		}
 		index++;
 	}
-
-	return;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

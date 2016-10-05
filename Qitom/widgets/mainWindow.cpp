@@ -343,8 +343,6 @@ namespace ito {
         showMaximized();
     }
 
-
-
     qDebug(".. main window build done");
 
     //showInfoMessageLine("Hey folks...!", "TestInfo");
@@ -517,8 +515,6 @@ void MainWindow::addAbstractDock(AbstractDockWidget* dockWidget, Qt::DockWidgetA
             dockWidget->setFloating(false);
             //qDebug() << "restoreDockWidget:" << restoreDockWidget(dockWidget); //does not work until now, since the state of docked script windows is not saved. they are deleted before destructing the main window.
         }
-
-        
     }
 }
 
@@ -615,7 +611,6 @@ void MainWindow::createActions()
 
     m_actions["show_loaded_plugins"] = new QAction(QIcon(":/plugins/icons/plugin.png"), tr("Loaded plugins..."), this);
     connect(m_actions["show_loaded_plugins"], SIGNAL(triggered()), this, SLOT(mnuShowLoadedPlugins()));
-
 
     if (uOrg->hasFeature(featDeveloper))
     {
@@ -774,7 +769,6 @@ void MainWindow::createMenus()
 
         m_pMenuPython->addAction(m_actions["python_timerManager"]);
         m_pMenuPython->addAction(m_actions["py_packageManager"]);
-		
     }
 
     m_pMenuHelp = menuBar()->addMenu(tr("Help"));
@@ -841,8 +835,6 @@ void MainWindow::menuLastFilesAboutToShow()
     }
 }
 
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
 /*Slot aboutToOpen*/
 void MainWindow::mnuViewAboutToShow()
@@ -895,7 +887,6 @@ void MainWindow::mnuViewAboutToShow()
 void MainWindow::lastFileOpen(const QString &path)
 {
     QString fileName;
-
     fileName = path;
 
     if (!fileName.isEmpty())
@@ -1577,7 +1568,7 @@ ito::RetVal MainWindow::removeMenuElement(const QString &key, QSharedPointer<QVe
         it = m_userDefinedRootMenus.find(tempKey);
         if (it != m_userDefinedRootMenus.end())
         {
-            removedMenuHandles->append( (size_t)(it.value()->menuAction()->property("itom__menuHandle").toUInt() ) );
+            removedMenuHandles->append((size_t)(it.value()->menuAction()->property("itom__menuHandle").toUInt()));
             getMenuHandlesRecursively(it.value(), removedMenuHandles);
             (*it)->deleteLater();
             it = m_userDefinedRootMenus.erase(it);
@@ -1616,7 +1607,7 @@ ito::RetVal MainWindow::removeMenuElement(const QString &key, QSharedPointer<QVe
 
         if (keys.size() == 0 && actToDelete)
         {
-            removedMenuHandles->append( (size_t)(actToDelete->property("itom__menuHandle").toUInt()) );
+            removedMenuHandles->append((size_t)(actToDelete->property("itom__menuHandle").toUInt()));
             getMenuHandlesRecursively(actToDelete->menu(), removedMenuHandles);
 
             if (actToDelete->menu()) //this action belongs to a QMenu -> delete the QMenu
@@ -1661,7 +1652,7 @@ ito::RetVal MainWindow::removeMenuElement(const size_t menuHandle, QSharedPointe
 
     while (it != m_userDefinedRootMenus.end() && !found)
     {
-        if ( (size_t)it.value()->menuAction()->property("itom__menuHandle").toUInt() == menuHandle)
+        if ((size_t)it.value()->menuAction()->property("itom__menuHandle").toUInt() == menuHandle)
         {
             found = true;
             removedMenuHandles->append(menuHandle);
@@ -1676,7 +1667,7 @@ ito::RetVal MainWindow::removeMenuElement(const size_t menuHandle, QSharedPointe
             if (actToDelete)
             {
                 found = true;
-                removedMenuHandles->append( (size_t)(actToDelete->property("itom__menuHandle").toUInt()) );
+                removedMenuHandles->append((size_t)(actToDelete->property("itom__menuHandle").toUInt()));
                 getMenuHandlesRecursively(actToDelete->menu(), removedMenuHandles);
                 
                 if (actToDelete->menu()) //this action belongs to a QMenu -> delete the QMenu
@@ -1721,7 +1712,7 @@ void MainWindow::getMenuHandlesRecursively(const QMenu *parent, QSharedPointer<Q
         {
             if (a)
             {
-                menuHandles->append( (size_t)a->property("itom__menuHandle").toUInt() );
+                menuHandles->append((size_t)a->property("itom__menuHandle").toUInt());
                 getMenuHandlesRecursively(a->menu(), menuHandles);
             }
         }
@@ -1975,7 +1966,7 @@ void MainWindow::mnuPyTimerManager()
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::mnuPyAutoReloadTriggered(bool checked)
 {
-    if(m_actions["py_autoReloadEnabled"] && m_actions["py_autoReloadFile"] && m_actions["py_autoReloadCmd"] && m_actions["py_autoReloadFunc"])
+    if (m_actions["py_autoReloadEnabled"] && m_actions["py_autoReloadFile"] && m_actions["py_autoReloadCmd"] && m_actions["py_autoReloadFunc"])
     {
         bool enabled = m_actions["py_autoReloadEnabled"]->isChecked();
         bool checkFile = m_actions["py_autoReloadFile"]->isChecked();
@@ -2032,15 +2023,15 @@ void MainWindow::showInfoMessageLine(QString text, QString winKey /*= ""*/)
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainWindow::pythonAutoReloadChanged(bool enabled, bool checkFile, bool checkCmd, bool checkFct)
 {
-    if(m_actions["py_autoReloadEnabled"]) m_actions["py_autoReloadEnabled"]->setChecked(enabled);
+    if (m_actions["py_autoReloadEnabled"]) m_actions["py_autoReloadEnabled"]->setChecked(enabled);
 
-    if(m_actions["py_autoReloadFile"]) m_actions["py_autoReloadFile"]->setChecked(checkFile);
-    if(m_actions["py_autoReloadCmd"]) m_actions["py_autoReloadCmd"]->setChecked(checkCmd);
-    if(m_actions["py_autoReloadFunc"]) m_actions["py_autoReloadFunc"]->setChecked(checkFct);
+    if (m_actions["py_autoReloadFile"]) m_actions["py_autoReloadFile"]->setChecked(checkFile);
+    if (m_actions["py_autoReloadCmd"]) m_actions["py_autoReloadCmd"]->setChecked(checkCmd);
+    if (m_actions["py_autoReloadFunc"]) m_actions["py_autoReloadFunc"]->setChecked(checkFct);
 
-    if(m_actions["py_autoReloadFile"]) m_actions["py_autoReloadFile"]->setEnabled(enabled);
-    if(m_actions["py_autoReloadCmd"]) m_actions["py_autoReloadCmd"]->setEnabled(enabled);
-    if(m_actions["py_autoReloadFunc"]) m_actions["py_autoReloadFunc"]->setEnabled(enabled);
+    if (m_actions["py_autoReloadFile"]) m_actions["py_autoReloadFile"]->setEnabled(enabled);
+    if (m_actions["py_autoReloadCmd"]) m_actions["py_autoReloadCmd"]->setEnabled(enabled);
+    if (m_actions["py_autoReloadFunc"]) m_actions["py_autoReloadFunc"]->setEnabled(enabled);
 
 }
 
