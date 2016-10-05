@@ -12,11 +12,15 @@ Name: "{commondesktop}\{#Name}"; Filename: "{app}\{#ExeName}"; Tasks: desktopico
 [Files]
 Source: "{#SourceDirItomBuild}\{#ExeName}"; DestDir: "{app}"; Flags: ignoreversion
 
+[Styles]
+Source: "{#SourceDirItomBuild}\styles\*.*"; DestDir: "{app}\styles"; Flags: ignoreversion recursesubdirs
+
 ; DLLs
 Source: "{#SourceDirItomBuild}\dataobject.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\itomCommonLib.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\itomCommonQtLib.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\itomCommonPlotLib.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\itomShapeLib.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\itomWidgets.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\pointcloud.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\qpropertyeditor.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -73,7 +77,7 @@ Source: "{#SourceDirQT}\..\plugins\platforms\qminimal.dll"; DestDir: "{app}\plat
 Source: "{#SourceDirQT}\..\plugins\platforms\qoffscreen.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion
 Source: "{#SourceDirQT}\..\plugins\platforms\qwindows.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion
 Source: "{#SourceDirQT}\..\plugins\printsupport\windowsprintersupport.dll"; DestDir: "{app}\printsupport"; Flags: ignoreversion
-;Source: "{#SourceDirQT}\..\plugins\sqldrivers\qsqlite4.dll"; DestDir: "{app}\sqldrivers"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\sqldrivers\qsqlite.dll"; DestDir: "{app}\sqldrivers"; Flags: ignoreversion
 
 ; Python-Scripts
 Source: "{#SourceDirItomBuild}\itoDebugger.py"; DestDir: "{app}"; Flags: ignoreversion
@@ -111,7 +115,7 @@ Source: "{#SourceDirItomSource}\Qitom\COPYING.txt"; DestDir: "{app}"; Flags: ign
 Source: "{#SourceDirItomBuild}\docs\pluginDoc\template\*.*"; DestDir: "{app}\docs\pluginDoc\template"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\demo\*.*"; DestDir: "{app}\demo"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\itom-packages\*.*"; DestDir: "{app}\itom-packages"; Flags: ignoreversion
-Source: "{#SourceDirItomBuild}\itom-packages\*.*"; DestDir: "{app}\itom-packages\apps"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\itom-packages\apps\*.*"; DestDir: "{app}\itom-packages\apps"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\itom-packages\api_generator\*.*"; DestDir: "{app}\itom-packages\api_generator"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\itom-packages\abstractObjToolbar\*.*"; DestDir: "{app}\itom-packages\abstractObjToolbar"; Flags: ignoreversion
 ;Source: "{#SourceDirItomBuild}\itom-packages\autostart\*.*"; DestDir: "{app}\itom-packages\autostart"; Flags: ignoreversion
