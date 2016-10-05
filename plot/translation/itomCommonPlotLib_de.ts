@@ -55,30 +55,30 @@
         <translation type="unfinished">Unbekannter Channel in &apos;setUpdatePending&apos;</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractFigure.cpp" line="200"/>
-        <location filename="../sources/AbstractFigure.cpp" line="246"/>
+        <location filename="../sources/AbstractFigure.cpp" line="199"/>
+        <location filename="../sources/AbstractFigure.cpp" line="245"/>
         <source>duplicate Channel, in addChannel</source>
         <translation type="unfinished">Doppelter Channel in &apos;addChannel&apos;</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractFigure.cpp" line="208"/>
-        <location filename="../sources/AbstractFigure.cpp" line="215"/>
+        <location filename="../sources/AbstractFigure.cpp" line="207"/>
+        <location filename="../sources/AbstractFigure.cpp" line="214"/>
         <source>parameters incompatible, while adding channel</source>
         <translation type="unfinished">Inkompatible Parameter beim hinzufügen des Channels</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractFigure.cpp" line="220"/>
+        <location filename="../sources/AbstractFigure.cpp" line="219"/>
         <source>undefined channel direction, while adding channel</source>
         <translation type="unfinished">Undefinierte Channel-Richtung beim hinzufügen des Channels</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractFigure.cpp" line="235"/>
+        <location filename="../sources/AbstractFigure.cpp" line="234"/>
         <source>invalid child pointer, in addChannel</source>
         <translation type="unfinished">Ungültiger Pointer in &apos;addChannel&apos;</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractFigure.cpp" line="262"/>
-        <location filename="../sources/AbstractFigure.cpp" line="287"/>
+        <location filename="../sources/AbstractFigure.cpp" line="261"/>
+        <location filename="../sources/AbstractFigure.cpp" line="286"/>
         <source>channel does not exist</source>
         <translation type="unfinished">Channel existiert nicht</translation>
     </message>
