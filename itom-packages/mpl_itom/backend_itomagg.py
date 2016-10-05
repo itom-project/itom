@@ -170,8 +170,9 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         #    self._agg_draw_pending = None
         #    return
         try:
-            FigureCanvasAgg.draw(self)
-            self.paintEvent()
+            if self.canvas:
+                FigureCanvasAgg.draw(self)
+                self.paintEvent()
         finally:
             self._agg_draw_pending = None
 
