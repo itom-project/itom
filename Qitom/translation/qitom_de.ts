@@ -2279,7 +2279,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+1120"/>
+        <location line="+1119"/>
         <source>no code is given</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6659,7 +6659,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Übersetzungen werden geladen...</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+49"/>
         <source>load themes and styles...</source>
         <translation>Themen und Stile werden geladen...</translation>
     </message>
@@ -6762,7 +6762,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation></translation>
     </message>
     <message>
-        <location line="+378"/>
+        <location line="+374"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
@@ -6802,7 +6802,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Geladene Plugins...</translation>
     </message>
     <message>
-        <location line="-447"/>
+        <location line="-443"/>
         <source>Command History</source>
         <translation>Befehlsliste</translation>
     </message>
@@ -6814,7 +6814,7 @@ Start itom again with the argument &apos;log&apos; and look-up the error message
 Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldungen in der Datei &apos;itomlog.txt&apos; auswerten.</translation>
     </message>
     <message>
-        <location line="+369"/>
+        <location line="+364"/>
         <source>Help...</source>
         <translation>Hilfe...</translation>
     </message>
@@ -6954,17 +6954,17 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <translation>Ansicht</translation>
     </message>
     <message>
-        <location line="+107"/>
+        <location line="+104"/>
         <source>Toolboxes</source>
         <translation>Werkzeuge</translation>
     </message>
     <message>
-        <location line="-102"/>
+        <location line="-99"/>
         <source>Script</source>
         <translation>Skript</translation>
     </message>
     <message>
-        <location line="+697"/>
+        <location line="+693"/>
         <source>key must not be empty.</source>
         <translation>Der Schlüssel darf nicht leer sein.</translation>
     </message>
@@ -6984,13 +6984,13 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <translation>Der UI-Designer (QT-Designer) konnte nicht geöffnet werden (%1).</translation>
     </message>
     <message>
-        <location line="-1720"/>
-        <location line="+606"/>
+        <location line="-1711"/>
+        <location line="+600"/>
         <source>Help</source>
         <translation>Hilfe</translation>
     </message>
     <message>
-        <location line="-138"/>
+        <location line="-137"/>
         <source>Shift+F5</source>
         <translation></translation>
     </message>
@@ -7000,17 +7000,17 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <translation>Neugeladene Module</translation>
     </message>
     <message>
-        <location line="+56"/>
+        <location line="+55"/>
         <source>no entries</source>
         <translation>Kein Eintrag</translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="+61"/>
         <source>no opened scripts</source>
         <translation>Kein geöffnetes Skript</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="+42"/>
         <source>Ready</source>
         <translation>Fertig</translation>
     </message>
@@ -7909,13 +7909,13 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+49"/>
-        <location line="+204"/>
+        <location line="+57"/>
+        <location line="+206"/>
         <source>mainModule is empty or cannot be accessed</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-149"/>
+        <location line="-155"/>
         <source>No more memory available during pickling.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7931,7 +7931,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+39"/>
+        <location line="+37"/>
         <source>it is not allowed to unpickle a data collection in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7941,7 +7941,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+127"/>
         <source>No more memory available during unpickling.</source>
         <translation type="unfinished"></translation>
     </message>
