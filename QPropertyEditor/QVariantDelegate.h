@@ -74,6 +74,8 @@ public:
     /// QItemDelegate implementation
     virtual void updateEditorGeometry(QWidget *editor,  const QStyleOptionViewItem &option, const QModelIndex &index) const;
 
+    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const;
+
 private:
     void parseEditorHints(QWidget* editor, const QString& editorHints) const;
 

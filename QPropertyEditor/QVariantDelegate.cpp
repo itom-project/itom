@@ -130,6 +130,16 @@ void QVariantDelegate::updateEditorGeometry(QWidget *editor, const QStyleOptionV
     return QItemDelegate::updateEditorGeometry(editor, option, index);
 }
 
+QSize QVariantDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
+{
+    //height control of each row. \Todo: it would be nice, if the minimum height of 18px would be extracted
+    //from the os-dependent height of a widget (like lineEdit, comboBox...). Until now, the minimum height is
+    //fixed to 18px.
+    QSize sizeHint(QItemDelegate::sizeHint(option, index));
+    sizeHint.rheight() = qMax(sizeHint.rheight(), 18);
+    return sizeHint;
+}
+
 void QVariantDelegate::parseEditorHints(QWidget* editor, const QString& editorHints) const
 {
     if (editor && !editorHints.isEmpty())
