@@ -178,7 +178,7 @@ Unzip the VTK source on your hard drive. Create a build_x64/build_x86 folder and
 
 .. note::
 
-    1. Before starting the compilation open in the folder **VTK\build\GUISupport\Qt** the **PluginInstall.cmake** file and change in line **5** **"QVTKWidgetPlugin.dll"** to **"QVTKWidgetPlugin-gd.dll"**
+    1. Before starting the compilation open in the folder **VTK\\build\\GUISupport\\Qt** the **PluginInstall.cmake** file and change in line **5** **"QVTKWidgetPlugin.dll"** to **"QVTKWidgetPlugin-gd.dll"**
     2. Start **DEBUG** compilation in Visual Studio
     3. Change the **"QVTKWidgetPlugin-gd.dll"** back to **"QVTKWidgetPlugin.dll"** and start **RELEASE** compilation
 
