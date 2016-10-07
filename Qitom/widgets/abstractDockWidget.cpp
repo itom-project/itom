@@ -440,6 +440,21 @@ void AbstractDockWidget::saveState(const QString &iniName) const
                     >> fullScreen;
 
                 qDebug() << "saved geometry state: " << objectName() << restoredFrameGeometry << restoredNormalGeometry << restoredScreenNumber << maximized << fullScreen;
+				/*
+				QString outputFilename = "D:\\itom\\geometryLog.txt";
+				QFile outputFile(outputFilename);
+				outputFile.open(QIODevice::WriteOnly | QIODevice::Append);
+
+				QTextStream outStream(&outputFile);
+
+				outStream << "saved geometry: " << objectName() << "\n"
+					<< "restored frame geometry: " << " height: " << restoredFrameGeometry.height() << " width: " << restoredFrameGeometry.width()
+					<< " position bottom (x,y):" << restoredFrameGeometry.bottomLeft().x() << " : " << restoredFrameGeometry.bottomLeft().y() << "\n"
+					<< "restored normal geometry: " << " height: " << restoredNormalGeometry.height() << " width: " << restoredNormalGeometry.width()
+					<< " position bottom (x,y):" << restoredNormalGeometry.bottomLeft().x() << " : " << restoredNormalGeometry.bottomLeft().y() << "\n"
+					<< "restored Screen number: " << restoredScreenNumber << " maximized: " << maximized << " fullscreen: " << fullScreen << "\n\n";
+
+				outputFile.close();*/
             }
 #endif
 
@@ -453,11 +468,6 @@ void AbstractDockWidget::saveState(const QString &iniName) const
                 settings.setValue("visible", QVariant()); //invalidate setting 'visible' since it is always false if docked (saveState is called in destructor, where visible is already false)
             }
         }
-
-		if (!settings.contains("geometry"))
-		{
-			std::cout << "settings do not contains geometry\n" << std::endl;
-		}
 
         settings.endGroup();
     }
@@ -495,12 +505,6 @@ void AbstractDockWidget::restoreState(const QString &iniName)
                 }
             }
 
-			if (!settings.contains("geometry"))
-			{
-				std::cout << "settings do not contains geometry\n" << std::endl;
-			}
-
-
             if (visible_.isValid())
             {
                 QByteArray geometry = settings.value("geometry").toByteArray();
@@ -535,8 +539,24 @@ void AbstractDockWidget::restoreState(const QString &iniName)
                         >> maximized 
                         >> fullScreen;
 
-                    qDebug() << "loaded geometry state: " << objectName() << restoredFrameGeometry << restoredNormalGeometry << restoredScreenNumber << maximized << fullScreen;
 
+					qDebug() << "restore geometry state: " << objectName() << restoredFrameGeometry << restoredNormalGeometry << restoredScreenNumber << maximized << fullScreen;
+					/*
+					QString outputFilename = "D:\\itom\\geometryLog.txt";
+					QFile outputFile(outputFilename);
+					outputFile.open(QIODevice::WriteOnly | QIODevice::Append);
+
+					QTextStream outStream(&outputFile);
+
+					outStream << "restored geometry: " << objectName() << "\n"
+						<< "restored frame geometry: " << " height: " << restoredFrameGeometry.height() << " width: " << restoredFrameGeometry.width() 
+						<< " position bottom (x,y):" << restoredFrameGeometry.bottomLeft().x() << " : " << restoredFrameGeometry.bottomLeft().y() << "\n"
+						<< "restored normal geometry: " << " height: " << restoredNormalGeometry.height() << " width: " << restoredNormalGeometry.width()
+						<< " position bottom (x,y):" << restoredNormalGeometry.bottomLeft().x() << " : " << restoredNormalGeometry.bottomLeft().y() << "\n"
+						<< "restored Screen number: " << restoredScreenNumber << " maximized: " << maximized << " fullscreen: " << fullScreen << "\n\n";
+
+					outputFile.close();
+*/
                 }
 #endif
 
