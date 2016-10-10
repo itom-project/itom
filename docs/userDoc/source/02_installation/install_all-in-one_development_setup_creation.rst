@@ -136,9 +136,9 @@ Replace in the line 27 **CONFIG** by:
     
 Open the native Visual Studio 2013 64-bit COMMAND PROMPT (or 32-bit). Set the QScintilla folder. Set the $QTDIR$ variable to the Qt Folder ${MAINDIR}\\3rdParty\\Qt5.6.0\\msvc2013_x64. 
 
-.. note: 
+.. note:: 
 
-    example: SET QTDIR= E:\itom_all-in-one_development\itom_all-in-one_development\vs2013_qt5.6.0\3rdParty\Qt5.6.0\5.6\msvc2013
+    example: SET QTDIR= E:\\itom_all-in-one_development\\itom_all-in-one_development\\vs2013_qt5.6.0\\3rdParty\\Qt5.6.0\\5.6\\msvc2013
 
 Execute the **qscintilla_install.bat** file. After the successfull compilation, delete form the QScintilla folder following folder: example, doc, python, Qt4Qt5/debug, Qt4QT5/release. 
 
