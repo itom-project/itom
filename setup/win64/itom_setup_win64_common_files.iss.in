@@ -9,11 +9,11 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
 Name: "{commondesktop}\{#Name}"; Filename: "{app}\{#ExeName}"; Tasks: desktopicon
 
-; Styles
-Source: "{#SourceDirItomBuild}\styles\*.*"; DestDir: "{app}\styles"; Flags: ignoreversion recursesubdirs
-
 [Files]
 Source: "{#SourceDirItomBuild}\{#ExeName}"; DestDir: "{app}"; Flags: ignoreversion
+
+; Styles
+Source: "{#SourceDirItomBuild}\styles\*.*"; DestDir: "{app}\styles"; Flags: ignoreversion recursesubdirs
 
 ; DLLs
 Source: "{#SourceDirItomBuild}\dataobject.dll"; DestDir: "{app}"; Flags: ignoreversion
