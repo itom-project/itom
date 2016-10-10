@@ -171,6 +171,7 @@ Unzip the VTK source on your hard drive. Create a build_x64/build_x86 folder and
 * Change **CMAKE_INSTALL_PREFIX** to **${MAINDIR}/3rdPartyPCL/vtk7.0.0**
 * If an error occures with wrong Qt Version, change **VTK_QT_VERSION** to **5**
 * delete variable of **CMAKE_RC_FLAGS**, **CMAKE_STATIC_LINKER_FLAGS**
+* Choose with the variable **VTK_RENDERING_BACKEND** which OpenGL is used for VTK/PCL. 
 
 .. note::
 
