@@ -225,9 +225,11 @@ Source: "{#SourceDirItomBuild}\plugins\Ximea\*.*"; DestDir: "{app}\plugins\Ximea
 ; Libs OpenCV
 Source: "{#SourceDirOpenCV}\opencv_calib3d${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirOpenCV}\opencv_highgui${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirOpenCV}\opencv_imgcodecs${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirOpenCV}\opencv_imgproc${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirOpenCV}\opencv_features2d${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirOpenCV}\opencv_flann${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirOpenCV}\opencv_videoio${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 ; Libs Plugins
 Source: "{#SourceDirItomBuild}\lib\1394camera.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\AeroBasic.dll"; DestDir: "{app}\lib"; Flags: ignoreversion

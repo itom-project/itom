@@ -89,6 +89,14 @@
 #define NaPythonPillow "Pillow"
 #define VePythonPillow "3.3.0"
 
+#define FNPythonDask "dask-0.11.1-py2.py3-none-any.whl"
+#define NaPythonDask "Dask"
+#define VePythonDask "0.11.1"
+
+#define FNPythonToolz "toolz-0.8.0-py2.py3-none-any.whl"
+#define NaPythonToolz "Toolz"
+#define VePythonToolz "0.8.0"
+
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
@@ -144,6 +152,8 @@ Source: "{#SourceDirPython}\{#FNPythonSciKit}"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\{#FNPythonDecor}"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\{#FNPythonNetWorkX}"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\{#FNPythonPillow}"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\{#FNPythonDask}"; DestDir: "{tmp}"
+Source: "{#SourceDirPython}\{#FNPythonToolz}"; DestDir: "{tmp}"
 
 #include "itom_setup_win32_common_files.iss"
 
@@ -159,13 +169,15 @@ Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyDateu}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyDateu}..."; Components: MATPLOTLIB
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyTz}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyTz}..."; Components: MATPLOTLIB
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonCycler}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonCycler}..."; Components: MATPLOTLIB
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonMatPlotLib}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#FNPythonMatPlotLib}..."; Components: MATPLOTLIB
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonMatPlotLib}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonMatPlotLib}..."; Components: MATPLOTLIB
 ;Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSix}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSix}..."; Components: SCIKIT
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonDecor}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonDecor}..."; Components: SCIKIT
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonNetWorkX}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonNetWorkX}..."; Components: SCIKIT
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonDask}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonDask}..."; Components: SCIKIT
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonToolz}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonToolz}..."; Components: SCIKIT
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPillow}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPillow}..."; Components: SCIKIT
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSciKit}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSciKit}..."; Components: SCIKIT
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPies}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "Pies..."; Components: FROSTED
+Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPies}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPies}..."; Components: FROSTED
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonFrosted}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonFrosted}..."; Components: FROSTED
 Filename: "{app}\{#ExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(Name, "&", "&&")}}"; Components: Main
 
@@ -187,6 +199,8 @@ Type: files; Name: "{tmp}\{#FNPythonCycler}"
 Type: files; Name: "{tmp}\{#FNPythonSciKit}"
 Type: files; Name: "{tmp}\{#FNPythonDecor}"
 Type: files; Name: "{tmp}\{#FNPythonPillow}"
+Type: files; Name: "{tmp}\{#FNPythonDask}"
+Type: files; Name: "{tmp}\{#FNPythonToolz}"
 Type: files; Name: "{tmp}\{#FNPythonNetWorkX}"
 Type: filesandordirs; Name: "{tmp}\wheelhouse"
 
