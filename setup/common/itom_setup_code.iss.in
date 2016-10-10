@@ -15,13 +15,11 @@ const
 //  INSTALLLEVEL_MAXIMUM = $ffff;
 //  INSTALLSTATE_ABSENT = 2;
 
-  // Visual C++ 2010 Redistributable
-  RP10_86 =    '{196BB40D-1578-3D01-B289-BEFC77A11A1E}';  // Visual C++ 2010 Redistributable Package (x86)
-  RP10_64 =    '{DA5E371C-6333-3D8A-93A4-6FD5B20BCC6E}';  // Visual C++ 2010 Redistributable Package (x64)
-//  RP10_IA =    '{C1A35166-4301-38E9-BA67-02823AD72A1B}';  // Visual C++ 2010 Redistributable Package (ia64) 
-  RP10_86SP1 = '{F0C3E5D1-1ADE-321E-8167-68EF0DE699A5}';  // Visual C++ 2010 SP1 Redistributable Package (x86)
-  RP10_64SP1 = '{1D8E6291-B0D5-35EC-8441-6616F567A0F7}';  // Visual C++ 2010 SP1 Redistributable Package (x64)
-//  RP10_IASP1 = '{88C73C1C-2DE5-3B01-AFB8-B46EF4AB41CD}';  // Visual C++ 2010 SP1 Redistributable Package (ia64)
+  // Visual C++ 2013 Redistributable
+  RP13_86_MIN = '{13A4EE12-23EA-3371-91EE-EFB36DDFFF3E}';
+  RP13_64_MIN = '{A749D8E6-B613-3BE3-8F5F-045C84EBA29B}';
+  RP13_86_ADD = '{F8CFEB22-A2E7-3971-9EDA-4B11EDEFC185}';
+  RP13_64_ADD = '{929FBD26-9020-399B-9A7A-751D61F0B942}';
 
   // Visual C++ 2015 Redistributable 14.0.23026
   RP15_86_MIN = '{A2563E55-3BEC-3828-8D67-E5E8B9E8B675}';
@@ -36,10 +34,10 @@ begin
   Result := MsiQueryProductState(ProductId) = INSTALLSTATE_DEFAULT;
 end;
 
-function NeedInstallRP10(SetupMode: Integer): Boolean;
+function NeedInstallRP13(SetupMode: Integer): Boolean;
 begin
-  Result := ((SetupMode = 64) and not (IsMsiProductInstalled(RP10_64) or IsMsiProductInstalled(RP10_64SP1))) or
-            ((SetupMode = 32) and not (IsMsiProductInstalled(RP10_86) or IsMsiProductInstalled(RP10_86SP1)));
+  Result := ((SetupMode = 64) and not (IsMsiProductInstalled(RP13_64_MIN) or IsMsiProductInstalled(RP13_64_ADD))) or
+            ((SetupMode = 32) and not (IsMsiProductInstalled(RP13_86_MIN) or IsMsiProductInstalled(RP13_86_ADD)));
 end;
 
 function NeedInstallRP15(SetupMode: Integer): Boolean;
@@ -98,7 +96,7 @@ begin
              if not IsWin64 or not RegQueryStringValue(HKEY_LOCAL_MACHINE_64, 'SOFTWARE\Python\PythonCore\3.5-32\PythonPath', '', PythonPath) then begin
               if not RegQueryStringValue(HKEY_CURRENT_USER, 'SOFTWARE\Python\PythonCore\3.5\InstallPath', '', PythonPath) then begin
                 if not RegQueryStringValue(HKEY_CURRENT_USER, 'SOFTWARE\Wow6432Node\Python\PythonCore\3.5\InstallPath', '', PythonPath) then begin
-                  if not RegQueryStringValue(HKEY_CURRENT_USER, 'SOFTWARE\Python\PythonCore\3.5-32\PythonPath', '', PythonPath) then begin
+                  if not RegQueryStringValue(HKEY_CURRENT_USER, 'SOFTWARE\Python\PythonCore\3.5-32\InstallPath', '', PythonPath) then begin
                     Found := BrowseForFolder(CustomMessage('PythonNotFound'), PythonPath, False);
                   end;
                 end;
