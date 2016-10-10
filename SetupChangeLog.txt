@@ -50,3 +50,4 @@ Setup 1.3.0  - Erstellt am 08.10.2014 - AddInInterface "ito.AddIn.InterfaceBase/
 Setup 1.4.0  - Erstellt am 17.02.2015 - AddInInterface "ito.AddIn.InterfaceBase/1.3.1"
 Setup 2.0.0  - Erstellt am 20.07.2015 - AddInInterface "ito.AddIn.InterfaceBase/2.0.0"
 Setup 2.1.0  - Erstellt am 01.03.2016 - AddInInterface "ito.AddIn.InterfaceBase/2.3.0"
+Setup 2.2.0  - Erstellt am 06.10.2016 - AddInInterface "ito.AddIn.InterfaceBase/2.5.0"
