@@ -15,7 +15,7 @@
 
 ; You should change...
 #define SourceDirSys32 "C:\Windows\System32"
-;#define SourceRedistributable2010 "W:\m\ITOM\Installationen\1. MS VisualStudio 2010 Pro"
+#define SourceRedistributable2012 "W:\m\ITOM\Installationen\1. MS VisualStudio 2012 Pro"
 #define SourceRedistributable2013 "W:\m\ITOM\Installationen\1. MS VisualStudio 2013 Pro"
 #define SourceRedistributable2015 "W:\m\ITOM\Installationen\5. Python 3.5\64bit"
 #define SourceDirPython "W:\m\ITOM\Installationen\5. Python 3.5\64bit\Numpy1.11.1-Basis"
@@ -134,7 +134,8 @@ Name: "{app}\SDK"; Permissions: everyone-modify
 
 [Files]
 ; EXEs
-Source: "{#SourceRedistributable2013}\vcredist_x64.exe"; DestDir: "{tmp}"
+Source: "{#SourceRedistributable2012}\MS_VS_12_vcredist_x64.exe"; DestDir: "{tmp}"
+Source: "{#SourceRedistributable2013}\MS_VS_13_vcredist_x64.exe"; DestDir: "{tmp}"
 Source: "{#SourceRedistributable2015}\Redistributable Visual Studio 2015 x64.exe"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\{#FNPython}"; DestDir: "{tmp}"
 Source: "{#SourceDirPython}\{#FNPythonPip}"; DestDir: "{tmp}"
@@ -158,7 +159,8 @@ Source: "{#SourceDirPython}\{#FNPythonToolz}"; DestDir: "{tmp}"
 #include "itom_setup_win64_common_files.iss"
 
 [Run]
-Filename: "{tmp}\vcredist_x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2013 Redistributable Package (x64)..."; Components: CREDPACK2013;
+Filename: "{tmp}\MS_VS_12_vcredist_x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2012 Redistributable Package (x64)..."; Components: CREDPACK2012;
+Filename: "{tmp}\MS_VS_13_vcredist_x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2013 Redistributable Package (x64)..."; Components: CREDPACK2013;
 Filename: "{tmp}\Redistributable Visual Studio 2015 x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2015 Redistributable Package (x64)..."; Components: CREDPACK2015;
 Filename: "{tmp}\{#FNPython}"; Parameters: "TargetDir={%SystemDrive}\Python35 PrependPath=1 CompileAll=0"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPython} {#VePython}..."; Components: PYTHON; BeforeInstall: PythonBeforeInstall
 Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --upgrade --only-binary=:all: --no-index {tmp}\{#FNPythonPip}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPip}..."; Components: PYTHON
@@ -184,7 +186,8 @@ Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-
 Filename: "{app}\{#ExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(Name, "&", "&&")}}"; Components: Main
 
 [InstallDelete]
-Type: files; Name: "{tmp}\vcredist_x64.exe"
+Type: files; Name: "{tmp}\MS_VS_12_vcredist_x64.exe"
+Type: files; Name: "{tmp}\MS_VS_13_vcredist_x64.exe"
 Type: files; Name: "{tmp}\Redistributable Visual Studio 2015 x64.exe"
 Type: files; Name: "{tmp}\{#FNPython}"
 Type: files; Name: "{tmp}\{#FNPythonPip}"
@@ -211,6 +214,7 @@ Name: "Install"; Description: "Installation"; Flags: iscustom
 
 [Components]
 Name: "Main"; Description: "{#Name}"; Types: Install; Flags: checkablealone fixed
+Name: "CREDPACK2012"; Description: "Microsoft Visual C++ 2012 Redistributable Package (x64)"; Types: Install; Flags: checkablealone fixed; Check: NeedInstallRP12({#DSetupMode})
 Name: "CREDPACK2013"; Description: "Microsoft Visual C++ 2013 Redistributable Package (x64)"; Types: Install; Flags: checkablealone fixed; Check: NeedInstallRP13({#DSetupMode})
 Name: "CREDPACK2015"; Description: "Microsoft Visual C++ 2015 Redistributable Package (x64)"; Types: Install; Flags: checkablealone fixed; Check: NeedInstallRP15({#DSetupMode})
 Name: "PYTHON"; Description: "{#NaPython} {#VePython}"; Types: Install; Flags: checkablealone
