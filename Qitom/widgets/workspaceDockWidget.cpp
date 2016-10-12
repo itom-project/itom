@@ -615,8 +615,9 @@ void WorkspaceDockWidget::updateActions()
 
         if (num > 0)
         {
-//            actDeleteEnabled = m_actDelete->en
+			
             QList<QTreeWidgetItem*> items = m_pWorkspaceWidget->selectedItems();
+			num = items.size(); //workaround: sometimes num != items.size() !!!
 
             m_firstCurrentItem = NULL;
             while (m_firstCurrentItem == NULL && i < items.count())
