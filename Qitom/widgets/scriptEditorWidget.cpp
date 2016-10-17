@@ -34,9 +34,9 @@
 #include <Qsci/qsciprinter.h>
 #include <qmessagebox.h>
 #if QT_VERSION >= 0x050000
-#include <QtPrintSupport/qprintpreviewdialog.h>
+    #include <QtPrintSupport/qprintpreviewdialog.h>
 #else
-#include <qprintpreviewdialog.h>
+    #include <qprintpreviewdialog.h>
 #endif
 #include <qtooltip.h>
 #include <qtimer.h>
@@ -189,15 +189,15 @@ RetVal ScriptEditorWidget::initEditor()
     setMarginType(3, QsciScintilla::SymbolMargin); //!< breakpoint, syntax error margin
     setMarginType(4, QsciScintilla::SymbolMargin); //!< folding margin
 
-    markBreakPoint = markerDefine(QPixmap(":/breakpoints/icons/itomBreak.png"));
-    markCBreakPoint = markerDefine(QPixmap(":/breakpoints/icons/itomcBreak.png"));
-    markBreakPointDisabled = markerDefine(QPixmap(":/breakpoints/icons/itomBreakDisabled.png"));
-    markCBreakPointDisabled = markerDefine(QPixmap(":/breakpoints/icons/itomCBreakDisabled.png"));
-    markBookmark = markerDefine(QPixmap(":/bookmark/icons/bookmark.png"));
-    markSyntaxError = markerDefine(QPixmap(":/script/icons/syntaxError.png"));
-    markBookmarkSyntaxError = markerDefine(QPixmap(":/script/icons/bookmarkSyntaxError.png"));
+    markBreakPoint = markerDefine(loadMarker(":/breakpoints/icons/itomBreak.png", 16));
+    markCBreakPoint = markerDefine(loadMarker(":/breakpoints/icons/itomcBreak.png", 16));
+    markBreakPointDisabled = markerDefine(loadMarker(":/breakpoints/icons/itomBreakDisabled.png", 16));
+    markCBreakPointDisabled = markerDefine(loadMarker(":/breakpoints/icons/itomCBreakDisabled.png", 16));
+    markBookmark = markerDefine(loadMarker(":/bookmark/icons/bookmark.png", 16));
+    markSyntaxError = markerDefine(loadMarker(":/script/icons/syntaxError.png", 16));
+    markBookmarkSyntaxError = markerDefine(loadMarker(":/script/icons/bookmarkSyntaxError.png", 16));
 
-    markCurrentLine = markerDefine(QPixmap(":/script/icons/currentLine.png"));
+    markCurrentLine = markerDefine(loadMarker(":/script/icons/currentLine.png", 16));
     markCurrentLineHandle = -1;
 
     markMaskBreakpoints = (1 << markBreakPoint) | (1 << markCBreakPoint)  | (1 << markBreakPointDisabled)  | (1 << markCBreakPointDisabled) | (1 << markCurrentLine);

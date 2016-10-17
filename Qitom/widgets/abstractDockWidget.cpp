@@ -29,6 +29,7 @@
 
 #include "abstractDockWidget.h"
 #include "../AppManagement.h"
+#include "../helper/guiHelper.h"
 
 #include <qstyle.h>
 #include <QSpacerItem>
@@ -722,7 +723,9 @@ RetVal AbstractDockWidget::addToolBar(QToolBar *tb, const QString &key, Qt::Tool
     }
     else
     {
-        tb->setIconSize(QSize(16, 16));
+        //adjust the height of the toolbar in docked status to 16 px with a 96dpi screen and scale it to other pixels for higher resolving screens.
+        int size = 16 * GuiHelper::getScreenLogicalDpi() / 96;
+        tb->setIconSize(QSize(size, size));
     }
 
     if (area == Qt::TopToolBarArea)
