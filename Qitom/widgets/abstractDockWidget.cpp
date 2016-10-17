@@ -724,7 +724,7 @@ RetVal AbstractDockWidget::addToolBar(QToolBar *tb, const QString &key, Qt::Tool
     else
     {
         //adjust the height of the toolbar in docked status to 16 px with a 96dpi screen and scale it to other pixels for higher resolving screens.
-        int size = 16 * GuiHelper::getScreenLogicalDpi() / 96;
+        int size = 16 * GuiHelper::screenDpiFactor();
         tb->setIconSize(QSize(size, size));
     }
 
@@ -977,16 +977,18 @@ void AbstractDockWidget::dockWidget()
 
     windowStateChanged(false);
 
+    float dpiScale = GuiHelper::screenDpiFactor();
+
     if (m_dockToolbar)
     {
-        m_dockToolbar->setIconSize(QSize(20, 15));
-        m_dockToolbar->setMinimumWidth(49);
+        m_dockToolbar->setIconSize(QSize(20 * dpiScale, 15 * dpiScale));
+        m_dockToolbar->setMinimumWidth(49 * dpiScale);
     }
 
     QList<Toolbar>::iterator it;
     for (it = m_toolbars.begin(); it != m_toolbars.end(); ++it)
     {
-        it->tb->setIconSize(QSize(16, 16));
+        it->tb->setIconSize(QSize(16 * dpiScale, 16 * dpiScale));
     }
 
     setAdvancedWindowTitle();
@@ -1005,6 +1007,7 @@ void AbstractDockWidget::undockWidget(bool show_it /*= true*/)
 {
     bool m_docked_old = m_docked;
     m_docked = false;
+    float dpiFactor = GuiHelper::screenDpiFactor();
 
     if (m_floatingStyle == floatingWindow)
     {
@@ -1093,7 +1096,7 @@ void AbstractDockWidget::undockWidget(bool show_it /*= true*/)
 
         if (m_dockToolbar)
         {
-            m_dockToolbar->setIconSize(QSize(20, 15));
+            m_dockToolbar->setIconSize(QSize(20 * dpiFactor, 15 * dpiFactor));
         }
     }
 
@@ -1106,13 +1109,13 @@ void AbstractDockWidget::undockWidget(bool show_it /*= true*/)
         }
         else
         {
-            it->tb->setIconSize(QSize(16, 16));
+            it->tb->setIconSize(QSize(16 * dpiFactor, 16 * dpiFactor));
         }
     }
 
     if (m_dockToolbar)
     {
-        m_dockToolbar->setMinimumWidth(55);
+        m_dockToolbar->setMinimumWidth(55 * dpiFactor);
     }
 
     setAdvancedWindowTitle();

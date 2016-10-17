@@ -29,6 +29,8 @@
     #include <qapplication.h>
 #endif
 
+#include <qglobal.h>
+
 namespace ito
 {
     int GuiHelper::dpi = 0;
@@ -87,5 +89,12 @@ namespace ito
         }
 
         return dpi;
+    }
+
+    //-------------------------------------------------------------------------------------
+    float GuiHelper::screenDpiFactor()
+    {
+        int dpi = getScreenLogicalDpi();
+        return qBound(1.0, (float)dpi / 96.0, 1.e10);
     }
 };

@@ -27,6 +27,7 @@
 
 #include "../global.h"
 #include "../Qitom/AppManagement.h"
+#include "../helper/guiHelper.h"
 
 #include <qfileinfo.h>
 #include "../ui/dialogEditBreakpoint.h"
@@ -174,10 +175,12 @@ RetVal ScriptEditorWidget::initEditor()
         setMarginSensitivity(i, false);
     }
 
-    setMarginWidth(1, 16);
+    float dpiFactor = GuiHelper::screenDpiFactor();
 
-    setMarginWidth(3, 18);
-    setMarginWidth(4, 18);
+    setMarginWidth(1, 16 * dpiFactor);
+
+    setMarginWidth(3, 18 * dpiFactor);
+    setMarginWidth(4, 18 * dpiFactor);
 
     setMarginSensitivity(1, true);
     setMarginSensitivity(3, true);

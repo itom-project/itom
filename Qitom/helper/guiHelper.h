@@ -33,6 +33,7 @@ namespace ito
     {
     public:
         static int getScreenLogicalDpi(bool *ok = NULL);
+        static float screenDpiFactor(); /*!< returns a factor [1,..) by which user interface components can be scaled due to high resolution screens. A factor of 1.0 is related to the default 96dpi screen. */
 
     private:
         static int dpi;
