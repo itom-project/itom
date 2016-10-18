@@ -106,11 +106,6 @@
         <file>icons/dirPaste.png</file>
     </qresource>
     <qresource prefix="/breakpoints">
-        <file>icons/breakpointToggle.png</file>
-        <file>icons/cBreak.png</file>
-        <file>icons/cBreakpointToggle.png</file>
-        <file>icons/break.png</file>
-        <file>icons/breakDisabled.png</file>
         <file>icons/itomBreak.png</file>
         <file>icons/itomcBreak.png</file>
         <file>icons/itomBreakDisable.png</file>
