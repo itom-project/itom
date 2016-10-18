@@ -225,12 +225,27 @@ int PythonTimer::PyTimer_init(PyTimer *self, PyObject *args, PyObject *kwds)
         return -1;
     }
 
-    self->timer->setSingleShot(singleShot > 0);
+    self->timer->setSingleShot(singleShot > 0); 
     self->timer->start();
-	UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
-	QPointer<QTimer> qTimerPtr(self->timer);
-	QString timerID(QString::number(self->timer->timerId()));
-	QMetaObject::invokeMethod(uiOrg, "registerActiveTimer", Q_ARG(QPointer<QTimer>, qTimerPtr), Q_ARG(QString, timerID));
+    if (self->timer->timerId() == 0)
+    {
+        if (PyErr_WarnEx(PyExc_RuntimeWarning, "timer object could not be created (e.g. negative interval, timer can only be used in threads started with QThread or timers cannot be started from another thread)", 1) == -1) //exception is raised instead of warning (depending on user defined warning levels)
+        {
+            DELETE_AND_SET_NULL(self->timer);
+            Py_XDECREF(self->callbackFunc->m_callbackArgs);
+            DELETE_AND_SET_NULL(self->callbackFunc);
+            return -1;
+        }
+    }
+    else
+    {
+        //send timer to timer dialog of main window
+        UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
+        QPointer<QTimer> qTimerPtr(self->timer);
+        QString timerID(QString::number(self->timer->timerId()));
+        QMetaObject::invokeMethod(uiOrg, "registerActiveTimer", Q_ARG(QPointer<QTimer>, qTimerPtr), Q_ARG(QString, timerID));
+    }
+
     return 0;
 }
 
