@@ -89,7 +89,6 @@
         <file>icons/plus.png</file>
     </qresource>
     <qresource prefix="/files">
-        <file>icons/fileModified.png</file>
         <file>icons/filePython.png</file>
         <file>icons/fileSave.png</file>
         <file>icons/fileSaveAll.png</file>
@@ -164,11 +163,6 @@
         <file>icons/import-prop-icon.png</file>
     </qresource>
     <qresource prefix="/plots">
-        <file>icons/lineDash.png</file>
-        <file>icons/lineDashDot.png</file>
-        <file>icons/lineDashDotDot.png</file>
-        <file>icons/lineDot.png</file>
-        <file>icons/lineSolid.png</file>
         <file>icons/zoom-3.png</file>
         <file>icons/move.png</file>
         <file>icons/print.png</file>
