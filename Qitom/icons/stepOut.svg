@@ -14,8 +14,8 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.5 r10040"
-   sodipodi:docname="continueToCursor.svg"
-   inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\step.png"
+   sodipodi:docname="stepOut.svg"
+   inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\stepOut.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -131,6 +131,70 @@
          style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;"
          transform="scale(0.4) rotate(180) translate(10,0)" />
     </marker>
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       inkscape:label="Drop Shadow"
+       id="filter3023">
+      <feFlood
+         flood-opacity="0.5"
+         flood-color="rgb(0,0,0)"
+         result="flood"
+         id="feFlood3025" />
+      <feComposite
+         in="flood"
+         in2="SourceGraphic"
+         operator="in"
+         result="composite1"
+         id="feComposite3027" />
+      <feGaussianBlur
+         in="composite"
+         stdDeviation="2"
+         result="blur"
+         id="feGaussianBlur3029" />
+      <feOffset
+         dx="2"
+         dy="-2"
+         result="offset"
+         id="feOffset3031" />
+      <feComposite
+         in="SourceGraphic"
+         in2="offset"
+         operator="over"
+         result="composite2"
+         id="feComposite3033" />
+    </filter>
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       inkscape:label="Drop Shadow"
+       id="filter3162">
+      <feFlood
+         flood-opacity="0.5"
+         flood-color="rgb(0,0,0)"
+         result="flood"
+         id="feFlood3164" />
+      <feComposite
+         in="flood"
+         in2="SourceGraphic"
+         operator="in"
+         result="composite1"
+         id="feComposite3166" />
+      <feGaussianBlur
+         in="composite"
+         stdDeviation="2"
+         result="blur"
+         id="feGaussianBlur3168" />
+      <feOffset
+         dx="2"
+         dy="2"
+         result="offset"
+         id="feOffset3170" />
+      <feComposite
+         in="SourceGraphic"
+         in2="offset"
+         operator="over"
+         result="composite2"
+         id="feComposite3172" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -146,8 +210,8 @@
      inkscape:current-layer="g8207"
      showgrid="true"
      inkscape:window-width="1920"
-     inkscape:window-height="1148"
-     inkscape:window-x="-8"
+     inkscape:window-height="1178"
+     inkscape:window-x="1912"
      inkscape:window-y="-8"
      inkscape:window-maximized="1">
     <inkscape:grid
@@ -189,21 +253,15 @@
            sodipodi:cy="14"
            sodipodi:rx="5"
            sodipodi:ry="5"
-           d="M 42.892939,9.9218996 A 5,5 0 0 1 40,19"
+           d="M 42.892939,9.9218996 C 45.145212,11.519626 45.675827,14.640666 44.0781,16.892939 43.140501,18.214649 41.620497,19 40,19"
            transform="matrix(-4.8717989,0,0,4.8717989,216.75729,962.11802)"
            sodipodi:start="5.3293852"
            sodipodi:end="7.8539816"
            sodipodi:open="true" />
-        <rect
-           style="fill:#1183f7;fill-opacity:1;stroke:none"
-           id="rect3822-4"
-           width="25.360008"
-           height="6.3399734"
-           x="45.977337"
-           y="1028.0542" />
         <g
            id="g4070"
-           transform="matrix(1,0,0,-1,0,2007.9244)">
+           transform="matrix(1,0,0,-1,0,2007.9244)"
+           style="filter:url(#filter3023)">
           <path
              style="fill:#1183f7;fill-opacity:1;stroke:none"
              d="m 11.741326,1025.5182 19.02,-11.412 -19.02,-11.412 z"
@@ -217,34 +275,45 @@
              d="m 28.225331,988.74618 -19.0200064,0 c -6.340002,0 -12.680004,6.34 -12.680004,12.68002 l -1e-7,0 c 0,6.34 6.3400021,12.68 12.6800041,12.68 l 6.3400024,0"
              style="fill:none;stroke:#1183f7;stroke-width:7.60800266;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none" />
         </g>
-        <rect
-           style="fill:#1183f7;fill-opacity:1;stroke:none"
-           id="rect3822-4-4-82"
-           width="46.916016"
-           height="6.3400116"
-           x="24.421329"
-           y="1002.6942" />
-        <rect
-           style="fill:#1183f7;fill-opacity:1;stroke:none"
-           id="rect3822-4-1"
-           width="25.360008"
-           height="6.339962"
-           x="45.977337"
-           y="1015.3742" />
-        <rect
-           style="fill:#1183f7;fill-opacity:1;stroke:none"
-           id="rect3822-4-7"
-           width="25.360008"
-           height="6.3399849"
-           x="45.977337"
-           y="1040.7343" />
-        <rect
-           style="fill:#1183f7;fill-opacity:1;stroke:none"
-           id="rect3822-4-4-82-1"
-           width="46.916016"
-           height="6.3400574"
-           x="24.421329"
-           y="1053.4142" />
+        <g
+           id="g3155"
+           style="filter:url(#filter3162)">
+          <rect
+             y="1026.7861"
+             x="44.709335"
+             height="6.3399734"
+             width="25.360008"
+             id="rect3822-4"
+             style="fill:#1183f7;fill-opacity:1;stroke:none" />
+          <rect
+             y="1001.4262"
+             x="23.15333"
+             height="6.3400116"
+             width="46.916016"
+             id="rect3822-4-4-82"
+             style="fill:#1183f7;fill-opacity:1;stroke:none" />
+          <rect
+             y="1014.1062"
+             x="44.709335"
+             height="6.339962"
+             width="25.360008"
+             id="rect3822-4-1"
+             style="fill:#1183f7;fill-opacity:1;stroke:none" />
+          <rect
+             y="1039.4662"
+             x="44.709335"
+             height="6.3399849"
+             width="25.360008"
+             id="rect3822-4-7"
+             style="fill:#1183f7;fill-opacity:1;stroke:none" />
+          <rect
+             y="1052.1461"
+             x="23.15333"
+             height="6.3400574"
+             width="46.916016"
+             id="rect3822-4-4-82-1"
+             style="fill:#1183f7;fill-opacity:1;stroke:none" />
+        </g>
       </g>
     </g>
   </g>

@@ -131,6 +131,70 @@
          style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;"
          transform="scale(0.4) rotate(180) translate(10,0)" />
     </marker>
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       inkscape:label="Drop Shadow"
+       id="filter3066">
+      <feFlood
+         flood-opacity="0.5"
+         flood-color="rgb(0,0,0)"
+         result="flood"
+         id="feFlood3068" />
+      <feComposite
+         in="flood"
+         in2="SourceGraphic"
+         operator="in"
+         result="composite1"
+         id="feComposite3070" />
+      <feGaussianBlur
+         in="composite"
+         stdDeviation="2"
+         result="blur"
+         id="feGaussianBlur3072" />
+      <feOffset
+         dx="2"
+         dy="-2"
+         result="offset"
+         id="feOffset3074" />
+      <feComposite
+         in="SourceGraphic"
+         in2="offset"
+         operator="over"
+         result="composite2"
+         id="feComposite3076" />
+    </filter>
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       inkscape:label="Drop Shadow"
+       id="filter3078">
+      <feFlood
+         flood-opacity="0.5"
+         flood-color="rgb(0,0,0)"
+         result="flood"
+         id="feFlood3080" />
+      <feComposite
+         in="flood"
+         in2="SourceGraphic"
+         operator="in"
+         result="composite1"
+         id="feComposite3082" />
+      <feGaussianBlur
+         in="composite"
+         stdDeviation="2"
+         result="blur"
+         id="feGaussianBlur3084" />
+      <feOffset
+         dx="2"
+         dy="-2"
+         result="offset"
+         id="feOffset3086" />
+      <feComposite
+         in="SourceGraphic"
+         in2="offset"
+         operator="over"
+         result="composite2"
+         id="feComposite3088" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -140,14 +204,14 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="11.2"
-     inkscape:cx="11.83414"
-     inkscape:cy="36.470708"
+     inkscape:cx="47.101997"
+     inkscape:cy="30.488565"
      inkscape:document-units="px"
-     inkscape:current-layer="g3931"
+     inkscape:current-layer="g4070"
      showgrid="true"
      inkscape:window-width="1920"
-     inkscape:window-height="1148"
-     inkscape:window-x="-8"
+     inkscape:window-height="1178"
+     inkscape:window-x="1912"
      inkscape:window-y="-8"
      inkscape:window-maximized="1">
     <inkscape:grid
@@ -186,36 +250,43 @@
            id="g4070"
            transform="matrix(1,0,0,-1,2.1166843e-8,2044.6964)">
           <g
-             id="g3931">
-            <path
-               sodipodi:nodetypes="cccc"
-               inkscape:connector-curvature="0"
-               id="path8176-8"
-               d="m 16.813327,1063.5582 22.824007,-13.948 -22.824007,-13.948 z"
-               style="fill:#1183f7;fill-opacity:1;stroke:none" />
-            <path
-               style="fill:none;stroke:#1183f7;stroke-width:7.60800266;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none"
-               d="m 21.885329,998.8902 -6.340002,0 c -19.0200066,0 -19.0200066,19.02 -19.0200066,19.02 l 0,12.68 c 0,0 0,19.02 19.0200066,19.02 l 1.268,0"
-               id="path3907"
-               inkscape:connector-curvature="0"
-               sodipodi:nodetypes="ccccsc" />
-          </g>
+             id="g3931"
+             style="filter:url(#filter3066)" />
           <g
-             transform="matrix(-1,0,0,-1,64.058664,2048.5004)"
-             style="stroke-width:6.34000206;stroke-miterlimit:1;stroke-dasharray:none"
-             id="g3931-2">
+             id="g3011"
+             transform="matrix(0.96774193,0,0,0.96774193,1.0332043,33.040333)"
+             style="filter:url(#filter3078)">
             <path
-               sodipodi:nodetypes="cccc"
-               inkscape:connector-curvature="0"
-               id="path8176-8-2"
+               style="fill:#1183f7;fill-opacity:1;stroke:none"
                d="m 16.813327,1063.5582 22.824007,-13.948 -22.824007,-13.948 z"
-               style="fill:#1183f7;fill-opacity:1;stroke:none" />
-            <path
-               style="fill:none;stroke:#1183f7;stroke-width:7.60800266;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none"
-               d="m 21.885329,998.8902 -6.340002,0 c -19.0200066,0 -19.0200066,19.02 -19.0200066,19.02 l 0,12.68 c 0,0 0,19.02 19.0200066,19.02 l 1.268,0"
-               id="path3907-1"
+               id="path8176-8"
                inkscape:connector-curvature="0"
-               sodipodi:nodetypes="ccccsc" />
+               sodipodi:nodetypes="cccc"
+               transform="translate(-2.1166844e-8,-5.7057582e-6)" />
+            <path
+               sodipodi:nodetypes="ccccsc"
+               inkscape:connector-curvature="0"
+               id="path3907"
+               d="m 21.885329,998.8902 -6.340002,0 c -19.0200066,0 -19.0200066,19.02 -19.0200066,19.02 l 0,12.68 c 0,0 0,19.02 19.0200066,19.02 l 1.268,0"
+               style="fill:none;stroke:#1183f7;stroke-width:7.60800266;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none"
+               transform="translate(-2.1166844e-8,-5.7057582e-6)" />
+            <g
+               id="g3931-2"
+               style="stroke-width:6.34000206;stroke-miterlimit:1;stroke-dasharray:none"
+               transform="matrix(-1,0,0,-1,64.058664,2048.5004)">
+              <path
+                 style="fill:#1183f7;fill-opacity:1;stroke:none"
+                 d="m 16.813327,1063.5582 22.824007,-13.948 -22.824007,-13.948 z"
+                 id="path8176-8-2"
+                 inkscape:connector-curvature="0"
+                 sodipodi:nodetypes="cccc" />
+              <path
+                 sodipodi:nodetypes="ccccsc"
+                 inkscape:connector-curvature="0"
+                 id="path3907-1"
+                 d="m 21.885329,998.8902 -6.340002,0 c -19.0200066,0 -19.0200066,19.02 -19.0200066,19.02 l 0,12.68 c 0,0 0,19.02 19.0200066,19.02 l 1.268,0"
+                 style="fill:none;stroke:#1183f7;stroke-width:7.60800266;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none" />
+            </g>
           </g>
         </g>
       </g>
