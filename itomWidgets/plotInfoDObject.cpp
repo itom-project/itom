@@ -83,6 +83,9 @@ void PlotInfoDObject::updateInfoHeader(const QString typeString, const int dType
 	case ito::tComplex128:
 		baseText.append("\n\nType: complex128\n");
 		break;
+    case ito::tRGBA32:
+        baseText.append("\n\nType: rgba32\n");
+        break;
 	default:
 		baseText.append("\n\nUndefined type!");
 		m_valid = false;
