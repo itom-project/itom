@@ -32,6 +32,7 @@
 #include "widgets/scriptDockWidget.h"
 #include "./ui/dialogSelectUser.h"
 #include "ui/dialogPipManager.h"
+#include "ui/dialogCloseItom.h"
 #include "DataObject/dataobj.h"
 
 #include <qsettings.h>
@@ -755,36 +756,39 @@ void MainApplication::mainWindowCloseRequest()
 
     QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings->beginGroup("MainWindow");
-    if (settings->value("askBeforeClose", false).toBool())
-    {
-        QMessageBox msgBox;
-            msgBox.setText(tr("Do you really want to exit the application?"));
-            msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
-            msgBox.setDefaultButton(QMessageBox::Ok);
-            msgBox.setIcon(QMessageBox::Question);
-            int ret = msgBox.exec();
 
-            if (ret == QMessageBox::Cancel)
-            {
-                settings->endGroup();
-                delete settings;
-                return;
-            }  
-    }
-    settings->endGroup();
-    delete settings;
+	bool pythonStopped = false;
 
-    if (m_pyEngine != NULL)
-    {
-        if (m_pyEngine->isPythonBusy())
-        {
-            QMessageBox msgBox;
-            msgBox.setText(tr("Python is still running. Please close it first before shutting down this application"));
-            msgBox.exec();
-            retValue += RetVal(retError);
-        }
-    }
+	if (m_pyEngine != NULL && m_pyEngine->isPythonBusy())
+	{
+		DialogCloseItom *dialog = new DialogCloseItom(NULL);
 
+		if (dialog->exec() == QDialog::Accepted)
+		{
+			pythonStopped = true;
+		}
+
+		DELETE_AND_SET_NULL(dialog);
+	}
+	else if (settings->value("askBeforeClose", false).toBool() && !pythonStopped)
+	{
+		QMessageBox msgBox;
+		msgBox.setText(tr("Do you really want to exit the application?"));
+		msgBox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);
+		msgBox.setDefaultButton(QMessageBox::Ok);
+		msgBox.setIcon(QMessageBox::Question);
+		int ret = msgBox.exec();
+
+		if (ret == QMessageBox::Cancel)
+		{
+			settings->endGroup();
+			delete settings;
+			return;
+		}
+	}
+	settings->endGroup();
+	delete settings;
+    
     if (retValue.containsError()) return;
 
     //saves the state of all opened scripts to the settings file
@@ -801,6 +805,9 @@ void MainApplication::mainWindowCloseRequest()
         QApplication::instance()->quit();
     }
 }
+
+//----------------------------------------------------------------------------------------------------------------------------------
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! exececution of the main event loop
