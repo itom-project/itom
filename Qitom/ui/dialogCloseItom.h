@@ -45,6 +45,7 @@ public:
 
 protected:
 	void timerEvent(QTimerEvent *event);
+    void closeEvent(QCloseEvent *event);
 
 private:
     Ui::DialogCloseItom ui;
@@ -54,8 +55,8 @@ private:
 	int m_timerID;
 
 private slots:
-	void on_pushButtonOk_clicked();
-	void on_pushButtonCancel_clicked();
+    void on_btnInterrupt_clicked();
+    void on_btnCancel_clicked();
 
 };
 

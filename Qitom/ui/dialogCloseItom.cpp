@@ -23,13 +23,16 @@
 #include "dialogCloseItom.h"
 
 #include "../AppManagement.h"
+#include "../helper/guiHelper.h"
 
 #include <QTimerEvent>
+#include <QCloseEvent>
 #include <qmovie.h>
 
 namespace ito
 {
 
+    //------------------------------------------------------------------------------------------------------
 DialogCloseItom::DialogCloseItom(QWidget *parent) :
     QDialog(parent),
 	m_secondsToWait(20),
@@ -39,32 +42,35 @@ DialogCloseItom::DialogCloseItom(QWidget *parent) :
     ui.setupUi(this);
 	
     setWindowModality(Qt::WindowModal);
-	ui.pushButtonOk->setFocus();
+    ui.btnInterrupt->setDefault(true);
 
 	ui.progressBarClose->setValue(0);
 	ui.progressBarClose->setMaximum(m_secondsToWait);
 	ui.progressBarClose->setVisible(false);
 	QPixmap pixmap(":/script/icons/stopScript.png");
-	ui.labelImage->setPixmap(pixmap.scaled(32,32, Qt::KeepAspectRatio));
+    float dpiFactor = GuiHelper::screenDpiFactor(); //factor related to 96dpi (1.0)
+    ui.labelImage->setPixmap(pixmap.scaled(32.0 / dpiFactor, 32.0 / dpiFactor, Qt::KeepAspectRatio));
 
 }
 
-void DialogCloseItom::on_pushButtonOk_clicked()
+//------------------------------------------------------------------------------------------------------
+void DialogCloseItom::on_btnInterrupt_clicked()
 {
 	PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 
 	if (pyEngine)
 	{
-
-		//QPixmap pixmap(":/script/icons/loader32x32trans.gif");
 		QMovie *loadGif = new QMovie(":/application/icons/loader32x32trans.gif");
 
 		ui.labelImage->setMovie(loadGif);
 		loadGif->start();
+
+        ui.lbl2->setText(tr("Try to interrupt Python..."));
 		
 		pyEngine->pythonInterruptExecution(); // close python
 		
-		ui.pushButtonOk->setEnabled(false);
+        ui.btnInterrupt->setEnabled(false);
+        ui.btnCancel->setEnabled(false);
 		ui.progressBarClose->setVisible(true);
 		m_secondsElapsed = 0.0;
 		m_timerID = startTimer(500);
@@ -73,16 +79,18 @@ void DialogCloseItom::on_pushButtonOk_clicked()
 
 }
 
-void DialogCloseItom::on_pushButtonCancel_clicked()
+//------------------------------------------------------------------------------------------------------
+void DialogCloseItom::on_btnCancel_clicked()
 {
 	reject();
 }
 
+//------------------------------------------------------------------------------------------------------
 void DialogCloseItom::timerEvent(QTimerEvent *event)
 {
 	m_secondsElapsed += 0.5;
 	
-	ui.progressBarClose->setValue(ui.progressBarClose->maximum() * m_secondsElapsed / (float)m_secondsToWait);
+	ui.progressBarClose->setValue(m_secondsElapsed);
 	PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
 	if (!pyEngine->isPythonBusy())
 	{
@@ -93,8 +101,29 @@ void DialogCloseItom::timerEvent(QTimerEvent *event)
 	{
 		//do something, message box...
 		killTimer(m_timerID);
-		reject();
+
+        ui.btnInterrupt->setEnabled(true);
+        ui.btnCancel->setEnabled(true);
+        ui.progressBarClose->setVisible(false);
+
+        ui.lbl2->setText(tr("Python did not stop. Do you want to retry to interrupt Python?"));
 	}
+}
+
+//------------------------------------------------------------------------------------------------------
+void DialogCloseItom::closeEvent(QCloseEvent *event)
+{
+    //this event is called if the user tries to close the dialog by the close-button in the title bar.
+    //Ignore this event if the python interruption process is currently running.
+
+    if (ui.progressBarClose->isVisible())
+    {
+        event->ignore();
+    }
+    else
+    {
+        event->accept();
+    }
 }
 
 } //end namespace ito

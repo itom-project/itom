@@ -92,6 +92,10 @@ namespace ito
     }
 
     //-------------------------------------------------------------------------------------
+    /* returns a screen dpi scaling factor >= 1. A factor of 1 is related to a default
+       screen resolution of 96dpi. A factor higher than 1 is the factor between 
+       real screen resolution and 96dpi. 
+    */
     float GuiHelper::screenDpiFactor()
     {
         int dpi = getScreenLogicalDpi();
