@@ -33,6 +33,14 @@
 #include <vector>
 #include <map>
 
+#ifdef USEOPENMP
+#define USEOMP 1
+#else
+#define USEOMP 0
+#endif
+// need to implement this function, just for testing of openmp funcitonality
+int getMaximumThreadCount() { return 2; }
+
 namespace ito {
 
 
@@ -325,7 +333,6 @@ void DObjConstIterator::seekAbs(int ofs)
 
             if(planeContinuous)
             {
-                
                 //sliceStart = dObj->rowPtr(plane, 0 );
                 matIndex = dObj->seekMat(plane);
                 sliceStart = (dObj->get_mdata()[matIndex])->data;
@@ -548,7 +555,6 @@ uchar* DObjIterator::operator [](int i)
     return (*it2);
 }
     
-
 //-------------------------------------------------------------------------  
 //! shifts the iterator forward by the specified number of elements
 DObjIterator& DObjIterator::operator += (int ofs)
@@ -613,7 +619,6 @@ DObjIterator DObjIterator::operator ++(int)
     *this += 1;
     return b;
 }
-
 
 /*!
     \class DataObject
@@ -886,7 +891,6 @@ DataObject::~DataObject(void)
 {
     freeData();
 }
-
 
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1827,8 +1831,6 @@ void DataObject::create(const unsigned char dimensions, const int *sizes, const 
 */
 template<typename _Tp> RetVal FreeFunc(DataObject *dObj)
 {
-   cv::Mat_<_Tp> *dataMat = NULL;
-
    // clear header
    if (dObj->m_roi.m_p) // m_roi.m_p-1 is the pointer mapping to the first element of [size of roi , roi-vector , size of osize, osize-vector, size of size, size-vector]
    {
@@ -1852,13 +1854,22 @@ template<typename _Tp> RetVal FreeFunc(DataObject *dObj)
             CV_XADD(dObj->m_pRefCount, -1);
 
             //this version of deleting the m_data vector is much faster than the version above (M. Gronle, 13.02.2012)
-//            unsigned int size = dObj->m_data.size();
+            //            unsigned int size = dObj->m_data.size();
             int size = dObj->mdata_size();
-            for ( int i = 0 ; i < size ; i++)
+
+#if (USEOMP)
+            #pragma omp parallel num_threads(getMaximumThreadCount())
             {
-                dataMat = (cv::Mat_<_Tp> *)dObj->m_data[i];
+            #pragma omp for schedule(guided)
+#endif
+            for (int i = 0; i < size; i++)
+            {
+                cv::Mat_<_Tp> *dataMat = (cv::Mat_<_Tp> *)dObj->m_data[i];
                 delete dataMat;
             }
+#if (USEOMP)
+            }
+#endif
             dObj->mdata_free();
 
             dObj->m_pRefCount = NULL;
@@ -1881,18 +1892,26 @@ template<typename _Tp> RetVal FreeFunc(DataObject *dObj)
     //check if the data has been allocated "en bloc" and delete the data first.
     if (dObj->m_continuous && old_m_dims > 2 && dObj->m_owndata)
     {
-        dataMat = (cv::Mat_<_Tp> *)dObj->m_data[0];
+        cv::Mat_<_Tp> *dataMat = (cv::Mat_<_Tp> *)dObj->m_data[0];
         free((void*)dataMat->datastart); //data is wrong, since data-pointer does not point to start in case of ROI
     }
 
     //this version of deleting the m_data vector is much faster than the version above (M. Gronle, 13.02.2012)
 //    unsigned int size = dObj->m_data.size();
     int size = dObj->mdata_size();
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+    {
+#pragma omp for schedule(guided)
+#endif
     for ( int i = 0 ; i < size ; i++)
     {
-        dataMat = (cv::Mat_<_Tp> *)dObj->m_data[i];
+        cv::Mat_<_Tp> *dataMat = (cv::Mat_<_Tp> *)dObj->m_data[i];
         delete dataMat;
     }
+#if (USEOMP)
+    }
+#endif
     dObj->mdata_free();
 
     return ito::retOk;
@@ -1914,7 +1933,6 @@ void DataObject::freeData(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 template<typename _Tp> RetVal SecureFreeFunc(DataObject *dObj)
 {
-   cv::Mat_<_Tp> *dataMat = NULL;
    int old_m_dims = dObj->m_dims;
 
    // clear header
@@ -1937,14 +1955,25 @@ template<typename _Tp> RetVal SecureFreeFunc(DataObject *dObj)
             CV_XADD(dObj->m_pRefCount, -1);
 
             //delete cvMats in m_data array (OpenCV organizes the rest)
-            if(dObj->m_data)
+            if (dObj->m_data)
             {
                 int size = dObj->mdata_size();
-                for ( int i = 0 ; i < size ; i++)
+#if (USEOMP)
+                #pragma omp parallel num_threads(getMaximumThreadCount())
+                {
+#endif
+                cv::Mat_<_Tp> *dataMat = NULL;
+#if (USEOMP)
+                #pragma omp for schedule(guided)
+#endif
+                for (int i = 0; i < size; i++)
                 {
                     dataMat = (cv::Mat_<_Tp> *)dObj->m_data[i];
-                    if(dataMat) delete dataMat;
+                    if (dataMat) delete dataMat;
                 }
+#if (USEOMP)
+                }
+#endif
                 dObj->mdata_free();
             }
 
@@ -1965,23 +1994,34 @@ template<typename _Tp> RetVal SecureFreeFunc(DataObject *dObj)
     //this section is only entered if we are the last to use the data or if no reference counter has been set (the latter usually should not happen)
     int numMats = dObj->mdata_size();
 
-    if(numMats > 0)
+    if (numMats > 0)
     {
         //check if the data has been allocated "en bloc" and delete the data first.
         if (dObj->m_continuous && old_m_dims > 2 && dObj->m_owndata)
         {
-            dataMat = (cv::Mat_<_Tp> *)dObj->m_data[0];
-            if(dataMat && dataMat->datastart)
+            cv::Mat_<_Tp> *dataMat = (cv::Mat_<_Tp> *)dObj->m_data[0];
+            if (dataMat && dataMat->datastart)
             {
                 free((void*)dataMat->datastart);
             }
         }
 
-        for ( int i = 0 ; i < numMats ; i++)
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+        cv::Mat_<_Tp> *dataMat = NULL;
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif
+        for (int i = 0; i < numMats; i++)
         {
             dataMat = (cv::Mat_<_Tp> *)dObj->m_data[i];
-            if(dataMat) delete dataMat;
+            if (dataMat) delete dataMat;
         }
+#if (USEOMP)
+        }
+#endif
 
         dObj->mdata_free();
     }
@@ -2115,43 +2155,43 @@ int DataObject::getPhysToPix2D(const double physY, double &tPxY, bool &isInsideI
 
     if(m_dims < 2)
     {           
-            tPxY = physY;
-            if(physY != 0.0)
-            {
-                isInsideImageY = false;
-            }
+        tPxY = physY;
+        if(physY != 0.0)
+        {
+            isInsideImageY = false;
+        }
 
-            tPxX = physX / getAxisScale(0) + getAxisOffset(0); //m_pDataObjectTags->m_axisScales[0] + m_pDataObjectTags->m_axisOffsets[0];
+        tPxX = physX / getAxisScale(0) + getAxisOffset(0); //m_pDataObjectTags->m_axisScales[0] + m_pDataObjectTags->m_axisOffsets[0];
 
-            if(tPxX > m_size[0] - 1)
-            {
-                isInsideImageX = false;
-                tPxX = static_cast<double>(m_size[0] - 1);
-            }                
+        if(tPxX > m_size[0] - 1)
+        {
+            isInsideImageX = false;
+            tPxX = static_cast<double>(m_size[0] - 1);
+        }                
     }
     else
     {             
-            if(m_pDataObjectTags)
-            {
-                tPxX = physX / getAxisScale(m_dims - 1) + getAxisOffset(m_dims - 1);
-                tPxY = physY / getAxisScale(m_dims - 2) + getAxisOffset(m_dims - 2);
-            }
-            else
-            {
-                tPxX = physX;
-                tPxY = physY;
-            }
+        if(m_pDataObjectTags)
+        {
+            tPxX = physX / getAxisScale(m_dims - 1) + getAxisOffset(m_dims - 1);
+            tPxY = physY / getAxisScale(m_dims - 2) + getAxisOffset(m_dims - 2);
+        }
+        else
+        {
+            tPxX = physX;
+            tPxY = physY;
+        }
 
-            if(tPxY > m_size[m_dims - 2] - 1)
-            {
-                isInsideImageY = false;
-                tPxY = static_cast<double>(m_size[m_dims - 2] - 1);
-            }
-            if(tPxX > m_size[m_dims - 1] - 1)
-            {
-                isInsideImageX = false;
-                tPxX = static_cast<double>(m_size[m_dims - 1] - 1);
-            }                
+        if(tPxY > m_size[m_dims - 2] - 1)
+        {
+            isInsideImageY = false;
+            tPxY = static_cast<double>(m_size[m_dims - 2] - 1);
+        }
+        if(tPxX > m_size[m_dims - 1] - 1)
+        {
+            isInsideImageX = false;
+            tPxX = static_cast<double>(m_size[m_dims - 1] - 1);
+        }                
     }
 
     if(tPxX < 0)
@@ -2254,50 +2294,49 @@ double DataObject::getPixToPhys(const unsigned int dim, const double pix) const
 */
 template<typename _Tp> RetVal CopyToFunc(const DataObject &lhs, DataObject &rhs, unsigned char regionOnly)
 {
-   if (&lhs == &rhs)
-   {
-         return 0;
-   }
+    if (&lhs == &rhs)
+    {
+        return 0;
+    }
 
-   int numMats = 0;
-   int tMat = 0;
-   cv::Mat_<_Tp> *tempMat = NULL;
-   cv::Mat_<_Tp> *rhsMat = NULL;
+    int numMats = 0;
+    int tMat = 0;
+    cv::Mat_<_Tp> *tempMat = NULL;
+    cv::Mat_<_Tp> *rhsMat = NULL;
 
-   rhs.freeData();
-   rhs.m_type = lhs.m_type;
-   char rhsOldContinuous = rhs.getDims() > 2 ? rhs.m_continuous : 0; //if dims(rhs)<=2, then the continuity-flag should only be influenced by lhs, since then the continuity doesn't change the representation and the constructor of empty dataObject sets the flag to one (default)
-   rhs.m_continuous = rhsOldContinuous | lhs.m_continuous;
+    rhs.freeData();
+    rhs.m_type = lhs.m_type;
+    char rhsOldContinuous = rhs.getDims() > 2 ? rhs.m_continuous : 0; //if dims(rhs)<=2, then the continuity-flag should only be influenced by lhs, since then the continuity doesn't change the representation and the constructor of empty dataObject sets the flag to one (default)
+    rhs.m_continuous = rhsOldContinuous | lhs.m_continuous;
 
-   if (regionOnly || lhs.m_dims == 0) //Marc: bug, if empty data object, it is necessary to use this if case, too.
-   {
-         numMats = lhs.getNumPlanes();
-         CreateFunc<_Tp>(&rhs, lhs.m_dims, lhs.m_size, rhs.m_continuous, NULL, NULL);
-         for (int nMat = 0; nMat < numMats; nMat++)
-         {
+    if (regionOnly || lhs.m_dims == 0) //Marc: bug, if empty data object, it is necessary to use this if case, too.
+    {
+        numMats = lhs.getNumPlanes();
+        CreateFunc<_Tp>(&rhs, lhs.m_dims, lhs.m_size, rhs.m_continuous, NULL, NULL);
+        for (int nMat = 0; nMat < numMats; nMat++)
+        {
             tMat = lhs.seekMat(nMat);
             tempMat = (cv::Mat_<_Tp> *)lhs.m_data[tMat];
             rhsMat = (cv::Mat_<_Tp> *)rhs.m_data[nMat];
             tempMat->copyTo(*rhsMat);
-         }
-   }
-   else
-   {
-         numMats = lhs.mdata_size();
-         CreateFunc<_Tp>(&rhs, lhs.m_dims, lhs.m_osize, rhs.m_continuous, NULL, NULL);
+        }
+    }
+    else
+    {
+        numMats = lhs.mdata_size();
+        CreateFunc<_Tp>(&rhs, lhs.m_dims, lhs.m_osize, rhs.m_continuous, NULL, NULL);
 
-         for(int i = 0 ; i < rhs.m_size.m_p[-1]; i++)
-         {
-             rhs.m_size.m_p[i] = lhs.m_size.m_p[i];
-         }
-         for(int i = 0 ; i < rhs.m_roi.m_p[-1]; i++)
-         {
-             rhs.m_roi.m_p[i] = lhs.m_roi.m_p[i];
-         }
+        for(int i = 0 ; i < rhs.m_size.m_p[-1]; i++)
+        {
+            rhs.m_size.m_p[i] = lhs.m_size.m_p[i];
+        }
+        for(int i = 0 ; i < rhs.m_roi.m_p[-1]; i++)
+        {
+            rhs.m_roi.m_p[i] = lhs.m_roi.m_p[i];
+        }
 
-
-         for (int nMat = 0; nMat < numMats; nMat++)
-         {
+        for (int nMat = 0; nMat < numMats; nMat++)
+        {
             tempMat = (cv::Mat_<_Tp> *)lhs.m_data[nMat];
             rhsMat = (cv::Mat_<_Tp> *)rhs.m_data[nMat];
 
@@ -2318,10 +2357,10 @@ template<typename _Tp> RetVal CopyToFunc(const DataObject &lhs, DataObject &rhs,
 
             tempMat->adjustROI(-dtop, -dbottom, -dleft, -dright);
             rhsMat->adjustROI(-dtop, -dbottom, -dleft, -dright);
-         }
-   }
+        }
+    }
 
-   return 0;
+    return 0;
 }
 
 typedef RetVal (*tCopyToFunc)(const DataObject &lhs, DataObject &rhs, unsigned char regionOnly);
@@ -2363,7 +2402,7 @@ template<typename _Tp> RetVal DeepCopyPartialFunc(const DataObject &lhs, DataObj
 {
     if (&lhs == &rhs)
     {
-            return ito::retOk;
+        return ito::retOk;
     }
 
     int lhs_numPlanes = lhs.getNumPlanes();
@@ -2397,7 +2436,7 @@ template<typename _Tp> RetVal DeepCopyPartialFunc(const DataObject &lhs, DataObj
             {
                 memcpy(rhs_mat->data, lhs_mat->data, planeBytes);
             }
-            else if (sizeX == sizeX_rhs) 
+            else if (sizeX == sizeX_rhs)
             {
                 lhs_ptr = lhs_mat->data;
                 rhs_ptr = rhs_mat->data;
@@ -2409,21 +2448,28 @@ template<typename _Tp> RetVal DeepCopyPartialFunc(const DataObject &lhs, DataObj
                     rhs_ptr += rhs_mat->step[0];
                 }
             }
-			else //so lhs has shape nXm while rhs is of shape mXn so it is necessary to loop ofer the cv:mats 
-			{
-				lhs_ptr = lhs_mat->data;
-				rhs_ptr = rhs_mat->data;
-				int row;
-				int col;
-				
-				
-				for (row = 0; row < lhs_mat -> rows; ++row)
-				{
-					for (col=0; col < lhs_mat -> cols; ++col)
-					{
+            else //so lhs has shape nXm while rhs is of shape mXn so it is necessary to loop ofer the cv:mats 
+            {
+                lhs_ptr = lhs_mat->data;
+                rhs_ptr = rhs_mat->data;
+                int row;
+                int col;
+
+#if (USEOMP)
+                #pragma omp parallel num_threads(getMaximumThreadCount())
+                {
+                #pragma omp for schedule(guided)
+#endif				
+                for (row = 0; row < lhs_mat->rows; ++row)
+                {
+                    for (col = 0; col < lhs_mat->cols; ++col)
+                    {
                         rhs_mat->ptr<_Tp>(col)[row] = ((const _Tp*)((lhs_ptr + row * lineBytes)))[col];
-					}
-				}	
+                    }
+                }
+#if (USEOMP)
+                }
+#endif
 
 			}
         }
@@ -3079,7 +3125,6 @@ RetVal DataObject::rand(const unsigned char dimensions, const int *sizes, const 
         }
     }
 
-
     int sizeX = sizes[dimensions - 1];
     int sizeY = 1;
     if(dimensions > 1)
@@ -3092,7 +3137,7 @@ RetVal DataObject::rand(const unsigned char dimensions, const int *sizes, const 
         fListRandFunc[type](sizeY, sizeX, val1, val2, randMode, &(m_data[matn]));
     }
 
-   return retOk;
+    return retOk;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3137,7 +3182,7 @@ template<typename _Tp> RetVal CopyMatFunc(const uchar **src, uchar **&dst, bool 
         }
     }
 
-   return RetVal(retOk);
+    return RetVal(retOk);
 }
 
 typedef RetVal (*tCopyMatFunc)(const uchar **src, uchar  **&dst, bool transposed, const int sizeofs);
@@ -3161,18 +3206,18 @@ DataObject & DataObject::operator = (const cv::Mat &rhs)
     //check data type of rhs
     switch(rhs.type())
     {
-    case CV_8UC1: dataObjType = ito::tUInt8; break;
-    case CV_8SC1: dataObjType = ito::tInt8; break;
-    case CV_16UC1: dataObjType = ito::tUInt16; break;
-    case CV_16SC1: dataObjType = ito::tInt16; break;
-    //case CV_32UC1: dataObjType = ito::tUInt32; break; //does not exist in OpenCV cv::Mat
-    case CV_32SC1: dataObjType = ito::tInt32; break;
-    case CV_32FC1: dataObjType = ito::tFloat32; break;
-    case CV_64FC1: dataObjType = ito::tFloat64; break;
-    case CV_32FC2: dataObjType = ito::tComplex64; break;
-    case CV_64FC2: dataObjType = ito::tComplex128; break;
-    case CV_8UC4: dataObjType = ito::tRGBA32; break;
-    default: dataObjType = -1;
+        case CV_8UC1: dataObjType = ito::tUInt8; break;
+        case CV_8SC1: dataObjType = ito::tInt8; break;
+        case CV_16UC1: dataObjType = ito::tUInt16; break;
+        case CV_16SC1: dataObjType = ito::tInt16; break;
+        //case CV_32UC1: dataObjType = ito::tUInt32; break; //does not exist in OpenCV cv::Mat
+        case CV_32SC1: dataObjType = ito::tInt32; break;
+        case CV_32FC1: dataObjType = ito::tFloat32; break;
+        case CV_64FC1: dataObjType = ito::tFloat64; break;
+        case CV_32FC2: dataObjType = ito::tComplex64; break;
+        case CV_64FC2: dataObjType = ito::tComplex128; break;
+        case CV_8UC4: dataObjType = ito::tRGBA32; break;
+        default: dataObjType = -1;
     }
 
     if(dataObjType == -1)
@@ -3209,21 +3254,21 @@ DataObject & DataObject::operator = (const cv::Mat &rhs)
 */
 DataObject & DataObject::operator = (const DataObject &rhs)
 {
-   if (this == &rhs)
-   {
-      return *this;
-   }
+    if (this == &rhs)
+    {
+        return *this;
+    }
 
-   freeData();
+    freeData();
 
-   createHeaderWithROI(rhs.m_dims, rhs.m_size.m_p, rhs.m_osize.m_p, rhs.m_roi.m_p);
-   m_type = rhs.m_type;
-   m_continuous = rhs.m_continuous;
-   m_pRefCount = rhs.m_pRefCount;
-   m_owndata = rhs.m_owndata; //if the rhs object already shared its data with another owner, this object will also shared data with the original owner!
+    createHeaderWithROI(rhs.m_dims, rhs.m_size.m_p, rhs.m_osize.m_p, rhs.m_roi.m_p);
+    m_type = rhs.m_type;
+    m_continuous = rhs.m_continuous;
+    m_pRefCount = rhs.m_pRefCount;
+    m_owndata = rhs.m_owndata; //if the rhs object already shared its data with another owner, this object will also shared data with the original owner!
 
-   if(rhs.m_dims > 0 || m_pRefCount)
-   {
+    if(rhs.m_dims > 0 || m_pRefCount)
+    {
         CV_XADD((m_pRefCount),1); //++;
 
         m_pDataObjectTags = rhs.m_pDataObjectTags;
@@ -3237,10 +3282,9 @@ DataObject & DataObject::operator = (const DataObject &rhs)
             secureFreeData();
             throw; //rethrow exception
         }
+    } //else: rhs is empty
 
-   } //else: rhs is empty
-
-   return *this;
+    return *this;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3387,7 +3431,6 @@ DataObject::DataObject(const DataObject& dObj, bool transposed)
     }
 }
 
-
 //----------------------------------------------------------------------------------------------------------------------------------
 //! low-level, templated helper method to assign the given scalar to every element within its ROI in DataObject src.
 /*!
@@ -3409,7 +3452,6 @@ template<typename _Tp> RetVal AssignScalarFunc(DataObject *src, const ito::tData
 
     cv::Mat** tempMats = src->get_mdata();
     cv::Mat* tempMat;
-    _Tp* dstPtr = NULL;
     int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
     int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
     for (int nmat = 0; nmat < numMats; nmat++)
@@ -3417,6 +3459,14 @@ template<typename _Tp> RetVal AssignScalarFunc(DataObject *src, const ito::tData
         MatNum = src->seekMat(nmat, numMats);
         tempMat = tempMats[MatNum];
 
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+        _Tp* dstPtr = NULL;
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif	
         for (int y = 0; y < sizey; y++)
         {
             dstPtr = tempMat->ptr<_Tp>(y);
@@ -3425,6 +3475,9 @@ template<typename _Tp> RetVal AssignScalarFunc(DataObject *src, const ito::tData
                 dstPtr[x] = scalar2;
             }
         }
+#if (USEOMP)
+        }
+#endif
     }
 
     return retOk;
@@ -3605,10 +3658,8 @@ template<typename _Tp> RetVal AssignScalarMaskFunc(DataObject *src, const DataOb
 
             cv::Mat** tempMats = src->get_mdata();
             cv::Mat* tempMat;
-            _Tp* dstPtr = NULL;
             const cv::Mat** maskMats = mask->get_mdata();
             const cv::Mat* maskMat;
-            const ito::uint8* maskPtr = NULL;
 
             int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
             int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
@@ -3620,6 +3671,15 @@ template<typename _Tp> RetVal AssignScalarMaskFunc(DataObject *src, const DataOb
                 MatNum = mask->seekMat(nmat, numMats);
                 maskMat = maskMats[MatNum];
 
+#if (USEOMP)
+                #pragma omp parallel num_threads(getMaximumThreadCount())
+                {
+#endif
+                const ito::uint8* maskPtr = NULL;
+                _Tp* dstPtr = NULL;
+#if (USEOMP)
+                #pragma omp for schedule(guided)
+#endif
                 for (int y = 0; y < sizey; y++)
                 {
                     maskPtr = maskMat->ptr<ito::uint8>(y);
@@ -3632,6 +3692,9 @@ template<typename _Tp> RetVal AssignScalarMaskFunc(DataObject *src, const DataOb
                         }
                     }
                 }
+#if (USEOMP)
+            }
+#endif
             }
         }
 
@@ -3910,14 +3973,21 @@ template<> RetVal AddComplexScalarFunc<ito::complex64>(const DataObject *dObjIn,
     cv::Mat **cvDests = dObjOut->get_mdata();
     const cv::Mat *cvSrc;
     cv::Mat *cvDest;
-    const ito::complex64 *srcPtr;
-    ito::complex64 *destPtr;
     ito::complex64 value = cv::saturate_cast<ito::complex64>(scalar);
 
     for (int nmat = 0; nmat < numMats; ++nmat)
     {
         cvDest = cvDests[dObjOut->seekMat(nmat, numMats)];
         cvSrc = cvSrcs[dObjIn->seekMat(nmat, numMats)];
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+        const ito::complex64 *srcPtr;
+        ito::complex64 *destPtr;
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif
         for (int r = 0; r < cvDest->rows; ++r)
         {
             srcPtr = cvSrc->ptr<ito::complex64>(r);
@@ -3927,6 +3997,9 @@ template<> RetVal AddComplexScalarFunc<ito::complex64>(const DataObject *dObjIn,
                 destPtr[c] = srcPtr[c] + value;
             }
         }
+#if (USEOMP)
+        }
+#endif
     }
 
    return RetVal(retOk);
@@ -3938,14 +4011,21 @@ template<> RetVal AddComplexScalarFunc<ito::complex128>(const DataObject *dObjIn
     const cv::Mat **cvSrcs = dObjIn->get_mdata();
     cv::Mat **cvDests = dObjOut->get_mdata();
     const cv::Mat *cvSrc;
-    cv::Mat *cvDest;
-    const ito::complex128 *srcPtr;
-    ito::complex128 *destPtr;
+    cv::Mat *cvDest;   
 
     for (int nmat = 0; nmat < numMats; ++nmat)
     {
         cvDest = cvDests[dObjOut->seekMat(nmat, numMats)];
         cvSrc = cvSrcs[dObjIn->seekMat(nmat, numMats)];
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+        const ito::complex128 *srcPtr;
+        ito::complex128 *destPtr;
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif
         for (int r = 0; r < cvDest->rows; ++r)
         {
             srcPtr = cvSrc->ptr<ito::complex128>(r);
@@ -3955,6 +4035,9 @@ template<> RetVal AddComplexScalarFunc<ito::complex128>(const DataObject *dObjIn
                 destPtr[c] = srcPtr[c] + scalar;
             }
         }
+#if (USEOMP)
+        }
+#endif
     }
 
    return RetVal(retOk);
@@ -4348,111 +4431,149 @@ DataObject DataObject::operator * (const DataObject &rhs)
 */
 template<typename _Tp> RetVal OpScalarMulFunc(DataObject *src, const float64 &factor)
 {
-   int numMats = src->getNumPlanes();
-   int MatNum = 0;
+    int numMats = src->getNumPlanes();
+    int MatNum = 0;
 
-   cv::Mat* tempMat = NULL;
-   _Tp* dstPtr = NULL;
+    cv::Mat* tempMat = NULL;
 
-   for (int nmat = 0; nmat < numMats; nmat++)
-   {
-       MatNum = src->seekMat(nmat, numMats);
-       tempMat = src->get_mdata()[MatNum];
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
+        MatNum = src->seekMat(nmat, numMats);
+        tempMat = src->get_mdata()[MatNum];
 
-       for (int y = 0; y < tempMat->rows; ++y)
-       {
-           dstPtr = tempMat->ptr<_Tp>(y);
-           for (int x = 0; x < tempMat->cols; ++x)
-           {
-               dstPtr[x] = cv::saturate_cast<_Tp>(dstPtr[x] * factor);
-           }
-       }
-   }
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+        _Tp* dstPtr = NULL;
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif
+        for (int y = 0; y < tempMat->rows; ++y)
+        {
+            dstPtr = tempMat->ptr<_Tp>(y);
+            for (int x = 0; x < tempMat->cols; ++x)
+            {
+                dstPtr[x] = cv::saturate_cast<_Tp>(dstPtr[x] * factor);
+            }
+        }
+#if (USEOMP)
+        }
+#endif
+    }
 
    return retOk;
 }
 
 template<> RetVal OpScalarMulFunc<ito::complex64>(DataObject *src, const float64 &factor)
 {
-   int numMats = src->getNumPlanes();
-   int MatNum = 0;
-   ito::complex64 factor2 = ito::complex64(cv::saturate_cast<ito::float32>(factor), 0.0);
+    int numMats = src->getNumPlanes();
+    int MatNum = 0;
+    ito::complex64 factor2 = ito::complex64(cv::saturate_cast<ito::float32>(factor), 0.0);
 
-   cv::Mat* tempMat = NULL;
-   ito::complex64*  dstPtr = NULL;
+    cv::Mat* tempMat = NULL;
 
-   for (int nmat = 0; nmat < numMats; nmat++)
-   {
-       MatNum = src->seekMat(nmat, numMats);
-       tempMat = src->get_mdata()[MatNum];
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
+        MatNum = src->seekMat(nmat, numMats);
+        tempMat = src->get_mdata()[MatNum];
 
-       for (int y = 0; y < tempMat->rows; y++)
-       {
-           dstPtr = tempMat->ptr<ito::complex64>(y);
-           for (int x = 0; x < tempMat->cols; x++)
-           {
-               dstPtr[x] = cv::saturate_cast<ito::complex64>(dstPtr[x] * factor2);
-           }
-       }
-   }
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+        ito::complex64*  dstPtr = NULL;
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif
+        for (int y = 0; y < tempMat->rows; y++)
+        {
+            dstPtr = tempMat->ptr<ito::complex64>(y);
+            for (int x = 0; x < tempMat->cols; x++)
+            {
+                dstPtr[x] = cv::saturate_cast<ito::complex64>(dstPtr[x] * factor2);
+            }
+        }
+#if (USEOMP)
+        }
+#endif
+    }
 
    return retOk;
 }
 
 template<> RetVal OpScalarMulFunc<ito::complex128>(DataObject *src, const float64 &factor)
 {
-   int numMats = src->getNumPlanes();
-   int MatNum = 0;
-   ito::complex128 factor2 = ito::complex128(cv::saturate_cast<ito::float64>(factor), 0.0);
+    int numMats = src->getNumPlanes();
+    int MatNum = 0;
+    ito::complex128 factor2 = ito::complex128(cv::saturate_cast<ito::float64>(factor), 0.0);
+    cv::Mat * tempMat = NULL;
 
-   cv::Mat * tempMat = NULL;
-   ito::complex128* dstPtr = NULL;
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
+        MatNum = src->seekMat(nmat, numMats);
+        tempMat = src->get_mdata()[MatNum];
 
-   for (int nmat = 0; nmat < numMats; nmat++)
-   {
-       MatNum = src->seekMat(nmat, numMats);
-       tempMat = src->get_mdata()[MatNum];
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+        ito::complex128* dstPtr = NULL;
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif
+        for (int y = 0; y < tempMat->rows; y++)
+        {
+            dstPtr = tempMat->ptr<ito::complex128>(y);
+            for (int x = 0; x < tempMat->cols; x++)
+            {
+                dstPtr[x] = cv::saturate_cast<ito::complex128>(dstPtr[x] * factor2);
+            }
+        }
+#if (USEOMP)
+        }
+#endif
+    }
 
-       for (int y = 0; y < tempMat->rows; y++)
-       {
-           dstPtr = tempMat->ptr<ito::complex128>(y);
-           for (int x = 0; x < tempMat->cols; x++)
-           {
-               dstPtr[x] = cv::saturate_cast<ito::complex128>(dstPtr[x] * factor2);
-           }
-       }
-   }
-
-   return retOk;
+    return retOk;
 }
 
 template<> RetVal OpScalarMulFunc<ito::Rgba32>(DataObject *src, const float64 &factor)
 {
-   int numMats = src->getNumPlanes();
-   int MatNum = 0;
+    int numMats = src->getNumPlanes();
+    int MatNum = 0;
+    ito::Rgba32 factor2;
+    factor2 = (factor < 0.0 ? (ito::uint32)0 : (factor > 4294967295 ? (ito::uint32)0xFFFFFFFF : (ito::uint32)(factor + 0.5)));
 
-   ito::Rgba32 factor2;
-   factor2 = (factor < 0.0 ? (ito::uint32)0 : (factor > 4294967295 ? (ito::uint32)0xFFFFFFFF : (ito::uint32)(factor + 0.5)));
+    cv::Mat* tempMat = NULL;
 
-   cv::Mat* tempMat = NULL;
-   ito::Rgba32* dstPtr = NULL;
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
+        MatNum = src->seekMat(nmat, numMats);
+        tempMat = src->get_mdata()[MatNum];
 
-   for (int nmat = 0; nmat < numMats; nmat++)
-   {
-       MatNum = src->seekMat(nmat, numMats);
-       tempMat = src->get_mdata()[MatNum];
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+        ito::Rgba32* dstPtr = NULL;
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif
+        for (int y = 0; y < tempMat->rows; y++)
+        {
+            dstPtr = tempMat->ptr<ito::Rgba32>(y);
+            for (int x = 0; x < tempMat->cols; x++)
+            {
+                dstPtr[x] *= factor2;
+            }
+        }
+#if (USEOMP)
+        }
+#endif
+    }
 
-       for (int y = 0; y < tempMat->rows; y++)
-       {
-           dstPtr = tempMat->ptr<ito::Rgba32>(y);
-           for (int x = 0; x < tempMat->cols; x++)
-           {
-               dstPtr[x] *= factor2;
-           }
-       }
-   }
-
-   return retOk;
+    return retOk;
 }
 
 typedef RetVal (*tOpScalarMulFunc)(DataObject *src, const float64 &factor);
@@ -4471,7 +4592,6 @@ template<typename _Tp> RetVal OpScalarComplexMulFunc(DataObject *src, const comp
     int MatNum = 0;
 
     cv::Mat* tempMat = NULL;
-    _Tp* dstPtr = NULL;
 
     if (std::abs(factor.imag()) < std::numeric_limits<ito::float64>::epsilon())
     {
@@ -4482,6 +4602,14 @@ template<typename _Tp> RetVal OpScalarComplexMulFunc(DataObject *src, const comp
             MatNum = src->seekMat(nmat, numMats);
             tempMat = src->get_mdata()[MatNum];
 
+#if (USEOMP)
+            #pragma omp parallel num_threads(getMaximumThreadCount())
+            {
+#endif
+            _Tp* dstPtr = NULL;
+#if (USEOMP)
+            #pragma omp for schedule(guided)
+#endif
             for (int y = 0; y < tempMat->rows; ++y)
             {
                 dstPtr = tempMat->ptr<_Tp>(y);
@@ -4490,6 +4618,9 @@ template<typename _Tp> RetVal OpScalarComplexMulFunc(DataObject *src, const comp
                     dstPtr[x] = cv::saturate_cast<_Tp>(dstPtr[x] * factor2);
                 }
             }
+#if (USEOMP)
+            }
+#endif
         }
     }
     else
@@ -4507,13 +4638,20 @@ template<> RetVal OpScalarComplexMulFunc<ito::complex64>(DataObject *src, const 
     ito::complex64 factor2 = cv::saturate_cast<complex64>(factor);
 
     cv::Mat* tempMat = NULL;
-    ito::complex64*  dstPtr = NULL;
 
     for (int nmat = 0; nmat < numMats; nmat++)
     {
         MatNum = src->seekMat(nmat, numMats);
         tempMat = src->get_mdata()[MatNum];
 
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+        ito::complex64*  dstPtr = NULL;
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif
         for (int y = 0; y < tempMat->rows; y++)
         {
             dstPtr = tempMat->ptr<ito::complex64>(y);
@@ -4522,6 +4660,9 @@ template<> RetVal OpScalarComplexMulFunc<ito::complex64>(DataObject *src, const 
                 dstPtr[x] = cv::saturate_cast<ito::complex64>(dstPtr[x] * factor2);
             }
         }
+#if (USEOMP)
+        }
+#endif
     }
 
     return retOk;
@@ -4533,13 +4674,20 @@ template<> RetVal OpScalarComplexMulFunc<ito::complex128>(DataObject *src, const
     int MatNum = 0;
 
     cv::Mat * tempMat = NULL;
-    ito::complex128* dstPtr = NULL;
 
     for (int nmat = 0; nmat < numMats; nmat++)
     {
         MatNum = src->seekMat(nmat, numMats);
         tempMat = src->get_mdata()[MatNum];
 
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+        ito::complex128* dstPtr = NULL;
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif
         for (int y = 0; y < tempMat->rows; y++)
         {
             dstPtr = tempMat->ptr<ito::complex128>(y);
@@ -4548,6 +4696,9 @@ template<> RetVal OpScalarComplexMulFunc<ito::complex128>(DataObject *src, const
                 dstPtr[x] = cv::saturate_cast<ito::complex128>(dstPtr[x] * factor);
             }
         }
+#if (USEOMP)
+        }
+#endif
     }
 
     return retOk;
@@ -4564,13 +4715,20 @@ template<> RetVal OpScalarComplexMulFunc<ito::Rgba32>(DataObject *src, const com
         factor2 = (factor.real() < 0.0 ? (ito::uint32)0 : (factor.real() > 4294967295 ? (ito::uint32)0xFFFFFFFF : (ito::uint32)(factor.real() + 0.5)));
 
         cv::Mat* tempMat = NULL;
-        ito::Rgba32* dstPtr = NULL;
 
         for (int nmat = 0; nmat < numMats; nmat++)
         {
             MatNum = src->seekMat(nmat, numMats);
             tempMat = src->get_mdata()[MatNum];
 
+#if (USEOMP)
+            #pragma omp parallel num_threads(getMaximumThreadCount())
+            {
+#endif
+            ito::Rgba32* dstPtr = NULL;
+#if (USEOMP)
+            #pragma omp for schedule(guided)
+#endif
             for (int y = 0; y < tempMat->rows; y++)
             {
                 dstPtr = tempMat->ptr<ito::Rgba32>(y);
@@ -4579,6 +4737,9 @@ template<> RetVal OpScalarComplexMulFunc<ito::Rgba32>(DataObject *src, const com
                     dstPtr[x] *= factor2;
                 }
             }
+#if (USEOMP)
+            }
+#endif
         }
     }
     else
@@ -4694,10 +4855,8 @@ template<> RetVal CmpFunc<ito::complex64>(const DataObject * src1, const DataObj
         const cv::Mat *src1mat;
         const cv::Mat *src2mat;
         cv::Mat *dest;
-        ito::uint8 *rowDest;
         bool equal = (cmpOp == cv::CMP_EQ);
         cv::Mat destTemp;
-        const ito::uint8 *rowVec2b;
 
         for (int nmat = 0; nmat < numMats; nmat++)
         {
@@ -4707,6 +4866,15 @@ template<> RetVal CmpFunc<ito::complex64>(const DataObject * src1, const DataObj
 
             cv::compare(*src1mat, *src2mat, destTemp, cmpOp);
 
+#if (USEOMP)
+            #pragma omp parallel num_threads(getMaximumThreadCount())
+            {
+#endif
+            const ito::uint8 *rowVec2b;
+            ito::uint8 *rowDest;
+#if (USEOMP)
+            #pragma omp for schedule(guided)
+#endif
             for (int r = 0; r < src1mat->rows; ++r)
             {
                 rowVec2b = destTemp.ptr<ito::uint8>(r);
@@ -4716,6 +4884,9 @@ template<> RetVal CmpFunc<ito::complex64>(const DataObject * src1, const DataObj
                     *rowDest++ = *rowVec2b++ & *rowVec2b++;
                 }
             }
+#if (USEOMP)
+            }
+#endif
         }
     }
     else
@@ -4737,10 +4908,8 @@ template<> RetVal CmpFunc<ito::complex128>(const DataObject * src1, const DataOb
         const cv::Mat *src1mat;
         const cv::Mat *src2mat;
         cv::Mat *dest;
-        ito::uint8 *rowDest;
         bool equal = (cmpOp == cv::CMP_EQ);
         cv::Mat destTemp;
-        const ito::uint8 *rowVec2b;
 
         for (int nmat = 0; nmat < numMats; nmat++)
         {
@@ -4750,6 +4919,15 @@ template<> RetVal CmpFunc<ito::complex128>(const DataObject * src1, const DataOb
 
             cv::compare(*src1mat, *src2mat, destTemp, cmpOp);
 
+#if (USEOMP)
+            #pragma omp parallel num_threads(getMaximumThreadCount())
+            {
+#endif
+            const ito::uint8 *rowVec2b;
+            ito::uint8 *rowDest;
+#if (USEOMP)
+            #pragma omp for schedule(guided)
+#endif
             for (int r = 0; r < src1mat->rows; ++r)
             {
                 rowVec2b = destTemp.ptr<ito::uint8>(r);
@@ -4759,6 +4937,9 @@ template<> RetVal CmpFunc<ito::complex128>(const DataObject * src1, const DataOb
                     *rowDest++ = *rowVec2b++ & *rowVec2b++;
                 }
             }
+#if (USEOMP)
+            }
+#endif
         }
     }
     else
@@ -5048,30 +5229,40 @@ DataObject DataObject::operator != (const float64 &value)
 */
 template<typename _Tp> RetVal ShiftLFunc(DataObject *src, const unsigned char shiftbit)
 {
-   int numMats = src->getNumPlanes();
-   int MatNum = 0;
+    int numMats = src->getNumPlanes();
+    int MatNum = 0;
 
-   cv::Mat_<_Tp> * tempMat = NULL;
-   _Tp* dstPtr = NULL;
-   int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
-   int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
-   for (int nmat = 0; nmat < numMats; nmat++)
-   {
-      MatNum = src->seekMat(nmat, numMats);
-      //TODO: check if non iterator version is working
-      tempMat = static_cast<cv::Mat_<_Tp> *>(src->get_mdata()[MatNum]);
+    cv::Mat_<_Tp> * tempMat = NULL;
+    int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
+    int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
+        MatNum = src->seekMat(nmat, numMats);
+        //TODO: check if non iterator version is working
+        tempMat = static_cast<cv::Mat_<_Tp> *>(src->get_mdata()[MatNum]);
 
-      for (int y = 0; y < sizey; y++)
-      {
-          dstPtr = (_Tp*)tempMat->ptr(y);
-          for (int x = 0; x < sizex; x++)
-          {
-              dstPtr[x] <<= shiftbit;
-          }
-      }
-   }
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+        _Tp* dstPtr = NULL;
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif
+        for (int y = 0; y < sizey; y++)
+        {
+            dstPtr = (_Tp*)tempMat->ptr(y);
+            for (int x = 0; x < sizex; x++)
+            {
+                dstPtr[x] <<= shiftbit;
+            }
+        }
+#if (USEOMP)
+        }
+#endif
+    }
 
-   return 0;
+    return 0;
 }
 
 //! template specialisation for shift function of type float32
@@ -5181,7 +5372,6 @@ template<typename _Tp> RetVal ShiftRFunc(DataObject *src, const unsigned char sh
    int MatNum = 0;
 
    cv::Mat_<_Tp> * tempMat = NULL;
-   _Tp* dstPtr = NULL;
    int sizex = static_cast<int>(src->getSize(src->getDims() - 1));
    int sizey = static_cast<int>(src->getSize(src->getDims() - 2));
    for (int nmat = 0; nmat < numMats; nmat++)
@@ -5190,6 +5380,14 @@ template<typename _Tp> RetVal ShiftRFunc(DataObject *src, const unsigned char sh
         //TODO: check if non iterator version is working
         tempMat = static_cast<cv::Mat_<_Tp> *>((src->get_mdata())[MatNum]);
 
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+        _Tp* dstPtr = NULL;
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif
         for (int y = 0; y < sizey; y++)
         {
             dstPtr = (_Tp*)tempMat->ptr(y);
@@ -5198,6 +5396,9 @@ template<typename _Tp> RetVal ShiftRFunc(DataObject *src, const unsigned char sh
                 dstPtr[x] >>= shiftbit;
             }
         }
+#if (USEOMP)
+        }
+#endif
    }
 
    return 0;
@@ -5559,8 +5760,6 @@ DataObject DataObject::operator | (const DataObject & rhs)
     result |= rhs;
     return result;
 }
-
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! low-level, templated method which element-wisely executes a bitwise 'xor' comparison between values of two dataObjects.
@@ -6103,29 +6302,40 @@ RetVal DataObject::eye(const int size, const int type)
 */
 template<typename _Tp> RetVal ConjFunc(DataObject *dObj)
 {
-   int numMats = dObj->getNumPlanes();
-   int MatNum = 0;
+    int numMats = dObj->getNumPlanes();
+    int MatNum = 0;
 
-   cv::Mat_<_Tp> * tempMat = NULL;
-   int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
-   int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
-   for (int nmat = 0; nmat < numMats; nmat++)
-   {
+    cv::Mat_<_Tp> * tempMat = NULL;
+    int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
+    int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
+    for (int nmat = 0; nmat < numMats; nmat++)
+    {
         //TODO: check if non iterator version is working
-       MatNum = dObj->seekMat(nmat, numMats);
-       tempMat = static_cast<cv::Mat_<_Tp> *>((dObj->get_mdata())[MatNum]);
+        MatNum = dObj->seekMat(nmat, numMats);
+        tempMat = static_cast<cv::Mat_<_Tp> *>((dObj->get_mdata())[MatNum]);
 
-       for (int y = 0; y < sizey; y++)
-       {
-           _Tp* dstPtr = (_Tp*)tempMat->ptr(y);
-           for (int x = 0; x < sizex; x++)
-           {
-               dstPtr[x] = std::conj(dstPtr[x]);
-           }
-       }
-   }
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+        _Tp* dstPtr = NULL;
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif
+        for (int y = 0; y < sizey; y++)
+        {
+            dstPtr = (_Tp*)tempMat->ptr(y);
+            for (int x = 0; x < sizex; x++)
+            {
+                dstPtr[x] = std::conj(dstPtr[x]);
+            }
+        }
+#if (USEOMP)
+        }
+#endif
+    }
 
-   return retOk;
+    return retOk;
 }
 
 //! template specialization for data object of type int8. throws cv::Exception, since the data type is not complex.
@@ -6346,9 +6556,6 @@ template<typename _Tp> RetVal MulFunc(const DataObject *src1, const DataObject *
    int rhsMatNum = 0;
    int resMatNum = 0;
 
-   const _Tp* src1RowPtr;
-   const _Tp* src2RowPtr;
-   _Tp* resRowPtr;
    const cv::Mat_<_Tp>* srcMat1 = NULL;
    const cv::Mat_<_Tp>* srcMat2 = NULL;
    cv::Mat_<_Tp>* dstMat = NULL;
@@ -6363,6 +6570,16 @@ template<typename _Tp> RetVal MulFunc(const DataObject *src1, const DataObject *
         srcMat2 = static_cast<const cv::Mat_<_Tp> *>(src2->get_mdata()[rhsMatNum]);
         dstMat = static_cast<cv::Mat_<_Tp> *>(res->get_mdata()[resMatNum]);
 
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+        const _Tp* src1RowPtr;
+        const _Tp* src2RowPtr;
+        _Tp* resRowPtr;
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif
         for(int i = 0; i < srcMat1->rows; i++)
         {
             src1RowPtr = (const _Tp*)srcMat1->ptr(i);
@@ -6374,6 +6591,9 @@ template<typename _Tp> RetVal MulFunc(const DataObject *src1, const DataObject *
                 resRowPtr[j] = src1RowPtr[j] * src2RowPtr[j];
             }
         }
+#if (USEOMP)
+        }
+#endif
    }
    return 0;
 }
@@ -6429,9 +6649,6 @@ template<typename _Tp> RetVal DivFunc(const DataObject *src1, const DataObject *
    int rhsMatNum = 0;
    int resMatNum = 0;
 
-   const _Tp* src1RowPtr;
-   const _Tp* src2RowPtr;
-   _Tp* resRowPtr;
    _Tp nanNumber;
    _Tp infNumber;
    _Tp epsilon;
@@ -6456,6 +6673,16 @@ template<typename _Tp> RetVal DivFunc(const DataObject *src1, const DataObject *
             infNumber = std::numeric_limits<_Tp>::infinity();
             epsilon = std::numeric_limits<_Tp>::epsilon();
 
+#if (USEOMP)
+            #pragma omp parallel num_threads(getMaximumThreadCount())
+            {
+#endif
+            const _Tp* src1RowPtr;
+            const _Tp* src2RowPtr;
+            _Tp* resRowPtr;
+#if (USEOMP)
+            #pragma omp for schedule(guided)
+#endif
             for(int i = 0; i < srcMat1->rows; i++)
             {
                 src1RowPtr = (const _Tp*)srcMat1->ptr(i);
@@ -6467,9 +6694,22 @@ template<typename _Tp> RetVal DivFunc(const DataObject *src1, const DataObject *
                     resRowPtr[j] = (isZeroValue<_Tp>(src2RowPtr[j],epsilon)) ? ((isZeroValue<_Tp>(src1RowPtr[j],epsilon)) ? nanNumber : infNumber) : src1RowPtr[j] / src2RowPtr[j];
                 }
             }
+#if (USEOMP)
+            }
+#endif
         }
         else
         {
+#if (USEOMP)
+            #pragma omp parallel num_threads(getMaximumThreadCount())
+            {
+#endif
+            const _Tp* src1RowPtr;
+            const _Tp* src2RowPtr;
+            _Tp* resRowPtr;
+#if (USEOMP)
+            #pragma omp for schedule(guided)
+#endif
             for(int i = 0; i < srcMat1->rows; i++)
             {
                 src1RowPtr = (const _Tp*)srcMat1->ptr(i);
@@ -6482,6 +6722,9 @@ template<typename _Tp> RetVal DivFunc(const DataObject *src1, const DataObject *
                     resRowPtr[j] = src1RowPtr[j] / src2RowPtr[j];
                 }
             }
+#if (USEOMP)
+            }
+#endif
         }
    }
 
@@ -6511,9 +6754,6 @@ template<> RetVal DivFunc<Rgba32>(const DataObject *src1, const DataObject *src2
    int rhsMatNum = 0;
    int resMatNum = 0;
 
-   const Rgba32* src1RowPtr;
-   const Rgba32* src2RowPtr;
-   ito::Rgba32* resRowPtr;
    const cv::Mat_<Rgba32>* srcMat1 = NULL;
    cv::Mat_<Rgba32>* dstMat = NULL;
    const cv::Mat_<Rgba32>* srcMat2 = NULL;
@@ -6528,6 +6768,16 @@ template<> RetVal DivFunc<Rgba32>(const DataObject *src1, const DataObject *src2
         srcMat2 = static_cast<const cv::Mat_<Rgba32> *>(src2->get_mdata()[rhsMatNum]);     
         dstMat = static_cast<cv::Mat_<Rgba32> *>(res->get_mdata()[resMatNum]);
 
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+        const Rgba32* src1RowPtr;
+        const Rgba32* src2RowPtr;
+        ito::Rgba32* resRowPtr;
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif
         for(int i = 0; i < srcMat1->rows; i++)
         {
             src1RowPtr = srcMat1->ptr<Rgba32>(i);
@@ -6539,6 +6789,9 @@ template<> RetVal DivFunc<Rgba32>(const DataObject *src1, const DataObject *src2
                 resRowPtr[j] = src1RowPtr[j] / src2RowPtr[j];
             }
         }
+#if (USEOMP)
+        }
+#endif
    }
 
    return 0;
@@ -6974,8 +7227,6 @@ DataObject DataObject::reshape(int newDims, const int *newSizes) const
     return resObj;
 }
 
-
-
 //----------------------------------------------------------------------------------------------------------------------------------
 RetVal DataObject::copyFromData2DInternal(const uchar* src, const int sizeOfElem, const int sizeX, const int sizeY)
 {
@@ -7002,10 +7253,18 @@ RetVal DataObject::copyFromData2DInternal(const uchar* src, const int sizeOfElem
     }
     else
     {
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+        #pragma omp for schedule(guided)
+#endif
         for (int y = 0; y < sizeY; y++)
         {
             memcpy(cvMat->ptr(y), src + y * sizeX * sizeOfElem, sizeX * sizeOfElem);
         }
+#if (USEOMP)
+        }
+#endif
     }
 
     return retOk;
@@ -7029,10 +7288,18 @@ RetVal DataObject::copyFromData2DInternal(const uchar* src, const int sizeOfElem
 
     if (cvMat->elemSize() !=  sizeOfElem)
         return retval;
+#if (USEOMP)
+    #pragma omp parallel num_threads(getMaximumThreadCount())
+    {
+    #pragma omp for schedule(guided)
+#endif
     for (int y = 0; y < height; y++)
     {
         memcpy(cvMat->ptr(y), src + ((y0 + y) * sizeX + x0) * sizeOfElem , width * sizeOfElem);
     }
+#if (USEOMP)
+    }
+#endif
 
     return retOk;
 }
@@ -7046,8 +7313,6 @@ template<typename _Tp> RetVal GrayScaleCastFunc(const DataObject *dObj, DataObje
     int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
     const cv::Mat * srcMat = NULL;
     cv::Mat * dstMat = NULL;
-    const ito::Rgba32* srcPtr;
-    _Tp* dstPtr;
 
     if (alpha == 1.0)
     {
@@ -7055,15 +7320,28 @@ template<typename _Tp> RetVal GrayScaleCastFunc(const DataObject *dObj, DataObje
         {
             srcMat = dObj->getCvPlaneMat(nmat);
             dstMat = resObj->getCvPlaneMat(nmat);
-for (int y = 0; y < sizey; y++)
-{
-    dstPtr = dstMat->ptr<_Tp>(y);
-    srcPtr = srcMat->ptr<const ito::Rgba32>(y);
-    for (int x = 0; x < sizex; x++)
-    {
-        dstPtr[x] = cv::saturate_cast<_Tp>(0.299 * srcPtr[x].r + 0.587 * srcPtr[x].g + 0.114 * srcPtr[x].b);
-    }
-}
+
+#if (USEOMP)
+            #pragma omp parallel num_threads(getMaximumThreadCount())
+            {
+#endif
+            const ito::Rgba32* srcPtr;
+            _Tp* dstPtr;
+#if (USEOMP)
+            #pragma omp for schedule(guided)
+#endif
+            for (int y = 0; y < sizey; y++)
+            {
+                dstPtr = dstMat->ptr<_Tp>(y);
+                srcPtr = srcMat->ptr<const ito::Rgba32>(y);
+                for (int x = 0; x < sizex; x++)
+                {
+                    dstPtr[x] = cv::saturate_cast<_Tp>(0.299 * srcPtr[x].r + 0.587 * srcPtr[x].g + 0.114 * srcPtr[x].b);
+                }
+            }
+#if (USEOMP)
+            }
+#endif
         }
     }
     else
@@ -7072,6 +7350,15 @@ for (int y = 0; y < sizey; y++)
         {
             srcMat = dObj->getCvPlaneMat(nmat);
             dstMat = resObj->getCvPlaneMat(nmat);
+#if (USEOMP)
+            #pragma omp parallel num_threads(getMaximumThreadCount())
+            {
+#endif
+            const ito::Rgba32* srcPtr;
+            _Tp* dstPtr;
+#if (USEOMP)
+            #pragma omp for schedule(guided)
+#endif
             for (int y = 0; y < sizey; y++)
             {
                 dstPtr = dstMat->ptr<_Tp>(y);
@@ -7081,6 +7368,9 @@ for (int y = 0; y < sizey; y++)
                     dstPtr[x] = cv::saturate_cast<_Tp>(alpha * (0.299 * srcPtr[x].r + 0.587 * srcPtr[x].g + 0.114 * srcPtr[x].b));
                 }
             }
+#if (USEOMP)
+            }
+#endif
         }
     }
 
@@ -7111,37 +7401,37 @@ DataObject DataObject::toGray(const int destinationType /*= ito::tUInt8*/) const
 
     switch (destinationType)
     {
-    case ito::tInt8:
-        GrayScaleCastFunc<int8>(this, &resObj);
-        break;
+        case ito::tInt8:
+            GrayScaleCastFunc<int8>(this, &resObj);
+            break;
 
-    case ito::tUInt8:
-        GrayScaleCastFunc<uint8>(this, &resObj);
-        break;
+        case ito::tUInt8:
+            GrayScaleCastFunc<uint8>(this, &resObj);
+            break;
 
-    case ito::tInt16:
-        GrayScaleCastFunc<int16>(this, &resObj);
-        break;
+        case ito::tInt16:
+            GrayScaleCastFunc<int16>(this, &resObj);
+            break;
 
-    case ito::tUInt16:
-        GrayScaleCastFunc<uint16>(this, &resObj);
-        break;
+        case ito::tUInt16:
+            GrayScaleCastFunc<uint16>(this, &resObj);
+            break;
 
-    case ito::tInt32:
-        GrayScaleCastFunc<uint32>(this, &resObj);
-        break;
+        case ito::tInt32:
+            GrayScaleCastFunc<uint32>(this, &resObj);
+            break;
 
-    case ito::tFloat32:
-        GrayScaleCastFunc<float32>(this, &resObj);
-        break;
+        case ito::tFloat32:
+            GrayScaleCastFunc<float32>(this, &resObj);
+            break;
 
-    case ito::tFloat64:
-        GrayScaleCastFunc<float64>(this, &resObj);
-        break;
+        case ito::tFloat64:
+            GrayScaleCastFunc<float64>(this, &resObj);
+            break;
 
-    default:
-        cv::error(cv::Exception(CV_StsAssert, "destinationType must be real.", "", __FILE__, __LINE__));
-        break;
+        default:
+            cv::error(cv::Exception(CV_StsAssert, "destinationType must be real.", "", __FILE__, __LINE__));
+            break;
     }
 
     copyTagMapTo(resObj);
@@ -7156,23 +7446,23 @@ template<typename _Tp> void extractColor(const DataObject *dObj, DataObject &res
 
     switch (numChannels)
     {
-    case 1:
-        resObj = DataObject(dObj->getDims(), dObj->getSize(), type);
-        break;
-    case 0:
-        return;
-        break;
-    default:
+        case 1:
+            resObj = DataObject(dObj->getDims(), dObj->getSize(), type);
+            break;
+        case 0:
+            return;
+            break;
+        default:
         {
-        int *sizes = new int[dObj->getDims() + 1];
-        for (int i = 0; i < dObj->getDims(); ++i)
-        {
-            sizes[i + 1] = dObj->getSize(i);
-        }
-        sizes[0] = numChannels;
-        resObj = DataObject(dObj->getDims() + 1, sizes, type); 
-        delete sizes;
-        break;    
+            int *sizes = new int[dObj->getDims() + 1];
+            for (int i = 0; i < dObj->getDims(); ++i)
+            {
+                sizes[i + 1] = dObj->getSize(i);
+            }
+            sizes[0] = numChannels;
+            resObj = DataObject(dObj->getDims() + 1, sizes, type); 
+            delete sizes;
+            break;    
         }
     }
 
@@ -7181,8 +7471,6 @@ template<typename _Tp> void extractColor(const DataObject *dObj, DataObject &res
 
     const cv::Mat * srcMat = NULL;
     cv::Mat * dstMat = NULL;
-    const ito::Rgba32* srcPtr;
-    _Tp* dstPtr;
 
     int numMats = dObj->getNumPlanes();
 
@@ -7194,6 +7482,15 @@ template<typename _Tp> void extractColor(const DataObject *dObj, DataObject &res
             {
                 srcMat = dObj->getCvPlaneMat(nmat);
                 dstMat = resObj.getCvPlaneMat(channel * numMats + nmat);
+#if (USEOMP)
+                #pragma omp parallel num_threads(getMaximumThreadCount())
+                {
+#endif
+                const ito::Rgba32* srcPtr;
+                _Tp* dstPtr;
+#if (USEOMP)
+                #pragma omp for schedule(guided)
+#endif
                 for (int y = 0; y < sizey; ++y)
                 {
                     dstPtr = dstMat->ptr<_Tp>(y);
@@ -7203,6 +7500,9 @@ template<typename _Tp> void extractColor(const DataObject *dObj, DataObject &res
                         dstPtr[x] = cv::saturate_cast<_Tp>(srcPtr[x].b);
                     }
                 }
+#if (USEOMP)
+                }
+#endif
             }
         }
         else if (color[channel] == 'r')
@@ -7211,6 +7511,15 @@ template<typename _Tp> void extractColor(const DataObject *dObj, DataObject &res
             {
                 srcMat = dObj->getCvPlaneMat(nmat);
                 dstMat = resObj.getCvPlaneMat(channel * numMats + nmat);
+#if (USEOMP)
+                #pragma omp parallel num_threads(getMaximumThreadCount())
+                {
+#endif
+                const ito::Rgba32* srcPtr;
+                _Tp* dstPtr;
+#if (USEOMP)
+                #pragma omp for schedule(guided)
+#endif
                 for (int y = 0; y < sizey; ++y)
                 {
                     dstPtr = dstMat->ptr<_Tp>(y);
@@ -7220,14 +7529,26 @@ template<typename _Tp> void extractColor(const DataObject *dObj, DataObject &res
                         dstPtr[x] = cv::saturate_cast<_Tp>(srcPtr[x].r);
                     }
                 }
+#if (USEOMP)
+                }
+#endif
             }
         }
         else if (color[channel] == 'g')
         {
             for (int nmat = 0; nmat < numMats; nmat++)
             {
+#if (USEOMP)
+                #pragma omp parallel num_threads(getMaximumThreadCount())
+                {
+#endif
+                const ito::Rgba32* srcPtr;
+                _Tp* dstPtr;
                 srcMat = dObj->getCvPlaneMat(nmat);
                 dstMat = resObj.getCvPlaneMat(channel * numMats + nmat);
+#if (USEOMP)
+                #pragma omp for schedule(guided)
+#endif
                 for (int y = 0; y < sizey; y++)
                 {
                     dstPtr = dstMat->ptr<_Tp>(y);
@@ -7237,6 +7558,9 @@ template<typename _Tp> void extractColor(const DataObject *dObj, DataObject &res
                         dstPtr[x] = cv::saturate_cast<_Tp>(srcPtr[x].g);
                     }
                 }
+#if (USEOMP)
+                }
+#endif
             }
         }
         else if (color[channel] == 'a')
@@ -7245,6 +7569,15 @@ template<typename _Tp> void extractColor(const DataObject *dObj, DataObject &res
             {
                 srcMat = dObj->getCvPlaneMat(nmat);
                 dstMat = resObj.getCvPlaneMat(channel * numMats + nmat);
+#if (USEOMP)
+                #pragma omp parallel num_threads(getMaximumThreadCount())
+                {
+#endif
+                const ito::Rgba32* srcPtr;
+                _Tp* dstPtr;
+#if (USEOMP)
+                #pragma omp for schedule(guided)
+#endif
                 for (int y = 0; y < sizey; y++)
                 {
                     dstPtr = dstMat->ptr<_Tp>(y);
@@ -7254,6 +7587,9 @@ template<typename _Tp> void extractColor(const DataObject *dObj, DataObject &res
                         dstPtr[x] = cv::saturate_cast<_Tp>(srcPtr[x].a);
                     }
                 }
+#if (USEOMP)
+                }
+#endif
             }
         }
     }
@@ -7283,42 +7619,39 @@ DataObject DataObject::splitColor(const char* destinationColor, const int& dtype
     
     switch (dtype)
     {
-    case ito::tUInt8:
-        extractColor<uint8>(this, resObj, destinationColor, dtype);
-        break;
+        case ito::tUInt8:
+            extractColor<uint8>(this, resObj, destinationColor, dtype);
+            break;
 
-    case ito::tInt16:
-        extractColor<int16>(this, resObj, destinationColor, dtype);
-        break;
+        case ito::tInt16:
+            extractColor<int16>(this, resObj, destinationColor, dtype);
+            break;
 
-    case ito::tUInt16:
-        extractColor<uint16>(this, resObj, destinationColor, dtype);
-        break;
+        case ito::tUInt16:
+            extractColor<uint16>(this, resObj, destinationColor, dtype);
+            break;
 
-    case ito::tInt32:
-        extractColor<uint32>(this, resObj, destinationColor, dtype);
-        break;
+        case ito::tInt32:
+            extractColor<uint32>(this, resObj, destinationColor, dtype);
+            break;
 
-    case ito::tFloat32:
-        extractColor<float32>(this, resObj, destinationColor, dtype);
-        break;
+        case ito::tFloat32:
+            extractColor<float32>(this, resObj, destinationColor, dtype);
+            break;
 
-    case ito::tFloat64:
-        extractColor<float64>(this, resObj, destinationColor, dtype);
-        break;
+        case ito::tFloat64:
+            extractColor<float64>(this, resObj, destinationColor, dtype);
+            break;
 
-    default:
-        cv::error(cv::Exception(CV_StsAssert, "destinationType must be real.", "", __FILE__, __LINE__));
-        break;
+        default:
+            cv::error(cv::Exception(CV_StsAssert, "destinationType must be real.", "", __FILE__, __LINE__));
+            break;
     }
-  
-
 
     copyTagMapTo(resObj);
     copyAxisTagsTo(resObj);
 
     return resObj;
-
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -7336,54 +7669,76 @@ DataObject DataObject::splitColor(const char* destinationColor, const int& dtype
 */
 template<typename _TSrc, typename _TDest> RetVal CastFunc(const DataObject *srcObj, DataObject *resObj, double alpha, double beta)
 {
-   int numMats = srcObj->getNumPlanes();
-   int resTmat = 0;
-   int srcTmat = 0;
+    int numMats = srcObj->getNumPlanes();
+    int resTmat = 0;
+    int srcTmat = 0;
 
-   int sizex = srcObj->getSize(srcObj->getDims() - 1);
-   int sizey = srcObj->getSize(srcObj->getDims() - 2);
-   const cv::Mat* srcMat = NULL;
-   cv::Mat* dstMat = NULL;
-   const _TSrc* srcPtr = NULL;
-   _TDest* dstPtr = NULL;
+    int sizex = srcObj->getSize(srcObj->getDims() - 1);
+    int sizey = srcObj->getSize(srcObj->getDims() - 2);
+    const cv::Mat* srcMat = NULL;
+    cv::Mat* dstMat = NULL;
 
-   if(alpha == 1.0 && beta == 0.0)
-   {
-       for (int nmat = 0; nmat < numMats; ++nmat)
-       {
-          resTmat = resObj->seekMat(nmat, numMats);
-          srcTmat = srcObj->seekMat(nmat, numMats);
-          srcMat = (srcObj->get_mdata())[srcTmat];
-          dstMat = (resObj->get_mdata())[resTmat];
-          for (int y = 0; y < sizey; ++y)
-          {
-              dstPtr = dstMat->ptr<_TDest>(y);
-              srcPtr = srcMat->ptr<const _TSrc>(y);
-              for (int x = 0; x < sizex; ++x)
-              {
-                  dstPtr[x] = cv::saturate_cast<_TDest>(srcPtr[x]);
-              }
-          }
-       }
-   }
-   else
-   {
-       for (int nmat = 0; nmat < numMats; ++nmat)
-       {
-          resTmat = resObj->seekMat(nmat, numMats);
-          srcTmat = srcObj->seekMat(nmat, numMats);
-          srcMat = (srcObj->get_mdata())[srcTmat];
-          dstMat = (resObj->get_mdata())[resTmat];
-          for (int y = 0; y < sizey; ++y)
-          {
-              dstPtr = dstMat->ptr<_TDest>(y);
-              srcPtr = srcMat->ptr<const _TSrc>(y);
-              for (int x = 0; x < sizex; ++x)
-              {
-                  dstPtr[x] = cv::saturate_cast<_TDest>(srcPtr[x] * alpha + beta);
-              }
-          }
-       }
+    if(alpha == 1.0 && beta == 0.0)
+    {
+        for (int nmat = 0; nmat < numMats; ++nmat)
+        {
+            resTmat = resObj->seekMat(nmat, numMats);
+            srcTmat = srcObj->seekMat(nmat, numMats);
+            srcMat = (srcObj->get_mdata())[srcTmat];
+            dstMat = (resObj->get_mdata())[resTmat];
+#if (USEOMP)
+            #pragma omp parallel num_threads(getMaximumThreadCount())
+            {
+#endif
+            const _TSrc* srcPtr = NULL;
+            _TDest* dstPtr = NULL;
+#if (USEOMP)
+            #pragma omp for schedule(guided)
+#endif
+            for (int y = 0; y < sizey; ++y)
+            {
+                dstPtr = dstMat->ptr<_TDest>(y);
+                srcPtr = srcMat->ptr<const _TSrc>(y);
+                for (int x = 0; x < sizex; ++x)
+                {
+                    dstPtr[x] = cv::saturate_cast<_TDest>(srcPtr[x]);
+                }
+            }
+#if (USEOMP)
+            }
+#endif
+        }
+    }
+    else
+    {
+        for (int nmat = 0; nmat < numMats; ++nmat)
+        {
+            resTmat = resObj->seekMat(nmat, numMats);
+            srcTmat = srcObj->seekMat(nmat, numMats);
+            srcMat = (srcObj->get_mdata())[srcTmat];
+            dstMat = (resObj->get_mdata())[resTmat];
+#if (USEOMP)
+            #pragma omp parallel num_threads(getMaximumThreadCount())
+            {
+#endif
+            const _TSrc* srcPtr = NULL;
+            _TDest* dstPtr = NULL;
+#if (USEOMP)
+            #pragma omp for schedule(guided)
+#endif
+            for (int y = 0; y < sizey; ++y)
+            {
+                dstPtr = dstMat->ptr<_TDest>(y);
+                srcPtr = srcMat->ptr<const _TSrc>(y);
+                for (int x = 0; x < sizex; ++x)
+                {
+                    dstPtr[x] = cv::saturate_cast<_TDest>(srcPtr[x] * alpha + beta);
+                }
+            }
+#if (USEOMP)
+            }
+#endif
+        }
    }
 
    return ito::retOk;
@@ -7391,57 +7746,79 @@ template<typename _TSrc, typename _TDest> RetVal CastFunc(const DataObject *srcO
 
 template<typename _TDest> RetVal CastFuncFromComplex64(const DataObject *srcObj, DataObject *resObj, double alpha, double beta)
 {
-   int numMats = srcObj->getNumPlanes();
-   int resTmat = 0;
-   int srcTmat = 0;
+    int numMats = srcObj->getNumPlanes();
+    int resTmat = 0;
+    int srcTmat = 0;
 
-   int sizex = srcObj->getSize(srcObj->getDims() - 1);
-   int sizey = srcObj->getSize(srcObj->getDims() - 2);
-   const cv::Mat* srcMat = NULL;
-   cv::Mat* dstMat = NULL;
-   const ito::complex64* srcPtr = NULL;
-   _TDest* dstPtr = NULL;
+    int sizex = srcObj->getSize(srcObj->getDims() - 1);
+    int sizey = srcObj->getSize(srcObj->getDims() - 2);
+    const cv::Mat* srcMat = NULL;
+    cv::Mat* dstMat = NULL;
 
-   if(alpha == 1.0 && beta == 0.0)
-   {
-       for (int nmat = 0; nmat < numMats; ++nmat)
-       {
-          resTmat = resObj->seekMat(nmat, numMats);
-          srcTmat = srcObj->seekMat(nmat, numMats);
-          srcMat = (srcObj->get_mdata())[srcTmat];
-          dstMat = (resObj->get_mdata())[resTmat];
-          for (int y = 0; y < sizey; ++y)
-          {
-              dstPtr = dstMat->ptr<_TDest>(y);
-              srcPtr = srcMat->ptr<const ito::complex64>(y);
-              for (int x = 0; x < sizex; ++x)
-              {
-                  dstPtr[x] = cv::saturate_cast<_TDest>(srcPtr[x]);
-              }
-          }
-       }
-   }
-   else
-   {
-       ito::complex64 alpha2(cv::saturate_cast<ito::float32>(alpha), 0.0);
-       ito::complex64 beta2(cv::saturate_cast<ito::float32>(beta), 0.0);
+    if(alpha == 1.0 && beta == 0.0)
+    {
+        for (int nmat = 0; nmat < numMats; ++nmat)
+        {
+            resTmat = resObj->seekMat(nmat, numMats);
+            srcTmat = srcObj->seekMat(nmat, numMats);
+            srcMat = (srcObj->get_mdata())[srcTmat];
+            dstMat = (resObj->get_mdata())[resTmat];
+#if (USEOMP)
+            #pragma omp parallel num_threads(getMaximumThreadCount())
+            {
+#endif
+            const ito::complex64* srcPtr = NULL;
+            _TDest* dstPtr = NULL;
+#if (USEOMP)
+            #pragma omp for schedule(guided)
+#endif
+            for (int y = 0; y < sizey; ++y)
+            {
+                dstPtr = dstMat->ptr<_TDest>(y);
+                srcPtr = srcMat->ptr<const ito::complex64>(y);
+                for (int x = 0; x < sizex; ++x)
+                {
+                    dstPtr[x] = cv::saturate_cast<_TDest>(srcPtr[x]);
+                }
+            }
+#if (USEOMP)
+            }
+#endif
+        }
+    }
+    else
+    {
+        ito::complex64 alpha2(cv::saturate_cast<ito::float32>(alpha), 0.0);
+        ito::complex64 beta2(cv::saturate_cast<ito::float32>(beta), 0.0);
 
-       for (int nmat = 0; nmat < numMats; ++nmat)
-       {
-          resTmat = resObj->seekMat(nmat, numMats);
-          srcTmat = srcObj->seekMat(nmat, numMats);
-          srcMat = (srcObj->get_mdata())[srcTmat];
-          dstMat = (resObj->get_mdata())[resTmat];
-          for (int y = 0; y < sizey; ++y)
-          {
-              dstPtr = dstMat->ptr<_TDest>(y);
-              srcPtr = srcMat->ptr<const ito::complex64>(y);
-              for (int x = 0; x < sizex; ++x)
-              {
-                  dstPtr[x] = cv::saturate_cast<_TDest>(srcPtr[x] * alpha2 + beta2);
-              }
-          }
-       }
+        for (int nmat = 0; nmat < numMats; ++nmat)
+        {
+            resTmat = resObj->seekMat(nmat, numMats);
+            srcTmat = srcObj->seekMat(nmat, numMats);
+            srcMat = (srcObj->get_mdata())[srcTmat];
+            dstMat = (resObj->get_mdata())[resTmat];
+#if (USEOMP)
+            #pragma omp parallel num_threads(getMaximumThreadCount())
+            {
+#endif
+            const ito::complex64* srcPtr = NULL;
+            _TDest* dstPtr = NULL;
+#if (USEOMP)
+            #pragma omp for schedule(guided)
+#endif
+            for (int y = 0; y < sizey; ++y)
+            {
+                dstPtr = dstMat->ptr<_TDest>(y);
+                srcPtr = srcMat->ptr<const ito::complex64>(y);
+                for (int x = 0; x < sizex; ++x)
+                {
+                    dstPtr[x] = cv::saturate_cast<_TDest>(srcPtr[x] * alpha2 + beta2);
+                }
+            }
+#if (USEOMP)
+            }
+#endif
+        }
    }
 
    return ito::retOk;
@@ -7449,57 +7826,79 @@ template<typename _TDest> RetVal CastFuncFromComplex64(const DataObject *srcObj,
 
 template<typename _TDest> RetVal CastFuncFromComplex128(const DataObject *srcObj, DataObject *resObj, double alpha, double beta)
 {
-   int numMats = srcObj->getNumPlanes();
-   int resTmat = 0;
-   int srcTmat = 0;
+    int numMats = srcObj->getNumPlanes();
+    int resTmat = 0;
+    int srcTmat = 0;
 
-   int sizex = srcObj->getSize(srcObj->getDims() - 1);
-   int sizey = srcObj->getSize(srcObj->getDims() - 2);
-   const cv::Mat* srcMat = NULL;
-   cv::Mat* dstMat = NULL;
-   const ito::complex128* srcPtr = NULL;
-   _TDest* dstPtr = NULL;
+    int sizex = srcObj->getSize(srcObj->getDims() - 1);
+    int sizey = srcObj->getSize(srcObj->getDims() - 2);
+    const cv::Mat* srcMat = NULL;
+    cv::Mat* dstMat = NULL;
 
-   if(alpha == 1.0 && beta == 0.0)
-   {
-       for (int nmat = 0; nmat < numMats; ++nmat)
-       {
-          resTmat = resObj->seekMat(nmat, numMats);
-          srcTmat = srcObj->seekMat(nmat, numMats);
-          srcMat = (srcObj->get_mdata())[srcTmat];
-          dstMat = (resObj->get_mdata())[resTmat];
-          for (int y = 0; y < sizey; ++y)
-          {
-              dstPtr = dstMat->ptr<_TDest>(y);
-              srcPtr = srcMat->ptr<const ito::complex128>(y);
-              for (int x = 0; x < sizex; ++x)
-              {
-                  dstPtr[x] = cv::saturate_cast<_TDest>(srcPtr[x]);
-              }
-          }
-       }
+    if(alpha == 1.0 && beta == 0.0)
+    {
+        for (int nmat = 0; nmat < numMats; ++nmat)
+        {
+            resTmat = resObj->seekMat(nmat, numMats);
+            srcTmat = srcObj->seekMat(nmat, numMats);
+            srcMat = (srcObj->get_mdata())[srcTmat];
+            dstMat = (resObj->get_mdata())[resTmat];
+#if (USEOMP)
+            #pragma omp parallel num_threads(getMaximumThreadCount())
+            {
+#endif
+            const ito::complex128* srcPtr = NULL;
+            _TDest* dstPtr = NULL;
+#if (USEOMP)
+            #pragma omp for schedule(guided)
+#endif
+            for (int y = 0; y < sizey; ++y)
+            {
+                dstPtr = dstMat->ptr<_TDest>(y);
+                srcPtr = srcMat->ptr<const ito::complex128>(y);
+                for (int x = 0; x < sizex; ++x)
+                {
+                    dstPtr[x] = cv::saturate_cast<_TDest>(srcPtr[x]);
+                }
+            }
+#if (USEOMP)
+            }
+#endif
+        }
    }
    else
    {
-       ito::complex128 alpha2(cv::saturate_cast<ito::float64>(alpha), 0.0);
-       ito::complex128 beta2(cv::saturate_cast<ito::float64>(beta), 0.0);
+        ito::complex128 alpha2(cv::saturate_cast<ito::float64>(alpha), 0.0);
+        ito::complex128 beta2(cv::saturate_cast<ito::float64>(beta), 0.0);
 
-       for (int nmat = 0; nmat < numMats; ++nmat)
-       {
-          resTmat = resObj->seekMat(nmat, numMats);
-          srcTmat = srcObj->seekMat(nmat, numMats);
-          srcMat = (srcObj->get_mdata())[srcTmat];
-          dstMat = (resObj->get_mdata())[resTmat];
-          for (int y = 0; y < sizey; ++y)
-          {
-              dstPtr = dstMat->ptr<_TDest>(y);
-              srcPtr = srcMat->ptr<const ito::complex128>(y);
-              for (int x = 0; x < sizex; ++x)
-              {
-                  dstPtr[x] = cv::saturate_cast<_TDest>(srcPtr[x] * alpha2 + beta2);
-              }
-          }
-       }
+        for (int nmat = 0; nmat < numMats; ++nmat)
+        {
+            resTmat = resObj->seekMat(nmat, numMats);
+            srcTmat = srcObj->seekMat(nmat, numMats);
+            srcMat = (srcObj->get_mdata())[srcTmat];
+            dstMat = (resObj->get_mdata())[resTmat];
+#if (USEOMP)
+            #pragma omp parallel num_threads(getMaximumThreadCount())
+            {
+#endif
+            const ito::complex128* srcPtr = NULL;
+            _TDest* dstPtr = NULL;
+#if (USEOMP)
+            #pragma omp for schedule(guided)
+#endif
+            for (int y = 0; y < sizey; ++y)
+            {
+                dstPtr = dstMat->ptr<_TDest>(y);
+                srcPtr = srcMat->ptr<const ito::complex128>(y);
+                for (int x = 0; x < sizex; ++x)
+                {
+                    dstPtr[x] = cv::saturate_cast<_TDest>(srcPtr[x] * alpha2 + beta2);
+                }
+            }
+#if (USEOMP)
+            }
+#endif
+        }
    }
 
    return ito::retOk;
@@ -7509,57 +7908,67 @@ template<typename _TDest> RetVal CastFuncFromRgba32(const DataObject *srcObj, Da
 {
     switch (resObj->getType())
     {
-    case ito::tUInt8:
-    case ito::tInt8:
-    case ito::tUInt16:
-    case ito::tInt16:
-    case ito::tUInt32:
-    case ito::tInt32:
-    case ito::tFloat32:
-    case ito::tFloat64:
-        if (beta != 0.0)
-        {
-            cv::error(cv::Exception(CV_StsAssert, "beta value != 0.0 not allowed for conversion from rgba32 to real value type (to gray-scale)", "", __FILE__, __LINE__));
-        }
-        GrayScaleCastFunc<_TDest>(srcObj, resObj, alpha);
-        break;
-    case ito::tRGBA32:
-        {
-            int numMats = srcObj->getNumPlanes();
-            int resTmat = 0;
-            int srcTmat = 0;
-
-            int sizex = srcObj->getSize(srcObj->getDims() - 1);
-            int sizey = srcObj->getSize(srcObj->getDims() - 2);
-            const cv::Mat* srcMat = NULL;
-            cv::Mat* dstMat = NULL;
-            const ito::Rgba32* srcPtr = NULL;
-            ito::Rgba32* dstPtr = NULL;
-
-            for (int nmat = 0; nmat < numMats; ++nmat)
+        case ito::tUInt8:
+        case ito::tInt8:
+        case ito::tUInt16:
+        case ito::tInt16:
+        case ito::tUInt32:
+        case ito::tInt32:
+        case ito::tFloat32:
+        case ito::tFloat64:
+            if (beta != 0.0)
             {
-                resTmat = resObj->seekMat(nmat, numMats);
-                srcTmat = srcObj->seekMat(nmat, numMats);
-                srcMat = (srcObj->get_mdata())[srcTmat];
-                dstMat = (resObj->get_mdata())[resTmat];
-                for (int y = 0; y < sizey; ++y)
+                cv::error(cv::Exception(CV_StsAssert, "beta value != 0.0 not allowed for conversion from rgba32 to real value type (to gray-scale)", "", __FILE__, __LINE__));
+            }
+            GrayScaleCastFunc<_TDest>(srcObj, resObj, alpha);
+            break;
+        case ito::tRGBA32:
+            {
+                int numMats = srcObj->getNumPlanes();
+                int resTmat = 0;
+                int srcTmat = 0;
+
+                int sizex = srcObj->getSize(srcObj->getDims() - 1);
+                int sizey = srcObj->getSize(srcObj->getDims() - 2);
+                const cv::Mat* srcMat = NULL;
+                cv::Mat* dstMat = NULL;
+
+                for (int nmat = 0; nmat < numMats; ++nmat)
                 {
-                    dstPtr = dstMat->ptr<ito::Rgba32>(y);
-                    srcPtr = srcMat->ptr<const ito::Rgba32>(y);
-                    for (int x = 0; x < sizex; ++x)
+                    resTmat = resObj->seekMat(nmat, numMats);
+                    srcTmat = srcObj->seekMat(nmat, numMats);
+                    srcMat = (srcObj->get_mdata())[srcTmat];
+                    dstMat = (resObj->get_mdata())[resTmat];
+#if (USEOMP)
+                    #pragma omp parallel num_threads(getMaximumThreadCount())
                     {
-                        dstPtr[x].r = cv::saturate_cast<ito::uint8>((double)srcPtr[x].r * alpha + beta);
-                        dstPtr[x].g = cv::saturate_cast<ito::uint8>((double)srcPtr[x].g * alpha + beta);
-                        dstPtr[x].b = cv::saturate_cast<ito::uint8>((double)srcPtr[x].b * alpha + beta);
-                        dstPtr[x].a = cv::saturate_cast<ito::uint8>((double)srcPtr[x].a * alpha + beta);
+#endif
+                    const ito::Rgba32* srcPtr = NULL;
+                    ito::Rgba32* dstPtr = NULL;
+#if (USEOMP)
+                    #pragma omp for schedule(guided)
+#endif
+                    for (int y = 0; y < sizey; ++y)
+                    {
+                        dstPtr = dstMat->ptr<ito::Rgba32>(y);
+                        srcPtr = srcMat->ptr<const ito::Rgba32>(y);
+                        for (int x = 0; x < sizex; ++x)
+                        {
+                            dstPtr[x].r = cv::saturate_cast<ito::uint8>((double)srcPtr[x].r * alpha + beta);
+                            dstPtr[x].g = cv::saturate_cast<ito::uint8>((double)srcPtr[x].g * alpha + beta);
+                            dstPtr[x].b = cv::saturate_cast<ito::uint8>((double)srcPtr[x].b * alpha + beta);
+                            dstPtr[x].a = cv::saturate_cast<ito::uint8>((double)srcPtr[x].a * alpha + beta);
+                        }
                     }
+#if (USEOMP)
+                    }
+#endif
                 }
             }
-        }
-        break;
-    default:
-        cv::error(cv::Exception(CV_StsAssert, "conversion from ito::Rgba32 to complex data types not supported.", "", __FILE__, __LINE__));
-        break;
+            break;
+        default:
+            cv::error(cv::Exception(CV_StsAssert, "conversion from ito::Rgba32 to complex data types not supported.", "", __FILE__, __LINE__));
+            break;
     }
 
     return ito::retOk;
@@ -7985,8 +8394,6 @@ template<typename _CmplxTp, typename _Tp> RetVal AbsFunc(const DataObject *dObj,
     cv::Mat_<_Tp> * dstMat = NULL;
     int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
     int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
-    const _CmplxTp* srcPtr = NULL;
-    _Tp* dstPtr = NULL;
 
     for (int nmat = 0; nmat < numMats; nmat++)
     {
@@ -7995,6 +8402,15 @@ template<typename _CmplxTp, typename _Tp> RetVal AbsFunc(const DataObject *dObj,
         srcMat = static_cast<const cv::Mat_<_CmplxTp> *>((dObj->get_mdata())[srcMatNum]);
         dstMat = static_cast<cv::Mat_<_Tp> *>((resObj->get_mdata())[dstMatNum]);
 
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+        const _CmplxTp* srcPtr = NULL;
+        _Tp* dstPtr = NULL;
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif
         for (int y = 0; y < sizey; y++)
         {
             dstPtr = (_Tp*)dstMat->ptr(y);
@@ -8004,6 +8420,9 @@ template<typename _CmplxTp, typename _Tp> RetVal AbsFunc(const DataObject *dObj,
                 dstPtr[x] = std::abs(srcPtr[x]);
             }
         }
+#if (USEOMP)
+        }
+#endif
     }
     return ito::retOk;
 }
@@ -8028,8 +8447,6 @@ template<typename _Tp> RetVal AbsFuncReal(const DataObject *dObj, DataObject *re
 
     const cv::Mat* srcMat = NULL;
     cv::Mat* dstMat = NULL;
-    _Tp* dstPtr = NULL;
-    const _Tp* srcPtr = NULL;
     int sizex = dObj->getSize(dObj->getDims() - 1);
     int sizey = dObj->getSize(dObj->getDims() - 2);
     for (int nmat = 0; nmat < numMats; nmat++)
@@ -8040,6 +8457,15 @@ template<typename _Tp> RetVal AbsFuncReal(const DataObject *dObj, DataObject *re
         srcMat = dObj->get_mdata()[srcMatNum];
         dstMat = resObj->get_mdata()[dstMatNum];
 
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+        _Tp* dstPtr = NULL;
+        const _Tp* srcPtr = NULL;
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif
         for (int y = 0; y < sizey; y++)
         {
             dstPtr = dstMat->ptr<_Tp>(y);
@@ -8049,6 +8475,9 @@ template<typename _Tp> RetVal AbsFuncReal(const DataObject *dObj, DataObject *re
                 dstPtr[x] = std::abs(srcPtr[x]);
             }
         }
+#if (USEOMP)
+        }
+#endif
     }
     return ito::retOk;
 }
@@ -8128,7 +8557,6 @@ DataObject abs(const DataObject &dObj)
 */
 template<typename _CmplxTp, typename _Tp> RetVal ArgFunc(const DataObject *dObj, DataObject *resObj)
 {
-
     dObj->copyTagMapTo(*resObj);
     dObj->copyAxisTagsTo(*resObj);
 
@@ -8138,8 +8566,6 @@ template<typename _CmplxTp, typename _Tp> RetVal ArgFunc(const DataObject *dObj,
 
     const cv::Mat_<_CmplxTp> * srcMat = NULL;
     cv::Mat_<_Tp> * dstMat = NULL;
-    _Tp* dstPtr = NULL;
-    const _CmplxTp* srcPtr = NULL;
     int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
     int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
     for (int nmat = 0; nmat < numMats; nmat++)
@@ -8150,6 +8576,15 @@ template<typename _CmplxTp, typename _Tp> RetVal ArgFunc(const DataObject *dObj,
         srcMat = static_cast<const cv::Mat_<_CmplxTp> *>((dObj->get_mdata())[srcMatNum]);
         dstMat = static_cast<cv::Mat_<_Tp> *>((resObj->get_mdata())[dstMatNum]);
 
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+        _Tp* dstPtr = NULL;
+        const _CmplxTp* srcPtr = NULL;
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif
         for (int y = 0; y < sizey; y++)
         {
             dstPtr = (_Tp*)dstMat->ptr(y);
@@ -8159,6 +8594,9 @@ template<typename _CmplxTp, typename _Tp> RetVal ArgFunc(const DataObject *dObj,
                 dstPtr[x] = std::arg(srcPtr[x]);
             }
         }
+#if (USEOMP)
+        }
+#endif
     }
     return 0;
 }
@@ -8212,8 +8650,6 @@ template<typename _CmplxTp, typename _Tp> RetVal RealFunc(const DataObject *dObj
 
     const cv::Mat_<_CmplxTp> * srcMat = NULL;
     cv::Mat_<_Tp> * dstMat = NULL;
-    const _CmplxTp* srcPtr = NULL;
-    _Tp* dstPtr = NULL;
     int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
     int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
     for (int nmat = 0; nmat < numMats; nmat++)
@@ -8224,6 +8660,15 @@ template<typename _CmplxTp, typename _Tp> RetVal RealFunc(const DataObject *dObj
         srcMat = static_cast<const cv::Mat_<_CmplxTp> *>(dObj->get_mdata()[srcMatNum]);
         dstMat = static_cast<cv::Mat_<_Tp> *>(resObj->get_mdata()[dstMatNum]);
 
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+        const _CmplxTp* srcPtr = NULL;
+        _Tp* dstPtr = NULL;
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif
         for (int y = 0; y < sizey; y++)
         {
             srcPtr = (const _CmplxTp*)srcMat->ptr(y);
@@ -8233,6 +8678,9 @@ template<typename _CmplxTp, typename _Tp> RetVal RealFunc(const DataObject *dObj
                 dstPtr[x] = std::real(srcPtr[x]);
             }
         }
+#if (USEOMP)
+        }
+#endif
     }
     return 0;
 }
@@ -8286,8 +8734,6 @@ template<typename _CmplxTp, typename _Tp> RetVal ImagFunc(const DataObject *dObj
 
     const cv::Mat_<_CmplxTp> * srcMat = NULL;
     cv::Mat_<_Tp> * dstMat = NULL;
-    const _CmplxTp* srcPtr = NULL;
-    _Tp* dstPtr = NULL;
     int sizex = static_cast<int>(dObj->getSize(dObj->getDims() - 1));
     int sizey = static_cast<int>(dObj->getSize(dObj->getDims() - 2));
     for (int nmat = 0; nmat < numMats; nmat++)
@@ -8298,6 +8744,15 @@ template<typename _CmplxTp, typename _Tp> RetVal ImagFunc(const DataObject *dObj
         srcMat = static_cast<const cv::Mat_<_CmplxTp> *>((dObj->get_mdata())[srcMatNum]);
         dstMat = static_cast<cv::Mat_<_Tp> *>((resObj->get_mdata())[dstMatNum]);
 
+#if (USEOMP)
+        #pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+        const _CmplxTp* srcPtr = NULL;
+        _Tp* dstPtr = NULL;
+#if (USEOMP)
+        #pragma omp for schedule(guided)
+#endif
         for (int y = 0; y < sizey; y++)
         {
             srcPtr = (const _CmplxTp*)srcMat->ptr(y);
@@ -8307,6 +8762,9 @@ template<typename _CmplxTp, typename _Tp> RetVal ImagFunc(const DataObject *dObj
                 dstPtr[x] = std::imag(srcPtr[x]);
             }
         }
+#if (USEOMP)
+        }
+#endif
     }
     return 0;
 }
@@ -8336,7 +8794,6 @@ DataObject imag(const DataObject &dObj)
         return DataObject();
     }
 }
-
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! low-level, templated method which copies an incontinuously organized data object to a continuously organized resulting data object
@@ -8722,25 +9179,25 @@ int DataObject::elemSize() const
 {
     switch(m_type)
     {
-    case tInt8:
-    case tUInt8:
-        return 1;
-    case tInt16:
-    case tUInt16:
-        return 2;
-    case tInt32:
-    case tUInt32:
-        return 4;
-    case tRGBA32:
-        return 4;
-    case tFloat32:
-        return 4;
-    case tFloat64:
-    case tComplex64:
-        return 8;
-    case tComplex128:
-        return 16;
-    default: return 0;
+        case tInt8:
+        case tUInt8:
+            return 1;
+        case tInt16:
+        case tUInt16:
+            return 2;
+        case tInt32:
+        case tUInt32:
+            return 4;
+        case tRGBA32:
+            return 4;
+        case tFloat32:
+            return 4;
+        case tFloat64:
+        case tComplex64:
+            return 8;
+        case tComplex128:
+            return 16;
+        default: return 0;
     }
 }
 
