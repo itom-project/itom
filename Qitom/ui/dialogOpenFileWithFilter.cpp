@@ -23,6 +23,7 @@
 #include "dialogOpenFileWithFilter.h"
 
 #include "../AppManagement.h"
+#include "../helper/guiHelper.h"
 
 #if QT_VERSION >= 0x050000
 #include <QtConcurrent/qtconcurrentrun.h>
@@ -32,8 +33,6 @@
 #include <qfileinfo.h>
 #include <qfileiconprovider.h>
 #include <qmessagebox.h>
-
-
 
 namespace ito {
 
@@ -72,6 +71,8 @@ namespace ito {
     }
 
     ui.txtPythonVariable->setText( var );
+
+    float dpiFactor = GuiHelper::screenDpiFactor(); //factor related to 96dpi (1.0)
 
     QFileIconProvider *provider = new QFileIconProvider();
     QIcon tempIcon = provider->icon(info);
@@ -121,6 +122,9 @@ namespace ito {
         }
         ui.tabWidget->setCurrentIndex(curIdx);
     }
+
+    tempIcon = QIcon(":/plugins/icons/sendToPython.png");
+    ui.lblImage->setPixmap(tempIcon.pixmap(16 * dpiFactor, 16 * dpiFactor));
 }
 
 //------------------------------------------------------------------------------------------------------------

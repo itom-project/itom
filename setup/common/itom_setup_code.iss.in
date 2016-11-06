@@ -15,6 +15,12 @@ const
 //  INSTALLLEVEL_MAXIMUM = $ffff;
 //  INSTALLSTATE_ABSENT = 2;
 
+  // Visual C++ 2012 Redistributable (Update 4)
+  RP12_86_MIN = '{BD95A8CD-1D9F-35AD-981A-3E7925026EBB}';
+  RP12_64_MIN = '{CF2BEA3C-26EA-32F8-AA9B-331F7E34BA97}';
+  RP12_86_ADD = '{B175520C-86A2-35A7-8619-86DC379688B9}';
+  RP12_64_ADD = '{37B8F9C7-03FB-3253-8781-2517C99D7C00}';
+
   // Visual C++ 2013 Redistributable
   RP13_86_MIN = '{13A4EE12-23EA-3371-91EE-EFB36DDFFF3E}';
   RP13_64_MIN = '{A749D8E6-B613-3BE3-8F5F-045C84EBA29B}';
@@ -32,6 +38,12 @@ const
 function IsMsiProductInstalled(const ProductId: string): Boolean;
 begin
   Result := MsiQueryProductState(ProductId) = INSTALLSTATE_DEFAULT;
+end;
+
+function NeedInstallRP12(SetupMode: Integer): Boolean;
+begin
+  Result := ((SetupMode = 64) and not (IsMsiProductInstalled(RP12_64_MIN) or IsMsiProductInstalled(RP12_64_ADD))) or
+            ((SetupMode = 32) and not (IsMsiProductInstalled(RP12_86_MIN) or IsMsiProductInstalled(RP12_86_ADD)));
 end;
 
 function NeedInstallRP13(SetupMode: Integer): Boolean;

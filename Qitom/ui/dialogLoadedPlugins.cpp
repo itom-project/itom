@@ -45,7 +45,7 @@ DialogLoadedPlugins::DialogLoadedPlugins(QWidget *parent) :
     ui.cmdError->setIcon(QIcon(":/application/icons/dialog-error-4.png"));
     ui.cmdWarning->setIcon(QIcon(":/application/icons/dialog-warning-4.png"));
     ui.cmdMessage->setIcon(QIcon(":/application/icons/dialog-information-4.png"));
-    ui.cmdIgnored->setIcon(QIcon(":/plugins/icons_m/ignored.png"));
+    ui.cmdIgnored->setIcon(QIcon(":/plugins/icons/ignored.png"));
 
     init();
     filter();
@@ -82,7 +82,7 @@ void DialogLoadedPlugins::init()
     header->setIcon(1, QIcon(":/application/icons/dialog-information-4.png"));
     header->setIcon(2, QIcon(":/application/icons/dialog-warning-4.png"));
     header->setIcon(3, QIcon(":/application/icons/dialog-error-4.png"));
-    header->setIcon(4, QIcon(":/plugins/icons_m/ignored.png"));
+    header->setIcon(4, QIcon(":/plugins/icons/ignored.png"));
     header->setText(5, "Library / Status");
     ui.tree->setHeaderItem(header);
 
@@ -150,10 +150,10 @@ void DialogLoadedPlugins::init()
             }
             else if (message->first & ito::plsfIgnored)
             {
-                child->setIcon(4,  QIcon(":/plugins/icons_m/ignored.png"));
+                child->setIcon(4,  QIcon(":/plugins/icons/ignored.png"));
                 setSortChar(4, *child);
                 m_items.append(QPair<int,QTreeWidgetItem*>(ito::plsfIgnored, child));
-                plugin->setIcon(4, QIcon(":/plugins/icons_m/ignored.png"));
+                plugin->setIcon(4, QIcon(":/plugins/icons/ignored.png"));
                 setSortChar(4, *plugin);
                 //pluginOK = false;
             }

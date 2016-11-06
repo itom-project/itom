@@ -29,6 +29,7 @@
 #include <qsignalmapper.h>
 
 #include "../../common/helperCommon.h"
+#include "../helper/guiHelper.h"
 
 namespace ito {
 
@@ -39,6 +40,8 @@ DialogNewPluginInstance::DialogNewPluginInstance(QModelIndex &modelIndex, ito::A
     m_pOptParser(NULL)
 {
     ui.setupUi(this);
+
+    float dpiFactor = GuiHelper::screenDpiFactor(); //factor related to 96dpi (1.0)
 
     const QAbstractItemModel *model = modelIndex.model();
     QModelIndex tempIndex;
@@ -53,7 +56,10 @@ DialogNewPluginInstance::DialogNewPluginInstance(QModelIndex &modelIndex, ito::A
         tempIcon = QIcon(":/plugins/icons/plugin.png");
     }
 
-    ui.lblIcon->setPixmap(tempIcon.pixmap(48,48));
+    ui.lblIcon->setPixmap(tempIcon.pixmap(48 * dpiFactor, 48 * dpiFactor));
+
+    tempIcon = QIcon(":/plugins/icons/sendToPython.png");
+    ui.lblImage->setPixmap(tempIcon.pixmap(16 * dpiFactor, 16 * dpiFactor));
 
     //get name
     ui.lblPluginName->setText(model->data(tempIndex, Qt::DisplayRole).toString());

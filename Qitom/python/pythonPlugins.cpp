@@ -3262,7 +3262,7 @@ PyObject* PythonPlugins::PyDataIOPlugin_copyVal(PyDataIOPlugin *self, PyObject *
         }
         else
         {
-            PyErr_SetString(PyExc_TypeError, "invalid parameters");
+            PyErr_SetString(PyExc_TypeError, "argument must be of type itom.dataObject.");
             return NULL;
         }
 

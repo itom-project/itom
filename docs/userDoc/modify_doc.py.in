@@ -1,7 +1,7 @@
 # coding=iso-8859-15 
 
 # -*- coding: utf-8 -*-
-
+import itom
 import os, re
 
 def replaceInFiles(path, ending):
@@ -13,6 +13,11 @@ def replaceInFiles(path, ending):
                 s = f.read()
                 s = s.replace("\\begin{quote}\\begin{description}", "\\begin{description}")
                 s = s.replace("\\end{description}\\end{quote}", "\\end{description}")
+                
+                dict = itom.version(True)
+                itomRefAbbrev = dict["itom"]["itom_GIT_Rev_Abbrev"]
+                itomVersion = dict["itom"]["itom_Version"]
+                s = s.replace("%s" % itomRefAbbrev, "%s" % itomVersion) # replace itom Ref number by itom version
                 
                 s = s.replace(".gif", ".png") # replace gif by png images for pdf
                 

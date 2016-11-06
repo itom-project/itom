@@ -89,7 +89,6 @@
         <file>icons/plus.png</file>
     </qresource>
     <qresource prefix="/files">
-        <file>icons/fileModified.png</file>
         <file>icons/filePython.png</file>
         <file>icons/fileSave.png</file>
         <file>icons/fileSaveAll.png</file>
@@ -106,11 +105,6 @@
         <file>icons/dirPaste.png</file>
     </qresource>
     <qresource prefix="/breakpoints">
-        <file>icons/breakpointToggle.png</file>
-        <file>icons/cBreak.png</file>
-        <file>icons/cBreakpointToggle.png</file>
-        <file>icons/break.png</file>
-        <file>icons/breakDisabled.png</file>
         <file>icons/itomBreak.png</file>
         <file>icons/itomcBreak.png</file>
         <file>icons/itomBreakDisable.png</file>
@@ -136,7 +130,6 @@
         <file>icons/editCut.png</file>
         <file>icons/editDelete.png</file>
         <file>icons/editIndent.png</file>
-        <file>icons/editor.png</file>
         <file>icons/editPaste.png</file>
         <file>icons/editRedo.png</file>
         <file>icons/editReplace.png</file>
@@ -170,11 +163,6 @@
         <file>icons/import-prop-icon.png</file>
     </qresource>
     <qresource prefix="/plots">
-        <file>icons/lineDash.png</file>
-        <file>icons/lineDashDot.png</file>
-        <file>icons/lineDashDotDot.png</file>
-        <file>icons/lineDot.png</file>
-        <file>icons/lineSolid.png</file>
         <file>icons/zoom-3.png</file>
         <file>icons/move.png</file>
         <file>icons/print.png</file>
@@ -215,26 +203,11 @@
         <file>icons/sendToPython.png</file>
         <file>icons/window.png</file>
         <file>icons/pluginAlgo.png</file>
-        <file>icons_m/ignored.png</file>
+        <file>icons/ignored.png</file>
         <file>icons/monitor.png</file>
         <file>icons/closeAll.png</file>
     </qresource>
     <qresource prefix="/misc">
-        <file>icons/itom_icons/calc.png</file>
-        <file>icons/itom_icons/rothl.png</file>
-        <file>icons/itom_icons/rothr.png</file>
-        <file>icons/itom_icons/rotipl.png</file>
-        <file>icons/itom_icons/rotipr.png</file>
-        <file>icons/itom_icons/rotvl.png</file>
-        <file>icons/itom_icons/rotvr.png</file>
-        <file>icons/itom_icons/rotzl.png</file>
-        <file>icons/itom_icons/rotzr.png</file>
-        <file>icons/itom_icons/linelev.png</file>
-        <file>icons/itom_icons/polylev.png</file>
-        <file>icons/itom_icons/record.png</file>
-        <file>icons/itom_icons/bulb.png</file>
-        <file>icons/preferences-orbit.png</file>
-        <file>icons/itom_icons/bulb_dir.png</file>
         <file>icons/User.png</file>
         <file>icons/shell.png</file>
     </qresource>
@@ -246,14 +219,6 @@
         <file>icons/itom_icons/snapQuick.png</file>
         <file>icons/itom_icons/snapSequence.png</file>
         <file>icons/itom_icons/stitch.png</file>
-    </qresource>
-    <qresource prefix="/matplotlib">
-        <file>icons/matplotlib/back.png</file>
-        <file>icons/matplotlib/forward.png</file>
-        <file>icons/matplotlib/home.png</file>
-        <file>icons/matplotlib/move.png</file>
-        <file>icons/matplotlib/subplots.png</file>
-        <file>icons/matplotlib/zoom_to_rect.png</file>
     </qresource>
     <qresource prefix="/license">
         <file>about.html</file>

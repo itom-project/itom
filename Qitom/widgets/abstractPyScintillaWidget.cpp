@@ -23,6 +23,7 @@
 #include "abstractPyScintillaWidget.h"
 #include "../global.h"
 #include "../AppManagement.h"
+#include "../helper/guiHelper.h"
 
 #include <qstring.h>
 #include <qsettings.h>
@@ -30,6 +31,8 @@
 #include <qcolor.h>
 #include <qfont.h>
 #include <qtooltip.h>
+
+
 
 namespace ito {
 
@@ -264,6 +267,19 @@ void AbstractPyScintillaWidget::loadSettings()
             settings.endGroup();
         }
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+QPixmap AbstractPyScintillaWidget::loadMarker(const QString &name, int sizeAt96dpi)
+{
+    int dpi = GuiHelper::getScreenLogicalDpi();
+    QPixmap px(name);
+    if (dpi != 96 || px.height() != sizeAt96dpi)
+    {
+        int newSize = sizeAt96dpi * dpi / 96;
+        px = px.scaled(newSize, newSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    }
+    return px;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

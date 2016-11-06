@@ -7231,21 +7231,20 @@ DataObject DataObject::reshape(int newDims, const int *newSizes) const
 RetVal DataObject::copyFromData2DInternal(const uchar* src, const int sizeOfElem, const int sizeX, const int sizeY)
 {
     ito::RetVal retval(ito::retOk);
+    int ndims = getDims();
 
-    if ((getNumPlanes() != 1) || (getSize(getDims() - 1) != sizeX) || (getSize(getDims() - 2) != sizeY))
+    if ((getNumPlanes() != 1) || (getSize(ndims - 1) != sizeX) || (getSize(ndims - 2) != sizeY))
     {
-        retval = RetVal(ito::retError,0,"Error in copyFromData2D. Size of Buffer unequal size of DataObject");
+        retval = RetVal::format(ito::retError, 0, "Error in copyFromData2D. Size of buffer (%i x %i) does not fit to size of dataObject (%i x %i)", sizeY, sizeX, getSize(ndims - 2), getSize(ndims - 1));
         return retval;
     }
-    
-    //retval = checkType(src); // This is bullshit because this type is anytype and src is always uchar!!!!
-    //if (retval != ito::retOk)
-    //   return retval;
 
-    cv::Mat *cvMat = get_mdata()[this->seekMat(0)];
+    cv::Mat *cvMat = getCvPlaneMat(0);
 
-    if (cvMat->elemSize() !=  sizeOfElem)
-        return retval;
+    if (cvMat->elemSize() != sizeOfElem)
+    {
+        return RetVal(ito::retError, 0, "Error in copyFromData2D: sizes of elements in buffer and dataObject are different.");
+    }
 
     if (cvMat->isContinuous())
     {

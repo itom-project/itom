@@ -38,6 +38,7 @@
 #include "../organizer/qsciApiManager.h"
 #include <qstringlist.h>
 #include <qrect.h>
+#include <qpixmap.h>
 
 namespace ito {
 
@@ -65,6 +66,8 @@ protected:
     void checkUserSelectionState();
     QString formatPythonCodePart(const QString &text, int &lineCount);
     QString formatConsoleCodePart(const QString &text);
+
+    QPixmap loadMarker(const QString &name, int sizeAt96dpi);
 
     tUserSelectionState m_userSelectionState;
 

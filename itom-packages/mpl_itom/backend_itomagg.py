@@ -10,7 +10,8 @@ import sys
 from itom import ui
 from itom import uiItem
 from itom import figure as itomFigure
-from itom import timer as itomTimer
+
+#import threading
 
 from matplotlib.figure import Figure
 
@@ -163,18 +164,17 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         # accumulate multiple draw requests from event handling.
         # TODO: queued signal connection might be safer than singleShot
         if not self._agg_draw_pending:
-            self._agg_draw_pending = itomTimer(0, self.__draw_idle_agg, singleShot = True)
+            self._agg_draw_pending = True
+            self.__draw_idle_agg()
 
     def __draw_idle_agg(self, *args):
-        #if self.height() < 0 or self.width() < 0:
-        #    self._agg_draw_pending = None
-        #    return
         try:
             if self.canvas:
                 FigureCanvasAgg.draw(self)
                 self.paintEvent()
         finally:
-            self._agg_draw_pending = None
+            if self._agg_draw_pending:
+                self._agg_draw_pending = None
 
     def blit(self, bbox=None):
         """

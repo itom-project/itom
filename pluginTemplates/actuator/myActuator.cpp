@@ -39,8 +39,8 @@ MyActuatorInterface::MyActuatorInterface()
 Put a detailed description about what the plugin is doing, what is needed to get it started, limitations...";
     m_detaildescription = QObject::tr(docstring);
 
-    m_author = "Authors of the plugin";
-    m_version = (PLUGIN_VERSION_MAJOR << 16) + (PLUGIN_VERSION_MINOR << 8) + PLUGIN_VERSION_PATCH;
+    m_author = PLUGIN_AUTHOR;
+    m_version = PLUGIN_VERSION;
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("The plugin's license string");
