@@ -78,6 +78,7 @@ namespace ito
         return addIn->getRefCount();
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     //! set api function pointer
     void AddInInterfaceBase::setApiFunctions(void **apiFunctions) 
     { 
@@ -86,13 +87,15 @@ namespace ito
         ito::ITOM_API_FUNCS = apiFunctions; //this propagates the api pointer to the itomCommonQt dll where this source file has been compiled
     }
 
-    void AddInInterfaceBase::setApiFunctionsGraph(void ** apiFunctionsGraph) 
+    //----------------------------------------------------------------------------------------------------------------------------------
+    void AddInInterfaceBase::setApiFunctionsGraph(void ** apiFunctionsGraph)
     { 
         m_apiFunctionsGraphBasePtr = apiFunctionsGraph;
         this->importItomApiGraph(apiFunctionsGraph); //this is the virtual function call in order to also propagate the api pointer to the plugin dll
         ito::ITOM_API_FUNCS_GRAPH = apiFunctionsGraph; //this propagates the api pointer to the itomCommonQt dll where this source file has been compiled
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     bool AddInInterfaceBase::event(QEvent *e)
     {
         //the event User+123 is emitted by AddInManager, if the API has been prepared and can
@@ -105,12 +108,12 @@ namespace ito
         {
             this->importItomApi(m_apiFunctionsBasePtr);
             this->importItomApiGraph(m_apiFunctionsGraphBasePtr);
-        }   
+        } 
+
         return QObject::event(e);
     }
 
-
-    //------------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------------------
     class AddInBasePrivate
     {
     public:
@@ -127,7 +130,6 @@ namespace ito
         int m_uniqueID;                         //!< uniqueID (automatically given by constructor of AddInBase with auto-incremented value)
         int m_createdByGUI;                     //!< 1 if this instance has firstly been created by GUI, 0: this instance has been created by c++ or python
         bool m_initialized;                     //!< true: init-method has been returned with any RetVal, false (default): init-method has not been finished yet
-
     };
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -265,6 +267,7 @@ namespace ito
             waitCond->returnValue = retValue;
             waitCond->release();
         }
+
         return retValue;
     }
 
@@ -295,6 +298,7 @@ namespace ito
             waitCond->returnValue = retValue;
             waitCond->release();
         }
+
         return retValue;
     }
 
@@ -316,6 +320,7 @@ namespace ito
         return retOk;
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------------
     //! method to retrieve a parameter from the parameter map (m_params)
     /*!
         returns parameter from m_params vector. If the parameter could not be found or if the given name is invalid an invalid Param is returned.
@@ -364,6 +369,7 @@ namespace ito
                 return tempParam; //returns default constructor if value not available in m_params. Default constructor has member isValid() => false
             }
         }
+
         return Param();
     }
 
@@ -394,6 +400,7 @@ namespace ito
             waitCond->returnValue = retValue;
             waitCond->release();
         }
+
         return retValue;
     }
 
@@ -494,6 +501,7 @@ namespace ito
         {
             maxThreadCount = threadCount;
         }
+
         return ito::retOk;
     }
 
@@ -618,7 +626,6 @@ namespace ito
          }
      }
 
-
     //----------------------------------------------------------------------------------------------------------------------------------
     //! method indicates whether this plugin instance has a configuration dialog.
     /*!
@@ -674,8 +681,6 @@ namespace ito
         return retOk;
     }
 
-
-
     //----------------------------------------------------------------------------------------------------------------------------------
     AddInDataIO::AddInDataIO() : 
         AddInBase(),
@@ -695,7 +700,6 @@ namespace ito
             m_timerID = 0;
         }
     }
-
 
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::startDeviceAndRegisterListener(QObject* obj, ItomSharedSemaphore *waitCond)
@@ -874,7 +878,6 @@ namespace ito
             }
         }
     }
-
 
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AddInDataIO::startDevice(ItomSharedSemaphore *waitCond)
@@ -1120,6 +1123,7 @@ namespace ito
             m_filterList.erase(it);
             return ito::retOk;
         }
+
         return ito::retError;
     }
 
@@ -1133,6 +1137,7 @@ namespace ito
             m_algoWidgetList.erase(it);
             return ito::retOk;
         }
+
         return ito::retError;
     }
 
