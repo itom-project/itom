@@ -54,6 +54,7 @@ Q_DECLARE_METATYPE(QPointer<ito::AddInActuator>)
 Q_DECLARE_METATYPE(ito::Shape)
 Q_DECLARE_METATYPE(QVector<ito::Shape>)
 
+
 namespace ito
 {
 

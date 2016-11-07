@@ -27,7 +27,7 @@
 #include <qvector4d.h>
 #include <qrect.h>
 
-
+Q_DECLARE_METATYPE(QVector<int>)
 
 namespace ito {
 

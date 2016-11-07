@@ -26,9 +26,9 @@
     #include <qdesktopwidget.h>
 #else
     #include <qscreen.h>
-    #include <qapplication.h>
 #endif
 
+#include <qapplication.h>
 #include <qglobal.h>
 
 namespace ito

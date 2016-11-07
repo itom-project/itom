@@ -133,7 +133,11 @@ void WidgetPropGeneralStyles::writeSettings()
     else if (ui.radioPredefinedStyle->isChecked())
     {
         QDir appPath(QCoreApplication::applicationDirPath());
+ #if QT_VERSION < 0x050000
+        QString name = ui.comboPredefinedStyle->itemData(ui.comboPredefinedStyle->currentIndex()).toString();
+#else
         QString name = ui.comboPredefinedStyle->currentData().toString();
+#endif
         QFileInfo qss(appPath.absoluteFilePath(QString("styles/stylesheets/%1/%1.qss").arg(name)));
         if (qss.exists())
         {
