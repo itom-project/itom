@@ -26,6 +26,8 @@
 #include <qabstractitemmodel.h>
 #include <qprocess.h>
 
+#include "../common/sharedStructures.h"
+
 namespace ito 
 {
 

@@ -682,9 +682,9 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                                 
                                 if (attr.hasAttribute("fontStyle"))
                                 {
-                                    globalOverrideFont.setBold(attr.value("fontStyle").toInt() & 1);
-                                    globalOverrideFont.setItalic(attr.value("fontStyle").toInt() & 2);
-                                    globalOverrideFont.setUnderline(attr.value("fontStyle").toInt() & 4);
+                                    globalOverrideFont.setBold(attr.value("fontStyle").toString().toInt() & 1);
+                                    globalOverrideFont.setItalic(attr.value("fontStyle").toString().toInt() & 2);
+                                    globalOverrideFont.setUnderline(attr.value("fontStyle").toString().toInt() & 4);
                                 }
                                 if (attr.hasAttribute("fontName"))
                                 {
@@ -692,7 +692,7 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                                 }
                                 if (attr.hasAttribute("fontSize"))
                                 {
-                                    globalOverrideFont.setPointSize(attr.value("fontSize").toInt());
+                                    globalOverrideFont.setPointSize(attr.value("fontSize").toString().toInt());
                                 }
                             }
                             else if (attr.hasAttribute("name") && attr.value("name") == "Default Style")
@@ -760,7 +760,7 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
                         {
                             for (int i = 0; i < m_styles.size(); ++i)
                             {
-                                if (m_styles[i].m_index == attr.value("styleID").toInt(&ok) && ok)
+                                if (m_styles[i].m_index == attr.value("styleID").toString().toInt(&ok) && ok)
                                 {
                                     stylesFound << m_styles[i].m_index;
                                     m_styles[i].m_fillToEOL = false;
@@ -784,9 +784,9 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
 
                                     if (attr.hasAttribute("fontStyle"))
                                     {
-                                        m_styles[i].m_font.setBold(attr.value("fontStyle").toInt() & 1);
-                                        m_styles[i].m_font.setItalic(attr.value("fontStyle").toInt() & 2);
-                                        m_styles[i].m_font.setUnderline(attr.value("fontStyle").toInt() & 4);
+                                        m_styles[i].m_font.setBold(attr.value("fontStyle").toString().toInt() & 1);
+                                        m_styles[i].m_font.setItalic(attr.value("fontStyle").toString().toInt() & 2);
+                                        m_styles[i].m_font.setUnderline(attr.value("fontStyle").toString().toInt() & 4);
                                     }
                                     if (attr.hasAttribute("fontName") && !attr.value("fontName").isEmpty())
                                     {
@@ -799,7 +799,7 @@ void WidgetPropEditorStyles::on_btnImport_clicked()
 
                                     if (attr.hasAttribute("fontSize") && !attr.value("fontSize").isEmpty())
                                     {
-                                        m_styles[i].m_font.setPointSize(attr.value("fontSize").toInt());
+                                        m_styles[i].m_font.setPointSize(attr.value("fontSize").toString().toInt());
                                     }
                                     else
                                     {
