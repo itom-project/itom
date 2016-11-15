@@ -17,7 +17,7 @@
    version="1.1"
    inkscape:version="0.91 r13725"
    sodipodi:docname="undockButtonGlyph.svg"
-   inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\undockButtonGlyph.png"
+   inkscape:export-filename="C:\itom\sources\itom\Qitom\icons_dark\undockButtonGlyph.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -343,10 +343,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="10.24"
-     inkscape:cx="31.087484"
-     inkscape:cy="34.662899"
+     inkscape:cx="39.095297"
+     inkscape:cy="33.979305"
      inkscape:document-units="px"
-     inkscape:current-layer="g4784"
+     inkscape:current-layer="g4883"
      showgrid="true"
      inkscape:window-width="1920"
      inkscape:window-height="1027"
@@ -399,14 +399,14 @@
                  style="filter:url(#filter4891)"
                  id="g4883">
                 <rect
-                   style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                   style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
                    id="rect4710"
                    width="78.616028"
                    height="8.7351427"
                    x="-7.2786808"
                    y="981.13818" />
                 <rect
-                   style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                   style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
                    id="rect4710-3"
                    width="78.615936"
                    height="8.7351141"
@@ -414,7 +414,7 @@
                    y="-7.2786808"
                    transform="matrix(0,-1,1,0,0,0)" />
                 <rect
-                   style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                   style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
                    id="rect4710-0"
                    width="78.615852"
                    height="8.7351179"
@@ -422,14 +422,14 @@
                    y="62.602234"
                    transform="matrix(0,-1,1,0,0,0)" />
                 <rect
-                   style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                   style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
                    id="rect4710-07"
                    width="78.616028"
                    height="8.7349634"
                    x="-7.2786813"
                    y="1051.0192" />
                 <rect
-                   style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                   style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
                    id="rect4710-3-6"
                    width="78.615936"
                    height="8.7351141"
@@ -437,7 +437,7 @@
                    y="-24.748909"
                    transform="matrix(0,-1,1,0,0,0)" />
                 <rect
-                   style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+                   style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
                    id="rect4710-07-7"
                    width="78.616028"
                    height="8.7349634"
