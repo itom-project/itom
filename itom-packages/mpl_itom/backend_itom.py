@@ -1,6 +1,5 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
-from matplotlib.externals import six
 
 import itom
 from itom import uiItem, timer, ui
@@ -10,7 +9,6 @@ import os
 import re
 import sys
 import weakref
-from matplotlib.externals.six import unichr
 
 import matplotlib
 
@@ -331,7 +329,7 @@ class FigureCanvasItom(FigureCanvasBase):
             if event_key > MAX_UNICODE:
                 return None
 
-            key = unichr(event_key)
+            key = chr(event_key)
             # qt delivers capitalized letters.  fix capitalization
             # note that capslock is ignored
             if 'shift' in mods:
@@ -539,7 +537,7 @@ class FigureManagerItom( FigureManagerBase ):
 
     def get_window_title(self):
         try:
-            return six.text_type(self.windowTitle)
+            return str(self.windowTitle)
         except Exception:
             return ""
 
