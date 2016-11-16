@@ -274,7 +274,7 @@ class FigureCanvasItom(FigureCanvasBase):
         except RuntimeError:
             self.signalDestroyedWidget()
 
-    def wheelEvent(self, event):
+    def wheelEvent(self, x, y, delta, orientation):
         # flipy so y=0 is bottom of canvas
         y = self.figure.bbox.height - y
         # from QWheelEvent::delta doc
