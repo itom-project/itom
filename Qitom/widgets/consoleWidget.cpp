@@ -932,7 +932,7 @@ void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)
         QString selectedText = text(line);
 
         //check for the following style '  File "x:\...py", line xxx, in ... and if found open the script at the given line to jump to the indicated error location in the script
-        if (selectedText.contains("file ", Qt::CaseInsensitive) || selectedText.contains(": RuntimeWarning:", Qt::CaseSensitive))
+        if (selectedText.contains("file ", Qt::CaseInsensitive) || selectedText.contains("Warning:", Qt::CaseSensitive))
         {
             QRegExp rx("^  File \"(.*\\.[pP][yY])\", line (\\d+)(, in )?.*$");
             if (rx.indexIn(selectedText) >= 0)
@@ -966,7 +966,7 @@ void ConsoleWidget::textDoubleClicked(int position, int line, int modifiers)
                 }
                 else
                 {
-                    rx.setPattern("^(.*\\.[pP][yY]):(\\d+): RuntimeWarning:.*$");
+                    rx.setPattern("^(.*\\.[pP][yY]):(\\d+): (\\w)*Warning:.*$");
                     if (rx.indexIn(selectedText) >= 0)
                     {
                         ScriptEditorOrganizer *seo = qobject_cast<ScriptEditorOrganizer*>(AppManagement::getScriptEditorOrganizer());
