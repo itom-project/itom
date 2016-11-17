@@ -160,7 +160,7 @@ HelpViewer::HelpViewer(QWidget *parent /*= NULL*/) :
 
 	toolbar->addSeparator();
 
-	QAction *homeAction = new QAction(QIcon(":/matplotlib/icons/matplotlib/home.png"), tr("Home"), this);
+	QAction *homeAction = new QAction(QIcon(":/itomDesignerPlugins/general/icons/home.png"), tr("Home"), this);
 	connect(homeAction, SIGNAL(triggered()), this, SLOT(setupFinished()));
 	toolbar->addAction(homeAction);
 
