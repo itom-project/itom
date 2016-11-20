@@ -211,6 +211,7 @@ itom.pointCloud.fromXYZI(X,Y,Z,I | XYZ,I) -> creates a point cloud from four X,Y
 itom.pointCloud.fromXYZRGBA(X,Y,Z,color | XYZ,color) -> creates a point cloud from four X,Y,Z,color data objects or from one 3xMxN data object and one coloured data object
 itom.pointCloud.height
 itom.pointCloud.insert(index, values) -> inserts a single point or a sequence of points before position given by index
+itom.pointCloud.moveXYZ(x = 0.0, y = 0.0, z = 0.0) -> move the x, y and z components of every point by the given values.
 itom.pointCloud.name
 itom.pointCloud.organized
 itom.pointCloud.scaleXYZ(x = 1.0, y = 1.0, z = 1.0) -> scale the x, y and z components of every point by the given values .

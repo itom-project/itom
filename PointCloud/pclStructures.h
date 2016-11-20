@@ -537,8 +537,11 @@ public:
     //! setter to set the dense property of this point cloud
     void set_dense(bool dense);
 
-    //! setter to set the dense property of this point cloud
+    //! scale every point in this cloud by scaleX, scaleY and scaleZ in X, Y and Z direction. Other point properties are not influenced by this.
     void scaleXYZ(float32 scaleX, float32 scaleY, float32 scaleZ);
+
+    //! scale every point in this cloud by scaleX, scaleY and scaleZ in X, Y and Z direction. Other point properties are not influenced by this.
+    void moveXYZ(float32 dX, float32 dY, float32 dZ);
 
     //! returns the header structure of this point cloud for a conversion to the old pcl::PCLPointCloud2 structure used in the pcl::PolygonMesh.
 #if PCL_VERSION_COMPARE(>=,1,7,0)
