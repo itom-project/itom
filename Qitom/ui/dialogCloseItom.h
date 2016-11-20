@@ -46,6 +46,7 @@ public:
 protected:
 	void timerEvent(QTimerEvent *event);
     void closeEvent(QCloseEvent *event);
+	void keyPressEvent(QKeyEvent *event);
 
 private:
     Ui::DialogCloseItom ui;

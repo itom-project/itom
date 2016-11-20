@@ -16,8 +16,8 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="undockButtonGlyph.svg"
-   inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\undockButtonGlyph.png"
+   sodipodi:docname="dockButtonGlyph.svg"
+   inkscape:export-filename="C:\itom\sources\itom\Qitom\icons_dark\dockButtonGlyph.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -305,34 +305,34 @@
     <filter
        style="color-interpolation-filters:sRGB;"
        inkscape:label="Drop Shadow"
-       id="filter4891">
+       id="filter4750">
       <feFlood
          flood-opacity="0.7"
          flood-color="rgb(0,0,0)"
          result="flood"
-         id="feFlood4893" />
+         id="feFlood4752" />
       <feComposite
          in="flood"
          in2="SourceGraphic"
          operator="in"
          result="composite1"
-         id="feComposite4895" />
+         id="feComposite4754" />
       <feGaussianBlur
          in="composite"
          stdDeviation="2"
          result="blur"
-         id="feGaussianBlur4897" />
+         id="feGaussianBlur4756" />
       <feOffset
          dx="2"
          dy="2"
          result="offset"
-         id="feOffset4899" />
+         id="feOffset4758" />
       <feComposite
          in="SourceGraphic"
          in2="offset"
          operator="over"
          result="composite2"
-         id="feComposite4901" />
+         id="feComposite4760" />
     </filter>
   </defs>
   <sodipodi:namedview
@@ -343,10 +343,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="10.24"
-     inkscape:cx="31.087484"
-     inkscape:cy="34.662899"
+     inkscape:cx="32.432113"
+     inkscape:cy="29.916781"
      inkscape:document-units="px"
-     inkscape:current-layer="g4784"
+     inkscape:current-layer="g4744"
      showgrid="true"
      inkscape:window-width="1920"
      inkscape:window-height="1027"
@@ -388,64 +388,38 @@
          style="stroke-width:6.34000206;stroke-miterlimit:1;stroke-dasharray:none">
         <g
            id="g4744"
-           transform="matrix(0.88709674,0,0,0.88709674,4.2502149,114.57769)">
-          <g
-             id="g4784"
-             transform="matrix(0.81818182,0,0,0.81818182,12.970427,178.38874)">
-            <g
-               id="g3046"
-               transform="matrix(0.60606054,0,0,0.60606054,9.3914602,405.08059)">
-              <g
-                 style="filter:url(#filter4891)"
-                 id="g4883">
-                <rect
-                   style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-                   id="rect4710"
-                   width="78.616028"
-                   height="8.7351427"
-                   x="-7.2786808"
-                   y="981.13818" />
-                <rect
-                   style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-                   id="rect4710-3"
-                   width="78.615936"
-                   height="8.7351141"
-                   x="-1059.7542"
-                   y="-7.2786808"
-                   transform="matrix(0,-1,1,0,0,0)" />
-                <rect
-                   style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-                   id="rect4710-0"
-                   width="78.615852"
-                   height="8.7351179"
-                   x="-1059.7543"
-                   y="62.602234"
-                   transform="matrix(0,-1,1,0,0,0)" />
-                <rect
-                   style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-                   id="rect4710-07"
-                   width="78.616028"
-                   height="8.7349634"
-                   x="-7.2786813"
-                   y="1051.0192" />
-                <rect
-                   style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-                   id="rect4710-3-6"
-                   width="78.615936"
-                   height="8.7351141"
-                   x="-1077.2244"
-                   y="-24.748909"
-                   transform="matrix(0,-1,1,0,0,0)" />
-                <rect
-                   style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
-                   id="rect4710-07-7"
-                   width="78.616028"
-                   height="8.7349634"
-                   x="-24.748909"
-                   y="1068.4894" />
-              </g>
-            </g>
-          </g>
+           transform="matrix(0.53763435,0,0,0.53763435,13.284294,469.48964)"
+           style="filter:url(#filter4750)">
+          <rect
+             y="981.13818"
+             x="-7.2786808"
+             height="7.1469164"
+             width="78.616028"
+             id="rect4710"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none" />
+          <rect
+             transform="matrix(0,-1,1,0,0,0)"
+             y="-7.2786808"
+             x="-1059.7542"
+             height="7.1469116"
+             width="78.615959"
+             id="rect4710-3"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none" />
+          <rect
+             transform="matrix(0,-1,1,0,0,0)"
+             y="64.190437"
+             x="-1059.7543"
+             height="7.1469102"
+             width="78.616096"
+             id="rect4710-0"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none" />
+          <rect
+             y="1035.6622"
+             x="-7.2786808"
+             height="24.091978"
+             width="78.616028"
+             id="rect4710-35"
+             style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none" />
         </g>
       </g>
     </g>

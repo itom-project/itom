@@ -15,9 +15,9 @@
    height="64"
    id="svg2"
    version="1.1"
-   inkscape:version="0.48.5 r10040"
+   inkscape:version="0.91 r13725"
    sodipodi:docname="dockButtonGlyph.svg"
-   inkscape:export-filename="D:\itom\sources\itom\Qitom\icons\dockButtonGlyph.png"
+   inkscape:export-filename="C:\itom\sources\itom\Qitom\icons\undockButtonGlyph.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -343,14 +343,14 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="10.24"
-     inkscape:cx="27.793441"
-     inkscape:cy="24.838656"
+     inkscape:cx="35.850082"
+     inkscape:cy="35.776156"
      inkscape:document-units="px"
      inkscape:current-layer="g8207"
      showgrid="true"
      inkscape:window-width="1920"
-     inkscape:window-height="1178"
-     inkscape:window-x="1912"
+     inkscape:window-height="1027"
+     inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      showguides="true"
@@ -371,7 +371,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -388,7 +388,7 @@
          style="stroke-width:6.34000206;stroke-miterlimit:1;stroke-dasharray:none">
         <g
            id="g4744"
-           transform="matrix(0.45350757,0,0,0.45350757,18.697311,555.83753)"
+           transform="matrix(0.53763435,0,0,0.53763435,13.284294,469.48964)"
            style="filter:url(#filter4750)">
           <rect
              y="981.13818"

@@ -758,14 +758,22 @@ void MainApplication::mainWindowCloseRequest()
     settings->beginGroup("MainWindow");
 
 	bool pythonStopped = false;
+	bool closeRequestCanceled = false;
+	int dialogRequest = -1;
 
 	if (m_pyEngine != NULL && m_pyEngine->isPythonBusy())
 	{
 		DialogCloseItom *dialog = new DialogCloseItom(NULL);
 
-		if (dialog->exec() == QDialog::Accepted)
+		int dialogRequest = dialog->exec();
+
+		if (dialogRequest == QDialog::Accepted)
 		{
 			pythonStopped = true;
+		}
+		else if (dialogRequest == QDialog::Rejected)
+		{
+			closeRequestCanceled = true;
 		}
 
 		DELETE_AND_SET_NULL(dialog);
@@ -786,23 +794,24 @@ void MainApplication::mainWindowCloseRequest()
 			return;
 		}
 	}
-	settings->endGroup();
-	delete settings;
+
+	if (!retValue.containsError() && !closeRequestCanceled)
+	{
+		settings->endGroup();
+		delete settings;
     
-    if (retValue.containsError()) return;
+		if (retValue.containsError()) return;
 
-    //saves the state of all opened scripts to the settings file
-    m_scriptEditorOrganizer->saveScriptState();
+		//saves the state of all opened scripts to the settings file
+		m_scriptEditorOrganizer->saveScriptState();
 
-    retValue += m_scriptEditorOrganizer->closeAllScripts(true);
-
-    if (!retValue.containsError())
-    {
-        if (m_mainWin)
-        {
-            m_mainWin->hide();
-        }
-        QApplication::instance()->quit();
+		retValue += m_scriptEditorOrganizer->closeAllScripts(true);
+	
+			if (m_mainWin)
+			{
+				m_mainWin->hide();
+			}
+			QApplication::instance()->quit();
     }
 }
 

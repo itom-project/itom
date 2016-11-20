@@ -126,4 +126,17 @@ void DialogCloseItom::closeEvent(QCloseEvent *event)
     }
 }
 
+//----------------------------------------------------------------------------------------
+void DialogCloseItom::keyPressEvent(QKeyEvent *event)
+{
+	int key = event->key();
+	//Qt::KeyboardModifiers modifiers = event->modifiers();
+
+	if (key == Qt::Key_Escape)
+	{
+		reject();
+	}
+
+}
+
 } //end namespace ito
