@@ -1752,7 +1752,7 @@ namespace dObjHelper
                 }
             }
 
-            if(nrOfValidElements > 2)
+            if ((nrOfValidElements - 1 + devTypFlag) != 0)
             {
                 devValue = sqrt(dev / (nrOfValidElements - 1 + devTypFlag));  // if flag = 1, std = 1/n * sqrt(sum((x - xm)²)) else std = 1/(n-1) * sqrt(sum((x - xm)²)) else
             }
