@@ -317,8 +317,8 @@
      inkscape:current-layer="g8207"
      showgrid="true"
      inkscape:window-width="1920"
-     inkscape:window-height="1148"
-     inkscape:window-x="-8"
+     inkscape:window-height="1178"
+     inkscape:window-x="1912"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
      showguides="true"
@@ -355,7 +355,7 @@
          transform="matrix(0.78864328,0,0,0.78864328,6.7402827,215.59415)"
          style="stroke-width:6.34000206;stroke-miterlimit:1;stroke-dasharray:none">
         <path
-           style="fill:url(#linearGradient4708);fill-opacity:1.0;stroke:none;filter:url(#filter4674);fill-rule:nonzero"
+           style="fill:url(#linearGradient4708);fill-opacity:1;stroke:none;fill-rule:nonzero"
            d="m -6.0106804,1028.1951 44.7529554,0 0,17.6111 31.327069,-26.4167 -31.327069,-26.41663 0,17.61113 -44.7529554,0 z"
            id="path4510"
            inkscape:connector-curvature="0"

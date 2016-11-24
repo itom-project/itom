@@ -250,7 +250,7 @@
            transform="translate(0,-3.8039978)" />
         <path
            sodipodi:type="arc"
-           style="fill:none;stroke:#1183f7;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker-end:none"
+           style="fill:none;stroke:#1183f7;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker-end:none;"
            id="path3012"
            sodipodi:cx="40"
            sodipodi:cy="14"
@@ -263,42 +263,40 @@
            sodipodi:open="true" />
         <g
            id="g3026"
-           transform="translate(-1.2680005,-1.2680006)"
-           style="filter:url(#filter3032)">
+           transform="translate(-1.2680005,-1.2680006)">
           <rect
              y="995.08618"
              x="24.421329"
              height="6.3400116"
              width="46.916016"
              id="rect3822-4-4-82"
-             style="fill:#1183f7;fill-opacity:1;stroke:none" />
+             style="fill:#1183f7;fill-opacity:1;stroke:none;" />
           <rect
              y="1007.7662"
              x="45.977337"
              height="6.339962"
              width="25.360008"
              id="rect3822-4-1"
-             style="fill:#0032b4;fill-opacity:1;stroke:none" />
+             style="fill:#0032b4;fill-opacity:1;stroke:none;" />
           <rect
              y="1020.4462"
              x="45.977337"
              height="6.3399849"
              width="25.360008"
              id="rect3822-4-7"
-             style="fill:#0032b4;fill-opacity:1;stroke:none" />
+             style="fill:#0032b4;fill-opacity:1;stroke:none;" />
           <rect
              y="1033.1262"
              x="24.421329"
              height="6.3400574"
              width="46.916016"
              id="rect3822-4-4-82-1"
-             style="fill:#1183f7;fill-opacity:1;stroke:none" />
+             style="fill:#1183f7;fill-opacity:1;stroke:none;" />
         </g>
         <g
-           id="g3010"
-           style="filter:url(#filter3014)">
+           id="g3010">
           <path
-             style="fill:#1183f7;fill-opacity:1;stroke:none"
+             style="fill:#1183f7;fill-opacity:1;stroke:none;"
              d="m 9.2053245,1031.8582 22.8240055,13.948 -22.8240055,13.948 z"
              id="path8176-8-8"
              inkscape:connector-curvature="0"
@@ -308,7 +306,7 @@
              inkscape:connector-curvature="0"
              id="path3907"
              d="m 28.225329,984.94218 -19.0200045,0 c -12.680004,10e-6 -12.6800041,12.68 -12.6800041,12.68 l 0,35.50402 c 0,0 0,12.68 12.6800041,12.68 l 6.3400025,0"
-             style="fill:none;stroke:#1183f7;stroke-width:7.60800266;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none" />
+             style="fill:none;stroke:#1183f7;stroke-width:7.60800266000000040;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none;" />
         </g>
       </g>
     </g>
