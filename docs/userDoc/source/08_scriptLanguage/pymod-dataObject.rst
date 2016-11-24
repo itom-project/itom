@@ -299,6 +299,7 @@ The output is then:
 The relation between pixel coordinates and the physical coordinates is:
 
 phys = (pix - offset) * scaling
+
 pix = phys / scaling + offset
 
 These transformations can be done using the methods :py:meth:`~itom.dataObject.physToPix` and :py:meth:`~itom.dataObject.pixToPhys`.

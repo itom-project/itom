@@ -103,6 +103,7 @@ public:
     static PyObject *PyPointCloud_toDataObject(PyPointCloud *self);
     static PyObject *PyPointCloud_copy(PyPointCloud *self);
     static PyObject *PyPointCloud_scaleXYZ(PyPointCloud *self, PyObject *args, PyObject *kwds);
+    static PyObject *PyPointCloud_moveXYZ(PyPointCloud *self, PyObject *args, PyObject *kwds);
 
     //-------------------------------------------------------------------------------------------------
     // helper methods

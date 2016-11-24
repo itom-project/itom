@@ -768,6 +768,41 @@ PyObject* PythonPCL::PyPointCloud_scaleXYZ(PyPointCloud *self, PyObject *args, P
 }
 
 //------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPointCloudMoveXYZ_doc, "moveXYZ(x = 0.0, y = 0.0, z = 0.0) -> move the x, y and z components of every point by the given values. \n\
+\n\
+Parameters \n\
+----------- \n\
+x : {float}, optional \n\
+    offset value for x-component (default: 0.0) \n\
+y : {float}, optional \n\
+    offset value for y-component (default: 0.0) \n\
+z : {float}, optional \n\
+    offset value for z-component (default: 0.0)");
+PyObject* PythonPCL::PyPointCloud_moveXYZ(PyPointCloud *self, PyObject *args, PyObject *kwds)
+{
+    if (self->data == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "point cloud is NULL");
+        return NULL;
+    }
+
+    //check if args contains only one point cloud
+    static char *kwlist[] = { "x", "y", "z", NULL };
+    ito::float32 x = 0.0;
+    ito::float32 y = 0.0;
+    ito::float32 z = 0.0;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "|fff", kwlist, &x, &y, &z))
+    {
+        return NULL;
+    }
+
+    self->data->moveXYZ(x, y, z);
+
+    Py_RETURN_NONE;
+}
+
+//------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyPointCloudAppend_doc,"append(point) -> appends point or all points from given pointCloud at the end of the point cloud. \n\
 \n\
 Parameters \n\
@@ -2529,6 +2564,7 @@ PyGetSetDef PythonPCL::PyPointCloud_getseters[] = {
 PyMethodDef PythonPCL::PyPointCloud_methods[] = {
     {"name",          (PyCFunction)PyPointCloud_name, METH_NOARGS, "name"},
     {"scaleXYZ",      (PyCFunction)PyPointCloud_scaleXYZ, METH_KEYWORDS | METH_VARARGS, pyPointCloudScaleXYZ_doc },
+    {"moveXYZ",      (PyCFunction)PyPointCloud_moveXYZ, METH_KEYWORDS | METH_VARARGS, pyPointCloudMoveXYZ_doc },
     {"append",        (PyCFunction)PyPointCloud_append, METH_KEYWORDS | METH_VARARGS, pyPointCloudAppend_doc},
     {"clear",         (PyCFunction)PyPointCloud_clear, METH_NOARGS, pyPointCloudClear_doc},
     {"insert",        (PyCFunction)PyPointCloud_insert, METH_VARARGS, pyPointCloudInsert_doc},

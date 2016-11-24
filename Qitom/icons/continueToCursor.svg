@@ -460,7 +460,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -477,7 +477,7 @@
          style="stroke-width:6.34000206;stroke-miterlimit:1;stroke-dasharray:none">
         <path
            sodipodi:type="arc"
-           style="fill:none;stroke:#1183f7;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker-end:none"
+           style="fill:none;stroke:#1183f7;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker-end:none;"
            id="path3012"
            sodipodi:cx="40"
            sodipodi:cy="14"
@@ -489,50 +489,46 @@
            sodipodi:end="7.8539816"
            sodipodi:open="true" />
         <path
-           style="fill:#000000;fill-opacity:1;stroke:none"
+           style="fill:#000000;fill-opacity:1;stroke:none;"
            d="m 45.977338,1039.4662 -5.072003,0 0,15.216 5.072003,0 0,5.072 -15.216006,0 0,-5.072 5.072003,0 0,-15.216 -5.072003,0 0,-5.072 15.216006,0 z"
            id="path3901"
            inkscape:connector-curvature="0"
            sodipodi:nodetypes="ccccccccccccc" />
-        <g
-           id="g3035"
-           style="filter:url(#filter3051)">
-          <path
-             style="fill:#1183f7;fill-opacity:1;stroke:none"
-             d="m 9.2053245,1031.8582 22.8240065,13.948 -22.8240065,13.948 z"
-             id="path8176-8-8"
-             inkscape:connector-curvature="0"
-             sodipodi:nodetypes="cccc" />
-          <path
-             sodipodi:nodetypes="cccccc"
-             inkscape:connector-curvature="0"
-             id="path3907"
-             d="m 28.22533,984.94217 -19.0200055,10e-6 c -12.6800041,10e-6 -12.680004,12.67999 -12.680004,12.67999 l -10e-8,35.50403 c 0,0 0,12.68 12.6800041,12.68 l 6.3400025,0"
-             style="fill:none;stroke:#1183f7;stroke-width:7.60800266;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none" />
-        </g>
+        <path
+           sodipodi:nodetypes="cccc"
+           inkscape:connector-curvature="0"
+           id="path8176-8-8"
+           d="m 9.2053245,1031.8582 22.8240065,13.948 -22.8240065,13.948 z"
+           style="fill:#1183f7;fill-opacity:1;stroke:none;" />
+        <path
+           style="fill:none;stroke:#1183f7;stroke-width:7.60800266000000040;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none;"
+           d="m 28.22533,984.94217 -19.0200055,10e-6 c -12.6800041,10e-6 -12.680004,12.67999 -12.680004,12.67999 l -10e-8,35.50403 c 0,0 0,12.68 12.6800041,12.68 l 6.3400025,0"
+           id="path3907"
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="cccccc" />
         <rect
-           style="fill:#0032b4;fill-opacity:1;stroke:none;filter:url(#filter3099)"
+           style="fill:#0032b4;fill-opacity:1;stroke:none;"
            id="rect3822-4-4-82"
            width="46.916012"
            height="6.3400068"
            x="23.15333"
            y="995.08618" />
         <rect
-           style="fill:#0032b4;fill-opacity:1;stroke:none;filter:url(#filter3087)"
+           style="fill:#0032b4;fill-opacity:1;stroke:none;"
            id="rect3822-4-4-82-5"
            width="46.916012"
            height="6.3399572"
            x="23.15333"
            y="1007.7662" />
         <rect
-           style="fill:#0032b4;fill-opacity:1;stroke:none;filter:url(#filter3075)"
+           style="fill:#0032b4;fill-opacity:1;stroke:none;"
            id="rect3822-4-4-82-2"
            width="46.916012"
            height="6.3399687"
            x="23.15333"
            y="1020.4462" />
         <rect
-           style="fill:#1183f7;fill-opacity:1;stroke:none;filter:url(#filter3063)"
+           style="fill:#1183f7;fill-opacity:1;stroke:none;"
            id="rect3822-4-4-82-6"
            width="25.360008"
            height="6.3400574"

@@ -195,6 +195,87 @@
          result="composite2"
          id="feComposite3088" />
     </filter>
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       inkscape:label="Drop Shadow"
+       id="filter3094">
+      <feFlood
+         flood-opacity="0"
+         flood-color="rgb(0,0,0)"
+         result="flood"
+         id="feFlood3096" />
+      <feComposite
+         in="flood"
+         in2="SourceGraphic"
+         operator="in"
+         result="composite1"
+         id="feComposite3098" />
+      <feOffset
+         dx="0"
+         dy="0"
+         result="offset"
+         id="feOffset3100" />
+      <feComposite
+         in="SourceGraphic"
+         in2="offset"
+         operator="over"
+         result="composite2"
+         id="feComposite3102" />
+    </filter>
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       inkscape:label="Drop Shadow"
+       id="filter3104">
+      <feFlood
+         flood-opacity="0"
+         flood-color="rgb(0,0,0)"
+         result="flood"
+         id="feFlood3106" />
+      <feComposite
+         in="flood"
+         in2="SourceGraphic"
+         operator="in"
+         result="composite1"
+         id="feComposite3108" />
+      <feOffset
+         dx="0"
+         dy="0"
+         result="offset"
+         id="feOffset3110" />
+      <feComposite
+         in="SourceGraphic"
+         in2="offset"
+         operator="over"
+         result="composite2"
+         id="feComposite3112" />
+    </filter>
+    <filter
+       style="color-interpolation-filters:sRGB;"
+       inkscape:label="Drop Shadow"
+       id="filter3114">
+      <feFlood
+         flood-opacity="0"
+         flood-color="rgb(0,0,0)"
+         result="flood"
+         id="feFlood3116" />
+      <feComposite
+         in="flood"
+         in2="SourceGraphic"
+         operator="in"
+         result="composite1"
+         id="feComposite3118" />
+      <feOffset
+         dx="0"
+         dy="0"
+         result="offset"
+         id="feOffset3120" />
+      <feComposite
+         in="SourceGraphic"
+         in2="offset"
+         operator="over"
+         result="composite2"
+         id="feComposite3122" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -252,42 +333,44 @@
           <g
              id="g3931"
              style="filter:url(#filter3066)" />
+          <path
+             transform="matrix(0.96774193,0,0,0.96774193,1.0332043,33.040327)"
+             sodipodi:nodetypes="cccc"
+             inkscape:connector-curvature="0"
+             id="path8176-8"
+             d="m 16.813327,1063.5582 22.824007,-13.948 -22.824007,-13.948 z"
+             style="fill:#1183f7;fill-opacity:1;stroke:none;filter:url(#filter3114)" />
+          <path
+             transform="matrix(0.96774193,0,0,0.96774193,1.0332043,33.040327)"
+             style="fill:none;stroke:#1183f7;stroke-width:7.60800266;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none;filter:url(#filter3114)"
+             d="m 21.885329,998.8902 -6.340002,0 c -19.0200066,0 -19.0200066,19.02 -19.0200066,19.02 l 0,12.68 c 0,0 0,19.02 19.0200066,19.02 l 1.268,0"
+             id="path3907"
+             inkscape:connector-curvature="0"
+             sodipodi:nodetypes="ccccsc" />
           <g
-             id="g3011"
-             transform="matrix(0.96774193,0,0,0.96774193,1.0332043,33.040333)"
-             style="filter:url(#filter3078)">
+             transform="matrix(-0.96774193,0,0,-0.96774193,63.025459,2015.4601)"
+             style="stroke-width:6.34000206;stroke-miterlimit:1;stroke-dasharray:none;filter:url(#filter3094)"
+             id="g3931-2">
             <path
-               style="fill:#1183f7;fill-opacity:1;stroke:none"
-               d="m 16.813327,1063.5582 22.824007,-13.948 -22.824007,-13.948 z"
-               id="path8176-8"
-               inkscape:connector-curvature="0"
                sodipodi:nodetypes="cccc"
-               transform="translate(-2.1166844e-8,-5.7057582e-6)" />
-            <path
-               sodipodi:nodetypes="ccccsc"
                inkscape:connector-curvature="0"
-               id="path3907"
+               id="path8176-8-2"
+               d="m 16.813327,1063.5582 22.824007,-13.948 -22.824007,-13.948 z"
+               style="fill:#1183f7;fill-opacity:1;stroke:none;filter:url(#filter3114)" />
+            <path
+               style="fill:none;stroke:#1183f7;stroke-width:7.60741091;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none;filter:url(#filter3114)"
                d="m 21.885329,998.8902 -6.340002,0 c -19.0200066,0 -19.0200066,19.02 -19.0200066,19.02 l 0,12.68 c 0,0 0,19.02 19.0200066,19.02 l 1.268,0"
-               style="fill:none;stroke:#1183f7;stroke-width:7.60800266;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none"
-               transform="translate(-2.1166844e-8,-5.7057582e-6)" />
-            <g
-               id="g3931-2"
-               style="stroke-width:6.34000206;stroke-miterlimit:1;stroke-dasharray:none"
-               transform="matrix(-1,0,0,-1,64.058664,2048.5004)">
-              <path
-                 style="fill:#1183f7;fill-opacity:1;stroke:none"
-                 d="m 16.813327,1063.5582 22.824007,-13.948 -22.824007,-13.948 z"
-                 id="path8176-8-2"
-                 inkscape:connector-curvature="0"
-                 sodipodi:nodetypes="cccc" />
-              <path
-                 sodipodi:nodetypes="ccccsc"
-                 inkscape:connector-curvature="0"
-                 id="path3907-1"
-                 d="m 21.885329,998.8902 -6.340002,0 c -19.0200066,0 -19.0200066,19.02 -19.0200066,19.02 l 0,12.68 c 0,0 0,19.02 19.0200066,19.02 l 1.268,0"
-                 style="fill:none;stroke:#1183f7;stroke-width:7.60800266;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none" />
-            </g>
+               id="path3907-1"
+               inkscape:connector-curvature="0"
+               sodipodi:nodetypes="ccccsc" />
           </g>
+          <path
+             style="fill:#1183f7;fill-opacity:1;stroke:none;filter:url(#filter3114)"
+             d="m 16.813327,1063.5582 22.824007,-13.948 -22.824007,-13.948 z"
+             id="path3940"
+             inkscape:connector-curvature="0"
+             sodipodi:nodetypes="cccc"
+             transform="matrix(0.96774193,0,0,0.96774193,1.0332043,33.040327)" />
         </g>
       </g>
     </g>

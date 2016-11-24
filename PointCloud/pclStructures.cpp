@@ -887,6 +887,32 @@ void PCLPointCloud::scaleXYZ(float32 scaleX, float32 scaleY, float32 scaleZ)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> void MoveXYZFunc(ito::PCLPointCloud *pc, ito::float32 dX, ito::float32 dY, ito::float32 dZ)
+{
+   pcl::PointCloud<_Tp>* temp = getPointCloudPtrInternal<_Tp >(*pc);
+   if(temp)
+   {
+       for (int i = 0; i < temp->points.size(); ++i)
+       {
+           temp->points[i].x += dX;
+           temp->points[i].y += dY;
+           temp->points[i].z += dZ;
+       }
+       return;
+   }
+   throw pcl::PCLException("shared pointer is NULL",__FILE__, "scaleXYZ", __LINE__);
+}
+
+typedef void(*tMoveXYZFunc)(ito::PCLPointCloud *pc, ito::float32 dX, ito::float32 dY, ito::float32 dZ);
+PCLMAKEFUNCLIST(MoveXYZFunc)
+void PCLPointCloud::moveXYZ(float32 dX, float32 dY, float32 dZ)
+{
+    int idx = getFuncListIndex();
+    if (idx >= 0)    return fListMoveXYZFunc[idx](this, dX, dY, dZ);
+    throw pcl::PCLException("invalid point cloud",__FILE__, "moveXYZ", __LINE__);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 #if PCL_VERSION_COMPARE(>=,1,7,0)
     template<typename _Tp> pcl::PCLHeader GetHeaderFunc(const ito::PCLPointCloud *pc)
     {

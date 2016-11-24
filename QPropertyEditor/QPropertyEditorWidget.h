@@ -138,6 +138,9 @@ private:
 
 signals:
 
+private slots :
+    void sortedAction(bool checked);
+
 
 };
 

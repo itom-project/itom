@@ -230,7 +230,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -247,7 +247,7 @@
          style="stroke-width:6.34000206;stroke-miterlimit:1;stroke-dasharray:none">
         <path
            sodipodi:type="arc"
-           style="fill:none;stroke:#1183f7;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker-end:none"
+           style="fill:none;stroke:#1183f7;stroke-width:0;stroke-linecap:butt;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker-end:none;"
            id="path3012"
            sodipodi:cx="40"
            sodipodi:cy="14"
@@ -259,49 +259,47 @@
            sodipodi:end="7.8539816"
            sodipodi:open="true" />
         <g
-           id="g3026"
-           style="filter:url(#filter3033)">
+           id="g3026">
           <rect
              y="1052.1462"
              x="23.15333"
              height="6.3400578"
              width="46.916016"
              id="rect3822-4-4-82-1"
-             style="fill:#1183f7;fill-opacity:1;stroke:none" />
+             style="fill:#1183f7;fill-opacity:1;stroke:none;" />
           <rect
              y="1035.6622"
              x="33.297333"
              height="6.3400578"
              width="36.772011"
              id="rect3822-4-4-82-1-1"
-             style="fill:#0032b4;fill-opacity:1;stroke:none" />
+             style="fill:#0032b4;fill-opacity:1;stroke:none;" />
           <rect
              y="1022.9821"
              x="33.297333"
              height="6.3400578"
              width="36.772011"
              id="rect3822-4-4-82-1-1-7"
-             style="fill:#0032b4;fill-opacity:1;stroke:none" />
+             style="fill:#0032b4;fill-opacity:1;stroke:none;" />
           <rect
              y="1010.3022"
              x="33.297333"
              height="6.3400578"
              width="36.772011"
              id="rect3822-4-4-82-1-1-4"
-             style="fill:#0032b4;fill-opacity:1;stroke:none" />
+             style="fill:#0032b4;fill-opacity:1;stroke:none;" />
           <rect
              y="993.81818"
              x="23.15333"
              height="6.3400578"
              width="46.916016"
              id="rect3822-4-4-82-1-0"
-             style="fill:#1183f7;fill-opacity:1;stroke:none" />
+             style="fill:#1183f7;fill-opacity:1;stroke:none;" />
         </g>
         <g
-           id="g3010"
-           style="filter:url(#filter3014)">
+           id="g3010">
           <path
-             style="fill:#1183f7;fill-opacity:1;stroke:none"
+             style="fill:#1183f7;fill-opacity:1;stroke:none;"
              d="m 9.2053259,1000.1582 22.8240061,13.948 -22.8240061,13.948 z"
              id="path8176-8-8"
              inkscape:connector-curvature="0"
@@ -311,7 +309,7 @@
              inkscape:connector-curvature="0"
              id="path3907"
              d="m 28.225329,984.94217 -19.0200045,10e-6 c -12.6800041,0 -12.6800034,12.68002 -12.6800034,12.68002 l -7e-7,3.804 c 0,0 0,12.68 12.6800041,12.68 l 6.3400025,0"
-             style="fill:none;stroke:#1183f7;stroke-width:7.60800266;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none" />
+             style="fill:none;stroke:#1183f7;stroke-width:7.60800266000000040;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:1;stroke-opacity:1;stroke-dasharray:none;" />
         </g>
       </g>
     </g>

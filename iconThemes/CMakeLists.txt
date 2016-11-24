@@ -111,4 +111,5 @@ IF (QT5_FOUND)
       qt5_add_binary_resources(iconThemeBright ${CMAKE_CURRENT_SOURCE_DIR}/../Qitom/iconThemeBright.qrc DESTINATION ${ITOM_APP_DIR}/iconThemeBright.rcc)
       qt5_add_binary_resources(iconThemeDark ${CMAKE_CURRENT_SOURCE_DIR}/../Qitom/iconThemeDark.qrc DESTINATION ${ITOM_APP_DIR}/iconThemeDark.rcc)
     ENDIF ()
-ENDIF(QT5_FOUND) #for Qt4, the bright theme is directly included in the itom application (no choice available)
+ENDIF(QT5_FOUND) #for Qt4, the bright theme is directly included in the itom application (no choice available) 
+   
