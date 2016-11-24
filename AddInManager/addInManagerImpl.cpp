@@ -677,134 +677,141 @@ RetVal AddInManagerPrivate::loadAddIn(ito::AddInManager *parent, QString &filena
             }
         }
 
-        QPluginLoader *loader = new QPluginLoader(filename);
-        QObject *plugin = loader->instance();
-        if (plugin)
+        try
         {
-            ito::AddInInterfaceBase *ain = qobject_cast<ito::AddInInterfaceBase *>(plugin);
-            pls.filename = filename;
-
-            if (ain)
+            QPluginLoader *loader = new QPluginLoader(filename);
+            QObject *plugin = loader->instance();
+            if (plugin)
             {
-                ain->setFilename(filename);
-                ain->setApiFunctions(ITOM_API_FUNCS);
-                ain->setApiFunctionsGraph(ITOM_API_FUNCS_GRAPH);
-                ain->setLoader(loader);
-                //the event User+123 is emitted by AddInManager, if the API has been prepared and can
-                //transmitted to the plugin. This assignment cannot be done directly, since 
-                //the array ITOM_API_FUNCS is in another scope if called from itom. By sending an
-                //event from itom to the plugin, this method is called and ITOM_API_FUNCS is in the
-                //right scope. The methods above only set the pointers in the "wrong"-itom-scope (which
-                //also is necessary if any methods of the plugin are directly called from itom).
-                QEvent evt((QEvent::Type)(QEvent::User+123));
-                QCoreApplication::sendEvent(ain, &evt);
+                ito::AddInInterfaceBase *ain = qobject_cast<ito::AddInInterfaceBase *>(plugin);
+                pls.filename = filename;
 
-                switch (ain->getType()&(ito::typeDataIO|ito::typeAlgo|ito::typeActuator))
+                if (ain)
                 {
-                case typeDataIO:
-                    retValue += loadAddInDataIO(plugin, pls);
-                    break;
+                    ain->setFilename(filename);
+                    ain->setApiFunctions(ITOM_API_FUNCS);
+                    ain->setApiFunctionsGraph(ITOM_API_FUNCS_GRAPH);
+                    ain->setLoader(loader);
+                    //the event User+123 is emitted by AddInManager, if the API has been prepared and can
+                    //transmitted to the plugin. This assignment cannot be done directly, since 
+                    //the array ITOM_API_FUNCS is in another scope if called from itom. By sending an
+                    //event from itom to the plugin, this method is called and ITOM_API_FUNCS is in the
+                    //right scope. The methods above only set the pointers in the "wrong"-itom-scope (which
+                    //also is necessary if any methods of the plugin are directly called from itom).
+                    QEvent evt((QEvent::Type)(QEvent::User+123));
+                    QCoreApplication::sendEvent(ain, &evt);
 
-                case typeActuator:
-                    retValue += loadAddInActuator(plugin, pls);
-                    break;
-
-                case typeAlgo:
-                    retValue += loadAddInAlgo(plugin, pls);
-                    break;
-
-                default:
-                    message = tr("Plugin with filename '%1' is unknown.").arg(filename);
-                    qDebug() << message;
-                    //retValue += RetVal(retError, 1003, message.toLatin1().data());
-                    pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
-                    break;
-                }
-                m_pluginLoadStatus.append(pls);
-            }
-            else
-            {
-                //check whether this instance is an older or newer version of AddInInterface
-                QObject *obj = qobject_cast<QObject*>(plugin);
-                if (obj)
-                {
-                    if (obj->qt_metacast("ito::AddInInterfaceBase") != NULL)
+                    switch (ain->getType()&(ito::typeDataIO|ito::typeAlgo|ito::typeActuator))
                     {
-                        int i = 0;
-                        const char* oldName = ito_AddInInterface_OldVersions[0];
+                    case typeDataIO:
+                        retValue += loadAddInDataIO(plugin, pls);
+                        break;
+
+                    case typeActuator:
+                        retValue += loadAddInActuator(plugin, pls);
+                        break;
+
+                    case typeAlgo:
+                        retValue += loadAddInAlgo(plugin, pls);
+                        break;
+
+                    default:
+                        message = tr("Plugin with filename '%1' is unknown.").arg(filename);
+                        qDebug() << message;
+                        //retValue += RetVal(retError, 1003, message.toLatin1().data());
+                        pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
+                        break;
+                    }
+                    m_pluginLoadStatus.append(pls);
+                }
+                else
+                {
+                    //check whether this instance is an older or newer version of AddInInterface
+                    QObject *obj = qobject_cast<QObject*>(plugin);
+                    if (obj)
+                    {
+                        if (obj->qt_metacast("ito::AddInInterfaceBase") != NULL)
+                        {
+                            int i = 0;
+                            const char* oldName = ito_AddInInterface_OldVersions[0];
                             
-                        while(oldName != NULL)
-                        {
-                            if (obj->qt_metacast(oldName) != NULL)
+                            while(oldName != NULL)
                             {
-                                message = tr("AddIn '%1' fits to the obsolete interface %2. The AddIn interface of this version of 'itom' is %3.").arg(filename).arg(oldName).arg(ito_AddInInterface_CurrentVersion);
-                                break;
+                                if (obj->qt_metacast(oldName) != NULL)
+                                {
+                                    message = tr("AddIn '%1' fits to the obsolete interface %2. The AddIn interface of this version of 'itom' is %3.").arg(filename).arg(oldName).arg(ito_AddInInterface_CurrentVersion);
+                                    break;
+                                }
+                                oldName = ito_AddInInterface_OldVersions[++i];
                             }
-                            oldName = ito_AddInInterface_OldVersions[++i];
+                            if (oldName == NULL)
+                            {
+                                message = tr("AddIn '%1' fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of 'itom' is %2.").arg(filename).arg(ito_AddInInterface_CurrentVersion);
+                            }
                         }
-                        if (oldName == NULL)
+                        else
                         {
-                            message = tr("AddIn '%1' fits to a new addIn-interface, which is not supported by this version of itom. The AddIn interface of this version of 'itom' is %2.").arg(filename).arg(ito_AddInInterface_CurrentVersion);
+                            message = tr("AddIn '%1' does not fit to the general interface AddInInterfaceBase").arg(filename);
                         }
                     }
                     else
                     {
-                        message = tr("AddIn '%1' does not fit to the general interface AddInInterfaceBase").arg(filename);
+                        message = tr("AddIn '%1' is not derived from class QObject.").arg(filename).arg(loader->errorString());
                     }
+                    qDebug() << message;
+                    //retValue += RetVal(retError, 1003, message.toLatin1().data());
+                    pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
+                    m_pluginLoadStatus.append(pls);
+
+    //                    delete plugin;
+                    loader->unload();
+                    DELETE_AND_SET_NULL(loader);
+                }
+            }
+            else
+            {
+                QString notValidQtLibraryMsg = tr("The file '%1' is not a valid Qt plugin.").arg("*");
+                QRegExp rx(notValidQtLibraryMsg, Qt::CaseSensitive, QRegExp::Wildcard);
+                qDebug() << loader->errorString();
+                if (rx.exactMatch(loader->errorString()))
+                {
+                    message = tr("Library '%1' was ignored. Message: %2").arg(filename).arg(loader->errorString());
+                    qDebug() << message;
+                    pls.filename = filename;
+                    pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfIgnored, message));
+                    m_pluginLoadStatus.append(pls);
                 }
                 else
                 {
-                    message = tr("AddIn '%1' is not derived from class QObject.").arg(filename).arg(loader->errorString());
+                    //This regular expression is used to check whether the error message during loading a plugin contains the words
+                    //'debug' or 'release'. This means, that a release plugin is tried to be loaded with a debug version of itom or vice-versa
+                    QRegExp regExpDebugRelease(".*(release|debug).*", Qt::CaseInsensitive);
+                    if (regExpDebugRelease.exactMatch(loader->errorString()))
+                    {
+                        message = tr("AddIn '%1' could not be loaded. Error message: %2").arg(filename).arg(loader->errorString());
+                        qDebug() << message;
+                        pls.filename = filename;
+                        ito::PluginLoadStatusFlags flags(plsfWarning | plsfRelDbg);
+                        pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(flags, message));
+                        m_pluginLoadStatus.append(pls);
+                    }
+                    else
+                    {
+                        message = tr("AddIn '%1' could not be loaded. Error message: %2").arg(filename).arg(loader->errorString());
+                        qDebug() << message;
+                        //retValue += RetVal(retError, 1003, message.toLatin1().data());
+                        pls.filename = filename;
+                        pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
+                        m_pluginLoadStatus.append(pls);
+                    }
                 }
-                qDebug() << message;
-                //retValue += RetVal(retError, 1003, message.toLatin1().data());
-                pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
-                m_pluginLoadStatus.append(pls);
-
-//                    delete plugin;
                 loader->unload();
                 DELETE_AND_SET_NULL(loader);
             }
         }
-        else
+        catch (...)
         {
-            QString notValidQtLibraryMsg = tr("The file '%1' is not a valid Qt plugin.").arg("*");
-            QRegExp rx(notValidQtLibraryMsg, Qt::CaseSensitive, QRegExp::Wildcard);
-            qDebug() << loader->errorString();
-            if (rx.exactMatch(loader->errorString()))
-            {
-                message = tr("Library '%1' was ignored. Message: %2").arg(filename).arg(loader->errorString());
-                qDebug() << message;
-                pls.filename = filename;
-                pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfIgnored, message));
-                m_pluginLoadStatus.append(pls);
-            }
-            else
-            {
-                //This regular expression is used to check whether the error message during loading a plugin contains the words
-                //'debug' or 'release'. This means, that a release plugin is tried to be loaded with a debug version of itom or vice-versa
-                QRegExp regExpDebugRelease(".*(release|debug).*", Qt::CaseInsensitive); 
-                if (regExpDebugRelease.exactMatch(loader->errorString()))
-                {
-                    message = tr("AddIn '%1' could not be loaded. Error message: %2").arg(filename).arg(loader->errorString());
-                    qDebug() << message;
-                    pls.filename = filename;
-                    ito::PluginLoadStatusFlags flags(plsfWarning | plsfRelDbg);
-                    pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(flags, message));
-                    m_pluginLoadStatus.append(pls);
-                }
-                else
-                {
-                    message = tr("AddIn '%1' could not be loaded. Error message: %2").arg(filename).arg(loader->errorString());
-                    qDebug() << message;
-                    //retValue += RetVal(retError, 1003, message.toLatin1().data());
-                    pls.filename = filename;
-                    pls.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(plsfError, message));
-                    m_pluginLoadStatus.append(pls);
-                }
-            }
-            loader->unload();
-            DELETE_AND_SET_NULL(loader);
+            retValue += ito::RetVal(ito::retError, 0, tr("Caught exception during loading of plugin: %1").arg(filename).toLatin1().data());
         }
     }
 
@@ -1132,74 +1139,18 @@ const RetVal AddInManager::getPluginInfo(const QString &name, int &pluginType, i
     int found = 0;
     ito::AddInInterfaceBase *aib = NULL;
 
-    //test actuator (objectName)
-    for (int n = 0; n < AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListAct.size(); n++)
+    try
     {
-        if (QString::compare(AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListAct[n]->objectName(), name, Qt::CaseInsensitive) == 0)
-        {
-            pluginNum = n;
-            pluginType = ito::typeActuator;
-
-            typeString = "Actuator";
-            aib = qobject_cast<ito::AddInInterfaceBase *>(AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListAct[n]);
-            found = 1;
-            break;
-        }
-    }
-
-    if (!found) //test dataIO (objectName)
-    {
-        for (int n = 0; n < AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListDataIO.size(); n++)
-        {
-            if (QString::compare(AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListDataIO[n]->objectName(), name, Qt::CaseInsensitive) == 0)
-            {
-                pluginNum = n;
-                pluginType = ito::typeDataIO;
-
-                typeString = "DataIO";
-                aib = qobject_cast<ito::AddInInterfaceBase *>(AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListDataIO[n]);
-                found = 1;
-                break;
-            }
-        }
-    }
-
-    if (!found) //test Algorithm (objectName)
-    {
-        for (int n = 0; n < AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListAlgo.size(); n++)
-        {
-            if (QString::compare(AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListAlgo[n]->objectName(), name, Qt::CaseInsensitive) == 0)
-            {
-                pluginNum = n;
-                pluginType = ito::typeAlgo;
-
-                typeString = "Algorithm";
-                aib = qobject_cast<ito::AddInInterfaceBase *>(AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListAlgo[n]);
-                found = 1;
-                break;
-            }
-        }
-    }
-
-    //if nothing found until then, try to find name as filename within the dll-filename of the plugin
-    if (!found)
-    {
-        QFileInfo fi;
-        QString name_(name);
-#ifdef _DEBUG
-        name_ += "d"; //since we are now comparing with the filename, we append 'd' that corresponds to the debug versions of the plugin dll filenames
-#endif
-
         //test actuator (objectName)
         for (int n = 0; n < AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListAct.size(); n++)
         {
-            aib = qobject_cast<ito::AddInInterfaceBase *>(AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListAct[n]);
-            fi.setFile(aib->getFilename());
-            if (QString::compare(fi.completeBaseName(),name_,Qt::CaseInsensitive) == 0)
+            if (QString::compare(AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListAct[n]->objectName(), name, Qt::CaseInsensitive) == 0)
             {
                 pluginNum = n;
                 pluginType = ito::typeActuator;
+
                 typeString = "Actuator";
+                aib = qobject_cast<ito::AddInInterfaceBase *>(AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListAct[n]);
                 found = 1;
                 break;
             }
@@ -1209,13 +1160,13 @@ const RetVal AddInManager::getPluginInfo(const QString &name, int &pluginType, i
         {
             for (int n = 0; n < AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListDataIO.size(); n++)
             {
-                aib = qobject_cast<ito::AddInInterfaceBase *>(AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListDataIO[n]);
-                fi.setFile(aib->getFilename());
-                if (QString::compare(fi.completeBaseName(),name_,Qt::CaseInsensitive) == 0)
+                if (QString::compare(AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListDataIO[n]->objectName(), name, Qt::CaseInsensitive) == 0)
                 {
                     pluginNum = n;
                     pluginType = ito::typeDataIO;
+
                     typeString = "DataIO";
+                    aib = qobject_cast<ito::AddInInterfaceBase *>(AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListDataIO[n]);
                     found = 1;
                     break;
                 }
@@ -1226,29 +1177,92 @@ const RetVal AddInManager::getPluginInfo(const QString &name, int &pluginType, i
         {
             for (int n = 0; n < AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListAlgo.size(); n++)
             {
-                aib = qobject_cast<ito::AddInInterfaceBase *>(AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListAlgo[n]);
-                fi.setFile(aib->getFilename());
-                if (QString::compare(fi.completeBaseName(),name_,Qt::CaseInsensitive) == 0)
+                if (QString::compare(AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListAlgo[n]->objectName(), name, Qt::CaseInsensitive) == 0)
                 {
                     pluginNum = n;
                     pluginType = ito::typeAlgo;
+
                     typeString = "Algorithm";
+                    aib = qobject_cast<ito::AddInInterfaceBase *>(AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListAlgo[n]);
                     found = 1;
                     break;
                 }
             }
         }
-    }
 
-    if (aib && found)
+        //if nothing found until then, try to find name as filename within the dll-filename of the plugin
+        if (!found)
+        {
+            QFileInfo fi;
+            QString name_(name);
+#ifdef _DEBUG
+            name_ += "d"; //since we are now comparing with the filename, we append 'd' that corresponds to the debug versions of the plugin dll filenames
+#endif
+
+            //test actuator (objectName)
+            for (int n = 0; n < AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListAct.size(); n++)
+            {
+                aib = qobject_cast<ito::AddInInterfaceBase *>(AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListAct[n]);
+                fi.setFile(aib->getFilename());
+                if (QString::compare(fi.completeBaseName(), name_, Qt::CaseInsensitive) == 0)
+                {
+                    pluginNum = n;
+                    pluginType = ito::typeActuator;
+                    typeString = "Actuator";
+                    found = 1;
+                    break;
+                }
+            }
+
+            if (!found) //test dataIO (objectName)
+            {
+                for (int n = 0; n < AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListDataIO.size(); n++)
+                {
+                    aib = qobject_cast<ito::AddInInterfaceBase *>(AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListDataIO[n]);
+                    fi.setFile(aib->getFilename());
+                    if (QString::compare(fi.completeBaseName(), name_, Qt::CaseInsensitive) == 0)
+                    {
+                        pluginNum = n;
+                        pluginType = ito::typeDataIO;
+                        typeString = "DataIO";
+                        found = 1;
+                        break;
+                    }
+                }
+            }
+
+            if (!found) //test Algorithm (objectName)
+            {
+                for (int n = 0; n < AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListAlgo.size(); n++)
+                {
+                    aib = qobject_cast<ito::AddInInterfaceBase *>(AddInManagerPrivate::m_pAddInManagerPrivate->m_addInListAlgo[n]);
+                    fi.setFile(aib->getFilename());
+                    if (QString::compare(fi.completeBaseName(), name_, Qt::CaseInsensitive) == 0)
+                    {
+                        pluginNum = n;
+                        pluginType = ito::typeAlgo;
+                        typeString = "Algorithm";
+                        found = 1;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (aib && found)
+        {
+            author = aib->getAuthor();
+            description = aib->getDescription();
+            detaildescription = aib->getDetailDescription();
+            version = aib->getVersion();
+            license = aib->getLicenseInfo();
+            about = aib->getAboutInfo();
+            ret = ito::retOk;
+        }
+    }
+    catch (...)
     {
-        author = aib->getAuthor();
-        description = aib->getDescription();
-        detaildescription =aib->getDetailDescription();
-        version = aib->getVersion();
-        license = aib->getLicenseInfo();
-        about = aib->getAboutInfo();
-        ret = ito::retOk;
+        ret += ito::RetVal(ito::retError, 0, tr("Caught exception during getPluginInfo of: %1").arg(name).toLatin1().data());
     }
 
     return ret;
@@ -1298,7 +1312,14 @@ ito::RetVal AddInManagerPrivate::initDockWidget(const ito::AddInBase *addIn)
 */
 ito::RetVal AddInManager::initAddIn(const int pluginNum, const QString &name, ito::AddInDataIO **addIn, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, ItomSharedSemaphore *aimWait)
 {
-    return AddInManagerPrivate::m_pAddInManagerPrivate->initAddIn(pluginNum, name, addIn, paramsMand, paramsOpt, autoLoadPluginParams, aimWait);
+    try
+    {
+        return AddInManagerPrivate::m_pAddInManagerPrivate->initAddIn(pluginNum, name, addIn, paramsMand, paramsOpt, autoLoadPluginParams, aimWait);
+    }
+    catch (...)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Caught exception during initAddIn of: %1").arg(name).toLatin1().data());
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1461,7 +1482,14 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
 */
 ito::RetVal AddInManager::initAddIn(const int pluginNum, const QString &name, ito::AddInActuator **addIn, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, ItomSharedSemaphore *aimWait)
 {
-    return AddInManagerPrivate::m_pAddInManagerPrivate->initAddIn(pluginNum, name, addIn, paramsMand, paramsOpt, autoLoadPluginParams, aimWait);
+    try 
+    {
+        return AddInManagerPrivate::m_pAddInManagerPrivate->initAddIn(pluginNum, name, addIn, paramsMand, paramsOpt, autoLoadPluginParams, aimWait);
+    }
+    catch (...)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Caught exception during initAddIn of: %1").arg(name).toLatin1().data());
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1621,7 +1649,14 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
 */
 ito::RetVal AddInManager::initAddIn(const int pluginNum, const QString &name, ito::AddInAlgo **addIn, QVector<ito::ParamBase> * paramsMand, QVector<ito::ParamBase> * paramsOpt, bool autoLoadPluginParams, ItomSharedSemaphore *aimWait)
 {
-    return AddInManagerPrivate::m_pAddInManagerPrivate->initAddIn(pluginNum, name, addIn, paramsMand, paramsOpt, autoLoadPluginParams, aimWait);
+    try
+    {
+        return AddInManagerPrivate::m_pAddInManagerPrivate->initAddIn(pluginNum, name, addIn, paramsMand, paramsOpt, autoLoadPluginParams, aimWait);
+    }
+    catch (...)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Caught exception during initAddIn of: %1").arg(name).toLatin1().data());
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1712,7 +1747,14 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
 */
 ito::RetVal AddInManager::closeAddIn(AddInBase *addIn, ItomSharedSemaphore *aimWait)
 {
-    return AddInManagerPrivate::m_pAddInManagerPrivate->closeAddIn(addIn, aimWait);
+    try 
+    {
+        return AddInManagerPrivate::m_pAddInManagerPrivate->closeAddIn(addIn, aimWait);
+    }
+    catch (...)
+    {
+        return ito::RetVal(ito::retError, 0, tr("Caught exception during closeAddIn of: %1").arg(addIn->getBasePlugin()->getFilename()).toLatin1().data());
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
