@@ -29,6 +29,7 @@
 #include "Property.h"
 #include <qevent.h>
 #include <qheaderview.h>
+#include <qaction.h>
 
 #include "itomCustomTypes.h"
 
@@ -43,6 +44,14 @@ QPropertyEditorWidget::QPropertyEditorWidget(QWidget* parent /*= 0*/) : QTreeVie
     setEditTriggers( QAbstractItemView::EditKeyPressed ); //triggers are handled by mousepress and keypress event below (is better than original)
     setSelectionBehavior( QAbstractItemView::SelectRows );
     setAlternatingRowColors(true);
+
+    QAction *action = new QAction(tr("sort entries"), this);
+    action->setCheckable(true);
+    action->setChecked(sorted());
+    addAction(action);
+    connect(action, SIGNAL(triggered(bool)), this, SLOT(sortedAction(bool)));
+
+    setContextMenuPolicy(Qt::ActionsContextMenu);
 
     ito::itomCustomTypes::registerTypes();
     registerCustomPropertyCB(ito::itomCustomTypes::createCustomProperty);
@@ -150,6 +159,12 @@ void QPropertyEditorWidget::setSorted(bool value)
     
     m_sorted = value;
 
+    //first action corresponds to sorted
+    if (actions().size() > 0)
+    {
+        actions()[0]->setChecked(value);
+    }
+
     if(m_sorted)
     {
     }
@@ -162,4 +177,9 @@ void QPropertyEditorWidget::setSorted(bool value)
 bool QPropertyEditorWidget::sorted() const
 {
     return m_model->sorted();
+}
+
+void QPropertyEditorWidget::sortedAction(bool checked)
+{
+    setSorted(checked);
 }
