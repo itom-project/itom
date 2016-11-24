@@ -24,10 +24,8 @@
 #define PARAMHELPER_H
 
 #include "../common/sharedStructures.h"
-//#include "../global.h"
 
 #include <qmap.h>
-#include <qstring.h>
 #include <qsharedpointer.h>
 
 namespace ito 

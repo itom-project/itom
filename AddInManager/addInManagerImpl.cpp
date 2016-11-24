@@ -22,42 +22,18 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
-#include "global.h"
+//#include "global.h"
 #include "addInManager.h"
-#include "../common/addInInterface.h"
-//#include "../common/apiFunctionsInc.h"
-//#include "../common/apiFunctionsGraphInc.h"
-
 #include "../common/sharedFunctionsQt.h"
-#include "../common/helperCommon.h"
 
-#include "sharedPointerHelper.h"
-
-#include <qsettings.h>
-#include <qdir.h>
-#include <qfileinfo.h>
-#include <qpluginloader.h>
 #include <qapplication.h>
-#include <QtXml/qdom.h>
 #include <qmainwindow.h>
-#include <qdockwidget.h>
-#include <QDebug>
 #include <QDirIterator>
 #include <qaction.h>
 #include <qsettings.h>
-#include <qnumeric.h>
 
-//#include "./memoryCheck/setDebugNew.h"
-//#include "./memoryCheck/reportingHook.h"
-
-//#include <qcoreapplication.h>
-#include <qmetatype.h>
-#include <qvector.h>
-#include <qsharedpointer.h>
-#include <qhash.h>
 #include <qtimer.h>
 #include <qtranslator.h>
-#include <qpointer.h>
 
 // in the invokeMethod function parameters are passed with the Q_ARG macro, which works only with preregistered data types
 // the registration of "new" data types is done in two steps. First they are declared with the Q_DECLARE_METATYPE macro
@@ -2100,7 +2076,7 @@ AddInManager::AddInManager(void **apiFuncs, void **apiFuncsGraph, QObject *mainW
     qRegisterMetaType<QSharedPointer<double> >("QSharedPointer<double>");
     qRegisterMetaType<QSharedPointer<QVector<double> > >("QSharedPointer<QVector<double>>");
     qRegisterMetaType<QSharedPointer<int> >("QSharedPointer<int>");
-    qRegisterMetaType<QSharedPointer<IntVector> >("QSharedPointer<IntVector>");
+//    qRegisterMetaType<QSharedPointer<IntVector> >("QSharedPointer<IntVector>");
     qRegisterMetaType<QSharedPointer<char*> >("QSharedPointer<char>");
     qRegisterMetaType<QSharedPointer<QByteArray> >("QSharedPointer<QByteArray>");
     qRegisterMetaType<QSharedPointer<ito::Param> >("QSharedPointer<ito::Param>");

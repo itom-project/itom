@@ -22,7 +22,6 @@
 
 #include "PlugInModel.h"
 #include "addInManager.h"
-#include <qicon.h>
 #include <qfileinfo.h>
 
 namespace ito

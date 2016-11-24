@@ -21,9 +21,7 @@
 *********************************************************************** */
 
 #include "algoInterfaceValidator.h"
-//#include "addInManager.h"
-//#include "../global.h"
-#include <qregexp.h>
+#include "paramHelper.h"
 
 namespace ito
 {

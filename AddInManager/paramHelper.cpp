@@ -21,12 +21,7 @@
 *********************************************************************** */
 
 #include "paramHelper.h"
-
 #include "../common/addInInterface.h"
-
-#include <qobject.h>
-#include <qregexp.h>
-
 
 namespace ito {
 

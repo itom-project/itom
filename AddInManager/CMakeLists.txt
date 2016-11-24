@@ -40,7 +40,7 @@ ELSE(BUILD_SHARED_LIBS)
     SET(LIBRARY_TYPE STATIC)
 ENDIF(BUILD_SHARED_LIBS)
 
-find_package(ITOM_SDK COMPONENTS dataobject pointcloud itomCommonLib itomCommonQtLib itomWidgets REQUIRED)
+find_package(ITOM_SDK COMPONENTS dataobject pointcloud itomCommonLib itomCommonQtLib REQUIRED)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 
 #at first, get the available Qt version
@@ -71,16 +71,10 @@ INCLUDE_DIRECTORIES(
     ${Qt5Widgets_INCLUDE_DIRS}
     ${OpenCV_DIR}/include
     ${PCL_INCLUDE_DIRS}
-    ${Boost_INCLUDE_DIR}
-    ${EIGEN_INCLUDE_DIRS}
-    ${FLANN_INCLUDE_DIRS}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
 	${ITOM_SDK_INCLUDE_DIR}/common/apiFunctionsGraphInc.h
 	${ITOM_SDK_INCLUDE_DIR}/common/apiFunctionsInc.h
-	${ITOM_SDK_INCLUDE_DIR}/common/sharedStructures.h
-	${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresGraphics.h
 	${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
-	${ITOM_SDK_INCLUDE_DIR}/common/typeDefs.h	
 )
 
 LINK_DIRECTORIES(
@@ -89,8 +83,6 @@ LINK_DIRECTORIES(
 
 set(lib_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/addInMgrDefines.h
-	${CMAKE_CURRENT_SOURCE_DIR}/global.h
-	${CMAKE_CURRENT_SOURCE_DIR}/sharedPointerHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/addInManagerVersion.h
 	${CMAKE_CURRENT_SOURCE_DIR}/pluginModel.h
 	${CMAKE_CURRENT_SOURCE_DIR}/paramHelper.h
