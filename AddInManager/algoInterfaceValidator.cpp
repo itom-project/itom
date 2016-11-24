@@ -22,7 +22,7 @@
 
 #include "algoInterfaceValidator.h"
 //#include "addInManager.h"
-#include "../global.h"
+//#include "../global.h"
 #include <qregexp.h>
 
 namespace ito

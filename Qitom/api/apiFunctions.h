@@ -77,6 +77,9 @@ namespace ito
             //! function called by apiSendParamsToPyWorkspace
             static ito::RetVal sendParamsToPyWorkspaceThreadSafe(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values);
 
+            //! get itom settings file
+            static QString getSettingsFile(void);
+
         private:
             int m_loadFPointer;
     };

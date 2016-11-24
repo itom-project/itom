@@ -1,6 +1,6 @@
 #include "helpTreeDockWidget.h"
 
-#include "../organizer/addInManager.h"
+#include "../../AddInManager/addInManager.h"
 #include <AppManagement.h>
 #include <qdesktopservices.h>
 #include <qdiriterator.h>

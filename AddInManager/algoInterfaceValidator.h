@@ -23,17 +23,20 @@
 #ifndef ALGOINTERFACEVALIDATOR_H
 #define ALGOINTERFACEVALIDATOR_H
 
+#if !defined(Q_MOC_RUN) || defined(ADDINMGR_DLL) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
+
+#include "addInMgrDefines.h"
 #include <qobject.h>
-#include "../../common/addInInterface.h"
-#include "../../common/sharedStructures.h"
-#include "../helper/paramHelper.h"
+#include "../common/addInInterface.h"
+#include "../common/sharedStructures.h"
+#include "paramHelper.h"
 
 #include <qvector.h>
 #include <qvariant.h>
 
 namespace ito {
 
-class AlgoInterfaceValidator : public QObject
+class ADDINMGR_EXPORT AlgoInterfaceValidator : public QObject
 {
 public:
     AlgoInterfaceValidator(ito::RetVal &retValue);
@@ -65,5 +68,7 @@ private:
 };
 
 } //end namespace ito
+
+#endif // #if !defined(Q_MOC_RUN) || defined(ADDINMGR_DLL) 
 
 #endif

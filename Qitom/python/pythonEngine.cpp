@@ -46,7 +46,7 @@
 #include "pythonShape.h"
 #include "pythonAutoInterval.h"
 
-#include "../organizer/addInManager.h"
+#include "../../AddInManager/addInManager.h"
 #include "common/interval.h"
 #include "../helper/sleeper.h"
 

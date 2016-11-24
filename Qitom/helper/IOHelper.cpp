@@ -29,8 +29,8 @@
 
 #include "../organizer/scriptEditorOrganizer.h"
 #include "../organizer/processOrganizer.h"
-#include "../organizer/addInManager.h"
-#include "../organizer/algoInterfaceValidator.h"
+#include "../../AddInManager/addInManager.h"
+#include "../../AddInManager/algoInterfaceValidator.h"
 
 #include "../ui/dialogOpenFileWithFilter.h"
 #include "../ui/dialogSaveFileWithFilter.h"

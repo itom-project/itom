@@ -38,7 +38,7 @@
 
 #include "../AppManagement.h"
 #include "../organizer/uiOrganizer.h"
-#include "../organizer/addInManager.h"
+#include "../../AddInManager/addInManager.h"
 #include "../organizer/userOrganizer.h"
 #include "../organizer/paletteOrganizer.h"
 #include "../organizer/designerWidgetOrganizer.h"
@@ -596,7 +596,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
     PyObject *resulttemp = NULL;
     PyObject *item = NULL;
 
-    ito::AddInManager *AIM = ito::AddInManager::getInstance();
+    ito::AddInManager *AIM = AddInManagerInst;
     if (!AIM)
     {
         PyErr_SetString(PyExc_RuntimeError, "no addin-manager found");
@@ -1086,7 +1086,7 @@ PyObject* PythonItom::PyPluginLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
         return NULL;
     }
 
-    ito::AddInManager *AIM = ito::AddInManager::getInstance();
+    ito::AddInManager *AIM = AddInManagerInst;
     if (!AIM)
     {
         PyErr_SetString(PyExc_RuntimeError, "no addin-manager found");
@@ -1649,7 +1649,7 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
     PyObject *item = NULL;    
 
 
-    ito::AddInManager *AIM = ito::AddInManager::getInstance();
+    ito::AddInManager *AIM = AddInManagerInst;
     if (!AIM)
     {
         PyErr_SetString(PyExc_RuntimeError, "no addin-manager found");
@@ -2043,7 +2043,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
     {
         PyObject* myTempDic = PyDict_New();
         char buf[7] = {0};
-        ito::AddInManager *aim = ito::AddInManager::getInstance();
+        ito::AddInManager *aim = AddInManagerInst;
         ito::AddInInterfaceBase  *curAddInInterface = NULL;
         if (aim != NULL)
         {
@@ -3358,7 +3358,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
         return NULL;
     }
 
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = AddInManagerInst;
     const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
     QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->constFind(key);
     if (cfit == flist->constEnd())

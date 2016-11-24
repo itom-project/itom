@@ -153,12 +153,14 @@ INCLUDE_DIRECTORIES(
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
     ../DataObject/
     ../PointCloud/
+	../AddInManager/
     ../itomWidgets
 )
 
 LINK_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}/../DataObject
     ${CMAKE_CURRENT_BINARY_DIR}/../PointCloud
+	${CMAKE_CURRENT_BINARY_DIR}/../AddInManager
     ${OpenCV_DIR}/lib
 )
 
@@ -177,11 +179,14 @@ set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/typeDefs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/numeric.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/color.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/PlugInModel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/addInManager.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/algoInterfaceValidator.h
     
 )
 
 set(qitom_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/aaa.h   # this file must be first in list for automoc
+	${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/0.h   # this file must be first in list for automoc
     ${CMAKE_CURRENT_SOURCE_DIR}/main.h
     ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.h
     ${CMAKE_CURRENT_SOURCE_DIR}/global.h
@@ -201,11 +206,11 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/organizer/addInManager.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/organizer/algoInterfaceValidator.h
+	#${CMAKE_CURRENT_SOURCE_DIR}/organizer/addInManager.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/organizer/algoInterfaceValidator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/designerWidgetOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/helpSystem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/paletteOrganizer.h
@@ -407,11 +412,12 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.cpp
+	#${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/PlugInModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/organizer/addInManager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/organizer/algoInterfaceValidator.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/organizer/addInManager.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/organizer/algoInterfaceValidator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/designerWidgetOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/helpSystem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/paletteOrganizer.cpp
@@ -727,12 +733,12 @@ ENDIF(BUILD_WITH_PCL)
 
 IF (QT5_FOUND)
     if (WIN32)
-        TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${Qt5WebEngineWidgets_LIBRARIES} ${Qt5Help_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets itomCommonPlotLib ${PYMATLAB_LIBRARIES} shell32)
+        TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${Qt5WebEngineWidgets_LIBRARIES} ${Qt5Help_LIBRARIES} dataobject addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets itomCommonPlotLib ${PYMATLAB_LIBRARIES} shell32)
     else (WIN32)
-        TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${Qt5WebEngineWidgets_LIBRARIES} ${Qt5Help_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets itomCommonPlotLib ${PYMATLAB_LIBRARIES})
+        TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${Qt5WebEngineWidgets_LIBRARIES} ${Qt5Help_LIBRARIES} dataobject addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets itomCommonPlotLib ${PYMATLAB_LIBRARIES})
     endif (WIN32)
 ELSE (QT5_FOUND)
-    TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets itomCommonPlotLib ${PYMATLAB_LIBRARIES})
+    TARGET_LINK_LIBRARIES(${target_name} ${WINICONRES} ${QT_LIBRARIES} ${QT_QTMAIN_LIBRARY} ${QT_QTSVG_LIBRARY} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTUITOOLS_LIBRARY}  ${QT_QTSQL_LIBRARY} ${QT_QTHELP_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_PRINTSUPPORT_LIBRARY} ${QT_UITOOLS_LIBRARY} ${QSCINTILLA_LIBRARY} ${PYTHON_LIBRARY_ITOM} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} dataobject addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomWidgets itomCommonPlotLib ${PYMATLAB_LIBRARIES})
 ENDIF (QT5_FOUND)
  
 BUILD_PARALLEL_LINUX(${target_name})

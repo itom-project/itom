@@ -456,6 +456,14 @@ namespace ito
     #define apiQObjectPropertyWrite \
         (* (ito::RetVal (*)(QObject *object, const char* propName, const QVariant &value)) ito::ITOM_API_FUNCS[33])
 
+    //! Get itom / user's settings file name.
+    /*!
+
+    \return QString settings file
+    */
+    #define apiGetSettingsFile \
+            (* (QString (*)(void)) ito::ITOM_API_FUNCS[34])
+
     /** \} */
 
 

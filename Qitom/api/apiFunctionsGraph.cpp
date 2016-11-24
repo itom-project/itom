@@ -23,7 +23,7 @@
 #include "../helper/paramHelper.h"
 #include "apiFunctionsGraph.h"
 #include "../Qitom/AppManagement.h"
-#include "../organizer/addInManager.h"
+#include "../../AddInManager/addInManager.h"
 #include "../organizer/paletteOrganizer.h"
 #include "../organizer/designerWidgetOrganizer.h"
 #include "../Qitom/organizer/uiOrganizer.h"
@@ -293,7 +293,7 @@ ito::RetVal apiFunctionsGraph::mconnectLiveData(QObject *liveDataSource, QObject
     {
         if(liveDataSource->inherits("ito::AddInDataIO"))
         {
-            ito::AddInManager *aim = ito::AddInManager::getInstance();
+            ito::AddInManager *aim = AddInManagerInst;
             retval += aim->incRef((ito::AddInBase*)liveDataSource);
         }
         else
@@ -318,8 +318,8 @@ ito::RetVal apiFunctionsGraph::mdisconnectLiveData(QObject *liveDataSource, QObj
     {
         if(liveDataSource->inherits("ito::AddInDataIO"))
         {
-        ito::AddInManager *aim = ito::AddInManager::getInstance();
-        retval += aim->decRef((ito::AddInBase**)&liveDataSource);
+            ito::AddInManager *aim = AddInManagerInst;
+            retval += aim->decRef((ito::AddInBase**)&liveDataSource);
         }
         else
         {

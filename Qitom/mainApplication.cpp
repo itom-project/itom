@@ -19,14 +19,13 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
-
 #include "mainApplication.h"
 #include "global.h"
 #include "version.h"
 #include "AppManagement.h"
 
 #include "widgets/abstractDockWidget.h"
-#include "organizer/addInManager.h"
+#include "../AddInManager/addInManager.h"
 #include "./models/UserModel.h"
 #include "organizer/userOrganizer.h"
 #include "widgets/scriptDockWidget.h"
@@ -85,6 +84,7 @@ namespace ito
 
 //! static instance pointer initialization
 MainApplication* MainApplication::mainApplicationInstance = NULL;
+ito::AddInManager *ito::AddInManagerInst = NULL;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
@@ -448,7 +448,9 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     m_splashScreen->showMessage(tr("scan and load plugins..."), Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
-    ito::AddInManager *AIM = ito::AddInManager::getInstance();
+    ito::AddInManager *AIM = new AddInManager(ito::ITOM_API_FUNCS, ito::ITOM_API_FUNCS_GRAPH, AppManagement::getMainWindow(), AppManagement::getMainApplication());
+    AIM->setTimeOuts(AppManagement::timeouts.pluginInitClose, AppManagement::timeouts.pluginGeneral);
+    AddInManagerInst = AIM;
     connect(AIM, SIGNAL(splashLoadMessage(const QString&, int, const QColor &)), m_splashScreen, SLOT(showMessage(const QString&, int, const QColor &)));
     retValue += AIM->scanAddInDir("");
 
@@ -720,7 +722,8 @@ void MainApplication::finalizeApplication()
     m_pyThread->wait();
     DELETE_AND_SET_NULL(m_pyThread);
 
-    ito::AddInManager::closeInstance();
+    //ito::AddInManager::closeInstance();
+    AddInManagerInst->closeInstance();
 
     DELETE_AND_SET_NULL(m_processOrganizer);
     AppManagement::setProcessOrganizer(NULL);
