@@ -27,20 +27,17 @@ ELSE(BUILD_ITOMLIBS_SHARED)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     ENDIF(UNIX)
 ENDIF(BUILD_ITOMLIBS_SHARED)
- 
-      
 
 SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/..)
 
 include("../ItomBuildMacros.cmake")
 
-IF(BUILD_SHARED_LIBS)
-    SET(LIBRARY_TYPE SHARED)
-ELSE(BUILD_SHARED_LIBS)
-    SET(LIBRARY_TYPE STATIC)
-ENDIF(BUILD_SHARED_LIBS)
-
-find_package(ITOM_SDK COMPONENTS dataobject pointcloud itomCommonLib itomCommonQtLib REQUIRED)
+IF(BUILD_WITH_PCL)
+	find_package(ITOM_SDK COMPONENTS dataobject pointcloud itomCommonLib itomCommonQtLib REQUIRED)
+ELSE(BUILD_WITH_PCL)
+	find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
+	find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
+ENDIF(BUILD_WITH_PCL)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 
 #at first, get the available Qt version
@@ -48,7 +45,6 @@ FIND_PACKAGE_QT(ON Core)
 #requires Qt5 and Qt5WebEngine in order to built a built-in help viewer, since QtAssistant only has a limited set of rendering options since Qt5.6.
 FIND_PACKAGE_QT(ON Core Widgets Xml LinguistTools)
 
-find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
 find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(VisualLeakDetector QUIET)
 
@@ -72,9 +68,9 @@ INCLUDE_DIRECTORIES(
     ${OpenCV_DIR}/include
     ${PCL_INCLUDE_DIRS}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
-	${ITOM_SDK_INCLUDE_DIR}/common/apiFunctionsGraphInc.h
-	${ITOM_SDK_INCLUDE_DIR}/common/apiFunctionsInc.h
-	${ITOM_SDK_INCLUDE_DIR}/common/sharedStructuresQt.h
+	${ITOM_SDK_INCLUDE_DIR}/common
+	${ITOM_SDK_INCLUDE_DIR}/DataObject
+	${ITOM_SDK_INCLUDE_DIR}/PointCloud
 )
 
 LINK_DIRECTORIES(
@@ -132,7 +128,10 @@ endif (QT5_FOUND)
 set (FILES_TO_TRANSLATE ${lib_SOURCES} ${lib_HEADERS} ${lib_UI})
 PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 
-#FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/defines.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
+FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/addInMgrDefines.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/AddInManager)
+FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/addInManager.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/AddInManager)
+FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/PluginModel.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/AddInManager)
+FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/algoInterfaceValidator.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/AddInManager)
 #FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataobj.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
 #FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataObjectFuncs.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
 #FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataobjVersion.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)

@@ -27,9 +27,9 @@ ADD_SUBDIRECTORY(DataObject)
 
 IF(BUILD_WITH_PCL)
     ADD_SUBDIRECTORY(PointCloud)
-    SET(ITOM_SDK_LIB_COMPONENTS_STR "dataobject pointcloud qpropertyeditor itomCommonLib itomCommonQtLib itomCommonPlotLib itomWidgets itomShapeLib")
+    SET(ITOM_SDK_LIB_COMPONENTS_STR "dataobject pointcloud addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomCommonPlotLib itomWidgets itomShapeLib")
 ELSE(BUILD_WITH_PCL)
-    SET(ITOM_SDK_LIB_COMPONENTS_STR "dataobject qpropertyeditor itomCommonLib itomCommonQtLib itomCommonPlotLib itomWidgets itomShapeLib")
+    SET(ITOM_SDK_LIB_COMPONENTS_STR "dataobject addinmanager qpropertyeditor itomCommonLib itomCommonQtLib itomCommonPlotLib itomWidgets itomShapeLib")
 ENDIF(BUILD_WITH_PCL)
 
 ADD_SUBDIRECTORY(common)
