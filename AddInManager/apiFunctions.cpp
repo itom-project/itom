@@ -20,18 +20,20 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "../python/pythonEngine.h"
-#include "../../AddInManager/addInManager.h"
-#include "../helper/paramHelper.h"
+//#include "../python/pythonEngine.h"
+#include "addInManager.h"
+#include "paramHelper.h"
 #include "apiFunctions.h"
-#include "../Qitom/AppManagement.h"
-#include "../organizer/paletteOrganizer.h"
-#include "common/sharedFunctionsQt.h"
-#include "common/abstractAddInConfigDialog.h"
-#include "../Qitom/organizer/uiOrganizer.h"
-#include "../helper/qpropertyHelper.h"
+//#include "../Qitom/AppManagement.h"
+//#include "../organizer/paletteOrganizer.h"
+#include "../common/sharedFunctionsQt.h"
+#include "../common/abstractAddInConfigDialog.h"
+//#include "../Qitom/organizer/uiOrganizer.h"
+//#include "../helper/qpropertyHelper.h"
+#include <qdir.h>
 
 static ito::ApiFunctions singleApiFunctions; //singleton instance, forces the construction where the ITOM_API_FUNCS_ARR pointer is propagated to ITOM_API_FUNCS
+QString ito::ApiFunctions::m_settingsFile("");
 
 namespace ito
 {
@@ -67,11 +69,15 @@ namespace ito
         (void*)&ParamHelper::validateIntArrayMeta,        /* [26] */
         (void*)&ParamHelper::validateCharArrayMeta,       /* [27] */
         (void*)&ParamHelper::validateDoubleArrayMeta,     /* [28] */
-        (void*)&ApiFunctions::sendParamToPyWorkspaceThreadSafe,      /* [29] */
-        (void*)&ApiFunctions::sendParamsToPyWorkspaceThreadSafe,     /* [30] */
+//        (void*)&ApiFunctions::sendParamToPyWorkspaceThreadSafe,      /* [29] */
+//        (void*)&ApiFunctions::sendParamsToPyWorkspaceThreadSafe,     /* [30] */
+        (void*)&ApiFunctions::removed,                    /* [29] */
+        (void*)&ApiFunctions::removed,                    /* [30] */
         (void*)&ApiFunctions::maddInClose,                /* [31] */
-        (void*)&QPropertyHelper::readProperty,            /* [32] */
-        (void*)&QPropertyHelper::writeProperty,           /* [33] */
+//        (void*)&QPropertyHelper::readProperty,            /* [32] */
+//        (void*)&QPropertyHelper::writeProperty,           /* [33] */
+        (void*)&ApiFunctions::removed,                    /* [32] */
+        (void*)&ApiFunctions::removed,                    /* [33] */
         (void*)&ApiFunctions::getSettingsFile,            /* [34] */
         NULL
     };
@@ -236,6 +242,11 @@ ito::RetVal apiFParseInitParams(QVector<ito::ParamBase> *initParamListMand, QVec
     return ito::retOk;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ApiFunctions::removed(...)
+{
+    return ito::RetVal(ito::retError, 0, QObject::tr("function removed from apiFunctions, check apiFunctionsGraph").toLatin1().data());
+}
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::FilterDef *&FilterDef)
@@ -561,15 +572,15 @@ ito::RetVal ApiFunctions::mshowConfigurationDialog(ito::AddInBase *plugin, ito::
     return ito::retOk;
 }
 
-
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-/*static*/ ito::RetVal ApiFunctions::sendParamToPyWorkspaceThreadSafe(const QString &varname, const QSharedPointer<ito::ParamBase> &value)
+/*
+ito::RetVal ApiFunctions::sendParamToPyWorkspaceThreadSafe(const QString &varname, const QSharedPointer<ito::ParamBase> &value)
 {
     return sendParamsToPyWorkspaceThreadSafe(QStringList(varname), QVector<QSharedPointer<ito::ParamBase> >(1, value));
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-/*static*/ ito::RetVal ApiFunctions::sendParamsToPyWorkspaceThreadSafe(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values)
+ito::RetVal ApiFunctions::sendParamsToPyWorkspaceThreadSafe(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values)
 {
     ito::RetVal retval;
     PythonEngine *pyEng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
@@ -600,11 +611,18 @@ ito::RetVal ApiFunctions::mshowConfigurationDialog(ito::AddInBase *plugin, ito::
 
     return retval;
 }
-
+*/
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 /*static*/ QString ApiFunctions::getSettingsFile(void)
 {
-    return AppManagement::getSettingsFile();
+    return m_settingsFile;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ApiFunctions::setSettingsFile(QString settingsFile)
+{
+    m_settingsFile = settingsFile;
+    return ito::retOk;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------

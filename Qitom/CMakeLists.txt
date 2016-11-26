@@ -61,8 +61,8 @@ find_package(NumPy REQUIRED)
 find_package(VisualLeakDetector QUIET)
 find_package(HTMLHelp)
 find_package(LATEX QUIET) 
-        
-           
+
+
 ADD_DEFINITIONS(${QT_DEFINITIONS})  
 add_definitions(${Qt5Widgets_DEFINITIONS})
 
@@ -168,8 +168,8 @@ set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/benchmarks.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInGrabber.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/addInInterface.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/apiFunctionsGraphInc.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../common/apiFunctionsInc.h
+#    ${CMAKE_CURRENT_SOURCE_DIR}/../common/apiFunctionsGraphInc.h
+#    ${CMAKE_CURRENT_SOURCE_DIR}/../common/apiFunctionsInc.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/helperCommon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedFunctionsQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructures.h
@@ -191,12 +191,12 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/AppManagement.h
     ${CMAKE_CURRENT_SOURCE_DIR}/global.h
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctions.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctions.h
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/fileDownloader.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/guiHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/helper/paramHelper.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/helper/paramHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/sharedPointerHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/sleeper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.h
@@ -399,12 +399,12 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/global.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctions.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/fileDownloader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/guiHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/IOHelper.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/helper/paramHelper.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/helper/paramHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/versionHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/qpropertyHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/helpViewer.cpp

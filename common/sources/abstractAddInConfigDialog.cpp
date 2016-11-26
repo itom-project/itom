@@ -38,6 +38,7 @@
 #include <qdebug.h>
 #include <QTime>
 #include <qcoreapplication.h>
+#include "apiFunctionsInc.h"
 
 namespace ito
 {

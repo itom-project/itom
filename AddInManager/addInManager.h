@@ -55,7 +55,7 @@ namespace ito
         //PLUGIN_ITOM_API
 
         public:
-            AddInManager(void **apiFuncs, void **apiFuncsGraph, QObject *mainWindow = NULL, QObject *mainApplication = NULL);
+            AddInManager(QString itomSettingsFile, void **apiFuncsGraph, QObject *mainWindow = NULL, QObject *mainApplication = NULL);
             //AddInManager * getInstance(const void *mainWindow = NULL, const void *mainApplication = NULL);
             RetVal closeInstance(void);
             const RetVal scanAddInDir(const QString &path);
@@ -88,6 +88,8 @@ namespace ito
             const QList<ito::AddInAlgo::FilterDef *> getFilterByInterface(ito::AddInAlgo::tAlgoInterface iface, const QString tag = QString::Null()) const;
             const QList<ito::AddInAlgo::FilterDef *> getFiltersByCategory(ito::AddInAlgo::tAlgoCategory cat) const;
             const QList<ito::AddInAlgo::FilterDef *> getFilterByInterfaceAndCategory(ito::AddInAlgo::tAlgoInterface iface, ito::AddInAlgo::tAlgoCategory cat, const QString tag = QString::Null()) const;
+
+            void **getItomApiFuncsPtr(void);
 
         private:
             AddInManager(AddInManager  &/*copyConstr*/);
@@ -124,7 +126,6 @@ namespace ito
 
             ito::RetVal closeAddIn(ito::AddInBase *addIn, ItomSharedSemaphore *aimWait = NULL);
     };
-} //namespace ito
-
+} //namespace ito   
 #endif // #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) 
 #endif

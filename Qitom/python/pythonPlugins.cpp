@@ -38,7 +38,7 @@
 
 #include <qsharedpointer.h>
 #include "../helper/sharedPointerHelper.h"
-#include "../helper/paramHelper.h"
+#include "../../AddInManager/paramHelper.h"
 #include "../../common/helperCommon.h"
 
 #include "pythontParamConversion.h"

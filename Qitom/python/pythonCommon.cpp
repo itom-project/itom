@@ -28,7 +28,7 @@
 #include "pythonDataObject.h"
 #include "pythonPCL.h"
 
-#include "helper/paramHelper.h"
+#include "../../AddInManager/paramHelper.h"
 #include "../common/numeric.h"
 
 #include <iostream>

@@ -23,7 +23,7 @@
 #ifndef APIFUNCTIONS_H
 #define APIFUNCTINOS_H
 
-#include "../../common/apiFunctionsInc.h"
+#include "../common/apiFunctionsInc.h"
 
 namespace ito 
 {
@@ -72,16 +72,25 @@ namespace ito
             static ito::RetVal mshowConfigurationDialog(ito::AddInBase *plugin, ito::AbstractAddInConfigDialog *configDialogInstance);
             
             //! function called by apiSendParamToPyWorkspace
-            static ito::RetVal sendParamToPyWorkspaceThreadSafe(const QString &varname, const QSharedPointer<ito::ParamBase> &value);
+            // function moved to apiFunctionsGui
+            //static ito::RetVal sendParamToPyWorkspaceThreadSafe(const QString &varname, const QSharedPointer<ito::ParamBase> &value);
 
             //! function called by apiSendParamsToPyWorkspace
-            static ito::RetVal sendParamsToPyWorkspaceThreadSafe(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values);
+            // function moved to apiFunctionsGui
+            //static ito::RetVal sendParamsToPyWorkspaceThreadSafe(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values);
+
+            //! substitute for removed functions
+            static ito::RetVal removed(...);
 
             //! get itom settings file
             static QString getSettingsFile(void);
 
+            //! setter function only used on AddInManager startup
+            static ito::RetVal setSettingsFile(QString settingsFile);
+
         private:
             int m_loadFPointer;
+            static QString m_settingsFile;
     };
 }
 

@@ -26,6 +26,7 @@
 *********************************************************************** */
 
 #include "../AbstractDObjFigure.h"
+#include "../common/apiFunctionsGraphInc.h"
 
 #include <qmetaobject.h>
 #include <iostream>

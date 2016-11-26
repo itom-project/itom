@@ -31,8 +31,7 @@
 #ifndef Q_MOC_RUN
 namespace ito 
 {
-
-    #if defined(ITOM_IMPORT_API) && !defined(ITOM_CORE)
+    #if defined(ITOM_IMPORT_API) //&& !defined(ITOM_CORE)
         void **ITOM_API_FUNCS;
     #else
         extern void **ITOM_API_FUNCS;
@@ -404,6 +403,7 @@ namespace ito
         (* (ito::RetVal (*)(ito::AddInBase *plugin, ito::AbstractAddInConfigDialog *configDialogInstance)) ito::ITOM_API_FUNCS[22])
 
 
+    // function moved to apiFunctionsGui
     //! sends the given ParamBase value to the global python workspace
     /*!
         This methods sends the given ParamBase value to the global python workspace using the indicated variable name. Existing
@@ -416,9 +416,10 @@ namespace ito
 
         \return ito::retOk on success, else ito::retError
     */
-    #define apiSendParamToPyWorkspace \
-        (* (ito::RetVal (*)(const QString &varname, const QSharedPointer<ito::ParamBase> &value)) ito::ITOM_API_FUNCS[29])
+//    #define apiSendParamToPyWorkspace \
+//        (* (ito::RetVal (*)(const QString &varname, const QSharedPointer<ito::ParamBase> &value)) ito::ITOM_API_FUNCS[29])
 
+    // function moved to apiFunctionsGui
     //! sends the given ParamBase value to the global python workspace
     /*!
         This methods sends the given ParamBase values to the global python workspace using the indicated variable names. Existing
@@ -431,9 +432,10 @@ namespace ito
 
         \return ito::retOk on success, else ito::retError
     */
-    #define apiSendParamsToPyWorkspace \
-        (* (ito::RetVal (*)(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values)) ito::ITOM_API_FUNCS[30])
+//    #define apiSendParamsToPyWorkspace \
+//        (* (ito::RetVal (*)(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values)) ito::ITOM_API_FUNCS[30])
 
+    // function moved to apiFunctionsGui
     //! read a property from an QObject based instance.
     /*!
         \param object is the object
@@ -442,9 +444,10 @@ namespace ito
 
         \return ito::retOk if property could be found and read, else ito::retError
     */
-    #define apiQObjectPropertyRead \
-        (* (ito::RetVal (*)(const QObject *object, const char* propName, QVariant &value)) ito::ITOM_API_FUNCS[32])
+//    #define apiQObjectPropertyRead \
+//        (* (ito::RetVal (*)(const QObject *object, const char* propName, QVariant &value)) ito::ITOM_API_FUNCS[32])
 
+    // function moved to apiFunctionsGui
     //! write a property to an QObject based instance.
     /*!
     \param object is the object
@@ -453,8 +456,8 @@ namespace ito
 
     \return ito::retOk if property could be found and written, else ito::retError
     */
-    #define apiQObjectPropertyWrite \
-        (* (ito::RetVal (*)(QObject *object, const char* propName, const QVariant &value)) ito::ITOM_API_FUNCS[33])
+//    #define apiQObjectPropertyWrite \
+//        (* (ito::RetVal (*)(QObject *object, const char* propName, const QVariant &value)) ito::ITOM_API_FUNCS[33])
 
     //! Get itom / user's settings file name.
     /*!

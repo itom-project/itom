@@ -23,6 +23,7 @@
 #ifndef PARAMHELPER_H
 #define PARAMHELPER_H
 
+#include "addInMgrDefines.h"
 #include "../common/sharedStructures.h"
 
 #include <qmap.h>
@@ -32,7 +33,7 @@ namespace ito
 {
     class AddInBase; //forward declaration
 
-    class ParamHelper
+    class ADDINMGR_EXPORT ParamHelper
     {
     public: 
 

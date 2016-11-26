@@ -50,7 +50,8 @@
 #include "DataObject/dataObjectFuncs.h"
 #include "pythonCommon.h"
 
-#include "api/apiFunctions.h"
+//#include "api/apiFunctions.h"
+#include "../../common/apiFunctionsInc.h"
 
 #include <qbytearray.h>
 #include <qstring.h>
@@ -1858,7 +1859,11 @@ PyObject* PythonPCL::PyPointCloud_Reduce(PyPointCloud *self, PyObject * /*args*/
 
         try
         {
-            retval  = ito::ApiFunctions::mfilterCall("savePointCloud", &paramsMand, &paramsOpt, &paramsOut);
+//            retval  = ito::ApiFunctions::mfilterCall("savePointCloud", &paramsMand, &paramsOpt, &paramsOut);
+            if (apiFilterCall)
+                retval = apiFilterCall("savePointCloud", &paramsMand, &paramsOpt, &paramsOut);
+            else
+                retval = ito::RetVal(ito::retError, 0, QObject::tr("api function pointer not set").toLatin1().data());
         }
         catch(std::bad_alloc &/*ba*/)
         {
@@ -1965,7 +1970,11 @@ PyObject* PythonPCL::PyPointCloud_SetState(PyPointCloud *self, PyObject *args)
 
         try
         {
-            retval  = ito::ApiFunctions::mfilterCall("loadPointCloud", &paramsMand, &paramsOpt, &paramsOut);
+//            retval  = ito::ApiFunctions::mfilterCall("loadPointCloud", &paramsMand, &paramsOpt, &paramsOut);
+            if (apiFilterCall)
+                retval = apiFilterCall("loadPointCloud", &paramsMand, &paramsOpt, &paramsOut);
+            else
+                retval = ito::RetVal(ito::retError, 0, QObject::tr("api function pointer not set").toLatin1().data());
         }
         catch(std::bad_alloc &/*ba*/)
         {
@@ -4008,7 +4017,12 @@ PyObject* PythonPCL::PyPolygonMesh_Reduce(PyPolygonMesh *self, PyObject * /*args
 
         paramsOpt.append(ito::ParamBase("type", ito::ParamBase::String, "obj"));
 
-        ito::RetVal retval = ito::ApiFunctions::mfilterCall("savePolygonMesh", &paramsMand, &paramsOpt, &paramsOut);
+//        ito::RetVal retval = ito::ApiFunctions::mfilterCall("savePolygonMesh", &paramsMand, &paramsOpt, &paramsOut);
+        ito::RetVal retval;
+        if (apiFilterCall)
+            retval = apiFilterCall("savePolygonMesh", &paramsMand, &paramsOpt, &paramsOut);
+        else
+            retval = ito::RetVal(ito::retError, 0, QObject::tr("api function pointer not set").toLatin1().data());
 
         if (PythonCommon::transformRetValToPyException(retval) == false)
         {
@@ -4091,7 +4105,12 @@ PyObject* PythonPCL::PyPolygonMesh_SetState(PyPolygonMesh *self, PyObject *args)
         paramsMand.append(ito::ParamBase("filename", ito::ParamBase::String | ito::ParamBase::In, tempFilename.toLatin1().data()));
         paramsOpt.append(ito::ParamBase("type", ito::ParamBase::String | ito::ParamBase::In, "obj"));
 
-        ito::RetVal retval = ito::ApiFunctions::mfilterCall("loadPolygonMesh", &paramsMand, &paramsOpt, &paramsOut);
+//        ito::RetVal retval = ito::ApiFunctions::mfilterCall("loadPolygonMesh", &paramsMand, &paramsOpt, &paramsOut);
+        ito::RetVal retval;
+        if (apiFilterCall)
+            retval = apiFilterCall("loadPolygonMesh", &paramsMand, &paramsOpt, &paramsOut);
+        else
+            retval = ito::RetVal(ito::retError, 0, QObject::tr("api function pointer not set").toLatin1().data());
 
         tempFile2.remove();
 

@@ -19,6 +19,9 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
+#define ITOM_IMPORT_API
+#include "../common/apiFunctionsInc.h"
+#undef ITOM_IMPORT_API
 #include "mainApplication.h"
 #include "global.h"
 #include "version.h"
@@ -448,7 +451,8 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     m_splashScreen->showMessage(tr("scan and load plugins..."), Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
-    ito::AddInManager *AIM = new AddInManager(ito::ITOM_API_FUNCS, ito::ITOM_API_FUNCS_GRAPH, AppManagement::getMainWindow(), AppManagement::getMainApplication());
+    ito::AddInManager *AIM = new AddInManager(AppManagement::getSettingsFile(), ito::ITOM_API_FUNCS_GRAPH, AppManagement::getMainWindow(), AppManagement::getMainApplication());
+    ito::ITOM_API_FUNCS = AIM->getItomApiFuncsPtr();
     AIM->setTimeOuts(AppManagement::timeouts.pluginInitClose, AppManagement::timeouts.pluginGeneral);
     AddInManagerInst = AIM;
     connect(AIM, SIGNAL(splashLoadMessage(const QString&, int, const QColor &)), m_splashScreen, SLOT(showMessage(const QString&, int, const QColor &)));
@@ -810,11 +814,11 @@ void MainApplication::mainWindowCloseRequest()
 
 		retValue += m_scriptEditorOrganizer->closeAllScripts(true);
 	
-			if (m_mainWin)
-			{
-				m_mainWin->hide();
-			}
-			QApplication::instance()->quit();
+		if (m_mainWin)
+		{
+			m_mainWin->hide();
+		}
+		QApplication::instance()->quit();
     }
 }
 

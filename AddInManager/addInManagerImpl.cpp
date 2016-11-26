@@ -19,12 +19,14 @@ General Public Licence for more details.
 You should have received a copy of the GNU Library General Public License
 along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
-#define ITOM_IMPORT_API
+//#define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 
 //#include "global.h"
 #include "addInManager.h"
+#include "apiFunctions.h"
 #include "../common/sharedFunctionsQt.h"
+#include "../common/apiFunctionsGraphInc.h"
 
 #include <qapplication.h>
 #include <qmainwindow.h>
@@ -183,6 +185,12 @@ AddInManagerPrivate::AddInManagerPrivate(void) :
 AddInManagerPrivate::~AddInManagerPrivate(void)
 {
 
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void **AddInManager::getItomApiFuncsPtr(void)
+{
+    return ITOM_API_FUNCS;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1258,19 +1266,22 @@ const RetVal AddInManager::getPluginInfo(const QString &name, int &pluginType, i
 */
 ito::RetVal AddInManagerPrivate::initDockWidget(const ito::AddInBase *addIn)
 {
-    QMainWindow *win = qobject_cast<QMainWindow*>(m_pMainWindow);
-    if (addIn->getDockWidget() && win)
+    if (qobject_cast<QApplication*>(QCoreApplication::instance()))
     {
-        QDockWidget* dockWidget = addIn->getDockWidget();
-        Qt::DockWidgetArea area;
-        bool floating;
-        bool visible;
-        addIn->dockWidgetDefaultStyle(floating, visible, area);
-        win->addDockWidget(area, dockWidget);
-        dockWidget->setFloating(floating);
-        dockWidget->setVisible(visible);
+        QMainWindow *win = qobject_cast<QMainWindow*>(m_pMainWindow);
+        if (addIn->getDockWidget() && win)
+        {
+            QDockWidget* dockWidget = addIn->getDockWidget();
+            Qt::DockWidgetArea area;
+            bool floating;
+            bool visible;
+            addIn->dockWidgetDefaultStyle(floating, visible, area);
+            win->addDockWidget(area, dockWidget);
+            dockWidget->setFloating(floating);
+            dockWidget->setVisible(visible);
 
-        /*bool restored =*/ win->restoreDockWidget(dockWidget);
+            /*bool restored =*/ win->restoreDockWidget(dockWidget);
+        }
     }
 
     return ito::retOk;
@@ -1361,17 +1372,15 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
     {
         retval += AddInManagerPrivate::m_pAddInManagerPrivate->initDockWidget(static_cast<ito::AddInBase*>(*addIn));
 
-        waitCond = new ItomSharedSemaphore();
-
         callInitInNewThread = (*addIn)->getBasePlugin()->getCallInitInNewThread();
-
-        if (callInitInNewThread)
+        if (QApplication::instance() && callInitInNewThread)
         {
             (*addIn)->MoveToThread();
         }
 
-        QMetaObject::invokeMethod(*addIn, "init", Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(ItomSharedSemaphore*, waitCond));
-
+        waitCond = new ItomSharedSemaphore();
+        Qt::ConnectionType conType = (QApplication::instance() != NULL) ? Qt::AutoConnection : Qt::DirectConnection;
+        QMetaObject::invokeMethod(*addIn, "init", conType, Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(ItomSharedSemaphore*, waitCond));
         //this gives the plugin's init method to invoke a slot of any gui instance of the plugin within its init method. Else this slot is called after
         //having finished this initAddIn method (since main thread is blocked).
         while (!waitCond->waitAndProcessEvents(AddInManagerPrivate::m_pAddInManagerPrivate->m_timeOutInitClose, QEventLoop::ExcludeUserInputEvents | QEventLoop::ExcludeSocketNotifiers))
@@ -1387,7 +1396,7 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
         waitCond->deleteSemaphore();
         waitCond = NULL;
 
-        if (!callInitInNewThread)
+        if (QApplication::instance() && !callInitInNewThread)
         {
             (*addIn)->MoveToThread();
         }
@@ -1531,16 +1540,14 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
     {
         retval += AddInManagerPrivate::m_pAddInManagerPrivate->initDockWidget(static_cast<ito::AddInBase*>(*addIn));
 
-        waitCond = new ItomSharedSemaphore();
-
         callInitInNewThread = (*addIn)->getBasePlugin()->getCallInitInNewThread();
-
         if (callInitInNewThread)
         {
             (*addIn)->MoveToThread();
         }
-
-        QMetaObject::invokeMethod(*addIn, "init", Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(ItomSharedSemaphore*, waitCond));
+        waitCond = new ItomSharedSemaphore();
+        Qt::ConnectionType conType = (QApplication::instance() != NULL) ? Qt::AutoConnection : Qt::DirectConnection;
+        QMetaObject::invokeMethod(*addIn, "init", conType, Q_ARG(QVector<ito::ParamBase>*, paramsMand), Q_ARG(QVector<ito::ParamBase>*, paramsOpt), Q_ARG(ItomSharedSemaphore*, waitCond));
 
         //this gives the plugin's init method to invoke a slot of any gui instance of the plugin within its init method. Else this slot is called after
         //having finished this initAddIn method (since main thread is blocked).
@@ -1553,6 +1560,7 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
                 break;
             }
         }
+
         retval += waitCond->returnValue;
         waitCond->deleteSemaphore();
         waitCond = NULL;
@@ -1756,42 +1764,11 @@ const ito::RetVal AddInManagerPrivate::closeAddIn(AddInBase *addIn, ItomSharedSe
 
     if (aib->getRef(addIn) <= 0) //this instance holds the last reference of the plugin. close it now.
     {
-        //we always promised that if the init-method is called in the main thread, the close method is called in the main thread, too.
-        //Therefore pull it to the main thread, if necessary.
-        if (!aib->getCallInitInNewThread())
+        if (QApplication::instance())
         {
-            ItomSharedSemaphoreLocker moveToThreadLocker(new ItomSharedSemaphore());
-            if (QMetaObject::invokeMethod(addIn, "moveBackToApplicationThread", Q_ARG(ItomSharedSemaphore*, moveToThreadLocker.getSemaphore())))
-            {
-                if (moveToThreadLocker->wait(AddInManagerPrivate::m_pAddInManagerPrivate->m_timeOutInitClose) == false)
-                {
-                    retval += ito::RetVal(ito::retWarning, 0, tr("timeout while pulling plugin back to main thread.").toLatin1().data());
-                }
-            }
-            else
-            {
-                moveToThreadLocker->deleteSemaphore();
-                retval += ito::RetVal(ito::retWarning, 0, tr("error invoking method 'moveBackToApplicationThread' of plugin.").toLatin1().data());
-            }
-        }
-
-        waitCond = new ItomSharedSemaphore();
-        QMetaObject::invokeMethod(addIn, "close", Q_ARG(ItomSharedSemaphore*, waitCond));
-
-        while (waitCond->wait(AddInManagerPrivate::m_pAddInManagerPrivate->m_timeOutInitClose) == false && !timeout)
-        {
-            if (addIn->isAlive() == 0)
-            {
-                timeout = true;
-                retval += ito::RetVal(ito::retError, 0, tr("timeout while closing plugin").toLatin1().data());
-            }
-        }
-
-        if (!timeout)
-        {
-            retval += waitCond->returnValue;
-
-            if (aib->getCallInitInNewThread())
+            //we always promised that if the init-method is called in the main thread, the close method is called in the main thread, too.
+            //Therefore pull it to the main thread, if necessary.
+            if (!aib->getCallInitInNewThread())
             {
                 ItomSharedSemaphoreLocker moveToThreadLocker(new ItomSharedSemaphore());
                 if (QMetaObject::invokeMethod(addIn, "moveBackToApplicationThread", Q_ARG(ItomSharedSemaphore*, moveToThreadLocker.getSemaphore())))
@@ -1805,6 +1782,43 @@ const ito::RetVal AddInManagerPrivate::closeAddIn(AddInBase *addIn, ItomSharedSe
                 {
                     moveToThreadLocker->deleteSemaphore();
                     retval += ito::RetVal(ito::retWarning, 0, tr("error invoking method 'moveBackToApplicationThread' of plugin.").toLatin1().data());
+                }
+            }
+
+            waitCond = new ItomSharedSemaphore();
+            Qt::ConnectionType conType = (QApplication::instance() != NULL) ? Qt::AutoConnection : Qt::DirectConnection;
+            QMetaObject::invokeMethod(addIn, "close", conType, Q_ARG(ItomSharedSemaphore*, waitCond));
+
+            while (waitCond->wait(AddInManagerPrivate::m_pAddInManagerPrivate->m_timeOutInitClose) == false && !timeout)
+            {
+                if (addIn->isAlive() == 0)
+                {
+                    timeout = true;
+                    retval += ito::RetVal(ito::retError, 0, tr("timeout while closing plugin").toLatin1().data());
+                }
+            }
+        }
+
+        if (!timeout)
+        {
+            retval += waitCond->returnValue;
+            if (QApplication::instance())
+            {
+                if (aib->getCallInitInNewThread())
+                {
+                    ItomSharedSemaphoreLocker moveToThreadLocker(new ItomSharedSemaphore());
+                    if (QMetaObject::invokeMethod(addIn, "moveBackToApplicationThread", Q_ARG(ItomSharedSemaphore*, moveToThreadLocker.getSemaphore())))
+                    {
+                        if (moveToThreadLocker->wait(AddInManagerPrivate::m_pAddInManagerPrivate->m_timeOutInitClose) == false)
+                        {
+                            retval += ito::RetVal(ito::retWarning, 0, tr("timeout while pulling plugin back to main thread.").toLatin1().data());
+                        }
+                    }
+                    else
+                    {
+                        moveToThreadLocker->deleteSemaphore();
+                        retval += ito::RetVal(ito::retWarning, 0, tr("error invoking method 'moveBackToApplicationThread' of plugin.").toLatin1().data());
+                    }
                 }
             }
             
@@ -2016,7 +2030,8 @@ const ito::RetVal AddInManagerPrivate::loadParamVals(ito::AddInBase *plugin)
 //                continue;
 //            }
         waitCond = new ItomSharedSemaphore();
-        QMetaObject::invokeMethod(plugin, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore*, waitCond));
+        Qt::ConnectionType conType = (QApplication::instance() != NULL) ? Qt::AutoConnection : Qt::DirectConnection;
+        QMetaObject::invokeMethod(plugin, "setParam", conType, Q_ARG(QSharedPointer<ito::ParamBase>, qsParam), Q_ARG(ItomSharedSemaphore*, waitCond));
         ret += waitCond->returnValue;
         waitCond->wait(m_timeOutGeneral);
         waitCond->deleteSemaphore();
@@ -2031,7 +2046,7 @@ const ito::RetVal AddInManagerPrivate::loadParamVals(ito::AddInBase *plugin)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-AddInManager::AddInManager(void **apiFuncs, void **apiFuncsGraph, QObject *mainWindow, QObject *mainApplication) // :
+AddInManager::AddInManager(QString itomSettingsFile, void **apiFuncsGraph, QObject *mainWindow, QObject *mainApplication) // :
 //    m_algoInterfaceValidator(NULL)
 {
     ito::RetVal retValue;
@@ -2040,7 +2055,7 @@ AddInManager::AddInManager(void **apiFuncs, void **apiFuncsGraph, QObject *mainW
     if (AddInManagerPrivate::m_pAddInManagerPrivate == NULL)
     {
         AddInManagerPrivate::m_pAddInManagerPrivate = new ito::AddInManagerPrivate();
-        ito::ITOM_API_FUNCS = apiFuncs;
+        ApiFunctions::setSettingsFile(itomSettingsFile);
         ito::ITOM_API_FUNCS_GRAPH = apiFuncsGraph;
     }
     else

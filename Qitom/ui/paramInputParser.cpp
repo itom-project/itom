@@ -31,7 +31,7 @@
 
 #include "dialogPluginPicker.h"
 #include "paramInputDialog.h"
-#include "../helper/paramHelper.h"
+#include "../../AddInManager/paramHelper.h"
 
 namespace ito {
 

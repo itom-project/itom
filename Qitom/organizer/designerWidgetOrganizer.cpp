@@ -24,7 +24,8 @@
 
 #include "../global.h"
 #include "../AppManagement.h"
-#include "common/apiFunctionsGraphInc.h"
+#include "../common/apiFunctionsGraphInc.h"
+#include "../common/apiFunctionsInc.h"
 #include "plot/AbstractFigure.h"
 #include "plot/AbstractDObjFigure.h"
 
