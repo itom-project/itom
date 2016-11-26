@@ -515,6 +515,7 @@ const RetVal AddInManager::scanAddInDir(const QString &path)
 
         //search for base plugin folder
         pluginsDir = QDir(qApp->applicationDirPath());
+        QString a = pluginsDir.dirName();
 
 #if defined(WIN32)
         if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
@@ -609,15 +610,19 @@ RetVal AddInManagerPrivate::loadAddIn(ito::AddInManager *parent, QString &filena
         emit parent->splashLoadMessage(tr("scan and load plugins (%1)").arg(finfo.fileName()), Qt::AlignRight | Qt::AlignBottom);
         QCoreApplication::processEvents();
 
-        //load translation file
-        QString settingsFile = apiGetSettingsFile();
-        QSettings settings(settingsFile, QSettings::IniFormat);
-        QStringList startupScripts;
+        QString language("en");
+        if (ITOM_API_FUNCS)
+        {
+            //load translation file
+            QString settingsFile = apiGetSettingsFile();
+            QSettings settings(settingsFile, QSettings::IniFormat);
+            QStringList startupScripts;
 
-        settings.beginGroup("Language");
-        QString language = settings.value("language", "en").toString();
-        QByteArray codec =  settings.value("codec", "UTF-8" ).toByteArray();
-        settings.endGroup();
+            settings.beginGroup("Language");
+            language = settings.value("language", "en").toString();
+            QByteArray codec = settings.value("codec", "UTF-8").toByteArray();
+            settings.endGroup();
+        }
 
         QFileInfo fileInfo(filename);
         QDir fileInfoDir = fileInfo.dir();
@@ -2242,18 +2247,26 @@ AddInManager::~AddInManager(void)
 //----------------------------------------------------------------------------------------------------------------------------------
 void AddInManagerPrivate::propertiesChanged()
 {
-    QString settingsFile = apiGetSettingsFile();
-    QSettings settings(settingsFile, QSettings::IniFormat);
-    settings.beginGroup("AddInManager");
-    if (QThread::idealThreadCount() < 0)
+    QString settingsFile("");
+    if (ITOM_API_FUNCS)
     {
-        ito::AddInBase::setMaximumThreadCount(qBound(1, settings.value("maximumThreadCount", 2).toInt(), 2));
+        settingsFile = apiGetSettingsFile();
+        QSettings settings(settingsFile, QSettings::IniFormat);
+        settings.beginGroup("AddInManager");
+        if (QThread::idealThreadCount() < 0)
+        {
+            ito::AddInBase::setMaximumThreadCount(qBound(1, settings.value("maximumThreadCount", 2).toInt(), 2));
+        }
+        else
+        {
+            ito::AddInBase::setMaximumThreadCount(qBound(1, settings.value("maximumThreadCount", QThread::idealThreadCount()).toInt(), QThread::idealThreadCount()));
+        }
+        settings.endGroup();
     }
     else
     {
-        ito::AddInBase::setMaximumThreadCount(qBound(1, settings.value("maximumThreadCount", QThread::idealThreadCount()).toInt(), QThread::idealThreadCount()));
+        ito::AddInBase::setMaximumThreadCount(QThread::idealThreadCount());
     }
-    settings.endGroup();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
