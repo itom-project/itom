@@ -6,7 +6,8 @@ Build on linux
 ================
 
 This section describes how |itom| and its plugins are built on a linux system (tested on Ubuntu 12.04 (32bit), Kubuntu (Debian, KDE, 64bit) and Lubuntu). 
-The general approach is similar to the other documentation in the install chapter that are mainly focussed on Windows.
+The general approach is similar to the other documentation in the install chapter that are mainly focussed on Windows. For building
+itom under Fedora, see the specific :ref:`Fedora help page <build-fedora>`.
 
 Necessary packages
 -------------------

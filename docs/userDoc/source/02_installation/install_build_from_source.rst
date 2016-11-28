@@ -26,4 +26,5 @@ For linux including the Raspberry Pi as well as Mac OS X, a short description of
     
     build_linux.rst
     build_raspi.rst
+    build_fedora.rst
     build_osx.rst
