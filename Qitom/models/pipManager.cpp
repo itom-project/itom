@@ -422,6 +422,10 @@ void PipManager::listAvailablePackages(const PipGeneralOptions &options /*= PipG
 
         QStringList arguments;
         arguments << "-m" << "pip" << "list"; //here the pip version check is done
+		if (m_pipVersion >= 0x090000)
+		{
+			arguments << "--format=legacy";
+		}
         arguments << parseGeneralOptions(options, false, false);
         m_pipProcess.start(m_pythonPath, arguments);
     }
@@ -481,6 +485,10 @@ void PipManager::checkPackageUpdates(const PipGeneralOptions &options /*= PipGen
 
         QStringList arguments;
         arguments << "-m" << "pip" << "list" << "--outdated"; //version has already been checked in listAvailablePackages. This is sufficient.
+		if (m_pipVersion >= 0x090000)
+		{
+			arguments << "--format=legacy";
+		}
         arguments << parseGeneralOptions(options, false, true);
         m_pipProcess.start(m_pythonPath, arguments);
     }
