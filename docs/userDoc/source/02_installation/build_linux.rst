@@ -5,9 +5,9 @@
 Build on linux
 ================
 
-This section describes how |itom| and its plugins are built on a linux system (tested on Ubuntu 12.04 (32bit), Kubuntu (Debian, KDE, 64bit) and Lubuntu). 
-The general approach is similar to the other documentation in the install chapter that are mainly focussed on Windows. For building
-itom under Fedora, see the specific :ref:`Fedora help page <build-fedora>`.
+This section describes how |itom| and its plugins are built on a linux system (tested on Fedora 25, Ubuntu 12.04 (32bit), Kubuntu (Debian, KDE, 64bit) and Lubuntu). 
+The general approach is similar to the other documentation in the install chapter that are mainly focussed on Windows. Links to details about commands
+necessary to obtain required packages, get the itom sources and build it, are given in the last section of this page.
 
 Necessary packages
 -------------------
@@ -108,6 +108,6 @@ Bash-based build
 -----------------
 
 You can also get all packages, download the sources and build itom including all plugins via the bash or command line. Instructions for Debian or Ubuntu systems having Qt5 packages in the respository
-can be read at the :ref:`Raspberry Pi <build-raspi>` build instruction page.  
+can be read at the :ref:`Raspberry Pi <build-raspi>` build instruction page. For Fedora see :ref:`Fedora build page <build-fedora>`.
     
 
