@@ -38,6 +38,8 @@ class ITOMWIDGETS_EXPORT PenCreatorButton : public QPushButton
 
     protected:
         QScopedPointer<PenCreatorButtonPrivate> d_ptr;
+    protected slots:
+        void onToggled(bool change = true);
     private:
         
        Q_DECLARE_PRIVATE(PenCreatorButton);

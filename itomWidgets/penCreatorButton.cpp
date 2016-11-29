@@ -21,6 +21,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 #include <penCreatorButton.h>
 #include <qpen.h>
+#include <QStyle>
 
 
 class PenCreatorButtonPrivate
@@ -31,6 +32,8 @@ protected:
 public:
     PenCreatorButtonPrivate(PenCreatorButton& object);
     QPen pen;
+    void init();
+    void computeButtonIcon();
 };
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 PenCreatorButtonPrivate::PenCreatorButtonPrivate(PenCreatorButton& object)
@@ -40,12 +43,33 @@ pen(QBrush(Qt::gray), 2, Qt::SolidLine)
 
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
+void PenCreatorButtonPrivate::init()
+{
+    Q_Q(PenCreatorButton);
+    q->setCheckable(true);
+    QObject::connect(q, SIGNAL(toggled(bool)),q, SLOT(onToggled(bool)));
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+void PenCreatorButtonPrivate::computeButtonIcon()
+{
+    Q_Q(PenCreatorButton);
+    int iconSize = q->style()->pixelMetric(QStyle::PM_SmallIconSize);
+    QPixmap pix(iconSize, iconSize);
+    pix.fill(this->pen.color().isValid() ? q->palette().button().color() : Qt::transparent);
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
 PenCreatorButton::PenCreatorButton(QWidget* _parent)
     : QPushButton(_parent),
     d_ptr(new PenCreatorButtonPrivate(*this))
 {
         
 };
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+void PenCreatorButton::onToggled(bool change/*= true*/)
+{
+
+}
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 PenCreatorButton::~PenCreatorButton()
 {
