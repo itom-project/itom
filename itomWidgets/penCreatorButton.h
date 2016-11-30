@@ -37,6 +37,7 @@ class ITOMWIDGETS_EXPORT PenCreatorButton : public QPushButton
      ~PenCreatorButton();
 
     protected:
+        virtual void paintEvent(QPaintEvent* event);
         QScopedPointer<PenCreatorButtonPrivate> d_ptr;
     protected slots:
         void onToggled(bool change = true);

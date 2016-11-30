@@ -22,6 +22,10 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <penCreatorButton.h>
 #include <qpen.h>
 #include <QStyle>
+#include <QPainter>
+#include <QIcon>
+#include <QStylePainter>
+#include <QStyleOptionButton>
 
 
 class PenCreatorButtonPrivate
@@ -32,6 +36,7 @@ protected:
 public:
     PenCreatorButtonPrivate(PenCreatorButton& object);
     QPen pen;
+    QIcon icon;
     void init();
     void computeButtonIcon();
 };
@@ -48,6 +53,7 @@ void PenCreatorButtonPrivate::init()
     Q_Q(PenCreatorButton);
     q->setCheckable(true);
     QObject::connect(q, SIGNAL(toggled(bool)),q, SLOT(onToggled(bool)));
+    computeButtonIcon();
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 void PenCreatorButtonPrivate::computeButtonIcon()
@@ -56,15 +62,34 @@ void PenCreatorButtonPrivate::computeButtonIcon()
     int iconSize = q->style()->pixelMetric(QStyle::PM_SmallIconSize);
     QPixmap pix(iconSize, iconSize);
     pix.fill(this->pen.color().isValid() ? q->palette().button().color() : Qt::transparent);
+    QPainter p(&pix);
+    p.setPen(QPen(Qt::gray));
+    p.setBrush(this->pen.color().isValid() ?this->pen.color() : QBrush(Qt::NoBrush));
+    p.drawRect(2, 2, pix.width() - 5, pix.height() - 5);
+    p.drawLine(2 + ((pix.height() - 5) / 2), 2, 2 + ((pix.height() - 5) / 2), 2 + pix.width() - 5);
+    icon = QIcon(pix);
+
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 PenCreatorButton::PenCreatorButton(QWidget* _parent)
     : QPushButton(_parent),
     d_ptr(new PenCreatorButtonPrivate(*this))
 {
+    Q_D(PenCreatorButton);
+    d->init();
+
         
 };
-
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+void PenCreatorButton::paintEvent(QPaintEvent* event)
+{
+    Q_D(PenCreatorButton);
+    QStylePainter p(this);
+    QStyleOptionButton option;
+    this->initStyleOption(&option);
+    option.icon = d->icon;
+    p.drawControl(QStyle::CE_PushButton, option);
+}
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 void PenCreatorButton::onToggled(bool change/*= true*/)
 {
