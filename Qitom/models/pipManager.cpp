@@ -770,8 +770,54 @@ void PipManager::finalizeTask(int exitCode /*= 0*/)
                     lines = output.split("\n");
                 }
 
+				//The "python.exe - m pip show numpy pip setuptools" request returns a stream in the following way:
+				/*
+				---
+				Name: numpy
+				Version: 1.11.0
+				Summary: NumPy: array processing for numbers, strings, records, and objects.
+				Home-page: http://www.numpy.org
+				Author: NumPy Developers
+				Author-email: numpy-discussion@scipy.org
+				License: BSD
+				Location: c:\program files\python35\lib\site-packages
+				Requires:
+				---
+				Name: pip
+				Version: 9.0.1
+				Summary: The PyPA recommended tool for installing Python packages.
+				Home-page: https://pip.pypa.io/
+				Author: The pip developers
+				Author-email: python-virtualenv@groups.google.com
+				License: MIT
+				Location: c:\program files\python35\lib\site-packages
+				Requires:
+				---
+				Name: setuptools
+				Version: 18.2
+				Summary: Easily download, build, install, upgrade, and uninstall Python packages
+
+				Home-page: https://bitbucket.org/pypa/setuptools
+				Author: Python Packaging Authority
+				Author-email: distutils-sig@python.org
+				License: PSF or ZPL
+				Location: c:\program files\python35\lib\site-packages
+				Requires:
+				*/
+
+				//The following code puts every package into the PythonPackage struct.
+				//Once the next ---line is found, the previous package struct is appended to m_pythonPackages
+				//and a new package struct is created.
+
+				//Starting from pip 9.0.0, the response does not start with a --- line, therefore
+				// package_started has to be set to true in this case, while it was false for pip < 9.0.0
+
                 PythonPackage package;
                 bool package_started = false;
+				if (m_pipVersion >= 0x090000)
+				{
+					package_started = true;
+				}
                 int pos;
                 QString key, value;
                 QStringList keys;
