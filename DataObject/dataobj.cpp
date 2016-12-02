@@ -744,7 +744,230 @@ DObjIterator DObjIterator::operator ++(int)
         cv::error(cv::Exception(CV_StsOutOfRange, "one of the matrices dimension is zero, meaningless operation", "", __FILE__, __LINE__)); \
     }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+//! low-level, templated method for freeing allocated data blocks
+/*!
+First, the header information of the corresponding data block is deleted. Then the reference counter of the data block is decremented.
+In the same way, the reference counter for every matrix-plane is incremented by calling the corresponding release-method. If the ref-counter is lower than zero
+no other instance needs this data block and it is deallocated if the m_owndata-flag is true.
 
+\param *dObj whose data block should be freed
+\return retOk
+\sa freeData
+*/
+template<typename _Tp> RetVal FreeFunc(DataObject *dObj)
+{
+    // clear header
+    if (dObj->m_roi.m_p) // m_roi.m_p-1 is the pointer mapping to the first element of [size of roi , roi-vector , size of osize, osize-vector, size of size, size-vector]
+    {
+        delete[](dObj->m_roi.m_p - 1);
+    }
+
+    int old_m_dims = dObj->m_dims;
+
+    dObj->m_size.m_p = NULL;
+    dObj->m_osize.m_p = NULL;
+    dObj->m_roi.m_p = NULL;
+    dObj->m_dims = 0;
+
+    // there is data?
+    if (dObj->m_pRefCount)
+    {
+        // check if we are the last one
+        if (*(dObj->m_pRefCount))
+        {
+            // no so just remove matrix headers and return
+            CV_XADD(dObj->m_pRefCount, -1);
+
+            //this version of deleting the m_data vector is much faster than the version above (M. Gronle, 13.02.2012)
+            //            unsigned int size = dObj->m_data.size();
+            int size = dObj->mdata_size();
+
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+            {
+#pragma omp for schedule(guided)
+#endif
+                for (int i = 0; i < size; i++)
+                {
+                    cv::Mat_<_Tp> *dataMat = (cv::Mat_<_Tp> *)dObj->m_data[i];
+                    delete dataMat;
+                }
+#if (USEOMP)
+            }
+#endif
+            dObj->mdata_free();
+
+            dObj->m_pRefCount = NULL;
+            dObj->m_pDataObjectTags = NULL;
+
+            return ito::retOk;
+        }
+        delete dObj->m_pRefCount;
+        dObj->m_pRefCount = NULL;
+        delete dObj->m_pDataObjectTags;
+        dObj->m_pDataObjectTags = NULL;
+    }
+
+    // yes so really clean up
+    if (!dObj->mdata_size())
+    {
+        return ito::retOk;
+    }
+
+    //check if the data has been allocated "en bloc" and delete the data first.
+    if (dObj->m_continuous && old_m_dims > 2 && dObj->m_owndata)
+    {
+        cv::Mat_<_Tp> *dataMat = (cv::Mat_<_Tp> *)dObj->m_data[0];
+        free((void*)dataMat->datastart); //data is wrong, since data-pointer does not point to start in case of ROI
+    }
+
+    //this version of deleting the m_data vector is much faster than the version above (M. Gronle, 13.02.2012)
+    //    unsigned int size = dObj->m_data.size();
+    int size = dObj->mdata_size();
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+    {
+#pragma omp for schedule(guided)
+#endif
+        for (int i = 0; i < size; i++)
+        {
+            cv::Mat_<_Tp> *dataMat = (cv::Mat_<_Tp> *)dObj->m_data[i];
+            delete dataMat;
+        }
+#if (USEOMP)
+    }
+#endif
+    dObj->mdata_free();
+
+    return ito::retOk;
+}
+
+typedef RetVal(*tFreeFunc)(DataObject *dObj);
+
+MAKEFUNCLIST(FreeFunc);
+
+//! high-level, non-templated method for freeing data
+/*!
+\sa FreeFunc
+*/
+void DataObject::freeData(void)
+{
+    fListFreeFunc[m_type](this);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> RetVal SecureFreeFunc(DataObject *dObj)
+{
+    int old_m_dims = dObj->m_dims;
+
+    // clear header
+    if (dObj->m_roi.m_p) // m_roi.m_p-1 is the pointer mapping to the first element of [size of roi , roi-vector , size of osize, osize-vector, size of size, size-vector]
+    {
+        delete[](dObj->m_roi.m_p - 1);
+    }
+
+    dObj->m_size.m_p = NULL;
+    dObj->m_osize.m_p = NULL;
+    dObj->m_roi.m_p = NULL;
+    dObj->m_dims = 0;
+
+    // does the data object contain a reference counter
+    if (dObj->m_pRefCount)
+    {
+        if (*(dObj->m_pRefCount) > 0) //we are not the last to use the data
+        {
+            // decrease reference counter
+            CV_XADD(dObj->m_pRefCount, -1);
+
+            //delete cvMats in m_data array (OpenCV organizes the rest)
+            if (dObj->m_data)
+            {
+                int size = dObj->mdata_size();
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+                {
+#endif
+                    cv::Mat_<_Tp> *dataMat = NULL;
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+                    for (int i = 0; i < size; i++)
+                    {
+                        dataMat = (cv::Mat_<_Tp> *)dObj->m_data[i];
+                        if (dataMat) delete dataMat;
+                    }
+#if (USEOMP)
+                }
+#endif
+                dObj->mdata_free();
+            }
+
+            dObj->m_pRefCount = NULL;
+            dObj->m_pDataObjectTags = NULL;
+
+            return retOk;
+        }
+        else //this is the last instance to use this data
+        {
+            if (dObj->m_pRefCount) delete dObj->m_pRefCount;
+            dObj->m_pRefCount = NULL;
+            if (dObj->m_pDataObjectTags) delete dObj->m_pDataObjectTags;
+            dObj->m_pDataObjectTags = NULL;
+        }
+    }
+
+    //this section is only entered if we are the last to use the data or if no reference counter has been set (the latter usually should not happen)
+    int numMats = dObj->mdata_size();
+
+    if (numMats > 0)
+    {
+        //check if the data has been allocated "en bloc" and delete the data first.
+        if (dObj->m_continuous && old_m_dims > 2 && dObj->m_owndata)
+        {
+            cv::Mat_<_Tp> *dataMat = (cv::Mat_<_Tp> *)dObj->m_data[0];
+            if (dataMat && dataMat->datastart)
+            {
+                free((void*)dataMat->datastart);
+            }
+        }
+
+#if (USEOMP)
+#pragma omp parallel num_threads(getMaximumThreadCount())
+        {
+#endif
+            cv::Mat_<_Tp> *dataMat = NULL;
+#if (USEOMP)
+#pragma omp for schedule(guided)
+#endif
+            for (int i = 0; i < numMats; i++)
+            {
+                dataMat = (cv::Mat_<_Tp> *)dObj->m_data[i];
+                if (dataMat) delete dataMat;
+            }
+#if (USEOMP)
+        }
+#endif
+
+        dObj->mdata_free();
+    }
+
+    return retOk;
+}
+
+typedef RetVal(*tSecureFreeFunc)(DataObject *dObj);
+MAKEFUNCLIST(SecureFreeFunc);
+
+//! high-level, non-templated method for securely freeing data
+/*!
+\sa SecureFreeFunc
+*/
+void DataObject::secureFreeData(void)
+{
+    fListSecureFreeFunc[m_type](this);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! constructor for empty data object
 /*!
     no data will be allocated, the number of elements and dimensions is set to zero
@@ -879,7 +1102,7 @@ DataObject::DataObject(const unsigned char dimensions, const int *sizes, const i
 }
 
 
-
+//----------------------------------------------------------------------------------------------------------------------------------
 //! destructor
 /*!
     reference pointer of data is decremented and if <0, data will be deleted if owndata-flag is true. Additionally the allocated memory for
@@ -1819,230 +2042,6 @@ void DataObject::create(const unsigned char dimensions, const int *sizes, const 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-//! low-level, templated method for freeing allocated data blocks
-/*!
-    First, the header information of the corresponding data block is deleted. Then the reference counter of the data block is decremented.
-    In the same way, the reference counter for every matrix-plane is incremented by calling the corresponding release-method. If the ref-counter is lower than zero
-    no other instance needs this data block and it is deallocated if the m_owndata-flag is true.
-
-    \param *dObj whose data block should be freed
-    \return retOk
-    \sa freeData
-*/
-template<typename _Tp> RetVal FreeFunc(DataObject *dObj)
-{
-   // clear header
-   if (dObj->m_roi.m_p) // m_roi.m_p-1 is the pointer mapping to the first element of [size of roi , roi-vector , size of osize, osize-vector, size of size, size-vector]
-   {
-      delete[] (dObj->m_roi.m_p - 1);
-   }
-
-   int old_m_dims = dObj->m_dims;
-
-   dObj->m_size.m_p = NULL;
-   dObj->m_osize.m_p = NULL;
-   dObj->m_roi.m_p = NULL;
-   dObj->m_dims = 0;
-
-    // there is data?
-    if (dObj->m_pRefCount)
-    {
-        // check if we are the last one
-        if (*(dObj->m_pRefCount))
-        {
-            // no so just remove matrix headers and return
-            CV_XADD(dObj->m_pRefCount, -1);
-
-            //this version of deleting the m_data vector is much faster than the version above (M. Gronle, 13.02.2012)
-            //            unsigned int size = dObj->m_data.size();
-            int size = dObj->mdata_size();
-
-#if (USEOMP)
-            #pragma omp parallel num_threads(getMaximumThreadCount())
-            {
-            #pragma omp for schedule(guided)
-#endif
-            for (int i = 0; i < size; i++)
-            {
-                cv::Mat_<_Tp> *dataMat = (cv::Mat_<_Tp> *)dObj->m_data[i];
-                delete dataMat;
-            }
-#if (USEOMP)
-            }
-#endif
-            dObj->mdata_free();
-
-            dObj->m_pRefCount = NULL;
-            dObj->m_pDataObjectTags = NULL;
-
-            return ito::retOk;
-        }
-        delete dObj->m_pRefCount;
-        dObj->m_pRefCount = NULL;
-        delete dObj->m_pDataObjectTags;
-        dObj->m_pDataObjectTags = NULL;
-    }
-
-    // yes so really clean up
-    if (!dObj->mdata_size())
-    {
-        return ito::retOk;
-    }
-
-    //check if the data has been allocated "en bloc" and delete the data first.
-    if (dObj->m_continuous && old_m_dims > 2 && dObj->m_owndata)
-    {
-        cv::Mat_<_Tp> *dataMat = (cv::Mat_<_Tp> *)dObj->m_data[0];
-        free((void*)dataMat->datastart); //data is wrong, since data-pointer does not point to start in case of ROI
-    }
-
-    //this version of deleting the m_data vector is much faster than the version above (M. Gronle, 13.02.2012)
-//    unsigned int size = dObj->m_data.size();
-    int size = dObj->mdata_size();
-#if (USEOMP)
-#pragma omp parallel num_threads(getMaximumThreadCount())
-    {
-#pragma omp for schedule(guided)
-#endif
-    for ( int i = 0 ; i < size ; i++)
-    {
-        cv::Mat_<_Tp> *dataMat = (cv::Mat_<_Tp> *)dObj->m_data[i];
-        delete dataMat;
-    }
-#if (USEOMP)
-    }
-#endif
-    dObj->mdata_free();
-
-    return ito::retOk;
-}
-
-typedef RetVal (*tFreeFunc)(DataObject *dObj);
-
-MAKEFUNCLIST(FreeFunc);
-
-//! high-level, non-templated method for freeing data
-/*!
-    \sa FreeFunc
-*/
-void DataObject::freeData(void)
-{
-   fListFreeFunc[m_type](this);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-template<typename _Tp> RetVal SecureFreeFunc(DataObject *dObj)
-{
-   int old_m_dims = dObj->m_dims;
-
-   // clear header
-   if (dObj->m_roi.m_p) // m_roi.m_p-1 is the pointer mapping to the first element of [size of roi , roi-vector , size of osize, osize-vector, size of size, size-vector]
-   {
-      delete[] (dObj->m_roi.m_p - 1);
-   }
-
-   dObj->m_size.m_p = NULL;
-   dObj->m_osize.m_p = NULL;
-   dObj->m_roi.m_p = NULL;
-   dObj->m_dims = 0;
-
-    // does the data object contain a reference counter
-    if (dObj->m_pRefCount)
-    {
-        if (*(dObj->m_pRefCount) > 0) //we are not the last to use the data
-        {
-            // decrease reference counter
-            CV_XADD(dObj->m_pRefCount, -1);
-
-            //delete cvMats in m_data array (OpenCV organizes the rest)
-            if (dObj->m_data)
-            {
-                int size = dObj->mdata_size();
-#if (USEOMP)
-                #pragma omp parallel num_threads(getMaximumThreadCount())
-                {
-#endif
-                cv::Mat_<_Tp> *dataMat = NULL;
-#if (USEOMP)
-                #pragma omp for schedule(guided)
-#endif
-                for (int i = 0; i < size; i++)
-                {
-                    dataMat = (cv::Mat_<_Tp> *)dObj->m_data[i];
-                    if (dataMat) delete dataMat;
-                }
-#if (USEOMP)
-                }
-#endif
-                dObj->mdata_free();
-            }
-
-            dObj->m_pRefCount = NULL;
-            dObj->m_pDataObjectTags = NULL;
-
-            return retOk;
-        }
-        else //this is the last instance to use this data
-        {
-            if(dObj->m_pRefCount) delete dObj->m_pRefCount;
-            dObj->m_pRefCount = NULL;
-            if(dObj->m_pDataObjectTags) delete dObj->m_pDataObjectTags;
-            dObj->m_pDataObjectTags = NULL;
-        }
-    }
-
-    //this section is only entered if we are the last to use the data or if no reference counter has been set (the latter usually should not happen)
-    int numMats = dObj->mdata_size();
-
-    if (numMats > 0)
-    {
-        //check if the data has been allocated "en bloc" and delete the data first.
-        if (dObj->m_continuous && old_m_dims > 2 && dObj->m_owndata)
-        {
-            cv::Mat_<_Tp> *dataMat = (cv::Mat_<_Tp> *)dObj->m_data[0];
-            if (dataMat && dataMat->datastart)
-            {
-                free((void*)dataMat->datastart);
-            }
-        }
-
-#if (USEOMP)
-        #pragma omp parallel num_threads(getMaximumThreadCount())
-        {
-#endif
-        cv::Mat_<_Tp> *dataMat = NULL;
-#if (USEOMP)
-        #pragma omp for schedule(guided)
-#endif
-        for (int i = 0; i < numMats; i++)
-        {
-            dataMat = (cv::Mat_<_Tp> *)dObj->m_data[i];
-            if (dataMat) delete dataMat;
-        }
-#if (USEOMP)
-        }
-#endif
-
-        dObj->mdata_free();
-    }
-
-    return retOk;
-}
-
-typedef RetVal (*tSecureFreeFunc)(DataObject *dObj);
-MAKEFUNCLIST(SecureFreeFunc);
-
-//! high-level, non-templated method for securely freeing data
-/*!
-    \sa SecureFreeFunc
-*/
-void DataObject::secureFreeData(void)
-{
-    fListSecureFreeFunc[m_type](this);
-}
-
-
-
 /**
 \brief Function returns the not rounded pixel index of a physical coordinate
 \detail Function returns the not rounded pixel index of a physical coordinate (Unit-Coordinate = ( px-Coordinate - Offset)* Scale).
