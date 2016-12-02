@@ -26,6 +26,11 @@
 #include "addInMgrDefines.h"
 
 #include "../DataObject/dataobj.h"
+#ifdef USEPCL
+#define ITOM_POINTCLOUDLIBRARY 1
+#else
+#define ITOM_POINTCLOUDLIBRARY 0
+#endif
 #if ITOM_POINTCLOUDLIBRARY > 0
     #include "../PointCloud/pclStructures.h"
 #endif

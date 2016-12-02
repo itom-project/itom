@@ -34,9 +34,10 @@ include("../ItomBuildMacros.cmake")
 
 IF(BUILD_WITH_PCL)
 	find_package(ITOM_SDK COMPONENTS dataobject pointcloud itomCommonLib itomCommonQtLib REQUIRED)
+	find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
+	ADD_DEFINITIONS(-DUSEPCL)
 ELSE(BUILD_WITH_PCL)
 	find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
-	find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
 ENDIF(BUILD_WITH_PCL)
 include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
 
