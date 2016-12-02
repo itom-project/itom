@@ -30,8 +30,11 @@ IF(${BUILD_WITH_HELPVIEWER})
     #at first, get the available Qt version
     FIND_PACKAGE_QT(ON Core)
 
-    IF(((NOT ${Qt5_FOUND}) OR (${Qt5_VERSION} VERSION_LESS 5.6.0)))
+    IF(NOT ${Qt5_FOUND})
         message(WARNING "BUILD_WITH_HELPVIEWER is set to FALSE, since it is only possible for Qt >= 5.6.0")
+        SET(BUILD_WITH_HELPVIEWER FALSE)
+	ELSEIF(${Qt5_VERSION} VERSION_LESS 5.6.0)
+		message(WARNING "BUILD_WITH_HELPVIEWER is set to FALSE, since it is only possible for Qt >= 5.6.0")
         SET(BUILD_WITH_HELPVIEWER FALSE)
     ENDIF()
 ENDIF()
@@ -259,6 +262,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogIconBrowser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogLoadedPlugins.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogNewPluginInstance.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogOpenNewGui.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogOpenFileWithFilter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPluginPicker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogProperties.h
@@ -336,6 +340,7 @@ set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogIconBrowser.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogLoadedPlugins.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogNewPluginInstance.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogOpenNewGui.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogOpenFileWithFilter.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPluginPicker.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReloadModule.ui
@@ -463,6 +468,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogIconBrowser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogLoadedPlugins.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogNewPluginInstance.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogOpenNewGui.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogOpenFileWithFilter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPluginPicker.cpp    
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogProperties.cpp

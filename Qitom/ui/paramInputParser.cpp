@@ -32,6 +32,7 @@
 #include "dialogPluginPicker.h"
 #include "paramInputDialog.h"
 #include "../../AddInManager/paramHelper.h"
+#include "../helper/guiHelper.h"
 
 namespace ito {
 
@@ -82,11 +83,13 @@ ito::RetVal ParamInputParser::createInputMask(const QVector<ito::Param> &params)
 
     m_internalData.resize(params.size());
 
+    float dpiFactor = GuiHelper::screenDpiFactor(); //factor related to 96dpi (1.0)
+
     foreach (const ito::Param &param, params)
     {
         m_lblInfo = new QLabel(parent);
-        m_lblInfo->setMaximumSize(24, 24);
-        m_lblInfo->setPixmap(m_iconInfo.pixmap(16, 16));
+        m_lblInfo->setMaximumSize(24 * dpiFactor, 24 * dpiFactor);
+        m_lblInfo->setPixmap(m_iconInfo.pixmap(16 * dpiFactor, 16));
 
         QString info = QLatin1String(param.getInfo());
         if (info == "")

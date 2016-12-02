@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.9)
-
+ 
 include(CMakeParseArguments)
 
 # _itom_qt5_parse_qrc_file(infile _out_depends _rc_depends)

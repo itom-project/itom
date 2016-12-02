@@ -25,6 +25,7 @@
 #include "../../AddInManager/addInManager.h"
 #include "../ui/dialogNewPluginInstance.h"
 #include "../ui/dialogSnapshot.h"
+#include "../ui/dialogOpenNewGui.h"
 
 #include "../global.h"
 #include "../AppManagement.h"
@@ -821,49 +822,64 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
     {
         if (paramsMand.size() > 0 || paramsOpt.size() > 0)
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("Currently, you can only open user interfaces from plugins which does not have any mandatory or optional starting parameters").toLatin1().data());
-        }
-        else
-        {
-            UiOrganizer *uiOrganizer = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
-            QSharedPointer<unsigned int> dialogHandle(new unsigned int);
-            QSharedPointer<unsigned int> initSlotCount(new unsigned int);
-            QSharedPointer<int> retCodeIfModal(new int);
-            QSharedPointer<unsigned int> objectID(new unsigned int);
-            QSharedPointer<QByteArray> className(new QByteArray());
-            *objectID = 0;
-            *dialogHandle = 0;
-            *initSlotCount = 0;
+            DialogOpenNewGui *dialog = new DialogOpenNewGui(awd->m_name, paramsMand, paramsOpt);
 
-            int winType = 0xff;
-            bool deleteOnClose = false;
-            bool childOfMainWindow = false;
-            Qt::DockWidgetArea dockWidgetArea = Qt::TopDockWidgetArea;
-            int buttonBarType = UserUiDialog::bbTypeNo;
-            StringMap dialogButtons;
-            int uiDescription = UiOrganizer::createUiDescription(winType, buttonBarType, childOfMainWindow, deleteOnClose, dockWidgetArea);
-
-            if (uiOrganizer)
+            if (dialog->exec() == 1) //accepted
             {
-                retValue += uiOrganizer->loadPluginWidget(reinterpret_cast<void*>(awd->m_widgetFunc), uiDescription, dialogButtons, &paramsMandBase, &paramsOptBase, dialogHandle, initSlotCount, objectID, className, NULL);
-                if (!retValue.containsError())
-                {
-                    if (*dialogHandle > 0)
-                    {
-                        retValue += uiOrganizer->setAttribute(*dialogHandle, Qt::WA_DeleteOnClose, true, NULL); //forces the dialog to delete itself if the user closes the dialog, since no other instance/itom-component is holding a reference to it.
-                        retValue += uiOrganizer->showDialog(*dialogHandle,false,retCodeIfModal,NULL);
-                    }
-                    else
-                    {
-                        retValue += ito::RetVal(ito::retError, 0, tr("User interface of plugin could not be created. Returned handle is invalid.").toLatin1().data());
-                    }
-                }
+                //QString pythonVarName = dialog->getPythonVariable();
+                ito::RetVal retValue = ito::retOk;
+                ito::AddInBase *basePlugin = NULL;
+
+                retValue += dialog->getFilledMandParams(paramsMandBase);
+                retValue += dialog->getFilledOptParams(paramsOptBase);
+
+                DELETE_AND_SET_NULL(dialog);
             }
             else
             {
-                retValue += ito::RetVal(ito::retError, 0, tr("could not find instance of UiOrganizer").toLatin1().data());
-            }
+                DELETE_AND_SET_NULL(dialog);
 
+                return;
+            }
+        }
+            
+        UiOrganizer *uiOrganizer = qobject_cast<UiOrganizer*>(AppManagement::getUiOrganizer());
+        QSharedPointer<unsigned int> dialogHandle(new unsigned int);
+        QSharedPointer<unsigned int> initSlotCount(new unsigned int);
+        QSharedPointer<int> retCodeIfModal(new int);
+        QSharedPointer<unsigned int> objectID(new unsigned int);
+        QSharedPointer<QByteArray> className(new QByteArray());
+        *objectID = 0;
+        *dialogHandle = 0;
+        *initSlotCount = 0;
+
+        int winType = 0xff;
+        bool deleteOnClose = false;
+        bool childOfMainWindow = false;
+        Qt::DockWidgetArea dockWidgetArea = Qt::TopDockWidgetArea;
+        int buttonBarType = UserUiDialog::bbTypeNo;
+        StringMap dialogButtons;
+        int uiDescription = UiOrganizer::createUiDescription(winType, buttonBarType, childOfMainWindow, deleteOnClose, dockWidgetArea);
+
+        if (uiOrganizer)
+        {
+            retValue += uiOrganizer->loadPluginWidget(reinterpret_cast<void*>(awd->m_widgetFunc), uiDescription, dialogButtons, &paramsMandBase, &paramsOptBase, dialogHandle, initSlotCount, objectID, className, NULL);
+            if (!retValue.containsError())
+            {
+                if (*dialogHandle > 0)
+                {
+                    retValue += uiOrganizer->setAttribute(*dialogHandle, Qt::WA_DeleteOnClose, true, NULL); //forces the dialog to delete itself if the user closes the dialog, since no other instance/itom-component is holding a reference to it.
+                    retValue += uiOrganizer->showDialog(*dialogHandle,false,retCodeIfModal,NULL);
+                }
+                else
+                {
+                    retValue += ito::RetVal(ito::retError, 0, tr("User interface of plugin could not be created. Returned handle is invalid.").toLatin1().data());
+                }
+            }
+        }
+        else
+        {
+            retValue += ito::RetVal(ito::retError, 0, tr("could not find instance of UiOrganizer").toLatin1().data());
         }
     }
      

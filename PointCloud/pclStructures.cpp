@@ -471,6 +471,39 @@ bool PCLPoint::setCurvature(float curvature)
     return false;
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
+template<typename _Tp> pcl::PointCloud<_Tp>* getPointCloudPtrInternal(ito::PCLPointCloud &pc) { return NULL; }
+template<> pcl::PointCloud<pcl::PointXYZ>* getPointCloudPtrInternal(ito::PCLPointCloud &pc) { return pc.m_pcXYZ.get(); }
+template<> pcl::PointCloud<pcl::PointXYZI>* getPointCloudPtrInternal(ito::PCLPointCloud &pc) { return pc.m_pcXYZI.get(); }
+template<> pcl::PointCloud<pcl::PointXYZRGBA>* getPointCloudPtrInternal(ito::PCLPointCloud &pc) { return pc.m_pcXYZRGBA.get(); }
+template<> pcl::PointCloud<pcl::PointNormal>* getPointCloudPtrInternal(ito::PCLPointCloud &pc) { return pc.m_pcXYZNormal.get(); }
+template<> pcl::PointCloud<pcl::PointXYZINormal>* getPointCloudPtrInternal(ito::PCLPointCloud &pc) { return pc.m_pcXYZINormal.get(); }
+template<> pcl::PointCloud<pcl::PointXYZRGBNormal>* getPointCloudPtrInternal(ito::PCLPointCloud &pc) { return pc.m_pcXYZRGBNormal.get(); }
+
+template<typename _Tp> const pcl::PointCloud<_Tp>* getPointCloudPtrInternal(const ito::PCLPointCloud &pc) { return NULL; }
+template<> const pcl::PointCloud<pcl::PointXYZ>* getPointCloudPtrInternal(const ito::PCLPointCloud &pc) { return pc.m_pcXYZ.get(); }
+template<> const pcl::PointCloud<pcl::PointXYZI>* getPointCloudPtrInternal(const ito::PCLPointCloud &pc) { return pc.m_pcXYZI.get(); }
+template<> const pcl::PointCloud<pcl::PointXYZRGBA>* getPointCloudPtrInternal(const ito::PCLPointCloud &pc) { return pc.m_pcXYZRGBA.get(); }
+template<> const pcl::PointCloud<pcl::PointNormal>* getPointCloudPtrInternal(const ito::PCLPointCloud &pc) { return pc.m_pcXYZNormal.get(); }
+template<> const pcl::PointCloud<pcl::PointXYZINormal>* getPointCloudPtrInternal(const ito::PCLPointCloud &pc) { return pc.m_pcXYZINormal.get(); }
+template<> const pcl::PointCloud<pcl::PointXYZRGBNormal>* getPointCloudPtrInternal(const ito::PCLPointCloud &pc) { return pc.m_pcXYZRGBNormal.get(); }
+
+template<typename _Tp> _Tp* getPointPtrInternal(ito::PCLPoint &point) { return NULL; }
+template<> pcl::PointXYZ* getPointPtrInternal(ito::PCLPoint &point) { return &point.getPointXYZ(); }
+template<> pcl::PointXYZI* getPointPtrInternal(ito::PCLPoint &point) { return &point.getPointXYZI(); }
+template<> pcl::PointXYZRGBA* getPointPtrInternal(ito::PCLPoint &point) { return &point.getPointXYZRGBA(); }
+template<> pcl::PointNormal* getPointPtrInternal(ito::PCLPoint &point) { return &point.getPointXYZNormal(); }
+template<> pcl::PointXYZINormal* getPointPtrInternal(ito::PCLPoint &point) { return &point.getPointXYZINormal(); }
+template<> pcl::PointXYZRGBNormal* getPointPtrInternal(ito::PCLPoint &point) { return &point.getPointXYZRGBNormal(); }
+
+template<typename _Tp> const _Tp* getPointPtrInternal(const ito::PCLPoint &point) { return NULL; }
+template<> const pcl::PointXYZ* getPointPtrInternal(const ito::PCLPoint &point) { return &point.getPointXYZ(); }
+template<> const pcl::PointXYZI* getPointPtrInternal(const ito::PCLPoint &point) { return &point.getPointXYZI(); }
+template<> const pcl::PointXYZRGBA* getPointPtrInternal(const ito::PCLPoint &point) { return &point.getPointXYZRGBA(); }
+template<> const pcl::PointNormal* getPointPtrInternal(const ito::PCLPoint &point) { return &point.getPointXYZNormal(); }
+template<> const pcl::PointXYZINormal* getPointPtrInternal(const ito::PCLPoint &point) { return &point.getPointXYZINormal(); }
+template<> const pcl::PointXYZRGBNormal* getPointPtrInternal(const ito::PCLPoint &point) { return &point.getPointXYZRGBNormal(); }
+
 
 //-------------------------------------------------------------------------------------------------
 PCLPointCloud::PCLPointCloud(uint32_t width_, uint32_t height_, ito::tPCLPointType type_,  const PCLPoint &value_)
@@ -1502,39 +1535,7 @@ void PCLPointCloud::insert(uint32_t index, const ito::PCLPoint& point)
     throw pcl::PCLException("invalid point cloud",__FILE__, "insert", __LINE__);
 }
 
-//----------------------------------------------------------------------------------------------------------------------------------
 
-template<typename _Tp> pcl::PointCloud<_Tp>* getPointCloudPtrInternal(ito::PCLPointCloud &pc) { return NULL; }
-template<> pcl::PointCloud<pcl::PointXYZ>* getPointCloudPtrInternal(ito::PCLPointCloud &pc) { return pc.m_pcXYZ.get(); }
-template<> pcl::PointCloud<pcl::PointXYZI>* getPointCloudPtrInternal(ito::PCLPointCloud &pc) { return pc.m_pcXYZI.get(); }
-template<> pcl::PointCloud<pcl::PointXYZRGBA>* getPointCloudPtrInternal(ito::PCLPointCloud &pc) { return pc.m_pcXYZRGBA.get(); }
-template<> pcl::PointCloud<pcl::PointNormal>* getPointCloudPtrInternal(ito::PCLPointCloud &pc) { return pc.m_pcXYZNormal.get(); }
-template<> pcl::PointCloud<pcl::PointXYZINormal>* getPointCloudPtrInternal(ito::PCLPointCloud &pc) { return pc.m_pcXYZINormal.get(); }
-template<> pcl::PointCloud<pcl::PointXYZRGBNormal>* getPointCloudPtrInternal(ito::PCLPointCloud &pc) { return pc.m_pcXYZRGBNormal.get(); }
-
-template<typename _Tp> const pcl::PointCloud<_Tp>* getPointCloudPtrInternal(const ito::PCLPointCloud &pc) { return NULL; }
-template<> const pcl::PointCloud<pcl::PointXYZ>* getPointCloudPtrInternal(const ito::PCLPointCloud &pc) { return pc.m_pcXYZ.get(); }
-template<> const pcl::PointCloud<pcl::PointXYZI>* getPointCloudPtrInternal(const ito::PCLPointCloud &pc) { return pc.m_pcXYZI.get(); }
-template<> const pcl::PointCloud<pcl::PointXYZRGBA>* getPointCloudPtrInternal(const ito::PCLPointCloud &pc) { return pc.m_pcXYZRGBA.get(); }
-template<> const pcl::PointCloud<pcl::PointNormal>* getPointCloudPtrInternal(const ito::PCLPointCloud &pc) { return pc.m_pcXYZNormal.get(); }
-template<> const pcl::PointCloud<pcl::PointXYZINormal>* getPointCloudPtrInternal(const ito::PCLPointCloud &pc) { return pc.m_pcXYZINormal.get(); }
-template<> const pcl::PointCloud<pcl::PointXYZRGBNormal>* getPointCloudPtrInternal(const ito::PCLPointCloud &pc) { return pc.m_pcXYZRGBNormal.get(); }
-
-template<typename _Tp> _Tp* getPointPtrInternal(ito::PCLPoint &point) { return NULL; }
-template<> pcl::PointXYZ* getPointPtrInternal(ito::PCLPoint &point) { return &point.getPointXYZ(); }
-template<> pcl::PointXYZI* getPointPtrInternal(ito::PCLPoint &point) { return &point.getPointXYZI(); }
-template<> pcl::PointXYZRGBA* getPointPtrInternal(ito::PCLPoint &point) { return &point.getPointXYZRGBA(); }
-template<> pcl::PointNormal* getPointPtrInternal(ito::PCLPoint &point) { return &point.getPointXYZNormal(); }
-template<> pcl::PointXYZINormal* getPointPtrInternal(ito::PCLPoint &point) { return &point.getPointXYZINormal(); }
-template<> pcl::PointXYZRGBNormal* getPointPtrInternal(ito::PCLPoint &point) { return &point.getPointXYZRGBNormal(); }
-
-template<typename _Tp> const _Tp* getPointPtrInternal(const ito::PCLPoint &point) { return NULL; }
-template<> const pcl::PointXYZ* getPointPtrInternal(const ito::PCLPoint &point) { return &point.getPointXYZ(); }
-template<> const pcl::PointXYZI* getPointPtrInternal(const ito::PCLPoint &point) { return &point.getPointXYZI(); }
-template<> const pcl::PointXYZRGBA* getPointPtrInternal(const ito::PCLPoint &point) { return &point.getPointXYZRGBA(); }
-template<> const pcl::PointNormal* getPointPtrInternal(const ito::PCLPoint &point) { return &point.getPointXYZNormal(); }
-template<> const pcl::PointXYZINormal* getPointPtrInternal(const ito::PCLPoint &point) { return &point.getPointXYZINormal(); }
-template<> const pcl::PointXYZRGBNormal* getPointPtrInternal(const ito::PCLPoint &point) { return &point.getPointXYZRGBNormal(); }
 
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------
