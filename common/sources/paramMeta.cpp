@@ -277,6 +277,8 @@ namespace ito
         m_numMax(numMax),
         m_numStep(numStepSize)
     {
+        if (m_numMax < m_numMin)
+            m_numMax = m_numMin;
         m_type = rttiCharArrayMeta;
     }
 
@@ -319,6 +321,8 @@ namespace ito
         m_numMax(numMax),
         m_numStep(numStepSize)
     {
+        if (m_numMax < m_numMin)
+            m_numMax = m_numMin;
         m_type = rttiIntArrayMeta;
     }
 
@@ -360,6 +364,8 @@ namespace ito
         m_numMax(numMax),
         m_numStep(numStepSize)
     {
+        if (m_numMax < m_numMin)
+            m_numMax = m_numMin;
         m_type = rttiDoubleArrayMeta;
     }
 
@@ -408,6 +414,8 @@ namespace ito
         m_sizeStep(intervalStep),
         m_isIntervalNotRange(false)
     {
+        if (m_sizeMax < m_sizeMin)
+            m_sizeMax = m_sizeMin;
         m_type = rttiIntervalMeta;
     }
 
@@ -465,6 +473,8 @@ namespace ito
         m_sizeMax(sizeMax),
         m_sizeStep(sizeStep)
     {
+        if (m_sizeMax < m_sizeMin)
+            m_sizeMax = m_sizeMin;
         m_type = rttiDoubleIntervalMeta;
     }
 
