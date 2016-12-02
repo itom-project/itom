@@ -599,7 +599,7 @@ namespace ito
     *   a timer will be started, which triggers the method 'timerEvent' (should be implemented by any camera). If this flag is disabled, the
     *   live image is registered, but no images will be regularily aquired. In this case, only manually taken images will be passed to any registered
     *   source node. If the flag is enabled again, the timer is restarted and every live image will automatically get new images. This is done by
-    *   invoking the slot 'dataAvailable' of every registered source node.
+    *   invoking the slot 'setSource' of every registered source node.
     *
     *   Every camera will only return shallow copies of its internal image both to the live image and to the user. This image can be read by everybody.
     *   If the user wants to change values in this image, he should make a deep copy first.
@@ -656,7 +656,7 @@ namespace ito
             //! sets a new interval for the auto-grabbing timer (in ms). If interval <= 0 is passed, nothing is changed, but the current interval is returned. This method does not enable or disable the timer.
             ito::RetVal setAutoGrabbingInterval(QSharedPointer<int> interval, ItomSharedSemaphore *waitCond = NULL); //consider this method as final
 
-            //! starts device and registers obj as listener (live image). This listener must have a slot void dataAvailable(DataObject image).
+            //! starts device and registers obj as listener (live image). This listener must have a slot void setSource(QSharedPointer<ito::DataObject>, ItomSaredSemaphore).
             ito::RetVal startDeviceAndRegisterListener(QObject* obj, ItomSharedSemaphore *waitCond = NULL); //consider this method as final
 
             //! stops device and unregisters obj (live image).
