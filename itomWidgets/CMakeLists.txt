@@ -132,6 +132,7 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoPicker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoShapes.h
     ${CMAKE_CURRENT_SOURCE_DIR}/penCreatorButton.h
+	${CMAKE_CURRENT_SOURCE_DIR}/penCreatorDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/colorPickerButton.h
     ${CMAKE_CURRENT_SOURCE_DIR}/colorDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/checkableComboBox.h
@@ -198,6 +199,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/completer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rangeSlider.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/penCreatorButton.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/penCreatorDialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/colorPickerButton.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/colorDialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/collapsibleGroupBox.cpp
@@ -237,6 +239,7 @@ set(itomWidgets_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/doubleRangeWidget.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/sliderWidget.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/motorAxisController.ui
+	${CMAKE_CURRENT_SOURCE_DIR}/ui/penCreatorDialog.ui
 )
 
 IF (QT5_FOUND)

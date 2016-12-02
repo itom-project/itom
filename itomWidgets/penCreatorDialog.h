@@ -19,44 +19,31 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
+#ifndef PENCREATORDIALOG_H
+#define PENCREATORDIALOG_H
 
+#include"ui_penCreatorDialog.h"
+#include<QDialog>
+#include<qpen.h>
 
-#ifndef PENCREATORBUTTON_H
-#define PENCREATORBUTTON_H
-
-#include <QPushButton>
-#include "commonWidgets.h"
-
-class PenCreatorButtonPrivate;
-
-class ITOMWIDGETS_EXPORT PenCreatorButton : public QPushButton
+class PenCreatorDialog : public QDialog
 {
-     Q_OBJECT
-    public:
-     explicit PenCreatorButton(QWidget* parent = 0);
-     explicit PenCreatorButton(QPen pen, QWidget* parent = 0);
-     ~PenCreatorButton();
-     void changePen();
+    Q_OBJECT
 
-    protected:
-        virtual void paintEvent(QPaintEvent* event);
-        QScopedPointer<PenCreatorButtonPrivate> d_ptr;
-    protected slots:
-        void onToggled(bool change = true);
-    public slots:
-    ///
-    ///  Set a new current pen without opening a dialog
+public:
+    PenCreatorDialog(QPen &inputPen, QWidget *parent = NULL);
+    ~PenCreatorDialog();
     void setPen(const QPen &pen);
-    private:
-        
-       Q_DECLARE_PRIVATE(PenCreatorButton);
-       Q_DISABLE_COPY(PenCreatorButton);
+    void synchronizeGUI();
+    QPen getPen();
+    
+private:
+    Ui::penCreatorDialog ui;
+    QPen &pen;
+    
+    void updatePen();
+private slots:
+    void on_buttonBox_clicked(QAbstractButton* btn);
 
 };
-
-
-
-
-
-
 #endif
