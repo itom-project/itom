@@ -544,11 +544,16 @@ ParamBase::ParamBase(const ByteArray &name, const uint32 type, const unsigned in
 */
 ParamBase::~ParamBase()
 {
+    // 01.12.16 crash when trying to free a fixed pointer assigned to a paramBase copied to another
+    // via = operator, using broken assignment. Guess we must not free pointers, when ival == -1 
+    // int useLim[10] = {1, 0 ,0, 0, 0, 0};
+    // (*param) = ito::ParamBase("useLimits", ito::ParamBase::IntArray, (char*)useLim);
+    // but if we do not free we might provocate memory leaks ... needs review
     if ((m_cVal) && ((typeFilter(m_type) == String)
-        || (typeFilter(m_type) == DoubleArray)
-        || (typeFilter(m_type) == IntArray)
-        || (typeFilter(m_type) == CharArray)
-        || (typeFilter(m_type) == ComplexArray)))
+        || (m_iVal > 0) && (typeFilter(m_type) == DoubleArray)
+        || (m_iVal > 0) && (typeFilter(m_type) == IntArray)
+        || (m_iVal > 0) && (typeFilter(m_type) == CharArray)
+        || (m_iVal > 0) && (typeFilter(m_type) == ComplexArray)))
     {
         free(m_cVal);
         m_cVal = NULL;
