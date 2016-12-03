@@ -63,9 +63,14 @@ void PenCreatorButtonPrivate::init()
 void PenCreatorButtonPrivate::computeButtonIcon()
 {
     Q_Q(PenCreatorButton);
-    //q->setFixedSize(200, 200);
-    int iconSize = q->style()->pixelMetric(QStyle::PM_LargeIconSize);
-    QPixmap pix(iconSize, iconSize);
+
+    //int iconSize = q->style()->pixelMetric(QStyle::PM_SmallIconSize); 
+    //QPixmap pix(iconSize, iconSize);
+    
+    q->setMinimumHeight(30);
+    q->setMinimumWidth(50);
+    q->setIconSize(QSize(40, 20));
+    QPixmap pix(40, 20);
     pix.fill(this->pen.color().isValid() ? q->palette().button().color() : Qt::transparent);
     QPainter p(&pix);
     p.setPen(pen);
@@ -74,6 +79,7 @@ void PenCreatorButtonPrivate::computeButtonIcon()
     //p.drawRect(2, 2, pix.width() - 1, pix.height() - 5);
     p.drawLine(2, 2 + ((pix.height() - 5) / 2), 2 + pix.width() - 1, 2 + ((pix.height() - 5) / 2));
     icon = QIcon(pix);
+
 
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
