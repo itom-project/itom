@@ -63,7 +63,7 @@ namespace ito
             AddInManager(QString itomSettingsFile, void **apiFuncsGraph, QObject *mainWindow = NULL, QObject *mainApplication = NULL);
             //AddInManager * getInstance(const void *mainWindow = NULL, const void *mainApplication = NULL);
             RetVal closeInstance(void);
-            const RetVal scanAddInDir(const QString &path);
+            const RetVal scanAddInDir(const QString &path, const int checkQCoreApp = 1);
             const QList<QObject *> * getDataIOList(void) const;
             const QList<QObject *> * getActList(void)    const;
             const QList<QObject *> * getAlgList(void)    const;

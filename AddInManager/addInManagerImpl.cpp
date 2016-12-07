@@ -112,6 +112,7 @@ class AddInManagerPrivate : public QObject
         AlgoInterfaceValidator *m_algoInterfaceValidator;
         PlugInModel m_plugInModel;
 
+        QCoreApplication *m_pQCoreApp;
         QList< QPointer<ito::AddInBase> > m_deadPlugins;
         QTimer m_deadPluginTimer;
         int m_timeOutInitClose;
@@ -173,12 +174,13 @@ ito::AddInManagerPrivate* ito::AddInManagerPrivate::m_pAddInManagerPrivate = NUL
 namespace ito
 {
 //----------------------------------------------------------------------------------------------------------------------------------
-AddInManagerPrivate::AddInManagerPrivate(void) :
+AddInManagerPrivate::AddInManagerPrivate() :
     m_pMainWindow(NULL),
     m_pMainApplication(NULL),
     m_algoInterfaceValidator(NULL),
     m_timeOutInitClose(30000),
-    m_timeOutGeneral(5000)
+    m_timeOutGeneral(5000),
+    m_pQCoreApp(NULL)
 {
 
 }
@@ -512,12 +514,22 @@ RetVal AddInManager::closeInstance(void)
 *   and must habe the name "plugins" for loadable plugins. The found plugins are sorted into the three lists
 *   with the available plugins (ito::AddInManager::m_addInListDataIO, ito::AddInManager::m_addInListAct, ito::AddInManager::m_addInListAlg)
 */
-const RetVal AddInManager::scanAddInDir(const QString &path)
+const RetVal AddInManager::scanAddInDir(const QString &path, const int checkQCoreApp)
 {
     RetVal retValue = retOk;
     bool firstStart = false;
     bool pluginsFolderExists = true;
     QDir pluginsDir;
+    
+    // first we check if there exists any sort of QCoreApplication, which is required for qt event loop.
+    // if not we start a QCoreApplication which is preferred for gui less systems. If the AddInManager has
+    // been started via itom a QCoreApplication should (must) already exist here and nothing will happen
+    if (checkQCoreApp && !QApplication::instance())
+    {
+        int argc = 0;
+        ito::AddInManagerPrivate::m_pAddInManagerPrivate->m_pQCoreApp = new QCoreApplication(argc, NULL);
+    }
+
     if (path.isEmpty() || path == "")
     {
         firstStart = true;
