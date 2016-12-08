@@ -66,6 +66,9 @@ namespace ito {
     the communication is done by RetVal only.
 */
 
+//! name of set of all itom files (used in file open dialog or file system dialog)
+QString IOHelper::allItomFilesName = QObject::tr("Itom Files");
+
 //------------------------------------------------------------------------------------------------------------------------------------------------
 //! method to load any supported file
 /*!
@@ -1221,7 +1224,7 @@ end:
 
     _allPatterns.removeDuplicates();
 
-    filter << tr("Itom Files (%1)").arg(_allPatterns.join(" "));
+	filter << QString("%1 (%2)").arg(allItomFilesName).arg(_allPatterns.join(" "));
 
     if(allPatterns)
     {
