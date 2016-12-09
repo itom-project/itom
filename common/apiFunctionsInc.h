@@ -89,6 +89,15 @@ namespace ito
 
     #define apiFilterParamBase \
         (*(ito::RetVal (*)(const QString &name, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QVector<ito::ParamBase> *paramsOut)) ito::ITOM_API_FUNCS[3])
+
+    #define apiFilterVersion \
+        (*(ito::RetVal (*)(const QString &name, int &version)) ito::ITOM_API_FUNCS[35])
+
+    #define apiFilterAuthor \
+        (*(ito::RetVal (*)(const QString &name, QString &author)) ito::ITOM_API_FUNCS[36])
+
+    #define apiFilterPluginName \
+        (*(ito::RetVal (*)(const QString &name, QString &pluginName)) ito::ITOM_API_FUNCS[37])
     
     //! checks if a specific plugin is available and returns its default mandatory and optional parameter set for the initialization
     /*!

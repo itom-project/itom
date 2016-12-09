@@ -47,6 +47,15 @@ namespace ito
             //! function called by apiFilterParam
             static ito::RetVal mfilterParam(const QString &name, QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
 
+            //! function called by apiFilterVersion
+            static ito::RetVal mfilterVersion(const QString &name, int &version);
+
+            //! function called by apiFilterAuthor
+            static ito::RetVal mfilterAuthor(const QString &name, QString &author);
+
+            //! function called by apiFilterPluginName
+            static ito::RetVal mfilterPluginName(const QString &name, QString &pluginName);
+
             //! function called by apiAddInGetInitParams
             static ito::RetVal maddInGetInitParams(const QString &name, const int pluginType, int *pluginNum, QVector<ito::Param> *&paramsMand, QVector<ito::Param> *&paramsOpt);
 

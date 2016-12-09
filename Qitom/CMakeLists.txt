@@ -585,6 +585,7 @@ IF(CONSIDER_GIT_SVN AND GIT_FOUND)
         COMMAND    ${PYTHON_EXECUTABLE}
         "${CMAKE_CURRENT_BINARY_DIR}/pyGit2Header.py"
     )
+	FILE(COPY ${CMAKE_CURRENT_BINARY_DIR}/version.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include)
 ELSE()
     MESSAGE(STATUS "Git versioning was not enabled (CONSIDER_GIT_SVN OFF) or git could not be found. Default version.h file is generated")
     FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/version_nogit.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

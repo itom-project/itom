@@ -79,6 +79,9 @@ namespace ito
         (void*)&ApiFunctions::removed,                    /* [32] */
         (void*)&ApiFunctions::removed,                    /* [33] */
         (void*)&ApiFunctions::getSettingsFile,            /* [34] */
+        (void*)&ApiFunctions::mfilterVersion,             /* [35] */
+        (void*)&ApiFunctions::mfilterAuthor,              /* [36] */
+        (void*)&ApiFunctions::mfilterPluginName,          /* [37] */
         NULL
     };
 
@@ -376,6 +379,75 @@ ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
     return ito::retOk;
 }
 
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal ApiFunctions::mfilterVersion(const QString &name, int &version)
+{
+    if (name.length() < 1)
+    {
+        version = 0;
+        return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toLatin1().data());
+    }
+
+    ito::AddInManager *aim = AddInManagerInst;
+    const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
+    QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
+    if (cfit == flist->end())
+    {
+        version = 0;
+        return ito::RetVal(ito::retError, 0, QObject::tr("Filter not found").toLatin1().data());
+    }
+
+    version = cfit.value()->m_pBasePlugin->getVersion();
+
+    return ito::retOk;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal ApiFunctions::mfilterAuthor(const QString &name, QString &author)
+{
+    if (name.length() < 1)
+    {
+        author = "";
+        return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toLatin1().data());
+    }
+
+    ito::AddInManager *aim = AddInManagerInst;
+    const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
+    QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
+    if (cfit == flist->end())
+    {
+        author = "";
+        return ito::RetVal(ito::retError, 0, QObject::tr("Filter not found").toLatin1().data());
+    }
+
+    author = cfit.value()->m_pBasePlugin->getAuthor();
+
+    return ito::retOk;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal ApiFunctions::mfilterPluginName(const QString &name, QString &pluginName)
+{
+    if (name.length() < 1)
+    {
+        pluginName = "";
+        return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toLatin1().data());
+    }
+
+    ito::AddInManager *aim = AddInManagerInst;
+    const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
+    QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
+    if (cfit == flist->end())
+    {
+        pluginName = "";
+        return ito::RetVal(ito::retError, 0, QObject::tr("Filter not found").toLatin1().data());
+    }
+
+    pluginName = cfit.value()->m_pBasePlugin->objectName();
+
+    return ito::retOk;
+}
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ApiFunctions::maddInGetInitParams(const QString &name, const int pluginType, int *pluginNum, QVector<ito::Param> *&paramsMand, QVector<ito::Param> *&paramsOpt)
