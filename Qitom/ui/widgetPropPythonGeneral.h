@@ -56,6 +56,9 @@ signals:
 public slots:
 
 private slots:
+    void on_rbPyHomeSub_clicked();
+    void on_rbPyHomeSys_clicked();
+    void on_rbPyHomeUse_clicked();
 
 };
 

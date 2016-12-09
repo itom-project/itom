@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>397</width>
-    <height>217</height>
+    <width>386</width>
+    <height>322</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3">
+  <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
@@ -48,18 +48,15 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupPyHome">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="title">
-      <string>User-defined Python home directory</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
+      <string>Pyhton home directory</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -75,6 +72,27 @@
         </property>
         <property name="wordWrap">
          <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="rbPyHomeSub">
+        <property name="text">
+         <string>Subdirectory of itom (...\itom\python3)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="rbPyHomeSys">
+        <property name="text">
+         <string>System information (Registry, PYTHONHOME,...)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="rbPyHomeUse">
+        <property name="text">
+         <string>User defined:</string>
         </property>
        </widget>
       </item>
