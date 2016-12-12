@@ -312,7 +312,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
     {
         if (PythonEngine::instatiated.tryLock(5000))
         {
-            QString pythonSubDir = QCoreApplication::applicationDirPath() + "/python3";
+            QString pythonSubDir = QCoreApplication::applicationDirPath() + QString("/python%1").arg(PY_MAJOR_VERSION);
             //check if an alternative home directory of Python should be set:
             QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
             settings.beginGroup("Python");
@@ -321,7 +321,8 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             if (pythonDirState == -1)
             {
 #ifdef WIN32
-                if (QDir(pythonSubDir).exists())
+                if (QDir(pythonSubDir).exists() && \
+                    QFileInfo(pythonSubDir + QString("/python%1%2.dll").arg(PY_MAJOR_VERSION).arg(PY_MINOR_VERSION)).exists())
                 {
                     pythonDirState = 0;
                 }
