@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>386</width>
-    <height>322</height>
+    <width>381</width>
+    <height>261</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -56,7 +56,7 @@
       </sizepolicy>
      </property>
      <property name="title">
-      <string>Pyhton home directory</string>
+      <string>Python home directory</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -68,7 +68,7 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>If Python could not be properly started since its built-in libraries could not be automatically detected, it is necessary to indicate the home or base directory of Python here (under Windows, this path usually contains the Python executable):</string>
+         <string>Python can only be started properly if its home directory, containing built-in libraries, is automatically detected or manually given. Please choose the right option for finding this directory here (under Windows, the directory usually contains the Python executable):</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
