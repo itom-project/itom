@@ -47,6 +47,7 @@
 #include "factories/plotInfoShapesFactory.h"
 #include "factories/motorAxisControllerFactory.h"
 #include "factories/statusLedFactory.h"
+#include "factories/fontButtonFactory.h"
 
 //------------------------------------------------------------------------------------------------
 ItomWidgetsFactory::ItomWidgetsFactory(QObject *parent)
@@ -68,12 +69,13 @@ ItomWidgetsFactory::ItomWidgetsFactory(QObject *parent)
     widgets.append(new MenuComboBoxFactory(this));
     widgets.append(new ComboBoxFactory(this));
     widgets.append(new CheckableComboBoxFactory(this));
-	widgets.append(new PlotInfoDObjectFactory(this));
-	widgets.append(new PlotInfoMarkerFactory(this));
-	widgets.append(new PlotInfoPickerFactory(this));
-	widgets.append(new PlotInfoShapesFactory(this));
+    widgets.append(new PlotInfoDObjectFactory(this));
+    widgets.append(new PlotInfoMarkerFactory(this));
+    widgets.append(new PlotInfoPickerFactory(this));
+    widgets.append(new PlotInfoShapesFactory(this));
     widgets.append(new MotorAxisControllerFactory(this));
     widgets.append(new StatusLedFactory(this));
+    widgets.append(new FontButtonFactory(this));
 }
 
 //------------------------------------------------------------------------------------------------
