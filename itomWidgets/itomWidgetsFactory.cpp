@@ -25,6 +25,7 @@
 #include "itomWidgetsFactory.h"
 
 #include "factories/rangeSliderFactory.h"
+#include "factories/brushCreatorButtonFactory.h"
 #include "factories/collapsibleGroupBoxFactory.h"
 #include "factories/colorPickerButtonFactory.h"
 #include "factories/doubleRangeSliderFactory.h"
@@ -53,6 +54,7 @@
 ItomWidgetsFactory::ItomWidgetsFactory(QObject *parent)
     : QObject(parent)
 {
+    widgets.append(new brushCreatorButtonFactory(this));
     widgets.append(new CollapsibleGroupBoxFactory(this));
     widgets.append(new ColorPickerButtonFactory(this));
     widgets.append(new DoubleRangeSliderFactory(this));
@@ -69,11 +71,11 @@ ItomWidgetsFactory::ItomWidgetsFactory(QObject *parent)
     widgets.append(new MenuComboBoxFactory(this));
     widgets.append(new ComboBoxFactory(this));
     widgets.append(new CheckableComboBoxFactory(this));
+    widgets.append(new PenCreatorButtonFactory(this));
 	widgets.append(new PlotInfoDObjectFactory(this));
 	widgets.append(new PlotInfoMarkerFactory(this));
 	widgets.append(new PlotInfoPickerFactory(this));
 	widgets.append(new PlotInfoShapesFactory(this));
-    widgets.append(new PenCreatorButtonFactory(this));
     widgets.append(new MotorAxisControllerFactory(this));
     widgets.append(new StatusLedFactory(this));
 }

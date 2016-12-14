@@ -76,6 +76,7 @@ LINK_DIRECTORIES(
 set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/itomWidgetsFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/rangeSliderFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/brushCreatorButtonFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/collapsibleGroupBoxFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/colorPickerButtonFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleRangeSliderFactory.h
@@ -98,8 +99,10 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoShapesFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/motorAxisControllerFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/statusLedFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/brushCreatorDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSpinBox_p.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/penCreatorDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/basePopupWidget_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/menuComboBox_p.h
@@ -118,6 +121,7 @@ set(itomWidgets_Factory_HEADERS
 set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/commonWidgets.h
     ${CMAKE_CURRENT_SOURCE_DIR}/rangeSlider.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/brushCreatorButton.h
     ${CMAKE_CURRENT_SOURCE_DIR}/collapsibleGroupBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleRangeSlider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSlider.h
@@ -132,7 +136,6 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoPicker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoShapes.h
     ${CMAKE_CURRENT_SOURCE_DIR}/penCreatorButton.h
-	${CMAKE_CURRENT_SOURCE_DIR}/penCreatorDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/colorPickerButton.h
     ${CMAKE_CURRENT_SOURCE_DIR}/colorDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/checkableComboBox.h
@@ -173,6 +176,7 @@ set(itomWidgets_rcc
 set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/itomWidgetsFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/rangeSliderFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/brushCreatorButtonFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/collapsibleGroupBoxFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/colorPickerButtonFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/penCreatorButtonFactory.cpp
@@ -198,8 +202,8 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/checkableModelHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/completer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rangeSlider.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/penCreatorButton.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/penCreatorDialog.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/brushCreatorButton.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/brushCreatorDialog.cpp    
     ${CMAKE_CURRENT_SOURCE_DIR}/colorPickerButton.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/colorDialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/collapsibleGroupBox.cpp
@@ -210,6 +214,8 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleRangeWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/sliderWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pathLineEdit.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/penCreatorButton.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/penCreatorDialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/popupWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/basePopupWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/checkableComboBox.cpp
@@ -240,6 +246,7 @@ set(itomWidgets_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/sliderWidget.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/motorAxisController.ui
 	${CMAKE_CURRENT_SOURCE_DIR}/ui/penCreatorDialog.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/brushCreatorDialog.ui
 )
 
 IF (QT5_FOUND)

@@ -21,45 +21,45 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
 
-#ifndef PENCREATORBUTTON_H
-#define PENCREATORBUTTON_H
+#ifndef BRUSHCREATORBUTTON_H
+#define BRUSHCREATORBUTTON_H
 
 #include <QPushButton>
-#include <qpen.h>
+#include <qbrush.h>
 
 #include "commonWidgets.h"
 
-class PenCreatorButtonPrivate;
+class BrushCreatorButtonPrivate;
 
-class ITOMWIDGETS_EXPORT PenCreatorButton : public QPushButton
+class ITOMWIDGETS_EXPORT BrushCreatorButton : public QPushButton
 {
-     Q_OBJECT
+    Q_OBJECT
 
-     Q_PROPERTY(QPen pen READ getPen WRITE setPen)
+        Q_PROPERTY(QBrush brush READ getBrush WRITE setBrush)
 
 public:
-    explicit PenCreatorButton(QWidget* parent = 0);
-    explicit PenCreatorButton(QPen pen, QWidget* parent = 0);
-    ~PenCreatorButton();
+    explicit BrushCreatorButton(QWidget* parent = 0);
+    explicit BrushCreatorButton(QBrush brush, QWidget* parent = 0);
+    ~BrushCreatorButton();
 
     QSize sizeHint() const;
-    QPen getPen() const;
-     
+    QBrush getBrush() const;
+
 protected:
     virtual void paintEvent(QPaintEvent* event);
-    void changePen();
+    void changeBrush();
 
-    QScopedPointer<PenCreatorButtonPrivate> d_ptr;
-protected slots:
+    QScopedPointer<BrushCreatorButtonPrivate> d_ptr;
+    protected slots:
     void onToggled(bool change = true);
-public slots:
+    public slots:
     ///
     ///  Set a new current pen without opening a dialog
-    void setPen(const QPen &pen);
+    void setBrush(const QBrush &brush);
 private:
-        
-       Q_DECLARE_PRIVATE(PenCreatorButton);
-       Q_DISABLE_COPY(PenCreatorButton);
+
+    Q_DECLARE_PRIVATE(BrushCreatorButton);
+    Q_DISABLE_COPY(BrushCreatorButton);
 
 };
 

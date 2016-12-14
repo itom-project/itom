@@ -19,70 +19,70 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
-#include <penCreatorButton.h>
-#include <qpen.h>
+#include <brushCreatorButton.h>
+#include <qbrush.h>
 #include <QStyle>
 #include <QPainter>
 #include <QIcon>
 #include <QStylePainter>
 #include <QStyleOptionButton>
-#include <penCreatorDialog.h>
+#include <brushCreatorDialog.h>
 #include <QDebug>
 
 
-class PenCreatorButtonPrivate
+class BrushCreatorButtonPrivate
 {
-    Q_DECLARE_PUBLIC(PenCreatorButton);
+    Q_DECLARE_PUBLIC(BrushCreatorButton);
 protected:
-    PenCreatorButton* const q_ptr;
+    BrushCreatorButton* const q_ptr;
 public:
-    PenCreatorButtonPrivate(PenCreatorButton& object, QPen inputPen = QPen(QBrush(Qt::black), 2, Qt::SolidLine));
-    QPen pen;
+    BrushCreatorButtonPrivate(BrushCreatorButton& object, QBrush inputBrush = QBrush(Qt::black, Qt::SolidPattern));
+    QBrush brush;
     QIcon m_icon;
     QSize m_iconSizeCache;
     mutable QSize m_sizeHintCache;
 
     void init();
-    PenCreatorDialog *dialog;
+    BrushCreatorDialog *dialog;
 };
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-PenCreatorButtonPrivate::PenCreatorButtonPrivate(PenCreatorButton& object, QPen inputPen)
-: q_ptr(&object),
+BrushCreatorButtonPrivate::BrushCreatorButtonPrivate(BrushCreatorButton& object, QBrush inputBrush)
+    : q_ptr(&object),
     dialog(NULL),
-    pen(inputPen)
+    brush(inputBrush)
 {
 
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-void PenCreatorButtonPrivate::init()
+void BrushCreatorButtonPrivate::init()
 {
-    Q_Q(PenCreatorButton);
+    Q_Q(BrushCreatorButton);
     q->setCheckable(true);
-    QObject::connect(q, SIGNAL(toggled(bool)),q, SLOT(onToggled(bool)));
+    QObject::connect(q, SIGNAL(toggled(bool)), q, SLOT(onToggled(bool)));
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-PenCreatorButton::PenCreatorButton(QWidget* _parent)
+BrushCreatorButton::BrushCreatorButton(QWidget* _parent)
     : QPushButton(_parent),
-    d_ptr(new PenCreatorButtonPrivate(*this))
+    d_ptr(new BrushCreatorButtonPrivate(*this))
 {
-    Q_D(PenCreatorButton);
+    Q_D(BrushCreatorButton);
     d->init();
 
-        
+
 };
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-PenCreatorButton::PenCreatorButton(QPen pen, QWidget* parent) :
+BrushCreatorButton::BrushCreatorButton(QBrush brush, QWidget* parent) :
 QPushButton(parent),
-d_ptr(new PenCreatorButtonPrivate(*this, pen))
+d_ptr(new BrushCreatorButtonPrivate(*this, brush))
 {
-    Q_D(PenCreatorButton);
+    Q_D(BrushCreatorButton);
     d->init();
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-void PenCreatorButton::paintEvent(QPaintEvent* event)
+void BrushCreatorButton::paintEvent(QPaintEvent* event)
 {
-    Q_D(PenCreatorButton);
+    Q_D(BrushCreatorButton);
     QStylePainter p(this);
     QStyleOptionButton option;
     this->initStyleOption(&option);
@@ -99,10 +99,9 @@ void PenCreatorButton::paintEvent(QPaintEvent* event)
         //pix.fill(d->pen.color().isValid() ? palette().button().color() : Qt::transparent);
         pix.fill(Qt::transparent);
         QPainter p(&pix);
-        p.setPen(d->pen);
-        qDebug() << d->pen.brush().color();
-       
-        p.drawLine(2, 2 + ((pix.height() - 5) / 2), pix.width()-2, 2 + ((pix.height() - 5) / 2));
+        //p.setPen(d->pen);
+        p.setBrush(d->brush);
+        p.drawRect(2, 2, pix.width() - 4, pix.height()-4);
         d->m_icon = QIcon(pix);
         d->m_iconSizeCache = desiredIconSize;
     }
@@ -112,43 +111,43 @@ void PenCreatorButton::paintEvent(QPaintEvent* event)
     p.drawControl(QStyle::CE_PushButton, option);
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-void PenCreatorButton::onToggled(bool change/*= true*/)
+void BrushCreatorButton::onToggled(bool change/*= true*/)
 {
     if (change)
     {
-        changePen();
+        changeBrush();
         setChecked(false);
     }
 
 }
 
 //-----------------------------------------------------------------------------
-void PenCreatorButton::setPen(const QPen &pen)
+void BrushCreatorButton::setBrush(const QBrush &brush)
 {
-    Q_D(PenCreatorButton);
+    Q_D(BrushCreatorButton);
 
-    if (d->pen != pen)
+    if (d->brush != brush)
     {
-        d->pen = pen;
+        d->brush = brush;
         d->m_icon = QIcon(); //invalidate icon to be recreated in computeButtonIcon
     }
 }
 
 //-----------------------------------------------------------------------------
-QPen PenCreatorButton::getPen() const
+QBrush BrushCreatorButton::getBrush() const
 {
-    Q_D(const PenCreatorButton);
-    return d->pen;
+    Q_D(const BrushCreatorButton);
+    return d->brush;
 }
 
 
 //-----------------------------------------------------------------------------
-void PenCreatorButton::changePen()
+void BrushCreatorButton::changeBrush()
 {
-    Q_D(PenCreatorButton);
-    if(!d->dialog)
-    { 
-        d->dialog = new PenCreatorDialog(d->pen,this);
+    Q_D(BrushCreatorButton);
+    if (!d->dialog)
+    {
+        d->dialog = new BrushCreatorDialog(d->brush, this);
     }
     else
     {
@@ -158,13 +157,13 @@ void PenCreatorButton::changePen()
     {
         d->m_icon = QIcon();
     }
-    
+
 
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-QSize PenCreatorButton::sizeHint() const
+QSize BrushCreatorButton::sizeHint() const
 {
-    Q_D(const PenCreatorButton);
+    Q_D(const BrushCreatorButton);
     if (d->m_sizeHintCache.isValid())
     {
         return d->m_sizeHintCache;
@@ -185,12 +184,12 @@ QSize PenCreatorButton::sizeHint() const
     d->m_sizeHintCache = this->style()->sizeFromContents(
         QStyle::CT_ToolButton, &opt, opt.iconSize, this).
         expandedTo(QApplication::globalStrut());
-    
+
     return d->m_sizeHintCache;
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-PenCreatorButton::~PenCreatorButton()
+BrushCreatorButton::~BrushCreatorButton()
 {
 
 }

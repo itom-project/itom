@@ -20,52 +20,38 @@ You should have received a copy of the GNU General Public License
 along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#ifndef BRUSHCREATORBUTTONFACTORY_H
+#define BRUSHCREATORBUTTONFACTORY_H
 
-#ifndef PENCREATORBUTTON_H
-#define PENCREATORBUTTON_H
+#include "qglobal.h"
+#if QT_VERSION < 0x050500 //hex-code must be used since Qt4 moc process does not understand QT_VERSION_CHECK(5,5,0)
+#include <QtDesigner/QDesignerCustomWidgetInterface>
+#else
+#include <QtUiPlugin/QDesignerCustomWidgetInterface>
+#endif
 
-#include <QPushButton>
-#include <qpen.h>
-
-#include "commonWidgets.h"
-
-class PenCreatorButtonPrivate;
-
-class ITOMWIDGETS_EXPORT PenCreatorButton : public QPushButton
+class brushCreatorButtonFactory : public QObject, public QDesignerCustomWidgetInterface
 {
-     Q_OBJECT
-
-     Q_PROPERTY(QPen pen READ getPen WRITE setPen)
+    Q_OBJECT
+        Q_INTERFACES(QDesignerCustomWidgetInterface)
 
 public:
-    explicit PenCreatorButton(QWidget* parent = 0);
-    explicit PenCreatorButton(QPen pen, QWidget* parent = 0);
-    ~PenCreatorButton();
+    brushCreatorButtonFactory(QObject *parent = 0);
 
-    QSize sizeHint() const;
-    QPen getPen() const;
-     
-protected:
-    virtual void paintEvent(QPaintEvent* event);
-    void changePen();
+    bool isContainer() const;
+    bool isInitialized() const { return initialized; }
+    QIcon icon() const;
+    QString domXml() const;
+    QString group() const;
+    QString includeFile() const;
+    QString name() const;
+    QString toolTip() const;
+    QString whatsThis() const;
+    QWidget *createWidget(QWidget *parent);
+    void initialize(QDesignerFormEditorInterface *core);
 
-    QScopedPointer<PenCreatorButtonPrivate> d_ptr;
-protected slots:
-    void onToggled(bool change = true);
-public slots:
-    ///
-    ///  Set a new current pen without opening a dialog
-    void setPen(const QPen &pen);
 private:
-        
-       Q_DECLARE_PRIVATE(PenCreatorButton);
-       Q_DISABLE_COPY(PenCreatorButton);
-
+    bool initialized;
 };
-
-
-
-
-
 
 #endif

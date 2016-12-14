@@ -22,75 +22,75 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 
 #include <QtCore/QtPlugin>
-#include "penCreatorButtonFactory.h"
-#include "penCreatorButton.h"
+#include "brushCreatorButtonFactory.h"
+#include "brushCreatorButton.h"
 
 
 // --------------------------------------------------------------------------
-PenCreatorButtonFactory::PenCreatorButtonFactory(QObject *_parent)
+brushCreatorButtonFactory::brushCreatorButtonFactory(QObject *_parent)
     : QObject(_parent)
 {
 }
 
 // --------------------------------------------------------------------------
-QWidget *PenCreatorButtonFactory::createWidget(QWidget *_parent)
+QWidget *brushCreatorButtonFactory::createWidget(QWidget *_parent)
 {
-    PenCreatorButton* widget = new PenCreatorButton(_parent);
+    BrushCreatorButton* widget = new BrushCreatorButton(_parent);
     return widget;
 }
 
 // --------------------------------------------------------------------------
-QString PenCreatorButtonFactory::domXml() const
+QString brushCreatorButtonFactory::domXml() const
 {
-    return "<widget class=\"PenCreatorButton\" \
-                name=\"PenCreatorButton\">\n"
-             "</widget>\n";
+    return "<widget class=\"BrushCreatorButton\" \
+                           name=\"BrushCreatorButton\">\n"
+                           "</widget>\n";
 }
 
 // --------------------------------------------------------------------------
-QIcon PenCreatorButtonFactory::icon() const
+QIcon brushCreatorButtonFactory::icon() const
 {
-    return QIcon(":/icons/pen.png");
+    return QIcon(":/icons/bucket.png");
 }
 
 // --------------------------------------------------------------------------
-QString PenCreatorButtonFactory::includeFile() const
+QString brushCreatorButtonFactory::includeFile() const
 {
-    return "penCreatorButton.h";
+    return "brushCreatorButton.h";
 }
 
 // --------------------------------------------------------------------------
-bool PenCreatorButtonFactory::isContainer() const
+bool brushCreatorButtonFactory::isContainer() const
 {
     return false;
 }
 
 // --------------------------------------------------------------------------
-QString PenCreatorButtonFactory::name() const
+QString brushCreatorButtonFactory::name() const
 {
-    return "PenCreatorButton";
+    return "BrushCreatorButton";
 }
 
 //-----------------------------------------------------------------------------
-QString PenCreatorButtonFactory::group() const
+QString brushCreatorButtonFactory::group() const
 {
     return "itom [widgets]";
 }
 
 //-----------------------------------------------------------------------------
-QString PenCreatorButtonFactory::toolTip() const
+QString brushCreatorButtonFactory::toolTip() const
 {
     return QString();
 }
 
 //-----------------------------------------------------------------------------
-QString PenCreatorButtonFactory::whatsThis() const
+QString brushCreatorButtonFactory::whatsThis() const
 {
     return QString();
 }
 
 //-----------------------------------------------------------------------------
-void PenCreatorButtonFactory::initialize(QDesignerFormEditorInterface *formEditor)
+void brushCreatorButtonFactory::initialize(QDesignerFormEditorInterface *formEditor)
 {
     Q_UNUSED(formEditor);
     if (initialized)

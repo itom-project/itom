@@ -33,7 +33,7 @@ struct StaticQtMetaObject : public QObject
 };
 #endif
 
-PenCreatorDialog::PenCreatorDialog(QPen &inputPen,QWidget *parent) :
+PenCreatorDialog::PenCreatorDialog(QPen &inputPen, QWidget *parent) :
 QDialog(parent),
 pen(inputPen)
 {

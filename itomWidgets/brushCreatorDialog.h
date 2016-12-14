@@ -19,53 +19,31 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
+#ifndef BRUSHCREATORDIALOG_H
+#define BRUSHCREATORDIALOG_H
 
+#include"ui_brushCreatorDialog.h"
+#include<QDialog>
+#include<qbrush.h>
 
-#ifndef PENCREATORBUTTON_H
-#define PENCREATORBUTTON_H
-
-#include <QPushButton>
-#include <qpen.h>
-
-#include "commonWidgets.h"
-
-class PenCreatorButtonPrivate;
-
-class ITOMWIDGETS_EXPORT PenCreatorButton : public QPushButton
+class BrushCreatorDialog : public QDialog
 {
-     Q_OBJECT
-
-     Q_PROPERTY(QPen pen READ getPen WRITE setPen)
+    Q_OBJECT
 
 public:
-    explicit PenCreatorButton(QWidget* parent = 0);
-    explicit PenCreatorButton(QPen pen, QWidget* parent = 0);
-    ~PenCreatorButton();
+    BrushCreatorDialog(QBrush &inputBrush, QWidget *parent = NULL);
+    ~BrushCreatorDialog();
+    void setBrush(const QBrush &brush);
+    void synchronizeGUI();
+    QBrush getBrush();
 
-    QSize sizeHint() const;
-    QPen getPen() const;
-     
-protected:
-    virtual void paintEvent(QPaintEvent* event);
-    void changePen();
-
-    QScopedPointer<PenCreatorButtonPrivate> d_ptr;
-protected slots:
-    void onToggled(bool change = true);
-public slots:
-    ///
-    ///  Set a new current pen without opening a dialog
-    void setPen(const QPen &pen);
 private:
-        
-       Q_DECLARE_PRIVATE(PenCreatorButton);
-       Q_DISABLE_COPY(PenCreatorButton);
+    Ui::brushCreatorDialog ui;
+    QBrush &brush;
+
+    void updateBrush();
+    private slots:
+    void on_buttonBox_clicked(QAbstractButton* btn);
 
 };
-
-
-
-
-
-
 #endif

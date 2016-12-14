@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
   <qresource>
+    <file>icons/bucket.png</file>
     <file>icons/combobox.png</file>
     <file>icons/doublespinbox.png</file>
     <file>icons/groupbox.png</file>
@@ -8,6 +9,7 @@
     <file>icons/hslider.png</file>
     <file>icons/listbox.png</file>
     <file>icons/listview.png</file>
+    <file>icons/pen.png</file>
     <file>icons/pushbutton.png</file>
     <file>icons/sliderspinbox.png</file>
     <file>icons/rangespinbox.png</file>
