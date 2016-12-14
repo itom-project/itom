@@ -4186,7 +4186,7 @@ Parameters \n\
 name : {string} \n\
     name of the new palette. \n\
 entries : {dict} \n\
-    dictionary with two floating type entries defining the stop coordiate and its rga value.\n\
+    dictionary with two floating type entries defining the stop coordiate and its rgba32 value.\n\
 \n\
 See Also \n\
 --------- \n\
@@ -4313,13 +4313,27 @@ PyObject* PythonItom::PySetPalette(PyObject* pSelf, PyObject* pArgs)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(getPalette_doc,"getPalette(name) -> get the palette for color bars defined by name.\n\
+PyDoc_STRVAR(getPalette_doc,"getPalette(name) -> get the color palette used in color bars defined by name.\n\
 \n\
+If a color palette with this name is given, a tuple is returned whose length corresponds \n\
+to the number of color stops. Every item is a tuple with two elements, where the first element \n\
+denotes the normalized index position of the color stop [0,1] and the second element is of type itom.rgba32 \n\
+and indicates the color at the stop position. \n\
 \n\
 Parameters \n\
 ----------- \n\
 name : {string} \n\
     name of the new palette. \n\
+\n\
+Returns \n\
+-------- \n\
+palette : {tuple} \n\
+    Color stop tuple of desired color palette \n\
+\n\
+Raises \n\
+----------- \n\
+RuntimeError : \n\
+    if no color palette with the given name is available. \n\
 \n\
 See Also \n\
 --------- \n\
