@@ -76,7 +76,7 @@ ItomWidgetsFactory::ItomWidgetsFactory(QObject *parent)
     widgets.append(new PlotInfoDObjectFactory(this));
     widgets.append(new PlotInfoMarkerFactory(this));
     widgets.append(new PlotInfoPickerFactory(this));
-     widgets.append(new PlotInfoShapesFactory(this));
+    widgets.append(new PlotInfoShapesFactory(this));
     widgets.append(new MotorAxisControllerFactory(this));
     widgets.append(new StatusLedFactory(this));
     widgets.append(new FontButtonFactory(this));
