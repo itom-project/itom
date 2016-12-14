@@ -52,7 +52,8 @@ CallStackDockWidget::CallStackDockWidget(const QString &title, const QString &ob
     m_table->setColumnCount(3);
     m_table->setSortingEnabled(false);
     m_table->setTextElideMode(Qt::ElideLeft);
-    m_table->verticalHeader()->setDefaultSectionSize(20);
+
+	m_table->verticalHeader()->setDefaultSectionSize(m_table->verticalHeader()->minimumSectionSize());
     m_table->horizontalHeader()->setStretchLastSection(true);
     m_table->setAlternatingRowColors(true);
     m_table->setCornerButtonEnabled(false);

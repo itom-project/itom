@@ -39,6 +39,12 @@ WidgetPropPythonGeneral::WidgetPropPythonGeneral(QWidget *parent) :
     AbstractPropertyPageWidget(parent)
 {
     ui.setupUi(this);
+
+#ifdef WIN32
+    ui.rbPyHomeSub->setVisible(true);
+#else
+    ui.rbPyHomeSub->setVisible(false);
+#endif
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -56,17 +62,21 @@ void WidgetPropPythonGeneral::readSettings()
     int index = settings.value("saveScriptStateBeforeExecution", 0).toInt();
     ui.comboSaveScriptBeforeExecution->setCurrentIndex(index);
 
+    int pythonDirState = settings.value("pyDirState", -1).toInt();
+    ui.rbPyHomeSub->setChecked(pythonDirState == 0);
+    ui.rbPyHomeSys->setChecked(pythonDirState == 1);
+    ui.rbPyHomeUse->setChecked(pythonDirState == 2);
+
     QString pythonHomeDirectory = settings.value("pyHome", "").toString();
     if (pythonHomeDirectory == "" || QDir(pythonHomeDirectory).exists() == false)
     {
-        ui.groupPyHome->setChecked(false);
         ui.pathLineEditPyHome->setCurrentPath("");
     }
     else
     {
-        ui.groupPyHome->setChecked(true);
         ui.pathLineEditPyHome->setCurrentPath(pythonHomeDirectory);
     }
+    ui.pathLineEditPyHome->setEnabled(pythonDirState == 2);
 
     settings.endGroup();
 }
@@ -80,16 +90,42 @@ void WidgetPropPythonGeneral::writeSettings()
 
     settings.setValue("saveScriptStateBeforeExecution", ui.comboSaveScriptBeforeExecution->currentIndex());
 
-    if (ui.groupPyHome->isChecked())
+    int pythonDirState = -1;
+    if (ui.rbPyHomeSub->isChecked())
     {
-        settings.setValue("pyHome", ui.pathLineEditPyHome->currentPath());
+        pythonDirState = 0;
     }
-    else
+    else if (ui.rbPyHomeSys->isChecked())
     {
-        settings.setValue("pyHome", "");
+        pythonDirState = 1;
+    }
+    else if (ui.rbPyHomeUse->isChecked())
+    {
+        pythonDirState = 2;
     }
 
+    settings.setValue("pyDirState", pythonDirState);
+    settings.setValue("pyHome", ui.pathLineEditPyHome->currentPath());
+
     settings.endGroup();
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropPythonGeneral::on_rbPyHomeSub_clicked()
+{
+    ui.pathLineEditPyHome->setEnabled(false);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropPythonGeneral::on_rbPyHomeSys_clicked()
+{
+    ui.pathLineEditPyHome->setEnabled(false);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void WidgetPropPythonGeneral::on_rbPyHomeUse_clicked()
+{
+    ui.pathLineEditPyHome->setEnabled(true);
 }
 
 } //end namespace ito

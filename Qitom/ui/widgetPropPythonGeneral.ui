@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>397</width>
-    <height>217</height>
+    <width>381</width>
+    <height>261</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3">
+  <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
     <widget class="QLabel" name="label">
      <property name="text">
@@ -48,18 +48,15 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupPyHome">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
      <property name="title">
-      <string>User-defined Python home directory</string>
-     </property>
-     <property name="checkable">
-      <bool>true</bool>
+      <string>Python home directory</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -71,10 +68,31 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>If Python could not be properly started since its built-in libraries could not be automatically detected, it is necessary to indicate the home or base directory of Python here (under Windows, this path usually contains the Python executable):</string>
+         <string>Python can only be started properly if its home directory, containing built-in libraries, is automatically detected or manually given. Please choose the right option for finding this directory here (under Windows, the directory usually contains the Python executable):</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="rbPyHomeSub">
+        <property name="text">
+         <string>Subdirectory of itom (...\itom\python3)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="rbPyHomeSys">
+        <property name="text">
+         <string>System information (Registry, PYTHONHOME,...)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="rbPyHomeUse">
+        <property name="text">
+         <string>User defined:</string>
         </property>
        </widget>
       </item>

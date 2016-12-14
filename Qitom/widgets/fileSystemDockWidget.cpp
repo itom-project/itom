@@ -500,7 +500,7 @@ void FileSystemDockWidget::fillFilterList()
 {
     int defFilterNumber = 0;
     int cnt = 0;
-    QString itomFiles = tr("Itom Files");
+    QString itomFiles = IOHelper::getAllItomFilesName();
     QString filters = IOHelper::getFileFilters(IOHelper::IOFilters(IOHelper::IOInput | IOHelper::IOOutput | IOHelper::IOPlugin | IOHelper::IOAllFiles | IOHelper::IOMimeAll));
     QStringList fList = filters.split(";;");
     defaultFilterPatterns.clear();
@@ -509,7 +509,7 @@ void FileSystemDockWidget::fillFilterList()
 
     foreach(const QString &s, fList)
     {
-        m_pCmbFilter->addItem(s);
+        m_pCmbFilter->addItem(s, s);
 
         if (regExp.indexIn(s) >= 0)
         {

@@ -24,6 +24,15 @@ Please execute the following commands in the command line to get the dependencie
     sudo apt-get install libopencv-dev
     sudo apt-get install libv4l-dev #this is optional to get the video for linux drivers
     sudo apt-get install xsdcxx libxerces-c3.1 libxerces-c-dev #this is optional to being able to compile the x3p plugin
+    
+In almost one line, the packages above are equal to:
+    
+.. code-block:: bash
+    
+    sudo apt-get install cmake cmake-gui git python3 python3-dev python3-numpy python3-pip libqt5webkit5 libqt5webkit5-dev libqt5widgets5 libqt5xml5 libqt5svg5 libqt5svg5-dev libqt5gui5 libqt5designer5 libqt5concurrent5 libqt5scintilla2-dev qttools5-dev-tools qttools5-dev
+    sudo apt-get update && sudo apt-get install build-essential
+    sudo apt-get install libopencv-dev libv4l-dev xsdcxx libxerces-c3.1 libxerces-c-dev
+
 
 If you want to compile |itom| with support from the Point Cloud Library, also get the following packages:
 

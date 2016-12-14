@@ -143,7 +143,7 @@ of shapes that replace all existing shapes and are displayed in the coordinate s
 example, a rectangle, a line and a circle are placed onto the canvas (the dataObject has got a scaling factor of *0.1* as well as an offset of *100* in both the x- and y-axis):
 
 .. code-block:: python
-    :lineos:
+    :linenos:
     
     data = dataObject.zeros([200,200],'uint8')
     data.axisScales=(0.1,0.1)

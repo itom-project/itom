@@ -71,7 +71,7 @@ DialogPipManager::DialogPipManager(QWidget *parent /*= NULL*/, bool standalone /
         ui.tablePackages->horizontalHeader()->setStretchLastSection(true);
         ui.tablePackages->horizontalHeader()->setHighlightSections(false);
         ui.tablePackages->verticalHeader()->setVisible(false);
-        ui.tablePackages->verticalHeader()->setDefaultSectionSize(17);
+        ui.tablePackages->verticalHeader()->setDefaultSectionSize(ui.tablePackages->verticalHeader()->minimumSectionSize());
         ui.tablePackages->setSelectionBehavior(QAbstractItemView::SelectRows);
         ui.tablePackages->setSelectionMode(QAbstractItemView::SingleSelection);
         ui.tablePackages->setColumnWidth(1, 50);
