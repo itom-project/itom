@@ -182,7 +182,8 @@ AddInManagerPrivate::AddInManagerPrivate() :
     m_timeOutGeneral(5000),
     m_pQCoreApp(NULL)
 {
-
+    //connect(&AddInManagerPrivate::m_pAddInManagerPrivate->m_deadPluginTimer, SIGNAL(timeout()), &AddInManagerPrivate::m_pAddInManagerPrivate, SLOT((closeDeadPlugins())));
+    connect(&this->m_deadPluginTimer, SIGNAL(timeout()), this, SLOT(closeDeadPlugins()));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2134,8 +2135,6 @@ AddInManager::AddInManager(QString itomSettingsFile, void **apiFuncsGraph, QObje
     AddInManagerPrivate::m_pAddInManagerPrivate->m_deadPlugins.clear();
 
     AddInManagerPrivate::m_pAddInManagerPrivate->propertiesChanged();
-
-    connect(&AddInManagerPrivate::m_pAddInManagerPrivate->m_deadPluginTimer, SIGNAL(timeout()), this, SLOT(closeDeadPlugins()));
 
     AddInManagerPrivate::m_pAddInManagerPrivate->m_algoInterfaceValidator = new AlgoInterfaceValidator(retValue);
 
