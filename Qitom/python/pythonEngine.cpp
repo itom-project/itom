@@ -307,20 +307,79 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 
     readSettings();
 
-    
-
     RetVal tretVal(retOk);
     if (!m_started)
     {
         if (PythonEngine::instatiated.tryLock(5000))
         {
+            QString pythonSubDir = QCoreApplication::applicationDirPath() + QString("/python%1").arg(PY_MAJOR_VERSION);
             //check if an alternative home directory of Python should be set:
             QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
             settings.beginGroup("Python");
-            QString pythonHomeDirectory = settings.value("pyHome", "").toString();
+            QString pythonHomeUserDirectory = settings.value("pyHome", "").toString();
+            int pythonDirState = settings.value("pyDirState", -1).toInt();
+            if (pythonDirState == -1)
+            {
+#ifdef WIN32
+                if (QDir(pythonSubDir).exists() && \
+                    QFileInfo(pythonSubDir + QString("/python%1%2.dll").arg(PY_MAJOR_VERSION).arg(PY_MINOR_VERSION)).exists())
+                {
+                    pythonDirState = 0;
+                }
+                else
+                {
+                    pythonDirState = 1;
+                }
+#else
+                pythonDirState = 1;
+#endif
+                settings.setValue("pyDirState", pythonDirState);
+            }
+
             settings.endGroup();
 
-            if (pythonHomeDirectory != "")
+            QString pythonDir = "";
+            if (pythonDirState == 0)
+            {
+                if (QDir(pythonSubDir).exists())
+                {
+                    pythonDir = pythonSubDir;
+                }
+                else
+                {
+                    (*retValue) += RetVal::format(retError, 0, tr("The itom subdirectory of Python '%s' is not existing.\nPlease change setting in the property dialog of itom.").toLatin1().data(),
+                        pythonSubDir.toLatin1().data());
+                    return;
+                }
+            }
+            else if (pythonDirState == 2)
+            {
+                if (QDir(pythonHomeUserDirectory).exists())
+                {
+                    pythonDir = pythonHomeUserDirectory;
+                }
+                else
+                {
+                    (*retValue) += RetVal::format(retError, 0, tr("Settings value Python::pyHome has not been set as Python Home directory since it does not exist:  %s").toLatin1().data(),
+                        pythonHomeUserDirectory.toLatin1().data());
+                    return;
+                }
+            }
+
+            if (pythonDir != "")
+            {
+                //the python home path given to Py_SetPythonHome must be persistent for the whole Python session
+#if PY_VERSION_HEX < 0x03050000
+                m_pUserDefinedPythonHome = (wchar_t*)PyMem_RawMalloc((pythonDir.size() + 10) * sizeof(wchar_t));
+                memset(m_pUserDefinedPythonHome, 0, (pythonDir.size() + 10) * sizeof(wchar_t));
+                pythonDir.toWCharArray(m_pUserDefinedPythonHome);
+#else
+                m_pUserDefinedPythonHome = Py_DecodeLocale(pythonHomeUserDirectory.toLatin1().data(), NULL);
+#endif
+                Py_SetPythonHome(m_pUserDefinedPythonHome);
+            }
+
+/*            if (pythonHomeDirectory != "")
             {
                 if (QDir(pythonHomeDirectory).exists())
                 {
@@ -338,7 +397,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 {
                     qDebug() << "Settings value Python::pyHome has not been set as Python Home directory since it does not exist: " << pythonHomeDirectory;
                 }
-            }
+            }*/
 
             //read directory values from Python
             qDebug() << "Py_GetPythonHome:" << QString::fromWCharArray(Py_GetPythonHome());
