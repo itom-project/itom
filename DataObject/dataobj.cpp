@@ -34,7 +34,8 @@
 #include <map>
 
 #ifdef USEOPENMP
-#define USEOMP 1
+// disabled due to application hang on closing when using AddInManager dll
+#define USEOMP 0
 #else
 #define USEOMP 0
 #endif
