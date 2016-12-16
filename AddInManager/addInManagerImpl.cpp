@@ -84,7 +84,7 @@ Q_DECLARE_METATYPE(ito::DataObject)
 namespace ito
 {
 
-class AddInManagerPrivate : public QObject 
+class AddInManagerPrivate : public QObject
 {
     Q_OBJECT
 
@@ -1801,15 +1801,18 @@ const ito::RetVal AddInManagerPrivate::closeAddIn(AddInBase *addIn, ItomSharedSe
             }
 
             waitCond = new ItomSharedSemaphore();
-            Qt::ConnectionType conType = (QApplication::instance() != NULL) ? Qt::AutoConnection : Qt::DirectConnection;
+            // this a (temporary?) workaround for application hanging on closing, using addInManager dll 
+            Qt::ConnectionType conType = (QApplication::instance() != NULL && !QApplication::hasPendingEvents()) ? Qt::AutoConnection : Qt::DirectConnection;
             QMetaObject::invokeMethod(addIn, "close", conType, Q_ARG(ItomSharedSemaphore*, waitCond));
 
+//            while (!waitCond->waitAndProcessEvents(AddInManagerPrivate::m_pAddInManagerPrivate->m_timeOutInitClose))
             while (waitCond->wait(AddInManagerPrivate::m_pAddInManagerPrivate->m_timeOutInitClose) == false && !timeout)
             {
                 if (addIn->isAlive() == 0)
                 {
-                    timeout = true;
                     retval += ito::RetVal(ito::retError, 0, tr("timeout while closing plugin").toLatin1().data());
+                    timeout = true;
+                    break;
                 }
             }
         }
@@ -1822,7 +1825,9 @@ const ito::RetVal AddInManagerPrivate::closeAddIn(AddInBase *addIn, ItomSharedSe
                 if (aib->getCallInitInNewThread())
                 {
                     ItomSharedSemaphoreLocker moveToThreadLocker(new ItomSharedSemaphore());
-                    if (QMetaObject::invokeMethod(addIn, "moveBackToApplicationThread", Q_ARG(ItomSharedSemaphore*, moveToThreadLocker.getSemaphore())))
+                    // this a (temporary?) workaround for application hanging on closing, using addInManager dll 
+                    Qt::ConnectionType conType = (QApplication::instance() != NULL && !QApplication::hasPendingEvents()) ? Qt::AutoConnection : Qt::DirectConnection;
+                    if (QMetaObject::invokeMethod(addIn, "moveBackToApplicationThread", conType, Q_ARG(ItomSharedSemaphore*, moveToThreadLocker.getSemaphore())))
                     {
                         if (moveToThreadLocker->wait(AddInManagerPrivate::m_pAddInManagerPrivate->m_timeOutInitClose) == false)
                         {
