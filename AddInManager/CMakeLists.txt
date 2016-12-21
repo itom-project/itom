@@ -33,13 +33,13 @@ SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOUR
 include("../ItomBuildMacros.cmake")
 
 IF(BUILD_WITH_PCL)
-	find_package(ITOM_SDK COMPONENTS dataobject pointcloud itomCommonLib itomCommonQtLib REQUIRED)
+	#find_package(ITOM_SDK COMPONENTS dataobject pointcloud itomCommonLib itomCommonQtLib REQUIRED)
 	find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
 	ADD_DEFINITIONS(-DUSEPCL)
 ELSE(BUILD_WITH_PCL)
-	find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
+	#find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
 ENDIF(BUILD_WITH_PCL)
-include("${ITOM_SDK_DIR}/ItomBuildMacros.cmake")
+include("../ItomBuildMacros.cmake")
 
 #at first, get the available Qt version
 FIND_PACKAGE_QT(ON Core)
@@ -64,14 +64,14 @@ ENDIF (DEFINED CMAKE_BUILD_TYPE)
 INCLUDE_DIRECTORIES( 
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${ITOM_SDK_INCLUDE_DIRS}
+#    ${ITOM_SDK_INCLUDE_DIRS}
     ${Qt5Widgets_INCLUDE_DIRS}
     ${OpenCV_DIR}/include
     ${PCL_INCLUDE_DIRS}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}
-	${ITOM_SDK_INCLUDE_DIR}/common
-	${ITOM_SDK_INCLUDE_DIR}/DataObject
-	${ITOM_SDK_INCLUDE_DIR}/PointCloud
+	../common
+	../DataObject
+	../PointCloud
 )
 
 LINK_DIRECTORIES(
@@ -121,7 +121,7 @@ file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${lib_SOURCES} ${lib_HEADERS} ${lib_HEADERS_MOC} ${lib_UI_MOC} ${lib_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
 
 IF(BUILD_ITOMLIBS_SHARED)
-    TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${PCL_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES})
+    TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${PCL_LIBRARIES} dataobject itomCommonLib itomCommonQtLib ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES})
 ENDIF(BUILD_ITOMLIBS_SHARED)
 if (QT5_FOUND)
     qt5_use_modules(${target_name} ${QT_COMPONENTS}) #special command for Qt5
