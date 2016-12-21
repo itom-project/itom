@@ -25,4 +25,4 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#define COMMON_VER_STRING "1.7.0.0"
+#define COMMON_VER_STRING "1.8.0.0"

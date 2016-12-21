@@ -305,8 +305,26 @@ namespace ito
                 m_info = info;
             }
 
-            inline const ParamMeta* getMeta(void) const { return m_pMeta; } //!< returns const-pointer to meta-information instance or NULL if not available
-            inline ParamMeta* getMeta(void) { return m_pMeta; }                //!< returns pointer to meta-information instance or NULL if not available
+            inline const ParamMeta* getMeta(void) const { return m_pMeta; }  //!< returns const-pointer to meta-information instance or NULL if not available. Cast this pointer to the right class of the parameter.
+            inline ParamMeta* getMeta(void) { return m_pMeta; }              //!< returns pointer to meta-information instance or NULL if not available. Cast this pointer to the right class of the parameter.
+
+			//!< returns const-pointer to meta-information instance casted to 'const _Tp*' or NULL if not available or cast failed.
+			/*
+			Example: intParam.getMetaT<ito::IntMeta>();
+			*/
+			template<typename _Tp> inline const _Tp* getMetaT(void) const 
+			{ 
+				return static_cast<const _Tp*>(m_pMeta);
+			}  
+
+			//!< returns pointer to meta-information instance casted to '_Tp*' or NULL if not available or cast failed.
+			/*
+			Example: intParam.getMetaT<ito::IntMeta>();
+			*/
+			template<typename _Tp> inline _Tp* getMetaT(void)
+			{
+				return static_cast<_Tp*>(m_pMeta);
+			}
 
             //! sets a new ParamMeta-instance as meta information for this Param
             /*!
