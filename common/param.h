@@ -86,6 +86,7 @@ namespace ito
             Readonly        = 0x020000, // this flag is not used inside Param but you can check for it
             In              = 0x040000,
             Out             = 0x080000,
+			NotAvailable    = 0x100000,
 
             //type (bit 1-16)
             Pointer         = 0x000001,

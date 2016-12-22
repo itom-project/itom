@@ -304,9 +304,11 @@ namespace ito
             virtual ~StringMeta();
 
             inline tType getStringType() const { return m_stringType; } //!< returns the type how strings in list should be considered. \sa tType
+			void setStringType(tType type);                             //!< sets the type how strings in pattern list should be considered. \sa tType
             inline int getLen() const { return m_len; }                 //!< returns the number of string elements in meta information class.
             const char* getString(int idx = 0) const;                   //!< returns string from list at index position or NULL, if index is out of range.
             bool addItem(const char *val);                              //!< adds another element to the list of patterns.
+			void clearItems();                                          //!< clear all elements from the pattern list.
             StringMeta & operator += (const char *val);                 //!< add another pattern string to the list of patterns.
 
         private:
