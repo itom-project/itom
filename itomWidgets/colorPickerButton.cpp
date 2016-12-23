@@ -180,7 +180,6 @@ void ColorPickerButton::onToggled(bool change)
     this->setChecked(false);
     }
 }
-
 //-----------------------------------------------------------------------------
 void ColorPickerButton::setDisplayColorName(bool displayColorName)
 {
