@@ -254,6 +254,12 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
+    StringMeta & StringMeta::operator = (const StringMeta &rhs)
+    {
+        return StringMeta(rhs);
+    }
+
+    //---------------------------------------------------------------------------------
     const char* StringMeta::getString(int idx /*= 0*/) const 
     { 
         return (idx >= m_len) ? NULL : m_val[idx]; 

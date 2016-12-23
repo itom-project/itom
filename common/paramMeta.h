@@ -308,6 +308,7 @@ namespace ito
             const char* getString(int idx = 0) const;                   //!< returns string from list at index position or NULL, if index is out of range.
             bool addItem(const char *val);                              //!< adds another element to the list of patterns.
             StringMeta & operator += (const char *val);                 //!< add another pattern string to the list of patterns.
+            StringMeta & operator = (const StringMeta& rhs);
 
         private:
             tType m_stringType;
