@@ -297,7 +297,9 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
     values["values"] = QStringList();
     values["description"] = QStringList();
     values["readwrite"] = QStringList();
+	values["available"] = QStringList();
     bool readonly;
+	bool available;
     const ito::ParamMeta *meta = NULL;
 
     PyObject *pVector = PyTuple_New( params->size() ); // new reference
@@ -322,6 +324,17 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                 values["readwrite"].append("rw");
                 readonly = false;
             }
+
+			if (p.getFlags() & ito::ParamBase::NotAvailable)
+			{
+				values["available"].append("false");
+				available = false;
+			}
+			else
+			{
+				values["available"].append("true");
+				available = true;
+			}
 
             switch(p.getType())
             {
@@ -428,6 +441,7 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
             Py_DECREF(item);
 
             PyDict_SetItemString(p_pyLine, "readonly", readonly ? Py_True : Py_False);
+			PyDict_SetItemString(p_pyLine, "available", available ? Py_True : Py_False);
 
             if (addInfos)
             {
@@ -443,267 +457,273 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
                     values["description"].append("<no description>");
                 }
 
-                switch(p.getType())
-                {
-                    case ito::ParamBase::Char & ito::paramTypeMask:
-                    case ito::ParamBase::Int & ito::paramTypeMask:
-                        {
-                        const ito::IntMeta *intMeta = static_cast<const ito::IntMeta*>(meta);
-                        int mi, ma, step;
-                        if (intMeta)
-                        {
-                            mi = intMeta->getMin();
-                            ma = intMeta->getMax();
-                            step = intMeta->getStepSize();
-                        }
-                        else
-                        {
-                            const ito::CharMeta *charMeta = static_cast<const ito::CharMeta*>(meta);
-                            if (charMeta)
-                            {
-                                mi = static_cast<int>(charMeta->getMin());
-                                ma = static_cast<int>(charMeta->getMax());
-                                step = static_cast<int>(charMeta->getStepSize());
-                            }
-                            else
-                            {
-                                mi = std::numeric_limits<int>::min();
-                                ma = std::numeric_limits<int>::max();
-                                step = 1;
-                            }
-                        }
-                        int va =  p.getVal<int>();
+				if (available)
+				{
+					switch (p.getType())
+					{
+					case ito::ParamBase::Char & ito::paramTypeMask:
+					case ito::ParamBase::Int & ito::paramTypeMask:
+					{
+						const ito::IntMeta *intMeta = static_cast<const ito::IntMeta*>(meta);
+						int mi, ma, step;
+						if (intMeta)
+						{
+							mi = intMeta->getMin();
+							ma = intMeta->getMax();
+							step = intMeta->getStepSize();
+						}
+						else
+						{
+							const ito::CharMeta *charMeta = static_cast<const ito::CharMeta*>(meta);
+							if (charMeta)
+							{
+								mi = static_cast<int>(charMeta->getMin());
+								ma = static_cast<int>(charMeta->getMax());
+								step = static_cast<int>(charMeta->getStepSize());
+							}
+							else
+							{
+								mi = std::numeric_limits<int>::min();
+								ma = std::numeric_limits<int>::max();
+								step = 1;
+							}
+						}
+						int va = p.getVal<int>();
 
-                        if (mi == std::numeric_limits<int>::min() && ma == std::numeric_limits<int>::max() && step == 1)
-                        {
-                            temp = QString("current: %1").arg(va);
-                        }
-                        else if (step == 1)
-                        {
-                            temp = QString("current: %1, [%2,%3]").arg(va).arg(mi).arg(ma);
-                        }
-                        else
-                        {
-                            temp = QString("current: %1, [%2,%3], step: %4").arg(va).arg(mi).arg(ma).arg(step);
-                        }
-                        values["values"].append(temp);
+						if (mi == std::numeric_limits<int>::min() && ma == std::numeric_limits<int>::max() && step == 1)
+						{
+							temp = QString("current: %1").arg(va);
+						}
+						else if (step == 1)
+						{
+							temp = QString("current: %1, [%2,%3]").arg(va).arg(mi).arg(ma);
+						}
+						else
+						{
+							temp = QString("current: %1, [%2,%3], step: %4").arg(va).arg(mi).arg(ma).arg(step);
+						}
+						values["values"].append(temp);
 
-                        item = PyLong_FromLong(va);
-                        PyDict_SetItemString(p_pyLine, "value", item);
-                        Py_DECREF(item);
+						item = PyLong_FromLong(va);
+						PyDict_SetItemString(p_pyLine, "value", item);
+						Py_DECREF(item);
 
-                        item = parseParamMetaAsDict(meta);
-                        PyDict_Merge(p_pyLine, item, 1);
-                        Py_DECREF(item);
-                        }
-                    break;
+						item = parseParamMetaAsDict(meta);
+						PyDict_Merge(p_pyLine, item, 1);
+						Py_DECREF(item);
+					}
+					break;
 
-                    case ito::ParamBase::Double & ito::paramTypeMask:
-                        {
-                        const ito::DoubleMeta *dblMeta = static_cast<const ito::DoubleMeta*>(meta);
-                        double mi, ma, step;
-                        if (dblMeta)
-                        {
-                            mi = dblMeta->getMin();
-                            ma = dblMeta->getMax();
-                            step = dblMeta->getStepSize();
-                        }
-                        else
-                        {
-                            ma = std::numeric_limits<double>::max();
-                            mi = -ma;
-                            step = 0.0;
-                        }
-                        double va = p.getVal<double>();
+					case ito::ParamBase::Double & ito::paramTypeMask:
+					{
+						const ito::DoubleMeta *dblMeta = static_cast<const ito::DoubleMeta*>(meta);
+						double mi, ma, step;
+						if (dblMeta)
+						{
+							mi = dblMeta->getMin();
+							ma = dblMeta->getMax();
+							step = dblMeta->getStepSize();
+						}
+						else
+						{
+							ma = std::numeric_limits<double>::max();
+							mi = -ma;
+							step = 0.0;
+						}
+						double va = p.getVal<double>();
 
-                        if (qAbs(ma - std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon() && qAbs(mi + std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon() && step == 0.0)
-                        {
-                            temp = QString("current: %1").arg(va);
-                        }
-                        else if (step == 0.0)
-                        {
-                            temp = QString("current: %1, [%2,%3]").arg(va).arg(mi).arg(ma);
-                        }
-                        else
-                        {
-                            temp = QString("current: %1, [%2,%3], step: %4").arg(va).arg(mi).arg(ma).arg(step);
-                        }
-                        values["values"].append(temp);
+						if (qAbs(ma - std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon() && qAbs(mi + std::numeric_limits<double>::max()) < std::numeric_limits<double>::epsilon() && step == 0.0)
+						{
+							temp = QString("current: %1").arg(va);
+						}
+						else if (step == 0.0)
+						{
+							temp = QString("current: %1, [%2,%3]").arg(va).arg(mi).arg(ma);
+						}
+						else
+						{
+							temp = QString("current: %1, [%2,%3], step: %4").arg(va).arg(mi).arg(ma).arg(step);
+						}
+						values["values"].append(temp);
 
-                        item = PyFloat_FromDouble(va);
-                        PyDict_SetItemString(p_pyLine, "value", item);
-                        Py_DECREF(item);
+						item = PyFloat_FromDouble(va);
+						PyDict_SetItemString(p_pyLine, "value", item);
+						Py_DECREF(item);
 
-                        item = parseParamMetaAsDict(meta);
-                        PyDict_Merge(p_pyLine, item, 1);
-                        Py_DECREF(item);
-                        }
-                    break;
+						item = parseParamMetaAsDict(meta);
+						PyDict_Merge(p_pyLine, item, 1);
+						Py_DECREF(item);
+					}
+					break;
 
-                    case (ito::ParamBase::String & ito::paramTypeMask):
-                    {
-                        char* tempbuf = p.getVal<char*>();
-                        if (tempbuf == NULL)
-                        {
-                            item = PyUnicode_FromString("");
-                            values["values"].append("");
-                            PyDict_SetItemString(p_pyLine, "value", item);
-                            Py_DECREF(item);
-                        }
-                        else
-                        {
-                            temp = tempbuf;
-                            temp.replace("\n","\\n");
-                            temp.replace("\r","\\r");
-                            if (temp.size() > 20)
-                            {
-                                temp = QString("\"%1...\"").arg(temp.left(20));
-                            }
-                            else
-                            {
-                                temp = QString("\"%1\"").arg(temp);
-                            }
-                            values["values"].append(temp);
-                            item = PythonQtConversion::QByteArrayToPyUnicodeSecure(tempbuf);
-                            PyDict_SetItemString(p_pyLine, "value", item);
-                            Py_DECREF(item);
-                        }
-                    }
-                    break;
+					case (ito::ParamBase::String & ito::paramTypeMask) :
+					{
+						char* tempbuf = p.getVal<char*>();
+						if (tempbuf == NULL)
+						{
+							item = PyUnicode_FromString("");
+							values["values"].append("");
+							PyDict_SetItemString(p_pyLine, "value", item);
+							Py_DECREF(item);
+						}
+						else
+						{
+							temp = tempbuf;
+							temp.replace("\n", "\\n");
+							temp.replace("\r", "\\r");
+							if (temp.size() > 20)
+							{
+								temp = QString("\"%1...\"").arg(temp.left(20));
+							}
+							else
+							{
+								temp = QString("\"%1\"").arg(temp);
+							}
+							values["values"].append(temp);
+							item = PythonQtConversion::QByteArrayToPyUnicodeSecure(tempbuf);
+							PyDict_SetItemString(p_pyLine, "value", item);
+							Py_DECREF(item);
+						}
+					}
+					break;
 
-                    case ito::ParamBase::CharArray & ito::paramTypeMask:
-                    {
-                        int len = p.getLen();
-                        char *ptr = p.getVal<char*>();
-                        switch (len)
-                        {
-                        case 0:
-                            values["values"].append("empty");
-                            break;
-                        case 1:
-                            temp = QString("[%1]").arg(ptr[0]);
-                            values["values"].append(temp);
-                            break;
-                        case 2:
-                            temp = QString("[%1,%2]").arg(ptr[0]).arg(ptr[1]);
-                            values["values"].append(temp);
-                            break;
-                        case 3:
-                            temp = QString("[%1,%2,%3]").arg(ptr[0]).arg(ptr[1]).arg(ptr[2]);
-                            values["values"].append(temp);
-                            break;
-                        case 4:
-                            temp = QString("[%1,%2,%3,%4]").arg(ptr[0]).arg(ptr[1]).arg(ptr[2]).arg(ptr[3]);
-                            values["values"].append(temp);
-                            break;
-                        default:
-                            temp = QString("%1 elements").arg(len);
-                            values["values"].append(temp);
-                            break;
-                        }
+					case ito::ParamBase::CharArray & ito::paramTypeMask:
+					{
+						int len = p.getLen();
+						char *ptr = p.getVal<char*>();
+						switch (len)
+						{
+						case 0:
+							values["values"].append("empty");
+							break;
+						case 1:
+							temp = QString("[%1]").arg(ptr[0]);
+							values["values"].append(temp);
+							break;
+						case 2:
+							temp = QString("[%1,%2]").arg(ptr[0]).arg(ptr[1]);
+							values["values"].append(temp);
+							break;
+						case 3:
+							temp = QString("[%1,%2,%3]").arg(ptr[0]).arg(ptr[1]).arg(ptr[2]);
+							values["values"].append(temp);
+							break;
+						case 4:
+							temp = QString("[%1,%2,%3,%4]").arg(ptr[0]).arg(ptr[1]).arg(ptr[2]).arg(ptr[3]);
+							values["values"].append(temp);
+							break;
+						default:
+							temp = QString("%1 elements").arg(len);
+							values["values"].append(temp);
+							break;
+						}
 
-                        item = parseParamMetaAsDict(meta);
-                        PyDict_Merge(p_pyLine, item, 1);
-                        Py_DECREF(item);
-                    }
-                    break;
+						item = parseParamMetaAsDict(meta);
+						PyDict_Merge(p_pyLine, item, 1);
+						Py_DECREF(item);
+					}
+					break;
 
-                    case ito::ParamBase::IntArray & ito::paramTypeMask:
-                    {
-                        int len = p.getLen();
-                        int *ptr = p.getVal<int*>();
-                        switch (len)
-                        {
-                        case 0:
-                            values["values"].append("empty");
-                            break;
-                        case 1:
-                            temp = QString("[%1]").arg(ptr[0]);
-                            values["values"].append(temp);
-                            break;
-                        case 2:
-                            temp = QString("[%1,%2]").arg(ptr[0]).arg(ptr[1]);
-                            values["values"].append(temp);
-                            break;
-                        case 3:
-                            temp = QString("[%1,%2,%3]").arg(ptr[0]).arg(ptr[1]).arg(ptr[2]);
-                            values["values"].append(temp);
-                            break;
-                        case 4:
-                            temp = QString("[%1,%2,%3,%4]").arg(ptr[0]).arg(ptr[1]).arg(ptr[2]).arg(ptr[3]);
-                            values["values"].append(temp);
-                            break;
-                        default:
-                            temp = QString("%1 elements").arg(len);
-                            values["values"].append(temp);
-                            break;
-                        }
+					case ito::ParamBase::IntArray & ito::paramTypeMask:
+					{
+						int len = p.getLen();
+						int *ptr = p.getVal<int*>();
+						switch (len)
+						{
+						case 0:
+							values["values"].append("empty");
+							break;
+						case 1:
+							temp = QString("[%1]").arg(ptr[0]);
+							values["values"].append(temp);
+							break;
+						case 2:
+							temp = QString("[%1,%2]").arg(ptr[0]).arg(ptr[1]);
+							values["values"].append(temp);
+							break;
+						case 3:
+							temp = QString("[%1,%2,%3]").arg(ptr[0]).arg(ptr[1]).arg(ptr[2]);
+							values["values"].append(temp);
+							break;
+						case 4:
+							temp = QString("[%1,%2,%3,%4]").arg(ptr[0]).arg(ptr[1]).arg(ptr[2]).arg(ptr[3]);
+							values["values"].append(temp);
+							break;
+						default:
+							temp = QString("%1 elements").arg(len);
+							values["values"].append(temp);
+							break;
+						}
 
-                        item = parseParamMetaAsDict(meta);
-                        PyDict_Merge(p_pyLine, item, 1);
-                        Py_DECREF(item);
-                    }
-                    break;
+						item = parseParamMetaAsDict(meta);
+						PyDict_Merge(p_pyLine, item, 1);
+						Py_DECREF(item);
+					}
+					break;
 
-                    case ito::ParamBase::DoubleArray & ito::paramTypeMask:
-                    {
-                        int len = p.getLen();
-                        double *ptr = p.getVal<double*>();
-                        switch (len)
-                        {
-                        case 0:
-                            values["values"].append("empty");
-                            break;
-                        case 1:
-                            temp = QString("[%1]").arg(ptr[0]);
-                            values["values"].append(temp);
-                            break;
-                        case 2:
-                            temp = QString("[%1,%2]").arg(ptr[0]).arg(ptr[1]);
-                            values["values"].append(temp);
-                            break;
-                        case 3:
-                            temp = QString("[%1,%2,%3]").arg(ptr[0]).arg(ptr[1]).arg(ptr[2]);
-                            values["values"].append(temp);
-                            break;
-                        case 4:
-                            temp = QString("[%1,%2,%3,%4]").arg(ptr[0]).arg(ptr[1]).arg(ptr[2]).arg(ptr[3]);
-                            values["values"].append(temp);
-                            break;
-                        default:
-                            temp = QString("%1 elements").arg(len);
-                            values["values"].append(temp);
-                            break;
-                        }
+					case ito::ParamBase::DoubleArray & ito::paramTypeMask:
+					{
+						int len = p.getLen();
+						double *ptr = p.getVal<double*>();
+						switch (len)
+						{
+						case 0:
+							values["values"].append("empty");
+							break;
+						case 1:
+							temp = QString("[%1]").arg(ptr[0]);
+							values["values"].append(temp);
+							break;
+						case 2:
+							temp = QString("[%1,%2]").arg(ptr[0]).arg(ptr[1]);
+							values["values"].append(temp);
+							break;
+						case 3:
+							temp = QString("[%1,%2,%3]").arg(ptr[0]).arg(ptr[1]).arg(ptr[2]);
+							values["values"].append(temp);
+							break;
+						case 4:
+							temp = QString("[%1,%2,%3,%4]").arg(ptr[0]).arg(ptr[1]).arg(ptr[2]).arg(ptr[3]);
+							values["values"].append(temp);
+							break;
+						default:
+							temp = QString("%1 elements").arg(len);
+							values["values"].append(temp);
+							break;
+						}
 
-                        item = parseParamMetaAsDict(meta);
-                        PyDict_Merge(p_pyLine, item, 1);
-                        Py_DECREF(item);
-                    }
-                    break;
+						item = parseParamMetaAsDict(meta);
+						PyDict_Merge(p_pyLine, item, 1);
+						Py_DECREF(item);
+					}
+					break;
 
-                    case ((ito::ParamBase::Pointer | ito::ParamBase::HWRef) & ito::paramTypeMask):
-                    case (ito::ParamBase::Pointer & ito::paramTypeMask):
-                    case (ito::ParamBase::DObjPtr & ito::paramTypeMask):
-                    case (ito::ParamBase::PointCloudPtr & ito::paramTypeMask):
-                    case (ito::ParamBase::PointPtr & ito::paramTypeMask):
-                    case (ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask):
-                        values["values"].append("<Object-Pointer>");
+					case ((ito::ParamBase::Pointer | ito::ParamBase::HWRef) & ito::paramTypeMask) :
+					case (ito::ParamBase::Pointer & ito::paramTypeMask) :
+					case (ito::ParamBase::DObjPtr & ito::paramTypeMask) :
+					case (ito::ParamBase::PointCloudPtr & ito::paramTypeMask) :
+					case (ito::ParamBase::PointPtr & ito::paramTypeMask) :
+					case (ito::ParamBase::PolygonMeshPtr & ito::paramTypeMask) :
+						values["values"].append("<Object-Pointer>");
+						item = parseParamMetaAsDict(meta);
+						PyDict_Merge(p_pyLine, item, 1);
+						Py_DECREF(item);
+						break;
 
-                        item = parseParamMetaAsDict(meta);
-                        PyDict_Merge(p_pyLine, item, 1);
-                        Py_DECREF(item);
-                    break;
+					default:
+						values["values"].append("<unknown>");
+						item = parseParamMetaAsDict(meta);
+						PyDict_Merge(p_pyLine, item, 1);
+						Py_DECREF(item);
+						break;
 
-                    default:
-                        values["values"].append("<unknown>");
-
-                        item = parseParamMetaAsDict(meta);
-                        PyDict_Merge(p_pyLine, item, 1);
-                        Py_DECREF(item);
-                    break;
-
-                }
+					}
+				}
+				else //not available
+				{
+					values["values"].append("-");
+					PyDict_SetItemString(p_pyLine, "value", Py_None);
+				}
             }
             if (p.getInfo())
             {
@@ -804,7 +824,14 @@ PyObject* PrntOutParams(const QVector<ito::Param> *params, bool asErr, bool addI
         {
             temp = values["values"][i].leftJustified(valuesLength,' ', true);
             output.append(temp);
-            temp = values["readwrite"][i].leftJustified(readWriteLength,' ', true);
+			if (available)
+			{
+				temp = values["readwrite"][i].leftJustified(readWriteLength, ' ', true);
+			}
+			else
+			{
+				temp = QString("n.a.").leftJustified(readWriteLength, ' ', true);
+			}
             output.append(temp);
             output.append(values["description"][i]);
         }

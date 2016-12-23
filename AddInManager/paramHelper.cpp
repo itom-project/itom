@@ -1386,6 +1386,10 @@ namespace ito {
             {
                 return ito::RetVal::format(ito::retError, 0, QObject::tr("Parameter '%1' is read only.").arg(key).toLatin1().data());
             }
+			else if (it->getFlags() & ito::ParamBase::NotAvailable)
+			{
+				return ito::RetVal::format(ito::retError, 0, QObject::tr("Parameter '%1' is (temporarily) not available.").arg(key).toLatin1().data());
+			}
 
             found = it;
         }
