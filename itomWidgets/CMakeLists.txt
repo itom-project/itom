@@ -181,9 +181,11 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/brushCreatorButtonFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/collapsibleGroupBoxFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/colorPickerButtonFactory.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/factories/penCreatorButtonFactory.cpp    ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleRangeSliderFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/penCreatorButtonFactory.cpp    
+	${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleRangeSliderFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleSpinBoxFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleSliderFactory.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/factories/fontButtonFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/rangeWidgetFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleRangeWidgetFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/sliderWidgetFactory.cpp
