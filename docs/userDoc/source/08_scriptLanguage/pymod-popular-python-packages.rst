@@ -39,7 +39,7 @@ information about **Matplotlib** and |itom|, see the section :ref:`pymod-matplot
 **sphinx**
 
 Sphinx is a popular package for rendering user documentations to various output formats (e.g. html, latex, QtHelp, Windows Help Format, ...). Sphinx is used to parse this documentation and for the
-homepage of |itom| (itom.bitbucket.org). See the section :ref:`buildDocumentation` for more information how to create the user documentation (e.g. if you have a self-compiled version of |itom|).
+homepage of |itom| (itom.bitbucket.io). See the section :ref:`buildDocumentation` for more information how to create the user documentation (e.g. if you have a self-compiled version of |itom|).
 
 **pip**
 
