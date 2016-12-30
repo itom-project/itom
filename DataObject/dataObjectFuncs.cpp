@@ -2447,6 +2447,86 @@ namespace dObjHelper
         return out;
     }
 
+    //------------------------------------------------------------------------------------------------------------------------------------------------------
+    //! returns a shallow or deep copy of a given data object that fits to given requirements
+    /*!
+        Use this simple api method to test a given data object if it fits some requirements.
+        If this is the case, a shallow copy of the input data object is returned. Else, it is
+        tried to convert into the required object and a converted deep copy is returned. If the
+        input object does not fit the given requirements, NULL is returned and the ito::RetVal
+        parameter contains an error status including error message.
+
+        \note In any case you need to delete the returned data object
+
+        \param dObj the input data object
+        \param nrDims the required number of dimensions
+        \param type the required type of the returned data object
+        \param name name of the data object for an improved error message (zero-terminated string) or NULL if no name is known.
+        \param sizeLimits can be NULL if the sizes should not be checked, else it is an array with length (2*nrDims). Every adjacent pair describes the minimum and maximum size of each dimension.
+        \param retval can be a pointer to an instance of ito::RetVal or NULL. If given, the status of this method is added to this return value.
+        \return shallow or deep copy of the input data object or NULL (in case of unsolvable incompatibility)
+    */
+    ito::DataObject* createFromNamedDataObject(const ito::DataObject *dObj, int nrDims, ito::tDataType type, const char *name /*= NULL*/, int *sizeLimits /*= NULL*/, ito::RetVal *retval /*= NULL*/)
+    {
+        ito::DataObject *output = NULL;
+        ito::RetVal ret;
+
+        if (dObj)
+        {
+            if (dObj->getDims() != nrDims)
+            {
+                if (name)
+                {
+                    ret += ito::RetVal::format(ito::retError, 0, "The data object '%s' must have %i dimensions (%i given)", name, nrDims, dObj->getDims());
+                }
+                else
+                {
+                    ret += ito::RetVal::format(ito::retError, 0, "The given data object must have %i dimensions (%i given)", nrDims, dObj->getDims());
+                }
+            }
+            else if(sizeLimits) //check sizeLimits (must be twice as lang as nrDims)
+            {
+                for (int i = 0; i < nrDims; ++i)
+                {
+                    int s = dObj->getSize(i);
+                    if (s < sizeLimits[i * 2] || s > sizeLimits[i * 2 + 1])
+                    {
+                        if (name)
+                        {
+                            ret += ito::RetVal::format(ito::retError, 0, "The size of the %i. dimension of data object '%s' exceeds the given boundaries [%i, %i]", i+1, name, sizeLimits[i * 2], sizeLimits[i * 2 + 1]);
+                        }
+                        else
+                        {
+                            ret += ito::RetVal::format(ito::retError, 0, "The size of the %i. dimension exceeds the given boundaries [%i, %i]", i+1, sizeLimits[i * 2], sizeLimits[i * 2 + 1]);
+                        }
+                        break;
+                    }
+                }
+            }
+
+            if (!ret.containsError())
+            {
+                if (dObj->getType() == type)
+                {
+                    output = new ito::DataObject(*dObj);
+                }
+                else
+                {
+                    output = new ito::DataObject();
+                    ret += dObj->convertTo(*output, type);
+                }
+            }
+        }
+
+        if (ret.containsError())
+        {
+            DELETE_AND_SET_NULL(output);
+        }
+
+        if (retval) *retval += ret;
+        return output;
+    }
+
     //-----------------------------------------------------------------------------------------------
     /*! \fn dObjCopyLastNAxisTags 
         \detail  Helperfunction to copy axis related tags from a n-D-Object to a m-D-Object.
@@ -2538,8 +2618,6 @@ namespace dObjHelper
 
         return ito::retOk;
     }
-
-
 
 
 
