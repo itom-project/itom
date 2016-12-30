@@ -57,9 +57,6 @@ pen(inputPen)
         }
 #if QT_VERSION >= 0x050500
         mo = qt_getEnumMetaObject(Qt::SquareCap); //cap style
-#else
-        const QMetaObject mo_ = StaticQtMetaObject::get();
-        const QMetaObject *mo = &mo_;
 #endif
         me = mo->enumerator(mo->indexOfEnumerator("PenCapStyle"));
         for (i = 0; i < me.keyCount(); ++i)
@@ -68,9 +65,6 @@ pen(inputPen)
         }
 #if QT_VERSION >= 0x050500
         mo = qt_getEnumMetaObject(Qt::BevelJoin); //join style
-#else
-        const QMetaObject mo_ = StaticQtMetaObject::get();
-        const QMetaObject *mo = &mo_;
 #endif
         me = mo->enumerator(mo->indexOfEnumerator("PenJoinStyle"));
         for (i = 0; i < me.keyCount(); ++i)
