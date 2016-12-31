@@ -1443,10 +1443,11 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
 
                 policy = (*addIn)->getBasePlugin()->getAutoLoadPolicy();
 
-                if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
-                {
-                    retval += ito::RetVal(ito::retWarning, 0, tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toLatin1().data());
-                }
+                // ck 31.12.16 removed warning about ignoring autoload settings
+//                if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
+//                {
+//                    retval += ito::RetVal(ito::retWarning, 0, tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toLatin1().data());
+//                }
 
                 if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
                 {
@@ -1610,10 +1611,11 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
 
                 policy = (*addIn)->getBasePlugin()->getAutoLoadPolicy();
 
-                if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
-                {
-                    retval += ito::RetVal(ito::retWarning, 0, tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toLatin1().data());
-                }
+                // ck 31.12.16 removed warning about ignoring autoload settings
+//                if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
+//                {
+//                    retval += ito::RetVal(ito::retWarning, 0, tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toLatin1().data());
+//                }
 
                 if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
                 {
@@ -1722,10 +1724,11 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
     {
         policy = (*addIn)->getBasePlugin()->getAutoLoadPolicy();
 
-        if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
-        {
-            retval += ito::RetVal(ito::retWarning, 0, tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toLatin1().data());
-        }
+        // ck 31.12.16 removed warning about ignoring autoload settings
+//        if (autoLoadPluginParams && policy != ito::autoLoadKeywordDefined)
+//        {
+//            retval += ito::RetVal(ito::retWarning, 0, tr("Parameter has own parameter management. Keyword 'autoLoadParams' is ignored.").toLatin1().data());
+//        }
 
         if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
         {
@@ -2147,6 +2150,7 @@ AddInManager::AddInManager(QString itomSettingsFile, void **apiFuncsGraph, QObje
     if (mainApplication)
     {
         connect(AddInManagerPrivate::m_pAddInManagerPrivate->m_pMainApplication, SIGNAL(propertiesChanged()), this, SLOT(propertiesChanged()));
+    
     }
     AddInManagerPrivate::m_pAddInManagerPrivate->m_pMainWindow = mainWindow;
 }
@@ -2280,6 +2284,23 @@ AddInManager::~AddInManager(void)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+const ito::RetVal AddInManager::setMainWindow(QObject *mainWindow)
+{
+    ito::RetVal retval(ito::retOk);
+
+    if (AddInManagerPrivate::m_pAddInManagerPrivate->m_pMainWindow && AddInManagerPrivate::m_pAddInManagerPrivate->m_pMainWindow != mainWindow)
+    {
+        retval += ito::RetVal(ito::retWarning, 0, tr("AddInManager already has an instance of mainWindow, ignoring new window").toLatin1().data());
+    }
+    else
+    {
+        AddInManagerPrivate::m_pAddInManagerPrivate->m_pMainWindow = mainWindow;
+    }
+
+    return retval;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void AddInManagerPrivate::propertiesChanged()
 {
     QString settingsFile("");
@@ -2363,13 +2384,20 @@ ito::RetVal AddInManager::showConfigDialog(ito::AddInBase *addin, ItomSharedSema
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
 
-    if (addin && addin->hasConfDialog())
+    if (qobject_cast<QApplication*>(QCoreApplication::instance()))
     {
-        retval += addin->showConfDialog();
+        if (addin && addin->hasConfDialog())
+        {
+            retval += addin->showConfDialog();
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retWarning, 0, tr("no configuration dialog available").toLatin1().data());
+        }
     }
     else
     {
-        retval += ito::RetVal(ito::retWarning, 0, tr("no configuration dialog available").toLatin1().data());
+        retval += ito::RetVal(ito::retWarning, 0, tr("No suitable qapplication / window could be detected, not loading dockWidget").toLatin1().data());
     }
 
     if (waitCond)
@@ -2396,39 +2424,46 @@ ito::RetVal AddInManager::showDockWidget(ito::AddInBase *addin, int visible, Ito
     ItomSharedSemaphoreLocker locker(waitCond);
     ito::RetVal retval;
 
-    if (addin)
+    if (qobject_cast<QApplication*>(QCoreApplication::instance()))
     {
-        QDockWidget *dw = addin->getDockWidget();
-        if (dw)
+        if (addin)
         {
-            QAction *toggleAction = dw->toggleViewAction();
-            if (visible == 0) //hide
+            QDockWidget *dw = addin->getDockWidget();
+            if (dw)
             {
-                if (toggleAction->isChecked()) //dock widget is currently visible -> hide it now
+                QAction *toggleAction = dw->toggleViewAction();
+                if (visible == 0) //hide
+                {
+                    if (toggleAction->isChecked()) //dock widget is currently visible -> hide it now
+                    {
+                        dw->toggleViewAction()->trigger();
+                    }
+                }
+                else if (visible == 1) //show
+                {
+                    if (toggleAction->isChecked() == false) //dock widget is currently hidden -> show it now
+                    {
+                        dw->toggleViewAction()->trigger();
+                    }
+                }
+                else //toggle
                 {
                     dw->toggleViewAction()->trigger();
                 }
             }
-            else if (visible == 1) //show
+            else
             {
-                if (toggleAction->isChecked() == false) //dock widget is currently hidden -> show it now
-                {
-                    dw->toggleViewAction()->trigger();
-                }
-            }
-            else //toggle
-            {
-                dw->toggleViewAction()->trigger();
+                retval += ito::RetVal(ito::retError, 0, tr("no toolbox available").toLatin1().data());
             }
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 0, tr("no toolbox available").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, tr("plugin not available").toLatin1().data());
         }
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, tr("plugin not available").toLatin1().data());
+        retval += ito::RetVal(ito::retWarning, 0, tr("No suitable qapplication / window could be detected, not loading dockWidget").toLatin1().data());
     }
 
     if (waitCond)
@@ -2637,4 +2672,4 @@ const ito::RetVal AddInManager::setTimeOuts(const int initClose, const int gener
 //----------------------------------------------------------------------------------------------------------------------------------
 } // namespace ito
 
-#include "addInManagerImpl.moc"
+#include "addInManager.moc"

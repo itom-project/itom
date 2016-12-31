@@ -510,6 +510,8 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
 
         m_designerWidgetOrganizer = new DesignerWidgetOrganizer(retValue);
         AppManagement::setDesignerWidgetOrganizer(qobject_cast<QObject*>(m_designerWidgetOrganizer));
+        if (AddInManagerInst)
+            AddInManagerInst->setMainWindow(m_mainWin);
     }
     else
     {

@@ -94,7 +94,7 @@ set(lib_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/paramHelper.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/algoInterfaceValidator.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/apiFunctions.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/addInManagerImpl.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/addInManager.cpp
 )
 
 if(MSVC)

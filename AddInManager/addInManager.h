@@ -87,6 +87,7 @@ namespace ito
             const RetVal incRef(ito::AddInBase *plugin);
             const RetVal decRef(ito::AddInBase **plugin);
             const RetVal setTimeOuts(const int initClose, const int general);
+            const RetVal setMainWindow(QObject *mainWindow);
 
             bool isPluginInstanceDead(const ito::AddInBase *plugin) const;
 
