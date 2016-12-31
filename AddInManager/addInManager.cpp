@@ -1433,7 +1433,7 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
                 if (*addIn != NULL)
                 {
                     AddInManagerPrivate::m_pAddInManagerPrivate->m_plugInModel.insertInstance(aib, false); //end insert, since closeAddIn will call beginRemoveRows...
-                    retval += closeAddIn(reinterpret_cast<ito::AddInBase*>(*addIn));
+                    retval += closeAddIn(*addIn);
                 }
                 *addIn = NULL;
             }
@@ -1451,7 +1451,7 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
 
                 if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
                 {
-                    retval += AddInManagerPrivate::m_pAddInManagerPrivate->loadParamVals(reinterpret_cast<ito::AddInBase*>(*addIn));
+                    retval += AddInManagerPrivate::m_pAddInManagerPrivate->loadParamVals(*addIn);
                 }
             }
         }
@@ -1601,7 +1601,7 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
                 if (*addIn != NULL)
                 {
                     AddInManagerPrivate::m_pAddInManagerPrivate->m_plugInModel.insertInstance(aib, false); //end insert, since closeAddIn will call beginRemoveRows...
-                    retval += closeAddIn(reinterpret_cast<ito::AddInBase*>(*addIn));
+                    retval += closeAddIn(*addIn);
                 }
                 *addIn = NULL;
             }
@@ -1619,7 +1619,7 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
 
                 if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
                 {
-                    retval += AddInManagerPrivate::m_pAddInManagerPrivate->loadParamVals(reinterpret_cast<ito::AddInBase*>(*addIn));
+                    retval += AddInManagerPrivate::m_pAddInManagerPrivate->loadParamVals(*addIn);
                 }
             }
         }
@@ -1714,7 +1714,7 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
         {
             if (*addIn != NULL)
             {
-                retval += closeAddIn(reinterpret_cast<ito::AddInBase*>(*addIn));
+                retval += closeAddIn(*addIn);
             }
             *addIn = NULL;
         }
@@ -1732,7 +1732,7 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
 
         if (policy == ito::autoLoadAlways || (policy == ito::autoLoadKeywordDefined && autoLoadPluginParams))
         {
-            retval += AddInManagerPrivate::m_pAddInManagerPrivate->loadParamVals(reinterpret_cast<ito::AddInBase*>(*addIn));
+            retval += AddInManagerPrivate::m_pAddInManagerPrivate->loadParamVals(*addIn);
         }
     }
 
@@ -2415,7 +2415,7 @@ ito::RetVal AddInManager::showConfigDialog(ito::AddInBase *addin, ItomSharedSema
 *   @param [in] visible         1=show, 0=hide, -1=toggle
 *   @param [in, out] waitCond   wait condition for calls from other threads. See also \ref ItomSharedSemaphore
 *
-*   This method opens or closes the wodget of a plugin. The widget can be opened or closed using a right click on an instance of the
+*   This method opens or closes the widget of a plugin. The widget can be opened or closed using a right click on an instance of the
 *   plugin in the addInModel list or using showToolbox or hideToolbox command in python. An implementation of a configuration dialog
 *   is not mandatory, so in case there is no dialog implemented nothing happens.
 */
