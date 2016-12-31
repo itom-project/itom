@@ -49,11 +49,11 @@ namespace ito
 
             enum RGBSelectionFlags
             {
-                RGBA_B    = 0,
-                RGBA_G    = 1,
-                RGBA_R    = 2,
-                RGBA_A    = 3,
-                RGBA_Y    = 4,
+                RGBA_B    = 0, //!< blue
+                RGBA_G    = 1, //!< green
+                RGBA_R    = 2, //!< red
+                RGBA_A    = 3, //!< alpha
+                RGBA_Y    = 4, //!< gray
                 RGBA_RGB  = 5
             };
 
