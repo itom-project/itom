@@ -42,6 +42,7 @@
 #include <qapplication.h>
 
 #include <qpen.h>
+#include <qnamespace.h>
 
 /*!
     \class DesignerWidgetOrganizer
@@ -58,9 +59,15 @@ namespace ito
 */
 DesignerWidgetOrganizer::DesignerWidgetOrganizer(ito::RetVal &retValue)
 {
-    /*QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("DesignerPlugins");
-    settings.beginGroup("ito::AbstractDObjFigure");
+    settings.beginGroup("ito::AbstractFigure");
+    if (settings.contains("titleFont") == false) settings.setValue("titleFont", QFont("Helvetica", 12));
+    if (settings.contains("labelFont") == false) settings.setValue("labelFont", QFont("Helvetica", 12));
+    if (settings.contains("axisFont") == false) settings.setValue("axisFont", QFont("Helvetica", 12));
+    if (settings.contains("lineStyle") == false) settings.setValue("lineStyle", (int)Qt::SolidLine);
+    if (settings.contains("lineWidth") == false) settings.setValue("lineWidth", qreal(1.0));
+    if (settings.contains("legendFont") == false) settings.setValue("legendFont", QFont("Helvetica", 8));
     if (settings.contains("zoomRubberBandPen") == false) settings.setValue("zoomRubberBandPen", QPen(QBrush(Qt::red), 2, Qt::DashLine));
     if (settings.contains("trackerPen") == false) settings.setValue("trackerPen", QPen(QBrush(Qt::red), 2));
     if (settings.contains("trackerFont") == false) settings.setValue("trackerFont", QFont("Verdana", 10));
@@ -68,7 +75,7 @@ DesignerWidgetOrganizer::DesignerWidgetOrganizer(ito::RetVal &retValue)
     if (settings.contains("centerMarkerSize") == false) settings.setValue("centerMarkerSize", QSize(25, 25));
     if (settings.contains("centerMarkerPen") == false) settings.setValue("centerMarkerPen", QPen(QBrush(Qt::red), 1));
     settings.endGroup();
-    settings.endGroup();*/
+    settings.endGroup();
 
     //create figure categories (for property dialog...)
    ito::PlotDataFormats allFormats = ~(ito::PlotDataFormats(0)); //(~ito::Format_Gray8); // | ito::Format_Gray8; //(ito::PlotDataFormats(0));
