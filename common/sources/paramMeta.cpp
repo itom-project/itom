@@ -220,8 +220,12 @@ namespace ito
     //---------------------------------------------------------------------------------
     /*virtual*/ StringMeta::~StringMeta()
     {
-        for(int i=0;i<m_len;++i) free(m_val[i]);
+		for (int i = 0; i < m_len; ++i)
+		{
+			free(m_val[i]);
+		}
         free(m_val);
+		m_val = NULL;
     }
 
     //---------------------------------------------------------------------------------
@@ -245,6 +249,23 @@ namespace ito
         m_val[m_len-1] = _strdup(val);
         return true;
     }
+
+	//---------------------------------------------------------------------------------
+	void StringMeta::clearItems()
+	{
+		for (int i = 0; i < m_len; ++i)
+		{
+			free(m_val[i]);
+		}
+		free(m_val);
+		m_val = NULL;
+	}
+
+	//---------------------------------------------------------------------------------
+	void StringMeta::setStringType(tType type)
+	{
+		m_stringType = type;
+	}
 
     //---------------------------------------------------------------------------------
     StringMeta & StringMeta::operator += (const char *val)

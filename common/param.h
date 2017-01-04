@@ -86,6 +86,7 @@ namespace ito
             Readonly        = 0x020000, // this flag is not used inside Param but you can check for it
             In              = 0x040000,
             Out             = 0x080000,
+			NotAvailable    = 0x100000,
 
             //type (bit 1-16)
             Pointer         = 0x000001,
@@ -305,8 +306,26 @@ namespace ito
                 m_info = info;
             }
 
-            inline const ParamMeta* getMeta(void) const { return m_pMeta; } //!< returns const-pointer to meta-information instance or NULL if not available
-            inline ParamMeta* getMeta(void) { return m_pMeta; }                //!< returns pointer to meta-information instance or NULL if not available
+            inline const ParamMeta* getMeta(void) const { return m_pMeta; }  //!< returns const-pointer to meta-information instance or NULL if not available. Cast this pointer to the right class of the parameter.
+            inline ParamMeta* getMeta(void) { return m_pMeta; }              //!< returns pointer to meta-information instance or NULL if not available. Cast this pointer to the right class of the parameter.
+
+			//!< returns const-pointer to meta-information instance casted to 'const _Tp*' or NULL if not available or cast failed.
+			/*
+			Example: intParam.getMetaT<ito::IntMeta>();
+			*/
+			template<typename _Tp> inline const _Tp* getMetaT(void) const 
+			{ 
+				return static_cast<const _Tp*>(m_pMeta);
+			}  
+
+			//!< returns pointer to meta-information instance casted to '_Tp*' or NULL if not available or cast failed.
+			/*
+			Example: intParam.getMetaT<ito::IntMeta>();
+			*/
+			template<typename _Tp> inline _Tp* getMetaT(void)
+			{
+				return static_cast<_Tp*>(m_pMeta);
+			}
 
             //! sets a new ParamMeta-instance as meta information for this Param
             /*!
