@@ -123,3 +123,13 @@ void PenCreatorDialog::on_buttonBox_clicked(QAbstractButton* btn)
             accept(); //AcceptRole
         }
 }
+//-----------------------------------------------------------------------------
+void PenCreatorDialog::setColorEditable(const bool &val)
+{
+    ui.colorBtn->setEnabled(val);
+}
+//-----------------------------------------------------------------------------
+bool PenCreatorDialog::getColorEditable() const
+{
+    return ui.colorBtn->isEnabled();
+}

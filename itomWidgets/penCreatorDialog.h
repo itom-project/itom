@@ -36,14 +36,20 @@ public:
     void setPen(const QPen &pen);
     void synchronizeGUI();
     QPen getPen();
+    bool getColorEditable() const;
     
 private:
     Ui::penCreatorDialog ui;
     QPen &pen;
     
     void updatePen();
+
 private slots:
     void on_buttonBox_clicked(QAbstractButton* btn);
+
+public slots:
+    void setColorEditable(const bool &val);//sets the color (un-)editable
+
 
 };
 #endif

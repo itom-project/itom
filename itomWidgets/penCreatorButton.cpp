@@ -100,7 +100,7 @@ void PenCreatorButton::paintEvent(QPaintEvent* event)
         pix.fill(Qt::transparent);
         QPainter p(&pix);
         p.setPen(d->pen);
-        qDebug() << d->pen.brush().color();
+
        
         p.drawLine(2, 2 + ((pix.height() - 5) / 2), pix.width()-2, 2 + ((pix.height() - 5) / 2));
         d->m_icon = QIcon(pix);
@@ -188,7 +188,27 @@ QSize PenCreatorButton::sizeHint() const
     
     return d->m_sizeHintCache;
 }
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+void PenCreatorButton::setColorState(const bool &val)
+{
+    Q_D(PenCreatorButton);
+    if (!d->dialog)
+    {
+        d->dialog = new PenCreatorDialog(d->pen, this);
+        
+    }
+    d->dialog->setColorEditable(val);
 
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+bool PenCreatorButton::getColorState() const
+{
+    Q_D(const PenCreatorButton);
+    if (d->dialog)
+        return d->dialog->getColorEditable();
+    else
+        return true; // since the setter is always called when the instance is created this case shouldn`t be called at any time
+}
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 PenCreatorButton::~PenCreatorButton()
 {
