@@ -40,6 +40,7 @@ public:
     QPen pen;
     QIcon m_icon;
     QSize m_iconSizeCache;
+    bool m_colorEditable;
     mutable QSize m_sizeHintCache;
 
     void init();
@@ -49,7 +50,8 @@ public:
 PenCreatorButtonPrivate::PenCreatorButtonPrivate(PenCreatorButton& object, QPen inputPen)
 : q_ptr(&object),
     dialog(NULL),
-    pen(inputPen)
+    pen(inputPen),
+    m_colorEditable(true)
 {
 
 }
@@ -146,18 +148,16 @@ QPen PenCreatorButton::getPen() const
 void PenCreatorButton::changePen()
 {
     Q_D(PenCreatorButton);
-    if(!d->dialog)
-    { 
-        d->dialog = new PenCreatorDialog(d->pen,this);
-    }
-    else
-    {
-        d->dialog->synchronizeGUI();
-    }
+
+    d->dialog = new PenCreatorDialog(d->pen, d->m_colorEditable , this);
     if (d->dialog->exec())
     {
         d->m_icon = QIcon();
+       
     }
+    delete d->dialog;
+    d->dialog = NULL;
+
     
 
 }
@@ -192,22 +192,15 @@ QSize PenCreatorButton::sizeHint() const
 void PenCreatorButton::setColorState(const bool &val)
 {
     Q_D(PenCreatorButton);
-    if (!d->dialog)
-    {
-        d->dialog = new PenCreatorDialog(d->pen, this);
-        
-    }
-    d->dialog->setColorEditable(val);
+    d->m_colorEditable = val;
+
 
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 bool PenCreatorButton::getColorState() const
 {
     Q_D(const PenCreatorButton);
-    if (d->dialog)
-        return d->dialog->getColorEditable();
-    else
-        return true; // since the setter is always called when the instance is created this case shouldn`t be called at any time
+    return d->m_colorEditable;
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 PenCreatorButton::~PenCreatorButton()

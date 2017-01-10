@@ -23,7 +23,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "penCreatorDialog.h"
 #include <QPen>
 #include <QMetaEnum>
-
+#include <QDebug>
 #if QT_VERSION < 0x050500
 //workaround for qt_getEnumMetaObject
 //see: https://forum.qt.io/topic/644/global-qmetaobject/2
@@ -33,11 +33,12 @@ struct StaticQtMetaObject : public QObject
 };
 #endif
 
-PenCreatorDialog::PenCreatorDialog(QPen &inputPen, QWidget *parent) :
+PenCreatorDialog::PenCreatorDialog(QPen &inputPen,bool colorEditable, QWidget *parent) :
 QDialog(parent),
 pen(inputPen)
 {
     ui.setupUi(this);
+    ui.colorBtn->setEnabled(colorEditable);
     //connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(close()));
 
     //fill the combo boxes of the gui
@@ -90,6 +91,7 @@ void PenCreatorDialog::synchronizeGUI()
     ui.colorBtn->setColor(pen.color());
     ui.widthSpin->setValue(pen.widthF());
     ui.styleCombo->setCurrentIndex((int)pen.style());
+    qDebug() << pen.style() << (int)pen.style();
     ui.capCombo->setCurrentIndex((int)pen.capStyle());
     ui.joinCombo->setCurrentIndex((int)pen.joinStyle());
 }
@@ -122,14 +124,4 @@ void PenCreatorDialog::on_buttonBox_clicked(QAbstractButton* btn)
             updatePen(); //since the ok btn was cklicked we create a new pen with the adjusted properties
             accept(); //AcceptRole
         }
-}
-//-----------------------------------------------------------------------------
-void PenCreatorDialog::setColorEditable(const bool &val)
-{
-    ui.colorBtn->setEnabled(val);
-}
-//-----------------------------------------------------------------------------
-bool PenCreatorDialog::getColorEditable() const
-{
-    return ui.colorBtn->isEnabled();
 }

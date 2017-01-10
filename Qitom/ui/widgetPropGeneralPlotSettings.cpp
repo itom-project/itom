@@ -100,6 +100,7 @@ namespace ito
         ui.trackerBackgroundBtn->setBrush( QBrush((255, 255, 255, 255), Qt::SolidPattern));
         ui.centerMerkerPenBtn->setPen(QPen(Qt::red, 1));
         ui.centerMarkerSizeSpin->setValue(25);
+        this->update();
     }
 
 }//endNamespace ito

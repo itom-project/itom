@@ -31,12 +31,12 @@ class PenCreatorDialog : public QDialog
     Q_OBJECT
 
 public:
-    PenCreatorDialog(QPen &inputPen, QWidget *parent = NULL);
+    PenCreatorDialog(QPen &inputPen, bool colorEditable ,QWidget *parent = NULL);
     ~PenCreatorDialog();
     void setPen(const QPen &pen);
     void synchronizeGUI();
     QPen getPen();
-    bool getColorEditable() const;
+
     
 private:
     Ui::penCreatorDialog ui;
@@ -47,8 +47,6 @@ private:
 private slots:
     void on_buttonBox_clicked(QAbstractButton* btn);
 
-public slots:
-    void setColorEditable(const bool &val);//sets the color (un-)editable
 
 
 };
