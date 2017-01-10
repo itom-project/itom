@@ -2509,7 +2509,7 @@ const ito::AddInAlgo::AlgoWidgetDef * AddInManager::getAlgoWidgetDef(QString alg
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** 
-*   @param path filterParam
+*   @param filterParam filterParam
 *   @return ito::FilterParams    
 */
 const ito::FilterParams* AddInManager::getHashedFilterParams(ito::AddInAlgo::t_filterParam filterParam) const

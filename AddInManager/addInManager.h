@@ -57,81 +57,95 @@ namespace ito
     class ADDINMGR_EXPORT AddInManager : public QObject
     {
         Q_OBJECT
-        //PLUGIN_ITOM_API
 
         public:
+            //!> create new instance to access addin-Manager. The internal class addInManagerImpl is singleton
             AddInManager(QString itomSettingsFile, void **apiFuncsGraph, QObject *mainWindow = NULL, QObject *mainApplication = NULL);
-            //AddInManager * getInstance(const void *mainWindow = NULL, const void *mainApplication = NULL);
+            //!> close addInManager instance (also closes the singleton class)
             RetVal closeInstance(void);
+            //!> scan directory at path for loadable plugins, if checkQCoreApp is 1 it is checked wether an instance of Q(Core)Application
+            //!> is already running, which is necessary for multithreading, i.e. asynchone use of plugins. If no instance is found a new 
+            //!> one is created
             const RetVal scanAddInDir(const QString &path, const int checkQCoreApp = 1);
+            //!> return list of all dataIO plugins
             const QList<QObject *> * getDataIOList(void) const;
+            //!> return list of actuator plugins
             const QList<QObject *> * getActList(void)    const;
+            //!> return list of algorithm plugins
             const QList<QObject *> * getAlgList(void)    const;
+            //!> return list of all filters
             const QHash<QString, ito::AddInAlgo::FilterDef *>     * getFilterList(void)     const;
+            //!> return list of algorithm widgets
             const QHash<QString, ito::AddInAlgo::AlgoWidgetDef *> * getAlgoWidgetList(void) const;
+            //!> return parameters used for / within a filter based on the filter function pointer
             const ito::FilterParams* getHashedFilterParams(ito::AddInAlgo::t_filterParam filterParam) const;
+            //!> return status of all plugins
             const QList<PluginLoadStatus> getPluginLoadStatus() const;
+            //!> 
             const AlgoInterfaceValidator * getAlgoInterfaceValidator(void) const;
-
+            //!> 
             const ito::AddInAlgo::AlgoWidgetDef * getAlgoWidgetDef( QString algoWidgetName, QString algoPluginName = QString() );
 
             PlugInModel * getPluginModel(void);
+            //!> Reload plugin library (dll)
             const RetVal reloadAddIn(const QString &name);
             int getNumTotItems(void) const;
+            //!> get plugin pointer
             void * getAddInPtr(const int itemNum);
+            //!> get index in plugin list based on plugin pointer
             int getItemIndexInList(const void *item);
 
             void updateModel(void);
+            //!> get parameters for plugin initialization, based on plugin number \ref getItemIndexList
             const RetVal getInitParams(const QString &name, const int pluginType, int *pluginNum, QVector<ito::Param> *&paramsMand, QVector<ito::Param> *&paramsOpt);
+            //!> return plugin information based on plugin number and type
             const RetVal getPluginInfo(const QString &name, int &pluginType, int &pluginNum, int &version, QString &typeString, QString &author, QString &description, QString &detaildescription, QString &license, QString &about);
+            //!> increment plugin reference counter, use e.g. when making a copy of the plugin pointer to avoid plugin being closed while still holding a reference 
             const RetVal incRef(ito::AddInBase *plugin);
+            //!> decrement plugin reference counter, use to ensure proper closing / deletion of plugin after incrementing reference counter
             const RetVal decRef(ito::AddInBase **plugin);
+            //!> set plugin time outs (initialization / closing and general)
             const RetVal setTimeOuts(const int initClose, const int general);
+            //!> pass main window pointer to addInManager, which is used for the construction / displaying of plugin widgets
             const RetVal setMainWindow(QObject *mainWindow);
 
+            //!> check if given instance of plugin still reacts
             bool isPluginInstanceDead(const ito::AddInBase *plugin) const;
 
+            //!> return list of filter matching the passed interface
             const QList<ito::AddInAlgo::FilterDef *> getFilterByInterface(ito::AddInAlgo::tAlgoInterface iface, const QString tag = QString::Null()) const;
+            //!> return list of filter matching the passed category
             const QList<ito::AddInAlgo::FilterDef *> getFiltersByCategory(ito::AddInAlgo::tAlgoCategory cat) const;
+            //!> return list of filter matching the passed interface and category
             const QList<ito::AddInAlgo::FilterDef *> getFilterByInterfaceAndCategory(ito::AddInAlgo::tAlgoInterface iface, ito::AddInAlgo::tAlgoCategory cat, const QString tag = QString::Null()) const;
 
+            //!> return itomApi functions pointer (e.g. used in plugins to call itom api functions)
             void **getItomApiFuncsPtr(void);
 
         private:
             AddInManager(AddInManager  &/*copyConstr*/);
             ~AddInManager(void);
-/*
-            //!< singleton nach: http://www.oop-trainer.de/Themen/Singleton.html
-            class AddInSingleton
-            {
-                public:
-                    ~AddInSingleton()
-                    {
-                        #pragma omp critical
-                        {
-                            if( AddInManager::m_pAddInManager != NULL)
-                            {
-                                delete AddInManager::m_pAddInManager;
-                                AddInManager::m_pAddInManager = NULL;
-                            }
-                        }
-                    }
-            };
-            friend class AddInSingleton;
-*/
+
         signals:
+            //!> show plugin load splash screen
             void splashLoadMessage(const QString &message, int alignment = Qt::AlignLeft, const QColor &color = Qt::black);
 
         public slots:
+            //!> show plugin configuration dialog
             ito::RetVal showConfigDialog(ito::AddInBase *addin, ItomSharedSemaphore *waitCond = NULL);
+            //!> show plugin dock widget
             ito::RetVal showDockWidget(ito::AddInBase *addin, int visible, ItomSharedSemaphore *waitCond = NULL);
 
+            //!> initialize dataIO plugin based on number and name
             ito::RetVal initAddIn(const int pluginNum, const QString &name, ito::AddInDataIO **addIn, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, ItomSharedSemaphore *aimWait = NULL);
+            //!> initialize actuator plugin based on number and name
             ito::RetVal initAddIn(const int pluginNum, const QString &name, ito::AddInActuator **addIn, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, ItomSharedSemaphore *aimWait = NULL);
+            //!> initialize algorithm plugin based on number and name
             ito::RetVal initAddIn(const int pluginNum, const QString &name, ito::AddInAlgo **addIn, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, bool autoLoadPluginParams, ItomSharedSemaphore *aimWait = NULL);
 
+            //!> close passed plugin
             ito::RetVal closeAddIn(ito::AddInBase *addIn, ItomSharedSemaphore *aimWait = NULL);
     };
 } //namespace ito   
-#endif // #if !defined(Q_MOC_RUN) || defined(ITOMCOMMONQT_MOC) 
-#endif
+#endif // #if !defined(Q_MOC_RUN) || defined(ADDINMGR_DLL) 
+#endif // #if ADDINMANAGER_H
