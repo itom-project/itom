@@ -109,7 +109,10 @@
       <item row="4" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>line style (color is set by the plot itself):</string>
+         <string>line style:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
@@ -124,7 +127,11 @@
        </widget>
       </item>
       <item row="4" column="1">
-       <widget class="PenCreatorButton" name="lineStyleBtn"/>
+       <widget class="PenCreatorButton" name="lineStyleBtn">
+        <property name="editableColor" stdset="0">
+         <bool>false</bool>
+        </property>
+       </widget>
       </item>
       <item row="2" column="1">
        <widget class="FontButton" name="labelFontBtn"/>

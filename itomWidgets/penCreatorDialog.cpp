@@ -37,6 +37,7 @@ PenCreatorDialog::PenCreatorDialog(QPen &inputPen,bool colorEditable, QWidget *p
 QDialog(parent),
 pen(inputPen)
 {
+
     ui.setupUi(this);
     ui.colorBtn->setEnabled(colorEditable);
     //connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(close()));
@@ -54,7 +55,7 @@ pen(inputPen)
         int i;
         for (i = 0; i < me.keyCount(); ++i)
         {
-            ui.styleCombo->addItem(me.key(i), QVariant()); //add pen styles
+            ui.styleCombo->addItem(me.key(i), me.value(i)); //add pen styles
         }
 #if QT_VERSION >= 0x050500
         mo = qt_getEnumMetaObject(Qt::SquareCap); //cap style
@@ -62,7 +63,7 @@ pen(inputPen)
         me = mo->enumerator(mo->indexOfEnumerator("PenCapStyle"));
         for (i = 0; i < me.keyCount(); ++i)
         {
-            ui.capCombo->addItem(me.key(i), QVariant()); //add cap styles
+            ui.capCombo->addItem(me.key(i), me.value(i)); //add cap styles
         }
 #if QT_VERSION >= 0x050500
         mo = qt_getEnumMetaObject(Qt::BevelJoin); //join style
@@ -70,45 +71,61 @@ pen(inputPen)
         me = mo->enumerator(mo->indexOfEnumerator("PenJoinStyle"));
         for (i = 0; i < me.keyCount(); ++i)
         {
-            ui.joinCombo->addItem(me.key(i), QVariant()); //add join styles
+            ui.joinCombo->addItem(me.key(i), me.value(i)); //add join styles
         }
         synchronizeGUI();
 }
+
 //-----------------------------------------------------------------------------
 PenCreatorDialog::~PenCreatorDialog()
 {
 
 }
+
 //-----------------------------------------------------------------------------
 void PenCreatorDialog::setPen(const QPen &pen)
 {
     this->pen = pen;
     synchronizeGUI();
 }
+
+void setCurrentData(QComboBox *comboBox, int data)
+{
+    for (int i = 0; i < comboBox->count(); ++i)
+    {
+        if (comboBox->itemData(i, Qt::UserRole).toInt() == data)
+        {
+            comboBox->setCurrentIndex(i);
+            break;
+        }
+    }
+}
+
 //-----------------------------------------------------------------------------
 void PenCreatorDialog::synchronizeGUI()
 {
     ui.colorBtn->setColor(pen.color());
     ui.widthSpin->setValue(pen.widthF());
-    ui.styleCombo->setCurrentIndex((int)pen.style());
-    qDebug() << pen.style() << (int)pen.style();
-    ui.capCombo->setCurrentIndex((int)pen.capStyle());
-    ui.joinCombo->setCurrentIndex((int)pen.joinStyle());
+    setCurrentData(ui.styleCombo, (int)pen.style());
+    setCurrentData(ui.capCombo, (int)pen.capStyle());
+    setCurrentData(ui.joinCombo, (int)pen.joinStyle());
 }
 //-----------------------------------------------------------------------------
 void PenCreatorDialog::updatePen()
 {
     pen.setColor(ui.colorBtn->color());
     pen.setWidthF(ui.widthSpin->value());
-    pen.setStyle((Qt::PenStyle)ui.styleCombo->currentIndex());
-    pen.setCapStyle((Qt::PenCapStyle)ui.capCombo->currentIndex());
-    pen.setJoinStyle((Qt::PenJoinStyle)ui.joinCombo->currentIndex());
+    pen.setStyle((Qt::PenStyle)(ui.styleCombo->itemData(ui.styleCombo->currentIndex(), Qt::UserRole).toInt()));
+    pen.setCapStyle((Qt::PenCapStyle)(ui.capCombo->itemData(ui.capCombo->currentIndex(), Qt::UserRole).toInt()));
+    pen.setJoinStyle((Qt::PenJoinStyle)(ui.joinCombo->itemData(ui.joinCombo->currentIndex(), Qt::UserRole).toInt()));
 }
+
 //-----------------------------------------------------------------------------
 QPen PenCreatorDialog::getPen()
 {
     return pen;
 }
+
 //-----------------------------------------------------------------------------
 void PenCreatorDialog::on_buttonBox_clicked(QAbstractButton* btn)
 {

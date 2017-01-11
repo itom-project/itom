@@ -45,7 +45,8 @@ namespace ito
         ui.titleFontBtn->setCurrentFont(settings.value("titleFont", ("Helvetica", 12)).value<QFont>());
         ui.labelFontBtn->setCurrentFont(settings.value("labelFont", ("Helvetica", 12)).value<QFont>());
         ui.axisFontBtn->setCurrentFont(settings.value("axisFont", ("Helvetica", 12)).value<QFont>());
-        QPen pen(settings.value("lineStyle", (int)Qt::SolidLine).toInt());
+        QPen pen;
+        pen.setStyle((Qt::PenStyle)settings.value("lineStyle", (int)Qt::SolidLine).toInt());
         pen.setWidth(settings.value("lineWidth", 1.0).value<qreal>());
         ui.lineStyleBtn->setPen(pen);
         ui.legendFontBtn->setCurrentFont(settings.value("legendFont", ("Helvetica", 8)).value<QFont>());
@@ -70,7 +71,7 @@ namespace ito
       settings.setValue("titleFont", ui.titleFontBtn->currentFont());
       settings.setValue("labelFont", ui.labelFontBtn->currentFont());
       settings.setValue("axisFont", ui.axisFontBtn->currentFont());
-      settings.setValue("lineStyle", (int)ui.lineStyleBtn->getPen().style());
+      settings.setValue("lineStyle", (int) ui.lineStyleBtn->getPen().style());
       settings.setValue("lineWidth", (qreal)ui.lineStyleBtn->getPen().width());
       settings.setValue("legendFont", ui.legendFontBtn->currentFont());
       settings.setValue("zoomRubberBandPen", ui.zoomRubberBandPenBtn->getPen());
