@@ -93,7 +93,7 @@ begin
   end;
 end;
 
-function GetPythonPath(Value: string): string;
+function GetPythonPath(Value: String): string;
 var  PythonPath: string;
      Found: Boolean;
      RootKey: Integer;
@@ -129,4 +129,32 @@ end;
 procedure PythonBeforeInstall();
 begin
   MsgBox(CustomMessage('PythonReboot'), mbInformation, MB_OK);
+end;
+
+procedure ComponentsClickCheck(Sender: TObject);
+var  ListBox: TNewCheckListBox;
+     Idx,x: Integer;
+begin
+  ListBox := TNewCheckListBox(Sender);
+  Idx:= ListBox.ItemIndex;
+  
+  if (Idx<ListBox.Items.Count-1) then begin 
+    x:= Idx+1;
+    while (x<ListBox.Items.Count) and (ListBox.ItemLevel[Idx]<ListBox.ItemLevel[x]) do begin
+      if ListBox.State[Idx]=cbUnchecked then begin
+        ListBox.Checked[x]:= False;
+        ListBox.ItemEnabled[x]:= False;
+      end
+      else begin
+        ListBox.Checked[x]:= True;
+        ListBox.ItemEnabled[x]:= True;
+      end;
+      x:= x+1;
+    end;
+  end;
+end;
+
+procedure InitializeWizard();
+begin
+  WizardForm.ComponentsList.OnClickCheck := @ComponentsClickCheck;
 end;

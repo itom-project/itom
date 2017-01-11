@@ -18,7 +18,8 @@
 #define SourceRedistributable2012 "W:\m\ITOM\Installationen\1. MS VisualStudio 2012 Pro"
 #define SourceRedistributable2013 "W:\m\ITOM\Installationen\1. MS VisualStudio 2013 Pro"
 #define SourceRedistributable2015 "W:\m\ITOM\Installationen\5. Python 3.5\64bit"
-#define SourceDirPython "W:\m\ITOM\Installationen\5. Python 3.5\64bit\Numpy1.11.1-Basis"
+#define SourcePythonPackDir "W:\m\ITOM\Installationen\5. Python 3.5\64bit\Numpy1.11.1-Basis"
+#define SourcePythonDir "{#SourceDirItomBuild}\python3"
 
 ; Python
 ; - FNPythonXY file name of Python module XY
@@ -137,59 +138,342 @@ Name: "{app}\SDK"; Permissions: everyone-modify
 Source: "{#SourceRedistributable2012}\MS_VS_12_vcredist_x64.exe"; DestDir: "{tmp}"
 Source: "{#SourceRedistributable2013}\MS_VS_13_vcredist_x64.exe"; DestDir: "{tmp}"
 Source: "{#SourceRedistributable2015}\Redistributable Visual Studio 2015 x64.exe"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\{#FNPython}"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\{#FNPythonPip}"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\{#FNPythonNumPy}"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\{#FNPythonSciPy}"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\{#FNPythonSix}"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\{#FNPythonPyPars}"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\{#FNPythonPyDateu}"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\{#FNPythonPyTz}"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\{#FNPythonMatPlotLib}"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\{#FNPythonPies}"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\{#FNPythonFrosted}"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\{#FNPythonCycler}"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\{#FNPythonSciKit}"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\{#FNPythonDecor}"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\{#FNPythonNetWorkX}"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\{#FNPythonPillow}"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\{#FNPythonDask}"; DestDir: "{tmp}"
-Source: "{#SourceDirPython}\{#FNPythonToolz}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPython}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonPip}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonNumPy}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonSciPy}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonSix}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonPyPars}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonPyDateu}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonPyTz}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonMatPlotLib}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonPies}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonFrosted}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonCycler}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonSciKit}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonDecor}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonNetWorkX}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonPillow}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonDask}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonToolz}"; DestDir: "{tmp}"
 
-#include "itom_setup_win64_common_files.iss"
+[Languages]
+Name: "Deutsch"; MessagesFile: "compiler:Languages\German.isl"
+Name: "English"; MessagesFile: "compiler:Default.isl"
+
+[Tasks]
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+
+[Icons]
+Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
+Name: "{commondesktop}\{#Name}"; Filename: "{app}\{#ExeName}"; Tasks: desktopicon
+
+[Files]
+Source: "{#SourceDirItomBuild}\{#ExeName}"; DestDir: "{app}"; Flags: ignoreversion
+
+; Styles
+Source: "{#SourceDirItomBuild}\styles\*.*"; DestDir: "{app}\styles"; Flags: ignoreversion recursesubdirs
+
+; DLLs
+Source: "{#SourceDirItomBuild}\dataobject.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\itomCommonLib.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\itomCommonQtLib.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\itomCommonPlotLib.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\itomShapeLib.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\itomWidgets.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\pointcloud.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\qpropertyeditor.dll"; DestDir: "{app}"; Flags: ignoreversion
+; DLLs QT
+Source: "{#SourceDirQT}\D3Dcompiler_47.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\libGLESV2.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\opengl32sw.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5OpenGL.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5Core.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5Gui.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5Network.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5PrintSupport.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5Sql.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5Svg.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5Widgets.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\icudt54.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\icuin54.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\icuuc54.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\qscintilla2.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\QtWebEngineProcess.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\resources\icudtl.dat"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\resources\qtwebengine_resources.pak"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\resources\qtwebengine_resources_100p.pak"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\resources\qtwebengine_resources_200p.pak"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\translations\qt_*.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
+; DLLs QT Assistant
+Source: "{#SourceDirQT}\Qt5CLucene.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5Help.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5Multimedia.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5MultimediaWidgets.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5Positioning.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5Qml.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5Quick.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5Sensors.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5WebChannel.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5WebEngine.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5WebEngineCore.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5WebEngineWidgets.dll"; DestDir: "{app}"; Flags: ignoreversion
+; DLLs QT Designer
+Source: "{#SourceDirQT}\Qt5Designer.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5DesignerComponents.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\Qt5Xml.dll"; DestDir: "{app}"; Flags: ignoreversion
+; DLLs QT OpenCV
+Source: "{#SourceDirOpenCV}\opencv_core${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_common_release.dll"; DestDir: "{app}"; Flags: ignoreversion
+; DLLs QT Plugins
+Source: "{#SourceDirQT}\..\plugins\bearer\qgenericbearer.dll"; DestDir: "{app}\bearer"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\bearer\qnativewifibearer.dll"; DestDir: "{app}\bearer"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\iconengines\qsvgicon.dll"; DestDir: "{app}\iconengines"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\imageformats\qdds.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\imageformats\qgif.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\imageformats\qicns.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\imageformats\qico.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
+;Source: "{#SourceDirQT}\..\plugins\imageformats\qjp2.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\imageformats\qjpeg.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
+;Source: "{#SourceDirQT}\..\plugins\imageformats\qmng.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\imageformats\qsvg.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\imageformats\qtga.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\imageformats\qtiff.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\imageformats\qwbmp.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\imageformats\qwebp.dll"; DestDir: "{app}\imageformats"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\platforms\qminimal.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\platforms\qoffscreen.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\platforms\qwindows.dll"; DestDir: "{app}\platforms"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\printsupport\windowsprintersupport.dll"; DestDir: "{app}\printsupport"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\sqldrivers\qsqlite.dll"; DestDir: "{app}\sqldrivers"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\sqldrivers\qsqlmysql.dll"; DestDir: "{app}\sqldrivers"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\sqldrivers\qsqlodbc.dll"; DestDir: "{app}\sqldrivers"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\plugins\sqldrivers\qsqlpsql.dll"; DestDir: "{app}\sqldrivers"; Flags: ignoreversion
+
+; Python-Scripts
+Source: "{#SourceDirItomBuild}\itoDebugger.py"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\itoFunctions.py"; DestDir: "{app}"; Flags: ignoreversion
+
+; Icon-Sets
+Source: "{#SourceDirItomBuild}\iconThemeBright.rcc"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\iconThemeDark.rcc"; DestDir: "{app}"; Flags: ignoreversion
+
+; Hilfe
+Source: "{#SourceDirItomBuild}\docs\userDoc\build\qthelp\*.qch"; DestDir: "{app}\docs\userDoc\build\qthelp"; Flags: ignoreversion
+Source: "{#SourceDirQT}\assistant.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\qhelpgenerator.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\qcollectiongenerator.exe"; DestDir: "{app}"; Flags: ignoreversion
+
+; Sprachen
+Source: "{#SourceDirItomBuild}\translation\*.qm"; DestDir: "{app}\translation"; Flags: ignoreversion
+Source: "{#SourceDirQT}\..\translations\qt_??.qm"; DestDir: "{app}\translation"; Flags: ignoreversion
+
+; EXEs
+Source: "{#SourceDirQT}\assistant.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\designer.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\linguist.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\lrelease.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\lupdate.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirQT}\uic.exe"; DestDir: "{app}"; Flags: ignoreversion  
+
+; Default INI
+Source: "{#SourceDirItomBuild}\itomSettings\itomDefault.ini"; DestDir: "{app}\itomSettings"; Flags: ignoreversion  
+
+; Lizenz-Datei
+Source: "{#SourceDirItomSource}\Qitom\COPYING.txt"; DestDir: "{app}"; Flags: ignoreversion
+
+; itom-packages
+Source: "{#SourceDirItomBuild}\docs\pluginDoc\template\*.*"; DestDir: "{app}\docs\pluginDoc\template"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\demo\*.*"; DestDir: "{app}\demo"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\itom-packages\*.*"; DestDir: "{app}\itom-packages"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\itom-packages\apps\*.*"; DestDir: "{app}\itom-packages\apps"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\itom-packages\api_generator\*.*"; DestDir: "{app}\itom-packages\api_generator"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\itom-packages\abstractObjToolbar\*.*"; DestDir: "{app}\itom-packages\abstractObjToolbar"; Flags: ignoreversion
+;Source: "{#SourceDirItomBuild}\itom-packages\autostart\*.*"; DestDir: "{app}\itom-packages\autostart"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\itom-packages\camToolbar\*.*"; DestDir: "{app}\itom-packages\camToolbar"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\itom-packages\measurementSystem\*.*"; DestDir: "{app}\itom-packages\measurementSystem"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\itom-packages\mpl_itom\*.*"; DestDir: "{app}\itom-packages\mpl_itom"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\itom-packages\numpy_utils\*.*"; DestDir: "{app}\itom-packages\numpy_utils"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\itom-packages\plotToolBar\*.*"; DestDir: "{app}\itom-packages\plotToolBar"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\itom-packages\SurfaceCharakteristics\*.*"; DestDir: "{app}\itom-packages\SurfaceCharakteristics"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\SDK\*.*"; DestDir: "{app}\SDK"; Flags: ignoreversion; Components: SDK
+Source: "{#SourceDirItomBuild}\SDK\include\*.*"; DestDir: "{app}\SDK\include"; Flags: ignoreversion recursesubdirs; Components: SDK
+Source: "{#SourceDirItomBuild}\SDK\docs\*.*"; DestDir: "{app}\SDK\docs"; Flags: ignoreversion recursesubdirs; Components: SDK
+Source: "{#SourceDirItomBuild}\SDK\pluginTemplates\*.*"; DestDir: "{app}\SDK\pluginTemplates"; Flags: ignoreversion recursesubdirs; Components: SDK
+Source: "{#SourceDirItomBuild}\SDK\lib\vc12_x64\*.*"; DestDir: "{app}\SDK\lib\vc12_x64"; Flags: ignoreversion; Components: SDK
+Source: "{#SourcePythonDir}\*.*"; DestDir: "{app}\python3"; Flags: ignoreversion recursesubdirs
+
+; DesignerPlugins
+Source: "{#SourceDirItomBuild}\designer\dataObjectTable.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\designer\evaluateGeometrics.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\designer\itom1DQwtPlot.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\designer\itom2dQwtPlot.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\designer\itomGraphicView.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
+;Source: "{#SourceDirItomBuild}\designer\itomIsoGLFigurePlugin.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\designer\itomWidgets.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\designer\matplotlibPlot.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\designer\motorController.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\designer\slider2D.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\designer\twipOGLPlugin.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\designer\vtk3dVisualizer.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\designer\translation\*.qm"; DestDir: "{app}\designer\translation"; Flags: ignoreversion recursesubdirs
+
+; Plugins
+; Source: "{#SourceDirItomBuild}\plugins\AerotechA3200\*.*"; DestDir: "{app}\plugins\AerotechA3200"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\AerotechEnsemble\*.*"; DestDir: "{app}\plugins\AerotechEnsemble"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\AndorSDK3\*.*"; DestDir: "{app}\plugins\AndorSDK3"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\AvantesAvaSpec\*.*"; DestDir: "{app}\plugins\AvantesAvaSpec"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\AVTVimba\*.*"; DestDir: "{app}\plugins\AVTVimba"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\BasicFilters\*.*"; DestDir: "{app}\plugins\BasicFilters"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\BasicGPLFilters\*.*"; DestDir: "{app}\plugins\BasicGPLFilters"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\cmu1394\*.*"; DestDir: "{app}\plugins\cmu1394"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\CommonVisionBlox\*.*"; DestDir: "{app}\plugins\CommonVisionBlox"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\CyUSB\*.*"; DestDir: "{app}\plugins\CyUSB"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\dataobjectarithmetic\*.*"; DestDir: "{app}\plugins\dataobjectarithmetic"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\DataObjectIO\*.*"; DestDir: "{app}\plugins\DataObjectIO"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\demoAlgorithms\*.*"; DestDir: "{app}\plugins\demoAlgorithms"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\dispWindow\*.*"; DestDir: "{app}\plugins\dispWindow"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\DummyGrabber\*.*"; DestDir: "{app}\plugins\DummyGrabber"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\DummyMotor\*.*"; DestDir: "{app}\plugins\DummyMotor"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\FFTWfilters\*.*"; DestDir: "{app}\plugins\FFTWfilters"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\FileGrabber\*.*"; DestDir: "{app}\plugins\FileGrabber"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\FireGrabber\*.*"; DestDir: "{app}\plugins\FireGrabber"; Flags: ignoreversion recursesubdirs
+; Source: "{#SourceDirItomBuild}\plugins\FirgelliLAC\*.*"; DestDir: "{app}\plugins\FirgelliLAC"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\FittingFilters\*.*"; DestDir: "{app}\plugins\FittingFilters"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\FringeProj\*.*"; DestDir: "{app}\plugins\FringeProj"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\glDisplay\*.*"; DestDir: "{app}\plugins\glDisplay"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\GWInstekPSP\*.*"; DestDir: "{app}\plugins\GWInstekPSP"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\hidapi\*.*"; DestDir: "{app}\plugins\hidapi"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\IDSuEye\*.*"; DestDir: "{app}\plugins\IDSuEye"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\LeicaMotorFocus\*.*"; DestDir: "{app}\plugins\LeicaMotorFocus"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\LibModBus\*.*"; DestDir: "{app}\plugins\LibModBus"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\LibUSB\*.*"; DestDir: "{app}\plugins\LibUSB"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\MeasurementComputing\*.*"; DestDir: "{app}\plugins\MeasurementComputing"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\MSMediaFoundation\*.*"; DestDir: "{app}\plugins\MSMediaFoundation"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\NanotecStepMotor\*.*"; DestDir: "{app}\plugins\NanotecStepMotor"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\NewportSMC100\*.*"; DestDir: "{app}\plugins\NewportSMC100"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\NI-DAQmx\*.*"; DestDir: "{app}\plugins\NI-DAQmx"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\OpenCVFilters\*.*"; DestDir: "{app}\plugins\OpenCVFilters"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\OpenCVGrabber\*.*"; DestDir: "{app}\plugins\OpenCVGrabber"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\PclTools\*.*"; DestDir: "{app}\plugins\PclTools"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\PCOCamera\*.*"; DestDir: "{app}\plugins\PCOCamera"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\PCOPixelFly\*.*"; DestDir: "{app}\plugins\PCOPixelFly"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\PCOSensicam\*.*"; DestDir: "{app}\plugins\PCOSensicam"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\PGRFlyCapture\*.*"; DestDir: "{app}\plugins\PGRFlyCapture"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\PI_GCS2\*.*"; DestDir: "{app}\plugins\PI_GCS2"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\PiezosystemJena_NV40_1\*.*"; DestDir: "{app}\plugins\PiezosystemJena_NV40_1"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\PIPiezoCtrl\*.*"; DestDir: "{app}\plugins\PIPiezoCtrl"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\QCam\*.*"; DestDir: "{app}\plugins\QCam"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\rawImport\*.*"; DestDir: "{app}\plugins\rawImport"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\Roughness\*.*"; DestDir: "{app}\plugins\Roughness"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\SerialIO\*.*"; DestDir: "{app}\plugins\SerialIO"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\Standa8SMC4USB\*.*"; DestDir: "{app}\plugins\Standa8SMC4USB"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\SuperlumBL\*.*"; DestDir: "{app}\plugins\SuperlumBL"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\SuperlumBS\*.*"; DestDir: "{app}\plugins\SuperlumBS"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\ThorlabsBP\*.*"; DestDir: "{app}\plugins\ThorlabsBP"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\ThorlabsCCS\*.*"; DestDir: "{app}\plugins\ThorlabsCCS"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\ThorlabsISM\*.*"; DestDir: "{app}\plugins\ThorlabsISM"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\UhlRegister\*.*"; DestDir: "{app}\plugins\UhlRegister"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\UhlText\*.*"; DestDir: "{app}\plugins\UhlText"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\USBMotion3XIII\*.*"; DestDir: "{app}\plugins\USBMotion3XIII"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\Vistek\*.*"; DestDir: "{app}\plugins\Vistek"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\VRMagic\*.*"; DestDir: "{app}\plugins\VRMagic"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\x3pio\*.*"; DestDir: "{app}\plugins\x3pio"; Flags: ignoreversion recursesubdirs
+Source: "{#SourceDirItomBuild}\plugins\Ximea\*.*"; DestDir: "{app}\plugins\Ximea"; Flags: ignoreversion recursesubdirs
+
+; Libs OpenCV
+Source: "{#SourceDirOpenCV}\opencv_calib3d${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirOpenCV}\opencv_highgui${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirOpenCV}\opencv_imgcodecs${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirOpenCV}\opencv_imgproc${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirOpenCV}\opencv_features2d${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirOpenCV}\opencv_flann${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirOpenCV}\opencv_videoio${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+; Libs Plugins
+Source: "{#SourceDirItomBuild}\lib\1394camera.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\AeroBasic64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\atcl_bitflow.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\atcore.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\atdevregcam.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\cbw64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\dcraw.exe"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\EnsembleC64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\EnsembleCore64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\FlyCapture2_v110.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\iso5436-2-xml64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\libblas.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\libfftw3-3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\libfftw3f-3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\libgcc_s_seh-1.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\libgfortran-3.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\libiomp5md.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\liblapack.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\liblapacke.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\libquadmath-0.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\libwinpthread-1.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\libximc.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\m3apiX64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\PI_GCS2_DLL_x64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\SC2_Cam.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\SVGigE.x64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\SVGigETLFilter.x64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\SVGigETLWinsock.x64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.Benchtop.Piezo.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.DeviceManager.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\Thorlabs.MotionControl.IntegratedStepperMotors.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\VimbaC.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\VimbaCPP.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\vrmusbcam2.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\xerces-c_3_1_vc120.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\xiApi.NETX64.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\lib\iso5436_2.xsd"; DestDir: "{app}\lib"; Flags: ignoreversion
+; app PCL
+Source: "{#SourceDirPCL}\bin\pcl_features_release.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_filters_release.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_io_release.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_io_ply_release.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_kdtree_release.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_octree_release.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_recognition_release.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_sample_consensus_release.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_search_release.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_surface_release.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirPCL}\bin\pcl_visualization_release.dll"; DestDir: "{app}"; Flags: ignoreversion
+
+; Demo
+Source: "{#SourceDirItomSource}\demo\*.*"; DestDir: "{app}\demo"; Flags: ignoreversion recursesubdirs
 
 [Run]
 Filename: "{tmp}\MS_VS_12_vcredist_x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2012 Redistributable Package (x64)..."; Components: CREDPACK2012;
 Filename: "{tmp}\MS_VS_13_vcredist_x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2013 Redistributable Package (x64)..."; Components: CREDPACK2013;
 Filename: "{tmp}\Redistributable Visual Studio 2015 x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2015 Redistributable Package (x64)..."; Components: CREDPACK2015;
-Filename: "{tmp}\{#FNPython}"; Parameters: "TargetDir={%SystemDrive}\Python35 PrependPath=1 CompileAll=0"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPython} {#VePython}..."; Components: PYTHON; BeforeInstall: PythonBeforeInstall
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --upgrade --only-binary=:all: --no-index {tmp}\{#FNPythonPip}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPip}..."; Components: PYTHON
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonNumPy}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonNumPy}..."; Components: NUMPY
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSciPy}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSciPy}..."; Components: SCIPY
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSix}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSix}..."; Components: MATPLOTLIB
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyPars}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyPars}..."; Components: MATPLOTLIB
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyDateu}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyDateu}..."; Components: MATPLOTLIB
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyTz}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyTz}..."; Components: MATPLOTLIB
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonCycler}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonCycler}..."; Components: MATPLOTLIB
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonMatPlotLib}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonMatPlotLib}..."; Components: MATPLOTLIB
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSix}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSix}..."; Components: SCIKIT
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonDecor}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonDecor}..."; Components: SCIKIT
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonNetWorkX}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonNetWorkX}..."; Components: SCIKIT
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonDask}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonDask}..."; Components: SCIKIT
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonToolz}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonToolz}..."; Components: SCIKIT
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPillow}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPillow}..."; Components: SCIKIT
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSciKit}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSciKit}..."; Components: SCIKIT
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPies}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPies}..."; Components: FROSTED
-Filename: "{code:GetPythonPath}\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonFrosted}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonFrosted}..."; Components: FROSTED
-
-
+;Filename: "{tmp}\{#FNPython}"; Parameters: "TargetDir={%SystemDrive}\Python35 PrependPath=1 CompileAll=0"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPython} {#VePython}..."; Components: PYTHON; BeforeInstall: PythonBeforeInstall
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --upgrade --only-binary=:all: --no-index {tmp}\{#FNPythonPip}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPip}..."; Components: PYTHON
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonNumPy}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonNumPy}..."; Components: NUMPY
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSciPy}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSciPy}..."; Components: SCIPY
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSix}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSix}..."; Components: MATPLOTLIB
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyPars}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyPars}..."; Components: MATPLOTLIB
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyDateu}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyDateu}..."; Components: MATPLOTLIB
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyTz}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyTz}..."; Components: MATPLOTLIB
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonCycler}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonCycler}..."; Components: MATPLOTLIB
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonMatPlotLib}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonMatPlotLib}..."; Components: MATPLOTLIB
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSix}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSix}..."; Components: SCIKIT
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonDecor}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonDecor}..."; Components: SCIKIT
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonNetWorkX}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonNetWorkX}..."; Components: SCIKIT
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonDask}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonDask}..."; Components: SCIKIT
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonToolz}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonToolz}..."; Components: SCIKIT
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPillow}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPillow}..."; Components: SCIKIT
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSciKit}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSciKit}..."; Components: SCIKIT
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPies}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPies}..."; Components: FROSTED
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonFrosted}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonFrosted}..."; Components: FROSTED
 Filename: "{app}\{#ExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(Name, "&", "&&")}}"; Components: Main
 
 [InstallDelete]
 Type: files; Name: "{tmp}\MS_VS_12_vcredist_x64.exe"
 Type: files; Name: "{tmp}\MS_VS_13_vcredist_x64.exe"
 Type: files; Name: "{tmp}\Redistributable Visual Studio 2015 x64.exe"
-Type: files; Name: "{tmp}\{#FNPython}"
+;Type: files; Name: "{tmp}\{#FNPython}"
 Type: files; Name: "{tmp}\{#FNPythonPip}"
 Type: files; Name: "{tmp}\{#FNPythonNumPy}"
 Type: files; Name: "{tmp}\{#FNPythonSciPy}"
