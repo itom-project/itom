@@ -68,7 +68,7 @@
 
 #include "../organizer/paletteOrganizer.h"
 
-#include <QMessageBox.h>
+#include <qmessagebox.h>
 
 #if ITOM_PYTHONMATLAB == 1
 #include "pythonMatlab.h"
