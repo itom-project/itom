@@ -27,9 +27,9 @@
 ; - NaPythonXY name of Python module XY
 ; - VePythonXY version of Python module XY
 
-; #define FNPython "python-3.5.1.exe"
+;#define FNPython "python-3.5.1.exe"
 #define NaPython "Python"
-#define VePython "3.5.1"
+#define VePython "3.5.2"
 
 #define FNPythonPip "pip-8.1.2-py2.py3-none-any.whl"
 #define NaPythonPip "Pip"
