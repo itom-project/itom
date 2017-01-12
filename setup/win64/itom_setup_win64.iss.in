@@ -185,14 +185,9 @@ Source: "{#SourceDirItomBuild}\pointcloud.dll"; DestDir: "{app}"; Flags: ignorev
 Source: "{#SourceDirItomBuild}\qpropertyeditor.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourcePythonDir}\python35.dll"; DestDir: "{app}"; Flags: ignoreversion
 ; DLLs Redistributable 2012-2015
-Source: "{#SourceRedistributableDir}\2012\64 Bit\msvcp110.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceRedistributableDir}\2012\64 Bit\msvcr110.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceRedistributableDir}\2012\64 Bit\vccorlib110.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceRedistributableDir}\2013\64 Bit\msvcp120.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceRedistributableDir}\2013\64 Bit\msvcr120.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceRedistributableDir}\2013\64 Bit\vcomp120.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceRedistributableDir}\2015\64 Bit\msvcp140.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourceRedistributableDir}\2015\64 Bit\vcruntime140.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceRedistributableDir}\2012\64 Bit\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceRedistributableDir}\2013\64 Bit\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceRedistributableDir}\2015\64 Bit\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 ; DLLs QT
 Source: "{#SourceDirQT}\D3Dcompiler_47.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
