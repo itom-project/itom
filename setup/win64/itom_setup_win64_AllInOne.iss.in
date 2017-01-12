@@ -19,7 +19,9 @@
 #define SourceRedistributable2013 "W:\m\ITOM\Installationen\1. MS VisualStudio 2013 Pro"
 #define SourceRedistributable2015 "W:\m\ITOM\Installationen\5. Python 3.5\64bit"
 #define SourcePythonPackDir "W:\m\ITOM\Installationen\5. Python 3.5\64bit\Numpy1.11.1-Basis"
-#define SourcePythonDir "{#SourceDirItomBuild}\python3"
+#define SourcePythonDir "W:\m\ITOM\Python\3.5\x86\Python3.5.2_x86_minimal"
+;#define SourcePythonDir "W:\m\ITOM\Python\3.5\x64\Python3.5.2_x64_minimal"
+#define SourceRedistributableDir "W:\m\ITOM\Microsoft Visual C++ Redistributable Package DLLs"
 
 ; Python
 ; - FNPythonXY file name of Python module XY
@@ -116,7 +118,7 @@ OutputBaseFilename=setup
 Compression=lzma
 SolidCompression=yes
 LicenseFile={#SourceDirItomSource}\COPYING.txt
-AlwaysRestart=True
+AlwaysRestart=False
 
 [Dirs]
 Name: "{app}\"; Permissions: everyone-modify
@@ -127,7 +129,6 @@ Name: "{app}\demo"; Permissions: everyone-modify
 Name: "{app}\itomSettings"; Permissions: everyone-modify
 Name: "{app}\lib"; Permissions: everyone-modify
 Name: "{app}\help"; Permissions: everyone-modify
-; Name: "{app}\sqldrivers"; Permissions: everyone-modify
 Name: "{app}\imageformats"; Permissions: everyone-modify
 Name: "{app}\translation"; Permissions: everyone-modify
 Name: "{app}\itom-packages"; Permissions: everyone-modify
@@ -135,10 +136,10 @@ Name: "{app}\SDK"; Permissions: everyone-modify
 
 [Files]
 ; EXEs
-Source: "{#SourceRedistributable2012}\MS_VS_12_vcredist_x64.exe"; DestDir: "{tmp}"
-Source: "{#SourceRedistributable2013}\MS_VS_13_vcredist_x64.exe"; DestDir: "{tmp}"
-Source: "{#SourceRedistributable2015}\Redistributable Visual Studio 2015 x64.exe"; DestDir: "{tmp}"
-Source: "{#SourcePythonPackDir}\{#FNPython}"; DestDir: "{tmp}"
+;Source: "{#SourceRedistributable2012}\MS_VS_12_vcredist_x64.exe"; DestDir: "{tmp}"
+;Source: "{#SourceRedistributable2013}\MS_VS_13_vcredist_x64.exe"; DestDir: "{tmp}"
+;Source: "{#SourceRedistributable2015}\Redistributable Visual Studio 2015 x64.exe"; DestDir: "{tmp}"
+;Source: "{#SourcePythonPackDir}\{#FNPython}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonPip}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonNumPy}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonSciPy}"; DestDir: "{tmp}"
@@ -183,6 +184,16 @@ Source: "{#SourceDirItomBuild}\itomShapeLib.dll"; DestDir: "{app}"; Flags: ignor
 Source: "{#SourceDirItomBuild}\itomWidgets.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\pointcloud.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\qpropertyeditor.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourcePythonDir}\python35.dll"; DestDir: "{app}"; Flags: ignoreversion
+; DLLs Redistributable 2012-2015
+Source: "{#SourceRedistributableDir}\2012\64 Bit\msvcp110.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceRedistributableDir}\2012\64 Bit\msvcr110.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceRedistributableDir}\2012\64 Bit\vccorlib110.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceRedistributableDir}\2013\64 Bit\msvcp120.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceRedistributableDir}\2013\64 Bit\msvcr120.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceRedistributableDir}\2013\64 Bit\vcomp120.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceRedistributableDir}\2015\64 Bit\msvcp140.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceRedistributableDir}\2015\64 Bit\vcruntime140.dll"; DestDir: "{app}"; Flags: ignoreversion
 ; DLLs QT
 Source: "{#SourceDirQT}\D3Dcompiler_47.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -310,7 +321,6 @@ Source: "{#SourceDirItomBuild}\designer\evaluateGeometrics.dll"; DestDir: "{app}
 Source: "{#SourceDirItomBuild}\designer\itom1DQwtPlot.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\designer\itom2dQwtPlot.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\designer\itomGraphicView.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
-;Source: "{#SourceDirItomBuild}\designer\itomIsoGLFigurePlugin.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\designer\itomWidgets.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\designer\matplotlibPlot.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\designer\motorController.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
@@ -445,34 +455,34 @@ Source: "{#SourceDirPCL}\bin\pcl_visualization_release.dll"; DestDir: "{app}"; F
 Source: "{#SourceDirItomSource}\demo\*.*"; DestDir: "{app}\demo"; Flags: ignoreversion recursesubdirs
 
 [Run]
-Filename: "{tmp}\MS_VS_12_vcredist_x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2012 Redistributable Package (x64)..."; Components: CREDPACK2012;
-Filename: "{tmp}\MS_VS_13_vcredist_x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2013 Redistributable Package (x64)..."; Components: CREDPACK2013;
-Filename: "{tmp}\Redistributable Visual Studio 2015 x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2015 Redistributable Package (x64)..."; Components: CREDPACK2015;
+;Filename: "{tmp}\MS_VS_12_vcredist_x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2012 Redistributable Package (x64)..."; Components: CREDPACK2012;
+;Filename: "{tmp}\MS_VS_13_vcredist_x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2013 Redistributable Package (x64)..."; Components: CREDPACK2013;
+;Filename: "{tmp}\Redistributable Visual Studio 2015 x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2015 Redistributable Package (x64)..."; Components: CREDPACK2015;
 ;Filename: "{tmp}\{#FNPython}"; Parameters: "TargetDir={%SystemDrive}\Python35 PrependPath=1 CompileAll=0"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPython} {#VePython}..."; Components: PYTHON; BeforeInstall: PythonBeforeInstall
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --upgrade --only-binary=:all: --no-index {tmp}\{#FNPythonPip}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPip}..."; Components: PYTHON
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonNumPy}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonNumPy}..."; Components: NUMPY
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSciPy}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSciPy}..."; Components: SCIPY
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSix}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSix}..."; Components: MATPLOTLIB
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyPars}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyPars}..."; Components: MATPLOTLIB
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyDateu}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyDateu}..."; Components: MATPLOTLIB
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyTz}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyTz}..."; Components: MATPLOTLIB
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonCycler}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonCycler}..."; Components: MATPLOTLIB
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonMatPlotLib}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonMatPlotLib}..."; Components: MATPLOTLIB
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSix}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSix}..."; Components: SCIKIT
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonDecor}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonDecor}..."; Components: SCIKIT
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonNetWorkX}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonNetWorkX}..."; Components: SCIKIT
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonDask}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonDask}..."; Components: SCIKIT
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonToolz}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonToolz}..."; Components: SCIKIT
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPillow}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPillow}..."; Components: SCIKIT
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSciKit}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSciKit}..."; Components: SCIKIT
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPies}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPies}..."; Components: FROSTED
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonFrosted}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonFrosted}..."; Components: FROSTED
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonNumPy}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonNumPy}..."; Components: PYTHON\NUMPY
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSciPy}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSciPy}..."; Components: PYTHON\SCIPY
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSix}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSix}..."; Components: PYTHON\MATPLOTLIB
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyPars}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyPars}..."; Components: PYTHON\MATPLOTLIB
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyDateu}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyDateu}..."; Components: PYTHON\MATPLOTLIB
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyTz}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyTz}..."; Components: PYTHON\MATPLOTLIB
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonCycler}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonCycler}..."; Components: PYTHON\MATPLOTLIB
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonMatPlotLib}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonMatPlotLib}..."; Components: PYTHON\MATPLOTLIB
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSix}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSix}..."; Components: PYTHON\SCIKIT
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonDecor}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonDecor}..."; Components: PYTHON\SCIKIT
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonNetWorkX}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonNetWorkX}..."; Components: PYTHON\SCIKIT
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonDask}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonDask}..."; Components: PYTHON\SCIKIT
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonToolz}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonToolz}..."; Components: PYTHON\SCIKIT
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPillow}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPillow}..."; Components: PYTHON\SCIKIT
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSciKit}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSciKit}..."; Components: PYTHON\SCIKIT
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPies}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPies}..."; Components: PYTHON\FROSTED
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonFrosted}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonFrosted}..."; Components: PYTHON\FROSTED
 Filename: "{app}\{#ExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(Name, "&", "&&")}}"; Components: Main
 
 [InstallDelete]
-Type: files; Name: "{tmp}\MS_VS_12_vcredist_x64.exe"
-Type: files; Name: "{tmp}\MS_VS_13_vcredist_x64.exe"
-Type: files; Name: "{tmp}\Redistributable Visual Studio 2015 x64.exe"
+;Type: files; Name: "{tmp}\MS_VS_12_vcredist_x64.exe"
+;Type: files; Name: "{tmp}\MS_VS_13_vcredist_x64.exe"
+;Type: files; Name: "{tmp}\Redistributable Visual Studio 2015 x64.exe"
 ;Type: files; Name: "{tmp}\{#FNPython}"
 Type: files; Name: "{tmp}\{#FNPythonPip}"
 Type: files; Name: "{tmp}\{#FNPythonNumPy}"
@@ -498,15 +508,15 @@ Name: "Install"; Description: "Installation"; Flags: iscustom
 
 [Components]
 Name: "Main"; Description: "{#Name}"; Types: Install; Flags: checkablealone fixed
-Name: "CREDPACK2012"; Description: "Microsoft Visual C++ 2012 Redistributable Package (x64)"; Types: Install; Flags: checkablealone fixed; Check: NeedInstallRP12({#DSetupMode})
-Name: "CREDPACK2013"; Description: "Microsoft Visual C++ 2013 Redistributable Package (x64)"; Types: Install; Flags: checkablealone fixed; Check: NeedInstallRP13({#DSetupMode})
-Name: "CREDPACK2015"; Description: "Microsoft Visual C++ 2015 Redistributable Package (x64)"; Types: Install; Flags: checkablealone fixed; Check: NeedInstallRP15({#DSetupMode})
+;Name: "CREDPACK2012"; Description: "Microsoft VC++ 2012 Redistrib. Pack (x64) (required by some plugins)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP12({#DSetupMode})
+;Name: "CREDPACK2013"; Description: "Microsoft VC++ 2013 Redistrib. Pack (x64) (required by itom)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP13({#DSetupMode})
+;Name: "CREDPACK2015"; Description: "Microsoft VC++ 2015 Redistrib. Pack (x64) (required by some python packages)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP15({#DSetupMode})
 Name: "PYTHON"; Description: "{#NaPython} {#VePython}"; Types: Install; Flags: checkablealone
-Name: "NUMPY"; Description: "{#NaPythonNumPy} {#VePythonNumPy}"; Types: Install; Flags: checkablealone
-Name: "SCIPY"; Description: "{#NaPythonSciPy} {#VePythonSciPy}"; Types: Install; Flags: checkablealone
-Name: "MATPLOTLIB"; Description: "{#NaPythonMatPlotLib} {#VePythonMatPlotLib}"; Types: Install; Flags: checkablealone
-Name: "SCIKIT"; Description: "{#NaPythonSciKit} {#VePythonSciKit}"; Types: Install; Flags: checkablealone
-Name: "FROSTED"; Description: "{#NaPythonFrosted} {#VePythonFrosted}"; Types: Install; Flags: checkablealone
+Name: "PYTHON\NUMPY"; Description: "{#NaPythonNumPy} {#VePythonNumPy}"; Types: Install; Flags: checkablealone
+Name: "PYTHON\SCIPY"; Description: "{#NaPythonSciPy} {#VePythonSciPy}"; Types: Install; Flags: checkablealone
+Name: "PYTHON\MATPLOTLIB"; Description: "{#NaPythonMatPlotLib} {#VePythonMatPlotLib}"; Types: Install; Flags: checkablealone
+Name: "PYTHON\SCIKIT"; Description: "{#NaPythonSciKit} {#VePythonSciKit}"; Types: Install; Flags: checkablealone
+Name: "PYTHON\FROSTED"; Description: "{#NaPythonFrosted} {#VePythonFrosted}"; Types: Install; Flags: checkablealone
 Name: "SDK"; Description: "itom SDK"; Types: Install; Flags: checkablealone
 
 [UninstallDelete]

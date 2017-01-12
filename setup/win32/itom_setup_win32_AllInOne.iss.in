@@ -19,8 +19,8 @@
 #define SourceRedistributable2013 "W:\m\ITOM\Installationen\1. MS VisualStudio 2013 Pro"
 #define SourceRedistributable2015 "W:\m\ITOM\Installationen\5. Python 3.5\32bit"
 #define SourcePythonPackDir "W:\m\ITOM\Installationen\5. Python 3.5\32bit\Numpy1.11.1-Basis"
-;#define SourcePythonDir "{#SourceDirItomBuild}\python3"
 #define SourcePythonDir "W:\m\ITOM\Python\3.5\x86\Python3.5.2_x86_minimal"
+#define SourceRedistributableDir "W:\m\ITOM\Microsoft Visual C++ Redistributable Package DLLs"
 
 ; Python
 ; - FNPythonXY file name of Python module XY
@@ -128,7 +128,6 @@ Name: "{app}\demo"; Permissions: everyone-modify
 Name: "{app}\itomSettings"; Permissions: everyone-modify
 Name: "{app}\lib"; Permissions: everyone-modify
 Name: "{app}\help"; Permissions: everyone-modify
-; Name: "{app}\sqldrivers"; Permissions: everyone-modify
 Name: "{app}\imageformats"; Permissions: everyone-modify
 Name: "{app}\translation"; Permissions: everyone-modify
 Name: "{app}\itom-packages"; Permissions: everyone-modify
@@ -136,10 +135,10 @@ Name: "{app}\SDK"; Permissions: everyone-modify
 
 [Files]
 ; EXEs
-Source: "{#SourceRedistributable2012}\MS_VS_12_vcredist_x86.exe"; DestDir: "{tmp}"
-Source: "{#SourceRedistributable2013}\MS_VS_13_vcredist_x86.exe"; DestDir: "{tmp}"
-Source: "{#SourceRedistributable2015}\Redistributable Visual Studio 2015 x86.exe"; DestDir: "{tmp}"
-; Source: "{#SourcePythonPackDir}\{#FNPython}"; DestDir: "{tmp}"
+;Source: "{#SourceRedistributable2012}\MS_VS_12_vcredist_x86.exe"; DestDir: "{tmp}"
+;Source: "{#SourceRedistributable2013}\MS_VS_13_vcredist_x86.exe"; DestDir: "{tmp}"
+;Source: "{#SourceRedistributable2015}\Redistributable Visual Studio 2015 x86.exe"; DestDir: "{tmp}"
+;Source: "{#SourcePythonPackDir}\{#FNPython}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonPip}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonNumPy}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonSciPy}"; DestDir: "{tmp}"
@@ -185,6 +184,15 @@ Source: "{#SourceDirItomBuild}\itomWidgets.dll"; DestDir: "{app}"; Flags: ignore
 Source: "{#SourceDirItomBuild}\pointcloud.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\qpropertyeditor.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourcePythonDir}\python35.dll"; DestDir: "{app}"; Flags: ignoreversion
+; DLLs Redistributable 2012-2015
+Source: "{#SourceRedistributableDir}\2012\32 Bit\msvcp110.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceRedistributableDir}\2012\32 Bit\msvcr110.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceRedistributableDir}\2012\32 Bit\vccorlib110.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceRedistributableDir}\2013\32 Bit\msvcp120.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceRedistributableDir}\2013\32 Bit\msvcr120.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceRedistributableDir}\2013\32 Bit\vcomp120.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceRedistributableDir}\2015\32 Bit\msvcp140.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceRedistributableDir}\2015\32 Bit\vcruntime140.dll"; DestDir: "{app}"; Flags: ignoreversion
 ; DLLs QT
 Source: "{#SourceDirQT}\D3Dcompiler_47.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -312,7 +320,6 @@ Source: "{#SourceDirItomBuild}\designer\evaluateGeometrics.dll"; DestDir: "{app}
 Source: "{#SourceDirItomBuild}\designer\itom1DQwtPlot.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\designer\itom2dQwtPlot.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\designer\itomGraphicView.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
-;Source: "{#SourceDirItomBuild}\designer\itomIsoGLFigurePlugin.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\designer\itomWidgets.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\designer\matplotlibPlot.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\designer\motorController.dll"; DestDir: "{app}\designer"; Flags: ignoreversion
@@ -413,6 +420,7 @@ Source: "{#SourceDirItomBuild}\lib\libiomp5md.dll"; DestDir: "{app}\lib"; Flags:
 Source: "{#SourceDirItomBuild}\lib\liblapack.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\liblapacke.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libquadmath-0.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
+;Source: "{#SourceDirItomBuild}\lib\libwinpthread-1.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\libximc.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\m3api.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\lib\PI_GCS2_DLL.dll"; DestDir: "{app}\lib"; Flags: ignoreversion
@@ -446,9 +454,9 @@ Source: "{#SourceDirPCL}\bin\pcl_visualization_release.dll"; DestDir: "{app}"; F
 Source: "{#SourceDirItomSource}\demo\*.*"; DestDir: "{app}\demo"; Flags: ignoreversion recursesubdirs
 
 [Run]
-Filename: "{tmp}\MS_VS_12_vcredist_x86.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2012 Redistributable Package (x86)..."; Components: CREDPACK2012;
-Filename: "{tmp}\MS_VS_13_vcredist_x86.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2013 Redistributable Package (x86)..."; Components: CREDPACK2013;
-Filename: "{tmp}\Redistributable Visual Studio 2015 x86.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2015 Redistributable Package (x86)..."; Components: CREDPACK2015;
+;Filename: "{tmp}\MS_VS_12_vcredist_x86.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2012 Redistributable Package (x86)..."; Components: CREDPACK2012;
+;Filename: "{tmp}\MS_VS_13_vcredist_x86.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2013 Redistributable Package (x86)..."; Components: CREDPACK2013;
+;Filename: "{tmp}\Redistributable Visual Studio 2015 x86.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2015 Redistributable Package (x86)..."; Components: CREDPACK2015;
 ;Filename: "{tmp}\{#FNPython}"; Parameters: "TargetDir={%SystemDrive}\Python35 PrependPath=1 CompileAll=0"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPython} {#VePython}..."; Components: PYTHON; BeforeInstall: PythonBeforeInstall
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --upgrade --only-binary=:all: --no-index {tmp}\{#FNPythonPip}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPip}..."; Components: PYTHON
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonNumPy}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonNumPy}..."; Components: PYTHON\NUMPY
@@ -471,9 +479,9 @@ Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=
 Filename: "{app}\{#ExeName}"; Flags: nowait postinstall skipifsilent; Description: "{cm:LaunchProgram,{#StringChange(Name, "&", "&&")}}"; Components: Main
 
 [InstallDelete]
-Type: files; Name: "{tmp}\MS_VS_12_vcredist_x86.exe"
-Type: files; Name: "{tmp}\MS_VS_13_vcredist_x86.exe"
-Type: files; Name: "{tmp}\Redistributable Visual Studio 2015 x86.exe"
+;Type: files; Name: "{tmp}\MS_VS_12_vcredist_x86.exe"
+;Type: files; Name: "{tmp}\MS_VS_13_vcredist_x86.exe"
+;Type: files; Name: "{tmp}\Redistributable Visual Studio 2015 x86.exe"
 ;Type: files; Name: "{tmp}\{#FNPython}"
 Type: files; Name: "{tmp}\{#FNPythonPip}"
 Type: files; Name: "{tmp}\{#FNPythonNumPy}"
@@ -499,9 +507,9 @@ Name: "Install"; Description: "Installation"; Flags: iscustom
 
 [Components]
 Name: "Main"; Description: "{#Name}"; Types: Install; Flags: checkablealone fixed
-Name: "CREDPACK2012"; Description: "Microsoft Visual C++ 2012 Redistributable Package (x86)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP12({#DSetupMode})
-Name: "CREDPACK2013"; Description: "Microsoft Visual C++ 2013 Redistributable Package (x86)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP13({#DSetupMode})
-Name: "CREDPACK2015"; Description: "Microsoft Visual C++ 2015 Redistributable Package (x86)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP15({#DSetupMode})
+;Name: "CREDPACK2012"; Description: "Microsoft VC++ 2012 Redistrib. Pack (x86) (required by some plugins)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP12({#DSetupMode})
+;Name: "CREDPACK2013"; Description: "Microsoft VC++ 2013 Redistrib. Pack (x86) (required by itom)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP13({#DSetupMode})
+;Name: "CREDPACK2015"; Description: "Microsoft VC++ 2015 Redistrib. Pack (x86) (required by some python packages)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP15({#DSetupMode})
 Name: "PYTHON"; Description: "{#NaPython} {#VePython}"; Types: Install; Flags: checkablealone
 Name: "PYTHON\NUMPY"; Description: "{#NaPythonNumPy} {#VePythonNumPy}"; Types: Install; Flags: checkablealone
 Name: "PYTHON\SCIPY"; Description: "{#NaPythonSciPy} {#VePythonSciPy}"; Types: Install; Flags: checkablealone
