@@ -67,14 +67,14 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/styles DESTINATION ${CMAKE_CURRENT_BINARY_
 #CONFIGURE AND PREPARE THE INNO SETUP FILES (require location of Qt, therefore find_package_qt must be called)
 include("ItomBuildMacros.cmake")  
 FIND_PACKAGE_QT(ON Core)
+#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32.iss )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32_AllInOne.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32_AllInOne.iss )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32_common_files.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32_common_files.iss )
+#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win32/itom_setup_win32_common_files.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32_common_files.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win32/itom_setup_win32_code.iss )
 
+#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64.iss )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64_AllInOne.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64_AllInOne.iss )
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64_common_files.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64_common_files.iss )
+#configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/win64/itom_setup_win64_common_files.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64_common_files.iss )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/setup/common/itom_setup_code.iss.in ${CMAKE_CURRENT_BINARY_DIR}/setup/win64/itom_setup_win64_code.iss )
 ################################################################################################################ 
 
