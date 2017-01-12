@@ -68,6 +68,8 @@
 
 #include "../organizer/paletteOrganizer.h"
 
+#include <QMessageBox.h>
+
 #if ITOM_PYTHONMATLAB == 1
 #include "pythonMatlab.h"
 #endif
@@ -316,19 +318,19 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             //check if an alternative home directory of Python should be set:
             QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
             settings.beginGroup("Python");
-            QString pythonHomeUserDirectory = settings.value("pyHome", "").toString();
+            QString pythonHomeFromSettings = settings.value("pyHome", "").toString();
             int pythonDirState = settings.value("pyDirState", -1).toInt();
-            if (pythonDirState == -1)
+            if (pythonDirState == -1) //not yet decided
             {
 #ifdef WIN32
                 if (QDir(pythonSubDir).exists() && \
                     QFileInfo(pythonSubDir + QString("/python%1%2.dll").arg(PY_MAJOR_VERSION).arg(PY_MINOR_VERSION)).exists())
                 {
-                    pythonDirState = 0;
+                    pythonDirState = 0; //use pythonXX subdirectory of itom as python home path
                 }
                 else
                 {
-                    pythonDirState = 1;
+                    pythonDirState = 1; //use python default search mechanism for home path (e.g. registry...)
                 }
 #else
                 pythonDirState = 1;
@@ -339,7 +341,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             settings.endGroup();
 
             QString pythonDir = "";
-            if (pythonDirState == 0)
+            if (pythonDirState == 0) //use pythonXX subdirectory of itom as python home path
             {
                 if (QDir(pythonSubDir).exists())
                 {
@@ -352,16 +354,17 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                     return;
                 }
             }
-            else if (pythonDirState == 2)
+            else if (pythonDirState == 2) //user-defined value
             {
-                if (QDir(pythonHomeUserDirectory).exists())
+                
+                if (QDir(pythonHomeFromSettings).exists())
                 {
-                    pythonDir = pythonHomeUserDirectory;
+                    pythonDir = pythonHomeFromSettings;
                 }
                 else
                 {
                     (*retValue) += RetVal::format(retError, 0, tr("Settings value Python::pyHome has not been set as Python Home directory since it does not exist:  %s").toLatin1().data(),
-                        pythonHomeUserDirectory.toLatin1().data());
+                        pythonHomeFromSettings.toLatin1().data());
                     return;
                 }
             }
@@ -374,7 +377,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 memset(m_pUserDefinedPythonHome, 0, (pythonDir.size() + 10) * sizeof(wchar_t));
                 pythonDir.toWCharArray(m_pUserDefinedPythonHome);
 #else
-                m_pUserDefinedPythonHome = Py_DecodeLocale(pythonHomeUserDirectory.toLatin1().data(), NULL);
+                m_pUserDefinedPythonHome = Py_DecodeLocale(pythonDir.toLatin1().data(), NULL);
 #endif
                 Py_SetPythonHome(m_pUserDefinedPythonHome);
             }
