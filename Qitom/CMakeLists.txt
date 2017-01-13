@@ -64,6 +64,10 @@ find_package(NumPy REQUIRED)
 find_package(VisualLeakDetector QUIET)
 find_package(HTMLHelp)
 find_package(LATEX QUIET) 
+
+message(STATUS "Python include directory: ${PYTHON_INCLUDE_DIR}")
+message(STATUS "Python executable: ${PYTHON_EXECUTABLE}")
+message(STATUS "Numpy include directory: ${NUMPY_INCLUDE_DIRS}")
         
            
 ADD_DEFINITIONS(${QT_DEFINITIONS})  
