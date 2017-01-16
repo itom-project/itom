@@ -35,7 +35,7 @@
 #include <qmessagebox.h>
 #include <qinputdialog.h>
 #include <qabstractitemmodel.h>
-#include "../../AddInManager/PlugInModel.h"
+#include "../../AddInManager/pluginModel.h"
 
 namespace ito {
 

@@ -186,7 +186,7 @@ set(qitom_HEADERS_NOMOC
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/typeDefs.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/numeric.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/color.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/PlugInModel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/pluginModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/addInManager.h
 	${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/algoInterfaceValidator.h
     
@@ -213,7 +213,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
-    #${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/models/pluginModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.h
 	#${CMAKE_CURRENT_SOURCE_DIR}/organizer/addInManager.h
@@ -421,8 +421,8 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/models/PlugInModel.cpp
-	#${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/PlugInModel.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/models/pluginModel.cpp
+	#${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/pluginModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.cpp
     #${CMAKE_CURRENT_SOURCE_DIR}/organizer/addInManager.cpp

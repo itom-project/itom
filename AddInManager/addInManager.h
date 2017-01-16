@@ -34,7 +34,7 @@
 #if ITOM_POINTCLOUDLIBRARY > 0
     #include "../PointCloud/pclStructures.h"
 #endif
-#include "PlugInModel.h"
+#include "pluginModel.h"
 #include "algoInterfaceValidator.h"
 
 #if !defined(Q_MOC_RUN) || defined(ADDINMGR_DLL) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
@@ -80,13 +80,13 @@ namespace ito
             //!> return parameters used for / within a filter based on the filter function pointer
             const ito::FilterParams* getHashedFilterParams(ito::AddInAlgo::t_filterParam filterParam) const;
             //!> return status of all plugins
-            const QList<PluginLoadStatus> getPluginLoadStatus() const;
+            const QList<struct PluginLoadStatus> getPluginLoadStatus() const;
             //!> 
             const AlgoInterfaceValidator * getAlgoInterfaceValidator(void) const;
             //!> 
             const ito::AddInAlgo::AlgoWidgetDef * getAlgoWidgetDef( QString algoWidgetName, QString algoPluginName = QString() );
 
-            PlugInModel * getPluginModel(void);
+            class PlugInModel * getPluginModel(void);
             //!> Reload plugin library (dll)
             const RetVal reloadAddIn(const QString &name);
             int getNumTotItems(void) const;

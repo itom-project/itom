@@ -218,6 +218,16 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
+    StringMeta::StringMeta(StringMeta& cpy) : ParamMeta(rttiStringMeta), m_stringType(cpy.m_stringType), m_len(cpy.m_len), m_val(NULL)
+    {
+        if(m_len > 0)
+        {
+            m_val = (char**) calloc(m_len, sizeof(char*));
+            for(int i=0;i<m_len;++i) m_val[i] = _strdup(cpy.m_val[i]);
+        }
+    }
+
+    //---------------------------------------------------------------------------------
     /*virtual*/ StringMeta::~StringMeta()
     {
 		for (int i = 0; i < m_len; ++i)
@@ -277,7 +287,8 @@ namespace ito
     //---------------------------------------------------------------------------------
     StringMeta & StringMeta::operator = (const StringMeta &rhs)
     {
-        return StringMeta(rhs);
+        ito::StringMeta sm = StringMeta(rhs);
+        return sm;
     }
 
     //---------------------------------------------------------------------------------

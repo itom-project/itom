@@ -20,7 +20,7 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "PlugInModel.h"
+#include "pluginModel.h"
 #include "addInManager.h"
 #include <qfileinfo.h>
 

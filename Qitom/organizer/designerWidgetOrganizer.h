@@ -25,7 +25,7 @@
 
 #include "../../common/sharedStructures.h"
 #include "../../common/sharedStructuresGraphics.h"
-#include "../../AddInManager/PlugInModel.h"
+#include "../../AddInManager/pluginModel.h"
 #include "plot/AbstractItomDesignerPlugin.h"
 
 #include <qobject.h>

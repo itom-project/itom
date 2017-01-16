@@ -32,6 +32,7 @@
 #include "./models/UserModel.h"
 #include "organizer/userOrganizer.h"
 #include "widgets/scriptDockWidget.h"
+#include "widgets/scriptEditorWidget.h"
 #include "./ui/dialogSelectUser.h"
 #include "ui/dialogPipManager.h"
 #include "ui/dialogCloseItom.h"
@@ -87,7 +88,7 @@ namespace ito
 
 //! static instance pointer initialization
 MainApplication* MainApplication::mainApplicationInstance = NULL;
-ito::AddInManager *ito::AddInManagerInst = NULL;
+AddInManager *AddInManagerInst = NULL;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
@@ -146,10 +147,10 @@ MainApplication::~MainApplication()
 //----------------------------------------------------------------------------------------------------------------------------------
 void MainApplication::registerMetaObjects()
 {
-    qRegisterMetaTypeStreamOperators<ito::ScriptEditorStorage>("ito::ScriptEditorStorage");
-    qRegisterMetaTypeStreamOperators<QList<ito::ScriptEditorStorage> >("QList<ito::ScriptEditorStorage>");
+    qRegisterMetaTypeStreamOperators<ScriptEditorStorage>("ito::ScriptEditorStorage");
+    qRegisterMetaTypeStreamOperators<QList<ScriptEditorStorage> >("QList<ito::ScriptEditorStorage>");
 
-    qRegisterMetaTypeStreamOperators<ito::BreakPointItem>("BreakPointItem");
+    qRegisterMetaTypeStreamOperators<BreakPointItem>("BreakPointItem");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -442,7 +443,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     m_splashScreen->showMessage(tr("load process organizer..."), Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
-    m_processOrganizer = new ito::ProcessOrganizer();
+    m_processOrganizer = new ProcessOrganizer();
     AppManagement::setProcessOrganizer(qobject_cast<QObject*>(m_processOrganizer));
 
     qDebug("MainApplication::setupApplication");
@@ -451,8 +452,8 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     m_splashScreen->showMessage(tr("scan and load plugins..."), Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
-    ito::AddInManager *AIM = new AddInManager(AppManagement::getSettingsFile(), ito::ITOM_API_FUNCS_GRAPH, AppManagement::getMainWindow(), AppManagement::getMainApplication());
-    ito::ITOM_API_FUNCS = AIM->getItomApiFuncsPtr();
+    AddInManager *AIM = new AddInManager(AppManagement::getSettingsFile(), ITOM_API_FUNCS_GRAPH, AppManagement::getMainWindow(), AppManagement::getMainApplication());
+    ITOM_API_FUNCS = AIM->getItomApiFuncsPtr();
     AIM->setTimeOuts(AppManagement::timeouts.pluginInitClose, AppManagement::timeouts.pluginGeneral);
     AddInManagerInst = AIM;
     connect(AIM, SIGNAL(splashLoadMessage(const QString&, int, const QColor &)), m_splashScreen, SLOT(showMessage(const QString&, int, const QColor &)));
@@ -472,7 +473,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     m_pyThread = new QThread();
     m_pyEngine->moveToThread(m_pyThread);
     m_pyThread->start();
-    QMetaObject::invokeMethod(m_pyEngine, "pythonSetup", Qt::BlockingQueuedConnection, Q_ARG(ito::RetVal*, &pyRetValue));
+    QMetaObject::invokeMethod(m_pyEngine, "pythonSetup", Qt::BlockingQueuedConnection, Q_ARG(RetVal*, &pyRetValue));
 
     qDebug("..python engine moved to new thread");
 
@@ -854,7 +855,7 @@ int MainApplication::exec()
 //----------------------------------------------------------------------------------------------------------------------------------
 int MainApplication::execPipManagerOnly()
 {
-    ito::DialogPipManager manager(NULL, true);
+    DialogPipManager manager(NULL, true);
     return manager.exec();
 }
 

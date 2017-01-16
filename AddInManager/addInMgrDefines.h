@@ -25,8 +25,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */   
 
-#if (defined ITOMLIBS_SHARED && ( defined(_Windows) || defined(_WINDOWS) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__) )) 
-    
+//#if (defined ITOMLIBS_SHARED && ( defined(_Windows) || defined(_WINDOWS) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__) ))
+#if (defined ITOMLIBS_SHARED)
     #ifndef ADDINMGR_EXPORT
 
         // Borland/Microsoft
@@ -45,13 +45,21 @@
 
         #ifndef ADDINMGR_EXPORT //ADDINMGR_EXPORT has not be defined yet
             #ifdef ADDINMGR_DLL
-                #define ADDINMGR_EXPORT __declspec(dllexport)
+                #if ( defined(_Windows) || defined(_WINDOWS) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
+                    #define ADDINMGR_EXPORT __declspec(dllexport)
+                #else
+                    #define ADDINMGR_EXPORT
+                #endif
                 namespace ito {
                     class AddInManager;
                     static AddInManager *AddInManagerInst = 0;
                 }
             #else
-                #define ADDINMGR_EXPORT __declspec(dllimport)
+                #if ( defined(_Windows) || defined(_WINDOWS) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
+                    #define ADDINMGR_EXPORT __declspec(dllimport)
+                #else
+                    #define ADDINMGR_EXPORT
+                #endif
                 namespace ito {
                     class AddInManager;
                     extern AddInManager *AddInManagerInst;
