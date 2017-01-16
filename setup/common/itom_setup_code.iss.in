@@ -1,64 +1,64 @@
-[CustomMessages]
-English.DirExistsText = This selected application directory contains at least one of the folders "designer", "plugins", "help" or "SDK". For a proper installation of the current itom version these folder should be cleared. Do you want this setup to clear these folders before starting the installation?
-English.PythonReboot=The Python installer will be executed now. Itom is only able to find the python library if the installation path has been added to the PATH environment variable. Please let the corresponding option checked in the setup and log off or restart the computer at the end of the setup.
-English.PythonNotFound=Python path was not found in registry. Please select the Python directory!
-Deutsch.DirExistsText = Das ausgewaehlte Verzeichnis enthaelt bereits mindestens einen der Ordner "designer", "plugins", "help" oder "SDK". Fuer eine ordnungsgemaesse Installation der aktuellen Version ins gewaehlte Verzeichnis sollten diese Ordner geloescht werden. Soll das vor der Installation gemacht werden?
-Deutsch.PythonReboot=Im Folgenden wird Python installiert. Itom kann Python nur finden, wenn es der PATH Umgebungsvariable hinzugefuegt ist. Bitte die zugehoerige Option im Setup von Python aktiviert lassen und am Ende der Installation einen Neustart oder eine Neuanmeldung vornehmen.
-Deutsch.PythonNotFound=Das Python Installationsverzeichnis konnte nicht gefunden werden. Bitte das Verzeichnis angeben!
+; [CustomMessages]
+; English.DirExistsText = This selected application directory contains at least one of the folders "designer", "plugins", "help" or "SDK". For a proper installation of the current itom version these folder should be cleared. Do you want this setup to clear these folders before starting the installation?
+; English.PythonReboot=The Python installer will be executed now. Itom is only able to find the python library if the installation path has been added to the PATH environment variable. Please let the corresponding option checked in the setup and log off or restart the computer at the end of the setup.
+; English.PythonNotFound=Python path was not found in registry. Please select the Python directory!
+; Deutsch.DirExistsText = Das ausgewaehlte Verzeichnis enthaelt bereits mindestens einen der Ordner "designer", "plugins", "help" oder "SDK". Fuer eine ordnungsgemaesse Installation der aktuellen Version ins gewaehlte Verzeichnis sollten diese Ordner geloescht werden. Soll das vor der Installation gemacht werden?
+; Deutsch.PythonReboot=Im Folgenden wird Python installiert. Itom kann Python nur finden, wenn es der PATH Umgebungsvariable hinzugefuegt ist. Bitte die zugehoerige Option im Setup von Python aktiviert lassen und am Ende der Installation einen Neustart oder eine Neuanmeldung vornehmen.
+; Deutsch.PythonNotFound=Das Python Installationsverzeichnis konnte nicht gefunden werden. Bitte das Verzeichnis angeben!
 
 [Code]
 function MsiQueryProductState(ProductCode: string): integer;
   external 'MsiQueryProductStateA@msi.dll stdcall';
 
-const
-  INSTALLSTATE_DEFAULT = 5;
+//const
+//  INSTALLSTATE_DEFAULT = 5;
 //  INSTALLLEVEL_MAXIMUM = $ffff;
 //  INSTALLSTATE_ABSENT = 2;
 
   // Visual C++ 2012 Redistributable (Update 4)
-  RP12_86_MIN = '{BD95A8CD-1D9F-35AD-981A-3E7925026EBB}';
-  RP12_64_MIN = '{CF2BEA3C-26EA-32F8-AA9B-331F7E34BA97}';
-  RP12_86_ADD = '{B175520C-86A2-35A7-8619-86DC379688B9}';
-  RP12_64_ADD = '{37B8F9C7-03FB-3253-8781-2517C99D7C00}';
+//  RP12_86_MIN = '{BD95A8CD-1D9F-35AD-981A-3E7925026EBB}';
+//  RP12_64_MIN = '{CF2BEA3C-26EA-32F8-AA9B-331F7E34BA97}';
+//  RP12_86_ADD = '{B175520C-86A2-35A7-8619-86DC379688B9}';
+//  RP12_64_ADD = '{37B8F9C7-03FB-3253-8781-2517C99D7C00}';
 
   // Visual C++ 2013 Redistributable
-  RP13_86_MIN = '{13A4EE12-23EA-3371-91EE-EFB36DDFFF3E}';
-  RP13_64_MIN = '{A749D8E6-B613-3BE3-8F5F-045C84EBA29B}';
-  RP13_86_ADD = '{F8CFEB22-A2E7-3971-9EDA-4B11EDEFC185}';
-  RP13_64_ADD = '{929FBD26-9020-399B-9A7A-751D61F0B942}';
+//  RP13_86_MIN = '{13A4EE12-23EA-3371-91EE-EFB36DDFFF3E}';
+//  RP13_64_MIN = '{A749D8E6-B613-3BE3-8F5F-045C84EBA29B}';
+//  RP13_86_ADD = '{F8CFEB22-A2E7-3971-9EDA-4B11EDEFC185}';
+//  RP13_64_ADD = '{929FBD26-9020-399B-9A7A-751D61F0B942}';
 
   // Visual C++ 2015 Redistributable 14.0.23026
-  RP15_86_MIN = '{A2563E55-3BEC-3828-8D67-E5E8B9E8B675}';
-  RP15_64_MIN = '{0D3E9E15-DE7A-300B-96F1-B4AF12B96488}';
-  RP15_86_ADD = '{BE960C1C-7BAD-3DE6-8B1A-2616FE532845}';
-  RP15_64_ADD = '{BC958BD2-5DAC-3862-BB1A-C1BE0790438D}';
+//  RP15_86_MIN = '{A2563E55-3BEC-3828-8D67-E5E8B9E8B675}';
+//  RP15_64_MIN = '{0D3E9E15-DE7A-300B-96F1-B4AF12B96488}';
+//  RP15_86_ADD = '{BE960C1C-7BAD-3DE6-8B1A-2616FE532845}';
+//  RP15_64_ADD = '{BC958BD2-5DAC-3862-BB1A-C1BE0790438D}';}
   
   // You can find product codes for other Visual Studio versions in HKEY_CLASSES_ROOT\Installer\Dependencies\, for example HKEY_CLASSES_ROOT\Installer\Dependencies\Microsoft.VS.VC_RuntimeAdditionalVSU_amd64,v14
   
-function IsMsiProductInstalled(const ProductId: string): Boolean;
+{function IsMsiProductInstalled(const ProductId: string): Boolean;
 begin
   Result := MsiQueryProductState(ProductId) = INSTALLSTATE_DEFAULT;
-end;
+end;}
 
-function NeedInstallRP12(SetupMode: Integer): Boolean;
+{function NeedInstallRP12(SetupMode: Integer): Boolean;
 begin
   Result := ((SetupMode = 64) and not (IsMsiProductInstalled(RP12_64_MIN) or IsMsiProductInstalled(RP12_64_ADD))) or
             ((SetupMode = 32) and not (IsMsiProductInstalled(RP12_86_MIN) or IsMsiProductInstalled(RP12_86_ADD)));
-end;
+end;}
 
-function NeedInstallRP13(SetupMode: Integer): Boolean;
+{function NeedInstallRP13(SetupMode: Integer): Boolean;
 begin
   Result := ((SetupMode = 64) and not (IsMsiProductInstalled(RP13_64_MIN) or IsMsiProductInstalled(RP13_64_ADD))) or
             ((SetupMode = 32) and not (IsMsiProductInstalled(RP13_86_MIN) or IsMsiProductInstalled(RP13_86_ADD)));
-end;
+end;}
 
-function NeedInstallRP15(SetupMode: Integer): Boolean;
+{function NeedInstallRP15(SetupMode: Integer): Boolean;
 begin
   Result := ((SetupMode = 64) and not (IsMsiProductInstalled(RP15_64_MIN) or IsMsiProductInstalled(RP15_64_ADD))) or
             ((SetupMode = 32) and not (IsMsiProductInstalled(RP15_86_MIN) or IsMsiProductInstalled(RP15_86_ADD)));
-end;
+end;}
 
-procedure DeleteDirAndFiles(const Path, Filename: String; const IsDir, DeleteFiles, DeleteSubdirsAlso: Boolean);
+{procedure DeleteDirAndFiles(const Path, Filename: String; const IsDir, DeleteFiles, DeleteSubdirsAlso: Boolean);
 var  Filter: string;
 begin
   if DirExists(Path) then begin
@@ -69,14 +69,14 @@ begin
     end;
     DelTree(Filter, IsDir, DeleteFiles, DeleteSubdirsAlso);
   end;
-end;
+end;}
 
-procedure CurStepChanged(CurStep: TSetupStep);
+{procedure CurStepChanged(CurStep: TSetupStep);
 var  AppDir: string;
 begin
-  if (CurStep = ssInstall) then begin
-    AppDir := ExpandConstant('{app}') + '\';
-    if DirExists(AppDir + 'SDK') or DirExists(AppDir + 'lib') or DirExists(AppDir + 'plugins') or DirExists(AppDir + 'designer') then begin
+  if (CurStep = ssInstall) then begin}
+//    AppDir := ExpandConstant('{app}') + '\';
+{    if DirExists(AppDir + 'SDK') or DirExists(AppDir + 'lib') or DirExists(AppDir + 'plugins') or DirExists(AppDir + 'designer') then begin
       if MsgBox(CustomMessage('DirExistsText'), mbConfirmation, MB_YESNO) = IDYES then begin
         DeleteDirAndFiles(AppDir + 'SDK', '', True, True, True);
         DeleteDirAndFiles(AppDir + 'translation', '', True, True, True);
@@ -91,9 +91,9 @@ begin
       end;
     end;
   end;
-end;
+end;}
 
-function GetPythonPath(Value: string): string;
+{function GetPythonPath(Value: String): string;
 var  PythonPath: string;
      Found: Boolean;
      RootKey: Integer;
@@ -124,9 +124,37 @@ begin
     Result := PythonPath;
 //  else
 //    MsgBox('Python path was not found!', mbError, MB_OK);
-end;
+end;}
 
-procedure PythonBeforeInstall();
+{procedure PythonBeforeInstall();
 begin
   MsgBox(CustomMessage('PythonReboot'), mbInformation, MB_OK);
+end;}
+
+procedure ComponentsClickCheck(Sender: TObject);
+var  ListBox: TNewCheckListBox;
+     Idx,x: Integer;
+begin
+  ListBox := TNewCheckListBox(Sender);
+  Idx:= ListBox.ItemIndex;
+  
+  if (Idx<ListBox.Items.Count-1) then begin 
+    x:= Idx+1;
+    while (x<ListBox.Items.Count) and (ListBox.ItemLevel[Idx]<ListBox.ItemLevel[x]) do begin
+      if ListBox.State[Idx]=cbUnchecked then begin
+        ListBox.Checked[x]:= False;
+        ListBox.ItemEnabled[x]:= False;
+      end
+      else begin
+        ListBox.Checked[x]:= True;
+        ListBox.ItemEnabled[x]:= True;
+      end;
+      x:= x+1;
+    end;
+  end;
+end;
+
+procedure InitializeWizard();
+begin
+  WizardForm.ComponentsList.OnClickCheck := @ComponentsClickCheck;
 end;
