@@ -299,7 +299,6 @@ namespace ito
 
             //! copy constructor
             StringMeta(const StringMeta& cpy);
-            StringMeta(StringMeta& cpy);
 
             //! destructor
             virtual ~StringMeta();
