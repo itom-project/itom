@@ -10,8 +10,8 @@
 function MsiQueryProductState(ProductCode: string): integer;
   external 'MsiQueryProductStateA@msi.dll stdcall';
 
-//const
-//  INSTALLSTATE_DEFAULT = 5;
+const
+  INSTALLSTATE_DEFAULT = 5;
 //  INSTALLLEVEL_MAXIMUM = $ffff;
 //  INSTALLSTATE_ABSENT = 2;
 
@@ -28,17 +28,17 @@ function MsiQueryProductState(ProductCode: string): integer;
 //  RP13_64_ADD = '{929FBD26-9020-399B-9A7A-751D61F0B942}';
 
   // Visual C++ 2015 Redistributable 14.0.23026
-//  RP15_86_MIN = '{A2563E55-3BEC-3828-8D67-E5E8B9E8B675}';
-//  RP15_64_MIN = '{0D3E9E15-DE7A-300B-96F1-B4AF12B96488}';
-//  RP15_86_ADD = '{BE960C1C-7BAD-3DE6-8B1A-2616FE532845}';
-//  RP15_64_ADD = '{BC958BD2-5DAC-3862-BB1A-C1BE0790438D}';}
+  RP15_86_MIN = '{A2563E55-3BEC-3828-8D67-E5E8B9E8B675}';
+  RP15_64_MIN = '{0D3E9E15-DE7A-300B-96F1-B4AF12B96488}';
+  RP15_86_ADD = '{BE960C1C-7BAD-3DE6-8B1A-2616FE532845}';
+  RP15_64_ADD = '{BC958BD2-5DAC-3862-BB1A-C1BE0790438D}';
   
   // You can find product codes for other Visual Studio versions in HKEY_CLASSES_ROOT\Installer\Dependencies\, for example HKEY_CLASSES_ROOT\Installer\Dependencies\Microsoft.VS.VC_RuntimeAdditionalVSU_amd64,v14
   
-{function IsMsiProductInstalled(const ProductId: string): Boolean;
+function IsMsiProductInstalled(const ProductId: string): Boolean;
 begin
   Result := MsiQueryProductState(ProductId) = INSTALLSTATE_DEFAULT;
-end;}
+end;
 
 {function NeedInstallRP12(SetupMode: Integer): Boolean;
 begin
@@ -52,11 +52,11 @@ begin
             ((SetupMode = 32) and not (IsMsiProductInstalled(RP13_86_MIN) or IsMsiProductInstalled(RP13_86_ADD)));
 end;}
 
-{function NeedInstallRP15(SetupMode: Integer): Boolean;
+function NeedInstallRP15(SetupMode: Integer): Boolean;
 begin
   Result := ((SetupMode = 64) and not (IsMsiProductInstalled(RP15_64_MIN) or IsMsiProductInstalled(RP15_64_ADD))) or
             ((SetupMode = 32) and not (IsMsiProductInstalled(RP15_86_MIN) or IsMsiProductInstalled(RP15_86_ADD)));
-end;}
+end;
 
 {procedure DeleteDirAndFiles(const Path, Filename: String; const IsDir, DeleteFiles, DeleteSubdirsAlso: Boolean);
 var  Filter: string;
