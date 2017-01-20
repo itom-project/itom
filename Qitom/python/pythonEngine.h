@@ -191,11 +191,6 @@ private:
     ito::RetVal pickleDictionary(PyObject *dict, const QString &filename);
     ito::RetVal unpickleDictionary(PyObject *destinationDict, const QString &filename, bool overwrite);
 
-    //methods for maintaining python functionality
-    ito::RetVal addMethodToModule(PyMethodDef* def);
-    ito::RetVal delMethodFromModule(const char* ml_name);
-    ito::RetVal pythonAddBuiltinMethods();
-
     //methods for debugging
     void enqueueDbgCmd(ito::tPythonDbgCmd dbgCmd);
     ito::tPythonDbgCmd dequeueDbgCmd();

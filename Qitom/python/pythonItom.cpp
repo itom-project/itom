@@ -3621,14 +3621,30 @@ scaleValueAndUnit");
 PyObject* PythonItom::getDefaultScaleableUnits(PyObject * /*pSelf*/)
 {
     PyObject *myList = PyList_New(0);
-    PyList_Append(myList, PyUnicode_FromString("mm"));
-    PyList_Append(myList, PyUnicode_FromString("m"));
-    PyList_Append(myList, PyUnicode_FromString("V"));
-    PyList_Append(myList, PyUnicode_FromString("s"));
-    PyList_Append(myList, PyUnicode_FromString("g"));
-    PyList_Append(myList, PyUnicode_FromString("cd"));
-    PyList_Append(myList, PyUnicode_FromString("A"));
-    PyList_Append(myList, PyUnicode_FromString("%"));
+	PyObject *temp = PyUnicode_FromString("mm");
+    PyList_Append(myList, temp);
+	Py_DECREF(temp);
+	temp = PyUnicode_FromString("m");
+    PyList_Append(myList, temp);
+	Py_DECREF(temp);
+	temp = PyUnicode_FromString("V");
+	PyList_Append(myList, temp);
+	Py_DECREF(temp);
+	temp = PyUnicode_FromString("s");
+	PyList_Append(myList, temp);
+	Py_DECREF(temp);
+	temp = PyUnicode_FromString("g");
+	PyList_Append(myList, temp);
+	Py_DECREF(temp);
+	temp = PyUnicode_FromString("cd");
+	PyList_Append(myList, temp);
+	Py_DECREF(temp);
+	temp = PyUnicode_FromString("A");
+	PyList_Append(myList, temp);
+	Py_DECREF(temp);
+	temp = PyUnicode_FromString("%");
+	PyList_Append(myList, temp);
+	Py_DECREF(temp);
 
     return myList;
 }
