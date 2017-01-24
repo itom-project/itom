@@ -2990,7 +2990,7 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
     PyObject *element = NULL;
     PyObject *saveDict = NULL;
     PyObject *tempItem = NULL;
-    const char *filename = NULL;
+    PyObject *filename = NULL;
     PyObject *matrixNames = NULL;
     const char *matrixName = "matrix";
     const char *tempName = NULL;
@@ -3000,7 +3000,7 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
     PyObject *matrixNamesItem = NULL;
 
 
-    if (!PyArg_ParseTuple(pArgs, "sO|O", &filename, &element, &matrixNames))
+    if (!PyArg_ParseTuple(pArgs, "UO|O", &filename, &element, &matrixNames))
     {
         Py_XDECREF(scipyIoModule);
         return NULL;
@@ -3114,24 +3114,27 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
         saveDict = PyMatlabMatDataObjectConverter(element);
     }
 
-    Py_INCREF(Py_True);
-    Py_INCREF(Py_False);
-    //if (!PyObject_CallMethodObjArgs(scipyIoModule, PyUnicode_FromString("savemat"), PyUnicode_FromString(filename), saveDict, Py_True, PyUnicode_FromString("5"), Py_True, Py_False, PyUnicode_FromString("row"), NULL))
-    if (!PyObject_CallMethodObjArgs(scipyIoModule, PyUnicode_FromString("savemat"), PyUnicode_DecodeLatin1(filename, strlen(filename), NULL), saveDict, Py_True, PyUnicode_FromString("5"), Py_True, Py_False, PyUnicode_FromString("row"), NULL))
+	PyObject *nameobj = PyUnicode_FromString("savemat");
+	PyObject *fiveobj = PyUnicode_FromString("5");
+	PyObject *rowobj = PyUnicode_FromString("row");
+	if (!PyObject_CallMethodObjArgs(scipyIoModule, nameobj, filename, saveDict, Py_True, fiveobj, Py_True, Py_False, rowobj, NULL))
     {
+		Py_XDECREF(nameobj);
+		Py_XDECREF(fiveobj);
+		Py_XDECREF(rowobj);
         Py_XDECREF(saveDict);
-        Py_DECREF(Py_True);
-        Py_DECREF(Py_False);
         Py_XDECREF(scipyIoModule);
         return NULL;
     }
-
-    Py_XDECREF(saveDict);
-    Py_DECREF(Py_True);
-    Py_DECREF(Py_False);
-    Py_XDECREF(scipyIoModule);
-
-    Py_RETURN_NONE;
+	else
+	{
+		Py_XDECREF(nameobj);
+		Py_XDECREF(fiveobj);
+		Py_XDECREF(rowobj);
+		Py_XDECREF(saveDict);
+		Py_XDECREF(scipyIoModule);
+		Py_RETURN_NONE;
+	}
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -3216,10 +3219,10 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 
     //Arguments must be: filename -> string
 
-    const char *filename = NULL;
+    PyObject *filename = NULL; //borrowed reference
 
 
-    if (!PyArg_ParseTuple(pArgs, "s", &filename))
+    if (!PyArg_ParseTuple(pArgs, "U", &filename))
     {
         Py_XDECREF(scipyIoModule);
         return NULL;
@@ -3228,13 +3231,15 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
     PyObject *kwdDict = PyDict_New();
     PyObject *argTuple = PyTuple_New(1);
     //PyTuple_SetItem(argTuple, 0, PyUnicode_FromString(filename));
-    PyTuple_SetItem(argTuple, 0, PyUnicode_DecodeLatin1(filename, strlen(filename), NULL));
+	Py_INCREF(filename);
+    PyTuple_SetItem(argTuple, 0, filename); //steals a reference
     PyDict_SetItemString(kwdDict, "squeeze_me",Py_True);
-    PyObject *callable = PyObject_GetAttr(scipyIoModule, PyUnicode_FromString("loadmat"));
+	PyObject *loadmatobj = PyUnicode_FromString("loadmat");
+    PyObject *callable = PyObject_GetAttr(scipyIoModule, loadmatobj);
+	Py_DECREF(loadmatobj);
     resultLoadMat = PyObject_Call(callable, argTuple, kwdDict);
     Py_DECREF(kwdDict);
     Py_DECREF(argTuple);
-    //resultLoadMat = PyObject_CallMethodObjArgs(scipyIoModule, PyUnicode_FromString("loadmat"), PyUnicode_FromString(filename), NULL);
 
 
     if (resultLoadMat)
@@ -3245,6 +3250,8 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
             PyObject *key = NULL;
             PyObject *value = NULL;
             Py_ssize_t pos = 0;
+			PyObject *itomMetaInfoObj = PyUnicode_FromString("itomMetaInformation");
+			PyObject *importMatlabMatAsDataObjectObj = PyUnicode_FromString("importMatlabMatAsDataObject");
 
             while (PyDict_Next(resultLoadMat, &pos, &key, &value)) //borrowed reference to key and value
             {
@@ -3265,17 +3272,19 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 
                             if (descr->fields != NULL) //fields is a dictionary with "fieldname" => type-description for this field
                             {
-                                if (PyDict_Contains(descr->fields, PyUnicode_FromString("itomMetaInformation")))
+								if (PyDict_Contains(descr->fields, itomMetaInfoObj))
                                 {
                                     PythonEngine *pyEngine = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
                                     if (pyEngine)
                                     {
-                                        PyObject *result = PyObject_CallMethodObjArgs(pyEngine->itomFunctions, PyUnicode_FromString("importMatlabMatAsDataObject"), value, NULL);
+										PyObject *result = PyObject_CallMethodObjArgs(pyEngine->itomFunctions, importMatlabMatAsDataObjectObj, value, NULL);
 
                                         if (result == NULL || PyErr_Occurred())
                                         {
                                             Py_XDECREF(result);
                                             Py_XDECREF(scipyIoModule);
+											Py_XDECREF(itomMetaInfoObj);
+											Py_XDECREF(importMatlabMatAsDataObjectObj);
                                             PyErr_PrintEx(0);
                                             PyErr_SetString(PyExc_RuntimeError, "error while parsing imported dataObject or npDataObject.");
                                             return NULL;
@@ -3285,7 +3294,10 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
                                     }
                                     else
                                     {
-                                        PyErr_SetString(PyExc_RuntimeError, "Python Engine not available");
+										Py_XDECREF(scipyIoModule);
+										Py_XDECREF(itomMetaInfoObj);
+										Py_XDECREF(importMatlabMatAsDataObjectObj);
+										PyErr_SetString(PyExc_RuntimeError, "Python Engine not available");
                                         return NULL;
                                     }
                                 }
@@ -3304,6 +3316,9 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
                     }
                 }
             }
+
+			Py_XDECREF(itomMetaInfoObj);
+			Py_XDECREF(importMatlabMatAsDataObjectObj);
         }
     }
 
@@ -3606,14 +3621,30 @@ scaleValueAndUnit");
 PyObject* PythonItom::getDefaultScaleableUnits(PyObject * /*pSelf*/)
 {
     PyObject *myList = PyList_New(0);
-    PyList_Append(myList, PyUnicode_FromString("mm"));
-    PyList_Append(myList, PyUnicode_FromString("m"));
-    PyList_Append(myList, PyUnicode_FromString("V"));
-    PyList_Append(myList, PyUnicode_FromString("s"));
-    PyList_Append(myList, PyUnicode_FromString("g"));
-    PyList_Append(myList, PyUnicode_FromString("cd"));
-    PyList_Append(myList, PyUnicode_FromString("A"));
-    PyList_Append(myList, PyUnicode_FromString("%"));
+	PyObject *temp = PyUnicode_FromString("mm");
+    PyList_Append(myList, temp);
+	Py_DECREF(temp);
+	temp = PyUnicode_FromString("m");
+    PyList_Append(myList, temp);
+	Py_DECREF(temp);
+	temp = PyUnicode_FromString("V");
+	PyList_Append(myList, temp);
+	Py_DECREF(temp);
+	temp = PyUnicode_FromString("s");
+	PyList_Append(myList, temp);
+	Py_DECREF(temp);
+	temp = PyUnicode_FromString("g");
+	PyList_Append(myList, temp);
+	Py_DECREF(temp);
+	temp = PyUnicode_FromString("cd");
+	PyList_Append(myList, temp);
+	Py_DECREF(temp);
+	temp = PyUnicode_FromString("A");
+	PyList_Append(myList, temp);
+	Py_DECREF(temp);
+	temp = PyUnicode_FromString("%");
+	PyList_Append(myList, temp);
+	Py_DECREF(temp);
 
     return myList;
 }

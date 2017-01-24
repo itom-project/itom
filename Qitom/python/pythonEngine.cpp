@@ -457,7 +457,6 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             itomModule = PyImport_ImportModule("itom");
             m_pyModGC = PyImport_ImportModule("gc"); //new reference
 
-            pythonAddBuiltinMethods();
             mainModule = PyImport_AddModule("__main__"); // reference to the module __main__ , where code above has been evaluated
 
             if (mainModule)
@@ -1018,75 +1017,6 @@ ito::RetVal PythonEngine::pythonShutdown(ItomSharedSemaphore *aimWait)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PythonEngine::pythonAddBuiltinMethods()
-{
-    //nach: http://code.activestate.com/recipes/54352-defining-python-class-methods-in-c/
-
-    ////!< insert all dynamic function calls to PythonAdditionalModuleITOM, which must be "alive" until Py_Finalize()
-    //int numberOfDynamicElements = 1;
-    //PythonAdditionalModuleITOM = new PyMethodDef[numberOfDynamicElements];
-    //PythonAdditionalModuleITOM[0].ml_doc = NULL;
-    //PythonAdditionalModuleITOM[0].ml_flags = METH_VARARGS;
-    //PythonAdditionalModuleITOM[0].ml_meth = PythonEngine::pythonInterfaceWrapper;
-    //PythonAdditionalModuleITOM[0].ml_name = "general";
-
-    //addMethodToModule(&PythonAdditionalModuleITOM[0]);
-
-    //!< insert all dynamic function calls to PythonAdditionalModuleITOM, which must be "alive" until Py_Finalize()
-    /*int numberOfDynamicElements = 1;
-    PythonAdditionalModuleITOM = new PyMethodDef[numberOfDynamicElements];
-    PythonAdditionalModuleITOM[0].ml_doc = NULL;
-    PythonAdditionalModuleITOM[0].ml_flags = METH_VARARGS;
-    PythonAdditionalModuleITOM[0].ml_meth = PythonEngine::PyNullMethod;
-    PythonAdditionalModuleITOM[0].ml_name = "smoothingFilter";
-
-    addMethodToModule(&PythonAdditionalModuleITOM[0]);*/
-
-    return RetVal(retOk);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PythonEngine::addMethodToModule(PyMethodDef *def)
-{
-    //nach: http://code.activestate.com/recipes/54352-defining-python-class-methods-in-c/
-
-    PyObject *moduleDict = NULL; //!< module-dictionary (borrowed)
-    PyObject *func = NULL; //!< function object for new dynamic function call (new reference)
-
-    moduleDict = PyModule_GetDict(itomModule);
-    func = PyCFunction_NewEx(def , PyBytes_FromString(def->ml_name) , PyBytes_FromString("itom"));
-    PyDict_SetItemString(moduleDict , def->ml_name , func);
-    //PyDict_SetItemString(moduleDict, def->ml_name, Py_None);
-
-    Py_XDECREF(func);
-    func = NULL;
-
-    moduleDict = NULL;
-
-    return RetVal(retOk);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PythonEngine::delMethodFromModule(const char* ml_name)
-{
-    RetVal retValue = RetVal(retOk);
-
-    //nach: http://code.activestate.com/recipes/54352-defining-python-class-methods-in-c/
-    PyObject *moduleDict = NULL; //!< module-dictionary (borrowed)
-
-    moduleDict = PyModule_GetDict(itomModule);
-
-    if (PyDict_DelItemString(moduleDict, ml_name))
-    {
-        retValue += RetVal(retError, 1, tr("method name not found in builtin itom").toLatin1().data());
-    }
-
-    moduleDict = NULL;
-
-    return retValue;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal PythonEngine::stringEncodingChanged()
 {
     ito::RetVal retval;
@@ -1214,7 +1144,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
     }
     else
     {
-        retval += ito::RetVal(ito::retWarning,0,"default text codec could not be obtained. Latin1 is used");
+		retval += ito::RetVal(ito::retWarning, 0, "default text codec could not be obtained. Latin1 is used");
         encodingType = PythonQtConversion::latin_1;
         encodingName = "latin_1";
     }
@@ -1282,7 +1212,7 @@ void PythonEngine::setAutoReloader(bool enabled, bool checkFile, bool checkCmd, 
         {
             if (!m_autoReload.classAutoReload)
             {
-                PyObject *dictItem = PyDict_GetItemString(PyModule_GetDict(m_autoReload.modAutoReload), "ItomAutoreloader"); // borrowed reference
+                PyObject *dictItem = PyDict_GetItemString(PyModule_GetDict(m_autoReload.modAutoReload), "ItomAutoreloader"); // both borrowed references
                 if (dictItem == NULL)
                 {
                     std::cerr << "The class 'ItomAutoreloader' could not be found" << std::endl;
@@ -5628,10 +5558,11 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
     {
         PyObject *result = NULL;
         PyObject *version = PyLong_FromLong(3); //Use pickle protocol version 3 as default. This is readable by all itom version that have been published (default for Python 3).
+		PyObject *dumpObj = PyUnicode_FromString("dump");
         
         try
         {
-            result = PyObject_CallMethodObjArgs(pickleModule, PyUnicode_FromString("dump"), dict, fileHandle, version, NULL);
+			result = PyObject_CallMethodObjArgs(pickleModule, dumpObj, dict, fileHandle, version, NULL);
         }
         catch(std::bad_alloc &/*ba*/)
         {
@@ -5653,6 +5584,7 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
             retval += ito::RetVal(ito::retError, 0, tr("Pickle error. An unspecified exception has been thrown.").toLatin1().data());
         }
 
+		Py_DECREF(dumpObj);
         Py_DECREF(version);
 
         if (result == NULL)
@@ -5831,10 +5763,11 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
     }
     else
     {
+		PyObject *loadObj = PyUnicode_FromString("load");
         PyObject *unpickledItem = NULL;
         try
         {
-            unpickledItem = PyObject_CallMethodObjArgs(pickleModule, PyUnicode_FromString("load"), fileHandle, NULL); //new ref
+			unpickledItem = PyObject_CallMethodObjArgs(pickleModule, loadObj, fileHandle, NULL); //new ref
         }
         catch(std::bad_alloc &/*ba*/)
         {
@@ -5855,7 +5788,7 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
         {
             retval += ito::RetVal(ito::retError, 0, tr("Unpickling error. An unspecified exception has been thrown.").toLatin1().data());
         }
-
+		Py_DECREF(loadObj);
 
         if (unpickledItem == NULL)
         {

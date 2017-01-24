@@ -62,8 +62,8 @@ void BrushCreatorButtonPrivate::init()
 }
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-BrushCreatorButton::BrushCreatorButton(QWidget* _parent)
-    : QPushButton(_parent),
+BrushCreatorButton::BrushCreatorButton(QWidget* _parent) :
+	QPushButton(_parent),
     d_ptr(new BrushCreatorButtonPrivate(*this))
 {
     Q_D(BrushCreatorButton);
@@ -73,12 +73,18 @@ BrushCreatorButton::BrushCreatorButton(QWidget* _parent)
 };
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 BrushCreatorButton::BrushCreatorButton(QBrush brush, QWidget* parent) :
-QPushButton(parent),
-d_ptr(new BrushCreatorButtonPrivate(*this, brush))
+	QPushButton(parent),
+	d_ptr(new BrushCreatorButtonPrivate(*this, brush))
 {
     Q_D(BrushCreatorButton);
     d->init();
 }
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+BrushCreatorButton::~BrushCreatorButton()
+{
+}
+
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 void BrushCreatorButton::paintEvent(QPaintEvent* event)
 {
@@ -188,8 +194,3 @@ QSize BrushCreatorButton::sizeHint() const
     return d->m_sizeHintCache;
 }
 
-//---------------------------------------------------------------------------------------------------------------------------------------------------------
-BrushCreatorButton::~BrushCreatorButton()
-{
-
-}
