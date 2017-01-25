@@ -100,6 +100,7 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoShapesFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/motorAxisControllerFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/statusLedFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/paramEditorFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/brushCreatorDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pluginVersion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/doubleSpinBox_p.h
@@ -111,6 +112,8 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoMarker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoPicker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoShapes.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramEditorWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramEditorModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/valueProxy.h
     ${CMAKE_CURRENT_SOURCE_DIR}/utils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/proxyStyle.h
@@ -182,10 +185,10 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/collapsibleGroupBoxFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/colorPickerButtonFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/penCreatorButtonFactory.cpp    
-	${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleRangeSliderFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleRangeSliderFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleSpinBoxFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleSliderFactory.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/factories/fontButtonFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/fontButtonFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/rangeWidgetFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/doubleRangeWidgetFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/sliderWidgetFactory.cpp
@@ -202,6 +205,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/menuComboBoxFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/motorAxisControllerFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/statusLedFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/paramEditorFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/checkableModelHelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/completer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rangeSlider.cpp
@@ -234,6 +238,8 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoMarker.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoPicker.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoShapes.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramEditorWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramEditorModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/motorAxisController.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/statusLed.cpp
 )

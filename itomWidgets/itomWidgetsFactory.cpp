@@ -50,6 +50,7 @@
 #include "factories/motorAxisControllerFactory.h"
 #include "factories/statusLedFactory.h"
 #include "factories/fontButtonFactory.h"
+#include "factories/paramEditorFactory.h"
 
 //------------------------------------------------------------------------------------------------
 ItomWidgetsFactory::ItomWidgetsFactory(QObject *parent)
@@ -80,6 +81,7 @@ ItomWidgetsFactory::ItomWidgetsFactory(QObject *parent)
     widgets.append(new MotorAxisControllerFactory(this));
     widgets.append(new StatusLedFactory(this));
     widgets.append(new FontButtonFactory(this));
+    widgets.append(new ParamEditorFactory(this));
 }
 
 //------------------------------------------------------------------------------------------------
