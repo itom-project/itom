@@ -38,7 +38,22 @@ class DataObjectResize(unittest.TestCase):
         for shape in shapes:
             b = obj.reshape(shape)
             self.assertEqual([i for i in b], obj_list)
-
+    
+    def test_squeeze_continuous_obj(self):
+        cdobj = dataObject([1,1,35,5,4],'float64',continuous=1)
+        cdobj[:,:,:,:,:]=1
+        cdobj[0,0,:,:,:]=2
+        cdobj[0,0,0,:,:]=3
+        a=cdobj[0,0,0,:,:].copy().squeeze()
+        for i in a:
+            self.assertEqual(i, 3)
+            
+    def test_reshape_continuous_obj(self):
+        cdobj = dataObject([1,1,35,5,4],'float64',continuous=1)
+        cdobj[:,:,:,:,:]=1
+        a=cdobj.copy().reshape([35,5,4])
+        for i in a:
+            self.assertEqual(i, 1)
 
 
 if __name__ == '__main__':

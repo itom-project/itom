@@ -4647,7 +4647,8 @@ PyDoc_STRVAR(pyDataObjectReshape_doc,"reshape(newShape) -> return a reshaped sha
 \n\
 This method returns a shallow or deep copy if this data object where the type and data is unchanged. The shape \n\
 of the returned object corresponds to the parameter 'newShape'. The number of values must therefore not be changed. \n\
-If the last two dimensions of 'newShape' and this object are the same, a shallow copy can be returned, else a deep \n\
+If the last two dimensions of 'newShape' and this object are the same and if the data is not continously organized, \n\
+a shallow copy can be returned, else a deep \n\
 copy has to be created. Tags and the rotation matrix are copied, the axis tags are only copied for all axes whose \n\
 size will not change beginning from the last axis ('x'). This axis copying is stopped after the first axis with a different \n\
 new size. \n\
@@ -5024,7 +5025,8 @@ PyObject* PythonDataObject::PyDataObject_adjustROI(PyDataObject *self, PyObject*
 PyDoc_STRVAR(pyDataObjectSqueeze_doc,"squeeze() -> return a squeezed shallow copy (if possible) of this dataObject. \n\
 \n\
 This method removes every dimension with size equal to 1. A shallow copy is only returned, if the last two dimensions \n\
-(called plane) are not affected by the squeeze operation. Else a deep-copy has to be returned due to a overall re-\n\
+(called plane) are not affected by the squeeze operation and if the data block in the dataObject is not continuous. \n\
+Else a deep-copy has to be returned due to a overall re-\n\
 aligment of the matrix. The returned object can never have less then two dimensions. If this is the case, the \n\
 last or second to last dimensions with a size of 1 is not deleted. If squeeze() returns a shallow copy, a change in a \n\
 value will change the same value in the original object, too. \n\
