@@ -84,22 +84,24 @@ namespace ito
         };
 
 		/*!
-		\brief The behaviour of number types indicates the type of widget that is suited best to display and change the value
+		\brief The representation of number types indicates the type of widget that is suited best to display and change the value
 
-		Not all behaviours can be applied to all types of number values, e.g. IPV4 can not be used for char-types.
-		e.g. - Char, CharArray: Linear, Logarithmic, PureNumber
-		     - IntegerArray, Range, Interval: Linear, Logarithmic, PureNumber
-			 - Integer: Linear, Logarithmic, PureNumber, HexNumber, IPV4Address, MACAddress
-			 - Double, DoubleArray: Linear, Logarithmic, PureNumber
+		Not all representations can be applied to all types of number values, e.g. IPV4 can not be used for char-types.
+		e.g. - Char, CharArray: Linear, Boolean, Logarithmic, PureNumber
+		     - IntegerArray, Range, Interval: Linear, Boolean, Logarithmic, PureNumber
+			 - Integer: Linear, Boolean, Logarithmic, PureNumber, HexNumber, IPV4Address, MACAddress
+			 - Double, DoubleArray: Linear, Boolean, Logarithmic, PureNumber
 		*/
-		enum tBehaviour
+		enum tRepresentation
 		{
-			Linear = 0x0001,
-			Logarithmic = 0x0002,
-			PureNumber = 0x0004,
-			HexNumber = 0x0008,
-			IPV4Address = 0x0010,
-			MACAddress = 0x0020
+			Linear = 0x0001,       //!< Slider with linear behavior
+			Logarithmic = 0x0002,  //!< Slider with logarithmic behaviour
+			Boolean = 0x0004,      //!< Check box
+			PureNumber = 0x0008,   //!< Decimal number in an edit control
+			HexNumber = 0x0010,    //!< Hex number in an edit control
+			IPV4Address = 0x0020,  //!< IP-Address
+			MACAddress = 0x0040,   //!< MAC-Address
+			UnknownRepresentation = 0x0080
 		};
 
 		ParamMeta(ito::ByteArray category = ito::ByteArray());                //!< default constructor with an unknown meta information type
@@ -133,8 +135,8 @@ namespace ito
         inline char getStepSize() const { return m_stepSize; }  //!< returns step size
 		inline ito::ByteArray getUnit() const { return m_unit; } //!< returns unit
 		inline void setUnit(const ito::ByteArray &unit) { m_unit = unit; } //!< sets unit string of this parameter
-		inline ParamMeta::tBehaviour getBehaviour() const { return m_behaviour; } //!< returns display behaviour
-		void setBehaviour(ParamMeta::tBehaviour behaviour); //!< sets display behaviour
+		inline ParamMeta::tRepresentation getRepresentation() const { return m_representation; } //!< returns display representation
+		void setRepresentation(ParamMeta::tRepresentation representation); //!< sets display representation
 
         //! sets the minimum value
         /*!
@@ -158,7 +160,7 @@ namespace ito
         char m_maxVal;
         char m_stepSize; // >= 1
 		ito::ByteArray m_unit; //!< unit of value, e.g. 'mm', ...
-		ParamMeta::tBehaviour m_behaviour; //!< hint for display behaviour in GUI widget
+		ParamMeta::tRepresentation m_representation; //!< hint for display representation in GUI widget
     };
 
     /*!
@@ -180,8 +182,8 @@ namespace ito
         inline int32 getStepSize() const { return m_stepSize; }       //!< returns step size
 		inline ito::ByteArray getUnit() const { return m_unit; } //!< returns unit
 		inline void setUnit(const ito::ByteArray &unit) { m_unit = unit; } //!< sets unit string of this parameter
-		inline ParamMeta::tBehaviour getBehaviour() const { return m_behaviour; } //!< returns display behaviour
-		void setBehaviour(ParamMeta::tBehaviour behaviour); //!< sets display behaviour
+		inline ParamMeta::tRepresentation getRepresentation() const { return m_representation; } //!< returns display representation
+		void setRepresentation(ParamMeta::tRepresentation behaviour); //!< sets display representation
         
         //! sets the minimum value
         /*!
@@ -205,7 +207,7 @@ namespace ito
         int32 m_maxVal;
         int32 m_stepSize; // >= 1
 		ito::ByteArray m_unit; //!< unit of value, e.g. 'mm', ...
-		ParamMeta::tBehaviour m_behaviour; //!< hint for display behaviour in GUI widget
+		ParamMeta::tRepresentation m_representation; //!< hint for display behaviour in GUI widget
     };
 
     /*!
@@ -221,9 +223,9 @@ namespace ito
     {
     public:
 		/*!
-		\brief Notation style if the related parameters is displayed in any widget
+		\brief Display notation style if the related parameters is displayed in any widget
 		*/
-		enum tNotation
+		enum tDisplayNotation
 		{
 			Automatic,  //!< double number is automatically rendered in any GUI element
 			Fixed,      //!< if possible, the double number should be shown as fixed number, e.g. 1000.00
@@ -240,10 +242,10 @@ namespace ito
 		inline void setUnit(const ito::ByteArray &unit) { m_unit = unit; } //!< sets unit string of this parameter
 		inline int getDisplayPrecision() const { return m_displayPrecision; } //!< returns display precision
 		inline void setDisplayPrecision(int displayPrecision) { m_displayPrecision = displayPrecision; } //!< sets display precision
-		inline DoubleMeta::tNotation getNotation() const { return m_notation; } //!< returns notation
-		inline void setNotation(DoubleMeta::tNotation notation) { m_notation = notation; } //!< sets notation
-		inline ParamMeta::tBehaviour getBehaviour() const { return m_behaviour; } //!< returns display behaviour
-		void setBehaviour(ParamMeta::tBehaviour behaviour); //!< sets display behaviour
+		inline DoubleMeta::tDisplayNotation getDisplayNotation() const { return m_displayNotation; } //!< returns display notation
+		inline void setDisplayNotation(DoubleMeta::tDisplayNotation displayNotation) { m_displayNotation = displayNotation; } //!< sets display notation
+		inline ParamMeta::tRepresentation getRepresentation() const { return m_representation; } //!< returns display representation
+		void setRepresentation(ParamMeta::tRepresentation representation); //!< sets display representation
         
         //! sets the minimum value
         /*!
@@ -267,9 +269,9 @@ namespace ito
         float64 m_maxVal;
         float64 m_stepSize; // >= 0, 0.0 means no specific step size
 		ito::ByteArray m_unit; //!< unit of value, e.g. 'mm', ...
-		int m_displayPrecision; //!< hint for the number of decimal digits that should be shown in any GUI widget
-		tNotation m_notation; //!< indicates how this double number should be rendered (e.g. in GUI widgets)
-		ParamMeta::tBehaviour m_behaviour; //!< hint for display behaviour in GUI widget
+		int m_displayPrecision; //!< hint for the number of decimal digits that should be shown in any GUI widget, default: 3
+		tDisplayNotation m_displayNotation; //!< indicates how this double number should be rendered (e.g. in GUI widgets)
+		ParamMeta::tRepresentation m_representation; //!< hint for display representation in GUI widget
     };
 
     /*!
@@ -676,6 +678,9 @@ namespace ito
 
         void setWidthRangeMeta(const ito::RangeMeta &widthMeta);
         void setHeightRangeMeta(const ito::RangeMeta &heightMeta);
+
+		inline ito::ByteArray getUnit() const { return m_heightMeta.getUnit(); } //!< returns unit
+		inline void setUnit(const ito::ByteArray &unit) { m_heightMeta.setUnit(unit); } //!< sets unit string of this parameter
 
     protected:
         ito::RangeMeta m_heightMeta;

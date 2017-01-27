@@ -61,9 +61,14 @@ namespace ito
         m_minVal(minVal), 
         m_maxVal(maxVal), 
 		m_stepSize(stepSize),
-		m_behaviour(ParamMeta::Linear)
+		m_representation(ParamMeta::Linear)
     { 
         if(m_maxVal < m_minVal) std::swap(m_minVal,m_maxVal); 
+
+		if (m_minVal == 0 && m_maxVal == 1 && m_stepSize == 1)
+		{
+			m_representation = ParamMeta::Boolean;
+		}
 
 #if _DEBUG
         if (stepSize <= 0)
@@ -106,9 +111,9 @@ namespace ito
     }
 
 	//---------------------------------------------------------------------------------
-	void CharMeta::setBehaviour(ParamMeta::tBehaviour behaviour)
+	void CharMeta::setRepresentation(ParamMeta::tRepresentation representation)
 	{
-		m_behaviour = behaviour;
+		m_representation = representation;
 	}
 
 
@@ -119,9 +124,14 @@ namespace ito
         m_minVal(minVal), 
         m_maxVal(maxVal), 
         m_stepSize(stepSize),
-		m_behaviour(ParamMeta::Linear)
+		m_representation(ParamMeta::Linear)
     { 
-        if(m_maxVal < m_minVal) std::swap(m_minVal,m_maxVal); 
+        if(m_maxVal < m_minVal) std::swap(m_minVal,m_maxVal);
+
+		if (m_minVal == 0 && m_maxVal == 1 && m_stepSize == 1)
+		{
+			m_representation = ParamMeta::Boolean;
+		}
 
 #if _DEBUG
         if (stepSize <= 0)
@@ -164,9 +174,9 @@ namespace ito
     }
 
 	//---------------------------------------------------------------------------------
-	void IntMeta::setBehaviour(ParamMeta::tBehaviour behaviour)
+	void IntMeta::setRepresentation(ParamMeta::tRepresentation representation)
 	{
-		m_behaviour = behaviour;
+		m_representation = representation;
 	}
 
 
@@ -176,10 +186,16 @@ namespace ito
         m_minVal(minVal), 
         m_maxVal(maxVal), 
         m_stepSize(stepSize),
-		m_notation(Automatic),
-		m_behaviour(ParamMeta::Linear)
+		m_displayNotation(Automatic),
+		m_displayPrecision(3),
+		m_representation(ParamMeta::Linear)
     { 
         if(m_maxVal < m_minVal) std::swap(m_minVal,m_maxVal); 
+
+		if (m_minVal == 0.0 && m_maxVal == 1.0 && m_stepSize == 1.0)
+		{
+			m_representation = ParamMeta::Boolean;
+		}
 
 #if _DEBUG
         if (stepSize < 0.0)
@@ -238,9 +254,9 @@ namespace ito
 	};
 
 	//---------------------------------------------------------------------------------
-	void DoubleMeta::setBehaviour(ParamMeta::tBehaviour behaviour)
+	void DoubleMeta::setRepresentation(ParamMeta::tRepresentation representation)
 	{
-		m_behaviour = behaviour;
+		m_representation = representation;
 	}
 
     //---------------------------------------------------------------------------------
