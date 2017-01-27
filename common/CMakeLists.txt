@@ -1,7 +1,7 @@
 SET (target_name itomCommonLib)
 project(${target_name}) 
 cmake_minimum_required(VERSION 2.8)
-
+ 
 IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
     if(POLICY CMP0042)
         cmake_policy(SET CMP0042 OLD)
