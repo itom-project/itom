@@ -43,6 +43,7 @@
 #include <qthread.h>
 #include <qsharedpointer.h>
 #include <qmutex.h>
+#include <qapplication.h>
 
 #if QT_VERSION < 0x050000
 #include <qpluginloader.h>
@@ -250,6 +251,12 @@ namespace ito
 
             virtual void importItomApi(void** apiPtr) = 0; //this methods are implemented in the plugin itsself. Therefore place ITOM_API right after Q_INTERFACE in the header file and replace Q_EXPORT_PLUGIN2 by Q_EXPORT_PLUGIN2_ITOM in the source file.
             virtual void importItomApiGraph(void** apiPtr) = 0;
+            //!> check if we have gui support
+            inline bool hasGuiSupport() { 
+                if (qobject_cast<QApplication*>(QCoreApplication::instance())) 
+                    return true; 
+                else 
+                    return false; }
 
         public:
             void **m_apiFunctionsBasePtr;
@@ -324,8 +331,6 @@ namespace ito
             inline QPluginLoader * getLoader(void) { return m_loader; }
 
             bool event(QEvent *e);
-
-
     };
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -506,6 +511,12 @@ namespace ito
 
             //! decrements reference counter of this plugin (thread-safe)
             void decRefCount(void);
+            //! check if we have gui support
+            inline bool hasGuiSupport() { 
+                if (qobject_cast<QApplication*>(QCoreApplication::instance())) 
+                    return true; 
+                else 
+                    return false; }
 
             int m_refCount;                                   //!< reference counter, used to avoid early deletes (0 means that one instance is holding one reference, 1 that two participants hold the reference...)
             QVector<ito::AddInBase::AddInRef *> m_hwDecList;  //!< list of hardware that was passed to the plugin on initialisation and whose refcounter was incremented
