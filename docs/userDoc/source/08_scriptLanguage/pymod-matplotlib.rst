@@ -280,6 +280,26 @@ matplotlib figure handle. If the figure handle can be obtained by the current fi
 
 As an example see the script **hist2d_size_control.py** in the **demo/matplotlib** folder.
 
+Font not found in Matplotlib
+=====================================
+
+Sometimes it might occur that Matplotlib cannot found a desired font name, even if it is installed on the computer. The reason might be,
+that Matplotlib caches installed fonts for a faster access. If the font has been installed recently, it might be necessary to update the cache.
+Usually, the cache is located in the install or build directory of |itom|:
+
+**itom/itom-packages/mpl_itom/fontList.py3k.cache**
+
+Delete this file, re-open itom and try to load the Matplotlib script again. In order to verify the path, where Matplotlib is currently
+searching for a cache file, use the following snippet:
+
+.. code-block:: python
+    
+    from matplotlib import get_cachedir
+    print(get_cachedir())
+
+(See also: http://stackoverflow.com/questions/26085867/matplotlib-font-not-found)
+
+
 Creating an animation via Matplotlib
 =====================================
 
