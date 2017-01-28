@@ -311,16 +311,150 @@ namespace dObjHelper
         return ito::retOk;
     }
 
-    template<> RetVal maxValueFunc<complex64>(const DataObject * /*dObj*/, float64 & /*maxValue*/, uint32 * /*firstLocation*/, bool /*ignoreNaN*/)
+    template<> RetVal maxValueFunc<complex64>(const DataObject *dObj, float64 &maxValue, uint32 *firstLocation, bool ignoreNaN)
     {
-        cv::error(cv::Exception(CV_StsAssert, "maxValueFunc not defined for complex type", "", __FILE__, __LINE__));
-        return retError;
+        unsigned int numMats = dObj->getNumPlanes();
+        int matIndex = 0;
+        int m, n;
+
+        cv::Mat_<complex64> *mat = NULL;
+        const complex64* rowPtr;
+
+        float64 tempMaxValue;
+
+        if (std::numeric_limits<complex64>::is_exact)
+        {
+            tempMaxValue = std::numeric_limits<float64>::min(); //integer numbers
+        }
+        else
+        {
+            tempMaxValue = -1 * std::numeric_limits<float64>::max();
+        }
+
+        if (ignoreNaN)
+        {
+            for (unsigned int nmat = 0; nmat < numMats; nmat++)
+            {
+                matIndex = dObj->seekMat(nmat, numMats);
+                mat = (cv::Mat_<complex64> *)(dObj->get_mdata())[matIndex];
+
+                for (m = 0; m < mat->rows; m++)
+                {
+                    rowPtr = (complex64*)mat->ptr(m);
+                    for (n = 0; n < mat->cols; n++)
+                    {
+                        if (isFinite<complex64>(rowPtr[n]) && abs(rowPtr[n]) > tempMaxValue)
+                        {
+                            tempMaxValue = abs(rowPtr[n]);
+                            firstLocation[0] = nmat;
+                            firstLocation[1] = m;
+                            firstLocation[2] = n;
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (unsigned int nmat = 0; nmat < numMats; nmat++)
+            {
+                matIndex = dObj->seekMat(nmat, numMats);
+                mat = (cv::Mat_<complex64> *)(dObj->get_mdata())[matIndex];
+
+                for (m = 0; m < mat->rows; m++)
+                {
+                    rowPtr = (complex64*)mat->ptr(m);
+                    for (n = 0; n < mat->cols; n++)
+                    {
+                        if (abs(rowPtr[n]) > tempMaxValue)
+                        {
+                            tempMaxValue = abs(rowPtr[n]);
+                            firstLocation[0] = nmat;
+                            firstLocation[1] = m;
+                            firstLocation[2] = n;
+                        }
+                    }
+                }
+            }
+        }
+
+        maxValue = cv::saturate_cast<float64>(tempMaxValue);
+        return ito::retOk;
+//        cv::error(cv::Exception(CV_StsAssert, "maxValueFunc not defined for complex type", "", __FILE__, __LINE__));
+//        return retError;
     }
 
-    template<> RetVal maxValueFunc<complex128>(const DataObject * /*dObj*/, float64 & /*maxValue*/, uint32 * /*firstLocation*/, bool /*ignoreNaN*/)
+    template<> RetVal maxValueFunc<complex128>(const DataObject *dObj, float64 &maxValue, uint32 *firstLocation, bool ignoreNaN)
     {
-        cv::error(cv::Exception(CV_StsAssert, "maxValueFunc not defined for complex type", "", __FILE__, __LINE__));
-        return retError;
+        unsigned int numMats = dObj->getNumPlanes();
+        int matIndex = 0;
+        int m, n;
+
+        cv::Mat_<complex128> *mat = NULL;
+        const complex128* rowPtr;
+
+        float64 tempMaxValue;
+
+        if (std::numeric_limits<complex128>::is_exact)
+        {
+            tempMaxValue = std::numeric_limits<float64>::min(); //integer numbers
+        }
+        else
+        {
+            tempMaxValue = -1 * std::numeric_limits<float64>::max();
+        }
+
+        if (ignoreNaN)
+        {
+            for (unsigned int nmat = 0; nmat < numMats; nmat++)
+            {
+                matIndex = dObj->seekMat(nmat, numMats);
+                mat = (cv::Mat_<complex128> *)(dObj->get_mdata())[matIndex];
+
+                for (m = 0; m < mat->rows; m++)
+                {
+                    rowPtr = (complex128*)mat->ptr(m);
+                    for (n = 0; n < mat->cols; n++)
+                    {
+                        if (isFinite<complex128>(rowPtr[n]) && abs(rowPtr[n]) > tempMaxValue)
+                        {
+                            tempMaxValue = abs(rowPtr[n]);
+                            firstLocation[0] = nmat;
+                            firstLocation[1] = m;
+                            firstLocation[2] = n;
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            for (unsigned int nmat = 0; nmat < numMats; nmat++)
+            {
+                matIndex = dObj->seekMat(nmat, numMats);
+                mat = (cv::Mat_<complex128> *)(dObj->get_mdata())[matIndex];
+
+                for (m = 0; m < mat->rows; m++)
+                {
+                    rowPtr = (complex128*)mat->ptr(m);
+                    for (n = 0; n < mat->cols; n++)
+                    {
+                        if (abs(rowPtr[n]) > tempMaxValue)
+                        {
+                            tempMaxValue = abs(rowPtr[n]);
+                            firstLocation[0] = nmat;
+                            firstLocation[1] = m;
+                            firstLocation[2] = n;
+                        }
+                    }
+                }
+            }
+        }
+
+        maxValue = cv::saturate_cast<float64>(tempMaxValue);
+        return ito::retOk;
+//        cv::error(cv::Exception(CV_StsAssert, "maxValueFunc not defined for complex type", "", __FILE__, __LINE__));
+//        return retError;
     }
 
     template<> RetVal maxValueFunc<Rgba32>(const DataObject * /*dObj*/, float64 & /*maxValue*/, uint32 * /*firstLocation*/, bool /*ignoreNaN*/)
@@ -338,7 +472,7 @@ namespace dObjHelper
         \detail Find the max-value of this data object and the first position.
                 NaN-Values will be ignored by this method and the Inf-Value handling depends on inf-flag. 
                 If ignoreInf == true, inf is ignored else inf is not ignored.
-                This function has no complex 
+                For complex valued data types the position with the largest magnitude is returned.
 
         \param[in]      dObj            handle to the dataObject
         \param[out]     maxValue        highest value in this object
@@ -357,11 +491,12 @@ namespace dObjHelper
         if(dObj == NULL || dObj->getDims() == 0)
             return ito::RetVal(retError, 0, "DataObjectPointer is invalid");
 
+        /*
         if(dObj->getType() == tComplex64 || dObj->getType() == tComplex128)
         {
             return ito::RetVal(retError, 0, "source matrix must be of type (u)int8, (u)int16, (u)int32, float32 or float64");
         }
-
+        */
         return fListmaxValueFunc[dObj->getType()](dObj, maxValue, firstLocation, ignoreInf);
     }
 
