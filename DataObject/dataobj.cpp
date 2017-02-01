@@ -6780,9 +6780,26 @@ DataObject DataObject::squeeze() const
     {
         //shallow copy without change in any plane
         cv::Mat * planes = new cv::Mat[numMats];
+		const cv::Mat* tempPlane;
         for(int i = 0 ; i < numMats ; i++)
         {
-            planes[i] = *( (cv::Mat*)(m_data[this->seekMat(i)]) );
+			tempPlane = (cv::Mat*)(m_data[this->seekMat(i)]);
+
+#if (CV_MAJOR_VERSION >= 3)
+			if (tempPlane->u)
+#else
+			if (tempPlane->refcount)
+#endif
+			{
+				//the opencv matrix has its own reference counter and manages its memory -> simple shallow copies are sufficient
+				planes[i] = *tempPlane;
+			}
+			else
+			{
+				//the opencv matrix points to user-allocated data (e.g. continuous data block allocated by dataObject). In
+				//this case, a shallow copy is dangerous if the base object is deleted. Therefore, all planes have to be deeply copied:
+				tempPlane->copyTo(planes[i]);
+			}
         }
 
         resObj = DataObject(newDimensions, newSizes, m_type, planes, static_cast<unsigned int>(numMats));
@@ -6903,16 +6920,33 @@ DataObject DataObject::reshape(int newDims, const int *newSizes) const
     
     if (planesUnchanged)
     {
-        //shallow copy without change in any plane
-        cv::Mat * planes = new cv::Mat[numMats];
-        for(int i = 0 ; i < numMats ; i++)
-        {
-            planes[i] = *( (cv::Mat*)(m_data[this->seekMat(i)]) );
-        }
+		//shallow copy without change in any plane
+		cv::Mat * planes = new cv::Mat[numMats];
+		const cv::Mat* tempPlane;
+		for (int i = 0; i < numMats; i++)
+		{
+			tempPlane = (cv::Mat*)(m_data[this->seekMat(i)]);
 
-        resObj = DataObject(newDims, newSizes, m_type, planes, static_cast<unsigned int>(numMats));
+#if (CV_MAJOR_VERSION >= 3)
+			if (tempPlane->u)
+#else
+			if (tempPlane->refcount)
+#endif
+			{
+				//the opencv matrix has its own reference counter and manages its memory -> simple shallow copies are sufficient
+				planes[i] = *tempPlane;
+			}
+			else
+			{
+				//the opencv matrix points to user-allocated data (e.g. continuous data block allocated by dataObject). In
+				//this case, a shallow copy is dangerous if the base object is deleted. Therefore, all planes have to be deeply copied:
+				tempPlane->copyTo(planes[i]);
+			}
+		}
 
-        delete[] planes;
+		resObj = DataObject(newDims, newSizes, m_type, planes, static_cast<unsigned int>(numMats));
+
+		delete[] planes;
     }
     else
     {

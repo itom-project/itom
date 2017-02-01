@@ -301,7 +301,7 @@ class FigureCanvasItom(FigureCanvasBase):
             dpival = self.figure.dpi
             winch = w / dpival
             hinch = h / dpival
-            self.figure.set_size_inches(winch, hinch)
+            self.figure.set_size_inches(winch, hinch, forward=False)
             FigureCanvasBase.resize_event(self)
             if draw:
                 self.draw_idle()
