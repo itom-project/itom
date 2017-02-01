@@ -33,31 +33,28 @@
       <string>General style settings </string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="1" column="2">
-       <widget class="QLabel" name="label_6">
+      <item row="6" column="2">
+       <widget class="QLabel" name="label_14">
         <property name="text">
-         <string>tracker pen:</string>
+         <string>z stack marker size</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
-      <item row="2" column="2">
-       <widget class="QLabel" name="label_7">
-        <property name="text">
-         <string>tracker font:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      <item row="6" column="3">
+       <widget class="QSpinBox" name="zStackMarkerSizeSpin"/>
+      </item>
+      <item row="5" column="3">
+       <widget class="PenCreatorButton" name="zStackMarkerPenBtn">
+        <property name="editableColor" stdset="0">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
       <item row="3" column="1">
        <widget class="FontButton" name="axisFontBtn"/>
-      </item>
-      <item row="2" column="3">
-       <widget class="FontButton" name="trackerFontBtn"/>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="label">
@@ -66,13 +63,6 @@
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="3">
-       <widget class="PenCreatorButton" name="trackerPenBtn">
-        <property name="editableColor" stdset="0">
-         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -142,53 +132,14 @@
       <item row="5" column="0">
        <widget class="QLabel" name="label_11">
         <property name="text">
-         <string>lgend font:</string>
+         <string>legend font:</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
        </widget>
       </item>
-      <item row="4" column="2">
-       <widget class="QLabel" name="label_9">
-        <property name="text">
-         <string>center marker pen:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="2">
-       <widget class="QLabel" name="label_10">
-        <property name="text">
-         <string>center marker size:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QLabel" name="label_8">
-        <property name="text">
-         <string>tracker background:</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="3">
-       <widget class="QSpinBox" name="centerMarkerSizeSpin"/>
-      </item>
-      <item row="4" column="3">
-       <widget class="PenCreatorButton" name="centerMerkerPenBtn"/>
-      </item>
-      <item row="3" column="3">
-       <widget class="BrushCreatorButton" name="trackerBackgroundBtn"/>
-      </item>
-      <item row="8" column="3">
+      <item row="7" column="3">
        <widget class="QPushButton" name="defaultBtn">
         <property name="text">
          <string>Set to default</string>
@@ -204,6 +155,92 @@
          <bool>true</bool>
         </property>
        </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_16">
+        <property name="text">
+         <string>shape label background</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1">
+       <widget class="BrushCreatorButton" name="shapeLabelBgBtn"/>
+      </item>
+      <item row="1" column="3">
+       <widget class="FontButton" name="trackerFontBtn"/>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>tracker background:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>tracker font:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="BrushCreatorButton" name="trackerBackgroundBtn"/>
+      </item>
+      <item row="3" column="2">
+       <widget class="QLabel" name="label_9">
+        <property name="text">
+         <string>center marker pen:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="2">
+       <widget class="QLabel" name="label_13">
+        <property name="text">
+         <string>z stack marker pen</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="3">
+       <widget class="QSpinBox" name="centerMarkerSizeSpin"/>
+      </item>
+      <item row="4" column="2">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>center marker size:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="3">
+       <widget class="PenCreatorButton" name="centerMerkerPenBtn">
+        <property name="editableColor" stdset="0">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="0">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>shape label font</string>
+        </property>
+       </widget>
+      </item>
+      <item row="8" column="1">
+       <widget class="FontButton" name="shapeLabelFontBtn"/>
       </item>
      </layout>
     </widget>

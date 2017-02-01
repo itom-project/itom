@@ -215,6 +215,20 @@ Plots and Figures
     :scale: 80%
     :align: center
     
+**Default Style Settings**
+
+On this page it is possible to set global plot parameters. Each time a plot is opened it is checked which global properties are of intrest for this type of plot. Bellows figure shows some of connections
+between the settings and the different plot of the 1DQwtPlot and 2DQwtPlot elements .
+
+.. figure:: images/generalPlotSettings.png
+    :scale: 80%
+    :align: center
+	
+.. figure:: images/1dLineElements.png
+    :scale: 80%
+    :align: center
+
+
 .
 
 

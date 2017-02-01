@@ -51,12 +51,16 @@ namespace ito
         ui.lineStyleBtn->setPen(pen);
         ui.legendFontBtn->setCurrentFont(settings.value("legendFont", ("Helvetica", 8)).value<QFont>());
         ui.zoomRubberBandPenBtn->setPen(settings.value("zoomRubberBandPen", QPen((Qt::red), 2, Qt::DashLine)).value<QPen>());
-        ui.trackerPenBtn->setPen(settings.value("trackerPen", (Qt::red, 2)).value<QPen>());
+        //ui.trackerPenBtn->setPen(settings.value("trackerPen", (Qt::red, 2)).value<QPen>());
         ui.trackerFontBtn->setCurrentFont(settings.value("trackerFont", ("Verdana", 10)).value<QFont>());
-        ui.trackerBackgroundBtn->setBrush(settings.value("trackerBackground", QBrush((255, 255, 255, 255), Qt::SolidPattern)).value<QBrush>());
+        ui.trackerBackgroundBtn->setBrush(settings.value("trackerBackground", QBrush((255, 255, 255, 155), Qt::SolidPattern)).value<QBrush>());
         ui.centerMerkerPenBtn->setPen(settings.value("centerMarkerPen", (Qt::red, 1)).value<QPen>());
         ui.centerMarkerSizeSpin->setValue(settings.value("centerMarkerSize", (25, 25)).value<QSize>().width());
-
+        ui.zStackMarkerSizeSpin->setValue(settings.value("zStackMarkerSize", (7, 7)).value<QSize>().width());
+        ui.zStackMarkerPenBtn->setPen(settings.value("zStackMarkerPen", QPen(Qt::black, 10, Qt::SolidLine)).value<QPen>());
+        //ui.shapePenBtn->setPen(settings.value("shapePen", (QBrush(Qt::red), 2)).value<QPen>());
+        ui.shapeLabelBgBtn->setBrush(settings.value("shapeLabelBackground", QBrush(Qt::NoBrush, Qt::SolidPattern)).value<QBrush>());
+        ui.shapeLabelFontBtn->setCurrentFont(settings.value("shapeLabelFont", ("Helvetica", 8)).value<QFont>());
 
         settings.endGroup();
         settings.endGroup();
@@ -75,11 +79,16 @@ namespace ito
       settings.setValue("lineWidth", (qreal)ui.lineStyleBtn->getPen().width());
       settings.setValue("legendFont", ui.legendFontBtn->currentFont());
       settings.setValue("zoomRubberBandPen", ui.zoomRubberBandPenBtn->getPen());
-      settings.setValue("trackerPen", ui.trackerPenBtn->getPen());
+      //settings.setValue("trackerPen", ui.trackerPenBtn->getPen());
       settings.setValue("trackerFont", ui.trackerFontBtn->currentFont());
       settings.setValue("trackerBackground", ui.trackerBackgroundBtn->getBrush());
       settings.setValue("centerMarkerPen", ui.centerMerkerPenBtn->getPen());
       settings.setValue("centerMarkerSize", QSize(ui.centerMarkerSizeSpin->value(), ui.centerMarkerSizeSpin->value()));
+      settings.setValue("zStackMarkerPen", ui.zStackMarkerPenBtn->getPen());
+      settings.setValue("zStackMarkerSize", QSize(ui.zStackMarkerSizeSpin->value(), ui.zStackMarkerSizeSpin->value()));
+      //settings.setValue("shapePen", ui.shapePenBtn->getPen());
+      settings.setValue("shapeLabelBackground", ui.shapeLabelBgBtn->getBrush());
+      settings.setValue("shapeLabelFont", ui.shapeLabelFontBtn->currentFont());
 
 
       settings.endGroup();
@@ -96,11 +105,16 @@ namespace ito
         ui.lineStyleBtn->setPen(pen);
         ui.legendFontBtn->setCurrentFont(QFont("Helvetica", 8));
         ui.zoomRubberBandPenBtn->setPen(QPen(Qt::red, 2, Qt::DashLine));
-        ui.trackerPenBtn->setPen(QPen(Qt::red, 2));
+        //ui.trackerPenBtn->setPen(QPen(Qt::red, 2));
         ui.trackerFontBtn->setCurrentFont(QFont("Verdana", 10));
-        ui.trackerBackgroundBtn->setBrush( QBrush((255, 255, 255, 255), Qt::SolidPattern));
+        ui.trackerBackgroundBtn->setBrush( QBrush((255, 255, 255, 155), Qt::SolidPattern));
         ui.centerMerkerPenBtn->setPen(QPen(Qt::red, 1));
         ui.centerMarkerSizeSpin->setValue(25);
+        ui.zStackMarkerSizeSpin->setValue(7);
+        ui.zStackMarkerPenBtn->setPen(QPen(Qt::black, 10, Qt::SolidLine));
+        //ui.shapePenBtn->setPen(QPen(QBrush(Qt::red), 2));
+        ui.shapeLabelBgBtn->setBrush(QBrush(Qt::NoBrush, Qt::SolidPattern));
+        ui.shapeLabelFontBtn->setCurrentFont(QFont("Helvetica", 8));
         this->update();
     }
 
