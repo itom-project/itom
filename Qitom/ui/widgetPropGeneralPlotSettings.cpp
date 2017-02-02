@@ -63,7 +63,6 @@ namespace ito
         ui.shapeLabelFontBtn->setCurrentFont(settings.value("shapeLabelFont", ("Verdana", 10)).value<QFont>());
         ui.geometricShapePenBtn->setPen(settings.value("geometricShapePen", QPen(QBrush(Qt::red), 1, Qt::SolidLine)).value<QPen>());
         ui.shapeLabelTextColorBtn->setColor(settings.value("shapeLabelTextColor", QColor(Qt::white)).value<QColor>());
-
         settings.endGroup();
         settings.endGroup();
     }
