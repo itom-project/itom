@@ -217,8 +217,8 @@ Plots and Figures
     
 **Default Style Settings**
 
-On this page it is possible to set global plot parameters. Each time a plot is opened it is checked which global properties are of intrest for this type of plot. Bellows figure shows some of connections
-between the settings and the different plot of the 1DQwtPlot and 2DQwtPlot elements .
+Here you have the possibility to set global plot settings like e.g. the legend font. If a setting is not provided by any plot type the setting will be ignored. 
+The figures below are showing some examples of the different settings. 
 
 .. figure:: images/generalPlotSettings.png
     :scale: 80%
