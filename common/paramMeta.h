@@ -84,36 +84,36 @@ namespace ito
         };
 
 
-		/*!
-		\brief The representation of number types indicates the type of widget that is suited best to display and change the value
+        /*!
+        \brief The representation of number types indicates the type of widget that is suited best to display and change the value
 
-		Not all representations can be applied to all types of number values, e.g. IPV4 can not be used for char-types.
-		e.g. - Char, CharArray: Linear, Boolean, Logarithmic, PureNumber
-		     - IntegerArray, Range, Interval: Linear, Boolean, Logarithmic, PureNumber
-			 - Integer: Linear, Boolean, Logarithmic, PureNumber, HexNumber, IPV4Address, MACAddress
-			 - Double, DoubleArray: Linear, Boolean, Logarithmic, PureNumber
-		*/
-		enum tRepresentation
-		{
-			Linear = 0x0001,       //!< Slider with linear behavior
-			Logarithmic = 0x0002,  //!< Slider with logarithmic behaviour
-			Boolean = 0x0004,      //!< Check box
-			PureNumber = 0x0008,   //!< Decimal number in an edit control
-			HexNumber = 0x0010,    //!< Hex number in an edit control
-			IPV4Address = 0x0020,  //!< IP-Address
-			MACAddress = 0x0040,   //!< MAC-Address
-			UnknownRepresentation = 0x0080
-		};
+        Not all representations can be applied to all types of number values, e.g. IPV4 can not be used for char-types.
+        e.g. - Char, CharArray: Linear, Boolean, Logarithmic, PureNumber
+             - IntegerArray, Range, Interval: Linear, Boolean, Logarithmic, PureNumber
+             - Integer: Linear, Boolean, Logarithmic, PureNumber, HexNumber, IPV4Address, MACAddress
+             - Double, DoubleArray: Linear, Boolean, Logarithmic, PureNumber
+        */
+        enum tRepresentation
+        {
+            Linear = 0x0001,       //!< Slider with linear behavior
+            Logarithmic = 0x0002,  //!< Slider with logarithmic behaviour
+            Boolean = 0x0004,      //!< Check box
+            PureNumber = 0x0008,   //!< Decimal number in an edit control
+            HexNumber = 0x0010,    //!< Hex number in an edit control
+            IPV4Address = 0x0020,  //!< IP-Address
+            MACAddress = 0x0040,   //!< MAC-Address
+            UnknownRepresentation = 0x0080
+        };
 
-		ParamMeta(ito::ByteArray category = ito::ByteArray());                //!< default constructor with an unknown meta information type
-		ParamMeta(MetaRtti type, ito::ByteArray category = ito::ByteArray()); //!< constructor used by derived classes to indicate their real type
+        ParamMeta(ito::ByteArray category = ito::ByteArray());                //!< default constructor with an unknown meta information type
+        ParamMeta(MetaRtti type, ito::ByteArray category = ito::ByteArray()); //!< constructor used by derived classes to indicate their real type
         virtual ~ParamMeta() {}                            //!< destructor
         inline MetaRtti getType() const { return m_type; } //!< returns runtime type information value
-		inline ito::ByteArray getCategory() const { return m_category; } //!< returns category name of this parameter (default: empty ByteArray)
-		void setCategory(const ito::ByteArray &category);
+        inline ito::ByteArray getCategory() const { return m_category; } //!< returns category name of this parameter (default: empty ByteArray)
+        void setCategory(const ito::ByteArray &category);
     protected:
         MetaRtti m_type;
-		ito::ByteArray m_category; //!< optional category name of this parameter
+        ito::ByteArray m_category; //!< optional category name of this parameter
     };
 
     /*!
@@ -130,15 +130,15 @@ namespace ito
     public:
         //! constructor with minimum and maximum value
 
-		explicit CharMeta(char minVal, char maxVal, char stepSize = 1, ito::ByteArray category = ito::ByteArray()); //!< constructor with minimum and maximum value as well as optional step size (default: 1)
+        explicit CharMeta(char minVal, char maxVal, char stepSize = 1, ito::ByteArray category = ito::ByteArray()); //!< constructor with minimum and maximum value as well as optional step size (default: 1)
         static CharMeta* all(ito::ByteArray category = ito::ByteArray()); //!< returns a new instance of CharMeta, where the min and max are set to the full range available for char. The caller has to take care of memory.
         inline char getMin() const { return m_minVal; }         //!< returns minimum value
         inline char getMax() const { return m_maxVal; }         //!< returns maximum value
         inline char getStepSize() const { return m_stepSize; }  //!< returns step size
-		inline ito::ByteArray getUnit() const { return m_unit; } //!< returns unit
-		inline void setUnit(const ito::ByteArray &unit) { m_unit = unit; } //!< sets unit string of this parameter
-		inline ParamMeta::tRepresentation getRepresentation() const { return m_representation; } //!< returns display representation
-		void setRepresentation(ParamMeta::tRepresentation representation); //!< sets display representation
+        inline ito::ByteArray getUnit() const { return m_unit; } //!< returns unit
+        inline void setUnit(const ito::ByteArray &unit) { m_unit = unit; } //!< sets unit string of this parameter
+        inline ParamMeta::tRepresentation getRepresentation() const { return m_representation; } //!< returns display representation
+        void setRepresentation(ParamMeta::tRepresentation representation); //!< sets display representation
 
         //! sets the minimum value
         /*!
@@ -161,8 +161,8 @@ namespace ito
         char m_minVal;
         char m_maxVal;
         char m_stepSize; // >= 1
-		ito::ByteArray m_unit; //!< unit of value, e.g. 'mm', ...
-		ParamMeta::tRepresentation m_representation; //!< hint for display representation in GUI widget
+        ito::ByteArray m_unit; //!< unit of value, e.g. 'mm', ...
+        ParamMeta::tRepresentation m_representation; //!< hint for display representation in GUI widget
     };
 
     /*!
@@ -178,15 +178,15 @@ namespace ito
     {
     public:
 
-		explicit IntMeta(int32 minVal, int32 maxVal, int32 stepSize = 1, ito::ByteArray category = ito::ByteArray()); //!< constructor with minimum and maximum value as well as optional step size (default: 1)
-		static IntMeta* all(ito::ByteArray category = ito::ByteArray()); //!< returns a new instance of IntMeta, where the min and max are set to the full range available for integers. The caller has to take care of memory.
+        explicit IntMeta(int32 minVal, int32 maxVal, int32 stepSize = 1, ito::ByteArray category = ito::ByteArray()); //!< constructor with minimum and maximum value as well as optional step size (default: 1)
+        static IntMeta* all(ito::ByteArray category = ito::ByteArray()); //!< returns a new instance of IntMeta, where the min and max are set to the full range available for integers. The caller has to take care of memory.
         inline int32 getMin() const { return m_minVal; }              //!< returns minimum value
         inline int32 getMax() const { return m_maxVal; }              //!< returns maximum value
         inline int32 getStepSize() const { return m_stepSize; }       //!< returns step size
-		inline ito::ByteArray getUnit() const { return m_unit; } //!< returns unit
-		inline void setUnit(const ito::ByteArray &unit) { m_unit = unit; } //!< sets unit string of this parameter
-		inline ParamMeta::tRepresentation getRepresentation() const { return m_representation; } //!< returns display representation
-		void setRepresentation(ParamMeta::tRepresentation behaviour); //!< sets display representation
+        inline ito::ByteArray getUnit() const { return m_unit; } //!< returns unit
+        inline void setUnit(const ito::ByteArray &unit) { m_unit = unit; } //!< sets unit string of this parameter
+        inline ParamMeta::tRepresentation getRepresentation() const { return m_representation; } //!< returns display representation
+        void setRepresentation(ParamMeta::tRepresentation behaviour); //!< sets display representation
         
         //! sets the minimum value
         /*!
@@ -209,8 +209,8 @@ namespace ito
         int32 m_minVal;
         int32 m_maxVal;
         int32 m_stepSize; // >= 1
-		ito::ByteArray m_unit; //!< unit of value, e.g. 'mm', ...
-		ParamMeta::tRepresentation m_representation; //!< hint for display behaviour in GUI widget
+        ito::ByteArray m_unit; //!< unit of value, e.g. 'mm', ...
+        ParamMeta::tRepresentation m_representation; //!< hint for display behaviour in GUI widget
     };
 
     /*!
@@ -225,31 +225,31 @@ namespace ito
     class ITOMCOMMON_EXPORT DoubleMeta : public ParamMeta
     {
     public:
-		/*!
-		\brief Display notation style if the related parameters is displayed in any widget
-		*/
-		enum tDisplayNotation
-		{
-			Automatic,  //!< double number is automatically rendered in any GUI element
-			Fixed,      //!< if possible, the double number should be shown as fixed number, e.g. 1000.00
-			Scientific  //!< if possible, the double number should be rendered in a scientific notation, e.g. 1.0E3
-		};
+        /*!
+        \brief Display notation style if the related parameters is displayed in any widget
+        */
+        enum tDisplayNotation
+        {
+            Automatic,  //!< double number is automatically rendered in any GUI element
+            Fixed,      //!< if possible, the double number should be shown as fixed number, e.g. 1000.00
+            Scientific  //!< if possible, the double number should be rendered in a scientific notation, e.g. 1.0E3
+        };
 
         //! constructor with minimum and maximum value
 
-		explicit DoubleMeta(float64 minVal, float64 maxVal, float64 stepSize = 0.0 /*0.0 means no specific step size*/, ito::ByteArray category = ito::ByteArray());
-		static DoubleMeta* all(ito::ByteArray category = ito::ByteArray()); //!< returns a new instance of DoubleMeta, where the min and max are set to the full range available for double. The caller has to take care of memory.
+        explicit DoubleMeta(float64 minVal, float64 maxVal, float64 stepSize = 0.0 /*0.0 means no specific step size*/, ito::ByteArray category = ito::ByteArray());
+        static DoubleMeta* all(ito::ByteArray category = ito::ByteArray()); //!< returns a new instance of DoubleMeta, where the min and max are set to the full range available for double. The caller has to take care of memory.
         inline float64 getMin() const { return m_minVal; }        //!< returns minimum value
         inline float64 getMax() const { return m_maxVal; }        //!< returns maximum value
         inline float64 getStepSize() const { return m_stepSize; } //!< returns step size
-		inline ito::ByteArray getUnit() const { return m_unit; } //!< returns unit
-		inline void setUnit(const ito::ByteArray &unit) { m_unit = unit; } //!< sets unit string of this parameter
-		inline int getDisplayPrecision() const { return m_displayPrecision; } //!< returns display precision
-		inline void setDisplayPrecision(int displayPrecision) { m_displayPrecision = displayPrecision; } //!< sets display precision
-		inline DoubleMeta::tDisplayNotation getDisplayNotation() const { return m_displayNotation; } //!< returns display notation
-		inline void setDisplayNotation(DoubleMeta::tDisplayNotation displayNotation) { m_displayNotation = displayNotation; } //!< sets display notation
-		inline ParamMeta::tRepresentation getRepresentation() const { return m_representation; } //!< returns display representation
-		void setRepresentation(ParamMeta::tRepresentation representation); //!< sets display representation
+        inline ito::ByteArray getUnit() const { return m_unit; } //!< returns unit
+        inline void setUnit(const ito::ByteArray &unit) { m_unit = unit; } //!< sets unit string of this parameter
+        inline int getDisplayPrecision() const { return m_displayPrecision; } //!< returns display precision
+        inline void setDisplayPrecision(int displayPrecision) { m_displayPrecision = displayPrecision; } //!< sets display precision
+        inline DoubleMeta::tDisplayNotation getDisplayNotation() const { return m_displayNotation; } //!< returns display notation
+        inline void setDisplayNotation(DoubleMeta::tDisplayNotation displayNotation) { m_displayNotation = displayNotation; } //!< sets display notation
+        inline ParamMeta::tRepresentation getRepresentation() const { return m_representation; } //!< returns display representation
+        void setRepresentation(ParamMeta::tRepresentation representation); //!< sets display representation
         
         //! sets the minimum value
         /*!
@@ -272,10 +272,10 @@ namespace ito
         float64 m_minVal;
         float64 m_maxVal;
         float64 m_stepSize; // >= 0, 0.0 means no specific step size
-		ito::ByteArray m_unit; //!< unit of value, e.g. 'mm', ...
-		int m_displayPrecision; //!< hint for the number of decimal digits that should be shown in any GUI widget, default: 3
-		tDisplayNotation m_displayNotation; //!< indicates how this double number should be rendered (e.g. in GUI widgets)
-		ParamMeta::tRepresentation m_representation; //!< hint for display representation in GUI widget
+        ito::ByteArray m_unit; //!< unit of value, e.g. 'mm', ...
+        int m_displayPrecision; //!< hint for the number of decimal digits that should be shown in any GUI widget, default: 3
+        tDisplayNotation m_displayNotation; //!< indicates how this double number should be rendered (e.g. in GUI widgets)
+        ParamMeta::tRepresentation m_representation; //!< hint for display representation in GUI widget
     };
 
     /*!
@@ -299,7 +299,7 @@ namespace ito
                 \sa ito::Plugin, ito::tPluginType
             */
 
-			explicit HWMeta(uint32 minType, ito::ByteArray category = ito::ByteArray()) : ParamMeta(rttiHWMeta, category), m_minType(minType)
+            explicit HWMeta(uint32 minType, ito::ByteArray category = ito::ByteArray()) : ParamMeta(rttiHWMeta, category), m_minType(minType)
             {
             }
 
@@ -310,7 +310,7 @@ namespace ito
                 \sa ito::Plugin
             */
 
-			explicit HWMeta(const char *HWAddInName, ito::ByteArray category = ito::ByteArray()) : ParamMeta(rttiHWMeta, category), m_minType(0), m_HWName(HWAddInName)
+            explicit HWMeta(const char *HWAddInName, ito::ByteArray category = ito::ByteArray()) : ParamMeta(rttiHWMeta, category), m_minType(0), m_HWName(HWAddInName)
             {
             }
 
@@ -326,7 +326,7 @@ namespace ito
             ito::ByteArray m_HWName;     //!< zero-terminated name of specific plugin-name or invalid if not defined
     };
 
-	class StringMetaPrivate; //forward declaration
+    class StringMetaPrivate; //forward declaration
 
     /*!
     \class StringMeta
@@ -354,7 +354,7 @@ namespace ito
                 \param type indicates how the string elements should be considered
                 \sa tType
             */
-			StringMeta(tType type, ito::ByteArray category = ito::ByteArray());
+            StringMeta(tType type, ito::ByteArray category = ito::ByteArray());
 
             //! constructor
             /*!
@@ -363,38 +363,38 @@ namespace ito
                 \param val adds a first string to the element list
                 \sa tType
             */
-			StringMeta(tType type, const char* val, ito::ByteArray category = ito::ByteArray());
+            StringMeta(tType type, const char* val, ito::ByteArray category = ito::ByteArray());
 
-			//! constructor
-			/*!
-			Returns a meta information class for string-types.
-			\param type indicates how the string elements should be considered
-			\param val adds a first string to the element list
-			\sa tType
-			*/
-			StringMeta(tType type, const ito::ByteArray &val, ito::ByteArray category = ito::ByteArray());
+            //! constructor
+            /*!
+            Returns a meta information class for string-types.
+            \param type indicates how the string elements should be considered
+            \param val adds a first string to the element list
+            \sa tType
+            */
+            StringMeta(tType type, const ito::ByteArray &val, ito::ByteArray category = ito::ByteArray());
 
             //! copy constructor
-			StringMeta(const StringMeta& cpy);
+            StringMeta(const StringMeta& cpy);
 
             //! destructor
             virtual ~StringMeta();
 
 
-			tType getStringType() const;                   //!< returns the type how strings in list should be considered. \sa tType
-			void setStringType(tType type);                //!< sets the type how strings in pattern list should be considered. \sa tType
-			int getLen() const;                            //!< returns the number of string elements in meta information class.
+            tType getStringType() const;                   //!< returns the type how strings in list should be considered. \sa tType
+            void setStringType(tType type);                //!< sets the type how strings in pattern list should be considered. \sa tType
+            int getLen() const;                            //!< returns the number of string elements in meta information class.
             const char* getString(int idx = 0) const;      //!< returns string from list at index position or NULL, if index is out of range.
             bool addItem(const char *val);                 //!< adds another element to the list of patterns.
-			bool addItem(const ito::ByteArray &val);       //!< adds another element to the list of patterns.
-			void clearItems();                             //!< clear all elements from the pattern list.
+            bool addItem(const ito::ByteArray &val);       //!< adds another element to the list of patterns.
+            void clearItems();                             //!< clear all elements from the pattern list.
             StringMeta & operator += (const char *val);    //!< add another pattern string to the list of patterns.
             StringMeta & operator = (const StringMeta& rhs);
 
         private:
 
-			StringMetaPrivate *p;
-			
+            StringMetaPrivate *p;
+            
     };
 
     /*!
@@ -409,7 +409,7 @@ namespace ito
     {
         public:
 
-			explicit DObjMeta(uint32 allowedTypes = 0xFFFF, int minDim = 0, int maxDim = std::numeric_limits<int>::max(), ito::ByteArray category = ito::ByteArray()) : ParamMeta(rttiDObjMeta, category), m_allowedTypes(allowedTypes), m_minDim(minDim), m_maxDim(maxDim) {}
+            explicit DObjMeta(uint32 allowedTypes = 0xFFFF, int minDim = 0, int maxDim = std::numeric_limits<int>::max(), ito::ByteArray category = ito::ByteArray()) : ParamMeta(rttiDObjMeta, category), m_allowedTypes(allowedTypes), m_minDim(minDim), m_maxDim(maxDim) {}
             inline int getAllowedTypes() const { return m_allowedTypes; }
             inline int getMinDim() const { return m_minDim; } //!< returns maximum allowed dimensions of data object
             inline int getMaxDim() const { return m_maxDim; } //!< returns minimum number of dimensions of data object
@@ -434,8 +434,8 @@ namespace ito
     {
     public:
 
-		explicit CharArrayMeta(char minVal, char maxVal, char stepSize = 1, ito::ByteArray category = ito::ByteArray());
-		explicit CharArrayMeta(char minVal, char maxVal, char stepSize, size_t numMin, size_t numMax, size_t numStepSize = 1, ito::ByteArray category = ito::ByteArray());
+        explicit CharArrayMeta(char minVal, char maxVal, char stepSize = 1, ito::ByteArray category = ito::ByteArray());
+        explicit CharArrayMeta(char minVal, char maxVal, char stepSize, size_t numMin, size_t numMax, size_t numStepSize = 1, ito::ByteArray category = ito::ByteArray());
         inline size_t getNumMin() const { return m_numMin; }         //!< returns minimum number of values
         inline size_t getNumMax() const { return m_numMax; }         //!< returns maximum number of values
         inline size_t getNumStepSize() const { return m_numStep; }   //!< returns step size of number of values
@@ -478,8 +478,8 @@ namespace ito
     {
     public:
 
-		explicit IntArrayMeta(int32 minVal, int32 maxVal, int stepSize = 1, ito::ByteArray category = ito::ByteArray());
-		explicit IntArrayMeta(int32 minVal, int32 maxVal, int stepSize, size_t numMin, size_t numMax, size_t numStepSize = 1, ito::ByteArray category = ito::ByteArray());
+        explicit IntArrayMeta(int32 minVal, int32 maxVal, int stepSize = 1, ito::ByteArray category = ito::ByteArray());
+        explicit IntArrayMeta(int32 minVal, int32 maxVal, int stepSize, size_t numMin, size_t numMax, size_t numStepSize = 1, ito::ByteArray category = ito::ByteArray());
         inline size_t getNumMin() const { return m_numMin; }         //!< returns minimum number of values
         inline size_t getNumMax() const { return m_numMax; }         //!< returns maximum number of values
         inline size_t getNumStepSize() const { return m_numStep; }   //!< returns step size of number of values
@@ -522,8 +522,8 @@ namespace ito
     {
     public:
 
-		explicit DoubleArrayMeta(float64 minVal, float64 maxVal, float64 stepSize = 0.0, ito::ByteArray category = ito::ByteArray());
-		explicit DoubleArrayMeta(float64 minVal, float64 maxVal, float64 stepSize, size_t numMin, size_t numMax, size_t numStepSize = 1, ito::ByteArray category = ito::ByteArray());
+        explicit DoubleArrayMeta(float64 minVal, float64 maxVal, float64 stepSize = 0.0, ito::ByteArray category = ito::ByteArray());
+        explicit DoubleArrayMeta(float64 minVal, float64 maxVal, float64 stepSize, size_t numMin, size_t numMax, size_t numStepSize = 1, ito::ByteArray category = ito::ByteArray());
         inline size_t getNumMin() const { return m_numMin; }         //!< returns minimum number of values
         inline size_t getNumMax() const { return m_numMax; }         //!< returns maximum number of values
         inline size_t getNumStepSize() const { return m_numStep; }   //!< returns step size of number of values
@@ -568,8 +568,8 @@ namespace ito
     {
     public:
 
-		explicit DoubleIntervalMeta(float64 minVal, float64 maxVal, float64 stepSize = 0.0, ito::ByteArray category = ito::ByteArray());
-		explicit DoubleIntervalMeta(float64 minVal, float64 maxVal, float64 stepSize, float64 sizeMin, float64 sizeMax, float64 sizeStep = 0.0, ito::ByteArray category = ito::ByteArray());
+        explicit DoubleIntervalMeta(float64 minVal, float64 maxVal, float64 stepSize = 0.0, ito::ByteArray category = ito::ByteArray());
+        explicit DoubleIntervalMeta(float64 minVal, float64 maxVal, float64 stepSize, float64 sizeMin, float64 sizeMax, float64 sizeStep = 0.0, ito::ByteArray category = ito::ByteArray());
         inline float64 getSizeMin() const { return m_sizeMin; }         //!< returns minimum size of range
         inline float64 getSizeMax() const { return m_sizeMax; }         //!< returns maximum size of range
         inline float64 getSizeStepSize() const { return m_sizeStep; }   //!< returns step size of size of range
@@ -615,8 +615,8 @@ namespace ito
     class ITOMCOMMON_EXPORT IntervalMeta : public IntMeta
     {
     public:
-		explicit IntervalMeta(int32 minVal, int32 maxVal, int32 stepSize = 1, ito::ByteArray category = ito::ByteArray());
-		explicit IntervalMeta(int32 minVal, int32 maxVal, int32 stepSize, int32 sizeMin, int32 sizeMax, int32 intervalStep = 1, ito::ByteArray category = ito::ByteArray());
+        explicit IntervalMeta(int32 minVal, int32 maxVal, int32 stepSize = 1, ito::ByteArray category = ito::ByteArray());
+        explicit IntervalMeta(int32 minVal, int32 maxVal, int32 stepSize, int32 sizeMin, int32 sizeMax, int32 intervalStep = 1, ito::ByteArray category = ito::ByteArray());
         inline int getSizeMin() const { return m_sizeMin; }         //!< returns minimum size of interval or range
         inline int getSizeMax() const { return m_sizeMax; }         //!< returns maximum size of interval or range
         inline int getSizeStepSize() const { return m_sizeStep; }   //!< returns step size of size of interval or range
@@ -668,8 +668,8 @@ namespace ito
     class ITOMCOMMON_EXPORT RangeMeta : public IntervalMeta
     {
     public:
-		explicit RangeMeta(int32 minVal, int32 maxVal, int32 stepSize = 1, ito::ByteArray category = ito::ByteArray());
-		explicit RangeMeta(int32 minVal, int32 maxVal, int32 stepSize, size_t sizeMin, size_t sizeMax, size_t sizeStep = 1, ito::ByteArray category = ito::ByteArray());
+        explicit RangeMeta(int32 minVal, int32 maxVal, int32 stepSize = 1, ito::ByteArray category = ito::ByteArray());
+        explicit RangeMeta(int32 minVal, int32 maxVal, int32 stepSize, size_t sizeMin, size_t sizeMax, size_t sizeStep = 1, ito::ByteArray category = ito::ByteArray());
     };
 
 
@@ -687,15 +687,15 @@ namespace ito
     class ITOMCOMMON_EXPORT RectMeta : public ParamMeta
     {
     public:
-		explicit RectMeta(const ito::RangeMeta &widthMeta, const ito::RangeMeta &heightMeta, ito::ByteArray category = ito::ByteArray());
+        explicit RectMeta(const ito::RangeMeta &widthMeta, const ito::RangeMeta &heightMeta, ito::ByteArray category = ito::ByteArray());
         inline const ito::RangeMeta& getWidthRangeMeta() const { return m_widthMeta; }
         inline const ito::RangeMeta& getHeightRangeMeta() const { return m_heightMeta; }
 
         void setWidthRangeMeta(const ito::RangeMeta &widthMeta);
         void setHeightRangeMeta(const ito::RangeMeta &heightMeta);
 
-		inline ito::ByteArray getUnit() const { return m_heightMeta.getUnit(); } //!< returns unit
-		inline void setUnit(const ito::ByteArray &unit) { m_heightMeta.setUnit(unit); } //!< sets unit string of this parameter
+        inline ito::ByteArray getUnit() const { return m_heightMeta.getUnit(); } //!< returns unit
+        inline void setUnit(const ito::ByteArray &unit) { m_heightMeta.setUnit(unit); } //!< sets unit string of this parameter
 
     protected:
         ito::RangeMeta m_heightMeta;
