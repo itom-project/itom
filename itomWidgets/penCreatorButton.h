@@ -36,14 +36,16 @@ class ITOMWIDGETS_EXPORT PenCreatorButton : public QPushButton
      Q_OBJECT
 
      Q_PROPERTY(QPen pen READ getPen WRITE setPen)
+     Q_PROPERTY(bool editableColor READ getColorState WRITE setColorState DESIGNABLE true)
 
 public:
     explicit PenCreatorButton(QWidget* parent = 0);
-    explicit PenCreatorButton(QPen pen, QWidget* parent = 0);
+    explicit PenCreatorButton(QPen pen, QWidget* parent = 0 );
     ~PenCreatorButton();
 
     QSize sizeHint() const;
     QPen getPen() const;
+    bool getColorState() const;
      
 protected:
     virtual void paintEvent(QPaintEvent* event);
@@ -56,10 +58,13 @@ public slots:
     ///
     ///  Set a new current pen without opening a dialog
     void setPen(const QPen &pen);
+    void setColorState(const bool &val);
 private:
         
        Q_DECLARE_PRIVATE(PenCreatorButton);
        Q_DISABLE_COPY(PenCreatorButton);
+   signals:
+       void colorStateChanged(bool state);
 
 };
 

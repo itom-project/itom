@@ -142,8 +142,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>328</width>
-            <height>202</height>
+            <width>98</width>
+            <height>28</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -182,5 +182,22 @@
  <resources>
   <include location="../qitom.qrc"/>
  </resources>
- <connections/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>DialogOpenNewGui</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>308</x>
+     <y>322</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>355</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

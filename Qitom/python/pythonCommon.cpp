@@ -1365,6 +1365,11 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 temp = PyLong_FromLong(cm->getStepSize());
                 PyDict_SetItemString(dict, "step", temp);
                 Py_DECREF(temp);
+
+				ito::ByteArray unit = cm->getUnit();
+				temp = PyUnicode_FromString(unit.data());
+				PyDict_SetItemString(dict, "unit", temp);
+				Py_DECREF(temp);
             }
             break;
         case ito::ParamMeta::rttiIntMeta:
@@ -1385,6 +1390,11 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 temp = PyLong_FromLong(cm->getStepSize());
                 PyDict_SetItemString(dict, "step", temp);
                 Py_DECREF(temp);
+
+				ito::ByteArray unit = cm->getUnit();
+				temp = PyUnicode_FromString(unit.data());
+				PyDict_SetItemString(dict, "unit", temp);
+				Py_DECREF(temp);
             }
             break;
         case ito::ParamMeta::rttiDoubleMeta:
@@ -1412,6 +1422,11 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                     PyDict_SetItemString(dict, "step", temp);
                     Py_DECREF(temp);
                 }
+
+				ito::ByteArray unit = cm->getUnit();
+				temp = PyUnicode_FromString(unit.data());
+				PyDict_SetItemString(dict, "unit", temp);
+				Py_DECREF(temp);
             }
             break;
         case ito::ParamMeta::rttiStringMeta:
@@ -1503,6 +1518,11 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 temp = PyLong_FromLong(cm->getNumStepSize());
                 PyDict_SetItemString(dict, "numStep", temp);
                 Py_DECREF(temp);
+
+				ito::ByteArray unit = cm->getUnit();
+				temp = PyUnicode_FromString(unit.data());
+				PyDict_SetItemString(dict, "unit", temp);
+				Py_DECREF(temp);
             }
             break;
         case ito::ParamMeta::rttiDoubleArrayMeta:
@@ -1535,6 +1555,11 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 temp = PyFloat_FromDouble(cm->getNumStepSize());
                 PyDict_SetItemString(dict, "numStep", temp);
                 Py_DECREF(temp);
+
+				ito::ByteArray unit = cm->getUnit();
+				temp = PyUnicode_FromString(unit.data());
+				PyDict_SetItemString(dict, "unit", temp);
+				Py_DECREF(temp);
             }
             break;
         case ito::ParamMeta::rttiCharArrayMeta:
@@ -1567,6 +1592,11 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 temp = PyLong_FromLong(cm->getNumStepSize());
                 PyDict_SetItemString(dict, "numStep", temp);
                 Py_DECREF(temp);
+
+				ito::ByteArray unit = cm->getUnit();
+				temp = PyUnicode_FromString(unit.data());
+				PyDict_SetItemString(dict, "unit", temp);
+				Py_DECREF(temp);
             }
             break;
         case ito::ParamMeta::rttiIntervalMeta:
@@ -1599,6 +1629,11 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 temp = PyLong_FromLong(cm->getSizeStepSize());
                 PyDict_SetItemString(dict, "sizeStep", temp);
                 Py_DECREF(temp);
+
+				ito::ByteArray unit = cm->getUnit();
+				temp = PyUnicode_FromString(unit.data());
+				PyDict_SetItemString(dict, "unit", temp);
+				Py_DECREF(temp);
             }
             break;
         case ito::ParamMeta::rttiDoubleIntervalMeta:
@@ -1645,6 +1680,11 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                     PyDict_SetItemString(dict, "sizeStep", temp);
                     Py_DECREF(temp);
                 }
+
+				ito::ByteArray unit = cm->getUnit();
+				temp = PyUnicode_FromString(unit.data());
+				PyDict_SetItemString(dict, "unit", temp);
+				Py_DECREF(temp);
             }
             break;
         case ito::ParamMeta::rttiRangeMeta:
@@ -1677,6 +1717,11 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 temp = PyLong_FromLong(cm->getSizeStepSize());
                 PyDict_SetItemString(dict, "sizeStep", temp);
                 Py_DECREF(temp);
+
+				ito::ByteArray unit = cm->getUnit();
+				temp = PyUnicode_FromString(unit.data());
+				PyDict_SetItemString(dict, "unit", temp);
+				Py_DECREF(temp);
             }
             break;
         case ito::ParamMeta::rttiRectMeta:
@@ -1693,6 +1738,11 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
                 temp = parseParamMetaAsDict(&cm->getHeightRangeMeta());
                 PyDict_SetItemString(dict, "heightMeta", temp);
                 Py_DECREF(temp);
+
+				ito::ByteArray unit = cm->getUnit();
+				temp = PyUnicode_FromString(unit.data());
+				PyDict_SetItemString(dict, "unit", temp);
+				Py_DECREF(temp);
             }
             break;
         default:
@@ -1705,6 +1755,11 @@ PyObject *parseParamMetaAsDict(const ito::ParamMeta *meta)
         temp = PyLong_FromLong(meta->getType());
         PyDict_SetItemString(dict, "metaType", temp);
         Py_DECREF(temp);
+
+		ito::ByteArray category = meta->getCategory();
+		temp = PyUnicode_FromString(category.data());
+		PyDict_SetItemString(dict, "category", temp);
+		Py_DECREF(temp);
 
         return dict;
     }

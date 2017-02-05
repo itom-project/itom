@@ -28,6 +28,8 @@
 /* includes */
 #include "../paramMeta.h"
 
+#include <vector>
+
 #if _DEBUG
 #include <stdexcept>
 #endif
@@ -35,14 +37,38 @@
 
 namespace ito
 {
+	//--------------------------------------------------------------------------------
+	ParamMeta::ParamMeta(ByteArray category /*= ito::ByteArray()*/) : 
+		m_type(rttiUnknown), 
+		m_category(category) 
+	{
+	}
+
+	//--------------------------------------------------------------------------------
+	ParamMeta::ParamMeta(MetaRtti type, ito::ByteArray category /*= ito::ByteArray()*/) : m_type(type), m_category(category) 
+	{
+	}
+
+	//--------------------------------------------------------------------------------
+	void ParamMeta::setCategory(const ito::ByteArray &category)
+	{
+		m_category = category;
+	}
+
     //---------------------------------------------------------------------------------
-    CharMeta::CharMeta(char minVal, char maxVal, char stepSize /*= 1*/)
-        : ParamMeta(rttiCharMeta), 
+	CharMeta::CharMeta(char minVal, char maxVal, char stepSize /*= 1*/, ito::ByteArray category /*= ito::ByteArray()*/)
+        : ParamMeta(rttiCharMeta, category), 
         m_minVal(minVal), 
         m_maxVal(maxVal), 
-        m_stepSize(stepSize) 
+		m_stepSize(stepSize),
+		m_representation(ParamMeta::Linear)
     { 
         if(m_maxVal < m_minVal) std::swap(m_minVal,m_maxVal); 
+
+		if (m_minVal == 0 && m_maxVal == 1 && m_stepSize == 1)
+		{
+			m_representation = ParamMeta::Boolean;
+		}
 
 #if _DEBUG
         if (stepSize <= 0)
@@ -53,9 +79,9 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    CharMeta* CharMeta::all() 
+	CharMeta* CharMeta::all(ito::ByteArray category /*= ito::ByteArray()*/)
     { 
-        return new CharMeta(std::numeric_limits<char>::min(), std::numeric_limits<char>::max() ); 
+        return new CharMeta(std::numeric_limits<char>::min(), std::numeric_limits<char>::max(), 1, category); 
     }
 
     //---------------------------------------------------------------------------------
@@ -84,16 +110,28 @@ namespace ito
         m_stepSize = val; 
     }
 
+	//---------------------------------------------------------------------------------
+	void CharMeta::setRepresentation(ParamMeta::tRepresentation representation)
+	{
+		m_representation = representation;
+	}
+
 
 
     //---------------------------------------------------------------------------------
-    IntMeta::IntMeta(int32 minVal, int32 maxVal, int32 stepSize /*= 1*/)
-        : ParamMeta(rttiIntMeta), 
+	IntMeta::IntMeta(int32 minVal, int32 maxVal, int32 stepSize /*= 1*/, ito::ByteArray category /*= ito::ByteArray()*/)
+        : ParamMeta(rttiIntMeta, category), 
         m_minVal(minVal), 
         m_maxVal(maxVal), 
-        m_stepSize(stepSize) 
+        m_stepSize(stepSize),
+		m_representation(ParamMeta::Linear)
     { 
-        if(m_maxVal < m_minVal) std::swap(m_minVal,m_maxVal); 
+        if(m_maxVal < m_minVal) std::swap(m_minVal,m_maxVal);
+
+		if (m_minVal == 0 && m_maxVal == 1 && m_stepSize == 1)
+		{
+			m_representation = ParamMeta::Boolean;
+		}
 
 #if _DEBUG
         if (stepSize <= 0)
@@ -104,9 +142,9 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    IntMeta* IntMeta::all() 
+	IntMeta* IntMeta::all(ito::ByteArray category /*= ito::ByteArray()*/)
     { 
-        return new IntMeta(std::numeric_limits<int>::min(), std::numeric_limits<int>::max() ); 
+        return new IntMeta(std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 1, category); 
     }
 
     //---------------------------------------------------------------------------------
@@ -135,17 +173,29 @@ namespace ito
         m_stepSize = val; 
     }
 
-
+	//---------------------------------------------------------------------------------
+	void IntMeta::setRepresentation(ParamMeta::tRepresentation representation)
+	{
+		m_representation = representation;
+	}
 
 
     //---------------------------------------------------------------------------------
-    DoubleMeta::DoubleMeta(float64 minVal, float64 maxVal, float64 stepSize /*=0.0*/ /*0.0 means no specific step size*/)
-        : ParamMeta(rttiDoubleMeta), 
+	DoubleMeta::DoubleMeta(float64 minVal, float64 maxVal, float64 stepSize /*=0.0*/ /*0.0 means no specific step size*/, ito::ByteArray category /*= ito::ByteArray()*/)
+        : ParamMeta(rttiDoubleMeta, category), 
         m_minVal(minVal), 
         m_maxVal(maxVal), 
-        m_stepSize(stepSize) 
+        m_stepSize(stepSize),
+		m_displayNotation(Automatic),
+		m_displayPrecision(3),
+		m_representation(ParamMeta::Linear)
     { 
         if(m_maxVal < m_minVal) std::swap(m_minVal,m_maxVal); 
+
+		if (m_minVal == 0.0 && m_maxVal == 1.0 && m_stepSize == 1.0)
+		{
+			m_representation = ParamMeta::Boolean;
+		}
 
 #if _DEBUG
         if (stepSize < 0.0)
@@ -156,7 +206,7 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    DoubleMeta* DoubleMeta::all() 
+	DoubleMeta* DoubleMeta::all(ito::ByteArray category /*= ito::ByteArray()*/)
     { 
         return new DoubleMeta(-std::numeric_limits<float64>::max(), std::numeric_limits<float64>::max() ); 
     }
@@ -187,84 +237,120 @@ namespace ito
         m_stepSize = val; 
     }
 
+
+	class StringMetaPrivate
+	{
+	public:
+		StringMetaPrivate(StringMeta::tType type) :
+			m_stringType(type),
+			m_len(0)
+		{
+		}
+
+
+		StringMeta::tType m_stringType;
+		int m_len;
+		std::vector<ito::ByteArray> m_items;
+	};
+
+	//---------------------------------------------------------------------------------
+	void DoubleMeta::setRepresentation(ParamMeta::tRepresentation representation)
+	{
+		m_representation = representation;
+	}
+
     //---------------------------------------------------------------------------------
-    StringMeta::StringMeta(tType type) : ParamMeta(rttiStringMeta), m_stringType(type), m_len(0), m_val(NULL) 
+	StringMeta::StringMeta(tType type, ito::ByteArray category /*= ito::ByteArray()*/) 
+		: ParamMeta(rttiStringMeta, category), 
+		p(new StringMetaPrivate(type))
     {
     }
 
     //---------------------------------------------------------------------------------
-    StringMeta::StringMeta(tType type, const char* val) : ParamMeta(rttiStringMeta), m_stringType(type), m_len(1)
+	StringMeta::StringMeta(tType type, const char* val, ito::ByteArray category /*= ito::ByteArray()*/) 
+		: ParamMeta(rttiStringMeta, category), 
+		p(new StringMetaPrivate(type))
     {
         if(val)
         {
-            m_val = (char**) calloc(1, sizeof(char*));
-            m_val[0] = _strdup(val);
+			p->m_items.push_back(val);
+			p->m_len = 1;
         }
-        else
-        {
-            m_len = 0;
-            m_val = NULL;
-        }
+		else
+		{
+			p->m_len = 0;
+		}
+    }
+	
+	//---------------------------------------------------------------------------------
+	StringMeta::StringMeta(tType type, const ito::ByteArray &val, ito::ByteArray category /*= ito::ByteArray()*/) 
+		: ParamMeta(rttiStringMeta, category), 
+		p(new StringMetaPrivate(type))
+    {
+		if (val.empty() == false)
+		{
+			p->m_items.push_back(val);
+			p->m_len = 1;
+		}
+		else
+		{
+			p->m_len = 0;
+		}
     }
 
     //---------------------------------------------------------------------------------
-    StringMeta::StringMeta(const StringMeta& cpy) : ParamMeta(rttiStringMeta), m_stringType(cpy.m_stringType), m_len(cpy.m_len), m_val(NULL)
+	StringMeta::StringMeta(const StringMeta& cpy) 
+		: ParamMeta(cpy),
+		p(new StringMetaPrivate(*(cpy.p)))
     {
-        if(m_len > 0)
-        {
-            m_val = (char**) calloc(m_len, sizeof(char*));
-            for(int i=0;i<m_len;++i) m_val[i] = _strdup(cpy.m_val[i]);
-        }
     }
 
     //---------------------------------------------------------------------------------
     /*virtual*/ StringMeta::~StringMeta()
     {
-		for (int i = 0; i < m_len; ++i)
-		{
-			free(m_val[i]);
-		}
-        free(m_val);
-		m_val = NULL;
+		delete p;
+		p = NULL;
     }
 
     //---------------------------------------------------------------------------------
     bool StringMeta::addItem(const char *val)
     {
-        if(m_val)
-        {
-            char **m_val_old = m_val;
-            m_val = (char**)realloc(m_val, sizeof(char*) * (++m_len) ); //m_val can change its address. if NULL, reallocation failed and m_val_old still contains old values
-            if (!m_val)
-            {
-                m_val = m_val_old;
-                m_len--; //failed to add new value
-                return false;
-            }
-        }
-        else
-        {
-            m_val = (char**) calloc(++m_len, sizeof(char*));
-        }
-        m_val[m_len-1] = _strdup(val);
+		p->m_items.push_back(val);
+		p->m_len++;
         return true;
     }
 
 	//---------------------------------------------------------------------------------
+	bool StringMeta::addItem(const ito::ByteArray &val)
+	{
+		p->m_items.push_back(val);
+		p->m_len++;
+		return true;
+	}
+
+	//---------------------------------------------------------------------------------
 	void StringMeta::clearItems()
 	{
-		for (int i = 0; i < m_len; ++i)
-		{
-			free(m_val[i]);
-		}
-		free(m_val);
-		m_val = NULL;
+		p->m_len = 0;
+		p->m_items.clear();
 	}
 
 	//---------------------------------------------------------------------------------
 	void StringMeta::setStringType(tType type)
 	{
-		m_stringType = type;
+		p->m_stringType = type;
+	}
+
+	//---------------------------------------------------------------------------------
+	StringMeta::tType StringMeta::getStringType() const
+	{ 
+		return p->m_stringType; 
+	}
+
+	//---------------------------------------------------------------------------------
+	int StringMeta::getLen() const
+	{ 
+		return p->m_len; 
 	}
 
     //---------------------------------------------------------------------------------
@@ -284,13 +370,13 @@ namespace ito
     //---------------------------------------------------------------------------------
     const char* StringMeta::getString(int idx /*= 0*/) const 
     { 
-        return (idx >= m_len) ? NULL : m_val[idx]; 
+		return (idx >= p->m_len) ? NULL : p->m_items[idx].data();
     }
 
 
     //---------------------------------------------------------------------------------
-    CharArrayMeta::CharArrayMeta(char minVal, char maxVal, char stepSize /*= 1*/) :
-        CharMeta(minVal, maxVal, stepSize),
+	CharArrayMeta::CharArrayMeta(char minVal, char maxVal, char stepSize /*= 1*/, ito::ByteArray category /*= ito::ByteArray()*/) :
+        CharMeta(minVal, maxVal, stepSize, category),
         m_numMin(0),
         m_numMax(std::numeric_limits<size_t>::max()),
         m_numStep(1)
@@ -299,8 +385,8 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    CharArrayMeta::CharArrayMeta(char minVal, char maxVal, char stepSize, size_t numMin, size_t numMax, size_t numStepSize /*= 1*/) :
-        CharMeta(minVal, maxVal, stepSize),
+	CharArrayMeta::CharArrayMeta(char minVal, char maxVal, char stepSize, size_t numMin, size_t numMax, size_t numStepSize /*= 1*/, ito::ByteArray category /*= ito::ByteArray()*/) :
+        CharMeta(minVal, maxVal, stepSize, category),
         m_numMin(numMin),
         m_numMax(numMax),
         m_numStep(numStepSize)
@@ -333,8 +419,8 @@ namespace ito
 
     
     //---------------------------------------------------------------------------------
-    IntArrayMeta::IntArrayMeta(int32 minVal, int32 maxVal, int32 stepSize /*= 1*/) :
-        IntMeta(minVal, maxVal, stepSize),
+	IntArrayMeta::IntArrayMeta(int32 minVal, int32 maxVal, int32 stepSize /*= 1*/, ito::ByteArray category /*= ito::ByteArray()*/) :
+        IntMeta(minVal, maxVal, stepSize, category),
         m_numMin(0),
         m_numMax(std::numeric_limits<size_t>::max()),
         m_numStep(1)
@@ -343,8 +429,8 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    IntArrayMeta::IntArrayMeta(int32 minVal, int32 maxVal, int32 stepSize, size_t numMin, size_t numMax, size_t numStepSize /*= 1*/) :
-        IntMeta(minVal, maxVal, stepSize),
+	IntArrayMeta::IntArrayMeta(int32 minVal, int32 maxVal, int32 stepSize, size_t numMin, size_t numMax, size_t numStepSize /*= 1*/, ito::ByteArray category /*= ito::ByteArray()*/) :
+        IntMeta(minVal, maxVal, stepSize, category),
         m_numMin(numMin),
         m_numMax(numMax),
         m_numStep(numStepSize)
@@ -376,8 +462,8 @@ namespace ito
 
 
     //---------------------------------------------------------------------------------
-    DoubleArrayMeta::DoubleArrayMeta(float64 minVal, float64 maxVal, float64 stepSize /*= 1*/) :
-        DoubleMeta(minVal, maxVal, stepSize),
+	DoubleArrayMeta::DoubleArrayMeta(float64 minVal, float64 maxVal, float64 stepSize /*= 1*/, ito::ByteArray category /*= ito::ByteArray()*/) :
+        DoubleMeta(minVal, maxVal, stepSize, category),
         m_numMin(0),
         m_numMax(std::numeric_limits<size_t>::max()),
         m_numStep(1)
@@ -386,8 +472,8 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    DoubleArrayMeta::DoubleArrayMeta(float64 minVal, float64 maxVal, float64 stepSize, size_t numMin, size_t numMax, size_t numStepSize /*= 1*/) :
-        DoubleMeta(minVal, maxVal, stepSize),
+	DoubleArrayMeta::DoubleArrayMeta(float64 minVal, float64 maxVal, float64 stepSize, size_t numMin, size_t numMax, size_t numStepSize /*= 1*/, ito::ByteArray category /*= ito::ByteArray()*/) :
+        DoubleMeta(minVal, maxVal, stepSize, category),
         m_numMin(numMin),
         m_numMax(numMax),
         m_numStep(numStepSize)
@@ -424,8 +510,8 @@ namespace ito
 
 
     //---------------------------------------------------------------------------------
-    IntervalMeta::IntervalMeta(int32 minVal, int32 maxVal, int32 stepSize /*= 1*/) :
-        IntMeta(minVal, maxVal, stepSize),
+	IntervalMeta::IntervalMeta(int32 minVal, int32 maxVal, int32 stepSize /*= 1*/, ito::ByteArray category /*= ito::ByteArray()*/) :
+        IntMeta(minVal, maxVal, stepSize, category),
         m_sizeMin(0),
         m_sizeMax(std::numeric_limits<int32>::max()),
         m_sizeStep(1),
@@ -435,8 +521,8 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    IntervalMeta::IntervalMeta(int32 minVal, int32 maxVal, int32 stepSize, int32 intervalMin, int32 intervalMax, int32 intervalStep /*= 1*/) :
-        IntMeta(minVal, maxVal, stepSize),
+	IntervalMeta::IntervalMeta(int32 minVal, int32 maxVal, int32 stepSize, int32 intervalMin, int32 intervalMax, int32 intervalStep /*= 1*/, ito::ByteArray category /*= ito::ByteArray()*/) :
+        IntMeta(minVal, maxVal, stepSize, category),
         m_sizeMin(intervalMin),
         m_sizeMax(intervalMax),
         m_sizeStep(intervalStep),
@@ -468,16 +554,16 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    RangeMeta::RangeMeta(int32 minVal, int32 maxVal, int32 stepSize /*= 1*/) :
-        IntervalMeta(minVal, maxVal, stepSize)
+	RangeMeta::RangeMeta(int32 minVal, int32 maxVal, int32 stepSize /*= 1*/, ito::ByteArray category /*= ito::ByteArray()*/) :
+        IntervalMeta(minVal, maxVal, stepSize, category)
     {
         m_type = rttiRangeMeta;
         m_isIntervalNotRange = false;
     }
 
     //---------------------------------------------------------------------------------
-    RangeMeta::RangeMeta(int32 minVal, int32 maxVal, int32 stepSize, size_t sizeMin, size_t sizeMax, size_t sizeStep /*= 1*/) :
-        IntervalMeta(minVal, maxVal, stepSize, sizeMin, sizeMax, sizeStep)
+	RangeMeta::RangeMeta(int32 minVal, int32 maxVal, int32 stepSize, size_t sizeMin, size_t sizeMax, size_t sizeStep /*= 1*/, ito::ByteArray category /*= ito::ByteArray()*/) :
+        IntervalMeta(minVal, maxVal, stepSize, sizeMin, sizeMax, sizeStep, category)
     {
         m_type = rttiRangeMeta;
         m_isIntervalNotRange = false;
@@ -485,8 +571,8 @@ namespace ito
 
 
     //---------------------------------------------------------------------------------
-    DoubleIntervalMeta::DoubleIntervalMeta(float64 minVal, float64 maxVal, float64 stepSize /*= 0.0*/) :
-        DoubleMeta(minVal, maxVal, stepSize),
+	DoubleIntervalMeta::DoubleIntervalMeta(float64 minVal, float64 maxVal, float64 stepSize /*= 0.0*/, ito::ByteArray category /*= ito::ByteArray()*/) :
+        DoubleMeta(minVal, maxVal, stepSize, category),
         m_sizeMin(0.0),
         m_sizeMax(std::numeric_limits<float64>::max()),
         m_sizeStep(0.0)
@@ -495,8 +581,8 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    DoubleIntervalMeta::DoubleIntervalMeta(float64 minVal, float64 maxVal, float64 stepSize, float64 sizeMin, float64 sizeMax, float64 sizeStep /*= 0.0*/) :
-        DoubleMeta(minVal, maxVal, stepSize),
+	DoubleIntervalMeta::DoubleIntervalMeta(float64 minVal, float64 maxVal, float64 stepSize, float64 sizeMin, float64 sizeMax, float64 sizeStep /*= 0.0*/, ito::ByteArray category /*= ito::ByteArray()*/) :
+        DoubleMeta(minVal, maxVal, stepSize, category),
         m_sizeMin(sizeMin),
         m_sizeMax(sizeMax),
         m_sizeStep(sizeStep)
@@ -527,8 +613,8 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
-    RectMeta::RectMeta(const ito::RangeMeta &widthMeta, const ito::RangeMeta &heightMeta) :
-        ParamMeta(rttiRectMeta),
+	RectMeta::RectMeta(const ito::RangeMeta &widthMeta, const ito::RangeMeta &heightMeta, ito::ByteArray category /*= ito::ByteArray()*/) :
+        ParamMeta(rttiRectMeta, category),
         m_widthMeta(widthMeta),
         m_heightMeta(heightMeta)
     {

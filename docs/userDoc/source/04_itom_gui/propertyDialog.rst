@@ -215,6 +215,20 @@ Plots and Figures
     :scale: 80%
     :align: center
     
+**Default Style Settings**
+
+Here you have the possibility to set global plot settings like e.g. the legend font. If a setting is not provided by any plot type the setting will be ignored. 
+The figures below are showing some examples of the different settings. 
+
+.. figure:: images/generalPlotSettings.png
+    :scale: 80%
+    :align: center
+	
+.. figure:: images/1dLineElements.png
+    :scale: 80%
+    :align: center
+
+
 .
 
 

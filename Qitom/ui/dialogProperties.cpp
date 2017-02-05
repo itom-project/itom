@@ -44,6 +44,7 @@
 #include "widgetPropGeneralStyles.h"
 #include "widgetPropPluginsAlgorithms.h"
 #include "widgetPropWorkspaceUnpack.h"
+#include "widgetPropGeneralPlotSettings.h"
 
 #include "AppManagement.h"
 
@@ -175,7 +176,8 @@ void DialogProperties::initPages()
     m_pages["06_plugins/02algorithms"] = PropertyPage(tr("Algorithms and Filters"), tr("Plugins - Algorithms and filters"), "06_plugins/02algorithms", new WidgetPropPluginsAlgorithms(), QIcon(":/plugins/icons/pluginAlgo.png"));
     m_pages["07_plots"] = PropertyPage(tr("Plots and Figures"), tr("Plots and Figures - please choose subpage"), "07_plots", NULL, QIcon(":/plots/icons/itom_icons/3d.png"));
     m_pages["07_plots/01defaults"] = PropertyPage(tr("Default Plots"), tr("Plots and Figures - Defaults"), "07_plots/01defaults", new WidgetPropFigurePlugins(), QIcon(":/plots/icons/itom_icons/2d.png"));
-    
+    m_pages["07_plots/02defaultSettings"] = PropertyPage(tr("Default Style Settings"), tr("Plots and Figures - Default style settings"), "07_plots/02defaultSettings", new WidgetPropGeneralPlotSettings(), QIcon(":/plots/icons/itom_icons/2d.png"));
+
 	PropertyPage page;
     QStringList pathes;
 
