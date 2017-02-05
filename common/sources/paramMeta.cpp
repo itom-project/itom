@@ -363,8 +363,13 @@ namespace ito
     //---------------------------------------------------------------------------------
     StringMeta & StringMeta::operator = (const StringMeta &rhs)
     {
-        ito::StringMeta sm = StringMeta(rhs);
-        return sm;
+        if (rhs.p)
+        {
+            p->m_items = rhs.p->m_items;
+            p->m_len = rhs.p->m_len;
+            p->m_stringType = rhs.p->m_stringType;
+        }
+        return *this;
     }
 
     //---------------------------------------------------------------------------------

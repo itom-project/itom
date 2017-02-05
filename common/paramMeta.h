@@ -354,7 +354,6 @@ namespace ito
                 \param type indicates how the string elements should be considered
                 \sa tType
             */
-
 			StringMeta(tType type, ito::ByteArray category = ito::ByteArray());
 
             //! constructor
@@ -364,7 +363,6 @@ namespace ito
                 \param val adds a first string to the element list
                 \sa tType
             */
-
 			StringMeta(tType type, const char* val, ito::ByteArray category = ito::ByteArray());
 
 			//! constructor
@@ -377,7 +375,7 @@ namespace ito
 			StringMeta(tType type, const ito::ByteArray &val, ito::ByteArray category = ito::ByteArray());
 
             //! copy constructor
-
+			StringMeta(const StringMeta& cpy);
 
             //! destructor
             virtual ~StringMeta();
