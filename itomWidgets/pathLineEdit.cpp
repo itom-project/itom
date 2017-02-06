@@ -125,7 +125,7 @@ void PathLineEditPrivate::init()
   this->BrowseButton->setText("...");
   // Don't vertically stretch the path line edit unnecessary
   this->BrowseButton->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Ignored));
-  this->BrowseButton->setToolTip(q->tr("Open a dialog"));
+  this->BrowseButton->setToolTip(PathLineEdit::tr("Open a dialog"));
 
   QObject::connect(this->BrowseButton,SIGNAL(clicked()),
                    q, SLOT(browse()));
