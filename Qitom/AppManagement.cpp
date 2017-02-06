@@ -21,7 +21,7 @@
 *********************************************************************** */
 
 #include "AppManagement.h"
-#include "organizer/addInManager.h"
+#include "../AddInManager/addInManager.h"
 #include "organizer/userOrganizer.h"
 
 #include <qtextcodec.h>
@@ -52,7 +52,7 @@ QTextCodec* AppManagement::m_scriptTextCodec = NULL;
 /*static*/ QObject* AppManagement::getAddInManager() 
 { 
     QMutexLocker locker (&m_mutex); 
-    return qobject_cast<QObject*>(ito::AddInManager::getInstance()); 
+    return qobject_cast<QObject*>(AddInManagerInst);
 }
 
 //-------------------------------------------------------------------------------------------

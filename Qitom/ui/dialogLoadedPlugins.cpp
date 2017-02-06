@@ -25,7 +25,7 @@
 #define _USE_MATH_DEFINES
 
 #include "../AppManagement.h"
-#include "../organizer/addInManager.h"
+#include "../../AddInManager/addInManager.h"
 #include "../organizer/designerWidgetOrganizer.h"
 #include "qmath.h"
 

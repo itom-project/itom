@@ -20,9 +20,8 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "PlugInModel.h"
-#include "../organizer/addInManager.h"
-#include <qicon.h>
+#include "pluginModel.h"
+#include "addInManager.h"
 #include <qfileinfo.h>
 
 namespace ito
@@ -97,7 +96,7 @@ Qt::ItemFlags PlugInModel::flags(const QModelIndex &index) const
         return 0;
     }
 
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = AddInManagerInst;
     
     tItemType itemType;
     size_t itemInternalData;
@@ -136,7 +135,7 @@ QModelIndex PlugInModel::parent(const QModelIndex &index) const
         return QModelIndex();
     }
 
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = AddInManagerInst;
     
     tItemType itemType;
     size_t itemInternalData;
@@ -250,7 +249,7 @@ QModelIndex PlugInModel::parent(const QModelIndex &index) const
 */
 int PlugInModel::rowCount(const QModelIndex &parent) const
 {
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = AddInManagerInst;
     
     if (parent.isValid() == false)
     {
@@ -351,7 +350,7 @@ int PlugInModel::columnCount(const QModelIndex & /*parent*/) const
 */
 QModelIndex PlugInModel::index(int row, int column, const QModelIndex &parent) const
 {
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = AddInManagerInst;
 
     if (!hasIndex(row, column, parent))
     {
@@ -498,7 +497,7 @@ bool PlugInModel::getModelIndexInfo(const QModelIndex &index, tItemType &type, s
     //check if item is of type itemCategory or itemSubCategory
     const int *ptr1 = &m_treeFixNodes[0];
 //    const int *ptr2 = &m_treeFixNodes[5];
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = AddInManagerInst;
     void *internalPtr = index.internalPointer();
     QObject *obj = NULL;
 //    int rowIndex;
@@ -1200,7 +1199,7 @@ QVariant PlugInModel::data(const QModelIndex &index, int role) const
         {
             ito::AddInBase *aib = (ito::AddInBase*)(itemInternalData);
             ito::AddInInterfaceBase *aiib = aib->getBasePlugin();
-            ito::AddInManager *aim = ito::AddInManager::getInstance();
+            ito::AddInManager *aim = AddInManagerInst;
 
             if (aiib->getType() & ito::typeActuator)
             {
@@ -1287,7 +1286,7 @@ QModelIndex PlugInModel::getIndexByAddInInterface(AddInInterfaceBase *aib) const
 {
     if (aib)
     {
-        ito::AddInManager *aim = ito::AddInManager::getInstance();
+        ito::AddInManager *aim = AddInManagerInst;
         const QList<QObject*> *list = NULL;
 
         switch (aib->getType())

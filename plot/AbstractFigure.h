@@ -211,20 +211,7 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
         void actionChanged();
 
     public slots:
-
-        int getPlotID() 
-        { 
-            if(!ito::ITOM_API_FUNCS_GRAPH) return 0;
-            ito::uint32 thisID = 0;
-            ito::RetVal retval = apiGetFigureIDbyHandle(this, thisID);
-
-            if(retval.containsError())
-            {
-                return 0;
-            }
-            return thisID; 
-        }
-
+        int getPlotID();
         void refreshPlot() { update(); }
 };
 

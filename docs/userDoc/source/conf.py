@@ -128,7 +128,9 @@ qt_version = itomFuncs.version(True)["itom"]["QT_Version"]
 
 #choose itom theme as main theme
 html_theme = 'itom'
+qthelp_theme = 'itom' #theme for QtHelp only (available since Sphinx 1.5.3)
 html_theme_path = ['_themes']
+
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #html_theme = 'default'

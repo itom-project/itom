@@ -23,7 +23,10 @@
 #ifndef PLUGINMODEL_H
 #define PLUGINMODEL_H
 
-#include "../../common/addInInterface.h"
+#if !defined(Q_MOC_RUN) || defined(ADDINMGR_DLL) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
+
+#include "addInMgrDefines.h"
+#include "../common/addInInterface.h"
 #include <qabstractitemmodel.h>
 
 #include <qicon.h>
@@ -66,7 +69,7 @@ namespace ito
     *   using a right click on the instance and selecting "open configuration dialog" in the context menu. The tree view is 
     *   automatically updated when a new instance is created or an existing one had been deleted.
     */
-    class PlugInModel : public QAbstractItemModel
+    class ADDINMGR_EXPORT PlugInModel : public QAbstractItemModel
     {
         Q_OBJECT
 
@@ -139,5 +142,7 @@ namespace ito
     };
 
 }; // namespace ito
+
+#endif // #if !defined(Q_MOC_RUN) || defined(ADDINMGR_DLL) 
 
 #endif

@@ -23,7 +23,7 @@
 #ifndef APIFUNCTIONS_H
 #define APIFUNCTINOS_H
 
-#include "../../common/apiFunctionsInc.h"
+#include "../common/apiFunctionsInc.h"
 
 namespace ito 
 {
@@ -46,6 +46,15 @@ namespace ito
 
             //! function called by apiFilterParam
             static ito::RetVal mfilterParam(const QString &name, QVector<ito::Param> *paramsMand, QVector<ito::Param> *paramsOpt, QVector<ito::Param> *paramsOut);
+
+            //! function called by apiFilterVersion
+            static ito::RetVal mfilterVersion(const QString &name, int &version);
+
+            //! function called by apiFilterAuthor
+            static ito::RetVal mfilterAuthor(const QString &name, QString &author);
+
+            //! function called by apiFilterPluginName
+            static ito::RetVal mfilterPluginName(const QString &name, QString &pluginName);
 
             //! function called by apiAddInGetInitParams
             static ito::RetVal maddInGetInitParams(const QString &name, const int pluginType, int *pluginNum, QVector<ito::Param> *&paramsMand, QVector<ito::Param> *&paramsOpt);
@@ -72,13 +81,25 @@ namespace ito
             static ito::RetVal mshowConfigurationDialog(ito::AddInBase *plugin, ito::AbstractAddInConfigDialog *configDialogInstance);
             
             //! function called by apiSendParamToPyWorkspace
-            static ito::RetVal sendParamToPyWorkspaceThreadSafe(const QString &varname, const QSharedPointer<ito::ParamBase> &value);
+            // function moved to apiFunctionsGui
+            //static ito::RetVal sendParamToPyWorkspaceThreadSafe(const QString &varname, const QSharedPointer<ito::ParamBase> &value);
 
             //! function called by apiSendParamsToPyWorkspace
-            static ito::RetVal sendParamsToPyWorkspaceThreadSafe(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values);
+            // function moved to apiFunctionsGui
+            //static ito::RetVal sendParamsToPyWorkspaceThreadSafe(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values);
+
+            //! substitute for removed functions
+            static ito::RetVal removed(...);
+
+            //! get itom settings file
+            static QString getSettingsFile(void);
+
+            //! setter function only used on AddInManager startup
+            static ito::RetVal setSettingsFile(QString settingsFile);
 
         private:
             int m_loadFPointer;
+            static QString m_settingsFile;
     };
 }
 

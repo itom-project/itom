@@ -20,13 +20,15 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "../helper/paramHelper.h"
+#include "../python/pythonEngine.h"
+#include "../../AddInManager/paramHelper.h"
 #include "apiFunctionsGraph.h"
 #include "../Qitom/AppManagement.h"
-#include "../organizer/addInManager.h"
+#include "../../AddInManager/addInManager.h"
 #include "../organizer/paletteOrganizer.h"
 #include "../organizer/designerWidgetOrganizer.h"
 #include "../Qitom/organizer/uiOrganizer.h"
+#include "../helper/qpropertyHelper.h"
 
 #include <qmetaobject.h>
 #include <qcoreapplication.h>
@@ -53,6 +55,10 @@ namespace ito
         (void*)&singleApiFunctionsGraph.mgetPluginWidget,       /* [11] */
         (void*)&singleApiFunctionsGraph.mgetFigureUIDByHandle,  /* [12] */
         (void*)&singleApiFunctionsGraph.mgetPlotHandleByID,     /* [13] */
+        (void*)&singleApiFunctionsGraph.sendParamToPyWorkspaceThreadSafe, /* [14] */
+        (void*)&singleApiFunctionsGraph.sendParamsToPyWorkspaceThreadSafe, /* [15] */
+        (void*)&QPropertyHelper::readProperty,                  /* [16] */
+        (void*)&QPropertyHelper::writeProperty,                 /* [17] */
         NULL
     };
 
@@ -293,7 +299,7 @@ ito::RetVal apiFunctionsGraph::mconnectLiveData(QObject *liveDataSource, QObject
     {
         if(liveDataSource->inherits("ito::AddInDataIO"))
         {
-            ito::AddInManager *aim = ito::AddInManager::getInstance();
+            ito::AddInManager *aim = AddInManagerInst;
             retval += aim->incRef((ito::AddInBase*)liveDataSource);
         }
         else
@@ -318,8 +324,8 @@ ito::RetVal apiFunctionsGraph::mdisconnectLiveData(QObject *liveDataSource, QObj
     {
         if(liveDataSource->inherits("ito::AddInDataIO"))
         {
-        ito::AddInManager *aim = ito::AddInManager::getInstance();
-        retval += aim->decRef((ito::AddInBase**)&liveDataSource);
+            ito::AddInManager *aim = AddInManagerInst;
+            retval += aim->decRef((ito::AddInBase**)&liveDataSource);
         }
         else
         {
@@ -499,6 +505,45 @@ ito::RetVal apiFunctionsGraph::mgetPlotHandleByID(const ito::uint32 &figureUID, 
     else
     {
         retval += ito::RetVal(ito::retError, 0, QObject::tr("uiOrganizer is not available").toLatin1().data());
+    }
+
+    return retval;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal apiFunctionsGraph::sendParamToPyWorkspaceThreadSafe(const QString &varname, const QSharedPointer<ito::ParamBase> &value)
+{
+    return sendParamsToPyWorkspaceThreadSafe(QStringList(varname), QVector<QSharedPointer<ito::ParamBase> >(1, value));
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal apiFunctionsGraph::sendParamsToPyWorkspaceThreadSafe(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values)
+{
+    ito::RetVal retval;
+    PythonEngine *pyEng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
+    if (pyEng)
+    {
+        if (QThread::currentThreadId() == pyEng->getPythonThreadId())
+        {
+            retval += pyEng->putParamsToWorkspace(true, varnames, values, NULL);
+        }
+        else
+        {
+            ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+            QMetaObject::invokeMethod(pyEng, "putParamsToWorkspace", Q_ARG(bool,true), Q_ARG(QStringList,varnames), Q_ARG(QVector<SharedParamBasePointer >, values), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+            if (locker->wait(AppManagement::timeouts.pluginGeneral))
+            {
+                retval += locker->returnValue;
+            }
+            else
+            {
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while sending variables to python workspace. Python is maybe busy. Try it later again.").toLatin1().data());
+            }
+        }
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("Python is not available.").toLatin1().data());
     }
 
     return retval;

@@ -8,7 +8,7 @@ IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
         cmake_policy(SET CMP0042 OLD)
     ENDIF(POLICY CMP0042)
 ENDIF()
-      
+       
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
@@ -142,6 +142,8 @@ set (FILES_TO_TRANSLATE ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS})
 PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 
 FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/translation)
+
+FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/commonQtVersion.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/common)
 
 # COPY SECTION
 set(COPY_SOURCES "${CMAKE_CURRENT_BINARY_DIR}/translation/${target_name}_de.qm")

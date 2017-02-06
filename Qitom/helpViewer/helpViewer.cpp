@@ -44,7 +44,7 @@
 #include <qtoolbar.h>
 #include <qmenu.h>
 #include <qmenubar.h>
-#include <QLineEdit.h>
+//#include <QLineEdit.h>
 #include <qlabel.h>
 #include <qregexp.h>
 #include <qlist.h>

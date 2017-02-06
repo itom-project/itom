@@ -30,7 +30,7 @@
 #else
     #include "structmember.h"   //python structmember
 #endif
-#include "../organizer/addInManager.h"
+#include "../../AddInManager/addInManager.h"
 #include "../AppManagement.h"
 #include <qlist.h>
 #include <qmap.h>
@@ -38,7 +38,7 @@
 
 #include <qsharedpointer.h>
 #include "../helper/sharedPointerHelper.h"
-#include "../helper/paramHelper.h"
+#include "../../AddInManager/paramHelper.h"
 #include "../../common/helperCommon.h"
 
 #include "pythontParamConversion.h"
@@ -285,7 +285,7 @@ PyObject* plugin_showConfiguration(ito::AddInBase *aib)
     {
         if (aib->hasConfDialog())
         {
-            QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showConfigDialog", Q_ARG(ito::AddInBase*, aib), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+            QMetaObject::invokeMethod(AddInManagerInst, "showConfigDialog", Q_ARG(ito::AddInBase*, aib), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
 
             locker.getSemaphore()->wait(-1);
             retval += locker.getSemaphore()->returnValue;
@@ -319,7 +319,7 @@ PyObject* plugin_showToolbox(ito::AddInBase *aib)
 
     if (aib)
     {
-        if (QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showDockWidget", Q_ARG(ito::AddInBase*, aib), Q_ARG(int,1), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore())))
+        if (QMetaObject::invokeMethod(AddInManagerInst, "showDockWidget", Q_ARG(ito::AddInBase*, aib), Q_ARG(int, 1), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
             if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
             {
@@ -356,7 +356,7 @@ PyObject* plugin_hideToolbox(ito::AddInBase *aib)
 
     if (aib)
     {
-        if (QMetaObject::invokeMethod(ito::AddInManager::getInstance(), "showDockWidget", Q_ARG(ito::AddInBase*, aib), Q_ARG(int,0), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore())))
+        if (QMetaObject::invokeMethod(AddInManagerInst, "showDockWidget", Q_ARG(ito::AddInBase*, aib), Q_ARG(int, 0), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
             if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginGeneral))
             {
@@ -1175,7 +1175,7 @@ void PythonPlugins::PyActuatorPlugin_dealloc(PyActuatorPlugin* self)
         else
         {
             ito::RetVal retval(ito::retOk);
-            ito::AddInManager *aim = ito::AddInManager::getInstance();
+            ito::AddInManager *aim = AddInManagerInst;
 
             ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
             
@@ -1302,7 +1302,7 @@ int PythonPlugins::PyActuatorPlugin_init(PyActuatorPlugin *self, PyObject *args,
     QVector<ito::ParamBase> paramsMandCpy;
     QVector<ito::ParamBase> paramsOptCpy;
 
-    ito::AddInManager *AIM = ito::AddInManager::getInstance();
+    ito::AddInManager *AIM = AddInManagerInst;
     if (!AIM)
     {
         PyErr_SetString(PyExc_RuntimeError, "no addin-manager found");
@@ -2450,7 +2450,7 @@ void PythonPlugins::PyDataIOPlugin_dealloc(PyDataIOPlugin* self)
         }
         else
         {
-            ito::AddInManager *aim = ito::AddInManager::getInstance();
+            ito::AddInManager *aim = AddInManagerInst;
             ito::RetVal retval(ito::retOk);
 
             ItomSharedSemaphore *waitCond = new ItomSharedSemaphore();
@@ -2580,7 +2580,7 @@ int PythonPlugins::PyDataIOPlugin_init(PyDataIOPlugin *self, PyObject *args, PyO
     QVector<ito::ParamBase> paramsMandCpy;
     QVector<ito::ParamBase> paramsOptCpy;
 
-    ito::AddInManager *AIM = ito::AddInManager::getInstance();
+    ito::AddInManager *AIM = AddInManagerInst;
     if (!AIM)
     {
         PyErr_SetString(PyExc_RuntimeError, "no addin-manager found");

@@ -26,7 +26,7 @@
 
 #include "../global.h"
 #include "../organizer/uiOrganizer.h"
-#include "../organizer/addInManager.h"
+#include "../../AddInManager/addInManager.h"
 #include <qcoreapplication.h>
 
 #include "pythonQtConversion.h"
@@ -3343,7 +3343,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     QString algoWidgetName;
     bool ok;
 
-    ito::AddInManager *AIM = ito::AddInManager::getInstance();
+    ito::AddInManager *AIM = AddInManagerInst;
     if (!AIM)
     {
         PyErr_SetString(PyExc_RuntimeError, QObject::tr("no addin-manager found").toUtf8().data());
@@ -3536,7 +3536,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget2(PyUi * /*self*/, PyObject *args, P
     QVector<ito::ParamBase> paramsMandBase, paramsOptBase;
     QString algoWidgetName = widgetName;
 
-    ito::AddInManager *AIM = ito::AddInManager::getInstance();
+    ito::AddInManager *AIM = AddInManagerInst;
     if (!AIM)
     {
         PyErr_SetString(PyExc_RuntimeError, QObject::tr("no addin-manager found").toUtf8().data());

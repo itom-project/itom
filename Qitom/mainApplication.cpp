@@ -19,14 +19,16 @@
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
-
+#define ITOM_IMPORT_API
+#include "../common/apiFunctionsInc.h"
+#undef ITOM_IMPORT_API
 #include "mainApplication.h"
 #include "global.h"
 #include "version.h"
 #include "AppManagement.h"
 
 #include "widgets/abstractDockWidget.h"
-#include "organizer/addInManager.h"
+#include "../AddInManager/addInManager.h"
 #include "./models/UserModel.h"
 #include "organizer/userOrganizer.h"
 #include "widgets/scriptDockWidget.h"
@@ -85,6 +87,7 @@ namespace ito
 
 //! static instance pointer initialization
 MainApplication* MainApplication::mainApplicationInstance = NULL;
+AddInManager *AddInManagerInst = NULL;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
@@ -439,7 +442,7 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     m_splashScreen->showMessage(tr("load process organizer..."), Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
-    m_processOrganizer = new ito::ProcessOrganizer();
+    m_processOrganizer = new ProcessOrganizer();
     AppManagement::setProcessOrganizer(qobject_cast<QObject*>(m_processOrganizer));
 
     qDebug("MainApplication::setupApplication");
@@ -448,7 +451,10 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     m_splashScreen->showMessage(tr("scan and load plugins..."), Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
-    ito::AddInManager *AIM = ito::AddInManager::getInstance();
+    AddInManager *AIM = new AddInManager(AppManagement::getSettingsFile(), ito::ITOM_API_FUNCS_GRAPH, AppManagement::getMainWindow(), AppManagement::getMainApplication());
+    ito::ITOM_API_FUNCS = AIM->getItomApiFuncsPtr();
+    AIM->setTimeOuts(AppManagement::timeouts.pluginInitClose, AppManagement::timeouts.pluginGeneral);
+    AddInManagerInst = AIM;
     connect(AIM, SIGNAL(splashLoadMessage(const QString&, int, const QColor &)), m_splashScreen, SLOT(showMessage(const QString&, int, const QColor &)));
     retValue += AIM->scanAddInDir("");
 
@@ -504,6 +510,8 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
 
         m_designerWidgetOrganizer = new DesignerWidgetOrganizer(retValue);
         AppManagement::setDesignerWidgetOrganizer(qobject_cast<QObject*>(m_designerWidgetOrganizer));
+        if (AddInManagerInst)
+            AddInManagerInst->setMainWindow(m_mainWin);
     }
     else
     {
@@ -720,7 +728,8 @@ void MainApplication::finalizeApplication()
     m_pyThread->wait();
     DELETE_AND_SET_NULL(m_pyThread);
 
-    ito::AddInManager::closeInstance();
+    //ito::AddInManager::closeInstance();
+    AddInManagerInst->closeInstance();
 
     DELETE_AND_SET_NULL(m_processOrganizer);
     AppManagement::setProcessOrganizer(NULL);
@@ -807,11 +816,11 @@ void MainApplication::mainWindowCloseRequest()
 
 		retValue += m_scriptEditorOrganizer->closeAllScripts(true);
 	
-			if (m_mainWin)
-			{
-				m_mainWin->hide();
-			}
-			QApplication::instance()->quit();
+		if (m_mainWin)
+		{
+			m_mainWin->hide();
+		}
+		QApplication::instance()->quit();
     }
 }
 
@@ -845,7 +854,7 @@ int MainApplication::exec()
 //----------------------------------------------------------------------------------------------------------------------------------
 int MainApplication::execPipManagerOnly()
 {
-    ito::DialogPipManager manager(NULL, true);
+    DialogPipManager manager(NULL, true);
     return manager.exec();
 }
 

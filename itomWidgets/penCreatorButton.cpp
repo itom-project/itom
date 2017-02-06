@@ -40,6 +40,7 @@ public:
     QPen pen;
     QIcon m_icon;
     QSize m_iconSizeCache;
+    bool m_colorEditable;
     mutable QSize m_sizeHintCache;
 
     void init();
@@ -49,7 +50,8 @@ public:
 PenCreatorButtonPrivate::PenCreatorButtonPrivate(PenCreatorButton& object, QPen inputPen)
 : q_ptr(&object),
     dialog(NULL),
-    pen(inputPen)
+    pen(inputPen),
+    m_colorEditable(true)
 {
 
 }
@@ -100,7 +102,7 @@ void PenCreatorButton::paintEvent(QPaintEvent* event)
         pix.fill(Qt::transparent);
         QPainter p(&pix);
         p.setPen(d->pen);
-        qDebug() << d->pen.brush().color();
+
        
         p.drawLine(2, 2 + ((pix.height() - 5) / 2), pix.width()-2, 2 + ((pix.height() - 5) / 2));
         d->m_icon = QIcon(pix);
@@ -146,18 +148,16 @@ QPen PenCreatorButton::getPen() const
 void PenCreatorButton::changePen()
 {
     Q_D(PenCreatorButton);
-    if(!d->dialog)
-    { 
-        d->dialog = new PenCreatorDialog(d->pen,this);
-    }
-    else
-    {
-        d->dialog->synchronizeGUI();
-    }
+
+    d->dialog = new PenCreatorDialog(d->pen, d->m_colorEditable , this);
     if (d->dialog->exec())
     {
         d->m_icon = QIcon();
+       
     }
+    delete d->dialog;
+    d->dialog = NULL;
+
     
 
 }
@@ -188,7 +188,20 @@ QSize PenCreatorButton::sizeHint() const
     
     return d->m_sizeHintCache;
 }
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+void PenCreatorButton::setColorState(const bool &val)
+{
+    Q_D(PenCreatorButton);
+    d->m_colorEditable = val;
 
+
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+bool PenCreatorButton::getColorState() const
+{
+    Q_D(const PenCreatorButton);
+    return d->m_colorEditable;
+}
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 PenCreatorButton::~PenCreatorButton()
 {

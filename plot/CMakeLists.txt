@@ -33,7 +33,7 @@ ELSE(BUILD_ITOMLIBS_SHARED)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
     ENDIF(UNIX)
 
-    ADD_DEFINITIONS(-DITOM_CORE -D_ITOM_CORE) #necessary for not publishing the ITOM_API_FUNCS (in every dll or exe ITOM_API_FUNCS need to be
+#    ADD_DEFINITIONS(-DITOM_CORE -D_ITOM_CORE) #necessary for not publishing the ITOM_API_FUNCS (in every dll or exe ITOM_API_FUNCS need to be
                                                #published with void** only one (!) time. if this lib is statically linked to itom, it is already
                                                #defined within itom and must not be defined in this lib but with extern void**. If this lib is
                                                #shared, it also needs to be defined there.

@@ -1,5 +1,5 @@
-#ifndef AAA_H
-#define AAA_H
+#ifndef A_H
+#define A_H
 
 // This file is a dirty litte trick for the automoccer of qt - we MUST include our python stuff before ANY
 // qt stuff so we make this class which is first in the file list and first in alphabet and gets included
@@ -53,4 +53,4 @@ class qDummyClass : public QObject
     private:
 };
 
-#endif // AAA_H
+#endif // A_H

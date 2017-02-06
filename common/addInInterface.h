@@ -43,6 +43,7 @@
 #include <qthread.h>
 #include <qsharedpointer.h>
 #include <qmutex.h>
+#include <qapplication.h>
 
 #if QT_VERSION < 0x050000
 #include <qpluginloader.h>
@@ -250,6 +251,12 @@ namespace ito
 
             virtual void importItomApi(void** apiPtr) = 0; //this methods are implemented in the plugin itsself. Therefore place ITOM_API right after Q_INTERFACE in the header file and replace Q_EXPORT_PLUGIN2 by Q_EXPORT_PLUGIN2_ITOM in the source file.
             virtual void importItomApiGraph(void** apiPtr) = 0;
+            //!> check if we have gui support
+            inline bool hasGuiSupport() { 
+                if (qobject_cast<QApplication*>(QCoreApplication::instance())) 
+                    return true; 
+                else 
+                    return false; }
 
         public:
             void **m_apiFunctionsBasePtr;
@@ -324,8 +331,6 @@ namespace ito
             inline QPluginLoader * getLoader(void) { return m_loader; }
 
             bool event(QEvent *e);
-
-
     };
 
     //----------------------------------------------------------------------------------------------------------------------------------
@@ -506,6 +511,12 @@ namespace ito
 
             //! decrements reference counter of this plugin (thread-safe)
             void decRefCount(void);
+            //! check if we have gui support
+            inline bool hasGuiSupport() { 
+                if (qobject_cast<QApplication*>(QCoreApplication::instance())) 
+                    return true; 
+                else 
+                    return false; }
 
             int m_refCount;                                   //!< reference counter, used to avoid early deletes (0 means that one instance is holding one reference, 1 that two participants hold the reference...)
             QVector<ito::AddInBase::AddInRef *> m_hwDecList;  //!< list of hardware that was passed to the plugin on initialisation and whose refcounter was incremented
@@ -599,7 +610,7 @@ namespace ito
     *   a timer will be started, which triggers the method 'timerEvent' (should be implemented by any camera). If this flag is disabled, the
     *   live image is registered, but no images will be regularily aquired. In this case, only manually taken images will be passed to any registered
     *   source node. If the flag is enabled again, the timer is restarted and every live image will automatically get new images. This is done by
-    *   invoking the slot 'dataAvailable' of every registered source node.
+    *   invoking the slot 'setSource' of every registered source node.
     *
     *   Every camera will only return shallow copies of its internal image both to the live image and to the user. This image can be read by everybody.
     *   If the user wants to change values in this image, he should make a deep copy first.
@@ -656,7 +667,7 @@ namespace ito
             //! sets a new interval for the auto-grabbing timer (in ms). If interval <= 0 is passed, nothing is changed, but the current interval is returned. This method does not enable or disable the timer.
             ito::RetVal setAutoGrabbingInterval(QSharedPointer<int> interval, ItomSharedSemaphore *waitCond = NULL); //consider this method as final
 
-            //! starts device and registers obj as listener (live image). This listener must have a slot void dataAvailable(DataObject image).
+            //! starts device and registers obj as listener (live image). This listener must have a slot void setSource(QSharedPointer<ito::DataObject>, ItomSaredSemaphore).
             ito::RetVal startDeviceAndRegisterListener(QObject* obj, ItomSharedSemaphore *waitCond = NULL); //consider this method as final
 
             //! stops device and unregisters obj (live image).
@@ -1078,6 +1089,8 @@ static const char* ito_AddInInterface_OldVersions[] = {
     "ito.AddIn.InterfaceBase/2.2.0", //outdated on 2016-02-19 due to crash fixes if the main mindow is deleted and implicitely closes dock widgets of plugins, that are currently blocked by any other operation.
     "ito.AddIn.InterfaceBase/2.3.0", //outdated on 2016-06-14 due to changes in signal definitions in plots, introduction of complex and complexArray types in ParamBase and further smaller changes.
     "ito.AddIn.InterfaceBase/2.4.0", //outdated on 2016-07-12 due to new library itomCommonPlotLib.
+    "ito.AddIn.InterfaceBase/2.5.0", //outdated on 2017-02-05 due to changes in ParamMeta classes
+    "ito.AddIn.InterfaceBase/2.6.0", //outdated on 2017-02-05 since the AddInManager has been separated into its own shared library
     NULL
 };
 
@@ -1085,11 +1098,11 @@ static const char* ito_AddInInterface_OldVersions[] = {
 #define CREATE_ADDININTERFACE_VERSION_STR(major,minor,patch) "ito.AddIn.InterfaceBase/"#major"."#minor"."#patch
 #define CREATE_ADDININTERFACE_VERSION(major,minor,patch) ((major<<16)|(minor<<8)|(patch))
 
-#define ITOM_ADDININTERFACE_MAJOR 2
-#define ITOM_ADDININTERFACE_MINOR 5
+#define ITOM_ADDININTERFACE_MAJOR 3
+#define ITOM_ADDININTERFACE_MINOR 0
 #define ITOM_ADDININTERFACE_PATCH 0
 #define ITOM_ADDININTERFACE_VERSION CREATE_ADDININTERFACE_VERSION(ITOM_ADDININTERFACE_MAJOR,ITOM_ADDININTERFACE_MINOR,ITOM_ADDININTERFACE_PATCH)
-static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_VERSION_STR(2,5,0); //results in "ito.AddIn.InterfaceBase/x.x.x"; (the numbers 1,3,1 can not be replaced by the macros above. Does not work properly)
+static const char* ito_AddInInterface_CurrentVersion = CREATE_ADDININTERFACE_VERSION_STR(3,0,0); //results in "ito.AddIn.InterfaceBase/x.x.x"; (the numbers 1,3,1 can not be replaced by the macros above. Does not work properly)
 
 
 

@@ -23,7 +23,8 @@
 #include "../python/pythonEngineInc.h"
 #include "uiOrganizer.h"
 
-#include "../api/apiFunctions.h"
+//#include "../../AddInManager/apiFunctions.h"
+#include "../common/apiFunctionsInc.h"
 #include "../api/apiFunctionsGraph.h"
 
 #include "common/helperCommon.h"

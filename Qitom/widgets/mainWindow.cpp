@@ -28,7 +28,7 @@
 #include "../AppManagement.h"
 #include "../global.h"
 
-#include "../organizer/addInManager.h"
+#include "../../AddInManager/addInManager.h"
 #include "../organizer/processOrganizer.h"
 #include "../organizer/uiOrganizer.h"
 #include "../organizer/userOrganizer.h"

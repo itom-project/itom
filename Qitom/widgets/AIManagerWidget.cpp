@@ -22,7 +22,7 @@
 
 #include "AIManagerWidget.h"
 
-#include "../organizer/addInManager.h"
+#include "../../AddInManager/addInManager.h"
 #include "../ui/dialogNewPluginInstance.h"
 #include "../ui/dialogSnapshot.h"
 #include "../ui/dialogOpenNewGui.h"
@@ -35,7 +35,7 @@
 #include <qmessagebox.h>
 #include <qinputdialog.h>
 #include <qabstractitemmodel.h>
-#include "../models/PlugInModel.h"
+#include "../../AddInManager/pluginModel.h"
 
 namespace ito {
 
@@ -63,7 +63,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, const QString &objName, Q
     m_pViewDetails(NULL)
 {
     int size = 0;
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = AddInManagerInst;
 
     m_pAIManagerView = new QTreeView(this);
     m_pAIManagerView->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -197,7 +197,7 @@ m_pMainToolbar->setOrientation(Qt::Vertical);*/
 //----------------------------------------------------------------------------------------------------------------------------------
 AIManagerWidget::~AIManagerWidget()
 {
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = AddInManagerInst;
     PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
     QString setFile(AppManagement::getSettingsFile());
     QSettings *settings = new QSettings(setFile, QSettings::IniFormat);
@@ -471,7 +471,7 @@ void AIManagerWidget::CloseInstance(const QModelIndex index)
                 QMessageBox::information(this, tr("final closing not possible"), tr("The instance '%1' can finally not be closed since there are still references to this instance from other componentents, e.g. python variables.").arg(index.model()->data(index).toString()));
             }
 
-            ito::AddInManager *aim = ito::AddInManager::getInstance();
+            ito::AddInManager *aim = AddInManagerInst;
             ito::RetVal retValue = aim->closeAddIn(ais,NULL);
 
             if (retValue.containsWarning())
@@ -559,7 +559,7 @@ void AIManagerWidget::mnuCreateNewInstance()
 
     if (index.isValid())
     {
-        ito::AddInManager *aim = ito::AddInManager::getInstance();
+        ito::AddInManager *aim = AddInManagerInst;
 //        ito::AddInInterfaceBase *aib = (ito::AddInInterfaceBase *)aim->getAddInPtr(index.row());
         ito::AddInInterfaceBase *aib = (ito::AddInInterfaceBase*)index.internalPointer();
 
@@ -1039,7 +1039,7 @@ void AIManagerWidget::setTreeViewHideColumns(const bool &hide, const int colCoun
 //----------------------------------------------------------------------------------------------------------------------------------
 void AIManagerWidget::showList()
 {
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = AddInManagerInst;
     PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
     bool isList = true;
 
@@ -1075,7 +1075,7 @@ void AIManagerWidget::mnuToggleView()
 //----------------------------------------------------------------------------------------------------------------------------------
 void AIManagerWidget::showDetails()
 {
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = AddInManagerInst;
     PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
     bool isList = true;
 

@@ -34,7 +34,7 @@ DialogPluginPicker::DialogPluginPicker(bool allowNewInstances, ito::AddInBase *c
 {
     ui.setupUi(this);
 
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = AddInManagerInst;
 
     m_pFilterModel = new PickerSortFilterProxyModel(this);
     m_pFilterModel->setSourceModel(aim->getPluginModel());
@@ -77,7 +77,7 @@ void DialogPluginPicker::itemClicked(const QModelIndex &index)
     {
         QModelIndex indexMap = m_pFilterModel->mapToSource(index);
 
-        ito::AddInManager *aim = ito::AddInManager::getInstance();
+        ito::AddInManager *aim = AddInManagerInst;
         ito::PlugInModel *model = aim->getPluginModel();
 
         int itemType = model->data(indexMap, Qt::UserRole + 3).toInt();
@@ -133,7 +133,7 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
     QModelIndex index = ui.treeView->currentIndex();
     index = m_pFilterModel->mapToSource(index);
 
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = AddInManagerInst;
     ito::PlugInModel *model = aim->getPluginModel();
 
     if (index.isValid())
