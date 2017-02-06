@@ -8,6 +8,10 @@ IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
         cmake_policy(SET CMP0042 OLD)
     ENDIF(POLICY CMP0042)
 ENDIF()
+
+if (POLICY CMP0028)
+    cmake_policy(SET CMP0028 NEW) #raise an CMake error if an imported target, containing ::, could not be found
+ENDIF (POLICY CMP0028)
    
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
@@ -39,12 +43,11 @@ IF(BUILD_WITH_PCL)
 ELSE(BUILD_WITH_PCL)
 	#find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
 ENDIF(BUILD_WITH_PCL)
-include("../ItomBuildMacros.cmake")
 
 #at first, get the available Qt version
 FIND_PACKAGE_QT(ON Core)
 #requires Qt5 and Qt5WebEngine in order to built a built-in help viewer, since QtAssistant only has a limited set of rendering options since Qt5.6.
-FIND_PACKAGE_QT(ON Core Widgets Xml LinguistTools)
+FIND_PACKAGE_QT(ON Core Widgets Xml LinguistTools Designer Svg PrintSupport)
 
 find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(VisualLeakDetector QUIET)
@@ -137,9 +140,6 @@ FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/pluginModel.h  DESTINATION ${CMAKE_CURRENT
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/paramHelper.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/AddInManager)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/algoInterfaceValidator.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/AddInManager)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/addInManagerVersion.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/AddInManager)
-#FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataobj.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
-#FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataObjectFuncs.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
-#FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataobjVersion.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
 
 # COPY SECTION
 set(COPY_SOURCES "")

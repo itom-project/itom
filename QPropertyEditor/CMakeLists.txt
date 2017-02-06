@@ -11,6 +11,10 @@ IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
     ENDIF(POLICY CMP0042)
 ENDIF()
 
+if (POLICY CMP0028)
+    cmake_policy(SET CMP0028 NEW) #raise an CMake error if an imported target, containing ::, could not be found
+ENDIF (POLICY CMP0028)
+
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
@@ -34,7 +38,7 @@ SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOUR
 
 include("../ItomBuildMacros.cmake")
 
-FIND_PACKAGE_QT(ON Core PrintSupport Widgets)
+FIND_PACKAGE_QT(ON Core PrintSupport Widgets Designer Xml Svg UiTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
 
 add_definitions(-DUNICODE -D_UNICODE)
