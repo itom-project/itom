@@ -115,14 +115,10 @@ endif (QT5_FOUND)
 
 add_library(${target_name} ${LIBRARY_TYPE} ${qpropertyeditor_SOURCES} ${qpropertyeditor_HEADERS} ${qproperteditor_HEADERS_MOC} ${qpropertyeditor_UI_MOC} ${qpropertyeditor_RCC_MOC})
 
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} itomCommonLib itomWidgets)
-IF (QT5_FOUND)
-    IF(CMAKE_VERSION VERSION_GREATER 3.0.0)
-        #https://bugreports.qt.io/browse/QTBUG-39457
-        cmake_policy(SET CMP0043 OLD)
-    ENDIF()
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT5_LIBRARIES} itomCommonLib itomWidgets)
+IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
     qt5_use_modules(${target_name} ${QT_COMPONENTS})
-ENDIF (QT5_FOUND)
+ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
 
 #COPY HEADER FILES TO SDK INCLUDE DIRECTORY
 SET(SOURCEFILE ${CMAKE_CURRENT_SOURCE_DIR}/../QPropertyEditor)

@@ -47,7 +47,7 @@ ENDIF(BUILD_WITH_PCL)
 #at first, get the available Qt version
 FIND_PACKAGE_QT(ON Core)
 #requires Qt5 and Qt5WebEngine in order to built a built-in help viewer, since QtAssistant only has a limited set of rendering options since Qt5.6.
-FIND_PACKAGE_QT(ON Core Widgets Xml LinguistTools Designer Svg PrintSupport)
+FIND_PACKAGE_QT(ON Core Widgets Xml Designer Svg PrintSupport)
 
 find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(VisualLeakDetector QUIET)
@@ -124,11 +124,11 @@ file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${lib_SOURCES} ${lib_HEADERS} ${lib_HEADERS_MOC} ${lib_UI_MOC} ${lib_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
 
 IF(BUILD_ITOMLIBS_SHARED)
-    TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${PCL_LIBRARIES} dataobject itomCommonLib itomCommonQtLib ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES})
+    TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${PCL_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES} dataobject itomCommonLib itomCommonQtLib )
 ENDIF(BUILD_ITOMLIBS_SHARED)
-if (QT5_FOUND)
+IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
     qt5_use_modules(${target_name} ${QT_COMPONENTS}) #special command for Qt5
-endif (QT5_FOUND)
+ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
 
 #translation
 set (FILES_TO_TRANSLATE ${lib_SOURCES} ${lib_HEADERS} ${lib_UI})

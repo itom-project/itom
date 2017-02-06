@@ -11,9 +11,14 @@ SET (target_name MyActuator) #->replace MyActuator by the name of your plugin (o
 
 project(${target_name})
 
-message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
-
 cmake_minimum_required(VERSION 2.8)
+
+#CMAKE Policies
+if (POLICY CMP0028)
+    cmake_policy(SET CMP0028 NEW) #raise an CMake error if an imported target, containing ::, could not be found
+ENDIF (POLICY CMP0028)
+
+message(STATUS "Project ${target_name} (${CMAKE_CURRENT_BINARY_DIR})")
 
 #################################################################
 # Input elements for CMake GUI (Checkboxes, Pathes, Strings...)
@@ -57,8 +62,8 @@ find_package(VisualLeakDetector QUIET) #silently detects the VisualLeakDetector 
 
 #usage of FIND_PACKAGE_QT(automoc component1, component2, ...)
 # automoc is ON or OFF and only relevant for Qt5, usually set it to ON
-# possible components are: OpenGL,Core,Designer,Xml,Svg,Sql,Network,UiTools,Widgets,PrintSupport,LinguistTools...
-FIND_PACKAGE_QT(ON Core LinguistTools Widgets)
+# possible components are: OpenGL,Core,Designer,Xml,Svg,Sql,Network,UiTools,Widgets,PrintSupport...
+FIND_PACKAGE_QT(ON Core Widgets)
 
 #################################################################
 # General settings and preprocessor settings
@@ -208,10 +213,10 @@ ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${plugin_SOURCES} ${plugin_HEADERS} $
 # if you want to link against one library whose directory is already added to LINK_DIRECTORIES above
 # simply add its filename without suffix (*.lib, *.so...). This is automatically done by CMake
 
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
-if (QT5_FOUND)
-    qt5_use_modules(${target_name} ${QT_COMPONENTS}) #special command for Qt5
-endif (QT5_FOUND)
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${ITOM_SDK_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES})
+IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
+    qt5_use_modules(${target_name} ${QT_COMPONENTS}) #special command for Qt5 and older CMake versions
+ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
 
 #################################################################
 # Plugin Translation

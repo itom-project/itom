@@ -18,8 +18,6 @@ else (BUILD_TARGET64)
     set(CMAKE_SIZEOF_VOID_P 4)
 endif (BUILD_TARGET64)
 
-
-
 IF (${CMAKE_MAJOR_VERSION} LESS 3)
     SET(CMAKE_VERSION_GE_030000 "FALSE")
     IF (${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} STRGREATER 2.7)
@@ -152,6 +150,7 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
     #
     SET(Components ${ARGN}) #all arguments after SetAutomoc are components for Qt
     SET(QT_COMPONENTS ${ARGN})
+    SET(QT5_LIBRARIES "")
 
     IF(${BUILD_QTVERSION} STREQUAL "Qt4")
         SET(DETECT_QT5 FALSE)
@@ -215,6 +214,7 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
                     IF (${comp} STREQUAL "Widgets")
                         add_definitions(${Qt5Widgets_DEFINITIONS})
                     ENDIF ()
+                    SET(QT5_LIBRARIES ${QT5_LIBRARIES} Qt5::${comp})
                 ENDFOREACH (comp)
             ENDIF (NOT Qt5Core_FOUND)
             
@@ -239,6 +239,7 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
                 IF (${comp} STREQUAL "Widgets")
                     add_definitions(${Qt5Widgets_DEFINITIONS})
                 ENDIF ()
+                SET(QT5_LIBRARIES ${QT5_LIBRARIES} Qt5::${comp})
             ENDFOREACH (comp)
         ENDIF (${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
         
