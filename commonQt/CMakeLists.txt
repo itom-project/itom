@@ -127,15 +127,11 @@ file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
 add_library(${target_name} ${LIBRARY_TYPE} ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS} ${itomCommonQt_HEADERS_MOC} ${EXISTING_TRANSLATION_FILES})
 
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} dataobject itomCommonLib itomShapeLib)
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${QT5_LIBRARIES} dataobject itomCommonLib itomShapeLib)
 
-IF (QT5_FOUND)
-    IF(CMAKE_VERSION VERSION_GREATER 3.0.0)
-        #https://bugreports.qt.io/browse/QTBUG-39457
-        cmake_policy(SET CMP0043 OLD)
-    ENDIF()
+IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
     qt5_use_modules(${target_name} ${QT_COMPONENTS})
-ENDIF (QT5_FOUND)
+ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
 
 #translation
 set (FILES_TO_TRANSLATE ${itomCommonQt_SOURCES} ${itomCommonQt_HEADERS})

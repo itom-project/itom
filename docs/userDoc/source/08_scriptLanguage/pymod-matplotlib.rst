@@ -339,6 +339,50 @@ or easier::
     
 In the **demo/matplotlib** folder are two demo scripts (**matplotlibAnimation1d.py, matplotlibAnimation2d.py**), which show how to create animations. 
 
+Creating figures for a thesis/report
+=====================================
+
+Matplotlib can be used to create figures with **LaTeX** for the text layout. This figures can be saved as *pdf* or *eps* files for your document. The figures then have the same text layout as the main document using **LaTeX**. Matplotlib with **LaTeX** support is slower. 
+
+.. note:: Required installation: `LaTeX <https://miktex.org/>`_ , `dvipng <https://www.ctan.org/pkg/dvipng?lang=de/>`_ (may be included in LaTeX installation), `Ghostscript <https://www.ghostscript.com/>`_ . The executables of **LaTeX**, **Ghostscript** must all be located on your **PATH** variable. 
+
+The **LaTeX** options is actived by the setting *text.usedtex* in the **rc** settings of the Matplotlib:
+
+.. code-block:: python
+
+    fromt matplotlib import rc
+    rc('text', usetex = True)
+    
+Some detailed documentation can be found on the Matplotlib website: `<http://matplotlib.org/users/usetex.html>`_ 
+
+The mathmode of **LaTeX** ($ e = mc^1$) is not supported. The command *\displaystyle* must be added or unicode must be used. 
+
+.. code-block:: python
+
+    import matplotlib
+    matplotlib.rcParams['text.usetex'] = True
+    matplotlib.rcParams['text.latex.unicode'] = True
+    
+All strings which are created ba **LaTeX** needs a **r** before the opening quote. 
+
+.. code-block:: python
+    
+    plt.xlabel(r'\textbf{time (s)}')
+    
+If some special **LaTeX** packages are needed, you can included whose by adding the package to the matplotlib latex preamble: 
+
+.. code-block:: python 
+
+    matplotlib.rcParams['text.latex.preamble'] = [r'\RequirePackage[T1]{fontenc}']
+    
+
+In the **demo/matplotlib** folder is a demo scripts (**tex_demo**), which show how to create such a figure. In this demo three methods of matplotlib plots are included (default, latex, latex.unicode). Unicode must be used, if special characters are needed in the text. Here you see the example with the default text layout and the **LaTeX** text layout. 
+
+============================================== ==============================================
+.. figure:: ./images/matplotlibDefaultText.png .. figure:: ./images/matplotlibLatexText.png
+============================================== ==============================================
+
+
 Designer plugin MatplotlibPlot
 ===============================
 

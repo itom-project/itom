@@ -8,6 +8,10 @@ IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
         cmake_policy(SET CMP0042 OLD)
     ENDIF(POLICY CMP0042)
 ENDIF()
+
+if (POLICY CMP0028)
+    cmake_policy(SET CMP0028 NEW) #raise an CMake error if an imported target, containing ::, could not be found
+ENDIF (POLICY CMP0028)
    
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
@@ -39,12 +43,11 @@ IF(BUILD_WITH_PCL)
 ELSE(BUILD_WITH_PCL)
 	#find_package(ITOM_SDK COMPONENTS dataobject itomCommonLib itomCommonQtLib REQUIRED)
 ENDIF(BUILD_WITH_PCL)
-include("../ItomBuildMacros.cmake")
 
 #at first, get the available Qt version
 FIND_PACKAGE_QT(ON Core)
 #requires Qt5 and Qt5WebEngine in order to built a built-in help viewer, since QtAssistant only has a limited set of rendering options since Qt5.6.
-FIND_PACKAGE_QT(ON Core Widgets Xml LinguistTools)
+FIND_PACKAGE_QT(ON Core Widgets Xml Designer Svg PrintSupport LinguistTools)
 
 find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(VisualLeakDetector QUIET)
@@ -121,11 +124,11 @@ file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${lib_SOURCES} ${lib_HEADERS} ${lib_HEADERS_MOC} ${lib_UI_MOC} ${lib_RCC_MOC} ${EXISTING_TRANSLATION_FILES})
 
 IF(BUILD_ITOMLIBS_SHARED)
-    TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${PCL_LIBRARIES} dataobject itomCommonLib itomCommonQtLib ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES})
+    TARGET_LINK_LIBRARIES(${target_name} ${OpenCV_LIBS} ${PCL_LIBRARIES} ${QT5_LIBRARIES} ${VISUALLEAKDETECTOR_LIBRARIES} ${QT_LIBRARIES} dataobject itomCommonLib itomCommonQtLib )
 ENDIF(BUILD_ITOMLIBS_SHARED)
-if (QT5_FOUND)
+IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
     qt5_use_modules(${target_name} ${QT_COMPONENTS}) #special command for Qt5
-endif (QT5_FOUND)
+ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
 
 #translation
 set (FILES_TO_TRANSLATE ${lib_SOURCES} ${lib_HEADERS} ${lib_UI})
@@ -137,9 +140,6 @@ FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/pluginModel.h  DESTINATION ${CMAKE_CURRENT
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/paramHelper.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/AddInManager)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/algoInterfaceValidator.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/AddInManager)
 FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/addInManagerVersion.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/AddInManager)
-#FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataobj.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
-#FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataObjectFuncs.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
-#FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/../DataObject/dataobjVersion.h  DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/../SDK/include/DataObject)
 
 # COPY SECTION
 set(COPY_SOURCES "")

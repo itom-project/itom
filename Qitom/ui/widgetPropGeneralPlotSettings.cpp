@@ -23,7 +23,6 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 #include "../global.h"
 #include "../AppManagement.h"
-#include <qdebug>
 #include <qsettings.h>
 
 namespace ito
