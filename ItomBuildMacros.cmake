@@ -213,8 +213,12 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
                     find_package(Qt5${comp} REQUIRED)
                     IF (${comp} STREQUAL "Widgets")
                         add_definitions(${Qt5Widgets_DEFINITIONS})
+                        SET(QT5_LIBRARIES ${QT5_LIBRARIES} Qt5::${comp})
+                    ELSEIF (${comp} STREQUAL "LinguistTools")
+                        #it is not possible to link Qt5::LinguistTools since it does not exist
+                    ELSE ()
+                        SET(QT5_LIBRARIES ${QT5_LIBRARIES} Qt5::${comp})
                     ENDIF ()
-                    SET(QT5_LIBRARIES ${QT5_LIBRARIES} Qt5::${comp})
                 ENDFOREACH (comp)
             ENDIF (NOT Qt5Core_FOUND)
             
@@ -238,8 +242,13 @@ MACRO (FIND_PACKAGE_QT SET_AUTOMOC)
             FOREACH (comp ${Components})
                 IF (${comp} STREQUAL "Widgets")
                     add_definitions(${Qt5Widgets_DEFINITIONS})
+                    SET(QT5_LIBRARIES ${QT5_LIBRARIES} Qt5::${comp})
+                ELSEIF (${comp} STREQUAL "LinguistTools")
+                    #it is not possible to link Qt5::LinguistTools since it does not exist
+                ELSE ()
+                    SET(QT5_LIBRARIES ${QT5_LIBRARIES} Qt5::${comp})
                 ENDIF ()
-                SET(QT5_LIBRARIES ${QT5_LIBRARIES} Qt5::${comp})
+                
             ENDFOREACH (comp)
         ENDIF (${Qt5_DIR} STREQUAL "Qt5_DIR-NOTFOUND") 
         

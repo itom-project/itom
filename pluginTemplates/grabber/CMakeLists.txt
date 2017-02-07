@@ -62,8 +62,8 @@ find_package(VisualLeakDetector QUIET) #silently detects the VisualLeakDetector 
 
 #usage of FIND_PACKAGE_QT(automoc component1, component2, ...)
 # automoc is ON or OFF and only relevant for Qt5, usually set it to ON
-# possible components are: OpenGL,Core,Designer,Xml,Svg,Sql,Network,UiTools,Widgets,PrintSupport...
-FIND_PACKAGE_QT(ON Core Widgets)
+# possible components are: OpenGL,Core,Designer,Xml,Svg,Sql,Network,UiTools,Widgets,PrintSupport,LinguistTools...
+FIND_PACKAGE_QT(ON Core Widgets LinguistTools)
 
 #################################################################
 # General settings and preprocessor settings

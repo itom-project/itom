@@ -51,7 +51,7 @@ IF(${BUILD_WITH_HELPVIEWER})
     ENDIF()
 ELSE()
     #uses the old QtAssistant as help viewer.
-    FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg Designer)
+    FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg Designer LinguistTools)
 ENDIF()
 find_package(PythonLibs 3.0 REQUIRED)  
 find_package(QScintilla REQUIRED)  

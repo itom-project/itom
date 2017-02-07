@@ -40,7 +40,7 @@ ENDIF(BUILD_ITOMLIBS_SHARED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-FIND_PACKAGE_QT(OFF UiTools Widgets Svg Xml Designer PrintSupport) #no automoc for Qt5
+FIND_PACKAGE_QT(OFF UiTools Widgets Svg Xml Designer PrintSupport LinguistTools) #no automoc for Qt5
 find_package(VisualLeakDetector QUIET)
 find_package(OpenCV COMPONENTS core REQUIRED)
 

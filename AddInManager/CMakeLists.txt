@@ -47,7 +47,7 @@ ENDIF(BUILD_WITH_PCL)
 #at first, get the available Qt version
 FIND_PACKAGE_QT(ON Core)
 #requires Qt5 and Qt5WebEngine in order to built a built-in help viewer, since QtAssistant only has a limited set of rendering options since Qt5.6.
-FIND_PACKAGE_QT(ON Core Widgets Xml Designer Svg PrintSupport)
+FIND_PACKAGE_QT(ON Core Widgets Xml Designer Svg PrintSupport LinguistTools)
 
 find_package(OpenCV COMPONENTS core REQUIRED)
 find_package(VisualLeakDetector QUIET)
