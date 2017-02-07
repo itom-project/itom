@@ -1,13 +1,15 @@
 # coding=iso-8859-15
-# -*- coding: utf-8 -*-
-
 from itom import *
-import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib import rc
+import numpy as np
 
 #http://matplotlib.org/users/customizing.html
+matplotlib.rcParams['text.latex.unicode'] = True # latex unicode
+matplotlib.rcParams['font.family'] = 'serif'
+matplotlib.rcParams['text.latex.preamble'] = [r'\usepackage{lmodern}']
+rc('text', usetex=True)
 
 #########################################################################
 ## plot
