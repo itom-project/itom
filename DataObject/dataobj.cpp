@@ -977,6 +977,7 @@ DataObject::DataObject(void) : m_continuous(1), m_owndata(1), m_type(0), m_pRefC
 {
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! constructor for one-dimensional data object. The data is newly allocated and arbitrarily filled.
 /*!
     In fact, by this constructor a two-dimensional matrix with dimension 1 x size will be created.
@@ -992,6 +993,7 @@ DataObject::DataObject(const int size, const int type): m_continuous(1), m_ownda
     this->create(2, sizes, type, 1);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! constructor for two-dimensional data object. The data is newly allocated and arbitrarily filled.
 /*!
     the owndata-flag is set to true, the continuously-flag, too (since only one matrix-plane will be created)
@@ -1007,6 +1009,7 @@ DataObject::DataObject(const int sizeY, const int sizeX, const int type): m_cont
     this->create(2, sizes, type, 1);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! constructor for three-dimensional data object. The data is newly allocated and arbitrarily filled.
 /*!
     the owndata-flag is set to true
@@ -1024,10 +1027,11 @@ DataObject::DataObject(const int sizeZ, const int sizeY, const int sizeX, const 
     this->create(3, sizes, type, m_continuous);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! constructor for 3-dimensional data object which uses the data given by the continuousDataPtr.
 /*!
-    In case of the continuousDataPtr, the owndata-flag is set to false, hence this dataObj will not delete the data.
-    Additionally the continuous-flag is set to true.
+    In case of the continuousDataPtr, the owndata-flag is set to false, hence this DataObject will not delete the data.
+    Additionally the continuous-flag is set to true. The external data must be kept alive during the entire lifetime of this DataObject.
 
     \param sizeZ is the number of images in the z-direction
     \param sizeY is the number of rows in each matrix-plane
@@ -1045,6 +1049,7 @@ DataObject::DataObject(const int sizeZ, const int sizeY, const int sizeX, const 
     this->create(3, sizes, type, m_continuous, continuousDataPtr, steps);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! constructor for data object with given dimension. The data is newly allocated and arbitrarily filled.
 /*!
     the owndata-flag is set to true
@@ -1059,6 +1064,7 @@ DataObject::DataObject(const MSize &sizes, const int type, const unsigned char c
     this->create(sizes.m_p[-1], sizes.operator const int *(), type, m_continuous);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! constructor for data object with given dimension. The data is newly allocated and arbitrarily filled.
 /*!
     the owndata-flag is set to true
@@ -1074,10 +1080,11 @@ DataObject::DataObject(const unsigned char dimensions, const int *sizes, const i
     this->create(dimensions, sizes, type, m_continuous);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 //! constructor for data object which uses the data given by the continuousDataPtr.
 /*!
     In case of the continuousDataPtr, the owndata-flag is set to false, hence this dataObj will not delete the data.
-    Additionally the continuous-flag is set to true.
+    Additionally the continuous-flag is set to true. The external data must be kept alive during the entire lifetime of this DataObject.
 
     \param dimensions indicates the total number of dimensions
     \param *sizes is a vector of size 'dimensions', where each element gives the size (not osize) of the specific dimension
@@ -1093,6 +1100,7 @@ DataObject::DataObject(const unsigned char dimensions, const int *sizes, const i
     this->create(dimensions, sizes, type, m_continuous, continuousDataPtr, steps);
 }
 
+//----------------------------------------------------------------------------------------------------------------------------------
 DataObject::DataObject(const unsigned char dimensions, const int *sizes, const int type, const cv::Mat* planes, const unsigned int nrOfPlanes) : m_continuous(0), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
 {
     //usually it is dangerous to say that m_owndata is 1 in this case, since we cannot be sure if the given planes are the owner of their data.
@@ -1102,9 +1110,16 @@ DataObject::DataObject(const unsigned char dimensions, const int *sizes, const i
     this->create(dimensions, sizes, type, planes, nrOfPlanes);
 }
 
-DataObject::DataObject(const cv::Mat &data) : m_continuous(0), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
+//----------------------------------------------------------------------------------------------------------------------------------
+DataObject::DataObject(const cv::Mat &data) : m_continuous(1), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
 {
     int sizes[2] = { data.rows, data.cols };
+
+    if (data.dims != 2)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "DataObject only accepts a 2D cv::Mat.", "", __FILE__, __LINE__));
+    }
+
     switch (data.type())
     {
         case CV_8U:
@@ -1131,6 +1146,8 @@ DataObject::DataObject(const cv::Mat &data) : m_continuous(0), m_owndata(1), m_p
         case CV_64F:
             this->create(2, sizes, ito::tFloat64, &data, 1);
         break;
+        default:
+            cv::error(cv::Exception(CV_StsAssert, "DataObject does not accept this type of cv::Mat.", "", __FILE__, __LINE__));
     }
 }
 
