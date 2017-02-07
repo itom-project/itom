@@ -1102,6 +1102,37 @@ DataObject::DataObject(const unsigned char dimensions, const int *sizes, const i
     this->create(dimensions, sizes, type, planes, nrOfPlanes);
 }
 
+DataObject::DataObject(const cv::Mat &data) : m_continuous(0), m_owndata(1), m_pRefCount(0), m_dims(0), m_data(NULL), m_pDataObjectTags(0)
+{
+    int sizes[2] = { data.rows, data.cols };
+    switch (data.type())
+    {
+        case CV_8U:
+            this->create(2, sizes, ito::tUInt8, &data, 1);
+        break;
+        case CV_8S:
+            this->create(2, sizes, ito::tInt8, &data, 1);
+        break;
+        case CV_16U:
+            this->create(2, sizes, ito::tUInt16, &data, 1);
+        break;
+        case CV_16S:
+            this->create(2, sizes, ito::tInt16, &data, 1);
+        break;
+//        case CV_32U:
+//            this->create(2, sizes, ito::tUInt32, &data, 1);
+//        break;
+        case CV_32S:
+            this->create(2, sizes, ito::tInt32, &data, 1);
+        break;
+        case CV_32F:
+            this->create(2, sizes, ito::tFloat32, &data, 1);
+        break;
+        case CV_64F:
+            this->create(2, sizes, ito::tFloat64, &data, 1);
+        break;
+    }
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! destructor
