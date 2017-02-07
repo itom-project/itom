@@ -35,8 +35,7 @@ elif value == 'latex unicode':
     matplotlib.rcParams['text.latex.unicode'] = True
     title = r'\TeX\ is Number $\sum\limits_{n=1}^\infty \frac{-e^{i\pi}}{2^n}$!'
     xLabel = r'\textbf{time [s]}'
-    yLabel = r'\textit{velocity [$^{\circ}$/sec]}'
-    #yLabel = u'\\textit{velocity [\u00B0/sec]}'
+    yLabel = u'\\textit{velocity [\u00B0/sec]}'
     
 
 clc() # clear command line
