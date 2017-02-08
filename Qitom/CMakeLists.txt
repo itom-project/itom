@@ -42,7 +42,7 @@ IF(${BUILD_WITH_HELPVIEWER})
     #at first, get the available Qt version
     FIND_PACKAGE_QT(ON Core)
     #requires Qt5 and Qt5WebEngine in order to built a built-in help viewer, since QtAssistant only has a limited set of rendering options since Qt5.6.
-    FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg WebEngineWidgets Help Designer)
+    FIND_PACKAGE_QT(ON Core Widgets UiTools PrintSupport Network Sql Xml OpenGL Svg WebEngineWidgets Help Designer LinguistTools)
     
     IF(Qt5WebEngineWidgets_FOUND)
         ADD_DEFINITIONS(-DUSEHELPVIEWER -D_USEHELPVIEWER)
