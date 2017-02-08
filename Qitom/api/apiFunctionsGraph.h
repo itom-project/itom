@@ -31,6 +31,7 @@
 
 #include <qvariant.h>
 #include <qpointer.h>
+#include <qsharedpointer.h>
 
 namespace ito 
 {

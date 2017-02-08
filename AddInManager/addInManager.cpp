@@ -33,7 +33,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <QDirIterator>
 #include <qaction.h>
 #include <qsettings.h>
-
+#include <qpointer.h>
 #include <qtimer.h>
 #include <qtranslator.h>
 
@@ -2672,4 +2672,8 @@ const ito::RetVal AddInManager::setTimeOuts(const int initClose, const int gener
 //----------------------------------------------------------------------------------------------------------------------------------
 } // namespace ito
 
-#include "addInManager.moc"
+#if QT_VERSION >= 0x050000
+    #include "addInManager.moc"
+#else
+    #include "moc_addInManager.cxx"
+#endif

@@ -25,6 +25,7 @@
 
 #include "../global.h"
 #include <qdialog.h>
+#include <qpointer.h>
 #include "../common/addInInterface.h"
 #include "../DataObject/dataobj.h"
 #include "../../AddInManager/addInManager.h"
