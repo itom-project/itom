@@ -23,7 +23,7 @@
       <item>
        <widget class="QCheckBox" name="checkAskBeforeExit">
         <property name="text">
-         <string>show message before closing the application</string>
+         <string>Show message before closing the application</string>
         </property>
        </widget>
       </item>
@@ -232,14 +232,14 @@
           <item>
            <widget class="QPushButton" name="btnMoveUp">
             <property name="text">
-             <string>Move up</string>
+             <string>Move Up</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="btnMoveDown">
             <property name="text">
-             <string>Move down</string>
+             <string>Move Down</string>
             </property>
            </widget>
           </item>

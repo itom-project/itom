@@ -83,18 +83,18 @@ void DialogReloadModule::loadModules()
 
         if(!locker.getSemaphore()->waitAndProcessEvents(PLUGINWAIT)) //this is important, since the garbage collector might be called when calling getSysModules. If the gc is destructing an ui-instance, the uiOrganizer is invoked, which lives in the same thread than this dialog.
         {
-            QMessageBox::critical(this, tr("connection problem"), tr("No information about loaded modules could be retrieved by python."));
+            QMessageBox::critical(this, tr("Connection problem"), tr("No information about loaded modules could be retrieved by python."));
             enableUI(false);
         }
         else if(locker.getSemaphore()->returnValue != ito::retOk)
         {
             if(locker.getSemaphore()->returnValue.hasErrorMessage())
             {
-                QMessageBox::critical(this, tr("error while getting module list"), QLatin1String(locker.getSemaphore()->returnValue.errorMessage()));
+                QMessageBox::critical(this, tr("Error while getting module list"), QLatin1String(locker.getSemaphore()->returnValue.errorMessage()));
             }
             else
             {
-                QMessageBox::critical(this, tr("error while getting module list"), tr("Unknown error"));
+                QMessageBox::critical(this, tr("Error while getting module list"), tr("Unknown error"));
             }
         }
         else
@@ -164,11 +164,11 @@ void DialogReloadModule::dialogAccepted()
         {
             if(locker.getSemaphore()->returnValue.hasErrorMessage())
             {
-                QMessageBox::critical(this, tr("error while reloading modules"), QLatin1String(locker.getSemaphore()->returnValue.errorMessage()));
+                QMessageBox::critical(this, tr("Error while reloading modules"), QLatin1String(locker.getSemaphore()->returnValue.errorMessage()));
             }
             else
             {
-                QMessageBox::critical(this, tr("error while reloading modules"), tr("Unknown error"));
+                QMessageBox::critical(this, tr("Error while reloading modules"), tr("Unknown error"));
             }
         }
         else if(mods->count() > 0) //some modules could not be loaded

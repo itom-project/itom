@@ -78,7 +78,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
             }
             else
             {
-                return ito::RetVal(ito::retError, 0, QObject::tr("value could not be converted to integer").toLatin1().data());
+                return ito::RetVal(ito::retError, 0, QObject::tr("Value could not be converted to integer").toLatin1().data());
             }
         }
     break;
@@ -93,7 +93,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
             }
             else
             {
-                return ito::RetVal(ito::retError, 0, QObject::tr("value could not be converted to double").toLatin1().data());
+                return ito::RetVal(ito::retError, 0, QObject::tr("Value could not be converted to double").toLatin1().data());
             }
         }
     break;
@@ -108,7 +108,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
             }
             else
             {
-                return ito::RetVal(ito::retError, 0, QObject::tr("value could not be converted to complex").toLatin1().data());
+                return ito::RetVal(ito::retError, 0, QObject::tr("Value could not be converted to complex").toLatin1().data());
             }
         }
     break;
@@ -187,7 +187,7 @@ ito::RetVal checkAndSetParamVal(PyObject *pyObj, const ito::Param *defaultParam,
             QByteArray ba = PythonQtConversion::PyObjGetBytes(pyObj,false,ok);
             if (ok == false)
             {
-                return ito::RetVal(ito::retError, 0, QObject::tr("error while converting python object to string").toLatin1().data());
+                return ito::RetVal(ito::retError, 0, QObject::tr("Error while converting python object to string").toLatin1().data());
             }
             outParam.setVal<char *>(ba.data());
         }
@@ -925,8 +925,8 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
     if (((argsLen + kwdsLen) < numMandParams)
         || ((argsLen + kwdsLen) > (numMandParams + numOptParams)))
     {
-        errOutInitParams(defaultParamListMand, -1, QObject::tr("wrong number of parameters. Mandatory parameters are:").toLatin1().data());
-        errOutInitParams(defaultParamListOpt, -1, QObject::tr("optional parameters are:").toLatin1().data());
+        errOutInitParams(defaultParamListMand, -1, QObject::tr("Wrong number of parameters. Mandatory parameters are:").toLatin1().data());
+        errOutInitParams(defaultParamListOpt, -1, QObject::tr("Optional parameters are:").toLatin1().data());
         if (mandPParsed)
         {
             free(mandPParsed);
@@ -937,7 +937,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
             free(optPParsed);
             optPParsed = NULL;
         }
-        return ito::RetVal::format(ito::retError, 0, QObject::tr("wrong number of parameters (%i given, %i mandatory and %i optional required)").toLatin1().data(), 
+        return ito::RetVal::format(ito::retError, 0, QObject::tr("Wrong number of parameters (%i given, %i mandatory and %i optional required)").toLatin1().data(), 
             argsLen + kwdsLen, numMandParams, numOptParams);
     }
 
@@ -961,7 +961,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
                     free(optPParsed);
                     optPParsed = NULL;
                 }
-                return ito::RetVal::format(ito::retError, 0, QObject::tr("parameter %d - %s passed as arg and keyword!").toLatin1().data(), n, tkey);
+                return ito::RetVal::format(ito::retError, 0, QObject::tr("Parameter %d - %s passed as arg and keyword!").toLatin1().data(), n, tkey);
             }
         }
         for (int n = len; n < argsLen; n++)
@@ -979,7 +979,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
                     free(optPParsed);
                     optPParsed = NULL;
                 }
-                return ito::RetVal::format(ito::retError, 0, QObject::tr("optional parameter %d - %s passed as arg and keyword!").toLatin1().data(), n, tkey);
+                return ito::RetVal::format(ito::retError, 0, QObject::tr("Optional parameter %d - %s passed as arg and keyword!").toLatin1().data(), n, tkey);
             }
         }
     }
@@ -1024,7 +1024,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
             std::cerr << "there are keyword arguments that does not exist in mandatory or optional parameters." << std::endl;
             errOutInitParams(defaultParamListMand, -1, "Mandatory parameters are:");
             errOutInitParams(defaultParamListOpt, -1, "Optional parameters are:");
-            return ito::RetVal(ito::retError, 0, QObject::tr("there are keyword arguments that does not exist in mandatory or optional parameters.").toLatin1().data());
+            return ito::RetVal(ito::retError, 0, QObject::tr("There are keyword arguments that does not exist in mandatory or optional parameters.").toLatin1().data());
         }
     }
 
@@ -1042,7 +1042,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
         }
         if ((argsLen + mandKwd) < numMandParams)
         {
-            errOutInitParams(defaultParamListMand, -1, QObject::tr("wrong number of parameters\n Mandatory parameters are:\n").toLatin1().data());
+            errOutInitParams(defaultParamListMand, -1, QObject::tr("Wrong number of parameters\n Mandatory parameters are:\n").toLatin1().data());
             if (mandPParsed)
             {
                 free(mandPParsed);
@@ -1053,7 +1053,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
                 free(optPParsed);
                 optPParsed = NULL;
             }
-            return ito::RetVal::format(ito::retError, 0, QObject::tr("wrong number of parameters (%i given, %i mandatory and %i optional required)").toLatin1().data(), 
+            return ito::RetVal::format(ito::retError, 0, QObject::tr("Wrong number of parameters (%i given, %i mandatory and %i optional required)").toLatin1().data(), 
                 argsLen + kwdsLen, numMandParams, numOptParams);
         }
     }
@@ -1073,7 +1073,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
         {
             if (retval.hasErrorMessage() == false)
             {
-                errOutInitParams(defaultParamListMand, n, QObject::tr("wrong parameter type").toLatin1().data());
+                errOutInitParams(defaultParamListMand, n, QObject::tr("Wrong parameter type").toLatin1().data());
             }
             else
             {
@@ -1103,7 +1103,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
         {
             if (retval.hasErrorMessage() == false)
             {
-                errOutInitParams(defaultParamListMand, n, QObject::tr("wrong parameter type").toLatin1().data());
+                errOutInitParams(defaultParamListMand, n, QObject::tr("Wrong parameter type").toLatin1().data());
             }
             else
             {
@@ -1133,7 +1133,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
         {
             if (retval.hasErrorMessage() == false)
             {
-                errOutInitParams(defaultParamListOpt, n - numMandParams, QObject::tr("wrong parameter type").toLatin1().data());
+                errOutInitParams(defaultParamListOpt, n - numMandParams, QObject::tr("Wrong parameter type").toLatin1().data());
             }
             else
             {
@@ -1169,7 +1169,7 @@ ito::RetVal parseInitParams(const QVector<ito::Param> *defaultParamListMand, con
                     }
                     else
                     {
-                        errOutInitParams(defaultParamListOpt, n, QObject::tr("wrong parameter type").toLatin1().data());
+                        errOutInitParams(defaultParamListOpt, n, QObject::tr("Wrong parameter type").toLatin1().data());
                     }
                     if (mandPParsed)
                     {
@@ -1312,7 +1312,7 @@ PyObject* buildFilterOutputValues(QVector<QVariant> *outVals, ito::RetVal &retVa
         tuple = PythonQtConversion::QVariantToPyObject(*elem);
         if (tuple == NULL)
         {
-            PyErr_SetString(PyExc_RuntimeError, QObject::tr("unknown parameter of type QVariant").toLatin1().data());
+            PyErr_SetString(PyExc_RuntimeError, QObject::tr("Unknown parameter of type QVariant").toLatin1().data());
         }
     }
     else
@@ -1325,7 +1325,7 @@ PyObject* buildFilterOutputValues(QVector<QVariant> *outVals, ito::RetVal &retVa
             temp = PythonQtConversion::QVariantToPyObject(*elem);
             if (temp == NULL)
             {
-                PyErr_SetString(PyExc_RuntimeError, QObject::tr("unknown parameter of type QVariant").toLatin1().data());
+                PyErr_SetString(PyExc_RuntimeError, QObject::tr("Unknown parameter of type QVariant").toLatin1().data());
             }
             else
             {
@@ -1784,7 +1784,7 @@ bool PythonCommon::transformRetValToPyException(ito::RetVal &retVal, PyObject *e
         const char *temp = retVal.errorMessage();
         if (temp == NULL)
         {
-            msg = QObject::tr("- unknown message -").toUtf8();
+            msg = QObject::tr("- Unknown message -").toUtf8();
         }
         else
         {

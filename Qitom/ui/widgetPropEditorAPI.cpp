@@ -46,7 +46,7 @@ WidgetPropEditorAPI::WidgetPropEditorAPI(QWidget *parent) :
 
     QDir canonicalBase = QCoreApplication::applicationDirPath();
     m_canonicalBasePath = canonicalBase.canonicalPath();
-    ui.lblBasePath->setText(tr("base path for relative pathes: ") + m_canonicalBasePath);
+    ui.lblBasePath->setText(tr("Base path for relative pathes: ") + m_canonicalBasePath);
     ui.btnAdd->setEnabled(true);
     ui.btnRemove->setEnabled(false);
 
@@ -143,7 +143,7 @@ void WidgetPropEditorAPI::on_listWidget_currentItemChanged(QListWidgetItem* curr
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropEditorAPI::on_btnAdd_clicked()
 {
-    QStringList filenames = QFileDialog::getOpenFileNames(this, tr("load python api file"), m_lastApiFileDirectory, tr("python api file (*.api)"));
+    QStringList filenames = QFileDialog::getOpenFileNames(this, tr("Load python api file"), m_lastApiFileDirectory, tr("Python api file (*.api)"));
     QDir baseDir(m_canonicalBasePath);
      
     foreach (QString filename, filenames)

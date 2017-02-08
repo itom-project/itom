@@ -58,7 +58,7 @@ CallStackDockWidget::CallStackDockWidget(const QString &title, const QString &ob
     m_table->setAlternatingRowColors(true);
     m_table->setCornerButtonEnabled(false);
 
-    m_headers << tr("file") << tr("line") << tr("method");
+    m_headers << tr("File") << tr("Line") << tr("Method");
     m_table->setHorizontalHeaderLabels(m_headers);
 
     connect(m_table, SIGNAL(itemDoubleClicked(QTableWidgetItem*)), this, SLOT(itemDoubleClicked(QTableWidgetItem*)));

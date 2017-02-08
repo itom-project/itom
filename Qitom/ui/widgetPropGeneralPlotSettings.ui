@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>613</width>
-    <height>457</height>
+    <height>467</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -55,7 +55,7 @@
          <item row="2" column="0">
           <widget class="QLabel" name="label_8">
            <property name="text">
-            <string>tracker background:</string>
+            <string>Tracker background:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -68,7 +68,7 @@
          <item row="0" column="0">
           <widget class="QLabel" name="label_17">
            <property name="text">
-            <string>tracker pen color:</string>
+            <string>Tracker pen color:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -81,7 +81,7 @@
          <item row="1" column="0">
           <widget class="QLabel" name="label_7">
            <property name="text">
-            <string>tracker font:</string>
+            <string>Tracker font:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -91,7 +91,7 @@
          <item row="3" column="0">
           <widget class="QLabel" name="label_5">
            <property name="text">
-            <string>zoom rubber band pen:</string>
+            <string>Zoom rubber band pen:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -123,7 +123,7 @@
          <item row="2" column="0">
           <widget class="QLabel" name="label_18">
            <property name="text">
-            <string>label color:</string>
+            <string>Label color:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -136,7 +136,7 @@
          <item row="0" column="0">
           <widget class="QLabel" name="label_16">
            <property name="text">
-            <string>shape label background:</string>
+            <string>Shape label background:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -146,7 +146,7 @@
          <item row="1" column="0">
           <widget class="QLabel" name="label_6">
            <property name="text">
-            <string>shape label font:</string>
+            <string>Shape label font:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -156,7 +156,7 @@
          <item row="3" column="0">
           <widget class="QLabel" name="label_15">
            <property name="text">
-            <string>shape pen:</string>
+            <string>Shape pen:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -182,7 +182,7 @@
          <item row="0" column="0">
           <widget class="QLabel" name="label_4">
            <property name="text">
-            <string>line style:</string>
+            <string>Line style:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -215,7 +215,7 @@
          <item row="2" column="0">
           <widget class="QLabel" name="label_13">
            <property name="text">
-            <string>z stack marker pen</string>
+            <string>Z stack marker pen</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -228,7 +228,7 @@
          <item row="3" column="0">
           <widget class="QLabel" name="label_14">
            <property name="text">
-            <string>z stack marker size</string>
+            <string>Z stack marker size</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -248,7 +248,7 @@
          <item row="1" column="0">
           <widget class="QLabel" name="label_10">
            <property name="text">
-            <string>center marker size:</string>
+            <string>Center marker size:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -258,7 +258,7 @@
          <item row="0" column="0">
           <widget class="QLabel" name="label_9">
            <property name="text">
-            <string>center marker pen:</string>
+            <string>Center marker pen:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -277,7 +277,7 @@
          <item row="1" column="0">
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>label font:</string>
+            <string>Label font:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -290,7 +290,7 @@
          <item row="0" column="0">
           <widget class="QLabel" name="label">
            <property name="text">
-            <string>title font:</string>
+            <string>Title font:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -303,7 +303,7 @@
          <item row="2" column="0">
           <widget class="QLabel" name="label_3">
            <property name="text">
-            <string>axis font:</string>
+            <string>Axis font:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -316,7 +316,7 @@
          <item row="3" column="0">
           <widget class="QLabel" name="label_11">
            <property name="text">
-            <string>legend font:</string>
+            <string>Legend font:</string>
            </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -345,7 +345,7 @@
       <item row="4" column="1">
        <widget class="QPushButton" name="defaultBtn">
         <property name="text">
-         <string>Set to default</string>
+         <string>Set To Default</string>
         </property>
        </widget>
       </item>

@@ -69,7 +69,7 @@ BreakPointModel::BreakPointModel() : QAbstractItemModel()
 {
     qRegisterMetaTypeStreamOperators<ito::BreakPointItem>("BreakPointItem");
 
-    m_headers   << tr("line")          << tr("condition")         << tr("temporary")            << tr("enabled")              << tr("ignore count");
+    m_headers   << tr("Line")          << tr("Condition")         << tr("Temporary")            << tr("Enabled")              << tr("Ignore count");
     m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignRight) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignHCenter) << QVariant(Qt::AlignHCenter) << QVariant(Qt::AlignRight);
 
 #ifndef WIN32
@@ -842,7 +842,7 @@ RetVal BreakPointModel::changeBreakPoint(const QModelIndex index, BreakPointItem
 
     if (!index.isValid())
     {
-        retval += ito::RetVal(ito::retError, 0, tr("given modelIndex of breakpoint is invalid").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Given modelIndex of breakpoint is invalid").toLatin1().data());
     }
     else if (index.internalPointer() != NULL)
     {
@@ -853,7 +853,7 @@ RetVal BreakPointModel::changeBreakPoint(const QModelIndex index, BreakPointItem
         {
             if (m_breakpoints[idx].filename != bp.filename)
             {
-                retval += ito::RetVal(ito::retError, 0, tr("filename must not be changed").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, tr("Filename must not be changed").toLatin1().data());
             }
             else
             {
@@ -871,7 +871,7 @@ RetVal BreakPointModel::changeBreakPoint(const QModelIndex index, BreakPointItem
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, tr("given modelIndex is no model index of a breakpoint").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, tr("Given modelIndex is no model index of a breakpoint").toLatin1().data());
     }
     
     return retval;

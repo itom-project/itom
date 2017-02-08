@@ -291,53 +291,53 @@ void ScriptEditorWidget::loadSettings()
 RetVal ScriptEditorWidget::initMenus()
 {
     bookmarkMenu = new QMenu(this);
-    bookmarkMenuActions["toggleBM"] = bookmarkMenu->addAction(QIcon(":/bookmark/icons/bookmarkToggle.png"), tr("&toggle bookmark"), this, SLOT(menuToggleBookmark()));
-    bookmarkMenuActions["nextBM"] = bookmarkMenu->addAction(QIcon(":/bookmark/icons/bookmarkNext.png"), tr("next bookmark"), this, SLOT(menuGotoNextBookmark()));
-    bookmarkMenuActions["prevBM"] = bookmarkMenu->addAction(QIcon(":/bookmark/icons/bookmarkPrevious.png"), tr("previous bookmark"), this, SLOT(menuGotoPreviousBookmark()));
-    bookmarkMenuActions["clearAllBM"] = bookmarkMenu->addAction(QIcon(":/bookmark/icons/bookmarkClearAll.png"), tr("clear all bookmarks"), this, SLOT(menuClearAllBookmarks()));
+    bookmarkMenuActions["toggleBM"] = bookmarkMenu->addAction(QIcon(":/bookmark/icons/bookmarkToggle.png"), tr("&Toggle Bookmark"), this, SLOT(menuToggleBookmark()));
+    bookmarkMenuActions["nextBM"] = bookmarkMenu->addAction(QIcon(":/bookmark/icons/bookmarkNext.png"), tr("Next Bookmark"), this, SLOT(menuGotoNextBookmark()));
+    bookmarkMenuActions["prevBM"] = bookmarkMenu->addAction(QIcon(":/bookmark/icons/bookmarkPrevious.png"), tr("Previous Bookmark"), this, SLOT(menuGotoPreviousBookmark()));
+    bookmarkMenuActions["clearAllBM"] = bookmarkMenu->addAction(QIcon(":/bookmark/icons/bookmarkClearAll.png"), tr("Clear All Bookmarks"), this, SLOT(menuClearAllBookmarks()));
 
     connect(bookmarkMenu, SIGNAL(aboutToShow()), this, SLOT(preShowContextMenuMargin()));
 
     breakpointMenu = new QMenu(this);
-    breakpointMenuActions["toggleBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/itomBreak.png"), tr("&toggle breakpoint"), this, SLOT(menuToggleBreakpoint()));
-    breakpointMenuActions["toggleBPEnabled"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/itomBreakDisable.png"), tr("&disable breakpoint"), this, SLOT(menuToggleEnableBreakpoint()));
-    breakpointMenuActions["editConditionBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/itomcBreak.png"), tr("&edit condition"), this, SLOT(menuEditBreakpoint()));
-    breakpointMenuActions["nextBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/breakpointNext.png"), tr("&next breakpoint"), this, SLOT(menuGotoNextBreakPoint()));
-    breakpointMenuActions["prevBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/breakpointPrevious.png"),tr("&previous breakpoint"), this, SLOT(menuGotoPreviousBreakPoint()));
-    breakpointMenuActions["clearALLBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/garbageAllBPs.png"), tr("&delete all breakpoints"), this, SLOT(menuClearAllBreakpoints()));
+    breakpointMenuActions["toggleBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/itomBreak.png"), tr("&Toggle Breakpoint"), this, SLOT(menuToggleBreakpoint()));
+    breakpointMenuActions["toggleBPEnabled"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/itomBreakDisable.png"), tr("&Disable Breakpoint"), this, SLOT(menuToggleEnableBreakpoint()));
+    breakpointMenuActions["editConditionBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/itomcBreak.png"), tr("&Edit Condition"), this, SLOT(menuEditBreakpoint()));
+    breakpointMenuActions["nextBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/breakpointNext.png"), tr("&Next Breakpoint"), this, SLOT(menuGotoNextBreakPoint()));
+    breakpointMenuActions["prevBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/breakpointPrevious.png"),tr("&Previous Breakpoint"), this, SLOT(menuGotoPreviousBreakPoint()));
+    breakpointMenuActions["clearALLBP"] = breakpointMenu->addAction(QIcon(":/breakpoints/icons/garbageAllBPs.png"), tr("&Delete All Breakpoints"), this, SLOT(menuClearAllBreakpoints()));
 
     connect(breakpointMenu, SIGNAL(aboutToShow()), this, SLOT(preShowContextMenuMargin()));
 
     editorMenu = new QMenu(this);
-    editorMenuActions["cut"] = editorMenu->addAction(QIcon(":/editor/icons/editCut.png"), tr("&cut"), this, SLOT(menuCut()));
-    editorMenuActions["copy"] = editorMenu->addAction(QIcon(":/editor/icons/editCopy.png"), tr("cop&y"), this, SLOT(menuCopy()));
-    editorMenuActions["paste"] = editorMenu->addAction(QIcon(":/editor/icons/editPaste.png"), tr("&paste"), this, SLOT(menuPaste()));
+    editorMenuActions["cut"] = editorMenu->addAction(QIcon(":/editor/icons/editCut.png"), tr("&Cut"), this, SLOT(menuCut()));
+    editorMenuActions["copy"] = editorMenu->addAction(QIcon(":/editor/icons/editCopy.png"), tr("Cop&y"), this, SLOT(menuCopy()));
+    editorMenuActions["paste"] = editorMenu->addAction(QIcon(":/editor/icons/editPaste.png"), tr("&Paste"), this, SLOT(menuPaste()));
     editorMenu->addSeparator();
-    editorMenuActions["indent"] = editorMenu->addAction(QIcon(":/editor/icons/editIndent.png"), tr("&indent"), this, SLOT(menuIndent()));
-    editorMenuActions["unindent"] = editorMenu->addAction(QIcon(":/editor/icons/editUnindent.png"), tr("&unindent"), this, SLOT(menuUnindent()));
-    editorMenuActions["comment"] = editorMenu->addAction(QIcon(":/editor/icons/editComment.png"), tr("&comment"), this, SLOT(menuComment()));
-    editorMenuActions["uncomment"] = editorMenu->addAction(QIcon(":/editor/icons/editUncomment.png"), tr("unc&omment"), this, SLOT(menuUncomment()));
+    editorMenuActions["indent"] = editorMenu->addAction(QIcon(":/editor/icons/editIndent.png"), tr("&Indent"), this, SLOT(menuIndent()));
+    editorMenuActions["unindent"] = editorMenu->addAction(QIcon(":/editor/icons/editUnindent.png"), tr("&Unindent"), this, SLOT(menuUnindent()));
+    editorMenuActions["comment"] = editorMenu->addAction(QIcon(":/editor/icons/editComment.png"), tr("&Comment"), this, SLOT(menuComment()));
+    editorMenuActions["uncomment"] = editorMenu->addAction(QIcon(":/editor/icons/editUncomment.png"), tr("Unc&omment"), this, SLOT(menuUncomment()));
     //editorMenu->addSeparator();
-    //editorMenuActions["open"] = editorMenu->addAction(QIcon("icons/open.png"), tr("&open"), this, SLOT(menuOpen()));
-    //editorMenuActions["save"] = editorMenu->addAction(QIcon("icons/fileSave.png"), tr("&save"), this, SLOT(menuSave()), tr("Ctrl+S"));
-    //editorMenuActions["saveas"] = editorMenu->addAction(QIcon("icons/fileSaveAs.png"), tr("save &as"), this, SLOT(menuSaveAs()));
+    //editorMenuActions["open"] = editorMenu->addAction(QIcon("icons/open.png"), tr("&Open"), this, SLOT(menuOpen()));
+    //editorMenuActions["save"] = editorMenu->addAction(QIcon("icons/fileSave.png"), tr("&Save"), this, SLOT(menuSave()), tr("Ctrl+S"));
+    //editorMenuActions["saveas"] = editorMenu->addAction(QIcon("icons/fileSaveAs.png"), tr("Save &As"), this, SLOT(menuSaveAs()));
     editorMenu->addSeparator();
-    editorMenuActions["runScript"] = editorMenu->addAction(QIcon(":/script/icons/runScript.png"), tr("&run script"), this, SLOT(menuRunScript()));
-    editorMenuActions["runSelection"] = editorMenu->addAction(QIcon(":/script/icons/runScript.png"), tr("run &selection"), this, SLOT(menuRunSelection()));
-    editorMenuActions["debugScript"] = editorMenu->addAction(QIcon(":/script/icons/debugScript.png"), tr("&debug script"), this, SLOT(menuDebugScript()));
-    editorMenuActions["stopScript"] = editorMenu->addAction(QIcon(":/script/icons/stopScript.png"), tr("sto&p script"), this, SLOT(menuStopScript()));
+    editorMenuActions["runScript"] = editorMenu->addAction(QIcon(":/script/icons/runScript.png"), tr("&Run Script"), this, SLOT(menuRunScript()));
+    editorMenuActions["runSelection"] = editorMenu->addAction(QIcon(":/script/icons/runScript.png"), tr("Run &Selection"), this, SLOT(menuRunSelection()));
+    editorMenuActions["debugScript"] = editorMenu->addAction(QIcon(":/script/icons/debugScript.png"), tr("&Debug Script"), this, SLOT(menuDebugScript()));
+    editorMenuActions["stopScript"] = editorMenu->addAction(QIcon(":/script/icons/stopScript.png"), tr("Sto&p Script"), this, SLOT(menuStopScript()));
     editorMenu->addSeparator();
     editorMenu->addAction(bookmarkMenuActions["toggleBM"]);
     editorMenu->addAction(bookmarkMenuActions["nextBM"]);
     editorMenu->addAction(bookmarkMenuActions["prevBM"]);
     editorMenu->addAction(bookmarkMenuActions["clearAllBM"]);
     editorMenu->addSeparator();
-    QMenu *foldMenu = editorMenu->addMenu(tr("folding"));
-    editorMenuActions["foldUnfoldToplevel"] = foldMenu->addAction(tr("fold/unfold &toplevel"), this, SLOT(menuFoldUnfoldToplevel()));
-    editorMenuActions["foldUnfoldAll"] = foldMenu->addAction(tr("fold/unfold &all"), this, SLOT(menuFoldUnfoldAll()));
-    editorMenuActions["unfoldAll"] = foldMenu->addAction(tr("&unfold all"), this, SLOT(menuUnfoldAll()));
+    QMenu *foldMenu = editorMenu->addMenu(tr("Folding"));
+    editorMenuActions["foldUnfoldToplevel"] = foldMenu->addAction(tr("Fold/Unfold &Toplevel"), this, SLOT(menuFoldUnfoldToplevel()));
+    editorMenuActions["foldUnfoldAll"] = foldMenu->addAction(tr("Fold/Unfold &All"), this, SLOT(menuFoldUnfoldAll()));
+    editorMenuActions["unfoldAll"] = foldMenu->addAction(tr("&Unfold All"), this, SLOT(menuUnfoldAll()));
     editorMenu->addSeparator();
-    editorMenuActions["insertCodec"] = editorMenu->addAction(tr("&insert codec..."), this, SLOT(menuInsertCodec()));
+    editorMenuActions["insertCodec"] = editorMenu->addAction(tr("&Insert Codec..."), this, SLOT(menuInsertCodec()));
 
     //this->addAction(editorMenuActions["save"]);
 
@@ -515,11 +515,11 @@ RetVal ScriptEditorWidget::preShowContextMenuMargin()
 
             if (markersAtLine(contextMenuLine) & ((1 << markBreakPoint) | (1 << markCBreakPoint)))
             {
-                breakpointMenuActions["toggleBPEnabled"]->setText(tr("&disable breakpoint"));
+                breakpointMenuActions["toggleBPEnabled"]->setText(tr("&Disable Breakpoint"));
             }
             else
             {
-                breakpointMenuActions["toggleBPEnabled"]->setText(tr("&enable breakpoint"));
+                breakpointMenuActions["toggleBPEnabled"]->setText(tr("&Enable Breakpoint"));
             }
         }
         else
@@ -1015,7 +1015,7 @@ void ScriptEditorWidget::menuInsertCodec()
     QStringList items;
     bool ok;
     items << "ascii (English, us-ascii)" << "latin1 (West Europe, iso-8859-1)" << "iso-8859-15 (Western Europe)" << "utf8 (all languages)";
-    QString codec = QInputDialog::getItem(this, tr("insert codec"), tr("Choose an encoding of the file which is added to the first line of the script"), items, 2, false, &ok);
+    QString codec = QInputDialog::getItem(this, tr("Insert Codec"), tr("Choose an encoding of the file which is added to the first line of the script"), items, 2, false, &ok);
 
     if (codec != "" && ok)
     {
@@ -1053,7 +1053,7 @@ RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument
     {
         if (isModified())
         {
-            int ret = QMessageBox::information(this, tr("unsaved changes"), tr("there are unsaved changes in the current document. Do you want to save it first?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
+            int ret = QMessageBox::information(this, tr("Unsaved Changes"), tr("There are unsaved changes in the current document. Do you want to save it first?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
 
             if (ret & QMessageBox::Cancel)
             {
@@ -1070,7 +1070,7 @@ RetVal ScriptEditorWidget::openFile(QString fileName, bool ignorePresentDocument
     QFile file(fileName);
     if (! file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        QMessageBox::warning(this, tr("error while opening file"), tr("file %1 could not be loaded").arg(fileName));
+        QMessageBox::warning(this, tr("Error while opening file"), tr("File %1 could not be loaded").arg(fileName));
     }
     else
     {
@@ -1137,7 +1137,7 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
 
     if (askFirst)
     {
-        int ret = QMessageBox::information(this, tr("unsaved changes"), tr("there are unsaved changes in the document '%1'. Do you want to save it first?").arg(getFilename()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
+        int ret = QMessageBox::information(this, tr("Unsaved Changes"), tr("There are unsaved changes in the document '%1'. Do you want to save it first?").arg(getFilename()), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
         if (ret & QMessageBox::Cancel)
         {
             return RetVal(retError);
@@ -1153,7 +1153,7 @@ RetVal ScriptEditorWidget::saveFile(bool askFirst)
     QFile file(getFilename());
     if (! file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        QMessageBox::warning(this, tr("error while accessing file"), tr("file %1 could not be accessed").arg(getFilename()));
+        QMessageBox::warning(this, tr("Error while accessing file"), tr("File %1 could not be accessed").arg(getFilename()));
         return RetVal(retError);
     }
 
@@ -1185,7 +1185,7 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
 {
     if (askFirst)
     {
-        int ret = QMessageBox::information(this, tr("unsaved changes"), tr("there are unsaved changes in the current document. Do you want to save it first?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
+        int ret = QMessageBox::information(this, tr("Unsaved Changes"), tr("There are unsaved changes in the current document. Do you want to save it first?"), QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel, QMessageBox::Yes);
         if (ret & QMessageBox::Cancel)
         {
             return RetVal(retError);
@@ -1202,7 +1202,7 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
     //we need to block the signals from the file system watcher, since a crash will occur if this file is renamed 
     //during the save as process (the 'remove file due to rename' dialog will appear during the save-as dialog if the signal is not blocked)
     m_pFileSysWatcher->blockSignals(true); 
-    QString tempFileName = QFileDialog::getSaveFileName(this, tr("save as..."), defaultPath, "Python (*.py)");
+    QString tempFileName = QFileDialog::getSaveFileName(this, tr("Save As..."), defaultPath, "Python (*.py)");
     m_pFileSysWatcher->blockSignals(false);
     if (!tempFileName.isEmpty())
     {
@@ -1216,7 +1216,7 @@ RetVal ScriptEditorWidget::saveAsFile(bool askFirst)
 
     if (! file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        QMessageBox::warning(this, tr("error while accessing file"), tr("file %1 could not be accessed").arg(getFilename()));
+        QMessageBox::warning(this, tr("Error while accessing file"), tr("File %1 could not be accessed").arg(getFilename()));
         return RetVal(retError);
     }
 
@@ -1964,7 +1964,7 @@ void ScriptEditorWidget::print()
         }
         else
         {
-            printer.setDocName(tr("unnamed"));
+            printer.setDocName(tr("Unnamed"));
         }
 
         printer.setPageMargins(20,15,20,15,QPrinter::Millimeter);

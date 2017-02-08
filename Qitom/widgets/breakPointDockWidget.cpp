@@ -90,7 +90,7 @@ void BreakPointDockWidget::createToolBars()
     spacerLayout->setStretch(0, 2);
     spacerWidget->setLayout(spacerLayout);
 
-    m_pMainToolbar = new QToolBar(tr("breakpoints"), this);
+    m_pMainToolbar = new QToolBar(tr("Breakpoints"), this);
     m_pMainToolbar->setObjectName("toolbarBreakpoints");
     m_pMainToolbar->setContextMenuPolicy(Qt::PreventContextMenu);
     m_pMainToolbar->setFloatable(false);
@@ -108,15 +108,15 @@ void BreakPointDockWidget::createToolBars()
 //----------------------------------------------------------------------------------------------------------------------------------
 void BreakPointDockWidget::createActions()
 {
-    m_pActDelBP         = new ShortcutAction(QIcon(":/breakpoints/icons/garbageBP.png"), tr("delete Breakpoint"), this);
+    m_pActDelBP         = new ShortcutAction(QIcon(":/breakpoints/icons/garbageBP.png"), tr("Delete Breakpoint"), this);
     m_pActDelBP->connectTrigger(this, SLOT(mnuDeleteBP()));
-    m_pActDelAllBPs     = new ShortcutAction(QIcon(":/breakpoints/icons/garbageAllBPs.png"), tr("delete all Breakpoints"), this);
+    m_pActDelAllBPs     = new ShortcutAction(QIcon(":/breakpoints/icons/garbageAllBPs.png"), tr("Delete All Breakpoints"), this);
     m_pActDelAllBPs->connectTrigger(this, SLOT(mnuDeleteAllBPs()));
-    m_pActEditBP        = new ShortcutAction(QIcon(":/breakpoints/icons/itomcBreak.png"), tr("edit Breakpoints"), this);
+    m_pActEditBP        = new ShortcutAction(QIcon(":/breakpoints/icons/itomcBreak.png"), tr("Edit Breakpoints"), this);
     m_pActEditBP->connectTrigger(this, SLOT(mnuEditBreakpoint()));
-    m_pActToggleBP      = new ShortcutAction(QIcon(":/breakpoints/icons/itomBreakDisable.png"), tr("En- or disable Breakpoint"), this);
+    m_pActToggleBP      = new ShortcutAction(QIcon(":/breakpoints/icons/itomBreakDisable.png"), tr("En- Or Disable Breakpoint"), this);
     m_pActToggleBP->connectTrigger(this, SLOT(mnuEnOrDisAbleBrakpoint()));
-    m_pActToggleAllBPs  = new ShortcutAction(QIcon(":/breakpoints/icons/itomBreakDisabledAll.png"), tr("En- or disable all Breakpoints"), this);
+    m_pActToggleAllBPs  = new ShortcutAction(QIcon(":/breakpoints/icons/itomBreakDisabledAll.png"), tr("En- Or Disable All Breakpoints"), this);
     m_pActToggleAllBPs->connectTrigger(this, SLOT(mnuEnOrDisAbleAllBrakpoints()));
 }
 

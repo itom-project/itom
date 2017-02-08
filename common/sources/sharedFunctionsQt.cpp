@@ -264,7 +264,7 @@ namespace ito
                 //    .arg(errorColumn)
                 //    .arg(errorStr));
                 QString errStr;
-                errStr.sprintf("parse error at line %d, column %d error: %s", errorLine, errorColumn, errorStr.toLatin1().data());
+                errStr.sprintf("Parse error at line %d, column %d error: %s", errorLine, errorColumn, errorStr.toLatin1().data());
                 return ito::RetVal(ito::retWarning, 0, QObject::tr(errorStr.toLatin1().data()).toLatin1().data());
         }
 
@@ -941,7 +941,7 @@ namespace ito
             type = "tRGBA32";
             break;
         default:
-            return RetVal(retError, 0, QObject::tr("Save object failed: type not supported").toLatin1().data());
+            return RetVal(retError, 0, QObject::tr("Save object failed: Type not supported").toLatin1().data());
         }
 
         // First add informations of the dataObject to element DataObject like FormatVersion of this file...
@@ -1235,12 +1235,12 @@ namespace ito
 
         if (!dObjOut)
         {
-            return RetVal(retError, 0, QObject::tr("Save object failed: invalid object handle").toLatin1().data());
+            return RetVal(retError, 0, QObject::tr("Save object failed: Invalid object handle").toLatin1().data());
         }
 
         if ((dObjOut->getDims() == 0) || (dObjOut->getTotal() == 0))
         {
-            return RetVal(retError, 0, QObject::tr("Save object failed: object seems empty").toLatin1().data());
+            return RetVal(retError, 0, QObject::tr("Save object failed: Object seems empty").toLatin1().data());
         }
 
         /*ret += dObjOut->evaluateTransposeFlag();
@@ -1275,7 +1275,7 @@ namespace ito
 
         if (!checkFile.isWritable() && checkFile.exists())
         {
-            return RetVal(retError, 0, QObject::tr("Save object failed: file not writeable").toLatin1().data());
+            return RetVal(retError, 0, QObject::tr("Save object failed: File not writeable").toLatin1().data());
         }
 
         paramFile.open(QIODevice::WriteOnly);
@@ -2016,7 +2016,7 @@ namespace ito
 
         if (!dObjIn)
         {
-            return RetVal(retError, 0, QObject::tr("Load object failed: invalid object handle").toLatin1().data());
+            return RetVal(retError, 0, QObject::tr("Load object failed: Invalid object handle").toLatin1().data());
         }
 
         // First start with the properties of the file, check if it ist readable ...

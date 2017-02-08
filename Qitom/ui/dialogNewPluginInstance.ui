@@ -128,7 +128,7 @@
             <x>0</x>
             <y>0</y>
             <width>328</width>
-            <height>111</height>
+            <height>105</height>
            </rect>
           </property>
          </widget>
@@ -169,8 +169,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>98</width>
-            <height>28</height>
+            <width>96</width>
+            <height>26</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -237,10 +237,10 @@
          <bool>false</bool>
         </property>
         <property name="toolTip">
-         <string>variable name in global workspace</string>
+         <string>Variable name in global workspace</string>
         </property>
         <property name="text">
-         <string>variable name:</string>
+         <string>Variable name:</string>
         </property>
         <property name="buddy">
          <cstring>txtPythonVariable</cstring>

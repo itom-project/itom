@@ -17,7 +17,7 @@
    <item>
     <widget class="QGroupBox" name="groupAutoCompletion">
      <property name="title">
-      <string>auto-completion enabled</string>
+      <string>Auto-completion enabled</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
@@ -28,7 +28,7 @@
         <item>
          <widget class="QLabel" name="label">
           <property name="text">
-           <string>threshold</string>
+           <string>Threshold</string>
           </property>
          </widget>
         </item>
@@ -71,14 +71,14 @@
       <item>
        <widget class="QCheckBox" name="checkReplaceWord">
         <property name="text">
-         <string>replace word right of the cursor if entry from list is selected</string>
+         <string>Replace word right of the cursor if entry from list is selected</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QCheckBox" name="checkShowSingle">
         <property name="text">
-         <string>show single</string>
+         <string>Show single</string>
         </property>
        </widget>
       </item>

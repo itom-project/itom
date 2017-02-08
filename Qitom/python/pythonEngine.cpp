@@ -472,8 +472,8 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             if (_import_array() < 0)
             {
                 PyErr_PrintEx(0);
-                PyErr_SetString(PyExc_ImportError, tr("numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.").toLatin1().data());
-                (*retValue) += RetVal(retError, 0, tr("numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.\n").toLatin1().data());
+                PyErr_SetString(PyExc_ImportError, tr("Numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.").toLatin1().data());
+                (*retValue) += RetVal(retError, 0, tr("Numpy.core.multiarray failed to import. Please verify that you have numpy 1.6 or higher installed.\n").toLatin1().data());
                 return;
             }
 
@@ -486,16 +486,16 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 
             // ck moved this here from below import numpy to print out early errors like missing numpy
             if  ((tretVal = runString("import sys")) != ito::retOk)
-                (*retValue) += ito::RetVal(ito::retError, 0, tr("error importing sys in start python engine\n").toLatin1().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("Error importing sys in start python engine\n").toLatin1().data());
             if ((tretVal = runString("import itom")) != ito::retOk)
-                (*retValue) += ito::RetVal(ito::retError, 0, tr("error importing itom in start python engine\n").toLatin1().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("Error importing itom in start python engine\n").toLatin1().data());
             //the streams __stdout__ and __stderr__, pointing to the original streams at startup are None, but need to have a valid value for instance when using pip.
             if ((tretVal = runString("sys.stdout = sys.__stdout__ = itom.pythonStream(1)")) != ito::retOk)
-                (*retValue) += ito::RetVal(ito::retError, 0, tr("error redirecting stdout in start python engine\n").toLatin1().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("Error redirecting stdout in start python engine\n").toLatin1().data());
             if ((tretVal = runString("sys.stderr = sys.__stderr__ = itom.pythonStream(2)")) != ito::retOk)
-                (*retValue) += ito::RetVal(ito::retError, 0, tr("error redirecting stderr in start python engine\n").toLatin1().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("Error redirecting stderr in start python engine\n").toLatin1().data());
             if ((tretVal = runString("sys.stdin = sys.__stdin__ = itom.pythonStream(3)")) != ito::retOk)
-                (*retValue) += ito::RetVal(ito::retError, 0, tr("error redirecting stdin in start python engine\n").toLatin1().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("Error redirecting stdin in start python engine\n").toLatin1().data());
 
 
             static wchar_t *wargv = L"";
@@ -739,7 +739,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             itomFunctions = PyImport_ImportModule("itoFunctions"); // new reference
             if (itomFunctions == NULL)
             {
-                (*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoFunctions could not be loaded. Make sure that the script itoFunctions.py is available in the itom root directory.").toLatin1().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("The module itoFunctions could not be loaded. Make sure that the script itoFunctions.py is available in the itom root directory.").toLatin1().data());
                 std::cerr << "the module itoFunctions could not be loaded." << std::endl;
                 PyErr_PrintEx(0);
                 PyErr_Clear();
@@ -749,7 +749,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             itomDbgModule = PyImport_ImportModule("itoDebugger"); // new reference
             if (itomDbgModule == NULL)
             {
-                (*retValue) += ito::RetVal(ito::retError, 0, tr("the module itoDebugger could not be loaded. Make sure that the script itoDebugger.py is available in the itom root directory.").toLatin1().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("The module itoDebugger could not be loaded. Make sure that the script itoDebugger.py is available in the itom root directory.").toLatin1().data());
                 std::cerr << "the module itoDebugger could not be loaded." <<std::endl;
                 PyErr_PrintEx(0);
             }
@@ -760,7 +760,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 itomDbgDict = NULL;
                 if (itomDbgClass == NULL)
                 {
-                    (*retValue) += ito::RetVal(ito::retError, 0, tr("the class itoDebugger in the module itoDebugger could not be loaded.").toLatin1().data());
+                    (*retValue) += ito::RetVal(ito::retError, 0, tr("The class itoDebugger in the module itoDebugger could not be loaded.").toLatin1().data());
                     PyErr_PrintEx(0);
                     //printPythonError(PySys_GetObject("stderr"));
                 }
@@ -774,7 +774,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
             m_autoReload.modAutoReload = PyImport_ImportModule("autoreload");
             if (m_autoReload.modAutoReload == NULL)
             {
-                (*retValue) += ito::RetVal(ito::retError, 0, tr("the module 'autoreload' could not be loaded. Make sure that the script autoreload.py is available in the itom-packages directory.").toLatin1().data());
+                (*retValue) += ito::RetVal(ito::retError, 0, tr("The module 'autoreload' could not be loaded. Make sure that the script autoreload.py is available in the itom-packages directory.").toLatin1().data());
                 std::cerr << "the module 'autoreload' could not be loaded." <<std::endl;
                 PyErr_PrintEx(0);
             }
@@ -829,7 +829,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
         }
         else
         {
-            (*retValue) += ito::RetVal(ito::retError, 2, tr("deadlock in python setup.").toLatin1().data());
+            (*retValue) += ito::RetVal(ito::retError, 2, tr("Deadlock in python setup.").toLatin1().data());
         }
     }
 
@@ -1144,7 +1144,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
     }
     else
     {
-		retval += ito::RetVal(ito::retWarning, 0, "default text codec could not be obtained. Latin1 is used");
+		retval += ito::RetVal(ito::retWarning, 0, "Default text codec could not be obtained. Latin1 is used");
         encodingType = PythonQtConversion::latin_1;
         encodingName = "latin_1";
     }
@@ -1325,7 +1325,7 @@ ito::RetVal PythonEngine::runString(const QString &command)
     if (mainDict == NULL)
     {
         std::cerr << "main dictionary is empty. python probably not started" << std::endl;
-        retValue += RetVal(retError, 1, tr("main dictionary is empty").toLatin1().data());
+        retValue += RetVal(retError, 1, tr("Main dictionary is empty").toLatin1().data());
     }
     else if (PyErr_Occurred() == PyExc_SyntaxError)
     {
@@ -1378,7 +1378,7 @@ ito::RetVal PythonEngine::runString(const QString &command)
             else
             {
                 PyErr_PrintEx(0);
-                retValue += RetVal(retError, 2, tr("error while evaluating python string.").toLatin1().data());
+                retValue += RetVal(retError, 2, tr("Error while evaluating python string.").toLatin1().data());
             }
             PyErr_Clear();
         }
@@ -1428,7 +1428,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
         QFile data(pythonFileName);
         if (data.exists() == false)
         {
-            retValue += RetVal(retError, 0, tr("file does not exist").toLatin1().data());
+            retValue += RetVal(retError, 0, tr("File does not exist").toLatin1().data());
         }
         else
         {
@@ -1508,7 +1508,7 @@ ito::RetVal PythonEngine::runPyFile(const QString &pythonFileName)
             }
             else
             {
-                retValue += RetVal(retError, 0, tr("file could not be opened in readonly-mode").toLatin1().data());
+                retValue += RetVal(retError, 0, tr("File could not be opened in readonly-mode").toLatin1().data());
             }
         }
     }
@@ -4180,7 +4180,7 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
 
     if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        retVal += RetVal(retError, 0, tr("it is not allowed to save a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
+        retVal += RetVal(retError, 0, tr("It is not allowed to save a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
@@ -4204,7 +4204,7 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
 
         if (dict == NULL)
         {
-            retVal += RetVal(retError, 0, tr("variables can not be saved since dictionary is not available").toLatin1().data());
+            retVal += RetVal(retError, 0, tr("Variables can not be saved since dictionary is not available").toLatin1().data());
         }
         else
         {
@@ -4288,7 +4288,7 @@ ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer
 
     if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        retVal += ito::RetVal(retError, 0, tr("it is not allowed to pickle a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
+        retVal += ito::RetVal(retError, 0, tr("It is not allowed to pickle a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
@@ -4322,7 +4322,7 @@ ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer
                 }
                 else
                 {
-                    retVal += ito::RetVal(retError, 0, tr("could not save dataObject since it is not available.").toLatin1().data());
+                    retVal += ito::RetVal(retError, 0, tr("Could not save dataObject since it is not available.").toLatin1().data());
                 }
             }
             break;
@@ -4355,18 +4355,18 @@ ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer
                 }
                 else
                 {
-                    retVal += ito::RetVal(retError, 0, tr("could not save dataObject since it is not available.").toLatin1().data());
+                    retVal += ito::RetVal(retError, 0, tr("Could not save dataObject since it is not available.").toLatin1().data());
                 }
             }
             break;
 #endif
             default:
-                retVal += ito::RetVal(retError, 0, tr("unsupported data type to save to matlab.").toLatin1().data());
+                retVal += ito::RetVal(retError, 0, tr("Unsupported data type to save to matlab.").toLatin1().data());
             }
 
             if (item == NULL)
             {
-                retVal += ito::RetVal(retError, 0, tr("error converting object to Python object. Save to matlab not possible.").toLatin1().data());
+                retVal += ito::RetVal(retError, 0, tr("Error converting object to Python object. Save to matlab not possible.").toLatin1().data());
             }
         }
 
@@ -4420,7 +4420,7 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
 
     if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        retVal += RetVal(retError, 0, tr("it is not allowed to load matlab variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
+        retVal += RetVal(retError, 0, tr("It is not allowed to load matlab variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
@@ -4444,7 +4444,7 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
 
         if (destinationDict == NULL)
         {
-            retVal += RetVal(retError, 0, tr("variables can not be load since dictionary is not available").toLatin1().data());
+            retVal += RetVal(retError, 0, tr("Variables can not be load since dictionary is not available").toLatin1().data());
         }
         else
         {
@@ -4561,7 +4561,7 @@ ito::RetVal PythonEngine::checkVarnamesInWorkspace(bool globalNotLocal, const QS
 
         if (destinationDict == NULL)
         {
-            retVal += ito::RetVal(ito::retError, 0, tr("values cannot be saved since workspace dictionary not available.").toLatin1().data());
+            retVal += ito::RetVal(ito::retError, 0, tr("Values cannot be saved since workspace dictionary not available.").toLatin1().data());
         }
         else
         {
@@ -4664,7 +4664,7 @@ ito::RetVal PythonEngine::getVarnamesListInWorkspace(bool globalNotLocal, const 
 
         if (destinationDict == NULL)
         {
-            retVal += ito::RetVal(ito::retError, 0, tr("values cannot be saved since workspace dictionary not available.").toLatin1().data());
+            retVal += ito::RetVal(ito::retError, 0, tr("Values cannot be saved since workspace dictionary not available.").toLatin1().data());
         }
         else
         {
@@ -4760,7 +4760,7 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
 
         if (destinationDict == NULL)
         {
-            retVal += ito::RetVal(ito::retError, 0, tr("values cannot be saved since workspace dictionary not available.").toLatin1().data());
+            retVal += ito::RetVal(ito::retError, 0, tr("Values cannot be saved since workspace dictionary not available.").toLatin1().data());
         }
         else
         {
@@ -4807,7 +4807,7 @@ ito::RetVal PythonEngine::putParamsToWorkspace(bool globalNotLocal, const QStrin
                     value = PythonParamConversion::ParamBaseToPyObject(*(values[i]));
                     if (value == NULL)
                     {
-                        retVal += ito::RetVal::format(ito::retError, 0, tr("error while transforming value '%s' to PyObject*.").toLatin1().data(), names[i].toLatin1().data());
+                        retVal += ito::RetVal::format(ito::retError, 0, tr("Error while transforming value '%s' to PyObject*.").toLatin1().data(), names[i].toLatin1().data());
                     }
                     else
                     {
@@ -4878,7 +4878,7 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
     }
     else if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        retVal += ito::RetVal(ito::retError, 0, tr("it is not allowed to load variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
+        retVal += ito::RetVal(ito::retError, 0, tr("It is not allowed to load variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
@@ -4893,7 +4893,7 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
 
         if ((globalNotLocal && getGlobalDictionary() == NULL) || (!globalNotLocal && getLocalDictionary() == NULL))
         {
-            retVal += ito::RetVal(ito::retError, 0, tr("values cannot be obtained since workspace dictionary not available.").toLatin1().data());
+            retVal += ito::RetVal(ito::retError, 0, tr("Values cannot be obtained since workspace dictionary not available.").toLatin1().data());
         }
         else
         {
@@ -4905,7 +4905,7 @@ ito::RetVal PythonEngine::getParamsFromWorkspace(bool globalNotLocal, const QStr
                 value = getPyObjectByFullName(globalNotLocal, names[i], &validVariableName); //new reference
                 if (value == NULL)
                 {
-                    retVal += ito::RetVal(ito::retError, 0, tr("item '%1' does not exist in workspace.").arg(names[i]).toLatin1().data());
+                    retVal += ito::RetVal(ito::retError, 0, tr("Item '%1' does not exist in workspace.").arg(names[i]).toLatin1().data());
                     break;
                 }
                 else
@@ -5012,7 +5012,7 @@ ito::RetVal PythonEngine::registerAddInInstance(QString varname, ito::AddInBase 
             {
                 if (PyDict_GetItem(dict, pyVarname) != NULL)
                 {
-                    QString ErrStr = tr("variable name '%1' already exists in dictionary").arg(varname);
+                    QString ErrStr = tr("Variable name '%1' already exists in dictionary").arg(varname);
                     retVal += RetVal(retError, 0, ErrStr.toLatin1().data());
                 }
                 else
@@ -5110,13 +5110,13 @@ PyObject* PythonEngine::getAndCheckIdentifier(const QString &identifier, ito::Re
         {
             Py_DECREF(obj);
             obj = NULL;
-            retval += ito::RetVal::format(ito::retError, 0, "string '%s' is no valid python identifier", ba.data());
+            retval += ito::RetVal::format(ito::retError, 0, "String '%s' is no valid python identifier", ba.data());
         }
     }
     else
     {
         PyErr_Clear();
-        retval += ito::RetVal::format(ito::retError, 0, "string '%s' cannot be interpreted as unicode", ba.data());
+        retval += ito::RetVal::format(ito::retError, 0, "String '%s' cannot be interpreted as unicode", ba.data());
     }
 
     return obj;
@@ -5132,7 +5132,7 @@ ito::RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QS
 
     if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        retValue += RetVal(retError, 0, tr("it is not allowed to get modules if python is currently executed").toLatin1().data());
+        retValue += RetVal(retError, 0, tr("It is not allowed to get modules if python is currently executed").toLatin1().data());
     }
     else
     {
@@ -5148,7 +5148,7 @@ ito::RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QS
         //code
         if (itomFunctions == NULL)
         {
-            retValue += RetVal(retError, 0, tr("the script itomFunctions.py is not available").toLatin1().data());
+            retValue += RetVal(retError, 0, tr("The script itomFunctions.py is not available").toLatin1().data());
         }
         else
         {
@@ -5158,7 +5158,7 @@ ito::RetVal PythonEngine::getSysModules(QSharedPointer<QStringList> modNames, QS
 
             if (!result)
             {
-                retValue += RetVal(retError, 0, tr("error while loading the modules").toLatin1().data());
+                retValue += RetVal(retError, 0, tr("Error while loading the modules").toLatin1().data());
                 PyErr_PrintEx(0);
             }
             else
@@ -5207,7 +5207,7 @@ ito::RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames,
 
     if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        retValue += RetVal(retError, 0, tr("it is not allowed to get modules if python is currently executed").toLatin1().data());
+        retValue += RetVal(retError, 0, tr("It is not allowed to get modules if python is currently executed").toLatin1().data());
     }
     else
     {
@@ -5223,7 +5223,7 @@ ito::RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames,
         //code
         if (itomFunctions == NULL)
         {
-            retValue += RetVal(retError, 0, tr("the script itomFunctions.py is not available").toLatin1().data());
+            retValue += RetVal(retError, 0, tr("The script itomFunctions.py is not available").toLatin1().data());
         }
         else
         {
@@ -5236,7 +5236,7 @@ ito::RetVal PythonEngine::reloadSysModules(QSharedPointer<QStringList> modNames,
 
             if (!result)
             {
-                retValue += RetVal(retError, 0, tr("error while reloading the modules").toLatin1().data());
+                retValue += RetVal(retError, 0, tr("Error while reloading the modules").toLatin1().data());
                 PyErr_PrintEx(0);
             }
             else
@@ -5281,7 +5281,7 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
 
     if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        retVal += ito::RetVal(retError, 0, tr("it is not allowed to pickle a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
+        retVal += ito::RetVal(retError, 0, tr("It is not allowed to pickle a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
@@ -5307,7 +5307,7 @@ ito::RetVal PythonEngine::pickleVariables(bool globalNotLocal, QString filename,
 
         if (dict == NULL)
         {
-            retVal += ito::RetVal(retError, 0, tr("variables can not be pickled since dictionary is not available").toLatin1().data());
+            retVal += ito::RetVal(retError, 0, tr("Variables can not be pickled since dictionary is not available").toLatin1().data());
         }
         else
         {
@@ -5380,7 +5380,7 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
 
     if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        retVal += ito::RetVal(retError, 0, tr("it is not allowed to pickle a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
+        retVal += ito::RetVal(retError, 0, tr("It is not allowed to pickle a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
@@ -5397,7 +5397,7 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
 
         if (value.isNull())
         {
-            retVal += ito::RetVal(retError, 0, tr("could not pickle since value is empty.").toLatin1().data());
+            retVal += ito::RetVal(retError, 0, tr("Could not pickle since value is empty.").toLatin1().data());
         }
         else
         {
@@ -5414,7 +5414,7 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
                 }
                 else
                 {
-                    retVal += ito::RetVal(retError, 0, tr("could not pickle dataObject since it is not available.").toLatin1().data());
+                    retVal += ito::RetVal(retError, 0, tr("Could not pickle dataObject since it is not available.").toLatin1().data());
                 }
             }
             break;
@@ -5430,7 +5430,7 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
                 }
                 else
                 {
-                    retVal += ito::RetVal(retError, 0, tr("could not pickle dataObject since it is not available.").toLatin1().data());
+                    retVal += ito::RetVal(retError, 0, tr("Could not pickle dataObject since it is not available.").toLatin1().data());
                 }
             }
             break;
@@ -5446,18 +5446,18 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
                 }
                 else
                 {
-                    retVal += ito::RetVal(retError, 0, tr("could not pickle dataObject since it is not available.").toLatin1().data());
+                    retVal += ito::RetVal(retError, 0, tr("Could not pickle dataObject since it is not available.").toLatin1().data());
                 }
             }
             break;
 #endif
             default:
-                retVal += ito::RetVal(retError, 0, tr("unsupported data type to pickle.").toLatin1().data());
+                retVal += ito::RetVal(retError, 0, tr("Unsupported data type to pickle.").toLatin1().data());
             }
 
             if (item == NULL)
             {
-                retVal += ito::RetVal(retError, 0, tr("error converting object to Python object. No pickle possible.").toLatin1().data());
+                retVal += ito::RetVal(retError, 0, tr("Error converting object to Python object. No pickle possible.").toLatin1().data());
             }
         }
 
@@ -5514,7 +5514,7 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
 
     if (mainModule == NULL)
     {
-        return RetVal(retError, 0, tr("mainModule is empty or cannot be accessed").toLatin1().data());
+        return RetVal(retError, 0, tr("MainModule is empty or cannot be accessed").toLatin1().data());
     }
 
     PyObject* pickleModule = PyImport_AddModule("pickle"); // borrowed reference
@@ -5619,7 +5619,7 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
 
     if (pythonState == pyStateRunning || pythonState == pyStateDebugging || pythonState == pyStateDebuggingWaitingButBusy)
     {
-        retVal += RetVal(retError, 0, tr("it is not allowed to unpickle a data collection in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
+        retVal += RetVal(retError, 0, tr("It is not allowed to unpickle a data collection in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy").toLatin1().data());
     }
     else
     {
@@ -5643,7 +5643,7 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
 
         if (destinationDict == NULL)
         {
-            retVal += RetVal(retError, 0, tr("variables can not be unpickled since dictionary is not available").toLatin1().data());
+            retVal += RetVal(retError, 0, tr("Variables can not be unpickled since dictionary is not available").toLatin1().data());
         }
         else
         {
@@ -5722,7 +5722,7 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
 
     if (mainModule == NULL)
     {
-        return RetVal(retError, 0, tr("mainModule is empty or cannot be accessed").toLatin1().data());
+        return RetVal(retError, 0, tr("MainModule is empty or cannot be accessed").toLatin1().data());
     }
 
     PyObject* pickleModule = PyImport_AddModule("pickle"); // borrowed reference
@@ -5796,7 +5796,7 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
         }
         else if (!PyDict_Check(unpickledItem))
         {
-            retval += RetVal(retError, 0, tr("unpickling error. This file contains no dictionary as base element.").toLatin1().data());
+            retval += RetVal(retError, 0, tr("Unpickling error. This file contains no dictionary as base element.").toLatin1().data());
         }
         else
         {
