@@ -596,7 +596,7 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
     PyObject *resulttemp = NULL;
     PyObject *item = NULL;
 
-    ito::AddInManager *AIM = AddInManagerInst;
+    ito::AddInManager *AIM = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     if (!AIM)
     {
         PyErr_SetString(PyExc_RuntimeError, "No addin-manager found");
@@ -1088,7 +1088,7 @@ PyObject* PythonItom::PyPluginLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
         return NULL;
     }
 
-    ito::AddInManager *AIM = AddInManagerInst;
+    ito::AddInManager *AIM = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     if (!AIM)
     {
         PyErr_SetString(PyExc_RuntimeError, "No addin-manager found");
@@ -1651,7 +1651,7 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
     PyObject *item = NULL;    
 
 
-    ito::AddInManager *AIM = AddInManagerInst;
+    ito::AddInManager *AIM = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     if (!AIM)
     {
         PyErr_SetString(PyExc_RuntimeError, "No addin-manager found");
@@ -2043,13 +2043,13 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
     {
         PyObject* myTempDic = PyDict_New();
         char buf[7] = {0};
-        ito::AddInManager *aim = AddInManagerInst;
+        ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
         ito::AddInInterfaceBase  *curAddInInterface = NULL;
         if (aim != NULL)
         {
             PyObject* info = NULL;
             PyObject* license = NULL;
-            for (int i = 0; i < aim->getNumTotItems(); i++)
+            for (int i = 0; i < aim->getTotalNumAddIns(); i++)
             {
                 curAddInInterface = reinterpret_cast<ito::AddInInterfaceBase*>(aim->getAddInPtr(i));
                 if (curAddInInterface)
@@ -3368,7 +3368,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
         return NULL;
     }
 
-    ito::AddInManager *aim = AddInManagerInst;
+    ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
     QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->constFind(key);
     if (cfit == flist->constEnd())

@@ -20,16 +20,11 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-//#include "../python/pythonEngine.h"
 #include "addInManager.h"
 #include "paramHelper.h"
 #include "apiFunctions.h"
-//#include "../Qitom/AppManagement.h"
-//#include "../organizer/paletteOrganizer.h"
 #include "../common/sharedFunctionsQt.h"
 #include "../common/abstractAddInConfigDialog.h"
-//#include "../Qitom/organizer/uiOrganizer.h"
-//#include "../helper/qpropertyHelper.h"
 #include <qdir.h>
 
 static ito::ApiFunctions singleApiFunctions; //singleton instance, forces the construction where the ITOM_API_FUNCS_ARR pointer is propagated to ITOM_API_FUNCS
@@ -260,7 +255,7 @@ ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
         return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toLatin1().data());
     }
 
-    ito::AddInManager *aim = AddInManagerInst;
+    ito::AddInManager *aim = AddInManager::instance();
     const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
     QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
     if (cfit == flist->end())
@@ -283,7 +278,7 @@ ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
         return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toLatin1().data());
     }
 
-    ito::AddInManager *aim = AddInManagerInst;
+    ito::AddInManager *aim = AddInManager::instance();
     const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
     QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
     if (cfit == flist->end())
@@ -309,7 +304,7 @@ ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
         return ito::RetVal(ito::retError, 0, QObject::tr("Vectors paramsMand, paramsOpt and paramsOut must not be NULL").toLatin1().data());
     }
 
-    ito::AddInManager *aim = AddInManagerInst;
+    ito::AddInManager *aim = AddInManager::instance();
     const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
     QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
     if (cfit == flist->end())
@@ -357,7 +352,7 @@ ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
         return ito::RetVal(ito::retError, 0, QObject::tr("Vectors paramsMand, paramsOpt and paramsOut must not be NULL").toLatin1().data());
     }
 
-    ito::AddInManager *aim = AddInManagerInst;
+    ito::AddInManager *aim = AddInManager::instance();
     const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
     QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
     if (cfit == flist->end())
@@ -389,7 +384,7 @@ ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
         return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toLatin1().data());
     }
 
-    ito::AddInManager *aim = AddInManagerInst;
+    ito::AddInManager *aim = AddInManager::instance();
     const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
     QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
     if (cfit == flist->end())
@@ -412,7 +407,7 @@ ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
         return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toLatin1().data());
     }
 
-    ito::AddInManager *aim = AddInManagerInst;
+    ito::AddInManager *aim = AddInManager::instance();
     const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
     QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
     if (cfit == flist->end())
@@ -435,7 +430,7 @@ ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
         return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toLatin1().data());
     }
 
-    ito::AddInManager *aim = AddInManagerInst;
+    ito::AddInManager *aim = AddInManager::instance();
     const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
     QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
     if (cfit == flist->end())
@@ -454,7 +449,7 @@ ito::RetVal ApiFunctions::maddInGetInitParams(const QString &name, const int plu
 {
     *pluginNum = -1;
 
-    ito::AddInManager *AIM = AddInManagerInst;
+    ito::AddInManager *AIM = AddInManager::instance();
     if (!AIM)
     {
         return ito::RetVal(ito::retError, 0, QObject::tr("Fatal error! Could not get addInManager instance!").toLatin1().data());
@@ -473,7 +468,7 @@ ito::RetVal ApiFunctions::maddInOpenActuator(const QString &name, const int plug
 {
     ito::RetVal retval(ito::retOk);
 
-    ito::AddInManager *AIM = AddInManagerInst;
+    ito::AddInManager *AIM = AddInManager::instance();
     if (!AIM)
     {
         return ito::RetVal(ito::retError, 0, QObject::tr("Fatal error! Could not get addInManager instance!").toLatin1().data());
@@ -494,7 +489,7 @@ ito::RetVal ApiFunctions::maddInOpenDataIO(const QString &name, const int plugin
 {
     ito::RetVal retval(ito::retOk);
 
-    ito::AddInManager *AIM = AddInManagerInst;
+    ito::AddInManager *AIM = AddInManager::instance();
     if (!AIM)
     {
         return ito::RetVal(ito::retError, 0, QObject::tr("Fatal error! Could not get addInManager instance!").toLatin1().data());
@@ -515,7 +510,7 @@ ito::RetVal ApiFunctions::maddInClose(ito::AddInBase *instance)
 {
     ito::RetVal retval(ito::retOk);
 
-    ito::AddInManager *AIM = AddInManagerInst;
+    ito::AddInManager *AIM = AddInManager::instance();
     if (!AIM)
     {
         return ito::RetVal(ito::retError, 0, QObject::tr("Fatal error! Could not get addInManager instance!").toLatin1().data());

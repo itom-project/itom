@@ -23,6 +23,8 @@
 #include "dialogPluginPicker.h"
 
 #include "dialogNewPluginInstance.h"
+#include "../AppManagement.h"
+#include "../AddInManager/pluginModel.h"
 #include <qmessagebox.h>
 
 namespace ito {
@@ -34,7 +36,7 @@ DialogPluginPicker::DialogPluginPicker(bool allowNewInstances, ito::AddInBase *c
 {
     ui.setupUi(this);
 
-    ito::AddInManager *aim = AddInManagerInst;
+    ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
 
     m_pFilterModel = new PickerSortFilterProxyModel(this);
     m_pFilterModel->setSourceModel(aim->getPluginModel());
@@ -77,8 +79,8 @@ void DialogPluginPicker::itemClicked(const QModelIndex &index)
     {
         QModelIndex indexMap = m_pFilterModel->mapToSource(index);
 
-        ito::AddInManager *aim = AddInManagerInst;
-        ito::PlugInModel *model = aim->getPluginModel();
+        ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
+        const ito::PlugInModel *model = aim->getPluginModel();
 
         int itemType = model->data(indexMap, Qt::UserRole + 3).toInt();
         if (itemType == ito::PlugInModel::itemInstance)
@@ -133,8 +135,8 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
     QModelIndex index = ui.treeView->currentIndex();
     index = m_pFilterModel->mapToSource(index);
 
-    ito::AddInManager *aim = AddInManagerInst;
-    ito::PlugInModel *model = aim->getPluginModel();
+    ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
+    const ito::PlugInModel *model = aim->getPluginModel();
 
     if (index.isValid())
     {
