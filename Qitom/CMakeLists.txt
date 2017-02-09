@@ -29,11 +29,8 @@ IF(${BUILD_WITH_HELPVIEWER})
     #at first, get the available Qt version
     FIND_PACKAGE_QT(ON Core)
 
-    IF(NOT ${Qt5_FOUND})
+    IF((NOT ${Qt5_FOUND}) OR (Qt5_VERSION VERSION_LESS 5.6.0))
         message(WARNING "BUILD_WITH_HELPVIEWER is set to FALSE, since it is only possible for Qt >= 5.6.0")
-        SET(BUILD_WITH_HELPVIEWER FALSE)
-	ELSEIF(${Qt5_VERSION} VERSION_LESS 5.6.0)
-		message(WARNING "BUILD_WITH_HELPVIEWER is set to FALSE, since it is only possible for Qt >= 5.6.0")
         SET(BUILD_WITH_HELPVIEWER FALSE)
     ENDIF()
 ENDIF()
