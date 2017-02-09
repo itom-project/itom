@@ -14,7 +14,7 @@ TEST(AddInManagerTest, General)
     //AddInManager::closeInstance();
 
     ito::AddInManager* aim = new ito::AddInManager("", NULL, NULL, NULL); // &a);
-    EXPECT_NE(aim, NULL);
+    EXPECT_FALSE(aim == NULL);
     aim->closeInstance();
 }
 
