@@ -1217,7 +1217,7 @@ void ScriptDockWidget::updateTabContextActions()
 //! creates actions
 void ScriptDockWidget::createActions()
 {
-    m_tabMoveLeftAction = new ShortcutAction(QIcon(":/arrows/icons/1leftarrow.png"), tr("Move Feft"), this);
+    m_tabMoveLeftAction = new ShortcutAction(QIcon(":/arrows/icons/1leftarrow.png"), tr("Move Left"), this);
     m_tabMoveLeftAction->connectTrigger(this, SLOT(mnuTabMoveLeft()));
 
     m_tabMoveRightAction = new ShortcutAction(QIcon(":/arrows/icons/1rightarrow.png"), tr("Move Right"), this);
