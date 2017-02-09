@@ -11,6 +11,8 @@ TEST(AddInManagerTest, General)
 
     ito::AddInManager* aim = new ito::AddInManager("", NULL, NULL, NULL); // &a);
     EXPECT_FALSE(aim == NULL);
+
+    std::cout << aim->getNumTotItems() << "\n" << std::endl;
     aim->closeInstance();
 }
 
