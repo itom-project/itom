@@ -8331,7 +8331,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     <message>
         <location line="+1"/>
         <source>Background color of words equal to the currently selected string</source>
-        <translation> Hintergrundfarbe aller Wörter, die identisch zu dem aktuell ausgewählten Wort sind
+        <translation>Hintergrundfarbe aller Wörter, die identisch zu dem aktuell ausgewählten Wort sind
 </translation>
     </message>
     <message>
@@ -8347,7 +8347,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Farbe: %1, Hintergrundfarbe: %2;</translation>
     </message>
     <message>
-        <location line="+226"/>
+        <location line="+227"/>
         <source>Import style file</source>
         <translation>Style importieren</translation>
     </message>
