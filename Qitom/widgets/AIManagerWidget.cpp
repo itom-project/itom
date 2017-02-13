@@ -92,7 +92,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, const QString &objName, Q
     connect(m_pActCloseInstance, SIGNAL(triggered()), this, SLOT(mnuCloseInstance()));
     m_pContextMenu->addAction(m_pActCloseInstance);
 
-    m_pActCloseAllInstances = new QAction(QIcon(":/plugins/icons/closeAll.png"), tr("Close all"), this);
+    m_pActCloseAllInstances = new QAction(QIcon(":/plugins/icons/closeAll.png"), tr("Close All"), this);
     connect(m_pActCloseAllInstances, SIGNAL(triggered()), this, SLOT(mnuCloseAllInstances()));
     m_pContextMenu->addAction(m_pActCloseAllInstances);
 
@@ -121,7 +121,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, const QString &objName, Q
     connect(m_pActInfo, SIGNAL(triggered()), this, SLOT(mnuShowInfo()));
     m_pContextMenu->addAction(m_pActInfo);
 
-    m_pActSendToPython = new QAction(QIcon(":/plugins/icons/sendToPython.png"), tr("Send to Python..."), this);
+    m_pActSendToPython = new QAction(QIcon(":/plugins/icons/sendToPython.png"), tr("Send To Python..."), this);
     connect(m_pActSendToPython, SIGNAL(triggered()), this, SLOT(mnuSendToPython()));
     m_pContextMenu->addAction(m_pActSendToPython);
 
@@ -263,7 +263,7 @@ void AIManagerWidget::createActions()
 //----------------------------------------------------------------------------------------------------------------------------------
 void AIManagerWidget::createMenus()
 {
-    m_pAIManagerViewSettingMenu = new QMenu(tr("settings"), this);
+    m_pAIManagerViewSettingMenu = new QMenu(tr("Settings"), this);
     m_pAIManagerViewSettingMenu->setIcon(QIcon(":/application/icons/adBlockAction.png"));
     m_pAIManagerViewSettingMenu->addAction(m_pViewList->action());
     m_pAIManagerViewSettingMenu->addAction(m_pViewDetails->action());
@@ -454,11 +454,11 @@ void AIManagerWidget::CloseInstance(const QModelIndex index)
     {
         if (ais->createdByGUI() == 0)
         {
-            QMessageBox::warning(this, tr("closing not possible"), tr("The instance '%1' cannot be closed by GUI since it has been created by Python").arg(index.model()->data(index).toString()));
+            QMessageBox::warning(this, tr("Closing not possible"), tr("The instance '%1' cannot be closed by GUI since it has been created by Python").arg(index.model()->data(index).toString()));
         }
         else if (ais->getRefCount() > 1)
         {
-            QMessageBox::warning(this, tr("closing not possible"), tr("The instance '%1' can temporarily not be closed since it is still in use by another element.").arg(index.model()->data(index).toString()));
+            QMessageBox::warning(this, tr("Closing not possible"), tr("The instance '%1' can temporarily not be closed since it is still in use by another element.").arg(index.model()->data(index).toString()));
         }
         else
         {
@@ -476,12 +476,12 @@ void AIManagerWidget::CloseInstance(const QModelIndex index)
 
             if (retValue.containsWarning())
             {
-                QString message = tr("warning while closing instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
+                QString message = tr("Warning while closing instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                 QMessageBox::warning(this, tr("Warning while closing instance"), message);
             }
             else if (retValue.containsError())
             {
-                QString message = tr("error while closing instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
+                QString message = tr("Error while closing instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                 QMessageBox::critical(this, tr("Error while closing instance"), message);
             }
         }
@@ -578,7 +578,7 @@ void AIManagerWidget::mnuCreateNewInstance()
 
             if (retValue.containsError())
             {
-                QString message = tr("error while creating new instance. \nMessage: %1").arg(QLatin1String(retValue.errorMessage()));
+                QString message = tr("Error while creating new instance. \nMessage: %1").arg(QLatin1String(retValue.errorMessage()));
                 QMessageBox::critical(this, tr("Error while creating new instance"), message);
                 return;
             }
@@ -612,12 +612,12 @@ void AIManagerWidget::mnuCreateNewInstance()
 
             if (retValue.containsWarning())
             {
-                QString message = tr("warning while creating new instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
+                QString message = tr("Warning while creating new instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                 QMessageBox::warning(this, tr("Warning while creating new instance"), message);
             }
             else if (retValue.containsError())
             {
-                QString message = tr("error while creating new instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
+                QString message = tr("Error while creating new instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                 QMessageBox::critical(this, tr("Error while creating new instance"), message);
             }
 
@@ -643,12 +643,12 @@ void AIManagerWidget::mnuCreateNewInstance()
 
                         if (retValue.containsWarning())
                         {
-                            QString message = tr("warning while sending instance to python. Message: %1").arg(QLatin1String(retValue.errorMessage()));
+                            QString message = tr("Warning while sending instance to python. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                             QMessageBox::warning(this, tr("Warning while sending instance to python"), message);
                         }
                         else if (retValue.containsError())
                         {
-                            QString message = tr("error while sending instance to python. Message: %1").arg(QLatin1String(retValue.errorMessage()));
+                            QString message = tr("Error while sending instance to python. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                             QMessageBox::critical(this, tr("Error while sending instance to python"), message);
                         }
                     }
@@ -740,12 +740,12 @@ void AIManagerWidget::mnuSendToPython()
 
                     if (retValue.containsWarning())
                     {
-                        QString message = tr("warning while sending instance to python. Message: %1").arg(QLatin1String(retValue.errorMessage()));
+                        QString message = tr("Warning while sending instance to python. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                         QMessageBox::warning(this, tr("Warning while sending instance to python"), message);
                     }
                     else if (retValue.containsError())
                     {
-                        QString message = tr("error while sending instance to python. Message: %1").arg(QLatin1String(retValue.errorMessage()));
+                        QString message = tr("Error while sending instance to python. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                         QMessageBox::critical(this, tr("Error while sending instance to python"), message);
                     }
                 }
@@ -879,7 +879,7 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("could not find instance of UiOrganizer").toLatin1().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Could not find instance of UiOrganizer").toLatin1().data());
         }
     }
      

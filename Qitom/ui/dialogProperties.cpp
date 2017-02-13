@@ -151,32 +151,32 @@ void DialogProperties::initPages()
     //-----------------------------------------------------------------------------------------------------
 
 
-    m_pages["04_editor"] = PropertyPage(tr("Editor"), tr("Editor - please choose subpage"), "04_editor", NULL, QIcon(":/application/icons/preferences-general.png"));
+    m_pages["04_editor"] = PropertyPage(tr("Editor"), tr("Editor - Please Choose Subpage"), "04_editor", NULL, QIcon(":/application/icons/preferences-general.png"));
     m_pages["04_editor/01general"] = PropertyPage(tr("General"), tr("Editor - General"), "04_editor/01general", new WidgetPropEditorGeneral(), QIcon(":/application/icons/preferences-general.png"));
-    m_pages["04_editor/02scripts"] = PropertyPage(tr("Script Editors"), tr("Editor - scripts"), "04_editor/02scripts", new WidgetPropEditorScripts(), QIcon(":/application/icons/preferences-general.png"));
-    m_pages["04_editor/03api"] = PropertyPage(tr("API"), tr("Editor - API files"), "04_editor/03api", new WidgetPropEditorAPI(), QIcon(":/application/icons/preferences-general.png"));
-    m_pages["04_editor/04calltips"] = PropertyPage(tr("Calltips"), tr("Editor - calltips"), "04_editor/04calltips", new WidgetPropEditorCalltips(), QIcon(":/application/icons/preferences-general.png"));
-    m_pages["04_editor/05autocompletion"] = PropertyPage(tr("Auto Completion"), tr("Editor - auto completion"), "04_editor/05autocompletion", new WidgetPropEditorAutoCompletion(), QIcon(":/application/icons/preferences-general.png"));
-    m_pages["04_editor/06styles"] = PropertyPage(tr("Styles"), tr("Editor - styles"), "04_editor/06styles", new WidgetPropEditorStyles(), QIcon(":/application/icons/preferences-general.png"));
-    m_pages["01_console"] = PropertyPage(tr("Console"), tr("Console - please choose subpage"), "01_console", NULL, QIcon(":/application/icons/editSmartIndent.png"));
+    m_pages["04_editor/02scripts"] = PropertyPage(tr("Script Editors"), tr("Editor - Scripts"), "04_editor/02scripts", new WidgetPropEditorScripts(), QIcon(":/application/icons/preferences-general.png"));
+    m_pages["04_editor/03api"] = PropertyPage(tr("API"), tr("Editor - API Files"), "04_editor/03api", new WidgetPropEditorAPI(), QIcon(":/application/icons/preferences-general.png"));
+    m_pages["04_editor/04calltips"] = PropertyPage(tr("Calltips"), tr("Editor - Calltips"), "04_editor/04calltips", new WidgetPropEditorCalltips(), QIcon(":/application/icons/preferences-general.png"));
+    m_pages["04_editor/05autocompletion"] = PropertyPage(tr("Auto Completion"), tr("Editor - Auto Completion"), "04_editor/05autocompletion", new WidgetPropEditorAutoCompletion(), QIcon(":/application/icons/preferences-general.png"));
+    m_pages["04_editor/06styles"] = PropertyPage(tr("Styles"), tr("Editor - Styles"), "04_editor/06styles", new WidgetPropEditorStyles(), QIcon(":/application/icons/preferences-general.png"));
+    m_pages["01_console"] = PropertyPage(tr("Console"), tr("Console - Please Choose Subpage"), "01_console", NULL, QIcon(":/application/icons/editSmartIndent.png"));
     m_pages["01_console/01general"] = PropertyPage(tr("General"), tr("Console - General"), "01_console/01general", new WidgetPropConsoleGeneral(), QIcon(":/application/icons/editSmartIndent.png"));
     m_pages["01_console/02lineWrap"] = PropertyPage(tr("Line Wrap"), tr("Console - Line Wrap"), "01_console/02lineWrap", new WidgetPropConsoleWrap(), QIcon(":/application/icons/editSmartIndent.png"));
     m_pages["01_console/03commandHistory"] = PropertyPage(tr("Command History"), tr("Console - Command History"), "01_console/03commandHistory", new WidgetPropConsoleLastCommand(), QIcon(":/application/icons/editSmartIndent.png"));
-    m_pages["03_python"] = PropertyPage(tr("Python"), tr("Python - please choose subpage"), "03_python", NULL, QIcon(":/application/icons/preferences-python.png"));
-    m_pages["03_python/01general"] = PropertyPage(tr("General"), tr("Python - general"), "03_python/01general", new WidgetPropPythonGeneral(), QIcon(":/application/icons/preferences-python.png"));
-    m_pages["03_python/02startup"] = PropertyPage(tr("Startup"), tr("Python - startups"), "03_python/02startup", new WidgetPropPythonStartup(), QIcon(":/application/icons/preferences-python.png"));
-    m_pages["00_general"] = PropertyPage(tr("General"), tr("General - please choose subpage"), "00_general", NULL, QIcon(":/application/icons/itomicon/itomIcon32"));
-    m_pages["00_general/01application"] = PropertyPage(tr("Application"), tr("General - application"), "00_general/01application", new WidgetPropGeneralApplication(), QIcon(":/application/icons/itomicon/itomIcon32"));
-    m_pages["00_general/02language"] = PropertyPage(tr("Language"), tr("General - language"), "00_general/02language", new WidgetPropGeneralLanguage(), QIcon(":/application/icons/itomicon/itomIcon32"));
+    m_pages["03_python"] = PropertyPage(tr("Python"), tr("Python - Please Choose Subpage"), "03_python", NULL, QIcon(":/application/icons/preferences-python.png"));
+    m_pages["03_python/01general"] = PropertyPage(tr("General"), tr("Python - General"), "03_python/01general", new WidgetPropPythonGeneral(), QIcon(":/application/icons/preferences-python.png"));
+    m_pages["03_python/02startup"] = PropertyPage(tr("Startup"), tr("Python - Startups"), "03_python/02startup", new WidgetPropPythonStartup(), QIcon(":/application/icons/preferences-python.png"));
+    m_pages["00_general"] = PropertyPage(tr("General"), tr("General - Please Choose Subpage"), "00_general", NULL, QIcon(":/application/icons/itomicon/itomIcon32"));
+    m_pages["00_general/01application"] = PropertyPage(tr("Application"), tr("General - Application"), "00_general/01application", new WidgetPropGeneralApplication(), QIcon(":/application/icons/itomicon/itomIcon32"));
+    m_pages["00_general/02language"] = PropertyPage(tr("Language"), tr("General - Language"), "00_general/02language", new WidgetPropGeneralLanguage(), QIcon(":/application/icons/itomicon/itomIcon32"));
     m_pages["00_general/03helpViewer"]  = PropertyPage(tr("Help Viewer"), tr("General - Help Viewer"), "00_general/03helpViewer" , new WidgetPropHelpDock(), QIcon(":/application/icons/itomicon/itomIcon32"));
-    m_pages["00_general/04styles"] = PropertyPage(tr("Styles and Themes"), tr("General - Styles and Themes"), "00_general/04styles", new WidgetPropGeneralStyles(), QIcon(":/application/icons/color-icon.png"));
-    m_pages["05_workspace"] = PropertyPage(tr("Workspace"), tr("Workspace - please choose subpage"), "05_workspace", NULL, QIcon(":/workspace/icons/import-prop-icon.png"));
+    m_pages["00_general/04styles"] = PropertyPage(tr("Styles and Themes"), tr("General - Styles And Themes"), "00_general/04styles", new WidgetPropGeneralStyles(), QIcon(":/application/icons/color-icon.png"));
+    m_pages["05_workspace"] = PropertyPage(tr("Workspace"), tr("Workspace - Please Choose Subpage"), "05_workspace", NULL, QIcon(":/workspace/icons/import-prop-icon.png"));
     m_pages["05_workspace/01unpack"] = PropertyPage(tr("Import to workspace"), tr("Workspace - Import"), "05_workspace/01unpack", new WidgetPropWorkspaceUnpack(), QIcon(":/workspace/icons/import-prop-icon.png"));
-    m_pages["06_plugins"] = PropertyPage(tr("Plugins"), tr("Plugins - please choose subpage"), "06_plugins", NULL, QIcon(":/plugins/icons/plugin.png"));
-    m_pages["06_plugins/02algorithms"] = PropertyPage(tr("Algorithms and Filters"), tr("Plugins - Algorithms and filters"), "06_plugins/02algorithms", new WidgetPropPluginsAlgorithms(), QIcon(":/plugins/icons/pluginAlgo.png"));
-    m_pages["07_plots"] = PropertyPage(tr("Plots and Figures"), tr("Plots and Figures - please choose subpage"), "07_plots", NULL, QIcon(":/plots/icons/itom_icons/3d.png"));
-    m_pages["07_plots/01defaults"] = PropertyPage(tr("Default Plots"), tr("Plots and Figures - Defaults"), "07_plots/01defaults", new WidgetPropFigurePlugins(), QIcon(":/plots/icons/itom_icons/2d.png"));
-    m_pages["07_plots/02defaultSettings"] = PropertyPage(tr("Default Style Settings"), tr("Plots and Figures - Default style settings"), "07_plots/02defaultSettings", new WidgetPropGeneralPlotSettings(), QIcon(":/plots/icons/itom_icons/2d.png"));
+    m_pages["06_plugins"] = PropertyPage(tr("Plugins"), tr("Plugins - Please Choose Subpage"), "06_plugins", NULL, QIcon(":/plugins/icons/plugin.png"));
+    m_pages["06_plugins/02algorithms"] = PropertyPage(tr("Algorithms And Filters"), tr("Plugins - Algorithms And Filters"), "06_plugins/02algorithms", new WidgetPropPluginsAlgorithms(), QIcon(":/plugins/icons/pluginAlgo.png"));
+    m_pages["07_plots"] = PropertyPage(tr("Plots And Figures"), tr("Plots And Figures - Please Choose Subpage"), "07_plots", NULL, QIcon(":/plots/icons/itom_icons/3d.png"));
+    m_pages["07_plots/01defaults"] = PropertyPage(tr("Default Plots"), tr("Plots And Figures - Defaults"), "07_plots/01defaults", new WidgetPropFigurePlugins(), QIcon(":/plots/icons/itom_icons/2d.png"));
+    m_pages["07_plots/02defaultSettings"] = PropertyPage(tr("Default Style Settings"), tr("Plots And Figures - Default Style Settings"), "07_plots/02defaultSettings", new WidgetPropGeneralPlotSettings(), QIcon(":/plots/icons/itom_icons/2d.png"));
 
 	PropertyPage page;
     QStringList pathes;

@@ -25,17 +25,17 @@
     <widget class="QComboBox" name="comboSaveScriptBeforeExecution">
      <item>
       <property name="text">
-       <string>always ask to save scripts before execution</string>
+       <string>Always ask to save scripts before execution</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>automatically save all unsaved scripts before execution</string>
+       <string>Automatically save all unsaved scripts before execution</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>do not save any unsaved scripts (last saved version is executed then)</string>
+       <string>Do not save any unsaved scripts (last saved version is executed then)</string>
       </property>
      </item>
     </widget>

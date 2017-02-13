@@ -8,6 +8,10 @@ IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
         cmake_policy(SET CMP0042 OLD)
     ENDIF(POLICY CMP0042)
 ENDIF()
+
+if (POLICY CMP0028)
+    cmake_policy(SET CMP0028 NEW) #raise an CMake error if an imported target, containing ::, could not be found
+ENDIF (POLICY CMP0028)
       
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF) 
 OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
@@ -41,7 +45,7 @@ ENDIF(BUILD_ITOMLIBS_SHARED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-FIND_PACKAGE_QT(ON Core Xml PrintSupport Svg Designer LinguistTools)
+FIND_PACKAGE_QT(ON Core PrintSupport Designer Xml Svg Widgets UiTools LinguistTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
 
 IF(BUILD_WITH_PCL)
@@ -117,15 +121,11 @@ file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
 
 add_library(${target_name} ${LIBRARY_TYPE} ${itomCommonPlot_SOURCES} ${itomCommonPlot_HEADERS} ${itomCommonPlot_HEADERS_MOC} ${EXISTING_TRANSLATION_FILES})
 
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} dataobject itomCommonLib itomShapeLib qpropertyeditor itomCommonQtLib)
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${OpenCV_LIBS} ${POINTCLOUD_LIBRARIES} ${QT5_LIBRARIES} dataobject itomCommonLib itomShapeLib qpropertyeditor itomCommonQtLib)
 
-IF (QT5_FOUND)
-    IF(CMAKE_VERSION VERSION_GREATER 3.0.0)
-        #https://bugreports.qt.io/browse/QTBUG-39457
-        cmake_policy(SET CMP0043 OLD)
-    ENDIF()
+IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
     qt5_use_modules(${target_name} ${QT_COMPONENTS})
-ENDIF (QT5_FOUND)
+ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
 
 #translation
 set (FILES_TO_TRANSLATE ${itomCommonPlot_SOURCES} ${itomCommonPlot_HEADERS})

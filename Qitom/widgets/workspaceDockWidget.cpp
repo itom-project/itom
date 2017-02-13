@@ -141,26 +141,26 @@ WorkspaceDockWidget::~WorkspaceDockWidget()
 */
 void WorkspaceDockWidget::createActions()
 {
-    m_actDelete = new ShortcutAction(QIcon(":/workspace/icons/document-close-4.png"), tr("delete selected item(s)"), this, QKeySequence::Delete, Qt::WidgetWithChildrenShortcut);
+    m_actDelete = new ShortcutAction(QIcon(":/workspace/icons/document-close-4.png"), tr("Delete Selected Item(s)"), this, QKeySequence::Delete, Qt::WidgetWithChildrenShortcut);
     m_actDelete->connectTrigger(this, SLOT(mnuDeleteItem()));
-    m_actExport = new ShortcutAction(QIcon(":/workspace/icons/document-export.png"), tr("export selected item(s)"), this, QKeySequence::Save, Qt::WidgetWithChildrenShortcut);
+    m_actExport = new ShortcutAction(QIcon(":/workspace/icons/document-export.png"), tr("Export Selected Item(s)"), this, QKeySequence::Save, Qt::WidgetWithChildrenShortcut);
     m_actExport->connectTrigger(this, SLOT(mnuExportItem()));
-    m_actImport = new ShortcutAction(QIcon(":/workspace/icons/document-import.png"), tr("import item(s)"), this);
+    m_actImport = new ShortcutAction(QIcon(":/workspace/icons/document-import.png"), tr("Import Item(s)"), this);
     m_actImport->connectTrigger(this, SLOT(mnuImportItem()));
-    m_actRename = new ShortcutAction(QIcon(":/workspace/icons/edit-rename.png"), tr("rename selected item"), this, QKeySequence(tr("F2")), Qt::WidgetWithChildrenShortcut);
+    m_actRename = new ShortcutAction(QIcon(":/workspace/icons/edit-rename.png"), tr("Rename Selected Item"), this, QKeySequence(tr("F2")), Qt::WidgetWithChildrenShortcut);
     m_actRename->connectTrigger(this, SLOT(mnuRenameItem()));
 
-    m_dObjPlot1d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/1d.png"), tr("1D line plot"), this);
+    m_dObjPlot1d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/1d.png"), tr("1D Line Plot"), this);
     m_dObjPlot1d->connectTrigger(this, SLOT(mnuPlot1D()));
-    m_dObjPlot2d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/2d.png"), tr("2D image plot"), this);
+    m_dObjPlot2d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/2d.png"), tr("2D Image Plot"), this);
     m_dObjPlot2d->connectTrigger(this, SLOT(mnuPlot2D()));
-    m_dObjPlot25d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/3d.png"), tr("2.5D isometric plot"), this);
+    m_dObjPlot25d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/3d.png"), tr("2.5D Isometric Plot"), this);
     m_dObjPlot25d->connectTrigger(this, SLOT(mnuPlot25D()));
-    m_dObjPlot3d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/3d.png"), tr("3D cloud or mesh visualization"), this);
+    m_dObjPlot3d = new ShortcutAction(QIcon(":/plots/icons/itom_icons/3d.png"), tr("3D Cloud Or Mesh Visualization"), this);
     m_dObjPlot3d->connectTrigger(this, SLOT(mnuPlot25D()));
 
-    m_actUnpack = new QAction(QIcon(":/application/icons/unpack.png"), tr("unpack loaded dictionary"), this);
-    m_actUnpack->setToolTip(tr("unpack loaded dictionary from idc or mat files to workspace"));
+    m_actUnpack = new QAction(QIcon(":/application/icons/unpack.png"), tr("Unpack Loaded Dictionary"), this);
+    m_actUnpack->setToolTip(tr("Unpack loaded dictionary from idc or mat files to workspace"));
     m_actUnpack->setCheckable(true);
     connect(m_actUnpack, SIGNAL(triggered()), this, SLOT(mnuToggleUnpack()));
     checkToggleUnpack();
@@ -419,19 +419,19 @@ void WorkspaceDockWidget::mnuPlotGeneric(const QString &plotClass)
 
     if (eng == NULL)
     {
-        retVal += RetVal(retError, 1, tr("python engine not available").toLatin1().data());
+        retVal += RetVal(retError, 1, tr("Python engine not available").toLatin1().data());
     }
     else if (eng->isPythonBusy() && !eng->isPythonDebuggingAndWaiting())
     {
-        retVal += RetVal(retError, 2, tr("variables cannot be plot since python is busy right now").toLatin1().data());
+        retVal += RetVal(retError, 2, tr("Variables cannot be plot since python is busy right now").toLatin1().data());
     }
     else if (!m_pWorkspaceWidget)
     {
-        retVal += RetVal(retError, 3, tr("workspace not available").toLatin1().data());
+        retVal += RetVal(retError, 3, tr("Workspace not available").toLatin1().data());
     }
     else if (m_pWorkspaceWidget->numberOfSelectedItems() == 0)
     {
-        retVal += RetVal(retError, 5, tr("nothing selected").toLatin1().data());
+        retVal += RetVal(retError, 5, tr("Nothing selected").toLatin1().data());
     }
     else
     {
@@ -502,7 +502,7 @@ void WorkspaceDockWidget::mnuPlotGeneric(const QString &plotClass)
         QMetaObject::invokeMethod(eng, "getParamsFromWorkspace", Q_ARG(bool, m_globalNotLocal), Q_ARG(QStringList, keyListFinal), Q_ARG(QVector<int>, compatibleParamBaseTypesFinal), Q_ARG(QSharedPointer<SharedParamBasePointerVector>, values), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         if (!locker.getSemaphore()->wait(5000))
         {
-            retVal += RetVal(retError, 0, tr("timeout while getting value from workspace").toLatin1().data());
+            retVal += RetVal(retError, 0, tr("Timeout while getting value from workspace").toLatin1().data());
         }
         else
         {
@@ -511,7 +511,7 @@ void WorkspaceDockWidget::mnuPlotGeneric(const QString &plotClass)
 
         if (values->size() != keyListFinal.size())
         {
-            retVal += RetVal(retError, 0, tr("the number of values returned from workspace does not correspond to requested number").toLatin1().data());
+            retVal += RetVal(retError, 0, tr("The number of values returned from workspace does not correspond to requested number").toLatin1().data());
         }
 
         if (!retVal.containsError())
@@ -755,7 +755,7 @@ void WorkspaceDockWidget::treeWidgetItemChanged(QTreeWidgetItem * item, int /*co
             }
             else
             {
-                emit setStatusInformation(tr("timeout while renaming variables"), PLUGINWAIT);
+                emit setStatusInformation(tr("Timeout while renaming variables"), PLUGINWAIT);
             }
             QApplication::restoreOverrideCursor();
         }

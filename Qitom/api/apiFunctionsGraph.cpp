@@ -100,7 +100,7 @@ ito::RetVal apiFunctionsGraph::mgetColorBarName(const QString &name, ito::ItomPa
     }
     else
     {
-        return ito::RetVal::format(ito::retError, 0, QObject::tr("color map '%s' not found").toLatin1().data(), name.toLatin1().data());
+        return ito::RetVal::format(ito::retError, 0, QObject::tr("Color map '%s' not found").toLatin1().data(), name.toLatin1().data());
     }
 }
 
@@ -133,7 +133,7 @@ ito::RetVal apiFunctionsGraph::mgetColorBarIdxFromName(const QString &name, ito:
     }
     else
     {
-        return ito::RetVal::format(ito::retError, 0, QObject::tr("color map '%s' not found").toLatin1().data(), name.toLatin1().data());
+        return ito::RetVal::format(ito::retError, 0, QObject::tr("Color map '%s' not found").toLatin1().data(), name.toLatin1().data());
     }
 }
 
@@ -200,7 +200,7 @@ ito::RetVal apiFunctionsGraph::mgetFigure(const QString &figCategoryName, const 
         }
         else if(!dwOrg)
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("designerWidgetOrganizer is not available").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("DesignerWidgetOrganizer is not available").toLatin1().data());
         }
     }
     else
@@ -278,7 +278,7 @@ ito::RetVal apiFunctionsGraph::mstopLiveData(QObject *liveDataSource, QObject *l
 
     if(!locker.getSemaphore()->wait(10000))
     {
-        retValue += RetVal(retError, 1001, QObject::tr("timeout while unregistering live image from camera.").toLatin1().data());
+        retValue += RetVal(retError, 1001, QObject::tr("Timeout while unregistering live image from camera.").toLatin1().data());
     }
     else
     {
@@ -304,12 +304,12 @@ ito::RetVal apiFunctionsGraph::mconnectLiveData(QObject *liveDataSource, QObject
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("liveDataSource is no instance of ito::AddInDataIO").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("LiveDataSource is no instance of ito::AddInDataIO").toLatin1().data());
         }
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, QObject::tr("liveDataSource or liveDataView are NULL").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("LiveDataSource or liveDataView are NULL").toLatin1().data());
     }
 
     return retval;
@@ -329,12 +329,12 @@ ito::RetVal apiFunctionsGraph::mdisconnectLiveData(QObject *liveDataSource, QObj
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("liveDataSource is no instance of ito::AddInDataIO").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("LiveDataSource is no instance of ito::AddInDataIO").toLatin1().data());
         }
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, QObject::tr("liveDataSource or liveDataView are NULL").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("LiveDataSource or liveDataView are NULL").toLatin1().data());
     }
 
     return retval;
@@ -347,12 +347,12 @@ QVariant apiFunctionsGraph::mgetFigureSetting(const QObject *figureClass, const 
 {
     if(!figureClass)
     {
-        if (retval) (*retval) += ito::RetVal(ito::retError, 0, QObject::tr("figureClass is NULL. No settings could be retrieved").toLatin1().data());
+        if (retval) (*retval) += ito::RetVal(ito::retError, 0, QObject::tr("FigureClass is NULL. No settings could be retrieved").toLatin1().data());
         return defaultValue;
     }
     else if(figureClass->inherits("ito::AbstractFigure") == false)
     {
-        if (retval) (*retval) += ito::RetVal(ito::retError, 0, QObject::tr("figureClass is not inherited from AbstractFigure. No settings could be retrieved").toLatin1().data());
+        if (retval) (*retval) += ito::RetVal(ito::retError, 0, QObject::tr("FigureClass is not inherited from AbstractFigure. No settings could be retrieved").toLatin1().data());
         return defaultValue;
     }
 
@@ -423,7 +423,7 @@ ito::RetVal apiFunctionsGraph::mgetPluginWidget(char* algoWidgetFunc, QVector<it
 
         if(!locker.getSemaphore()->wait(-1))
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while loading plugin widget").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("Timeout while loading plugin widget").toLatin1().data());
             return retval;
         }
 
@@ -434,13 +434,13 @@ ito::RetVal apiFunctionsGraph::mgetPluginWidget(char* algoWidgetFunc, QVector<it
         QMetaObject::invokeMethod(uiOrg, "getUiDialogByHandle", Qt::BlockingQueuedConnection, Q_RETURN_ARG(UiContainer*, widgetContainer), Q_ARG(uint, *dialogHandle)); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
         if (!(*widget = widgetContainer->getUiWidget()))
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("error retrieving widget pointer").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("Error retrieving widget pointer").toLatin1().data());
             ItomSharedSemaphoreLocker locker2(new ItomSharedSemaphore());
             QMetaObject::invokeMethod(uiOrg, "deleteDialog", Q_ARG(uint, static_cast<unsigned int>(*dialogHandle)), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
     
             if(!locker2.getSemaphore()->wait(5000))
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("error closing dialog").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("Error closing dialog").toLatin1().data());
             }
             return retval;
         }
@@ -449,7 +449,7 @@ ito::RetVal apiFunctionsGraph::mgetPluginWidget(char* algoWidgetFunc, QVector<it
         QMetaObject::invokeMethod(uiOrg, "showDialog", Q_ARG(uint, *dialogHandle) , Q_ARG(int, 0), Q_ARG(QSharedPointer<int>, modalRet), Q_ARG(ItomSharedSemaphore*, locker3.getSemaphore())); //'unsigned int' leads to overhead and is automatically transformed to uint in invokeMethod command
         if(!locker3.getSemaphore()->wait(-1))
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout showing dialog").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("Timeout showing dialog").toLatin1().data());
             return retval;
         }
     }
@@ -499,7 +499,7 @@ ito::RetVal apiFunctionsGraph::mgetPlotHandleByID(const ito::uint32 &figureUID, 
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("plot widget does not exist.").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("Plot widget does not exist.").toLatin1().data());
         }
     }
     else
@@ -537,7 +537,7 @@ ito::RetVal apiFunctionsGraph::sendParamsToPyWorkspaceThreadSafe(const QStringLi
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("timeout while sending variables to python workspace. Python is maybe busy. Try it later again.").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("Timeout while sending variables to python workspace. Python is maybe busy. Try it later again.").toLatin1().data());
             }
         }
     }

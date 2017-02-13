@@ -33,7 +33,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <QDirIterator>
 #include <qaction.h>
 #include <qsettings.h>
-
+#include <qpointer.h>
 #include <qtimer.h>
 #include <qtranslator.h>
 
@@ -566,12 +566,12 @@ const RetVal AddInManager::scanAddInDir(const QString &path, const int checkQCor
 
     if (pluginsDir.exists() == false)
     {
-        QString dirErr = tr("directory '%1' could not be found").arg(pluginsDir.canonicalPath());
+        QString dirErr = tr("Directory '%1' could not be found").arg(pluginsDir.canonicalPath());
         retValue += RetVal(retError, 0, dirErr.toLatin1().data());
     }
     else if (!pluginsFolderExists)
     {
-        retValue += RetVal(retWarning, 0, tr("plugins folder could not be found").toLatin1().data());
+        retValue += RetVal(retWarning, 0, tr("Plugins folder could not be found").toLatin1().data());
     }
     else
     {
@@ -624,13 +624,13 @@ RetVal AddInManagerPrivate::loadAddIn(ito::AddInManager *parent, QString &filena
 
     if (QLibrary::isLibrary(filename) == false)
     {
-        message = tr("filename is no itom plugin library: %1").arg(filename);
+        message = tr("Filename is no itom plugin library: %1").arg(filename);
         qDebug() << message;
         retValue += RetVal(retError, 1001, message.toLatin1().data());
     }
     else
     {
-        emit parent->splashLoadMessage(tr("scan and load plugins (%1)").arg(finfo.fileName()), Qt::AlignRight | Qt::AlignBottom);
+        emit parent->splashLoadMessage(tr("Scan and load plugins (%1)").arg(finfo.fileName()), Qt::AlignRight | Qt::AlignBottom);
         QCoreApplication::processEvents();
 
         QString language("en");
@@ -883,7 +883,7 @@ RetVal AddInManagerPrivate::loadAddInAlgo(QObject *plugin, ito::PluginLoadStatus
         retValue += initAddIn(m_addInListAlgo.size() - 1, plugin->objectName(), &algoInst, &paramsMand, &paramsOpt, true);
         if (!algoInst)
         {
-            message = tr("error initializing plugin: %1").arg(plugin->objectName());
+            message = tr("Error initializing plugin: %1").arg(plugin->objectName());
             qDebug() << message;
             retValue += RetVal(retError, 1002, message.toLatin1().data());
             pluginLoadStatus.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfError, message));
@@ -1110,7 +1110,7 @@ const RetVal AddInManager::getInitParams(const QString &name, const int pluginTy
     }
     else
     {
-        ret += ito::RetVal(ito::retError, 0, tr("invalid plugin type. Only typeDataIO, typeActuator or typeAlgo are allowed.").toLatin1().data());
+        ret += ito::RetVal(ito::retError, 0, tr("Invalid plugin type. Only typeDataIO, typeActuator or typeAlgo are allowed.").toLatin1().data());
     }
 
     if (*pluginNum < 0)
@@ -1374,7 +1374,7 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
         //ref-count of plugin must be zero (that means one instance is holder a single reference), this is rechecked in the following line
         if (aib->getRef(*addIn) != 0)
         {
-            retval += ito::RetVal(ito::retWarning, 0, tr("reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).").toLatin1().data());
+            retval += ito::RetVal(ito::retWarning, 0, tr("Reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).").toLatin1().data());
         }
 
         if ((*addIn)->getBasePlugin() == NULL || (*addIn)->getBasePlugin()->getType() == 0)
@@ -1402,7 +1402,7 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
         {
             if (!(*addIn)->isAlive())
             {
-                retval += ito::RetVal(ito::retError, 0, tr("timeout while initializing dataIO").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, tr("Timeout while initializing dataIO").toLatin1().data());
                 timeoutOccurred = true;
                 break;
             }
@@ -1543,7 +1543,7 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
         //ref-count of plugin must be zero (that means one instance is holder a single reference), this is rechecked in the following line
         if (aib->getRef(*addIn) != 0)
         {
-            retval += ito::RetVal(ito::retWarning, 0, tr("reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).").toLatin1().data());
+            retval += ito::RetVal(ito::retWarning, 0, tr("Reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).").toLatin1().data());
         }
 
         if ((*addIn)->getBasePlugin() == NULL || (*addIn)->getBasePlugin()->getType() == 0)
@@ -1571,7 +1571,7 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
         {
             if (!(*addIn)->isAlive())
             {
-                retval += ito::RetVal(ito::retError, 0, tr("timeout while initializing actuator").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, tr("Timeout while initializing actuator").toLatin1().data());
                 timeoutOccurred = true;
                 break;
             }
@@ -1705,7 +1705,7 @@ const ito::RetVal AddInManagerPrivate::initAddIn(const int pluginNum, const QStr
         //ref-count of plugin must be zero (that means one instance is holder a single reference), this is rechecked in the following line
         if (aib->getRef(*addIn) != 0)
         {
-            retval += ito::RetVal(ito::retWarning, 0, tr("reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).").toLatin1().data());
+            retval += ito::RetVal(ito::retWarning, 0, tr("Reference counter of plugin has to be initialized with zero. This is not the case for this plugin (Please contact the plugin developer).").toLatin1().data());
         }
 
         (*addIn)->init(paramsMand, paramsOpt);
@@ -1793,13 +1793,13 @@ const ito::RetVal AddInManagerPrivate::closeAddIn(AddInBase *addIn, ItomSharedSe
                 {
                     if (moveToThreadLocker->wait(AddInManagerPrivate::m_pAddInManagerPrivate->m_timeOutInitClose) == false)
                     {
-                        retval += ito::RetVal(ito::retWarning, 0, tr("timeout while pulling plugin back to main thread.").toLatin1().data());
+                        retval += ito::RetVal(ito::retWarning, 0, tr("Timeout while pulling plugin back to main thread.").toLatin1().data());
                     }
                 }
                 else
                 {
                     moveToThreadLocker->deleteSemaphore();
-                    retval += ito::RetVal(ito::retWarning, 0, tr("error invoking method 'moveBackToApplicationThread' of plugin.").toLatin1().data());
+                    retval += ito::RetVal(ito::retWarning, 0, tr("Error invoking method 'moveBackToApplicationThread' of plugin.").toLatin1().data());
                 }
             }
 
@@ -1813,7 +1813,7 @@ const ito::RetVal AddInManagerPrivate::closeAddIn(AddInBase *addIn, ItomSharedSe
             {
                 if (addIn->isAlive() == 0)
                 {
-                    retval += ito::RetVal(ito::retError, 0, tr("timeout while closing plugin").toLatin1().data());
+                    retval += ito::RetVal(ito::retError, 0, tr("Timeout while closing plugin").toLatin1().data());
                     timeout = true;
                     break;
                 }
@@ -1834,13 +1834,13 @@ const ito::RetVal AddInManagerPrivate::closeAddIn(AddInBase *addIn, ItomSharedSe
                     {
                         if (moveToThreadLocker->wait(AddInManagerPrivate::m_pAddInManagerPrivate->m_timeOutInitClose) == false)
                         {
-                            retval += ito::RetVal(ito::retWarning, 0, tr("timeout while pulling plugin back to main thread.").toLatin1().data());
+                            retval += ito::RetVal(ito::retWarning, 0, tr("Timeout while pulling plugin back to main thread.").toLatin1().data());
                         }
                     }
                     else
                     {
                         moveToThreadLocker->deleteSemaphore();
-                        retval += ito::RetVal(ito::retWarning, 0, tr("error invoking method 'moveBackToApplicationThread' of plugin.").toLatin1().data());
+                        retval += ito::RetVal(ito::retWarning, 0, tr("Error invoking method 'moveBackToApplicationThread' of plugin.").toLatin1().data());
                     }
                 }
             }
@@ -2392,7 +2392,7 @@ ito::RetVal AddInManager::showConfigDialog(ito::AddInBase *addin, ItomSharedSema
         }
         else
         {
-            retval += ito::RetVal(ito::retWarning, 0, tr("no configuration dialog available").toLatin1().data());
+            retval += ito::RetVal(ito::retWarning, 0, tr("No configuration dialog available").toLatin1().data());
         }
     }
     else
@@ -2453,12 +2453,12 @@ ito::RetVal AddInManager::showDockWidget(ito::AddInBase *addin, int visible, Ito
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, tr("no toolbox available").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, tr("No toolbox available").toLatin1().data());
             }
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 0, tr("plugin not available").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, tr("Plugin not available").toLatin1().data());
         }
     }
     else
@@ -2672,4 +2672,8 @@ const ito::RetVal AddInManager::setTimeOuts(const int initClose, const int gener
 //----------------------------------------------------------------------------------------------------------------------------------
 } // namespace ito
 
-#include "addInManager.moc"
+#if QT_VERSION >= 0x050000
+    #include "addInManager.moc"
+#else
+    #include "moc_addInManager.cxx"
+#endif

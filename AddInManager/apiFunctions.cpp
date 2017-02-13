@@ -619,7 +619,7 @@ ito::RetVal ApiFunctions::mshowConfigurationDialog(ito::AddInBase *plugin, ito::
     {
         if (!QMetaObject::invokeMethod(plugin, "sendParameterRequest"))
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("error invoking 'sendParameterRequest' of the plugin").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("Error invoking 'sendParameterRequest' of the plugin").toLatin1().data());
         }
         else
         {
@@ -636,7 +636,7 @@ ito::RetVal ApiFunctions::mshowConfigurationDialog(ito::AddInBase *plugin, ito::
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, QObject::tr("the signal/slot 'parametersChanged' could not be connected").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("The signal/slot 'parametersChanged' could not be connected").toLatin1().data());
     }
 
     configDialogInstance->deleteLater();

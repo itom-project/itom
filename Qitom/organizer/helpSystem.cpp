@@ -311,7 +311,7 @@ RetVal HelpSystem::getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, q
         if(!file.open(QIODevice::ReadOnly))
         {
             file.close();
-            return RetVal(retWarning, 0, QObject::tr("file could not be opened.").toLatin1().data());
+            return RetVal(retWarning, 0, QObject::tr("File could not be opened.").toLatin1().data());
         }
 
         QXmlStreamReader stream(&file);
@@ -421,7 +421,7 @@ RetVal HelpSystem::rebuildHelpCollection(QStringList &qchFiles, quint16 checksum
     if(!file.open(QIODevice::WriteOnly))
     {
         file.close();
-        return RetVal(retError, 0, QObject::tr("collection project file could not be opened").toLatin1().data());
+        return RetVal(retError, 0, QObject::tr("Collection project file could not be opened").toLatin1().data());
     }
 
     QXmlStreamWriter stream(&file);
@@ -476,7 +476,7 @@ RetVal HelpSystem::rebuildHelpCollection(QStringList &qchFiles, quint16 checksum
     process.start(app.toLatin1().data() , args);
     if (!process.waitForFinished(30000))
     {
-        return RetVal(retError,0,QObject::tr("error calling qcollectiongenerator").toLatin1().data());
+        return RetVal(retError,0,QObject::tr("Error calling qcollectiongenerator").toLatin1().data());
     }
 
     
@@ -507,7 +507,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
     templateDir = QDir(QCoreApplication::applicationDirPath());
     if (!templateDir.cd("docs/pluginDoc/template"))
     {
-        retval += ito::RetVal(ito::retWarning,0,QObject::tr("templates for plugin documentation not found. Directory 'docs/pluginDoc/template' not available. Plugin documentation will not be built.").toLatin1().data());
+        retval += ito::RetVal(ito::retWarning,0,QObject::tr("Templates for plugin documentation not found. Directory 'docs/pluginDoc/template' not available. Plugin documentation will not be built.").toLatin1().data());
     }
 
     buildDir = QDir(QCoreApplication::applicationDirPath());
@@ -522,7 +522,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
         }
         else
         {
-            retval += ito::RetVal(ito::retWarning,0,QObject::tr("folder 'build' as subfolder of 'docs/pluginDoc' could not be created. Plugin documentation will not be built.").toLatin1().data());
+            retval += ito::RetVal(ito::retWarning,0,QObject::tr("Folder 'build' as subfolder of 'docs/pluginDoc' could not be created. Plugin documentation will not be built.").toLatin1().data());
         }
     }
     else
@@ -532,7 +532,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
         //clear content of build folder
         if (!HelpSystem::removeDir(buildDir))
         {
-            retval += ito::RetVal(ito::retWarning,0,QObject::tr("could not clear folder 'docs/pluginDoc/build'. Plugin documentation will not be built.").toLatin1().data());
+            retval += ito::RetVal(ito::retWarning,0,QObject::tr("Could not clear folder 'docs/pluginDoc/build'. Plugin documentation will not be built.").toLatin1().data());
         }
         
     }
@@ -540,7 +540,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
     pluginDir = QDir(QCoreApplication::applicationDirPath());
     if (!pluginDir.cd("plugins"))
     {
-        retval += ito::RetVal(ito::retWarning,0,QObject::tr("no plugin directory available. No plugin documentation will be built.").toLatin1().data());
+        retval += ito::RetVal(ito::retWarning,0,QObject::tr("No plugin directory available. No plugin documentation will be built.").toLatin1().data());
     }
 
     if (!retval.containsWarningOrError())
@@ -613,7 +613,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
             }
             else
             {
-                retval += ito::RetVal(ito::retWarning,0,QObject::tr("error opening index.html of template folder").toLatin1().data());
+                retval += ito::RetVal(ito::retWarning,0,QObject::tr("Error opening index.html of template folder").toLatin1().data());
             }
 
             //itomPluginDoc.qhp
@@ -625,7 +625,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
             }
             else
             {
-                retval += ito::RetVal(ito::retWarning,0,QObject::tr("error opening itomPluginDoc.qhp of template folder").toLatin1().data());
+                retval += ito::RetVal(ito::retWarning,0,QObject::tr("Error opening itomPluginDoc.qhp of template folder").toLatin1().data());
             }
         }
 
@@ -678,7 +678,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
             }
             else
             {
-                retval += ito::RetVal(ito::retWarning,0,QObject::tr("error writing index.html of template folder").toLatin1().data());
+                retval += ito::RetVal(ito::retWarning,0,QObject::tr("Error writing index.html of template folder").toLatin1().data());
             }
 
             //itomPluginDoc.qhp
@@ -690,7 +690,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
             }
             else
             {
-                retval += ito::RetVal(ito::retWarning,0,QObject::tr("error writing itomPluginDoc.qhp of template folder").toLatin1().data());
+                retval += ito::RetVal(ito::retWarning,0,QObject::tr("Error writing itomPluginDoc.qhp of template folder").toLatin1().data());
             }
         }
 
@@ -699,7 +699,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
             //copy content of _static folder of template folder to build/_static
             if (!copyDir(templateDir.filePath("_static"), buildDir.filePath("_static")))
             {
-                retval += ito::RetVal(ito::retWarning,0,QObject::tr("could not copy folder 'docs/pluginDoc/template/_static' to 'docs/pluginDoc/build/_static'").toLatin1().data());
+                retval += ito::RetVal(ito::retWarning,0,QObject::tr("Could not copy folder 'docs/pluginDoc/template/_static' to 'docs/pluginDoc/build/_static'").toLatin1().data());
             }
         }
 
@@ -715,7 +715,7 @@ RetVal HelpSystem::buildPluginHelp(quint16 checksum)
             process.start(app.toLatin1().data() , args);
             if (!process.waitForFinished(30000))
             {
-                retval += RetVal(retWarning,0,QObject::tr("error calling qhelpgenerator for creating the plugin documentation.").toLatin1().data());
+                retval += RetVal(retWarning,0,QObject::tr("Error calling qhelpgenerator for creating the plugin documentation.").toLatin1().data());
             }
 
         }

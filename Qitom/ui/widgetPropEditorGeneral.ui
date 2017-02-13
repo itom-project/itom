@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>537</width>
-    <height>476</height>
+    <height>488</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -101,7 +101,7 @@
            <item>
             <widget class="QRadioButton" name="radioIndentWarn1">
              <property name="text">
-              <string>no warning</string>
+              <string>No warning</string>
              </property>
             </widget>
            </item>
@@ -114,28 +114,28 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>indentation is made up of a different combination (tabs/spaces) compared to previous line</string>
+              <string>Indentation is made up of a different combination (tabs/spaces) compared to previous line</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QRadioButton" name="radioIndentWarn3">
              <property name="text">
-              <string>indentation is made up of spaces followed by tabs</string>
+              <string>Indentation is made up of spaces followed by tabs</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QRadioButton" name="radioIndentWarn4">
              <property name="text">
-              <string>indentation contains spaces</string>
+              <string>Indentation contains spaces</string>
              </property>
             </widget>
            </item>
            <item>
             <widget class="QRadioButton" name="radioIndentWarn5">
              <property name="text">
-              <string>indentation contains tabs</string>
+              <string>Indentation contains tabs</string>
              </property>
             </widget>
            </item>
@@ -257,7 +257,7 @@
         <item>
          <widget class="QLabel" name="label_3">
           <property name="text">
-           <string>extra ascent (above each line)</string>
+           <string>Extra ascent (above each line)</string>
           </property>
          </widget>
         </item>
@@ -272,9 +272,22 @@
          </widget>
         </item>
         <item>
+         <spacer name="horizontalSpacer_3">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
          <widget class="QLabel" name="label_4">
           <property name="text">
-           <string>extra descent (below)</string>
+           <string>Extra descent (below)</string>
           </property>
          </widget>
         </item>

@@ -159,12 +159,16 @@
         <source>Select a directory...</source>
         <translation>Ein Verzeichnis auswählen...</translation>
     </message>
+    <message>
+        <source>Open a dialog</source>
+        <translation type="unfinished">Dialog öffnen</translation>
+    </message>
 </context>
 <context>
     <name>PathLineEditPrivate</name>
     <message>
         <source>Open a dialog</source>
-        <translation>Dialog öffnen</translation>
+        <translation type="vanished">Dialog öffnen</translation>
     </message>
 </context>
 <context>
@@ -230,6 +234,48 @@
     <message>
         <source>SliderWidget</source>
         <translation></translation>
+    </message>
+</context>
+<context>
+    <name>brushCreatorDialog</name>
+    <message>
+        <source>Brush Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Brush Style:</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>penCreatorDialog</name>
+    <message>
+        <source>Pen Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Join Style:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cap Style:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line Width:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Color:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Line Style:</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

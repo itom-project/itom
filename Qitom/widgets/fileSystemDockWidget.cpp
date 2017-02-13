@@ -85,7 +85,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_newDirSelectedMapper = new QSignalMapper(this);
     connect(m_newDirSelectedMapper, SIGNAL(mapped(const QString &)), this, SLOT(newDirSelected(const QString &)));
 
-    m_pShowDirListMenu = new QMenu(tr("last used directories"), this);
+    m_pShowDirListMenu = new QMenu(tr("Last used directories"), this);
     m_pShowDirListMenu->setIcon(QIcon(":/files/icons/browser.png"));
     connect(m_pShowDirListMenu->menuAction(), SIGNAL(triggered()), m_newDirSelectedMapper, SLOT(map()));
 
@@ -292,33 +292,33 @@ void FileSystemDockWidget::setLinkColor(const QColor &color)
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::createActions()
 {
-    m_pActSelectCD = new ShortcutAction(QIcon(":/files/icons/dirOpen.png"), tr("open new folder"), this);
+    m_pActSelectCD = new ShortcutAction(QIcon(":/files/icons/dirOpen.png"), tr("Open New Folder"), this);
     m_pActSelectCD->connectTrigger(this, SLOT(mnuSelectCD()));
-    m_pActMoveCDUp = new ShortcutAction(QIcon(":/files/icons/dir-parent-folder.png"), tr("change to parent folder"), this);
+    m_pActMoveCDUp = new ShortcutAction(QIcon(":/files/icons/dir-parent-folder.png"), tr("Change To Parent Folder"), this);
     m_pActMoveCDUp->connectTrigger(this, SLOT(mnuMoveCDUp()));
-    m_pActCopyDir = new ShortcutAction(QIcon(":/files/icons/dirCopy.png"), tr("copy path to clipboard"), this);
+    m_pActCopyDir = new ShortcutAction(QIcon(":/files/icons/dirCopy.png"), tr("Copy Path To Clipboard"), this);
     m_pActCopyDir->connectTrigger(this, SLOT(mnuCopyDir()));
-    m_pActPasteDir = new ShortcutAction(QIcon(":/files/icons/dirPaste.png"), tr("get path from clipboard"), this);
+    m_pActPasteDir = new ShortcutAction(QIcon(":/files/icons/dirPaste.png"), tr("Get Path From Clipboard"), this);
     m_pActPasteDir->connectTrigger(this, SLOT(mnuPasteDir()));
-    m_pActOpenFile = new ShortcutAction(QIcon(":/files/icons/open.png"), tr("open file"), this);
+    m_pActOpenFile = new ShortcutAction(QIcon(":/files/icons/open.png"), tr("Open File"), this);
     m_pActOpenFile->connectTrigger(this, SLOT(mnuOpenFile()));
-    m_pActExecuteFile = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("execute file"), this);
+    m_pActExecuteFile = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("Execute File"), this);
     m_pActExecuteFile->connectTrigger(this, SLOT(mnuExecuteFile()));
-    m_pActLocateOnDisk = new ShortcutAction(QIcon(":/files/icons/browser.png"), tr("locate on disk"), this);
+    m_pActLocateOnDisk = new ShortcutAction(QIcon(":/files/icons/browser.png"), tr("Locate On Disk"), this);
     m_pActLocateOnDisk->connectTrigger(this, SLOT(mnuLocateOnDisk()));
-    m_pActRenameItem = new ShortcutAction(QIcon(":/workspace/icons/edit-rename.png"), tr("rename"), this, QKeySequence(tr("F2")), Qt::WidgetWithChildrenShortcut);
+    m_pActRenameItem = new ShortcutAction(QIcon(":/workspace/icons/edit-rename.png"), tr("Rename"), this, QKeySequence(tr("F2")), Qt::WidgetWithChildrenShortcut);
     m_pActRenameItem->connectTrigger(this, SLOT(mnuRenameItem()));
-    m_pActDeleteItems = new ShortcutAction(QIcon(":/editor/icons/editDelete.png"), tr("delete"), this, QKeySequence::Delete, Qt::WidgetWithChildrenShortcut);
+    m_pActDeleteItems = new ShortcutAction(QIcon(":/editor/icons/editDelete.png"), tr("Delete"), this, QKeySequence::Delete, Qt::WidgetWithChildrenShortcut);
     m_pActDeleteItems->connectTrigger(this, SLOT(mnuDeleteItems()));
-    m_pActCutItems = new ShortcutAction(QIcon(":/editor/icons/editCut.png"), tr("cut"), this, QKeySequence::Cut, Qt::WidgetWithChildrenShortcut);
+    m_pActCutItems = new ShortcutAction(QIcon(":/editor/icons/editCut.png"), tr("Cut"), this, QKeySequence::Cut, Qt::WidgetWithChildrenShortcut);
     m_pActCutItems->connectTrigger(this, SLOT(mnuCutItems()));
-    m_pActCopyItems = new ShortcutAction(QIcon(":/editor/icons/editCopy.png"), tr("copy"), this, QKeySequence::Copy, Qt::WidgetWithChildrenShortcut);
+    m_pActCopyItems = new ShortcutAction(QIcon(":/editor/icons/editCopy.png"), tr("Copy"), this, QKeySequence::Copy, Qt::WidgetWithChildrenShortcut);
     m_pActCopyItems->connectTrigger(this, SLOT(mnuCopyItems()));
-    m_pActPasteItems = new ShortcutAction(QIcon(":/editor/icons/editPaste.png"), tr("paste"), this, QKeySequence::Paste, Qt::WidgetWithChildrenShortcut);
+    m_pActPasteItems = new ShortcutAction(QIcon(":/editor/icons/editPaste.png"), tr("Paste"), this, QKeySequence::Paste, Qt::WidgetWithChildrenShortcut);
     m_pActPasteItems->connectTrigger(this, SLOT(mnuPasteItems()));
-    m_pActNewDir = new ShortcutAction(QIcon(":/files/icons/newDir.png"), tr("create new folder"), this);
+    m_pActNewDir = new ShortcutAction(QIcon(":/files/icons/newDir.png"), tr("Create New Folder"), this);
     m_pActNewDir->connectTrigger(this, SLOT(mnuNewDir()));
-    m_pActNewPyFile = new ShortcutAction(QIcon(":/files/icons/new.png"), tr("create new python file"), this);
+    m_pActNewPyFile = new ShortcutAction(QIcon(":/files/icons/new.png"), tr("Create New Python File"), this);
     m_pActNewPyFile->connectTrigger(this, SLOT(mnuNewPyFile()));
 
     m_pViewList = new ShortcutAction(QIcon(":/application/icons/kdb_form.png"), tr("List"), this);
@@ -346,7 +346,7 @@ void FileSystemDockWidget::createMenus()
     m_pContextMenu->addAction(m_pActNewDir->action());
     m_pContextMenu->addAction(m_pActNewPyFile->action());
 
-    m_pFileSystemSettingMenu = new QMenu(tr("settings"), this);
+    m_pFileSystemSettingMenu = new QMenu(tr("Settings"), this);
     m_pFileSystemSettingMenu->setIcon(QIcon(":/application/icons/adBlockAction.png"));
     m_pFileSystemSettingMenu->addAction(m_pViewList->action());
     m_pFileSystemSettingMenu->addAction(m_pViewDetails->action());
@@ -361,7 +361,7 @@ void FileSystemDockWidget::createToolBars()
     spacerLayout->setStretch(0, 2);
     spacerWidget->setLayout(spacerLayout);
 
-    m_pMainToolbar = new QToolBar(tr("file system"), this);
+    m_pMainToolbar = new QToolBar(tr("File System"), this);
     m_pMainToolbar->setObjectName("toolbarFileSystem");
     m_pMainToolbar->setContextMenuPolicy(Qt::PreventContextMenu);
     m_pMainToolbar->setFloatable(false);
@@ -656,7 +656,7 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
 //----------------------------------------------------------------------------------------------------------------------------------
 void FileSystemDockWidget::mnuSelectCD()
 {
-    QString newDirectory = QFileDialog::getExistingDirectory(this, tr("select base directory"), baseDirectory);
+    QString newDirectory = QFileDialog::getExistingDirectory(this, tr("Select base directory"), baseDirectory);
 
     if (!newDirectory.isEmpty() && !newDirectory.isNull())
     {
@@ -887,7 +887,7 @@ void FileSystemDockWidget::mnuDeleteItems()
         itemName = tr("the selected items");
     }
 
-    if (QMessageBox::question(this, tr("delete"), tr("Do you really want to delete %1?").arg(itemName), QMessageBox::Yes, QMessageBox::No, QMessageBox::NoButton) == QMessageBox::Yes)
+    if (QMessageBox::question(this, tr("Delete"), tr("Do you really want to delete %1?").arg(itemName), QMessageBox::Yes, QMessageBox::No, QMessageBox::NoButton) == QMessageBox::Yes)
     {
         // first we have to create a list with all selected files
         foreach(const QModelIndex &idx, indexList)
@@ -900,7 +900,7 @@ void FileSystemDockWidget::mnuDeleteItems()
         {
             if (!m_pFileSystemModel->remove(m_pFileSystemModel->index(fileList[i])))
             {
-                QMessageBox::warning(this, tr("delete"), tr("Error while deleting '%1'!").arg(fileList[i]));
+                QMessageBox::warning(this, tr("Delete"), tr("Error while deleting '%1'!").arg(fileList[i]));
                 break;
             }
         }

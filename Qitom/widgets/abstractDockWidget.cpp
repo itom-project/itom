@@ -113,12 +113,12 @@ AbstractDockWidget::AbstractDockWidget(bool docked, bool isDockAvailable, tFloat
 
     QDockWidget::setWindowTitle(title);
 
-    m_actStayOnTop = new QAction(QIcon(""), tr("Stay on top"), this);
-    m_actStayOnTop->setToolTip(tr("stay on top of all visible windows"));
+    m_actStayOnTop = new QAction(QIcon(""), tr("Stay On Top"), this);
+    m_actStayOnTop->setToolTip(tr("Stay on top of all visible windows"));
     m_actStayOnTop->setCheckable(true);
     connect(m_actStayOnTop, SIGNAL(triggered(bool)), this, SLOT(mnuStayOnTop(bool)));
-    m_actStayOnTopOfApp = new QAction(tr("Stay on top of main window"), this);
-    m_actStayOnTopOfApp->setToolTip(tr("stay on top of main window of itom"));
+    m_actStayOnTopOfApp = new QAction(tr("Stay On Top Of Main Window"), this);
+    m_actStayOnTopOfApp->setToolTip(tr("Stay on top of main window of itom"));
     m_actStayOnTopOfApp->setCheckable(true);
     connect(m_actStayOnTopOfApp, SIGNAL(triggered(bool)), this, SLOT(mnuStayOnTopOfApp(bool)));
     
@@ -185,16 +185,16 @@ void AbstractDockWidget::init()
 
     if (m_floatingStyle == floatingWindow && m_dockAvailable) //only show dock-toolbar, if this widget is able to be a full-window in undocked mode
     {
-        m_dockToolbar = new QToolBar(tr("docking toolbar"), this);
+        m_dockToolbar = new QToolBar(tr("Docking Toolbar"), this);
 
         QWidget *spacerWidget = new QWidget();
         QHBoxLayout *spacerLayout = new QHBoxLayout();
         spacerLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum));
         spacerWidget->setLayout(spacerLayout);
 
-        m_actDock = new QAction(QIcon(":/dockWidget/icons/dockButtonGlyph.png"), tr("dock widget"), this);
+        m_actDock = new QAction(QIcon(":/dockWidget/icons/dockButtonGlyph.png"), tr("Dock Widget"), this);
         connect(m_actDock, SIGNAL(triggered()), this, SLOT(dockWidget()));
-        m_actUndock = new QAction(QIcon(":/dockWidget/icons/undockButtonGlyph.png"), tr("undock widget"), this);
+        m_actUndock = new QAction(QIcon(":/dockWidget/icons/undockButtonGlyph.png"), tr("Undock Widget"), this);
         connect(m_actUndock, SIGNAL(triggered()), this, SLOT(undockWidget()));
 
         m_dockToolbar->addWidget(spacerWidget);
@@ -708,7 +708,7 @@ RetVal AbstractDockWidget::addToolBar(QToolBar *tb, const QString &key, Qt::Tool
     {
         if (i->key == key)
         {
-            return RetVal(retError, 0, tr("toolbar '%1' is already available").arg(key).toLatin1().data());
+            return RetVal(retError, 0, tr("Toolbar '%1' is already available").arg(key).toLatin1().data());
         }
 
         if (i->area == area && i->section > highestSection)
@@ -832,7 +832,7 @@ RetVal AbstractDockWidget::removeToolBar(const QString &key)
 
     }
 
-    return RetVal(retError, 0, tr("toolbar '%1' not found").arg(key).toLatin1().data());
+    return RetVal(retError, 0, tr("Toolbar '%1' not found").arg(key).toLatin1().data());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

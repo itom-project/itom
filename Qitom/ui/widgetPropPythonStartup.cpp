@@ -40,7 +40,7 @@ WidgetPropPythonStartup::WidgetPropPythonStartup(QWidget *parent) :
 {
     ui.setupUi(this);
 
-    ui.lblBasePath->setText(tr("base path for relative pathes: ") + QCoreApplication::applicationDirPath());
+    ui.lblBasePath->setText(tr("Base path for relative pathes: ") + QCoreApplication::applicationDirPath());
     ui.btnAdd->setEnabled(true);
     ui.btnRemove->setEnabled(false);
 }
@@ -95,7 +95,7 @@ void WidgetPropPythonStartup::on_listWidget_currentItemChanged(QListWidgetItem* 
 //----------------------------------------------------------------------------------------------------------------------------------
 void WidgetPropPythonStartup::on_btnAdd_clicked()
 {
-    QStringList filenames = QFileDialog::getOpenFileNames(this, tr("load python script"), QDir::currentPath(), tr("python script (*.py)"));
+    QStringList filenames = QFileDialog::getOpenFileNames(this, tr("Load python script"), QDir::currentPath(), tr("Python script (*.py)"));
 
     if (!filenames.empty())
     {

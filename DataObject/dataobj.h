@@ -639,7 +639,11 @@ namespace ito {
         //! constructor for data object which uses the data given by the continuousDataPtr.
         DataObject(const unsigned char dimensions, const int *sizes, const int type, const uchar* continuousDataPtr, const int* steps = NULL);
         
+        //! constructor for data object from a stack of cv::Mat
         DataObject(const unsigned char dimensions, const int *sizes, const int type, const cv::Mat* planes, const unsigned int nrOfPlanes);
+
+        //! constructor for data object from a single cv::Mat
+        DataObject(const cv::Mat &data);
         
         DataObject(const DataObject& copyConstr);    /*!< copy constructor */
         

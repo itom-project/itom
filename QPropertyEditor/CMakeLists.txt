@@ -11,6 +11,10 @@ IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
     ENDIF(POLICY CMP0042)
 ENDIF()
 
+if (POLICY CMP0028)
+    cmake_policy(SET CMP0028 NEW) #raise an CMake error if an imported target, containing ::, could not be found
+ENDIF (POLICY CMP0028)
+
 OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte charset." ON)
 OPTION(BUILD_TARGET64 "Build for 64 bit target if set to ON or 32 bit if set to OFF." OFF)
 SET (ITOM_SDK_DIR "" CACHE PATH "base path to itom_sdk")
@@ -34,7 +38,7 @@ SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOUR
 
 include("../ItomBuildMacros.cmake")
 
-FIND_PACKAGE_QT(ON Core PrintSupport Widgets)
+FIND_PACKAGE_QT(ON Core PrintSupport Widgets Designer Xml Svg UiTools)
 find_package(OpenCV COMPONENTS core REQUIRED)
 
 add_definitions(-DUNICODE -D_UNICODE)
@@ -111,14 +115,10 @@ endif (QT5_FOUND)
 
 add_library(${target_name} ${LIBRARY_TYPE} ${qpropertyeditor_SOURCES} ${qpropertyeditor_HEADERS} ${qproperteditor_HEADERS_MOC} ${qpropertyeditor_UI_MOC} ${qpropertyeditor_RCC_MOC})
 
-TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} itomCommonLib itomWidgets)
-IF (QT5_FOUND)
-    IF(CMAKE_VERSION VERSION_GREATER 3.0.0)
-        #https://bugreports.qt.io/browse/QTBUG-39457
-        cmake_policy(SET CMP0043 OLD)
-    ENDIF()
+TARGET_LINK_LIBRARIES(${target_name} ${QT_LIBRARIES} ${QT5_LIBRARIES} itomCommonLib itomWidgets)
+IF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
     qt5_use_modules(${target_name} ${QT_COMPONENTS})
-ENDIF (QT5_FOUND)
+ENDIF (QT5_FOUND AND CMAKE_VERSION VERSION_LESS 3.0.2)
 
 #COPY HEADER FILES TO SDK INCLUDE DIRECTORY
 SET(SOURCEFILE ${CMAKE_CURRENT_SOURCE_DIR}/../QPropertyEditor)

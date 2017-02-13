@@ -15,12 +15,12 @@
         <location filename="../sources/AbstractDObjPCLFigure.cpp" line="50"/>
         <location filename="../sources/AbstractDObjPCLFigure.cpp" line="51"/>
         <location filename="../sources/AbstractDObjPCLFigure.cpp" line="52"/>
-        <location filename="../sources/AbstractDObjFigure.cpp" line="41"/>
+        <location filename="../sources/AbstractDObjFigure.cpp" line="42"/>
         <source>Source data for plot</source>
         <translation>Quelldaten für Plot</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractDObjFigure.cpp" line="42"/>
+        <location filename="../sources/AbstractDObjFigure.cpp" line="43"/>
         <source>Actual output data of plot</source>
         <translation>Aktuelle Ausgabedaten für Plot</translation>
     </message>
@@ -55,30 +55,30 @@
         <translation type="unfinished">Unbekannter Channel in &apos;setUpdatePending&apos;</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractFigure.cpp" line="199"/>
-        <location filename="../sources/AbstractFigure.cpp" line="245"/>
+        <location filename="../sources/AbstractFigure.cpp" line="219"/>
+        <location filename="../sources/AbstractFigure.cpp" line="265"/>
         <source>duplicate Channel, in addChannel</source>
         <translation type="unfinished">Doppelter Channel in &apos;addChannel&apos;</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractFigure.cpp" line="207"/>
-        <location filename="../sources/AbstractFigure.cpp" line="214"/>
+        <location filename="../sources/AbstractFigure.cpp" line="227"/>
+        <location filename="../sources/AbstractFigure.cpp" line="234"/>
         <source>parameters incompatible, while adding channel</source>
         <translation type="unfinished">Inkompatible Parameter beim hinzufügen des Channels</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractFigure.cpp" line="219"/>
+        <location filename="../sources/AbstractFigure.cpp" line="239"/>
         <source>undefined channel direction, while adding channel</source>
         <translation type="unfinished">Undefinierte Channel-Richtung beim hinzufügen des Channels</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractFigure.cpp" line="234"/>
+        <location filename="../sources/AbstractFigure.cpp" line="254"/>
         <source>invalid child pointer, in addChannel</source>
         <translation type="unfinished">Ungültiger Pointer in &apos;addChannel&apos;</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractFigure.cpp" line="261"/>
-        <location filename="../sources/AbstractFigure.cpp" line="286"/>
+        <location filename="../sources/AbstractFigure.cpp" line="281"/>
+        <location filename="../sources/AbstractFigure.cpp" line="306"/>
         <source>channel does not exist</source>
         <translation type="unfinished">Channel existiert nicht</translation>
     </message>
@@ -110,12 +110,12 @@
 <context>
     <name>ito::AbstractDObjFigure</name>
     <message>
-        <location filename="../sources/AbstractDObjFigure.cpp" line="127"/>
+        <location filename="../sources/AbstractDObjFigure.cpp" line="128"/>
         <source>Function &apos;spawnLinePlot&apos; not supported from this plot widget</source>
         <translation>Die Funktion  &apos;spawnLinePlot&apos; wird von diesem Plot-Widget nicht unterstützt</translation>
     </message>
     <message>
-        <location filename="../sources/AbstractDObjFigure.cpp" line="265"/>
+        <location filename="../sources/AbstractDObjFigure.cpp" line="266"/>
         <source>Figure does not contain an input slot for live sources</source>
         <translation>Der Plot besitzt keinen Slot für Live-Quellen</translation>
     </message>
@@ -131,7 +131,7 @@
 <context>
     <name>ito::AbstractFigure</name>
     <message>
-        <location filename="../sources/AbstractFigure.cpp" line="157"/>
+        <location filename="../sources/AbstractFigure.cpp" line="162"/>
         <source>Properties</source>
         <translation>Eigenschaften</translation>
     </message>

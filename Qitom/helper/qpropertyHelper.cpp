@@ -57,12 +57,12 @@ namespace ito {
 
                 if (!ok)
                 {
-                    retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to PointF: at least one value could not be transformed to float.").toLatin1().data());
+                    retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to PointF: at least one value could not be transformed to float.").toLatin1().data());
                 }
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to PointF: 2 values required.").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to PointF: 2 values required.").toLatin1().data());
             }
         }
         else if (userDestType == QVariant::Point)
@@ -75,12 +75,12 @@ namespace ito {
 
                 if (!ok)
                 {
-                    retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to Point: at least one value could not be transformed to integer.").toLatin1().data());
+                    retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to Point: at least one value could not be transformed to integer.").toLatin1().data());
                 }
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to Point: 2 values required.").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to Point: 2 values required.").toLatin1().data());
             }
         }
         else if (userDestType == QVariant::Rect)
@@ -95,12 +95,12 @@ namespace ito {
 
                 if (!ok)
                 {
-                    retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to Rect: at least one value could not be transformed to integer.").toLatin1().data());
+                    retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to Rect: at least one value could not be transformed to integer.").toLatin1().data());
                 }
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to Rect: 4 values required.").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to Rect: 4 values required.").toLatin1().data());
             }
         }
         else if (userDestType == QVariant::RectF)
@@ -115,12 +115,12 @@ namespace ito {
 
                 if (!ok)
                 {
-                    retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to RectF: at least one value could not be transformed to float.").toLatin1().data());
+                    retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to RectF: at least one value could not be transformed to float.").toLatin1().data());
                 }
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to RectF: 4 values required.").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to RectF: 4 values required.").toLatin1().data());
             }
         }
         else if (userDestType == QVariant::Vector2D)
@@ -133,12 +133,12 @@ namespace ito {
 
                 if (!ok)
                 {
-                    retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to Vector2D: at least one value could not be transformed to float.").toLatin1().data());
+                    retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to Vector2D: at least one value could not be transformed to float.").toLatin1().data());
                 }
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to Vector2D: 2 values required.").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to Vector2D: 2 values required.").toLatin1().data());
             }
         }
         else if (userDestType == QVariant::Vector3D)
@@ -152,12 +152,12 @@ namespace ito {
 
                 if (!ok)
                 {
-                    retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to Vector3D: at least one value could not be transformed to float.").toLatin1().data());
+                    retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to Vector3D: at least one value could not be transformed to float.").toLatin1().data());
                 }
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to Vector3D: 3 values required.").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to Vector3D: 3 values required.").toLatin1().data());
             }
         }
         else if (userDestType == QVariant::Vector4D)
@@ -172,12 +172,12 @@ namespace ito {
 
                 if (!ok)
                 {
-                    retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to Vector4D: at least one value could not be transformed to float.").toLatin1().data());
+                    retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to Vector4D: at least one value could not be transformed to float.").toLatin1().data());
                 }
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to Vector4D: 4 values required.").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to Vector4D: 4 values required.").toLatin1().data());
             }
         }
         else if (userDestType == QVariant::Size)
@@ -190,12 +190,12 @@ namespace ito {
 
                 if (!ok)
                 {
-                    retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to Size: at least one value could not be transformed to integer.").toLatin1().data());
+                    retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to Size: at least one value could not be transformed to integer.").toLatin1().data());
                 }
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to Size: 2 values required.").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to Size: 2 values required.").toLatin1().data());
             }
         }
         else if (userDestType == QMetaType::type("ito::AutoInterval"))
@@ -208,12 +208,12 @@ namespace ito {
 
                 if (!ok)
                 {
-                    retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to AutoInterval: at least one value could not be transformed to float.").toLatin1().data());
+                    retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to AutoInterval: at least one value could not be transformed to float.").toLatin1().data());
                 }
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to AutoInterval: 2 values required.").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to AutoInterval: 2 values required.").toLatin1().data());
             }
         }
         else if (userDestType == QMetaType::type("QVector<ito::Shape>"))
@@ -231,7 +231,7 @@ namespace ito {
                     }
                     else
                     {
-                        retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to vector of shapes: at least one item could not be interpreted as shape.").toLatin1().data());
+                        retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to vector of shapes: at least one item could not be interpreted as shape.").toLatin1().data());
                         ok = false;
                         break;
                     }
@@ -261,7 +261,7 @@ namespace ito {
 
                     if (!ok_)
                     {
-                        retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to QVector<int>: at least one value could not be transformed to int.").toLatin1().data());
+                        retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to QVector<int>: at least one value could not be transformed to int.").toLatin1().data());
                         ok = false;
                         break;
                     }
@@ -288,7 +288,7 @@ namespace ito {
             }
             else
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("transformation error to AutoInterval: value must be [min,max] or 'auto'.").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("Transformation error to AutoInterval: value must be [min,max] or 'auto'.").toLatin1().data());
             }
         }
     } //end item.type() == QVariant::String
@@ -374,7 +374,7 @@ namespace ito {
             }
             else
             {
-                fromName = QObject::tr("unknown");
+                fromName = QObject::tr("Unknown");
             }
 
             if (QMetaType::isRegistered(userDestType))
@@ -383,10 +383,10 @@ namespace ito {
             }
             else
             {
-                toName = QObject::tr("unknown");
+                toName = QObject::tr("Unknown");
             }
 
-            retval += ito::RetVal::format(ito::retError, 0, QObject::tr("no conversion from QVariant type '%s' to '%s' is possible").toLatin1().data(), 
+            retval += ito::RetVal::format(ito::retError, 0, QObject::tr("No conversion from QVariant type '%s' to '%s' is possible").toLatin1().data(), 
                 fromName.toLatin1().data(), toName.toLatin1().data());
         }
     }
@@ -515,12 +515,12 @@ RetVal QPropertyHelper::readProperty(const QObject *object, const char* propName
         value = object->property(propName);
         if (value.isValid())
         {
-            retValue += RetVal::format(retError, 0, QObject::tr("property '%s' could not be read").toLatin1().data(), propName);
+            retValue += RetVal::format(retError, 0, QObject::tr("Property '%s' could not be read").toLatin1().data(), propName);
         }
     }
     else
     {
-        retValue += RetVal(retError, 0, QObject::tr("invalid object").toLatin1().data());
+        retValue += RetVal(retError, 0, QObject::tr("Invalid object").toLatin1().data());
     }
 
     return retValue;

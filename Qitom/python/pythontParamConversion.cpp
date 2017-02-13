@@ -140,13 +140,13 @@ namespace ito
                 }
                 else
                 {
-                    PyErr_SetString(PyExc_RuntimeError, "could not create instance of dataObject");
+                    PyErr_SetString(PyExc_RuntimeError, "Could not create instance of dataObject");
                     return NULL;
                 }
             }
             else
             {
-                PyErr_SetString(PyExc_RuntimeError, "data object in parameter is invalid or empty (NULL).");
+                PyErr_SetString(PyExc_RuntimeError, "Data object in parameter is invalid or empty (NULL).");
                 return NULL;
             }
 
@@ -167,13 +167,13 @@ namespace ito
                 }
                 else
                 {
-                    PyErr_SetString(PyExc_RuntimeError, "could not create instance of pointCloud");
+                    PyErr_SetString(PyExc_RuntimeError, "Could not create instance of pointCloud");
                     return NULL;
                 }
             }
             else
             {
-                PyErr_SetString(PyExc_RuntimeError, "pointCloud in parameter is invalid or empty (NULL).");
+                PyErr_SetString(PyExc_RuntimeError, "PointCloud in parameter is invalid or empty (NULL).");
                 return NULL;
             }
 
@@ -194,13 +194,13 @@ namespace ito
                 }
                 else
                 {
-                    PyErr_SetString(PyExc_RuntimeError, "could not create instance of polygonMesh");
+                    PyErr_SetString(PyExc_RuntimeError, "Could not create instance of polygonMesh");
                     return NULL;
                 }
             }
             else
             {
-                PyErr_SetString(PyExc_RuntimeError, "polygonMesh in parameter is invalid or empty (NULL).");
+                PyErr_SetString(PyExc_RuntimeError, "PolygonMesh in parameter is invalid or empty (NULL).");
                 return NULL;
             }
 
@@ -228,7 +228,7 @@ namespace ito
                             }
                             else
                             {
-                                PyErr_SetString(PyExc_RuntimeError, "could not create instance of type actuator");
+                                PyErr_SetString(PyExc_RuntimeError, "Could not create instance of type actuator");
                                 return NULL;
                             }
                         }
@@ -244,30 +244,30 @@ namespace ito
                             }
                             else
                             {
-                                PyErr_SetString(PyExc_RuntimeError, "could not create instance of type dataIO");
+                                PyErr_SetString(PyExc_RuntimeError, "Could not create instance of type dataIO");
                                 return NULL;
                             }
                         }
                         else if( ptr2->getBasePlugin()->getType() & ito::typeAlgo )
                         {
-                            PyErr_SetString(PyExc_TypeError, "parameter of type 'hardware reference' is a reference to an algorithm plugin, which cannot be returned.");
+                            PyErr_SetString(PyExc_TypeError, "Parameter of type 'hardware reference' is a reference to an algorithm plugin, which cannot be returned.");
                             return NULL;
                         }
                         else
                         {
-                            PyErr_SetString(PyExc_TypeError, "parameter of type 'hardware reference' cannot be casted to any plugin type.");
+                            PyErr_SetString(PyExc_TypeError, "Parameter of type 'hardware reference' cannot be casted to any plugin type.");
                             return NULL;
                         }
                     }
                     else
                     {
-                        PyErr_SetString(PyExc_TypeError, "parameter of type 'hardware reference' cannot be casted to any plugin type.");
+                        PyErr_SetString(PyExc_TypeError, "Parameter of type 'hardware reference' cannot be casted to any plugin type.");
                         return NULL;
                     }
                 }
                 else
                 {
-                    PyErr_SetString(PyExc_TypeError, "parameter of type 'hardware reference' is NULL");
+                    PyErr_SetString(PyExc_TypeError, "Parameter of type 'hardware reference' is NULL");
                     return NULL;
                 }
                 
@@ -276,7 +276,7 @@ namespace ito
         break;
 
         default:
-            PyErr_SetString(PyExc_TypeError, "undefined parameter type");
+            PyErr_SetString(PyExc_TypeError, "Undefined parameter type");
             return NULL;
         break;
     }
@@ -324,7 +324,7 @@ namespace ito
 
     if(paramBaseType <= 0)
     {
-        retVal += ito::RetVal(ito::retError, 0, QObject::tr("type of ParamBase could not be guessed with given PyObject.").toLatin1().data());
+        retVal += ito::RetVal(ito::retError, 0, QObject::tr("Type of ParamBase could not be guessed with given PyObject.").toLatin1().data());
         return QSharedPointer<ito::ParamBase>();
     }
     
@@ -483,14 +483,14 @@ namespace ito
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
     default:
         {
-            retVal += ito::RetVal(ito::retError, 0, QObject::tr("given paramBaseType is unsupported.").toLatin1().data());
+            retVal += ito::RetVal(ito::retError, 0, QObject::tr("Given paramBaseType is unsupported.").toLatin1().data());
         return QSharedPointer<ito::ParamBase>();
         }
     }
 
     if(!ok)
     {
-        retVal += ito::RetVal(ito::retError, 0, QObject::tr("error while converting value from PyObject to ParamBase").toLatin1().data());
+        retVal += ito::RetVal(ito::retError, 0, QObject::tr("Error while converting value from PyObject to ParamBase").toLatin1().data());
     }
     return QSharedPointer<ito::ParamBase>();
 

@@ -173,7 +173,7 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
 
                 if (retValue.containsError())
                 {
-                    QString message = tr("error while creating new instance. \nMessage: %1").arg(QLatin1String(retValue.errorMessage()));
+                    QString message = tr("Error while creating new instance. \nMessage: %1").arg(QLatin1String(retValue.errorMessage()));
                     QMessageBox::critical(this, tr("Error while creating new instance"), message);
                     return;
                 }
@@ -207,12 +207,12 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
 
                 if (retValue.containsWarning())
                 {
-                    QString message = tr("warning while creating new instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
+                    QString message = tr("Warning while creating new instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                     QMessageBox::warning(this, tr("Warning while creating new instance"), message);
                 }
                 else if (retValue.containsError())
                 {
-                    QString message = tr("error while creating new instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
+                    QString message = tr("Error while creating new instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                     QMessageBox::critical(this, tr("Error while creating new instance"), message);
                 }
 
@@ -238,7 +238,7 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
     }
     else
     {
-        QMessageBox::information(this, tr("choose plugin"), tr("Please choose plugin you want to create a new instance from"));
+        QMessageBox::information(this, tr("Choose plugin"), tr("Please choose plugin you want to create a new instance from"));
     }
 }
 
