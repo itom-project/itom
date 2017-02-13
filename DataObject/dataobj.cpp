@@ -2354,17 +2354,13 @@ template<typename _Tp> RetVal CopyToFunc(const DataObject &lhs, DataObject &rhs,
 
     if (regionOnly && rhs.getDims() == lhs.getDims() && rhs.getType() == lhs.getType())
     {
-        for (int nd = 0; nd < lhs.getDims(); nd++)
+        if (lhs.getSize() != rhs.getSize())
         {
-            if (lhs.getSize(nd) != rhs.getSize(nd))
-            {
-                newMat = 1;
-                rhs.freeData();
-                rhs.m_type = lhs.m_type;
-                char rhsOldContinuous = rhs.getDims() > 2 ? rhs.m_continuous : 0; //if dims(rhs)<=2, then the continuity-flag should only be influenced by lhs, since then the continuity doesn't change the representation and the constructor of empty dataObject sets the flag to one (default)
-                rhs.m_continuous = rhsOldContinuous | lhs.m_continuous;
-                break;
-            }
+            newMat = 1;
+            rhs.freeData();
+            rhs.m_type = lhs.m_type;
+            char rhsOldContinuous = rhs.getDims() > 2 ? rhs.m_continuous : 0; //if dims(rhs)<=2, then the continuity-flag should only be influenced by lhs, since then the continuity doesn't change the representation and the constructor of empty dataObject sets the flag to one (default)
+            rhs.m_continuous = rhsOldContinuous | lhs.m_continuous;
         }
     }
     else
@@ -2429,7 +2425,7 @@ template<typename _Tp> RetVal CopyToFunc(const DataObject &lhs, DataObject &rhs,
         }
     }
 
-    return 0;
+    return ito::retOk;
 }
 
 typedef RetVal (*tCopyToFunc)(const DataObject &lhs, DataObject &rhs, unsigned char regionOnly);
