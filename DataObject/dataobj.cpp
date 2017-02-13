@@ -2348,19 +2348,35 @@ template<typename _Tp> RetVal CopyToFunc(const DataObject &lhs, DataObject &rhs,
     }
 
     int numMats = 0;
-    int tMat = 0;
+    int tMat = 0, newMat = 0;
     cv::Mat_<_Tp> *tempMat = NULL;
     cv::Mat_<_Tp> *rhsMat = NULL;
 
-    rhs.freeData();
-    rhs.m_type = lhs.m_type;
-    char rhsOldContinuous = rhs.getDims() > 2 ? rhs.m_continuous : 0; //if dims(rhs)<=2, then the continuity-flag should only be influenced by lhs, since then the continuity doesn't change the representation and the constructor of empty dataObject sets the flag to one (default)
-    rhs.m_continuous = rhsOldContinuous | lhs.m_continuous;
-
+    if (regionOnly && rhs.getDims() == lhs.getDims() && rhs.getType() == lhs.getType())
+    {
+        if (lhs.getSize() != rhs.getSize())
+        {
+            newMat = 1;
+            rhs.freeData();
+            rhs.m_type = lhs.m_type;
+            char rhsOldContinuous = rhs.getDims() > 2 ? rhs.m_continuous : 0; //if dims(rhs)<=2, then the continuity-flag should only be influenced by lhs, since then the continuity doesn't change the representation and the constructor of empty dataObject sets the flag to one (default)
+            rhs.m_continuous = rhsOldContinuous | lhs.m_continuous;
+        }
+    }
+    else
+    {
+        newMat = 1;
+        rhs.freeData();
+        rhs.m_type = lhs.m_type;
+        char rhsOldContinuous = rhs.getDims() > 2 ? rhs.m_continuous : 0; //if dims(rhs)<=2, then the continuity-flag should only be influenced by lhs, since then the continuity doesn't change the representation and the constructor of empty dataObject sets the flag to one (default)
+        rhs.m_continuous = rhsOldContinuous | lhs.m_continuous;
+    }
+    
     if (regionOnly || lhs.m_dims == 0) //Marc: bug, if empty data object, it is necessary to use this if case, too.
     {
         numMats = lhs.getNumPlanes();
-        CreateFunc<_Tp>(&rhs, lhs.m_dims, lhs.m_size, rhs.m_continuous, NULL, NULL);
+        if (newMat)
+            CreateFunc<_Tp>(&rhs, lhs.m_dims, lhs.m_size, rhs.m_continuous, NULL, NULL);
         for (int nMat = 0; nMat < numMats; nMat++)
         {
             tMat = lhs.seekMat(nMat);
@@ -2372,7 +2388,8 @@ template<typename _Tp> RetVal CopyToFunc(const DataObject &lhs, DataObject &rhs,
     else
     {
         numMats = lhs.mdata_size();
-        CreateFunc<_Tp>(&rhs, lhs.m_dims, lhs.m_osize, rhs.m_continuous, NULL, NULL);
+        if (newMat)
+            CreateFunc<_Tp>(&rhs, lhs.m_dims, lhs.m_osize, rhs.m_continuous, NULL, NULL);
 
         for(int i = 0 ; i < rhs.m_size.m_p[-1]; i++)
         {
@@ -2408,7 +2425,7 @@ template<typename _Tp> RetVal CopyToFunc(const DataObject &lhs, DataObject &rhs,
         }
     }
 
-    return 0;
+    return ito::retOk;
 }
 
 typedef RetVal (*tCopyToFunc)(const DataObject &lhs, DataObject &rhs, unsigned char regionOnly);
