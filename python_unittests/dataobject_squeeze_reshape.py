@@ -54,7 +54,16 @@ class DataObjectResize(unittest.TestCase):
         a=cdobj.copy().reshape([35,5,4])
         for i in a:
             self.assertEqual(i, 1)
-
+    
+    def test_deepCopyPartial(self):
+        obj = dataObject.zeros([2,4],'float32')
+        obj2 = dataObject.ones([4,3],'float32')
+        for i in range(4):
+            obj2[i,:] = i
+        obj[1,:] = obj2[:,1]
+        
+        for i in range(4):
+            self.assertEqual(obj[1,i], obj2[i,1])
 
 if __name__ == '__main__':
     unittest.main()
