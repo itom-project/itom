@@ -21,7 +21,6 @@
 *********************************************************************** */
 
 #include "AppManagement.h"
-#include "../AddInManager/addInManager.h"
 #include "organizer/userOrganizer.h"
 
 #include <qtextcodec.h>
@@ -44,16 +43,10 @@ QObject* AppManagement::m_mainWin = NULL;
 QObject* AppManagement::m_uiOrganizer = NULL;
 QObject* AppManagement::m_processOrganizer = NULL;
 QObject* AppManagement::m_userOrganizer = NULL;
+QObject* AppManagement::m_addInManager = NULL;
 QMutex AppManagement::m_mutex;
 AppManagement::Timeouts AppManagement::timeouts;
 QTextCodec* AppManagement::m_scriptTextCodec = NULL;
-
-//-------------------------------------------------------------------------------------------
-/*static*/ QObject* AppManagement::getAddInManager() 
-{ 
-    QMutexLocker locker (&m_mutex); 
-    return qobject_cast<QObject*>(AddInManagerInst);
-}
 
 //-------------------------------------------------------------------------------------------
 /*static*/ QString AppManagement::getSettingsFile(void)

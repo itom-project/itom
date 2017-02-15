@@ -89,6 +89,7 @@ set(lib_HEADERS
 	${CMAKE_CURRENT_SOURCE_DIR}/algoInterfaceValidator.h
 	${CMAKE_CURRENT_SOURCE_DIR}/apiFunctions.h
 	${CMAKE_CURRENT_SOURCE_DIR}/addInManager.h
+	${CMAKE_CURRENT_SOURCE_DIR}/addInManagerPrivate.h
 )
 
 set(lib_SOURCES
@@ -98,6 +99,7 @@ set(lib_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/algoInterfaceValidator.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/apiFunctions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/addInManager.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/addInManagerPrivate.cpp
 )
 
 if(MSVC)

@@ -3343,7 +3343,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget(PyUi * /*self*/, PyObject *args, Py
     QString algoWidgetName;
     bool ok;
 
-    ito::AddInManager *AIM = AddInManagerInst;
+    ito::AddInManager *AIM = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     if (!AIM)
     {
         PyErr_SetString(PyExc_RuntimeError, QObject::tr("no addin-manager found").toUtf8().data());
@@ -3536,7 +3536,7 @@ PyObject* PythonUi::PyUi_createNewAlgoWidget2(PyUi * /*self*/, PyObject *args, P
     QVector<ito::ParamBase> paramsMandBase, paramsOptBase;
     QString algoWidgetName = widgetName;
 
-    ito::AddInManager *AIM = AddInManagerInst;
+    ito::AddInManager *AIM = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     if (!AIM)
     {
         PyErr_SetString(PyExc_RuntimeError, QObject::tr("no addin-manager found").toUtf8().data());

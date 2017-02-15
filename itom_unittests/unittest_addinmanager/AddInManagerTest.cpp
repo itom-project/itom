@@ -9,10 +9,12 @@ TEST(AddInManagerTest, General)
     int argc = 0;
     QCoreApplication a(argc, NULL);
 
-    ito::AddInManager* aim = new ito::AddInManager("", NULL, NULL, NULL); // &a);
-    EXPECT_FALSE(aim == NULL);
+    //ito::AddInManager* aim = ito::AddInManager::createInstance("", NULL, NULL, NULL); // &a);
+    //EXPECT_NE(aim, NULL);
+    //AddInManager::closeInstance();
 
-    std::cout << aim->getNumTotItems() << "\n" << std::endl;
+    ito::AddInManager* aim = new ito::AddInManager("", NULL, NULL, NULL); // &a);
+    EXPECT_NE(aim, NULL);
     aim->closeInstance();
 }
 

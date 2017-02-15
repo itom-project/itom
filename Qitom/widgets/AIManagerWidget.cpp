@@ -63,7 +63,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, const QString &objName, Q
     m_pViewDetails(NULL)
 {
     int size = 0;
-    ito::AddInManager *aim = AddInManagerInst;
+    ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
 
     m_pAIManagerView = new QTreeView(this);
     m_pAIManagerView->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -197,7 +197,7 @@ m_pMainToolbar->setOrientation(Qt::Vertical);*/
 //----------------------------------------------------------------------------------------------------------------------------------
 AIManagerWidget::~AIManagerWidget()
 {
-    ito::AddInManager *aim = AddInManagerInst;
+    ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
     QString setFile(AppManagement::getSettingsFile());
     QSettings *settings = new QSettings(setFile, QSettings::IniFormat);
@@ -352,7 +352,7 @@ void AIManagerWidget::updateActions()
                     QObject *engine = AppManagement::getPythonEngine();
                     m_pActSendToPython->setEnabled(engine);
 
-                    m_pShowConfDialog->setEnabled(ais->hasConfDialog());
+                    m_pShowConfDialog->setEnabled((qobject_cast<QApplication*>(QCoreApplication::instance())) && ais->hasConfDialog());
                     m_pActDockWidget->setEnabled(ais->hasDockWidget());
                     m_pActDockWidgetToolbar->setEnabled(ais->hasDockWidget());
 
@@ -471,7 +471,7 @@ void AIManagerWidget::CloseInstance(const QModelIndex index)
                 QMessageBox::information(this, tr("final closing not possible"), tr("The instance '%1' can finally not be closed since there are still references to this instance from other componentents, e.g. python variables.").arg(index.model()->data(index).toString()));
             }
 
-            ito::AddInManager *aim = AddInManagerInst;
+            ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
             ito::RetVal retValue = aim->closeAddIn(ais,NULL);
 
             if (retValue.containsWarning())
@@ -507,7 +507,7 @@ void AIManagerWidget::mnuShowConfdialog()
     if (index.isValid())
     {
         ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
-        if (ais && ais->hasConfDialog())
+        if ((qobject_cast<QApplication*>(QCoreApplication::instance())) && ais && ais->hasConfDialog())
         {
             ito::RetVal retValue = ais->showConfDialog();
             
@@ -559,8 +559,7 @@ void AIManagerWidget::mnuCreateNewInstance()
 
     if (index.isValid())
     {
-        ito::AddInManager *aim = AddInManagerInst;
-//        ito::AddInInterfaceBase *aib = (ito::AddInInterfaceBase *)aim->getAddInPtr(index.row());
+        ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
         ito::AddInInterfaceBase *aib = (ito::AddInInterfaceBase*)index.internalPointer();
 
         DialogNewPluginInstance *dialog = new DialogNewPluginInstance(index, aib);
@@ -1039,7 +1038,7 @@ void AIManagerWidget::setTreeViewHideColumns(const bool &hide, const int colCoun
 //----------------------------------------------------------------------------------------------------------------------------------
 void AIManagerWidget::showList()
 {
-    ito::AddInManager *aim = AddInManagerInst;
+    ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
     bool isList = true;
 
@@ -1075,7 +1074,7 @@ void AIManagerWidget::mnuToggleView()
 //----------------------------------------------------------------------------------------------------------------------------------
 void AIManagerWidget::showDetails()
 {
-    ito::AddInManager *aim = AddInManagerInst;
+    ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
     bool isList = true;
 
