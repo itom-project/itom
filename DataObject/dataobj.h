@@ -963,7 +963,7 @@ namespace ito {
             return total;
         }
         
-        RetVal copyTo(DataObject &rhs, unsigned char regionOnly = 0) const;   /*!< deeply copies the data of this data object to the given rhs-dataObject, whose existing data will be deleted first. */
+        RetVal copyTo(DataObject &rhs, unsigned char regionOnly = 0) const;   /*!< deeply copies the data of this data object to the given rhs-dataObject. regionOnly defines if only data within the current ROI should be copied or the entire matrix with the current ROI borders. The destination object is newly allocated if its current number od dimensions, type or size of the ROI does not fit. */
         RetVal convertTo(DataObject &rhs, const int type, const double alpha=1, const double beta=0 ) const; /*!< Convertes an array to another data type with optional scaling (alpha * value + beta) */
         
         RetVal setTo(const int8 &value, const DataObject &mask = DataObject());        /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
