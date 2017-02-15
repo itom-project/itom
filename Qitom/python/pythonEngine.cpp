@@ -3393,6 +3393,18 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
         {
             bool ok = false;
             *extendedValue = PythonQtConversion::PyObjGetString(repr,false,ok);
+            if (PyArray_Check(obj))
+            {
+                QString dims = "[";
+                int arrSize = PyArray_NDIM((PyArrayObject*)obj);
+                for (int nd = 0; nd < arrSize; [&nd, &dims, arrSize](){ nd++; if (nd < arrSize) dims += " x "; }())
+                {
+                    dims += QString::number(PyArray_DIM((PyArrayObject*)obj, nd));
+                }
+                dims += "]\n";
+                *extendedValue =  dims + *extendedValue;
+            }
+
             if (ok == false)
             {
                 *extendedValue = "unknown";
