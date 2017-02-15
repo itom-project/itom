@@ -5353,7 +5353,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
 
         for (Py_ssize_t i = 0; i < length && !error; i++)
         {
-            elem = PyTuple_GetItem(key, i);
+            elem = PyTuple_GetItem(key, i); //borrowed reference
             axisSize = self->dataObject->getSize(i);
 
             //check type of elem, must be int or stride
