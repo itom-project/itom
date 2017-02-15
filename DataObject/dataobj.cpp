@@ -2358,7 +2358,15 @@ double DataObject::getPixToPhys(const unsigned int dim, const double pix) const
 //----------------------------------------------------------------------------------------------------------------------------------
 //! low-level, templated method for deeply copying the data of one matrix to another given matrix
 /*!
-    At first, the memory of the new matrix is delete. Then the data of the lhs-matrix is deeply copied to the rhs-matrix.
+    In case of 'regionOnly' == false, the destination dataObject 'rhs' is always newly allocated
+    before copying data and the tags as well as the axis descriptions etc. are also copied from
+    the source object. If the source object has a ROI set, the entire object with all data
+    outside of the ROI is copied and the ROI is applied to the destination object, too.
+
+    If 'regionOnly' == true, only data within a current ROI is copied to the destination object.
+    In this case, the destination is only newly allocated if its current dimension, size or type
+    do not fit to the source object. Else, data is copied into the existing memory. Tags and
+    axis descriptions etc. are always copied to the destination object.
 
     \param &lhs is the matrix whose data is copied
     \param &rhs is the matrix where the data is copied to. The old data of rhs is deleted first
@@ -2471,7 +2479,9 @@ MAKEFUNCLIST(CopyToFunc);
     axis descriptions etc. are always copied to the destination object.
 
     \param &rhs is the matrix where the data is copied to. The old data of rhs is deleted first
-    \param regionOnly, if true, only the data of the ROI in lhs is copied, hence, the org-size of rhs corresponds to the ROI-size of lhs, else the whole data block is copied and the ROI of rhs is set to the ROI of lhs
+    \param regionOnly, if true, only the data of the ROI in lhs is copied, hence, the org-size of 
+           rhs corresponds to the ROI-size of lhs, else the whole data block is copied and the ROI 
+           of rhs is set to the ROI of lhs
     \return retOk
     \sa deepCopyPartial
 */
