@@ -240,42 +240,38 @@
     <name>brushCreatorDialog</name>
     <message>
         <source>Brush Style</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Pinselstil</translation>
     </message>
     <message>
-        <source>Color:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Brush Style:</source>
-        <translation type="unfinished"></translation>
+        <source>Color</source>
+        <translation type="unfinished">Farbe</translation>
     </message>
 </context>
 <context>
     <name>penCreatorDialog</name>
     <message>
         <source>Pen Style</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Stiftstil</translation>
     </message>
     <message>
-        <source>Join Style:</source>
-        <translation type="unfinished"></translation>
+        <source>Join Style</source>
+        <translation type="unfinished">Join-Stil</translation>
     </message>
     <message>
-        <source>Cap Style:</source>
-        <translation type="unfinished"></translation>
+        <source>Cap Style</source>
+        <translation type="unfinished">Cap-Stil</translation>
     </message>
     <message>
-        <source>Line Width:</source>
-        <translation type="unfinished"></translation>
+        <source>Line Width</source>
+        <translation type="unfinished">Linientiefe</translation>
     </message>
     <message>
-        <source>Color:</source>
-        <translation type="unfinished"></translation>
+        <source>Color</source>
+        <translation type="unfinished">Farbe</translation>
     </message>
     <message>
-        <source>Line Style:</source>
-        <translation type="unfinished"></translation>
+        <source>Line Style</source>
+        <translation type="unfinished">Linienstil</translation>
     </message>
 </context>
 </TS>
