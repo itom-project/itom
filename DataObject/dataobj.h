@@ -889,6 +889,18 @@ namespace ito {
                 return m_size[index];
             }
         }
+
+        //! returns the original size-member. This is equal to getSize() if no roi is set to the dataObject.
+        /*!
+        \return osize-member of type MSize
+        */
+        inline MSize getOriginalSize(void) { return m_osize; }
+
+        //! returns the original size-member. This is equal to getSize() if no roi is set to the dataObject.
+        /*!
+        \return osize-member of type MSize
+        */
+        inline const MSize getOriginalSize(void) const { return m_osize; }
         
         //! gets the original size of the given dimension (this is the size without considering any ROI)
         /*!

@@ -1525,23 +1525,37 @@ void DataObject::createHeader(const unsigned char dimensions, const int *sizes, 
             {
                 delete[] (m_roi.m_p - 1);
 
+                //the newly allocated array for a 2d object of size [40,50] should look like this:
+                //[2, 0, 0, 2, 40, 50, 2, 40, 50].
+                //m_roi.m_p finally points to the 2nd entry,
+                //m_osize.m_p to the 4. entry and
+                //m_size.m_p to the 8. entry
+                //m_roi/m_osize/msize.m_p[-1] always contains the number of dimensions (here: 2)
                 m_roi.m_p = new int [(dimensions + 1) + (dimensions + 1) + (dimensions + 1)];
+                m_roi.m_p = m_roi.m_p + 1;
                 m_osize.m_p = static_cast<int *>(m_roi.m_p + dimensions) + 1;
                 m_osize.m_p[-1] = dimensions;
                 m_size.m_p = static_cast<int *>(m_osize.m_p + dimensions) + 1;
                 m_size.m_p[-1] = dimensions;
-                m_roi.m_p = m_roi.m_p + 1;
+                
                 m_roi.m_p[-1] = dimensions;
             }
         }
         else
         {
+            //the newly allocated array for a 2d object of size [40,50] should look like this:
+            //[2, 0, 0, 2, 40, 50, 2, 40, 50].
+            //m_roi.m_p finally points to the 2nd entry,
+            //m_osize.m_p to the 4. entry and
+            //m_size.m_p to the 8. entry
+            //m_roi/m_osize/msize.m_p[-1] always contains the number of dimensions (here: 2)
             m_roi.m_p = new int [(dimensions + 1) + (dimensions + 1) + (dimensions + 1)];
+            m_roi.m_p = m_roi.m_p + 1;
             m_osize.m_p = static_cast<int *>(m_roi.m_p + dimensions) + 1;
             m_osize.m_p[-1] = dimensions;
             m_size.m_p = static_cast<int *>(m_osize.m_p + dimensions) + 1;
             m_size.m_p[-1] = dimensions;
-            m_roi.m_p = m_roi.m_p + 1;
+            
             m_roi.m_p[-1] = dimensions;
         }
 
@@ -1603,23 +1617,35 @@ void DataObject::createHeaderWithROI(const unsigned char dimensions, const int *
             {
                 delete[] (m_roi.m_p-1);
 
+                //the newly allocated array for a 2d object of size [40,50] should look like this:
+                //[2, 0, 0, 2, 40, 50, 2, 40, 50].
+                //m_roi.m_p finally points to the 2nd entry,
+                //m_osize.m_p to the 4. entry and
+                //m_size.m_p to the 8. entry
+                //m_roi/m_osize/msize.m_p[-1] always contains the number of dimensions (here: 2)
                 m_roi.m_p = new int [(dimensions + 1) + (dimensions + 1) + (dimensions + 1)];
+                m_roi.m_p = m_roi.m_p + 1; //move m_p pointer by one
                 m_osize.m_p = static_cast<int *>(m_roi.m_p + dimensions) + 1;
                 m_osize.m_p[-1] = dimensions;
                 m_size.m_p = static_cast<int *>(m_osize.m_p + dimensions) + 1;
                 m_size.m_p[-1] = dimensions;
-                m_roi.m_p = m_roi.m_p + 1; //move m_p pointer by one
                 m_roi.m_p[-1] = dimensions;
             }
         }
         else
         {
+            //the newly allocated array for a 2d object of size [40,50] should look like this:
+            //[2, 0, 0, 2, 40, 50, 2, 40, 50].
+            //m_roi.m_p finally points to the 2nd entry,
+            //m_osize.m_p to the 4. entry and
+            //m_size.m_p to the 8. entry
+            //m_roi/m_osize/msize.m_p[-1] always contains the number of dimensions (here: 2)
             m_roi.m_p = new int [(dimensions + 1) + (dimensions + 1) + (dimensions + 1)];
+            m_roi.m_p = m_roi.m_p + 1; //move m_p pointer by one
             m_osize.m_p = static_cast<int *>(m_roi.m_p + dimensions) + 1;
             m_osize.m_p[-1] = dimensions;
             m_size.m_p = static_cast<int *>(m_osize.m_p + dimensions) + 1;
             m_size.m_p[-1] = dimensions;
-            m_roi.m_p = m_roi.m_p + 1; //move m_p pointer by one
             m_roi.m_p[-1] = dimensions;
         }
 
@@ -2434,10 +2460,20 @@ MAKEFUNCLIST(CopyToFunc);
 
 //! high-level, non-templated method to deeply copy the data of this matrix to another matrix rhs
 /*!
+    In case of 'regionOnly' == false, the destination dataObject 'rhs' is always newly allocated
+    before copying data and the tags as well as the axis descriptions etc. are also copied from
+    the source object. If the source object has a ROI set, the entire object with all data
+    outside of the ROI is copied and the ROI is applied to the destination object, too.
+
+    If 'regionOnly' == true, only data within a current ROI is copied to the destination object.
+    In this case, the destination is only newly allocated if its current dimension, size or type
+    do not fit to the source object. Else, data is copied into the existing memory. Tags and
+    axis descriptions etc. are always copied to the destination object.
+
     \param &rhs is the matrix where the data is copied to. The old data of rhs is deleted first
     \param regionOnly, if true, only the data of the ROI in lhs is copied, hence, the org-size of rhs corresponds to the ROI-size of lhs, else the whole data block is copied and the ROI of rhs is set to the ROI of lhs
     \return retOk
-    \sa CopyToFunc
+    \sa deepCopyPartial
 */
 RetVal DataObject::copyTo(DataObject &rhs, unsigned char regionOnly) const
 {
