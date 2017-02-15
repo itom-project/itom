@@ -26,7 +26,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 #include "commonWidgets.h"
 
-#include <qtreeview.h>
+#include <qwidget.h>
 #include <qscopedpointer.h>
 #include <qpointer.h>
 
@@ -37,7 +37,7 @@ namespace ito {
 	class AddInBase; //forward declaration
 };
 
-class ITOMWIDGETS_EXPORT ParamEditorWidget : public QTreeView
+class ITOMWIDGETS_EXPORT ParamEditorWidget : public QWidget
 {
     Q_OBJECT
 
@@ -57,27 +57,14 @@ public:
     /// Destructor
 	virtual ~ParamEditorWidget();
 
-    void setSorted(bool value);
-
-    bool sorted() const;
-
 	QPointer<ito::AddInBase> plugin() const;
 	void setPlugin(QPointer<ito::AddInBase> plugin);
-
-protected:
-    void mousePressEvent(QMouseEvent *event);
-    void keyPressEvent(QKeyEvent *event);
 
 private:
 	QScopedPointer<ParamEditorWidgetPrivate> d_ptr;
 
 	Q_DECLARE_PRIVATE(ParamEditorWidget);
 	Q_DISABLE_COPY(ParamEditorWidget);
-
-signals:
-
-private slots :
-    void sortedAction(bool checked);
 
 
 };

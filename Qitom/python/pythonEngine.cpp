@@ -223,6 +223,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<QSharedPointer<ito::DataObject> >("QSharedPointer<ito::DataObject>");
     qRegisterMetaType<QPointer<ito::AddInDataIO> >("QPointer<ito::AddInDataIO>");
     qRegisterMetaType<QPointer<ito::AddInActuator> >("QPointer<ito::AddInActuator>");
+    qRegisterMetaType<QPointer<ito::AddInBase> >("QPointer<ito::AddInBase>");
     qRegisterMetaType<QSharedPointer< QSharedPointer< unsigned int > > >("QSharedPointer<QSharedPointer<unsigned int>>");
 #if ITOM_POINTCLOUDLIBRARY > 0    
     qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud");

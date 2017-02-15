@@ -21,174 +21,97 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
 #include "paramEditorWidget.h"
-#include "paramEditorModel.h"
-#include "QVariantDelegate.h"
 #include <qevent.h>
 #include <qheaderview.h>
 #include <qaction.h>
+#include <qlayout.h>
+
+#include "common/addInInterface.h"
+
+#include "qttreepropertybrowser.h"
+#include "qtgroupboxpropertybrowser.h"
+#include "qtpropertymanager.h"
 
 class ParamEditorWidgetPrivate
 {
-	Q_DECLARE_PUBLIC(ParamEditorWidget);
+	//Q_DECLARE_PUBLIC(ParamEditorWidget);
 
 public:
-	QScopedPointer<ParamEditorModel> m_model;
+    ParamEditorWidgetPrivate()
+        : m_pBrowser(NULL),
+        m_pIntManager(NULL)
+    {};
+
+    QPointer<ito::AddInBase> m_plugin;
+    QtAbstractPropertyBrowser *m_pBrowser;
+    QtIntPropertyManager *m_pIntManager;
 };
 
-
+//-----------------------------------------------------------------------
 ParamEditorWidget::ParamEditorWidget(QWidget* parent /*= 0*/) : 
-	QTreeView(parent),
+	QWidget(parent),
 	d_ptr(new ParamEditorWidgetPrivate())
 {
 	Q_D(ParamEditorWidget);
 
-	d->m_model = new ParamEditorModel(this);
+	d->m_pBrowser = new QtTreePropertyBrowser();
+    d->m_pIntManager = new QtIntPropertyManager(this);
 
-    m_model = new QPropertyModel(this);    
-
-    setModel(m_model);
-
-    setItemDelegate(new QVariantDelegate(this));
-    //setEditTriggers( QAbstractItemView::SelectedClicked | QAbstractItemView::EditKeyPressed | QAbstractItemView::AnyKeyPressed /*QAbstractItemView::AllEditTriggers*/ );
-    setEditTriggers( QAbstractItemView::EditKeyPressed ); //triggers are handled by mousepress and keypress event below (is better than original)
-    setSelectionBehavior( QAbstractItemView::SelectRows );
-    setAlternatingRowColors(true);
-
-    QAction *action = new QAction(tr("sort entries"), this);
-    action->setCheckable(true);
-    action->setChecked(sorted());
-    addAction(action);
-    connect(action, SIGNAL(triggered(bool)), this, SLOT(sortedAction(bool)));
-
-    setContextMenuPolicy(Qt::ActionsContextMenu);
-
-    ito::itomCustomTypes::registerTypes();
-    registerCustomPropertyCB(ito::itomCustomTypes::createCustomProperty);
+    QHBoxLayout *hboxLayout = new QHBoxLayout();
+    hboxLayout->addWidget(d->m_pBrowser);
+    setLayout(hboxLayout);
 }
 
-
-QPropertyEditorWidget::~QPropertyEditorWidget()
+//-----------------------------------------------------------------------
+ParamEditorWidget::~ParamEditorWidget()
 {
+    Q_D(ParamEditorWidget);
+    delete d->m_pBrowser;
 }
 
-void QPropertyEditorWidget::addObject(QObject* propertyObject)
+//-----------------------------------------------------------------------
+QPointer<ito::AddInBase> ParamEditorWidget::plugin() const
 {
-    m_model->addItem(propertyObject);
-    if(!m_model->sorted())
+    Q_D(const ParamEditorWidget);
+    return d->m_plugin;
+}
+
+//-----------------------------------------------------------------------
+void ParamEditorWidget::setPlugin(QPointer<ito::AddInBase> plugin)
+{
+    Q_D(ParamEditorWidget);
+
+    if (d->m_plugin.data() != plugin.data())
     {
-        expandToDepth(0);
-    }
-}
+        d->m_plugin = plugin;
 
-void QPropertyEditorWidget::setObject(QObject* propertyObject)
-{
-    m_model->clear();
-    if (propertyObject)
-    {
-        addObject(propertyObject);
-    }
-}
+        d->m_pBrowser->clear();
 
-void QPropertyEditorWidget::updateObject(QObject* propertyObject)
-{
-    if (propertyObject)
-        m_model->updateItem(propertyObject);    
-}
-
-void QPropertyEditorWidget::registerCustomPropertyCB(UserTypeCB callback)
-{
-    m_model->registerCustomPropertyCB(callback);
-}
-
-void QPropertyEditorWidget::unregisterCustomPropertyCB(UserTypeCB callback)
-{
-    m_model->unregisterCustomPropertyCB(callback);
-}
-
-
-void QPropertyEditorWidget::mousePressEvent(QMouseEvent *event)
-{
-    QTreeView::mousePressEvent(event);
-    QModelIndex index = indexAt( event->pos() );
-
-    if (index.isValid()) 
-    {
-        if (/*(item != m_editorPrivate->editedItem()) && */(event->button() == Qt::LeftButton) 
-                && (header()->logicalIndexAt(event->pos().x()) == 1)
-                && ((m_model->flags(index) & (Qt::ItemIsEditable | Qt::ItemIsEnabled)) == (Qt::ItemIsEditable | Qt::ItemIsEnabled))) 
+        if (plugin.isNull() == false)
         {
-            //editItem(item, 1);
-            edit(index);
-        } 
-        /*else if (!m_editorPrivate->hasValue(item) && m_editorPrivate->markPropertiesWithoutValue() && !rootIsDecorated()) 
-        {
-            if (event->pos().x() + header()->offset() < 20)
-                item->setExpanded(!item->isExpanded());
-        }*/
-    }
-}
+            QtGroupPropertyManager *groupManager = new QtGroupPropertyManager(this);
+            d->m_pBrowser->addProperty(groupManager->addProperty("General"));
+            d->m_pBrowser->addProperty(groupManager->addProperty("Test"));
 
-void QPropertyEditorWidget::keyPressEvent(QKeyEvent *event)
-{
-    switch (event->key()) 
-    {
-    case Qt::Key_Return:
-    case Qt::Key_Enter:
-    case Qt::Key_Space: // Trigger Edit
-        //if (!m_editorPrivate->editedItem())
-        {
-            QModelIndex index = currentIndex();
+            QMap<QString, ito::Param> *params;
+            QMap<QString, ito::Param>::const_iterator iter;
+            plugin->getParamList(&params);
 
-            if (index.isValid() )
+            iter = params->constBegin();
+            while (iter != params->constEnd())
             {
-                if (m_model->columnCount(index) >= 2 && ((m_model->flags(index) & (Qt::ItemIsEditable | Qt::ItemIsEnabled)) == (Qt::ItemIsEditable | Qt::ItemIsEnabled))) 
+                if (iter->getType() == ito::ParamBase::Int)
                 {
-                    event->accept();
-                    // If the current position is at column 0, move to 1.
-                    if (index.column() == 0) 
-                    {
-                        index = index.sibling(index.row(), 1);
-                        setCurrentIndex(index);
-                    }
-                    edit(index);
-                    return;
+                    QtProperty *prop = d->m_pIntManager->addProperty(iter->getName());
+                    prop->setEnabled(!(iter->getFlags() & ito::ParamBase::Readonly));
+                    d->m_pIntManager->setValue(prop, iter->getVal<int>());
+                    d->m_pIntManager->setMinimum(prop, iter->getMin());
+                    d->m_pIntManager->setMaximum(prop, iter->getMax());
+                    d->m_pBrowser->addProperty(prop);
                 }
+                ++iter;
             }
+            
         }
-        break;
-    default:
-        break;
     }
-    QTreeView::keyPressEvent(event);
-}
-
-void QPropertyEditorWidget::setSorted(bool value)
-{
-    m_model->setSorted(value);
-    
-    m_sorted = value;
-
-    //first action corresponds to sorted
-    if (actions().size() > 0)
-    {
-        actions()[0]->setChecked(value);
-    }
-
-    if(m_sorted)
-    {
-    }
-    else
-    {
-        expandToDepth(0);
-    }
-}
-
-bool QPropertyEditorWidget::sorted() const
-{
-    return m_model->sorted();
-}
-
-void QPropertyEditorWidget::sortedAction(bool checked)
-{
-    setSorted(checked);
 }

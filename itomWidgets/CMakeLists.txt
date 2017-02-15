@@ -66,6 +66,8 @@ ENDIF (DEFINED CMAKE_BUILD_TYPE)
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_CURRENT_BINARY_DIR}/paramPropertyBrowser
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser
     ${CMAKE_CURRENT_SOURCE_DIR}/..  
     ${QT_QTCORE_INCLUDE_DIR}
     ${Qt5Widgets_INCLUDE_DIRS}
@@ -75,6 +77,29 @@ INCLUDE_DIRECTORIES(
 
 LINK_DIRECTORIES(
     ${OpenCV_DIR}/lib
+)
+
+SET(paramPropertyBrowser_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtbuttonpropertybrowser.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtbuttonpropertybrowser.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qteditorfactory.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qteditorfactory.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtgroupboxpropertybrowser.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtgroupboxpropertybrowser.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertybrowser.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertybrowser.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertybrowserutils.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertybrowserutils_p.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertymanager.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertymanager.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qttreepropertybrowser.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qttreepropertybrowser.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtvariantproperty.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtvariantproperty.h
+)
+
+SET(paramPropertyBrowser_MOC_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertybrowserutils_p.h
 )
 
 set(itomWidgets_Factory_HEADERS
@@ -117,7 +142,7 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoPicker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoShapes.h
     ${CMAKE_CURRENT_SOURCE_DIR}/paramEditorWidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramEditorModel.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/paramEditorModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/valueProxy.h
     ${CMAKE_CURRENT_SOURCE_DIR}/utils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/proxyStyle.h
@@ -154,17 +179,55 @@ set(itomWidgets_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/menuComboBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/motorAxisController.h
     ${CMAKE_CURRENT_SOURCE_DIR}/statusLed.h
+	${CMAKE_CURRENT_SOURCE_DIR}/paramEditorWidget.h
+)
+
+# List of header that should go though moc
+SET(paramPropertyBrowser_HEADERS_MOC_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtbuttonpropertybrowser.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qteditorfactory.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtgroupboxpropertybrowser.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertybrowser.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertybrowserutils_p.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertymanager.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qttreepropertybrowser.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtvariantproperty.h
+)
+
+# List of cpp files that should go though moc
+SET(paramPropertyBrowser_CPP_MOC_SOURCES
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qteditorfactory.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertymanager.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qttreepropertybrowser.cpp
 )
 
 
 if (QT5_FOUND)
+    QT5_WRAP_CPP(paramPropertyBrowser_MOC ${paramPropertyBrowser_MOC_SOURCES})
     QT5_WRAP_CPP(itomWidgets_HEADERS_MOC ${itomWidgets_HEADERS})
     QT5_WRAP_CPP(itomWidgets_Factory_HEADERS_MOC ${itomWidgets_Factory_HEADERS})
     #these header files need to be moc'ed, but the moc file should not be added to the project
     #since it is included in another source file that actually compiles the moc'ed file.
     QT5_GENERATE_MOCS(
         pathLineEdit.h)
+        
+    SET(paramPropertyBrowser_MOC_CPP)
+    FOREACH(file ${paramPropertyBrowser_HEADERS_MOC_SOURCES})
+      get_filename_component(filename_we ${file} NAME_WE)
+      SET(output_file moc_${filename_we}.cpp)
+      QT5_GENERATE_MOC(${file} ${output_file})
+      LIST(APPEND paramPropertyBrowser_MOC_CPP ${output_file})
+    ENDFOREACH()
+    
+    FOREACH(file ${paramPropertyBrowser_CPP_MOC_SOURCES})
+      get_filename_component(filename_we ${file} NAME_WE)
+      SET(output_file ${filename_we}.moc)
+      QT5_GENERATE_MOC(${file} ${output_file})
+      LIST(APPEND paramPropertyBrowser_MOC_CPP ${output_file})
+    ENDFOREACH()
 else (QT5_FOUND)
+
+    QT4_WRAP_CPP_ITOM(paramPropertyBrowser_MOC ${paramPropertyBrowser_MOC_SOURCES})
     QT4_WRAP_CPP_ITOM(itomWidgets_Factory_HEADERS_MOC ${itomWidgets_Factory_HEADERS})
     QT4_WRAP_CPP_ITOM(itomWidgets_HEADERS_MOC ${itomWidgets_HEADERS})
     
@@ -173,6 +236,21 @@ else (QT5_FOUND)
     QT4_GENERATE_MOCS(
         pathLineEdit.h
     )
+    
+    SET(paramPropertyBrowser_MOC_CPP)
+    FOREACH(file ${paramPropertyBrowser_HEADERS_MOC_SOURCES})
+      get_filename_component(filename_we ${file} NAME_WE)
+      SET(output_file moc_${filename_we}.cpp)
+      QT4_GENERATE_MOC(${file} ${output_file})
+      LIST(APPEND paramPropertyBrowser_MOC_CPP ${output_file})
+    ENDFOREACH()
+    
+    FOREACH(file ${paramPropertyBrowser_CPP_MOC_SOURCES})
+      get_filename_component(filename_we ${file} NAME_WE)
+      SET(output_file ${filename_we}.moc)
+      QT4_GENERATE_MOC(${file} ${output_file})
+      LIST(APPEND paramPropertyBrowser_MOC_CPP ${output_file})
+    ENDFOREACH()
 endif (QT5_FOUND)
 
 #append the separately moc'ed header to the list of headers
@@ -243,7 +321,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoPicker.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoShapes.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/paramEditorWidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/paramEditorModel.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/paramEditorModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/motorAxisController.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/statusLed.cpp
 )
@@ -263,19 +341,15 @@ set(itomWidgets_UI
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/brushCreatorDialog.ui
 )
 
+
+
 IF (QT5_FOUND)
     QT5_WRAP_UI(itomWidgets_UI_MOC ${itomWidgets_UI})
 ELSE (QT5_FOUND)
     QT4_WRAP_UI_ITOM(itomWidgets_UI_MOC ${itomWidgets_UI})
 ENDIF (QT5_FOUND)
 
-#handle translations BEGIN STEP 1
-#set (FILES_TO_TRANSLATE ${itomWidgets_SOURCES} ${itomWidgets_HEADERS} ${itomWidgets_Factory_HEADERS} ${designer_ui})
-#set (TRANSLATION_OUTPUT_FILES)
-#set (TRANSLATIONS_FILES)
-
 file (GLOB EXISTING_TRANSLATION_FILES "translation/*.ts")
-#handle translations END STEP 1
 
 if (QT5_FOUND)
     QT5_ADD_RESOURCES(itomWidgets_rcc_MOC ${itomWidgets_rcc})
@@ -286,9 +360,20 @@ endif (QT5_FOUND)
 #add filters to visual studio
 ADD_SOURCE_GROUP(factories)
 ADD_SOURCE_GROUP(helper)
+ADD_SOURCE_GROUP(paramPropertyBrowser)
 #end add filters to visual studio
 
-ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} ${itomWidgets_SOURCES} ${itomWidgets_HEADERS} ${itomWidgets_HEADERS_MOC} ${itomWidgets_Factory_HEADERS} ${itomWidgets_Factory_HEADERS_MOC} ${itomWidgets_UI_MOC} ${itomWidgets_rcc_MOC} ${EXISTING_TRANSLATION_FILES})
+ADD_LIBRARY(${target_name} ${LIBRARY_TYPE} 
+    ${itomWidgets_SOURCES} 
+    ${itomWidgets_HEADERS} 
+    ${itomWidgets_HEADERS_MOC} 
+    ${itomWidgets_Factory_HEADERS} 
+    ${itomWidgets_Factory_HEADERS_MOC} 
+    ${itomWidgets_UI_MOC} 
+    ${itomWidgets_rcc_MOC} 
+    ${paramPropertyBrowser_SOURCES}
+    ${paramPropertyBrowser_MOC}
+    ${EXISTING_TRANSLATION_FILES})
 
 if (QT5_FOUND)
     TARGET_LINK_LIBRARIES(${target_name} ${VISUALLEAKDETECTOR_LIBRARIES} ${OpenCV_LIBS} ${QT5_LIBRARIES} itomCommonLib itomShapeLib itomCommonQtLib)
@@ -305,6 +390,12 @@ endif (QT5_FOUND)
 set (FILES_TO_TRANSLATE ${itomWidgets_SOURCES} ${itomWidgets_HEADERS} ${itomWidgets_UI})
 PLUGIN_TRANSLATION(QM_FILES ${target_name} ${UPDATE_TRANSLATIONS} "${EXISTING_TRANSLATION_FILES}" ITOM_LANGUAGES "${FILES_TO_TRANSLATE}")
 FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/translation)
+
+#this is a dummy project to force some moc-files to be generated before they are directly included in some cpp files (qtpropertybrowser only)
+add_custom_target(${target_name}GenerateMoc
+  DEPENDS ${paramPropertyBrowser_MOC_CPP}
+  )
+add_dependencies(${target_name} ${target_name}GenerateMoc)
 
 # COPY SECTION
 #set(COPY_SOURCES "")

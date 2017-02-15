@@ -2916,7 +2916,9 @@ PyObject* PythonQtConversion::ConvertQtValueToPythonInternal(int type, const voi
             }
             return DataObjectToPyObject(*(sharedPtr->data()));
         }
-        else if (strcmp(name, "QPointer<ito::AddInDataIO>") == 0 || strcmp(name, "QPointer<ito::AddInActuator>") == 0)
+        else if (strcmp(name, "QPointer<ito::AddInDataIO>") == 0 || \
+            strcmp(name, "QPointer<ito::AddInActuator>") == 0 || \
+            strcmp(name, "QPointer<ito::AddInBase>") == 0)
         {
             QPointer<ito::AddInBase> *ptr = (QPointer<ito::AddInBase>*)data;
             if (ptr == NULL)

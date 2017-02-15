@@ -25,4 +25,24 @@
     <file>icons/motorAxisController.png</file>
     <file>icons/statusLed.png</file>
   </qresource>
+  <qresource prefix="/trolltech/qtpropertybrowser">
+    <file>icons/cursor-arrow.png</file>
+    <file>icons/cursor-busy.png</file>
+    <file>icons/cursor-closedhand.png</file>
+    <file>icons/cursor-cross.png</file>
+    <file>icons/cursor-forbidden.png</file>
+    <file>icons/cursor-hand.png</file>
+    <file>icons/cursor-hsplit.png</file>
+    <file>icons/cursor-ibeam.png</file>
+    <file>icons/cursor-openhand.png</file>
+    <file>icons/cursor-sizeall.png</file>
+    <file>icons/cursor-sizeb.png</file>
+    <file>icons/cursor-sizef.png</file>
+    <file>icons/cursor-sizeh.png</file>
+    <file>icons/cursor-sizev.png</file>
+    <file>icons/cursor-uparrow.png</file>
+    <file>icons/cursor-vsplit.png</file>
+    <file>icons/cursor-wait.png</file>
+    <file>icons/cursor-whatsthis.png</file>
+  </qresource>
 </RCC>

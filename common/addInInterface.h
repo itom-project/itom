@@ -43,7 +43,7 @@
 #include <qthread.h>
 #include <qsharedpointer.h>
 #include <qmutex.h>
-#include <qapplication.h>
+#include <QApplication>
 
 #if QT_VERSION < 0x050000
 #include <qpluginloader.h>
