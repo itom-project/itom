@@ -4569,32 +4569,32 @@ c : {dataObject} \n\
 For a mathematical multiplication see the *-operator.");
 PyObject* PythonDataObject::PyDataObject_mul(PyDataObject *self, PyObject *args)
 {
-    if (self->dataObject == NULL) return 0;
+	if (self->dataObject == NULL) return 0;
 
-    PyObject *pyDataObject = NULL;
-    if (!PyArg_ParseTuple(args, "O!", &PythonDataObject::PyDataObjectType, &pyDataObject))
-    {
-        PyErr_SetString(PyExc_RuntimeError,"argument is no data object");
-        return NULL;
-    }
+	PyObject *pyDataObject = NULL;
+	if (!PyArg_ParseTuple(args, "O!", &PythonDataObject::PyDataObjectType, &pyDataObject))
+	{
+		PyErr_SetString(PyExc_RuntimeError, "argument is no data object");
+		return NULL;
+	}
 
-    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-    PyDataObject* obj2 = (PyDataObject*)pyDataObject;
+	PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+	PyDataObject* obj2 = (PyDataObject*)pyDataObject;
 
-    try
-    {
-        retObj->dataObject = new ito::DataObject(self->dataObject->mul(*(obj2->dataObject)));  //new dataObject should always be the owner of its data, therefore base of resultObject remains None
-    }
-    catch(cv::Exception &exc)
-    {
-        Py_DECREF(retObj);
-        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        return NULL;
-    }
+	try
+	{
+		retObj->dataObject = new ito::DataObject(self->dataObject->mul(*(obj2->dataObject)));  //new dataObject should always be the owner of its data, therefore base of resultObject remains None
+	}
+	catch (cv::Exception &exc)
+	{
+		Py_DECREF(retObj);
+		PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+		return NULL;
+	}
 
-    if(retObj) retObj->dataObject->addToProtocol("Created by elementwise multiplication of two dataObjects.");
+	if (retObj) retObj->dataObject->addToProtocol("Created by elementwise multiplication of two dataObjects.");
 
-    return (PyObject*)retObj;
+	return (PyObject*)retObj;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -7905,6 +7905,76 @@ PyObject* PythonDataObject::PyDataObj_StaticFromNumpyColor(PyObject *self, PyObj
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectCopyMetaInfo_doc, "copyMetaInfo(sourceObj [, copyAxisInfo = True, copyTags = False]) -> Copy the meta information of sourceObj. \n\
+\n\
+All meta information(axis scales, offsets, descriptions, units, tags...) of the sourceObj \
+are copied to the dataObject. \n\
+Parameters  \n\
+------------\n\
+sourceObj : {dataObject} \n\
+	whose meta information is copied in this dataObject. \n\
+copyAxisInfo : {bool}, optional\n\
+	If 'copyAxisInfo' is True, the 'axis scales', 'offsets', 'descriptions', 'units' are copied.\n\
+copyTags : {bool}, optional\n\
+	If 'copyTags' is True, the 'tags' are copied.\n\
+Returns \n\
+\n\
+Raises \n\
+------- \n\
+RuntimeError : \n\
+	if the given sourceObj is not a dataObject\n\
+\n\
+See Also \n\
+--------- \n\
+metaDict : this attribute can directly be used to print the meta information of a dataobject.");
+PyObject* PythonDataObject::PyDataObj_CopyMetaInfo(PyDataObject *self, PyObject *args, PyObject *kwds)
+{
+	Py_ssize_t length = 0;
+
+	if (self->dataObject == NULL)
+	{
+		PyErr_SetString(PyExc_RuntimeError, "DataObject is NULL.");
+		return NULL;
+	}
+
+	static const char *kwlist[] = { "sourceObj", "copyAxisInfo", "copyTags", NULL };
+	PyObject *pyObj = NULL;
+	unsigned char copyAxesInfo = 1;
+	unsigned char copyTags = 0;
+
+	if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|bb", const_cast<char**>(kwlist), &PythonDataObject::PyDataObjectType, &pyObj, &copyAxesInfo, &copyTags)) // obj is a borrowed reference
+	{
+		return NULL;
+	}
+	
+	PyDataObject* dObj = (PyDataObject*)pyObj;
+	try
+	{
+		if (copyAxesInfo)
+		{
+			dObj->dataObject->copyAxisTagsTo(*(self->dataObject));
+		}
+
+		if (copyTags)
+		{
+			dObj->dataObject->copyTagMapTo(*(self->dataObject));
+		}	
+
+	}
+	catch (cv::Exception &exc)
+	{
+		PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+		return NULL;
+	}	
+
+	if (self->dataObject)
+	{
+		self->dataObject->addToProtocol("Whole meta information of a dataObject copied.");
+	}
+	Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"name", (PyCFunction)PythonDataObject::PyDataObject_name, METH_NOARGS, pyDataObjectName_doc},
         {"data", (PyCFunction)PythonDataObject::PyDataObject_data, METH_NOARGS, pyDataObjectData_doc},
@@ -7920,6 +7990,7 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"addToProtocol",(PyCFunction)PyDataObj_AddToProtocol, METH_VARARGS, pyDataObjectAddToProtocol_doc},
         {"physToPix",(PyCFunction)PyDataObj_PhysToPix, METH_KEYWORDS | METH_VARARGS, pyDataObjectPhysToPix_doc},
         {"pixToPhys",(PyCFunction)PyDataObj_PixToPhys, METH_KEYWORDS | METH_VARARGS, pyDataObjectPixToPhys_doc},
+		{"copyMetaInfo", (PyCFunction)PyDataObj_CopyMetaInfo, METH_KEYWORDS | METH_VARARGS, pyDataObjectCopyMetaInfo_doc },
         
         {"copy",(PyCFunction)PythonDataObject::PyDataObject_copy, METH_VARARGS, pyDataObjectCopy_doc},
         {"astype", (PyCFunction)PythonDataObject::PyDataObject_astype, METH_VARARGS | METH_KEYWORDS, pyDataObjectAstype_doc},
