@@ -7909,69 +7909,69 @@ PyDoc_STRVAR(pyDataObjectCopyMetaInfo_doc, "copyMetaInfo(sourceObj [, copyAxisIn
 \n\
 All meta information(axis scales, offsets, descriptions, units, tags...) of the sourceObj \
 are copied to the dataObject. \n\
+\n\
 Parameters  \n\
 ------------\n\
 sourceObj : {dataObject} \n\
-	whose meta information is copied in this dataObject. \n\
+    whose meta information is copied in this dataObject. \n\
 copyAxisInfo : {bool}, optional\n\
-	If 'copyAxisInfo' is True, the 'axis scales', 'offsets', 'descriptions', 'units' are copied.\n\
+    If 'copyAxisInfo' is True, the 'axis scales', 'offsets', 'descriptions', 'units' are copied.\n\
 copyTags : {bool}, optional\n\
-	If 'copyTags' is True, the 'tags' are copied.\n\
-Returns \n\
+    If 'copyTags' is True, the 'tags' are copied.\n\
 \n\
 Raises \n\
 ------- \n\
 RuntimeError : \n\
-	if the given sourceObj is not a dataObject\n\
+    if the given sourceObj is not a dataObject\n\
 \n\
 See Also \n\
 --------- \n\
 metaDict : this attribute can directly be used to print the meta information of a dataobject.");
 PyObject* PythonDataObject::PyDataObj_CopyMetaInfo(PyDataObject *self, PyObject *args, PyObject *kwds)
 {
-	Py_ssize_t length = 0;
+    Py_ssize_t length = 0;
 
-	if (self->dataObject == NULL)
-	{
-		PyErr_SetString(PyExc_RuntimeError, "DataObject is NULL.");
-		return NULL;
-	}
+    if (self->dataObject == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "DataObject is NULL.");
+        return NULL;
+    }
 
-	static const char *kwlist[] = { "sourceObj", "copyAxisInfo", "copyTags", NULL };
-	PyObject *pyObj = NULL;
-	unsigned char copyAxesInfo = 1;
-	unsigned char copyTags = 0;
+    static const char *kwlist[] = { "sourceObj", "copyAxisInfo", "copyTags", NULL };
+    PyObject *pyObj = NULL;
+    unsigned char copyAxesInfo = 1;
+    unsigned char copyTags = 0;
 
-	if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|bb", const_cast<char**>(kwlist), &PythonDataObject::PyDataObjectType, &pyObj, &copyAxesInfo, &copyTags)) // obj is a borrowed reference
-	{
-		return NULL;
-	}
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|bb", const_cast<char**>(kwlist), &PythonDataObject::PyDataObjectType, &pyObj, &copyAxesInfo, &copyTags)) // obj is a borrowed reference
+    {
+        return NULL;
+    }
 	
-	PyDataObject* dObj = (PyDataObject*)pyObj;
-	try
-	{
-		if (copyAxesInfo)
-		{
-			dObj->dataObject->copyAxisTagsTo(*(self->dataObject));
-		}
+    PyDataObject* dObj = (PyDataObject*)pyObj;
+    try
+    {
+        if (copyAxesInfo)
+        {
+            dObj->dataObject->copyAxisTagsTo(*(self->dataObject));
+        }
 
-		if (copyTags)
-		{
-			dObj->dataObject->copyTagMapTo(*(self->dataObject));
-		}	
+        if (copyTags)
+        {
+            dObj->dataObject->copyTagMapTo(*(self->dataObject));
+        }	
 
-	}
-	catch (cv::Exception &exc)
-	{
-		PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-		return NULL;
-	}	
+    }
+    catch (cv::Exception &exc)
+    {
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        return NULL;
+    }	
 
-	if (self->dataObject)
-	{
-		self->dataObject->addToProtocol("Whole meta information of a dataObject copied.");
-	}
-	Py_RETURN_NONE;
+    if (self->dataObject)
+    {
+        self->dataObject->addToProtocol("Copied meta information from another dataObject.");
+    }
+    Py_RETURN_NONE;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
