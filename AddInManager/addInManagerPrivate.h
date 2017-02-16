@@ -41,7 +41,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <QTranslator>
 #include <qmainwindow.h>
 #include <qpair.h>
-
+#include <qpointer.h>
 
 
 namespace ito
@@ -57,8 +57,6 @@ class AddInManagerPrivate : public QObject
     public:
         AddInManagerPrivate(AddInManager* addInMgr);
         ~AddInManagerPrivate();
-
-        friend AddInManager;
     
     protected:
         AddInManager* const q_ptr;

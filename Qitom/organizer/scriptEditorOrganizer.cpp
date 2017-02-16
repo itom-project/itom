@@ -64,7 +64,7 @@ ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable)
 {
     m_dockAvailable = dockAvailable;
 
-    widgetFocusChanged(NULL,NULL); //sets active ScriptDockWidget to NULL
+    widgetFocusChanged(NULL, NULL); //sets active ScriptDockWidget to NULL
 
     m_scriptStackMutex.lock();
     scriptDockElements.clear();
@@ -76,8 +76,8 @@ ScriptEditorOrganizer::ScriptEditorOrganizer(bool dockAvailable)
     {
         connect(this, SIGNAL(pythonRunFile(QString)), pyEngine, SLOT(pythonRunFile(QString)));
         connect(this, SIGNAL(pythonDebugFile(QString)), pyEngine, SLOT(pythonDebugFile(QString)));
-        connect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString,int)));
-        connect(qApp, SIGNAL(focusChanged(QWidget*,QWidget*)), this, SLOT(widgetFocusChanged(QWidget*,QWidget*)));
+        connect(pyEngine, SIGNAL(pythonDebugPositionChanged(QString, int)), this, SLOT(pythonDebugPositionChanged(QString, int)));
+        connect(qApp, SIGNAL(focusChanged(QWidget*, QWidget*)), this, SLOT(widgetFocusChanged(QWidget*, QWidget*)));
     }
 }
 
@@ -111,12 +111,12 @@ ScriptEditorOrganizer::~ScriptEditorOrganizer()
 void ScriptEditorOrganizer::saveScriptState()
 {
     QMainWindow *mainWin = qobject_cast<QMainWindow*>(AppManagement::getMainWindow());
-
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
     settings.remove("ScriptEditorOrganizer"); //remove old entries and rebuild it from nothing
 
     settings.beginGroup("ScriptEditorOrganizer");
+
     settings.beginWriteArray("scriptWidgets");
     int counter = 0;
     QVariant states;
@@ -127,7 +127,7 @@ void ScriptEditorOrganizer::saveScriptState()
         
         if (mainWin)
         {
-            settings.setValue("dockWidgetArea",mainWin->dockWidgetArea(sdw));
+            settings.setValue("dockWidgetArea", mainWin->dockWidgetArea(sdw));
         }
         else
         {
@@ -135,7 +135,7 @@ void ScriptEditorOrganizer::saveScriptState()
         }
         
         settings.setValue("objectName", sdw->objectName());
-        settings.setValue("docked",sdw->docked());
+        settings.setValue("docked", sdw->docked());
         settings.setValue("currentIndex", sdw->getCurrentIndex());
         states = QVariant::fromValue<QList<ito::ScriptEditorStorage> >(sdw->saveScriptState());
         settings.setValue("state", states);
@@ -155,6 +155,13 @@ void ScriptEditorOrganizer::saveScriptState()
         }
     }
     settings.endArray();
+
+    ScriptDockWidget* activeWidget = getActiveDockWidget();
+    if (activeWidget)
+    {
+        m_dockedNewWidget = activeWidget->docked();
+    }
+    settings.setValue("scriptEditorDocked", m_dockedNewWidget);
     settings.endGroup();
 }
 
@@ -167,6 +174,7 @@ RetVal ScriptEditorOrganizer::restoreScriptState()
     RetVal retval;
     QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     settings.beginGroup("ScriptEditorOrganizer");
+    m_dockedNewWidget = settings.value("scriptEditorDocked", "false").toBool();
 
     bool docked;
     QString objectName;
@@ -318,11 +326,11 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked, Qt::
     scriptDockElements.push_front(newWidget);
     m_scriptStackMutex.unlock();
 
-    connect(newWidget,SIGNAL(removeAndDeleteScriptDockWidget(ScriptDockWidget*)),this,SLOT(removeScriptDockWidget(ScriptDockWidget*)));
-    connect(newWidget,SIGNAL(dockScriptTab(ScriptDockWidget*,int,bool)),this,SLOT(dockScriptTab(ScriptDockWidget*,int,bool)));
-    connect(newWidget,SIGNAL(undockScriptTab(ScriptDockWidget*,int,bool,bool)),this,SLOT(undockScriptTab(ScriptDockWidget*,int,bool,bool)));
+    connect(newWidget, SIGNAL(removeAndDeleteScriptDockWidget(ScriptDockWidget*)), this, SLOT(removeScriptDockWidget(ScriptDockWidget*)));
+    connect(newWidget, SIGNAL(dockScriptTab(ScriptDockWidget*, int, bool)), this, SLOT(dockScriptTab(ScriptDockWidget*, int, bool)));
+    connect(newWidget, SIGNAL(undockScriptTab(ScriptDockWidget*, int, bool, bool)), this, SLOT(undockScriptTab(ScriptDockWidget*, int, bool, bool)));
 
-    connect(newWidget,SIGNAL(openScriptRequest(QString,ScriptDockWidget*)), this, SLOT(openScriptRequested(QString,ScriptDockWidget*)));
+    connect(newWidget, SIGNAL(openScriptRequest(QString, ScriptDockWidget*)), this, SLOT(openScriptRequested(QString, ScriptDockWidget*)));
 
     connect(newWidget, SIGNAL(pythonRunFileRequest(QString)), this, SLOT(pythonRunFileRequested(QString)));
     connect(newWidget, SIGNAL(pythonDebugFileRequest(QString)), this, SLOT(pythonDebugFileRequested(QString)));
@@ -359,6 +367,8 @@ ScriptDockWidget* ScriptEditorOrganizer::createEmptyScriptDock(bool docked, Qt::
 */
 void ScriptEditorOrganizer::removeScriptDockWidget(ScriptDockWidget* widget)
 {
+    m_dockedNewWidget = widget->docked();
+
     widget->disconnect(); //disconnect all connected to 'widget'
 
     emit(removeScriptDockWidgetFromMainWindow(widget));
@@ -696,7 +706,7 @@ RetVal ScriptEditorOrganizer::newScript(ItomSharedSemaphore *semaphore)
     }
     else
     {
-        activeWidget = createEmptyScriptDock(false);
+        activeWidget = createEmptyScriptDock(m_dockedNewWidget);
         if (activeWidget != NULL) 
         {
             retValue += activeWidget->newScript();
@@ -751,7 +761,7 @@ RetVal ScriptEditorOrganizer::openScript(const QString &filename, ItomSharedSema
         ScriptDockWidget* activeWidget = getActiveDockWidget();
         if (activeWidget == NULL)
         {
-            activeWidget = createEmptyScriptDock(false);
+            activeWidget = createEmptyScriptDock(m_dockedNewWidget);
         }
     
         if (activeWidget != NULL) 
@@ -819,7 +829,7 @@ ScriptDockWidget* ScriptEditorOrganizer::openScriptRequested(const QString &file
     {
         if (widget == NULL)
         {
-            widget = createEmptyScriptDock(false);
+            widget = createEmptyScriptDock(m_dockedNewWidget);
         }
          widget->openScript(filename, true);
          tempWidget = widget;

@@ -2563,17 +2563,16 @@ template<typename _Tp> RetVal DeepCopyPartialFunc(const DataObject &lhs, DataObj
             {
                 lhs_ptr = lhs_mat->data;
                 rhs_ptr = rhs_mat->data;
-                int row;
-                int col;
+                lineBytes = lhs_mat->step[0];
 
 #if (USEOMP)
                 #pragma omp parallel num_threads(getMaximumThreadCount())
                 {
                 #pragma omp for schedule(guided)
 #endif				
-                for (row = 0; row < lhs_mat->rows; ++row)
+                for (int row = 0; row < lhs_mat->rows; ++row)
                 {
-                    for (col = 0; col < lhs_mat->cols; ++col)
+                    for (int col = 0; col < lhs_mat->cols; ++col)
                     {
                         rhs_mat->ptr<_Tp>(col)[row] = ((const _Tp*)((lhs_ptr + row * lineBytes)))[col];
                     }

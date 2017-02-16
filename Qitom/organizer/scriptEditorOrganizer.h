@@ -49,6 +49,7 @@ public:
     const QStringList &getRecentlyUsedFiles() const { return m_recentlyUsedFiles; }
 
     QStringList openedScripts() const;
+    bool m_dockedNewWidget;
 
 protected:
     ScriptDockWidget* createEmptyScriptDock(bool docked, Qt::DockWidgetArea area = Qt::TopDockWidgetArea, const QString &objectName = QString());
