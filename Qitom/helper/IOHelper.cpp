@@ -544,11 +544,13 @@ end:
     if (!unpackDict)
     {
         QRegExp regExp("^[a-zA-Z][a-zA-Z0-9_]*$");
-        QString defaultName = info.baseName();
+        QString defaultName = info.completeBaseName();
         if (regExp.indexIn(defaultName) == -1)
         {
-            defaultName.prepend("var");
+            //defaultName.prepend("var");
             defaultName.replace("-", "_");
+			defaultName.replace(".", "_");
+			defaultName.replace(" ", "_");
             if (regExp.indexIn(defaultName) == -1)
             {
                 defaultName = "varName";
