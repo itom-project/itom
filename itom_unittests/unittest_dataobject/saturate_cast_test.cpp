@@ -211,9 +211,18 @@ TYPED_TEST(SaturateTestRGBA_compatible_cast, saturate_cast_Test)
     }
     else
     {
-        EXPECT_EQ(cv::saturate_cast<TypeParam>(rgba_val1) , (TypeParam)rgba_val1.gray());
-        EXPECT_EQ(cv::saturate_cast<TypeParam>(rgba_val2) , (TypeParam)rgba_val2.gray());
-        EXPECT_EQ(cv::saturate_cast<TypeParam>(rgba_val3) , (TypeParam)rgba_val3.gray());
+		if (std::numeric_limits<TypeParam>::is_exact)
+		{
+			EXPECT_EQ(cv::saturate_cast<TypeParam>(rgba_val1), (TypeParam)(cvRound(rgba_val1.gray())));
+			EXPECT_EQ(cv::saturate_cast<TypeParam>(rgba_val2), (TypeParam)(cvRound(rgba_val2.gray())));
+			EXPECT_EQ(cv::saturate_cast<TypeParam>(rgba_val3), (TypeParam)(cvRound(rgba_val3.gray())));
+		}
+		else
+		{
+			EXPECT_EQ(cv::saturate_cast<TypeParam>(rgba_val1), (TypeParam)((rgba_val1.gray())));
+			EXPECT_EQ(cv::saturate_cast<TypeParam>(rgba_val2), (TypeParam)((rgba_val2.gray())));
+			EXPECT_EQ(cv::saturate_cast<TypeParam>(rgba_val3), (TypeParam)((rgba_val3.gray())));
+		}
 
         EXPECT_EQ(cv::saturate_cast<TypeParam>(rgba_val3) , cv::saturate_cast<TypeParam>(rgba_val3.gray()));
          
