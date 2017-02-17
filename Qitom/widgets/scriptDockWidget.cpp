@@ -1540,6 +1540,7 @@ void ScriptDockWidget::createToolBars()
     m_fileToolBar->addAction(m_saveScriptAction->action());
     m_fileToolBar->addAction(m_saveScriptAsAction->action());
     m_fileToolBar->addAction(m_saveAllScriptsAction->action());
+    m_fileToolBar->addAction(m_printAction->action());
     m_fileToolBar->setFloatable(false);
 
     m_editToolBar = new QToolBar(tr("Edit Toolbar"), this);
@@ -1551,6 +1552,7 @@ void ScriptDockWidget::createToolBars()
     m_editToolBar->addAction(m_redoAction->action());
     m_editToolBar->addAction(m_findTextExprAction->action());
     m_editToolBar->addAction(m_replaceTextExprAction->action());
+    m_editToolBar->addAction(m_openIconBrowser->action());
     m_editToolBar->setFloatable(false);
 
     m_scriptToolBar = new QToolBar(tr("Script Toolbar"), this);

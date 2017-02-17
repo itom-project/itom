@@ -71,6 +71,12 @@ cxx_library(gtest "${cxx_strict}" src/gtest-all.cc)
 # cxx_library(gtest_main "${cxx_strict}" src/gtest_main.cc) #itom fix: commented since gtest_main not necessary here
 # target_link_libraries(gtest_main gtest)                   #itom fix: commented since gtest_main not necessary here
 
+set_target_properties(gtest
+    PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/"
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/"
+)
+
 ########################################################################
 #
 # Samples on how to link user tests with gtest or gtest_main.

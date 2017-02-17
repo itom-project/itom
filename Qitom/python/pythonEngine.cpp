@@ -4487,10 +4487,32 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
                 {
                     PyObject *key, *value;
                     Py_ssize_t pos = 0;
+					QString key_str;
+					bool ok;
+					ito::RetVal ret;
+					PyObject *key_approved;
+					int counter = 0;
 
                     while (PyDict_Next(dict, &pos, &key, &value)) //returns borrowed references to key and value.
                     {
-                        PyDict_SetItem(destinationDict, key, value);
+						key_str = PythonQtConversion::PyObjGetString(key, true, ok); 
+						if (ok)
+						{
+							key_str.replace(".","_");
+							key_str.replace("-","_");
+							key_str.replace(" ","_");
+							ret = ito::retOk;
+							key_approved = getAndCheckIdentifier(key_str, ret); //new reference
+						}
+
+						if (!ok || ret.containsError())
+						{
+							key_approved = PyUnicode_FromFormat("var%i", counter); //new reference
+							counter++;
+						}
+
+                        PyDict_SetItem(destinationDict, key_approved, value);
+						Py_DECREF(key_approved);
                     }
                 }
             }
@@ -5815,16 +5837,37 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
             //try to write every element of unpickledItem-dict to destinationDictionary
             PyObject *key, *value;
             Py_ssize_t pos = 0;
+			QString key_str;
+			PyObject *key_approved = NULL;
+			bool ok;
+			ito::RetVal ret;
+			int counter = 0;
 
             while (PyDict_Next(unpickledItem, &pos, &key, &value))
             {
-                if (PyDict_Contains(destinationDict, key) && overwrite)
+				key_str = PythonQtConversion::PyObjGetString(key, true, ok); 
+				if (ok)
+				{
+					key_str.replace(".","_");
+					key_str.replace("-","_");
+					key_str.replace(" ","_");
+					ret = ito::retOk;
+					key_approved = getAndCheckIdentifier(key_str, ret); //new reference
+				}
+
+				if (!ok || ret.containsError())
+				{
+					key_approved = PyUnicode_FromFormat("var%i", counter); //new reference
+					counter++;
+				}
+
+                if (PyDict_Contains(destinationDict, key_approved) && overwrite)
                 {
                     if (overwrite)
                     {
-                        PyDict_DelItem(destinationDict, key);
+                        PyDict_DelItem(destinationDict, key_approved);
                         //Py_INCREF(value);
-                        PyDict_SetItem(destinationDict, key, value); //value is not stolen by SetItem
+                        PyDict_SetItem(destinationDict, key_approved, value); //value is not stolen by SetItem
                     }
                     else
                     {
@@ -5833,8 +5876,10 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
                 }
                 else
                 {
-                    PyDict_SetItem(destinationDict, key, value);
+                    PyDict_SetItem(destinationDict, key_approved, value);
                 }
+
+				Py_DECREF(key_approved);
             }
   
         }
