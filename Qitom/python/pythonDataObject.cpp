@@ -7475,6 +7475,48 @@ PyObject* PythonDataObject::PyDataObject_createMask(PyDataObject *self, PyObject
         return NULL;
     }
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectStack_doc, "stack(obj) -> return a three dimensional data object containing a stack of all planes given by this and obj. \n\
+\n\
+The returned three dimensional dataObject contains layers of the same shape and type like the given ones. The different layers will be located along the first axis.\
+\n\
+Parameters \n\
+----------- \n\
+obj : {dataObject} \n\
+	DataObject containig planes that will be stacked to the other dataObject. Obj must be of the same type and have the same shape of planes (last two dimesnions).\n\
+	The function works with two and three dimensional dataObjects.\n\
+\n\
+Returns \n\
+------- \n\
+dataObj : {dataObject} \n\
+	three dimensional dataObject of the same type. The different planes are located along the first axis.");
+PyObject* PythonDataObject::PyDataObject_stack(PyDataObject *self, PyObject *args)
+{
+    if (self->dataObject == NULL) return 0;
+
+    PyObject *pyDataObject = NULL;
+    if (!PyArg_ParseTuple(args, "O!", &PythonDataObject::PyDataObjectType, &pyDataObject))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "argument is no data object");
+        return NULL;
+    }
+    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+    PyDataObject* obj2 = (PyDataObject*)pyDataObject;
+    try
+    {
+        retObj->dataObject = new ito::DataObject(self->dataObject->stack(*(obj2->dataObject)));
+    }
+    catch (cv::Exception &exc)
+    {
+        Py_DECREF(retObj);
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        return NULL;
+    }
+
+    if (retObj) retObj->dataObject->addToProtocol("Created by stacking two dataObjects.");
+
+    return (PyObject*)retObj;
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonDataObject::PyDataObj_Capsule_Destructor(PyObject* capsule)
@@ -8018,6 +8060,7 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"__setstate__", (PyCFunction)PythonDataObject::PyDataObj_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
         {"__array__", (PyCFunction)PythonDataObject::PyDataObj_Array_, METH_VARARGS, dataObject_Array__doc},
         { "createMask", (PyCFunction)PythonDataObject::PyDataObject_createMask, METH_KEYWORDS | METH_VARARGS, pyDataObjectCreateMask_doc },
+        { "stack", (PyCFunction)PythonDataObject::PyDataObject_stack, METH_VARARGS, pyDataObjectStack_doc },
 
         {"abs", (PyCFunction)PythonDataObject::PyDataObject_abs, METH_NOARGS, pyDataObjectAbs_doc}, 
         {"arg", (PyCFunction)PythonDataObject::PyDataObject_arg, METH_NOARGS, pyDataObjectArg_doc},

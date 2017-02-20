@@ -67,8 +67,8 @@
 #define NaPythonPies "Pies"
 #define VePythonPies "2.6.7"
 
-#define FNPythonFrosted "frosted-1.4.1-py2.py3-none-any.whl"
-#define NaPythonFrosted "Frosted"
+#define FNPythonFrosted "frosted-1.4.1.post2-py2.py3-none-any.whl"
+#define NaPythonFrosted "Frosted (Post 2)"
 #define VePythonFrosted "1.4.1"
 
 #define FNPythonCycler "cycler-0.10.0-py2.py3-none-any.whl"
