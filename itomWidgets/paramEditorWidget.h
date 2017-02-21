@@ -26,12 +26,17 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 #include "commonWidgets.h"
 
+#include "common/sharedStructuresQt.h"
+#include "common/param.h"
+
 #include <qwidget.h>
 #include <qscopedpointer.h>
 #include <qpointer.h>
 
 class ParamEditorModel;
 class ParamEditorWidgetPrivate;
+class QtProperty;
+class QTimerEvent;
 
 namespace ito {
 	class AddInBase; //forward declaration
@@ -44,8 +49,6 @@ class ITOMWIDGETS_EXPORT ParamEditorWidget : public QWidget
 	Q_PROPERTY(QPointer<ito::AddInBase> plugin READ plugin WRITE setPlugin)
 
 public:
-
-
     /**
      * \brief Constructor 
      *
@@ -60,11 +63,39 @@ public:
 	QPointer<ito::AddInBase> plugin() const;
 	void setPlugin(QPointer<ito::AddInBase> plugin);
 
+protected:
+    /**
+    * MessageLevel enumeration
+    * defines whether warnings and/or errors that might occur during some executions should be displayed with a message box.
+    */
+    enum MessageLevel 
+    {
+        msgLevelNo = 0,          /*!< no messagebox should information about warnings or errors */
+        msgLevelErrorOnly = 1,   /*!< a message box should only inform about errors */
+        msgLevelWarningOnly = 2, /*!< a message box should only inform about warnings */
+        msgLevelWarningAndError = msgLevelErrorOnly | msgLevelWarningOnly /*!< a message box should inform about warnings and errors */
+    };
+
+    ito::RetVal setPluginParameter(QSharedPointer<ito::ParamBase> param, MessageLevel msgLevel = msgLevelWarningAndError) const;
+    ito::RetVal observeInvocation(ItomSharedSemaphore *waitCond, MessageLevel msgLevel) const;
+
+    ito::RetVal addParam(const ito::Param &param);
+    ito::RetVal addParamInt(const ito::Param &param, QtProperty *groupProperty);
+
+protected:
+    void timerEvent(QTimerEvent *event);
+
 private:
 	QScopedPointer<ParamEditorWidgetPrivate> d_ptr;
 
 	Q_DECLARE_PRIVATE(ParamEditorWidget);
 	Q_DISABLE_COPY(ParamEditorWidget);
+
+private slots:
+    void valueChanged(QtProperty* prop, int value);
+    void valueChanged(QtProperty* prop, bool value);
+
+    void parametersChanged(QMap<QString, ito::Param> parameters);
 
 
 };
