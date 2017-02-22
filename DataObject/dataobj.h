@@ -1328,8 +1328,12 @@ namespace ito {
         
         template<typename _Tp> RetVal linspace(const _Tp start, const _Tp end, const _Tp inc, const int transposed);
 
-		//returns a stack of multiple dataObjects (number is equal to num) along the 3rd dimension
-		static DataObject dstack(const DataObject *mats, int num);
+		//! returns a stack of multiple dataObjects (number is equal to num) along the given axis (default: 0). 
+		/*! The axis is always mapped to the object with the largest number of dimensions ndim_max. 
+		    All other dataObjects are considered to also have ndim_max dimensions, where additional
+			dimensions are prepended having a size of 1.
+		*/
+		static DataObject stack(const DataObject *mats, int num, unsigned int axis = 0);
         
     };
     

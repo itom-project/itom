@@ -6880,7 +6880,7 @@ The result is stored in a result matrix of the same plane size and type. Only th
 \return result dataObject
 */
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ DataObject DataObject::dstack(const DataObject *mats, int num)
+/*static*/ DataObject DataObject::stack(const DataObject *mats, int num, unsigned int axis)
 {
 	cv::error(cv::Exception(CV_StsAssert, "not yet implemented", "", __FILE__, __LINE__));
 
