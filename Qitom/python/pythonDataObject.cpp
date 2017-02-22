@@ -7493,7 +7493,8 @@ dataObj : {dataObject} \n\
 PyObject* PythonDataObject::PyDataObj_dstack(PyObject *self, PyObject *args)
 {
     PyObject *sequence = NULL;
-	if (!PyArg_ParseTuple(args, "O", &sequence))
+	unsigned int axis = 0;
+	if (!PyArg_ParseTuple(args, "O|I", &sequence, &axis))
     {
         return NULL;
     }
@@ -7527,7 +7528,7 @@ PyObject* PythonDataObject::PyDataObj_dstack(PyObject *self, PyObject *args)
 
 			try
 			{
-				retObj->dataObject = new ito::DataObject(ito::DataObject::dstack(vector, len));
+				retObj->dataObject = new ito::DataObject(ito::DataObject::stack(vector, len, axis));
 			}
 			catch (cv::Exception &exc)
 			{
