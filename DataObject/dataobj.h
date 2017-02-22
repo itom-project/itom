@@ -1095,8 +1095,7 @@ namespace ito {
         DataObject mul(const DataObject &mat2, const double scale = 1.0) const;
         DataObject div(const DataObject &mat2, const double scale = 1.0) const;
 
-        //creats a stack out of two 2d dataObjects
-        DataObject stack(const DataObject &mat2) const;
+        
 
 		// power (power of 0.5 is the square root)
 		DataObject pow(const ito::float64 &power); // returns a new data object with the same size and type than this data object and calculates src**power if power is an integer, else |src|**power (only for float32 and float64 data objects)
@@ -1340,6 +1339,9 @@ namespace ito {
         template<typename T2> operator T2 ();  /*!< cast operator, tries to cast this data object to another element type */
         
         template<typename _Tp> RetVal linspace(const _Tp start, const _Tp end, const _Tp inc, const int transposed);
+
+		//returns a stack of multiple dataObjects (number is equal to num) along the 3rd dimension
+		static DataObject dstack(const DataObject *mats, int num);
         
     };
     

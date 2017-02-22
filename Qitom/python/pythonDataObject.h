@@ -134,8 +134,6 @@ class PythonDataObject
         static PyObject* PyDataObject_reshape(PyDataObject *self, PyObject *args);
 
         static PyObject* PyDataObject_createMask(PyDataObject *self, PyObject *args, PyObject* kwds);
-
-        static PyObject* PyDataObject_stack(PyDataObject *self, PyObject *args);
     
         // Get / Set metadata / objecttags
         static PyObject* PyDataObj_SetAxisOffset(PyDataObject *self, PyObject *args);
@@ -299,6 +297,7 @@ class PythonDataObject
         static PyObject* PyDataObj_StaticRandN(PyObject *self, PyObject *args, PyObject *kwds);
         static PyObject* PyDataObj_StaticEye(PyObject *self, PyObject *args, PyObject *kwds);
         static PyObject* PyDataObj_StaticFromNumpyColor(PyObject *self, PyObject *args, PyObject *kwds);
+		static PyObject* PyDataObj_dstack(PyObject *self, PyObject *args);
 
 
         //#################################################################################################

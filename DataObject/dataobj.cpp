@@ -6933,92 +6933,8 @@ DataObject DataObject::div(const DataObject &mat2, const double /*scale*/) const
 
     return result;
 }
-//----------------------------------------------------------------------------------------------------------------------------------
-//! low-level, templated method which stacks the planes of the input dataObjects together. 
-/*!
-The result is stored in a result matrix. Only the last but two dimensions are allowed to have a size greater than two. The plane sizes of the input arguments must be equivalent. 
-\param *src1 is the first source matrix with three or less dimensions
-\param *src2 is the second source matrix with three or less dimensions
-\param *res is the 3 dimensional result matrix. The object must contain planes of the same shape like the input matrices. The required amount of planes is defined by the sum of planes given by src1 and src2.
-\return retOk
-*/
-template <typename _Tp> RetVal StackFunc(const DataObject* src1, const DataObject* src2, DataObject* dst)
-{
-    int src1_numPlanes = src1->getNumPlanes();
-    int src2_numPlanes = src2->getNumPlanes();
-    int dst_numPlanes = dst->getNumPlanes();
-    int dims_src1 = src1->getDims();
-    int dims_src2 = src2->getDims();
-
-    const cv::Mat **src1_mdata = src1->get_mdata();
-	const cv::Mat **src2_mdata = src2->get_mdata();
-    cv::Mat **dst_mdata = dst->get_mdata();
-    const cv::Mat *src_mat;
-    cv::Mat *dst_mat;
 
 
-    int sizeX = src1->getSize(dims_src1 - 1);
-    int sizeY = src1->getSize(dims_src1 - 2);
-
-
-    int lineBytes = sizeX * sizeof(_Tp);
-    int planeBytes = sizeY * lineBytes;
-
-    const uchar *src_ptr;
-    uchar *dst_ptr;
-	int nMat;
-	//copy src1
-    for (nMat = 0; nMat < src1_numPlanes; ++nMat)
-    {
-        src_mat = src1_mdata[src1->seekMat(nMat, src1_numPlanes)];
-        dst_mat = dst_mdata[dst->seekMat(nMat, dst_numPlanes)];
-
-        if (src_mat->isContinuous() && dst_mat->isContinuous())
-        {
-            memcpy(dst_mat->data, src_mat->data, planeBytes);
-        }
-        else
-        {
-            src_ptr = src_mat->data;
-            dst_ptr = dst_mat->data;
-            for (int y = 0; y < sizeY; ++y)
-            {
-                memcpy(dst_ptr, src_ptr, lineBytes);
-                src_ptr += src_mat->step[0];
-                dst_ptr += dst_mat->step[0];
-            }
-        }
-    }
-	int cnt(0);
-	//copy the second source
-	while (nMat < dst_numPlanes)
-	{
-		src_mat = src2_mdata[src2->seekMat(cnt, src2_numPlanes)];
-		dst_mat = dst_mdata[dst->seekMat(nMat, dst_numPlanes)];
-
-		if (src_mat->isContinuous() && dst_mat->isContinuous())
-		{
-			memcpy(dst_mat->data, src_mat->data, planeBytes);
-		}
-		else
-		{
-			src_ptr = src_mat->data;
-			dst_ptr = dst_mat->data;
-			for (int y = 0; y < sizeY; ++y)
-			{
-				memcpy(dst_ptr, src_ptr, lineBytes);
-				src_ptr += src_mat->step[0];
-				dst_ptr += dst_mat->step[0];
-			}
-		}
-		++nMat;
-		++cnt;
-	}
-    return 0;
-
-}
-typedef RetVal(*tStackFunc)(const DataObject *src1, const DataObject *src2, DataObject* dst);
-MAKEFUNCLIST(StackFunc)
 
 //! high-level method which stacks the planes of the input dataObjects to a three dimensional dataObject together. 
 /*!
@@ -7027,10 +6943,11 @@ The result is stored in a result matrix of the same plane size and type. Only th
 \return result dataObject
 */
 //----------------------------------------------------------------------------------------------------------------------------------
-DataObject DataObject::stack(const DataObject &mat2) const
+/*static*/ DataObject DataObject::dstack(const DataObject *mats, int num)
 {
+	cv::error(cv::Exception(CV_StsAssert, "not yet implemented", "", __FILE__, __LINE__));
 
-    int rhsDims = mat2.getDims();
+    /*int rhsDims = mat2.getDims();
     int thisDims = this->getDims();
 
     
@@ -7047,7 +6964,7 @@ DataObject DataObject::stack(const DataObject &mat2) const
     int *thisSizes = new int[3];
     int *rhsSizes = new int[3];
     //compute last sizes
-    bool rhsIsStack(false);// marks if rhs contains three dimensions
+    bool rhsIsStack = false;// marks if rhs contains three dimensions
     bool thisIsStack(false);// marks if this contains three dimensions
     int i;
     int cnt = 0;
@@ -7156,8 +7073,8 @@ DataObject DataObject::stack(const DataObject &mat2) const
 
     delete[] thisSizes;
     delete[] rhsSizes;
-    return result;
-
+    return result;*/
+	return ito::DataObject();
 }
 
 

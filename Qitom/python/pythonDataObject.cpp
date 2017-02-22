@@ -7476,46 +7476,86 @@ PyObject* PythonDataObject::PyDataObject_createMask(PyDataObject *self, PyObject
     }
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectStack_doc, "stack(obj) -> return a three dimensional data object containing a stack of all planes given by this and obj. \n\
+PyDoc_STRVAR(pyDataObjectDstack_doc, "dstack(objects) -> return a stacked data object containing a stack of all planes given by this and obj. \n\
 \n\
-The returned three dimensional dataObject contains layers of the same shape and type like the given ones. The different layers will be located along the first axis.\
+The returned dataObject contains layers of the same shape and type like the given ones. The different layers will be located along the first axis.\
 \n\
 Parameters \n\
 ----------- \n\
-obj : {dataObject} \n\
-	DataObject containig planes that will be stacked to the other dataObject. Obj must be of the same type and have the same shape of planes (last two dimesnions).\n\
+obj : {sequence of dataObjects} \n\
+	Sequence of dataObjects containig planes that will be stacked together. All dataObjects must be of the same type and have the same shape of planes (last two dimesnions).\n\
 	The function works with two and three dimensional dataObjects.\n\
 \n\
 Returns \n\
 ------- \n\
 dataObj : {dataObject} \n\
-	three dimensional dataObject of the same type. The different planes are located along the first axis.");
-PyObject* PythonDataObject::PyDataObject_stack(PyDataObject *self, PyObject *args)
+	dataObject of the same type. The different planes are located along the first axis.");
+PyObject* PythonDataObject::PyDataObj_dstack(PyObject *self, PyObject *args)
 {
-    if (self->dataObject == NULL) return 0;
-
-    PyObject *pyDataObject = NULL;
-    if (!PyArg_ParseTuple(args, "O!", &PythonDataObject::PyDataObjectType, &pyDataObject))
+    PyObject *sequence = NULL;
+	if (!PyArg_ParseTuple(args, "O", &sequence))
     {
-        PyErr_SetString(PyExc_RuntimeError, "argument is no data object");
-        return NULL;
-    }
-    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-    PyDataObject* obj2 = (PyDataObject*)pyDataObject;
-    try
-    {
-        retObj->dataObject = new ito::DataObject(self->dataObject->stack(*(obj2->dataObject)));
-    }
-    catch (cv::Exception &exc)
-    {
-        Py_DECREF(retObj);
-        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
         return NULL;
     }
 
-    if (retObj) retObj->dataObject->addToProtocol("Created by stacking two dataObjects.");
+	if (PySequence_Check(sequence))
+	{
+		Py_ssize_t len = PySequence_Size(sequence);
+		
 
-    return (PyObject*)retObj;
+		PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+		if (len > 0)
+		{
+			ito::DataObject *vector = new ito::DataObject[len];
+
+			for (Py_ssize_t i = 0; i < len; ++i)
+			{
+				PyObject *item = PySequence_GetItem(sequence, i); //new reference
+				if (!PyDataObject_Check(item))
+				{
+					Py_DECREF(item);
+					DELETE_AND_SET_NULL_ARRAY(vector);
+					return PyErr_Format(PyExc_RuntimeError, "%i-th element of sequence is no dataObject.", i);
+				}
+				else
+				{
+					vector[i] = *(((PyDataObject*)(item))->dataObject);
+				}
+				Py_DECREF(item);
+			}
+
+			try
+			{
+				retObj->dataObject = new ito::DataObject(ito::DataObject::dstack(vector, len));
+			}
+			catch (cv::Exception &exc)
+			{
+				DELETE_AND_SET_NULL_ARRAY(vector);
+				Py_DECREF(retObj);
+				PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+				return NULL;
+			}
+
+			if (retObj)
+			{
+				retObj->dataObject->addToProtocol("Created by stacking two dataObjects.");
+			}
+
+			DELETE_AND_SET_NULL_ARRAY(vector);
+
+			return (PyObject*)retObj;
+		}
+		else
+		{
+			return (PyObject*)retObj;
+		}
+	}
+	else
+	{
+		PyErr_SetString(PyExc_RuntimeError, "argument must be a sequence of dataObjects.");
+		return NULL;
+	}
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -8060,7 +8100,7 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"__setstate__", (PyCFunction)PythonDataObject::PyDataObj_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
         {"__array__", (PyCFunction)PythonDataObject::PyDataObj_Array_, METH_VARARGS, dataObject_Array__doc},
         { "createMask", (PyCFunction)PythonDataObject::PyDataObject_createMask, METH_KEYWORDS | METH_VARARGS, pyDataObjectCreateMask_doc },
-        { "stack", (PyCFunction)PythonDataObject::PyDataObject_stack, METH_VARARGS, pyDataObjectStack_doc },
+		{ "dstack", (PyCFunction)PythonDataObject::PyDataObj_dstack, METH_VARARGS | METH_STATIC, pyDataObjectDstack_doc },
 
         {"abs", (PyCFunction)PythonDataObject::PyDataObject_abs, METH_NOARGS, pyDataObjectAbs_doc}, 
         {"arg", (PyCFunction)PythonDataObject::PyDataObject_arg, METH_NOARGS, pyDataObjectArg_doc},
