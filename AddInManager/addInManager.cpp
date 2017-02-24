@@ -773,7 +773,7 @@ AddInManager::AddInManager(QString itomSettingsFile, void **apiFuncsGraph, QObje
     qRegisterMetaType<QVector<float> >("QVector<float>");
 
     qRegisterMetaType<QSharedPointer<double> >("QSharedPointer<double>");
-    qRegisterMetaType<QSharedPointer<QVector<double> > >("QSharedPointer<QVector<double>>");
+    qRegisterMetaType<QSharedPointer<QVector<double> > >("QSharedPointer<QVector<double> >");
     qRegisterMetaType<QSharedPointer<int> >("QSharedPointer<int>");
 //    qRegisterMetaType<QSharedPointer<IntVector> >("QSharedPointer<IntVector>");
     qRegisterMetaType<QSharedPointer<char*> >("QSharedPointer<char>");
@@ -785,7 +785,8 @@ AddInManager::AddInManager(QString itomSettingsFile, void **apiFuncsGraph, QObje
     qRegisterMetaType<ito::DataObject>("ito::DataObject");
     qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::Param>");
     qRegisterMetaType<QMap<QString, ito::Param> >("QMap<QString, ito::ParamBase>");
-    qRegisterMetaType<QSharedPointer<QVector<ito::ParamBase> > >("QSharedPointer<QVectoror<ito::ParamBase> >");
+    qRegisterMetaType<QSharedPointer<QVector<ito::ParamBase> > >("QSharedPointer<QVector<ito::ParamBase> >");
+    qRegisterMetaType<QVector<QSharedPointer<ito::ParamBase> > >("QVector<QSharedPointer<ito::ParamBase> >");
 
 #if ITOM_POINTCLOUDLIBRARY > 0    
     qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud");

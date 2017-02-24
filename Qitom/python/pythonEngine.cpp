@@ -211,7 +211,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<QSharedPointer<QObject*> >("QSharedPointer<QObject*>");
     qRegisterMetaType<QPointer<QObject> >("QPointer<QObject>");
     qRegisterMetaType<QSharedPointer<IntList> >("QSharedPointer<IntList>"); 
-    qRegisterMetaType<QSharedPointer<IntVector> >("QSharedPointer<QVector<int>>"); //if the string is QVector<int> and not IntList (which is the same), Q_ARG(QShared...<QVector<int>>) can be submitted and not QShared..<QIntVector>
+    qRegisterMetaType<QSharedPointer<IntVector> >("QSharedPointer<QVector<int> >"); //if the string is QVector<int> and not IntList (which is the same), Q_ARG(QShared...<QVector<int>>) can be submitted and not QShared..<QIntVector>
     qRegisterMetaType<PyObject*>("PyObject*");
     qRegisterMetaType<QSharedPointer<MethodDescriptionList> >("QSharedPointer<MethodDescriptionList>");
     qRegisterMetaType<QSharedPointer<FctCallParamContainer> >("QSharedPointer<FctCallParamContainer>");
@@ -220,10 +220,11 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<QVector<SharedParamBasePointer> >("QVector<SharedParamBasePointer>"); 
     qRegisterMetaType<QSharedPointer<SharedParamBasePointerVector> >("QSharedPointer<SharedParamBasePointerVector>");
     qRegisterMetaType<QSharedPointer<ParamBaseVector> >("QSharedPointer<QVector<ito::ParamBase>>");
+    qRegisterMetaType<QSharedPointer<QVector<ito::ParamBase> > >("QSharedPointer<QVector<ito::ParamBase> >");
     qRegisterMetaType<QSharedPointer<ito::DataObject> >("QSharedPointer<ito::DataObject>");
     qRegisterMetaType<QPointer<ito::AddInDataIO> >("QPointer<ito::AddInDataIO>");
     qRegisterMetaType<QPointer<ito::AddInActuator> >("QPointer<ito::AddInActuator>");
-    qRegisterMetaType<QSharedPointer< QSharedPointer< unsigned int > > >("QSharedPointer<QSharedPointer<unsigned int>>");
+    qRegisterMetaType<QSharedPointer< QSharedPointer< unsigned int > > >("QSharedPointer<QSharedPointer<unsigned int> >");
 #if ITOM_POINTCLOUDLIBRARY > 0    
     qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud");
     qRegisterMetaType<ito::PCLPolygonMesh >("ito::PCLPolygonMesh");
