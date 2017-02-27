@@ -96,6 +96,10 @@ SET(paramPropertyBrowser_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qttreepropertybrowser.h
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtvariantproperty.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtvariantproperty.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamManager.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamManager.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.h
 )
 
 SET(paramPropertyBrowser_MOC_SOURCES
@@ -192,12 +196,16 @@ SET(paramPropertyBrowser_HEADERS_MOC_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertymanager.h
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qttreepropertybrowser.h
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtvariantproperty.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamManager.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.h
 )
 
 # List of cpp files that should go though moc
 SET(paramPropertyBrowser_CPP_MOC_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qteditorfactory.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertymanager.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamManager.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qttreepropertybrowser.cpp
 )
 

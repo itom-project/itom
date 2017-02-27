@@ -33,8 +33,9 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 
 #include "qttreepropertybrowser.h"
 #include "qtgroupboxpropertybrowser.h"
+#include "itomParamManager.h"
 #include "qtpropertymanager.h"
-#include "qteditorfactory.h"
+#include "itomParamFactory.h"
 
 class ParamEditorWidgetPrivate
 {
@@ -61,13 +62,11 @@ public:
     QPointer<ito::AddInBase> m_plugin;
     QtAbstractPropertyBrowser *m_pBrowser;
 
-    QtIntPropertyManager *m_pIntManager;
-    QtBoolPropertyManager *m_pBoolManager;
+    ito::ParamIntPropertyManager *m_pIntManager;
     QtGroupPropertyManager *m_pGroupPropertyManager;
 
     //factories, responsible for editing properties.
-    QtCheckBoxFactory *m_pCheckBoxFactory;
-    QtSpinBoxFactory *m_pSpinBoxFactory;
+    ito::ParamIntPropertyFactory *m_pIntFactory;
 
     QQueue<QSharedPointer<ito::ParamBase> > m_changedParameters;
 
@@ -86,17 +85,12 @@ ParamEditorWidget::ParamEditorWidget(QWidget* parent /*= 0*/) :
 
     d->m_pGroupPropertyManager = new QtGroupPropertyManager(this);
 
-    d->m_pIntManager = new QtIntPropertyManager(d->m_pBrowser);
+    d->m_pIntManager = new ito::ParamIntPropertyManager(this);
     connect(d->m_pIntManager, SIGNAL(valueChanged(QtProperty *, int)), this, SLOT(valueChanged(QtProperty *, int)));
 
-    d->m_pBoolManager = new QtBoolPropertyManager(d->m_pBrowser);
-    connect(d->m_pBoolManager, SIGNAL(valueChanged(QtProperty *, bool)), this, SLOT(valueChanged(QtProperty *, bool)));
+    d->m_pIntFactory = new ito::ParamIntPropertyFactory(this);
 
-    d->m_pCheckBoxFactory = new QtCheckBoxFactory(d->m_pBrowser);
-    d->m_pSpinBoxFactory = new QtSpinBoxFactory(d->m_pBrowser);
-
-    d->m_pBrowser->setFactoryForManager(d->m_pBoolManager, d->m_pCheckBoxFactory);
-    d->m_pBrowser->setFactoryForManager(d->m_pIntManager, d->m_pSpinBoxFactory);
+    d->m_pBrowser->setFactoryForManager(d->m_pIntManager, d->m_pIntFactory);
 
     QHBoxLayout *hboxLayout = new QHBoxLayout();
     hboxLayout->addWidget(d->m_pBrowser);
@@ -107,13 +101,10 @@ ParamEditorWidget::ParamEditorWidget(QWidget* parent /*= 0*/) :
 ParamEditorWidget::~ParamEditorWidget()
 {
     Q_D(ParamEditorWidget);
-    DELETE_AND_SET_NULL(d->m_pBrowser);
-    DELETE_AND_SET_NULL(d->m_pCheckBoxFactory);
-    DELETE_AND_SET_NULL(d->m_pSpinBoxFactory);
-    DELETE_AND_SET_NULL(d->m_pBoolManager);
+    DELETE_AND_SET_NULL(d->m_pIntFactory);
     DELETE_AND_SET_NULL(d->m_pIntManager);
     DELETE_AND_SET_NULL(d->m_pGroupPropertyManager);
-}
+    DELETE_AND_SET_NULL(d->m_pBrowser);
 }
 
 //-----------------------------------------------------------------------
@@ -216,13 +207,13 @@ ito::RetVal ParamEditorWidget::addParamInt(const ito::Param &param, QtProperty *
     d->m_pIntManager->blockSignals(true);
     QtProperty *prop = d->m_pIntManager->addProperty(param.getName());
     prop->setEnabled(!(param.getFlags() & ito::ParamBase::Readonly));
-    d->m_pIntManager->setValue(prop, param.getVal<int>());
-    d->m_pIntManager->setMinimum(prop, param.getMin());
-    d->m_pIntManager->setMaximum(prop, param.getMax());
+    d->m_pIntManager->setParam(prop, param);
     d->m_pBrowser->addProperty(prop);
     d->m_pIntManager->blockSignals(false);
     prop->setStatusTip(param.getInfo());
     prop->setToolTip(param.getInfo());
+
+    return ito::retOk;
 }
 
 //-----------------------------------------------------------------------

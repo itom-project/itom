@@ -43,7 +43,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qthread.h>
 #include <qsharedpointer.h>
 #include <qmutex.h>
-#include <QApplication>
+#include <qapplication.h>
 
 #if QT_VERSION < 0x050000
 #include <qpluginloader.h>

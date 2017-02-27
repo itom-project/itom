@@ -55,6 +55,13 @@ namespace ito
         m_category = category;
     }
 
+    //--------------------------------------------------------------------------------
+    bool ParamMeta::operator==(const ParamMeta& other) const
+    {
+        return (m_type == other.m_type && \
+            m_category == other.m_category);
+    }
+
     //---------------------------------------------------------------------------------
     CharMeta::CharMeta(char minVal, char maxVal, char stepSize /*= 1*/, ito::ByteArray category /*= ito::ByteArray()*/)
         : ParamMeta(rttiCharMeta, category), 
@@ -114,6 +121,20 @@ namespace ito
     void CharMeta::setRepresentation(ParamMeta::tRepresentation representation)
     {
         m_representation = representation;
+    }
+
+    //---------------------------------------------------------------------------------
+    bool CharMeta::operator==(const ParamMeta& other) const
+    {
+        if (!ParamMeta::operator==(other))
+            return false;
+
+        const CharMeta *other_ = (const CharMeta*)(&other);
+        return ((m_minVal == other_->m_minVal) && \
+            (m_maxVal == other_->m_maxVal) && \
+            (m_stepSize == other_->m_stepSize) && \
+            (m_unit == other_->m_unit) && \
+            (m_representation == other_->m_representation));
     }
 
 
@@ -177,6 +198,20 @@ namespace ito
     void IntMeta::setRepresentation(ParamMeta::tRepresentation representation)
     {
         m_representation = representation;
+    }
+
+    //---------------------------------------------------------------------------------
+    bool IntMeta::operator==(const ParamMeta& other) const
+    {
+        if (!ParamMeta::operator==(other))
+            return false;
+
+        const IntMeta *other_ = (const IntMeta*)(&other);
+        return ((m_minVal == other_->m_minVal) && \
+            (m_maxVal == other_->m_maxVal) && \
+            (m_stepSize == other_->m_stepSize) && \
+            (m_unit == other_->m_unit) && \
+            (m_representation == other_->m_representation));
     }
 
 
@@ -257,6 +292,34 @@ namespace ito
     void DoubleMeta::setRepresentation(ParamMeta::tRepresentation representation)
     {
         m_representation = representation;
+    }
+
+    //---------------------------------------------------------------------------------
+    bool DoubleMeta::operator==(const ParamMeta& other) const
+    {
+        if (!ParamMeta::operator==(other))
+            return false;
+
+        const DoubleMeta *other_ = (const DoubleMeta*)(&other);
+        double eps = std::numeric_limits<double>::epsilon();
+        return ((std::abs(m_minVal - other_->m_minVal) < eps) && \
+            (std::abs(m_maxVal - other_->m_maxVal) < eps) && \
+            (std::abs(m_stepSize - other_->m_stepSize) < eps) && \
+            (m_unit == other_->m_unit) && \
+            (m_displayPrecision == other_->m_displayPrecision) && \
+            (m_displayNotation == other_->m_displayNotation) && \
+            (m_representation == other_->m_representation));
+    }
+
+    //---------------------------------------------------------------------------------
+    bool HWMeta::operator==(const ParamMeta& other) const
+    {
+        if (!ParamMeta::operator==(other))
+            return false;
+
+        const HWMeta *other_ = (const HWMeta*)(&other);
+        return ((m_minType == other_->m_minType) && \
+            (m_HWName == other_->m_HWName));
     }
 
     //---------------------------------------------------------------------------------
@@ -378,6 +441,40 @@ namespace ito
         return (idx >= p->m_len) ? NULL : p->m_items[idx].data();
     }
 
+    //---------------------------------------------------------------------------------
+    bool StringMeta::operator==(const ParamMeta& other) const
+    {
+        if (!ParamMeta::operator==(other))
+            return false;
+
+        const StringMeta *other_ = (const StringMeta*)(&other);
+        if ((p->m_len == other_->p->m_len) && \
+            (p->m_stringType == other_->p->m_stringType) && \
+            (p->m_items.size() == other_->p->m_items.size()))
+        {
+            for (size_t i = 0; i < p->m_items.size(); ++i)
+            {
+                if (p->m_items[i] != other_->p->m_items[i])
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    //---------------------------------------------------------------------------------
+    bool DObjMeta::operator==(const ParamMeta& other) const
+    {
+        if (!ParamMeta::operator==(other))
+            return false;
+
+        const DObjMeta *other_ = (const DObjMeta*)(&other);
+        return ((m_allowedTypes == other_->m_allowedTypes) && \
+            (m_minDim == other_->m_minDim) && \
+            (m_maxDim == other_->m_maxDim));
+    }
+
 
     //---------------------------------------------------------------------------------
     CharArrayMeta::CharArrayMeta(char minVal, char maxVal, char stepSize /*= 1*/, ito::ByteArray category /*= ito::ByteArray()*/) :
@@ -419,6 +516,18 @@ namespace ito
     void CharArrayMeta::setNumStepSize(size_t val)
     {
         m_numStep = val;
+    }
+
+    //---------------------------------------------------------------------------------
+    bool CharArrayMeta::operator==(const ParamMeta& other) const
+    {
+        if (!CharMeta::operator==(other))
+            return false;
+
+        const CharArrayMeta *other_ = (const CharArrayMeta*)(&other);
+        return ((m_numMin == other_->m_numMin) && \
+            (m_numMax == other_->m_numMax) && \
+            (m_numStep == other_->m_numStep));
     }
 
 
@@ -465,6 +574,18 @@ namespace ito
         m_numStep = val;
     }
 
+    //---------------------------------------------------------------------------------
+    bool IntArrayMeta::operator==(const ParamMeta& other) const
+    {
+        if (!IntMeta::operator==(other))
+            return false;
+
+        const IntArrayMeta *other_ = (const IntArrayMeta*)(&other);
+        return ((m_numMin == other_->m_numMin) && \
+            (m_numMax == other_->m_numMax) && \
+            (m_numStep == other_->m_numStep));
+    }
+
 
     //---------------------------------------------------------------------------------
     DoubleArrayMeta::DoubleArrayMeta(float64 minVal, float64 maxVal, float64 stepSize /*= 1*/, ito::ByteArray category /*= ito::ByteArray()*/) :
@@ -508,7 +629,17 @@ namespace ito
         m_numStep = val;
     }
 
+    //---------------------------------------------------------------------------------
+    bool DoubleArrayMeta::operator==(const ParamMeta& other) const
+    {
+        if (!DoubleMeta::operator==(other))
+            return false;
 
+        const DoubleArrayMeta *other_ = (const DoubleArrayMeta*)(&other);
+        return ((m_numMin == other_->m_numMin) && \
+            (m_numMax == other_->m_numMax) && \
+            (m_numStep == other_->m_numStep));
+    }
     
 
     
@@ -559,6 +690,19 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
+    bool IntervalMeta::operator==(const ParamMeta& other) const
+    {
+        if (!IntMeta::operator==(other))
+            return false;
+
+        const IntervalMeta *other_ = (const IntervalMeta*)(&other);
+        return ((m_sizeMin == other_->m_sizeMin) && \
+            (m_sizeMax == other_->m_sizeMax) && \
+            (m_sizeStep == other_->m_sizeStep) && \
+            (m_isIntervalNotRange == other_->m_isIntervalNotRange));
+    }
+
+    //---------------------------------------------------------------------------------
     RangeMeta::RangeMeta(int32 minVal, int32 maxVal, int32 stepSize /*= 1*/, ito::ByteArray category /*= ito::ByteArray()*/) :
         IntervalMeta(minVal, maxVal, stepSize, category)
     {
@@ -573,6 +717,8 @@ namespace ito
         m_type = rttiRangeMeta;
         m_isIntervalNotRange = false;
     }
+
+    
 
 
     //---------------------------------------------------------------------------------
@@ -618,6 +764,19 @@ namespace ito
     }
 
     //---------------------------------------------------------------------------------
+    bool DoubleIntervalMeta::operator==(const ParamMeta& other) const
+    {
+        if (!DoubleMeta::operator==(other))
+            return false;
+
+        double eps = std::numeric_limits<double>::epsilon();
+        const DoubleIntervalMeta *other_ = (const DoubleIntervalMeta*)(&other);
+        return ((std::abs(m_sizeMin - other_->m_sizeMin) < eps) && \
+            (std::abs(m_sizeMax - other_->m_sizeMax) < eps) && \
+            (std::abs(m_sizeStep - other_->m_sizeStep) < eps));
+    }
+
+    //---------------------------------------------------------------------------------
     RectMeta::RectMeta(const ito::RangeMeta &widthMeta, const ito::RangeMeta &heightMeta, ito::ByteArray category /*= ito::ByteArray()*/) :
         ParamMeta(rttiRectMeta, category),
         m_widthMeta(widthMeta),
@@ -636,6 +795,17 @@ namespace ito
     void RectMeta::setHeightRangeMeta(const ito::RangeMeta &heightMeta)
     {
         m_heightMeta = heightMeta;
+    }
+
+    //---------------------------------------------------------------------------------
+    bool RectMeta::operator==(const ParamMeta& other) const
+    {
+        if (!ParamMeta::operator==(other))
+            return false;
+
+        const RectMeta *other_ = (const RectMeta*)(&other);
+        return ((m_heightMeta == other_->m_heightMeta) && \
+            (m_widthMeta == other_->m_widthMeta));
     }
         
 
