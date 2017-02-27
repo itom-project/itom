@@ -141,7 +141,7 @@ ito::RetVal AbstractAddInConfigDialog::setPluginParameters(const QVector<QShared
     if (d->m_pPlugin)
     {
         ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
-        if (QMetaObject::invokeMethod(d->m_pPlugin, "setParamVector", Q_ARG(const QVector<QSharedPointer<ito::ParamBase> >, params), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+        if (QMetaObject::invokeMethod(d->m_pPlugin, "setParamVector", Q_ARG(QVector<QSharedPointer<ito::ParamBase> >, params), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
             retval += observeInvocation(locker.getSemaphore(),msgLevelNo);
         }

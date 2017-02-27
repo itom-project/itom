@@ -43,6 +43,8 @@ public:
     ito::DataObject dObj2;        
     ito::DataObject dObj3;
     ito::DataObject dObj4;
+    ito::DataObject dObj5;
+    ito::DataObject dObj6;
     };
     
 TYPED_TEST_CASE(locateROI_func_test, ItomRealDataTypes);
@@ -106,4 +108,16 @@ TYPED_TEST(locateROI_func_test, locateROI_Test3)
     {
         EXPECT_EQ(lims5d[i],exptLims5d[i]);            //!< Checking if the result of locateROI() function match with expected result.
     }
+}
+
+//locateROI_Test4
+/*!
+    This test should check a bug in the size, osize and roi members of a dataObject.
+    Since dObj2 and dObj3 have different number of dimensions, their size, roi and originalSize should be unequal.
+    However, at least the original size, was pretent to be equal.
+*/
+TYPED_TEST(locateROI_func_test, locateROI_Test4)
+{
+    EXPECT_NE(dObj2.getSize(), dObj3.getSize());
+    EXPECT_NE(dObj2.getOriginalSize(), dObj3.getOriginalSize());
 }

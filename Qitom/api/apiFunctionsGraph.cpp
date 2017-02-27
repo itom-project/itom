@@ -299,7 +299,7 @@ ito::RetVal apiFunctionsGraph::mconnectLiveData(QObject *liveDataSource, QObject
     {
         if(liveDataSource->inherits("ito::AddInDataIO"))
         {
-            ito::AddInManager *aim = AddInManagerInst;
+            ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
             retval += aim->incRef((ito::AddInBase*)liveDataSource);
         }
         else
@@ -324,7 +324,7 @@ ito::RetVal apiFunctionsGraph::mdisconnectLiveData(QObject *liveDataSource, QObj
     {
         if(liveDataSource->inherits("ito::AddInDataIO"))
         {
-            ito::AddInManager *aim = AddInManagerInst;
+            ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
             retval += aim->decRef((ito::AddInBase**)&liveDataSource);
         }
         else

@@ -1525,23 +1525,37 @@ void DataObject::createHeader(const unsigned char dimensions, const int *sizes, 
             {
                 delete[] (m_roi.m_p - 1);
 
+                //the newly allocated array for a 2d object of size [40,50] should look like this:
+                //[2, 0, 0, 2, 40, 50, 2, 40, 50].
+                //m_roi.m_p finally points to the 2nd entry,
+                //m_osize.m_p to the 4. entry and
+                //m_size.m_p to the 8. entry
+                //m_roi/m_osize/msize.m_p[-1] always contains the number of dimensions (here: 2)
                 m_roi.m_p = new int [(dimensions + 1) + (dimensions + 1) + (dimensions + 1)];
+                m_roi.m_p = m_roi.m_p + 1;
                 m_osize.m_p = static_cast<int *>(m_roi.m_p + dimensions) + 1;
                 m_osize.m_p[-1] = dimensions;
                 m_size.m_p = static_cast<int *>(m_osize.m_p + dimensions) + 1;
                 m_size.m_p[-1] = dimensions;
-                m_roi.m_p = m_roi.m_p + 1;
+                
                 m_roi.m_p[-1] = dimensions;
             }
         }
         else
         {
+            //the newly allocated array for a 2d object of size [40,50] should look like this:
+            //[2, 0, 0, 2, 40, 50, 2, 40, 50].
+            //m_roi.m_p finally points to the 2nd entry,
+            //m_osize.m_p to the 4. entry and
+            //m_size.m_p to the 8. entry
+            //m_roi/m_osize/msize.m_p[-1] always contains the number of dimensions (here: 2)
             m_roi.m_p = new int [(dimensions + 1) + (dimensions + 1) + (dimensions + 1)];
+            m_roi.m_p = m_roi.m_p + 1;
             m_osize.m_p = static_cast<int *>(m_roi.m_p + dimensions) + 1;
             m_osize.m_p[-1] = dimensions;
             m_size.m_p = static_cast<int *>(m_osize.m_p + dimensions) + 1;
             m_size.m_p[-1] = dimensions;
-            m_roi.m_p = m_roi.m_p + 1;
+            
             m_roi.m_p[-1] = dimensions;
         }
 
@@ -1603,23 +1617,35 @@ void DataObject::createHeaderWithROI(const unsigned char dimensions, const int *
             {
                 delete[] (m_roi.m_p-1);
 
+                //the newly allocated array for a 2d object of size [40,50] should look like this:
+                //[2, 0, 0, 2, 40, 50, 2, 40, 50].
+                //m_roi.m_p finally points to the 2nd entry,
+                //m_osize.m_p to the 4. entry and
+                //m_size.m_p to the 8. entry
+                //m_roi/m_osize/msize.m_p[-1] always contains the number of dimensions (here: 2)
                 m_roi.m_p = new int [(dimensions + 1) + (dimensions + 1) + (dimensions + 1)];
+                m_roi.m_p = m_roi.m_p + 1; //move m_p pointer by one
                 m_osize.m_p = static_cast<int *>(m_roi.m_p + dimensions) + 1;
                 m_osize.m_p[-1] = dimensions;
                 m_size.m_p = static_cast<int *>(m_osize.m_p + dimensions) + 1;
                 m_size.m_p[-1] = dimensions;
-                m_roi.m_p = m_roi.m_p + 1; //move m_p pointer by one
                 m_roi.m_p[-1] = dimensions;
             }
         }
         else
         {
+            //the newly allocated array for a 2d object of size [40,50] should look like this:
+            //[2, 0, 0, 2, 40, 50, 2, 40, 50].
+            //m_roi.m_p finally points to the 2nd entry,
+            //m_osize.m_p to the 4. entry and
+            //m_size.m_p to the 8. entry
+            //m_roi/m_osize/msize.m_p[-1] always contains the number of dimensions (here: 2)
             m_roi.m_p = new int [(dimensions + 1) + (dimensions + 1) + (dimensions + 1)];
+            m_roi.m_p = m_roi.m_p + 1; //move m_p pointer by one
             m_osize.m_p = static_cast<int *>(m_roi.m_p + dimensions) + 1;
             m_osize.m_p[-1] = dimensions;
             m_size.m_p = static_cast<int *>(m_osize.m_p + dimensions) + 1;
             m_size.m_p[-1] = dimensions;
-            m_roi.m_p = m_roi.m_p + 1; //move m_p pointer by one
             m_roi.m_p[-1] = dimensions;
         }
 
@@ -2332,7 +2358,15 @@ double DataObject::getPixToPhys(const unsigned int dim, const double pix) const
 //----------------------------------------------------------------------------------------------------------------------------------
 //! low-level, templated method for deeply copying the data of one matrix to another given matrix
 /*!
-    At first, the memory of the new matrix is delete. Then the data of the lhs-matrix is deeply copied to the rhs-matrix.
+    In case of 'regionOnly' == false, the destination dataObject 'rhs' is always newly allocated
+    before copying data and the tags as well as the axis descriptions etc. are also copied from
+    the source object. If the source object has a ROI set, the entire object with all data
+    outside of the ROI is copied and the ROI is applied to the destination object, too.
+
+    If 'regionOnly' == true, only data within a current ROI is copied to the destination object.
+    In this case, the destination is only newly allocated if its current dimension, size or type
+    do not fit to the source object. Else, data is copied into the existing memory. Tags and
+    axis descriptions etc. are always copied to the destination object.
 
     \param &lhs is the matrix whose data is copied
     \param &rhs is the matrix where the data is copied to. The old data of rhs is deleted first
@@ -2348,19 +2382,35 @@ template<typename _Tp> RetVal CopyToFunc(const DataObject &lhs, DataObject &rhs,
     }
 
     int numMats = 0;
-    int tMat = 0;
+    int tMat = 0, newMat = 0;
     cv::Mat_<_Tp> *tempMat = NULL;
     cv::Mat_<_Tp> *rhsMat = NULL;
 
-    rhs.freeData();
-    rhs.m_type = lhs.m_type;
-    char rhsOldContinuous = rhs.getDims() > 2 ? rhs.m_continuous : 0; //if dims(rhs)<=2, then the continuity-flag should only be influenced by lhs, since then the continuity doesn't change the representation and the constructor of empty dataObject sets the flag to one (default)
-    rhs.m_continuous = rhsOldContinuous | lhs.m_continuous;
-
+    if (regionOnly && rhs.getDims() == lhs.getDims() && rhs.getType() == lhs.getType())
+    {
+        if (lhs.getSize() != rhs.getSize())
+        {
+            newMat = 1;
+            rhs.freeData();
+            rhs.m_type = lhs.m_type;
+            char rhsOldContinuous = rhs.getDims() > 2 ? rhs.m_continuous : 0; //if dims(rhs)<=2, then the continuity-flag should only be influenced by lhs, since then the continuity doesn't change the representation and the constructor of empty dataObject sets the flag to one (default)
+            rhs.m_continuous = rhsOldContinuous | lhs.m_continuous;
+        }
+    }
+    else
+    {
+        newMat = 1;
+        rhs.freeData();
+        rhs.m_type = lhs.m_type;
+        char rhsOldContinuous = rhs.getDims() > 2 ? rhs.m_continuous : 0; //if dims(rhs)<=2, then the continuity-flag should only be influenced by lhs, since then the continuity doesn't change the representation and the constructor of empty dataObject sets the flag to one (default)
+        rhs.m_continuous = rhsOldContinuous | lhs.m_continuous;
+    }
+    
     if (regionOnly || lhs.m_dims == 0) //Marc: bug, if empty data object, it is necessary to use this if case, too.
     {
         numMats = lhs.getNumPlanes();
-        CreateFunc<_Tp>(&rhs, lhs.m_dims, lhs.m_size, rhs.m_continuous, NULL, NULL);
+        if (newMat)
+            CreateFunc<_Tp>(&rhs, lhs.m_dims, lhs.m_size, rhs.m_continuous, NULL, NULL);
         for (int nMat = 0; nMat < numMats; nMat++)
         {
             tMat = lhs.seekMat(nMat);
@@ -2372,7 +2422,8 @@ template<typename _Tp> RetVal CopyToFunc(const DataObject &lhs, DataObject &rhs,
     else
     {
         numMats = lhs.mdata_size();
-        CreateFunc<_Tp>(&rhs, lhs.m_dims, lhs.m_osize, rhs.m_continuous, NULL, NULL);
+        if (newMat)
+            CreateFunc<_Tp>(&rhs, lhs.m_dims, lhs.m_osize, rhs.m_continuous, NULL, NULL);
 
         for(int i = 0 ; i < rhs.m_size.m_p[-1]; i++)
         {
@@ -2408,7 +2459,7 @@ template<typename _Tp> RetVal CopyToFunc(const DataObject &lhs, DataObject &rhs,
         }
     }
 
-    return 0;
+    return ito::retOk;
 }
 
 typedef RetVal (*tCopyToFunc)(const DataObject &lhs, DataObject &rhs, unsigned char regionOnly);
@@ -2417,10 +2468,22 @@ MAKEFUNCLIST(CopyToFunc);
 
 //! high-level, non-templated method to deeply copy the data of this matrix to another matrix rhs
 /*!
+    In case of 'regionOnly' == false, the destination dataObject 'rhs' is always newly allocated
+    before copying data and the tags as well as the axis descriptions etc. are also copied from
+    the source object. If the source object has a ROI set, the entire object with all data
+    outside of the ROI is copied and the ROI is applied to the destination object, too.
+
+    If 'regionOnly' == true, only data within a current ROI is copied to the destination object.
+    In this case, the destination is only newly allocated if its current dimension, size or type
+    do not fit to the source object. Else, data is copied into the existing memory. Tags and
+    axis descriptions etc. are always copied to the destination object.
+
     \param &rhs is the matrix where the data is copied to. The old data of rhs is deleted first
-    \param regionOnly, if true, only the data of the ROI in lhs is copied, hence, the org-size of rhs corresponds to the ROI-size of lhs, else the whole data block is copied and the ROI of rhs is set to the ROI of lhs
+    \param regionOnly, if true, only the data of the ROI in lhs is copied, hence, the org-size of 
+           rhs corresponds to the ROI-size of lhs, else the whole data block is copied and the ROI 
+           of rhs is set to the ROI of lhs
     \return retOk
-    \sa CopyToFunc
+    \sa deepCopyPartial
 */
 RetVal DataObject::copyTo(DataObject &rhs, unsigned char regionOnly) const
 {
@@ -2500,17 +2563,16 @@ template<typename _Tp> RetVal DeepCopyPartialFunc(const DataObject &lhs, DataObj
             {
                 lhs_ptr = lhs_mat->data;
                 rhs_ptr = rhs_mat->data;
-                int row;
-                int col;
+                lineBytes = lhs_mat->step[0];
 
 #if (USEOMP)
                 #pragma omp parallel num_threads(getMaximumThreadCount())
                 {
                 #pragma omp for schedule(guided)
 #endif				
-                for (row = 0; row < lhs_mat->rows; ++row)
+                for (int row = 0; row < lhs_mat->rows; ++row)
                 {
-                    for (col = 0; col < lhs_mat->cols; ++col)
+                    for (int col = 0; col < lhs_mat->cols; ++col)
                     {
                         rhs_mat->ptr<_Tp>(col)[row] = ((const _Tp*)((lhs_ptr + row * lineBytes)))[col];
                     }
@@ -6871,6 +6933,150 @@ DataObject DataObject::div(const DataObject &mat2, const double /*scale*/) const
 
     return result;
 }
+
+
+
+//! high-level method which stacks the planes of the input dataObjects to a three dimensional dataObject together. 
+/*!
+The result is stored in a result matrix of the same plane size and type. Only the last but two dimensions are allowed to have a size greater than one.
+\param &mat2 is the second source matrix
+\return result dataObject
+*/
+//----------------------------------------------------------------------------------------------------------------------------------
+/*static*/ DataObject DataObject::stack(const DataObject *mats, int num, unsigned int axis)
+{
+	cv::error(cv::Exception(CV_StsAssert, "not yet implemented", "", __FILE__, __LINE__));
+
+    /*int rhsDims = mat2.getDims();
+    int thisDims = this->getDims();
+
+    
+    if (rhsDims < 2 || thisDims < 2)
+    {
+        cv::error(cv::Exception(CV_StsAssert, "at least one dataObject has less than 2 dimensions", "", __FILE__, __LINE__));
+    }
+    // check if the types fit
+    if (m_type != mat2.getType())
+    {
+        cv::error(cv::Exception(CV_StsAssert, "dataObjects differ in type", "", __FILE__, __LINE__));
+    }
+
+    int *thisSizes = new int[3];
+    int *rhsSizes = new int[3];
+    //compute last sizes
+    bool rhsIsStack = false;// marks if rhs contains three dimensions
+    bool thisIsStack(false);// marks if this contains three dimensions
+    int i;
+    int cnt = 0;
+    int size;
+    //get the sizes of the last three dimensions
+    for (i = 0; i < thisDims; ++i)
+    {
+        size = this->getSize(i);
+        if (thisDims - 3 <= i)
+        {
+            thisSizes[cnt] = size;
+            if (++cnt == 3)
+            {
+                thisIsStack = true;
+            }
+        }
+        else
+        {
+            if (size > 1)
+            {
+                delete[] thisSizes;
+                delete[] rhsSizes;
+                cv::error(cv::Exception(CV_StsAssert, "only the last three dimensions of the host dataObject are allowed to be greater than 1", "", __FILE__, __LINE__));
+            }
+        }
+    }
+    cnt = 0;
+    for (i = 0; i < rhsDims; ++i)
+    {
+        size = mat2.getSize(i);
+        if (rhsDims - 3 <= i)
+        {
+            rhsSizes[cnt] = size;
+            if (++cnt == 3)
+            {
+                rhsIsStack = true;
+            }
+        }
+        else
+        {
+            if (size > 1)
+            {
+                delete[] thisSizes;
+                delete[] rhsSizes;
+                cv::error(cv::Exception(CV_StsAssert, "only the last three dimensions of the argumental dataObject are allowed to be greater than 1", "", __FILE__, __LINE__));
+            }
+        }
+    }
+    //check if the last two dimensions fit
+    if (thisIsStack)
+    {
+        if (rhsIsStack)//both are 3 dimensional
+        {
+            if (thisSizes[1] != rhsSizes[1] || thisSizes[2] != rhsSizes[2])
+            {
+                delete[] thisSizes;
+                delete[] rhsSizes;
+                cv::error(cv::Exception(CV_StsAssert, "the last two dimensions of the dataObjects does not fit", "", __FILE__, __LINE__));
+            }
+            thisSizes[0] = thisSizes[0] + rhsSizes[0];//thisSizes contains now the size of the resulting dataObject
+        }
+        else//only this is 3 dimensional
+        {
+            if (thisSizes[1] != rhsSizes[0] || thisSizes[2] != rhsSizes[1])
+            {
+                delete[] thisSizes;
+                delete[] rhsSizes;
+                cv::error(cv::Exception(CV_StsAssert, "the last two dimensions of the dataObjects does not fit", "", __FILE__, __LINE__));
+            }
+            thisSizes[0] = thisSizes[0] + 1;//thisSizes contains now the size of the resulting dataObject
+        }
+    }
+    else//
+    {
+        if (rhsIsStack)//only rhs is three dimensional 
+        {
+            if (thisSizes[0] != rhsSizes[1] || thisSizes[1] != rhsSizes[2])
+            {
+                delete[] thisSizes;
+                delete[] rhsSizes;
+                cv::error(cv::Exception(CV_StsAssert, "the last two dimensions of the dataObjects does not fit", "", __FILE__, __LINE__));
+            }
+            thisSizes[2] = thisSizes[1]; //thisSizes contains now the size of the resulting dataObject
+            thisSizes[1] = thisSizes[0];
+            thisSizes[0] = 1 + rhsSizes[0];
+        }
+        else//both are two dimensional
+        {
+            if (thisSizes[0] != rhsSizes[0] || thisSizes[1] != rhsSizes[1])
+            {
+                delete[] thisSizes;
+                delete[] rhsSizes;
+                cv::error(cv::Exception(CV_StsAssert, "the last two dimensions of the dataObjects does not fit", "", __FILE__, __LINE__));
+            }
+
+            thisSizes[2] = thisSizes[1]; //thisSizes contains now the size of the resulting dataObject
+            thisSizes[1] = thisSizes[0];
+            thisSizes[0] = 2;
+        }
+    }
+    DataObject result = DataObject(3, thisSizes, m_type);
+
+	fListStackFunc[m_type](this, &mat2, &result);
+	copyAxisTagsTo(result);
+	copyTagMapTo(result);
+
+    delete[] thisSizes;
+    delete[] rhsSizes;
+    return result;*/
+	return ito::DataObject();
+}
+
 
 //----------------------------------------------------------------------------------------------------------------------------------
 DataObject DataObject::pow(const ito::float64 &power)

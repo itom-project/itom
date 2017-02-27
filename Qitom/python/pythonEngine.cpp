@@ -211,7 +211,7 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<QSharedPointer<QObject*> >("QSharedPointer<QObject*>");
     qRegisterMetaType<QPointer<QObject> >("QPointer<QObject>");
     qRegisterMetaType<QSharedPointer<IntList> >("QSharedPointer<IntList>"); 
-    qRegisterMetaType<QSharedPointer<IntVector> >("QSharedPointer<QVector<int>>"); //if the string is QVector<int> and not IntList (which is the same), Q_ARG(QShared...<QVector<int>>) can be submitted and not QShared..<QIntVector>
+    qRegisterMetaType<QSharedPointer<IntVector> >("QSharedPointer<QVector<int> >"); //if the string is QVector<int> and not IntList (which is the same), Q_ARG(QShared...<QVector<int>>) can be submitted and not QShared..<QIntVector>
     qRegisterMetaType<PyObject*>("PyObject*");
     qRegisterMetaType<QSharedPointer<MethodDescriptionList> >("QSharedPointer<MethodDescriptionList>");
     qRegisterMetaType<QSharedPointer<FctCallParamContainer> >("QSharedPointer<FctCallParamContainer>");
@@ -220,11 +220,11 @@ PythonEngine::PythonEngine() :
     qRegisterMetaType<QVector<SharedParamBasePointer> >("QVector<SharedParamBasePointer>"); 
     qRegisterMetaType<QSharedPointer<SharedParamBasePointerVector> >("QSharedPointer<SharedParamBasePointerVector>");
     qRegisterMetaType<QSharedPointer<ParamBaseVector> >("QSharedPointer<QVector<ito::ParamBase>>");
+    qRegisterMetaType<QSharedPointer<QVector<ito::ParamBase> > >("QSharedPointer<QVector<ito::ParamBase> >");
     qRegisterMetaType<QSharedPointer<ito::DataObject> >("QSharedPointer<ito::DataObject>");
     qRegisterMetaType<QPointer<ito::AddInDataIO> >("QPointer<ito::AddInDataIO>");
     qRegisterMetaType<QPointer<ito::AddInActuator> >("QPointer<ito::AddInActuator>");
-    qRegisterMetaType<QPointer<ito::AddInBase> >("QPointer<ito::AddInBase>");
-    qRegisterMetaType<QSharedPointer< QSharedPointer< unsigned int > > >("QSharedPointer<QSharedPointer<unsigned int>>");
+    qRegisterMetaType<QSharedPointer< QSharedPointer< unsigned int > > >("QSharedPointer<QSharedPointer<unsigned int> >");
 #if ITOM_POINTCLOUDLIBRARY > 0    
     qRegisterMetaType<ito::PCLPointCloud >("ito::PCLPointCloud");
     qRegisterMetaType<ito::PCLPolygonMesh >("ito::PCLPolygonMesh");
@@ -3394,6 +3394,18 @@ void PythonEngine::workspaceGetValueInformation(PyWorkspaceContainer *container,
         {
             bool ok = false;
             *extendedValue = PythonQtConversion::PyObjGetString(repr,false,ok);
+            if (PyArray_Check(obj))
+            {
+                QString dims = "[";
+                int arrSize = PyArray_NDIM((PyArrayObject*)obj);
+                for (int nd = 0; nd < arrSize; [&nd, &dims, arrSize](){ nd++; if (nd < arrSize) dims += " x "; }())
+                {
+                    dims += QString::number(PyArray_DIM((PyArrayObject*)obj, nd));
+                }
+                dims += "]\n";
+                *extendedValue =  dims + *extendedValue;
+            }
+
             if (ok == false)
             {
                 *extendedValue = "unknown";
@@ -4476,10 +4488,32 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
                 {
                     PyObject *key, *value;
                     Py_ssize_t pos = 0;
+					QString key_str;
+					bool ok;
+					ito::RetVal ret;
+					PyObject *key_approved;
+					int counter = 0;
 
                     while (PyDict_Next(dict, &pos, &key, &value)) //returns borrowed references to key and value.
                     {
-                        PyDict_SetItem(destinationDict, key, value);
+						key_str = PythonQtConversion::PyObjGetString(key, true, ok); 
+						if (ok)
+						{
+							key_str.replace(".","_");
+							key_str.replace("-","_");
+							key_str.replace(" ","_");
+							ret = ito::retOk;
+							key_approved = getAndCheckIdentifier(key_str, ret); //new reference
+						}
+
+						if (!ok || ret.containsError())
+						{
+							key_approved = PyUnicode_FromFormat("var%i", counter); //new reference
+							counter++;
+						}
+
+                        PyDict_SetItem(destinationDict, key_approved, value);
+						Py_DECREF(key_approved);
                     }
                 }
             }
@@ -5804,16 +5838,37 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
             //try to write every element of unpickledItem-dict to destinationDictionary
             PyObject *key, *value;
             Py_ssize_t pos = 0;
+			QString key_str;
+			PyObject *key_approved = NULL;
+			bool ok;
+			ito::RetVal ret;
+			int counter = 0;
 
             while (PyDict_Next(unpickledItem, &pos, &key, &value))
             {
-                if (PyDict_Contains(destinationDict, key) && overwrite)
+				key_str = PythonQtConversion::PyObjGetString(key, true, ok); 
+				if (ok)
+				{
+					key_str.replace(".","_");
+					key_str.replace("-","_");
+					key_str.replace(" ","_");
+					ret = ito::retOk;
+					key_approved = getAndCheckIdentifier(key_str, ret); //new reference
+				}
+
+				if (!ok || ret.containsError())
+				{
+					key_approved = PyUnicode_FromFormat("var%i", counter); //new reference
+					counter++;
+				}
+
+                if (PyDict_Contains(destinationDict, key_approved) && overwrite)
                 {
                     if (overwrite)
                     {
-                        PyDict_DelItem(destinationDict, key);
+                        PyDict_DelItem(destinationDict, key_approved);
                         //Py_INCREF(value);
-                        PyDict_SetItem(destinationDict, key, value); //value is not stolen by SetItem
+                        PyDict_SetItem(destinationDict, key_approved, value); //value is not stolen by SetItem
                     }
                     else
                     {
@@ -5822,8 +5877,10 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
                 }
                 else
                 {
-                    PyDict_SetItem(destinationDict, key, value);
+                    PyDict_SetItem(destinationDict, key_approved, value);
                 }
+
+				Py_DECREF(key_approved);
             }
   
         }

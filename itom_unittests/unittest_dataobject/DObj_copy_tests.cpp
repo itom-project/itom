@@ -467,3 +467,45 @@ TYPED_TEST(copyTests, copyTo_False_Test1)
         }
     }
 }
+
+//!< copyTo_NoRealloc_Test
+/*!
+    It is desired, that a copyTo operation only reallocates the rhs object if its
+    sizes does not correspond to the copied range. This is tested here.
+*/
+TYPED_TEST(copyTests, copyTo_NoRealloc_RegionOnly_Test)
+{   
+    ito::int16 data1[] = {1,2,3,4,11,12,13,14,21,22,23,24};
+    ito::DataObject source(3,4,ito::tInt16);
+    memcpy(source.rowPtr<ito::int16>(0,0), data1, 3 * 4 * sizeof(ito::int16));
+
+    ito::int16 data2[] = {100,200,300,400,110,120,130,140,210,220,230,240};
+    ito::DataObject destination(3, 4, ito::tInt16);
+    memcpy(destination.rowPtr<ito::int16>(0,0), data2, 3 * 4 * sizeof(ito::int16));
+
+    //roi of source
+    ito::DataObject source_roi = source.at(ito::Range::all(), ito::Range(1,2));
+
+    //copy
+    source_roi.copyTo(destination.at(ito::Range::all(), ito::Range(0,1)), 1);
+
+    ito::int16 *line0 = destination.rowPtr<ito::int16>(0, 0);
+    ito::int16 *line1 = destination.rowPtr<ito::int16>(0, 1);
+    ito::int16 *line2 = destination.rowPtr<ito::int16>(0, 2);
+    EXPECT_EQ(2, line0[0]);
+    EXPECT_EQ(200, line0[1]);
+    EXPECT_EQ(300, line0[2]);
+    EXPECT_EQ(400, line0[3]);
+
+    EXPECT_EQ(12, line1[0]);
+    EXPECT_EQ(120, line1[1]);
+    EXPECT_EQ(130, line1[2]);
+    EXPECT_EQ(140, line1[3]);
+
+    EXPECT_EQ(22, line2[0]);
+    EXPECT_EQ(220, line2[1]);
+    EXPECT_EQ(230, line2[2]);
+    EXPECT_EQ(240, line2[3]);
+
+
+}

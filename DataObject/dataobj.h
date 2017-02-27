@@ -889,6 +889,18 @@ namespace ito {
                 return m_size[index];
             }
         }
+
+        //! returns the original size-member. This is equal to getSize() if no roi is set to the dataObject.
+        /*!
+        \return osize-member of type MSize
+        */
+        inline MSize getOriginalSize(void) { return m_osize; }
+
+        //! returns the original size-member. This is equal to getSize() if no roi is set to the dataObject.
+        /*!
+        \return osize-member of type MSize
+        */
+        inline const MSize getOriginalSize(void) const { return m_osize; }
         
         //! gets the original size of the given dimension (this is the size without considering any ROI)
         /*!
@@ -951,7 +963,7 @@ namespace ito {
             return total;
         }
         
-        RetVal copyTo(DataObject &rhs, unsigned char regionOnly = 0) const;   /*!< deeply copies the data of this data object to the given rhs-dataObject, whose existing data will be deleted first. */
+        RetVal copyTo(DataObject &rhs, unsigned char regionOnly = 0) const;   /*!< deeply copies the data of this data object to the given rhs-dataObject. regionOnly defines if only data within the current ROI should be copied or the entire matrix with the current ROI borders. The destination object is newly allocated if its current number od dimensions, type or size of the ROI does not fit. */
         RetVal convertTo(DataObject &rhs, const int type, const double alpha=1, const double beta=0 ) const; /*!< Convertes an array to another data type with optional scaling (alpha * value + beta) */
         
         RetVal setTo(const int8 &value, const DataObject &mask = DataObject());        /*!< Sets all or some (if uint8 mask is given) of the array elements to the specified value. */
@@ -1082,6 +1094,8 @@ namespace ito {
         // element-wise multiplication 
         DataObject mul(const DataObject &mat2, const double scale = 1.0) const;
         DataObject div(const DataObject &mat2, const double scale = 1.0) const;
+
+        
 
 		// power (power of 0.5 is the square root)
 		DataObject pow(const ito::float64 &power); // returns a new data object with the same size and type than this data object and calculates src**power if power is an integer, else |src|**power (only for float32 and float64 data objects)
@@ -1325,6 +1339,13 @@ namespace ito {
         template<typename T2> operator T2 ();  /*!< cast operator, tries to cast this data object to another element type */
         
         template<typename _Tp> RetVal linspace(const _Tp start, const _Tp end, const _Tp inc, const int transposed);
+
+		//! returns a stack of multiple dataObjects (number is equal to num) along the given axis (default: 0). 
+		/*! The axis is always mapped to the object with the largest number of dimensions ndim_max. 
+		    All other dataObjects are considered to also have ndim_max dimensions, where additional
+			dimensions are prepended having a size of 1.
+		*/
+		static DataObject stack(const DataObject *mats, int num, unsigned int axis = 0);
         
     };
     

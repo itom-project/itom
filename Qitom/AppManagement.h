@@ -48,7 +48,7 @@ class AppManagement
         inline static QObject* getDesignerWidgetOrganizer() { QMutexLocker locker(&m_mutex); return m_dwo; }        /*!< returns static pointer to DesignerWidgetOrganizer instance */
     
         inline static QObject* getMainApplication() { QMutexLocker locker (&m_mutex); return m_app; }
-        static QObject* getAddInManager();
+        inline static QObject* getAddInManager() { QMutexLocker locker(&m_mutex); return m_addInManager; }
         inline static QObject* getMainWindow() { QMutexLocker locker (&m_mutex); return m_mainWin; }
         inline static QObject* getUiOrganizer() { QMutexLocker locker (&m_mutex); return m_uiOrganizer; }  /*!< returns static pointer to UiOrganizer instance */
         inline static QObject* getProcessOrganizer() { QMutexLocker locker (&m_mutex); return m_processOrganizer; }  /*!< returns static pointer to ProcessOrganizer instance */
@@ -58,25 +58,31 @@ class AppManagement
         static void setScriptTextCodec(QTextCodec *codec);
 
 
-        static void setScriptEditorOrganizer(QObject* scriptEditorOrganizer)                                /*!< sets ScriptEditorOrganizer instance pointer */
+        static void setScriptEditorOrganizer(QObject* scriptEditorOrganizer)     /*!< sets ScriptEditorOrganizer instance pointer */
         {
             QMutexLocker locker(&m_mutex);
             m_sew = scriptEditorOrganizer;
         }
 
-        static void setPythonEngine(QObject* pythonEngine)                                                  /*!< sets PythonEngine instance pointer */
+        static void setAddInManager(QObject* addInManager)                      /*!< sets AddInManager instance pointer */
+        {
+            QMutexLocker locker(&m_mutex);
+            m_addInManager = addInManager;
+        }
+
+        static void setPythonEngine(QObject* pythonEngine)                       /*!< sets PythonEngine instance pointer */
         {
             QMutexLocker locker(&m_mutex);
             m_pe = pythonEngine;
         }
 
-        static void setPaletteOrganizer(QObject* paletteOrganizer)                                          /*!< sets PythonEngine instance pointer */
+        static void setPaletteOrganizer(QObject* paletteOrganizer)               /*!< sets PythonEngine instance pointer */
         {
             QMutexLocker locker(&m_mutex);
             m_plo = paletteOrganizer;
         }
 
-        static void setDesignerWidgetOrganizer(QObject* designerWidgetOrganizer)                            /*!< sets PythonEngine instance pointer */
+        static void setDesignerWidgetOrganizer(QObject* designerWidgetOrganizer) /*!< sets PythonEngine instance pointer */
         {
             QMutexLocker locker(&m_mutex);
             m_dwo = designerWidgetOrganizer;
@@ -128,6 +134,7 @@ class AppManagement
         static QObject* m_plo;   /*!< static pointer to FigureOrganizer (default: NULL) */
         static QObject* m_app;  /*!< static pointer to MainApplication (default: NULL) */
         static QObject* m_mainWin;
+        static QObject* m_addInManager;
         static QObject* m_uiOrganizer; /*!< static pointer to UiOrganizer (default: NULL) */
         static QObject* m_processOrganizer; /*!< static pointer to ProcessOrganizer (default: NULL) */
         static QObject *m_userOrganizer;    /*!< static pointer to UserOrganizer (default: NULL) */

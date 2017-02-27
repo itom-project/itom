@@ -3059,27 +3059,27 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+10"/>
         <source>Tracker Settings</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Cursor-Positionsmarker</translation>
     </message>
     <message>
         <location line="+9"/>
         <source>Tracker background</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Markerhintergrund</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Tracker pen color</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Stiftfarbe des Markers</translation>
     </message>
     <message>
         <location line="+13"/>
         <source>Tracker font</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Schriftart des Markers</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Zoom rubber band pen</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Zoom-Rahmenstift</translation>
     </message>
     <message>
         <location line="+32"/>
@@ -4615,7 +4615,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="+1"/>
         <source>Workspace - Please Choose Subpage</source>
-        <translation type="unfinished">Workspace - Bitte Unterrubrik auswählen</translation>
+        <translation>Workspace - Bitte Unterrubrik auswählen</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -7538,12 +7538,12 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
 <context>
     <name>ito::ScriptEditorOrganizer</name>
     <message>
-        <location filename="../organizer/scriptEditorOrganizer.cpp" line="+293"/>
+        <location filename="../organizer/scriptEditorOrganizer.cpp" line="+301"/>
         <source>Script Editor</source>
         <translation>Skript-Editor</translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+111"/>
         <source>The following files have been changed and should be safed:</source>
         <translation>Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>

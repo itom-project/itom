@@ -35,10 +35,8 @@
             #else
                 #ifdef ADDINMGR_DLL
                     #define ADDINMGR_EXPORT __export
-                    #define static AddInManager *AddInManagerInst = NULL;
                 #else
                     #define ADDINMGR_EXPORT     //__import doesn't exist AFAIK in VC++ Exists in Borland C++ for C++ classes (== huge)
-                    #define extern AddInManager *AddInManagerInst;
                 #endif
             #endif
         #endif
@@ -50,20 +48,12 @@
                 #else
                     #define ADDINMGR_EXPORT
                 #endif
-                namespace ito {
-                    class AddInManager;
-                    static AddInManager *AddInManagerInst = 0;
-                }
             #else
                 #if ( defined(_Windows) || defined(_WINDOWS) || defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
                     #define ADDINMGR_EXPORT __declspec(dllimport)
                 #else
                     #define ADDINMGR_EXPORT
                 #endif
-                namespace ito {
-                    class AddInManager;
-                    extern AddInManager *AddInManagerInst;
-                }
             #endif
         #endif
 
@@ -73,5 +63,4 @@
 
 #ifndef ADDINMGR_EXPORT
     #define ADDINMGR_EXPORT
-    #define extern AddInManager *AddInManagerInst;
 #endif

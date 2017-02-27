@@ -46,8 +46,11 @@ class ITOMWIDGETS_EXPORT BasePopupWidget : public QFrame
 {
   Q_OBJECT
 
+#if QT_VERSION < 0x050500
+  //for >= Qt 5.5.0 see Q_ENUM definition below
   Q_ENUMS(AnimationEffect)
   Q_ENUMS(VerticalDirection)
+#endif
 
   /// ScrollEffect by default
   Q_PROPERTY( AnimationEffect animationEffect READ animationEffect WRITE setAnimationEffect)
@@ -122,6 +125,13 @@ public:
     TopToBottom = 1,
     BottomToTop = 2
   };
+
+#if QT_VERSION >= 0x050500
+  //Q_ENUM exposes a meta object to the enumeration types, such that the key names for the enumeration
+  //values are always accessible.
+  Q_ENUM(AnimationEffect);
+  Q_ENUM(VerticalDirection);
+#endif
   
   VerticalDirection verticalDirection()const;
   void setVerticalDirection(VerticalDirection direction);

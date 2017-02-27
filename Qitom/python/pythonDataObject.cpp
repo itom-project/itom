@@ -4569,32 +4569,32 @@ c : {dataObject} \n\
 For a mathematical multiplication see the *-operator.");
 PyObject* PythonDataObject::PyDataObject_mul(PyDataObject *self, PyObject *args)
 {
-    if (self->dataObject == NULL) return 0;
+	if (self->dataObject == NULL) return 0;
 
-    PyObject *pyDataObject = NULL;
-    if (!PyArg_ParseTuple(args, "O!", &PythonDataObject::PyDataObjectType, &pyDataObject))
-    {
-        PyErr_SetString(PyExc_RuntimeError,"argument is no data object");
-        return NULL;
-    }
+	PyObject *pyDataObject = NULL;
+	if (!PyArg_ParseTuple(args, "O!", &PythonDataObject::PyDataObjectType, &pyDataObject))
+	{
+		PyErr_SetString(PyExc_RuntimeError, "argument is no data object");
+		return NULL;
+	}
 
-    PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
-    PyDataObject* obj2 = (PyDataObject*)pyDataObject;
+	PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+	PyDataObject* obj2 = (PyDataObject*)pyDataObject;
 
-    try
-    {
-        retObj->dataObject = new ito::DataObject(self->dataObject->mul(*(obj2->dataObject)));  //new dataObject should always be the owner of its data, therefore base of resultObject remains None
-    }
-    catch(cv::Exception &exc)
-    {
-        Py_DECREF(retObj);
-        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
-        return NULL;
-    }
+	try
+	{
+		retObj->dataObject = new ito::DataObject(self->dataObject->mul(*(obj2->dataObject)));  //new dataObject should always be the owner of its data, therefore base of resultObject remains None
+	}
+	catch (cv::Exception &exc)
+	{
+		Py_DECREF(retObj);
+		PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+		return NULL;
+	}
 
-    if(retObj) retObj->dataObject->addToProtocol("Created by elementwise multiplication of two dataObjects.");
+	if (retObj) retObj->dataObject->addToProtocol("Created by elementwise multiplication of two dataObjects.");
 
-    return (PyObject*)retObj;
+	return (PyObject*)retObj;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -5353,7 +5353,7 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
 
         for (Py_ssize_t i = 0; i < length && !error; i++)
         {
-            elem = PyTuple_GetItem(key, i);
+            elem = PyTuple_GetItem(key, i); //borrowed reference
             axisSize = self->dataObject->getSize(i);
 
             //check type of elem, must be int or stride
@@ -7475,6 +7475,89 @@ PyObject* PythonDataObject::PyDataObject_createMask(PyDataObject *self, PyObject
         return NULL;
     }
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectDstack_doc, "dstack(objects) -> return a stacked data object containing a stack of all planes given by this and obj. \n\
+\n\
+The returned dataObject contains layers of the same shape and type like the given ones. The different layers will be located along the first axis.\
+\n\
+Parameters \n\
+----------- \n\
+obj : {sequence of dataObjects} \n\
+	Sequence of dataObjects containig planes that will be stacked together. All dataObjects must be of the same type and have the same shape of planes (last two dimesnions).\n\
+	The function works with two and three dimensional dataObjects.\n\
+\n\
+Returns \n\
+------- \n\
+dataObj : {dataObject} \n\
+	dataObject of the same type. The different planes are located along the first axis.");
+PyObject* PythonDataObject::PyDataObj_dstack(PyObject *self, PyObject *args)
+{
+    PyObject *sequence = NULL;
+	unsigned int axis = 0;
+	if (!PyArg_ParseTuple(args, "O|I", &sequence, &axis))
+    {
+        return NULL;
+    }
+
+	if (PySequence_Check(sequence))
+	{
+		Py_ssize_t len = PySequence_Size(sequence);
+		
+
+		PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+
+		if (len > 0)
+		{
+			ito::DataObject *vector = new ito::DataObject[len];
+
+			for (Py_ssize_t i = 0; i < len; ++i)
+			{
+				PyObject *item = PySequence_GetItem(sequence, i); //new reference
+				if (!PyDataObject_Check(item))
+				{
+					Py_DECREF(item);
+					DELETE_AND_SET_NULL_ARRAY(vector);
+					return PyErr_Format(PyExc_RuntimeError, "%i-th element of sequence is no dataObject.", i);
+				}
+				else
+				{
+					vector[i] = *(((PyDataObject*)(item))->dataObject);
+				}
+				Py_DECREF(item);
+			}
+
+			try
+			{
+				retObj->dataObject = new ito::DataObject(ito::DataObject::stack(vector, len, axis));
+			}
+			catch (cv::Exception &exc)
+			{
+				DELETE_AND_SET_NULL_ARRAY(vector);
+				Py_DECREF(retObj);
+				PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+				return NULL;
+			}
+
+			if (retObj)
+			{
+				retObj->dataObject->addToProtocol("Created by stacking two dataObjects.");
+			}
+
+			DELETE_AND_SET_NULL_ARRAY(vector);
+
+			return (PyObject*)retObj;
+		}
+		else
+		{
+			return (PyObject*)retObj;
+		}
+	}
+	else
+	{
+		PyErr_SetString(PyExc_RuntimeError, "argument must be a sequence of dataObjects.");
+		return NULL;
+	}
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonDataObject::PyDataObj_Capsule_Destructor(PyObject* capsule)
@@ -7905,6 +7988,76 @@ PyObject* PythonDataObject::PyDataObj_StaticFromNumpyColor(PyObject *self, PyObj
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectCopyMetaInfo_doc, "copyMetaInfo(sourceObj [, copyAxisInfo = True, copyTags = False]) -> Copy the meta information of sourceObj. \n\
+\n\
+All meta information(axis scales, offsets, descriptions, units, tags...) of the sourceObj \
+are copied to the dataObject. \n\
+\n\
+Parameters  \n\
+------------\n\
+sourceObj : {dataObject} \n\
+    whose meta information is copied in this dataObject. \n\
+copyAxisInfo : {bool}, optional\n\
+    If 'copyAxisInfo' is True, the 'axis scales', 'offsets', 'descriptions', 'units' are copied.\n\
+copyTags : {bool}, optional\n\
+    If 'copyTags' is True, the 'tags' are copied.\n\
+\n\
+Raises \n\
+------- \n\
+RuntimeError : \n\
+    if the given sourceObj is not a dataObject\n\
+\n\
+See Also \n\
+--------- \n\
+metaDict : this attribute can directly be used to print the meta information of a dataobject.");
+PyObject* PythonDataObject::PyDataObj_CopyMetaInfo(PyDataObject *self, PyObject *args, PyObject *kwds)
+{
+    Py_ssize_t length = 0;
+
+    if (self->dataObject == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "DataObject is NULL.");
+        return NULL;
+    }
+
+    static const char *kwlist[] = { "sourceObj", "copyAxisInfo", "copyTags", NULL };
+    PyObject *pyObj = NULL;
+    unsigned char copyAxesInfo = 1;
+    unsigned char copyTags = 0;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O!|bb", const_cast<char**>(kwlist), &PythonDataObject::PyDataObjectType, &pyObj, &copyAxesInfo, &copyTags)) // obj is a borrowed reference
+    {
+        return NULL;
+    }
+	
+    PyDataObject* dObj = (PyDataObject*)pyObj;
+    try
+    {
+        if (copyAxesInfo)
+        {
+            dObj->dataObject->copyAxisTagsTo(*(self->dataObject));
+        }
+
+        if (copyTags)
+        {
+            dObj->dataObject->copyTagMapTo(*(self->dataObject));
+        }	
+
+    }
+    catch (cv::Exception &exc)
+    {
+        PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+        return NULL;
+    }	
+
+    if (self->dataObject)
+    {
+        self->dataObject->addToProtocol("Copied meta information from another dataObject.");
+    }
+    Py_RETURN_NONE;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"name", (PyCFunction)PythonDataObject::PyDataObject_name, METH_NOARGS, pyDataObjectName_doc},
         {"data", (PyCFunction)PythonDataObject::PyDataObject_data, METH_NOARGS, pyDataObjectData_doc},
@@ -7920,6 +8073,7 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"addToProtocol",(PyCFunction)PyDataObj_AddToProtocol, METH_VARARGS, pyDataObjectAddToProtocol_doc},
         {"physToPix",(PyCFunction)PyDataObj_PhysToPix, METH_KEYWORDS | METH_VARARGS, pyDataObjectPhysToPix_doc},
         {"pixToPhys",(PyCFunction)PyDataObj_PixToPhys, METH_KEYWORDS | METH_VARARGS, pyDataObjectPixToPhys_doc},
+		{"copyMetaInfo", (PyCFunction)PyDataObj_CopyMetaInfo, METH_KEYWORDS | METH_VARARGS, pyDataObjectCopyMetaInfo_doc },
         
         {"copy",(PyCFunction)PythonDataObject::PyDataObject_copy, METH_VARARGS, pyDataObjectCopy_doc},
         {"astype", (PyCFunction)PythonDataObject::PyDataObject_astype, METH_VARARGS | METH_KEYWORDS, pyDataObjectAstype_doc},
@@ -7947,6 +8101,7 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"__setstate__", (PyCFunction)PythonDataObject::PyDataObj_SetState, METH_VARARGS, "__setstate__ method for handle unpickling commands"},
         {"__array__", (PyCFunction)PythonDataObject::PyDataObj_Array_, METH_VARARGS, dataObject_Array__doc},
         { "createMask", (PyCFunction)PythonDataObject::PyDataObject_createMask, METH_KEYWORDS | METH_VARARGS, pyDataObjectCreateMask_doc },
+		{ "dstack", (PyCFunction)PythonDataObject::PyDataObj_dstack, METH_VARARGS | METH_STATIC, pyDataObjectDstack_doc },
 
         {"abs", (PyCFunction)PythonDataObject::PyDataObject_abs, METH_NOARGS, pyDataObjectAbs_doc}, 
         {"arg", (PyCFunction)PythonDataObject::PyDataObject_arg, METH_NOARGS, pyDataObjectArg_doc},

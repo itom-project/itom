@@ -54,9 +54,13 @@ class ValueProxy;
 class ITOMWIDGETS_EXPORT DoubleSpinBox : public QWidget
 {
   Q_OBJECT
+
+#if QT_VERSION < 0x050500
+  //for >= Qt 5.5.0 see Q_ENUM definition below
   Q_ENUMS(SetMode)
-  Q_FLAGS(DecimalsOption DecimalsOptions)
   Q_ENUMS(SizeHintPolicy)
+  Q_FLAGS(DecimalsOption DecimalsOptions)
+#endif
 
   Q_PROPERTY(Qt::Alignment alignment READ alignment WRITE setAlignment)
   Q_PROPERTY(bool frame READ hasFrame WRITE setFrame)
@@ -167,6 +171,14 @@ public:
     SizeHintByMinMax,
     SizeHintByValue
     };
+
+#if QT_VERSION >= 0x050500
+  //Q_ENUM exposes a meta object to the enumeration types, such that the key names for the enumeration
+  //values are always accessible.
+  Q_ENUM(SetMode)
+  Q_ENUM(SizeHintPolicy)
+  Q_FLAG(DecimalsOptions)
+#endif
 
   typedef QWidget Superclass;
 

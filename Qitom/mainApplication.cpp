@@ -87,7 +87,6 @@ namespace ito
 
 //! static instance pointer initialization
 MainApplication* MainApplication::mainApplicationInstance = NULL;
-AddInManager *AddInManagerInst = NULL;
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /*!
@@ -451,10 +450,10 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     m_splashScreen->showMessage(tr("scan and load plugins..."), Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
-    AddInManager *AIM = new AddInManager(AppManagement::getSettingsFile(), ito::ITOM_API_FUNCS_GRAPH, AppManagement::getMainWindow(), AppManagement::getMainApplication());
+    AddInManager *AIM = AddInManager::createInstance(AppManagement::getSettingsFile(), ito::ITOM_API_FUNCS_GRAPH, AppManagement::getMainWindow(), AppManagement::getMainApplication());
     ito::ITOM_API_FUNCS = AIM->getItomApiFuncsPtr();
+    AppManagement::setAddInManager(AIM);
     AIM->setTimeOuts(AppManagement::timeouts.pluginInitClose, AppManagement::timeouts.pluginGeneral);
-    AddInManagerInst = AIM;
     connect(AIM, SIGNAL(splashLoadMessage(const QString&, int, const QColor &)), m_splashScreen, SLOT(showMessage(const QString&, int, const QColor &)));
     retValue += AIM->scanAddInDir("");
 
@@ -510,8 +509,10 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
 
         m_designerWidgetOrganizer = new DesignerWidgetOrganizer(retValue);
         AppManagement::setDesignerWidgetOrganizer(qobject_cast<QObject*>(m_designerWidgetOrganizer));
-        if (AddInManagerInst)
-            AddInManagerInst->setMainWindow(m_mainWin);
+        if (AIM)
+        {
+            AIM->setMainWindow(m_mainWin);
+        }
     }
     else
     {
@@ -728,8 +729,7 @@ void MainApplication::finalizeApplication()
     m_pyThread->wait();
     DELETE_AND_SET_NULL(m_pyThread);
 
-    //ito::AddInManager::closeInstance();
-    AddInManagerInst->closeInstance();
+    AddInManager::closeInstance();
 
     DELETE_AND_SET_NULL(m_processOrganizer);
     AppManagement::setProcessOrganizer(NULL);

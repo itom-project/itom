@@ -31,6 +31,7 @@
 #include <qvector.h>
 
 #include "../../AddInManager/addInManager.h"
+#include "../../AddInManager/pluginModel.h"
 #include <qsortfilterproxymodel.h>
 
 #include "ui_dialogPluginPicker.h"

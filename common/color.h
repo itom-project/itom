@@ -232,7 +232,10 @@ namespace ito
                 return (b != rhs.b) || (g != rhs.g) || (r != rhs.r || (a != rhs.a));
             }
 
-            inline float32 gray() const {return static_cast<float32>(0.299 * r + 0.587 * g + 0.114 * b);} /*! < Return the gray-value of the current RGB-Value*/
+            inline float32 gray() const /*! < Return the gray-value of the current RGB-Value*/
+			{
+				return static_cast<float32>(0.299 * r + 0.587 * g + 0.114 * b);
+			} 
 
             uint8& alpha() {return a;}; /*! < Access to alpha-Channel*/
             uint8& red()   {return r;}; /*! < Access to red-Channel*/
