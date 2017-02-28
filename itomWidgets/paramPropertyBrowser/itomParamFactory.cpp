@@ -31,7 +31,7 @@
 #include "common/paramMeta.h"
 #include "common/param.h"
 
-#include <qspinbox.h>
+#include "paramIntWidget.h"
 
 #if defined(Q_CC_MSVC)
 #    pragma warning(disable: 4786) /* MS VS 6: truncating debug info after 255 characters */
@@ -96,22 +96,23 @@ void ItomEditorFactoryPrivate<Editor>::slotEditorDestroyed(QObject *object)
 }
 
 // ------------ ParamIntPropertyFactory
-class ParamIntPropertyFactoryPrivate : ItomEditorFactoryPrivate<QSpinBox>
+class ParamIntPropertyFactoryPrivate : ItomEditorFactoryPrivate<ito::ParamIntWidget>
 {
     ParamIntPropertyFactory *q_ptr;
     Q_DECLARE_PUBLIC(ParamIntPropertyFactory)
 public:
     void slotPropertyChanged(QtProperty *property, int value);
     void slotMetaChanged(QtProperty *property, const ito::IntMeta &meta);
+    void slotSetValue(int value);
 };
 
 void ParamIntPropertyFactoryPrivate::slotPropertyChanged(QtProperty *property, int value)
 {
     if (!m_createdEditors.contains(property))
         return;
-    QListIterator<QSpinBox *> itEditor(m_createdEditors[property]);
+    QListIterator<ito::ParamIntWidget *> itEditor(m_createdEditors[property]);
     while (itEditor.hasNext()) {
-        QSpinBox *editor = itEditor.next();
+        ito::ParamIntWidget *editor = itEditor.next();
         if (editor->value() != value) {
             editor->blockSignals(true);
             editor->setValue(value);
@@ -129,13 +130,29 @@ void ParamIntPropertyFactoryPrivate::slotMetaChanged(QtProperty *property, const
     if (!manager)
         return;
 
-    QListIterator<QSpinBox *> itEditor(m_createdEditors[property]);
+    QListIterator<ito::ParamIntWidget *> itEditor(m_createdEditors[property]);
     while (itEditor.hasNext()) {
-        QSpinBox *editor = itEditor.next();
+        ito::ParamIntWidget *editor = itEditor.next();
         editor->blockSignals(true);
-        editor->setRange(meta.getMin(), meta.getMax());
+        editor->setMeta(meta);
         editor->setValue(manager->paramBase(property)->getVal<int>());
         editor->blockSignals(false);
+    }
+}
+
+void ParamIntPropertyFactoryPrivate::slotSetValue(int value)
+{
+    QObject *object = q_ptr->sender();
+    const QMap<ito::ParamIntWidget *, QtProperty *>::ConstIterator ecend = m_editorToProperty.constEnd();
+    for (QMap<ito::ParamIntWidget *, QtProperty *>::ConstIterator itEditor = m_editorToProperty.constBegin(); itEditor != ecend; ++itEditor ) {
+        if (itEditor.key() == object) {
+            QtProperty *property = itEditor.value();
+            ParamIntPropertyManager *manager = q_ptr->propertyManager(property);
+            if (!manager)
+                return;
+            manager->setValue(property, value);
+            return;
+        }
     }
 }
 
@@ -189,22 +206,9 @@ void ParamIntPropertyFactory::connectPropertyManager(ParamIntPropertyManager *ma
 QWidget *ParamIntPropertyFactory::createEditor(ParamIntPropertyManager *manager, QtProperty *property,
         QWidget *parent)
 {
-    QSpinBox *editor = d_ptr->createEditor(property, parent);
+    ito::ParamIntWidget *editor = d_ptr->createEditor(property, parent);
     const ito::Param* param = manager->param(property);
-    const ito::IntMeta* meta = param->getMetaT<ito::IntMeta>();
-
-    if (meta)
-    {
-        editor->setSingleStep(meta->getStepSize());
-        editor->setRange(meta->getMin(), meta->getMax());
-    }
-    else
-    {
-        editor->setSingleStep(1);
-        editor->setRange(INT_MIN, INT_MAX);
-    }
-
-    editor->setValue(param->getVal<int>());
+    editor->setParam(*param);
     editor->setKeyboardTracking(false);
 
     connect(editor, SIGNAL(valueChanged(int)), this, SLOT(slotSetValue(int)));

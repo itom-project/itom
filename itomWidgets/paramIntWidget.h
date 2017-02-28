@@ -23,50 +23,59 @@
 
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
+
 *********************************************************************** */
 
+#ifndef PARAMINTWIDGET_H
+#define PARAMINTWIDGET_H
 
-#ifndef ITOMPARAMMANAGER_H
-#define ITOMPARAMMANAGER_H
+#include <QWidget>
 
-#include "qtpropertybrowser.h"
 #include "common/param.h"
-#include "common/paramMeta.h"
 
-#include <qicon.h>
+#include "commonWidgets.h"
 
-namespace ito 
+namespace ito
 {
 
-class ParamIntPropertyManagerPrivate;
+class ParamIntWidgetPrivate; // forward declare
 
-class QT_QTPROPERTYBROWSER_EXPORT ParamIntPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT ParamIntWidget : public QWidget
 {
     Q_OBJECT
-public:
-    ParamIntPropertyManager(QObject *parent = 0);
-    ~ParamIntPropertyManager();
 
-    const ito::ParamBase *paramBase(const QtProperty *property) const;
-    const ito::Param *param(const QtProperty *property) const;
+    Q_PROPERTY(bool keyboardTracking READ keyboardTracking WRITE setKeyboardTracking);
+
+public:
+    explicit ParamIntWidget(QWidget *parent = 0);
+    virtual ~ParamIntWidget();
+
+    ito::Param param() const;
+    bool keyboardTracking() const;
+    int value() const;
+    ito::IntMeta meta() const;
+
+Q_SIGNALS:
+    void valueChanged(int value);
 
 public Q_SLOTS:
-    void setParam(QtProperty *property, const ito::Param &param);
-    void setValue(QtProperty *property, int value);
-Q_SIGNALS:
-    void valueChanged(QtProperty *property, int val);
-    void metaChanged(QtProperty *property, ito::IntMeta meta);
+    void setParam(const ito::Param &param);
+    void setKeyboardTracking(bool tracking);
+    void setValue(int value);
+    void setMeta(const ito::IntMeta &meta);
+
 protected:
-    QString valueText(const QtProperty *property) const;
-    QIcon valueIcon(const QtProperty *property) const;
-    virtual void initializeProperty(QtProperty *property);
-    virtual void uninitializeProperty(QtProperty *property);
+    QScopedPointer<ParamIntWidgetPrivate> d_ptr; // QScopedPointer to forward declared class
+
 private:
-    ParamIntPropertyManagerPrivate *d_ptr;
-    Q_DECLARE_PRIVATE(ParamIntPropertyManager)
-    Q_DISABLE_COPY(ParamIntPropertyManager)
+    Q_DECLARE_PRIVATE(ParamIntWidget);
+    Q_DISABLE_COPY(ParamIntWidget);
+
+    Q_PRIVATE_SLOT(d_func(), void slotValueChanged(int))
+    Q_PRIVATE_SLOT(d_func(), void slotValueChanged(double))
+    Q_PRIVATE_SLOT(d_func(), void slotChecked(bool))
 };
 
 } //end namespace ito
 
-#endif
+#endif // PARAMINTWIDGET_H

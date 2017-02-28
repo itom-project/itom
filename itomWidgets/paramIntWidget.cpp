@@ -1,0 +1,263 @@
+/* ********************************************************************
+    itom software
+    URL: http://www.uni-stuttgart.de/ito
+    Copyright (C) 2017, Institut fuer Technische Optik (ITO),
+    Universitaet Stuttgart, Germany
+
+    This file is part of itom and its software development toolkit (SDK).
+
+    itom is free software; you can redistribute it and/or modify it
+    under the terms of the GNU Library General Public Licence as published by
+    the Free Software Foundation; either version 2 of the Licence, or (at
+    your option) any later version.
+   
+    In addition, as a special exception, the Institut fuer Technische
+    Optik (ITO) gives you certain additional rights.
+    These rights are described in the ITO LGPL Exception version 1.0,
+    which can be found in the file LGPL_EXCEPTION.txt in this package.
+
+    itom is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Library
+    General Public Licence for more details.
+
+    You should have received a copy of the GNU Library General Public License
+    along with itom. If not, see <http://www.gnu.org/licenses/>.
+
+*********************************************************************** */
+
+#include "paramIntWidget.h"
+
+#include <qspinbox.h>
+#include <qcheckbox.h>
+#include "sliderWidget.h"
+#include "doubleSpinBox.h"
+#include <qlayout.h>
+
+namespace ito
+{
+
+class ParamIntWidgetPrivate
+{
+public:
+    ParamIntWidget *q_ptr;
+    ParamIntWidgetPrivate() {}
+
+    QCheckBox *m_pCheckBox;
+    QSpinBox *m_pSpinBox;
+    SliderWidget *m_pSliderWidget;
+    ito::Param m_param;
+
+    void slotValueChanged(int value)
+    {
+        emit q_ptr->valueChanged(value);
+    }
+
+    void slotValueChanged(double value)
+    {
+        emit q_ptr->valueChanged(value);
+    }
+
+    void slotChecked(bool checked) 
+    {
+        emit q_ptr->valueChanged(checked ? 1 : 0);
+    }
+
+private:
+    Q_DISABLE_COPY(ParamIntWidgetPrivate);
+};
+
+//---------------------------------------------------------------------------
+ParamIntWidget::ParamIntWidget(QWidget *parent /*= NULL*/) :
+    QWidget(parent),
+    d_ptr(new ParamIntWidgetPrivate())
+{
+    d_ptr->q_ptr = this;
+
+    Q_D(ParamIntWidget);
+
+    d->m_param = ito::Param("", ito::ParamBase::Int, INT_MIN, INT_MAX, 0, "");
+
+    QHBoxLayout *layout = new QHBoxLayout();
+    layout->setSpacing(0);
+    layout->setMargin(0);
+
+    d->m_pCheckBox = new QCheckBox(this);
+    layout->addWidget(d->m_pCheckBox);
+    d->m_pCheckBox->setVisible(false);
+    connect(d->m_pCheckBox, SIGNAL(toggled(bool)), this, SLOT(slotChecked(bool)));
+
+    d->m_pSpinBox = new QSpinBox(this);
+    layout->addWidget(d->m_pSpinBox);
+    d->m_pSpinBox->setVisible(false);
+    connect(d->m_pSpinBox, SIGNAL(valueChanged(int)), this, SLOT(slotValueChanged(int)));
+
+    d->m_pSliderWidget = new SliderWidget(this);
+    layout->addWidget(d->m_pSliderWidget);
+    d->m_pSliderWidget->setVisible(false);
+    d->m_pSliderWidget->setDecimals(0);
+    connect(d->m_pSliderWidget, SIGNAL(valueChanged(double)), this, SLOT(slotValueChanged(double)));
+
+    setLayout(layout);
+    setKeyboardTracking(false);
+}
+
+//---------------------------------------------------------------------------
+ParamIntWidget::~ParamIntWidget()
+{
+}
+
+//---------------------------------------------------------------------------
+ito::Param ParamIntWidget::param() const
+{
+    Q_D(const ParamIntWidget);
+    return d->m_param;
+}
+
+//---------------------------------------------------------------------------
+void ParamIntWidget::setParam(const ito::Param &param)
+{
+    Q_D(ParamIntWidget);
+
+    if (param.getType() == ito::ParamBase::Int)
+    {
+        const ito::IntMeta *metaOld = d->m_param.getMetaT<const ito::IntMeta>(); //always != NULL
+        const ito::IntMeta *metaNew = param.getMetaT<const ito::IntMeta>();
+
+        bool valChanged = param != d->m_param;
+        bool metaChanged = ((metaNew && (*metaOld != *metaNew)) || \
+                            (!metaNew));
+
+        if (valChanged || metaChanged)
+        {
+            bool check = (metaNew->getRepresentation() == ito::ParamMeta::Boolean) || \
+                         (metaNew->getMin() == 0 && metaNew->getMax() && metaNew->getStepSize() == 1);
+            bool slider = (metaNew->getRepresentation() == ito::ParamMeta::Linear)  || \
+                         (metaNew->getRepresentation() == ito::ParamMeta::Logarithmic);
+
+            if (metaChanged)
+            {
+                d->m_pCheckBox->setVisible(check);
+                d->m_pSliderWidget->setVisible(!check && slider);
+                d->m_pSpinBox->setVisible(!check && !slider);
+            }
+
+            if (check)
+            {
+                if (valChanged)
+                {
+                    d->m_pCheckBox->setChecked(param.getVal<int>() > 0);
+                }
+            }
+            else if (slider)
+            {
+                if (metaChanged)
+                {
+                    d->m_pSliderWidget->setSuffix(metaNew->getUnit().empty() ? "" : QString(" %1").arg(metaNew->getUnit().data()));
+                    d->m_pSliderWidget->setRange(metaNew->getMin(), metaNew->getMax());
+                    d->m_pSliderWidget->setSingleStep(metaNew->getStepSize());
+                }
+
+                if (valChanged)
+                {
+                    d->m_pSliderWidget->setValue(param.getVal<int>());
+                }
+            }
+            else
+            {
+                if (metaChanged)
+                {
+                    d->m_pSpinBox->setSuffix(metaNew->getUnit().empty() ? "" : QString(" %1").arg(metaNew->getUnit().data()));
+                    d->m_pSpinBox->setRange(metaNew->getMin(), metaNew->getMax());
+                    d->m_pSpinBox->setSingleStep(metaNew->getStepSize());
+                }
+
+                if (valChanged)
+                {
+                    d->m_pSpinBox->setValue(param.getVal<int>());
+                }
+            }
+
+            d->m_param = param;
+
+            if (metaNew == NULL)
+            {
+                d->m_param.setMeta(new ito::IntMeta(INT_MIN, INT_MAX, 1), true);
+            }
+
+            if (valChanged)
+            {
+                emit valueChanged(param.getVal<int>());
+            }
+        }
+    }
+}
+
+//---------------------------------------------------------------------------
+bool ParamIntWidget::keyboardTracking() const
+{
+    Q_D(const ParamIntWidget);
+    return d->m_pSpinBox->keyboardTracking();
+}
+
+//---------------------------------------------------------------------------
+void ParamIntWidget::setKeyboardTracking(bool tracking)
+{
+    Q_D(ParamIntWidget);
+    d->m_pSpinBox->setKeyboardTracking(tracking);
+    d->m_pSliderWidget->spinBox()->setKeyboardTracking(tracking);
+}
+
+//---------------------------------------------------------------------------
+int ParamIntWidget::value() const
+{
+    Q_D(const ParamIntWidget);
+    return d->m_param.getVal<int>();
+}
+
+//---------------------------------------------------------------------------
+void ParamIntWidget::setValue(int value)
+{
+    Q_D(ParamIntWidget);
+
+    if (d->m_param.getVal<int>() != value)
+    {
+        if (d->m_pCheckBox->isVisible())
+        {
+            d->m_pCheckBox->setChecked(value > 0);
+        }
+        else if (d->m_pSliderWidget->isVisible())
+        {
+            d->m_pSliderWidget->setValue(value);
+        }
+        else
+        {
+            d->m_pSpinBox->setValue(value);
+        }
+
+        d->m_param.setVal<int>(value);
+
+        emit valueChanged(value);
+    }
+}
+
+//---------------------------------------------------------------------------
+ito::IntMeta ParamIntWidget::meta() const
+{
+    Q_D(const ParamIntWidget);
+    return *(d->m_param.getMetaT<ito::IntMeta>());
+}
+
+//---------------------------------------------------------------------------
+void ParamIntWidget::setMeta(const ito::IntMeta &meta)
+{
+    Q_D(ParamIntWidget);
+    ito::Param p = d->m_param;
+    p.setMeta(new ito::IntMeta(meta), true);
+    setParam(p);
+}
+
+} //end namespace ito
+
+#include "moc_paramIntWidget.cpp"
+#include "paramIntWidget.moc"

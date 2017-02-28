@@ -100,6 +100,8 @@ SET(paramPropertyBrowser_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamManager.h
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramIntWidget.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramIntWidget.cpp
 )
 
 SET(paramPropertyBrowser_MOC_SOURCES
@@ -198,6 +200,7 @@ SET(paramPropertyBrowser_HEADERS_MOC_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtvariantproperty.h
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamManager.h
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramIntWidget.h
 )
 
 # List of cpp files that should go though moc
@@ -207,6 +210,7 @@ SET(paramPropertyBrowser_CPP_MOC_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamManager.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qttreepropertybrowser.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramIntWidget.cpp
 )
 
 

@@ -55,7 +55,7 @@ private:
     Q_PRIVATE_SLOT(d_func(), void slotPropertyChanged(QtProperty *, int))
     Q_PRIVATE_SLOT(d_func(), void slotMetaChanged(QtProperty *, const ito::IntMeta &))
     //Q_PRIVATE_SLOT(d_func(), void slotSingleStepChanged(QtProperty *, int))
-    //Q_PRIVATE_SLOT(d_func(), void slotSetValue(int))
+    Q_PRIVATE_SLOT(d_func(), void slotSetValue(int))
     Q_PRIVATE_SLOT(d_func(), void slotEditorDestroyed(QObject *))
 };
 

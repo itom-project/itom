@@ -68,7 +68,7 @@ namespace ito
         m_minVal(minVal), 
         m_maxVal(maxVal), 
         m_stepSize(stepSize),
-        m_representation(ParamMeta::Linear)
+        m_representation(ParamMeta::PureNumber)
     { 
         if(m_maxVal < m_minVal) std::swap(m_minVal,m_maxVal); 
 
@@ -145,7 +145,7 @@ namespace ito
         m_minVal(minVal), 
         m_maxVal(maxVal), 
         m_stepSize(stepSize),
-        m_representation(ParamMeta::Linear)
+        m_representation(ParamMeta::PureNumber)
     { 
         if(m_maxVal < m_minVal) std::swap(m_minVal,m_maxVal);
 
@@ -223,7 +223,7 @@ namespace ito
         m_stepSize(stepSize),
         m_displayNotation(Automatic),
         m_displayPrecision(3),
-        m_representation(ParamMeta::Linear)
+        m_representation(ParamMeta::PureNumber)
     { 
         if(m_maxVal < m_minVal) std::swap(m_minVal,m_maxVal); 
 
