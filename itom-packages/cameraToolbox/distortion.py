@@ -151,7 +151,7 @@ def undistortPointGrid(pointsDistorted, rows, cols, coeffs, repr = '2d'):
     
     while (error >= 1e-6 and iter < maxIter):
         r2 = x_u * x_u + y_u * y_u
-        error = np.mean(np.abs(r2 - r2old))
+        error = np.nanmean(np.abs(r2 - r2old))
         iter += 1
         factor = 1.0 / (1 + r2 * (k1 + r2 * (k2 + k3 * r2)))
         x_u = x_u0 * factor
@@ -197,11 +197,19 @@ def drawPointGrid(points, rows, cols, canvas = None):
         newCanvas = False
     
     if newCanvas:
-        height = min(10000, int(max(points_[:,1]) + 50))
-        width = min(10000, int(max(points_[:,0]) + 50))
-        canvas = dataObject.zeros([height, width], 'rgba32')
+        minH = int(min(points_[:,1])) - 50
+        maxH = min(10000, int(max(points_[:,1]) + 50))
+        minW = int(min(points_[:,0])) - 50
+        maxW = min(10000, int(max(points_[:,0]) + 50))
+        canvas = dataObject.zeros([maxH - minH, maxW - minW], 'rgba32')
+        points_[:,1] -= minH
+        points_[:,0] -= minW
+    else:
+        minH = minW = 0
     
     filter("cvDrawChessboardCorners", canvas, (cols, rows), points_, 1)
+    canvas.axisOffsets = (-minH, -minW)
+    
     return canvas
     
 #######################################################
@@ -215,10 +223,14 @@ def createDistortionMap(coeffs, points, rows, cols):
     else:
         points_ = dataObject(points)
     
-    height = min(10000, int(max(points_[:,1]) + 50))
-    width = min(10000, int(max(points_[:,0]) + 50))
+    minH = int(min(points_[:,1])) - 50
+    maxH = min(10000, int(max(points_[:,1]) + 50))
+    minW = int(min(points_[:,0])) - 50
+    maxW = min(10000, int(max(points_[:,0]) + 50))
+    width = maxW - minW
+    height = maxH - minH
     
-    [X,Y] = np.meshgrid(range(width), range(height))
+    [X,Y] = np.meshgrid(range(minW, maxW+1), range(minH, maxH-1))
     X = X.astype('float64') - coeffs[1]
     Y = Y.astype('float64') - coeffs[2]
     radius2 = X*X + Y*Y
@@ -226,6 +238,7 @@ def createDistortionMap(coeffs, points, rows, cols):
                    coeffs[5] * radius2 * radius2 + coeffs[6] * radius2 * radius2 * radius2) * 100.0
     distortionMap.valueDescription = "Distortion"
     distortionMap.valueUnit = "%"
+    distortionMap.axisOffsets = (-minH, -minW)
 
     return distortionMap
     
@@ -236,7 +249,7 @@ def getMeanDistance(x1, y1, x2, y2):
     
     Each pair of points is given by its (x1,y1) and (x2,y2) value.
     '''
-    return np.sqrt((x1 - x2)**2 + (y1 - y2)**2).mean()
+    return np.nanmean(np.sqrt((x1 - x2)**2 + (y1 - y2)**2))
     
 #######################################################
 def meritFitGrid(params, xe, ye):
@@ -301,6 +314,8 @@ def estimateRotationByPCA(xe, ye, rows, cols):
     estimate for the rotation angle
     """
     data = np.hstack([np.array(xe).reshape([rows*cols,1]), np.array(ye).reshape([rows*cols,1])])
+    mask = np.isfinite(data)[:,0]
+    data = data[mask,:]
     m, n = data.shape
     # mean center the data
     data -= data.mean(axis=0)
@@ -416,11 +431,11 @@ def fitGrid(distortedPointGrid, rows = None, cols = None, x0 = None, withDistort
         x0 = guessInitialParameters(distortedPointGrid, rows, cols, withDistortion, withRotation)
     
     if distortedPointGrid.ndim == 2:
-        xe = distortedPointGrid[:,0]
-        ye = distortedPointGrid[:,1]
+        xe = distortedPointGrid[:,0].astype('float64')
+        ye = distortedPointGrid[:,1].astype('float64')
     else:
-        xe = distortedPointGrid[:,:,0]
-        ye = distortedPointGrid[:,:,1]
+        xe = distortedPointGrid[:,:,0].astype('float64')
+        ye = distortedPointGrid[:,:,1].astype('float64')
     
     if withDistortion and withRotation:
         #optimize scaling, rotation and distortion
