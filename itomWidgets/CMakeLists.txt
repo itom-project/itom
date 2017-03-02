@@ -66,7 +66,6 @@ ENDIF (DEFINED CMAKE_BUILD_TYPE)
 INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}
-	${CMAKE_CURRENT_BINARY_DIR}/paramPropertyBrowser
     ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser
     ${CMAKE_CURRENT_SOURCE_DIR}/..  
     ${QT_QTCORE_INCLUDE_DIR}
@@ -102,6 +101,8 @@ SET(paramPropertyBrowser_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.h
   ${CMAKE_CURRENT_SOURCE_DIR}/paramIntWidget.h
   ${CMAKE_CURRENT_SOURCE_DIR}/paramIntWidget.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramStringWidget.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramStringWidget.cpp
 )
 
 SET(paramPropertyBrowser_MOC_SOURCES
@@ -201,6 +202,7 @@ SET(paramPropertyBrowser_HEADERS_MOC_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamManager.h
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.h
   ${CMAKE_CURRENT_SOURCE_DIR}/paramIntWidget.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramStringWidget.h
 )
 
 # List of cpp files that should go though moc
@@ -211,6 +213,7 @@ SET(paramPropertyBrowser_CPP_MOC_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qttreepropertybrowser.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/paramIntWidget.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramStringWidget.cpp
 )
 
 
@@ -333,7 +336,6 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoPicker.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoShapes.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/paramEditorWidget.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/paramEditorModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/motorAxisController.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/statusLed.cpp
 )

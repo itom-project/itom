@@ -32,6 +32,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qwidget.h>
 #include <qscopedpointer.h>
 #include <qpointer.h>
+#include <qvector.h>
 
 class ParamEditorModel;
 class ParamEditorWidgetPrivate;
@@ -77,6 +78,7 @@ protected:
     };
 
     ito::RetVal setPluginParameter(QSharedPointer<ito::ParamBase> param, MessageLevel msgLevel = msgLevelWarningAndError) const;
+    ito::RetVal setPluginParameters(const QVector<QSharedPointer<ito::ParamBase> > params, MessageLevel msgLevel = msgLevelWarningAndError) const;
     ito::RetVal observeInvocation(ItomSharedSemaphore *waitCond, MessageLevel msgLevel) const;
 
     ito::RetVal addParam(const ito::Param &param);

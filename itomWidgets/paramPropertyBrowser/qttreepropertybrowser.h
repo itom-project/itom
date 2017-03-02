@@ -51,7 +51,7 @@ QT_BEGIN_NAMESPACE
 class QTreeWidgetItem;
 class QtTreePropertyBrowserPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtTreePropertyBrowser : public QtAbstractPropertyBrowser
+class ITOMWIDGETS_EXPORT QtTreePropertyBrowser : public QtAbstractPropertyBrowser
 {
     Q_OBJECT
     Q_ENUMS(ResizeMode)

@@ -44,13 +44,15 @@
 
 #include "qtpropertybrowser.h"
 
+#include "../commonWidgets.h"
+
 #if QT_VERSION >= 0x040400
 QT_BEGIN_NAMESPACE
 #endif
 
 class QtButtonPropertyBrowserPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtButtonPropertyBrowser : public QtAbstractPropertyBrowser
+class ITOMWIDGETS_EXPORT QtButtonPropertyBrowser : public QtAbstractPropertyBrowser
 {
     Q_OBJECT
 public:

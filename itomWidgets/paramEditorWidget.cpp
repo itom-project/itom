@@ -27,7 +27,6 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qlayout.h>
 #include <qmessagebox.h>
 #include <qtimer.h>
-#include <qqueue.h>
 
 #include "common/addInInterface.h"
 
@@ -59,6 +58,22 @@ public:
         m_groups.clear();
     }
 
+    void enqueue(const QSharedPointer<ito::ParamBase> param)
+    {
+        const char* name = param->getName();
+
+        for (int i = 0; i < m_changedParameters.size(); ++i)
+        {
+            if (memcmp(m_changedParameters[i]->getName(), name, sizeof(name)) == 0)
+            {
+                m_changedParameters[i] = param;
+                return;
+            }
+        }
+
+        m_changedParameters.append(param);
+    }
+
     QPointer<ito::AddInBase> m_plugin;
     QtAbstractPropertyBrowser *m_pBrowser;
 
@@ -68,7 +83,9 @@ public:
     //factories, responsible for editing properties.
     ito::ParamIntPropertyFactory *m_pIntFactory;
 
-    QQueue<QSharedPointer<ito::ParamBase> > m_changedParameters;
+    QVector<QSharedPointer<ito::ParamBase> > m_changedParameters;
+
+    QMap<QByteArray, QtProperty*> m_properties;
 
     QMap<QString, QtProperty*> m_groups;
     int m_timerID;
@@ -206,6 +223,7 @@ ito::RetVal ParamEditorWidget::addParamInt(const ito::Param &param, QtProperty *
     
     d->m_pIntManager->blockSignals(true);
     QtProperty *prop = d->m_pIntManager->addProperty(param.getName());
+    d->m_properties[param.getName()] = prop;
     prop->setEnabled(!(param.getFlags() & ito::ParamBase::Readonly));
     d->m_pIntManager->setParam(prop, param);
     d->m_pBrowser->addProperty(prop);
@@ -220,7 +238,7 @@ ito::RetVal ParamEditorWidget::addParamInt(const ito::Param &param, QtProperty *
 void ParamEditorWidget::valueChanged(QtProperty* prop, int value)
 {
     Q_D(ParamEditorWidget);
-    d->m_changedParameters.enqueue(QSharedPointer<ito::ParamBase>(new ito::ParamBase(prop->propertyName().toLatin1().data(), ito::ParamBase::Int, value)));
+    d->enqueue(QSharedPointer<ito::ParamBase>(new ito::ParamBase(prop->propertyName().toLatin1().data(), ito::ParamBase::Int, value)));
     if (d->m_timerID == -1)
     {
         d->m_timerID = startTimer(0);
@@ -234,7 +252,7 @@ void ParamEditorWidget::valueChanged(QtProperty* prop, int value)
 void ParamEditorWidget::valueChanged(QtProperty* prop, bool value)
 {
     Q_D(ParamEditorWidget);
-    d->m_changedParameters.enqueue(QSharedPointer<ito::ParamBase>(new ito::ParamBase(prop->propertyName().toLatin1().data(), ito::ParamBase::Int, value ? 1 : 0)));
+    d->enqueue(QSharedPointer<ito::ParamBase>(new ito::ParamBase(prop->propertyName().toLatin1().data(), ito::ParamBase::Int, value ? 1 : 0)));
     if (d->m_timerID == -1)
     {
         d->m_timerID = startTimer(0);
@@ -252,10 +270,8 @@ void ParamEditorWidget::timerEvent(QTimerEvent *event)
     killTimer(d->m_timerID);
     d->m_timerID = -1;
 
-    while (d->m_changedParameters.size() > 0)
-    {
-        setPluginParameter(d->m_changedParameters.dequeue());
-    }
+    setPluginParameters(d->m_changedParameters);
+    d->m_changedParameters.clear();
 }
 
 
@@ -271,10 +287,69 @@ ito::RetVal ParamEditorWidget::setPluginParameter(QSharedPointer<ito::ParamBase>
         if (QMetaObject::invokeMethod(d->m_plugin, "setParam", Q_ARG(QSharedPointer<ito::ParamBase>, param), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
         {
             retval += observeInvocation(locker.getSemaphore(),msgLevelNo);
+
+            if (retval.containsWarningOrError())
+            {
+                QMetaObject::invokeMethod(d->m_plugin, "sendParameterRequest");
+            }
         }
         else
         {
             retval += ito::RetVal(ito::retError, 0, tr("slot 'setParam' could not be invoked since it does not exist.").toLatin1().data());
+        }
+    }
+    else
+    {
+        retval += ito::RetVal(ito::retError, 0, tr("pointer to plugin is invalid.").toLatin1().data());
+    }
+    
+    if (retval.containsError() && (msgLevel & msgLevelErrorOnly))
+    {
+        QMessageBox msgBox;
+        msgBox.setText(tr("Error while setting parameter"));
+        if (retval.hasErrorMessage())
+        {
+            msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
+        }
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.exec();
+    }
+    else if (retval.containsWarning() && (msgLevel & msgLevelWarningOnly))
+    {
+        QMessageBox msgBox;
+        msgBox.setText(tr("Warning while setting parameter"));
+        if (retval.hasErrorMessage())
+        {
+            msgBox.setInformativeText(QLatin1String(retval.errorMessage()));
+        }
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
+    }
+    
+    return retval;
+}
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ParamEditorWidget::setPluginParameters(const QVector<QSharedPointer<ito::ParamBase> > params, MessageLevel msgLevel /*= msgLevelWarningAndError*/) const
+{
+    Q_D(const ParamEditorWidget);
+    ito::RetVal retval;
+
+    if (d->m_plugin)
+    {
+        ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+        if (QMetaObject::invokeMethod(d->m_plugin, "setParamVector", Q_ARG(const QVector<QSharedPointer<ito::ParamBase> >, params), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore())))
+        {
+            retval += observeInvocation(locker.getSemaphore(),msgLevelNo);
+
+            if (retval.containsWarningOrError())
+            {
+                QMetaObject::invokeMethod(d->m_plugin, "sendParameterRequest");
+            }
+        }
+        else
+        {
+            retval += ito::RetVal(ito::retError, 0, tr("slot 'setParamVector' could not be invoked since it does not exist.").toLatin1().data());
         }
     }
     else
@@ -362,5 +437,22 @@ ito::RetVal ParamEditorWidget::observeInvocation(ItomSharedSemaphore *waitCond, 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void ParamEditorWidget::parametersChanged(QMap<QString, ito::Param> parameters)
 {
-    qDebug() << 3;
+    Q_D(ParamEditorWidget);
+
+    QMap<QString, ito::Param>::ConstIterator it = parameters.constBegin();
+    QtProperty *prop;
+    ito::AbstractParamPropertyManager *manager;
+    while (it != parameters.constEnd())
+    {
+        if (d->m_properties.contains(it->getName()))
+        {
+            prop = d->m_properties[it->getName()];
+            manager = qobject_cast<ito::AbstractParamPropertyManager*>(prop->propertyManager());
+            //manager->blockSignals(true);
+            manager->setParam(prop, *it);
+            //manager->blockSignals(false);
+        }
+
+        ++it;
+    }
 }

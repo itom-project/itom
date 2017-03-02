@@ -55,7 +55,7 @@ typedef QMap<int, QIcon> QtIconMap;
 class QtVariantPropertyManager;
 class QtVariantPropertyPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtVariantProperty : public QtProperty
+class ITOMWIDGETS_EXPORT QtVariantProperty : public QtProperty
 {
 public:
     ~QtVariantProperty();
@@ -75,7 +75,7 @@ private:
 
 class QtVariantPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtVariantPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtVariantPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -165,7 +165,7 @@ private:
 
 class QtVariantEditorFactoryPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtVariantEditorFactory : public QtAbstractEditorFactory<QtVariantPropertyManager>
+class ITOMWIDGETS_EXPORT QtVariantEditorFactory : public QtAbstractEditorFactory<QtVariantPropertyManager>
 {
     Q_OBJECT
 public:

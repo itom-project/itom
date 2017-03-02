@@ -135,7 +135,7 @@ void ParamIntPropertyFactoryPrivate::slotMetaChanged(QtProperty *property, const
         ito::ParamIntWidget *editor = itEditor.next();
         editor->blockSignals(true);
         editor->setMeta(meta);
-        editor->setValue(manager->paramBase(property)->getVal<int>());
+        editor->setValue(manager->paramBase(property).getVal<int>());
         editor->blockSignals(false);
     }
 }
@@ -147,7 +147,7 @@ void ParamIntPropertyFactoryPrivate::slotSetValue(int value)
     for (QMap<ito::ParamIntWidget *, QtProperty *>::ConstIterator itEditor = m_editorToProperty.constBegin(); itEditor != ecend; ++itEditor ) {
         if (itEditor.key() == object) {
             QtProperty *property = itEditor.value();
-            ParamIntPropertyManager *manager = q_ptr->propertyManager(property);
+            AbstractParamPropertyManager *manager = q_ptr->propertyManager(property);
             if (!manager)
                 return;
             manager->setValue(property, value);
@@ -207,8 +207,8 @@ QWidget *ParamIntPropertyFactory::createEditor(ParamIntPropertyManager *manager,
         QWidget *parent)
 {
     ito::ParamIntWidget *editor = d_ptr->createEditor(property, parent);
-    const ito::Param* param = manager->param(property);
-    editor->setParam(*param);
+    const ito::Param &param = manager->param(property);
+    editor->setParam(param, true);
     editor->setKeyboardTracking(false);
 
     connect(editor, SIGNAL(valueChanged(int)), this, SLOT(slotSetValue(int)));

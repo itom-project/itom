@@ -38,32 +38,57 @@
 namespace ito 
 {
 
-class ParamIntPropertyManagerPrivate;
+class AbstractParamPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT ParamIntPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT AbstractParamPropertyManager : public QtAbstractPropertyManager
+{
+    Q_OBJECT
+public:
+    AbstractParamPropertyManager(QObject *parent = 0);
+    ~AbstractParamPropertyManager();
+
+    const ito::ParamBase &paramBase(const QtProperty *property) const;
+    const ito::Param &param(const QtProperty *property) const;
+
+public Q_SLOTS:
+    virtual void setParam(QtProperty *property, const ito::Param &param) = 0;
+    virtual void setValue(QtProperty *property, int value) = 0;
+
+protected:
+    virtual QString valueText(const QtProperty *property) const;
+    virtual QIcon valueIcon(const QtProperty *property) const;
+    virtual void initializeProperty(QtProperty *property);
+    virtual void uninitializeProperty(QtProperty *property);
+
+    AbstractParamPropertyManagerPrivate *d_ptr;
+
+private:
+    Q_DECLARE_PRIVATE(AbstractParamPropertyManager)
+    Q_DISABLE_COPY(AbstractParamPropertyManager)
+};
+
+
+
+class ITOMWIDGETS_EXPORT ParamIntPropertyManager : public AbstractParamPropertyManager
 {
     Q_OBJECT
 public:
     ParamIntPropertyManager(QObject *parent = 0);
     ~ParamIntPropertyManager();
 
-    const ito::ParamBase *paramBase(const QtProperty *property) const;
-    const ito::Param *param(const QtProperty *property) const;
+protected:
+    QString valueText(const QtProperty *property) const;
+    QIcon valueIcon(const QtProperty *property) const;
+
+Q_SIGNALS:
+    void valueChanged(QtProperty *property, int val);
+    void metaChanged(QtProperty *property, ito::IntMeta meta);
 
 public Q_SLOTS:
     void setParam(QtProperty *property, const ito::Param &param);
     void setValue(QtProperty *property, int value);
-Q_SIGNALS:
-    void valueChanged(QtProperty *property, int val);
-    void metaChanged(QtProperty *property, ito::IntMeta meta);
-protected:
-    QString valueText(const QtProperty *property) const;
-    QIcon valueIcon(const QtProperty *property) const;
-    virtual void initializeProperty(QtProperty *property);
-    virtual void uninitializeProperty(QtProperty *property);
+
 private:
-    ParamIntPropertyManagerPrivate *d_ptr;
-    Q_DECLARE_PRIVATE(ParamIntPropertyManager)
     Q_DISABLE_COPY(ParamIntPropertyManager)
 };
 

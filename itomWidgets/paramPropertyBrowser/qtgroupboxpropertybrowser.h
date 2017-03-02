@@ -44,13 +44,15 @@
 
 #include "qtpropertybrowser.h"
 
+#include "../commonWidgets.h"
+
 #if QT_VERSION >= 0x040400
 QT_BEGIN_NAMESPACE
 #endif
 
 class QtGroupBoxPropertyBrowserPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtGroupBoxPropertyBrowser : public QtAbstractPropertyBrowser
+class ITOMWIDGETS_EXPORT QtGroupBoxPropertyBrowser : public QtAbstractPropertyBrowser
 {
     Q_OBJECT
 public:

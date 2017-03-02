@@ -242,7 +242,14 @@ void QtBoolEdit::setChecked(bool c)
     m_checkBox->setChecked(c);
     if (!m_textVisible)
         return;
-    m_checkBox->setText(isChecked() ? tr("True") : tr("False"));
+    if (isChecked())
+    {
+        m_checkBox->setText(tr("True"));
+    }
+    else
+    {
+        m_checkBox->setText(tr("False"));
+    }
 }
 
 bool QtBoolEdit::blockCheckBoxSignals(bool block)

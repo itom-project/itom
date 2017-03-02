@@ -33,6 +33,7 @@
 #include "sliderWidget.h"
 #include "doubleSpinBox.h"
 #include <qlayout.h>
+#include "qtpropertybrowserutils_p.h"
 
 namespace ito
 {
@@ -43,27 +44,69 @@ public:
     ParamIntWidget *q_ptr;
     ParamIntWidgetPrivate() {}
 
-    QCheckBox *m_pCheckBox;
+    QtBoolEdit *m_pCheckBox;
     QSpinBox *m_pSpinBox;
     SliderWidget *m_pSliderWidget;
     ito::Param m_param;
 
+    //--------------------------------------------------
     void slotValueChanged(int value)
     {
+        //value changed signal from spinbox
+        if (round(value))
+        {
+            bool blocked = m_pSpinBox->signalsBlocked();
+            m_pSpinBox->blockSignals(true);
+            m_pSpinBox->setValue(value);
+            m_pSpinBox->blockSignals(blocked);
+        }
+
         emit q_ptr->valueChanged(value);
     }
 
+    //--------------------------------------------------
     void slotValueChanged(double value)
     {
-        emit q_ptr->valueChanged(value);
+        int value2 = (int)value;
+        //value changed signal from slider widget
+        if (round(value2))
+        {
+            bool blocked = m_pSliderWidget->signalsBlocked();
+            m_pSliderWidget->blockSignals(true);
+            m_pSliderWidget->setValue(value2);
+            m_pSliderWidget->blockSignals(blocked);
+        }
+
+        emit q_ptr->valueChanged(value2);
     }
 
+    //--------------------------------------------------
     void slotChecked(bool checked) 
     {
+        //value changed signal from checkbox
         emit q_ptr->valueChanged(checked ? 1 : 0);
     }
 
 private:
+    //--------------------------------------------------
+    bool round(int &value)
+    {
+        //check if value fits to optional step size of meta information.
+        //If it does not fit, round it to the next possible value and return true (changed)
+        const ito::IntMeta *meta = m_param.getMetaT<const ito::IntMeta>();
+        int step = meta->getStepSize();
+        int minimum = meta->getMin();
+        if (step != 1 && ((value - minimum) % step) != 0)
+        {
+            value = qBound(minimum, minimum + step * qRound(float(value - minimum) / step), meta->getMax());
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     Q_DISABLE_COPY(ParamIntWidgetPrivate);
 };
 
@@ -82,7 +125,7 @@ ParamIntWidget::ParamIntWidget(QWidget *parent /*= NULL*/) :
     layout->setSpacing(0);
     layout->setMargin(0);
 
-    d->m_pCheckBox = new QCheckBox(this);
+    d->m_pCheckBox = new QtBoolEdit(this);
     layout->addWidget(d->m_pCheckBox);
     d->m_pCheckBox->setVisible(false);
     connect(d->m_pCheckBox, SIGNAL(toggled(bool)), this, SLOT(slotChecked(bool)));
@@ -115,7 +158,7 @@ ito::Param ParamIntWidget::param() const
 }
 
 //---------------------------------------------------------------------------
-void ParamIntWidget::setParam(const ito::Param &param)
+void ParamIntWidget::setParam(const ito::Param &param, bool forceValueChanged /*= false*/)
 {
     Q_D(ParamIntWidget);
 
@@ -124,7 +167,7 @@ void ParamIntWidget::setParam(const ito::Param &param)
         const ito::IntMeta *metaOld = d->m_param.getMetaT<const ito::IntMeta>(); //always != NULL
         const ito::IntMeta *metaNew = param.getMetaT<const ito::IntMeta>();
 
-        bool valChanged = param != d->m_param;
+        bool valChanged = forceValueChanged || (param != d->m_param);
         bool metaChanged = ((metaNew && (*metaOld != *metaNew)) || \
                             (!metaNew));
 
@@ -146,7 +189,9 @@ void ParamIntWidget::setParam(const ito::Param &param)
             {
                 if (valChanged)
                 {
+                    d->m_pCheckBox->blockCheckBoxSignals(true);
                     d->m_pCheckBox->setChecked(param.getVal<int>() > 0);
+                    d->m_pCheckBox->blockCheckBoxSignals(false);
                 }
             }
             else if (slider)

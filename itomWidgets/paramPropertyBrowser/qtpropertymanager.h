@@ -45,6 +45,8 @@
 #include "qtpropertybrowser.h"
 #include <QLineEdit>
 
+#include "../commonWidgets.h"
+
 #if QT_VERSION >= 0x040400
 QT_BEGIN_NAMESPACE
 #endif
@@ -54,7 +56,7 @@ class QTime;
 class QDateTime;
 class QLocale;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtGroupPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtGroupPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -70,7 +72,7 @@ protected:
 
 class QtIntPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtIntPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtIntPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -104,7 +106,7 @@ private:
 
 class QtBoolPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtBoolPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtBoolPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -130,7 +132,7 @@ private:
 
 class QtDoublePropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtDoublePropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtDoublePropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -167,7 +169,7 @@ private:
 
 class QtStringPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtStringPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtStringPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -199,7 +201,7 @@ private:
 
 class QtDatePropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtDatePropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtDatePropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -230,7 +232,7 @@ private:
 
 class QtTimePropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtTimePropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtTimePropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -255,7 +257,7 @@ private:
 
 class QtDateTimePropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtDateTimePropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtDateTimePropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -280,7 +282,7 @@ private:
 
 class QtKeySequencePropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtKeySequencePropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtKeySequencePropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -305,7 +307,7 @@ private:
 
 class QtCharPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtCharPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtCharPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -331,7 +333,7 @@ private:
 class QtEnumPropertyManager;
 class QtLocalePropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtLocalePropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtLocalePropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -360,7 +362,7 @@ private:
 
 class QtPointPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtPointPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtPointPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -389,7 +391,7 @@ private:
 
 class QtPointFPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtPointFPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtPointFPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -421,7 +423,7 @@ private:
 
 class QtSizePropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtSizePropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtSizePropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -456,7 +458,7 @@ private:
 
 class QtSizeFPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtSizeFPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtSizeFPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -494,7 +496,7 @@ private:
 
 class QtRectPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtRectPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtRectPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -526,7 +528,7 @@ private:
 
 class QtRectFPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtRectFPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtRectFPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -562,7 +564,7 @@ private:
 
 class QtMarginsPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtMarginsPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtMarginsPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -594,7 +596,7 @@ private:
 
 class QtMarginsFPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtMarginsFPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtMarginsFPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -627,7 +629,7 @@ private:
 
 class QtEnumPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtEnumPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtEnumPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -659,7 +661,7 @@ private:
 
 class QtFlagPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtFlagPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtFlagPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -691,7 +693,7 @@ private:
 
 class QtSizePolicyPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtSizePolicyPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtSizePolicyPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -722,7 +724,7 @@ private:
 
 class QtFontPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtFontPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtFontPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -758,7 +760,7 @@ private:
 
 class QtColorPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtColorPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtColorPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:
@@ -788,7 +790,7 @@ private:
 
 class QtCursorPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtCursorPropertyManager : public QtAbstractPropertyManager
+class ITOMWIDGETS_EXPORT QtCursorPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
 public:

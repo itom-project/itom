@@ -59,7 +59,7 @@ Q_SIGNALS:
     void valueChanged(int value);
 
 public Q_SLOTS:
-    void setParam(const ito::Param &param);
+    void setParam(const ito::Param &param, bool forceValueChanged = false);
     void setKeyboardTracking(bool tracking);
     void setValue(int value);
     void setMeta(const ito::IntMeta &meta);

@@ -23,43 +23,53 @@
 
     You should have received a copy of the GNU Library General Public License
     along with itom. If not, see <http://www.gnu.org/licenses/>.
+
 *********************************************************************** */
 
-#ifndef ITOMPARAMFACTORY_H
-#define ITOMPARAMFACTORY_H
+#ifndef PARAMSTRINGWIDGET_H
+#define PARAMSTRINGWIDGET_H
 
-#include "itomParamManager.h"
+#include <QWidget>
 
-#include "common/paramMeta.h"
-#include "../commonWidgets.h"
+#include "common/param.h"
 
-namespace ito 
+#include "commonWidgets.h"
+
+namespace ito
 {
 
-class ParamIntPropertyFactoryPrivate;
+class ParamStringWidgetPrivate; // forward declare
 
-class ITOMWIDGETS_EXPORT ParamIntPropertyFactory : public QtAbstractEditorFactory<ParamIntPropertyManager>
+class ITOMWIDGETS_EXPORT ParamStringWidget : public QWidget
 {
     Q_OBJECT
+
 public:
-    ParamIntPropertyFactory(QObject *parent = 0);
-    ~ParamIntPropertyFactory();
+    explicit ParamStringWidget(QWidget *parent = 0);
+    virtual ~ParamStringWidget();
+
+    ito::Param param() const;
+    QByteArray value() const;
+    ito::StringMeta meta() const;
+
+Q_SIGNALS:
+    void valueChanged(const QByteArray &value);
+
+public Q_SLOTS:
+    void setParam(const ito::Param &param, bool forceValueChanged = false);
+    void setValue(const QByteArray &value);
+    void setMeta(const ito::StringMeta &meta);
+
 protected:
-    void connectPropertyManager(ParamIntPropertyManager *manager);
-    QWidget *createEditor(ParamIntPropertyManager *manager, QtProperty *property,
-                QWidget *parent);
-    void disconnectPropertyManager(ParamIntPropertyManager *manager);
+    QScopedPointer<ParamStringWidgetPrivate> d_ptr; // QScopedPointer to forward declared class
+
 private:
-    ParamIntPropertyFactoryPrivate *d_ptr;
-    Q_DECLARE_PRIVATE(ParamIntPropertyFactory)
-    Q_DISABLE_COPY(ParamIntPropertyFactory)
-    Q_PRIVATE_SLOT(d_func(), void slotPropertyChanged(QtProperty *, int))
-    Q_PRIVATE_SLOT(d_func(), void slotMetaChanged(QtProperty *, const ito::IntMeta &))
-    //Q_PRIVATE_SLOT(d_func(), void slotSingleStepChanged(QtProperty *, int))
-    Q_PRIVATE_SLOT(d_func(), void slotSetValue(int))
-    Q_PRIVATE_SLOT(d_func(), void slotEditorDestroyed(QObject *))
+    Q_DECLARE_PRIVATE(ParamStringWidget);
+    Q_DISABLE_COPY(ParamStringWidget);
+
+    Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QString))
 };
 
 } //end namespace ito
 
-#endif
+#endif // PARAMINTWIDGET_H

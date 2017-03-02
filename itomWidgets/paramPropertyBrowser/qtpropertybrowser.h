@@ -46,34 +46,18 @@
 #include <QtCore/QSet>
 #include <QLineEdit>
 
+#include "../commonWidgets.h"
+
 #if QT_VERSION >= 0x040400
 QT_BEGIN_NAMESPACE
 #endif
-
-#if defined(Q_WS_WIN)
-#  if !defined(QT_QTPROPERTYBROWSER_EXPORT) && !defined(QT_QTPROPERTYBROWSER_IMPORT)
-#    define QT_QTPROPERTYBROWSER_EXPORT
-#  elif defined(QT_QTPROPERTYBROWSER_IMPORT)
-#    if defined(QT_QTPROPERTYBROWSER_EXPORT)
-#      undef QT_QTPROPERTYBROWSER_EXPORT
-#    endif
-#    define QT_QTPROPERTYBROWSER_EXPORT __declspec(dllimport)
-#  elif defined(QT_QTPROPERTYBROWSER_EXPORT)
-#    undef QT_QTPROPERTYBROWSER_EXPORT
-#    define QT_QTPROPERTYBROWSER_EXPORT __declspec(dllexport)
-#  endif
-#else
-#  define QT_QTPROPERTYBROWSER_EXPORT
-#endif
-
-
 
 typedef QLineEdit::EchoMode EchoMode;
 
 class QtAbstractPropertyManager;
 class QtPropertyPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtProperty
+class ITOMWIDGETS_EXPORT QtProperty
 {
 public:
     virtual ~QtProperty();
@@ -114,7 +98,7 @@ private:
 
 class QtAbstractPropertyManagerPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtAbstractPropertyManager : public QObject
+class ITOMWIDGETS_EXPORT QtAbstractPropertyManager : public QObject
 {
     Q_OBJECT
 public:
@@ -149,7 +133,7 @@ private:
     Q_DISABLE_COPY(QtAbstractPropertyManager)
 };
 
-class QT_QTPROPERTYBROWSER_EXPORT QtAbstractEditorFactoryBase : public QObject
+class ITOMWIDGETS_EXPORT QtAbstractEditorFactoryBase : public QObject
 {
     Q_OBJECT
 public:
@@ -251,7 +235,7 @@ private:
 class QtAbstractPropertyBrowser;
 class QtBrowserItemPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtBrowserItem
+class ITOMWIDGETS_EXPORT QtBrowserItem
 {
 public:
     QtProperty *property() const;
@@ -267,7 +251,7 @@ private:
 
 class QtAbstractPropertyBrowserPrivate;
 
-class QT_QTPROPERTYBROWSER_EXPORT QtAbstractPropertyBrowser : public QWidget
+class ITOMWIDGETS_EXPORT QtAbstractPropertyBrowser : public QWidget
 {
     Q_OBJECT
 public:
