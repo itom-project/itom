@@ -40,8 +40,8 @@ ito--DialogLoadedPlugins
 
 ito--DialogAboutQItom
 {
-    qproperty-textColor: #ff00ff;
-    qproperty-linkColor: #ffffff;
+    qproperty-textColor: #ffffff;
+    qproperty-linkColor: #3daee9;
 }
 
 ito--FigureWidget
