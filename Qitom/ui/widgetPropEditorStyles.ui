@@ -71,9 +71,9 @@
         <item>
          <widget class="ColorPickerButton" name="btnForegroundColor">
           <property name="text">
-           <string>Foreground color</string>
+           <string>Foreground Color</string>
           </property>
-          <property name="displayColorName">
+          <property name="displayColorName" stdset="0">
            <bool>false</bool>
           </property>
          </widget>
@@ -81,9 +81,9 @@
         <item>
          <widget class="ColorPickerButton" name="btnBackgroundColor">
           <property name="text">
-           <string>Background color</string>
+           <string>Background Color</string>
           </property>
-          <property name="displayColorName">
+          <property name="displayColorName" stdset="0">
            <bool>false</bool>
           </property>
          </widget>
@@ -218,7 +218,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Reset all to default</string>
+           <string>Reset All To Default</string>
           </property>
          </widget>
         </item>
@@ -249,14 +249,14 @@
         <item>
          <widget class="QPushButton" name="btnImport">
           <property name="text">
-           <string>Import style...</string>
+           <string>Import Style...</string>
           </property>
          </widget>
         </item>
         <item>
          <widget class="QPushButton" name="btnExport">
           <property name="text">
-           <string>Export style...</string>
+           <string>Export Style...</string>
           </property>
          </widget>
         </item>

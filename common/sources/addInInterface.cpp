@@ -425,7 +425,7 @@ namespace ito
         By this method, the dock-widget for this plugin is created, where you can define the content-widget of the dock-widget,
         some style-features of the dock-widget, the areas in the main window, where it is allowed to move the dock-widget...
 
-        If the content widget has a slot 'dockWidgetVisibilityChanged(bool)', this slot will be connected with the signal
+        If the content widget has a slot 'dockWidgetVisibilityChanged(bool)', this slot will be connected to the signal
         'visibilityChanged(bool)' of the dock widget.
 
         \param [in] title is the dock-widget's title
@@ -450,7 +450,10 @@ namespace ito
         {
             aibp->m_dockWidget->setWidget(content);
             content->setParent(aibp->m_dockWidget);
-            connect(aibp->m_dockWidget, SIGNAL(visibilityChanged(bool)), content, SLOT(dockWidgetVisibilityChanged(bool)));
+            if (content->metaObject()->indexOfSlot("dockWidgetVisibilityChanged(bool)") >= 0)
+            {
+                connect(aibp->m_dockWidget, SIGNAL(visibilityChanged(bool)), content, SLOT(dockWidgetVisibilityChanged(bool)));
+            }
         }
     }
 

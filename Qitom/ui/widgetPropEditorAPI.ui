@@ -62,7 +62,7 @@
    <item>
     <widget class="QLabel" name="lblBasePath">
      <property name="text">
-      <string>base path: </string>
+      <string>Base path: </string>
      </property>
     </widget>
    </item>

@@ -50,6 +50,14 @@ set(unittest_SOURCES
 cxx_executable(${target_name} ${CMAKE_CURRENT_SOURCE_DIR} gtest ${unittest_SOURCES} ${unittest_HEADERS})
 target_link_libraries(${target_name} itomCommonLib ${OpenCV_LIBS})
 
+set_target_properties( ${target_name}
+    PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG "${CMAKE_BINARY_DIR}/"
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/"
+)
+
+SET_TARGET_PROPERTIES(${target_name} PROPERTIES DEBUG_POSTFIX "d")
+
 
 
 

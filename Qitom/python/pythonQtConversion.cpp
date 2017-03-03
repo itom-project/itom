@@ -930,7 +930,8 @@ QVector<ito::Shape> PythonQtConversion::PyObjGetShapeVector(PyObject* val, bool 
         t = PySequence_GetItem(val, i); //new reference
         if (PyShape_Check(t))
         {
-            v.append(*((ito::PythonShape::PyShape*)t)->shape);
+            if (((ito::PythonShape::PyShape*)t)->shape)
+                v.append(*((ito::PythonShape::PyShape*)t)->shape);
         }
         else
         {

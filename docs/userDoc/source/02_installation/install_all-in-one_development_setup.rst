@@ -77,6 +77,33 @@ Optionally there is a 3rd party package that brings support for the PointCloudLi
 * VTK 7.0.0 (prebuild with Qt 5.6.0 support)
 * PCL 1.8.0 (prebuild with support of all libraries above)
 
+**Version Visual Studio 2013 with Qt 5.6.1**
+
+* Available for Visual Studio 2013 32bit and 64bit (Visual Studio 2013 required, e.g. free Community Edition)
+* Git 2.8.1 (setup in package, needs to be installed)
+* Python 3.5.1 (setup in package, needs to be installed)
+* Numpy MKL 1.11.0 (setup in package, will automatically be installed)
+* Qt 5.6.1-1 (prebuild)
+* OpenCV 3.1.0 (prebuild for VS2013)
+* CMake 3.5.1 (prebuild)
+* QScintilla 2.9.1 (prebuild inside of Qt 5.6.0)
+* Doxygen
+
+Optionally there is a 3rd party package that brings support for the PointCloudLibrary for itom. This secondary archive contains the following features:
+
+* Boost 1.60.0 (prebuild)
+* Eigen 3.2.7 (prebuild)
+* Flann 1.7.1 (prebuild)
+* QHull 2015.2 (prebuild)
+* VTK 7.0.0 (prebuild with Qt 5.6.0 support)
+* PCL 1.8.0 (prebuild with support of all libraries above)
+
+There are two versions of the 3rd party package available. They only differ in the type of OpenGL version used in VTK.
+The newer OpenGL 2.0 is known to be faster, however it is not supported by Remote Desktop Connections and might still
+crash in some methods. For more robust implementations, use the zip-archive with the OpenGL 1.1 version.
+
+For more information about available versions, see https://sourceforge.net/projects/itom/files/all-in-one-build-setup/ .
+
 Prerequisites for the development setup
 ========================================
 
@@ -120,7 +147,7 @@ Then execute the following steps:
     
     * Git 1.9.4 or similar version
     * Python 3.4.2 or similar version
-    * Numpy 1.8.2 (Numpy 1.11.0 needs not to be installed, it is automatically installed at setup process)
+    * Numpy 1.8.2 (only for older versions of the all-in-one development setup; else: Numpy 1.11.0 needs not to be installed, it is automatically installed at setup process)
     
     on your computer. This is required for the further installation. Optionally you can install the **Qt-AddIn** for Visual Studio as well as
     **TortoiseGit** from the **optional** folder. This can also be done later.
@@ -135,7 +162,7 @@ Then execute the following steps:
 3. Execute the script **setup.py**
     
     The next step is to execute the python script **setup.py** in the __install__ subfolder. Usually, this should work by double-clicking on the file. However
-    you need to make sure that the file is executed with the Python 3.4.2 version that you recently installed. If this is not the case, make a right click on the file
+    you need to make sure that the file is executed with the Python version that you recently installed. If this is not the case, make a right click on the file
     and select **Open with...** and choose **python.exe** from the Python installation path (e.g. C:/python34).
     
     This script leads you through the remaining installation process using a menu guided approach:
@@ -144,18 +171,26 @@ Then execute the following steps:
         :scale: 100%
         :align: center
     
-    
-    Type any number (1-9) after the question **your input?** and press return to start the corresponding installation step. You can also execute the first six steps using the
-    overall command number 7. Press 9 to quit the setup. You can continue with other steps by call **setup.py** again. Once you executed one step, an **(OK)** after the number
-    shows you that the step already has been executed. An **(??)** means that no further information about a possible execution can be shown. The single step should normally be
-    executed starting at 1 and ending with 8; however you can also omit single steps. The steps are explained in the following points.
+    It depends on the version of the all-in-one development setup how many steps have to be executed by the **setup.py** script. In any case,
+    you will get a list of all steps. Press any number after the qestion **your input?** followed by return to start the corresponding installation step.
+    There is also a number that executes several other steps at once. You can close the script by the corresponding number and restart it at any later time and continue
+    with the installation. Once you executed one step, an **(OK)** after the number
+    shows you that the step already has been executed. An **(??)** means that no further information about a possible execution can be shown. 
     
     .. note::
         
         If you have already executed **setup.py** at least once, a file **setup_settings.txt** is created in the **__install__** folder. This contains some settings that you 
         made during the installation. Delete this file if you want to restart the installation without preset settings.
     
-    1. Setup: clone git directories
+    1. Upgrade pip (only version >= VS2013):
+        
+        This step updates the **pip** package within the recently installed Python distribution to the current version.
+        
+    2. Install Numpy 1.11.0 (only version >= VS2013):
+        
+        Numpy 1.11.0 is automatically installed. For the VS2010 version, install Numpy 1.8.2 manually.
+        
+    3. Setup: clone git directories
     
         This command clones the **itom**, **plugins** and **designerPlugins** repositories from https://bitbucket.org/itom and creates the folders:
             
@@ -167,7 +202,7 @@ Then execute the following steps:
         guessed path (type **y** and press return) or you can indicate the absolute path to this executable (e.g. **C:/Program Files (x86)/Git/bin/git.exe**). This setting
         is stored in the settings file **setup_settings.txt**.
         
-    2. Patch Qt in 3rdParty folder
+    4. Patch Qt in 3rdParty folder
         
         The folder **3rdParty** contains a prebuild version of Qt (5.3.2, with OpenGL support). No further compilation needs to be done. However this Qt installation needs to be
         patched in order to correspond to your pathes. Use this setup step to execute the patch. If you are able to start executables like **assistant.exe** or **designer.exe** from the
@@ -177,34 +212,34 @@ Then execute the following steps:
             
             **How is this Qt prebuild version created?**
             
-            The Qt version in the prebuild setup is obtained by the source archive of Qt 5.3.2 from qt-projects.org. Using MSVC2010 32bit or 64bit, these sources have been configured using the same steps than indicated in :ref:`this link <compile-qt5-from-sources>`. The configured project is then compiled (using jom 1.0.14 for a multi-threaded compilation) and only the relevant files are then copied into the Qt5.3.2 folder of your prebuild itom setup.
+            The Qt version in the prebuild setup is obtained by the source archive of Qt 5.3.2 from qt.io. Using MSVC2010 32bit or 64bit, these sources have been configured using the same steps than indicated in :ref:`this link <compile-qt5-from-sources>`. The configured project is then compiled (using jom 1.0.14 for a multi-threaded compilation) and only the relevant files are then copied into the Qt5.3.2 folder of your prebuild itom setup.
             
         .. note::
             
             One drawback of this prebuild Qt installation is that you cannot directly debug into Qt methods (since the delivered ptb-files are not patched and point to invalid pathes). If
             you want to have this feature (usually not required for standard programming), you need to compile Qt by yourself into the same folder using the approach given in :ref:`this link <compile-qt5-from-sources>`.
     
-    3. Configure and Generate CMake (itom only)
+    5. Configure and Generate CMake (itom only)
         
-        At first, |itom| needs to be configured using CMake such that the folder **build/itom** is generated with an appropriate Visual Studio solution. CMake is directly called from **3rdParty/CMake3.0.2**. (If the configuration should fail, the CMake GUI is opened, you can reconfigure anything, generate the project by yourself and close the GUI. Then, the setup will continue.) Before you go on configuring the plugins and designerplugins, you need to build |itom| in Debug and Release first (in order to create the SDK). That is done in the following step.
+        At first, |itom| needs to be configured using CMake such that the folder **build/itom** is generated with an appropriate Visual Studio solution. CMake is directly called from **3rdParty/CMake3.0.2** or similar. (If the configuration should fail, the CMake GUI is opened, you can reconfigure anything, generate the project by yourself and close the GUI. Then, the setup will continue.) Before you go on configuring the plugins and designerplugins, you need to build |itom| in Debug and Release first (in order to create the SDK). That is done in the following step.
         
-    4. Compile **itom** in Debug and Release
+    6. Compile **itom** in Debug and Release
         
         This step compiles itom from **build/itom** in a debug and release compilation. Then the executables **qitom.exe** and **qitomd.exe** are generated. If you try to start them, this may fail, since the pathes to the binaries of Qt, OpenCV and optionally the PointCloudLibrary are not included in the Windows path environment variable yet (see step 8)
     
-    5. Configure and generate CMake of plugins and designerplugins
+    7. Configure and generate CMake of plugins and designerplugins
         
         Similar to step 3, the plugins and designerplugins are now configured and generated (folders **build/plugins** and **build/designerplugins**). This step will fail, if the itom-SDK could not be found in build/itom/SDK.
         
-    6. Compile **plugins** and **designerplugins** in Debug and Release
+    8. Compile **plugins** and **designerplugins** in Debug and Release
         
         Same than step 4 but for plugins and designerPlugins.
         
-    7. Bundle
+    9. Bundle
         
         In order to execute steps 1-6 manually, you can execute all these steps in one row using command 7 (sometimes you need to accept intermediate steps by pressing return)
         
-    8. Modify Windows path variable
+    10. Modify Windows path variable
         
         In order to find the binaries of Qt, OpenCV and optionally the PointCloudLibrary, it is necessary to prepend some pathes to the Windows path variable. If you choose option 8, a string is print to the command line and saved in the file **enver.txt**. Copy the string and **prepend** it to the PATH environment variable of Windows. Afterwards it is required to restart the computer or log-off and log-on again.
         

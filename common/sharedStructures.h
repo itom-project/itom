@@ -43,7 +43,7 @@ namespace ito
     #define MAJORVERSION(version)               version >> 16
     #define MINORVERSION(version)               (version >> 8) - (MAJORVERSION(version) << 8)
     #define PATCHVERSION(version)               version - ((version >> 8) << 8)
-    #define MAXVERSION                          CREATEVERSION(999999,0,0)    //maximum possible version (that means no maximum version is indicated)
+    #define MAXVERSION                          CREATEVERSION(255,0,0)    //maximum possible version (that means no maximum version is indicated); ck 17.01.2017 changed maxversion major to 255, avoiding warning about too many bits in bitshift CREATEVERSION macro / Linux
     #define MINVERSION                          CREATEVERSION(0,0,0)         //minimum possible version
 
     #define DELETE_AND_SET_NULL(pointer) if(pointer != NULL) { delete pointer; pointer = NULL;};

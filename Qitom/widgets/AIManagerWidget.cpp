@@ -22,7 +22,7 @@
 
 #include "AIManagerWidget.h"
 
-#include "../organizer/addInManager.h"
+#include "../../AddInManager/addInManager.h"
 #include "../ui/dialogNewPluginInstance.h"
 #include "../ui/dialogSnapshot.h"
 #include "../ui/dialogOpenNewGui.h"
@@ -35,7 +35,7 @@
 #include <qmessagebox.h>
 #include <qinputdialog.h>
 #include <qabstractitemmodel.h>
-#include "../models/PlugInModel.h"
+#include "../../AddInManager/pluginModel.h"
 
 namespace ito {
 
@@ -63,7 +63,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, const QString &objName, Q
     m_pViewDetails(NULL)
 {
     int size = 0;
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
 
     m_pAIManagerView = new QTreeView(this);
     m_pAIManagerView->setContextMenuPolicy(Qt::CustomContextMenu);
@@ -92,7 +92,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, const QString &objName, Q
     connect(m_pActCloseInstance, SIGNAL(triggered()), this, SLOT(mnuCloseInstance()));
     m_pContextMenu->addAction(m_pActCloseInstance);
 
-    m_pActCloseAllInstances = new QAction(QIcon(":/plugins/icons/closeAll.png"), tr("Close all"), this);
+    m_pActCloseAllInstances = new QAction(QIcon(":/plugins/icons/closeAll.png"), tr("Close All"), this);
     connect(m_pActCloseAllInstances, SIGNAL(triggered()), this, SLOT(mnuCloseAllInstances()));
     m_pContextMenu->addAction(m_pActCloseAllInstances);
 
@@ -121,7 +121,7 @@ AIManagerWidget::AIManagerWidget(const QString &title, const QString &objName, Q
     connect(m_pActInfo, SIGNAL(triggered()), this, SLOT(mnuShowInfo()));
     m_pContextMenu->addAction(m_pActInfo);
 
-    m_pActSendToPython = new QAction(QIcon(":/plugins/icons/sendToPython.png"), tr("Send to Python..."), this);
+    m_pActSendToPython = new QAction(QIcon(":/plugins/icons/sendToPython.png"), tr("Send To Python..."), this);
     connect(m_pActSendToPython, SIGNAL(triggered()), this, SLOT(mnuSendToPython()));
     m_pContextMenu->addAction(m_pActSendToPython);
 
@@ -197,7 +197,7 @@ m_pMainToolbar->setOrientation(Qt::Vertical);*/
 //----------------------------------------------------------------------------------------------------------------------------------
 AIManagerWidget::~AIManagerWidget()
 {
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
     QString setFile(AppManagement::getSettingsFile());
     QSettings *settings = new QSettings(setFile, QSettings::IniFormat);
@@ -263,7 +263,7 @@ void AIManagerWidget::createActions()
 //----------------------------------------------------------------------------------------------------------------------------------
 void AIManagerWidget::createMenus()
 {
-    m_pAIManagerViewSettingMenu = new QMenu(tr("settings"), this);
+    m_pAIManagerViewSettingMenu = new QMenu(tr("Settings"), this);
     m_pAIManagerViewSettingMenu->setIcon(QIcon(":/application/icons/adBlockAction.png"));
     m_pAIManagerViewSettingMenu->addAction(m_pViewList->action());
     m_pAIManagerViewSettingMenu->addAction(m_pViewDetails->action());
@@ -352,7 +352,7 @@ void AIManagerWidget::updateActions()
                     QObject *engine = AppManagement::getPythonEngine();
                     m_pActSendToPython->setEnabled(engine);
 
-                    m_pShowConfDialog->setEnabled(ais->hasConfDialog());
+                    m_pShowConfDialog->setEnabled((qobject_cast<QApplication*>(QCoreApplication::instance())) && ais->hasConfDialog());
                     m_pActDockWidget->setEnabled(ais->hasDockWidget());
                     m_pActDockWidgetToolbar->setEnabled(ais->hasDockWidget());
 
@@ -454,11 +454,11 @@ void AIManagerWidget::CloseInstance(const QModelIndex index)
     {
         if (ais->createdByGUI() == 0)
         {
-            QMessageBox::warning(this, tr("closing not possible"), tr("The instance '%1' cannot be closed by GUI since it has been created by Python").arg(index.model()->data(index).toString()));
+            QMessageBox::warning(this, tr("Closing not possible"), tr("The instance '%1' cannot be closed by GUI since it has been created by Python").arg(index.model()->data(index).toString()));
         }
         else if (ais->getRefCount() > 1)
         {
-            QMessageBox::warning(this, tr("closing not possible"), tr("The instance '%1' can temporarily not be closed since it is still in use by another element.").arg(index.model()->data(index).toString()));
+            QMessageBox::warning(this, tr("Closing not possible"), tr("The instance '%1' can temporarily not be closed since it is still in use by another element.").arg(index.model()->data(index).toString()));
         }
         else
         {
@@ -471,17 +471,17 @@ void AIManagerWidget::CloseInstance(const QModelIndex index)
                 QMessageBox::information(this, tr("final closing not possible"), tr("The instance '%1' can finally not be closed since there are still references to this instance from other componentents, e.g. python variables.").arg(index.model()->data(index).toString()));
             }
 
-            ito::AddInManager *aim = ito::AddInManager::getInstance();
+            ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
             ito::RetVal retValue = aim->closeAddIn(ais,NULL);
 
             if (retValue.containsWarning())
             {
-                QString message = tr("warning while closing instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
+                QString message = tr("Warning while closing instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                 QMessageBox::warning(this, tr("Warning while closing instance"), message);
             }
             else if (retValue.containsError())
             {
-                QString message = tr("error while closing instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
+                QString message = tr("Error while closing instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                 QMessageBox::critical(this, tr("Error while closing instance"), message);
             }
         }
@@ -507,7 +507,7 @@ void AIManagerWidget::mnuShowConfdialog()
     if (index.isValid())
     {
         ito::AddInBase *ais = (ito::AddInBase *)index.internalPointer();
-        if (ais && ais->hasConfDialog())
+        if ((qobject_cast<QApplication*>(QCoreApplication::instance())) && ais && ais->hasConfDialog())
         {
             ito::RetVal retValue = ais->showConfDialog();
             
@@ -559,8 +559,7 @@ void AIManagerWidget::mnuCreateNewInstance()
 
     if (index.isValid())
     {
-        ito::AddInManager *aim = ito::AddInManager::getInstance();
-//        ito::AddInInterfaceBase *aib = (ito::AddInInterfaceBase *)aim->getAddInPtr(index.row());
+        ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
         ito::AddInInterfaceBase *aib = (ito::AddInInterfaceBase*)index.internalPointer();
 
         DialogNewPluginInstance *dialog = new DialogNewPluginInstance(index, aib);
@@ -578,7 +577,7 @@ void AIManagerWidget::mnuCreateNewInstance()
 
             if (retValue.containsError())
             {
-                QString message = tr("error while creating new instance. \nMessage: %1").arg(QLatin1String(retValue.errorMessage()));
+                QString message = tr("Error while creating new instance. \nMessage: %1").arg(QLatin1String(retValue.errorMessage()));
                 QMessageBox::critical(this, tr("Error while creating new instance"), message);
                 return;
             }
@@ -612,12 +611,12 @@ void AIManagerWidget::mnuCreateNewInstance()
 
             if (retValue.containsWarning())
             {
-                QString message = tr("warning while creating new instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
+                QString message = tr("Warning while creating new instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                 QMessageBox::warning(this, tr("Warning while creating new instance"), message);
             }
             else if (retValue.containsError())
             {
-                QString message = tr("error while creating new instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
+                QString message = tr("Error while creating new instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                 QMessageBox::critical(this, tr("Error while creating new instance"), message);
             }
 
@@ -643,12 +642,12 @@ void AIManagerWidget::mnuCreateNewInstance()
 
                         if (retValue.containsWarning())
                         {
-                            QString message = tr("warning while sending instance to python. Message: %1").arg(QLatin1String(retValue.errorMessage()));
+                            QString message = tr("Warning while sending instance to python. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                             QMessageBox::warning(this, tr("Warning while sending instance to python"), message);
                         }
                         else if (retValue.containsError())
                         {
-                            QString message = tr("error while sending instance to python. Message: %1").arg(QLatin1String(retValue.errorMessage()));
+                            QString message = tr("Error while sending instance to python. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                             QMessageBox::critical(this, tr("Error while sending instance to python"), message);
                         }
                     }
@@ -740,12 +739,12 @@ void AIManagerWidget::mnuSendToPython()
 
                     if (retValue.containsWarning())
                     {
-                        QString message = tr("warning while sending instance to python. Message: %1").arg(QLatin1String(retValue.errorMessage()));
+                        QString message = tr("Warning while sending instance to python. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                         QMessageBox::warning(this, tr("Warning while sending instance to python"), message);
                     }
                     else if (retValue.containsError())
                     {
-                        QString message = tr("error while sending instance to python. Message: %1").arg(QLatin1String(retValue.errorMessage()));
+                        QString message = tr("Error while sending instance to python. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                         QMessageBox::critical(this, tr("Error while sending instance to python"), message);
                     }
                 }
@@ -879,7 +878,7 @@ void AIManagerWidget::mnuShowAlgoWidget(ito::AddInAlgo::AlgoWidgetDef* awd)
         }
         else
         {
-            retValue += ito::RetVal(ito::retError, 0, tr("could not find instance of UiOrganizer").toLatin1().data());
+            retValue += ito::RetVal(ito::retError, 0, tr("Could not find instance of UiOrganizer").toLatin1().data());
         }
     }
      
@@ -1039,7 +1038,7 @@ void AIManagerWidget::setTreeViewHideColumns(const bool &hide, const int colCoun
 //----------------------------------------------------------------------------------------------------------------------------------
 void AIManagerWidget::showList()
 {
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
     bool isList = true;
 
@@ -1075,7 +1074,7 @@ void AIManagerWidget::mnuToggleView()
 //----------------------------------------------------------------------------------------------------------------------------------
 void AIManagerWidget::showDetails()
 {
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
     bool isList = true;
 

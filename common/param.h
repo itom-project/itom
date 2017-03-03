@@ -187,7 +187,7 @@ namespace ito
 
         //! sets content of autosave flag - this flag determines whether the parameter value gets automagically saved to xml file
         //! when an instance of a plugin class is deleted (closed)
-        inline void setAutosave(const bool autosave) { m_type = autosave ? (m_type & ~NoAutosave) : (m_type | NoAutosave); }
+        inline void setAutosave(const bool autosave) { m_type = autosave ? (m_type | NoAutosave) : (m_type & ~NoAutosave); }
 
         //! returns length of array parameters or -1 if no array is given. For string parameter returns length of string or 0 if not given, for number parameters return 1. In all other cases -1.
         int getLen(void) const;

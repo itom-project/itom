@@ -106,6 +106,7 @@ void WidgetWrapper::initMethodHash()
         qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("selectedTexts()"), "QStringList", 2004, ok );
         qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("selectRows(QVector<int>)"), "void", 2005, ok );
         qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("takeItem(int)"), "QString", 2006, ok);
+        qListWidgetList << buildMethodDescription(QMetaObject::normalizedSignature("item(int)"), "QString", 2007, ok);
         methodHash["QListWidget"] = qListWidgetList;
 
         //QComboBox
@@ -335,6 +336,15 @@ bool WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                     _r = object2->takeItem((*reinterpret_cast< const int(*)>(_a[1])));
                     (*reinterpret_cast< QString*>(_a[0])) = _r->text();
 //                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
+                }
+                return true;
+                break;
+
+                case 2007: //item
+                {
+                    QListWidgetItem *_r;
+                    _r = object2->item((*reinterpret_cast< const int(*)>(_a[1])));
+                    (*reinterpret_cast< QString*>(_a[0])) = _r->text();
                 }
                 return true;
                 break;

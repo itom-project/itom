@@ -23,17 +23,18 @@
 #ifndef ALGOINTERFACEVALIDATOR_H
 #define ALGOINTERFACEVALIDATOR_H
 
-#include <qobject.h>
-#include "../../common/addInInterface.h"
-#include "../../common/sharedStructures.h"
-#include "../helper/paramHelper.h"
+#if !defined(Q_MOC_RUN) || defined(ADDINMGR_DLL) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
 
-#include <qvector.h>
-#include <qvariant.h>
+#include "addInMgrDefines.h"
+#include "../common/addInInterface.h"
+
+#include <qscopedpointer.h>
 
 namespace ito {
 
-class AlgoInterfaceValidator : public QObject
+class AlgoInterfaceValidatorPrivate; //forward declaration
+
+class ADDINMGR_EXPORT AlgoInterfaceValidator : public QObject
 {
 public:
     AlgoInterfaceValidator(ito::RetVal &retValue);
@@ -45,25 +46,17 @@ public:
     ito::RetVal getInterfaceParameters(ito::AddInAlgo::tAlgoInterface iface, QVector<ito::ParamBase> &mandParams, QVector<ito::ParamBase> &outParams) const;
 
 protected:
-    struct AlgoInterface
-    {
-        AlgoInterface() : maxNumMand(0), maxNumOpt(0), maxNumOut(0) {}
-        QVector<ito::Param> mandParams;
-        QVector<ito::Param> outParams;
-        int maxNumMand;
-        int maxNumOpt;
-        int maxNumOut;
-    };
-
-    QMap<int,AlgoInterface> m_interfaces;
-
     ito::RetVal init(void);
     bool isValid(const ito::AddInAlgo::tAlgoInterface iface, const ito::AddInAlgo::t_filterParam filterParamFunc, ito::RetVal &ret) const;
     bool getTags(const ito::AddInAlgo::tAlgoInterface iface, const QString &metaInformation, QStringList &tags) const;
 
 private:
+    QScopedPointer<AlgoInterfaceValidatorPrivate> d_ptr; //!> self-managed pointer to the private class container (deletes itself if d_ptr is destroyed)
+    Q_DECLARE_PRIVATE(AlgoInterfaceValidator);
 };
 
 } //end namespace ito
+
+#endif // #if !defined(Q_MOC_RUN) || defined(ADDINMGR_DLL) 
 
 #endif

@@ -95,7 +95,8 @@ class ITOMCOMMONQT_EXPORT ItomSharedSemaphore
                 m_pSemaphore->release( m_numOfListeners - m_pSemaphore->available());
                 qDebug("ItomSharedSemaphore is not fully available at moment of destruction");
             }
-            delete m_pSemaphore;
+            if (m_pSemaphore)
+                delete m_pSemaphore;
             m_pSemaphore = NULL;
         }
 

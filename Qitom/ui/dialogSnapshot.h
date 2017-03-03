@@ -25,9 +25,10 @@
 
 #include "../global.h"
 #include <qdialog.h>
+#include <qpointer.h>
 #include "../common/addInInterface.h"
 #include "../DataObject/dataobj.h"
-#include "../organizer/addInManager.h"
+#include "../../AddInManager/addInManager.h"
 
 #include "ui_dialogSnapshot.h"
 

@@ -38,7 +38,7 @@
 
 #include "../AppManagement.h"
 #include "../organizer/uiOrganizer.h"
-#include "../organizer/addInManager.h"
+#include "../../AddInManager/addInManager.h"
 #include "../organizer/userOrganizer.h"
 #include "../organizer/paletteOrganizer.h"
 #include "../organizer/designerWidgetOrganizer.h"
@@ -76,11 +76,11 @@ PyObject* PythonItom::PyOpenEmptyScriptEditor(PyObject * /*pSelf*/, PyObject * /
     QObject *sew = AppManagement::getScriptEditorOrganizer();
     if (sew == NULL)
     {
-        PyErr_SetString(PyExc_RuntimeError, "gui not available");
+        PyErr_SetString(PyExc_RuntimeError, "Gui not available");
         return NULL;
     }
 
-    QMetaObject::invokeMethod(sew,"openNewScriptWindow", Q_ARG(bool,false), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QMetaObject::invokeMethod(sew, "openNewScriptWindow", Q_ARG(bool,false), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
 
     if (locker.getSemaphore()->wait(PLUGINWAIT))
     {
@@ -92,7 +92,7 @@ PyObject* PythonItom::PyOpenEmptyScriptEditor(PyObject * /*pSelf*/, PyObject * /
         {
             return PyErr_Occurred();
         }
-        PyErr_SetString(PyExc_RuntimeError, "timeout while opening empty script.");
+        PyErr_SetString(PyExc_RuntimeError, "Timeout while opening empty script.");
         return NULL;
     }
 }
@@ -108,7 +108,7 @@ PyObject* PythonItom::PyNewScript(PyObject * /*pSelf*/, PyObject * /*pArgs*/)
     QObject *sew = AppManagement::getScriptEditorOrganizer();
     if (sew == NULL)
     {
-        PyErr_SetString(PyExc_RuntimeError, "gui not available");
+        PyErr_SetString(PyExc_RuntimeError, "Gui not available");
         return NULL;
     }
 
@@ -124,7 +124,7 @@ PyObject* PythonItom::PyNewScript(PyObject * /*pSelf*/, PyObject * /*pArgs*/)
         {
             return PyErr_Occurred();
         }
-        PyErr_SetString(PyExc_RuntimeError, "timeout while creating new script");
+        PyErr_SetString(PyExc_RuntimeError, "Timeout while creating new script");
         return NULL;
     }
 }
@@ -174,7 +174,7 @@ PyObject* PythonItom::PyOpenScript(PyObject * /*pSelf*/, PyObject *pArgs)
         }
         else
         { 
-            PyErr_SetString(PyExc_ValueError, "argument is no filename string and no other object that has a __file__ attribute.");
+            PyErr_SetString(PyExc_ValueError, "Argument is no filename string and no other object that has a __file__ attribute.");
             return NULL;
         }
     }
@@ -184,7 +184,7 @@ PyObject* PythonItom::PyOpenScript(PyObject * /*pSelf*/, PyObject *pArgs)
     QObject *sew = AppManagement::getScriptEditorOrganizer();
     if (sew == NULL)
     {
-        PyErr_SetString(PyExc_RuntimeError, "gui not available");
+        PyErr_SetString(PyExc_RuntimeError, "Gui not available");
         return NULL;
     }
 
@@ -200,7 +200,7 @@ PyObject* PythonItom::PyOpenScript(PyObject * /*pSelf*/, PyObject *pArgs)
         {
             return PyErr_Occurred();
         }
-        PyErr_SetString(PyExc_RuntimeError, "timeout while opening script");
+        PyErr_SetString(PyExc_RuntimeError, "Timeout while opening script");
         return NULL;
     }
 }
@@ -231,7 +231,7 @@ PyObject* PythonItom::PyShowHelpViewer(PyObject *pSelf, PyObject *pArgs)
 	}
 	else
 	{
-		PyErr_SetString(PyExc_RuntimeError, "main window is not available");
+		PyErr_SetString(PyExc_RuntimeError, "Main window is not available");
 		return NULL;
 	}
 
@@ -327,9 +327,9 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     if (!ok)
     {
 #if ITOM_POINTCLOUDLIBRARY > 0
-        PyErr_SetString(PyExc_RuntimeError, "first argument cannot be converted to dataObject, pointCloud or polygonMesh.");
+        PyErr_SetString(PyExc_RuntimeError, "First argument cannot be converted to dataObject, pointCloud or polygonMesh.");
 #else
-        PyErr_SetString(PyExc_RuntimeError, "first argument cannot be converted to dataObject.");
+        PyErr_SetString(PyExc_RuntimeError, "First argument cannot be converted to dataObject.");
 #endif
         return NULL;
     }
@@ -353,7 +353,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
             }
             else
             {
-                PyErr_SetString(PyExc_RuntimeError, "at least one property value could not be parsed to QVariant.");
+                PyErr_SetString(PyExc_RuntimeError, "At least one property value could not be parsed to QVariant.");
                 return NULL;
             }
         }
@@ -374,7 +374,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT * 5))
     {
-        PyErr_SetString(PyExc_RuntimeError, "timeout while plotting object");
+        PyErr_SetString(PyExc_RuntimeError, "Timeout while plotting object");
         return NULL;
     }
 
@@ -484,7 +484,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
             }
             else
             {
-                PyErr_SetString(PyExc_RuntimeError, "at least one property value could not be parsed to QVariant.");
+                PyErr_SetString(PyExc_RuntimeError, "At least one property value could not be parsed to QVariant.");
                 return NULL;
             }
         }
@@ -505,7 +505,7 @@ PyObject* PythonItom::PyLiveImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     QMetaObject::invokeMethod(uiOrg, "figureLiveImage", Q_ARG(AddInDataIO*, cam->dataIOObj), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT))
     {
-        PyErr_SetString(PyExc_RuntimeError, "timeout while showing live image of camera");
+        PyErr_SetString(PyExc_RuntimeError, "Timeout while showing live image of camera");
         return NULL;
     }
 
@@ -596,10 +596,10 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
     PyObject *resulttemp = NULL;
     PyObject *item = NULL;
 
-    ito::AddInManager *AIM = ito::AddInManager::getInstance();
+    ito::AddInManager *AIM = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     if (!AIM)
     {
-        PyErr_SetString(PyExc_RuntimeError, "no addin-manager found");
+        PyErr_SetString(PyExc_RuntimeError, "No addin-manager found");
         return NULL;
     }
 
@@ -608,12 +608,12 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
     
     if (!widglist && getWidgetHelp)
     {
-        PyErr_SetString(PyExc_RuntimeError, "no widget list found");
+        PyErr_SetString(PyExc_RuntimeError, "No widget list found");
         return NULL;
     }
     if (!filtlist && !getWidgetHelp)
     {
-        PyErr_SetString(PyExc_RuntimeError, "no filterlist found");
+        PyErr_SetString(PyExc_RuntimeError, "No filterlist found");
         return NULL;
     }
 
@@ -986,7 +986,9 @@ PyObject* PyWidgetOrFilterHelp(bool getWidgetHelp, PyObject* pArgs, PyObject *pK
                 }
             }
             else
+            {
                 continue;
+            }
         }
     }
 
@@ -1086,10 +1088,10 @@ PyObject* PythonItom::PyPluginLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
         return NULL;
     }
 
-    ito::AddInManager *AIM = ito::AddInManager::getInstance();
+    ito::AddInManager *AIM = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     if (!AIM)
     {
-        PyErr_SetString(PyExc_RuntimeError, "no addin-manager found");
+        PyErr_SetString(PyExc_RuntimeError, "No addin-manager found");
         return NULL;
     }
 
@@ -1133,7 +1135,7 @@ PyObject* PythonItom::PyPlotLoaded(PyObject* /*pSelf*/, PyObject* pArgs)
     ito::DesignerWidgetOrganizer *dwo = qobject_cast<ito::DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
     if (!dwo)
     {
-        PyErr_SetString(PyExc_RuntimeError, "no ui-manager found");
+        PyErr_SetString(PyExc_RuntimeError, "No ui-manager found");
         return NULL;
     }
 
@@ -1649,10 +1651,10 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
     PyObject *item = NULL;    
 
 
-    ito::AddInManager *AIM = ito::AddInManager::getInstance();
+    ito::AddInManager *AIM = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     if (!AIM)
     {
-        PyErr_SetString(PyExc_RuntimeError, "no addin-manager found");
+        PyErr_SetString(PyExc_RuntimeError, "No addin-manager found");
         return NULL;
     }
 
@@ -1705,7 +1707,6 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
         {
             std::cout << "VERSION:\t " << versionStr.toLatin1().data() << "\n";
         }
-        
 
         if (retDict)
         {
@@ -1935,7 +1936,6 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
                     Py_INCREF(Py_None);
                     PyDict_SetItemString(result, "widgets", Py_None);
                 }
-
             }
         }
         break;
@@ -1986,7 +1986,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
     {
         if (!PyArg_ParseTuple(pArgs, "b", &toggleOut))
         {
-            PyErr_SetString(PyExc_TypeError, "wrong input type, must be (bool, bool)");
+            PyErr_SetString(PyExc_TypeError, "Wrong input type, must be (bool, bool)");
             return NULL;
         }
     }
@@ -1994,7 +1994,7 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
     {
         if (!PyArg_ParseTuple(pArgs, "bb", &toggleOut, &addPlugIns))
         {
-            PyErr_SetString(PyExc_TypeError, "wrong input type, must be (bool, bool)");
+            PyErr_SetString(PyExc_TypeError, "Wrong input type, must be (bool, bool)");
             return NULL;
         }
     }
@@ -2043,15 +2043,14 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
     {
         PyObject* myTempDic = PyDict_New();
         char buf[7] = {0};
-        ito::AddInManager *aim = ito::AddInManager::getInstance();
+        ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
         ito::AddInInterfaceBase  *curAddInInterface = NULL;
         if (aim != NULL)
         {
             PyObject* info = NULL;
             PyObject* license = NULL;
-            for (int i = 0; i < aim->getNumTotItems(); i++)
+            for (int i = 0; i < aim->getTotalNumAddIns(); i++)
             {
-                
                 curAddInInterface = reinterpret_cast<ito::AddInInterfaceBase*>(aim->getAddInPtr(i));
                 if (curAddInInterface)
                 {
@@ -2083,7 +2082,6 @@ PyObject* PythonItom::PyITOMVersion(PyObject* /*pSelf*/, PyObject* pArgs)
 
         PyDict_SetItemString(myDic, "plugins", myTempDic);
         Py_XDECREF(myTempDic);
-
     }
 
     if (toggleOut)
@@ -2298,7 +2296,7 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
             if (!locker->wait(2000))
             {
                 unhashButtonOrMenuCode(funcWeakRef); //if the function is already hashed, release it.
-                PyErr_SetString(PyExc_RuntimeError, "timeout while waiting for button being added.");
+                PyErr_SetString(PyExc_RuntimeError, "Timeout while waiting for button being added.");
                 return NULL;
             }
             else
@@ -2312,7 +2310,7 @@ PyObject* PythonItom::PyAddButton(PyObject* /*pSelf*/, PyObject* pArgs, PyObject
         }
         else
         {
-            PyErr_SetString(PyExc_RuntimeError, "main window not available. Button cannot be added.");
+            PyErr_SetString(PyExc_RuntimeError, "Main window not available. Button cannot be added.");
             return NULL;
         }
     }
@@ -2362,7 +2360,7 @@ PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
         callByNames = false;
         if (!PyArg_ParseTuple(pArgs, "I", &buttonHandle))
         {
-            PyErr_SetString(PyExc_TypeError, "wrong length or type of arguments. Type help(removeButton) for more information.");
+            PyErr_SetString(PyExc_TypeError, "Wrong length or type of arguments. Type help(removeButton) for more information.");
             return NULL;
         }
     }
@@ -2385,7 +2383,7 @@ PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
 
         if (!locker->wait(2000))
         {
-            PyErr_SetString(PyExc_RuntimeError, "timeout while waiting for button being removed.");
+            PyErr_SetString(PyExc_RuntimeError, "Timeout while waiting for button being removed.");
             return NULL;
         }
         else
@@ -2409,7 +2407,7 @@ PyObject* PythonItom::PyRemoveButton(PyObject* /*pSelf*/, PyObject* pArgs)
     }
     else
     {
-        PyErr_SetString(PyExc_RuntimeError, "main window not available. Button cannot be removed.");
+        PyErr_SetString(PyExc_RuntimeError, "Main window not available. Button cannot be removed.");
         return NULL;
     }
 
@@ -2566,7 +2564,7 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
             if (!locker->wait(2000))
             {
                 unhashButtonOrMenuCode(funcWeakRef);
-                PyErr_SetString(PyExc_RuntimeError, "timeout while waiting that menu is added.");
+                PyErr_SetString(PyExc_RuntimeError, "Timeout while waiting that menu is added.");
                 return NULL;
             }
             else
@@ -2584,7 +2582,7 @@ PyObject* PythonItom::PyAddMenu(PyObject* /*pSelf*/, PyObject* args, PyObject *k
         }
         else
         {
-            PyErr_SetString(PyExc_RuntimeError, "main window not available. Menu could not be added.");
+            PyErr_SetString(PyExc_RuntimeError, "Main window not available. Menu could not be added.");
             return NULL;
         }
     }
@@ -2635,7 +2633,7 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
 
         if (!PyArg_ParseTupleAndKeywords(args, kwds, "I", const_cast<char**>(kwlist2), &menuHandle))
         {
-            PyErr_SetString(PyExc_TypeError, "wrong length or type of arguments. Type help(removeMenu) for more information.");
+            PyErr_SetString(PyExc_TypeError, "Wrong length or type of arguments. Type help(removeMenu) for more information.");
             return NULL;
         }
     }
@@ -2666,7 +2664,7 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
 
         if (!locker->wait(2000))
         {
-            PyErr_SetString(PyExc_RuntimeError, "timeout while waiting that menu is removed.");
+            PyErr_SetString(PyExc_RuntimeError, "Timeout while waiting that menu is removed.");
             return NULL;
         }
         else
@@ -2684,7 +2682,7 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
     }
     else
     {
-        PyErr_SetString(PyExc_RuntimeError, "main window not available. Menu could not be removed.");
+        PyErr_SetString(PyExc_RuntimeError, "Main window not available. Menu could not be removed.");
         return NULL;
     }
 
@@ -2739,7 +2737,7 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
         obj_list = PyObject_CallMethod(gc, "get_objects", "");
         if (!obj_list)
         {
-            PyErr_SetString(PyExc_RuntimeError, "call to gc.get_objects() failed");
+            PyErr_SetString(PyExc_RuntimeError, "Call to gc.get_objects() failed");
             return NULL;
         }
 
@@ -2754,7 +2752,7 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
     }
     else
     {
-        PyErr_SetString(PyExc_RuntimeError, "module gc could not be imported");
+        PyErr_SetString(PyExc_RuntimeError, "Module gc could not be imported");
         return NULL;
     }
     Py_RETURN_NONE;
@@ -2772,7 +2770,7 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
     int n;
     if (m_gcTrackerList.count() == 0)
     {
-        PyErr_SetString(PyExc_RuntimeError,"tracker has not been started. Call gcStartTracking() first.");
+        PyErr_SetString(PyExc_RuntimeError, "Tracker has not been started. Call gcStartTracking() first.");
         return NULL;
     }
 
@@ -2812,7 +2810,7 @@ PyObject* PythonItom::PyRemoveMenu(PyObject* /*pSelf*/, PyObject* args, PyObject
     }
     else
     {
-        PyErr_SetString(PyExc_RuntimeError,"module gc could not be imported");
+        PyErr_SetString(PyExc_RuntimeError, "Module gc could not be imported");
         return NULL;
     }
     Py_RETURN_NONE;
@@ -2979,7 +2977,7 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 
     if (scipyIoModule == NULL)
     {
-        PyErr_SetString(PyExc_ImportError, "scipy-module and scipy.io-module could not be loaded.");
+        PyErr_SetString(PyExc_ImportError, "Scipy-module and scipy.io-module could not be loaded.");
         return NULL;
     }
 
@@ -3039,7 +3037,6 @@ PyObject * PythonItom::PySaveMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
             matlabData = PyMatlabMatDataObjectConverter(element);
             PyDict_SetItemString(saveDict, tempName, matlabData);
             Py_DECREF(matlabData);
-
         }
         else
         {
@@ -3168,7 +3165,7 @@ PyObject* PythonItom::PyMatlabMatDataObjectConverter(PyObject *element)
     }
     else
     {
-        PyErr_SetString(PyExc_ValueError, "element is NULL");
+        PyErr_SetString(PyExc_ValueError, "Element is NULL");
         return NULL;
     }
 
@@ -3213,14 +3210,13 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 
     if (scipyIoModule == NULL)
     {
-        PyErr_SetString(PyExc_ImportError, "scipy-module and scipy.io-module could not be loaded.");
+        PyErr_SetString(PyExc_ImportError, "Scipy-module and scipy.io-module could not be loaded.");
         return NULL;
     }
 
     //Arguments must be: filename -> string
 
     PyObject *filename = NULL; //borrowed reference
-
 
     if (!PyArg_ParseTuple(pArgs, "U", &filename))
     {
@@ -3240,7 +3236,6 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
     resultLoadMat = PyObject_Call(callable, argTuple, kwdDict);
     Py_DECREF(kwdDict);
     Py_DECREF(argTuple);
-
 
     if (resultLoadMat)
     {
@@ -3286,7 +3281,7 @@ PyObject * PythonItom::PyLoadMatlabMat(PyObject * /*pSelf*/, PyObject *pArgs)
 											Py_XDECREF(itomMetaInfoObj);
 											Py_XDECREF(importMatlabMatAsDataObjectObj);
                                             PyErr_PrintEx(0);
-                                            PyErr_SetString(PyExc_RuntimeError, "error while parsing imported dataObject or npDataObject.");
+                                            PyErr_SetString(PyExc_RuntimeError, "Error while parsing imported dataObject or npDataObject.");
                                             return NULL;
                                         }
                                         PyDict_SetItem(resultLoadMat, key, result);
@@ -3357,7 +3352,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
 
     if (length == 0)
     {
-        PyErr_SetString(PyExc_ValueError, "no filter specified");
+        PyErr_SetString(PyExc_ValueError, "No filter specified");
         return NULL;
     }
     PyObject *tempObj = PyTuple_GetItem(pArgs, 0);
@@ -3369,16 +3364,16 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     }
     else
     {
-        PyErr_SetString(PyExc_TypeError, "first argument must be the filter name! Wrong argument type!");
+        PyErr_SetString(PyExc_TypeError, "First argument must be the filter name! Wrong argument type!");
         return NULL;
     }
 
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
     const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
     QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->constFind(key);
     if (cfit == flist->constEnd())
     {
-        PyErr_SetString(PyExc_ValueError, "unknown filter, please check typing!");
+        PyErr_SetString(PyExc_ValueError, "Unknown filter, please check typing!");
         return NULL;
     }
     ito::AddInAlgo::FilterDef * fFunc = cfit.value();
@@ -3387,7 +3382,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
     const ito::FilterParams* filterParams = aim->getHashedFilterParams(fFunc->m_paramFunc);
     if (filterParams == NULL)
     {
-        PyErr_SetString(PyExc_RuntimeError, "parameters of filter could not be found.");
+        PyErr_SetString(PyExc_RuntimeError, "Parameters of filter could not be found.");
         return NULL;
     }
 
@@ -3402,7 +3397,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
 
     if (ret.containsError())
     {
-        PyErr_SetString(PyExc_RuntimeError, QObject::tr("error while parsing parameters.").toLatin1().data());
+        PyErr_SetString(PyExc_RuntimeError, QObject::tr("Error while parsing parameters.").toLatin1().data());
         return NULL;
     }
 
@@ -3418,7 +3413,7 @@ PyObject * PythonItom::PyFilter(PyObject * /*pSelf*/, PyObject *pArgs, PyObject 
 
         ret += ito::RetVal::format(ito::retError, 0, QObject::tr("OpenCV Error: %s (%s) in %s, file %s, line %d").toLatin1().data(),
             errorStr, exc.err.c_str(), exc.func.size() > 0 ?
-            exc.func.c_str() : QObject::tr("unknown function").toLatin1().data(), exc.file.c_str(), exc.line);
+            exc.func.c_str() : QObject::tr("Unknown function").toLatin1().data(), exc.file.c_str(), exc.line);
         //see also cv::setBreakOnError(true) -> then cv::error(...) forces an access to 0x0000 (throws access error, the debugger stops and you can debug it)
 
         //use this to raise an access error that forces the IDE to break in this line (replaces cv::setBreakOnError(true)).
@@ -3758,7 +3753,7 @@ PyObject* PythonItom::getQtToolPath(PyObject* /*pSelf*/, PyObject* pArgs)
     }
     else
     {
-        PyErr_SetString(PyExc_FileExistsError, "absolute path to desired binary could not be found.");
+        PyErr_SetString(PyExc_FileExistsError, "Absolute path to desired binary could not be found.");
         return NULL;
     }
 }
@@ -3805,7 +3800,7 @@ PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
     PyObject *pyObj = NULL;
     if (!PyArg_ParseTuple(pArgs, "O", &pyObj))
     {
-        PyErr_SetString(PyExc_RuntimeError, "method requires a string as argument");
+        PyErr_SetString(PyExc_RuntimeError, "Method requires a string as argument");
         return NULL;
     }
 
@@ -3814,7 +3809,7 @@ PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
     path = PythonQtConversion::PyObjGetString(pyObj,true,ok);
     if (ok == false)
     {
-        PyErr_SetString(PyExc_RuntimeError, "newPath parameter could not be interpreted as string.");
+        PyErr_SetString(PyExc_RuntimeError, "NewPath parameter could not be interpreted as string.");
         return NULL;
     }
     if (!QDir::setCurrent(path))
@@ -3844,7 +3839,7 @@ PyObject* PythonItom::setCurrentPath(PyObject* /*pSelf*/, PyObject* pArgs)
 
     if ( level < -1 || level > 9)
     {
-        PyErr_SetString(PyExc_RuntimeError, "compression level must be -1 (default: level 6) or between 0 and 9");
+        PyErr_SetString(PyExc_RuntimeError, "Compression level must be -1 (default: level 6) or between 0 and 9");
         return NULL;
     }
 
@@ -4247,7 +4242,7 @@ PyObject* PythonItom::PySetPalette(PyObject* pSelf, PyObject* pArgs)
 
     if(paletteOrganizer == NULL)
     {
-        PyErr_SetString(PyExc_RuntimeError, "pallette organizer not loaded");
+        PyErr_SetString(PyExc_RuntimeError, "Pallette organizer not loaded");
         return NULL;    
     }
 
@@ -4331,7 +4326,7 @@ PyObject* PythonItom::PySetPalette(PyObject* pSelf, PyObject* pArgs)
 
     if (!locker.getSemaphore()->wait(60000))
     {
-        PyErr_SetString(PyExc_RuntimeError, "timeout while setting palette");
+        PyErr_SetString(PyExc_RuntimeError, "Timeout while setting palette");
         return NULL;
     }
 
@@ -4388,7 +4383,7 @@ PyObject* PythonItom::PyGetPalette(PyObject* pSelf, PyObject* pArgs)
 
     if(paletteOrganizer == NULL)
     {
-        PyErr_SetString(PyExc_RuntimeError, "pallette organizer not loaded");
+        PyErr_SetString(PyExc_RuntimeError, "Pallette organizer not loaded");
         return NULL;    
     }
 
@@ -4400,7 +4395,7 @@ PyObject* PythonItom::PyGetPalette(PyObject* pSelf, PyObject* pArgs)
 
     if (!locker.getSemaphore()->wait(60000))
     {
-        PyErr_SetString(PyExc_RuntimeError, "timeout while getting palette");
+        PyErr_SetString(PyExc_RuntimeError, "Timeout while getting palette");
         return NULL;
     }
 
@@ -4456,7 +4451,7 @@ PyObject* PythonItom::PyGetPaletteList(PyObject* pSelf, PyObject* pArgs)
 
     if(paletteOrganizer == NULL)
     {
-        PyErr_SetString(PyExc_RuntimeError, "pallette organizer not loaded");
+        PyErr_SetString(PyExc_RuntimeError, "Pallette organizer not loaded");
         return NULL;    
     }
 
@@ -4468,7 +4463,7 @@ PyObject* PythonItom::PyGetPaletteList(PyObject* pSelf, PyObject* pArgs)
 
     if (!locker.getSemaphore()->wait(60000))
     {
-        PyErr_SetString(PyExc_RuntimeError, "timeout while getting palette names");
+        PyErr_SetString(PyExc_RuntimeError, "Timeout while getting palette names");
         return NULL;
     }
 
@@ -4593,7 +4588,7 @@ PyObject* PythonItom::PyInitItom(void)
     {
         if (!code)
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("no code is given").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("No code is given").toLatin1().data());
         }
         else if (PyMethod_Check(code) || PyFunction_Check(code))
         {
@@ -4645,7 +4640,7 @@ PyObject* PythonItom::PyInitItom(void)
             codeString = PythonQtConversion::PyObjGetString(code, true, ok);
             if (!ok)
             {
-                retval += ito::RetVal(ito::retError, 0, QObject::tr("code is no function or method call and no executable code string").toLatin1().data());
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("Code is no function or method call and no executable code string").toLatin1().data());
             }
         }
     }

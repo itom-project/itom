@@ -62,8 +62,12 @@ class AbstractFigurePrivate; //forward declaration
 class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public AbstractNode
 {
     Q_OBJECT
+
+#if QT_VERSION < 0x050500
+    //for >= Qt 5.5.0 see Q_ENUM definition below
     Q_ENUMS(WindowMode)
     Q_ENUMS(UnitLabelStyle)
+#endif
 
     Q_PROPERTY(bool toolbarVisible READ getToolbarVisible WRITE setToolbarVisible DESIGNABLE true USER true)
     Q_PROPERTY(bool contextMenuEnabled READ getContextMenuEnabled WRITE setContextMenuEnabled DESIGNABLE true)
@@ -106,12 +110,19 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
             UnitLabelSquareBrackets      // x-axis [m]  -> does not correspond to DIN461
         };
 
+#if QT_VERSION >= 0x050500
+        //Q_ENUM exposes a meta object to the enumeration types, such that the key names for the enumeration
+        //values are always accessible.
+        Q_ENUM(WindowMode)
+        Q_ENUM(UnitLabelStyle)
+#endif
+
         int getCompilerFeatures(void) const 
         {
             int retval = tOpenCV;
-            #if defined USEPCL || ITOM_POINTCLOUDLIBRARY
+#if defined USEPCL || ITOM_POINTCLOUDLIBRARY
             retval |= tPointCloudLib;
-            #endif
+#endif
             return retval;
         }
 
@@ -211,20 +222,7 @@ class ITOMCOMMONPLOT_EXPORT AbstractFigure : public QMainWindow, public Abstract
         void actionChanged();
 
     public slots:
-
-        int getPlotID() 
-        { 
-            if(!ito::ITOM_API_FUNCS_GRAPH) return 0;
-            ito::uint32 thisID = 0;
-            ito::RetVal retval = apiGetFigureIDbyHandle(this, thisID);
-
-            if(retval.containsError())
-            {
-                return 0;
-            }
-            return thisID; 
-        }
-
+        int getPlotID();
         void refreshPlot() { update(); }
 };
 

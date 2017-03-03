@@ -75,6 +75,7 @@ itom.dataObject.conj() -> complex-conjugates all elements of this dataObject (in
 itom.dataObject.conjugate() -> return a copy of this dataObject where every element is complex-conjugated.
 itom.dataObject.continuous
 itom.dataObject.copy(regionOnly=0) -> return a deep copy of this dataObject
+itom.dataObject.copyMetaInfo(sourceObj [, copyAxisInfo = True, copyTags = False]) -> Copy the meta information of sourceObj.
 itom.dataObject.createMask(shapes [, inverse = False]) -> return a uint8 data object of the same size where all pixels belonging to any shape are masked.
 itom.dataObject.data() -> prints the content of the dataObject to the command line in a readable form.
 itom.dataObject.deleteTag(key) -> Delete a tag specified by key from the tag dictionary.
@@ -153,7 +154,7 @@ itom.getAppPath() -> returns absolute path of application base directory.
 itom.getCurrentPath() -> returns absolute path of current working directory.
 itom.getDebugger() -> returns new reference to debugger instance
 itom.getDefaultScaleableUnits() -> Get a list with the strings of the standard scalable units.
-itom.getPalette(name) -> get the palette for color bars defined by name.
+itom.getPalette(name) -> get the color palette used in color bars defined by name.
 itom.getPaletteList(typefilter) -> get a list of color bars / palettes.
 itom.getQtToolPath(toolname) -> get the absolute path of the Qt tool
 itom.getScreenInfo() -> returns dictionary with information about all available screens.
@@ -197,7 +198,7 @@ itom.point.rgba
 itom.point.type
 itom.point.xyz
 itom.pointCloud([type] | pointCloud [,indices] | width, height [,point] | point) -> creates new point cloud.
-itom.pointCloud.append(point) -> appends point or all points from given pointCloud at the end of the point cloud.
+itom.pointCloud.append(point) -> appends point or all points from a given point cloud to the end of the point cloud.
 itom.pointCloud.clear() -> clears the whole point cloud
 itom.pointCloud.copy() -> returns a deep copy of this point cloud.
 itom.pointCloud.dense

@@ -35,7 +35,7 @@
 namespace ito
 {
 
-    #if defined(ITOM_IMPORT_PLOTAPI) && !defined(ITOM_CORE)
+    #if defined(ITOM_IMPORT_PLOTAPI) //&& !defined(ITOM_CORE)
         void **ITOM_API_FUNCS_GRAPH;
     #else
         extern void **ITOM_API_FUNCS_GRAPH;
@@ -102,15 +102,58 @@ namespace ito
 
     #define apiGetItomPlotHandleByID \
         (*(ito::RetVal (*)(const ito::uint32 &figureUID, ito::ItomPlotHandle &plotHandle)) ito::ITOM_API_FUNCS_GRAPH[13])
-    /** \} */
 
-    /*#if defined(ITOM_IMPORT_PLOTAPI)
-    static int importItomPlotApi(void** apiArray)
-    {
-        ito::ITOM_API_FUNCS_GRAPH = apiArray;
-        return 0;
-    }
-    #endif*/
+    //! sends the given ParamBase value to the global python workspace
+    /*!
+    This methods sends the given ParamBase value to the global python workspace using the indicated variable name. Existing
+    values with the same name will be overwritten, unless they cover functions, methods, classes or types.
+
+    Invalid variable name will also result in an error.
+
+    \param varname is the variable name (must be a valid python variable name)
+    \param value is the ParamBase value
+
+    \return ito::retOk on success, else ito::retError
+    */
+    #define apiSendParamToPyWorkspace \
+            (* (ito::RetVal (*)(const QString &varname, const QSharedPointer<ito::ParamBase> &value)) ito::ITOM_API_FUNCS_GRAPH[14])
+
+    //! sends the given ParamBase value to the global python workspace
+    /*!
+    This methods sends the given ParamBase values to the global python workspace using the indicated variable names. Existing
+    values with the same name will be overwritten, unless they cover functions, methods, classes or types.
+
+    Invalid variable names will also result in an error.
+
+    \param varnames are the variable name (must be valid python variable names)
+    \param values are the ParamBase values
+
+    \return ito::retOk on success, else ito::retError
+    */
+    #define apiSendParamsToPyWorkspace \
+            (* (ito::RetVal (*)(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values)) ito::ITOM_API_FUNCS_GRAPH[15])
+
+    //! read a property from an QObject based instance.
+    /*!
+    \param object is the object
+    \propName is the name of the property
+    \value is a reference to the obtained value
+
+    \return ito::retOk if property could be found and read, else ito::retError
+    */
+    #define apiQObjectPropertyRead \
+            (* (ito::RetVal (*)(const QObject *object, const char* propName, QVariant &value)) ito::ITOM_API_FUNCS_GRAPH[16])
+
+    //! write a property to an QObject based instance.
+    /*!
+    \param object is the object
+    \propName is the name of the property
+    \value is the value to set
+
+    \return ito::retOk if property could be found and written, else ito::retError
+    */
+    #define apiQObjectPropertyWrite \
+                (* (ito::RetVal (*)(QObject *object, const char* propName, const QVariant &value)) ito::ITOM_API_FUNCS_GRAPH[17])
 
 } //end namespace ito
 

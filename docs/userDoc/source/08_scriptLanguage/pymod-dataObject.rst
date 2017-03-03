@@ -463,7 +463,7 @@ dataObjects:
 Main operations on numpy.arrays and itom.dataObjects
 ----------------------------------------------------------
 
-The following list in an extract of the itom cheatsheet (http://itom.bitbucket.org/media.html) and shows major operations on numpy.arrays and itom.dataObjects:
+The following list in an extract of the itom cheatsheet (http://itom.bitbucket.io/media.html) and shows major operations on numpy.arrays and itom.dataObjects:
 
 ======================================= ============================================= ===========================================================================================
 np.array (import numpy as np)           itom.dataObject (import itom)

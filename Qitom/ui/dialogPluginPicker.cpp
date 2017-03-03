@@ -23,6 +23,8 @@
 #include "dialogPluginPicker.h"
 
 #include "dialogNewPluginInstance.h"
+#include "../AppManagement.h"
+#include "../AddInManager/pluginModel.h"
 #include <qmessagebox.h>
 
 namespace ito {
@@ -34,7 +36,7 @@ DialogPluginPicker::DialogPluginPicker(bool allowNewInstances, ito::AddInBase *c
 {
     ui.setupUi(this);
 
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
 
     m_pFilterModel = new PickerSortFilterProxyModel(this);
     m_pFilterModel->setSourceModel(aim->getPluginModel());
@@ -77,8 +79,8 @@ void DialogPluginPicker::itemClicked(const QModelIndex &index)
     {
         QModelIndex indexMap = m_pFilterModel->mapToSource(index);
 
-        ito::AddInManager *aim = ito::AddInManager::getInstance();
-        ito::PlugInModel *model = aim->getPluginModel();
+        ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
+        const ito::PlugInModel *model = aim->getPluginModel();
 
         int itemType = model->data(indexMap, Qt::UserRole + 3).toInt();
         if (itemType == ito::PlugInModel::itemInstance)
@@ -133,8 +135,8 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
     QModelIndex index = ui.treeView->currentIndex();
     index = m_pFilterModel->mapToSource(index);
 
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
-    ito::PlugInModel *model = aim->getPluginModel();
+    ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
+    const ito::PlugInModel *model = aim->getPluginModel();
 
     if (index.isValid())
     {
@@ -173,7 +175,7 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
 
                 if (retValue.containsError())
                 {
-                    QString message = tr("error while creating new instance. \nMessage: %1").arg(QLatin1String(retValue.errorMessage()));
+                    QString message = tr("Error while creating new instance. \nMessage: %1").arg(QLatin1String(retValue.errorMessage()));
                     QMessageBox::critical(this, tr("Error while creating new instance"), message);
                     return;
                 }
@@ -207,12 +209,12 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
 
                 if (retValue.containsWarning())
                 {
-                    QString message = tr("warning while creating new instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
+                    QString message = tr("Warning while creating new instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                     QMessageBox::warning(this, tr("Warning while creating new instance"), message);
                 }
                 else if (retValue.containsError())
                 {
-                    QString message = tr("error while creating new instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
+                    QString message = tr("Error while creating new instance. Message: %1").arg(QLatin1String(retValue.errorMessage()));
                     QMessageBox::critical(this, tr("Error while creating new instance"), message);
                 }
 
@@ -238,7 +240,7 @@ void DialogPluginPicker::createNewInstance(bool /*checked*/)
     }
     else
     {
-        QMessageBox::information(this, tr("choose plugin"), tr("Please choose plugin you want to create a new instance from"));
+        QMessageBox::information(this, tr("Choose plugin"), tr("Please choose plugin you want to create a new instance from"));
     }
 }
 

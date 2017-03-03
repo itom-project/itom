@@ -20,18 +20,15 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "../python/pythonEngine.h"
-#include "../organizer/addInManager.h"
-#include "../helper/paramHelper.h"
+#include "addInManager.h"
+#include "paramHelper.h"
 #include "apiFunctions.h"
-#include "../Qitom/AppManagement.h"
-#include "../organizer/paletteOrganizer.h"
-#include "common/sharedFunctionsQt.h"
-#include "common/abstractAddInConfigDialog.h"
-#include "../Qitom/organizer/uiOrganizer.h"
-#include "../helper/qpropertyHelper.h"
+#include "../common/sharedFunctionsQt.h"
+#include "../common/abstractAddInConfigDialog.h"
+#include <qdir.h>
 
 static ito::ApiFunctions singleApiFunctions; //singleton instance, forces the construction where the ITOM_API_FUNCS_ARR pointer is propagated to ITOM_API_FUNCS
+QString ito::ApiFunctions::m_settingsFile("");
 
 namespace ito
 {
@@ -67,11 +64,19 @@ namespace ito
         (void*)&ParamHelper::validateIntArrayMeta,        /* [26] */
         (void*)&ParamHelper::validateCharArrayMeta,       /* [27] */
         (void*)&ParamHelper::validateDoubleArrayMeta,     /* [28] */
-        (void*)&ApiFunctions::sendParamToPyWorkspaceThreadSafe,      /* [29] */
-        (void*)&ApiFunctions::sendParamsToPyWorkspaceThreadSafe,     /* [30] */
+//        (void*)&ApiFunctions::sendParamToPyWorkspaceThreadSafe,      /* [29] */
+//        (void*)&ApiFunctions::sendParamsToPyWorkspaceThreadSafe,     /* [30] */
+        (void*)&ApiFunctions::removed,                    /* [29] */
+        (void*)&ApiFunctions::removed,                    /* [30] */
         (void*)&ApiFunctions::maddInClose,                /* [31] */
-        (void*)&QPropertyHelper::readProperty,            /* [32] */
-        (void*)&QPropertyHelper::writeProperty,           /* [33] */
+//        (void*)&QPropertyHelper::readProperty,            /* [32] */
+//        (void*)&QPropertyHelper::writeProperty,           /* [33] */
+        (void*)&ApiFunctions::removed,                    /* [32] */
+        (void*)&ApiFunctions::removed,                    /* [33] */
+        (void*)&ApiFunctions::getSettingsFile,            /* [34] */
+        (void*)&ApiFunctions::mfilterVersion,             /* [35] */
+        (void*)&ApiFunctions::mfilterAuthor,              /* [36] */
+        (void*)&ApiFunctions::mfilterPluginName,          /* [37] */
         NULL
     };
 
@@ -235,6 +240,11 @@ ito::RetVal apiFParseInitParams(QVector<ito::ParamBase> *initParamListMand, QVec
     return ito::retOk;
 }
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ApiFunctions::removed(...)
+{
+    return ito::RetVal(ito::retError, 0, QObject::tr("function removed from apiFunctions, check apiFunctionsGraph").toLatin1().data());
+}
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::FilterDef *&FilterDef)
@@ -245,7 +255,7 @@ ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
         return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toLatin1().data());
     }
 
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = AddInManager::instance();
     const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
     QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
     if (cfit == flist->end())
@@ -268,7 +278,7 @@ ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
         return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toLatin1().data());
     }
 
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = AddInManager::instance();
     const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
     QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
     if (cfit == flist->end())
@@ -294,7 +304,7 @@ ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
         return ito::RetVal(ito::retError, 0, QObject::tr("Vectors paramsMand, paramsOpt and paramsOut must not be NULL").toLatin1().data());
     }
 
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = AddInManager::instance();
     const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
     QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
     if (cfit == flist->end())
@@ -342,7 +352,7 @@ ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
         return ito::RetVal(ito::retError, 0, QObject::tr("Vectors paramsMand, paramsOpt and paramsOut must not be NULL").toLatin1().data());
     }
 
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    ito::AddInManager *aim = AddInManager::instance();
     const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
     QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
     if (cfit == flist->end())
@@ -366,11 +376,80 @@ ito::RetVal ApiFunctions::mfilterGetFunc(const QString &name, ito::AddInAlgo::Fi
 
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal ApiFunctions::mfilterVersion(const QString &name, int &version)
+{
+    if (name.length() < 1)
+    {
+        version = 0;
+        return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toLatin1().data());
+    }
+
+    ito::AddInManager *aim = AddInManager::instance();
+    const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
+    QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
+    if (cfit == flist->end())
+    {
+        version = 0;
+        return ito::RetVal(ito::retError, 0, QObject::tr("Filter not found").toLatin1().data());
+    }
+
+    version = cfit.value()->m_pBasePlugin->getVersion();
+
+    return ito::retOk;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal ApiFunctions::mfilterAuthor(const QString &name, QString &author)
+{
+    if (name.length() < 1)
+    {
+        author = "";
+        return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toLatin1().data());
+    }
+
+    ito::AddInManager *aim = AddInManager::instance();
+    const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
+    QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
+    if (cfit == flist->end())
+    {
+        author = "";
+        return ito::RetVal(ito::retError, 0, QObject::tr("Filter not found").toLatin1().data());
+    }
+
+    author = cfit.value()->m_pBasePlugin->getAuthor();
+
+    return ito::retOk;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+/*static*/ ito::RetVal ApiFunctions::mfilterPluginName(const QString &name, QString &pluginName)
+{
+    if (name.length() < 1)
+    {
+        pluginName = "";
+        return ito::RetVal(ito::retError, 0, QObject::tr("Filter name empty").toLatin1().data());
+    }
+
+    ito::AddInManager *aim = AddInManager::instance();
+    const QHash<QString, ito::AddInAlgo::FilterDef *> *flist = aim->getFilterList();
+    QHash<QString, ito::AddInAlgo::FilterDef *>::ConstIterator cfit = flist->find(name);
+    if (cfit == flist->end())
+    {
+        pluginName = "";
+        return ito::RetVal(ito::retError, 0, QObject::tr("Filter not found").toLatin1().data());
+    }
+
+    pluginName = cfit.value()->m_pBasePlugin->objectName();
+
+    return ito::retOk;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
 ito::RetVal ApiFunctions::maddInGetInitParams(const QString &name, const int pluginType, int *pluginNum, QVector<ito::Param> *&paramsMand, QVector<ito::Param> *&paramsOpt)
 {
     *pluginNum = -1;
 
-    ito::AddInManager *AIM = ito::AddInManager::getInstance();
+    ito::AddInManager *AIM = AddInManager::instance();
     if (!AIM)
     {
         return ito::RetVal(ito::retError, 0, QObject::tr("Fatal error! Could not get addInManager instance!").toLatin1().data());
@@ -389,7 +468,7 @@ ito::RetVal ApiFunctions::maddInOpenActuator(const QString &name, const int plug
 {
     ito::RetVal retval(ito::retOk);
 
-    ito::AddInManager *AIM = ito::AddInManager::getInstance();
+    ito::AddInManager *AIM = AddInManager::instance();
     if (!AIM)
     {
         return ito::RetVal(ito::retError, 0, QObject::tr("Fatal error! Could not get addInManager instance!").toLatin1().data());
@@ -410,7 +489,7 @@ ito::RetVal ApiFunctions::maddInOpenDataIO(const QString &name, const int plugin
 {
     ito::RetVal retval(ito::retOk);
 
-    ito::AddInManager *AIM = ito::AddInManager::getInstance();
+    ito::AddInManager *AIM = AddInManager::instance();
     if (!AIM)
     {
         return ito::RetVal(ito::retError, 0, QObject::tr("Fatal error! Could not get addInManager instance!").toLatin1().data());
@@ -431,7 +510,7 @@ ito::RetVal ApiFunctions::maddInClose(ito::AddInBase *instance)
 {
     ito::RetVal retval(ito::retOk);
 
-    ito::AddInManager *AIM = ito::AddInManager::getInstance();
+    ito::AddInManager *AIM = AddInManager::instance();
     if (!AIM)
     {
         return ito::RetVal(ito::retError, 0, QObject::tr("Fatal error! Could not get addInManager instance!").toLatin1().data());
@@ -535,7 +614,7 @@ ito::RetVal ApiFunctions::mshowConfigurationDialog(ito::AddInBase *plugin, ito::
     {
         if (!QMetaObject::invokeMethod(plugin, "sendParameterRequest"))
         {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("error invoking 'sendParameterRequest' of the plugin").toLatin1().data());
+            retval += ito::RetVal(ito::retError, 0, QObject::tr("Error invoking 'sendParameterRequest' of the plugin").toLatin1().data());
         }
         else
         {
@@ -552,7 +631,7 @@ ito::RetVal ApiFunctions::mshowConfigurationDialog(ito::AddInBase *plugin, ito::
     }
     else
     {
-        retval += ito::RetVal(ito::retError, 0, QObject::tr("the signal/slot 'parametersChanged' could not be connected").toLatin1().data());
+        retval += ito::RetVal(ito::retError, 0, QObject::tr("The signal/slot 'parametersChanged' could not be connected").toLatin1().data());
     }
 
     configDialogInstance->deleteLater();
@@ -560,15 +639,15 @@ ito::RetVal ApiFunctions::mshowConfigurationDialog(ito::AddInBase *plugin, ito::
     return ito::retOk;
 }
 
-
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-/*static*/ ito::RetVal ApiFunctions::sendParamToPyWorkspaceThreadSafe(const QString &varname, const QSharedPointer<ito::ParamBase> &value)
+/*
+ito::RetVal ApiFunctions::sendParamToPyWorkspaceThreadSafe(const QString &varname, const QSharedPointer<ito::ParamBase> &value)
 {
     return sendParamsToPyWorkspaceThreadSafe(QStringList(varname), QVector<QSharedPointer<ito::ParamBase> >(1, value));
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-/*static*/ ito::RetVal ApiFunctions::sendParamsToPyWorkspaceThreadSafe(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values)
+ito::RetVal ApiFunctions::sendParamsToPyWorkspaceThreadSafe(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values)
 {
     ito::RetVal retval;
     PythonEngine *pyEng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
@@ -598,6 +677,19 @@ ito::RetVal ApiFunctions::mshowConfigurationDialog(ito::AddInBase *plugin, ito::
     }
 
     return retval;
+}
+*/
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+/*static*/ QString ApiFunctions::getSettingsFile(void)
+{
+    return m_settingsFile;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal ApiFunctions::setSettingsFile(QString settingsFile)
+{
+    m_settingsFile = settingsFile;
+    return ito::retOk;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------

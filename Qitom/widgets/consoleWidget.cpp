@@ -1067,7 +1067,7 @@ RetVal ConsoleWidget::executeCmdQueue()
             }
             else
             {
-                QMessageBox::critical(this, tr("script execution"), tr("Python is not available"));
+                QMessageBox::critical(this, tr("Script Execution"), tr("Python is not available"));
             }
 
             //connect(this, SIGNAL(pythonExecuteString(QString)), pyEngine, SLOT(pythonRunString(QString)));
@@ -1638,34 +1638,34 @@ void ConsoleWidget::contextMenuEvent(QContextMenuEvent *e)
 
     if (!read_only)
     {
-        action = menu->addAction(QIcon(":/editor/icons/editUndo.png"), tr("&undo"), this, SLOT(undo()));
+        action = menu->addAction(QIcon(":/editor/icons/editUndo.png"), tr("&Undo"), this, SLOT(undo()));
         action->setEnabled(isUndoAvailable());
 
-        action = menu->addAction(QIcon(":/editor/icons/editRedo.png"), tr("&redo"), this, SLOT(redo()));
+        action = menu->addAction(QIcon(":/editor/icons/editRedo.png"), tr("&Redo"), this, SLOT(redo()));
         action->setEnabled(isRedoAvailable());
 
         menu->addSeparator();
 
-        action = menu->addAction(QIcon(":/editor/icons/editCut.png"), tr("&cut"), this, SLOT(cut()));
+        action = menu->addAction(QIcon(":/editor/icons/editCut.png"), tr("&Cut"), this, SLOT(cut()));
         action->setEnabled(has_selection && m_canCut);
     }
 
-    action = menu->addAction(QIcon(":/editor/icons/editCopy.png"), tr("cop&y"), this, SLOT(copy()));
+    action = menu->addAction(QIcon(":/editor/icons/editCopy.png"), tr("Cop&y"), this, SLOT(copy()));
     action->setEnabled(has_selection && m_canCopy);
 
     if (!read_only)
     {
-        action = menu->addAction(QIcon(":/editor/icons/editPaste.png"), tr("&paste"), this, SLOT(paste()));
+        action = menu->addAction(QIcon(":/editor/icons/editPaste.png"), tr("&Paste"), this, SLOT(paste()));
         action->setEnabled(SendScintilla(SCI_CANPASTE));
 
-        action = menu->addAction(QIcon(":/editor/icons/editDelete.png"), tr("clear command line"), this, SLOT(clearAndStartNewCommand()));
+        action = menu->addAction(QIcon(":/editor/icons/editDelete.png"), tr("Clear Command Line"), this, SLOT(clearAndStartNewCommand()));
         action->setEnabled(length() != 0);
     }
 
     if (!menu->isEmpty())
         menu->addSeparator();
 
-    action = menu->addAction(tr("select all"), this, SLOT(selectAll()));
+    action = menu->addAction(tr("Select All"), this, SLOT(selectAll()));
     action->setEnabled(length() != 0);
 
     if (menu)

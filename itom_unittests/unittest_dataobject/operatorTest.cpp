@@ -347,6 +347,7 @@ TYPED_TEST(operatorTest, divTest)
         mat2_2d.at<TypeParam>(1,1) = cv::saturate_cast<TypeParam>(4.0);
         
         mat1_3d.at<TypeParam>(0,0,3) = cv::saturate_cast<TypeParam>(4);
+		mat2_3d = 6;
         mat2_3d.at<TypeParam>(0,0,3) = cv::saturate_cast<TypeParam>(1);    
 
     div_mat3_1d = mat1_1d.div(mat2_1d);

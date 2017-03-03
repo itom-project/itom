@@ -25,7 +25,16 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
+#define ITOM_IMPORT_API
+#include "../../common/apiFunctionsInc.h"
+#undef ITOM_IMPORT_API
+#define ITOM_IMPORT_PLOTAPI
+#include "../../common/apiFunctionsGraphInc.h"
+#undef ITOM_IMPORT_PLOTAPI
 #include "../AbstractFigure.h"
+#include "../../common/typeDefs.h"
+#include "../../common/addInInterface.h"
+#include "QPropertyEditor/QPropertyEditorWidget.h"
 
 #include <qaction.h>
 #include <qtoolbar.h>
@@ -35,10 +44,6 @@
 #include <qsettings.h>
 #include <qshortcut.h>
 
-#include "../../common/typeDefs.h"
-#include "../../common/addInInterface.h"
-#include "../../common/apiFunctionsInc.h"
-#include "QPropertyEditor/QPropertyEditorWidget.h"
 
 namespace ito 
 {
@@ -163,6 +168,21 @@ RetVal AbstractFigure::initialize()
 	addToolbox(d->propertyDock, "properties", Qt::RightDockWidgetArea);
 
     return ito::retOk;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int AbstractFigure::getPlotID()
+{
+    if (!ito::ITOM_API_FUNCS_GRAPH)
+        return 0;
+    ito::uint32 thisID = 0;
+    ito::RetVal retval = apiGetFigureIDbyHandle(this, thisID);
+
+    if (retval.containsError())
+    {
+        return 0;
+    }
+    return thisID;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

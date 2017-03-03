@@ -23,7 +23,7 @@
       <item row="1" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBoxUnpackDictionary">
         <property name="text">
-         <string>unpack dictionary</string>
+         <string>Unpack dictionary</string>
         </property>
        </widget>
       </item>

@@ -23,14 +23,19 @@
 #ifndef PLUGINMODEL_H
 #define PLUGINMODEL_H
 
-#include "../../common/addInInterface.h"
+#if !defined(Q_MOC_RUN) || defined(ADDINMGR_DLL) //only moc this file in itomCommonQtLib but not in other libraries or executables linking against this itomCommonQtLib
+
+#include "addInMgrDefines.h"
+#include "../common/addInInterface.h"
 #include <qabstractitemmodel.h>
+#include <qscopedpointer.h>
 
 #include <qicon.h>
 
 namespace ito 
 {
     class AddInBase;
+    class AddInManager;
 
     /**
     * PluginLoadStatusFlag enumeration
@@ -58,6 +63,8 @@ namespace ito
         QList< QPair<ito::PluginLoadStatusFlags, QString> > messages;
     };
 
+    class PlugInModelPrivate; //forward declaration
+
     /** @class PlugInModel
     *   @brief class for visualizing the available (loaded) plugins
     *   
@@ -66,12 +73,12 @@ namespace ito
     *   using a right click on the instance and selecting "open configuration dialog" in the context menu. The tree view is 
     *   automatically updated when a new instance is created or an existing one had been deleted.
     */
-    class PlugInModel : public QAbstractItemModel
+    class ADDINMGR_EXPORT PlugInModel : public QAbstractItemModel
     {
         Q_OBJECT
 
         public:
-            PlugInModel(/*const QString &data, QObject *parent = 0*/);
+            PlugInModel(ito::AddInManager *addInManager, QObject *parent = NULL);
             ~PlugInModel();
 
             enum tItemType {
@@ -120,24 +127,12 @@ namespace ito
             QVariant getFilterOrWidgetNodeInfo(const QModelIndex &index, const int &role, bool filterNotWidget) const;
 
         private:
-//            void setupModelData(const QStringList &lines, AddInItem *parent);
-            QList<QString> m_headers;               //!<  string list of names of column headers
-            QList<QVariant> m_alignment;            //!<  list of alignments for the corresponding headers
-
-            int m_treeFixNodes[6];
-            QModelIndex m_treeFixIndizes[6];
-
-            QIcon m_iconActuator;
-            QIcon m_iconGrabber;
-            QIcon m_iconADDA;
-            QIcon m_iconRawIO;
-            QIcon m_iconFilter;
-            QIcon m_iconDataIO;
-            QIcon m_iconAlgo;
-            QIcon m_iconWidget;
-            QIcon m_iconPlots;
+            QScopedPointer<PlugInModelPrivate> d_ptr; //!> self-managed pointer to the private class container (deletes itself if d_ptr is destroyed)
+            Q_DECLARE_PRIVATE(PlugInModel);
     };
 
 }; // namespace ito
+
+#endif // #if !defined(Q_MOC_RUN) || defined(ADDINMGR_DLL) 
 
 #endif

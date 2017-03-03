@@ -332,6 +332,7 @@ void WidgetPropEditorStyles::on_listWidget_currentItemChanged(QListWidgetItem *c
         }
         else
         {
+            ui.lblSampleText->setText(tr(""));
             ui.btnForegroundColor->setEnabled(false);
             ui.btnBackgroundColor->setEnabled(false);
             ui.btnFont->setEnabled(false);

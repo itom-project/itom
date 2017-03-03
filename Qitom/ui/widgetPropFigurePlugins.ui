@@ -82,7 +82,7 @@
         <item>
          <widget class="QPushButton" name="btnResetDefaultFigures">
           <property name="text">
-           <string>Reset to standard</string>
+           <string>Reset To Standard</string>
           </property>
          </widget>
         </item>

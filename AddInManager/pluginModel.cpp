@@ -20,46 +20,77 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#include "PlugInModel.h"
-#include "../organizer/addInManager.h"
-#include <qicon.h>
+#include "pluginModel.h"
+#include "addInManager.h"
 #include <qfileinfo.h>
 
 namespace ito
 {
+    class PlugInModelPrivate
+    {
+    public:
+        PlugInModelPrivate() : m_pAIM(NULL) {};
+        ~PlugInModelPrivate() {};
+
+    public:
+        QList<QString> m_headers;               //!<  string list of names of column headers
+        QList<QVariant> m_alignment;            //!<  list of alignments for the corresponding headers
+
+        int m_treeFixNodes[6];
+        QModelIndex m_treeFixIndizes[6];
+
+        QIcon m_iconActuator;
+        QIcon m_iconGrabber;
+        QIcon m_iconADDA;
+        QIcon m_iconRawIO;
+        QIcon m_iconFilter;
+        QIcon m_iconDataIO;
+        QIcon m_iconAlgo;
+        QIcon m_iconWidget;
+        QIcon m_iconPlots;
+
+        ito::AddInManager *m_pAIM;
+    };
 
 //----------------------------------------------------------------------------------------------------------------------------------
 /** constructor
 *
 *   contructor, creating column headers for the tree view
 */
-PlugInModel::PlugInModel()
+PlugInModel::PlugInModel(ito::AddInManager *addInManager, QObject *parent /*= NULL*/) :
+    QAbstractItemModel(parent),
+    d_ptr(new PlugInModelPrivate())
+    
 {
-    m_headers << tr("Name") << tr("Type") << tr("Version") << tr("Filename") << tr("Author") << tr("min. itom Version") << tr("max. itom Version") << tr("Description");
-    m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignCenter) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignRight) << QVariant(Qt::AlignRight) << QVariant(Qt::AlignLeft);
+    Q_D(PlugInModel);
 
-    m_iconActuator = QIcon(":/plugins/icons/pluginActuator.png");
-    m_iconGrabber = QIcon(":/plugins/icons/pluginGrabber.png");
-    m_iconADDA = QIcon(":/plugins/icons/pluginADDA.png");
-    m_iconRawIO = QIcon(":/plugins/icons/pluginRawIO.png");
-    m_iconFilter = QIcon(":/plugins/icons/pluginFilter.png");
-    m_iconDataIO = QIcon(":/plugins/icons/plugin.png");
-    m_iconAlgo = QIcon(":/plugins/icons/pluginAlgo.png");
-    m_iconWidget = QIcon(":/plugins/icons/window.png");
+    d->m_pAIM = addInManager;
 
-    m_treeFixNodes[0] = typeDataIO;
-    m_treeFixNodes[1] = typeActuator;
-    m_treeFixNodes[2] = typeAlgo;
-    m_treeFixNodes[3] = typeDataIO | typeGrabber;
-    m_treeFixNodes[4] = typeDataIO | typeADDA;
-    m_treeFixNodes[5] = typeDataIO | typeRawIO;
+    d->m_headers << tr("Name") << tr("Type") << tr("Version") << tr("Filename") << tr("Author") << tr("min. itom Version") << tr("max. itom Version") << tr("Description");
+    d->m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignCenter) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignRight) << QVariant(Qt::AlignRight) << QVariant(Qt::AlignLeft);
 
-    m_treeFixIndizes[0] = createIndex(0, 0, &(m_treeFixNodes[0])); //level 0
-    m_treeFixIndizes[1] = createIndex(1, 0, &(m_treeFixNodes[1])); //level 0
-    m_treeFixIndizes[2] = createIndex(2, 0, &(m_treeFixNodes[2])); //level 0
-    m_treeFixIndizes[3] = createIndex(0, 0, &(m_treeFixNodes[3])); //level 1
-    m_treeFixIndizes[4] = createIndex(1, 0, &(m_treeFixNodes[4])); //level 1
-    m_treeFixIndizes[5] = createIndex(2, 0, &(m_treeFixNodes[5])); //level 1
+    d->m_iconActuator = QIcon(":/plugins/icons/pluginActuator.png");
+    d->m_iconGrabber = QIcon(":/plugins/icons/pluginGrabber.png");
+    d->m_iconADDA = QIcon(":/plugins/icons/pluginADDA.png");
+    d->m_iconRawIO = QIcon(":/plugins/icons/pluginRawIO.png");
+    d->m_iconFilter = QIcon(":/plugins/icons/pluginFilter.png");
+    d->m_iconDataIO = QIcon(":/plugins/icons/plugin.png");
+    d->m_iconAlgo = QIcon(":/plugins/icons/pluginAlgo.png");
+    d->m_iconWidget = QIcon(":/plugins/icons/window.png");
+
+    d->m_treeFixNodes[0] = typeDataIO;
+    d->m_treeFixNodes[1] = typeActuator;
+    d->m_treeFixNodes[2] = typeAlgo;
+    d->m_treeFixNodes[3] = typeDataIO | typeGrabber;
+    d->m_treeFixNodes[4] = typeDataIO | typeADDA;
+    d->m_treeFixNodes[5] = typeDataIO | typeRawIO;
+
+    d->m_treeFixIndizes[0] = createIndex(0, 0, &(d->m_treeFixNodes[0])); //level 0
+    d->m_treeFixIndizes[1] = createIndex(1, 0, &(d->m_treeFixNodes[1])); //level 0
+    d->m_treeFixIndizes[2] = createIndex(2, 0, &(d->m_treeFixNodes[2])); //level 0
+    d->m_treeFixIndizes[3] = createIndex(0, 0, &(d->m_treeFixNodes[3])); //level 1
+    d->m_treeFixIndizes[4] = createIndex(1, 0, &(d->m_treeFixNodes[4])); //level 1
+    d->m_treeFixIndizes[5] = createIndex(2, 0, &(d->m_treeFixNodes[5])); //level 1
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -68,18 +99,22 @@ PlugInModel::PlugInModel()
 */
 PlugInModel::~PlugInModel()
 {
-    m_headers.clear();
-    m_alignment.clear();
+    Q_D(PlugInModel);
+
+    d->m_headers.clear();
+    d->m_alignment.clear();
     return;
 }
 
 QModelIndex PlugInModel::getTypeNode(const int type) const
 {
-    for(unsigned int i = 0 ; i < (sizeof(m_treeFixNodes) / sizeof(m_treeFixNodes[0])) ; i++)
+    Q_D(const PlugInModel);
+
+    for (unsigned int i = 0; i < (sizeof(d->m_treeFixNodes) / sizeof(d->m_treeFixNodes[0])); i++)
     {
-        if(type == m_treeFixNodes[i])
+        if(type == d->m_treeFixNodes[i])
         {
-            return m_treeFixIndizes[i];
+            return d->m_treeFixIndizes[i];
         }
     }
     return QModelIndex();
@@ -92,12 +127,12 @@ QModelIndex PlugInModel::getTypeNode(const int type) const
 */
 Qt::ItemFlags PlugInModel::flags(const QModelIndex &index) const
 {
+    Q_D(const PlugInModel);
+
     if (!index.isValid())
     {
         return 0;
     }
-
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
     
     tItemType itemType;
     size_t itemInternalData;
@@ -110,7 +145,7 @@ Qt::ItemFlags PlugInModel::flags(const QModelIndex &index) const
     if(itemType == itemInstance)
     {
         ito::AddInBase *aib = (ito::AddInBase*)(itemInternalData);
-        if(aim->isPluginInstanceDead( aib ))
+        if (d->m_pAIM->isPluginInstanceDead(aib))
         {
             return Qt::ItemIsSelectable;
         }
@@ -131,12 +166,12 @@ Qt::ItemFlags PlugInModel::flags(const QModelIndex &index) const
 */
 QModelIndex PlugInModel::parent(const QModelIndex &index) const
 {
+    Q_D(const PlugInModel);
+
     if (!index.isValid())
     {
         return QModelIndex();
     }
-
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
     
     tItemType itemType;
     size_t itemInternalData;
@@ -158,7 +193,7 @@ QModelIndex PlugInModel::parent(const QModelIndex &index) const
         case itemSubCategoryDataIO_ADDA:
         case itemSubCategoryDataIO_RawIO:
         {
-            return m_treeFixIndizes[0];
+            return d->m_treeFixIndizes[0];
         }
         case itemPlugin:
         {
@@ -179,9 +214,9 @@ QModelIndex PlugInModel::parent(const QModelIndex &index) const
         
             if (aiib->getType() & ito::typeActuator)
             {
-                for (int i = 0; i < aim->getActList()->count(); i++)
+                for (int i = 0; i < d->m_pAIM->getActList()->count(); i++)
                 {
-                    if (aim->getActList()->at(i) == (QObject*)aiib)
+                    if (d->m_pAIM->getActList()->at(i) == (QObject*)aiib)
                     {
                         return createIndex(i, 0, (void*)aiib);
                     }
@@ -192,9 +227,9 @@ QModelIndex PlugInModel::parent(const QModelIndex &index) const
             {
                 int rowCounter = -1;
                 ito::AddInInterfaceBase *aiib2 = NULL;
-                for (int i = 0; i < aim->getDataIOList()->count(); i++)
+                for (int i = 0; i < d->m_pAIM->getDataIOList()->count(); i++)
                 {
-                    aiib2 = (ito::AddInInterfaceBase*)aim->getDataIOList()->at(i);
+                    aiib2 = (ito::AddInInterfaceBase*)d->m_pAIM->getDataIOList()->at(i);
                     if (aiib2->getType() == aiib->getType())
                     {
                         rowCounter++;
@@ -214,9 +249,9 @@ QModelIndex PlugInModel::parent(const QModelIndex &index) const
         case itemFilter:
         {
             ito::AddInAlgo::FilterDef* filter = (ito::AddInAlgo::FilterDef*)(itemInternalData);
-            for (int i = 0; i < aim->getAlgList()->count(); i++)
+            for (int i = 0; i < d->m_pAIM->getAlgList()->count(); i++)
             {
-                if (aim->getAlgList()->at(i) == (QObject*)filter->m_pBasePlugin)
+                if (d->m_pAIM->getAlgList()->at(i) == (QObject*)filter->m_pBasePlugin)
                 {
                     return createIndex(i, 0, (void*)filter->m_pBasePlugin);
                 }
@@ -226,9 +261,9 @@ QModelIndex PlugInModel::parent(const QModelIndex &index) const
         case itemWidget:
         {
             ito::AddInAlgo::AlgoWidgetDef* widget = (ito::AddInAlgo::AlgoWidgetDef*)(itemInternalData);
-            for (int i = 0; i < aim->getAlgList()->count(); i++)
+            for (int i = 0; i < d->m_pAIM->getAlgList()->count(); i++)
             {
-                if (aim->getAlgList()->at(i) == (QObject*)widget->m_pBasePlugin)
+                if (d->m_pAIM->getAlgList()->at(i) == (QObject*)widget->m_pBasePlugin)
                 {
                     return createIndex(i, 0, (void*)widget->m_pBasePlugin);
                 }
@@ -250,8 +285,8 @@ QModelIndex PlugInModel::parent(const QModelIndex &index) const
 */
 int PlugInModel::rowCount(const QModelIndex &parent) const
 {
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
-    
+    Q_D(const PlugInModel);
+
     if (parent.isValid() == false)
     {
         return 3;
@@ -273,18 +308,18 @@ int PlugInModel::rowCount(const QModelIndex &parent) const
             }
             case itemCatActuator:
             {
-                return aim->getActList()->count();
+                return d->m_pAIM->getActList()->count();
             }
             case itemCatAlgo:
             {
-                return aim->getAlgList()->count();
+                return d->m_pAIM->getAlgList()->count();
             }
             case itemSubCategoryDataIO_Grabber:
             case itemSubCategoryDataIO_ADDA:
             case itemSubCategoryDataIO_RawIO:
             {
                 int counter = 0;
-                const QList<QObject*> *dataIOs = aim->getDataIOList();
+                const QList<QObject*> *dataIOs = d->m_pAIM->getDataIOList();
                 ito::AddInInterfaceBase *aiib = NULL;
                 for (int i = 0; i < dataIOs->count(); i++)
                 {
@@ -332,7 +367,9 @@ int PlugInModel::rowCount(const QModelIndex &parent) const
 */
 int PlugInModel::columnCount(const QModelIndex & /*parent*/) const
 {
-    return m_headers.size();
+    Q_D(const PlugInModel);
+
+    return d->m_headers.size();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -351,7 +388,7 @@ int PlugInModel::columnCount(const QModelIndex & /*parent*/) const
 */
 QModelIndex PlugInModel::index(int row, int column, const QModelIndex &parent) const
 {
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
+    Q_D(const PlugInModel);
 
     if (!hasIndex(row, column, parent))
     {
@@ -362,7 +399,7 @@ QModelIndex PlugInModel::index(int row, int column, const QModelIndex &parent) c
     {
         if (row >= 0 && row <= 2)
         {
-            return createIndex(row, column, (void*)&m_treeFixNodes[row]);
+            return createIndex(row, column, (void*)&d->m_treeFixNodes[row]);
         }
         return QModelIndex();
     }
@@ -379,22 +416,22 @@ QModelIndex PlugInModel::index(int row, int column, const QModelIndex &parent) c
         {
             case itemCatDataIO:
             {
-                return createIndex(row, column, (void*)(&m_treeFixNodes[row+3]));
+                return createIndex(row, column, (void*)(&d->m_treeFixNodes[row + 3]));
             }
             case itemCatActuator:
             {
-                return createIndex(row, column, (void*)aim->getActList()->at(row));
+                return createIndex(row, column, (void*)d->m_pAIM->getActList()->at(row));
             }
             case itemCatAlgo:
             {
-                return createIndex(row, column, (void*)aim->getAlgList()->at(row));
+                return createIndex(row, column, (void*)d->m_pAIM->getAlgList()->at(row));
             }
             case itemSubCategoryDataIO_Grabber:
             case itemSubCategoryDataIO_ADDA:
             case itemSubCategoryDataIO_RawIO:
             {
                 int counter = -1;
-                const QList<QObject*> *dataIOs = aim->getDataIOList();
+                const QList<QObject*> *dataIOs = d->m_pAIM->getDataIOList();
                 ito::AddInInterfaceBase *aiib = NULL;
                 for (int i = 0; i < dataIOs->count(); i++)
                 {
@@ -454,11 +491,13 @@ QModelIndex PlugInModel::index(int row, int column, const QModelIndex &parent) c
 */
 QVariant PlugInModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
+    Q_D(const PlugInModel);
+
     if (role == Qt::DisplayRole && orientation == Qt::Horizontal)
     {
-        if (section >= 0 && section < m_headers.size())
+        if (section >= 0 && section < d->m_headers.size())
         {
-            return m_headers.at(section);
+            return d->m_headers.at(section);
         }
         return QVariant();
     }
@@ -476,6 +515,8 @@ QVariant PlugInModel::headerData(int section, Qt::Orientation orientation, int r
 */
 bool PlugInModel::getModelIndexInfo(const QModelIndex &index, tItemType &type, size_t &internalData) const
 {
+    Q_D(const PlugInModel);
+
     type = itemUnknown;
     internalData = 0;
 
@@ -496,14 +537,13 @@ bool PlugInModel::getModelIndexInfo(const QModelIndex &index, tItemType &type, s
     //itemWidget            -> Pointer to corresponding AlgoWidgetDef
 
     //check if item is of type itemCategory or itemSubCategory
-    const int *ptr1 = &m_treeFixNodes[0];
+    const int *ptr1 = &d->m_treeFixNodes[0];
 //    const int *ptr2 = &m_treeFixNodes[5];
-    ito::AddInManager *aim = ito::AddInManager::getInstance();
     void *internalPtr = index.internalPointer();
     QObject *obj = NULL;
 //    int rowIndex;
 
-    if (internalPtr >= ptr1 && internalPtr <= (ptr1 + sizeof(m_treeFixNodes)))
+    if (internalPtr >= ptr1 && internalPtr <= (ptr1 + sizeof(d->m_treeFixNodes)))
     {
         switch (* (int*)index.internalPointer())
         {
@@ -557,7 +597,7 @@ bool PlugInModel::getModelIndexInfo(const QModelIndex &index, tItemType &type, s
     {
         //check if item is a filter
         //check type of element
-        const QHash<QString, ito::AddInAlgo::FilterDef *> *filters = aim->getFilterList();
+        const QHash<QString, ito::AddInAlgo::FilterDef *> *filters = d->m_pAIM->getFilterList();
         QHash<QString, ito::AddInAlgo::FilterDef *>::const_iterator i = filters->constBegin();
         while (i != filters->constEnd()) 
         {
@@ -572,7 +612,7 @@ bool PlugInModel::getModelIndexInfo(const QModelIndex &index, tItemType &type, s
         }
 
         //check if item is a widget
-        const QHash<QString, ito::AddInAlgo::AlgoWidgetDef *> *widgets = aim->getAlgoWidgetList();
+        const QHash<QString, ito::AddInAlgo::AlgoWidgetDef *> *widgets = d->m_pAIM->getAlgoWidgetList();
         QHash<QString, ito::AddInAlgo::AlgoWidgetDef *>::const_iterator j = widgets->constBegin();
         while (j != widgets->constEnd()) 
         {
@@ -625,6 +665,7 @@ bool PlugInModel::getModelIndexInfo(const QModelIndex &index, tItemType &type, s
 */
 QVariant PlugInModel::getFixedNodeInfo(const QModelIndex &index, const QVariant &name, const tItemType &itemType, const int &role, const QIcon icon) const
 {
+    Q_D(const PlugInModel);
     if (role == Qt::DisplayRole)
     {
         if (index.column() == 0)
@@ -662,7 +703,7 @@ QVariant PlugInModel::getFixedNodeInfo(const QModelIndex &index, const QVariant 
     {
         if (index.column() == 0)
         {
-            return m_alignment[index.column()];
+            return d->m_alignment[index.column()];
         }
         else
         {
@@ -727,6 +768,7 @@ QVariant PlugInModel::getFixedNodeInfo(const QModelIndex &index, const QVariant 
 QVariant PlugInModel::getPluginNodeInfo(const QModelIndex &index, const int &role) const
 {
     ito::AddInInterfaceBase *aib = (ito::AddInInterfaceBase *)index.internalPointer();
+    Q_D(const PlugInModel);
 
     if (role == Qt::DisplayRole)
     {
@@ -812,19 +854,19 @@ QVariant PlugInModel::getPluginNodeInfo(const QModelIndex &index, const int &rol
             switch (aib->getType())
             {
                 case typeActuator:
-                    return m_iconActuator;
+                    return d->m_iconActuator;
                 break;
                 case typeDataIO | typeGrabber:
-                    return m_iconGrabber;
+                    return d->m_iconGrabber;
                 break;
                 case typeDataIO | typeADDA:
-                    return m_iconADDA;
+                    return d->m_iconADDA;
                 break;
                 case typeDataIO | typeRawIO:
-                    return m_iconRawIO;
+                    return d->m_iconRawIO;
                 break;
                 case typeAlgo:
-                    return m_iconAlgo;
+                    return d->m_iconAlgo;
                 break;
                 default:
                     return QVariant();
@@ -851,9 +893,9 @@ QVariant PlugInModel::getPluginNodeInfo(const QModelIndex &index, const int &rol
     }
     else if (role == Qt::TextAlignmentRole)
     {
-        if (index.column() >= 0 && index.column() < m_alignment.size())
+        if (index.column() >= 0 && index.column() < d->m_alignment.size())
         {
-            return m_alignment[index.column()];
+            return d->m_alignment[index.column()];
         }
         else
         {
@@ -886,8 +928,8 @@ QVariant PlugInModel::getPluginNodeInfo(const QModelIndex &index, const int &rol
 */
 QVariant PlugInModel::getInstanceNodeInfo(const QModelIndex &index, const int &role) const
 {
-    //ito::AddInInterfaceBase *aib = (ito::AddInInterfaceBase *)index.internalPointer();
     ito::AddInBase *ai = (ito::AddInBase *)index.internalPointer();
+    Q_D(const PlugInModel);
 
     if (role == Qt::DisplayRole)
     {
@@ -934,9 +976,9 @@ QVariant PlugInModel::getInstanceNodeInfo(const QModelIndex &index, const int &r
     }
     else if (role == Qt::TextAlignmentRole)
     {
-        if (index.column() >= 0 && index.column() < m_alignment.size())
+        if (index.column() >= 0 && index.column() < d->m_alignment.size())
         {
-            return m_alignment[index.column()];
+            return d->m_alignment[index.column()];
         }
         else
         {
@@ -985,6 +1027,7 @@ QVariant PlugInModel::getInstanceNodeInfo(const QModelIndex &index, const int &r
 */
 QVariant PlugInModel::getFilterOrWidgetNodeInfo(const QModelIndex &index, const int &role, bool filterNotWidget) const
 {
+    Q_D(const PlugInModel);
     QString *name;
     QString *description;
 
@@ -1043,11 +1086,11 @@ QVariant PlugInModel::getFilterOrWidgetNodeInfo(const QModelIndex &index, const 
         {
             if (filterNotWidget)
             {
-                return m_iconFilter;
+                return d->m_iconFilter;
             }
             else
             {
-                return m_iconWidget;
+                return d->m_iconWidget;
             }
         }
         return QVariant();
@@ -1106,9 +1149,9 @@ QVariant PlugInModel::getFilterOrWidgetNodeInfo(const QModelIndex &index, const 
     }
     else if (role == Qt::TextAlignmentRole)
     {
-        if (index.column() >= 0 && index.column() < m_alignment.size())
+        if (index.column() >= 0 && index.column() < d->m_alignment.size())
         {
-            return m_alignment[index.column()];
+            return d->m_alignment[index.column()];
         }
         else
         {
@@ -1150,6 +1193,7 @@ QVariant PlugInModel::getFilterOrWidgetNodeInfo(const QModelIndex &index, const 
 */
 QVariant PlugInModel::data(const QModelIndex &index, int role) const
 {
+    Q_D(const PlugInModel);
     tItemType itemType;
     size_t itemInternalData;
 
@@ -1162,34 +1206,34 @@ QVariant PlugInModel::data(const QModelIndex &index, int role) const
     {
         case itemCatDataIO:
         {
-            return getFixedNodeInfo(index, tr("DataIO"), itemType, role, m_iconDataIO);
+            return getFixedNodeInfo(index, tr("DataIO"), itemType, role, d->m_iconDataIO);
         }
         case itemCatActuator:
         {
-            return getFixedNodeInfo(index, tr("Actuator"), itemType, role, m_iconActuator);
+            return getFixedNodeInfo(index, tr("Actuator"), itemType, role, d->m_iconActuator);
         }
         case itemCatAlgo:
         {
-            return getFixedNodeInfo(index, tr("Algorithm"), itemType, role, m_iconAlgo);
+            return getFixedNodeInfo(index, tr("Algorithm"), itemType, role, d->m_iconAlgo);
         }
         case itemSubCategoryDataIO_Grabber:
         {
-            return getFixedNodeInfo(index, tr("Grabber"), itemType, role, m_iconGrabber);
+            return getFixedNodeInfo(index, tr("Grabber"), itemType, role, d->m_iconGrabber);
         }
         case itemSubCategoryDataIO_ADDA:
         {
-            return getFixedNodeInfo(index, tr("ADDA"), itemType, role, m_iconADDA);
+            return getFixedNodeInfo(index, tr("ADDA"), itemType, role, d->m_iconADDA);
         }
         case itemSubCategoryDataIO_RawIO:
         {
-            return getFixedNodeInfo(index, tr("Raw IO"), itemType, role, m_iconRawIO);
+            return getFixedNodeInfo(index, tr("Raw IO"), itemType, role, d->m_iconRawIO);
         }
         case itemPlugin:
         {
             ito::AddInInterfaceBase *aiib = (ito::AddInInterfaceBase*)(itemInternalData);
-            for (int i = 0 ; i < sizeof(m_treeFixNodes) / sizeof(m_treeFixNodes[0]) ; i++)
+            for (int i = 0; i < sizeof(d->m_treeFixNodes) / sizeof(d->m_treeFixNodes[0]); i++)
             {
-                if (aiib->getType() == m_treeFixNodes[i])
+                if (aiib->getType() == d->m_treeFixNodes[i])
                 {
                     return getPluginNodeInfo(index, role);
                 }
@@ -1200,14 +1244,13 @@ QVariant PlugInModel::data(const QModelIndex &index, int role) const
         {
             ito::AddInBase *aib = (ito::AddInBase*)(itemInternalData);
             ito::AddInInterfaceBase *aiib = aib->getBasePlugin();
-            ito::AddInManager *aim = ito::AddInManager::getInstance();
 
             if (aiib->getType() & ito::typeActuator)
             {
-                int count = aim->getActList()->count();
+                int count = d->m_pAIM->getActList()->count();
                 for (int i = 0 ; i < count ; i++)
                 {
-                    if (aim->getActList()->at(i) == (QObject*)aiib)
+                    if (d->m_pAIM->getActList()->at(i) == (QObject*)aiib)
                     {
                         return getInstanceNodeInfo(index, role);
                     }
@@ -1215,10 +1258,10 @@ QVariant PlugInModel::data(const QModelIndex &index, int role) const
             }
             else if(aiib->getType() & ito::typeDataIO)
             {
-                int count = aim->getDataIOList()->count();
+                int count = d->m_pAIM->getDataIOList()->count();
                 for (int i = 0; i < count; i++)
                 {
-                    if (aim->getDataIOList()->at(i) == (QObject*)aiib)
+                    if (d->m_pAIM->getDataIOList()->at(i) == (QObject*)aiib)
                     {
                         return getInstanceNodeInfo(index, role);
                     }
@@ -1285,35 +1328,35 @@ QModelIndex PlugInModel::getIndexByAddIn(ito::AddInBase *ai) const
 */
 QModelIndex PlugInModel::getIndexByAddInInterface(AddInInterfaceBase *aib) const
 {
+    Q_D(const PlugInModel);
     if (aib)
     {
-        ito::AddInManager *aim = ito::AddInManager::getInstance();
         const QList<QObject*> *list = NULL;
 
         switch (aib->getType())
         {
             case ito::typeActuator:
                 {
-                    list = aim->getActList();
+                    list = d->m_pAIM->getActList();
 
                     for (int i = 0; i < list->count(); i++)
                     {
                         if (qobject_cast<ito::AddInInterfaceBase*>(list->at(i)) == aib)
                         {
-                            return index(i, 0, m_treeFixIndizes[1]);
+                            return index(i, 0, d->m_treeFixIndizes[1]);
                         }
                     }
                 }
                 break;
             case ito::typeAlgo:
                 {
-                    list = aim->getAlgList();
+                    list = d->m_pAIM->getAlgList();
 
                     for (int i = 0; i < list->count(); i++)
                     {
                         if (qobject_cast<ito::AddInInterfaceBase*>(list->at(i)) == aib)
                         {
-                            return index(i, 0, m_treeFixIndizes[2]);
+                            return index(i, 0, d->m_treeFixIndizes[2]);
                         }
                     }
                 }
@@ -1322,7 +1365,7 @@ QModelIndex PlugInModel::getIndexByAddInInterface(AddInInterfaceBase *aib) const
             case ito::typeDataIO | ito::typeRawIO:
             case ito::typeDataIO | ito::typeADDA:
                 {
-                    list = aim->getDataIOList();
+                    list = d->m_pAIM->getDataIOList();
                     int countGrabber = 0;
                     int countRawIO = 0;
                     int countADDA = 0;
@@ -1335,15 +1378,15 @@ QModelIndex PlugInModel::getIndexByAddInInterface(AddInInterfaceBase *aib) const
                         {
                             if (aib->getType() & ito::typeGrabber)
                             {
-                                return index(countGrabber, 0, m_treeFixIndizes[3]);
+                                return index(countGrabber, 0, d->m_treeFixIndizes[3]);
                             }
                             else if (aib->getType() & ito::typeRawIO)
                             {
-                                return index(countRawIO, 0, m_treeFixIndizes[5]);
+                                return index(countRawIO, 0, d->m_treeFixIndizes[5]);
                             }
                             else if (aib->getType() & ito::typeADDA)
                             {
-                                return index(countADDA, 0, m_treeFixIndizes[4]);
+                                return index(countADDA, 0, d->m_treeFixIndizes[4]);
                             }
                             else
                             {
@@ -1383,10 +1426,11 @@ QModelIndex PlugInModel::getIndexByAddInInterface(AddInInterfaceBase *aib) const
 */
 bool PlugInModel::getIsAlgoPlugIn(tItemType &itemType, size_t &internalData) const
 {
+    Q_D(const PlugInModel);
     if(itemType == PlugInModel::itemPlugin)
     {
         ito::AddInInterfaceBase *aiib = (ito::AddInInterfaceBase*)(internalData);
-        return (aiib->getType() == m_treeFixNodes[2]);
+        return (aiib->getType() == d->m_treeFixNodes[2]);
     }
     return false;
 }

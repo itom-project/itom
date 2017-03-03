@@ -126,6 +126,7 @@ autodoc_docstring_signature = True
 qt_version = itomFuncs.version(True)["itom"]["QT_Version"]
 
 html_theme = 'itom'
+qthelp_theme = 'itom' #theme for QtHelp only (available since Sphinx 1.5.3)
 html_theme_path = ['..' + os.sep + '_themes']
 
 # The name for this set of Sphinx documents.  If None, it defaults to

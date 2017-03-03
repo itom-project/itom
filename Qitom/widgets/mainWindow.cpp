@@ -28,7 +28,7 @@
 #include "../AppManagement.h"
 #include "../global.h"
 
-#include "../organizer/addInManager.h"
+#include "../../AddInManager/addInManager.h"
 #include "../organizer/processOrganizer.h"
 #include "../organizer/uiOrganizer.h"
 #include "../organizer/userOrganizer.h"
@@ -609,7 +609,7 @@ void MainWindow::createActions()
     m_aboutQitom = new QAction(QIcon(":/application/icons/itomicon/itomIcon32"), tr("About itom..."), this);
     connect(m_aboutQitom, SIGNAL(triggered()), this, SLOT(mnuAboutQitom()));
 
-    m_actions["show_loaded_plugins"] = new QAction(QIcon(":/plugins/icons/plugin.png"), tr("Loaded plugins..."), this);
+    m_actions["show_loaded_plugins"] = new QAction(QIcon(":/plugins/icons/plugin.png"), tr("Loaded Plugins..."), this);
     connect(m_actions["show_loaded_plugins"], SIGNAL(triggered()), this, SLOT(mnuShowLoadedPlugins()));
 
     if (uOrg->hasFeature(featDeveloper))
@@ -624,8 +624,8 @@ void MainWindow::createActions()
         a = m_actions["open_designer"] = new QAction(QIcon(":/application/icons/designer4.png"), tr("UI Designer"), this);
         connect(a, SIGNAL(triggered()), this, SLOT(mnuShowDesigner()));
 
-        a = m_actions["python_global_runmode"] = new QAction(QIcon(":/application/icons/pythonDebug.png"), tr("Run python code in debug mode"), this);
-        a->setToolTip(tr("set whether internal python code should be executed in debug mode"));
+        a = m_actions["python_global_runmode"] = new QAction(QIcon(":/application/icons/pythonDebug.png"), tr("Run Python Code In Debug Mode"), this);
+        a->setToolTip(tr("Set whether internal python code should be executed in debug mode"));
         a->setCheckable(true);
         if (pyEngine)
         {
@@ -633,47 +633,47 @@ void MainWindow::createActions()
         }
         connect(m_actions["python_global_runmode"], SIGNAL(triggered(bool)), this, SLOT(mnuToggleExecPyCodeByDebugger(bool)));
 
-        a = m_actions["python_stopAction"] = new QAction(QIcon(":/script/icons/stopScript.png"), tr("stop"), this);
+        a = m_actions["python_stopAction"] = new QAction(QIcon(":/script/icons/stopScript.png"), tr("Stop"), this);
         a->setShortcut(tr("Shift+F5"));
         a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptStop()));
 
-        a = m_actions["python_continueAction"] = new QAction(QIcon(":/script/icons/continue.png"), tr("continue"), this);
+        a = m_actions["python_continueAction"] = new QAction(QIcon(":/script/icons/continue.png"), tr("Continue"), this);
         a->setShortcut(tr("F6"));
         a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptContinue()));
 
-        m_actions["python_stepAction"] = new QAction(QIcon(":/script/icons/step.png"), tr("step"), this);
+        m_actions["python_stepAction"] = new QAction(QIcon(":/script/icons/step.png"), tr("Step"), this);
         m_actions["python_stepAction"]->setShortcut(tr("F11"));
         m_actions["python_stepAction"]->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         connect(m_actions["python_stepAction"], SIGNAL(triggered()), this, SLOT(mnuScriptStep()));
 
-        a = m_actions["python_stepOverAction"] = new QAction(QIcon(":/script/icons/stepOver.png"), tr("step over"), this);
+        a = m_actions["python_stepOverAction"] = new QAction(QIcon(":/script/icons/stepOver.png"), tr("Step Over"), this);
         a->setShortcut(tr("F10"));
         a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptStepOver()));
 
-        a = m_actions["python_stepOutAction"] = new QAction(QIcon(":/script/icons/stepOut.png"), tr("step out"), this);
+        a = m_actions["python_stepOutAction"] = new QAction(QIcon(":/script/icons/stepOut.png"), tr("Step Out"), this);
         a->setShortcut(tr("Shift+F11"));
         a->setShortcutContext(Qt::WidgetWithChildrenShortcut);
         connect(a, SIGNAL(triggered()), this, SLOT(mnuScriptStepOut()));
 
-        a = m_actions["python_reloadModules"] = new QAction(QIcon(":/application/icons/reload.png"), tr("Reload modules..."), this);
+        a = m_actions["python_reloadModules"] = new QAction(QIcon(":/application/icons/reload.png"), tr("Reload Modules..."), this);
         connect(a, SIGNAL(triggered()), this, SLOT(mnuPyReloadModules()));
 
-        a = m_actions["py_autoReloadEnabled"] = new QAction(tr("autoreload modules"), this);
+        a = m_actions["py_autoReloadEnabled"] = new QAction(tr("Autoreload Modules"), this);
         a->setCheckable(true);
         connect(a, SIGNAL(triggered(bool)), this, SLOT(mnuPyAutoReloadTriggered(bool)));
 
-        a = m_actions["py_autoReloadFile"] = new QAction(tr("autoreload before script execution"), this);
+        a = m_actions["py_autoReloadFile"] = new QAction(tr("Autoreload Before Script Execution"), this);
         a->setCheckable(true);
         connect(a, SIGNAL(triggered(bool)), this, SLOT(mnuPyAutoReloadTriggered(bool)));
 
-        a = m_actions["py_autoReloadCmd"] = new QAction(tr("autoreload before single command"), this);
+        a = m_actions["py_autoReloadCmd"] = new QAction(tr("Autoreload Before Single Command"), this);
         a->setCheckable(true);
         connect(a, SIGNAL(triggered(bool)), this, SLOT(mnuPyAutoReloadTriggered(bool)));
 
-        a = m_actions["py_autoReloadFunc"] = new QAction(tr("autoreload before events and function calls"), this);
+        a = m_actions["py_autoReloadFunc"] = new QAction(tr("Autoreload Before Events And Function Calls"), this);
         a->setCheckable(true);
         connect(a, SIGNAL(triggered(bool)), this, SLOT(mnuPyAutoReloadTriggered(bool)));
 
@@ -729,7 +729,7 @@ void MainWindow::createMenus()
     m_pMenuFile->addAction(m_appFileOpen);
 
     // dynamically created Menu with the last files
-    m_plastFilesMenu = m_pMenuFile->addMenu(QIcon(":/files/icons/filePython.png"), tr("Recently used files"));
+    m_plastFilesMenu = m_pMenuFile->addMenu(QIcon(":/files/icons/filePython.png"), tr("Recently Used Files"));
     connect(this->m_plastFilesMenu, SIGNAL(aboutToShow()), this, SLOT(menuLastFilesAboutToShow()));
     // Add these menus dynamically
 
@@ -758,7 +758,7 @@ void MainWindow::createMenus()
         m_pMenuPython->addAction(m_actions["python_global_runmode"]);
         
 
-        m_pMenuReloadModule = m_pMenuPython->addMenu(QIcon(":/application/icons/reload.png"), tr("Reload modules"));
+        m_pMenuReloadModule = m_pMenuPython->addMenu(QIcon(":/application/icons/reload.png"), tr("Reload Modules"));
         m_pMenuReloadModule->addAction(m_actions["py_autoReloadEnabled"]);
         m_pMenuReloadModule->addSeparator();
         m_pMenuReloadModule->addAction(m_actions["py_autoReloadFile"]);
@@ -813,7 +813,7 @@ void MainWindow::menuLastFilesAboutToShow()
         {
             if (sEO->getRecentlyUsedFiles().isEmpty())
             {
-                QAction *a = m_plastFilesMenu->addAction(tr("no entries"));
+                QAction *a = m_plastFilesMenu->addAction(tr("No Entries"));
                 a->setEnabled(false);
             }
             else
@@ -874,7 +874,7 @@ void MainWindow::mnuViewAboutToShow()
             }
             else
             {
-                a = m_plastFilesMenu->addAction(tr("no opened scripts"));
+                a = m_plastFilesMenu->addAction(tr("No Opened Scripts"));
                 a->setEnabled(false);
                 m_pMenuView->addAction(a);
             }
@@ -938,7 +938,7 @@ void MainWindow::pythonStateChanged(tPythonTransitions pyTransition)
         m_pythonInWaitingMode=false;
         m_pythonDebugMode = false;
         m_pythonBusy = true;
-        statusBar()->showMessage(tr("python is being executed"));
+        statusBar()->showMessage(tr("Python is being executed"));
 
         //disable every userDefined-Action
         foreach(tempToolBar, m_userDefinedToolBars)
@@ -953,7 +953,7 @@ void MainWindow::pythonStateChanged(tPythonTransitions pyTransition)
         m_pythonInWaitingMode=false;
         m_pythonDebugMode = true;
         m_pythonBusy = true;
-        statusBar()->showMessage(tr("python is being executed"));
+        statusBar()->showMessage(tr("Python is being executed"));
 
         //disable every userDefined-Action
         foreach(tempToolBar, m_userDefinedToolBars)
@@ -980,7 +980,7 @@ void MainWindow::pythonStateChanged(tPythonTransitions pyTransition)
         m_pythonBusy = false;
         m_pythonInWaitingMode=false;
 
-        if (statusBar()->currentMessage() == tr("python is being executed"))
+        if (statusBar()->currentMessage() == tr("Python is being executed"))
         {
             statusBar()->clearMessage();
         }
@@ -1055,7 +1055,7 @@ void MainWindow::mnuOpenFile()
 
     QString filter = IOHelper::getFileFilters(IOHelper::IOFilters(IOHelper::IOInput | IOHelper::IOPlugin | IOHelper::IOAllFiles | IOHelper::IOMimeAll));
     static QString selectedFilter; //since this variable is static, it will remember the last set filter.
-    fileName = QFileDialog::getOpenFileName(this, tr("open file"), QDir::currentPath(), filter, &selectedFilter); //tr("python (*.py);;itom data collection (*.idc);;images (*.rpm *.bmp *.png);;matlab (*.mat);;itom files(*.py *.idc *.rpm *.bmp *.png *.mat);;all files (*.*)"));
+    fileName = QFileDialog::getOpenFileName(this, tr("Open File"), QDir::currentPath(), filter, &selectedFilter); //tr("python (*.py);;itom data collection (*.idc);;images (*.rpm *.bmp *.png);;matlab (*.mat);;itom files(*.py *.idc *.rpm *.bmp *.png *.mat);;all files (*.*)"));
 
     QFileInfo info(fileName);
 
@@ -1437,15 +1437,15 @@ ito::RetVal MainWindow::addMenuElement(int typeID, const QString &key, const QSt
     //some sanity checks
     if (keys.size() == 1 && typeID != 2)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("one single menu element must be of type MENU [2]").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("One single menu element must be of type MENU [2]").toLatin1().data());
     }
     else if (keys.size() == 0)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("key must not be empty.").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Key must not be empty.").toLatin1().data());
     }
     else if (typeID < 0 || typeID > 2)
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("invalid menu item type.").toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Invalid menu item type.").toLatin1().data());
     }
     else
     {
@@ -1801,7 +1801,7 @@ void MainWindow::userDefinedActionTriggered(const QString &pythonCode)
     else if (pythonCode == "")
     {
         QMessageBox msgBox;
-        msgBox.setText(tr("there is no python code associated with this action."));
+        msgBox.setText(tr("There is no python code associated with this action."));
         msgBox.exec();
     }
     else

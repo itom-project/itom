@@ -29,8 +29,8 @@
 
 #include "../organizer/scriptEditorOrganizer.h"
 #include "../organizer/processOrganizer.h"
-#include "../organizer/addInManager.h"
-#include "../organizer/algoInterfaceValidator.h"
+#include "../../AddInManager/addInManager.h"
+#include "../../AddInManager/algoInterfaceValidator.h"
 
 #include "../ui/dialogOpenFileWithFilter.h"
 #include "../ui/dialogSaveFileWithFilter.h"
@@ -105,7 +105,7 @@ QString IOHelper::allItomFilesName = QObject::tr("Itom Files");
 
     if (!file.exists())
     {
-        retval += RetVal(retError, 1001, tr("file %1 does not exist").arg(generalFileName).toLatin1().data());
+        retval += RetVal(retError, 1001, tr("File %1 does not exist").arg(generalFileName).toLatin1().data());
         goto end;
     }
     else
@@ -189,7 +189,7 @@ QString IOHelper::allItomFilesName = QObject::tr("Itom Files");
         }
         else
         {
-            retval += RetVal(retError, 1002, tr("file %1 can not be opened with this application").arg(generalFileName).toLatin1().data());
+            retval += RetVal(retError, 1002, tr("File %1 can not be opened with this application").arg(generalFileName).toLatin1().data());
             goto end;
         }
     }
@@ -206,7 +206,7 @@ end:
                 msgBox.setText(errStr);
             }
             else
-                msgBox.setText("unknown error opening file");
+                msgBox.setText("Unknown error opening file");
             msgBox.exec();
         }
     }
@@ -304,12 +304,12 @@ end:
             PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
             if (eng == NULL)
             {
-                return RetVal(retError, 1, tr("python engine not available").toLatin1().data());
+                return RetVal(retError, 1, tr("Python engine not available").toLatin1().data());
             }
 
             if (eng->isPythonBusy() && !eng->isPythonDebuggingAndWaiting())
             {
-                return RetVal(retError, 2, tr("variables cannot be exported since python is busy right now").toLatin1().data());
+                return RetVal(retError, 2, tr("Variables cannot be exported since python is busy right now").toLatin1().data());
             }
 
             QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
@@ -319,7 +319,7 @@ end:
             QMetaObject::invokeMethod(eng, "getParamsFromWorkspace",Q_ARG(bool,globalNotLocal), Q_ARG(QStringList, varNames), Q_ARG(QVector<int>, compatibleParamBaseTypes), Q_ARG(QSharedPointer<SharedParamBasePointerVector>, values), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
             if (!locker.getSemaphore()->wait(5000))
             {
-                retVal += RetVal(retError, 0, tr("timeout while getting value from workspace").toLatin1().data());
+                retVal += RetVal(retError, 0, tr("Timeout while getting value from workspace").toLatin1().data());
             }
             else
             {
@@ -328,7 +328,7 @@ end:
             
             if (values->size() != varNames.size())
             {
-                retVal += RetVal(retError, 0, tr("the number of values returned from workspace does not correspond to requested number").toLatin1().data());
+                retVal += RetVal(retError, 0, tr("The number of values returned from workspace does not correspond to requested number").toLatin1().data());
             }
             QApplication::restoreOverrideCursor();
 
@@ -365,19 +365,19 @@ end:
 
     if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
     {
-        return RetVal(retError, 3, tr("file cannot be opened").toLatin1().data());
+        return RetVal(retError, 3, tr("File cannot be opened").toLatin1().data());
     }
     file.close();
 
     PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (eng == NULL)
     {
-        return RetVal(retError, 1, tr("python engine not available").toLatin1().data());
+        return RetVal(retError, 1, tr("Python engine not available").toLatin1().data());
     }
 
     if (eng->isPythonBusy() && !eng->isPythonDebuggingAndWaiting())
     {
-        return RetVal(retError, 2, tr("variables cannot be exported since python is busy right now").toLatin1().data());
+        return RetVal(retError, 2, tr("Variables cannot be exported since python is busy right now").toLatin1().data());
     }
 
     QFileInfo info(file);
@@ -396,7 +396,7 @@ end:
 
         if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
         {
-            retValue += RetVal(retError, 2, tr("timeout while pickling variables").toLatin1().data());
+            retValue += RetVal(retError, 2, tr("Timeout while pickling variables").toLatin1().data());
         }
         else
         {
@@ -418,7 +418,7 @@ end:
 
         if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
         {
-            retValue += RetVal(retError, 2, tr("timeout while saving variables to matlab file").toLatin1().data());
+            retValue += RetVal(retError, 2, tr("Timeout while saving variables to matlab file").toLatin1().data());
         }
         else
         {
@@ -429,7 +429,7 @@ end:
     }
     else
     {
-        retValue += RetVal(retError, 0, tr("suffix must be *.idc or *.mat").toLatin1().data());
+        retValue += RetVal(retError, 0, tr("Suffix must be *.idc or *.mat").toLatin1().data());
     }
 
     return retValue;
@@ -485,7 +485,7 @@ end:
         }
         else
         {
-            return RetVal(retError, 1, tr("file not found").toLatin1().data());
+            return RetVal(retError, 1, tr("File not found").toLatin1().data());
         }
     }
 }
@@ -510,14 +510,14 @@ end:
 
     if (!file.open(QIODevice::ReadOnly))
     {
-        return RetVal(retError, 3, tr("file cannot be opened").toLatin1().data());
+        return RetVal(retError, 3, tr("File cannot be opened").toLatin1().data());
     }
     file.close();
 
     PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     if (eng == NULL)
     {
-        return RetVal(retError, 1, tr("python engine not available").toLatin1().data());
+        return RetVal(retError, 1, tr("Python engine not available").toLatin1().data());
     }
 
     if (eng->isPythonBusy() && !eng->isPythonDebuggingAndWaiting())
@@ -528,7 +528,7 @@ end:
         QApplication::processEvents(QEventLoop::ExcludeSocketNotifiers);
         if (eng->isPythonBusy() && !eng->isPythonDebuggingAndWaiting())
         {
-            return RetVal(retError, 2, tr("variables cannot be imported since python is busy right now").toLatin1().data());
+            return RetVal(retError, 2, tr("Variables cannot be imported since python is busy right now").toLatin1().data());
         }
     }
 
@@ -544,11 +544,13 @@ end:
     if (!unpackDict)
     {
         QRegExp regExp("^[a-zA-Z][a-zA-Z0-9_]*$");
-        QString defaultName = info.baseName();
+        QString defaultName = info.completeBaseName();
         if (regExp.indexIn(defaultName) == -1)
         {
-            defaultName.prepend("var");
+            //defaultName.prepend("var");
             defaultName.replace("-", "_");
+			defaultName.replace(".", "_");
+			defaultName.replace(" ", "_");
             if (regExp.indexIn(defaultName) == -1)
             {
                 defaultName = "varName";
@@ -556,7 +558,7 @@ end:
         }
 
         bool ok = true;
-        packedVarname = QInputDialog::getText(NULL, tr("variable name of imported dictionary"), tr("Please indicate a variable name for the dictionary in file '%1' \n(name must start with a letter followed by numbers or letters).").arg(info.fileName()), QLineEdit::Normal, defaultName, &ok);
+        packedVarname = QInputDialog::getText(NULL, tr("Variable name of imported dictionary"), tr("Please indicate a variable name for the dictionary in file '%1' \n(name must start with a letter followed by numbers or letters).").arg(info.fileName()), QLineEdit::Normal, defaultName, &ok);
         if (!ok)
         {
             return ito::retOk;
@@ -564,7 +566,7 @@ end:
 
         if (regExp.indexIn(packedVarname) == -1)
         {
-            return RetVal(retError, 0, tr("invalid variable name").toLatin1().data());
+            return RetVal(retError, 0, tr("Invalid variable name").toLatin1().data());
         }
     }
 
@@ -580,7 +582,7 @@ end:
         QMetaObject::invokeMethod(eng, "unpickleVariables", Q_ARG(bool,globalNotLocal), Q_ARG(QString,filename), Q_ARG(QString,packedVarname), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
         if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
         {
-            retValue += RetVal(retError, 2, tr("timeout while unpickling variables").toLatin1().data());
+            retValue += RetVal(retError, 2, tr("Timeout while unpickling variables").toLatin1().data());
         }
         else
         {
@@ -602,7 +604,7 @@ end:
         
         if (!locker.getSemaphore()->wait(AppManagement::timeouts.pluginFileSaveLoad))
         {
-            retValue += RetVal(retError, 2, tr("timeout while loading matlab variables").toLatin1().data());
+            retValue += RetVal(retError, 2, tr("Timeout while loading matlab variables").toLatin1().data());
         }
         else
         {
@@ -613,7 +615,7 @@ end:
     }
     else
     {
-        retValue += RetVal(retError, 0, tr("suffix must be *.idc or *.mat").toLatin1().data());
+        retValue += RetVal(retError, 0, tr("Suffix must be *.idc or *.mat").toLatin1().data());
     }
 
     return retValue;
@@ -650,7 +652,7 @@ end:
             QMetaObject::invokeMethod(seo,"openScript",Q_ARG(QString, filename),Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
             if (!locker.getSemaphore()->wait(20000))
             {
-                retValue += RetVal(retError, 2, tr("timeout while opening script").toLatin1().data());
+                retValue += RetVal(retError, 2, tr("Timeout while opening script").toLatin1().data());
             }
             QApplication::restoreOverrideCursor();
 
@@ -1063,7 +1065,7 @@ end:
                     autoMand[1].setVal<char*>(filename.toLatin1().data());
                     break;
                 default:
-                    retval += ito::RetVal(retError, 0, tr("algorithm interface not supported").toLatin1().data());
+                    retval += ito::RetVal(retError, 0, tr("Algorithm interface not supported").toLatin1().data());
                 }
 
                 if (!retval.containsError())
@@ -1103,7 +1105,7 @@ end:
             }
             else
             {
-                retval += RetVal(retError, 0, tr("error while getting mand and out parameters from algorithm interface").toLatin1().data());
+                retval += RetVal(retError, 0, tr("Error while getting mand and out parameters from algorithm interface").toLatin1().data());
             }
         }
         else
@@ -1134,7 +1136,7 @@ end:
 
     if (IOfilters.testFlag(ito::IOHelper::IOWorkspace) == false)
     {
-        filter << tr("Python Scripts (*.py)") << tr("Itom Data Collection (*.idc)") << tr("Matlab Matrix (*.mat)") << tr("User Interfaces (*.ui)");
+        filter << tr("Python Scripts (*.py)") << tr("itom Data Collection (*.idc)") << tr("Matlab Matrix (*.mat)") << tr("User Interfaces (*.ui)");
     }
     else
     {

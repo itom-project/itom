@@ -17,7 +17,7 @@
    <item>
     <widget class="QGroupBox" name="groupLastCommand">
      <property name="title">
-      <string>command history enabled (set disable to clear the history!)</string>
+      <string>Command history enabled (set disable to clear the history!)</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
@@ -28,7 +28,7 @@
         <item>
          <widget class="QLabel" name="label">
           <property name="text">
-           <string>number of saving commands</string>
+           <string>Number of saving commands</string>
           </property>
          </widget>
         </item>
@@ -63,7 +63,7 @@
       <item>
        <widget class="QCheckBox" name="checkHideDoubleCommand">
         <property name="text">
-         <string>do not add if the new command is equal to the last one</string>
+         <string>Do not add if the new command is equal to the last one</string>
         </property>
        </widget>
       </item>
@@ -72,7 +72,7 @@
         <item>
          <widget class="QLabel" name="label_2">
           <property name="text">
-           <string>date color</string>
+           <string>Date color</string>
           </property>
          </widget>
         </item>

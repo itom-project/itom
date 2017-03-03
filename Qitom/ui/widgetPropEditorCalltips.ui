@@ -17,7 +17,7 @@
    <item>
     <widget class="QGroupBox" name="groupCallTips">
      <property name="title">
-      <string>calltips enabled</string>
+      <string>Calltips enabled</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
@@ -28,7 +28,7 @@
         <item>
          <widget class="QLabel" name="label">
           <property name="text">
-           <string>number of calltips</string>
+           <string>Number of calltips</string>
           </property>
          </widget>
         </item>

@@ -21,12 +21,31 @@
 *********************************************************************** */
 
 #include "algoInterfaceValidator.h"
-//#include "addInManager.h"
-#include "../global.h"
-#include <qregexp.h>
+#include "paramHelper.h"
+
+#include <qmap.h>
 
 namespace ito
 {
+    class AlgoInterfaceValidatorPrivate
+    {
+    public:
+        AlgoInterfaceValidatorPrivate() {};
+        ~AlgoInterfaceValidatorPrivate() {};
+
+        struct AlgoInterface
+        {
+            AlgoInterface() : maxNumMand(0), maxNumOpt(0), maxNumOut(0) {}
+            QVector<ito::Param> mandParams;
+            QVector<ito::Param> outParams;
+            int maxNumMand;
+            int maxNumOpt;
+            int maxNumOut;
+        };
+
+        QMap<int, AlgoInterface> m_interfaces;
+    };
+
     //----------------------------------------------------------------------------------------------------------------------------------
     /*!
         \class AlgoInterfaceValidator
@@ -47,7 +66,7 @@ namespace ito
         in the enumeration tAlgoInterface
         \sa AddInAlgo::tAlgoInterface
     */
-    AlgoInterfaceValidator::AlgoInterfaceValidator(ito::RetVal &retValue) : QObject()
+    AlgoInterfaceValidator::AlgoInterfaceValidator(ito::RetVal &retValue) : QObject(), d_ptr(new AlgoInterfaceValidatorPrivate())
     {
         retValue += init();
     }
@@ -56,15 +75,17 @@ namespace ito
     //! destructor
     AlgoInterfaceValidator::~AlgoInterfaceValidator()
     {
-        m_interfaces.clear();
+        Q_D(AlgoInterfaceValidator);
+        d->m_interfaces.clear();
     }
 
 
     //----------------------------------------------------------------------------------------------------------------------------------
     ito::RetVal AlgoInterfaceValidator::getInterfaceParameters(ito::AddInAlgo::tAlgoInterface iface, QVector<ito::ParamBase> &mandParams, QVector<ito::ParamBase> &outParams) const
     {
-        QMap<int,AlgoInterface>::const_iterator it = m_interfaces.constFind( (int)iface );
-        if(it != m_interfaces.constEnd())
+        Q_D(const AlgoInterfaceValidator);
+        QMap<int, AlgoInterfaceValidatorPrivate::AlgoInterface>::const_iterator it = d->m_interfaces.constFind((int)iface);
+        if(it != d->m_interfaces.constEnd())
         {
             mandParams.clear();
             outParams.clear();
@@ -243,16 +264,17 @@ namespace ito
     */
     ito::RetVal AlgoInterfaceValidator::addInterface(ito::AddInAlgo::tAlgoInterface iface, QVector<ito::Param> &mandParams, QVector<ito::Param> &outParams, int maxNumMand, int maxNumOpt, int maxNumOut)
     {
-        QMap<int,AlgoInterface>::const_iterator it = m_interfaces.constFind( (int)iface );
-        if(it == m_interfaces.constEnd())
+        Q_D(AlgoInterfaceValidator);
+        QMap<int, AlgoInterfaceValidatorPrivate::AlgoInterface>::const_iterator it = d->m_interfaces.constFind((int)iface);
+        if(it == d->m_interfaces.constEnd())
         {
-            AlgoInterface ai;
+            AlgoInterfaceValidatorPrivate::AlgoInterface ai;
             ai.mandParams = mandParams;
             ai.outParams = outParams;
             ai.maxNumMand = maxNumMand;
             ai.maxNumOpt = maxNumOpt;
             ai.maxNumOut = maxNumOut;
-            m_interfaces[ (int)iface ] = ai;
+            d->m_interfaces[ (int)iface ] = ai;
         }
         else
         {
@@ -337,9 +359,11 @@ namespace ito
     {
         if(iface == ito::AddInAlgo::iNotSpecified) return true;
 
+        Q_D(const AlgoInterfaceValidator);
+
         int iface2 = (int)iface;
-        QMap<int,AlgoInterface>::const_iterator it = m_interfaces.constFind(iface2);
-        if(it != m_interfaces.constEnd())
+        QMap<int, AlgoInterfaceValidatorPrivate::AlgoInterface>::const_iterator it = d->m_interfaces.constFind(iface2);
+        if(it != d->m_interfaces.constEnd())
         {
             QVector<ito::Param> paramsMand;
             QVector<ito::Param> paramsOpt;

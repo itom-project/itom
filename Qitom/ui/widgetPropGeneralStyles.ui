@@ -23,7 +23,7 @@
       <item>
        <widget class="QRadioButton" name="radioNoStyle">
         <property name="text">
-         <string>no stylesheet</string>
+         <string>No stylesheet</string>
         </property>
         <property name="checked">
          <bool>true</bool>

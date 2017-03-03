@@ -31,6 +31,7 @@
 
 #include <qvariant.h>
 #include <qpointer.h>
+#include <qsharedpointer.h>
 
 namespace ito 
 {
@@ -57,6 +58,11 @@ namespace ito
             static ito::RetVal mgetPluginWidget(char* algoWidgetFunc, QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, QPointer<QWidget> *widget);
             static ito::RetVal mgetFigureUIDByHandle(QObject *figure, ito::uint32 &figureUID);
             static ito::RetVal mgetPlotHandleByID(const ito::uint32 &figureUID, ito::ItomPlotHandle &plotHandle);
+
+            //! function called by apiSendParamToPyWorkspace
+            static ito::RetVal sendParamToPyWorkspaceThreadSafe(const QString &varname, const QSharedPointer<ito::ParamBase> &value);
+            //! function called by apiSendParamsToPyWorkspace
+            static ito::RetVal sendParamsToPyWorkspaceThreadSafe(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values);
 
         private:
     };

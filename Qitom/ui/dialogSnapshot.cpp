@@ -27,6 +27,7 @@
 #include "../organizer/designerWidgetOrganizer.h"
 #include "../common/pluginThreadCtrl.h"
 #include "../common/addInInterface.h"
+#include "../AddInManager/algoInterfaceValidator.h"
 #include "../ui/dialogSaveFileWithFilter.h"
 
 #include <qmessagebox.h>

@@ -30,7 +30,8 @@
 #include <qdialog.h>
 #include <qvector.h>
 
-#include "../organizer/addInManager.h"
+#include "../../AddInManager/addInManager.h"
+#include "../../AddInManager/pluginModel.h"
 #include <qsortfilterproxymodel.h>
 
 #include "ui_dialogPluginPicker.h"
