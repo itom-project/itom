@@ -174,7 +174,7 @@ void ParamIntWidget::setParam(const ito::Param &param, bool forceValueChanged /*
         if (valChanged || metaChanged)
         {
             bool check = (metaNew->getRepresentation() == ito::ParamMeta::Boolean) || \
-                         (metaNew->getMin() == 0 && metaNew->getMax() && metaNew->getStepSize() == 1);
+                         (metaNew->getMin() == 0 && metaNew->getMax() == 1 && metaNew->getStepSize() == 1);
             bool slider = (metaNew->getRepresentation() == ito::ParamMeta::Linear)  || \
                          (metaNew->getRepresentation() == ito::ParamMeta::Logarithmic);
 

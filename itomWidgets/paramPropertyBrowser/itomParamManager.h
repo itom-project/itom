@@ -40,6 +40,9 @@ namespace ito
 
 class AbstractParamPropertyManagerPrivate;
 
+/*
+Abstract base class for all property managers that are responsible for ito::Param values.
+*/
 class ITOMWIDGETS_EXPORT AbstractParamPropertyManager : public QtAbstractPropertyManager
 {
     Q_OBJECT
@@ -52,12 +55,12 @@ public:
 
 public Q_SLOTS:
     virtual void setParam(QtProperty *property, const ito::Param &param) = 0;
-    virtual void setValue(QtProperty *property, int value) = 0;
+    //virtual void setValue(QtProperty *property, int value) = 0;
 
 protected:
     virtual QString valueText(const QtProperty *property) const;
     virtual QIcon valueIcon(const QtProperty *property) const;
-    virtual void initializeProperty(QtProperty *property);
+    virtual void initializeProperty(QtProperty *property) = 0;
     virtual void uninitializeProperty(QtProperty *property);
 
     AbstractParamPropertyManagerPrivate *d_ptr;
@@ -68,7 +71,9 @@ private:
 };
 
 
-
+/*
+Property Manager for parameters of type ito::ParamBase::Int
+*/
 class ITOMWIDGETS_EXPORT ParamIntPropertyManager : public AbstractParamPropertyManager
 {
     Q_OBJECT
@@ -79,6 +84,7 @@ public:
 protected:
     QString valueText(const QtProperty *property) const;
     QIcon valueIcon(const QtProperty *property) const;
+    void initializeProperty(QtProperty *property);
 
 Q_SIGNALS:
     void valueChanged(QtProperty *property, int val);
@@ -90,6 +96,33 @@ public Q_SLOTS:
 
 private:
     Q_DISABLE_COPY(ParamIntPropertyManager)
+};
+
+
+/*
+Property Manager for parameters of type ito::ParamBase::String
+*/
+class ITOMWIDGETS_EXPORT ParamStringPropertyManager : public AbstractParamPropertyManager
+{
+    Q_OBJECT
+public:
+    ParamStringPropertyManager(QObject *parent = 0);
+    ~ParamStringPropertyManager();
+
+protected:
+    QString valueText(const QtProperty *property) const;
+    void initializeProperty(QtProperty *property);
+
+Q_SIGNALS:
+    void valueChanged(QtProperty *property, const QByteArray &value);
+    void metaChanged(QtProperty *property, ito::StringMeta meta);
+
+public Q_SLOTS:
+    void setParam(QtProperty *property, const ito::Param &param);
+    void setValue(QtProperty *property, const QByteArray &value);
+
+private:
+    Q_DISABLE_COPY(ParamStringPropertyManager)
 };
 
 } //end namespace ito

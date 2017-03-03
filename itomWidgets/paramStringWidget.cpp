@@ -31,6 +31,7 @@
 #include <qcombobox.h>
 #include <qlineedit.h>
 #include <qlayout.h>
+#include <QRegExpValidator>
 
 namespace ito
 {
@@ -114,19 +115,33 @@ void ParamStringWidget::setParam(const ito::Param &param, bool forceValueChanged
 
         if (valChanged || metaChanged)
         {
-            bool lineedit = (metaNew->getLen() == 0);
+            bool lineedit = metaNew->getStringType() != ito::StringMeta::String || (metaNew->getLen() <= 0);
 
-            if (metaChanged)
-            {
-                d->m_pLineEdit->setVisible(lineedit);
-                d->m_pComboBox->setVisible(!lineedit);
-            }
+            d->m_pLineEdit->setVisible(lineedit);
+            d->m_pComboBox->setVisible(!lineedit);
 
             if (lineedit)
             {
                 if (metaChanged)
                 {
-                    //todo
+                    switch (metaNew->getStringType())
+                    {
+                    case ito::StringMeta::String:
+                        d->m_pLineEdit->setValidator(NULL);
+                        break;
+                    case ito::StringMeta::Wildcard:
+                        {
+                            QRegExp regexp(QLatin1String(metaNew->getString(0)), Qt::CaseSensitive, QRegExp::Wildcard);
+                            d->m_pLineEdit->setValidator(new QRegExpValidator(regexp, d->m_pLineEdit));
+                            break;
+                        }
+                    case ito::StringMeta::RegExp:
+                        {
+                        QRegExp regexp(QLatin1String(metaNew->getString(0)), Qt::CaseSensitive, QRegExp::RegExp);
+                        d->m_pLineEdit->setValidator(new QRegExpValidator(regexp, d->m_pLineEdit));
+                        break;
+                        }
+                    }
                 }
                 
                 if (valChanged)
@@ -140,7 +155,11 @@ void ParamStringWidget::setParam(const ito::Param &param, bool forceValueChanged
             {
                 if (metaChanged)
                 {
-                    //todo
+                    d->m_pComboBox->clear();
+                    for (int i = 0; i < metaNew->getLen(); ++i)
+                    {
+                        d->m_pComboBox->addItem(metaNew->getString(i));
+                    }
                 }
 
                 if (valChanged)

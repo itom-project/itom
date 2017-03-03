@@ -83,6 +83,7 @@ protected:
 
     ito::RetVal addParam(const ito::Param &param);
     ito::RetVal addParamInt(const ito::Param &param, QtProperty *groupProperty);
+    ito::RetVal addParamString(const ito::Param &param, QtProperty *groupProperty);
 
 protected:
     void timerEvent(QTimerEvent *event);
@@ -95,7 +96,7 @@ private:
 
 private slots:
     void valueChanged(QtProperty* prop, int value);
-    void valueChanged(QtProperty* prop, bool value);
+    void valueChanged(QtProperty* prop, const QByteArray &value);
 
     void parametersChanged(QMap<QString, ito::Param> parameters);
 

@@ -32,6 +32,7 @@
 #include "common/param.h"
 
 #include "paramIntWidget.h"
+#include "paramStringWidget.h"
 
 #if defined(Q_CC_MSVC)
 #    pragma warning(disable: 4786) /* MS VS 6: truncating debug info after 255 characters */
@@ -147,7 +148,7 @@ void ParamIntPropertyFactoryPrivate::slotSetValue(int value)
     for (QMap<ito::ParamIntWidget *, QtProperty *>::ConstIterator itEditor = m_editorToProperty.constBegin(); itEditor != ecend; ++itEditor ) {
         if (itEditor.key() == object) {
             QtProperty *property = itEditor.value();
-            AbstractParamPropertyManager *manager = q_ptr->propertyManager(property);
+            ParamIntPropertyManager *manager = q_ptr->propertyManager(property);
             if (!manager)
                 return;
             manager->setValue(property, value);
@@ -228,6 +229,144 @@ void ParamIntPropertyFactory::disconnectPropertyManager(ParamIntPropertyManager 
                 this, SLOT(slotPropertyChanged(QtProperty *, int)));
     disconnect(manager, SIGNAL(metaChanged(QtProperty *, ito::IntMeta)),
                 this, SLOT(slotMetaChanged(QtProperty *, ito::IntMeta)));
+}
+
+
+
+
+
+// ------------ ParamStringPropertyFactory
+class ParamStringPropertyFactoryPrivate : ItomEditorFactoryPrivate<ito::ParamStringWidget>
+{
+    ParamStringPropertyFactory *q_ptr;
+    Q_DECLARE_PUBLIC(ParamStringPropertyFactory)
+public:
+    void slotPropertyChanged(QtProperty *property, const QByteArray &value);
+    void slotMetaChanged(QtProperty *property, const ito::StringMeta &meta);
+    void slotSetValue(const QByteArray &value);
+};
+
+void ParamStringPropertyFactoryPrivate::slotPropertyChanged(QtProperty *property, const QByteArray &value)
+{
+    if (!m_createdEditors.contains(property))
+        return;
+    QListIterator<ito::ParamStringWidget *> itEditor(m_createdEditors[property]);
+    while (itEditor.hasNext()) {
+        ito::ParamStringWidget *editor = itEditor.next();
+        if (editor->value() != value) {
+            editor->blockSignals(true);
+            editor->setValue(value);
+            editor->blockSignals(false);
+        }
+    }
+}
+
+void ParamStringPropertyFactoryPrivate::slotMetaChanged(QtProperty *property, const ito::StringMeta &meta)
+{
+    if (!m_createdEditors.contains(property))
+        return;
+
+    ParamStringPropertyManager *manager = q_ptr->propertyManager(property);
+    if (!manager)
+        return;
+
+    QListIterator<ito::ParamStringWidget *> itEditor(m_createdEditors[property]);
+    while (itEditor.hasNext()) {
+        ito::ParamStringWidget *editor = itEditor.next();
+        editor->blockSignals(true);
+        editor->setMeta(meta);
+        editor->setValue(QByteArray(manager->paramBase(property).getVal<const char*>()));
+        editor->blockSignals(false);
+    }
+}
+
+void ParamStringPropertyFactoryPrivate::slotSetValue(const QByteArray &value)
+{
+    QObject *object = q_ptr->sender();
+    const QMap<ito::ParamStringWidget *, QtProperty *>::ConstIterator ecend = m_editorToProperty.constEnd();
+    for (QMap<ito::ParamStringWidget *, QtProperty *>::ConstIterator itEditor = m_editorToProperty.constBegin(); itEditor != ecend; ++itEditor) {
+        if (itEditor.key() == object) {
+            QtProperty *property = itEditor.value();
+            ParamStringPropertyManager *manager = q_ptr->propertyManager(property);
+            if (!manager)
+                return;
+            manager->setValue(property, value);
+            return;
+        }
+    }
+}
+
+/*!
+\class QtSpinBoxFactory
+
+\brief The QtSpinBoxFactory class provides QSpinBox widgets for
+properties created by QtIntPropertyManager objects.
+
+\sa QtAbstractEditorFactory, QtIntPropertyManager
+*/
+
+/*!
+Creates a factory with the given \a parent.
+*/
+ParamStringPropertyFactory::ParamStringPropertyFactory(QObject *parent)
+    : QtAbstractEditorFactory<ParamStringPropertyManager>(parent)
+{
+    d_ptr = new ParamStringPropertyFactoryPrivate();
+    d_ptr->q_ptr = this;
+
+}
+
+/*!
+Destroys this factory, and all the widgets it has created.
+*/
+ParamStringPropertyFactory::~ParamStringPropertyFactory()
+{
+    qDeleteAll(d_ptr->m_editorToProperty.keys());
+    delete d_ptr;
+}
+
+/*!
+\internal
+
+Reimplemented from the QtAbstractEditorFactory class.
+*/
+void ParamStringPropertyFactory::connectPropertyManager(ParamStringPropertyManager *manager)
+{
+    connect(manager, SIGNAL(valueChanged(QtProperty *, QByteArray)),
+        this, SLOT(slotPropertyChanged(QtProperty *, QByteArray)));
+    connect(manager, SIGNAL(metaChanged(QtProperty *, ito::StringMeta)),
+        this, SLOT(slotMetaChanged(QtProperty *, ito::StringMeta)));
+}
+
+/*!
+\internal
+
+Reimplemented from the QtAbstractEditorFactory class.
+*/
+QWidget *ParamStringPropertyFactory::createEditor(ParamStringPropertyManager *manager, QtProperty *property,
+    QWidget *parent)
+{
+    ito::ParamStringWidget *editor = d_ptr->createEditor(property, parent);
+    const ito::Param &param = manager->param(property);
+    editor->setParam(param, true);
+
+    connect(editor, SIGNAL(valueChanged(QByteArray)), this, SLOT(slotSetValue(QByteArray)));
+    connect(editor, SIGNAL(destroyed(QObject *)),
+        this, SLOT(slotEditorDestroyed(QObject *)));
+    return editor;
+}
+
+/*!
+\internal
+
+Reimplemented from the QtAbstractEditorFactory class.
+*/
+void ParamStringPropertyFactory::disconnectPropertyManager(ParamStringPropertyManager *manager)
+{
+    disconnect(manager, SIGNAL(valueChanged(QtProperty *, QByteArray)),
+        this, SLOT(slotPropertyChanged(QtProperty *, QByteArray)));
+    disconnect(manager, SIGNAL(metaChanged(QtProperty *, ito::StringMeta)),
+        this, SLOT(slotMetaChanged(QtProperty *, ito::StringMeta)));
 }
 
 } //end namespace ito

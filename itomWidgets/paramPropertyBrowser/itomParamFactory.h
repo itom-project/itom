@@ -46,8 +46,7 @@ public:
     ~ParamIntPropertyFactory();
 protected:
     void connectPropertyManager(ParamIntPropertyManager *manager);
-    QWidget *createEditor(ParamIntPropertyManager *manager, QtProperty *property,
-                QWidget *parent);
+    QWidget *createEditor(ParamIntPropertyManager *manager, QtProperty *property, QWidget *parent);
     void disconnectPropertyManager(ParamIntPropertyManager *manager);
 private:
     ParamIntPropertyFactoryPrivate *d_ptr;
@@ -55,8 +54,30 @@ private:
     Q_DISABLE_COPY(ParamIntPropertyFactory)
     Q_PRIVATE_SLOT(d_func(), void slotPropertyChanged(QtProperty *, int))
     Q_PRIVATE_SLOT(d_func(), void slotMetaChanged(QtProperty *, const ito::IntMeta &))
-    //Q_PRIVATE_SLOT(d_func(), void slotSingleStepChanged(QtProperty *, int))
     Q_PRIVATE_SLOT(d_func(), void slotSetValue(int))
+    Q_PRIVATE_SLOT(d_func(), void slotEditorDestroyed(QObject *))
+};
+
+
+class ParamStringPropertyFactoryPrivate;
+
+class ITOMWIDGETS_EXPORT ParamStringPropertyFactory : public QtAbstractEditorFactory<ParamStringPropertyManager>
+{
+    Q_OBJECT
+public:
+    ParamStringPropertyFactory(QObject *parent = 0);
+    ~ParamStringPropertyFactory();
+protected:
+    void connectPropertyManager(ParamStringPropertyManager *manager);
+    QWidget *createEditor(ParamStringPropertyManager *manager, QtProperty *property, QWidget *parent);
+    void disconnectPropertyManager(ParamStringPropertyManager *manager);
+private:
+    ParamStringPropertyFactoryPrivate *d_ptr;
+    Q_DECLARE_PRIVATE(ParamStringPropertyFactory)
+    Q_DISABLE_COPY(ParamStringPropertyFactory)
+    Q_PRIVATE_SLOT(d_func(), void slotPropertyChanged(QtProperty *, const QByteArray &))
+    Q_PRIVATE_SLOT(d_func(), void slotMetaChanged(QtProperty *, const ito::StringMeta &))
+    Q_PRIVATE_SLOT(d_func(), void slotSetValue(const QByteArray &))
     Q_PRIVATE_SLOT(d_func(), void slotEditorDestroyed(QObject *))
 };
 
