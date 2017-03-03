@@ -6,7 +6,9 @@ import distortion
 close('all')
 
 center = (330, 250) #center point of undistorted grid (x,y)
-pitch = 22 #px
+pitchX = 24 #px
+pitchY = 22 #px
+pitch = (pitchX, pitchY)
 rotation = 0
 cols = 22
 rows = 18
@@ -21,7 +23,7 @@ x0 = distortion.guessInitialParameters(points_d, rows, cols, withDistortion = Fa
 
 coeffs_coarse, opt_coarse_info = distortion.fitGrid(points_d, rows = rows, cols = cols, x0 = x0, withDistortion = False, withRotation = True)
 coeffs_fine, opt_fine_info = distortion.fitGrid(points_d, rows = rows, cols = cols, x0 = coeffs_coarse, withDistortion = True, withRotation = False)
-coeffs_fine2, opt_fine2_info = distortion.fitGrid(points_d, rows = rows, cols = cols, x0 = coeffs_coarse, withDistortion = True, withRotation = True)
+coeffs_fine2, opt_fine2_info = distortion.fitGrid(points_d, rows = rows, cols = cols, x0 = coeffs_fine, withDistortion = True, withRotation = True)
 
 points_corrected = distortion.undistortPointGrid(points_d, rows, cols, coeffs_fine, repr = '3d')
 
@@ -31,10 +33,10 @@ plot(distortion.drawPointGrid(points_corrected, rows, cols), properties={"title"
 plot(distortion.createDistortionMap(coeffs_fine, points_d, rows, cols), properties={"title":"Distortion", \
     "colorBarVisible":True, "colorMap":"falseColor"})
 
-print("coefficients (design): %.2f %.2f %.2f %.3f %.4fe-6 %.4fe-12 %.4fe-18" % (pitch, *center, rotation, k1*1e6, k2*1e12, k3*1e18))
-print("coefficients (coarse): %.2f %.2f %.2f %.3f %.4fe-6 %.4fe-12 %.4fe-18" % (*coeffs_coarse[0:4], 0, \
+print("coefficients (design): %.2f %.2f %.2f %.2f %.3f %.4fe-6 %.4fe-12 %.4fe-18" % (pitchX, pitchY, *center, rotation, k1*1e6, k2*1e12, k3*1e18))
+print("coefficients (coarse): %.2f %.2f %.2f %.2f %.3f %.4fe-6 %.4fe-12 %.4fe-18" % (*coeffs_coarse[0:5], 0, \
       0,0))
-print("coefficients (optim1): %.2f %.2f %.2f %.3f %.4fe-6 %.4fe-12 %.4fe-18" % (*coeffs_fine[0:4], coeffs_fine[4]*1e6, \
-      coeffs_fine[5]*1e12,coeffs_fine[6]*1e18))
-print("coefficients (optim2): %.2f %.2f %.2f %.3f %.4fe-6 %.4fe-12 %.4fe-18" % (*coeffs_fine[0:4], coeffs_fine[4]*1e6, \
-      coeffs_fine[5]*1e12,coeffs_fine[6]*1e18))
+print("coefficients (optim1): %.2f %.2f %.2f %.2f %.3f %.4fe-6 %.4fe-12 %.4fe-18" % (*coeffs_fine[0:5], coeffs_fine[5]*1e6, \
+      coeffs_fine[6]*1e12,coeffs_fine[7]*1e18))
+print("coefficients (optim2): %.2f %.2f %.2f %.2f %.3f %.4fe-6 %.4fe-12 %.4fe-18" % (*coeffs_fine2[0:5], coeffs_fine2[5]*1e6, \
+      coeffs_fine2[6]*1e12,coeffs_fine2[7]*1e18))

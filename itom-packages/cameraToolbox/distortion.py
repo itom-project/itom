@@ -15,14 +15,14 @@ def getPointGrid(shape, pitch, center, rotation=0, repr = '2d'):
     of each point respectively.
     
     * shape = (num_rows, num_cols)
-    * pitch = pixels between each point in one row or column
+    * pitch = pixels between each point in one row or column (pitchX, pitchY)
     * center = (centerX, centerY)
     * rotation = possible rotation of grid in degree
     * repr = '2d' or '3d'. See return above.
     '''
     xSpots, ySpots = np.meshgrid(
-             (np.arange(shape[1]) - (shape[1]-1)/2.)*pitch, 
-             (np.arange(shape[0]) - (shape[0]-1)/2.)*pitch)
+             (np.arange(shape[1]) - (shape[1]-1)/2.)*pitch[1], 
+             (np.arange(shape[0]) - (shape[0]-1)/2.)*pitch[0])
     theta = rotation/180.*np.pi
     xSpots = xSpots * np.cos(theta) - ySpots * np.sin(theta) + center[0]
     ySpots = xSpots * np.sin(theta) + ySpots * np.cos(theta) + center[1]
@@ -57,8 +57,8 @@ def getPointGridDistorted(shape, pitch, center, rotation=0, k1 = 0, k2 = 0, k3 =
     * repr = '2d' or '3d'. See return above.
     '''
     xSpots, ySpots = np.meshgrid(
-             (np.arange(shape[1]) - (shape[1]-1)/2.)*pitch, 
-             (np.arange(shape[0]) - (shape[0]-1)/2.)*pitch)
+             (np.arange(shape[1]) - (shape[1]-1)/2.)*pitch[1], 
+             (np.arange(shape[0]) - (shape[0]-1)/2.)*pitch[0])
     theta = rotation/180.*np.pi
     xTemp = xSpots*np.cos(theta) - ySpots*np.sin(theta)
     yTemp = xSpots*np.sin(theta) + ySpots*np.cos(theta)
@@ -83,14 +83,14 @@ def getPointGridRotated(shape, pitch, center, rotation=0, repr = '2d'):
     of each point respectively.
     
     * shape = (num_rows, num_cols)
-    * pitch = pixels between each point in one row or column
+    * pitch = pixels between each point in one row or column (pitchX, pitchY)
     * center = (centerX, centerY)
     * rotation = possible rotation of grid in degree
     * repr = '2d' or '3d'. See return above.
     '''
     xSpots, ySpots = np.meshgrid(
-             (np.arange(shape[1]) - (shape[1]-1)/2.)*pitch, 
-             (np.arange(shape[0]) - (shape[0]-1)/2.)*pitch)
+             (np.arange(shape[1]) - (shape[1]-1)/2.)*pitch[1], 
+             (np.arange(shape[0]) - (shape[0]-1)/2.)*pitch[0])
     theta = rotation/180.*np.pi
     xTemp = xSpots*np.cos(theta) - ySpots*np.sin(theta)
     yTemp = xSpots*np.sin(theta) + ySpots*np.cos(theta)
@@ -125,12 +125,12 @@ def undistortPointGrid(pointsDistorted, rows, cols, coeffs, repr = '2d'):
     an iterative approach where the radius is estimated based on the
     distorted coordinates and then approaches the real value (see OpenCV:: cvUndistortPoints)
     '''
-    if len(coeffs) == 4 or len(coeffs) == 3:
+    if len(coeffs) == 5 or len(coeffs) == 4:
         return points
-    elif len(coeffs) != 7:
-        raise ValueError("coeffs must have 3 or 4 (no distortion) or 7 (distortion) components")
+    elif len(coeffs) != 8:
+        raise ValueError("coeffs must have 4 or 5 (no distortion) or 8 (distortion) components")
     
-    pitch, centerX, centerY, rotation, k1, k2, k3 = coeffs
+    pitchX, pitchY, centerX, centerY, rotation, k1, k2, k3 = coeffs
     
     if pointsDistorted.ndim == 3:
         x_d = np.array(pointsDistorted[:,:,0]).reshape([rows*cols])
@@ -231,11 +231,11 @@ def createDistortionMap(coeffs, points, rows, cols):
     height = maxH - minH
     
     [X,Y] = np.meshgrid(range(minW, maxW+1), range(minH, maxH-1))
-    X = X.astype('float64') - coeffs[1]
-    Y = Y.astype('float64') - coeffs[2]
+    X = X.astype('float64') - coeffs[2]
+    Y = Y.astype('float64') - coeffs[3]
     radius2 = X*X + Y*Y
-    distortionMap = dataObject(coeffs[4] * radius2 + \
-                   coeffs[5] * radius2 * radius2 + coeffs[6] * radius2 * radius2 * radius2) * 100.0
+    distortionMap = dataObject(coeffs[5] * radius2 + \
+                   coeffs[6] * radius2 * radius2 + coeffs[7] * radius2 * radius2 * radius2) * 100.0
     distortionMap.valueDescription = "Distortion"
     distortionMap.valueUnit = "%"
     distortionMap.axisOffsets = (-minH, -minW)
@@ -259,8 +259,8 @@ def meritFitGrid(params, xe, ye):
     
     This implementation does not consider any distortion, but the rotation.
     '''
-    pitch, centerX, centerY, rotation = params
-    xy_grid = getPointGrid(xe.shape, pitch, [centerX, centerY], rotation, '3d')
+    pitchX, pitchY, centerX, centerY, rotation = params
+    xy_grid = getPointGrid(xe.shape, [pitchX, pitchY], [centerX, centerY], rotation, '3d')
     dist = getMeanDistance(xy_grid[:,:,0], xy_grid[:,:,1], xe, ye)
     #print(params, dist)
     return dist
@@ -273,8 +273,8 @@ def meritFitGridDistortion(params, xe, ye):
     
     This implementation considers shift, scaling and distortion (no rotation).
     '''
-    pitch, centerX, centerY, k1, k2, k3 = params
-    xy_grid = getPointGridDistorted(xe.shape, pitch, [centerX, centerY], 0, k1, k2, k3, '3d')
+    pitchX, pitchY, centerX, centerY, k1, k2, k3 = params
+    xy_grid = getPointGridDistorted(xe.shape, [pitchX, pitchY], [centerX, centerY], 0, k1, k2, k3, '3d')
     dist = getMeanDistance(xy_grid[:,:,0], xy_grid[:,:,1], xe, ye)
     #print(params, dist)
     return dist
@@ -287,8 +287,8 @@ def meritFitGridDistortionRotation(params, xe, ye):
     
     This implementation considers shift, scaling, rotation and distortion.
     '''
-    pitch, centerX, centerY, rotation, k1, k2, k3 = params
-    xy_grid = getPointGridDistorted(xe.shape, pitch, [centerX, centerY], rotation, k1, k2, k3, '3d')
+    pitchX, pitchY, centerX, centerY, rotation, k1, k2, k3 = params
+    xy_grid = getPointGridDistorted(xe.shape, [pitchX, pitchY], [centerX, centerY], rotation, k1, k2, k3, '3d')
     dist = getMeanDistance(xy_grid[:,:,0], xy_grid[:,:,1], xe, ye)
     #print(params, dist)
     return dist
@@ -301,8 +301,8 @@ def meritFitGridRotation(params, xe, ye):
     
     This implementation considers only shift, scaling and rotation.
     '''
-    pitch, centerX, centerY, rotation = params
-    xy_grid = getPointGridRotated(xe.shape, pitch, [centerX, centerY], rotation, '3d')
+    pitchX, pitchY, centerX, centerY, rotation = params
+    xy_grid = getPointGridRotated(xe.shape, [pitchX, pitchY], [centerX, centerY], rotation, '3d')
     dist = getMeanDistance(xy_grid[:,:,0], xy_grid[:,:,1], xe, ye)
     #print(params, dist)
     return dist
@@ -375,16 +375,17 @@ def guessInitialParameters(pointGrid, rows, cols, withDistortion = False, withRo
     
     dx = max(xe)-min(xe)
     dy = max(ye)-min(ye)
-    pitch = np.mean([dx / cols, dy / rows])
+    pitchX = dx / cols
+    pitchY = dy / rows
     centerX = min(xe) + 0.5 * dx
     centerY = max(xe) + 0.5 * dy
     
     if withDistortion and withRotation:
-        return [pitch, centerX, centerY, rotation, 0, 0, 0]
+        return [pitchX, pitchY, centerX, centerY, rotation, 0, 0, 0]
     elif withDistortion:
-        return [pitch, centerX, centerY, 0, 0, 0]
+        return [pitchX, pitchY, centerX, centerY, 0, 0, 0]
     elif withRotation:
-        return [pitch, centerX, centerY, rotation]
+        return [pitchX, pitchY, centerX, centerY, rotation]
     
     
 ####################################################
@@ -439,48 +440,48 @@ def fitGrid(distortedPointGrid, rows = None, cols = None, x0 = None, withDistort
     
     if withDistortion and withRotation:
         #optimize scaling, rotation and distortion
-        if len(x0) == 4:
+        if len(x0) == 5:
             x0 = x0 + [0,0,0]
-        elif len(x0) == 3:
+        elif len(x0) == 4:
             x0 = x0 + [0,0,0,0]
         coeffs = minimize(meritFitGridDistortionRotation, x0, args = (xe,ye), method='Nelder-Mead')
         result = coeffs.x
     
     elif withDistortion:
         #optimize scaling and distortion
-        if len(x0) == 4:
-            rotation = x0[3]
-            x1 = [*x0[0:3], 0, 0, 0]
+        if len(x0) == 5:
+            rotation = x0[4]
+            x1 = [*x0[0:4], 0, 0, 0]
             coeffs = minimize(meritFitGridDistortion, x1, args = (xe,ye), method='Nelder-Mead')
-            result = [*coeffs.x[0:3], rotation, *coeffs.x[3:6]]
-        elif len(x0) == 3:
+            result = [*coeffs.x[0:4], rotation, *coeffs.x[4:7]]
+        elif len(x0) == 4:
             x0 = x0 + [0,0,0]
             coeffs = minimize(meritFitGridDistortion, x0, args = (xe,ye), method='Nelder-Mead')
-            result = [*coeffs.x[0:3], 0.0, *coeffs.x[3:6]]
-        elif len(x0) == 7:
+            result = [*coeffs.x[0:4], 0.0, *coeffs.x[4:7]]
+        elif len(x0) == 8:
             coeffs = minimize(meritFitGridDistortion, x0, args = (xe,ye), method='Nelder-Mead')
             result = coeffs.x
     
     elif withRotation:
         #optimize scaling and rotation
-        if len(x0) == 4:
+        if len(x0) == 5:
             coeffs = minimize(meritFitGridRotation, x0, args = (xe,ye), method='Nelder-Mead')
             result = [*coeffs.x]
-        elif len(x0) == 3:
+        elif len(x0) == 4:
             x0 = x0 + [0,]
             coeffs = minimize(meritFitGridRotation, x0, args = (xe,ye), method='Nelder-Mead')
-            result = [*coeffs.x[0:3]]
-        elif len(x0) == 7:
-            x1 = x0[0:4]
-            distortion = x0[4:7]
+            result = [*coeffs.x[0:4]]
+        elif len(x0) == 8:
+            x1 = x0[0:5]
+            distortion = x0[5:8]
             coeffs = minimize(meritFitGridRotation, x0, args = (xe,ye), method='Nelder-Mead')
             result = [*coeffs.x] + distortion
         
     else:
         #optimize scaling
-        x1 = x0[0:3]
+        x1 = x0[0:4]
         coeffs = minimize(meritFitGrid, x1, args = (xe,ye), method='Nelder-Mead')
         result = x0
-        result[0:3] = coeffs.x[0:3]
+        result[0:4] = coeffs.x[0:4]
     
     return result, coeffs
