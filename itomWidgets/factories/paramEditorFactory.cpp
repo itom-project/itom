@@ -68,7 +68,7 @@ bool ParamEditorFactory::isContainer() const
 // --------------------------------------------------------------------------
 QString ParamEditorFactory::name() const
 {
-    return "ParamEditor";
+    return "ParamEditorWidget";
 }
 
 //-----------------------------------------------------------------------------

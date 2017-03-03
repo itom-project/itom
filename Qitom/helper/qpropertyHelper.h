@@ -49,6 +49,7 @@ Q_DECLARE_METATYPE(ito::PCLPolygonMesh)
 #endif
 
 Q_DECLARE_METATYPE(QSharedPointer<ito::DataObject>)
+Q_DECLARE_METATYPE(QPointer<ito::AddInBase>)
 Q_DECLARE_METATYPE(QPointer<ito::AddInDataIO>)
 Q_DECLARE_METATYPE(QPointer<ito::AddInActuator>)
 Q_DECLARE_METATYPE(ito::Shape)

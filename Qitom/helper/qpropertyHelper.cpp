@@ -312,6 +312,26 @@ namespace ito {
             result = QVariant::fromValue<QVector<ito::Shape> >(shapes);
         }
     }
+    else if (item.userType() == QMetaType::type("QPointer<ito::AddInActuator>"))
+    {
+        if (userDestType == QMetaType::type("QPointer<ito::AddInBase>"))
+        {
+            QPointer<ito::AddInActuator> actuator = qvariant_cast<QPointer<ito::AddInActuator> >(item);
+            QPointer<ito::AddInBase> base = actuator.data();
+            ok = true;
+            result = QVariant::fromValue<QPointer<ito::AddInBase> >(base);
+        }
+    }
+    else if (item.userType() == QMetaType::type("QPointer<ito::AddInDataIO>"))
+    {
+        if (userDestType == QMetaType::type("QPointer<ito::AddInBase>"))
+        {
+            QPointer<ito::AddInDataIO> dataIO = qvariant_cast<QPointer<ito::AddInDataIO> >(item);
+            QPointer<ito::AddInBase> base = dataIO.data();
+            ok = true;
+            result = QVariant::fromValue<QPointer<ito::AddInBase> >(base);
+        }
+    }
     else if (item.userType() == QMetaType::type("ito::PythonNone"))
     {
         if (userDestType == QMetaType::type("QSharedPointer<ito::DataObject>"))
@@ -328,6 +348,11 @@ namespace ito {
         {
             ok = true;
             result = QVariant::fromValue<QPointer<ito::AddInActuator> >(QPointer<ito::AddInActuator>());
+        }
+        else if (userDestType == QMetaType::type("QPointer<ito::AddInBase>"))
+        {
+            ok = true;
+            result = QVariant::fromValue<QPointer<ito::AddInBase> >(QPointer<ito::AddInBase>());
         }
         else if (userDestType == QMetaType::type("QVector<ito::Shape>"))
         {

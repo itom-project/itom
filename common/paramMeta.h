@@ -111,6 +111,10 @@ namespace ito
         inline MetaRtti getType() const { return m_type; } //!< returns runtime type information value
         inline ito::ByteArray getCategory() const { return m_category; } //!< returns category name of this parameter (default: empty ByteArray)
         void setCategory(const ito::ByteArray &category);
+
+        virtual bool operator==(const ParamMeta& other) const;
+        bool operator!=(const ParamMeta& other) const { return !(*this == other); }
+
     protected:
         MetaRtti m_type;
         ito::ByteArray m_category; //!< optional category name of this parameter
@@ -157,6 +161,8 @@ namespace ito
             \param val is the new step size, hence only discrete values [minVal, minVal+stepSize, minVal+2*stepSize...,maxVal] are allowed
         */
         void setStepSize(char val);
+
+        virtual bool operator==(const ParamMeta& other) const;
     private:
         char m_minVal;
         char m_maxVal;
@@ -205,6 +211,8 @@ namespace ito
             \param val is the new step size, hence only discrete values [minVal, minVal+stepSize, minVal+2*stepSize...,maxVal] are allowed
         */
         void setStepSize(int32 val);
+
+        virtual bool operator==(const ParamMeta& other) const;
     private:
         int32 m_minVal;
         int32 m_maxVal;
@@ -268,6 +276,9 @@ namespace ito
             \param val is the new step size, hence only discrete values [minVal, minVal+stepSize, minVal+2*stepSize...,maxVal] are allowed
         */
         void setStepSize(float64 val);
+
+        virtual bool operator==(const ParamMeta& other) const;
+
     private:
         float64 m_minVal;
         float64 m_maxVal;
@@ -321,6 +332,8 @@ namespace ito
 
             inline uint32 getMinType() const { return m_minType; }             //!< returns type-bitmask which is minimally required by plugin-reference. Default 0. \sa ito::tPluginType
             inline ito::ByteArray getHWAddInName() const { return m_HWName; }  //!< returns name of specific hardware plugin
+
+            virtual bool operator==(const ParamMeta& other) const;
         private:
             uint32 m_minType;            //!< type-bitmask which is minimally required. default: 0
             ito::ByteArray m_HWName;     //!< zero-terminated name of specific plugin-name or invalid if not defined
@@ -390,6 +403,7 @@ namespace ito
             void clearItems();                             //!< clear all elements from the pattern list.
             StringMeta & operator += (const char *val);    //!< add another pattern string to the list of patterns.
             StringMeta & operator = (const StringMeta& rhs);
+            virtual bool operator==(const ParamMeta& other) const;
 
         private:
 
@@ -413,6 +427,7 @@ namespace ito
             inline int getAllowedTypes() const { return m_allowedTypes; }
             inline int getMinDim() const { return m_minDim; } //!< returns maximum allowed dimensions of data object
             inline int getMaxDim() const { return m_maxDim; } //!< returns minimum number of dimensions of data object
+            virtual bool operator==(const ParamMeta& other) const;
 
         private:
             uint32 m_allowedTypes;
@@ -458,6 +473,8 @@ namespace ito
         */
         void setNumStepSize(size_t val);
 
+        virtual bool operator==(const ParamMeta& other) const;
+
     private:
         size_t m_numMin;
         size_t m_numMax;
@@ -502,6 +519,8 @@ namespace ito
         */
         void setNumStepSize(size_t val);
 
+        virtual bool operator==(const ParamMeta& other) const;
+
     private:
         size_t m_numMin;
         size_t m_numMax;
@@ -545,6 +564,8 @@ namespace ito
             \param val is the new step size, hence only discrete values [minVal, minVal+stepSize, minVal+2*stepSize...,maxVal] are allowed
         */
         void setNumStepSize(size_t val);
+
+        virtual bool operator==(const ParamMeta& other) const;
 
     private:
         size_t m_numMin;
@@ -591,6 +612,8 @@ namespace ito
             \param val is the new step size, hence only discrete values [minVal, minVal+stepSize, minVal+2*stepSize...,maxVal] are allowed
         */
         void setSizeStep(float64 val);
+
+        virtual bool operator==(const ParamMeta& other) const;
 
     private:
         float64 m_sizeMin;
@@ -639,6 +662,8 @@ namespace ito
             \param val is the new step size, hence only discrete values [minVal, minVal+stepSize, minVal+2*stepSize...,maxVal] are allowed
         */
         void setIntervalStep(int32 val);
+
+        virtual bool operator==(const ParamMeta& other) const;
 
     protected:
         int32 m_sizeMin;
@@ -696,6 +721,8 @@ namespace ito
 
         inline ito::ByteArray getUnit() const { return m_heightMeta.getUnit(); } //!< returns unit
         inline void setUnit(const ito::ByteArray &unit) { m_heightMeta.setUnit(unit); } //!< sets unit string of this parameter
+
+        virtual bool operator==(const ParamMeta& other) const;
 
     protected:
         ito::RangeMeta m_heightMeta;

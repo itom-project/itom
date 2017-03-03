@@ -556,7 +556,7 @@ namespace ito
         */
         void parametersChanged(QMap<QString, ito::Param> params);
 
-        public slots:
+    public slots:
         //! method for the initialisation of a new instance of the class (must be overwritten)
         virtual ito::RetVal init(QVector<ito::ParamBase> *paramsMand, QVector<ito::ParamBase> *paramsOpt, ItomSharedSemaphore *waitCond = NULL) = 0;
         //! method for closing an instance (must be overwritten)
@@ -579,7 +579,6 @@ namespace ito
         //! method invoked by AddInManager if the plugin should be pulled back to the main thread of itom. (not for direct use in plugins)
         ito::RetVal moveBackToApplicationThread(ItomSharedSemaphore *waitCond = NULL);
 
-        private slots:
         //! immediately emits the signal parametersChanged
         /*!
         call or invoke this method for instance after creating a configuration dialog for the plugin.
@@ -589,6 +588,8 @@ namespace ito
         \sa parametersChanged, m_params
         */
         void sendParameterRequest(){ emit parametersChanged(m_params); };
+
+    private slots:
 
         //! overwrite this slot if you want to get informed when the dock-widget of the plugin becomes (in)visible
         /*!
