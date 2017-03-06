@@ -6938,143 +6938,143 @@ DataObject DataObject::div(const DataObject &mat2, const double /*scale*/) const
 
 //! high-level method which stacks the planes of the input dataObjects to a three dimensional dataObject together. 
 /*!
-The result is stored in a result matrix of the same plane size and type. Only the last but two dimensions are allowed to have a size greater than one.
-\param &mat2 is the second source matrix
+The result is stored in a result matrix of the same plane size and type. Only one of the (n-2) dimensions is allowed to have a size greter than one.
+\param *mats sequence of input DataObjects
+\param *num number elements in mats
+\param axis axis along which a stack is build (not yet implemented)
 \return result dataObject
 */
 //----------------------------------------------------------------------------------------------------------------------------------
 /*static*/ DataObject DataObject::stack(const DataObject *mats, int num, unsigned int axis)
 {
-	cv::error(cv::Exception(CV_StsAssert, "not yet implemented", "", __FILE__, __LINE__));
+	if (num < 1)
+	{
+		cv::error(cv::Exception(CV_StsAssert, "a length less than one was given", "", __FILE__, __LINE__));
+	}
+	if (num == 1)
+	{
+		return mats[0];
+	}
 
-    /*int rhsDims = mat2.getDims();
-    int thisDims = this->getDims();
+	int type = mats[0].getType();
+	int *planeSize = new int[2];
+	planeSize[0] = mats[0].getSize(mats[0].getDims() - 2);
+	planeSize[1] = mats[0].getSize(mats[0].getDims() - 1);
+	int cnt;
+	int dims;
+	bool valid;
+	for (int i = 1; i < num; ++i)
+	{
+		if (mats[i].getType() != type)
+		{
+			cv::error(cv::Exception(CV_StsAssert, "at least one dataObject differ in type", "", __FILE__, __LINE__));
+			planeSize = NULL;
+			delete[] planeSize;
+		}
+		//check the last size of the last two dimensions 
+		if (mats[i].getSize(mats[i].getDims() - 1) != planeSize[1] || mats[i].getSize(mats[i].getDims() - 2) != planeSize[0])
+		{
+			cv::error(cv::Exception(CV_StsAssert, "the last two dimensions of the given dataObjects differ in size", "", __FILE__, __LINE__));
+			planeSize = NULL;
+			delete[] planeSize;
+		}
 
-    
-    if (rhsDims < 2 || thisDims < 2)
-    {
-        cv::error(cv::Exception(CV_StsAssert, "at least one dataObject has less than 2 dimensions", "", __FILE__, __LINE__));
-    }
-    // check if the types fit
-    if (m_type != mat2.getType())
-    {
-        cv::error(cv::Exception(CV_StsAssert, "dataObjects differ in type", "", __FILE__, __LINE__));
-    }
+		
 
-    int *thisSizes = new int[3];
-    int *rhsSizes = new int[3];
-    //compute last sizes
-    bool rhsIsStack = false;// marks if rhs contains three dimensions
-    bool thisIsStack(false);// marks if this contains three dimensions
-    int i;
-    int cnt = 0;
-    int size;
-    //get the sizes of the last three dimensions
-    for (i = 0; i < thisDims; ++i)
-    {
-        size = this->getSize(i);
-        if (thisDims - 3 <= i)
-        {
-            thisSizes[cnt] = size;
-            if (++cnt == 3)
-            {
-                thisIsStack = true;
-            }
-        }
-        else
-        {
-            if (size > 1)
-            {
-                delete[] thisSizes;
-                delete[] rhsSizes;
-                cv::error(cv::Exception(CV_StsAssert, "only the last three dimensions of the host dataObject are allowed to be greater than 1", "", __FILE__, __LINE__));
-            }
-        }
-    }
-    cnt = 0;
-    for (i = 0; i < rhsDims; ++i)
-    {
-        size = mat2.getSize(i);
-        if (rhsDims - 3 <= i)
-        {
-            rhsSizes[cnt] = size;
-            if (++cnt == 3)
-            {
-                rhsIsStack = true;
-            }
-        }
-        else
-        {
-            if (size > 1)
-            {
-                delete[] thisSizes;
-                delete[] rhsSizes;
-                cv::error(cv::Exception(CV_StsAssert, "only the last three dimensions of the argumental dataObject are allowed to be greater than 1", "", __FILE__, __LINE__));
-            }
-        }
-    }
-    //check if the last two dimensions fit
-    if (thisIsStack)
-    {
-        if (rhsIsStack)//both are 3 dimensional
-        {
-            if (thisSizes[1] != rhsSizes[1] || thisSizes[2] != rhsSizes[2])
-            {
-                delete[] thisSizes;
-                delete[] rhsSizes;
-                cv::error(cv::Exception(CV_StsAssert, "the last two dimensions of the dataObjects does not fit", "", __FILE__, __LINE__));
-            }
-            thisSizes[0] = thisSizes[0] + rhsSizes[0];//thisSizes contains now the size of the resulting dataObject
-        }
-        else//only this is 3 dimensional
-        {
-            if (thisSizes[1] != rhsSizes[0] || thisSizes[2] != rhsSizes[1])
-            {
-                delete[] thisSizes;
-                delete[] rhsSizes;
-                cv::error(cv::Exception(CV_StsAssert, "the last two dimensions of the dataObjects does not fit", "", __FILE__, __LINE__));
-            }
-            thisSizes[0] = thisSizes[0] + 1;//thisSizes contains now the size of the resulting dataObject
-        }
-    }
-    else//
-    {
-        if (rhsIsStack)//only rhs is three dimensional 
-        {
-            if (thisSizes[0] != rhsSizes[1] || thisSizes[1] != rhsSizes[2])
-            {
-                delete[] thisSizes;
-                delete[] rhsSizes;
-                cv::error(cv::Exception(CV_StsAssert, "the last two dimensions of the dataObjects does not fit", "", __FILE__, __LINE__));
-            }
-            thisSizes[2] = thisSizes[1]; //thisSizes contains now the size of the resulting dataObject
-            thisSizes[1] = thisSizes[0];
-            thisSizes[0] = 1 + rhsSizes[0];
-        }
-        else//both are two dimensional
-        {
-            if (thisSizes[0] != rhsSizes[0] || thisSizes[1] != rhsSizes[1])
-            {
-                delete[] thisSizes;
-                delete[] rhsSizes;
-                cv::error(cv::Exception(CV_StsAssert, "the last two dimensions of the dataObjects does not fit", "", __FILE__, __LINE__));
-            }
+	}
+	//check if only one dimension excluding the last but two has a size greater than one and find the location of this  dimension
+	unsigned int stackLayers = 0;
+	int size;
+	int *objLayers = new int[num];
+	for (int i = 0; i < num; ++i)
+	{
 
-            thisSizes[2] = thisSizes[1]; //thisSizes contains now the size of the resulting dataObject
-            thisSizes[1] = thisSizes[0];
-            thisSizes[0] = 2;
-        }
-    }
-    DataObject result = DataObject(3, thisSizes, m_type);
+		dims = mats[i].getDims();
+		if (dims > 2)
+		{
+			valid = true;
+			for (cnt = dims - 3; cnt >= 0; --cnt)
+			{
+				if (valid)
+				{
+					size = mats[i].getSize(cnt);
 
-	fListStackFunc[m_type](this, &mat2, &result);
-	copyAxisTagsTo(result);
-	copyTagMapTo(result);
+					if (size != 1)
+					{
+						valid = false;
+						stackLayers += size;
+						objLayers[i] = size;
+					}
+				}
+				else
+				{
+					if (mats[i].getSize(cnt) != 1)
+					{
+						objLayers = NULL;
+						delete[] objLayers;
+						planeSize = NULL;
+						delete[] planeSize;
+						cv::error(cv::Exception(CV_StsAssert, cv::format("%i-th element of sequence has more than one dimension of a size greater than one (regardless the last two).", i), "", __FILE__, __LINE__));
+					}
+				}
+			}
+			if (valid) //if still valid the dataObject contains only one plane
+			{
+				++stackLayers;
+				objLayers[i] = 1;
+			}
+		}
+		else{
+			++stackLayers; 
+			objLayers[i] = 1;
+		}
+	}
+	
+	cv::Mat * planes = new cv::Mat[stackLayers];
+	const cv::Mat* tempPlane;
+	int planeCount = 0;
+	//copy
+	for (int i = 0; i < num; ++i)
+	{
+		for (int cnt = 0; cnt < objLayers[i]; ++cnt)
+		{
+			tempPlane = mats[i].get_mdata()[mats[i].seekMat(cnt)];
+#if (CV_MAJOR_VERSION >= 3)
+			if (tempPlane->u)
+#else
+			if (tempPlane->refcount)
+#endif
+			{
+				//the opencv matrix has its own reference counter and manages its memory -> simple shallow copies are sufficient
+				planes[planeCount++] = *tempPlane;
+			}
+			else
+			{
+				//the opencv matrix points to user-allocated data (e.g. continuous data block allocated by dataObject). In
+				//this case, a shallow copy is dangerous if the base object is deleted. Therefore, all planes have to be deeply copied:
+				tempPlane->copyTo(planes[planeCount++]);
+			}
 
-    delete[] thisSizes;
-    delete[] rhsSizes;
-    return result;*/
-	return ito::DataObject();
+		}
+	}
+	int *shape = new int[3];
+	shape[0] = stackLayers;
+	shape[1] = planeSize[0];
+	shape[2] = planeSize[1];
+	
+	DataObject resObj(3, shape, type, planes, stackLayers);
+
+
+	
+
+
+	shape = NULL;
+	delete[] shape;
+	planeSize = NULL;
+	delete[] planeSize;
+	planes = NULL;
+	delete[] planes;
+	return resObj;
 }
 
 

@@ -7484,7 +7484,7 @@ Parameters \n\
 ----------- \n\
 obj : {sequence of dataObjects} \n\
 	Sequence of dataObjects containig planes that will be stacked together. All dataObjects must be of the same type and have the same shape of planes (last two dimesnions).\n\
-	The function works with two and three dimensional dataObjects.\n\
+		Only one of the (n-2) dimensions of each input dataObject is allowed to have a size greater one.\n\
 \n\
 Returns \n\
 ------- \n\
