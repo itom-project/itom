@@ -571,7 +571,7 @@ RetVal AddInManagerPrivate::loadAddInAlgo(QObject *plugin, ito::PluginLoadStatus
                 if (m_filterList.contains(it.key()))
                 {
                     algoInst->rejectFilter(it.key());
-                    message = tr("Filter '%1' rejected since a filter with the same name already exists in global filter list").arg(it.key());
+                    message = tr("Filter '%1' rejected since a filter with the same name already exists in global filter list.\n").arg(it.key());
                     qDebug() << message;
                     retValue += RetVal(retWarning, 1004, message.toLatin1().data());
                     pluginLoadStatus.messages.append(QPair<ito::PluginLoadStatusFlags, QString>(ito::plsfWarning, message));
