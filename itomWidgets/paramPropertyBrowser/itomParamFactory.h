@@ -81,6 +81,28 @@ private:
     Q_PRIVATE_SLOT(d_func(), void slotEditorDestroyed(QObject *))
 };
 
+class ParamIntervalPropertyFactoryPrivate;
+
+class ITOMWIDGETS_EXPORT ParamIntervalPropertyFactory : public QtAbstractEditorFactory<ParamIntervalPropertyManager>
+{
+    Q_OBJECT
+public:
+    ParamIntervalPropertyFactory(QObject *parent = 0);
+    ~ParamIntervalPropertyFactory();
+protected:
+    void connectPropertyManager(ParamIntervalPropertyManager *manager);
+    QWidget *createEditor(ParamIntervalPropertyManager *manager, QtProperty *property, QWidget *parent);
+    void disconnectPropertyManager(ParamIntervalPropertyManager *manager);
+private:
+    ParamIntervalPropertyFactoryPrivate *d_ptr;
+    Q_DECLARE_PRIVATE(ParamIntervalPropertyFactory)
+    Q_DISABLE_COPY(ParamIntervalPropertyFactory)
+    Q_PRIVATE_SLOT(d_func(), void slotPropertyChanged(QtProperty *, int, int))
+    Q_PRIVATE_SLOT(d_func(), void slotMetaChanged(QtProperty *, const ito::IntervalMeta &))
+    Q_PRIVATE_SLOT(d_func(), void slotSetValue(int, int))
+    Q_PRIVATE_SLOT(d_func(), void slotEditorDestroyed(QObject *))
+};
+
 } //end namespace ito
 
 #endif

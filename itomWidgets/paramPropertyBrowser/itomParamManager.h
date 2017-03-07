@@ -55,7 +55,6 @@ public:
 
 public Q_SLOTS:
     virtual void setParam(QtProperty *property, const ito::Param &param) = 0;
-    //virtual void setValue(QtProperty *property, int value) = 0;
 
 protected:
     virtual QString valueText(const QtProperty *property) const;
@@ -123,6 +122,86 @@ public Q_SLOTS:
 
 private:
     Q_DISABLE_COPY(ParamStringPropertyManager)
+};
+
+/*
+Property Manager for parameters of type ito::ParamBase::Interval and ito::ParamBase::Range
+*/
+class ITOMWIDGETS_EXPORT ParamIntervalPropertyManager : public AbstractParamPropertyManager
+{
+    Q_OBJECT
+public:
+    ParamIntervalPropertyManager(QObject *parent = 0);
+    ~ParamIntervalPropertyManager();
+
+protected:
+    QString valueText(const QtProperty *property) const;
+    void initializeProperty(QtProperty *property);
+
+Q_SIGNALS:
+    void valueChanged(QtProperty *property, int min, int max);
+    void metaChanged(QtProperty *property, ito::IntervalMeta meta);
+
+public Q_SLOTS:
+    void setParam(QtProperty *property, const ito::Param &param);
+    void setValue(QtProperty *property, int min, int max);
+
+private:
+    Q_DISABLE_COPY(ParamIntervalPropertyManager)
+};
+
+
+class ParamRectPropertyManagerPrivate;
+
+/*
+Property Manager for parameters of type ito::ParamBase::Rect
+*/
+class ITOMWIDGETS_EXPORT ParamRectPropertyManager : public AbstractParamPropertyManager
+{
+    Q_OBJECT
+public:
+    ParamRectPropertyManager(QObject *parent = 0);
+    ~ParamRectPropertyManager();
+
+Q_SIGNALS:
+    void valueChanged(QtProperty *property, int left, int top, int width, int height);
+    void metaChanged(QtProperty *property, ito::RectMeta meta);
+
+public Q_SLOTS:
+    void setParam(QtProperty *property, const ito::Param &param);
+    void setValue(QtProperty *property, int left, int top, int width, int height);
+
+protected:
+    QString valueText(const QtProperty *property) const;
+    void initializeProperty(QtProperty *property);
+    virtual void uninitializeProperty(QtProperty *property);
+    ParamRectPropertyManagerPrivate *d_ptr;
+
+private:
+    Q_DECLARE_PRIVATE(ParamRectPropertyManager)
+    Q_DISABLE_COPY(ParamRectPropertyManager)
+};
+
+/*
+Property Manager for parameters of type ito::ParamBase::HWRef, ito::ParamBase::DObjPtr,
+ito::ParamBase::PolygonMeshPtr, ito::ParamBase::PointCloudPtr, ito::ParamBase::PointPtr
+*/
+class ITOMWIDGETS_EXPORT ParamOtherPropertyManager : public AbstractParamPropertyManager
+{
+    Q_OBJECT
+public:
+    ParamOtherPropertyManager(QObject *parent = 0);
+    ~ParamOtherPropertyManager();
+
+protected:
+    QString valueText(const QtProperty *property) const;
+    void initializeProperty(QtProperty *property);
+
+public Q_SLOTS:
+    void setParam(QtProperty *property, const ito::Param &param);
+
+private:
+    Q_DISABLE_COPY(ParamOtherPropertyManager)
 };
 
 } //end namespace ito

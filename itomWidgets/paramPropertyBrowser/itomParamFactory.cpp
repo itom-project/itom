@@ -33,6 +33,7 @@
 
 #include "paramIntWidget.h"
 #include "paramStringWidget.h"
+#include "rangeWidget.h"
 
 #if defined(Q_CC_MSVC)
 #    pragma warning(disable: 4786) /* MS VS 6: truncating debug info after 255 characters */
@@ -297,12 +298,12 @@ void ParamStringPropertyFactoryPrivate::slotSetValue(const QByteArray &value)
 }
 
 /*!
-\class QtSpinBoxFactory
+\class ParamStringPropertyFactory
 
-\brief The QtSpinBoxFactory class provides QSpinBox widgets for
-properties created by QtIntPropertyManager objects.
+\brief The ParamStringPropertyFactory class provides QLineEdit widgets for
+properties created by ParamStringPropertyManager objects.
 
-\sa QtAbstractEditorFactory, QtIntPropertyManager
+\sa QtAbstractEditorFactory, ParamStringPropertyManager
 */
 
 /*!
@@ -367,6 +368,146 @@ void ParamStringPropertyFactory::disconnectPropertyManager(ParamStringPropertyMa
         this, SLOT(slotPropertyChanged(QtProperty *, QByteArray)));
     disconnect(manager, SIGNAL(metaChanged(QtProperty *, ito::StringMeta)),
         this, SLOT(slotMetaChanged(QtProperty *, ito::StringMeta)));
+}
+
+
+
+// ------------ ParamIntervalPropertyFactoryPrivate
+class ParamIntervalPropertyFactoryPrivate : ItomEditorFactoryPrivate<RangeWidget>
+{
+    ParamIntervalPropertyFactory *q_ptr;
+    Q_DECLARE_PUBLIC(ParamIntervalPropertyFactory)
+public:
+    void slotPropertyChanged(QtProperty *property, int min, int max);
+    void slotMetaChanged(QtProperty *property, const ito::IntervalMeta &meta);
+    void slotSetValue(int min, int max);
+};
+
+void ParamIntervalPropertyFactoryPrivate::slotPropertyChanged(QtProperty *property, int min, int max)
+{
+    if (!m_createdEditors.contains(property))
+        return;
+    QListIterator<RangeWidget *> itEditor(m_createdEditors[property]);
+    while (itEditor.hasNext()) {
+        RangeWidget *editor = itEditor.next();
+        if (editor->minimum() != min || editor->maximum() != max) {
+            editor->blockSignals(true);
+            editor->setValues(min, max);
+            editor->blockSignals(false);
+        }
+    }
+}
+
+void ParamIntervalPropertyFactoryPrivate::slotMetaChanged(QtProperty *property, const ito::IntervalMeta &meta)
+{
+    if (!m_createdEditors.contains(property))
+        return;
+
+    ParamIntervalPropertyManager *manager = q_ptr->propertyManager(property);
+    if (!manager)
+        return;
+
+    QListIterator<RangeWidget *> itEditor(m_createdEditors[property]);
+    while (itEditor.hasNext()) {
+        RangeWidget *editor = itEditor.next();
+        editor->blockSignals(true);
+        editor->setLimitsFromIntervalMeta(meta);
+        const int* vals = manager->paramBase(property).getVal<const int*>();
+        editor->setValues(vals[0], vals[1]);
+        editor->blockSignals(false);
+    }
+}
+
+void ParamIntervalPropertyFactoryPrivate::slotSetValue(int min, int max)
+{
+    QObject *object = q_ptr->sender();
+    const QMap<RangeWidget *, QtProperty *>::ConstIterator ecend = m_editorToProperty.constEnd();
+    for (QMap<RangeWidget *, QtProperty *>::ConstIterator itEditor = m_editorToProperty.constBegin(); itEditor != ecend; ++itEditor) {
+        if (itEditor.key() == object) {
+            QtProperty *property = itEditor.value();
+            ParamIntervalPropertyManager *manager = q_ptr->propertyManager(property);
+            if (!manager)
+                return;
+            manager->setValue(property, min, max);
+            return;
+        }
+    }
+}
+
+
+/*!
+\class ParamIntervalPropertyFactory
+
+\brief The ParamIntervalPropertyFactory class provides RangeWidget widgets for
+properties created by ParamIntervalPropertyManager objects.
+
+\sa QtAbstractEditorFactory, ParamIntervalPropertyManager
+*/
+
+/*!
+Creates a factory with the given \a parent.
+*/
+ParamIntervalPropertyFactory::ParamIntervalPropertyFactory(QObject *parent)
+    : QtAbstractEditorFactory<ParamIntervalPropertyManager>(parent)
+{
+    d_ptr = new ParamIntervalPropertyFactoryPrivate();
+    d_ptr->q_ptr = this;
+
+}
+
+/*!
+Destroys this factory, and all the widgets it has created.
+*/
+ParamIntervalPropertyFactory::~ParamIntervalPropertyFactory()
+{
+    qDeleteAll(d_ptr->m_editorToProperty.keys());
+    delete d_ptr;
+}
+
+/*!
+\internal
+
+Reimplemented from the QtAbstractEditorFactory class.
+*/
+void ParamIntervalPropertyFactory::connectPropertyManager(ParamIntervalPropertyManager *manager)
+{
+    connect(manager, SIGNAL(valueChanged(QtProperty *, int, int)),
+        this, SLOT(slotPropertyChanged(QtProperty *, int, int)));
+    connect(manager, SIGNAL(metaChanged(QtProperty *, ito::IntervalMeta)),
+        this, SLOT(slotMetaChanged(QtProperty *, ito::IntervalMeta)));
+}
+
+/*!
+\internal
+
+Reimplemented from the QtAbstractEditorFactory class.
+*/
+QWidget *ParamIntervalPropertyFactory::createEditor(ParamIntervalPropertyManager *manager, QtProperty *property,
+    QWidget *parent)
+{
+    RangeWidget *editor = d_ptr->createEditor(property, parent);
+    const ito::Param &param = manager->param(property);
+    const int* vals = param.getVal<const int*>();
+    editor->setLimitsFromIntervalMeta(*(param.getMetaT<ito::IntervalMeta>()));
+    editor->setValues(vals[0], vals[1]);
+
+    connect(editor, SIGNAL(rangeChanged(int, int)), this, SLOT(slotSetValue(int, int)));
+    connect(editor, SIGNAL(destroyed(QObject *)),
+        this, SLOT(slotEditorDestroyed(QObject *)));
+    return editor;
+}
+
+/*!
+\internal
+
+Reimplemented from the QtAbstractEditorFactory class.
+*/
+void ParamIntervalPropertyFactory::disconnectPropertyManager(ParamIntervalPropertyManager *manager)
+{
+    disconnect(manager, SIGNAL(valueChanged(QtProperty *, int, int)),
+        this, SLOT(slotPropertyChanged(QtProperty *, int, int)));
+    disconnect(manager, SIGNAL(metaChanged(QtProperty *, ito::IntervalMeta)),
+        this, SLOT(slotMetaChanged(QtProperty *, ito::IntervalMeta)));
 }
 
 } //end namespace ito
