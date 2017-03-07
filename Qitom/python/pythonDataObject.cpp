@@ -7476,14 +7476,14 @@ PyObject* PythonDataObject::PyDataObject_createMask(PyDataObject *self, PyObject
     }
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectDstack_doc, "dstack(objects) -> return a stacked data object containing a stack of all planes given by this and obj. \n\
+PyDoc_STRVAR(pyDataObjectDstack_doc, "dstack(objects) -> returns a stacked data object containing a stack of all planes given by this and obj. \n\
 \n\
-The returned dataObject contains layers of the same shape and type like the given ones. The different layers will be located along the first axis.\
+The returned dataObject contains layers of the same shape and type like the given ones. The different layers will be located along the first axis.\n\
 \n\
 Parameters \n\
 ----------- \n\
 obj : {sequence of dataObjects} \n\
-	Sequence of dataObjects containig planes that will be stacked together. All dataObjects must be of the same type and have the same shape of planes (last two dimesnions).\n\
+	Sequence of dataObjects containig planes that will be stacked together. All dataObjects must be of the same type and have the same shape of planes (last two dimesnions).\
 		Only one of the (n-2) dimensions of each input dataObject is allowed to have a size greater one.\n\
 \n\
 Returns \n\
