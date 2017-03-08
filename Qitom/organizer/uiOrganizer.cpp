@@ -2266,10 +2266,17 @@ RetVal UiOrganizer::callSlotOrMethod(bool slotNotMethod, unsigned int objectID, 
         if (slotNotMethod)
         {
             success = obj->qt_metacall(QMetaObject::InvokeMetaMethod, slotOrMethodIndex, args->args());
+            //if return value is set in qt_metacall, this is available in args->args()[0].
+            if (success == false)
+            {
+                retValue += RetVal(retError, errorSlotDoesNotExist, tr("slot could not be found").toLatin1().data());
+            }
         }
         else
         {
-            success = m_widgetWrapper->call(obj, slotOrMethodIndex, args->args());
+            // ck 07.03.17
+            // changed call of widgetWrapper to already return ito::RetVal with more detailed information about the failure reason 
+            retValue += m_widgetWrapper->call(obj, slotOrMethodIndex, args->args());
         }
 
         //check if arguments have to be marshalled (e.g. QObject* must be transformed to objectID before passed to python in other thread)
@@ -2283,13 +2290,6 @@ RetVal UiOrganizer::callSlotOrMethod(bool slotNotMethod, unsigned int objectID, 
                 m->m_object = NULL;
             }
         }
-
-        //if return value is set in qt_metacall, this is available in args->args()[0].
-        if (success == false)
-        {
-            retValue += RetVal(retError,errorSlotDoesNotExist, tr("slot could not be found").toLatin1().data());
-        }
-
     }
     else
     {

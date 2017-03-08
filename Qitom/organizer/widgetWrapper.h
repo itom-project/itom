@@ -40,7 +40,7 @@ public:
     ~WidgetWrapper(); //destructor
 
     MethodDescriptionList getMethodList(QObject *object);
-    bool call(QObject *object, int methodIndex, void **_a);
+    ito::RetVal call(QObject *object, int methodIndex, void **_a);
 
     QMetaProperty fakeProperty(const QObject *baseObject, const QString &fakePropertyName, QObject **destinationObject);
 
