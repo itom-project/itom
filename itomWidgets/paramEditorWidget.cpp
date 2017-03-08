@@ -44,12 +44,15 @@ public:
     ParamEditorWidgetPrivate()
         : m_pBrowser(NULL),
         m_pIntManager(NULL),
+        m_pCharManager(NULL),
+        m_pDoubleManager(NULL),
         m_pStringManager(NULL),
         m_pOtherManager(NULL),
         m_pIntervalManager(NULL),
         m_pRectManager(NULL),
         m_timerID(-1),
-        m_isChanging(false)
+        m_isChanging(false),
+        m_readonly(false)
     {};
 
     void clearGroups()
@@ -83,6 +86,8 @@ public:
     QtTreePropertyBrowser *m_pBrowser;
 
     ito::ParamIntPropertyManager *m_pIntManager;
+    ito::ParamCharPropertyManager *m_pCharManager;
+    ito::ParamDoublePropertyManager *m_pDoubleManager;
     ito::ParamStringPropertyManager *m_pStringManager;
     ito::ParamOtherPropertyManager *m_pOtherManager;
     ito::ParamIntervalPropertyManager *m_pIntervalManager;
@@ -99,6 +104,7 @@ public:
     QMap<QString, QtProperty*> m_groups;
     int m_timerID;
     bool m_isChanging;
+    bool m_readonly;
 };
 
 //-----------------------------------------------------------------------
@@ -115,23 +121,31 @@ ParamEditorWidget::ParamEditorWidget(QWidget* parent /*= 0*/) :
     d->m_pIntManager = new ito::ParamIntPropertyManager(this);
     connect(d->m_pIntManager, SIGNAL(valueChanged(QtProperty *, int)), this, SLOT(valueChanged(QtProperty *, int)));
     d->m_pIntFactory = new ito::ParamIntPropertyFactory(this);
-    d->m_pBrowser->setFactoryForManager(d->m_pIntManager, d->m_pIntFactory);
+
+    d->m_pCharManager = new ito::ParamCharPropertyManager(this);
+    connect(d->m_pCharManager, SIGNAL(valueChanged(QtProperty *, char)), this, SLOT(valueChanged(QtProperty *, char)));
+    //d->m_pCharFactory = new ito::ParamCharPropertyFactory(this);
+
+    d->m_pDoubleManager = new ito::ParamDoublePropertyManager(this);
+    connect(d->m_pDoubleManager, SIGNAL(valueChanged(QtProperty *, double)), this, SLOT(valueChanged(QtProperty *, double)));
+    //d->m_pDoubleFactory = new ito::ParamDoublePropertyFactory(this);
 
     d->m_pStringManager = new ito::ParamStringPropertyManager(this);
     connect(d->m_pStringManager, SIGNAL(valueChanged(QtProperty *, QByteArray)), this, SLOT(valueChanged(QtProperty *, QByteArray)));
     d->m_pStringFactory = new ito::ParamStringPropertyFactory(this);
-    d->m_pBrowser->setFactoryForManager(d->m_pStringManager, d->m_pStringFactory);
 
     d->m_pIntervalManager = new ito::ParamIntervalPropertyManager(this);
     connect(d->m_pIntervalManager, SIGNAL(valueChanged(QtProperty *, int, int)), this, SLOT(valueChanged(QtProperty *, int, int)));
     d->m_pIntervalFactory = new ito::ParamIntervalPropertyFactory(this);
-    d->m_pBrowser->setFactoryForManager(d->m_pIntervalManager, d->m_pIntervalFactory);
 
     d->m_pRectManager = new ito::ParamRectPropertyManager(this); 
     connect(d->m_pRectManager, SIGNAL(valueChanged(QtProperty *, int, int, int, int)), this, SLOT(valueChanged(QtProperty *, int, int, int, int)));
-    d->m_pBrowser->setFactoryForManager(d->m_pRectManager->subIntervalPropertyManager(), d->m_pIntervalFactory);
 
     d->m_pOtherManager = new ito::ParamOtherPropertyManager(this);    
+
+    //the following command set all factories for the managers
+    d_ptr->m_readonly = true;
+    setReadonly(false);
 
     QHBoxLayout *hboxLayout = new QHBoxLayout();
     hboxLayout->setMargin(0);
@@ -148,6 +162,8 @@ ParamEditorWidget::~ParamEditorWidget()
     DELETE_AND_SET_NULL(d->m_pStringFactory);
     DELETE_AND_SET_NULL(d->m_pIntervalFactory);
     DELETE_AND_SET_NULL(d->m_pIntManager);
+    DELETE_AND_SET_NULL(d->m_pCharManager);
+    DELETE_AND_SET_NULL(d->m_pDoubleManager);
     DELETE_AND_SET_NULL(d->m_pStringManager);
     DELETE_AND_SET_NULL(d->m_pIntervalManager);
     DELETE_AND_SET_NULL(d->m_pRectManager);
@@ -201,6 +217,42 @@ void ParamEditorWidget::setPlugin(QPointer<ito::AddInBase> plugin)
                 ++iter;
             }
             
+        }
+    }
+}
+
+//-----------------------------------------------------------------------
+bool ParamEditorWidget::readonly() const
+{
+    Q_D(const ParamEditorWidget);
+    return d_ptr->m_readonly;
+}
+
+//-----------------------------------------------------------------------
+void ParamEditorWidget::setReadonly(bool enable)
+{
+    Q_D(ParamEditorWidget);
+    if (enable != d_ptr->m_readonly)
+    {
+        d_ptr->m_readonly = enable;
+
+        if (enable)
+        {
+            d->m_pBrowser->unsetFactoryForManager(d->m_pIntManager);
+            d->m_pBrowser->unsetFactoryForManager(d->m_pCharManager);
+            d->m_pBrowser->unsetFactoryForManager(d->m_pDoubleManager);
+            d->m_pBrowser->unsetFactoryForManager(d->m_pStringManager);
+            d->m_pBrowser->unsetFactoryForManager(d->m_pIntervalManager);
+            d->m_pBrowser->unsetFactoryForManager(d->m_pRectManager->subIntervalPropertyManager());
+        }
+        else
+        {
+            d->m_pBrowser->setFactoryForManager(d->m_pIntManager, d->m_pIntFactory);
+            //d->m_pBrowser->setFactoryForManager(d->m_pIntManager, d->m_pCharFactory);
+            //d->m_pBrowser->setFactoryForManager(d->m_pIntManager, d->m_pDoubleFactory);
+            d->m_pBrowser->setFactoryForManager(d->m_pStringManager, d->m_pStringFactory);
+            d->m_pBrowser->setFactoryForManager(d->m_pIntervalManager, d->m_pIntervalFactory);
+            d->m_pBrowser->setFactoryForManager(d->m_pRectManager->subIntervalPropertyManager(), d->m_pIntervalFactory);
         }
     }
 }
@@ -335,6 +387,12 @@ ito::RetVal ParamEditorWidget::addParam(const ito::Param &param)
     case ito::ParamBase::Int:
         retval += addParamInt(param, groupProperty);
         break;
+    case ito::ParamBase::Char:
+        retval += addParamChar(param, groupProperty);
+        break;
+    case ito::ParamBase::Double:
+        retval += addParamDouble(param, groupProperty);
+        break;
     case ito::ParamBase::String:
         retval += addParamString(param, groupProperty);
         break;
@@ -383,6 +441,56 @@ ito::RetVal ParamEditorWidget::addParamInt(const ito::Param &param, QtProperty *
         d->m_pBrowser->addProperty(prop);
     }
     d->m_pIntManager->blockSignals(false);
+    prop->setStatusTip(param.getInfo());
+    prop->setToolTip(param.getInfo());
+
+    return ito::retOk;
+}
+
+//-----------------------------------------------------------------------
+ito::RetVal ParamEditorWidget::addParamChar(const ito::Param &param, QtProperty *groupProperty)
+{
+    Q_D(ParamEditorWidget);
+
+    d->m_pCharManager->blockSignals(true);
+    QtProperty *prop = d->m_pCharManager->addProperty(param.getName());
+    d->m_properties[param.getName()] = prop;
+    prop->setEnabled(!(param.getFlags() & ito::ParamBase::Readonly));
+    d->m_pCharManager->setParam(prop, param);
+    if (groupProperty)
+    {
+        groupProperty->addSubProperty(prop);
+    }
+    else
+    {
+        d->m_pBrowser->addProperty(prop);
+    }
+    d->m_pCharManager->blockSignals(false);
+    prop->setStatusTip(param.getInfo());
+    prop->setToolTip(param.getInfo());
+
+    return ito::retOk;
+}
+
+//-----------------------------------------------------------------------
+ito::RetVal ParamEditorWidget::addParamDouble(const ito::Param &param, QtProperty *groupProperty)
+{
+    Q_D(ParamEditorWidget);
+
+    d->m_pDoubleManager->blockSignals(true);
+    QtProperty *prop = d->m_pDoubleManager->addProperty(param.getName());
+    d->m_properties[param.getName()] = prop;
+    prop->setEnabled(!(param.getFlags() & ito::ParamBase::Readonly));
+    d->m_pDoubleManager->setParam(prop, param);
+    if (groupProperty)
+    {
+        groupProperty->addSubProperty(prop);
+    }
+    else
+    {
+        d->m_pBrowser->addProperty(prop);
+    }
+    d->m_pDoubleManager->blockSignals(false);
     prop->setStatusTip(param.getInfo());
     prop->setToolTip(param.getInfo());
 
@@ -487,6 +595,34 @@ ito::RetVal ParamEditorWidget::addParamOthers(const ito::Param &param, QtPropert
     prop->setToolTip(param.getInfo());
 
     return ito::retOk;
+}
+
+//-----------------------------------------------------------------------
+void ParamEditorWidget::valueChanged(QtProperty* prop, char value)
+{
+    Q_D(ParamEditorWidget);
+    if (!d_ptr->m_isChanging)
+    {
+        d->enqueue(QSharedPointer<ito::ParamBase>(new ito::ParamBase(prop->propertyName().toLatin1().data(), ito::ParamBase::Char, value)));
+        if (d->m_timerID == -1)
+        {
+            d->m_timerID = startTimer(0);
+        }
+    }
+}
+
+//-----------------------------------------------------------------------
+void ParamEditorWidget::valueChanged(QtProperty* prop, double value)
+{
+    Q_D(ParamEditorWidget);
+    if (!d_ptr->m_isChanging)
+    {
+        d->enqueue(QSharedPointer<ito::ParamBase>(new ito::ParamBase(prop->propertyName().toLatin1().data(), ito::ParamBase::Double, value)));
+        if (d->m_timerID == -1)
+        {
+            d->m_timerID = startTimer(0);
+        }
+    }
 }
 
 //-----------------------------------------------------------------------

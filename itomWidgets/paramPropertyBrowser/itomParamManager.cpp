@@ -318,6 +318,321 @@ QIcon ParamIntPropertyManager::valueIcon(const QtProperty *property) const
 
 
 
+
+
+//------------------------------------------------------------------------------
+ParamCharPropertyManager::ParamCharPropertyManager(QObject *parent /*= 0*/) :
+    AbstractParamPropertyManager(parent)
+{
+}
+
+//------------------------------------------------------------------------------
+ParamCharPropertyManager::~ParamCharPropertyManager()
+{
+}
+
+//------------------------------------------------------------------------------
+/*!
+\reimp
+*/
+void ParamCharPropertyManager::initializeProperty(QtProperty *property)
+{
+    d_ptr->m_values[property] = AbstractParamPropertyManagerPrivate::Data(ito::Param("", ito::ParamBase::Char, 0, ""));
+}
+
+//------------------------------------------------------------------------------
+/*!
+    \fn void AbstractParamPropertyManager::setValue(QtProperty *property, int value)
+
+    Sets the value of the given \a property to \a value.
+
+    If the specified \a value is not valid according to the given \a
+    property's range, the \a value is adjusted to the nearest valid
+    value within the range.
+
+    \sa value(), setRange(), valueChanged()
+*/
+void ParamCharPropertyManager::setParam(QtProperty *property, const ito::Param &param)
+{
+    typedef AbstractParamPropertyManagerPrivate::Data PrivateData;
+    typedef QMap<const QtProperty *, PrivateData> PropertyToData;
+    typedef PropertyToData::iterator PropertyToDataIterator;
+
+    const PropertyToDataIterator it = d_ptr->m_values.find(property);
+    if (it == d_ptr->m_values.end())
+        return;
+
+    Q_ASSERT(param.getType() == ito::ParamBase::Char);
+
+    property->setEnabled(!(param.getFlags() & ito::ParamBase::Readonly));
+
+    PrivateData &data = it.value();
+    ito::CharMeta *meta = data.param.getMetaT<ito::CharMeta>();
+    const ito::CharMeta *metaNew = param.getMetaT<const ito::CharMeta>();
+
+    if ((meta && metaNew && (*meta != *metaNew)) || \
+        (meta && !metaNew) || \
+        (!meta && metaNew))
+    {
+        data.param = param;
+        emit metaChanged(property, *param.getMetaT<ito::CharMeta>());
+        emit valueChanged(property, data.param.getVal<char>());
+        emit propertyChanged(property);
+    }
+    else if (data.param != param)
+    {
+        data.param.copyValueFrom(&param);
+        emit valueChanged(property, data.param.getVal<char>());
+        emit propertyChanged(property);
+    }
+}
+
+//------------------------------------------------------------------------------
+void ParamCharPropertyManager::setValue(QtProperty *property, char value)
+{
+    typedef AbstractParamPropertyManagerPrivate::Data PrivateData;
+    typedef QMap<const QtProperty *, PrivateData> PropertyToData;
+    typedef PropertyToData::iterator PropertyToDataIterator;
+
+    const PropertyToDataIterator it = d_ptr->m_values.find(property);
+    if (it == d_ptr->m_values.end())
+        return;
+
+    PrivateData &data = it.value();
+    if (data.param.getVal<char>() != value)
+    {
+        data.param.setVal<char>(value);
+        emit valueChanged(property, value);
+        emit propertyChanged(property);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*!
+    \reimp
+*/
+QString ParamCharPropertyManager::valueText(const QtProperty *property) const
+{
+    const AbstractParamPropertyManagerPrivate::PropertyValueMap::const_iterator it = d_ptr->m_values.constFind(property);
+    if (it == d_ptr->m_values.constEnd())
+        return QString();
+
+    const ito::Param &param = it.value().param;
+    const ito::CharMeta *meta = param.getMetaT<const ito::CharMeta>();
+    if (meta)
+    {
+        if (meta->getRepresentation() == ito::ParamMeta::Boolean || \
+            (meta->getMin() == 0 && meta->getMax() == 1 && meta->getStepSize() == 1))
+        {
+            static const QString trueText = tr("True");
+            static const QString falseText = tr("False");
+            return param.getVal<int>() > 0 ? trueText : falseText;
+        }
+        else if (meta->getUnit().empty() == false)
+        {
+            return QString("%1 %2").arg(param.getVal<char>()).arg(meta->getUnit().data());
+        }
+    }
+
+    return QString::number(param.getVal<char>());
+}
+
+//------------------------------------------------------------------------------
+/*!
+    \reimp
+*/
+QIcon ParamCharPropertyManager::valueIcon(const QtProperty *property) const
+{
+    const AbstractParamPropertyManagerPrivate::PropertyValueMap::const_iterator it = d_ptr->m_values.constFind(property);
+    if (it == d_ptr->m_values.constEnd())
+        return QIcon();
+
+    const ito::Param &param = it.value().param;
+    const ito::IntMeta *meta = param.getMetaT<const ito::IntMeta>();
+    if (meta && (meta->getRepresentation() == ito::ParamMeta::Boolean || \
+        (meta->getMin() == 0 && meta->getMax() == 1 && meta->getStepSize() == 1)))
+    {
+        static const QIcon checkedIcon = drawCheckBox(true);
+        static const QIcon uncheckedIcon = drawCheckBox(false);
+        return param.getVal<char>() > 0 ? checkedIcon : uncheckedIcon;
+    }
+
+    return QIcon();
+}
+
+
+
+//------------------------------------------------------------------------------
+ParamDoublePropertyManager::ParamDoublePropertyManager(QObject *parent /*= 0*/) :
+    AbstractParamPropertyManager(parent)
+{
+}
+
+//------------------------------------------------------------------------------
+ParamDoublePropertyManager::~ParamDoublePropertyManager()
+{
+}
+
+//------------------------------------------------------------------------------
+/*!
+\reimp
+*/
+void ParamDoublePropertyManager::initializeProperty(QtProperty *property)
+{
+    d_ptr->m_values[property] = AbstractParamPropertyManagerPrivate::Data(ito::Param("", ito::ParamBase::Double, 0.0, NULL, NULL));
+}
+
+//------------------------------------------------------------------------------
+/*!
+    \fn void AbstractParamPropertyManager::setValue(QtProperty *property, int value)
+
+    Sets the value of the given \a property to \a value.
+
+    If the specified \a value is not valid according to the given \a
+    property's range, the \a value is adjusted to the nearest valid
+    value within the range.
+
+    \sa value(), setRange(), valueChanged()
+*/
+void ParamDoublePropertyManager::setParam(QtProperty *property, const ito::Param &param)
+{
+    typedef AbstractParamPropertyManagerPrivate::Data PrivateData;
+    typedef QMap<const QtProperty *, PrivateData> PropertyToData;
+    typedef PropertyToData::iterator PropertyToDataIterator;
+
+    const PropertyToDataIterator it = d_ptr->m_values.find(property);
+    if (it == d_ptr->m_values.end())
+        return;
+
+    Q_ASSERT(param.getType() == ito::ParamBase::Double);
+
+    property->setEnabled(!(param.getFlags() & ito::ParamBase::Readonly));
+
+    PrivateData &data = it.value();
+    ito::DoubleMeta *meta = data.param.getMetaT<ito::DoubleMeta>();
+    const ito::DoubleMeta *metaNew = param.getMetaT<const ito::DoubleMeta>();
+
+    if ((meta && metaNew && (*meta != *metaNew)) || \
+        (meta && !metaNew) || \
+        (!meta && metaNew))
+    {
+        data.param = param;
+        emit metaChanged(property, *param.getMetaT<ito::DoubleMeta>());
+        emit valueChanged(property, data.param.getVal<ito::float64>());
+        emit propertyChanged(property);
+    }
+    else if (data.param != param)
+    {
+        data.param.copyValueFrom(&param);
+        emit valueChanged(property, data.param.getVal<ito::float64>());
+        emit propertyChanged(property);
+    }
+}
+
+//------------------------------------------------------------------------------
+void ParamDoublePropertyManager::setValue(QtProperty *property, double value)
+{
+    typedef AbstractParamPropertyManagerPrivate::Data PrivateData;
+    typedef QMap<const QtProperty *, PrivateData> PropertyToData;
+    typedef PropertyToData::iterator PropertyToDataIterator;
+
+    const PropertyToDataIterator it = d_ptr->m_values.find(property);
+    if (it == d_ptr->m_values.end())
+        return;
+
+    PrivateData &data = it.value();
+    if (data.param.getVal<ito::float64>() != value)
+    {
+        data.param.setVal<ito::float64>(value);
+        emit valueChanged(property, value);
+        emit propertyChanged(property);
+    }
+}
+
+//------------------------------------------------------------------------------
+/*!
+    \reimp
+*/
+QString ParamDoublePropertyManager::valueText(const QtProperty *property) const
+{
+    const AbstractParamPropertyManagerPrivate::PropertyValueMap::const_iterator it = d_ptr->m_values.constFind(property);
+    if (it == d_ptr->m_values.constEnd())
+        return QString();
+
+    const ito::Param &param = it.value().param;
+    const ito::DoubleMeta *meta = param.getMetaT<const ito::DoubleMeta>();
+    QString number;
+
+    if (meta)
+    {
+        double val = param.getVal<ito::float64>();
+
+        switch (meta->getDisplayNotation())
+        {
+        case ito::DoubleMeta::Automatic:
+            if (std::abs(val) > 100000)
+            {
+                number = QString::number(param.getVal<ito::float64>(), 'e', meta->getDisplayPrecision());
+            }
+            else
+            {
+                number = QString::number(param.getVal<ito::float64>(), 'f', meta->getDisplayPrecision());
+            }
+            break;
+        case ito::DoubleMeta::Fixed:
+            number = QString::number(param.getVal<ito::float64>(), 'f', meta->getDisplayPrecision());
+            break;
+        case ito::DoubleMeta::Scientific:
+            number = QString::number(param.getVal<ito::float64>(), 'e', meta->getDisplayPrecision());
+            break;
+        }
+    }
+    else
+    {
+        number= QString::number(param.getVal<ito::float64>());
+    }
+
+    if (meta)
+    {
+        if (meta->getRepresentation() == ito::ParamMeta::Boolean || \
+            (meta->getMin() == 0 && meta->getMax() == 1 && meta->getStepSize() == 1))
+        {
+            static const QString trueText = tr("True");
+            static const QString falseText = tr("False");
+            return param.getVal<int>() > 0 ? trueText : falseText;
+        }
+        else if (meta->getUnit().empty() == false)
+        {
+            return QString("%1 %2").arg(number).arg(meta->getUnit().data());
+        }
+    }
+
+    return number;
+}
+
+//------------------------------------------------------------------------------
+/*!
+    \reimp
+*/
+QIcon ParamDoublePropertyManager::valueIcon(const QtProperty *property) const
+{
+    const AbstractParamPropertyManagerPrivate::PropertyValueMap::const_iterator it = d_ptr->m_values.constFind(property);
+    if (it == d_ptr->m_values.constEnd())
+        return QIcon();
+
+    const ito::Param &param = it.value().param;
+    const ito::DoubleMeta *meta = param.getMetaT<const ito::DoubleMeta>();
+    if (meta && (meta->getRepresentation() == ito::ParamMeta::Boolean || \
+        (qFuzzyCompare(meta->getMin(), 0.0) && qFuzzyCompare(meta->getMax(), 1.0) && qFuzzyCompare(meta->getStepSize(), 1.0))))
+    {
+        static const QIcon checkedIcon = drawCheckBox(true);
+        static const QIcon uncheckedIcon = drawCheckBox(false);
+        return param.getVal<char>() > 0 ? checkedIcon : uncheckedIcon;
+    }
+
+    return QIcon();
+}
+
 //------------------------------------------------------------------------------
 ParamStringPropertyManager::ParamStringPropertyManager(QObject *parent /*= 0*/) :
 AbstractParamPropertyManager(parent)

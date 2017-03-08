@@ -97,6 +97,60 @@ private:
     Q_DISABLE_COPY(ParamIntPropertyManager)
 };
 
+/*
+Property Manager for parameters of type ito::ParamBase::Char
+*/
+class ITOMWIDGETS_EXPORT ParamCharPropertyManager : public AbstractParamPropertyManager
+{
+    Q_OBJECT
+public:
+    ParamCharPropertyManager(QObject *parent = 0);
+    ~ParamCharPropertyManager();
+
+protected:
+    QString valueText(const QtProperty *property) const;
+    QIcon valueIcon(const QtProperty *property) const;
+    void initializeProperty(QtProperty *property);
+
+Q_SIGNALS:
+    void valueChanged(QtProperty *property, char val);
+    void metaChanged(QtProperty *property, ito::CharMeta meta);
+
+public Q_SLOTS:
+    void setParam(QtProperty *property, const ito::Param &param);
+    void setValue(QtProperty *property, char value);
+
+private:
+    Q_DISABLE_COPY(ParamCharPropertyManager)
+};
+
+/*
+Property Manager for parameters of type ito::ParamBase::Double
+*/
+class ITOMWIDGETS_EXPORT ParamDoublePropertyManager : public AbstractParamPropertyManager
+{
+    Q_OBJECT
+public:
+    ParamDoublePropertyManager(QObject *parent = 0);
+    ~ParamDoublePropertyManager();
+
+protected:
+    QString valueText(const QtProperty *property) const;
+    QIcon valueIcon(const QtProperty *property) const;
+    void initializeProperty(QtProperty *property);
+
+Q_SIGNALS:
+    void valueChanged(QtProperty *property, double val);
+    void metaChanged(QtProperty *property, ito::DoubleMeta meta);
+
+public Q_SLOTS:
+    void setParam(QtProperty *property, const ito::Param &param);
+    void setValue(QtProperty *property, double value);
+
+private:
+    Q_DISABLE_COPY(ParamDoublePropertyManager)
+};
+
 
 /*
 Property Manager for parameters of type ito::ParamBase::String

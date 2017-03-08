@@ -47,7 +47,10 @@ class ITOMWIDGETS_EXPORT ParamEditorWidget : public QWidget
 {
     Q_OBJECT
 
+#if QT_VERSION < 0x050500
+    //for >= Qt 5.5.0 see Q_ENUM definition below
     Q_ENUMS(ResizeMode)
+#endif
 	Q_PROPERTY(QPointer<ito::AddInBase> plugin READ plugin WRITE setPlugin)
     Q_PROPERTY(int indentation READ indentation WRITE setIndentation)
     Q_PROPERTY(bool rootIsDecorated READ rootIsDecorated WRITE setRootIsDecorated)
@@ -56,6 +59,7 @@ class ITOMWIDGETS_EXPORT ParamEditorWidget : public QWidget
     Q_PROPERTY(ResizeMode resizeMode READ resizeMode WRITE setResizeMode)
     Q_PROPERTY(int splitterPosition READ splitterPosition WRITE setSplitterPosition)
     Q_PROPERTY(bool propertiesWithoutValueMarked READ propertiesWithoutValueMarked WRITE setPropertiesWithoutValueMarked)
+    Q_PROPERTY(bool readonly READ readonly WRITE setReadonly)
 
 public:
     enum ResizeMode
@@ -66,7 +70,11 @@ public:
         ResizeToContents
     };
 
+#if QT_VERSION >= 0x050500
+    //Q_ENUM exposes a meta object to the enumeration types, such that the key names for the enumeration
+    //values are always accessible.
     Q_ENUM(ResizeMode)
+#endif
 
     /**
      * \brief Constructor 
@@ -90,6 +98,9 @@ public:
 
     bool alternatingRowColors() const;
     void setAlternatingRowColors(bool enable);
+
+    bool readonly() const;
+    void setReadonly(bool enable);
 
     bool isHeaderVisible() const;
     void setHeaderVisible(bool visible);
@@ -122,6 +133,8 @@ protected:
 
     ito::RetVal addParam(const ito::Param &param);
     ito::RetVal addParamInt(const ito::Param &param, QtProperty *groupProperty);
+    ito::RetVal addParamChar(const ito::Param &param, QtProperty *groupProperty);
+    ito::RetVal addParamDouble(const ito::Param &param, QtProperty *groupProperty);
     ito::RetVal addParamString(const ito::Param &param, QtProperty *groupProperty);
     ito::RetVal addParamOthers(const ito::Param &param, QtProperty *groupProperty);
     ito::RetVal addParamInterval(const ito::Param &param, QtProperty *groupProperty);
@@ -138,6 +151,8 @@ private:
 
 private slots:
     void valueChanged(QtProperty* prop, int value);
+    void valueChanged(QtProperty* prop, char value);
+    void valueChanged(QtProperty* prop, double value);
     void valueChanged(QtProperty* prop, const QByteArray &value);
     void valueChanged(QtProperty* prop, int min, int max);
     void valueChanged(QtProperty* prop, int left, int top, int width, int height);
