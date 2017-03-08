@@ -486,12 +486,13 @@ QWidget *ParamIntervalPropertyFactory::createEditor(ParamIntervalPropertyManager
     QWidget *parent)
 {
     RangeWidget *editor = d_ptr->createEditor(property, parent);
+    editor->setTracking(false);
     const ito::Param &param = manager->param(property);
     const int* vals = param.getVal<const int*>();
     editor->setLimitsFromIntervalMeta(*(param.getMetaT<ito::IntervalMeta>()));
     editor->setValues(vals[0], vals[1]);
 
-    connect(editor, SIGNAL(rangeChanged(int, int)), this, SLOT(slotSetValue(int, int)));
+    connect(editor, SIGNAL(valuesChanged(int, int)), this, SLOT(slotSetValue(int, int)));
     connect(editor, SIGNAL(destroyed(QObject *)),
         this, SLOT(slotEditorDestroyed(QObject *)));
     return editor;

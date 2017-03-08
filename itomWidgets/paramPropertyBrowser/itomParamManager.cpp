@@ -438,7 +438,8 @@ ParamIntervalPropertyManager::~ParamIntervalPropertyManager()
 */
 void ParamIntervalPropertyManager::initializeProperty(QtProperty *property)
 {
-    d_ptr->m_values[property] = AbstractParamPropertyManagerPrivate::Data(ito::Param());
+    int vals[] = { 0, 0 };
+    d_ptr->m_values[property] = AbstractParamPropertyManagerPrivate::Data(ito::Param("", ito::ParamBase::IntArray, 2, vals, ""));
 }
 
 //------------------------------------------------------------------------------
@@ -463,7 +464,7 @@ void ParamIntervalPropertyManager::setParam(QtProperty *property, const ito::Par
     if (it == d_ptr->m_values.end())
         return;
 
-    Q_ASSERT(param.getType() == ito::ParamBase::String);
+    Q_ASSERT(param.getType() == (ito::ParamBase::IntArray & ito::paramTypeMask));
 
     property->setEnabled(!(param.getFlags() & ito::ParamBase::Readonly));
 
@@ -539,7 +540,17 @@ QString ParamIntervalPropertyManager::valueText(const QtProperty *property) cons
         return QString();
 
     const ito::Param &param = it.value().param;
-    return QLatin1String(param.getVal<const char*>());
+    const ito::IntervalMeta *meta = param.getMetaT<const ito::IntervalMeta>();
+
+    if (meta && meta->isIntervalNotRange())
+    {
+        return QString("[%1,%2)").arg(param.getVal<int*>()[0]).arg(param.getVal<int*>()[1]);
+    }
+    else
+    {
+        const int* vals = param.getVal<const int*>();
+        return QString("[%1,%2], size: %3").arg(vals[0]).arg(vals[1]).arg(vals[1] - vals[0] + 1);
+    }
 }
 
 
@@ -634,14 +645,14 @@ void ParamRectPropertyManager::initializeProperty(QtProperty *property)
     int vals[] = {0, 0, 0, 0};
     AbstractParamPropertyManager::d_ptr->m_values[property] = AbstractParamPropertyManagerPrivate::Data(ito::Param("", ito::ParamBase::IntArray, 4, vals, ""));
     QtProperty *widthProp = d_ptr->m_intervalPropertyManager->addProperty();
-    widthProp->setPropertyName(tr("Width"));
+    widthProp->setPropertyName(tr("width"));
     d_ptr->m_intervalPropertyManager->setValue(widthProp, 0, 0);
     d_ptr->m_propertyToWidth[property] = widthProp;
     d_ptr->m_widthToProperty[widthProp] = property;
     property->addSubProperty(widthProp);
 
     QtProperty *heightProp = d_ptr->m_intervalPropertyManager->addProperty();
-    heightProp->setPropertyName(tr("Top"));
+    heightProp->setPropertyName(tr("height"));
     d_ptr->m_intervalPropertyManager->setValue(heightProp, 0, 0);
     d_ptr->m_propertyToHeight[property] = heightProp;
     d_ptr->m_heightToProperty[heightProp] = property;
@@ -691,7 +702,7 @@ void ParamRectPropertyManager::setParam(QtProperty *property, const ito::Param &
     if (it == AbstractParamPropertyManager::d_ptr->m_values.end())
         return;
 
-    Q_ASSERT(param.getType() == ito::ParamBase::String);
+    Q_ASSERT(param.getType() == (ito::ParamBase::IntArray & ito::paramTypeMask));
 
     property->setEnabled(!(param.getFlags() & ito::ParamBase::Readonly));
 
@@ -703,11 +714,11 @@ void ParamRectPropertyManager::setParam(QtProperty *property, const ito::Param &
         (meta && !metaNew) || \
         (!meta && metaNew))
     {
-        const int* vals = data.param.getVal<const int*>();
         data.param = param;
+        const int* vals = data.param.getVal<const int*>();
         int vw[] = {vals[0], vals[0] + vals[2] - 1};
         ito::Param width("width", ito::ParamBase::IntArray, 2, vw, new ito::RangeMeta(metaNew->getWidthRangeMeta()), "");
-        d_ptr->m_intervalPropertyManager->setParam(d_ptr->m_propertyToHeight[property], width);
+        d_ptr->m_intervalPropertyManager->setParam(d_ptr->m_propertyToWidth[property], width);
         int vh[] = {vals[1], vals[1] + vals[3] - 1};
         ito::Param height("height", ito::ParamBase::IntArray, 2, vh, new ito::RangeMeta(metaNew->getHeightRangeMeta()), "");
         d_ptr->m_intervalPropertyManager->setParam(d_ptr->m_propertyToHeight[property], height);
@@ -719,6 +730,10 @@ void ParamRectPropertyManager::setParam(QtProperty *property, const ito::Param &
     {
         data.param.copyValueFrom(&param);          
         const int* vals = data.param.getVal<const int*>();
+
+        d_ptr->m_intervalPropertyManager->setValue(d_ptr->m_propertyToWidth[property], vals[0], vals[0] + vals[2] - 1);
+        d_ptr->m_intervalPropertyManager->setValue(d_ptr->m_propertyToHeight[property], vals[1], vals[1] + vals[3] - 1);
+
         emit valueChanged(property, vals[0], vals[1], vals[2], vals[3]);
         emit propertyChanged(property);
     }
@@ -769,10 +784,20 @@ QString ParamRectPropertyManager::valueText(const QtProperty *property) const
 
     const ito::Param &param = it.value().param;
     const int* vals = param.getVal<const int*>();
-    return QString("%1, %2, %3, %4").arg(vals[0]).arg(vals[1]).arg(vals[2]).arg(vals[3]);
+    return QString("x0:%1 y0:%2 w:%3 h:%4").arg(vals[0]).arg(vals[1]).arg(vals[2]).arg(vals[3]);
 }
 
+/*!
+Returns the manager that creates the nested \e width and \e height subproperties.
 
+In order to provide editing widgets for the mentioned
+subproperties in a property browser widget, this manager must be
+associated with an editor factory.
+*/
+ParamIntervalPropertyManager *ParamRectPropertyManager::subIntervalPropertyManager() const
+{
+    return d_ptr->m_intervalPropertyManager;
+}
 
 
 

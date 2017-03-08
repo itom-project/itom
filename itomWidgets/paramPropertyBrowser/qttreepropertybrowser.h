@@ -54,7 +54,10 @@ class QtTreePropertyBrowserPrivate;
 class ITOMWIDGETS_EXPORT QtTreePropertyBrowser : public QtAbstractPropertyBrowser
 {
     Q_OBJECT
+#if QT_VERSION < 0x050500
+    //for >= Qt 5.5.0 see Q_ENUM definition below
     Q_ENUMS(ResizeMode)
+#endif
     Q_PROPERTY(int indentation READ indentation WRITE setIndentation)
     Q_PROPERTY(bool rootIsDecorated READ rootIsDecorated WRITE setRootIsDecorated)
     Q_PROPERTY(bool alternatingRowColors READ alternatingRowColors WRITE setAlternatingRowColors)
@@ -64,6 +67,9 @@ class ITOMWIDGETS_EXPORT QtTreePropertyBrowser : public QtAbstractPropertyBrowse
     Q_PROPERTY(bool propertiesWithoutValueMarked READ propertiesWithoutValueMarked WRITE setPropertiesWithoutValueMarked)
 public:
 
+#if QT_VERSION >= 0x050500
+    //Q_ENUM exposes a meta object to the enumeration types, such that the key names for the enumeration
+    //values are always accessible.
     enum ResizeMode
     {
         Interactive,
@@ -71,6 +77,7 @@ public:
         Fixed,
         ResizeToContents
     };
+#endif
 
     QtTreePropertyBrowser(QWidget *parent = 0);
     ~QtTreePropertyBrowser();

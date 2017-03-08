@@ -171,6 +171,8 @@ public Q_SLOTS:
     void setParam(QtProperty *property, const ito::Param &param);
     void setValue(QtProperty *property, int left, int top, int width, int height);
 
+    ParamIntervalPropertyManager *subIntervalPropertyManager() const;
+
 protected:
     QString valueText(const QtProperty *property) const;
     void initializeProperty(QtProperty *property);
@@ -180,6 +182,9 @@ protected:
 private:
     Q_DECLARE_PRIVATE(ParamRectPropertyManager)
     Q_DISABLE_COPY(ParamRectPropertyManager)
+
+    Q_PRIVATE_SLOT(d_func(), void slotIntervalChanged(QtProperty *, int, int))
+    Q_PRIVATE_SLOT(d_func(), void slotPropertyDestroyed(QtProperty *))
 };
 
 /*

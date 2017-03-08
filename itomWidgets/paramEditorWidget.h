@@ -47,9 +47,27 @@ class ITOMWIDGETS_EXPORT ParamEditorWidget : public QWidget
 {
     Q_OBJECT
 
+    Q_ENUMS(ResizeMode)
 	Q_PROPERTY(QPointer<ito::AddInBase> plugin READ plugin WRITE setPlugin)
+    Q_PROPERTY(int indentation READ indentation WRITE setIndentation)
+    Q_PROPERTY(bool rootIsDecorated READ rootIsDecorated WRITE setRootIsDecorated)
+    Q_PROPERTY(bool alternatingRowColors READ alternatingRowColors WRITE setAlternatingRowColors)
+    Q_PROPERTY(bool headerVisible READ isHeaderVisible WRITE setHeaderVisible)
+    Q_PROPERTY(ResizeMode resizeMode READ resizeMode WRITE setResizeMode)
+    Q_PROPERTY(int splitterPosition READ splitterPosition WRITE setSplitterPosition)
+    Q_PROPERTY(bool propertiesWithoutValueMarked READ propertiesWithoutValueMarked WRITE setPropertiesWithoutValueMarked)
 
 public:
+    enum ResizeMode
+    {
+        Interactive,
+        Stretch,
+        Fixed,
+        ResizeToContents
+    };
+
+    Q_ENUM(ResizeMode)
+
     /**
      * \brief Constructor 
      *
@@ -63,6 +81,27 @@ public:
 
 	QPointer<ito::AddInBase> plugin() const;
 	void setPlugin(QPointer<ito::AddInBase> plugin);
+
+    int indentation() const;
+    void setIndentation(int i);
+
+    bool rootIsDecorated() const;
+    void setRootIsDecorated(bool show);
+
+    bool alternatingRowColors() const;
+    void setAlternatingRowColors(bool enable);
+
+    bool isHeaderVisible() const;
+    void setHeaderVisible(bool visible);
+
+    ResizeMode resizeMode() const;
+    void setResizeMode(ResizeMode mode);
+
+    int splitterPosition() const;
+    void setSplitterPosition(int position);
+
+    void setPropertiesWithoutValueMarked(bool mark);
+    bool propertiesWithoutValueMarked() const;
 
 protected:
     /**
