@@ -3789,7 +3789,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../common/addInInterface.h" line="+1012"/>
+        <location filename="../../common/addInInterface.h" line="+1025"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation>Nicht-Inizialisierte Vektoren bei Pflichtparametern!</translation>
     </message>
@@ -5638,12 +5638,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <name>ito::IOHelper</name>
     <message>
         <location filename="../helper/IOHelper.cpp" line="+88"/>
-        <location line="+872"/>
+        <location line="+874"/>
         <source>Multiple plugins</source>
         <translation type="unfinished">Multiple Plugins</translation>
     </message>
     <message>
-        <location line="-872"/>
+        <location line="-874"/>
         <source>Multiple plugins provide methods to load the file of type &apos;%1&apos;. Please choose one.</source>
         <translation type="unfinished">Multiple Plugins unterstüzen Methoden um Dateien des Typs &apos;%1&apos; zu laden. Bitte einen auswählen.</translation>
     </message>
@@ -5668,7 +5668,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Daten importieren</translation>
     </message>
     <message>
-        <location line="+447"/>
+        <location line="+449"/>
         <source>PolygonMesh and PointCloud not available since support of PointCloudLibrary is disabled in this version.</source>
         <translation>Polygonnetze und Punktewolken sind in dieser Version von PointCloudLibrary nicht verfügbar.</translation>
     </message>
@@ -5766,7 +5766,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Matlab-Matrizen (*.mat)</translation>
     </message>
     <message>
-        <location line="-1033"/>
+        <location line="-1035"/>
         <source>File %1 does not exist</source>
         <translation>Die Datei &apos;%1&apos; existiert nicht</translation>
     </message>
@@ -5811,12 +5811,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     </message>
     <message>
         <location line="+11"/>
-        <location line="+184"/>
+        <location line="+186"/>
         <source>Suffix must be *.idc or *.mat</source>
         <translation>Dateiendung muss *.idc oder *.mat sein</translation>
     </message>
     <message>
-        <location line="-128"/>
+        <location line="-130"/>
         <source>File not found</source>
         <translation>Datei nicht gefunden</translation>
     </message>
@@ -5826,7 +5826,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="unfinished">Variablen können nicht importiert werden während Python läuft</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+30"/>
         <source>Variable name of imported dictionary</source>
         <translation type="unfinished">Variablenname für das zu importierende &apos;Dictionary&apos;</translation>
     </message>
@@ -6714,13 +6714,13 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
     </message>
     <message>
         <location line="+84"/>
-        <location line="+993"/>
+        <location line="+1015"/>
         <location line="+99"/>
         <source>It is not allowed to pickle a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1058"/>
+        <location line="-1080"/>
         <location line="+33"/>
         <source>Could not save dataObject since it is not available.</source>
         <translation type="unfinished"></translation>
@@ -6746,7 +6746,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+117"/>
+        <location line="+139"/>
         <location line="+103"/>
         <location line="+96"/>
         <source>Values cannot be saved since workspace dictionary not available.</source>
@@ -6758,7 +6758,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4385"/>
+        <location line="-4407"/>
         <source>The itom subdirectory of Python &apos;%s&apos; is not existing.
 Please change setting in the property dialog of itom.</source>
         <translation type="unfinished"></translation>
@@ -6934,7 +6934,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2506"/>
+        <location line="+2528"/>
         <source>Error while transforming value &apos;%s&apos; to PyObject*.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7029,7 +7029,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-1491"/>
+        <location line="-1513"/>
         <source>Given value is empty. No save to matlab possible.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7039,7 +7039,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+198"/>
+        <location line="+220"/>
         <location line="+103"/>
         <source>It is not allowed to check names of variables in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
         <translation type="unfinished"></translation>
@@ -7209,7 +7209,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation></translation>
     </message>
     <message>
-        <location line="+880"/>
+        <location line="+882"/>
         <source>&apos;%1&apos; was not found</source>
         <translation>&apos;%1&apos; wurde nicht gefunden</translation>
     </message>
@@ -7225,7 +7225,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>%1 Vorkommen ersetzt</translation>
     </message>
     <message>
-        <location line="-964"/>
+        <location line="-966"/>
         <source>Ctrl+H</source>
         <comment>QShortcut</comment>
         <translation></translation>
@@ -7520,12 +7520,12 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Symbolleiste Datei</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>Edit Toolbar</source>
         <translation>Symbolleiste Bearbeiten</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>Script Toolbar</source>
         <translation>Symbolleiste Skript</translation>
     </message>
