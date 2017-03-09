@@ -37,6 +37,7 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 class ParamEditorModel;
 class ParamEditorWidgetPrivate;
 class QtProperty;
+class QtBrowserItem;
 class QTimerEvent;
 
 namespace ito {
@@ -60,6 +61,7 @@ class ITOMWIDGETS_EXPORT ParamEditorWidget : public QWidget
     Q_PROPERTY(int splitterPosition READ splitterPosition WRITE setSplitterPosition)
     Q_PROPERTY(bool propertiesWithoutValueMarked READ propertiesWithoutValueMarked WRITE setPropertiesWithoutValueMarked)
     Q_PROPERTY(bool readonly READ readonly WRITE setReadonly)
+    Q_PROPERTY(bool showDescriptions READ showDescriptions WRITE setShowDescriptions)
 
 public:
     enum ResizeMode
@@ -114,6 +116,9 @@ public:
     void setPropertiesWithoutValueMarked(bool mark);
     bool propertiesWithoutValueMarked() const;
 
+    void setShowDescriptions(bool show);
+    bool showDescriptions() const;
+
 protected:
     /**
     * MessageLevel enumeration
@@ -156,6 +161,8 @@ private slots:
     void valueChanged(QtProperty* prop, const QByteArray &value);
     void valueChanged(QtProperty* prop, int min, int max);
     void valueChanged(QtProperty* prop, int left, int top, int width, int height);
+
+    void currentItemChanged(QtBrowserItem *);
 
     void parametersChanged(QMap<QString, ito::Param> parameters);
 

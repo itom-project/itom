@@ -27,6 +27,8 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qlayout.h>
 #include <qmessagebox.h>
 #include <qtimer.h>
+#include <qtextedit.h>
+#include <qsplitter.h>
 
 #include "common/addInInterface.h"
 
@@ -43,6 +45,7 @@ class ParamEditorWidgetPrivate
 public:
     ParamEditorWidgetPrivate()
         : m_pBrowser(NULL),
+        m_pTextEdit(NULL),
         m_pIntManager(NULL),
         m_pCharManager(NULL),
         m_pDoubleManager(NULL),
@@ -50,9 +53,15 @@ public:
         m_pOtherManager(NULL),
         m_pIntervalManager(NULL),
         m_pRectManager(NULL),
+        m_pIntFactory(NULL),
+        m_pCharFactory(NULL),
+        m_pDoubleFactory(NULL),
+        m_pStringFactory(NULL),
+        m_pIntervalFactory(NULL),
         m_timerID(-1),
         m_isChanging(false),
-        m_readonly(false)
+        m_readonly(false),
+        m_showinfo(false)
     {};
 
     void clearGroups()
@@ -84,6 +93,7 @@ public:
 
     QPointer<ito::AddInBase> m_plugin;
     QtTreePropertyBrowser *m_pBrowser;
+    QTextEdit *m_pTextEdit;
 
     ito::ParamIntPropertyManager *m_pIntManager;
     ito::ParamCharPropertyManager *m_pCharManager;
@@ -96,6 +106,8 @@ public:
 
     //factories, responsible for editing properties.
     ito::ParamIntPropertyFactory *m_pIntFactory;
+    ito::ParamCharPropertyFactory *m_pCharFactory;
+    ito::ParamDoublePropertyFactory *m_pDoubleFactory;
     ito::ParamStringPropertyFactory *m_pStringFactory;
     ito::ParamIntervalPropertyFactory *m_pIntervalFactory;
 
@@ -105,6 +117,7 @@ public:
     int m_timerID;
     bool m_isChanging;
     bool m_readonly;
+    bool m_showinfo;
 };
 
 //-----------------------------------------------------------------------
@@ -124,11 +137,11 @@ ParamEditorWidget::ParamEditorWidget(QWidget* parent /*= 0*/) :
 
     d->m_pCharManager = new ito::ParamCharPropertyManager(this);
     connect(d->m_pCharManager, SIGNAL(valueChanged(QtProperty *, char)), this, SLOT(valueChanged(QtProperty *, char)));
-    //d->m_pCharFactory = new ito::ParamCharPropertyFactory(this);
+    d->m_pCharFactory = new ito::ParamCharPropertyFactory(this);
 
     d->m_pDoubleManager = new ito::ParamDoublePropertyManager(this);
     connect(d->m_pDoubleManager, SIGNAL(valueChanged(QtProperty *, double)), this, SLOT(valueChanged(QtProperty *, double)));
-    //d->m_pDoubleFactory = new ito::ParamDoublePropertyFactory(this);
+    d->m_pDoubleFactory = new ito::ParamDoublePropertyFactory(this);
 
     d->m_pStringManager = new ito::ParamStringPropertyManager(this);
     connect(d->m_pStringManager, SIGNAL(valueChanged(QtProperty *, QByteArray)), this, SLOT(valueChanged(QtProperty *, QByteArray)));
@@ -147,10 +160,20 @@ ParamEditorWidget::ParamEditorWidget(QWidget* parent /*= 0*/) :
     d_ptr->m_readonly = true;
     setReadonly(false);
 
-    QHBoxLayout *hboxLayout = new QHBoxLayout();
-    hboxLayout->setMargin(0);
-    hboxLayout->addWidget(d->m_pBrowser);
-    setLayout(hboxLayout);
+    d->m_pTextEdit = new QTextEdit(this);
+    d->m_pTextEdit->setVisible(d_ptr->m_showinfo);
+    d->m_pTextEdit->setReadOnly(true);
+    connect(d->m_pBrowser, SIGNAL(currentItemChanged(QtBrowserItem*)), this, SLOT(currentItemChanged(QtBrowserItem*)));
+
+    QVBoxLayout *vboxLayout = new QVBoxLayout();
+    vboxLayout->setMargin(0);
+    QSplitter *splitter = new QSplitter(parent);
+    splitter->setOrientation(Qt::Vertical);
+    splitter->addWidget(d->m_pBrowser);
+    splitter->addWidget(d->m_pTextEdit);
+    splitter->setStretchFactor(0, 3);
+    vboxLayout->addWidget(splitter);
+    setLayout(vboxLayout);
 
 }
 
@@ -159,6 +182,8 @@ ParamEditorWidget::~ParamEditorWidget()
 {
     Q_D(ParamEditorWidget);
     DELETE_AND_SET_NULL(d->m_pIntFactory);
+    DELETE_AND_SET_NULL(d->m_pCharFactory);
+    DELETE_AND_SET_NULL(d->m_pDoubleFactory);
     DELETE_AND_SET_NULL(d->m_pStringFactory);
     DELETE_AND_SET_NULL(d->m_pIntervalFactory);
     DELETE_AND_SET_NULL(d->m_pIntManager);
@@ -248,13 +273,28 @@ void ParamEditorWidget::setReadonly(bool enable)
         else
         {
             d->m_pBrowser->setFactoryForManager(d->m_pIntManager, d->m_pIntFactory);
-            //d->m_pBrowser->setFactoryForManager(d->m_pIntManager, d->m_pCharFactory);
-            //d->m_pBrowser->setFactoryForManager(d->m_pIntManager, d->m_pDoubleFactory);
+            d->m_pBrowser->setFactoryForManager(d->m_pCharManager, d->m_pCharFactory);
+            d->m_pBrowser->setFactoryForManager(d->m_pDoubleManager, d->m_pDoubleFactory);
             d->m_pBrowser->setFactoryForManager(d->m_pStringManager, d->m_pStringFactory);
             d->m_pBrowser->setFactoryForManager(d->m_pIntervalManager, d->m_pIntervalFactory);
             d->m_pBrowser->setFactoryForManager(d->m_pRectManager->subIntervalPropertyManager(), d->m_pIntervalFactory);
         }
     }
+}
+
+//-----------------------------------------------------------------------
+void ParamEditorWidget::setShowDescriptions(bool show)
+{
+    Q_D(ParamEditorWidget);
+    d_ptr->m_showinfo = show;
+    d_ptr->m_pTextEdit->setVisible(show);
+}
+
+//-----------------------------------------------------------------------
+bool ParamEditorWidget::showDescriptions() const
+{
+    Q_D(const ParamEditorWidget);
+    return d_ptr->m_showinfo;
 }
 
 //-----------------------------------------------------------------------
@@ -861,7 +901,6 @@ ito::RetVal ParamEditorWidget::observeInvocation(ItomSharedSemaphore *waitCond, 
 //-------------------------------------------------------------------------------------------------------------------------------------------------
 void ParamEditorWidget::parametersChanged(QMap<QString, ito::Param> parameters)
 {
-    qDebug() << "drin";
     Q_D(ParamEditorWidget);
     if (!d_ptr->m_isChanging)
     {
@@ -882,5 +921,20 @@ void ParamEditorWidget::parametersChanged(QMap<QString, ito::Param> parameters)
         }
         d_ptr->m_isChanging = false;
     }
-    qDebug() << "draußen";
+}
+
+
+//-------------------------------------------------------------------------------------------------------------------------------------------------
+void ParamEditorWidget::currentItemChanged(QtBrowserItem *item)
+{
+    Q_D(ParamEditorWidget);
+    if (item)
+    {
+        d_ptr->m_pTextEdit->setText(item->property()->statusTip());
+    }
+    else
+    {
+        d_ptr->m_pTextEdit->setText("");
+    }
+
 }

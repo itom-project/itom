@@ -59,6 +59,53 @@ private:
 };
 
 
+
+class ParamDoublePropertyFactoryPrivate;
+
+class ITOMWIDGETS_EXPORT ParamDoublePropertyFactory : public QtAbstractEditorFactory<ParamDoublePropertyManager>
+{
+    Q_OBJECT
+public:
+    ParamDoublePropertyFactory(QObject *parent = 0);
+    ~ParamDoublePropertyFactory();
+protected:
+    void connectPropertyManager(ParamDoublePropertyManager *manager);
+    QWidget *createEditor(ParamDoublePropertyManager *manager, QtProperty *property, QWidget *parent);
+    void disconnectPropertyManager(ParamDoublePropertyManager *manager);
+private:
+    ParamDoublePropertyFactoryPrivate *d_ptr;
+    Q_DECLARE_PRIVATE(ParamDoublePropertyFactory)
+    Q_DISABLE_COPY(ParamDoublePropertyFactory)
+    Q_PRIVATE_SLOT(d_func(), void slotPropertyChanged(QtProperty *, double))
+    Q_PRIVATE_SLOT(d_func(), void slotMetaChanged(QtProperty *, const ito::DoubleMeta &))
+    Q_PRIVATE_SLOT(d_func(), void slotSetValue(double))
+    Q_PRIVATE_SLOT(d_func(), void slotEditorDestroyed(QObject *))
+};
+
+
+class ParamCharPropertyFactoryPrivate;
+
+class ITOMWIDGETS_EXPORT ParamCharPropertyFactory : public QtAbstractEditorFactory<ParamCharPropertyManager>
+{
+    Q_OBJECT
+public:
+    ParamCharPropertyFactory(QObject *parent = 0);
+    ~ParamCharPropertyFactory();
+protected:
+    void connectPropertyManager(ParamCharPropertyManager *manager);
+    QWidget *createEditor(ParamCharPropertyManager *manager, QtProperty *property, QWidget *parent);
+    void disconnectPropertyManager(ParamCharPropertyManager *manager);
+private:
+    ParamCharPropertyFactoryPrivate *d_ptr;
+    Q_DECLARE_PRIVATE(ParamCharPropertyFactory)
+    Q_DISABLE_COPY(ParamCharPropertyFactory)
+    Q_PRIVATE_SLOT(d_func(), void slotPropertyChanged(QtProperty *, char))
+    Q_PRIVATE_SLOT(d_func(), void slotMetaChanged(QtProperty *, const ito::CharMeta &))
+    Q_PRIVATE_SLOT(d_func(), void slotSetValue(char))
+    Q_PRIVATE_SLOT(d_func(), void slotEditorDestroyed(QObject *))
+};
+
+
 class ParamStringPropertyFactoryPrivate;
 
 class ITOMWIDGETS_EXPORT ParamStringPropertyFactory : public QtAbstractEditorFactory<ParamStringPropertyManager>

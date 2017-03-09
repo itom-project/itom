@@ -72,7 +72,7 @@ INCLUDE_DIRECTORIES(
     ${Qt5Widgets_INCLUDE_DIRS}
     ${Qt5Designer_INCLUDE_DIRS}
     ${VISUALLEAKDETECTOR_INCLUDE_DIR}   
-	${OpenCV_DIR}/include
+    ${OpenCV_DIR}/include
 )
 
 LINK_DIRECTORIES(
@@ -80,30 +80,34 @@ LINK_DIRECTORIES(
 )
 
 SET(paramPropertyBrowser_SOURCES
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtbuttonpropertybrowser.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtbuttonpropertybrowser.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qteditorfactory.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qteditorfactory.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtgroupboxpropertybrowser.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtgroupboxpropertybrowser.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertybrowser.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertybrowser.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertybrowserutils.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertybrowserutils_p.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertymanager.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertymanager.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qttreepropertybrowser.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qttreepropertybrowser.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtvariantproperty.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtvariantproperty.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamManager.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamManager.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramIntWidget.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramIntWidget.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramStringWidget.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/paramStringWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtbuttonpropertybrowser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtbuttonpropertybrowser.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qteditorfactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qteditorfactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtgroupboxpropertybrowser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtgroupboxpropertybrowser.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertybrowser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertybrowser.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertybrowserutils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertybrowserutils_p.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertymanager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtpropertymanager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qttreepropertybrowser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qttreepropertybrowser.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtvariantproperty.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qtvariantproperty.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramIntWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramIntWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramDoubleWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramDoubleWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramCharWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramCharWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramStringWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/paramStringWidget.cpp
 )
 
 SET(paramPropertyBrowser_MOC_SOURCES
@@ -203,6 +207,8 @@ SET(paramPropertyBrowser_HEADERS_MOC_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamManager.h
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.h
   ${CMAKE_CURRENT_SOURCE_DIR}/paramIntWidget.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramCharWidget.h
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramDoubleWidget.h
   ${CMAKE_CURRENT_SOURCE_DIR}/paramStringWidget.h
 )
 
@@ -214,6 +220,8 @@ SET(paramPropertyBrowser_CPP_MOC_SOURCES
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/itomParamFactory.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/paramPropertyBrowser/qttreepropertybrowser.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/paramIntWidget.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramCharWidget.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/paramDoubleWidget.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/paramStringWidget.cpp
 )
 
