@@ -24,6 +24,7 @@
     <file>icons/run.png</file>
     <file>icons/motorAxisController.png</file>
     <file>icons/statusLed.png</file>
+    <file>icons/paramEditorWidget.png</file>
   </qresource>
   <qresource prefix="/trolltech/qtpropertybrowser">
     <file>icons/cursor-arrow.png</file>

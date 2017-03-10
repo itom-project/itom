@@ -50,7 +50,7 @@ QString ParamEditorFactory::domXml() const
 // --------------------------------------------------------------------------
 QIcon ParamEditorFactory::icon() const
 {
-    return QIcon(":/icons/bucket.png");
+    return QIcon(":/icons/paramEditorWidget.png");
 }
 
 // --------------------------------------------------------------------------

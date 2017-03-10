@@ -62,6 +62,7 @@ class ITOMWIDGETS_EXPORT ParamEditorWidget : public QWidget
     Q_PROPERTY(bool propertiesWithoutValueMarked READ propertiesWithoutValueMarked WRITE setPropertiesWithoutValueMarked)
     Q_PROPERTY(bool readonly READ readonly WRITE setReadonly)
     Q_PROPERTY(bool showDescriptions READ showDescriptions WRITE setShowDescriptions)
+    Q_PROPERTY(QStringList filteredCategories READ filteredCategories WRITE setFilteredCategories)
 
 public:
     enum ResizeMode
@@ -119,6 +120,9 @@ public:
     void setShowDescriptions(bool show);
     bool showDescriptions() const;
 
+    void setFilteredCategories(const QStringList &filteredCategories);
+    QStringList filteredCategories() const;
+
 protected:
     /**
     * MessageLevel enumeration
@@ -144,6 +148,11 @@ protected:
     ito::RetVal addParamOthers(const ito::Param &param, QtProperty *groupProperty);
     ito::RetVal addParamInterval(const ito::Param &param, QtProperty *groupProperty);
     ito::RetVal addParamRect(const ito::Param &param, QtProperty *groupProperty);
+    ito::RetVal addParamIntArray(const ito::Param &param, QtProperty *groupProperty);
+    ito::RetVal addParamCharArray(const ito::Param &param, QtProperty *groupProperty);
+    ito::RetVal addParamDoubleArray(const ito::Param &param, QtProperty *groupProperty);
+
+    ito::RetVal loadPlugin(QPointer<ito::AddInBase> plugin);
 
 protected:
     void timerEvent(QTimerEvent *event);
@@ -158,6 +167,9 @@ private slots:
     void valueChanged(QtProperty* prop, int value);
     void valueChanged(QtProperty* prop, char value);
     void valueChanged(QtProperty* prop, double value);
+    void valueChanged(QtProperty* prop, int num, ito::int8* values);
+    void valueChanged(QtProperty* prop, int num, ito::int32* values);
+    void valueChanged(QtProperty* prop, int num, ito::float64* values);
     void valueChanged(QtProperty* prop, const QByteArray &value);
     void valueChanged(QtProperty* prop, int min, int max);
     void valueChanged(QtProperty* prop, int left, int top, int width, int height);

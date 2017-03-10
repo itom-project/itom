@@ -241,6 +241,121 @@ private:
     Q_PRIVATE_SLOT(d_func(), void slotPropertyDestroyed(QtProperty *))
 };
 
+
+class ParamCharArrayPropertyManagerPrivate;
+
+/*
+Property Manager for parameters of type ito::ParamBase::CharArray
+*/
+class ITOMWIDGETS_EXPORT ParamCharArrayPropertyManager : public AbstractParamPropertyManager
+{
+    Q_OBJECT
+public:
+    ParamCharArrayPropertyManager(QObject *parent = 0);
+    ~ParamCharArrayPropertyManager();
+
+    typedef ito::int8 DataType;
+
+Q_SIGNALS:
+    void valueChanged(QtProperty *property, int num, const ito::int8* values);
+    void metaChanged(QtProperty *property, ito::CharArrayMeta meta);
+
+public Q_SLOTS:
+    void setParam(QtProperty *property, const ito::Param &param);
+    void setValue(QtProperty *property, int num, const ito::int8* values);
+
+    ParamCharPropertyManager *subIntervalPropertyManager() const;
+
+protected:
+    QString valueText(const QtProperty *property) const;
+    void initializeProperty(QtProperty *property);
+    virtual void uninitializeProperty(QtProperty *property);
+    ParamCharArrayPropertyManagerPrivate *d_ptr;
+
+private:
+    Q_DECLARE_PRIVATE(ParamCharArrayPropertyManager)
+    Q_DISABLE_COPY(ParamCharArrayPropertyManager)
+
+    Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QtProperty *, ito::int8))
+    Q_PRIVATE_SLOT(d_func(), void slotPropertyDestroyed(QtProperty *))
+};
+
+class ParamIntArrayPropertyManagerPrivate;
+
+/*
+Property Manager for parameters of type ito::ParamBase::IntArray
+*/
+class ITOMWIDGETS_EXPORT ParamIntArrayPropertyManager : public AbstractParamPropertyManager
+{
+    Q_OBJECT
+public:
+    ParamIntArrayPropertyManager(QObject *parent = 0);
+    ~ParamIntArrayPropertyManager();
+
+    typedef ito::int32 DataType;
+
+Q_SIGNALS:
+    void valueChanged(QtProperty *property, int num, const ito::int32* values);
+    void metaChanged(QtProperty *property, ito::IntArrayMeta meta);
+
+public Q_SLOTS:
+    void setParam(QtProperty *property, const ito::Param &param);
+    void setValue(QtProperty *property, int num, const ito::int32* values);
+
+    ParamIntPropertyManager *subIntervalPropertyManager() const;
+
+protected:
+    QString valueText(const QtProperty *property) const;
+    void initializeProperty(QtProperty *property);
+    virtual void uninitializeProperty(QtProperty *property);
+    ParamIntArrayPropertyManagerPrivate *d_ptr;
+
+private:
+    Q_DECLARE_PRIVATE(ParamIntArrayPropertyManager)
+    Q_DISABLE_COPY(ParamIntArrayPropertyManager)
+
+    Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QtProperty *, ito::int32))
+    Q_PRIVATE_SLOT(d_func(), void slotPropertyDestroyed(QtProperty *))
+};
+
+class ParamDoubleArrayPropertyManagerPrivate;
+
+/*
+Property Manager for parameters of type ito::ParamBase::DoubleArray
+*/
+class ITOMWIDGETS_EXPORT ParamDoubleArrayPropertyManager : public AbstractParamPropertyManager
+{
+    Q_OBJECT
+public:
+    ParamDoubleArrayPropertyManager(QObject *parent = 0);
+    ~ParamDoubleArrayPropertyManager();
+
+    typedef ito::float64 DataType;
+
+Q_SIGNALS:
+    void valueChanged(QtProperty *property, int num, const ito::float64* values);
+    void metaChanged(QtProperty *property, ito::DoubleArrayMeta meta);
+
+public Q_SLOTS:
+    void setParam(QtProperty *property, const ito::Param &param);
+    void setValue(QtProperty *property, int num, const ito::float64* values);
+
+    ParamDoublePropertyManager *subIntervalPropertyManager() const;
+
+protected:
+    QString valueText(const QtProperty *property) const;
+    void initializeProperty(QtProperty *property);
+    virtual void uninitializeProperty(QtProperty *property);
+    ParamDoubleArrayPropertyManagerPrivate *d_ptr;
+
+private:
+    Q_DECLARE_PRIVATE(ParamDoubleArrayPropertyManager)
+    Q_DISABLE_COPY(ParamDoubleArrayPropertyManager)
+
+    Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QtProperty *, ito::float64))
+    Q_PRIVATE_SLOT(d_func(), void slotPropertyDestroyed(QtProperty *))
+};
+
 /*
 Property Manager for parameters of type ito::ParamBase::HWRef, ito::ParamBase::DObjPtr,
 ito::ParamBase::PolygonMeshPtr, ito::ParamBase::PointCloudPtr, ito::ParamBase::PointPtr
@@ -262,6 +377,8 @@ public Q_SLOTS:
 private:
     Q_DISABLE_COPY(ParamOtherPropertyManager)
 };
+
+
 
 } //end namespace ito
 
