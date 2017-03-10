@@ -1296,7 +1296,7 @@ QString ParamCharArrayPropertyManager::valueText(const QtProperty *property) con
     case 3:
         return QString("[%1,%2,%3]").arg(vals[0]).arg(vals[1]).arg(vals[2]);
     default:
-        return QString("%i values").arg(len);
+        return QString("%1 values").arg(len);
     }
 }
 
@@ -1513,7 +1513,7 @@ QString ParamIntArrayPropertyManager::valueText(const QtProperty *property) cons
     case 3:
         return QString("[%1,%2,%3]").arg(vals[0]).arg(vals[1]).arg(vals[2]);
     default:
-        return QString("%i values").arg(len);
+        return QString("%1 values").arg(len);
     }
 }
 
@@ -1727,7 +1727,7 @@ QString ParamDoubleArrayPropertyManager::valueText(const QtProperty *property) c
     case 3:
         return QString("[%1,%2,%3]").arg(vals[0]).arg(vals[1]).arg(vals[2]);
     default:
-        return QString("%i values").arg(len);
+        return QString("%1 values").arg(len);
     }
 }
 
