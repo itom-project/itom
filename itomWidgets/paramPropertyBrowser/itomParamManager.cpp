@@ -1183,7 +1183,8 @@ ParamCharArrayPropertyManager::~ParamCharArrayPropertyManager()
 */
 void ParamCharArrayPropertyManager::initializeProperty(QtProperty *property)
 {
-    AbstractParamPropertyManager::d_ptr->m_values[property] = AbstractParamPropertyManagerPrivate::Data(ito::Param("", ito::ParamBase::CharArray, 0, NULL, NULL, ""));
+    char *ptr = NULL;
+    AbstractParamPropertyManager::d_ptr->m_values[property] = AbstractParamPropertyManagerPrivate::Data(ito::Param("", ito::ParamBase::CharArray, 0, ptr, NULL, ""));
 }
 
 //------------------------------------------------------------------------------
@@ -1399,7 +1400,8 @@ ParamIntArrayPropertyManager::~ParamIntArrayPropertyManager()
 */
 void ParamIntArrayPropertyManager::initializeProperty(QtProperty *property)
 {
-    AbstractParamPropertyManager::d_ptr->m_values[property] = AbstractParamPropertyManagerPrivate::Data(ito::Param("", ito::ParamBase::IntArray, 0, NULL, NULL, ""));
+    DataType *ptr = NULL;
+    AbstractParamPropertyManager::d_ptr->m_values[property] = AbstractParamPropertyManagerPrivate::Data(ito::Param("", ito::ParamBase::IntArray, 0, ptr, NULL, ""));
 }
 
 //------------------------------------------------------------------------------
@@ -1612,7 +1614,8 @@ ParamDoubleArrayPropertyManager::~ParamDoubleArrayPropertyManager()
 */
 void ParamDoubleArrayPropertyManager::initializeProperty(QtProperty *property)
 {
-    AbstractParamPropertyManager::d_ptr->m_values[property] = AbstractParamPropertyManagerPrivate::Data(ito::Param("", ito::ParamBase::DoubleArray, 0, NULL, NULL, ""));
+    DataType *ptr = NULL;
+    AbstractParamPropertyManager::d_ptr->m_values[property] = AbstractParamPropertyManagerPrivate::Data(ito::Param("", ito::ParamBase::DoubleArray, 0, ptr, NULL, ""));
 }
 
 //------------------------------------------------------------------------------
