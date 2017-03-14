@@ -22,6 +22,9 @@ set 'physicalCoordinates' to False.
 
 import numpy as np
 
+def pickerChangedSlot(pickerIdx, posX, posY, curveIdx):
+    print("picker %i changed. New pos: (%.2f, %.2f), curve: %i" % (pickerIdx, posX, posY, curveIdx))
+
 #create demo data
 #1d sine
 sine = np.sin(np.arange(0, 10 * np.pi, (1/20) * np.pi))
@@ -33,6 +36,8 @@ twosines[1,:] = sine2
 twosines.axisScales=(1, np.pi/20)
 
 [i,h] = plot(twosines, 'itom1dqwtplot')
+
+h.connect("pickerChanged(int,double,double,int)",pickerChangedSlot)
 
 #increase the maximum number of pickers to 7
 h["pickerLimit"] = 7
