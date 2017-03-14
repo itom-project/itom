@@ -27,7 +27,7 @@ itom
 * generic snapshot dialog added that is available for all camera instances (e.g. by their context menu)
 * improved drag&drop of files to the console. Hourglass is shown as cursor while a file is loaded.
 * documentation added how to directly start the package manager with an argument to qitom.exe
-* bugfix in matrix multiplication operator of DataObject: The data object has to be reallocated both for * and *= operators if the size of the multiplied matrix is different than the size of
+* bugfix in matrix multiplication operator of DataObject: The data object has to be reallocated both for :literal:'*' and :literal:'*'= operators if the size of the multiplied matrix is different than the size of
 * method meanValue implemented in dataObjectFuncs using the quick median algorithm.
 * added available colorMaps in plot documentation
 * maximum number of threads that should be used for algorithms and filter plugins can be set in property dialog. In plugins use ito::AddInBase::getMaximumThreadCount() (static) to request this value. It is always bound between 1 and the maximum number of avaiable threads on the computer.
@@ -101,7 +101,7 @@ itom
 * methods *isNotZero*, *isFinite*, *isNaN* and *isInf* moved from dataobj.h to numeric.h of Common library
 * :py:meth:`~itom.dataObject.createMask` added to create a mask object from one or multiple shapes.
 * enumerations based on QFlags (bitmask) can now be set via property in Python. These properties are now also changeable in property editor toolbox.
-* SDK adapted to support shapes in plots (rectangles, circles, points...). These shapes are accessible via :py:class:`itom.shape`and defined in Shape library. Old-style primitives (dataObject based) in plots replaced by shapes.
+* SDK adapted to support shapes in plots (rectangles, circles, points...). These shapes are accessible via :py:class:`itom.shape` and defined in Shape library. Old-style primitives (dataObject based) in plots replaced by shapes.
 * Implementation for generic toolboxes for markers, pickers and shapes of plots
 * many bugfixes
 
@@ -155,7 +155,7 @@ Plugins
 * ThorlabsISM plugin based on Kinesis 1.7.0 added (Thorlabs Integrated Stepper Motor)
 * ThorlabsBP plugin based on Kinesis 1.7.0 added (Thorlabs brushless piezo). This plugin has some known bugs that are described in the documentation due to errors in Kinesis.
 * Build plugins *dispWindow* and *glDisplay* only if OpenGL is available (not the case for older version of Raspberry). Only OpenGL >= 2.0 allowed.
-* Many filters have been adapted to the new shape class of itom (see :py:ref:`itom.shape`)
+* Many filters have been adapted to the new shape class of itom (see :py:ref:`itom.shape` )
 
 
 Designer Plugins
