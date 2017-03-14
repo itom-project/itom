@@ -32,8 +32,8 @@ sys.path.append(os.path.abspath('../ext'))
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.pngmath', 'sphinx.ext.ifconfig', 'numpydoc', 'breathe', 'sphinx.ext.intersphinx', 'itomext.designerplugindoc']
-#extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.pngmath', 'sphinx.ext.ifconfig', 'breathe', 'sphinx.ext.intersphinx']
+extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.imgmath', 'sphinx.ext.ifconfig', 'numpydoc', 'breathe', 'sphinx.ext.intersphinx', 'itomext.designerplugindoc']
+#extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo', 'sphinx.ext.imgmath', 'sphinx.ext.ifconfig', 'breathe', 'sphinx.ext.intersphinx']
 
 if sphinx.__version__ >= "0.7":
     extensions.append('sphinx.ext.autosummary')
@@ -207,7 +207,7 @@ htmlhelp_basename = 'itom_doc'
 # -- Options for LaTeX output --------------------------------------------------
 
 # The paper size ('letter' or 'a4').
-latex_paper_size = 'a4'
+#latex_paper_size = 'a4'
 
 # The font size ('10pt', '11pt' or '12pt').
 #latex_font_size = '10pt'
