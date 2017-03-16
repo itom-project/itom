@@ -683,17 +683,17 @@ Type conflict for %1</source>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../common/addInInterface.h" line="1012"/>
+        <location filename="../../common/addInInterface.h" line="1025"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation type="unfinished">Nicht initialisierter Vektor für Pflichtparameter!</translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.h" line="1016"/>
+        <location filename="../../common/addInInterface.h" line="1029"/>
         <source>uninitialized vector for optional parameters!</source>
         <translation type="unfinished">Nicht initialisierter Vektor für optionale Parameter!</translation>
     </message>
     <message>
-        <location filename="../../common/addInInterface.h" line="1020"/>
+        <location filename="../../common/addInInterface.h" line="1033"/>
         <source>uninitialized vector for output parameters!</source>
         <translation type="unfinished">Nicht initialisierter Vektor für Ausgabeparameter!</translation>
     </message>

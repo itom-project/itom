@@ -23,7 +23,7 @@ def parseProperties(properties):
                 lines[0] = m.group(3)
                 d = {"name":key, "readonly":"", "type":m.group(1), "text":indentText('\n'.join(lines))}
             except Exception:
-                pass
+                d = {"name":key, "readonly":"", "type":"", "text":""}
         
         output.append(tmpl % d)
     return "\n\n".join(output)

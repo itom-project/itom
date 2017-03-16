@@ -116,6 +116,7 @@ void WidgetWrapper::initMethodHash()
         qComboBoxList << buildMethodDescription(QMetaObject::normalizedSignature("removeItem(int)"), "void", 3003, ok );
         qComboBoxList << buildMethodDescription(QMetaObject::normalizedSignature("setItemData(int,QVariant)"), "void", 3004, ok );
         qComboBoxList << buildMethodDescription(QMetaObject::normalizedSignature("insertItem(int,QString)"), "void", 3005, ok );
+        qComboBoxList << buildMethodDescription(QMetaObject::normalizedSignature("itemText(int)"), "QString", 3006, ok);
         methodHash["QComboBox"] = qComboBoxList;
 
         //QTabWidget
@@ -357,35 +358,41 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
             if(object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("ComboBox object is null").toLatin1().data());
             switch(methodIndex)
             {
-            case 3001: //addItem
+                case 3001: //addItem
                 {
-                object2->addItem((*reinterpret_cast< const QString(*)>(_a[1])));
-                //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
-                return ito::retOk;
+                    object2->addItem((*reinterpret_cast< const QString(*)>(_a[1])));
+                    //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
+                    return ito::retOk;
                 }
-            case 3002: //addItems
+                case 3002: //addItems
                 {
-                object2->addItems((*reinterpret_cast< const QStringList(*)>(_a[1])));
-                //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
-                return ito::retOk;
+                    object2->addItems((*reinterpret_cast< const QStringList(*)>(_a[1])));
+                    //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
+                    return ito::retOk;
                 }
-            case 3003: //removeItem
+                case 3003: //removeItem
                 {
-                object2->removeItem((*reinterpret_cast< const int(*)>(_a[1])));
-                //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
-                return ito::retOk;
+                    object2->removeItem((*reinterpret_cast< const int(*)>(_a[1])));
+                    //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
+                    return ito::retOk;
                 }
-            case 3004: //setItemData
+                case 3004: //setItemData
                 {
-                object2->setItemData((*reinterpret_cast< const int(*)>(_a[1])), (*reinterpret_cast< const QVariant(*)>(_a[2])), Qt::DisplayRole);
-                //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
-                return ito::retOk;
+                    object2->setItemData((*reinterpret_cast< const int(*)>(_a[1])), (*reinterpret_cast< const QVariant(*)>(_a[2])), Qt::DisplayRole);
+                    //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
+                    return ito::retOk;
                 }
-            case 3005: //insertItem
+                case 3005: //insertItem
                 {
-                object2->insertItem((*reinterpret_cast< const int(*)>(_a[1])), (*reinterpret_cast< const QString(*)>(_a[2])));
-                //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
-                return ito::retOk;
+                    object2->insertItem((*reinterpret_cast< const int(*)>(_a[1])), (*reinterpret_cast< const QString(*)>(_a[2])));
+                    //*reinterpret_cast< ito::RetVal*>(_a[0]) = _r;
+                    return ito::retOk;
+                }
+                case 3006: //itemText
+                {
+                    QString _r = object2->itemText((*reinterpret_cast<const int(*)>(_a[1])));
+                    (*reinterpret_cast<QString*>(_a[0])) = _r;
+                    return ito::retOk;
                 }
             }
         }
@@ -395,17 +402,17 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
             if(object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QTabWidget object is null").toLatin1().data());
             switch(methodIndex)
             {
-            case 4001: //isTabEnabled
+                case 4001: //isTabEnabled
                 {
-                bool _r = object2->isTabEnabled((*reinterpret_cast< const int(*)>(_a[1])));
-                (*reinterpret_cast< bool*>(_a[0])) = _r;
-                return ito::retOk;
+                    bool _r = object2->isTabEnabled((*reinterpret_cast< const int(*)>(_a[1])));
+                    (*reinterpret_cast< bool*>(_a[0])) = _r;
+                    return ito::retOk;
                 }
-            case 4002: //setTabEnabled
+                case 4002: //setTabEnabled
                 {
-                object2->setTabEnabled((*reinterpret_cast< const int(*)>(_a[1])),(*reinterpret_cast< const bool(*)>(_a[2])));
-                //(*reinterpret_cast< bool*>(_a[0])) = _r;
-                return ito::retOk;
+                    object2->setTabEnabled((*reinterpret_cast< const int(*)>(_a[1])),(*reinterpret_cast< const bool(*)>(_a[2])));
+                    //(*reinterpret_cast< bool*>(_a[0])) = _r;
+                    return ito::retOk;
                 }
             }
         }
@@ -415,17 +422,17 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
             if(object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QMainWindow object is null").toLatin1().data());
             switch(methodIndex)
             {
-            case 5001: //statusBar
+                case 5001: //statusBar
                 {
-                QWidget* _r = (QWidget*)( object2->statusBar() );
-                (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
-                return ito::retOk;
+                    QWidget* _r = (QWidget*)( object2->statusBar() );
+                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
+                    return ito::retOk;
                 }
-            case 5002: //centralWidget
+                case 5002: //centralWidget
                 {
-                QWidget* _r = ( object2->centralWidget() );
-                (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
-                return ito::retOk;
+                    QWidget* _r = ( object2->centralWidget() );
+                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
+                    return ito::retOk;
                 }
             }
         }
@@ -435,17 +442,17 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
             if(object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QWidget object is null").toLatin1().data());
             switch(methodIndex)
             {
-            case 1001: //resize
+                case 1001: //resize
                 {
-                object2->resize((*reinterpret_cast< const int(*)>(_a[1])), (*reinterpret_cast< const int(*)>(_a[2])));
-                //(*reinterpret_cast< bool*>(_a[0])) = _r;
-                return ito::retOk;
+                    object2->resize((*reinterpret_cast< const int(*)>(_a[1])), (*reinterpret_cast< const int(*)>(_a[2])));
+                    //(*reinterpret_cast< bool*>(_a[0])) = _r;
+                    return ito::retOk;
                 }
-            case 1002: //setGeometry
+                case 1002: //setGeometry
                 {
-                object2->setGeometry((*reinterpret_cast< const int(*)>(_a[1])), (*reinterpret_cast< const int(*)>(_a[2])), (*reinterpret_cast< const int(*)>(_a[3])), (*reinterpret_cast< const int(*)>(_a[4])));
-                //(*reinterpret_cast< bool*>(_a[0])) = _r;
-                return ito::retOk;
+                    object2->setGeometry((*reinterpret_cast< const int(*)>(_a[1])), (*reinterpret_cast< const int(*)>(_a[2])), (*reinterpret_cast< const int(*)>(_a[3])), (*reinterpret_cast< const int(*)>(_a[4])));
+                    //(*reinterpret_cast< bool*>(_a[0])) = _r;
+                    return ito::retOk;
                 }
             }
         }
@@ -455,31 +462,31 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
             if(object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QTableWidget object is null").toLatin1().data());
             switch(methodIndex)
             {
-            case 6001: //setHorizontalHeaderLabels
+                case 6001: //setHorizontalHeaderLabels
                 {
-                object2->setHorizontalHeaderLabels( (*reinterpret_cast< const QStringList(*)>(_a[1])) );
-                //(*reinterpret_cast< bool*>(_a[0])) = _r;
-                return ito::retOk;
-                }
-            case 6002: //setVerticalHeaderLabels
-                {
-                object2->setVerticalHeaderLabels( (*reinterpret_cast< const QStringList(*)>(_a[1])) );
-                //(*reinterpret_cast< bool*>(_a[0])) = _r;
-                return ito::retOk;
-                }
-            case 6003: //getItem
-                {
-                int row = (*reinterpret_cast< const int(*)>(_a[1]));
-                int col = (*reinterpret_cast< const int(*)>(_a[2]));
-                QTableWidgetItem *item = object2->item(row,col);
-                if(item)
-                {
-                    (*reinterpret_cast<QVariant*>(_a[0])) = item->data(Qt::DisplayRole);
+                    object2->setHorizontalHeaderLabels( (*reinterpret_cast< const QStringList(*)>(_a[1])) );
+                    //(*reinterpret_cast< bool*>(_a[0])) = _r;
                     return ito::retOk;
                 }
-                return ito::RetVal(ito::retError, 0, QObject::tr("Could not access row / col, maybe out of range").toLatin1().data());
+                case 6002: //setVerticalHeaderLabels
+                {
+                    object2->setVerticalHeaderLabels( (*reinterpret_cast< const QStringList(*)>(_a[1])) );
+                    //(*reinterpret_cast< bool*>(_a[0])) = _r;
+                    return ito::retOk;
                 }
-            case 6004: //setItem
+                case 6003: //getItem
+                {
+                    int row = (*reinterpret_cast< const int(*)>(_a[1]));
+                    int col = (*reinterpret_cast< const int(*)>(_a[2]));
+                    QTableWidgetItem *item = object2->item(row,col);
+                    if(item)
+                    {
+                        (*reinterpret_cast<QVariant*>(_a[0])) = item->data(Qt::DisplayRole);
+                        return ito::retOk;
+                    }
+                    return ito::RetVal(ito::retError, 0, QObject::tr("Could not access row / col, maybe out of range").toLatin1().data());
+                }
+                case 6004: //setItem
                 {
                     int row = (*reinterpret_cast< const int(*)>(_a[1]));
                     int col = (*reinterpret_cast< const int(*)>(_a[2]));
@@ -490,12 +497,12 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
                     item->setData(Qt::DisplayRole, (*reinterpret_cast< const QVariant(*)>(_a[3])));
                     return ito::retOk;
                 }
-            case 6005: //currentColumn
+                case 6005: //currentColumn
                 {
                     (*reinterpret_cast<int*>(_a[0])) = object2->currentColumn();
                     return ito::retOk;
                 }
-            case 6006: //currentRow
+                case 6006: //currentRow
                 {
                     (*reinterpret_cast<int*>(_a[0])) = object2->currentRow();
                     return ito::retOk;
@@ -508,17 +515,17 @@ ito::RetVal WidgetWrapper::call(QObject *object, int methodIndex, void **_a)
             if(object2 == NULL) return ito::RetVal(ito::retError, 0, QObject::tr("QTableView object is null").toLatin1().data());
             switch(methodIndex)
             {
-            case 7001: //horizontalHeader
+                case 7001: //horizontalHeader
                 {
-                QHeaderView* _r = (QHeaderView*)( object2->horizontalHeader() );
-                (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
-                return ito::retOk;
+                    QHeaderView* _r = (QHeaderView*)( object2->horizontalHeader() );
+                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
+                    return ito::retOk;
                 }
-            case 7002: //verticalHeader
+                case 7002: //verticalHeader
                 {
-                QHeaderView* _r = (QHeaderView*)( object2->verticalHeader() );
-                (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
-                return ito::retOk;
+                    QHeaderView* _r = (QHeaderView*)( object2->verticalHeader() );
+                    (*reinterpret_cast<ito::PythonQObjectMarshal*>(_a[0])) = ito::PythonQObjectMarshal(_r->objectName().toLatin1(), _r->metaObject()->className(), (void*)_r);
+                    return ito::retOk;
                 }
             }
         }

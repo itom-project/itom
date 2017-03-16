@@ -10,21 +10,20 @@ can be downloaded from https://bitbucket.org/itom/itom/downloads. The setup inta
 For your convenience you can download an installer package for Microsoft Windows from `<https://bitbucket.org/itom/itom/downloads>`.
 There are several different types of setups available:
 
-* Windows, 32bit, |itom| only
-* Windows, 64bit, |itom| only
-* Windows, 32bit, |itom|, Python + packages: numpy, scipy, matplotlib, PIL (optional)
-* Windows, 64bit, |itom|, Python + packages: numpy, scipy, matplotlib, PIL (optional)
+* Windows, 32bit, |itom|, Python (sub directory of itom, optional) + Packages: numpy, scipy, matplotlib, PIL (optional)
+* Windows, 64bit, |itom|, Python (sub directory of itom, optional) + Packages: numpy, scipy, matplotlib, PIL (optional)
 
-These setups do not contain any plugins or designer-plugins.
+These setups contains some plugins and designer-plugins.
 
 In the course of the installation, the following third-party componenents will be installed along with |itom|:
 
-1. Microsoft Visual C++ 2010 Runtime Libraries (x86 or x64)
-2. Python 3.2.3 (optional)
-3. Python package *numpy* 1.6.2(optional)
-4. Python package *scipy* 0.10.1 (optional)
-5. Python package *matplotlib* 1.2.x (optional)
-6. Python package *PIL* 1.1.7 (optional)
+1. Microsoft Visual C++ 2016 Runtime Libraries (x86 or x64)
+2. Python 3.5.2 (optional, as sub directory of itom)
+3. Python package *NumPy* 1.11.1(optional)
+4. Python package *SciPy* 0.18.0 (optional)
+5. Python package *MatPlotLib* 1.5.2 (optional)
+6. Python package *SciKit Image* 0.12.3 (optional)
+7. Python package *Frosted* 1.4.1 (optional)
 
 In the following we will guide you through the installation setup with a couple of screenshots:
 
@@ -56,7 +55,7 @@ In the following we will guide you through the installation setup with a couple 
     chosen directory already exists and warns if so. Please agree if you want to really install itom in the
     existing directory.
 
-.. figure:: images/itom_install/setup05.jpg
+.. figure:: images/itom_install/setup05.png
     :alt: components
     :scale: 100%
     :align: center
@@ -80,7 +79,7 @@ In the following we will guide you through the installation setup with a couple 
     
     Choose whether you want to have an |itom| shortcut on your desktop
 
-.. figure:: images/itom_install/setup08.jpg
+.. figure:: images/itom_install/setup08.png
     :scale: 100%
     :align: center
     
@@ -99,39 +98,22 @@ In the following we will guide you through the installation setup with a couple 
     :scale: 100%
     :align: center
     
-    If not already available, the Microsoft Visual C++ 2010 Runtime Libraries are installed now. 
+    If not already available, the Microsoft Visual C++ 2015 Runtime Libraries are installed now. 
 
 .. figure:: images/itom_install/setup12.png
     :scale: 100%
     :align: center
     
-Depending on your selected components, python and/or any python packages are now installed:
-
-.. figure:: images/itom_install/install08.png
+.. figure:: images/itom_install/setup13.png
     :scale: 100%
     :align: center
     
-    Install Python 3.4.2 (or the version shipped with your setup version) for the current user or for all users.
+Depending on your selected components, any python packages are now installed:
 
-.. figure:: images/itom_install/install10.png
+.. figure:: images/itom_install/setup14.png
     :scale: 100%
     :align: center
     
-    Customize your Python installation. We recommend leaving everything as is.
-
-.. figure:: images/itom_install/install11.png
-    :scale: 100%
-    :align: center
-    
-    You've completed the Python installation as well. We're getting getting closer.
-
-.. figure:: images/itom_install/install12.png
-    :scale: 100%
-    :align: center
-    
-    Now, depending on the selected Python packages, several command lines appear that install the shipped packages 
-    using the Python internal tool *pip*. The packages are all installed by whl files (obtained from http://www.lfd.uci.edu/~gohlke/pythonlibs/).
-
 Finally, the entire setup is finished:
 
 .. figure:: images/itom_install/setup10.jpg
