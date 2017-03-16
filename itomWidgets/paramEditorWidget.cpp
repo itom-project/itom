@@ -76,6 +76,18 @@ public:
             ++it;
         }
         m_groups.clear();
+
+        m_pIntManager->clear();
+        m_pIntManager->clear();
+        m_pCharManager->clear();
+        m_pDoubleManager->clear();
+        m_pIntArrayManager->clear();
+        m_pCharArrayManager->clear();
+        m_pDoubleArrayManager->clear();
+        m_pStringManager->clear();
+        m_pOtherManager->clear();
+        m_pIntervalManager->clear();
+        m_pRectManager->clear();
     }
 
     void enqueue(const QSharedPointer<ito::ParamBase> param)
