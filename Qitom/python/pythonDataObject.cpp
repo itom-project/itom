@@ -6389,9 +6389,9 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
     PyObject *byteArray = NULL;
     cv::Mat* tempMat;
     unsigned int seekNr;
-    int sizeU = 0;
-    int sizeV = 0;
-    int elemSize = 0;
+    Py_ssize_t sizeU = 0;
+    Py_ssize_t sizeV = 0;
+    Py_ssize_t elemSize = 0;
     char *dummy = 0;
     char *startingPoint = NULL;
     //int res;
@@ -6400,12 +6400,12 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
     if (dims == 1)
     {
         sizeU = 1;
-        sizeV = self->dataObject->getSize(dims-1); 
+        sizeV = (Py_ssize_t)self->dataObject->getSize(dims - 1);
     }
     else if (dims > 1)
     {
-        sizeU = self->dataObject->getSize(dims-2); 
-        sizeV = self->dataObject->getSize(dims-1); 
+        sizeU = (Py_ssize_t)self->dataObject->getSize(dims - 2);
+        sizeV = (Py_ssize_t)self->dataObject->getSize(dims - 1);
     }
 
     if (version == 21120)
@@ -6414,7 +6414,7 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
         {
             seekNr = self->dataObject->seekMat(i);
             tempMat = (cv::Mat*)(self->dataObject->get_mdata()[seekNr]);
-            elemSize = (int)tempMat->elemSize();
+            elemSize = (Py_ssize_t)tempMat->elemSize();
 
             //in version (checksum) 21120 the data has been stored as bytearray, which is reduced to a unicode and needs a lot of space
             byteArray = PyByteArray_FromStringAndSize(dummy,0);
@@ -6429,7 +6429,7 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
 
             startingPoint = PyByteArray_AsString(byteArray);
 
-            for (int row = 0; row < sizeU; row++)
+            for (Py_ssize_t row = 0; row < sizeU; row++)
             {
                 if (memcpy((void*)startingPoint, (void*)(tempMat->ptr(row)), sizeV * elemSize) == NULL)
                 {
@@ -6467,7 +6467,7 @@ PyObject* PythonDataObject::PyDataObj_Reduce(PyDataObject *self, PyObject * /*ar
 
             startingPoint = PyBytes_AS_STRING(byteArray);
 
-            for (int row = 0; row < sizeU; row++)
+            for (Py_ssize_t row = 0; row < sizeU; row++)
             {
                 if (memcpy((void*)startingPoint, (void*)(tempMat->ptr(row)), sizeV * elemSize) == NULL)
                 {
@@ -6675,11 +6675,11 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
     PyObject *byteArray = NULL;
     cv::Mat* tempMat;
     unsigned int seekNr;
-    int sizeU = 0;
-    int sizeV = 0;
+    Py_ssize_t sizeU = 0;
+    Py_ssize_t sizeV = 0;
     uchar* startPtr = NULL;
     char* byteArrayContent = NULL;
-    int elemSize = 0;
+    Py_ssize_t elemSize = 0;
     std::string tempString;
     std::string keyString;
     PyObject *key, *value;
@@ -6690,12 +6690,12 @@ PyObject* PythonDataObject::PyDataObj_SetState(PyDataObject *self, PyObject *arg
     if (dims == 1)
     {
         sizeU = 1;
-        sizeV = self->dataObject->getSize(dims-1); 
+        sizeV = (Py_ssize_t)self->dataObject->getSize(dims - 1);
     }
     else if (dims > 1)
     {
-        sizeU = self->dataObject->getSize(dims-2); 
-        sizeV = self->dataObject->getSize(dims-1); 
+        sizeU = (Py_ssize_t)self->dataObject->getSize(dims - 2);
+        sizeV = (Py_ssize_t)self->dataObject->getSize(dims - 1);
     }
 
     if (version == 21120)
