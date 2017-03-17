@@ -905,26 +905,30 @@ MACRO (POST_BUILD_COPY_FILE_TO_LIB_FOLDER target sources)
     list(LENGTH ${sources} temp)
     math(EXPR len1 "${temp} - 1")
     
-    #message(STATUS "sources LEN: ${len1}")
-    #message(STATUS "destinations LEN: ${len2}")
-    
-    #create lib folder (for safety only, IF it does not exist some cmake versions do not copy the files in the 
-    #desired way using copy_if_different below
-    ADD_CUSTOM_COMMAND(TARGET ${target} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E make_directory
-            "${ITOM_APP_DIR}/lib"
-    )
-
-    foreach(val RANGE ${len1})
-        list(GET ${sources} ${val} val1)
-        #message(STATUS "POST_BUILD: COPY ${val1} TO ${ITOM_APP_DIR}/lib")
+    IF(${len1} GREATER "0")
+        #message(STATUS "sources LEN: ${len1}")
+        #message(STATUS "destinations LEN: ${len2}")
         
-        ADD_CUSTOM_COMMAND(TARGET ${target} POST_BUILD                 # Adds a post-build event to MyTest
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different                 # which executes "cmake - E copy_if_different..."
-                "${val1}"                                                 # <--this is in-file
-                "${ITOM_APP_DIR}/lib"                                                # <--this is out-file path
+        #create lib folder (for safety only, IF it does not exist some cmake versions do not copy the files in the 
+        #desired way using copy_if_different below
+        ADD_CUSTOM_COMMAND(TARGET ${target} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                "${ITOM_APP_DIR}/lib"
         )
-    endforeach()
+
+        foreach(val RANGE ${len1})
+            list(GET ${sources} ${val} val1)
+            #message(STATUS "POST_BUILD: COPY ${val1} TO ${ITOM_APP_DIR}/lib")
+            
+            ADD_CUSTOM_COMMAND(TARGET ${target} POST_BUILD                 # Adds a post-build event to MyTest
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different                 # which executes "cmake - E copy_if_different..."
+                    "${val1}"                                                 # <--this is in-file
+                    "${ITOM_APP_DIR}/lib"                                                # <--this is out-file path
+            )
+        endforeach()
+    ELSE(${len1} GREATER "0")
+        message(STATUS "No files to copy to lib folder for target ${target}")
+    ENDIF(${len1} GREATER "0")
 ENDMACRO (POST_BUILD_COPY_FILE_TO_LIB_FOLDER target sources)
 
 
