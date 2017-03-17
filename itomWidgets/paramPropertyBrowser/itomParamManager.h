@@ -254,15 +254,15 @@ public:
     ParamCharArrayPropertyManager(QObject *parent = 0);
     ~ParamCharArrayPropertyManager();
 
-    typedef ito::int8 DataType;
+    typedef char DataType;
 
 Q_SIGNALS:
-    void valueChanged(QtProperty *property, int num, const ito::int8* values);
+    void valueChanged(QtProperty *property, int num, const char* values);
     void metaChanged(QtProperty *property, ito::CharArrayMeta meta);
 
 public Q_SLOTS:
     void setParam(QtProperty *property, const ito::Param &param);
-    void setValue(QtProperty *property, int num, const ito::int8* values);
+    void setValue(QtProperty *property, int num, const char* values);
 
     ParamCharPropertyManager *subIntervalPropertyManager() const;
 
@@ -276,7 +276,7 @@ private:
     Q_DECLARE_PRIVATE(ParamCharArrayPropertyManager)
     Q_DISABLE_COPY(ParamCharArrayPropertyManager)
 
-    Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QtProperty *, ito::int8))
+    Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QtProperty *, char))
     Q_PRIVATE_SLOT(d_func(), void slotPropertyDestroyed(QtProperty *))
 };
 
@@ -292,15 +292,15 @@ public:
     ParamIntArrayPropertyManager(QObject *parent = 0);
     ~ParamIntArrayPropertyManager();
 
-    typedef ito::int32 DataType;
+    typedef int DataType;
 
 Q_SIGNALS:
-    void valueChanged(QtProperty *property, int num, const ito::int32* values);
+    void valueChanged(QtProperty *property, int num, const int* values);
     void metaChanged(QtProperty *property, ito::IntArrayMeta meta);
 
 public Q_SLOTS:
     void setParam(QtProperty *property, const ito::Param &param);
-    void setValue(QtProperty *property, int num, const ito::int32* values);
+    void setValue(QtProperty *property, int num, const int* values);
 
     ParamIntPropertyManager *subIntervalPropertyManager() const;
 
@@ -314,7 +314,7 @@ private:
     Q_DECLARE_PRIVATE(ParamIntArrayPropertyManager)
     Q_DISABLE_COPY(ParamIntArrayPropertyManager)
 
-    Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QtProperty *, ito::int32))
+    Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QtProperty *, int))
     Q_PRIVATE_SLOT(d_func(), void slotPropertyDestroyed(QtProperty *))
 };
 
@@ -330,15 +330,15 @@ public:
     ParamDoubleArrayPropertyManager(QObject *parent = 0);
     ~ParamDoubleArrayPropertyManager();
 
-    typedef ito::float64 DataType;
+    typedef double DataType;
 
 Q_SIGNALS:
-    void valueChanged(QtProperty *property, int num, const ito::float64* values);
+    void valueChanged(QtProperty *property, int num, const double* values);
     void metaChanged(QtProperty *property, ito::DoubleArrayMeta meta);
 
 public Q_SLOTS:
     void setParam(QtProperty *property, const ito::Param &param);
-    void setValue(QtProperty *property, int num, const ito::float64* values);
+    void setValue(QtProperty *property, int num, const double* values);
 
     ParamDoublePropertyManager *subIntervalPropertyManager() const;
 
@@ -352,7 +352,7 @@ private:
     Q_DECLARE_PRIVATE(ParamDoubleArrayPropertyManager)
     Q_DISABLE_COPY(ParamDoubleArrayPropertyManager)
 
-    Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QtProperty *, ito::float64))
+    Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QtProperty *, double))
     Q_PRIVATE_SLOT(d_func(), void slotPropertyDestroyed(QtProperty *))
 };
 

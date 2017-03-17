@@ -336,8 +336,8 @@ Reimplemented from the QtAbstractEditorFactory class.
 */
 void ParamDoublePropertyFactory::connectPropertyManager(ParamDoublePropertyManager *manager)
 {
-    connect(manager, SIGNAL(valueChanged(QtProperty *, int)),
-        this, SLOT(slotPropertyChanged(QtProperty *, int)));
+    connect(manager, SIGNAL(valueChanged(QtProperty *, double)),
+        this, SLOT(slotPropertyChanged(QtProperty *, double)));
     connect(manager, SIGNAL(metaChanged(QtProperty *, ito::DoubleMeta)),
         this, SLOT(slotMetaChanged(QtProperty *, ito::DoubleMeta)));
 }

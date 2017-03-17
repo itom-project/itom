@@ -1111,7 +1111,7 @@ class ParamCharArrayPropertyManagerPrivate
     Q_DECLARE_PUBLIC(ParamCharArrayPropertyManager)
 public:
 
-    void slotValueChanged(QtProperty *property, ito::int8 value);
+    void slotValueChanged(QtProperty *property, char value);
     void slotPropertyDestroyed(QtProperty *property);
     void setMeta(QtProperty *property, const ito::CharArrayMeta &meta);
 
@@ -1122,7 +1122,7 @@ public:
     QMap<const QtProperty*, QtProperty*> m_valuesToProperty;
 };
 
-void ParamCharArrayPropertyManagerPrivate::slotValueChanged(QtProperty *property, ito::int8 value)
+void ParamCharArrayPropertyManagerPrivate::slotValueChanged(QtProperty *property, char value)
 {
     if (QtProperty *prop = m_valuesToProperty.value(property, 0))
     {
@@ -1165,8 +1165,8 @@ AbstractParamPropertyManager(parent)
     d_ptr->m_d_ptr = AbstractParamPropertyManager::d_ptr;
 
     d_ptr->m_numberPropertyManager = new ito::ParamCharPropertyManager(this);
-    connect(d_ptr->m_numberPropertyManager, SIGNAL(valueChanged(QtProperty *, ito::int8)),
-        this, SLOT(slotIntervalChanged(QtProperty *, ito::int8)));
+    connect(d_ptr->m_numberPropertyManager, SIGNAL(valueChanged(QtProperty *, char)),
+        this, SLOT(slotValueChanged(QtProperty *, char)));
     connect(d_ptr->m_numberPropertyManager, SIGNAL(propertyDestroyed(QtProperty *)),
         this, SLOT(slotPropertyDestroyed(QtProperty *)));
 }
@@ -1249,7 +1249,7 @@ void ParamCharArrayPropertyManager::setParam(QtProperty *property, const ito::Pa
 }
 
 //------------------------------------------------------------------------------
-void ParamCharArrayPropertyManager::setValue(QtProperty *property, int num, const ito::int8* values)
+void ParamCharArrayPropertyManager::setValue(QtProperty *property, int num, const char* values)
 {
     typedef AbstractParamPropertyManagerPrivate::Data PrivateData;
     typedef QMap<const QtProperty *, PrivateData> PropertyToData;
@@ -1328,7 +1328,7 @@ class ParamIntArrayPropertyManagerPrivate
     Q_DECLARE_PUBLIC(ParamIntArrayPropertyManager)
 public:
 
-    void slotValueChanged(QtProperty *property, ito::int32 value);
+    void slotValueChanged(QtProperty *property, int value);
     void slotPropertyDestroyed(QtProperty *property);
     void setMeta(QtProperty *property, const ito::IntArrayMeta &meta);
 
@@ -1382,8 +1382,8 @@ AbstractParamPropertyManager(parent)
     d_ptr->m_d_ptr = AbstractParamPropertyManager::d_ptr;
 
     d_ptr->m_numberPropertyManager = new ito::ParamIntPropertyManager(this);
-    connect(d_ptr->m_numberPropertyManager, SIGNAL(valueChanged(QtProperty *, ito::int32)),
-        this, SLOT(slotIntervalChanged(QtProperty *, ito::int32)));
+    connect(d_ptr->m_numberPropertyManager, SIGNAL(valueChanged(QtProperty *, int)),
+        this, SLOT(slotValueChanged(QtProperty *, int)));
     connect(d_ptr->m_numberPropertyManager, SIGNAL(propertyDestroyed(QtProperty *)),
         this, SLOT(slotPropertyDestroyed(QtProperty *)));
 }
@@ -1466,7 +1466,7 @@ void ParamIntArrayPropertyManager::setParam(QtProperty *property, const ito::Par
 }
 
 //------------------------------------------------------------------------------
-void ParamIntArrayPropertyManager::setValue(QtProperty *property, int num, const ito::int32* values)
+void ParamIntArrayPropertyManager::setValue(QtProperty *property, int num, const int* values)
 {
     typedef AbstractParamPropertyManagerPrivate::Data PrivateData;
     typedef QMap<const QtProperty *, PrivateData> PropertyToData;
@@ -1542,7 +1542,7 @@ class ParamDoubleArrayPropertyManagerPrivate
     Q_DECLARE_PUBLIC(ParamDoubleArrayPropertyManager)
 public:
 
-    void slotValueChanged(QtProperty *property, ito::float64 value);
+    void slotValueChanged(QtProperty *property, double value);
     void slotPropertyDestroyed(QtProperty *property);
     void setMeta(QtProperty *property, const ito::DoubleArrayMeta &meta);
 
@@ -1553,7 +1553,7 @@ public:
     QMap<const QtProperty*, QtProperty*> m_valuesToProperty;
 };
 
-void ParamDoubleArrayPropertyManagerPrivate::slotValueChanged(QtProperty *property, ito::float64 value)
+void ParamDoubleArrayPropertyManagerPrivate::slotValueChanged(QtProperty *property, double value)
 {
     if (QtProperty *prop = m_valuesToProperty.value(property, 0))
     {
@@ -1596,8 +1596,8 @@ AbstractParamPropertyManager(parent)
     d_ptr->m_d_ptr = AbstractParamPropertyManager::d_ptr;
 
     d_ptr->m_numberPropertyManager = new ito::ParamDoublePropertyManager(this);
-    connect(d_ptr->m_numberPropertyManager, SIGNAL(valueChanged(QtProperty *, ito::float64)),
-        this, SLOT(slotIntervalChanged(QtProperty *, ito::float64)));
+    connect(d_ptr->m_numberPropertyManager, SIGNAL(valueChanged(QtProperty *, double)),
+        this, SLOT(slotValueChanged(QtProperty *, double)));
     connect(d_ptr->m_numberPropertyManager, SIGNAL(propertyDestroyed(QtProperty *)),
         this, SLOT(slotPropertyDestroyed(QtProperty *)));
 }
@@ -1680,7 +1680,7 @@ void ParamDoubleArrayPropertyManager::setParam(QtProperty *property, const ito::
 }
 
 //------------------------------------------------------------------------------
-void ParamDoubleArrayPropertyManager::setValue(QtProperty *property, int num, const ito::float64* values)
+void ParamDoubleArrayPropertyManager::setValue(QtProperty *property, int num, const double* values)
 {
     typedef AbstractParamPropertyManagerPrivate::Data PrivateData;
     typedef QMap<const QtProperty *, PrivateData> PropertyToData;

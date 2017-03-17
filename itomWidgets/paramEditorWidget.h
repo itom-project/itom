@@ -93,6 +93,8 @@ public:
 	QPointer<ito::AddInBase> plugin() const;
 	void setPlugin(QPointer<ito::AddInBase> plugin);
 
+    void refresh();
+
     int indentation() const;
     void setIndentation(int i);
 
@@ -167,9 +169,9 @@ private slots:
     void valueChanged(QtProperty* prop, int value);
     void valueChanged(QtProperty* prop, char value);
     void valueChanged(QtProperty* prop, double value);
-    void valueChanged(QtProperty* prop, int num, ito::int8* values);
-    void valueChanged(QtProperty* prop, int num, ito::int32* values);
-    void valueChanged(QtProperty* prop, int num, ito::float64* values);
+    void valueChanged(QtProperty* prop, int num, const char* values);
+    void valueChanged(QtProperty* prop, int num, const int* values);
+    void valueChanged(QtProperty* prop, int num, const double* values);
     void valueChanged(QtProperty* prop, const QByteArray &value);
     void valueChanged(QtProperty* prop, int min, int max);
     void valueChanged(QtProperty* prop, int left, int top, int width, int height);
