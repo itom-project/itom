@@ -472,6 +472,7 @@ QComboBox               void addItems(QStringList)
 QComboBox               void removeItem(int)
 QComboBox               void setItemData(int,QVariant) sets the value of the Qt::DisplayRole (displayed text) of the item with the indicated index
 QComboBox               void insertItem(int,QString)
+QComboBox               QString itemText(int) returns the text of the i-th item in the combo-box as string
 QTabWidget              int isTabEnabled(int)
 QTabWidget              void setTabEnabled(int,bool)
 QMainWindow             uiItem statusBar() *returns a reference to the statusbar widget*
