@@ -12,7 +12,7 @@ SET (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR} ${PROJECT_SOUR
 include("../../ItomBuildMacros.cmake")
 
 find_package(OpenCV REQUIRED COMPONENTS core)
-FIND_PACKAGE_QT(ON Core)
+FIND_PACKAGE_QT(ON Core Widgets)
 
 # Define helper functions and macros used by Google Test.
 include("../../gtest-1.6.0/cmake/internal_utils.cmake")

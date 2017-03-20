@@ -1118,7 +1118,7 @@ public:
     ito::ParamCharPropertyManager *m_numberPropertyManager;
     ito::AbstractParamPropertyManagerPrivate *m_d_ptr;
 
-    QMap<const QtProperty*, QVector<QtProperty*> > m_propertyToValues;
+    QMap<const QtProperty*, QList<QtProperty*> > m_propertyToValues;
     QMap<const QtProperty*, QtProperty*> m_valuesToProperty;
 };
 
@@ -1335,7 +1335,7 @@ public:
     ito::ParamIntPropertyManager *m_numberPropertyManager;
     ito::AbstractParamPropertyManagerPrivate *m_d_ptr;
 
-    QMap<const QtProperty*, QVector<QtProperty*> > m_propertyToValues;
+    QMap<const QtProperty*, QList<QtProperty*> > m_propertyToValues;
     QMap<const QtProperty*, QtProperty*> m_valuesToProperty;
 };
 
@@ -1549,7 +1549,7 @@ public:
     ito::ParamDoublePropertyManager *m_numberPropertyManager;
     ito::AbstractParamPropertyManagerPrivate *m_d_ptr;
 
-    QMap<const QtProperty*, QVector<QtProperty*> > m_propertyToValues;
+    QMap<const QtProperty*, QList<QtProperty*> > m_propertyToValues;
     QMap<const QtProperty*, QtProperty*> m_valuesToProperty;
 };
 
