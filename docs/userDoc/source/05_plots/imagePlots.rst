@@ -56,148 +56,20 @@ Properties
 -------------------------
 
 
-.. py:attribute:: bounds :  
+.. py:attribute:: selectedGeometricShape : int 
     :noindex:
     
-    
-
-.. py:attribute:: lineSymbolSize : int 
-    :noindex:
-    
-    Get / Set the current line symbol size
-
-.. py:attribute:: baseLine : float 
-    :noindex:
-    
-    the position of the baseline if curveStyle is set to 'Sticks', 'SticksVertical' or 'SticksHorizontal'.
-
-.. py:attribute:: source : dataObject 
-    :noindex:
-    
-    Sets the input data object for this plot.
-
-.. py:attribute:: legendTitles : seq. of str 
-    :noindex:
-    
-    Seq. of strings with the legend titles for all curves. If the list has less entries than curves, the last curves don't have any title. If no legends are given, the data object is checked for tags named 'legendTitle0', 'legendTitle1'... If these tags are not given, the default titles 'curve 0', 'curve 1'... are taken.
-
-.. py:attribute:: enableBoxFrame : bool 
-    :noindex:
-    
-    If true, a 1px solid border is drawn as a boxed rectangle around the canvas, else no margin is visible on the upper and right side.
-
-.. py:attribute:: displayed : dataObject (readonly)
-    :noindex:
-    
-    This returns the currently displayed data object [read only].
-
-.. py:attribute:: geometricShapesCount : int (readonly)
-    :noindex:
-    
-    Number of currently existing geometric shapes.
-
-.. py:attribute:: buttonSet : ButtonStyle 
-    :noindex:
-    
-    Get/set the button set used (normal or light color for dark themes).
-    
-    The type 'ButtonStyle' is an enumeration that can have one of the following values (str or int):
-    
-    * 'StyleBright' (0)
-    * 'StyleDark' (1)
-
-.. py:attribute:: geometryModificationModes : ItomQwtPlotEnums::ModificationModes 
-    :noindex:
-    
-    Bitmask to globally change how geometric shapes can be modified. The possible modes of a shape are both restricted by the shape's flags and the allowed modes of the plot (move: 0x01, rotate: 0x02, resize: 0x04)
-    
-    The type 'ItomQwtPlotEnums::ModificationModes' is a flag mask that can be a combination of one or several of the following values (or-combination number values or semicolon separated strings):
-    
-    * 'Move' (1)
-    * 'Rotate' (2)
-    * 'Resize' (4)
-
-.. py:attribute:: axisScale : ItomQwtPlotEnums::ScaleEngine 
-    :noindex:
-    
-    linear or logarithmic scale (various bases) can be chosen for the horizontal axis (x-axis). Please consider, that a logarithmic scale can only display values > 1e-100.
-    
-    The type 'ItomQwtPlotEnums::ScaleEngine' is an enumeration that can have one of the following values (str or int):
-    
-    * 'Linear' (1)
-    * 'Log2' (2)
-    * 'Log10' (10)
-    * 'Log16' (16)
-    * 'LogLog2' (1002)
-    * 'LogLog10' (1010)
-    * 'LogLog16' (1016)
-
-.. py:attribute:: legendFont : font 
-    :noindex:
-    
-    Font for legend entries
-
-.. py:attribute:: curveFillAlpha : int 
-    :noindex:
-    
-    set the alpha value for the curve fill color seperatly.
-
-.. py:attribute:: keepAspectRatio : bool 
-    :noindex:
-    
-    Enable or disable a fixed 1:1 aspect ratio between x and y axis.
-
-.. py:attribute:: colorMap : str 
-    :noindex:
-    
-    Color map (string) that should be used to colorize a non-color data object.
-
-.. py:attribute:: lineWidth : float 
-    :noindex:
-    
-    width of all curves in pixel.
-
-.. py:attribute:: xAxisInterval : autoInterval 
-    :noindex:
-    
-    Sets the visible range of the displayed x-axis (in coordinates of the data object). Set it to 'auto' if range should be automatically set [default].
-
-.. py:attribute:: contextMenuEnabled : bool 
-    :noindex:
-    
-    Defines whether the context menu of the plot should be enabled or not.
+    Get or set the currently highlighted geometric shape. After manipulation the last element stays selected.
 
 .. py:attribute:: toolbarVisible : bool 
     :noindex:
     
     Toggles the visibility of the toolbar of the plot.
 
-.. py:attribute:: markerLabelsVisible : bool 
+.. py:attribute:: lineCutData : dataObject (readonly)
     :noindex:
     
-    Toggle visibility of marker labels, the label is the set name of the marker.
-
-.. py:attribute:: pickerLabelAlignment : Qt::Alignment 
-    :noindex:
-    
-    Get / set label alignment for the picker labels.
-    
-    The type 'Qt::Alignment' is a flag mask that can be a combination of one or several of the following values (or-combination number values or semicolon separated strings):
-    
-    * 'AlignLeft' (1)
-    * 'AlignLeading' (1)
-    * 'AlignRight' (2)
-    * 'AlignTrailing' (2)
-    * 'AlignHCenter' (4)
-    * 'AlignJustify' (8)
-    * 'AlignAbsolute' (16)
-    * 'AlignHorizontal_Mask' (31)
-    * 'AlignTop' (32)
-    * 'AlignBottom' (64)
-    * 'AlignVCenter' (128)
-    * 'AlignBaseline' (256)
-    * 'AlignVertical_Mask' (480)
-    * 'AlignCenter' (132)
+    Get the currently displayed slices from the child lineplot
 
 .. py:attribute:: allowedGeometricShapes : ItomQwtPlotEnums::ShapeTypes 
     :noindex:
@@ -215,98 +87,208 @@ Properties
     * 'Circle' (64)
     * 'Polygon' (128)
 
-.. py:attribute:: legendPosition : LegendPos 
+.. py:attribute:: source : dataObject 
     :noindex:
     
-    Position of the legend (Off, Left, Top, Right, Bottom)
-    
-    The type 'LegendPos' is an enumeration that can have one of the following values (str or int):
-    
-    * 'Off' (0)
-    * 'Left' (1)
-    * 'Top' (2)
-    * 'Right' (3)
-    * 'Bottom' (4)
+    Sets the input data object for this plot.
 
-.. py:attribute:: canvasColor : color str, rgba or hex 
+.. py:attribute:: yAxisLabel : str 
     :noindex:
     
-    Get/set the color of the canvas.
-
-.. py:attribute:: textColor : color str, rgba or hex 
-    :noindex:
-    
-    Get/set the color of text and tick-numbers.
-
-.. py:attribute:: picker : dataObject (readonly)
-    :noindex:
-    
-    Get picker defined by a Mx4 float32 data object. Each row represents one picker and contains the following information: [pixelIndex, physIndex, value, curveIndex]. PixelIndex and physIndex are equal if axisScale = 1 and axisOffset = 0 for the corresponding dataObject.
-
-.. py:attribute:: renderLegend : bool 
-    :noindex:
-    
-    If this property is true, the legend are included in pixelmaps renderings.
+    Label of the y-axis or '<auto>' if the description from the data object should be used.
 
 .. py:attribute:: backgroundColor : color str, rgba or hex 
     :noindex:
     
     Get/set the background color.
 
-.. py:attribute:: pickerLimit : int 
+.. py:attribute:: yAxisFlipped : bool 
     :noindex:
     
-    Define the maximal number of picker for this plot.
+    Sets whether y-axis should be flipped (default: false, zero is at the bottom).
 
-.. py:attribute:: selectedGeometricShape : int 
+.. py:attribute:: xAxisLabel : str 
     :noindex:
     
-    Get or set the currently highlighted geometric shape. After manipulation the last element stays selected.
-
-.. py:attribute:: titleFont : font 
-    :noindex:
-    
-    Font for title.
-
-.. py:attribute:: axisFont : font 
-    :noindex:
-    
-    Font for axes tick values.
+    Label of the x-axis or '<auto>' if the description from the data object should be used.
 
 .. py:attribute:: labelFont : font 
     :noindex:
     
     Font for axes descriptions.
 
-.. py:attribute:: curveStyle : ItomQwtPlotEnums::CurveStyle 
+.. py:attribute:: contextMenuEnabled : bool 
     :noindex:
     
-    set the style of the qwt-plot according to curve styles.
-    
-    The type 'ItomQwtPlotEnums::CurveStyle' is an enumeration that can have one of the following values (str or int):
-    
-    * 'NoCurve' (-1)
-    * 'Lines' (0)
-    * 'FittedLines' (1)
-    * 'Sticks' (2)
-    * 'SticksHorizontal' (3)
-    * 'SticksVertical' (4)
-    * 'Steps' (5)
-    * 'StepsRight' (6)
-    * 'StepsLeft' (7)
-    * 'Dots' (8)
+    Defines whether the context menu of the plot should be enabled or not.
 
-.. py:attribute:: pickerType : ItomQwtPlotEnums::PlotPickerType 
+.. py:attribute:: geometricShapesLabelsVisible : bool 
     :noindex:
     
-    Get / set the current picker type ('DefaultMarker', 'RangeMarker', 'ValueRangeMarker', 'AxisRangeMarker')
+    Toggle visibility of shape labels, the label is the name of the shape.
+
+.. py:attribute:: keepAspectRatio : bool 
+    :noindex:
     
-    The type 'ItomQwtPlotEnums::PlotPickerType' is an enumeration that can have one of the following values (str or int):
+    Enable or disable a fixed 1:1 aspect ratio between x and y axis.
+
+.. py:attribute:: textColor : color str, rgba or hex 
+    :noindex:
     
-    * 'DefaultMarker' (0)
-    * 'RangeMarker' (1)
-    * 'ValueRangeMarker' (2)
-    * 'AxisRangeMarker' (3)
+    Get/set the color of text and tick-numbers.
+
+.. py:attribute:: geometryModificationModes : ItomQwtPlotEnums::ModificationModes 
+    :noindex:
+    
+    Bitmask to globally change how geometric shapes can be modified. The possible modes of a shape are both restricted by the shape's flags and the allowed modes of the plot (move: 0x01, rotate: 0x02, resize: 0x04)
+    
+    The type 'ItomQwtPlotEnums::ModificationModes' is a flag mask that can be a combination of one or several of the following values (or-combination number values or semicolon separated strings):
+    
+    * 'Move' (1)
+    * 'Rotate' (2)
+    * 'Resize' (4)
+
+.. py:attribute:: displayed : dataObject (readonly)
+    :noindex:
+    
+    This returns the currently displayed data object [read only].
+
+.. py:attribute:: titleFont : font 
+    :noindex:
+    
+    Font for title.
+
+.. py:attribute:: yAxisVisible : bool 
+    :noindex:
+    
+    Sets visibility of the y-axis.
+
+.. py:attribute:: geometricShapesCount : int (readonly)
+    :noindex:
+    
+    Number of currently existing geometric shapes.
+
+.. py:attribute:: enableBoxFrame : bool 
+    :noindex:
+    
+    If true, a 1px solid border is drawn as a boxed rectangle around the canvas, else no margin is visible on the upper and right side.
+
+.. py:attribute:: zSlicePlotItem : uiItem 
+    :noindex:
+    
+    Set/get the uiItem of the current line plot respective the destination line plot for z slicing. The 'uiItem' can be savely cast to 'plotItem'.
+
+.. py:attribute:: canvasColor : color str, rgba or hex 
+    :noindex:
+    
+    Get/set the color of the canvas.
+
+.. py:attribute:: title : str 
+    :noindex:
+    
+    Title of the plot or '<auto>' if the title of the data object should be used.
+
+.. py:attribute:: renderLegend : bool 
+    :noindex:
+    
+    If this property is true, the legend are included in pixelmaps renderings.
+
+.. py:attribute:: planeIndex : int 
+    :noindex:
+    
+    Plane index of currently visible plane.
+
+.. py:attribute:: geometricShapesFillOpacitySelected : int 
+    :noindex:
+    
+    Opacity for the selected geometric shapes with an area > 0. This value ranges from 0 (not filled) to 255 (opaque).
+
+.. py:attribute:: xAxisInterval : autoInterval 
+    :noindex:
+    
+    Sets the visible range of the displayed x-axis (in coordinates of the data object). Set it to 'auto' if range should be automatically set [default].
+
+.. py:attribute:: zAxisInterval : autoInterval 
+    :noindex:
+    
+    Sets the visible range of the displayed z-axis (in coordinates of the data object). Set it to 'auto' if range should be automatically set [default].
+
+.. py:attribute:: geometricShapes : seq. of shape 
+    :noindex:
+    
+    Get or set the geometric shapes on the canvas, they are set as a sequence of itom.shape for each shape.
+
+.. py:attribute:: overlayImage : dataObject 
+    :noindex:
+    
+    Set an overlay dataObject which is shown above the main dataObject and whose opacity (see 'overlayAlpha') can be controlled by a slider in the toolbar. Assign None to remove the overlay object.
+
+.. py:attribute:: yAxisInterval : autoInterval 
+    :noindex:
+    
+    Sets the visible range of the displayed y-axis (in coordinates of the data object). Set it to 'auto' if range should be automatically set [default].
+
+.. py:attribute:: colorBarVisible : bool 
+    :noindex:
+    
+    Defines whether the color bar should be visible.
+
+.. py:attribute:: valueScale : ItomQwtPlotEnums::ScaleEngine 
+    :noindex:
+    
+    linear or logarithmic scale (various bases) can be chosen for the value axis (color bar). Please consider, that a logarithmic scale can only display values > 1e-100 while the lower limit for the double-logarithmic scale is 1+1e-100.
+    
+    The type 'ItomQwtPlotEnums::ScaleEngine' is an enumeration that can have one of the following values (str or int):
+    
+    * 'Linear' (1)
+    * 'Log2' (2)
+    * 'Log10' (10)
+    * 'Log16' (16)
+    * 'LogLog2' (1002)
+    * 'LogLog10' (1010)
+    * 'LogLog16' (1016)
+
+.. py:attribute:: geometricShapesFillOpacity : int 
+    :noindex:
+    
+    Opacity for geometric shapes with an area > 0. This value ranges from 0 (not filled) to 255 (opaque).
+
+.. py:attribute:: axisFont : font 
+    :noindex:
+    
+    Font for axes tick values.
+
+.. py:attribute:: axisColor : color str, rgba or hex 
+    :noindex:
+    
+    Get/set the color of the axis.
+
+.. py:attribute:: complexStyle : ItomQwtPlotEnums::ComplexType 
+    :noindex:
+    
+    Defines whether the real, imaginary, phase or absolute of a complex number is shown. Possible options are CmplxAbs(0), CmplxImag (1), CmplxReal (2) and CmplxArg (3).
+    
+    The type 'ItomQwtPlotEnums::ComplexType' is an enumeration that can have one of the following values (str or int):
+    
+    * 'CmplxAbs' (0)
+    * 'CmplxImag' (1)
+    * 'CmplxReal' (2)
+    * 'CmplxArg' (3)
+
+.. py:attribute:: buttonSet : ButtonStyle 
+    :noindex:
+    
+    Get/set the button set used (normal or light color for dark themes).
+    
+    The type 'ButtonStyle' is an enumeration that can have one of the following values (str or int):
+    
+    * 'StyleBright' (0)
+    * 'StyleDark' (1)
+
+.. py:attribute:: geometricShapesDrawingEnabled : bool 
+    :noindex:
+    
+    Enable and disable internal plotting functions and GUI-elements for geometric elements.
 
 .. py:attribute:: unitLabelStyle : ito::AbstractFigure::UnitLabelStyle 
     :noindex:
@@ -319,232 +301,68 @@ Properties
     * 'UnitLabelKeywordIn' (1)
     * 'UnitLabelSquareBrackets' (2)
 
-.. py:attribute:: axisColor : color str, rgba or hex 
+.. py:attribute:: overlayAlpha : int 
     :noindex:
     
-    Get/set the color of the axis.
-
-.. py:attribute:: yAxisInterval : autoInterval 
-    :noindex:
-    
-    Sets the visible range of the displayed y-axis (in coordinates of the data object). Set it to 'auto' if range should be automatically set [default].
-
-.. py:attribute:: geometricShapesLabelsVisible : bool 
-    :noindex:
-    
-    Toggle visibility of shape labels, the label is the name of the shape.
-
-.. py:attribute:: fillCurve : ItomQwtPlotEnums::FillCurveStyle 
-    :noindex:
-    
-    fill curve below / above or according to baseline.
-    
-    The type 'ItomQwtPlotEnums::FillCurveStyle' is an enumeration that can have one of the following values (str or int):
-    
-    * 'NoCurveFill' (-1)
-    * 'FillBaseLine' (0)
-    * 'FillFromTop' (1)
-    * 'FillFromBottom' (2)
-
-.. py:attribute:: antiAliased : bool 
-    :noindex:
-    
-    True, if all curves should be plot with an anti-aliased render mode (slower) or False if not (faster).
-
-.. py:attribute:: title : str 
-    :noindex:
-    
-    Title of the plot or '<auto>' if the title of the data object should be used.
-
-.. py:attribute:: zAxisInterval : autoInterval 
-    :noindex:
-    
-    Sets the visible range of the displayed z-axis (in coordinates of the data object). Set it to 'auto' if range should be automatically set [default].
+    Changes the value of the overlay channel
 
 .. py:attribute:: camera : dataIO 
     :noindex:
     
     Use this property to set a camera/grabber to this plot (live image).
 
-.. py:attribute:: columnInterpretation : ItomQwtPlotEnums::MultiLineMode 
+.. py:attribute:: lineCutPlotItem : uiItem 
     :noindex:
     
-    Define the interpretation of M x N objects as Auto, FirstRow, FirstCol, MultiRows, MultiCols.
-    
-    The type 'ItomQwtPlotEnums::MultiLineMode' is an enumeration that can have one of the following values (str or int):
-    
-    * 'AutoRowCol' (0)
-    * 'FirstRow' (1)
-    * 'FirstCol' (2)
-    * 'MultiRows' (3)
-    * 'MultiCols' (4)
-    * 'MultiLayerAuto' (5)
-    * 'MultiLayerCols' (6)
-    * 'MultiLayerRows' (7)
+    Set/get the uiItem of the current line plot respective the destination line plot for lateral slicing. The 'uiItem' can be savely cast to 'plotItem'.
 
-.. py:attribute:: pickerCount : int (readonly)
+.. py:attribute:: colorMap : str 
     :noindex:
     
-    Number of picker within the plot.
+    Defines which color map should be used [e.g. grayMarked, hotIron].
 
-.. py:attribute:: curveFillColor : color str, rgba or hex 
+.. py:attribute:: xAxisVisible : bool 
     :noindex:
     
-    the fill color for the curve, invalid color leads to line color selection.
+    Sets visibility of the x-axis.
 
-.. py:attribute:: geometricShapesDrawingEnabled : bool 
+.. py:attribute:: overlayColorMap : str 
     :noindex:
     
-    Enable and disable internal plotting functions and GUI-elements for geometric elements.
+    Defines which color map should be used for the overlay channel [e.g. gray, grayMarked, falseColor, falseColorIR, hotIron, red, blue, green, viridis].
 
-.. py:attribute:: geometricShapes : seq. of shape 
+.. py:attribute:: showCenterMarker : bool 
     :noindex:
     
-    Get or set the geometric shapes on the canvas, they are set as a sequence of itom.shape for each shape.
+    Shows or hides a marker for the center of a data object.
 
-.. py:attribute:: geometricShapesFillOpacity : int 
+.. py:attribute:: markerLabelsVisible : bool 
     :noindex:
     
-    Opacity for geometric shapes with an area > 0. This value ranges from 0 (not filled) to 255 (opaque).
-
-.. py:attribute:: pickerLabelVisible : bool 
-    :noindex:
-    
-    Enable and disable the labels next to each picker.
-
-.. py:attribute:: lineStyle : Qt::PenStyle 
-    :noindex:
-    
-    style of all lines.
-    
-    The type 'Qt::PenStyle' is an enumeration that can have one of the following values (str or int):
-    
-    * 'NoPen' (0)
-    * 'SolidLine' (1)
-    * 'DashLine' (2)
-    * 'DotLine' (3)
-    * 'DashDotLine' (4)
-    * 'DashDotDotLine' (5)
-    * 'CustomDashLine' (6)
-
-.. py:attribute:: valueScale : ItomQwtPlotEnums::ScaleEngine 
-    :noindex:
-    
-    linear or logarithmic scale (various bases) can be chosen for the vertical axis (y-axis). Please consider, that a logarithmic scale can only display values > 1e-100 while the lower limit for the double-logarithmic scale is 1+1e-100.
-    
-    The type 'ItomQwtPlotEnums::ScaleEngine' is an enumeration that can have one of the following values (str or int):
-    
-    * 'Linear' (1)
-    * 'Log2' (2)
-    * 'Log10' (10)
-    * 'Log16' (16)
-    * 'LogLog2' (1002)
-    * 'LogLog10' (1010)
-    * 'LogLog16' (1016)
-
-.. py:attribute:: geometricShapesFillOpacitySelected : int 
-    :noindex:
-    
-    Opacity for the selected geometric shapes with an area > 0. This value ranges from 0 (not filled) to 255 (opaque).
-
-.. py:attribute:: lineSymbol : Symbol 
-    :noindex:
-    
-    Get / Set the current line symbol type
-    
-    The type 'Symbol' is an enumeration that can have one of the following values (str or int):
-    
-    * 'NoSymbol' (0)
-    * 'Ellipse' (1)
-    * 'Rect' (2)
-    * 'Diamond' (3)
-    * 'Triangle' (4)
-    * 'DTriangle' (5)
-    * 'UTriangle' (6)
-    * 'LTriangle' (7)
-    * 'RTriangle' (8)
-    * 'Cross' (9)
-    * 'XCross' (10)
-    * 'HLine' (11)
-    * 'VLine' (12)
-    * 'Star1' (13)
-    * 'Star2' (14)
-    * 'Hexagon' (15)
-
-.. py:attribute:: pickerLabelOrientation : Qt::Orientation 
-    :noindex:
-    
-    Get / set the label orientation for the picker labels.
-    
-    The type 'Qt::Orientation' is an enumeration that can have one of the following values (str or int):
-    
-    * 'Horizontal' (1)
-    * 'Vertical' (2)
-
-.. py:attribute:: currentPickerIndex : int 
-    :noindex:
-    
-    Get / set currently active picker.
-
-.. py:attribute:: grid : GridStyle 
-    :noindex:
-    
-    Style of the grid ('GridNo', 'GridMajorXY', 'GridMajorX', 'GridMajorY', 'GridMinorXY', 'GridMinorX', 'GridMinorY').
-    
-    The type 'GridStyle' is an enumeration that can have one of the following values (str or int):
-    
-    * 'GridNo' (0)
-    * 'GridMajorXY' (1)
-    * 'GridMajorX' (2)
-    * 'GridMajorY' (3)
-    * 'GridMinorXY' (4)
-    * 'GridMinorX' (5)
-    * 'GridMinorY' (6)
+    Toggle visibility of marker labels, the label is the set name of the marker.
 
 .. py:attribute:: valueLabel : str 
     :noindex:
     
-    Label of the value axis (y-axis) or '<auto>' if the description should be used from data object.
+    Label of the value axis or '<auto>' if the description should be used from data object.
 
-.. py:attribute:: axisLabel : str 
+.. py:attribute:: overlayInterval : autoInterval 
     :noindex:
     
-    Label of the direction (x/y) axis or '<auto>' if the descriptions from the data object should be used.
+    Range of the overlayInterval to scale the values
 
 Slots
 -------------------------
 
 
-.. py:function:: appendPicker(coordinates, curveIndex, physicalCoordinates) [slot]
+.. py:function:: deleteMarkers(id) [slot]
     :noindex:
     
     
-    Append plot pickers to a specific curve either in physical (axis) or in pixel coordinates.
+    Delete all sets of markers with the given id or all markers if no or an empty id is passed.
     
-    The pixel coordinates are the pixels of the currently displayed dataObject. The coordinates are the axis positions only, 
-    the values are chosen from the curve values. Existing pickers are not removed before this operation.
-    
-    :param coordinates: x-coordinates of each picker, the y-coordinate is automatically chosen from the shape of the curve. If the size of the sequence plus the number of existing pickers exceed the 'pickerLimit', a RuntimeError is thrown.curveIndex : {int} index of the curve where the pickers should be attached to (optional, default: 0 - first curve)
-    :type coordinates: seq. of float
-    :param physicalCoordinates: optional, if True (default), 'coordinates' are given in axis coordinates of the plot (hence, physical coordinates of the dataObject; False: 'coordinates' are given in pixel coordinates of the dataObject
-    :type physicalCoordinates: bool
-    
-    .. index:: 
-
-.. py:function:: savePlot(filename, xsize, ysize, resolution) [slot]
-    :noindex:
-    
-    
-    saves the plot as image, pdf or svg file (the supported file formats are listed in the save dialog of the plot)
-    
-    :param filename: absolute or relative filename whose suffix defines the file format
-    :type filename: str
-    :param xsize: x-size of the canvas in mm. If 0.0 [default], the size of the canvas is determined by the current size of the figure
-    :type xsize: float
-    :param ysize: y-size of the canvas in mm. If 0.0 [default], the size of the canvas is determined by the current size of the figure
-    :type ysize: float
-    :param resolution: resolution of image components in the plot in dpi (default: 300dpi)
-    :type resolution: int
+    :param id: name of the marker set that should be removed (optional)
+    :type id: str
     
     .. index:: 
 
@@ -559,38 +377,51 @@ Slots
     
     .. index:: 
 
-.. py:function:: addGeometricShape(geometricShape) [slot]
+.. py:function:: replot() [slot]
     :noindex:
     
     
-    Add a new geometric shape to the canvas if no shape with the same index already exists. 
-    
-    If the index of the new shape is -1 (default), the next free auto-incremented index will be set for this shape. (C++ only: this new index ist
-    stored in the optional 'newIndex' parameter).
-    
-    :param geometricShape: new geometric shape
-    :type geometricShape: shape
-    
-    :raises RuntimeError: if the index of the shape is != -1 and does already exist
+    Force a replot which is for instance necessary if values of the displayed data object changed and you want to update the plot, too.
     
     .. index:: 
 
-.. py:function:: deleteMarkers(id) [slot]
+.. py:function:: setLinePlot(x0, y0, x1, y1, destID) [slot]
     :noindex:
     
     
-    Delete all sets of markers with the given id or all markers if no or an empty id is passed.
+    displays a line cut plot with the given bounds.
     
-    :param id: name of the marker set that should be removed (optional)
-    :type id: str
+    :param x0: x-coordinate (physical units) of the first end point of the line cut.
+    :type x0: int
+    :param y0: y-coordinate (physical units) of the first end point of the line cut.
+    :type y0: int
+    :param x1: x-coordinate (physical units) of the first end point of the line cut.
+    :type x1: int
+    :param y1: y-coordinate (physical units) of the second end point of the line cut.
+    :type y1: int
+    :param destID: optional and unused
+    :type destID: int
     
     .. index:: 
 
-.. py:function:: getDisplayed() [slot]
+.. py:function:: setGeometricShapeLabel(idx, label) [slot]
     :noindex:
     
     
-    returns the currently displayed dataObject.
+    Set the label of geometric shape with the index idx.
+    
+    :param idx: index of the shape
+    :type idx: int
+    :param label: new label of the shape
+    :type label: str
+    
+    .. index:: 
+
+.. py:function:: refreshPlot() [slot]
+    :noindex:
+    
+    
+    Triggers an update of the current plot window.
     
     .. index:: 
 
@@ -606,59 +437,6 @@ Slots
     :type start: bool
     :param maxNrOfPoints: number of shapes that should be added, the user can quit earlier by pressing Esc (optional, default: -1 -> infinite number of shapes)
     :type maxNrOfPoints: int
-    
-    .. index:: 
-
-.. py:function:: setCurveProperty(index, property, value) [slot]
-    :noindex:
-    
-    
-    Set a property of a specific curve
-    
-    Some curve properties can be changed globally for all curves using the global properties. However, it is also possible to
-    set a property to different values for each curve.
-    
-    :param index: zero-based index of the curve whose property should be changed.
-    :type index: int
-    :param property: name of the property to be changed
-    :type property: str
-    :param value: value of the property
-    :type value: various
-    
-    .. index:: 
-
-.. py:function:: setLegendTitles(legends) [slot]
-    :noindex:
-    
-    
-    .. index:: 
-
-.. py:function:: replot() [slot]
-    :noindex:
-    
-    
-    Force a replot which is for instance necessary if values of the displayed data object changed and you want to update the plot, too.
-    
-    .. index:: 
-
-.. py:function:: setGeometricShapeLabelVisible(idx, visible) [slot]
-    :noindex:
-    
-    
-    Set the visibility of the label of a geometric shape with the given index.
-    
-    :param idx: index of the shape
-    :type idx: int
-    :param visible: True if the label should be displayed close to the shape, else False
-    :type visible: bool
-    
-    .. index:: 
-
-.. py:function:: copyToClipBoard() [slot]
-    :noindex:
-    
-    
-    copies the entire plot to the clipboard as bitmap data.
     
     .. index:: 
 
@@ -679,68 +457,20 @@ Slots
     
     .. index:: 
 
-.. py:function:: getCurveProperty(index, property) [slot]
+.. py:function:: savePlot(filename, xsize, ysize, resolution) [slot]
     :noindex:
     
     
-    Get a property of a specific curve
+    saves the plot as image, pdf or svg file (the supported file formats are listed in the save dialog of the plot)
     
-    Get the value of a property of a specific curve (see slot 'setCurveProperty').
-    
-    :param index: zero-based index of the curve whose property should be changed.
-    :type index: int
-    :param property: name of the property to be changed
-    :type property: str
-    
-    :return: value -> value of the requested property
-    :rtype: variant
-    
-    .. index:: 
-
-.. py:function:: getPlotID() [slot]
-    :noindex:
-    
-    
-    Return window ID of this plot {int}.
-    
-    .. index:: 
-
-.. py:function:: updateGeometricShape(geometricShape) [slot]
-    :noindex:
-    
-    
-    Updates an existing geometric shape by the new shape if the index of the shape already exists, else add the new shape to the canvas (similar to 'addGeometricShape'. 
-    
-    If the index of the new shape is -1 (default), the next free auto-incremented index will be set for this shape. (C++ only: this new index ist
-    stored in the optional 'newIndex' parameter).
-    
-    :param geometricShape: new geometric shape
-    :type geometricShape: shape
-    
-    .. index:: 
-
-.. py:function:: showCurveProperties() [slot]
-    :noindex:
-    
-    
-    .. index:: 
-
-.. py:function:: deletePicker(id) [slot]
-    :noindex:
-    
-    
-    Delete the i-th picker (id >= 0) or all pickers (id = -1)
-    
-    :param id: zero-based index of the picker to be deleted, or -1 if all pickers should be deleted (default). This parameter is optional.
-    :type id: int
-    
-    .. index:: 
-
-.. py:function:: refreshPlot() [slot]
-    :noindex:
-    
-    
-    Triggers an update of the current plot window.
+    :param filename: absolute or relative filename whose suffix defines the file format
+    :type filename: str
+    :param xsize: x-size of the canvas in mm. If 0.0 [default], the size of the canvas is determined by the current size of the figure
+    :type xsize: float
+    :param ysize: y-size of the canvas in mm. If 0.0 [default], the size of the canvas is determined by the current size of the figure
+    :type ysize: float
+    :param resolution: resolution of image components in the plot in dpi (default: 300dpi)
+    :type resolution: int
     
     .. index:: 
 
@@ -755,48 +485,48 @@ Slots
     
     .. index:: 
 
-.. py:function:: setPicker(coordinates, curveIndex, physicalCoordinates) [slot]
+.. py:function:: removeOverlayImage() [slot]
     :noindex:
     
     
-    Set plot pickers to a specific curve either in physical (axis) or in pixel coordinates.
-    
-    The pixel coordinates are the pixels of the currently displayed dataObject. The coordinates are the axis positions only, 
-    the values are chosen from the curve values. Existing pickers are deleted at first.
-    
-    :param coordinates: x-coordinates of each picker, the y-coordinate is automatically chosen from the shape of the curve. If the size of the sequence exceeds the 'pickerLimit', a RuntimeError is thrown.curveIndex : {int} index of the curve where the pickers should be attached to (optional, default: 0 - first curve)
-    :type coordinates: seq. of float
-    :param physicalCoordinates: optional, if True (default), 'coordinates' are given in axis coordinates of the plot (hence, physical coordinates of the dataObject; False: 'coordinates' are given in pixel coordinates of the dataObject
-    :type physicalCoordinates: bool
+    removes an overlay image. This is the same than assigning 'None' to the property 'overlayImage'
     
     .. index:: 
 
-.. py:function:: setLinePlot(x0, y0, x1, y1, destID) [slot]
+.. py:function:: setGeometricShapeLabelVisible(idx, visible) [slot]
     :noindex:
     
     
-    This slot can be implemented by any plot plugin to force the plot to open a line plot. Here it is not required and therefore not implemented.
-    
-    .. index:: 
-
-.. py:function:: clearGeometricShapes() [slot]
-    :noindex:
-    
-    
-    removes all geometric shapes from the canvas.
-    
-    .. index:: 
-
-.. py:function:: setGeometricShapeLabel(idx, label) [slot]
-    :noindex:
-    
-    
-    Set the label of geometric shape with the index idx.
+    Set the visibility of the label of a geometric shape with the given index.
     
     :param idx: index of the shape
     :type idx: int
-    :param label: new label of the shape
-    :type label: str
+    :param visible: True if the label should be displayed close to the shape, else False
+    :type visible: bool
+    
+    .. index:: 
+
+.. py:function:: getPlotID() [slot]
+    :noindex:
+    
+    
+    Return window ID of this plot {int}.
+    
+    .. index:: 
+
+.. py:function:: getDisplayedLineCut() [slot]
+    :noindex:
+    
+    
+    returns the currently displayed line cut dataObject
+    
+    .. index:: 
+
+.. py:function:: getDisplayed() [slot]
+    :noindex:
+    
+    
+    returns the currently displayed dataObject.
     
     .. index:: 
 
@@ -815,26 +545,89 @@ Slots
     
     .. index:: 
 
+.. py:function:: copyToClipBoard() [slot]
+    :noindex:
+    
+    
+    copies the entire plot to the clipboard as bitmap data.
+    
+    .. index:: 
+
+.. py:function:: addGeometricShape(geometricShape) [slot]
+    :noindex:
+    
+    
+    Add a new geometric shape to the canvas if no shape with the same index already exists. 
+    
+    If the index of the new shape is -1 (default), the next free auto-incremented index will be set for this shape. (C++ only: this new index ist
+    stored in the optional 'newIndex' parameter).
+    
+    :param geometricShape: new geometric shape
+    :type geometricShape: shape
+    
+    :raises RuntimeError: if the index of the shape is != -1 and does already exist
+    
+    .. index:: 
+
+.. py:function:: clearGeometricShapes() [slot]
+    :noindex:
+    
+    
+    removes all geometric shapes from the canvas.
+    
+    .. index:: 
+
+.. py:function:: updateGeometricShape(geometricShape) [slot]
+    :noindex:
+    
+    
+    Updates an existing geometric shape by the new shape if the index of the shape already exists, else add the new shape to the canvas (similar to 'addGeometricShape'. 
+    
+    If the index of the new shape is -1 (default), the next free auto-incremented index will be set for this shape. (C++ only: this new index ist
+    stored in the optional 'newIndex' parameter).
+    
+    :param geometricShape: new geometric shape
+    :type geometricShape: shape
+    
+    .. index:: 
+
 Signals
 -------------------------
 
 
-.. py:function:: geometricShapeStartUserInput(type, userInteractionReason) [signal]
+.. py:function:: geometricShapeChanged(idx, shape) [signal]
     :noindex:
     
     
-    This signal is emitted whenever the plot enters a mode where the user can add a new geometric shape using the mouse
+    This signal is emitted whenever a geometric shape has been changed (e.g. its position or form has been changed)
     
-    :param type: Type of the shape that could be added by the user, this is one of the constants shape.Circle, shape.Ellipse, shape.Line...
-    :type type: int
-    :param userInteractionReason: True if the process to add a new shape has been initialized by a script-base call, False if it has been started by a button in the toolbar or menu of the plot
-    :type userInteractionReason: bool
+    :param idx: index of the changed shape (this is the index of the second parameter 'shape')
+    :type idx: int
+    :param shape: shape that has been changed
+    :type shape: shape
     
     .. note::
     
         To connect to this signal use the following signature::
         
-            yourItem.connect('geometricShapeStartUserInput(int,bool)', yourMethod)
+            yourItem.connect('geometricShapeChanged(int,ito::Shape)', yourMethod)
+    
+    .. index:: 
+
+.. py:function:: geometricShapeCurrentChanged(currentShape) [signal]
+    :noindex:
+    
+    
+    This signal is emitted whenever the currently selected geometric has been changed
+    
+    :param currentShape: new current shape or an invalid shape if the current shape has been deleted and no other shape is selected now
+    :type currentShape: shape
+    
+    .. note::
+    
+        To connect to this signal use the following signature::
+        
+            yourItem.connect('geometricShapeCurrentChanged(ito::Shape)', yourMethod)
     
     .. index:: 
 
@@ -855,6 +648,25 @@ Signals
     
     .. index:: 
 
+.. py:function:: geometricShapeStartUserInput(type, userInteractionReason) [signal]
+    :noindex:
+    
+    
+    This signal is emitted whenever the plot enters a mode where the user can add a new geometric shape using the mouse
+    
+    :param type: Type of the shape that could be added by the user, this is one of the constants shape.Circle, shape.Ellipse, shape.Line...
+    :type type: int
+    :param userInteractionReason: True if the process to add a new shape has been initialized by a script-base call, False if it has been started by a button in the toolbar or menu of the plot
+    :type userInteractionReason: bool
+    
+    .. note::
+    
+        To connect to this signal use the following signature::
+        
+            yourItem.connect('geometricShapeStartUserInput(int,bool)', yourMethod)
+    
+    .. index:: 
+
 .. py:function:: geometricShapesDeleted() [signal]
     :noindex:
     
@@ -866,23 +678,6 @@ Signals
         To connect to this signal use the following signature::
         
             yourItem.connect('geometricShapesDeleted()', yourMethod)
-    
-    .. index:: 
-
-.. py:function:: geometricShapeCurrentChanged(currentShape) [signal]
-    :noindex:
-    
-    
-    This signal is emitted whenever the currently selected geometric has been changed
-    
-    :param currentShape: new current shape or an invalid shape if the current shape has been deleted and no other shape is selected now
-    :type currentShape: shape
-    
-    .. note::
-    
-        To connect to this signal use the following signature::
-        
-            yourItem.connect('geometricShapeCurrentChanged(ito::Shape)', yourMethod)
     
     .. index:: 
 
@@ -907,44 +702,6 @@ Signals
     
     .. index:: 
 
-.. py:function:: geometricShapeFinished(shapes, aborted) [signal]
-    :noindex:
-    
-    
-    This signal is emitted whenever one or multiple geometric shapes have been added, removed or modified
-    
-    :param shapes: A tuple containing all shapes that have been modified
-    :type shapes: tuple of shape
-    :param aborted: True if the modification process has been aborted, else False
-    :type aborted: bool
-    
-    .. note::
-    
-        To connect to this signal use the following signature::
-        
-            yourItem.connect('geometricShapeFinished(QVector<ito::Shape>,bool)', yourMethod)
-    
-    .. index:: 
-
-.. py:function:: geometricShapeChanged(idx, shape) [signal]
-    :noindex:
-    
-    
-    This signal is emitted whenever a geometric shape has been changed (e.g. its position or form has been changed)
-    
-    :param idx: index of the changed shape (this is the index of the second parameter 'shape')
-    :type idx: int
-    :param shape: shape that has been changed
-    :type shape: shape
-    
-    .. note::
-    
-        To connect to this signal use the following signature::
-        
-            yourItem.connect('geometricShapeChanged(int,ito::Shape)', yourMethod)
-    
-    .. index:: 
-
 .. py:function:: geometricShapeAdded(idx, shape) [signal]
     :noindex:
     
@@ -964,29 +721,41 @@ Signals
     
     .. index:: 
 
-.. py:function:: pickerChanged(pickerIndex, positionX, positionY, curveIndex) [signal]
+.. py:function:: planeIndexChanged(planeIndex) [signal]
     :noindex:
     
     
-    This signal is emitted whenever the current picker changed its position
+    This signal is emitted whenever the displayed plane in a 3D dataObject is changed
     
-    :param pickerIndex: index of the changed picker
-    :type pickerIndex: int
-    :param positionX: horizontal position of currently changed picker
-    :type positionX: double
-    :param positionY: vertical position of the currently changed picker
-    :type positionY: double
-    :param curveIndex: index of the curve the picker is attached to
-    :type curveIndex: int
+    :param plane: index of the displayed plane in the dataObject
+    :type plane: int
     
     .. note::
     
         To connect to this signal use the following signature::
         
-            yourItem.connect('pickerChanged(int,double,double,int)', yourMethod)
+            yourItem.connect('planeIndexChanged(int)', yourMethod)
     
     .. index:: 
 
+.. py:function:: geometricShapeFinished(shapes, aborted) [signal]
+    :noindex:
+    
+    
+    This signal is emitted whenever one or multiple geometric shapes have been added, removed or modified
+    
+    :param shapes: A tuple containing all shapes that have been modified
+    :type shapes: tuple of shape
+    :param aborted: True if the modification process has been aborted, else False
+    :type aborted: bool
+    
+    .. note::
+    
+        To connect to this signal use the following signature::
+        
+            yourItem.connect('geometricShapeFinished(QVector<ito::Shape>,bool)', yourMethod)
+    
+    .. index:: 
 
 .. END plot_help_to_rst_format.py: itom2dqwtplot
  
