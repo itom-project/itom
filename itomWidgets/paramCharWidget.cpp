@@ -26,7 +26,7 @@
 
 *********************************************************************** */
 
-#include "ParamCharWidget.h"
+#include "paramCharWidget.h"
 
 #include <qspinbox.h>
 #include <qcheckbox.h>
