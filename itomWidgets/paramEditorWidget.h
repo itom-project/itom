@@ -64,6 +64,18 @@ class ITOMWIDGETS_EXPORT ParamEditorWidget : public QWidget
     Q_PROPERTY(bool showDescriptions READ showDescriptions WRITE setShowDescriptions)
     Q_PROPERTY(QStringList filteredCategories READ filteredCategories WRITE setFilteredCategories)
 
+    Q_CLASSINFO("prop://plugin", "Actuator or dataIO instance whose parameters are observed and set by this widget.")
+    Q_CLASSINFO("prop://indentation", "Indentation level of child items in the tree.")
+    Q_CLASSINFO("prop://rootIsDecorated", "Slightly changes the visualization of root and child elements.")
+    Q_CLASSINFO("prop://alternatingRowColors", "En- or disables alternating row colors.")
+    Q_CLASSINFO("prop://headerVisible", "Indicates if the header line (property, value) is visible.")
+    Q_CLASSINFO("prop://resizeMode", "Sets the mode how the columns can be resized.")
+    Q_CLASSINFO("prop://splitterPosition", "Width of the first column (not possible if resizeMode is set to Stretch).")
+    Q_CLASSINFO("prop://propertiesWithoutValueMarked", "If True, category values are marked with a dark gray background.")
+    Q_CLASSINFO("prop://readonly", "Indicates if widget is readonly or if values can be changed.")
+    Q_CLASSINFO("prop://showDescriptions", "If True, a text box is visible below the properties to show an information text about the currently set entry.")
+    Q_CLASSINFO("prop://filteredCategories", "If empty, all categories are shown. Else pass a list of category names to only show these categories.")
+
 public:
     enum ResizeMode
     {

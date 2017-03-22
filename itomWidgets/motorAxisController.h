@@ -71,6 +71,21 @@ class ITOMWIDGETS_EXPORT MotorAxisController : public QWidget
     Q_PROPERTY(bool movementTypeVisible READ movementTypeVisible WRITE setMovementTypeVisible)
     Q_PROPERTY(QString arbitraryUnit READ arbitraryUnit WRITE setArbitraryUnit)
 
+    Q_CLASSINFO("prop://actuator", "Actuator instance that is monitored and controlled by this widget (or None in order to remove a previous actuator).")
+
+    Q_CLASSINFO("prop://numAxis", "Number of axes that are monitored.")
+    Q_CLASSINFO("prop://defaultAxisUnit", "Default unit for all axes. A different unit can be set for distinct axes using the slot 'setAxisUnit'.")
+    Q_CLASSINFO("prop://defaultAxisType", "Default type for all axes. A different type can be set for any axis using the slot 'setAxisType'.")
+    Q_CLASSINFO("prop://refreshAvailable", "Hide or show a button to manually refresh the positions of all covered axes.")
+    Q_CLASSINFO("prop://cancelAvailable", "Hide or show a button to cancel a running movement of any axis (should only be used, if the specific actuator is able to handle interrupts).")
+    Q_CLASSINFO("prop://startAllAvailable", "Hide or show a button to start a simultaneous movement of all covered axes to their current target positions.")
+    Q_CLASSINFO("prop://defaultRelativeStepSize", "Default relative step size for all axes (in mm or degree, depending on their types).")
+    Q_CLASSINFO("prop://axisNames", "Names of all axes as string list.")
+    Q_CLASSINFO("prop://defaultDecimals", "Default number of decimals of all axes. The number of decimals can also be set individually for each axis using the slot 'setAxisDecimals'.")
+    Q_CLASSINFO("prop://movementType", "Style of the widget depending if it should be optimized for an absolute movement, relative movement, both or no movement.")
+    Q_CLASSINFO("prop://movementTypeVisible", "Hide or show a combobox above the axes values that can be used to select an appropriate movement type.")
+    Q_CLASSINFO("prop://arbitraryUnit", "Unit name that is used for axes, whose unit is set to UnitAU (Arbitrary unit).")
+
 public:
     enum AxisUnit {
         UnitNm = 0,
