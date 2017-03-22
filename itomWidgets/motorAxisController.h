@@ -72,7 +72,6 @@ class ITOMWIDGETS_EXPORT MotorAxisController : public QWidget
     Q_PROPERTY(QString arbitraryUnit READ arbitraryUnit WRITE setArbitraryUnit)
 
     Q_CLASSINFO("prop://actuator", "Actuator instance that is monitored and controlled by this widget (or None in order to remove a previous actuator).")
-
     Q_CLASSINFO("prop://numAxis", "Number of axes that are monitored.")
     Q_CLASSINFO("prop://defaultAxisUnit", "Default unit for all axes. A different unit can be set for distinct axes using the slot 'setAxisUnit'.")
     Q_CLASSINFO("prop://defaultAxisType", "Default type for all axes. A different type can be set for any axis using the slot 'setAxisType'.")

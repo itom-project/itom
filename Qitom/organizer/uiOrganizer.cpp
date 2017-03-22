@@ -2375,6 +2375,7 @@ void UiOrganizer::pythonKeyboardInterrupt(bool /*checked*/)
     PyErr_SetInterrupt();
 }
 
+//!< the following map translates Qt/C++ datatypes into their Python representations. This is for instance used in the info()-method in Python to show the user the Python syntax.
 struct PyCMap {
     const char *ctype;
     const char *pytype;
@@ -2391,6 +2392,7 @@ struct PyCMap {
     { "QColor", "color str, rgba or hex" },
     { "QPointer<ito::AddInDataIO>", "dataIO" },
     { "QPointer<ito::AddInActuator>", "actuator" },
+    { "QPointer<ito::AddInBase>", "dataIO or actuator" },
     { "QStringList", "seq. of str" },
     { "ito::AutoInterval", "autoInterval" },
     { "ito::ItomPlotHandle", "uiItem" },
@@ -2625,12 +2627,11 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
 
     if (obj)
     {
-        QByteArray className;
-
         QMap<QByteArray, QByteArray> propInfoMap, signalInfoMap, slotInfoMap;
 
         const QMetaObject *mo = obj->metaObject();
-        className = mo->className();
+        QByteArray className = mo->className();
+        QByteArray firstClassName = className;
         QStringList qtBaseClasses = QStringList() << "QWidget" << "QMainWindow" << "QFrame";
         QByteArray methodName;
         QByteArray signature;
@@ -2882,7 +2883,7 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
 
         if (!objectInfo)
         {
-            std::cout << "WIDGET '" << className.data() << "'\n--------------------------\n" << std::endl;
+            std::cout << "Widget '" << firstClassName.data() << "'\n--------------------------\n" << std::endl;
             valid = false;
             foreach(const ClassInfoContainer &c, tmpObjectInfo)
             {
