@@ -304,5 +304,5 @@ void ParamCharWidget::setMeta(const ito::CharMeta &meta)
 
 } //end namespace ito
 
-#include "moc_ParamCharWidget.cpp"
-#include "ParamCharWidget.moc"
+#include "moc_paramCharWidget.cpp"
+#include "paramCharWidget.moc"
