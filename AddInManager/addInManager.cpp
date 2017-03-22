@@ -806,7 +806,7 @@ AddInManager::AddInManager(QString itomSettingsFile, void **apiFuncsGraph, QObje
     d->m_pMainApplication = mainApplication;
     if (mainApplication)
     {
-        connect(d->m_pMainApplication, SIGNAL(propertiesChanged()), this, SLOT(propertiesChanged()));
+        connect(d->m_pMainApplication, SIGNAL(propertiesChanged()), d, SLOT(propertiesChanged()));
     
     }
     d->m_pMainWindow = mainWindow;
