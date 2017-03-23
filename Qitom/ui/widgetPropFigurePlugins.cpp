@@ -24,9 +24,11 @@
 
 #include "../global.h"
 #include "../AppManagement.h"
+#include "../helper/guiHelper.h"
 
 #include <qtableview.h>
 #include <qcombobox.h>
+#include <qheaderview.h>
 
 namespace ito
 {
@@ -47,6 +49,10 @@ WidgetPropFigurePlugins::WidgetPropFigurePlugins(QWidget *parent) :
 
     ui.tableFigurePlugins->resizeColumnsToContents();
     ui.tableFigureCategory->resizeColumnsToContents();
+
+    float dpiFactor = GuiHelper::screenDpiFactor(); //factor related to 96dpi (1.0)
+    ui.tableFigurePlugins->verticalHeader()->setMinimumSectionSize(21 * dpiFactor);
+    ui.tableFigureCategory->verticalHeader()->setMinimumSectionSize(21 * dpiFactor);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
