@@ -11,6 +11,8 @@ SET (target_name MyGrabber) #->replace MyGrabber by the name of your plugin (one
 
 project(${target_name})
 
+message(STATUS "\n--------------- PLUGIN ${target_name} ---------------")
+
 cmake_minimum_required(VERSION 2.8)
 
 #CMAKE Policies
