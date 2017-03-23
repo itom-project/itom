@@ -27,6 +27,7 @@
 #include "../AppManagement.h"
 #include "../../AddInManager/addInManager.h"
 #include "../organizer/designerWidgetOrganizer.h"
+#include "../helper/guiHelper.h"
 #include "qmath.h"
 
 #include <qfileinfo.h>
@@ -41,11 +42,17 @@ DialogLoadedPlugins::DialogLoadedPlugins(QWidget *parent) :
 {
     ui.setupUi(this);
     m_fileIconProvider = new QFileIconProvider();
+	float dpiFactor = GuiHelper::screenDpiFactor(); //factor related to 96dpi (1.0)
 
     ui.cmdError->setIcon(QIcon(":/application/icons/dialog-error-4.png"));
     ui.cmdWarning->setIcon(QIcon(":/application/icons/dialog-warning-4.png"));
     ui.cmdMessage->setIcon(QIcon(":/application/icons/dialog-information-4.png"));
     ui.cmdIgnored->setIcon(QIcon(":/plugins/icons/ignored.png"));
+	QSize iconSize(16 * dpiFactor, 16 * dpiFactor);
+	ui.cmdError->setIconSize(iconSize);
+	ui.cmdWarning->setIconSize(iconSize);
+	ui.cmdMessage->setIconSize(iconSize);
+	ui.cmdIgnored->setIconSize(iconSize);
 
     init();
     filter();
@@ -77,7 +84,12 @@ void DialogLoadedPlugins::init()
         m_content.append(dwo->getPluginLoadStatus());
     }
 
-    ui.tree->setColumnWidth(0, 42);
+	float dpiFactor = GuiHelper::screenDpiFactor(); //factor related to 96dpi (1.0)
+    ui.tree->setColumnWidth(0, 42 * dpiFactor);
+
+	ui.tree->header()->setDefaultSectionSize(dpiFactor * 25);
+	ui.tree->header()->setMinimumSectionSize(dpiFactor * 21);
+
     QTreeWidgetItem *header = new QTreeWidgetItem();
     header->setIcon(1, QIcon(":/application/icons/dialog-information-4.png"));
     header->setIcon(2, QIcon(":/application/icons/dialog-warning-4.png"));
