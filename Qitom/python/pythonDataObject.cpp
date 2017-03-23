@@ -7059,8 +7059,8 @@ dataObj : {dataObject} \n\
 PyDoc_STRVAR(pyDataObj_SplitColor_doc, "splitColor(color, [destinationType='uint8']) -> returns a seperated color channel of a rgba32 color data object\n\
 \n\
 The destination data object has the same size than this data object if only one color is extracted. The output will have one dimension more if there are more than one colors extracted.\
-Each elemt of the new dimension corrspomnds to one color. \
-The type can given by destinationType.\
+Each element of the new dimension corrspomnds to one color. \
+DestinationType defines the type of the output object.\
 \n\
 Parameters \n\
 ----------- \n\
