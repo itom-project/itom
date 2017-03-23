@@ -57,9 +57,11 @@ DialogNewPluginInstance::DialogNewPluginInstance(QModelIndex &modelIndex, ito::A
     }
 
     ui.lblIcon->setPixmap(tempIcon.pixmap(48 * dpiFactor, 48 * dpiFactor));
+	ui.lblIcon->setMaximumSize(48 * dpiFactor, 48 * dpiFactor);
 
     tempIcon = QIcon(":/plugins/icons/sendToPython.png");
     ui.lblImage->setPixmap(tempIcon.pixmap(16 * dpiFactor, 16 * dpiFactor));
+	ui.lblImage->setMaximumSize(16 * dpiFactor, 16 * dpiFactor);
 
     //get name
     ui.lblPluginName->setText(model->data(tempIndex, Qt::DisplayRole).toString());

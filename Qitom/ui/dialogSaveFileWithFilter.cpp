@@ -22,6 +22,8 @@
 
 #include "dialogSaveFileWithFilter.h"
 
+#include "../helper/guiHelper.h"
+
 #if QT_VERSION >= 0x050000
 #include <QtConcurrent/qtconcurrentrun.h>
 #else
@@ -53,9 +55,12 @@ DialogSaveFileWithFilter::DialogSaveFileWithFilter(const QString &filename, cons
 
     m_filter = filter;
 
+	float dpiFactor = GuiHelper::screenDpiFactor(); //factor related to 96dpi (1.0)
+
     QFileIconProvider *provider = new QFileIconProvider();
     QIcon tempIcon = provider->icon(info);
-    ui.lblIcon->setPixmap(tempIcon.pixmap(48,48));
+	ui.lblIcon->setPixmap(tempIcon.pixmap(dpiFactor * 48, dpiFactor * 48));
+	ui.lblIcon->setMaximumSize(dpiFactor * 48, dpiFactor * 48);
     delete provider;
 
     ui.lblFilter->setText( filter->m_name );
