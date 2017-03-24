@@ -27,8 +27,8 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include <qlayout.h>
 #include <qmessagebox.h>
 #include <qtimer.h>
-#include <qtextedit.h>
-#include <qsplitter.h>
+#include <qplaintextedit.h>
+#include <qfontmetrics.h>
 
 #include "common/addInInterface.h"
 
@@ -38,6 +38,8 @@ along with itom. If not, see <http://www.gnu.org/licenses/>.
 #include "qtpropertymanager.h"
 #include "itomParamFactory.h"
 
+#include "collapsibleGroupBox.h"
+
 class ParamEditorWidgetPrivate
 {
 	//Q_DECLARE_PUBLIC(ParamEditorWidget);
@@ -46,6 +48,7 @@ public:
     ParamEditorWidgetPrivate()
         : m_pBrowser(NULL),
         m_pTextEdit(NULL),
+        m_pInfoBox(NULL),
         m_pIntManager(NULL),
         m_pCharManager(NULL),
         m_pDoubleManager(NULL),
@@ -109,7 +112,8 @@ public:
 
     QPointer<ito::AddInBase> m_plugin;
     QtTreePropertyBrowser *m_pBrowser;
-    QTextEdit *m_pTextEdit;
+    QPlainTextEdit *m_pTextEdit;
+    CollapsibleGroupBox *m_pInfoBox;
 
     ito::ParamIntPropertyManager *m_pIntManager;
     ito::ParamCharPropertyManager *m_pCharManager;
@@ -189,21 +193,36 @@ ParamEditorWidget::ParamEditorWidget(QWidget* parent /*= 0*/) :
     d_ptr->m_readonly = true;
     setReadonly(false);
 
-    d->m_pTextEdit = new QTextEdit(this);
-    d->m_pTextEdit->setVisible(d_ptr->m_showinfo);
+    d->m_pTextEdit = new QPlainTextEdit(this);
+    d->m_pTextEdit->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     d->m_pTextEdit->setReadOnly(true);
+
+    QFontMetrics m(d->m_pTextEdit->font());
+    int rowHeight = m.lineSpacing();
+    d->m_pTextEdit->setFixedHeight(4 * rowHeight);
+
     connect(d->m_pBrowser, SIGNAL(currentItemChanged(QtBrowserItem*)), this, SLOT(currentItemChanged(QtBrowserItem*)));
 
     QVBoxLayout *vboxLayout = new QVBoxLayout();
     vboxLayout->setMargin(0);
-    QSplitter *splitter = new QSplitter(parent);
-    splitter->setOrientation(Qt::Vertical);
-    splitter->addWidget(d->m_pBrowser);
-    splitter->addWidget(d->m_pTextEdit);
-    splitter->setStretchFactor(0, 6);
-    vboxLayout->addWidget(splitter);
-    setLayout(vboxLayout);
 
+    vboxLayout->addWidget(d->m_pBrowser);
+    d->m_pBrowser->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
+    d->m_pBrowser->sizePolicy().setVerticalStretch(20);
+    d->m_pInfoBox = new CollapsibleGroupBox();
+    d->m_pInfoBox->setVisible(d_ptr->m_showinfo);
+    d->m_pInfoBox->setTitle("Information");
+    d->m_pInfoBox->setFlat(true);
+    vboxLayout->addWidget(d->m_pInfoBox);
+    
+    QVBoxLayout *vboxLayout2 = new QVBoxLayout();
+    vboxLayout2->addWidget(d->m_pTextEdit);
+    vboxLayout2->setMargin(0);
+    d->m_pInfoBox->setLayout(vboxLayout2);
+    d->m_pInfoBox->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    d->m_pInfoBox->sizePolicy().setVerticalStretch(1);
+
+    setLayout(vboxLayout);
 }
 
 //-----------------------------------------------------------------------
@@ -329,7 +348,7 @@ void ParamEditorWidget::setShowDescriptions(bool show)
 {
     Q_D(ParamEditorWidget);
     d_ptr->m_showinfo = show;
-    d_ptr->m_pTextEdit->setVisible(show);
+    d_ptr->m_pInfoBox->setVisible(show);
 }
 
 //-----------------------------------------------------------------------
@@ -1129,11 +1148,11 @@ void ParamEditorWidget::currentItemChanged(QtBrowserItem *item)
     Q_D(ParamEditorWidget);
     if (item)
     {
-        d_ptr->m_pTextEdit->setText(item->property()->statusTip());
+        d_ptr->m_pTextEdit->setPlainText(item->property()->statusTip());
     }
     else
     {
-        d_ptr->m_pTextEdit->setText("");
+        d_ptr->m_pTextEdit->setPlainText("");
     }
 
 }
