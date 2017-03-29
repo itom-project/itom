@@ -102,6 +102,13 @@ Build the plugins, designerPlugins... in the same way than |itom| but make sure 
 If you don't want to have some of the plugins, simply uncheck them in CMake under the group **Plugin**.
 
 The plugins and designerPlugins will finally be compiled and then copy their resulting library files into the **designer** and **plugins** subfolder of |itom|. Restart |itom| and you the plugin will be loaded.
+If **itom** is build with Point Cloud Library and you want to build the **Vtk3dVisualizer** with **vtk 6.2** you may come up with a linker exception: **cannot find -lvtkproj4**
+This can be fixed by generating a sybolic link to any vtk .so file as followed:
+
+.. code-block:: bash
+
+    ln -s /usr/lib/x86_64-linux-gnu/libvtkCommonCore-6.2.so /usr/lib/libvtkproj4.so
+
 
 
 Bash-based build
