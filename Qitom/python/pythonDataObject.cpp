@@ -7483,7 +7483,7 @@ The returned dataObject contains layers of the same shape and type like the give
 Parameters \n\
 ----------- \n\
 obj : {sequence of dataObjects} \n\
-	Sequence of dataObjects containig planes that will be stacked together. All dataObjects must be of the same type and have the same shape of planes (last two dimesnions).\
+	Sequence (list) of dataObjects containig planes that will be stacked together. All dataObjects must be of the same type and have the same shape of planes (last two dimesnions).\
 		Only one of the (n-2) dimensions of each input dataObject is allowed to have a size greater one.\n\
 \n\
 Returns \n\
@@ -7496,8 +7496,13 @@ PyObject* PythonDataObject::PyDataObj_dstack(PyObject *self, PyObject *args)
 	unsigned int axis = 0;
 	if (!PyArg_ParseTuple(args, "O|I", &sequence, &axis))
     {
-        return NULL;
+
+		return PyErr_Format(PyExc_RuntimeError, "more than one parameter was given. The filter only supports a list of dataObjects.");
     }
+	if (axis!=0)
+	{
+		return PyErr_Format(PyExc_RuntimeError, "a integer was given as second argument but the axis specification is not implemented yet.");
+	}
 
 	if (PySequence_Check(sequence))
 	{
