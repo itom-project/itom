@@ -146,6 +146,41 @@
     </message>
 </context>
 <context>
+    <name>ParamEditorWidget</name>
+    <message>
+        <source>slot &apos;setParam&apos; could not be invoked since it does not exist.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>pointer to plugin is invalid.</source>
+        <translation type="unfinished">Der Pointer des Plugins ist ungültig.</translation>
+    </message>
+    <message>
+        <source>Error while setting parameter</source>
+        <translation type="unfinished">Fehler beim Setzen des Parameters</translation>
+    </message>
+    <message>
+        <source>Warning while setting parameter</source>
+        <translation type="unfinished">Beim Setzen des Parameters ist eine Warnung aufgetreten</translation>
+    </message>
+    <message>
+        <source>slot &apos;setParamVector&apos; could not be invoked since it does not exist.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Timeout while waiting for answer from plugin instance.</source>
+        <translation type="unfinished">Zeitüberschreitung. Die Plugin-Instanz antwortet nicht.</translation>
+    </message>
+    <message>
+        <source>Error while execution</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Warning while execution</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>PathLineEdit</name>
     <message>
         <source>Select a file to save </source>

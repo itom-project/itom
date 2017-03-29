@@ -1214,18 +1214,18 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../python/pythonPlugins.cpp" line="+295"/>
+        <location filename="../python/pythonPlugins.cpp" line="+296"/>
         <source>plugin has no configuration dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+31"/>
+        <location line="+32"/>
         <source>timeout while showing toolbox</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+9"/>
-        <location line="+37"/>
+        <location line="+38"/>
         <source>Member &apos;showDockWidget&apos; of plugin could not be invoked (error in signal/slot connection).</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2056,7 +2056,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+86"/>
+        <location line="+111"/>
         <location line="+9"/>
         <source>Unknown</source>
         <translation type="unfinished">Unbekannt</translation>
@@ -2234,6 +2234,51 @@ p, li { white-space: pre-wrap; }
     <message>
         <location line="+6"/>
         <source>Python is not available.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../organizer/widgetWrapper.cpp" line="+273"/>
+        <source>QListWidget object is null</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+85"/>
+        <source>ComboBox object is null</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+44"/>
+        <source>QTabWidget object is null</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>QMainWindow object is null</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>QWidget object is null</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>QTableWidget object is null</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Could not access row / col, maybe out of range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>QTableView object is null</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Slot or widget not found</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3580,7 +3625,7 @@ p, li { white-space: pre-wrap; }
         <translation>Fehler beim Anzeigen des Konfigurationsdialogs</translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+59"/>
         <location line="+39"/>
         <source>Error while creating new instance</source>
         <translation>Fehler beim Erzeugen einer neuen Instanz</translation>
@@ -3637,7 +3682,7 @@ p, li { white-space: pre-wrap; }
         <translation>Diese Instanz ist kein Grabber. Daher ist kein Aufnahmedialog verfügbar.</translation>
     </message>
     <message>
-        <location line="-522"/>
+        <location line="-521"/>
         <source>final closing not possible</source>
         <translation>Endgültiges Schließen nicht möglich</translation>
     </message>
@@ -3652,7 +3697,7 @@ p, li { white-space: pre-wrap; }
         <translation>Fehler beim Schließen der Instanz</translation>
     </message>
     <message>
-        <location line="+96"/>
+        <location line="+95"/>
         <source>Error while creating new instance. 
 Message: %1</source>
         <translation>Fehler beim Erzeugen einer neuen Instanz.
@@ -3789,7 +3834,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::AddInAlgo</name>
     <message>
-        <location filename="../../common/addInInterface.h" line="+1025"/>
+        <location filename="../../common/addInInterface.h" line="+1036"/>
         <source>uninitialized vector for mandatory parameters!</source>
         <translation>Nicht-Inizialisierte Vektoren bei Pflichtparametern!</translation>
     </message>
@@ -4215,7 +4260,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Der Name muss mit einem Buchstaben, gefolgt von Ziffern oder Buchstaben [a-z] oder [A-Z], beginnen</translation>
     </message>
     <message>
-        <location line="+77"/>
+        <location line="+78"/>
         <source>Python variable name missing</source>
         <translation>Python Variablenname fehlt</translation>
     </message>
@@ -4419,7 +4464,7 @@ Es ist ebenfalls möglich über das Argument &apos;pipManager&apos; beim Program
 <context>
     <name>ito::DialogPluginPicker</name>
     <message>
-        <location filename="../ui/dialogPluginPicker.cpp" line="+176"/>
+        <location filename="../ui/dialogPluginPicker.cpp" line="+178"/>
         <source>Error while creating new instance. 
 Message: %1</source>
         <translation>Fehler beim Erzeugen einer neuen Instanz.
@@ -4801,7 +4846,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DialogSnapshot</name>
     <message>
-        <location filename="../ui/dialogSnapshot.cpp" line="+65"/>
+        <location filename="../ui/dialogSnapshot.cpp" line="+66"/>
         <source>designerWidgetOrganizer is not available</source>
         <translation>&apos;designerWidgetOrganizer&apos; ist nicht verfügbar</translation>
     </message>
@@ -5882,7 +5927,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::MainApplication</name>
     <message>
-        <location filename="../mainApplication.cpp" line="+177"/>
+        <location filename="../mainApplication.cpp" line="+176"/>
         <location line="+4"/>
         <source>Version %1
 %2</source>
@@ -5939,7 +5984,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>&apos;Designer Widgets&apos; werden gescannt und geladen...</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+22"/>
         <source>load script editor organizer...</source>
         <translation>&apos;Script Editor Organizer&apos; wird geladen...</translation>
     </message>
@@ -5954,7 +5999,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Skripts im Autostartordner werden gescannt und ausgeführt...</translation>
     </message>
     <message>
-        <location line="+161"/>
+        <location line="+160"/>
         <source>Do you really want to exit the application?</source>
         <translation>Soll itom wirklich beendet werden?</translation>
     </message>
@@ -6660,7 +6705,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
 <context>
     <name>ito::PythonEngine</name>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="+993"/>
+        <location filename="../python/pythonEngine.cpp" line="+994"/>
         <source>Python not initialized</source>
         <translation type="unfinished">Python ist nicht inizialisiert</translation>
     </message>
@@ -6703,7 +6748,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished">Fehler beim Löschen aller Haltepunkte im ITO-Debugger.</translation>
     </message>
     <message>
-        <location line="+2250"/>
+        <location line="+2262"/>
         <source>It is not allowed to save a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6758,7 +6803,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4407"/>
+        <location line="-4419"/>
         <source>The itom subdirectory of Python &apos;%s&apos; is not existing.
 Please change setting in the property dialog of itom.</source>
         <translation type="unfinished"></translation>
@@ -6934,7 +6979,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2528"/>
+        <location line="+2540"/>
         <source>Error while transforming value &apos;%s&apos; to PyObject*.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7895,7 +7940,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished">Der &apos;defaultButton&apos; muss ebenfalls in &apos;buttons&apos; erscheinen.</translation>
     </message>
     <message>
-        <location line="+2399"/>
+        <location line="+2400"/>
         <location line="+37"/>
         <location line="+31"/>
         <location line="+26"/>
@@ -7908,7 +7953,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished">Der Timer ist ungültig</translation>
     </message>
     <message>
-        <location line="-2263"/>
+        <location line="-2264"/>
         <location line="+56"/>
         <source>property &apos;%1&apos; does not exist</source>
         <translation type="unfinished">Die Eigenschaft &apos;%1&apos; existiert nicht</translation>
@@ -7954,12 +7999,12 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished">Die übergebene Objekt-ID ist unbekannt.</translation>
     </message>
     <message>
-        <location line="+433"/>
+        <location line="+435"/>
         <source>object ID is not available</source>
         <translation type="unfinished">Die Objekt-ID ist nicht verfügbar</translation>
     </message>
     <message>
-        <location line="-603"/>
+        <location line="-605"/>
         <source>could not get reference to main dialog or window</source>
         <translation type="unfinished">Es ist keine Referenz zum Hauptdialog oder -Fenster verfügbar</translation>
     </message>
@@ -8001,12 +8046,12 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished">Das Signal konnte nicht mit einem Slot verbunden werden.</translation>
     </message>
     <message>
-        <location line="+55"/>
+        <location line="+37"/>
         <source>slot could not be found</source>
         <translation type="unfinished">Slot konnte nicht gefunden werden</translation>
     </message>
     <message>
-        <location line="+1021"/>
+        <location line="+1040"/>
         <source>unsupported data type</source>
         <translation type="unfinished">Nicht unterstützter Datentyp</translation>
     </message>
@@ -8023,8 +8068,8 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation></translation>
     </message>
     <message>
-        <location line="-2899"/>
-        <location line="+2672"/>
+        <location line="-2900"/>
+        <location line="+2673"/>
         <location line="+64"/>
         <location line="+64"/>
         <location line="+188"/>
@@ -8033,7 +8078,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished">&quot;figHandle&quot; &apos;%i&apos; ist nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="-2093"/>
+        <location line="-2094"/>
         <location line="+93"/>
         <location line="+102"/>
         <location line="+146"/>
@@ -8048,7 +8093,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished">Das Widget ist (nicht länger) verfügbar.</translation>
     </message>
     <message>
-        <location line="+600"/>
+        <location line="+601"/>
         <source>The requested widget does not exist (any more).</source>
         <translation type="unfinished">Das angeforderte Widget existiert nicht (mehr).</translation>
     </message>
@@ -8416,7 +8461,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
 <context>
     <name>ito::WidgetPropFigurePlugins</name>
     <message>
-        <location filename="../ui/widgetPropFigurePlugins.cpp" line="+73"/>
+        <location filename="../ui/widgetPropFigurePlugins.cpp" line="+79"/>
         <source>class name</source>
         <translation>Klassenname</translation>
     </message>

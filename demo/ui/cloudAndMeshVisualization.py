@@ -16,7 +16,7 @@ topography = dataObject(Z).astype('float32')
 topography.axisScales = (0.1,0.1)
 topography[0,0]=float('nan')
 
-mesh_quads = polygonMesh.fromTopography(topography)
+mesh_quads = polygonMesh.fromTopography(topography, triangulationType = 0)
 mesh_triangles = polygonMesh.fromTopography(topography, triangulationType = 1)
 
 [i,h] = plot(mesh_quads, "vtk3dvisualizer")

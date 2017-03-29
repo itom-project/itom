@@ -250,7 +250,7 @@ void ParamDoubleWidget::setParam(const ito::Param &param, bool forceValueChanged
 bool ParamDoubleWidget::keyboardTracking() const
 {
     Q_D(const ParamDoubleWidget);
-    return d->m_pSpinBox->keyboardTracking();
+    return d->m_pSliderWidget->hasTracking();
 }
 
 //---------------------------------------------------------------------------
@@ -258,7 +258,7 @@ void ParamDoubleWidget::setKeyboardTracking(bool tracking)
 {
     Q_D(ParamDoubleWidget);
     d->m_pSpinBox->setKeyboardTracking(tracking);
-    d->m_pSliderWidget->spinBox()->setKeyboardTracking(tracking);
+    d->m_pSliderWidget->setTracking(tracking);
 }
 
 //---------------------------------------------------------------------------
