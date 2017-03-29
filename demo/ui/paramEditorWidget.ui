@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>781</width>
+    <height>528</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Demo ParamEditorWidget</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Dummy Grabber</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="2,1">
+        <item>
+         <widget class="Itom2dQwtPlot" name="plot"/>
+        </item>
+        <item>
+         <widget class="ParamEditorWidget" name="pewGrabber">
+          <property name="resizeMode">
+           <enum>ParamEditorWidget::Interactive</enum>
+          </property>
+          <property name="propertiesWithoutValueMarked">
+           <bool>true</bool>
+          </property>
+          <property name="showDescriptions">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Dummy Motor</string>
+       </attribute>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="MotorAxisController" name="motorController">
+            <property name="numAxis">
+             <number>3</number>
+            </property>
+            <property name="axisNames">
+             <stringlist>
+              <string>x</string>
+              <string>y</string>
+              <string>z</string>
+             </stringlist>
+            </property>
+            <property name="movementType">
+             <enum>MotorAxisController::MovementBoth</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="groupBox_2">
+            <property name="title">
+             <string>Reduced, Read-Only Param Editor Widget</string>
+            </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <item>
+              <widget class="ParamEditorWidget" name="pewMotor1">
+               <property name="headerVisible">
+                <bool>false</bool>
+               </property>
+               <property name="propertiesWithoutValueMarked">
+                <bool>true</bool>
+               </property>
+               <property name="readonly">
+                <bool>true</bool>
+               </property>
+               <property name="filteredCategories">
+                <stringlist>
+                 <string>General</string>
+                </stringlist>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QGroupBox" name="groupBox">
+          <property name="title">
+           <string>General Param Editor Widget</string>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="ParamEditorWidget" name="pewMotor2">
+             <property name="headerVisible">
+              <bool>true</bool>
+             </property>
+             <property name="propertiesWithoutValueMarked">
+              <bool>true</bool>
+             </property>
+             <property name="showDescriptions">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>781</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Itom2dQwtPlot</class>
+   <extends>QMainWindow</extends>
+   <header>itom2dqwtplot.h</header>
+  </customwidget>
+  <customwidget>
+   <class>MotorAxisController</class>
+   <extends>QWidget</extends>
+   <header>motorAxisController.h</header>
+  </customwidget>
+  <customwidget>
+   <class>ParamEditorWidget</class>
+   <extends>QWidget</extends>
+   <header>paramEditorWidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
