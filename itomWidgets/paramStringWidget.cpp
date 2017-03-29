@@ -115,14 +115,14 @@ void ParamStringWidget::setParam(const ito::Param &param, bool forceValueChanged
 
         if (valChanged || metaChanged)
         {
-            bool lineedit = metaNew->getStringType() != ito::StringMeta::String || (metaNew->getLen() <= 0);
+            bool lineedit = !metaNew || (metaNew->getStringType() != ito::StringMeta::String) || (metaNew->getLen() <= 0);
 
             d->m_pLineEdit->setVisible(lineedit);
             d->m_pComboBox->setVisible(!lineedit);
 
             if (lineedit)
             {
-                if (metaChanged)
+                if (metaChanged && metaNew)
                 {
                     switch (metaNew->getStringType())
                     {
@@ -143,6 +143,10 @@ void ParamStringWidget::setParam(const ito::Param &param, bool forceValueChanged
                         }
                     }
                 }
+				else
+				{
+					d->m_pLineEdit->setValidator(NULL);
+				}
                 
                 if (valChanged)
                 {
