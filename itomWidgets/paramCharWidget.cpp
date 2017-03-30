@@ -173,10 +173,10 @@ void ParamCharWidget::setParam(const ito::Param &param, bool forceValueChanged /
 
         if (valChanged || metaChanged)
         {
-            bool check = (metaNew->getRepresentation() == ito::ParamMeta::Boolean) || \
-                         (metaNew->getMin() == 0 && metaNew->getMax() == 1 && metaNew->getStepSize() == 1);
-            bool slider = (metaNew->getRepresentation() == ito::ParamMeta::Linear)  || \
-                         (metaNew->getRepresentation() == ito::ParamMeta::Logarithmic);
+            bool check = metaNew && ((metaNew->getRepresentation() == ito::ParamMeta::Boolean) || \
+                         (metaNew->getMin() == 0 && metaNew->getMax() == 1 && metaNew->getStepSize() == 1));
+            bool slider = metaNew && ((metaNew->getRepresentation() == ito::ParamMeta::Linear)  || \
+                         (metaNew->getRepresentation() == ito::ParamMeta::Logarithmic));
 
             if (metaChanged)
             {
@@ -185,7 +185,7 @@ void ParamCharWidget::setParam(const ito::Param &param, bool forceValueChanged /
                 d->m_pSpinBox->setVisible(!check && !slider);
             }
 
-            if (check)
+            if (check) //metaNew always valid
             {
                 if (valChanged)
                 {
@@ -194,7 +194,7 @@ void ParamCharWidget::setParam(const ito::Param &param, bool forceValueChanged /
                     d->m_pCheckBox->blockCheckBoxSignals(false);
                 }
             }
-            else if (slider)
+            else if (slider) //metaNew always valid
             {
                 if (metaChanged)
                 {
@@ -212,9 +212,18 @@ void ParamCharWidget::setParam(const ito::Param &param, bool forceValueChanged /
             {
                 if (metaChanged)
                 {
-                    d->m_pSpinBox->setSuffix(metaNew->getUnit().empty() ? "" : QString(" %1").arg(metaNew->getUnit().data()));
-                    d->m_pSpinBox->setRange(metaNew->getMin(), metaNew->getMax());
-                    d->m_pSpinBox->setSingleStep(metaNew->getStepSize());
+                    if (metaNew)
+                    {
+                        d->m_pSpinBox->setSuffix(metaNew->getUnit().empty() ? "" : QString(" %1").arg(metaNew->getUnit().data()));
+                        d->m_pSpinBox->setRange(metaNew->getMin(), metaNew->getMax());
+                        d->m_pSpinBox->setSingleStep(metaNew->getStepSize());
+                    }
+                    else
+                    {
+                        d->m_pSpinBox->setSuffix("");
+                        d->m_pSpinBox->setRange(std::numeric_limits<char>::min(), std::numeric_limits<char>::max());
+                        d->m_pSpinBox->setSingleStep(1);
+                    }
                 }
 
                 if (valChanged)

@@ -169,10 +169,10 @@ void ParamDoubleWidget::setParam(const ito::Param &param, bool forceValueChanged
 
         if (valChanged || metaChanged)
         {
-            bool check = (metaNew->getRepresentation() == ito::ParamMeta::Boolean) || \
-                         (metaNew->getMin() == 0 && metaNew->getMax() == 1 && metaNew->getStepSize() == 1);
-            bool slider = (metaNew->getRepresentation() == ito::ParamMeta::Linear)  || \
-                         (metaNew->getRepresentation() == ito::ParamMeta::Logarithmic);
+            bool check = metaNew && ((metaNew->getRepresentation() == ito::ParamMeta::Boolean) || \
+                         (metaNew->getMin() == 0 && metaNew->getMax() == 1 && metaNew->getStepSize() == 1));
+            bool slider = metaNew && ((metaNew->getRepresentation() == ito::ParamMeta::Linear)  || \
+                         (metaNew->getRepresentation() == ito::ParamMeta::Logarithmic));
 
             if (metaChanged)
             {
@@ -181,7 +181,7 @@ void ParamDoubleWidget::setParam(const ito::Param &param, bool forceValueChanged
                 d->m_pSpinBox->setVisible(!check && !slider);
             }
 
-            if (check)
+            if (check) //metaNew always valid
             {
                 if (valChanged)
                 {
@@ -190,7 +190,7 @@ void ParamDoubleWidget::setParam(const ito::Param &param, bool forceValueChanged
                     d->m_pCheckBox->blockCheckBoxSignals(false);
                 }
             }
-            else if (slider)
+            else if (slider) //metaNew always valid
             {
                 if (metaChanged)
                 {
@@ -214,15 +214,25 @@ void ParamDoubleWidget::setParam(const ito::Param &param, bool forceValueChanged
             {
                 if (metaChanged)
                 {
-                    d->m_pSpinBox->setSuffix(metaNew->getUnit().empty() ? "" : QString(" %1").arg(metaNew->getUnit().data()));
-                    d->m_pSpinBox->setRange(metaNew->getMin(), metaNew->getMax());
-                    double step = metaNew->getStepSize();
-                    if (qFuzzyCompare(step, 0.0))
+                    if (metaNew)
                     {
-                        step = qMin(1.0, (metaNew->getMax() - metaNew->getMin()) / 100.0);
+                        d->m_pSpinBox->setSuffix(metaNew->getUnit().empty() ? "" : QString(" %1").arg(metaNew->getUnit().data()));
+                        d->m_pSpinBox->setRange(metaNew->getMin(), metaNew->getMax());
+                        double step = metaNew->getStepSize();
+                        if (qFuzzyCompare(step, 0.0))
+                        {
+                            step = qMin(1.0, (metaNew->getMax() - metaNew->getMin()) / 100.0);
+                        }
+                        d->m_pSpinBox->setSingleStep(step);
+                        d->m_pSpinBox->setDecimals(metaNew->getDisplayPrecision());
                     }
-                    d->m_pSpinBox->setSingleStep(step);
-                    d->m_pSpinBox->setDecimals(metaNew->getDisplayPrecision());
+                    else
+                    {
+                        d->m_pSpinBox->setSuffix("");
+                        d->m_pSpinBox->setRange(-std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+                        d->m_pSpinBox->setSingleStep(1.0);
+                        d->m_pSpinBox->setDecimals(3);
+                    }
                 }
 
                 if (valChanged)
