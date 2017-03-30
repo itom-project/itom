@@ -68,6 +68,7 @@ private:
     Q_DISABLE_COPY(ParamStringWidget);
 
     Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QString))
+	Q_PRIVATE_SLOT(d_func(), void slotEditingFinished())
 };
 
 } //end namespace ito

@@ -53,6 +53,12 @@ public:
         emit q_ptr->valueChanged(value.toLatin1());
     }
 
+	//--------------------------------------------------
+	void slotEditingFinished()
+	{
+		emit q_ptr->valueChanged(m_pLineEdit->text().toLatin1());
+	}
+
 private:
 
     Q_DISABLE_COPY(ParamStringWidgetPrivate);
@@ -82,7 +88,7 @@ ParamStringWidget::ParamStringWidget(QWidget *parent /*= NULL*/) :
     d->m_pLineEdit = new QLineEdit(this);
     layout->addWidget(d->m_pLineEdit);
     d->m_pLineEdit->setVisible(false);
-    connect(d->m_pLineEdit, SIGNAL(textChanged(QString)), this, SLOT(slotValueChanged(QString)));
+	connect(d->m_pLineEdit, SIGNAL(editingFinished()), this, SLOT(slotEditingFinished()));
 
     setLayout(layout);
 }
