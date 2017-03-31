@@ -886,7 +886,7 @@ MACRO (POST_BUILD_COPY_FILES target sources destinations)
     foreach(val RANGE ${len1})
         list(GET ${sources} ${val} val1)
         list(GET ${destinations} ${val} val2)
-#        message(STATUS "POST_BUILD: COPY ${val1} TO ${val2}")
+        message(STATUS "-- POST_BUILD: copy '${val1}' to '${val2}'")
         
         ADD_CUSTOM_COMMAND(TARGET ${target} POST_BUILD                 # Adds a post-build event to MyTest
             COMMAND ${CMAKE_COMMAND} -E copy_if_different                 # which executes "cmake - E copy_if_different..."
@@ -905,7 +905,7 @@ MACRO (POST_BUILD_COPY_FILE_TO_LIB_FOLDER target sources)
     list(LENGTH ${sources} temp)
     math(EXPR len1 "${temp} - 1")
     
-    IF(${len1} GREATER "0")
+    IF(${len1} GREATER "-1")
         #message(STATUS "sources LEN: ${len1}")
         #message(STATUS "destinations LEN: ${len2}")
         
@@ -926,9 +926,9 @@ MACRO (POST_BUILD_COPY_FILE_TO_LIB_FOLDER target sources)
                     "${ITOM_APP_DIR}/lib"                                                # <--this is out-file path
             )
         endforeach()
-    ELSE(${len1} GREATER "0")
+    ELSE(${len1} GREATER "-1")
         message(STATUS "No files to copy to lib folder for target ${target}")
-    ENDIF(${len1} GREATER "0")
+    ENDIF(${len1} GREATER "-1")
 ENDMACRO (POST_BUILD_COPY_FILE_TO_LIB_FOLDER target sources)
 
 
