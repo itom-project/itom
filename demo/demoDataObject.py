@@ -1,107 +1,127 @@
-#Demofile for DataObject functions
-#create an empty DataObject (for ITOM-Filter or FileIO) with the name dObj
-dObj = dataObject()
+# coding=iso-8859-15
+'''This demo shows some features of dataObjects.
+An extended overview about all methods of the dataObject,
+see the itom script reference or download the cheatsheet from
+https://itom.bitbucket.io/media.html'''
 
-#Delete an anykind of dataObject
-del dObj
-
-#Methods to create a dataObject
+#some constants
 yDim = 480
 xDim = 640
 zDim = 10
-# dObj = dataObject.rand([yDim, xDim], "float32")       # 2D Random white noise, for integer-types between min and max, for floatingpoint between 0..1
-# dObj = dataObject.randN([zDim, yDim, xDim], "int32")       # 3D Random white noise for integer-types 6*Sigma is between min and max, for floatingpoint 6Sigma is between 0..1
-# dObj = dataObject.ones([yDim, xDim], "int8")       #2D Object filled with 1
-# dObj = dataObject.zeros([zDim, yDim, xDim], "float64")       #3D Object filled with 0
 
-dObj = dataObject.rand([yDim, xDim], "float64") 
+'''Creation of several data objects'''
+objEmpty = dataObject()
+#a one-dimensional dataObject does not exist, always create a 1xM or Mx1 instead
+obj2dim = dataObject([yDim, xDim], "float64")
+obj3dim = dataObject([zDim, yDim, xDim], "uint16")
 
-# plot the dataObject
-plot(dObj)
+'''Special constructors for zero, ones, eye and randomly filled objects'''
+objZero = dataObject.zeros([yDim, xDim], "float64") #2D object filled with zeros
+objOnes = dataObject.ones([yDim, xDim], "float64") #2D object filled with ones
+objEye = dataObject.eye(4, "uint8") #4x4 matrix
+objRand = dataObject.rand([yDim, xDim], "uint8") #2D object filled with uniformly distributed random values
+objRandN = dataObject.randN([yDim, xDim], "uint8") #2D object filled with Gaussian distributed random values
+#hint: the methods rand and randN create values in the full data range for integer based data types
+#        whereas the randomly distributed values are in the range [0,1) for floating point data types.
 
-# Make a shallow-Copy of dObj (both objects share the same data)
-dObjTemp = dObj
+'''Type conversion'''
+objRandFloat = objRand.astype("float64")
 
-# Delete the shallowCopy, data will exist until dObj is deleted (Works also wise versa)
-del dObjTemp
+'''Assign values to data objects'''
+obj2dim[0:yDim//2,:] = 5.7 #fill the upper half of the object with 5.7 (the operator // makes an integer division)
+obj2dim[yDim//2:,:] = 6.6 #fill the bottom half of the object with 6.6 (the operator // makes an integer division)
+obj2dim[5:10, 20:100] = -2.0 #fill a selected rectangle with -2.0
+obj3dim[:,:,:] = 0 #fill the entire 3d object with zero
+obj3dim[1,:,:] = objRand.astype(obj3dim.dtype) #replace the 2nd plane of the 3d object by the random values of the casted object
 
-# Make a shallow-Copy of dObj with a ROI (both objects share the same data)
-dObjTemp = dObj[round(yDim/2):yDim, round(xDim/2):xDim]
+'''Delete objects'''
+del objRandFloat
 
-# set the values of the dataObject within the ROI to1
-dObjTemp[:,:] = 1
+'''Shallow copies'''
+#Python has the concept to share as much memory as possible between different objects.
+#This also holds for dataObjects. In some cases, e.g. a change of type, shared memories can not
+#be kept, such that an implicit separation of both objects is done.
+#If two objects are shallow copies to each other, the memory as well as tags and other meta information is shared.
+#However, one object can be a sub-slice, so called region of interest (ROI), of the other one, such that the
+#size of the object is individual for each object.
 
-# getValues (Point or Slice) from the dataObject
-pythonTuple = dObj[0,0] #one element is directly returned as integer or float
-pythonTuple = dObj[:,640-1].value #multiple elements are returned as dataObject. Therefore the value attribute is called to transform it into a tuple.
-pythonTuple = dObj[round(yDim/2),:].value
+objZero2 = objZero #both variables point to exactly the same dataObject in memory (everything shared)
+objZero3 = objZero[:,:] #objZero3 is a shallow copy of objZero with the same matrix size
+objZero4 = objZero[0:20, 0:20] #objZero4 is a shallow copy including a region of interest to the first 20 rows and columns
+objZero4[:,:] = 5 #change the values in the first 20 rows and columns of objZero4 to 5 
+#(hence, objZero, objZero2 and objZero4 are changed, too). Proof:
+plot(objZero) #opens a 2d plot of objZero
 
-# plot the ROI and the object
-plot(dObj)
-plot(dObjTemp)
+'''Deep copy'''
+#if you want to have a deep copy, with separated memory and meta information of a dataObject, use the copy-operator'''
+obj2dimCopy = obj2dim.copy()
+plot(obj2dimCopy)
 
-# make a DeepCopy of the Object or the ROI
-dObjCopy = dObj.copy()
-del dObjCopy
+'''Accessing values'''
+print("objZero at index 0,5 (row, column):", objZero[0,5])
+#get the first five values of the first row of objZero:
+vals = objZero[0,0:5] #the last value of a slice is always EXCLUDED from the slice
+#vals is now a dataObject, however it can be converted to a tuple:
+print("first five values of objZero:", vals.value)
+
+'''Axis scaling, offset, description and unit'''
+#every dataObject can have meta information for each axis.
+#The scaling represents unit/px and gives the physical representation of the axis
+#The offset is the offset of the first value in this axis, given in pixel
+#The transformation between pixel and physical coordinates is then:
+#phys_coord = (px_coord - offset) * scaling
+obj2dim.axisScales = (0.1, 0.1) #0.1 mm / px
+obj2dim.axisOffsets = (0, 100) #the x-axis starts now at -10mm (100 * 0.1)
+obj2dim.axisUnits = ('mm', 'mm')
+obj2dim.axisDescriptions = ('y-axis', 'x-axis')
+
+obj2dim.valueUnit = '°' #this is a special character. To allow this, the first line of this script is relevant (right click -> insert codec)
+obj2dim.valueDescription = 'phase'
+
+plot(obj2dim, properties = {"colorBarVisible":True})
+
+'''Tags'''
+#it is possible to add string or double valued tags to each dataObject. There are some special tags,
+#that can directly be interpreted by plots (e.g. the 'title' tag). All other tags can be used for any purpose.
+
+obj3dim.setTag('title', 'This is a 3d object, use the spin box to switch between planes')
+plot(obj3dim)
 
 # Set additional informations (meta data) as tags
 # Use set tag "key", "value". Key / value are user defined.
-dObj.setTag('Creator', 'Lyda')
-dObj.setTag('Type', 'Measurement')
-dObj.setTag('DummyTag', 'Delete Me')
+obj2dim.setTag('Creator', 'Lyda')
+obj2dim.setTag('Type', 'Measurement')
+obj2dim.setTag('DummyTag', 'Delete Me')
 
 # Retrieve tags by their key and print them
-print(dObj.tags['Creator'])
-print(dObj.tags['Type'])
+print(obj2dim.tags['Creator'])
+print(obj2dim.tags['Type'])
 
 # Get the complete tag space as a python dictionary
-tagdic = dObj.tags
+tagdic = obj2dim.tags
 
 # Get the size of the tagspace
-print(dObj.getTagListSize())
+print(obj2dim.getTagListSize())
 # or
 print(len(tagdic))
 
 # List up all tags in the tagspace
 print('\nMy Taglist')
 for key in tagdic.keys():
-    print(key + ' -> ' + dObj.tags[key])
+    print(key + ' -> ' + obj2dim.tags[key])
 
 # Delete a tag
-dObj.deleteTag('DummyTag')
+obj2dim.deleteTag('DummyTag')
 
 # List up all tags in the tagspace
 print('\nMy Taglist')
-for key in dObj.tags.keys():
-    print(key + ' -> ' + dObj.tags[key])
+for key in obj2dim.tags.keys():
+    print(key + ' -> ' + obj2dim.tags[key])
 
-print('\nUnits / Offsets and Scales')
-# Set the meta-data for units and lateral offset / scale for plotting and storing informations
-# Set the axis Units to mm
-dObj.axisUnits = ('mm', 'mm')
-# Set the axisScale as 0.1 units / px
-dObj.axisScales = (0.1, 0.1)
-# Set offset so coordinate offset is in the center of the image
-dObj.axisOffsets= (yDim/2, xDim/2)
-# Set the axis descriptions to axis names
-dObj.axisDescriptions = ('y-Axis', 'x-Axis')
-# Set the value units to a.u.
-dObj.valueUnit = 'a.u.'
-# Set the value description to 'Intensity'
-dObj.valueDescription = 'Intensity'
-
-plot(dObj)
-
-# Get Axis Units and print them
-print('The axis descriptions are '+ dObj.axisDescriptions[1] +' and '+ dObj.axisDescriptions[0])
-print('The axis scales are '+ str(dObj.axisScales[1]) + dObj.axisUnits[1]+'/px and '+ str(dObj.axisScales[0])+ dObj.axisUnits[1]+'/px')
-
-# The iTOM-dataObject has a protocol function. It is a tag and every filter in c++ should add its properties after computation to this string by using addToProtocol
+# The dataObject has a protocol function. It is a tag and many filters in c++ add their properties after computation to this string by using addToProtocol
 # Add a protocol to the Object, if object is a ROI-ShallowCopy the ROI is automatically added to the protocol-String
 print("\nProtocol function:")
-dObj.addToProtocol('Created today for test reasons')
-
-dObjTemp.addToProtocol('Values set to 1 (Show the effect of ROI in case of the protocol)')
+obj2dim.addToProtocol('Created today for test reasons')
 # Read protocol string
-print(dObj.tags["protocol"])
+print(obj2dim.tags["protocol"])
 

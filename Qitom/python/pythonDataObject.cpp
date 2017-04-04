@@ -7701,9 +7701,9 @@ PyObject* PythonDataObject::PyDataObj_StaticOnes(PyObject * /*self*/, PyObject *
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectStaticRand_doc,"rand([dims [, dtype='uint8'[, continuous = 0]]]) -> creates new dataObject filled with uniform distributed random values.  \n\
+PyDoc_STRVAR(pyDataObjectStaticRand_doc,"rand([dims [, dtype='uint8'[, continuous = 0]]]) -> creates new dataObject filled with uniformly distributed random values.  \n\
 \n\
-Static method to create a new itom.dataObject filled with uniform distributed random numbers.\n\
+Static method to create a new itom.dataObject filled with uniformly distributed random numbers.\n\
 In case of an integer type, the uniform noise is from min<ObjectType>(inclusiv) to max<ObjectType>(inclusiv).\n\
 For floating point types, the noise is between 0(inclusiv) and 1(exclusiv). \n\
 \n\
