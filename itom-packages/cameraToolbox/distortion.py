@@ -176,7 +176,7 @@ def undistortPointGrid(pointsDistorted, rows, cols, coeffs, repr = '2d'):
     
 
 #######################################################
-def drawPointGrid(points, rows, cols, canvas = None):
+def drawPointGrid(points, rows, cols, canvas = None, scale = 1.0):
     '''draw the point coordinates in a given canvas (or a newly created canvas if
     canvas == None) using the OpenCV method 'cvDrawChessboardCorners'
     
@@ -191,6 +191,8 @@ def drawPointGrid(points, rows, cols, canvas = None):
         points_ = dataObject(points).reshape([rows*cols,2])
     else:
         points_ = dataObject(points)
+        
+    points_ *= scale
         
     newCanvas = True
     if canvas and type(canvas) is dataObject and canvas.dtype=='rgba32':
