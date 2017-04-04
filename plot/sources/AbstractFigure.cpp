@@ -93,6 +93,15 @@ AbstractFigure::AbstractFigure(const QString &itomSettingsFile, WindowMode windo
 //----------------------------------------------------------------------------------------------------------------------------------
 AbstractFigure::~AbstractFigure()
 {
+    if (d->propertyEditorWidget)
+    {
+        //unregister object in order to prevent a possible crash, if 
+        //the object is currently being deleted and the property editor 
+        //tries to update its representation.
+        d->propertyEditorWidget->setObject(NULL);
+        d->propertyEditorWidget->deleteLater();
+    }
+
     foreach(Channel *delChan, m_pChannels)
     {
         removeChannel(delChan);
