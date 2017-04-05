@@ -170,6 +170,7 @@ Name: "{commondesktop}\{#Name}"; Filename: "{app}\{#ExeName}"; Tasks: desktopico
 
 [Files]
 Source: "{#SourceDirItomBuild}\{#ExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\addinmanager.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Styles
 Source: "{#SourceDirItomBuild}\styles\*.*"; DestDir: "{app}\styles"; Flags: ignoreversion recursesubdirs
