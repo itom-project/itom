@@ -17,53 +17,53 @@
 #define SourceDirSys32 "C:\Windows\System32"
 ;#define SourceRedistributable2012 "W:\m\ITOM\Installationen\1. MS VisualStudio 2012 Pro"
 ;#define SourceRedistributable2013 "W:\m\ITOM\Installationen\1. MS VisualStudio 2013 Pro"
-#define SourceRedistributable2015 "W:\m\ITOM\Installationen\5. Python 3.5\64bit"
-#define SourcePythonPackDir "W:\m\ITOM\Installationen\5. Python 3.5\64bit\Numpy1.11.1-Basis"
-#define SourcePythonDir "W:\m\ITOM\Python\3.5\x64\Python3.5.2_x64_minimal"
-#define SourceRedistributableDir "W:\m\ITOM\Microsoft Visual C++ Redistributable Package DLLs"
+#define SourceRedistributable2015 "W:\m\ITOM\Software\MS VisualStudio\Redistributable\64 bit"
+#define SourcePythonPackDir "W:\m\ITOM\Software\Python\Python 3.6\64 Bit\Pakete_Basis_Numpy1.11"
+#define SourcePythonDir "W:\m\ITOM\Software\Python\Python 3.6\64 Bit\Python-3.6.1_x64_minimal"
+#define SourceRedistributableDir "W:\m\ITOM\Software\MS VisualStudio\Redistributable\DLLs"
 
 ; Python
 ; - FNPythonXY file name of Python module XY
 ; - NaPythonXY name of Python module XY
 ; - VePythonXY version of Python module XY
 
-;#define FNPython "python-3.5.1-amd64.exe"
+;#define FNPython ""
 #define NaPython "Python"
-#define VePython "3.5.2"
+#define VePython "3.6.1"
 
-#define FNPythonPip "pip-8.1.2-py2.py3-none-any.whl"
+#define FNPythonPip "pip-9.0.1-py2.py3-none-any.whl"
 #define NaPythonPip "Pip"
-#define VePythonPip "8.1.2"
+#define VePythonPip "9.0.1"
 
-#define FNPythonNumPy "numpy-1.11.1+mkl-cp35-cp35m-win_amd64.whl"
+#define FNPythonNumPy "numpy-1.11.3+mkl-cp36-cp36m-win_amd64.whl"
 #define NaPythonNumPy "NumPy"
-#define VePythonNumPy "1.11.1"
+#define VePythonNumPy "1.11.3"
 
-#define FNPythonSciPy "scipy-0.18.0-cp35-cp35m-win_amd64.whl"
+#define FNPythonSciPy "scipy-0.19.0-cp36-cp36m-win_amd64.whl"
 #define NaPythonSciPy "SciPy"
-#define VePythonSciPy "0.18.0"
+#define VePythonSciPy "0.19.0"
 
 #define FNPythonSix "six-1.10.0-py2.py3-none-any.whl"
 #define NaPythonSix "Six"
 #define VePythonSix "1.10.0"
 
-#define FNPythonPyPars "pyparsing-2.1.10-py2.py3-none-any.whl"
+#define FNPythonPyPars "pyparsing-2.2.0-py2.py3-none-any.whl"
 #define NaPythonPyPars "PyParsing"
-#define VePythonPyPars "2.1.10"
+#define VePythonPyPars "2.2.0"
 
-#define FNPythonPyDateu "python_dateutil-2.5.3-py2.py3-none-any.whl"
+#define FNPythonPyDateu "python_dateutil-2.6.0-py2.py3-none-any.whl"
 #define NaPythonPyDateu "DateUtil"
-#define VePythonPyDateu "2.5.3"
+#define VePythonPyDateu "2.6.0"
 
-#define FNPythonPyTz "pytz-2016.6-py2.py3-none-any.whl"
+#define FNPythonPyTz "pytz-2017.2-py2.py3-none-any.whl"
 #define NaPythonPyTz "PyTz"
-#define VePythonPyTz "2016.6"
+#define VePythonPyTz "2017.2"
 
-#define FNPythonMatPlotLib "matplotlib-1.5.2-cp35-cp35m-win_amd64.whl"
+#define FNPythonMatPlotLib "matplotlib-2.0.0-cp36-cp36m-win_amd64.whl"
 #define NaPythonMatPlotLib "MatPlotLib"
-#define VePythonMatPlotLib "1.5.2"
+#define VePythonMatPlotLib "2.0.0"
 
-#define FNPythonPies "pies-2.6.7.tar.gz"
+#define FNPythonPies "pies-2.6.7-py2.py3-none-any.whl"
 #define NaPythonPies "Pies"
 #define VePythonPies "2.6.7"
 
@@ -75,29 +75,29 @@
 #define NaPythonCycler "Cycler"
 #define VePythonCycler "0.10.0"
 
-#define FNPythonSciKit "scikit_image-0.12.3-cp35-cp35m-win_amd64.whl"
+#define FNPythonSciKit "scikit_image-0.12.3-cp36-cp36m-win_amd64.whl"
 #define NaPythonSciKit "SciKit Image"
 #define VePythonSciKit "0.12.3"
 
-#define FNPythonDecor "decorator-4.0.10-py2.py3-none-any.whl"
+#define FNPythonDecor "decorator-4.0.11-py2.py3-none-any.whl"
 #define NaPythonDecor "Decorator"
-#define VePythonDecor "4.0.10"
+#define VePythonDecor "4.0.11"
 
 #define FNPythonNetWorkX "networkx-1.11-py2.py3-none-any.whl"
 #define NaPythonNetWorkX "NetworkX"
 #define VePythonNetWorkX "1.11"
 
-#define FNPythonPillow "Pillow-3.3.0-cp35-cp35m-win_amd64.whl"
+#define FNPythonPillow "Pillow-4.1.0-cp36-cp36m-win_amd64.whl"
 #define NaPythonPillow "Pillow"
-#define VePythonPillow "3.3.0"
+#define VePythonPillow "4.1.0"
 
-#define FNPythonDask "dask-0.11.1-py2.py3-none-any.whl"
+#define FNPythonDask "dask-0.14.1-py2.py3-none-any.whl"
 #define NaPythonDask "Dask"
-#define VePythonDask "0.11.1"
+#define VePythonDask "0.14.1"
 
-#define FNPythonToolz "toolz-0.8.0-py2.py3-none-any.whl"
+#define FNPythonToolz "toolz-0.8.2-py2.py3-none-any.whl"
 #define NaPythonToolz "Toolz"
-#define VePythonToolz "0.8.0"
+#define VePythonToolz "0.8.2"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -137,7 +137,7 @@ Name: "{app}\SDK"; Permissions: everyone-modify
 ; EXEs
 ;Source: "{#SourceRedistributable2012}\MS_VS_12_vcredist_x64.exe"; DestDir: "{tmp}"
 ;Source: "{#SourceRedistributable2013}\MS_VS_13_vcredist_x64.exe"; DestDir: "{tmp}"
-Source: "{#SourceRedistributable2015}\Redistributable Visual Studio 2015 x64.exe"; DestDir: "{tmp}"
+Source: "{#SourceRedistributable2015}\Microsoft Visual C++ 2015 Redistributable (x64) - 14.0.23026.exe"; DestDir: "{tmp}"
 ;Source: "{#SourcePythonPackDir}\{#FNPython}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonPip}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonNumPy}"; DestDir: "{tmp}"
@@ -184,10 +184,11 @@ Source: "{#SourceDirItomBuild}\itomWidgets.dll"; DestDir: "{app}"; Flags: ignore
 Source: "{#SourceDirItomBuild}\pointcloud.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\qpropertyeditor.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourcePythonDir}\python35.dll"; DestDir: "{app}"; Flags: ignoreversion
-; DLLs Redistributable 2012-2015
+
+; DLLs Redistributable 2012-2013
 Source: "{#SourceRedistributableDir}\2012\64 Bit\*.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceRedistributableDir}\2013\64 Bit\*.dll"; DestDir: "{app}"; Flags: ignoreversion
-;Source: "{#SourceRedistributableDir}\2015\64 Bit\*.dll"; DestDir: "{app}"; Flags: ignoreversion
+
 ; DLLs QT
 Source: "{#SourceDirQT}\D3Dcompiler_47.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\libEGL.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -211,6 +212,7 @@ Source: "{#SourceDirQT}\..\resources\qtwebengine_resources.pak"; DestDir: "{app}
 Source: "{#SourceDirQT}\..\resources\qtwebengine_resources_100p.pak"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\..\resources\qtwebengine_resources_200p.pak"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\..\translations\qt_*.qm"; DestDir: "{app}\translations"; Flags: ignoreversion
+
 ; DLLs QT Assistant
 Source: "{#SourceDirQT}\Qt5CLucene.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\Qt5Help.dll"; DestDir: "{app}"; Flags: ignoreversion
@@ -224,13 +226,16 @@ Source: "{#SourceDirQT}\Qt5WebChannel.dll"; DestDir: "{app}"; Flags: ignoreversi
 Source: "{#SourceDirQT}\Qt5WebEngine.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\Qt5WebEngineCore.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\Qt5WebEngineWidgets.dll"; DestDir: "{app}"; Flags: ignoreversion
+
 ; DLLs QT Designer
 Source: "{#SourceDirQT}\Qt5Designer.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\Qt5DesignerComponents.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirQT}\Qt5Xml.dll"; DestDir: "{app}"; Flags: ignoreversion
+
 ; DLLs QT OpenCV
 Source: "{#SourceDirOpenCV}\opencv_core${OpenCV_LIB_VERSION}.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirPCL}\bin\pcl_common_release.dll"; DestDir: "{app}"; Flags: ignoreversion
+
 ; DLLs QT Plugins
 Source: "{#SourceDirQT}\..\plugins\bearer\qgenericbearer.dll"; DestDir: "{app}\bearer"; Flags: ignoreversion
 Source: "{#SourceDirQT}\..\plugins\bearer\qnativewifibearer.dll"; DestDir: "{app}\bearer"; Flags: ignoreversion
@@ -480,7 +485,7 @@ Source: "{#SourceDirItomSource}\demo\*.*"; DestDir: "{app}\demo"; Flags: ignorev
 [Run]
 ;Filename: "{tmp}\MS_VS_12_vcredist_x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2012 Redistributable Package (x64)..."; Components: CREDPACK2012;
 ;Filename: "{tmp}\MS_VS_13_vcredist_x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2013 Redistributable Package (x64)..."; Components: CREDPACK2013;
-Filename: "{tmp}\Redistributable Visual Studio 2015 x64.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2015 Redistributable Package (x64)..."; Components: CREDPACK2015;
+Filename: "{tmp}\Microsoft Visual C++ 2015 Redistributable (x64) - 14.0.23026.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2015 Redistributable (x64) - 14.0.23026..."; Components: CREDPACK2015;
 ;Filename: "{tmp}\{#FNPython}"; Parameters: "TargetDir={%SystemDrive}\Python35 PrependPath=1 CompileAll=0"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPython} {#VePython}..."; Components: PYTHON; BeforeInstall: PythonBeforeInstall
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --upgrade --only-binary=:all: --no-index {tmp}\{#FNPythonPip}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPip}..."; Components: PYTHON
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonNumPy}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonNumPy}..."; Components: PYTHON\NUMPY
@@ -491,7 +496,7 @@ Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyTz}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyTz}..."; Components: PYTHON\MATPLOTLIB
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonCycler}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonCycler}..."; Components: PYTHON\MATPLOTLIB
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonMatPlotLib}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonMatPlotLib}..."; Components: PYTHON\MATPLOTLIB
-Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSix}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSix}..."; Components: PYTHON\SCIKIT
+;Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSix}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSix}..."; Components: PYTHON\SCIKIT
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonDecor}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonDecor}..."; Components: PYTHON\SCIKIT
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonNetWorkX}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonNetWorkX}..."; Components: PYTHON\SCIKIT
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonDask}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonDask}..."; Components: PYTHON\SCIKIT
@@ -505,7 +510,7 @@ Filename: "{app}\{#ExeName}"; Flags: nowait postinstall skipifsilent; Descriptio
 [InstallDelete]
 ;Type: files; Name: "{tmp}\MS_VS_12_vcredist_x64.exe"
 ;Type: files; Name: "{tmp}\MS_VS_13_vcredist_x64.exe"
-Type: files; Name: "{tmp}\Redistributable Visual Studio 2015 x64.exe"
+Type: files; Name: "{tmp}\Microsoft Visual C++ 2015 Redistributable (x64) - 14.0.23026.exe"
 ;Type: files; Name: "{tmp}\{#FNPython}"
 Type: files; Name: "{tmp}\{#FNPythonPip}"
 Type: files; Name: "{tmp}\{#FNPythonNumPy}"
@@ -533,7 +538,7 @@ Name: "Install"; Description: "Installation"; Flags: iscustom
 Name: "Main"; Description: "{#Name}"; Types: Install; Flags: checkablealone fixed
 ;Name: "CREDPACK2012"; Description: "Microsoft VC++ 2012 Redistrib. Pack (x64) (required by some plugins)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP12({#DSetupMode})
 ;Name: "CREDPACK2013"; Description: "Microsoft VC++ 2013 Redistrib. Pack (x64) (required by itom)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP13({#DSetupMode})
-Name: "CREDPACK2015"; Description: "Microsoft VC++ 2015 Redistrib. Pack (x64) (required by some python packages)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP15({#DSetupMode})
+Name: "CREDPACK2015"; Description: "Microsoft Visual C++ 2015 Redistr. x64 (required by some python packages)"; Types: Install; Flags: checkablealone; Check: NeedInstallRP15({#DSetupMode})
 Name: "PYTHON"; Description: "{#NaPython} {#VePython}"; Types: Install; Flags: checkablealone
 Name: "PYTHON\NUMPY"; Description: "{#NaPythonNumPy} {#VePythonNumPy}"; Types: Install; Flags: checkablealone
 Name: "PYTHON\SCIPY"; Description: "{#NaPythonSciPy} {#VePythonSciPy}"; Types: Install; Flags: checkablealone
