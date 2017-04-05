@@ -219,6 +219,8 @@
         <file>icons/itom_icons/snapQuick.png</file>
         <file>icons/itom_icons/snapSequence.png</file>
         <file>icons/itom_icons/stitch.png</file>
+        <file>icons/itom_icons/subtractPlane.png</file>
+        <file>icons/itom_icons/subtractPolynom.png</file>
     </qresource>
     <qresource prefix="/license">
         <file>about.html</file>

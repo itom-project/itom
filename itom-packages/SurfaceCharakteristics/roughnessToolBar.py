@@ -51,8 +51,8 @@ class surfaceAnalysisTools(abstractObjInteractionToolBar):
         #addButton("toolBarRoughnesStatistics","Ra/Sa","surfaceAnalysisTools.calcRaSa()", "")
         #addButton("toolBarRoughnesStatistics","Rq/Sq","surfaceAnalysisTools.calcRqSq()", "")
         if self.hasButtons == True:
-            addButton(self.myNameDelete,"Subtract Plane", self.planefit, ":/misc/icons/itom_icons/linelev.png")
-            addButton(self.myNameDelete,"Subtract Polynome", self.polyfit, ":/misc/icons/itom_icons/polylev.png")
+            addButton(self.myNameDelete,"Subtract Plane", self.planefit, ":/measurement/icons/itom_icons/subtractPlane.png")
+            addButton(self.myNameDelete,"Subtract Polynome", self.polyfit, ":/measurement/icons/itom_icons/subtractPolynom.png")
         
     def __del__(self):
         #removeButton("roughness","Rz/Sz")
