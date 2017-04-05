@@ -103,6 +103,10 @@
 #define NaPythonOleFile "OleFile"
 #define VePythonOleFile "0.44"
 
+#define FNPythonPyWav "PyWavelets-0.5.2-cp36-cp36m-win_amd64.whl"
+#define NaPythonPyWav "PyWavelets"
+#define VePythonPyWav "0.5.2"
+
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
 ; Do not use the same AppId value in installers for other applications.
@@ -122,6 +126,9 @@ Compression=lzma
 SolidCompression=yes
 LicenseFile={#SourceDirItomSource}\COPYING.txt
 AlwaysRestart=False
+PrivilegesRequired=none
+RestartIfNeededByRun=False
+MinVersion=0,6.0
 
 [Dirs]
 Name: "{app}\"; Permissions: everyone-modify
@@ -158,6 +165,7 @@ Source: "{#SourcePythonPackDir}\{#FNPythonSciKit}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonDecor}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonNetWorkX}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonOleFile}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonPyWav}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonPillow}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonDask}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonToolz}"; DestDir: "{tmp}"
@@ -167,7 +175,7 @@ Name: "Deutsch"; MessagesFile: "compiler:Languages\German.isl"
 Name: "English"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 
 [Icons]
 Name: "{group}\{#Name}"; Filename: "{app}\{#ExeName}"
@@ -507,6 +515,7 @@ Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonNetWorkX}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonNetWorkX}..."; Components: PYTHON\SCIKIT
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonDask}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonDask}..."; Components: PYTHON\SCIKIT
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonToolz}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonToolz}..."; Components: PYTHON\SCIKIT
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPyWav}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPyWav}..."; Components: PYTHON\SCIKIT
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonOleFile}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonOleFile}..."; Components: PYTHON\SCIKIT
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPillow}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPillow}..."; Components: PYTHON\SCIKIT
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSciKit}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSciKit}..."; Components: PYTHON\SCIKIT
@@ -532,6 +541,7 @@ Type: files; Name: "{tmp}\{#FNPythonFrosted}"
 Type: files; Name: "{tmp}\{#FNPythonCycler}"
 Type: files; Name: "{tmp}\{#FNPythonSciKit}"
 Type: files; Name: "{tmp}\{#FNPythonDecor}"
+Type: files; Name: "{tmp}\{#FNPythonPyWav}"
 Type: files; Name: "{tmp}\{#FNPythonOleFile}"
 Type: files; Name: "{tmp}\{#FNPythonPillow}"
 Type: files; Name: "{tmp}\{#FNPythonDask}"
