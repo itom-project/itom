@@ -75,9 +75,9 @@
 #define NaPythonCycler "Cycler"
 #define VePythonCycler "0.10.0"
 
-#define FNPythonSciKit "scikit_image-0.12.3-cp36-cp36m-win32.whl"
+#define FNPythonSciKit "scikit_image-0.13.0-cp36-cp36m-win32.whl"
 #define NaPythonSciKit "SciKit Image"
-#define VePythonSciKit "0.12.3"
+#define VePythonSciKit "0.13.0"
 
 #define FNPythonDecor "decorator-4.0.11-py2.py3-none-any.whl"
 #define NaPythonDecor "Decorator"
@@ -98,6 +98,10 @@
 #define FNPythonToolz "toolz-0.8.2-py2.py3-none-any.whl"
 #define NaPythonToolz "Toolz"
 #define VePythonToolz "0.8.2"
+
+#define FNPythonOleFile "olefile-0.44-py2.py3-none-any.whl"
+#define NaPythonOleFile "OleFile"
+#define VePythonOleFile "0.44"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application.
@@ -153,6 +157,7 @@ Source: "{#SourcePythonPackDir}\{#FNPythonCycler}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonSciKit}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonDecor}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonNetWorkX}"; DestDir: "{tmp}"
+Source: "{#SourcePythonPackDir}\{#FNPythonOleFile}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonPillow}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonDask}"; DestDir: "{tmp}"
 Source: "{#SourcePythonPackDir}\{#FNPythonToolz}"; DestDir: "{tmp}"
@@ -490,6 +495,7 @@ Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonNetWorkX}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonNetWorkX}..."; Components: PYTHON\SCIKIT
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonDask}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonDask}..."; Components: PYTHON\SCIKIT
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonToolz}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonToolz}..."; Components: PYTHON\SCIKIT
+Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonOleFile}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonOleFile}..."; Components: PYTHON\SCIKIT
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPillow}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPillow}..."; Components: PYTHON\SCIKIT
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonSciKit}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonSciKit}..."; Components: PYTHON\SCIKIT
 Filename: "{app}\python3\python.exe"; Parameters: "-m pip install --only-binary=:all: --no-index {tmp}\{#FNPythonPies}"; WorkingDir: "{tmp}"; Flags: shellexec waituntilterminated; StatusMsg: "{#NaPythonPies}..."; Components: PYTHON\FROSTED
@@ -514,6 +520,7 @@ Type: files; Name: "{tmp}\{#FNPythonFrosted}"
 Type: files; Name: "{tmp}\{#FNPythonCycler}"
 Type: files; Name: "{tmp}\{#FNPythonSciKit}"
 Type: files; Name: "{tmp}\{#FNPythonDecor}"
+Type: files; Name: "{tmp}\{#FNPythonOleFile}"
 Type: files; Name: "{tmp}\{#FNPythonPillow}"
 Type: files; Name: "{tmp}\{#FNPythonDask}"
 Type: files; Name: "{tmp}\{#FNPythonToolz}"
