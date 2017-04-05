@@ -183,7 +183,7 @@ Source: "{#SourceDirItomBuild}\itomShapeLib.dll"; DestDir: "{app}"; Flags: ignor
 Source: "{#SourceDirItomBuild}\itomWidgets.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\pointcloud.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\qpropertyeditor.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "{#SourcePythonDir}\python35.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourcePythonDir}\python36.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ; DLLs Redistributable 2012-2013
 Source: "{#SourceRedistributableDir}\2012\64 Bit\*.dll"; DestDir: "{app}"; Flags: ignoreversion
