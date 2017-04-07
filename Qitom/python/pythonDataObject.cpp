@@ -101,7 +101,6 @@ data : {str}, optional \n\
 \n\
 Notes \n\
 ------ \n\
-\n\
 The itom.dataObject is a direct wrapper for the underlying C++ class *dataObject*. This array class mainly is based on the class *Mat* of the computer vision library (OpenCV). \n\
 \n\
 In order to handle huge matrices, the data object can divide one array into chunks in memory.\n\
@@ -130,8 +129,8 @@ original object and all shallow copies.\n\
 \n\
 The opposite a deep copy of a dataObject (by sourceObject.copy()) creates a complete mew matrix with own meta data object.\n\
 \n\
-Example:\n\
-::\n\
+Example::\n\
+    \n\
     #Create an object \n\
     dObj = dataObject([5, 10, 10], 'int8')\n\
     \n\
@@ -7000,7 +6999,7 @@ PyObject* PythonDataObject::PyDataObject_imag(PyDataObject *self)
 PyDoc_STRVAR(pyDataObj_ToGray_doc, "toGray([destinationType='uint8']) -> returns the rgba32 color data object as a gray-scale object\n\
 \n\
 The destination data object has the same size than this data object and the real type given by destinationType. The pixel-wise \
-conversion is done using the formula: gray = 0.299 * red + 0.587 * green + 0.114 * blue.\
+conversion is done using the formula: gray = 0.299 * red + 0.587 * green + 0.114 * blue.\n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -7060,7 +7059,7 @@ PyDoc_STRVAR(pyDataObj_SplitColor_doc, "splitColor(color, [destinationType='uint
 \n\
 The destination data object has the same size than this data object if only one color is extracted. The output will have one dimension more if there are more than one colors extracted.\
 Each element of the new dimension corrspomnds to one color. \
-DestinationType defines the type of the output object.\
+DestinationType defines the type of the output object.\n\
 \n\
 Parameters \n\
 ----------- \n\
@@ -7386,8 +7385,8 @@ PyObject* PythonDataObject::PyDataObj_At(ito::DataObject *dataObj, int continuou
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyDataObjectCreateMask_doc, "createMask(shapes [, inverse = False]) -> return a uint8 data object of the same size where all pixels belonging to any shape are masked. \n\
 \n\
-The destination data object has the same size than this data object and the real type given by destinationType.The pixel - wise \
-conversion is done using the formula : gray = 0.299 * red + 0.587 * green + 0.114 * blue.\
+The destination data object has the same size than this data object and the real type given by destinationType. The pixel - wise \
+conversion is done using the formula : gray = 0.299 * red + 0.587 * green + 0.114 * blue.\n\
 \n\
 Parameters \n\
 ----------- \n\
