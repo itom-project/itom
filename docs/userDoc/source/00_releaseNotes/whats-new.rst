@@ -11,5 +11,6 @@ The following documents show the changelog for different versions of itom (based
     :numbered:
     :maxdepth: 2
     
+    changelog_300.rst
     changelog_220.rst
     changelog_le210.rst
