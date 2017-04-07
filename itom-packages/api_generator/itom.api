@@ -81,6 +81,7 @@ itom.dataObject.data() -> prints the content of the dataObject to the command li
 itom.dataObject.deleteTag(key) -> Delete a tag specified by key from the tag dictionary.
 itom.dataObject.dims
 itom.dataObject.div(obj) -> a.div(b) return result of element wise division of a./b
+itom.dataObject.dstack(objects) -> returns a stacked data object containing a stack of all planes given by this and obj.
 itom.dataObject.dtype
 itom.dataObject.existTag(key) -> return True if tag with given key exists, else False
 itom.dataObject.eye(size [, dtype='uint8']) -> creates a 2D, square, eye-matrix.
@@ -97,7 +98,7 @@ itom.dataObject.normalize([minValue=0.0, maxValue=1.0, typestring='']) -> return
 itom.dataObject.ones(dims [, dtype='uint8'[, continuous = 0]]) -> creates new dataObject filled with ones.
 itom.dataObject.physToPix(values [, axes]) -> returns the pixel coordinates for the given physical coordinates.
 itom.dataObject.pixToPhys(values [, axes]) -> returns the physical coordinates for the given pixel coordinates.
-itom.dataObject.rand([dims [, dtype='uint8'[, continuous = 0]]]) -> creates new dataObject filled with uniform distributed random values.
+itom.dataObject.rand([dims [, dtype='uint8'[, continuous = 0]]]) -> creates new dataObject filled with uniformly distributed random values.
 itom.dataObject.randN(dims [, dtype='uint8'[, continuous = 0]]) -> creates dataObject filled with gaussian distributed random values.
 itom.dataObject.real() -> return a new data object with the real part of the source
 itom.dataObject.reshape(newShape) -> return a reshaped shallow copy (if possible) of this dataObject.
