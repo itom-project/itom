@@ -316,6 +316,7 @@ Source: "{#SourceDirItomBuild}\itom-packages\apps\*.*"; DestDir: "{app}\itom-pac
 Source: "{#SourceDirItomBuild}\itom-packages\api_generator\*.*"; DestDir: "{app}\itom-packages\api_generator"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\itom-packages\abstractObjToolbar\*.*"; DestDir: "{app}\itom-packages\abstractObjToolbar"; Flags: ignoreversion
 ;Source: "{#SourceDirItomBuild}\itom-packages\autostart\*.*"; DestDir: "{app}\itom-packages\autostart"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\itom-packages\cameraToolbox\*.*"; DestDir: "{app}\itom-packages\cameraToolbox"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\itom-packages\camToolbar\*.*"; DestDir: "{app}\itom-packages\camToolbar"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\itom-packages\measurementSystem\*.*"; DestDir: "{app}\itom-packages\measurementSystem"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\itom-packages\mpl_itom\*.*"; DestDir: "{app}\itom-packages\mpl_itom"; Flags: ignoreversion
