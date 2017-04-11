@@ -48,14 +48,22 @@
 #include <QtGui/QIcon>
 #include <QtCore/QMetaEnum>
 #include <QtGui/QFontDatabase>
-#include <QtWidgets/QStyleOption>
-#include <QtWidgets/QStyle>
-#include <QtWidgets/QApplication>
+#if QT_VERSION < 0x050000
+	#include <QtGui/QStyleOption>
+	#include <QtGui/QStyle>
+	#include <QtGui/QApplication>
+	#include <QtGui/QLabel>
+	#include <QtGui/QCheckBox>
+	#include <QtGui/QLineEdit>
+#else
+	#include <QtWidgets/QStyleOption>
+	#include <QtWidgets/QStyle>
+	#include <QtWidgets/QApplication>
+	#include <QtWidgets/QLabel>
+	#include <QtWidgets/QCheckBox>
+	#include <QtWidgets/QLineEdit>
+#endif
 #include <QtGui/QPainter>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QCheckBox>
-#include <QtWidgets/QLineEdit>
-
 #include <limits.h>
 #include <float.h>
 
@@ -5035,6 +5043,7 @@ void QtMarginsPropertyManager::uninitializeProperty(QtProperty *property)
     d_ptr->m_values.remove(property);
 }
 
+#if QT_VERSION >= 0x050300
 // QtMarginsFPropertyManager
 
 class QtMarginsFPropertyManagerPrivate
@@ -5420,7 +5429,7 @@ void QtMarginsFPropertyManager::uninitializeProperty(QtProperty *property)
 
     d_ptr->m_values.remove(property);
 }
-
+#endif //QT_VERSION >= 0x050300
 
 // QtEnumPropertyManager
 

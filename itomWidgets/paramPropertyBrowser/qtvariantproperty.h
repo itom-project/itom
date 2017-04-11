@@ -141,12 +141,14 @@ private:
     Q_PRIVATE_SLOT(d_func(), void slotRangeChanged(QtProperty *, const QSize &, const QSize &))
     Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QtProperty *, const QSizeF &))
     Q_PRIVATE_SLOT(d_func(), void slotRangeChanged(QtProperty *, const QSizeF &, const QSizeF &))
-		Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QtProperty *, const QRect &))
+	Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QtProperty *, const QRect &))
     Q_PRIVATE_SLOT(d_func(), void slotConstraintChanged(QtProperty *, const QRect &))
-		Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QtProperty *, const QMargins &))
+	Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QtProperty *, const QMargins &))
     Q_PRIVATE_SLOT(d_func(), void slotConstraintChanged(QtProperty *, const QMargins &))
-		Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QtProperty *, const QMarginsF &))
+#if QT_VERSION >= 0x050300
+	Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QtProperty *, const QMarginsF &))
     Q_PRIVATE_SLOT(d_func(), void slotConstraintChanged(QtProperty *, const QMarginsF &))
+#endif
     Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QtProperty *, const QRectF &))
     Q_PRIVATE_SLOT(d_func(), void slotConstraintChanged(QtProperty *, const QRectF &))
     Q_PRIVATE_SLOT(d_func(), void slotValueChanged(QtProperty *, const QColor &))

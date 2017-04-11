@@ -28,9 +28,15 @@
 #include "itomParamManager.h"
 
 #include <qstring.h>
-#include <QtWidgets/QStyleOption>
-#include <QtWidgets/QStyle>
-#include <QtWidgets/QApplication>
+#if QT_VERSION < 0x050000
+	#include <QtGui/QStyleOption>
+	#include <QtGui/QStyle>
+	#include <QtGui/QApplication>
+#else
+	#include <QtWidgets/QStyleOption>
+	#include <QtWidgets/QStyle>
+	#include <QtWidgets/QApplication>
+#endif
 #include <qpainter.h>
 #include <qcheckbox.h>
 

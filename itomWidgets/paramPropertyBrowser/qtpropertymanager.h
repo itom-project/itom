@@ -594,6 +594,7 @@ private:
     Q_PRIVATE_SLOT(d_func(), void slotPropertyDestroyed(QtProperty *))
 };
 
+#if QT_VERSION >= 0x050300
 class QtMarginsFPropertyManagerPrivate;
 
 class ITOMWIDGETS_EXPORT QtMarginsFPropertyManager : public QtAbstractPropertyManager
@@ -625,7 +626,7 @@ private:
     Q_PRIVATE_SLOT(d_func(), void slotDoubleChanged(QtProperty *, double))
     Q_PRIVATE_SLOT(d_func(), void slotPropertyDestroyed(QtProperty *))
 };
-
+#endif //QT_VERSION >= 0x050300
 
 class QtEnumPropertyManagerPrivate;
 

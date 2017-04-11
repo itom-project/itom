@@ -56,7 +56,30 @@ QT_BEGIN_NAMESPACE
 #endif
 
 Q_DECLARE_METATYPE(QMargins);
-Q_DECLARE_METATYPE(QMarginsF);
+#if QT_VERSION >= 0x050300
+	Q_DECLARE_METATYPE(QMarginsF);
+#endif
+
+#if QT_VERSION < 0x050000
+#ifndef QT_NO_DATASTREAM
+	QDataStream &operator<<(QDataStream &out, const QMargins &obj)
+	{
+		out << obj.bottom() << obj.left() << obj.top() << obj.right();
+        return out;
+	}
+
+	QDataStream &operator>>(QDataStream &in, QMargins &obj)
+	{
+		int bottom, left, top, right;
+		in >> bottom >> left >> top >> right;
+        obj.setLeft(left);
+		obj.setRight(right);
+		obj.setTop(top);
+		obj.setBottom(bottom);
+		return in;
+	}
+#endif
+#endif
 
 class QtEnumPropertyType
 {
@@ -333,12 +356,14 @@ public:
     void slotRangeChanged(QtProperty *property, const QSize &min, const QSize &max);
     void slotValueChanged(QtProperty *property, const QSizeF &val);
     void slotRangeChanged(QtProperty *property, const QSizeF &min, const QSizeF &max);
-		void slotValueChanged(QtProperty *property, const QRect &val);
+	void slotValueChanged(QtProperty *property, const QRect &val);
     void slotConstraintChanged(QtProperty *property, const QRect &val);
-		void slotValueChanged(QtProperty *property, const QMargins &val);
+	void slotValueChanged(QtProperty *property, const QMargins &val);
     void slotConstraintChanged(QtProperty *property, const QMargins &val);
-		void slotValueChanged(QtProperty *property, const QMarginsF &val);
+#if QT_VERSION >= 0x050300
+	void slotValueChanged(QtProperty *property, const QMarginsF &val);
     void slotConstraintChanged(QtProperty *property, const QMarginsF &val);
+#endif
     void slotValueChanged(QtProperty *property, const QRectF &val);
     void slotConstraintChanged(QtProperty *property, const QRectF &val);
     void slotValueChanged(QtProperty *property, const QColor &val);
@@ -667,6 +692,7 @@ void QtVariantPropertyManagerPrivate::slotConstraintChanged(QtProperty *property
         emit q_ptr->attributeChanged(varProp, m_constraintAttribute, valVar);
 }
 
+#if QT_VERSION > 0x050300
 void QtVariantPropertyManagerPrivate::slotValueChanged(QtProperty *property, const QMarginsF &val)
 {
 	QVariant valVar;
@@ -681,6 +707,7 @@ void QtVariantPropertyManagerPrivate::slotConstraintChanged(QtProperty *property
     if (QtVariantProperty *varProp = m_internalToProperty.value(property, 0))
         emit q_ptr->attributeChanged(varProp, m_constraintAttribute, valVar);
 }
+#endif
 
 void QtVariantPropertyManagerPrivate::slotValueChanged(QtProperty *property, const QColor &val)
 {
@@ -1212,6 +1239,8 @@ QtVariantPropertyManager::QtVariantPropertyManager(QObject *parent)
                 this, SLOT(slotPropertyInserted(QtProperty *, QtProperty *, QtProperty *)));
     connect(marginsPropertyManager, SIGNAL(propertyRemoved(QtProperty *, QtProperty *)),
                 this, SLOT(slotPropertyRemoved(QtProperty *, QtProperty *)));
+
+#if QT_VERSION >= 0x050300
 		// MarginsFPropertyManager
     QtMarginsFPropertyManager *marginsfPropertyManager = new QtMarginsFPropertyManager(this);
 		qRegisterMetaType<QMarginsF>("QMarginsF");
@@ -1233,6 +1262,8 @@ QtVariantPropertyManager::QtVariantPropertyManager(QObject *parent)
                 this, SLOT(slotPropertyInserted(QtProperty *, QtProperty *, QtProperty *)));
     connect(marginsfPropertyManager, SIGNAL(propertyRemoved(QtProperty *, QtProperty *)),
                 this, SLOT(slotPropertyRemoved(QtProperty *, QtProperty *)));
+#endif //QT_VERSION >= 0x050300
+
     // ColorPropertyManager
     QtColorPropertyManager *colorPropertyManager = new QtColorPropertyManager(this);
     d_ptr->m_typeToPropertyManager[QVariant::Color] = colorPropertyManager;
@@ -1717,15 +1748,17 @@ void QtVariantPropertyManager::setValue(QtProperty *property, const QVariant &va
     } else if (QtSizeFPropertyManager *sizeFManager = qobject_cast<QtSizeFPropertyManager *>(manager)) {
         sizeFManager->setValue(internProp, qvariant_cast<QSizeF>(val));
         return;
-		} else if (QtRectPropertyManager *rectManager = qobject_cast<QtRectPropertyManager *>(manager)) {
+	} else if (QtRectPropertyManager *rectManager = qobject_cast<QtRectPropertyManager *>(manager)) {
         rectManager->setValue(internProp, qvariant_cast<QRect>(val));
         return;
-		} else if (QtMarginsPropertyManager *marginsManager = qobject_cast<QtMarginsPropertyManager *>(manager)) {
+	} else if (QtMarginsPropertyManager *marginsManager = qobject_cast<QtMarginsPropertyManager *>(manager)) {
         marginsManager->setValue(internProp, qvariant_cast<QMargins>(val));
         return;
-		} else if (QtMarginsFPropertyManager *marginsManager = qobject_cast<QtMarginsFPropertyManager *>(manager)) {
+#if QT_VERSION >= 0x050300
+	} else if (QtMarginsFPropertyManager *marginsManager = qobject_cast<QtMarginsFPropertyManager *>(manager)) {
         marginsManager->setValue(internProp, qvariant_cast<QMarginsF>(val));
         return;
+#endif
     } else if (QtRectFPropertyManager *rectFManager = qobject_cast<QtRectFPropertyManager *>(manager)) {
         rectFManager->setValue(internProp, qvariant_cast<QRectF>(val));
         return;
