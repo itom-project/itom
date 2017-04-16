@@ -302,6 +302,15 @@ ito::RetVal ParamEditorWidget::loadPlugin(QPointer<ito::AddInBase> plugin)
             addParam(*iter);
             ++iter;
         }
+
+        QList<QtBrowserItem*> topLevelItems = d->m_pBrowser->topLevelItems();
+        foreach (QtBrowserItem *i, topLevelItems)
+        {
+            foreach (QtBrowserItem* i2, i->children())
+            {
+                d->m_pBrowser->setExpanded(i2, false);
+            }
+        }
     }
 
     return ito::retOk;
@@ -330,6 +339,9 @@ void ParamEditorWidget::setReadonly(bool enable)
             d->m_pBrowser->unsetFactoryForManager(d->m_pStringManager);
             d->m_pBrowser->unsetFactoryForManager(d->m_pIntervalManager);
             d->m_pBrowser->unsetFactoryForManager(d->m_pRectManager->subIntervalPropertyManager());
+            d->m_pBrowser->unsetFactoryForManager(d->m_pCharArrayManager->subPropertyManager());
+            d->m_pBrowser->unsetFactoryForManager(d->m_pIntArrayManager->subPropertyManager());
+            d->m_pBrowser->unsetFactoryForManager(d->m_pDoubleArrayManager->subPropertyManager());
         }
         else
         {
@@ -339,6 +351,9 @@ void ParamEditorWidget::setReadonly(bool enable)
             d->m_pBrowser->setFactoryForManager(d->m_pStringManager, d->m_pStringFactory);
             d->m_pBrowser->setFactoryForManager(d->m_pIntervalManager, d->m_pIntervalFactory);
             d->m_pBrowser->setFactoryForManager(d->m_pRectManager->subIntervalPropertyManager(), d->m_pIntervalFactory);
+            d->m_pBrowser->setFactoryForManager(d->m_pCharArrayManager->subPropertyManager(), d->m_pCharFactory);
+            d->m_pBrowser->setFactoryForManager(d->m_pIntArrayManager->subPropertyManager(), d->m_pIntFactory);
+            d->m_pBrowser->setFactoryForManager(d->m_pDoubleArrayManager->subPropertyManager(), d->m_pDoubleFactory);
         }
     }
 }
@@ -875,7 +890,7 @@ void ParamEditorWidget::valueChanged(QtProperty* prop, int num, const ito::int32
     Q_D(ParamEditorWidget);
     if (!d_ptr->m_isChanging)
     {
-        d->enqueue(QSharedPointer<ito::ParamBase>(new ito::ParamBase(prop->propertyName().toLatin1().data(), ito::ParamBase::IntArray, num, (char*)values)));
+        d->enqueue(QSharedPointer<ito::ParamBase>(new ito::ParamBase(prop->propertyName().toLatin1().data(), ito::ParamBase::IntArray, num, values)));
         if (d->m_timerID == -1)
         {
             d->m_timerID = startTimer(0);
@@ -889,7 +904,7 @@ void ParamEditorWidget::valueChanged(QtProperty* prop, int num, const ito::float
     Q_D(ParamEditorWidget);
     if (!d_ptr->m_isChanging)
     {
-        d->enqueue(QSharedPointer<ito::ParamBase>(new ito::ParamBase(prop->propertyName().toLatin1().data(), ito::ParamBase::DoubleArray, num, (char*)values)));
+        d->enqueue(QSharedPointer<ito::ParamBase>(new ito::ParamBase(prop->propertyName().toLatin1().data(), ito::ParamBase::DoubleArray, num, values)));
         if (d->m_timerID == -1)
         {
             d->m_timerID = startTimer(0);

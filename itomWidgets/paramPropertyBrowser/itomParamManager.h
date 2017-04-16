@@ -264,7 +264,7 @@ public Q_SLOTS:
     void setParam(QtProperty *property, const ito::Param &param);
     void setValue(QtProperty *property, int num, const char* values);
 
-    ParamCharPropertyManager *subIntervalPropertyManager() const;
+    ParamCharPropertyManager *subPropertyManager() const;
 
 protected:
     QString valueText(const QtProperty *property) const;
@@ -302,7 +302,7 @@ public Q_SLOTS:
     void setParam(QtProperty *property, const ito::Param &param);
     void setValue(QtProperty *property, int num, const int* values);
 
-    ParamIntPropertyManager *subIntervalPropertyManager() const;
+    ParamIntPropertyManager *subPropertyManager() const;
 
 protected:
     QString valueText(const QtProperty *property) const;
@@ -340,7 +340,7 @@ public Q_SLOTS:
     void setParam(QtProperty *property, const ito::Param &param);
     void setValue(QtProperty *property, int num, const double* values);
 
-    ParamDoublePropertyManager *subIntervalPropertyManager() const;
+    ParamDoublePropertyManager *subPropertyManager() const;
 
 protected:
     QString valueText(const QtProperty *property) const;

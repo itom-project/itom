@@ -1237,18 +1237,68 @@ void ParamCharArrayPropertyManager::setParam(QtProperty *property, const ito::Pa
     int len = param.getLen();
     const DataType* values = param.getVal<const DataType*>();
 
+    int oldSubItems = d_ptr->m_propertyToValues.contains(property) ? d_ptr->m_propertyToValues[property].size() : 0;
+
     if ((meta && metaNew && (*meta != *metaNew)) || \
         (meta && !metaNew) || \
         (!meta && metaNew))
     {
         data.param = param;
+
+        if (oldSubItems > len)
+        {
+            //remove supernumerous sub-items
+            for (int i = oldSubItems; i = len; --i)
+            {
+                QtProperty *subProp = d_ptr->m_propertyToValues[property][i-1];
+                property->removeSubProperty(subProp);
+                d_ptr->m_valuesToProperty.remove(subProp);
+                delete subProp;
+                d_ptr->m_propertyToValues[property].removeLast();
+            }
+        }
+
+        if (len > oldSubItems)
+        {
+            //add new sub-items
+            for (int i = oldSubItems; i < len; ++i)
+            {
+                QtProperty *prop = d_ptr->m_numberPropertyManager->addProperty();
+                prop->setPropertyName(tr("%1").arg(i));
+                d_ptr->m_numberPropertyManager->setValue(prop, 0);
+                d_ptr->m_propertyToValues[property].append(prop);
+                d_ptr->m_valuesToProperty[prop] = property;
+                property->addSubProperty(prop);
+            }
+        }
+
+        const DataType* vals = data.param.getVal<const DataType*>();
+        ito::CharMeta *im;
+
+        for (int i = 0; i < len; ++i)
+        {
+            im = new ito::CharMeta(metaNew->getMin(), metaNew->getMax(), metaNew->getStepSize(), metaNew->getCategory());
+            ito::Param val("val", ito::ParamBase::Char, vals[i], im, "");
+            d_ptr->m_numberPropertyManager->setParam(d_ptr->m_propertyToValues[property][i], val);
+        }
+
         emit metaChanged(property, *metaNew);
-        emit valueChanged(property, len, data.param.getVal<const DataType*>());
+        emit valueChanged(property, len, vals);
         emit propertyChanged(property);
     }
     else if (data.param != param)
     {
         data.param.copyValueFrom(&param);
+        const DataType* vals = data.param.getVal<const DataType*>();
+        ito::CharMeta *im;
+
+        for (int i = 0; i < len; ++i)
+        {
+            im = new ito::CharMeta(metaNew->getMin(), metaNew->getMax(), metaNew->getStepSize(), metaNew->getCategory());
+            ito::Param val("val", ito::ParamBase::Char, vals[i], im, "");
+            d_ptr->m_numberPropertyManager->setParam(d_ptr->m_propertyToValues[property][i], val);
+        }
+
         emit valueChanged(property, len, data.param.getVal<const DataType*>());
         emit propertyChanged(property);
     }
@@ -1271,7 +1321,13 @@ void ParamCharArrayPropertyManager::setValue(QtProperty *property, int num, cons
 
     if (len != num || memcmp(values, vals, num * sizeof(DataType)) != 0)
     {
-        data.param.setVal<DataType*>(const_cast<DataType*>(values), num);
+        data.param.setVal<const DataType*>(values, num);
+
+        for (int i = 0; i < d_ptr->m_propertyToValues[property].size(); ++i)
+        {
+            d_ptr->m_numberPropertyManager->setValue(d_ptr->m_propertyToValues[property][i], values[i]);
+        }
+
         emit valueChanged(property, num, values);
         emit propertyChanged(property);
     }
@@ -1313,7 +1369,7 @@ In order to provide editing widgets for the mentioned
 subproperties in a property browser widget, this manager must be
 associated with an editor factory.
 */
-ParamCharPropertyManager *ParamCharArrayPropertyManager::subIntervalPropertyManager() const
+ParamCharPropertyManager *ParamCharArrayPropertyManager::subPropertyManager() const
 {
     return d_ptr->m_numberPropertyManager;
 }
@@ -1454,18 +1510,68 @@ void ParamIntArrayPropertyManager::setParam(QtProperty *property, const ito::Par
     int len = param.getLen();
     const DataType* values = param.getVal<const DataType*>();
 
+    int oldSubItems = d_ptr->m_propertyToValues.contains(property) ? d_ptr->m_propertyToValues[property].size() : 0;
+
     if ((meta && metaNew && (*meta != *metaNew)) || \
         (meta && !metaNew) || \
         (!meta && metaNew))
     {
         data.param = param;
+
+        if (oldSubItems > len)
+        {
+            //remove supernumerous sub-items
+            for (int i = oldSubItems; i = len; --i)
+            {
+                QtProperty *subProp = d_ptr->m_propertyToValues[property][i-1];
+                property->removeSubProperty(subProp);
+                d_ptr->m_valuesToProperty.remove(subProp);
+                delete subProp;
+                d_ptr->m_propertyToValues[property].removeLast();
+            }
+        }
+
+        if (len > oldSubItems)
+        {
+            //add new sub-items
+            for (int i = oldSubItems; i < len; ++i)
+            {
+                QtProperty *prop = d_ptr->m_numberPropertyManager->addProperty();
+                prop->setPropertyName(tr("%1").arg(i));
+                d_ptr->m_numberPropertyManager->setValue(prop, 0);
+                d_ptr->m_propertyToValues[property].append(prop);
+                d_ptr->m_valuesToProperty[prop] = property;
+                property->addSubProperty(prop);
+            }
+        }
+
+        const DataType* vals = data.param.getVal<const DataType*>();
+        ito::IntMeta *im;
+
+        for (int i = 0; i < len; ++i)
+        {
+            im = new ito::IntMeta(metaNew->getMin(), metaNew->getMax(), metaNew->getStepSize(), metaNew->getCategory());
+            ito::Param val("val", ito::ParamBase::Int, vals[i], im, "");
+            d_ptr->m_numberPropertyManager->setParam(d_ptr->m_propertyToValues[property][i], val);
+        }
+
         emit metaChanged(property, *metaNew);
-        emit valueChanged(property, len, data.param.getVal<const DataType*>());
+        emit valueChanged(property, len, vals);
         emit propertyChanged(property);
     }
     else if (data.param != param)
     {
         data.param.copyValueFrom(&param);
+        const DataType* vals = data.param.getVal<const DataType*>();
+        ito::IntMeta *im;
+
+        for (int i = 0; i < len; ++i)
+        {
+            im = new ito::IntMeta(metaNew->getMin(), metaNew->getMax(), metaNew->getStepSize(), metaNew->getCategory());
+            ito::Param val("val", ito::ParamBase::Int, vals[i], im, "");
+            d_ptr->m_numberPropertyManager->setParam(d_ptr->m_propertyToValues[property][i], val);
+        }
+
         emit valueChanged(property, len, data.param.getVal<const DataType*>());
         emit propertyChanged(property);
     }
@@ -1488,7 +1594,13 @@ void ParamIntArrayPropertyManager::setValue(QtProperty *property, int num, const
 
     if (len != num || memcmp(values, vals, num * sizeof(DataType)) != 0)
     {
-        data.param.setVal<DataType*>(const_cast<DataType*>(values), num);
+        data.param.setVal<const DataType*>(values, num);
+
+        for (int i = 0; i < d_ptr->m_propertyToValues[property].size(); ++i)
+        {
+            d_ptr->m_numberPropertyManager->setValue(d_ptr->m_propertyToValues[property][i], values[i]);
+        }
+
         emit valueChanged(property, num, values);
         emit propertyChanged(property);
     }
@@ -1530,7 +1642,7 @@ In order to provide editing widgets for the mentioned
 subproperties in a property browser widget, this manager must be
 associated with an editor factory.
 */
-ParamIntPropertyManager *ParamIntArrayPropertyManager::subIntervalPropertyManager() const
+ParamIntPropertyManager *ParamIntArrayPropertyManager::subPropertyManager() const
 {
     return d_ptr->m_numberPropertyManager;
 }
@@ -1668,18 +1780,68 @@ void ParamDoubleArrayPropertyManager::setParam(QtProperty *property, const ito::
     int len = param.getLen();
     const DataType* values = param.getVal<const DataType*>();
 
+    int oldSubItems = d_ptr->m_propertyToValues.contains(property) ? d_ptr->m_propertyToValues[property].size() : 0;
+
     if ((meta && metaNew && (*meta != *metaNew)) || \
-    (meta && !metaNew) || \
-    (!meta && metaNew))
+        (meta && !metaNew) || \
+        (!meta && metaNew))
     {
         data.param = param;
+
+        if (oldSubItems > len)
+        {
+            //remove supernumerous sub-items
+            for (int i = oldSubItems; i = len; --i)
+            {
+                QtProperty *subProp = d_ptr->m_propertyToValues[property][i-1];
+                property->removeSubProperty(subProp);
+                d_ptr->m_valuesToProperty.remove(subProp);
+                delete subProp;
+                d_ptr->m_propertyToValues[property].removeLast();
+            }
+        }
+
+        if (len > oldSubItems)
+        {
+            //add new sub-items
+            for (int i = oldSubItems; i < len; ++i)
+            {
+                QtProperty *prop = d_ptr->m_numberPropertyManager->addProperty();
+                prop->setPropertyName(tr("%1").arg(i));
+                d_ptr->m_numberPropertyManager->setValue(prop, 0);
+                d_ptr->m_propertyToValues[property].append(prop);
+                d_ptr->m_valuesToProperty[prop] = property;
+                property->addSubProperty(prop);
+            }
+        }
+
+        const DataType* vals = data.param.getVal<const DataType*>();
+        ito::DoubleMeta *im;
+
+        for (int i = 0; i < len; ++i)
+        {
+            im = new ito::DoubleMeta(metaNew->getMin(), metaNew->getMax(), metaNew->getStepSize(), metaNew->getCategory());
+            ito::Param val("val", ito::ParamBase::Double, vals[i], im, "");
+            d_ptr->m_numberPropertyManager->setParam(d_ptr->m_propertyToValues[property][i], val);
+        }
+
         emit metaChanged(property, *metaNew);
-        emit valueChanged(property, len, data.param.getVal<const DataType*>());
+        emit valueChanged(property, len, vals);
         emit propertyChanged(property);
     }
     else if (data.param != param)
     {
         data.param.copyValueFrom(&param);
+        const DataType* vals = data.param.getVal<const DataType*>();
+        ito::DoubleMeta *im;
+
+        for (int i = 0; i < len; ++i)
+        {
+            im = new ito::DoubleMeta(metaNew->getMin(), metaNew->getMax(), metaNew->getStepSize(), metaNew->getCategory());
+            ito::Param val("val", ito::ParamBase::Double, vals[i], im, "");
+            d_ptr->m_numberPropertyManager->setParam(d_ptr->m_propertyToValues[property][i], val);
+        }
+
         emit valueChanged(property, len, data.param.getVal<const DataType*>());
         emit propertyChanged(property);
     }
@@ -1702,7 +1864,13 @@ void ParamDoubleArrayPropertyManager::setValue(QtProperty *property, int num, co
 
     if (len != num || memcmp(values, vals, num * sizeof(DataType)) != 0)
     {
-        data.param.setVal<DataType*>(const_cast<DataType*>(values), num);
+        data.param.setVal<const DataType*>(values, num);
+
+        for (int i = 0; i < d_ptr->m_propertyToValues[property].size(); ++i)
+        {
+            d_ptr->m_numberPropertyManager->setValue(d_ptr->m_propertyToValues[property][i], values[i]);
+        }
+
         emit valueChanged(property, num, values);
         emit propertyChanged(property);
     }
@@ -1744,7 +1912,7 @@ In order to provide editing widgets for the mentioned
 subproperties in a property browser widget, this manager must be
 associated with an editor factory.
 */
-ParamDoublePropertyManager *ParamDoubleArrayPropertyManager::subIntervalPropertyManager() const
+ParamDoublePropertyManager *ParamDoubleArrayPropertyManager::subPropertyManager() const
 {
     return d_ptr->m_numberPropertyManager;
 }
