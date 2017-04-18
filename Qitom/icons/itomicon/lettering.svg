@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="74.737mm"
+   height="24.761mm"
+   viewBox="0 0 74.737 24.761"
+   version="1.1"
+   id="svg7351"
+   inkscape:version="0.92.1 r15371"
+   sodipodi:docname="lettering.svg"
+   inkscape:export-filename="D:\git-itom\sources\education\presentations\flyer_symposium2015\lettering.png"
+   inkscape:export-xdpi="300"
+   inkscape:export-ydpi="300">
+  <defs
+     id="defs7345" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4"
+     inkscape:cx="293.3473"
+     inkscape:cy="292.59214"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1138"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7348">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-272.239)">
+    <path
+       style="display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 0,272.8253 h 4.459839 v 23.59783 H 0 Z"
+       id="path2724"
+       inkscape:connector-curvature="0" />
+    <path
+       style="display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 6.854819,272.82544 h 13.04172 v 4.42767 h -4.29898 v 19.17016 h -4.55588 v -19.17016 h -4.18686 z"
+       id="path2726"
+       inkscape:connector-curvature="0" />
+    <path
+       style="display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.26458332px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 46.952009,296.42327 4.08609,-23.59783 h 4.37658 l 5.469889,16.45934 5.52003,-16.45934 h 4.37421 l 3.95836,23.59783 h -4.34393 l -2.53057,-14.90334 -5.01241,14.90334 h -3.95883 l -4.968889,-14.90334 -2.59065,14.90334 z"
+       id="path2728"
+       inkscape:connector-curvature="0" />
+    <path
+       style="color:#000000;clip-rule:nonzero;display:inline;overflow:visible;visibility:visible;opacity:1;isolation:auto;mix-blend-mode:normal;color-interpolation:sRGB;color-interpolation-filters:linearRGB;solid-color:#000000;solid-opacity:1;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0.26458332;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;color-rendering:auto;image-rendering:auto;shape-rendering:auto;text-rendering:auto;enable-background:accumulate"
+       d="m 32.966609,272.23871 c -6.52945,0.002 -12.21636,4.93629 -12.26541,12.38064 -0.0481,7.29654 5.73576,12.38953 12.26541,12.38064 6.70398,-0.009 12.23048,-5.08411 12.2654,-12.38064 0.0356,-7.44427 -5.98016,-12.38276 -12.2654,-12.38064 z m 0.007,4.41058 c 3.96678,-0.001 7.76309,3.18836 7.74061,7.99589 -0.022,4.71213 -3.50955,7.98949 -7.74061,7.99538 -4.12104,0.006 -7.77147,-3.28325 -7.74113,-7.99538 0.031,-4.80758 3.62022,-7.99454 7.74113,-7.99589 z"
+       id="path2730-1-0"
+       inkscape:connector-curvature="0" />
+  </g>
+</svg>
