@@ -152,6 +152,71 @@ void MainApplication::registerMetaObjects()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+QString getSplashScreenFileName()
+{
+    QString fileName;
+
+    QDate currentDate = QDate::currentDate();
+    int currentMonth = currentDate.month();
+    int currentYear = currentDate.year();
+    int currentDay = currentDate.day();
+
+    /*easter date calculation*/
+    uint easterMonth, easterDay;
+
+    uint aE = currentYear % 19;
+    uint bE = currentYear % 4;
+    uint cE = currentYear % 7;
+
+    int kE = currentYear / 100;
+    int qE = kE / 4;
+    int pE = ((8 * kE) + 13) / 25;
+    uint EgzE = (38 - (kE - qE) + pE) % 30;
+    uint ME = (53 - EgzE) % 30;
+    uint NE = (4 + kE - qE) % 7;
+
+    uint dE = ((19 * aE) + ME) % 30;
+    uint eE = ((2 * bE) + (4 * cE) + (6 * dE) + NE) % 7;
+
+    // Calculation of Easter date:
+    if ((22 + dE + eE) <= 31)
+    {
+        easterDay = 22 + dE + eE;
+        easterMonth = 3;
+    }
+    else
+    {
+        easterDay = dE + eE - 9;
+        easterMonth = 4;
+
+        // Consider two exceptions:
+        if (easterDay == 26)
+            easterDay = 19;
+        else if ((easterDay == 25) && (dE == 28) && (aE > 10))
+            easterDay = 18;
+    }
+    /*easter date calculation*/
+
+    if (currentMonth == 12)
+    {
+        //Christmas splashScreen whole december of each year
+        fileName = ":/application/icons/itomicon/splashScreen2Christmas.png";
+    }
+    else if ((currentDate.addDays(-7).month() <= easterMonth <= currentDate.addDays(7).month()) && (currentDate.addDays(-7).day() <= easterDay <= currentDate.addDays(7).day()))
+    {
+        //Easter splashScreen one week before and after easter day
+        fileName = ":/application/icons/itomicon/splashScreen2Easter.png";
+    }
+    else //default splashScreen
+    {
+        fileName = ":/application/icons/itomicon/splashScreen2.png";
+    }
+
+    return fileName;
+}
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
 //! setup of application
 /*!
     starts PythonEngine, MainWindow (dependent on gui-type) and all necessary managers and organizers.
@@ -167,7 +232,9 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
 
     registerMetaObjects();
 
-    QPixmap pixmap(":/application/icons/itomicon/splashScreen2.png");
+    QString spashScreenFileName = getSplashScreenFileName(); // get the fileName of splashScreen. Different at easter and christmas time
+
+    QPixmap pixmap(spashScreenFileName);
 
     QString text;
     
