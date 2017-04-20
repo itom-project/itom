@@ -17,7 +17,7 @@ import sphinx
 import itom as itomFuncs
 import __main__
 import inspect
-import quark_sphinx_theme
+#import quark_sphinx_theme
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -216,7 +216,9 @@ htmlhelp_basename = 'itom_doc'
 # -- Options for LaTeX output --------------------------------------------------
 
 # The paper size ('letter' or 'a4').
-latex_paper_size = 'a4'
+#latex_paper_size = 'a4'
+latex_elements = {}
+latex_elements['papersize'] = 'a4paper'
 
 # The font size ('10pt', '11pt' or '12pt').
 #latex_font_size = '10pt'
@@ -307,7 +309,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'itom', 'itom Documentation',
-   'ITO, Universität Stuttgart', 'itom', 'One line description of project.',
+   'ITO, Universit\"at Stuttgart', 'itom', 'One line description of project.',
    'Miscellaneous'),
 ]
 
