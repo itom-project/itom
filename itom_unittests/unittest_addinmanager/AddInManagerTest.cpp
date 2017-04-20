@@ -103,7 +103,7 @@ TEST(AddInManagerTest, General)
     strcat(newpath, oldpath);
     _putenv(newpath);
 #endif
-    retval += addInMgrInst->scanAddInDir(addInPath);
+    retval += addInMgrInst->scanAddInDir(addInPath + QString("/plugins"));
     //if (retval.containsError())
     //    goto EXIT;
 
