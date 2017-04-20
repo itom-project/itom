@@ -14,6 +14,7 @@ OPTION(BUILD_UNICODE "Build with unicode charset if set to ON, else multibyte ch
 OPTION(BUILD_WITH_PCL "Build itom with PointCloudLibrary support (pointCloud, polygonMesh, point...)" ON)
 OPTION(BUILD_WITH_PYMATLAB "Build itom with integrated python module 'matlab' to control and use Matlab within itom." OFF)
 OPTION(BUILD_WITH_HELPVIEWER "Build itom with help viewer for the itom documentation (only >= Qt 5.6.0)." ON)
+OPTION(BUILD_WITH_GIMMICKS "Build itom with gimmicks." ON)
 OPTION(CONSIDER_GIT_SVN "If ON GIT version history will be considered." ON)
 OPTION(UPDATE_TRANSLATIONS "Update source translation translation/*.ts files (WARNING: make clean will delete the source .ts files! Danger!)")
 SET (ITOM_LANGUAGES "de" CACHE STRING "semicolon separated list of languages that should be created (en must not be given since it is the default)")
@@ -80,6 +81,10 @@ ENDIF (BUILD_WITH_PCL)
 IF (BUILD_WITH_PYMATLAB)
     ADD_DEFINITIONS(-DUSEPYMATLAB -D_USEPYMATLAB)
 ENDIF (BUILD_WITH_PYMATLAB)
+
+IF (BUILD_WITH_GIMMICKS)
+    ADD_DEFINITIONS(-DUSEGIMMICKS -D_USEGIMMICKS)
+ENDIF (BUILD_WITH_GIMMICKS)
 
 ADD_DEFINITIONS(-DCMAKE -DITOM_CORE -DITOMSHAREDDESIGNER)
  

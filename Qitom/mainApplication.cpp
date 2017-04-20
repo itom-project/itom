@@ -232,7 +232,11 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
 
     registerMetaObjects();
 
-    QString spashScreenFileName = getSplashScreenFileName(); // get the fileName of splashScreen. Different at easter and christmas time
+#ifdef USEGIMMICKS
+    QString spashScreenFileName = getSplashScreenFileName(); // get the fileName of splashScreen. Different at easter and christmas time 
+#else
+    QString spashScreenFileName = ":/application/icons/itomicon/splashScreen2.png"; //only default splashScreen
+#endif // USEUSEGIMMICKS  
 
     QPixmap pixmap(spashScreenFileName);
 
