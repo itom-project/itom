@@ -202,7 +202,7 @@ QString getSplashScreenFileName()
         //Christmas splashScreen whole december of each year
         fileName = ":/application/icons/itomicon/splashScreen2Christmas.png";
     }
-    else if ((currentDate.addDays(-7).month() <= easterMonth <= currentDate.addDays(7).month()) && (currentDate.addDays(-7).day() <= easterDay <= currentDate.addDays(7).day()))
+    else if (currentDate.addDays(-7).month() <= easterMonth && easterMonth <= currentDate.addDays(7).month() && currentDate.addDays(-7).day() <= easterDay && easterDay <= currentDate.addDays(7).day())
     {
         //Easter splashScreen one week before and after easter day
         fileName = ":/application/icons/itomicon/splashScreen2Easter.png";
