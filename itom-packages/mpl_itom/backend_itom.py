@@ -1,3 +1,4 @@
+# coding=iso-8859-15
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 
@@ -642,11 +643,12 @@ class NavigationToolbar2Itom( NavigationToolbar2 ):
     def dynamic_update( self ):
         self.canvas.draw_idle()
 
-    def set_message( self, s ):
+    def set_message( self, text ):
         if self.coordinates:
             r = self.itomUI()
             if(not r is None):
-                r.call("setLabelText", (s.replace(', ', '\n')))
+                s2 = text.encode('latin-1', 'backslashreplace').decode('latin-1')
+                r.call("setLabelText", s2.replace(', ', '\n'))
 
     def set_cursor( self, cursor ):
         self.canvas.canvas.call("setCursors", cursord[cursor])
