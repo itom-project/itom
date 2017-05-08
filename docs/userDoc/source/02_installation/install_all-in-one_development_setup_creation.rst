@@ -85,6 +85,15 @@ The folder *qpatch* contains the files, which are needed to patch the prebuild v
 3rdParty folder
 ===============
 
+Creating preinstalled version of Python
+````````````````````````````````````````
+
+For the compilation of |itom|, it is not necessary to have a installed Python on the computer. For the Python 3rdParty folder, first: 
+
+* Install the current version of **Python** on your computer. 
+* Copy the installed **Python** folder into the **${MAINDIR}**/3rdParty/Python folder. 
+* Deinstall it again. 
+
 Creating prebuild version of Qt
 ````````````````````````````````
 
@@ -119,8 +128,11 @@ WITH options:
 .. figure:: images/all-in-one-create/CMake_WITH_OPENCV.png
    :scale: 100%
    :align: center
-       
+
+Start the compilation of the **INSTALL** build solution.  
+   
 optional install CUDA Toolkit (e.g. 7.0, supported by OptiX as well). Is need for Macrosim, which runs with |itom|.
+Delete the executable (*.exe) from the install_x64/x64/vc14/bin folder. They are not needed for the compilation of |itom|. 
 
 
 Compile QScintilla
@@ -166,16 +178,18 @@ Compile VTK
 Unzip the VTK source on your hard drive. Create a build_x64/build_x86 folder and execute than CMake with this two folders. 
 
 * Uncheck BUILD_EXAMPLES, BUILD_TESTING AND BUILD_SHARED_LIBS. 
+* Uncheck HDF5_USE_FOLDERS, HDF5_EMBEEDDED_LIBINFO
 * Check Module_vtkGUISupportGt, Module_vtkGUISupportQtOpenGL, Module_vtkGUISupportQtSQL, Module_vtkGUISupportWebkit, Module_vtkRenderingQT and Module_vtkViewsQt. 
-* Add a new entry in CMAKE name = **"CMAKE_DEBUG_POSTFIX"**, type = **"STRING"** with the value = **"-gd"**
+* Add a new entry in name = **"CMAKE_DEBUG_POSTFIX"**, type = **"STRING"** with the value = **"-gd"**
 * Change **CMAKE_INSTALL_PREFIX** to **${MAINDIR}/3rdPartyPCL/vtk7.0.0**
 * If an error occures with wrong Qt Version, change **VTK_QT_VERSION** to **5**
 * delete variable of **CMAKE_RC_FLAGS**, **CMAKE_STATIC_LINKER_FLAGS**
 * Choose with the variable **VTK_RENDERING_BACKEND** which OpenGL is used for VTK/PCL. 
+* Set the Entry **Qt5_DIR** to to **${MAINDIR}/3rdParty/Qt5.6.0/msvc2013_64/lib/cmake/Qt5**. 
 
 .. note::
 
-    Check the Entries **Qt5_DIR**, **Qt5Core_DIR**..., if they are set to the right path. 
+    Check the Entries **Qt5_DIR**, **Qt5Core_DIR**, **Qt5Sql_DIR**, ..., if they are set to the right path. 
 
 .. note::
 
