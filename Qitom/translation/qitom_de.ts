@@ -1241,12 +1241,12 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location line="+13"/>
-        <location line="+223"/>
+        <location line="+225"/>
         <source>Member &apos;getParam&apos; of plugin could not be invoked (error in signal/slot connection).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-194"/>
+        <location line="-196"/>
         <source>you must provide at least one parameter with the name of the function</source>
         <translation type="unfinished">Es muss mindestens ein Parameter für dem Funktionsnamen unterstützt werden</translation>
     </message>
@@ -1271,7 +1271,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+123"/>
+        <location line="+125"/>
         <source>timeout while getting parameter</source>
         <translation type="unfinished">Zeitüberschreitung beim Lesen der Parameter</translation>
     </message>
@@ -5927,7 +5927,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::MainApplication</name>
     <message>
-        <location filename="../mainApplication.cpp" line="+176"/>
+        <location filename="../mainApplication.cpp" line="+247"/>
         <location line="+4"/>
         <source>Version %1
 %2</source>
@@ -6247,7 +6247,7 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
     <message>
         <location line="+8"/>
         <source>About</source>
-        <translation>Über</translation>
+        <translation>Hilfe</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -6277,7 +6277,7 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
     <message>
         <location line="+34"/>
         <source>Toolboxes</source>
-        <translation>Werkzeuge</translation>
+        <translation>Toolboxen</translation>
     </message>
     <message>
         <location line="-99"/>

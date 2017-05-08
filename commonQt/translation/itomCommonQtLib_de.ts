@@ -713,7 +713,7 @@ Type conflict for %1</source>
     <message>
         <location filename="../../common/sources/addInInterface.cpp" line="442"/>
         <source>Toolbox</source>
-        <translation type="unfinished">Werkzeuge</translation>
+        <translation></translation>
     </message>
     <message>
         <location filename="../../common/sources/addInInterface.cpp" line="598"/>
