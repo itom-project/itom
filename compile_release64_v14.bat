@@ -1,5 +1,5 @@
 TITLE compile release x64 - %~dp0
-CALL "%VS140COMNTOOLS%\vsvars32.bat" x64
+CALL "%VS140COMNTOOLS%\vsvars32.bat"
 
 msbuild.exe "%~dp0\ALL_BUILD.vcxproj" /p:configuration=release /p:platform=x64
 
