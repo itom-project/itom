@@ -639,12 +639,16 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = ${CMAKE_CURRENT_SOURCE_DIR}/Qitom \
+                         ${CMAKE_CURRENT_SOURCE_DIR}/AddInManager \
                          ${CMAKE_CURRENT_SOURCE_DIR}/DataObject \
                          ${CMAKE_CURRENT_SOURCE_DIR}/PointCloud \
                          ${CMAKE_CURRENT_SOURCE_DIR}/common \
                          ${CMAKE_CURRENT_SOURCE_DIR}/commonQt \
                          ${CMAKE_CURRENT_SOURCE_DIR}/itomWidgets \
-                         ${CMAKE_CURRENT_SOURCE_DIR}/plot
+                         ${CMAKE_CURRENT_SOURCE_DIR}/plot \
+                         ${CMAKE_CURRENT_SOURCE_DIR}/plotLegends \
+                         ${CMAKE_CURRENT_SOURCE_DIR}/QPropertyEditor \
+                         ${CMAKE_CURRENT_SOURCE_DIR}/shape
 
 # This tag can be used to specify the character encoding of the source files 
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is 

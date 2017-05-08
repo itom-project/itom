@@ -331,4 +331,6 @@ breathe_default_project = "itom"
 todo_include_todos = True
 
 
-intersphinx_mapping = {'python': ('http://docs.python.org/3.6', None)}
+intersphinx_mapping = {'python': ('https://docs.python.org/3.6', None),
+                       'numpy': ('https://docs.scipy.org/doc/numpy', None),
+                       'scipy': ('https://docs.scipy.org/doc/scipy/reference', None)}
