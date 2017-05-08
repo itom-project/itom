@@ -77,6 +77,8 @@ if(MSVC_VERSION GREATER 1310) # Newer than VS .NET/VS Toolkit 2003
             # This is the XP-compatible v110 toolset
         elseif("${CMAKE_VS_PLATFORM_TOOLSET}" STREQUAL "v100")
             # This is the VS2010 toolset
+        elseif("${CMAKE_VS_PLATFORM_TOOLSET}" STREQUAL "v140")
+            # This is the VS2015 toolset
         else()
             if(NOT WINDOWSSDK_FOUND AND NOT WindowsSDK_FIND_QUIETLY)
                 message(STATUS "FindWindowsSDK: Detected Visual Studio 2012 or newer, not using the _xp toolset variant: including SDK versions that drop XP support in search!")
