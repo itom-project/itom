@@ -140,11 +140,19 @@ Compile QScintilla
 
 First copy the **qscintilla_install.bat** file into the QScintilla folder. Open the **${MAINDIR}\\QScintilla-gpl-2.9.1\\Qt4Qt5\\qscintilla.pro** file with the editor. 
 
-Replace in the line 27 **CONFIG** by:
+In line 26 the TARGET must be defined as **qscintilla2**.
 
-    CONFIG += qt warn_off debug_and_release build_all dll thread exceptions
-    
-    CONFIG(debug, debug|release){ TARGET = $$join(TARGET,,,d) }
+.. code-block:: rest
+
+   TARGET = qscintilla2
+   
+Replace in the line 27 **CONFIG** by.
+
+.. code-block:: rest
+
+   CONFIG += qt warn_off debug_and_release build_all dll thread exceptions
+   CONFIG(debug, debug|release){ TARGET = $$join(TARGET,,,d) }
+
     
 Open the native Visual Studio 2013 64-bit COMMAND PROMPT (or 32-bit). Set the QScintilla folder. Set the $QTDIR$ variable to the Qt Folder ${MAINDIR}\\3rdParty\\Qt5.6.0\\msvc2013_x64. 
 
@@ -255,3 +263,4 @@ Check in the function **installNumpy**, if the numpy whl file names are right.
 .. figure:: images/all-in-one-create/Setup_numpy_file.PNG
    :scale: 100%
    :align: center
+
