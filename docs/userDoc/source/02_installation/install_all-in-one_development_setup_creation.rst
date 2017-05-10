@@ -191,7 +191,6 @@ Unzip the VTK source on your hard drive. Create a build_x64/build_x86 folder and
 * Add a new entry in name = **"CMAKE_DEBUG_POSTFIX"**, type = **"STRING"** with the value = **"-gd"**
 * Change **CMAKE_INSTALL_PREFIX** to **${MAINDIR}/3rdPartyPCL/vtk7.0.0**
 * If an error occures with wrong Qt Version, change **VTK_QT_VERSION** to **5**
-* delete variable of **CMAKE_RC_FLAGS**, **CMAKE_STATIC_LINKER_FLAGS**
 * Choose with the variable **VTK_RENDERING_BACKEND** which OpenGL is used for VTK/PCL. 
 * Set the Entry **Qt5_DIR** to to **${MAINDIR}/3rdParty/Qt5.6.0/msvc2013_64/lib/cmake/Qt5**. 
 
