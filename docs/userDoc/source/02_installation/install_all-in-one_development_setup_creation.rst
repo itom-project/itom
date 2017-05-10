@@ -187,7 +187,7 @@ Unzip the VTK source on your hard drive. Create a build_x64/build_x86 folder and
 
 * Uncheck BUILD_EXAMPLES, BUILD_TESTING AND BUILD_SHARED_LIBS. 
 * Uncheck HDF5_USE_FOLDERS, HDF5_EMBEEDDED_LIBINFO
-* Check Module_vtkGUISupportGt, Module_vtkGUISupportQtOpenGL, Module_vtkGUISupportQtSQL, Module_vtkGUISupportWebkit, Module_vtkRenderingQT and Module_vtkViewsQt. 
+* Check Module_vtkGUISupportQt, Module_vtkGUISupportQtOpenGL, Module_vtkGUISupportQtSQL, Module_vtkGUISupportWebkit, Module_vtkRenderingQT and Module_vtkViewsQt. 
 * Add a new entry in name = **"CMAKE_DEBUG_POSTFIX"**, type = **"STRING"** with the value = **"-gd"**
 * Change **CMAKE_INSTALL_PREFIX** to **${MAINDIR}/3rdPartyPCL/vtk7.0.0**
 * If an error occures with wrong Qt Version, change **VTK_QT_VERSION** to **5**
