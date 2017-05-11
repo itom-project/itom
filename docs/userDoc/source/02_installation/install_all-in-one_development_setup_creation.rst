@@ -228,7 +228,6 @@ Unpack the PCL source on your hard drive. Create a build_x64/build_x86 folder an
 * Set **Qt5OpenGl_DIR** to ${MAINDIR}/3rdParty/Qt5.6.0/5.6/msvc2013/lib/cmake/Qt5OpenGl_DIR
 * Set **Qt5Widgets_DIR** to ${MAINDIR}/3rdParty/Qt5.6.0/5.6/msvc2013/lib/cmake/Qt5Widgets_DIR
 * check **BUILD_surface_on_nurbs** and **BUILD_visualization**
-* check **CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE**
 * uncheck **BUILD_global_tests**, **BUILD_examples**, **BUILD_apps**, **BUILD_simulation**
 * Set **CMAKE_INSTALL_PREFIX** ${MAINDIR}/3rdPartyPCL/pcl1.8.0
 
