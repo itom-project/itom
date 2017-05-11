@@ -314,7 +314,7 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
         if (PythonEngine::instatiated.tryLock(5000))
         {
             QString pythonSubDir = QCoreApplication::applicationDirPath() + QString("/python%1").arg(PY_MAJOR_VERSION);
-            QString pythonAllInOneDir = QCoreApplication::applicationDirPath() + QString("../../3rdParty/Python");
+            QString pythonAllInOneDir = QCoreApplication::applicationDirPath() + QString("/../../3rdParty/Python");
             qDebug() << "pythonAllInOneDir:" << pythonAllInOneDir;
             //check if an alternative home directory of Python should be set:
             QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
