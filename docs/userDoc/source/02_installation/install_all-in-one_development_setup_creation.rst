@@ -116,7 +116,7 @@ Compile OpenCV
 
 OpenCV must be build from the source files. You should create following folder structure: **source, build_x64, install_x64**. Than open CMake and set the source and build path. Configure the CMake file with following options:
 
-* CMAKE_INSTALL_SUFFIX: absolute path to **install_x64**. 
+* CMAKE_INSTALL_PREFIX: absolute path to **install_x64**. 
 * BUILD options:
 
 .. figure:: images/all-in-one-create/CMake_BUILD_OPENCV.png
