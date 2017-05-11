@@ -94,6 +94,11 @@ For the compilation of |itom|, it is not necessary to have a installed Python on
 * Copy the installed **Python** folder into the **${MAINDIR}**/3rdParty/Python folder. 
 * Deinstall it again. 
 
+.. note: 
+
+    You have to copy the installed folder, rename and deinstall it does not work!
+
+
 Creating prebuild version of Qt
 ````````````````````````````````
 
@@ -103,6 +108,7 @@ For a working |itom| development environment only a prebuild version of Qt is ne
 * After the installation copy the folder to another location (**${MAINDIR}**/3rdParty/Qt5.6.0_backup) and uninstall Qt in the Windows program settings
 * Rename Qt5.6.0_backup back to Qt5.6.0
 * From Qt5.6.0/Docs/Qt-5.6 copy all |star| .qch files (only in the main folder) to Qt5.6.0/5.6/msvc2013_64/doc 
+* Start the Qt Assistant (**${MAINDIR}**/3rdParty/Qt5.6.0/5.6/msvc2013_64/bin), open **options/documentation** and delete all. Add then the copied documentation files. 
 * From Qt5.6.0 delete the following things: 
     * folder: dist, Examples, Tools, vcredist, Docs (after having copied the qch files)
     * files: all files in the main folder, e. g. components.xml...
@@ -140,13 +146,13 @@ Compile QScintilla
 
 First copy the **qscintilla_install.bat** file into the QScintilla folder. Open the **${MAINDIR}\\QScintilla-gpl-2.9.1\\Qt4Qt5\\qscintilla.pro** file with the editor. 
 
-In line 26 the TARGET must be defined as **qscintilla2**.
+* In line 26 the TARGET must be defined as **qscintilla2**.
 
 .. code-block:: rest
 
    TARGET = qscintilla2
    
-Replace in the line 27 **CONFIG** by.
+* Replace in the line 27 **CONFIG** by.
 
 .. code-block:: rest
 
