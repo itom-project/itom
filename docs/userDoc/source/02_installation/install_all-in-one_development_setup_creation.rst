@@ -173,6 +173,7 @@ Creating the 3rdPartyPCL folder
 -------------------------------
 
 For the 3rdPartyPCL folder the software packages Boost, Eigen, Flann, QHull and Glew can be downloaded as binaries. VTK and PCL must be compiled on your computer. 
+If Flann or QHull is compile add the entry **CMAKE_DEBUG_POSTFIX** of type **STRING** with the value = **"-gd"**.
 
 
 Create Boost, Eigen, Flann, QHull, Glew
