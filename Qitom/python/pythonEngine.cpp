@@ -299,16 +299,17 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
     m_pythonThreadId = QThread::currentThreadId ();
     //qDebug() << "python in thread: " << m_pythonThreadId;
 
-	/*set new seed for random generator of OpenCV. 
-	This is required to have real random values for any randn or randu command.
-	The seed must be set in every thread. This is for the main thread.
-	*/
-	cv::theRNG().state = (uint64)cv::getCPUTickCount();
-	/*seed is set*/
+    /*set new seed for random generator of OpenCV. 
+    This is required to have real random values for any randn or randu command.
+    The seed must be set in every thread. This is for the main thread.
+    */
+    cv::theRNG().state = (uint64)cv::getCPUTickCount();
+    /*seed is set*/
 
     readSettings();
 
     RetVal tretVal(retOk);
+
     if (!m_started)
     {
         if (PythonEngine::instatiated.tryLock(5000))
@@ -398,9 +399,9 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
                 {
                     //the python home path given to Py_SetPythonHome must be persistent for the whole Python session
 #if PY_VERSION_HEX < 0x03050000
-					m_pUserDefinedPythonHome = (wchar_t*)PyMem_RawMalloc((pythonHomeDirectory.size() + 10) * sizeof(wchar_t));
-					memset(m_pUserDefinedPythonHome, 0, (pythonHomeDirectory.size() + 10) * sizeof(wchar_t));
-					pythonHomeDirectory.toWCharArray(m_pUserDefinedPythonHome);
+                    m_pUserDefinedPythonHome = (wchar_t*)PyMem_RawMalloc((pythonHomeDirectory.size() + 10) * sizeof(wchar_t));
+                    memset(m_pUserDefinedPythonHome, 0, (pythonHomeDirectory.size() + 10) * sizeof(wchar_t));
+                    pythonHomeDirectory.toWCharArray(m_pUserDefinedPythonHome);
 #else
                     m_pUserDefinedPythonHome = Py_DecodeLocale(pythonHomeDirectory.toLatin1().data(), NULL);
 #endif
@@ -1156,7 +1157,7 @@ ito::RetVal PythonEngine::stringEncodingChanged()
     }
     else
     {
-		retval += ito::RetVal(ito::retWarning, 0, "Default text codec could not be obtained. Latin1 is used");
+        retval += ito::RetVal(ito::retWarning, 0, "Default text codec could not be obtained. Latin1 is used");
         encodingType = PythonQtConversion::latin_1;
         encodingName = "latin_1";
     }
@@ -4499,32 +4500,32 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
                 {
                     PyObject *key, *value;
                     Py_ssize_t pos = 0;
-					QString key_str;
-					bool ok;
-					ito::RetVal ret;
-					PyObject *key_approved;
-					int counter = 0;
+                    QString key_str;
+                    bool ok;
+                    ito::RetVal ret;
+                    PyObject *key_approved;
+                    int counter = 0;
 
                     while (PyDict_Next(dict, &pos, &key, &value)) //returns borrowed references to key and value.
                     {
-						key_str = PythonQtConversion::PyObjGetString(key, true, ok); 
-						if (ok)
-						{
-							key_str.replace(".","_");
-							key_str.replace("-","_");
-							key_str.replace(" ","_");
-							ret = ito::retOk;
-							key_approved = getAndCheckIdentifier(key_str, ret); //new reference
-						}
+                        key_str = PythonQtConversion::PyObjGetString(key, true, ok); 
+                        if (ok)
+                        {
+                            key_str.replace(".","_");
+                            key_str.replace("-","_");
+                            key_str.replace(" ","_");
+                            ret = ito::retOk;
+                            key_approved = getAndCheckIdentifier(key_str, ret); //new reference
+                        }
 
-						if (!ok || ret.containsError())
-						{
-							key_approved = PyUnicode_FromFormat("var%i", counter); //new reference
-							counter++;
-						}
+                        if (!ok || ret.containsError())
+                        {
+                            key_approved = PyUnicode_FromFormat("var%i", counter); //new reference
+                            counter++;
+                        }
 
                         PyDict_SetItem(destinationDict, key_approved, value);
-						Py_DECREF(key_approved);
+                        Py_DECREF(key_approved);
                     }
                 }
             }
@@ -5549,11 +5550,11 @@ ito::RetVal PythonEngine::pickleSingleParam(QString filename, QSharedPointer<ito
 ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filename)
 {
 #if defined _DEBUG && PY_VERSION_HEX >= 0x03040000
-	if (!PyGILState_Check())
-	{
-		std::cerr << "Python GIL must be locked when calling pickleDictionary\n" << std::endl;
-		return ito::retError;
-	}
+    if (!PyGILState_Check())
+    {
+        std::cerr << "Python GIL must be locked when calling pickleDictionary\n" << std::endl;
+        return ito::retError;
+    }
 #endif
 
     RetVal retval;
@@ -5604,11 +5605,11 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
     {
         PyObject *result = NULL;
         PyObject *version = PyLong_FromLong(3); //Use pickle protocol version 3 as default. This is readable by all itom version that have been published (default for Python 3).
-		PyObject *dumpObj = PyUnicode_FromString("dump");
+        PyObject *dumpObj = PyUnicode_FromString("dump");
         
         try
         {
-			result = PyObject_CallMethodObjArgs(pickleModule, dumpObj, dict, fileHandle, version, NULL);
+            result = PyObject_CallMethodObjArgs(pickleModule, dumpObj, dict, fileHandle, version, NULL);
         }
         catch(std::bad_alloc &/*ba*/)
         {
@@ -5630,7 +5631,7 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
             retval += ito::RetVal(ito::retError, 0, tr("Pickle error. An unspecified exception has been thrown.").toLatin1().data());
         }
 
-		Py_DECREF(dumpObj);
+        Py_DECREF(dumpObj);
         Py_DECREF(version);
 
         if (result == NULL)
@@ -5693,7 +5694,7 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
         }
         else
         {
-			PyGILState_STATE gstate = PyGILState_Ensure();
+            PyGILState_STATE gstate = PyGILState_Ensure();
             if (packedVarName != "")
             {
                 PyObject *dict = PyDict_New();
@@ -5713,7 +5714,7 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
             {
                 retVal += unpickleDictionary(destinationDict, filename, true);
             }
-			PyGILState_Release(gstate);
+            PyGILState_Release(gstate);
 
             if (semaphore && !released)
             {
@@ -5757,11 +5758,11 @@ ito::RetVal PythonEngine::unpickleVariables(bool globalNotLocal, QString filenam
 ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QString &filename, bool overwrite)
 {
 #if defined _DEBUG && PY_VERSION_HEX >= 0x03040000
-	if (!PyGILState_Check())
-	{
-		std::cerr << "Python GIL must be locked when calling unpickleDictionary\n" << std::endl;
-		return ito::retError;
-	}
+    if (!PyGILState_Check())
+    {
+        std::cerr << "Python GIL must be locked when calling unpickleDictionary\n" << std::endl;
+        return ito::retError;
+    }
 #endif
 
     RetVal retval;
@@ -5809,11 +5810,11 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
     }
     else
     {
-		PyObject *loadObj = PyUnicode_FromString("load");
+        PyObject *loadObj = PyUnicode_FromString("load");
         PyObject *unpickledItem = NULL;
         try
         {
-			unpickledItem = PyObject_CallMethodObjArgs(pickleModule, loadObj, fileHandle, NULL); //new ref
+            unpickledItem = PyObject_CallMethodObjArgs(pickleModule, loadObj, fileHandle, NULL); //new ref
         }
         catch(std::bad_alloc &/*ba*/)
         {
@@ -5834,7 +5835,7 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
         {
             retval += ito::RetVal(ito::retError, 0, tr("Unpickling error. An unspecified exception has been thrown.").toLatin1().data());
         }
-		Py_DECREF(loadObj);
+        Py_DECREF(loadObj);
 
         if (unpickledItem == NULL)
         {
@@ -5849,29 +5850,29 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
             //try to write every element of unpickledItem-dict to destinationDictionary
             PyObject *key, *value;
             Py_ssize_t pos = 0;
-			QString key_str;
-			PyObject *key_approved = NULL;
-			bool ok;
-			ito::RetVal ret;
-			int counter = 0;
+            QString key_str;
+            PyObject *key_approved = NULL;
+            bool ok;
+            ito::RetVal ret;
+            int counter = 0;
 
             while (PyDict_Next(unpickledItem, &pos, &key, &value))
             {
-				key_str = PythonQtConversion::PyObjGetString(key, true, ok); 
-				if (ok)
-				{
-					key_str.replace(".","_");
-					key_str.replace("-","_");
-					key_str.replace(" ","_");
-					ret = ito::retOk;
-					key_approved = getAndCheckIdentifier(key_str, ret); //new reference
-				}
+                key_str = PythonQtConversion::PyObjGetString(key, true, ok); 
+                if (ok)
+                {
+                    key_str.replace(".","_");
+                    key_str.replace("-","_");
+                    key_str.replace(" ","_");
+                    ret = ito::retOk;
+                    key_approved = getAndCheckIdentifier(key_str, ret); //new reference
+                }
 
-				if (!ok || ret.containsError())
-				{
-					key_approved = PyUnicode_FromFormat("var%i", counter); //new reference
-					counter++;
-				}
+                if (!ok || ret.containsError())
+                {
+                    key_approved = PyUnicode_FromFormat("var%i", counter); //new reference
+                    counter++;
+                }
 
                 if (PyDict_Contains(destinationDict, key_approved) && overwrite)
                 {
@@ -5891,7 +5892,7 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
                     PyDict_SetItem(destinationDict, key_approved, value);
                 }
 
-				Py_DECREF(key_approved);
+                Py_DECREF(key_approved);
             }
   
         }
