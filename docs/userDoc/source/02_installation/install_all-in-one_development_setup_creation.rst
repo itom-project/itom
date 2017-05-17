@@ -117,6 +117,12 @@ For a working |itom| development environment only a prebuild version of Qt is ne
 
     Create a path on your hard drive with a long, long path name (called ${MAINDIR}) (later, the all-in-one path on destination computers must be shorter than this path name, due to the Qt patching)
 
+.. warning::
+    
+    The QT version **5.6.2** has a bug which prevent the start of the QT designer {'QTBUG-53984': ('https://bugreports.qt.io/browse/QTBUG-53984', 'QTBUG-53984')}. 
+    The workaround is to change the name of **Qt5WebEngineWidgets.dll** and **Qt5WebEngineWidgetsd.dll**, then copy the **Qt5Core.dll** and **Qt5Cored.dll** and change the name of these dll-files into **Qt5WebEngineWidgets.dll** and **Qt5WebEngineWidgetsd.dll**. This bug should be solved with QT version 5.6.3 (release August 2017).
+    
+    
 Compile OpenCV
 ````````````````
 
@@ -206,7 +212,7 @@ Unzip the VTK source on your hard drive. Create a build_x64/build_x86 folder and
 
     Check the Entries **Qt5_DIR**, **Qt5Core_DIR**, **Qt5Sql_DIR**, ..., if they are set to the right path. 
 
-.. note::
+.. warning::
 
     1. Before starting the compilation open in the folder **VTK\\build\\GUISupport\\Qt** the **PluginInstall.cmake** file and change in line **5** **"QVTKWidgetPlugin.dll"** to **"QVTKWidgetPlugin-gd.dll"**
     2. Start **DEBUG** compilation in Visual Studio
