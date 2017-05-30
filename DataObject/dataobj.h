@@ -1284,6 +1284,7 @@ namespace ito {
         
         DataObject toGray(const int destinationType = ito::tUInt8) const;
         DataObject splitColor(const char* destinationColor, const int& dtype) const;
+		DataObject lineCut(const int* coordinates, const int& len) const;
         
         // ROI
         DataObject & adjustROI(const int dtop, const int dbottom, const int dleft, const int dright);   /*!< changes the boundaries of the ROI of a two-dimensional data object by the given incremental values */

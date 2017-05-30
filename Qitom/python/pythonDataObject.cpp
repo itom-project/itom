@@ -7562,6 +7562,74 @@ PyObject* PythonDataObject::PyDataObj_dstack(PyObject *self, PyObject *args)
 		return NULL;
 	}
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyDataObjectLineCut_doc, "lineCut(coordinates) -> returns a data object of the same type containing a lineCut. \n\
+\n\
+The returned dataObject contains a lineCut across the 2d source dataObject.\n\
+\n\
+Parameters \n\
+----------- \n\
+obj : {sequence of int} \n\
+	Sequence (list) containing four integers representing the coordinates of the start- and endpoint. The values are interpreted as followed: [x0,y0,x1,y1]\n\
+\n\
+Returns \n\
+------- \n\
+dataObj : {dataObject} \n\
+	one dimensional dataObject of the same type.");
+PyObject* PythonDataObject::PyDataObj_lineCut(PyDataObject *self, PyObject *args)
+{
+	if (self->dataObject == NULL) return 0;
+
+	PyObject *sequence = NULL;
+	if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &sequence))
+	{
+		return PyErr_Format(PyExc_RuntimeError, "the given parameters do not fit. The filter only supports a list of integers.");
+	}
+
+	Py_ssize_t len = PySequence_Size(sequence);
+	if (len != 4)
+	{
+		return PyErr_Format(PyExc_RuntimeError, "a list containig four integers was expected (%i where given)",len);
+	}
+	int* coordinates = new int[len];
+	PyObject *temp = NULL;
+	for (int i = 0; i < len; ++i)
+	{
+		temp = PyList_GetItem(sequence, i); //borrowed
+		if (!PyLong_Check(temp))
+		{
+			PyErr_SetString(PyExc_ValueError, "at least one element in the offset list has no integer type");
+			break;
+		}
+		coordinates[i] = PyLong_AsLong(temp); 
+	}
+	PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
+	
+	try
+	{
+		retObj->dataObject = new ito::DataObject(self->dataObject->lineCut(coordinates,len));  //new dataObject should always be the owner of its data, therefore base of resultObject remains None
+	}
+	catch (cv::Exception &exc)
+	{
+		Py_DECREF(retObj);
+		PyErr_SetString(PyExc_TypeError, (exc.err).c_str());
+		return NULL;
+	}
+	if (retObj)
+	{
+		retObj->dataObject->addToProtocol("Created taking a lineCut across a dataObject.");
+	}
+	
+
+
+
+
+	DELETE_AND_SET_NULL_ARRAY(coordinates);
+	return (PyObject*)retObj;
+
+
+
+}
 
 //----------------------------------------------------------------------------------------------------------------------------------
 void PythonDataObject::PyDataObj_Capsule_Destructor(PyObject* capsule)
@@ -8106,6 +8174,7 @@ PyMethodDef PythonDataObject::PyDataObject_methods[] = {
         {"__array__", (PyCFunction)PythonDataObject::PyDataObj_Array_, METH_VARARGS, dataObject_Array__doc},
         { "createMask", (PyCFunction)PythonDataObject::PyDataObject_createMask, METH_KEYWORDS | METH_VARARGS, pyDataObjectCreateMask_doc },
 		{ "dstack", (PyCFunction)PythonDataObject::PyDataObj_dstack, METH_VARARGS | METH_STATIC, pyDataObjectDstack_doc },
+		{"lineCut",(PyCFunction)PythonDataObject::PyDataObj_lineCut, METH_VARARGS , pyDataObjectLineCut_doc},
 
         {"abs", (PyCFunction)PythonDataObject::PyDataObject_abs, METH_NOARGS, pyDataObjectAbs_doc}, 
         {"arg", (PyCFunction)PythonDataObject::PyDataObject_arg, METH_NOARGS, pyDataObjectArg_doc},

@@ -208,6 +208,7 @@ class PythonDataObject
 
         static PyObject* PyDataObj_Reduce(PyDataObject *self, PyObject *args);
         static PyObject* PyDataObj_SetState(PyDataObject *self, PyObject *args);
+		static PyObject* PyDataObj_lineCut(PyDataObject *self, PyObject *args);
 
         //-------------------------------------------------------------------------------------------------
         // number protocol
@@ -298,6 +299,7 @@ class PythonDataObject
         static PyObject* PyDataObj_StaticEye(PyObject *self, PyObject *args, PyObject *kwds);
         static PyObject* PyDataObj_StaticFromNumpyColor(PyObject *self, PyObject *args, PyObject *kwds);
 		static PyObject* PyDataObj_dstack(PyObject *self, PyObject *args);
+		
 
 
         //#################################################################################################

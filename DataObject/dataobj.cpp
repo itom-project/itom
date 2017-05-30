@@ -7906,6 +7906,9 @@ DataObject DataObject::splitColor(const char* destinationColor, const int& dtype
     
     switch (dtype)
     {
+		case ito::tInt8:
+			extractColor<int8>(this, resObj, destinationColor, dtype);
+			break;
         case ito::tUInt8:
             extractColor<uint8>(this, resObj, destinationColor, dtype);
             break;
@@ -7940,7 +7943,180 @@ DataObject DataObject::splitColor(const char* destinationColor, const int& dtype
 
     return resObj;
 }
+template<typename _Tp> RetVal lineCutFunc(const DataObject *src, const int* coordinates,const int& len , DataObject *res)
+{
+	bool _unused;
+	
+	int dims = src->getDims();
+	int dx = std::abs(coordinates[0] - coordinates[2]);
+	int incx = coordinates[0] <= coordinates[2] ? 1 : -1;
+	int dy = std::abs(coordinates[1] - coordinates[3]);
+	int incy = coordinates[1] <= coordinates[3] ? 1 : -1;
+	int nrPoints = res->getSize()[1];
+	cv::Mat_<_Tp>* dstMat(static_cast<cv::Mat_<_Tp> *>((res->get_mdata())[0]));
 
+	std::vector<size_t> matSteps; 
+	matSteps.resize(nrPoints);
+	float stepSizePhys;
+	
+	if (nrPoints > 0)
+	{
+		double dxPhys = src->getPixToPhys(dims - 1, coordinates[2], _unused) - src->getPixToPhys(dims - 1, coordinates[0], _unused);
+		double dyPhys = src->getPixToPhys(dims - 2, coordinates[3], _unused) - src->getPixToPhys(dims - 2, coordinates[1], _unused);
+		res->setAxisScale(1,std::sqrt((dxPhys * dxPhys) + (dyPhys * dyPhys)) / (nrPoints - 1));
+	}
+	else
+	{
+		res->setAxisScale(1,0.0);
+	}
+	int matIdx = src->seekMat(0);
+
+	int pdx, pdy, ddx, ddy, es, el;
+	if (dx>dy)
+	{
+		pdx = incx;
+		pdy = 0;
+		ddx = incx;
+		ddy = incy;
+		es = dy;
+		el = dx;
+	}
+	else
+	{
+		pdx = 0;
+		pdy = incy;
+		ddx = incx;
+		ddy = incy;
+		es = dx;
+		el = dy;
+	}
+	int err = el / 2; //0; /* error value e_xy */
+	long x = 0; //coordinates[0];
+	long y = 0; //coordinates[1];
+	_Tp* dstData((_Tp*)(dstMat->data));
+
+	dstData[0] = src->rowPtr<_Tp>(matIdx, coordinates[1])[coordinates[0]]; //set the first element
+	for (unsigned int n = 1; n < (unsigned int)nrPoints; n++)
+	{
+
+		
+		err -= es;
+		if (err < 0)
+		{
+			err += el;
+			x += ddx;
+			y += ddy;
+		}
+		else
+		{
+			x += pdx;
+			y += pdy;
+		}
+
+		dstData[n] = src->rowPtr<_Tp>(matIdx, y)[x];
+	}
+
+	std::string  description(src->getAxisDescription(dims - 2, _unused));
+	std::string unit(src->getAxisUnit(dims - 2, _unused));
+	if (unit == "") unit = "px";
+	
+	std::string descr2 = src->getAxisDescription(dims - 1, _unused);
+	std::string unit2 = src->getAxisUnit(dims - 1, _unused);
+	if (unit2 == "")
+	{
+		unit2 = "px";
+	}
+	if (description == "" && descr2 == "")
+	{
+		if (unit == "" && unit2 == "")
+		{
+			res->setAxisDescription(1, "x/y-axis");
+			res->setAxisUnit(1, "");
+		}
+		else
+		{
+			res->setAxisDescription(1, "x/y-axis");
+			res->setAxisUnit(1, unit + '/' + unit2);
+		}
+	}
+	else
+	{
+		if (unit == "" && unit2 == "")
+		{
+			res->setAxisDescription(1, description + '/' + descr2);
+			res->setAxisUnit(1, "");
+		}
+		else
+		{
+			res->setAxisDescription(1, description + '/' + descr2);
+			res->setAxisUnit(1, unit + '/' + unit2);
+
+		}
+	}
+	res->setValueDescription(src->getValueDescription());
+	res->setValueUnit(src->getValueUnit());
+
+	
+
+
+	return ito::retOk;
+}
+
+typedef RetVal(*tlineCutFunc)(const DataObject *src, const int* coordinates, const int& len, DataObject *res);
+MAKEFUNCLIST(lineCutFunc)
+//----------------------------------------------------------------------------------------------------------------------------------
+DataObject DataObject::lineCut(const int* coordinates, const int& len) const
+{
+	if (len != 4)
+	{
+		cv::error(cv::Exception(CV_StsAssert, "the length of the coordinate list has to be four", "", __FILE__, __LINE__));
+	}
+	int dims(this -> getDims());
+	if (dims > 3)
+	{
+		cv::error(cv::Exception(CV_StsAssert, "function only supprts 2D dataObjects", "", __FILE__, __LINE__));
+	}
+	int sizeX = -1;
+	int sizeY = -1;
+	int sizeZ = -1;
+	//validate coordinates
+	if (dims == 3)
+	{
+		sizeX = this->getSize(2);
+		sizeY = this->getSize(1);
+		sizeZ = this->getSize(0);
+	}
+	else if (dims == 2)
+	{
+		sizeX = this->getSize(1);
+		sizeY = this->getSize(0);
+		
+	}
+	for (int i = 0; i < len; ++i)
+	{
+		if (i % 2)
+		{
+			if (coordinates[i] < 0 || coordinates[i] >= sizeY)
+			{
+				cv::error(cv::Exception(CV_StsAssert, cv::format("the %i-th entry of the coordinate list exeeds the size of the dataObject", i+1), "", __FILE__, __LINE__));
+			}
+		}
+		else
+		{
+			if (coordinates[i] < 0 || coordinates[i] >= sizeX)
+			{
+				cv::error(cv::Exception(CV_StsAssert, cv::format("the %i-th entry of the coordinate list exeeds the size of the dataObject",i+1), "", __FILE__, __LINE__));
+			}
+		}
+	}
+	//calculate the shape of the new object
+
+	int numElements = 1 + std::max(std::abs(coordinates[0] - coordinates[2]), std::abs(coordinates[1] - coordinates[3]));
+	DataObject resObj(numElements, this->getType());
+	fListlineCutFunc[this->getType()](this, coordinates, len, &resObj);
+	return resObj;
+
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 //! low-level templated method to cast each element of source matrix to another type.
 /*!
