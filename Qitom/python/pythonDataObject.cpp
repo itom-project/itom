@@ -7563,7 +7563,7 @@ PyObject* PythonDataObject::PyDataObj_dstack(PyObject *self, PyObject *args)
 	}
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-PyDoc_STRVAR(pyDataObjectLineCut_doc, "lineCut(coordinates) -> returns a data object of the same type containing a lineCut. \n\
+PyDoc_STRVAR(pyDataObjectLineCut_doc, "lineCut(coordinates) -> returns a data object of the same type containing a lineCut calculated by the use of a Bresenham algorithm. \n\
 \n\
 The returned dataObject contains a lineCut across the 2d source dataObject.\n\
 \n\
