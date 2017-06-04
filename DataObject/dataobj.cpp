@@ -8055,8 +8055,8 @@ template<typename _Tp> RetVal lineCutFunc(const DataObject *src, const int* coor
 			el = dy;
 		}
 		int err = el / 2; //0; /* error value e_xy */
-		long x = 0; //coordinates[0];
-		long y = 0; //coordinates[1];
+		long x = coordinates[0];
+		long y = coordinates[1];
 		_Tp* dstData((_Tp*)(dstMat->data));
 
 		dstData[0] = src->rowPtr<_Tp>(matIdx, coordinates[1])[coordinates[0]]; //set the first element
@@ -8233,8 +8233,8 @@ template<> RetVal lineCutFunc<ito::uint32>(const DataObject *src, const int* coo
 			el = dy;
 		}
 		int err = el / 2; //0; /* error value e_xy */
-		long x = 0; //coordinates[0];
-		long y = 0; //coordinates[1];
+		long x = coordinates[0];
+		long y = coordinates[1];
 		ito::uint32* dstData((ito::uint32*)(dstMat->data));
 
 		dstData[0] = src->rowPtr<ito::uint32>(matIdx, coordinates[1])[coordinates[0]]; //set the first element
