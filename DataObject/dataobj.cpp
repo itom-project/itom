@@ -7945,123 +7945,364 @@ DataObject DataObject::splitColor(const char* destinationColor, const int& dtype
 }
 template<typename _Tp> RetVal lineCutFunc(const DataObject *src, const int* coordinates,const int& len , DataObject *res)
 {
-	bool _unused;
-	
-	int dims = src->getDims();
-	int dx = std::abs(coordinates[0] - coordinates[2]);
-	int incx = coordinates[0] <= coordinates[2] ? 1 : -1;
-	int dy = std::abs(coordinates[1] - coordinates[3]);
-	int incy = coordinates[1] <= coordinates[3] ? 1 : -1;
-	int nrPoints = res->getSize()[1];
-	cv::Mat_<_Tp>* dstMat(static_cast<cv::Mat_<_Tp> *>((res->get_mdata())[0]));
 
-	std::vector<size_t> matSteps; 
-	matSteps.resize(nrPoints);
-	float stepSizePhys;
-	
-	if (nrPoints > 0)
+	if (coordinates[0] == coordinates[2])//pure line in y direction
 	{
-		double dxPhys = src->getPixToPhys(dims - 1, coordinates[2], _unused) - src->getPixToPhys(dims - 1, coordinates[0], _unused);
-		double dyPhys = src->getPixToPhys(dims - 2, coordinates[3], _unused) - src->getPixToPhys(dims - 2, coordinates[1], _unused);
-		res->setAxisScale(1,std::sqrt((dxPhys * dxPhys) + (dyPhys * dyPhys)) / (nrPoints - 1));
-	}
-	else
-	{
-		res->setAxisScale(1,0.0);
-	}
-	int matIdx = src->seekMat(0);
-
-	int pdx, pdy, ddx, ddy, es, el;
-	if (dx>dy)
-	{
-		pdx = incx;
-		pdy = 0;
-		ddx = incx;
-		ddy = incy;
-		es = dy;
-		el = dx;
-	}
-	else
-	{
-		pdx = 0;
-		pdy = incy;
-		ddx = incx;
-		ddy = incy;
-		es = dx;
-		el = dy;
-	}
-	int err = el / 2; //0; /* error value e_xy */
-	long x = 0; //coordinates[0];
-	long y = 0; //coordinates[1];
-	_Tp* dstData((_Tp*)(dstMat->data));
-
-	dstData[0] = src->rowPtr<_Tp>(matIdx, coordinates[1])[coordinates[0]]; //set the first element
-	for (unsigned int n = 1; n < (unsigned int)nrPoints; n++)
-	{
-
 		
-		err -= es;
-		if (err < 0)
+		int nrPoints = res->getSize(1);
+		bool _unused;
+		const int dims = src->getDims();
+		int matIdx = src->seekMat(0);
+		const _Tp* srcPtr = (src->rowPtr<_Tp>(matIdx, coordinates[1])) + coordinates[0];
+		_Tp* dstPtr = (_Tp*)(static_cast<cv::Mat_<_Tp> *>((res->get_mdata())[0])->data);
+		size_t step = static_cast<const cv::Mat_<_Tp> *>(src->get_mdata()[matIdx])->step1();
+		step = src->getType() == ito::tRGBA32 ? step / 4 : step;
+		step = src->getType() == ito::tComplex64 || src->getType() == ito::tComplex128 ? step / 2 : step;
+		for (int row = 0; row < nrPoints; ++row)
 		{
-			err += el;
-			x += ddx;
-			y += ddy;
+			dstPtr[row] = srcPtr[step*row];
 		}
-		else
+		std::string  description(src->getAxisDescription(dims - 2, _unused));
+		std::string unit(src->getAxisUnit(dims - 2, _unused));
+		if (description == "")
 		{
-			x += pdx;
-			y += pdy;
+			description = "y-axis";
 		}
+		res->setAxisDescription(1, description);
+		if (unit == "")
+		{
+			unit = "px";
+		}
+		res->setAxisScale(1,src->getAxisScale(dims - 2));
+		res->setAxisOffset(1,src->getAxisOffset(dims - 2));
+		res->setAxisUnit(1, unit);
+		res->setValueDescription(src->getValueDescription());
+		res->setValueUnit(src->getValueUnit());
 
-		dstData[n] = src->rowPtr<_Tp>(matIdx, y)[x];
 	}
+	else if (coordinates[1] == coordinates[3])//pure line in x direction
+	{
+		bool _unused;
+		const int dims = src->getDims();
+		int matIdx = src->seekMat(0);
+		const _Tp* srcPtr=(src->rowPtr<_Tp>(matIdx, coordinates[1]))+coordinates[0];
 
-	std::string  description(src->getAxisDescription(dims - 2, _unused));
-	std::string unit(src->getAxisUnit(dims - 2, _unused));
-	if (unit == "") unit = "px";
-	
-	std::string descr2 = src->getAxisDescription(dims - 1, _unused);
-	std::string unit2 = src->getAxisUnit(dims - 1, _unused);
-	if (unit2 == "")
-	{
-		unit2 = "px";
-	}
-	if (description == "" && descr2 == "")
-	{
-		if (unit == "" && unit2 == "")
+		_Tp* dstPtr = (_Tp*)(static_cast<cv::Mat_<_Tp> *>((res->get_mdata())[0])->data);
+		memcpy(dstPtr, srcPtr, res->getSize()[1] * sizeof(_Tp));
+		std::string  description(src->getAxisDescription(dims - 1, _unused));
+		std::string unit(src->getAxisUnit(dims - 1, _unused));
+		if (description == "")
 		{
-			res->setAxisDescription(1, "x/y-axis");
-			res->setAxisUnit(1, "");
+			description = "x-axis";
 		}
-		else
+		res->setAxisDescription(1, description);
+		if (unit == "")
 		{
-			res->setAxisDescription(1, "x/y-axis");
-			res->setAxisUnit(1, unit + '/' + unit2);
+			unit = "px";
 		}
+		res->setAxisScale(1, src->getAxisScale(dims - 1));
+		res->setAxisOffset(1, src->getAxisOffset(dims - 1));
+		res->setAxisUnit(1, unit);
+		res->setValueDescription(src->getValueDescription());
+		res->setValueUnit(src->getValueUnit());
+
+
 	}
 	else
 	{
-		if (unit == "" && unit2 == "")
+		bool _unused;
+		int dims = src->getDims();
+		int dx = std::abs(coordinates[0] - coordinates[2]);
+		int incx = coordinates[0] <= coordinates[2] ? 1 : -1;
+		int dy = std::abs(coordinates[1] - coordinates[3]);
+		int incy = coordinates[1] <= coordinates[3] ? 1 : -1;
+		int nrPoints = res->getSize()[1];
+		cv::Mat_<_Tp>* dstMat(static_cast<cv::Mat_<_Tp> *>((res->get_mdata())[0]));
+
+		std::vector<size_t> matSteps;
+		matSteps.resize(nrPoints);
+		float stepSizePhys;
+
+		if (nrPoints > 0)
 		{
-			res->setAxisDescription(1, description + '/' + descr2);
-			res->setAxisUnit(1, "");
+			double dxPhys = src->getPixToPhys(dims - 1, coordinates[2], _unused) - src->getPixToPhys(dims - 1, coordinates[0], _unused);
+			double dyPhys = src->getPixToPhys(dims - 2, coordinates[3], _unused) - src->getPixToPhys(dims - 2, coordinates[1], _unused);
+			res->setAxisScale(1, std::sqrt((dxPhys * dxPhys) + (dyPhys * dyPhys)) / (nrPoints - 1));
 		}
 		else
 		{
-			res->setAxisDescription(1, description + '/' + descr2);
-			res->setAxisUnit(1, unit + '/' + unit2);
-
+			res->setAxisScale(1, 0.0);
 		}
+		int matIdx = src->seekMat(0);
+
+		int pdx, pdy, ddx, ddy, es, el;
+		if (dx > dy)
+		{
+			pdx = incx;
+			pdy = 0;
+			ddx = incx;
+			ddy = incy;
+			es = dy;
+			el = dx;
+		}
+		else
+		{
+			pdx = 0;
+			pdy = incy;
+			ddx = incx;
+			ddy = incy;
+			es = dx;
+			el = dy;
+		}
+		int err = el / 2; //0; /* error value e_xy */
+		long x = 0; //coordinates[0];
+		long y = 0; //coordinates[1];
+		_Tp* dstData((_Tp*)(dstMat->data));
+
+		dstData[0] = src->rowPtr<_Tp>(matIdx, coordinates[1])[coordinates[0]]; //set the first element
+		for (unsigned int n = 1; n < (unsigned int)nrPoints; n++)
+		{
+
+
+			err -= es;
+			if (err < 0)
+			{
+				err += el;
+				x += ddx;
+				y += ddy;
+			}
+			else
+			{
+				x += pdx;
+				y += pdy;
+			}
+
+			dstData[n] = src->rowPtr<_Tp>(matIdx, y)[x];
+		}
+
+		std::string  description(src->getAxisDescription(dims - 2, _unused));
+		std::string unit(src->getAxisUnit(dims - 2, _unused));
+		if (unit == "") unit = "px";
+
+		std::string descr2 = src->getAxisDescription(dims - 1, _unused);
+		std::string unit2 = src->getAxisUnit(dims - 1, _unused);
+		if (unit2 == "")
+		{
+			unit2 = "px";
+		}
+		if (description == "" && descr2 == "")
+		{
+			if (unit == "" && unit2 == "")
+			{
+				res->setAxisDescription(1, "x/y-axis");
+				res->setAxisUnit(1, "");
+			}
+			else
+			{
+				res->setAxisDescription(1, "x/y-axis");
+				res->setAxisUnit(1, unit + '/' + unit2);
+			}
+		}
+		else
+		{
+			if (unit == "" && unit2 == "")
+			{
+				res->setAxisDescription(1, description + '/' + descr2);
+				res->setAxisUnit(1, "");
+			}
+			else
+			{
+				res->setAxisDescription(1, description + '/' + descr2);
+				res->setAxisUnit(1, unit + '/' + unit2);
+
+			}
+		}
+		res->setValueDescription(src->getValueDescription());
+		res->setValueUnit(src->getValueUnit());
+
+
 	}
-	res->setValueDescription(src->getValueDescription());
-	res->setValueUnit(src->getValueUnit());
-
-	
-
 
 	return ito::retOk;
 }
+template<> RetVal lineCutFunc<ito::uint32>(const DataObject *src, const int* coordinates, const int& len, DataObject *res)
+{
 
+	if (coordinates[0] == coordinates[2])//pure line in y direction
+	{
+
+		int nrPoints = res->getSize(1);
+		bool _unused;
+		const int dims = src->getDims();
+		int matIdx = src->seekMat(0);
+		ito::uint32* dstPtr = (ito::uint32*)(static_cast<cv::Mat_<ito::uint32> *>((res->get_mdata())[0])->data);
+		for (int row = 0; row < nrPoints; ++row)
+		{
+			dstPtr[row] = src->rowPtr<ito::uint32>(matIdx,row+coordinates[1])[coordinates[0]];// need to use rowPtr function sinze the step1 method of openCv does not work for this type
+		}
+		std::string  description(src->getAxisDescription(dims - 2, _unused));
+		std::string unit(src->getAxisUnit(dims - 2, _unused));
+		if (description == "")
+		{
+			description = "y-axis";
+		}
+		res->setAxisDescription(1, description);
+		if (unit == "")
+		{
+			unit = "px";
+		}
+		res->setAxisScale(1, src->getAxisScale(dims - 2));
+		res->setAxisOffset(1, src->getAxisOffset(dims - 2));
+		res->setAxisUnit(1, unit);
+		res->setValueDescription(src->getValueDescription());
+		res->setValueUnit(src->getValueUnit());
+
+	}
+	else if (coordinates[1] == coordinates[3])//pure line in x direction
+	{
+		bool _unused;
+		const int dims = src->getDims();
+		int matIdx = src->seekMat(0);
+		const ito::uint32* srcPtr = (src->rowPtr<ito::uint32>(matIdx, coordinates[1])) + coordinates[0];
+
+		ito::uint32* dstPtr = (ito::uint32*)(static_cast<cv::Mat_<ito::uint32> *>((res->get_mdata())[0])->data);
+		memcpy(dstPtr, srcPtr, res->getSize()[1] * sizeof(ito::uint32));
+		std::string  description(src->getAxisDescription(dims - 1, _unused));
+		std::string unit(src->getAxisUnit(dims - 1, _unused));
+		if (description == "")
+		{
+			description = "x-axis";
+		}
+		res->setAxisDescription(1, description);
+		if (unit == "")
+		{
+			unit = "px";
+		}
+		res->setAxisScale(1, src->getAxisScale(dims - 1));
+		res->setAxisOffset(1, src->getAxisOffset(dims - 1));
+		res->setAxisUnit(1, unit);
+		res->setValueDescription(src->getValueDescription());
+		res->setValueUnit(src->getValueUnit());
+
+
+	}
+	else
+	{
+		bool _unused;
+		int dims = src->getDims();
+		int dx = std::abs(coordinates[0] - coordinates[2]);
+		int incx = coordinates[0] <= coordinates[2] ? 1 : -1;
+		int dy = std::abs(coordinates[1] - coordinates[3]);
+		int incy = coordinates[1] <= coordinates[3] ? 1 : -1;
+		int nrPoints = res->getSize()[1];
+		cv::Mat_<ito::uint32>* dstMat(static_cast<cv::Mat_<ito::uint32> *>((res->get_mdata())[0]));
+
+		std::vector<size_t> matSteps;
+		matSteps.resize(nrPoints);
+		float stepSizePhys;
+
+		if (nrPoints > 0)
+		{
+			double dxPhys = src->getPixToPhys(dims - 1, coordinates[2], _unused) - src->getPixToPhys(dims - 1, coordinates[0], _unused);
+			double dyPhys = src->getPixToPhys(dims - 2, coordinates[3], _unused) - src->getPixToPhys(dims - 2, coordinates[1], _unused);
+			res->setAxisScale(1, std::sqrt((dxPhys * dxPhys) + (dyPhys * dyPhys)) / (nrPoints - 1));
+		}
+		else
+		{
+			res->setAxisScale(1, 0.0);
+		}
+		int matIdx = src->seekMat(0);
+
+		int pdx, pdy, ddx, ddy, es, el;
+		if (dx > dy)
+		{
+			pdx = incx;
+			pdy = 0;
+			ddx = incx;
+			ddy = incy;
+			es = dy;
+			el = dx;
+		}
+		else
+		{
+			pdx = 0;
+			pdy = incy;
+			ddx = incx;
+			ddy = incy;
+			es = dx;
+			el = dy;
+		}
+		int err = el / 2; //0; /* error value e_xy */
+		long x = 0; //coordinates[0];
+		long y = 0; //coordinates[1];
+		ito::uint32* dstData((ito::uint32*)(dstMat->data));
+
+		dstData[0] = src->rowPtr<ito::uint32>(matIdx, coordinates[1])[coordinates[0]]; //set the first element
+		for (unsigned int n = 1; n < (unsigned int)nrPoints; n++)
+		{
+
+
+			err -= es;
+			if (err < 0)
+			{
+				err += el;
+				x += ddx;
+				y += ddy;
+			}
+			else
+			{
+				x += pdx;
+				y += pdy;
+			}
+
+			dstData[n] = src->rowPtr<ito::uint32>(matIdx, y)[x];
+		}
+
+		std::string  description(src->getAxisDescription(dims - 2, _unused));
+		std::string unit(src->getAxisUnit(dims - 2, _unused));
+		if (unit == "") unit = "px";
+
+		std::string descr2 = src->getAxisDescription(dims - 1, _unused);
+		std::string unit2 = src->getAxisUnit(dims - 1, _unused);
+		if (unit2 == "")
+		{
+			unit2 = "px";
+		}
+		if (description == "" && descr2 == "")
+		{
+			if (unit == "" && unit2 == "")
+			{
+				res->setAxisDescription(1, "x/y-axis");
+				res->setAxisUnit(1, "");
+			}
+			else
+			{
+				res->setAxisDescription(1, "x/y-axis");
+				res->setAxisUnit(1, unit + '/' + unit2);
+			}
+		}
+		else
+		{
+			if (unit == "" && unit2 == "")
+			{
+				res->setAxisDescription(1, description + '/' + descr2);
+				res->setAxisUnit(1, "");
+			}
+			else
+			{
+				res->setAxisDescription(1, description + '/' + descr2);
+				res->setAxisUnit(1, unit + '/' + unit2);
+
+			}
+		}
+		res->setValueDescription(src->getValueDescription());
+		res->setValueUnit(src->getValueUnit());
+
+
+	}
+
+	return ito::retOk;
+}
 typedef RetVal(*tlineCutFunc)(const DataObject *src, const int* coordinates, const int& len, DataObject *res);
 MAKEFUNCLIST(lineCutFunc)
 //----------------------------------------------------------------------------------------------------------------------------------
