@@ -7945,22 +7945,23 @@ DataObject DataObject::splitColor(const char* destinationColor, const int& dtype
 }
 template<typename _Tp> RetVal lineCutFunc(const DataObject *src, const int* coordinates,const int& len , DataObject *res)
 {
-
+	int nrPoints = res->getSize(1);
+	bool _unused;
+	const int dims = src->getDims();
+	int matIdx = src->seekMat(0);
 	if (coordinates[0] == coordinates[2])//pure line in y direction
 	{
 		
-		int nrPoints = res->getSize(1);
-		bool _unused;
-		const int dims = src->getDims();
-		int matIdx = src->seekMat(0);
+
 		const _Tp* srcPtr = (src->rowPtr<_Tp>(matIdx, coordinates[1])) + coordinates[0];
 		_Tp* dstPtr = (_Tp*)(static_cast<cv::Mat_<_Tp> *>((res->get_mdata())[0])->data);
 		size_t step = static_cast<const cv::Mat_<_Tp> *>(src->get_mdata()[matIdx])->step1();
 		step = src->getType() == ito::tRGBA32 ? step / 4 : step;
 		step = src->getType() == ito::tComplex64 || src->getType() == ito::tComplex128 ? step / 2 : step;
+		step = coordinates[3] < coordinates[1] ? step*-1 : step;
 		for (int row = 0; row < nrPoints; ++row)
 		{
-			dstPtr[row] = srcPtr[step*row];
+			dstPtr[row] = *(srcPtr+step*row);
 		}
 		std::string  description(src->getAxisDescription(dims - 2, _unused));
 		std::string unit(src->getAxisUnit(dims - 2, _unused));
@@ -7982,13 +7983,26 @@ template<typename _Tp> RetVal lineCutFunc(const DataObject *src, const int* coor
 	}
 	else if (coordinates[1] == coordinates[3])//pure line in x direction
 	{
-		bool _unused;
-		const int dims = src->getDims();
-		int matIdx = src->seekMat(0);
-		const _Tp* srcPtr=(src->rowPtr<_Tp>(matIdx, coordinates[1]))+coordinates[0];
+		
+		const _Tp* srcPtr = (src->rowPtr<_Tp>(matIdx, coordinates[1])) + coordinates[0];
 
-		_Tp* dstPtr = (_Tp*)(static_cast<cv::Mat_<_Tp> *>((res->get_mdata())[0])->data);
-		memcpy(dstPtr, srcPtr, res->getSize()[1] * sizeof(_Tp));
+		_Tp* dstPtr((_Tp*)(static_cast<cv::Mat_<_Tp> *>((res->get_mdata())[0])->data));
+		if (coordinates[2] > coordinates[0])
+		{
+			
+			memcpy(dstPtr, srcPtr, res->getSize()[1] * sizeof(_Tp));
+		}
+		else
+		{
+			for (int col = 0; col < nrPoints; ++col)
+			{
+				dstPtr[col] = srcPtr[-col];
+			}
+		}
+
+		
+		
+
 		std::string  description(src->getAxisDescription(dims - 1, _unused));
 		std::string unit(src->getAxisUnit(dims - 1, _unused));
 		if (description == "")
@@ -8010,13 +8024,11 @@ template<typename _Tp> RetVal lineCutFunc(const DataObject *src, const int* coor
 	}
 	else
 	{
-		bool _unused;
-		int dims = src->getDims();
 		int dx = std::abs(coordinates[0] - coordinates[2]);
 		int incx = coordinates[0] <= coordinates[2] ? 1 : -1;
 		int dy = std::abs(coordinates[1] - coordinates[3]);
 		int incy = coordinates[1] <= coordinates[3] ? 1 : -1;
-		int nrPoints = res->getSize()[1];
+
 		cv::Mat_<_Tp>* dstMat(static_cast<cv::Mat_<_Tp> *>((res->get_mdata())[0]));
 
 		std::vector<size_t> matSteps;
@@ -8127,18 +8139,20 @@ template<typename _Tp> RetVal lineCutFunc(const DataObject *src, const int* coor
 }
 template<> RetVal lineCutFunc<ito::uint32>(const DataObject *src, const int* coordinates, const int& len, DataObject *res)
 {
+	int nrPoints = res->getSize(1);
+	bool _unused;
+	const int dims = src->getDims();
+	int matIdx = src->seekMat(0);
 
 	if (coordinates[0] == coordinates[2])//pure line in y direction
 	{
 
-		int nrPoints = res->getSize(1);
-		bool _unused;
-		const int dims = src->getDims();
-		int matIdx = src->seekMat(0);
+
 		ito::uint32* dstPtr = (ito::uint32*)(static_cast<cv::Mat_<ito::uint32> *>((res->get_mdata())[0])->data);
+		int direction = coordinates[3] < coordinates[1] ? -1 : 1;
 		for (int row = 0; row < nrPoints; ++row)
 		{
-			dstPtr[row] = src->rowPtr<ito::uint32>(matIdx,row+coordinates[1])[coordinates[0]];// need to use rowPtr function sinze the step1 method of openCv does not work for this type
+			dstPtr[row] = src->rowPtr<ito::uint32>(matIdx, direction*row+coordinates[1])[coordinates[0]];// need to use rowPtr function sinze the step1 method of openCv does not work for this type
 		}
 		std::string  description(src->getAxisDescription(dims - 2, _unused));
 		std::string unit(src->getAxisUnit(dims - 2, _unused));
@@ -8160,13 +8174,22 @@ template<> RetVal lineCutFunc<ito::uint32>(const DataObject *src, const int* coo
 	}
 	else if (coordinates[1] == coordinates[3])//pure line in x direction
 	{
-		bool _unused;
-		const int dims = src->getDims();
-		int matIdx = src->seekMat(0);
+
 		const ito::uint32* srcPtr = (src->rowPtr<ito::uint32>(matIdx, coordinates[1])) + coordinates[0];
 
-		ito::uint32* dstPtr = (ito::uint32*)(static_cast<cv::Mat_<ito::uint32> *>((res->get_mdata())[0])->data);
-		memcpy(dstPtr, srcPtr, res->getSize()[1] * sizeof(ito::uint32));
+		ito::uint32* dstPtr((ito::uint32*)(static_cast<cv::Mat_<ito::uint32> *>((res->get_mdata())[0])->data));
+		if (coordinates[2] > coordinates[0])
+		{
+
+			memcpy(dstPtr, srcPtr, res->getSize()[1] * sizeof(ito::uint32));
+		}
+		else
+		{
+			for (int col = 0; col < nrPoints; ++col)
+			{
+				dstPtr[col] = srcPtr[-col];
+			}
+		}
 		std::string  description(src->getAxisDescription(dims - 1, _unused));
 		std::string unit(src->getAxisUnit(dims - 1, _unused));
 		if (description == "")
@@ -8188,13 +8211,11 @@ template<> RetVal lineCutFunc<ito::uint32>(const DataObject *src, const int* coo
 	}
 	else
 	{
-		bool _unused;
-		int dims = src->getDims();
+
 		int dx = std::abs(coordinates[0] - coordinates[2]);
 		int incx = coordinates[0] <= coordinates[2] ? 1 : -1;
 		int dy = std::abs(coordinates[1] - coordinates[3]);
 		int incy = coordinates[1] <= coordinates[3] ? 1 : -1;
-		int nrPoints = res->getSize()[1];
 		cv::Mat_<ito::uint32>* dstMat(static_cast<cv::Mat_<ito::uint32> *>((res->get_mdata())[0]));
 
 		std::vector<size_t> matSteps;
