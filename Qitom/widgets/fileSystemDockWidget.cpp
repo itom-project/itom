@@ -142,6 +142,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pCmbFilter = new QComboBox(this);
     m_pCmbFilter->setEditable(true);
     m_pCmbFilter->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Fixed);
+    m_pCmbFilter->setToolTip(tr("file name filters (semicolon or space separated list)"));
 
     connect(m_pCmbFilter, SIGNAL(editTextChanged(const QString&)), this, SLOT(cmbFilterEditTextChanged(const QString &)));
 
@@ -536,7 +537,15 @@ void FileSystemDockWidget::cmbFilterEditTextChanged(const QString &text)
     }
     else
     {
-        m_pFileSystemModel->setNameFilters(QStringList(text));
+        //text can contain a semicolon and/or space separated list of filters, e.g. "*.png *.jpg" or "*.png;*.jpg" or "*.png; *.jpg"
+        QString text_ = text.trimmed();
+        QStringList filters = text.split(";");
+        QStringList filters2;
+        foreach (const QString &f, filters)
+        {
+            filters2.append(f.trimmed().split(" "));
+        }
+        m_pFileSystemModel->setNameFilters(filters2);
     }
 }
 
