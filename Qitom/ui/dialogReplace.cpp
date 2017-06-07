@@ -241,7 +241,7 @@ void DialogReplace::on_pushButtonFindNext_clicked()
     bool caseSensitive = ui.checkBoxCase->isChecked();
     bool wholeWord = ui.checkBoxWholeWord->isChecked();
     bool wrap = ui.checkBoxWrapAround->isChecked(); 
-    bool forward = ui.radioButtonUp->isChecked();
+    bool forward = ui.radioButtonDown->isChecked();
     emit findNext(ui.comboBoxFindText->currentText(), regExpr, caseSensitive, wholeWord, wrap, forward, false);
 }
 
@@ -255,7 +255,7 @@ void DialogReplace::on_pushButtonReplace_clicked()
     bool caseSensitive = ui.checkBoxCase->isChecked();
     bool wholeWord = ui.checkBoxWholeWord->isChecked();
     bool wrap = ui.checkBoxWrapAround->isChecked();
-    bool forward = ui.radioButtonUp->isChecked();
+    bool forward = ui.radioButtonDown->isChecked();
 
     emit replaceSelection(ui.comboBoxFindText->currentText(), ui.comboBoxReplacedText->currentText());
     emit findNext(ui.comboBoxFindText->currentText(), regExpr, caseSensitive, wholeWord, wrap, forward, false);
