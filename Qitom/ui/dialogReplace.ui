@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>311</width>
-    <height>316</height>
+    <height>290</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -31,7 +31,7 @@
   <property name="windowTitle">
    <string>Find and Replace</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_3">
+  <layout class="QVBoxLayout" name="verticalLayout_4">
    <item>
     <layout class="QFormLayout" name="formLayout">
      <item row="0" column="0">
@@ -101,36 +101,6 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Find in</string>
-       </property>
-       <property name="buddy">
-        <cstring>comboBoxFindIn</cstring>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QComboBox" name="comboBoxFindIn">
-       <property name="minimumSize">
-        <size>
-         <width>200</width>
-         <height>0</height>
-        </size>
-       </property>
-       <item>
-        <property name="text">
-         <string>Current Document</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Selection</string>
-        </property>
-       </item>
-      </widget>
-     </item>
     </layout>
    </item>
    <item>
@@ -161,17 +131,48 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="2">
-      <widget class="QPushButton" name="pushButtonReplaceAll">
-       <property name="acceptDrops">
-        <bool>false</bool>
+     <item row="0" column="2" rowspan="2">
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
+        <string/>
        </property>
-       <property name="text">
-        <string>Replace All</string>
-       </property>
-       <property name="autoDefault">
-        <bool>false</bool>
-       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <property name="spacing">
+         <number>3</number>
+        </property>
+        <property name="leftMargin">
+         <number>3</number>
+        </property>
+        <property name="topMargin">
+         <number>3</number>
+        </property>
+        <property name="rightMargin">
+         <number>3</number>
+        </property>
+        <property name="bottomMargin">
+         <number>3</number>
+        </property>
+        <item>
+         <widget class="QPushButton" name="pushButtonReplaceAll">
+          <property name="acceptDrops">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Replace All</string>
+          </property>
+          <property name="autoDefault">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBoxReplaceInSelection">
+          <property name="text">
+           <string>In Selection</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </item>
      <item row="1" column="0">
@@ -284,10 +285,8 @@
   <tabstop>comboBoxFindText</tabstop>
   <tabstop>checkBoxReplaceWith</tabstop>
   <tabstop>comboBoxReplacedText</tabstop>
-  <tabstop>comboBoxFindIn</tabstop>
   <tabstop>pushButtonFindNext</tabstop>
   <tabstop>pushButtonReplace</tabstop>
-  <tabstop>pushButtonReplaceAll</tabstop>
   <tabstop>pushButtonExpand</tabstop>
   <tabstop>checkBoxWholeWord</tabstop>
   <tabstop>checkBoxCase</tabstop>

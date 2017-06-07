@@ -2060,7 +2060,7 @@ void ScriptDockWidget::mnuReplaceTextExpr()
         m_pDialogReplace->setModal(false);
         connect(m_pDialogReplace, SIGNAL(findNext(QString, bool, bool, bool, bool, bool, bool)), this, SLOT(findTextExpr(QString, bool, bool, bool, bool, bool, bool)));
         connect(m_pDialogReplace, SIGNAL(replaceSelection(QString, QString)), this, SLOT(replaceTextExpr(QString, QString)));
-        connect(m_pDialogReplace, SIGNAL(replaceAll(QString, QString, bool, bool, bool, int)), this, SLOT(replaceAllExpr(QString, QString, bool, bool, bool, int)));
+        connect(m_pDialogReplace, SIGNAL(replaceAll(QString, QString, bool, bool, bool, bool)), this, SLOT(replaceAllExpr(QString, QString, bool, bool, bool, bool)));
     }
 
     m_pDialogReplace->setData(defaultText, (lineTo == -1) || (lineTo == lineFrom));
@@ -2186,10 +2186,14 @@ void ScriptDockWidget::findTextExpr(QString expr, bool regExpr, bool caseSensiti
 
     if (sew != NULL)
     {
-        int lineFrom, indexFrom, lineTo, indexTo;
-        sew->getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
-        if (lineFrom != -1 && forward) sew->setCursorPosition(lineTo, indexTo);
-        if (lineFrom != -1 && !forward) sew->setCursorPosition(lineFrom, indexFrom);
+        if (!forward)
+        {
+            int lineFrom, indexFrom, lineTo, indexTo;
+            sew->getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
+            //            if (lineFrom != -1 && !forward) sew->setCursorPosition(lineTo, indexTo);
+            if (lineFrom != -1) sew->setCursorPosition(lineFrom, indexFrom);
+        }
+
         bool success = sew->findFirst(expr, regExpr, caseSensitive, wholeWord, wrap, forward, -1, -1, true);
 
         if (isQuickSeach)
@@ -2217,7 +2221,7 @@ void ScriptDockWidget::replaceTextExpr(QString expr, QString replace)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ScriptDockWidget::replaceAllExpr(QString expr, QString replace, bool regExpr, bool caseSensitive, bool wholeWord, int findIn)
+void ScriptDockWidget::replaceAllExpr(QString expr, QString replace, bool regExpr, bool caseSensitive, bool wholeWord, bool findInSel)
 {
     bool success = true;
     bool inRange = true;
@@ -2235,7 +2239,7 @@ void ScriptDockWidget::replaceAllExpr(QString expr, QString replace, bool regExp
         int indexFrom = -1;
         int lineTo = -1;
         int indexTo = -1;
-        if (findIn)
+        if (findInSel)
         {
             sew->getSelection(&lineFrom, &indexFrom, &lineTo, &indexTo);
         }
@@ -2244,7 +2248,7 @@ void ScriptDockWidget::replaceAllExpr(QString expr, QString replace, bool regExp
         sew->setCursorPosition(0, 0);
         success = sew->findFirst(expr, regExpr, caseSensitive, wholeWord, false, true, lineFrom, indexFrom, true);
 
-        if (findIn)
+        if (findInSel)
         {
             sew->getSelection(&tempLineFrom, &tempIndexFrom, &tempLineTo, &tempIndexTo);
             inRange = (lineTo > tempLineTo) || ((lineTo == tempLineTo) && (indexTo >= tempIndexTo));
@@ -2263,7 +2267,7 @@ void ScriptDockWidget::replaceAllExpr(QString expr, QString replace, bool regExp
             sew->replace(replace);
             success = sew->findNext();
 
-            if (findIn)
+            if (findInSel)
             {
                 sew->getSelection(&tempLineFrom, &tempIndexFrom, &tempLineTo, &tempIndexTo);
                 inRange = (lineTo > tempLineTo) || ((lineTo == tempLineTo) && (indexTo >= tempIndexTo));

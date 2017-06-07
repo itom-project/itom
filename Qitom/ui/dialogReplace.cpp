@@ -102,6 +102,7 @@ void DialogReplace::on_checkBoxReplaceWith_clicked()
     ui.comboBoxReplacedText->setEnabled(isChecked);
     ui.pushButtonReplace->setEnabled(isChecked);
     ui.pushButtonReplaceAll->setEnabled(isChecked);
+    ui.checkBoxReplaceInSelection->setEnabled(isChecked);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -156,7 +157,7 @@ DialogReplace::DialogReplace(QWidget *parent) :
 void DialogReplace::setData(const QString &defaultText, const bool &rowSelected)
 {
 //    if (lineTo == lineFrom)
-    if (rowSelected)
+/*    if (rowSelected)
     {
 //        m_lineFrom = -1;
         ui.comboBoxFindIn->setCurrentIndex(0);
@@ -165,7 +166,7 @@ void DialogReplace::setData(const QString &defaultText, const bool &rowSelected)
     {
 //        m_lineFrom = lineFrom;
         ui.comboBoxFindIn->setCurrentIndex(1);
-    }
+    }*/
 /*    m_indexFrom = indexFrom;
     m_lineTo = lineTo;
     m_indexTo = indexTo;*/
@@ -270,9 +271,10 @@ void DialogReplace::on_pushButtonReplaceAll_clicked()
     bool regExpr = ui.checkBoxRegular->isChecked();
     bool caseSensitive = ui.checkBoxCase->isChecked();
     bool wholeWord = ui.checkBoxWholeWord->isChecked();
-    int findIn = ui.comboBoxFindIn->currentIndex();
+    bool findInSel = ui.checkBoxReplaceInSelection->isChecked();
+    //    int findIn = ui.comboBoxFindIn->currentIndex();
 
-    emit replaceAll(ui.comboBoxFindText->currentText(), ui.comboBoxReplacedText->currentText(), regExpr, caseSensitive, wholeWord, findIn);
+    emit replaceAll(ui.comboBoxFindText->currentText(), ui.comboBoxReplacedText->currentText(), regExpr, caseSensitive, wholeWord, findInSel);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -292,7 +294,7 @@ void DialogReplace::on_pushButtonExpand_clicked()
     else
     {
         ui.groupBoxOptions->setVisible(true);
-        ui.pushButtonExpand->setText(tr("Collaps"));
+        ui.pushButtonExpand->setText(tr("Collapse"));
     }
 }
 

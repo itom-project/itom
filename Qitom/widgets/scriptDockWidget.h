@@ -195,7 +195,7 @@ private slots:
 
     void findTextExpr(QString expr, bool regExpr, bool caseSensitive, bool wholeWord, bool wrap, bool forward, bool isQuickSeach);
     void replaceTextExpr(QString expr, QString replace);
-    void replaceAllExpr(QString expr, QString replace, bool regExpr, bool caseSensitive, bool wholeWord, int findIn);
+    void replaceAllExpr(QString expr, QString replace, bool regExpr, bool caseSensitive, bool wholeWord, bool findInSel);
     void insertIconBrowserText(QString iconLink);
 
     void currentTabChanged(int index);

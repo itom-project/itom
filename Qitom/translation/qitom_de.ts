@@ -744,22 +744,19 @@ p, li { white-space: pre-wrap; }
         <translation>Ersetzen durch</translation>
     </message>
     <message>
-        <location line="+32"/>
         <source>Find in</source>
-        <translation>Suchen in</translation>
+        <translation type="vanished">Suchen in</translation>
     </message>
     <message>
-        <location line="+17"/>
         <source>Current Document</source>
-        <translation>Aktuelles Dokument</translation>
+        <translation type="vanished">Aktuelles Dokument</translation>
     </message>
     <message>
-        <location line="+5"/>
         <source>Selection</source>
-        <translation>Markierung</translation>
+        <translation type="vanished">Markierung</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+39"/>
         <source>Find Next</source>
         <translation>Weitersuchen</translation>
     </message>
@@ -774,9 +771,14 @@ p, li { white-space: pre-wrap; }
         <translation>Ersetzen</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+34"/>
         <source>Replace All</source>
         <translation>Alle ersetzen</translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>In Selection</source>
+        <translation>In Markierung</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -4825,14 +4827,18 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::DialogReplace</name>
     <message>
-        <location filename="../ui/dialogReplace.cpp" line="+285"/>
+        <location filename="../ui/dialogReplace.cpp" line="+287"/>
         <source>Expand</source>
         <translation>Erweitert</translation>
     </message>
     <message>
         <location line="+10"/>
-        <source>Collaps</source>
+        <source>Collapse</source>
         <translation>Einfach</translation>
+    </message>
+    <message>
+        <source>Collaps</source>
+        <translation type="vanished">Einfach</translation>
     </message>
 </context>
 <context>
@@ -5122,7 +5128,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Filter:</translation>
     </message>
     <message>
-        <location line="+171"/>
+        <location line="+172"/>
         <source>F2</source>
         <translation></translation>
     </message>
@@ -5137,29 +5143,29 @@ Meldung: &apos;%1&apos;</translation>
         <translation></translation>
     </message>
     <message>
-        <location line="+238"/>
+        <location line="+246"/>
         <source>Directory &apos;%1&apos; does not existing!</source>
         <translation>Verzeichnis &apos;%1&apos; existiert nicht!</translation>
     </message>
     <message>
-        <location line="-476"/>
+        <location line="-485"/>
         <source>Last used directories</source>
         <translation>Zuletzt verwendete Verzeichnisse</translation>
     </message>
     <message>
-        <location line="+221"/>
+        <location line="+222"/>
         <source>Rename</source>
         <translation>Umbenennen</translation>
     </message>
     <message>
         <location line="+2"/>
-        <location line="+579"/>
+        <location line="+587"/>
         <location line="+13"/>
         <source>Delete</source>
         <translation>Löschen</translation>
     </message>
     <message>
-        <location line="-590"/>
+        <location line="-598"/>
         <source>Cut</source>
         <translation>Ausschneiden</translation>
     </message>
@@ -5184,7 +5190,12 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Neues Verzeichnis öffnen</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="-151"/>
+        <source>file name filters (semicolon or space separated list)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+153"/>
         <source>Change To Parent Folder</source>
         <translation>Zum übergeordneten Verzeichnis wechseln</translation>
     </message>
@@ -5229,7 +5240,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Dateisystem</translation>
     </message>
     <message>
-        <location line="+295"/>
+        <location line="+303"/>
         <source>Select base directory</source>
         <translation>Aktuelles Stammverzeichnis auswählen</translation>
     </message>
@@ -6705,7 +6716,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
 <context>
     <name>ito::PythonEngine</name>
     <message>
-        <location filename="../python/pythonEngine.cpp" line="+1002"/>
+        <location filename="../python/pythonEngine.cpp" line="+1006"/>
         <source>Python not initialized</source>
         <translation type="unfinished">Python ist nicht inizialisiert</translation>
     </message>
@@ -7254,7 +7265,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation></translation>
     </message>
     <message>
-        <location line="+882"/>
+        <location line="+886"/>
         <source>&apos;%1&apos; was not found</source>
         <translation>&apos;%1&apos; wurde nicht gefunden</translation>
     </message>
@@ -7270,7 +7281,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>%1 Vorkommen ersetzt</translation>
     </message>
     <message>
-        <location line="-966"/>
+        <location line="-970"/>
         <source>Ctrl+H</source>
         <comment>QShortcut</comment>
         <translation></translation>
