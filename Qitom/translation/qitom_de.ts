@@ -5192,7 +5192,7 @@ Meldung: &apos;%1&apos;</translation>
     <message>
         <location line="-151"/>
         <source>file name filters (semicolon or space separated list)</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Dateinamen der Filter (mit Semikolon oder Leerzeichen separierte Liste)</translation>
     </message>
     <message>
         <location line="+153"/>
@@ -7210,7 +7210,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Folgende Dateien wurden geändert und sollten gespeichert werden:</translation>
     </message>
     <message>
-        <location line="+619"/>
+        <location line="+620"/>
         <source>Ctrl+R</source>
         <comment>QShortcut</comment>
         <translation></translation>
@@ -7265,7 +7265,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation></translation>
     </message>
     <message>
-        <location line="+886"/>
+        <location line="+890"/>
         <source>&apos;%1&apos; was not found</source>
         <translation>&apos;%1&apos; wurde nicht gefunden</translation>
     </message>
@@ -7281,7 +7281,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>%1 Vorkommen ersetzt</translation>
     </message>
     <message>
-        <location line="-970"/>
+        <location line="-974"/>
         <source>Ctrl+H</source>
         <comment>QShortcut</comment>
         <translation></translation>
@@ -7299,7 +7299,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation></translation>
     </message>
     <message>
-        <location line="-753"/>
+        <location line="-754"/>
         <source>File Open</source>
         <translation>Datei öffnen</translation>
     </message>
@@ -7324,7 +7324,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>Die Datei &apos;%1&apos;  ist kein Python-Makro</translation>
     </message>
     <message>
-        <location line="+606"/>
+        <location line="+607"/>
         <source>Move Left</source>
         <translation>Nach Links verschieben</translation>
     </message>
@@ -7536,6 +7536,11 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>&amp;Kodierung einfügen...</translation>
     </message>
     <message>
+        <location line="+3"/>
+        <source>Copy Filename</source>
+        <translation>Dateiname kopieren</translation>
+    </message>
+    <message>
         <location line="+29"/>
         <source>No Entries</source>
         <translation>Kein Eintrag</translation>
@@ -7571,7 +7576,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation>&amp;Fenster</translation>
     </message>
     <message>
-        <location line="+30"/>
+        <location line="+31"/>
         <source>File Toolbar</source>
         <translation>Symbolleiste Datei</translation>
     </message>

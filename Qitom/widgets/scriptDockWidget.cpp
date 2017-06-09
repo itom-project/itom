@@ -1211,6 +1211,7 @@ void ScriptDockWidget::updateTabContextActions()
 
     m_saveScriptAction->setEnabled(m_tab->count()>0 && sew != NULL && sew->isModified());
     m_saveScriptAsAction->setEnabled(m_tab->count()>0 && sew != NULL);
+    m_copyFilename->setEnabled(m_tab->count()>0 && sew != NULL && !sew->hasNoFilename());
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1344,6 +1345,9 @@ void ScriptDockWidget::createActions()
 
     m_insertCodecAct = new ShortcutAction(tr("&Insert Codec..."), this);
     m_insertCodecAct->connectTrigger(this, SLOT(mnuInsertCodec()));
+
+    m_copyFilename = new ShortcutAction(QIcon(":/application/icons/adBlockAction.png"), tr("Copy Filename"), this);
+    m_copyFilename->connectTrigger(this, SLOT(mnuCopyFilename()));
 
     updatePythonActions();
     updateTabContextActions();
@@ -1519,6 +1523,7 @@ void ScriptDockWidget::createMenus()
     m_tabContextMenu->addAction(m_tabMoveFirstAction->action());
     m_tabContextMenu->addAction(m_tabMoveLastAction->action());
     m_tabContextMenu->addSeparator();
+    m_tabContextMenu->addAction(m_copyFilename->action());
     m_tabContextMenu->addAction(m_saveScriptAction->action());
     m_tabContextMenu->addAction(m_saveScriptAsAction->action());
     m_tabContextMenu->addAction(m_tabCloseAction->action());
@@ -2331,6 +2336,18 @@ void ScriptDockWidget::findWordWidgetFinished()
 void ScriptDockWidget::setCurrentIndex(int index)
 {
     m_tab->setCurrentIndex(index);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+//! slot invoked by action to copy the filename to clipboard
+void ScriptDockWidget::mnuCopyFilename()
+{
+    ScriptEditorWidget *sew = getEditorByIndex(m_actTabIndex);
+    if (sew != NULL)
+    {
+        QClipboard *clipboard = QApplication::clipboard();
+        clipboard->setText(sew->getFilename(), QClipboard::Clipboard);
+    }
 }
 
 } //end namespace ito
