@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2017, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -1726,6 +1726,11 @@ template<typename _Tp> RetVal CreateFunc(DataObject *dObj, const unsigned char d
    if(!continuous && continuousDataPtr)
    {
        cv::error(cv::Exception(CV_BadDataPtr, "data pointer must be empty if matrix is not continuous" ,"", __FILE__, __LINE__));
+   }
+
+   if (cv::DataType<_Tp>::type == CV_USRTYPE1)
+   {
+       cv::error(cv::Exception(CV_BadDepth, "unsupported type (e.g. uint32 not possible)", "", __FILE__, __LINE__));
    }
 
    dObj->m_owndata = (continuousDataPtr == NULL);
