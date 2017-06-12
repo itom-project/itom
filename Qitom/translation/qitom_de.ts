@@ -6040,7 +6040,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
     <message>
         <location line="+59"/>
         <source>Python Messages</source>
-        <translation type="unfinished">Pythen-Meldungen</translation>
+        <translation type="unfinished">Python-Meldungen</translation>
     </message>
     <message>
         <location line="+10"/>
