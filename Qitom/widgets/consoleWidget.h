@@ -77,6 +77,7 @@ signals:
     void wantToCopy();
     void pythonExecuteString(QString cmd);
     void sendToLastCommand(QString cmd);
+    void sendToPythonMessage(QString cmd);
 
 
 protected:

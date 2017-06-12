@@ -3970,7 +3970,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Skript wird ausgeführt</translation>
     </message>
     <message>
-        <location line="+571"/>
+        <location line="+572"/>
         <source>&amp;Undo</source>
         <translation>&amp;Rückgängig</translation>
     </message>
@@ -6018,7 +6018,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::MainWindow</name>
     <message>
-        <location filename="../widgets/mainWindow.cpp" line="+119"/>
+        <location filename="../widgets/mainWindow.cpp" line="+120"/>
         <source>itom</source>
         <translation>itom</translation>
     </message>
@@ -6038,7 +6038,12 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation></translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+59"/>
+        <source>Python Messages</source>
+        <translation type="unfinished">Pythen-Meldungen</translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>Call Stack</source>
         <translation>Aufrufliste</translation>
     </message>
@@ -6058,7 +6063,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation></translation>
     </message>
     <message>
-        <location line="+374"/>
+        <location line="+377"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
@@ -6184,19 +6189,19 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="vanished">Geladene Plugins...</translation>
     </message>
     <message>
-        <location line="-440"/>
+        <location line="-448"/>
         <source>Command History</source>
         <translation>Befehlsliste</translation>
     </message>
     <message>
-        <location line="+84"/>
+        <location line="+89"/>
         <source>Python could not be started. itom cannot be used in the desired way. 
 Start itom again with the argument &apos;log&apos; and look-up the error message in the file itomlog.txt.</source>
         <translation>Python konnte nicht gestartet werden. itom kann ohne Python nicht genutzt werden.
 Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldungen in der Datei &apos;itomlog.txt&apos; auswerten.</translation>
     </message>
     <message>
-        <location line="+359"/>
+        <location line="+362"/>
         <source>Loaded Plugins...</source>
         <translation>Geladene Plugins...</translation>
     </message>
@@ -6301,8 +6306,8 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <translation>Der UI-Designer (QT-Designer) konnte nicht geöffnet werden (%1).</translation>
     </message>
     <message>
-        <location line="-1711"/>
-        <location line="+600"/>
+        <location line="-1714"/>
+        <location line="+603"/>
         <source>Help</source>
         <translation>Hilfe</translation>
     </message>
@@ -7182,6 +7187,14 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <location line="+5"/>
         <source>Unpickling error. An unspecified exception has been thrown.</source>
         <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>ito::PythonMessageDockWidget</name>
+    <message>
+        <location filename="../widgets/pythonMessageDockWidget.cpp" line="+114"/>
+        <source>Clear List</source>
+        <translation type="unfinished">Liste löschen</translation>
     </message>
 </context>
 <context>

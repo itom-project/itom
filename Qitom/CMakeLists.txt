@@ -216,9 +216,9 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
     #${CMAKE_CURRENT_SOURCE_DIR}/models/pluginModel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.h
-	#${CMAKE_CURRENT_SOURCE_DIR}/organizer/addInManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.h
+    #${CMAKE_CURRENT_SOURCE_DIR}/organizer/addInManager.h
     #${CMAKE_CURRENT_SOURCE_DIR}/organizer/algoInterfaceValidator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/designerWidgetOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/helpSystem.h
@@ -227,49 +227,51 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/qsciApiManager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/scriptEditorOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/uiOrganizer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userInteractionWatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userOrganizer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/widgetWrapper.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userInteractionWatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAutoInterval.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonCommon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonDataObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonEngine.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonEngineInc.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFigure.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFont.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItom.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItomMetaObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonMatlab.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNpDataObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNone.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNpDataObject.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNumeric.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlugins.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonProxy.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonRegion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonQtConversion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonQtSignalMapper.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonRegion.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonRgba.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonShape.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonSharedPointerGuard.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonStream.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythontParamConversion.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUi.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonRgba.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFont.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonShape.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFigure.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUiTimer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonWorkspace.h
     ${CMAKE_CURRENT_SOURCE_DIR}/python/qDebugStream.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/abstractFilterDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/abstractPropertyPageWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogAbout.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogCloseItom.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogEditBreakpoint.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogGoto.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogCloseItom.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogIconBrowser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogLoadedPlugins.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogNewPluginInstance.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogOpenNewGui.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogOpenFileWithFilter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogOpenNewGui.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManagerInstall.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPluginPicker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogProperties.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReloadModule.h
@@ -277,14 +279,12 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManager.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManagerInstall.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogTimerManager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/itomSpinBox.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputDialog.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetInfoBox.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.h
@@ -299,12 +299,12 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropFigurePlugins.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralApplication.h    
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralLanguage.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralPlotSettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralStyles.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropHelpDock.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPluginsAlgorithms.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonGeneral.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonStartup.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralPlotSettings.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPluginsAlgorithms.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropWorkspaceUnpack.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractPyScintillaWidget.h
@@ -312,25 +312,26 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/breakPointDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.h    
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/consoleWidget.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/fileSystemDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/itomQWidgets.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/pythonMessageDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.h    
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagementEdit.h    
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagementEdit.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiDialog.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceDockWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceWidget.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractDObjPCLFigure.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractFigure.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractItomDesignerPlugin.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../plot/AbstractNode.h
 )
 
 IF (QT5_FOUND)
@@ -341,48 +342,48 @@ ENDIF (QT5_FOUND)
 
 set(qitom_ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogAbout.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogCloseItom.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogEditBreakpoint.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogGoto.ui
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogCloseItom.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogIconBrowser.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogLoadedPlugins.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogNewPluginInstance.ui
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogOpenNewGui.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogOpenFileWithFilter.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogOpenNewGui.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManager.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManagerInstall.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPluginPicker.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReloadModule.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReplace.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.ui
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.ui
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManager.ui
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManagerInstall.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogTimerManager.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputDialog.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetInfoBox.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleLastCommand.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleWrap.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAPI.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAutoCompletion.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCalltips.ui
-	${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorStyles.ui
-	${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropWorkspaceUnpack.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropFigurePlugins.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralApplication.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralLanguage.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralPlotSettings.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralStyles.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropHelpDock.ui
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonStartup.ui
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonGeneral.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPluginsAlgorithms.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonGeneral.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonStartup.ui
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropWorkspaceUnpack.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/uiDebugViewer.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/uiMainWindow.ui
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.ui
@@ -412,6 +413,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/global.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/mainApplication.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/pluginModel.cpp
     #${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctions.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/api/apiFunctionsGraph.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/fileDownloader.cpp
@@ -425,10 +427,9 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
-    #${CMAKE_CURRENT_SOURCE_DIR}/models/pluginModel.cpp
-	#${CMAKE_CURRENT_SOURCE_DIR}/../AddInManager/pluginModel.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/models/pluginModel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/UserModel.cpp
     #${CMAKE_CURRENT_SOURCE_DIR}/organizer/addInManager.cpp
     #${CMAKE_CURRENT_SOURCE_DIR}/organizer/algoInterfaceValidator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/designerWidgetOrganizer.cpp
@@ -438,100 +439,101 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/qsciApiManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/scriptEditorOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/uiOrganizer.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userInteractionWatcher.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/organizer/userOrganizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/organizer/widgetWrapper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonAutoInterval.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonCommon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonDataObject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonEngine.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFigure.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFont.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonItom.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonMatlab.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNpDataObject.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonNumeric.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPCL.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlugins.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonProxy.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonRegion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonQtConversion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonQtSignalMapper.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonRegion.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonRgba.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonShape.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonSharedPointerGuard.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonStream.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythontParamConversion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUi.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonRgba.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFont.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonShape.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonFigure.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonPlotItem.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonUiTimer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/pythonWorkspace.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/python/qDebugStream.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/abstractFilterDialog.cpp
-#    ${CMAKE_CURRENT_SOURCE_DIR}/ui/AbstractPropertyPageWidget.cpp
+    #${CMAKE_CURRENT_SOURCE_DIR}/ui/AbstractPropertyPageWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogAbout.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogCloseItom.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogEditBreakpoint.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogGoto.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogCloseItom.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogIconBrowser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogLoadedPlugins.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogNewPluginInstance.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogOpenNewGui.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogOpenFileWithFilter.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPluginPicker.cpp    
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogOpenNewGui.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManagerInstall.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPluginPicker.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogProperties.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReloadModule.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogTimerManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogReplace.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSaveFileWithFilter.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSelectUser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogSnapshot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogTimerManager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogVariableDetail.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogPipManagerInstall.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/helpTreeDockWidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputDialog.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/paramInputParser.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetFindWord.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleLastCommand.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleWrap.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAPI.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorAutoCompletion.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorCalltips.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropConsoleGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorScripts.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropEditorStyles.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropFigurePlugins.cpp
-	${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropWorkspaceUnpack.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralApplication.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralLanguage.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralPlotSettings.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropGeneralStyles.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropHelpDock.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPluginsAlgorithms.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonGeneral.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPythonStartup.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropPluginsAlgorithms.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/widgetPropWorkspaceUnpack.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/abstractPyScintillaWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/AIManagerWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/breakPointDockWidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.cpp    
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/callStackDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/consoleWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/fileSystemDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/helpDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/lastCommandDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/mainWindow.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/pythonMessageDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/scriptEditorWidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/figureWidget.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagementEdit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiDialog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userUiWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceDockWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/widgets/workspaceWidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagement.cpp    
-    ${CMAKE_CURRENT_SOURCE_DIR}/widgets/userManagementEdit.cpp    
 )
 
 if(MSVC)

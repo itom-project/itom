@@ -1228,6 +1228,7 @@ void ConsoleWidget::receiveStream(QString text, ito::QDebugStream::MsgStreamType
             m_startLineBeginCmd = lines() - 1;
         }
 
+        emit sendToPythonMessage(text);
         break;
 
     case ito::QDebugStream::msgStreamOut:
