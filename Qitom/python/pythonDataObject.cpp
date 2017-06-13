@@ -7498,10 +7498,6 @@ PyObject* PythonDataObject::PyDataObj_dstack(PyObject *self, PyObject *args)
 
 		return PyErr_Format(PyExc_RuntimeError, "more than one parameter was given. The filter only supports a list of dataObjects.");
     }
-	if (axis!=0)
-	{
-		return PyErr_Format(PyExc_RuntimeError, "a integer was given as second argument but the axis specification is not implemented yet.");
-	}
 
 	if (PySequence_Check(sequence))
 	{

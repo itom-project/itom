@@ -6938,9 +6938,104 @@ DataObject DataObject::div(const DataObject &mat2, const double /*scale*/) const
 
     return result;
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+//! low-level, templated method which stacks a sequence of dataObjects horizontally or vertically together .
+/*!
+The result is stored in a result matrix.
+
+\param *mats the source sequence of dataObjects. All objects must be of the same type and contain the same number of planes. Also the shape of the axis along which is not stacked must be equal to all objects.
+\param &num the number of dataObjects inclluded in mats
+\param &axis defines the axis along the dataObjects will be stacked in the res dataObject. The parameter has to be one or two.
+\param *res is the result matrix (3d DataObject), which must have a size that fits to the corresponding stack axis. Furthermore the cv::Mats must be continous
+\return retOk
+*/
+template<typename _Tp> RetVal planeStackFunc(const DataObject *mats, const int &num, const unsigned int &axis, DataObject *res)
+{
+	int nrPlanes = res->getSize(0);
+	int maxRow = res->getSize(1);
+	int maxCol = res->getSize(2);
+	int byte = sizeof(_Tp);
+	int offset, row;
 
 
+	int matIdx, resIdx;
+	const _Tp* rowPtrSrc = NULL;
+	_Tp* rowPtrDst = NULL;
+	int dObjIdx;
+	if (axis == 2)
+	{
+		int *lineLength = new int[num];
+		for (int ind = 0; ind < num; ++ind)
+		{
+			lineLength[ind] = mats[ind].getSize(mats[ind].getDims() - 1);
+		}
+		for (int plane = 0; plane < nrPlanes; ++plane)
+		{
 
+			resIdx = res->seekMat(plane);
+			offset = 0;
+			for (dObjIdx = 0; dObjIdx < num; ++dObjIdx)
+			{
+
+				matIdx = mats[dObjIdx].seekMat(plane);
+				for (row = 0; row < maxRow; ++row)
+				{
+					rowPtrSrc = mats[dObjIdx].rowPtr<_Tp>(matIdx, row);
+					rowPtrDst = res->rowPtr<_Tp>(resIdx, row);
+					memcpy(rowPtrDst + offset, rowPtrSrc, lineLength[dObjIdx] * byte);
+
+				}
+				offset += lineLength[dObjIdx];
+			}
+		}
+		lineLength = NULL;
+		delete[] lineLength;
+	}
+	else if (axis == 1)
+	{
+		int *height = new int[num];
+		const cv::Mat* srcPlane;
+		_Tp* dstData = NULL;
+		for (int ind = 0; ind < num; ++ind)
+		{
+			height[ind] = mats[ind].getSize(mats[ind].getDims() - 2);
+		}
+		for (int plane = 0; plane < nrPlanes; ++plane)
+		{
+			offset = 0;
+			for (dObjIdx = 0; dObjIdx < num; ++dObjIdx)
+			{
+				srcPlane = mats[dObjIdx].get_mdata()[mats[dObjIdx].seekMat(plane)];
+
+				if (srcPlane->isContinuous())
+				{
+					
+					dstData = (_Tp*)res->get_mdata()[plane]->data; //since this is allocated in DataObject::stack the plane is allways the right index
+					memcpy(dstData+offset, srcPlane->data, maxCol*height[dObjIdx] * byte);
+					offset += maxCol*height[dObjIdx];
+				}
+				else
+				{
+					for (row = 0; row < height[dObjIdx]; ++row)
+					{
+						rowPtrSrc = (const _Tp*)srcPlane->ptr(row);
+						rowPtrDst = (_Tp*)res->rowPtr<_Tp>(plane, row);
+						memcpy(rowPtrDst+offset, rowPtrSrc, maxCol*byte);
+					}
+					offset += row*maxCol;
+				}
+
+
+			}
+		}
+		height = NULL;
+		delete[] height;
+	}
+	
+	return ito::retOk;
+}
+typedef RetVal(*tplaneStackFunc)(const DataObject *mats, const int &num, const unsigned int &axis, DataObject *res);
+MAKEFUNCLIST(planeStackFunc)
 //! high-level method which stacks the planes of the input dataObjects to a three dimensional dataObject together. 
 /*!
 The result is stored in a result matrix of the same plane size and type. Only one of the (n-2) dimensions is allowed to have a size greter than one.
@@ -6954,39 +7049,33 @@ The result is stored in a result matrix of the same plane size and type. Only on
 {
 	if (num < 1)
 	{
-		cv::error(cv::Exception(CV_StsAssert, "a length less than one was given", "", __FILE__, __LINE__));
+		cv::error(cv::Exception(CV_StsAssert, "A length less than one was given", "", __FILE__, __LINE__));
 	}
 	if (num == 1)
 	{
 		return mats[0];
 	}
+	if (axis >= 3)
+	{
+		cv::error(cv::Exception(CV_StsAssert, "An axis greater 2 was given", "", __FILE__, __LINE__));
+	}
 
 	int type = mats[0].getType();
+	if (type == ito::tUInt32)
+	{
+		cv::error(cv::Exception(CV_StsAssert, "DataType uint32 is not supported by this function", "", __FILE__, __LINE__));
+	}
 	int *planeSize = new int[2];
 	planeSize[0] = mats[0].getSize(mats[0].getDims() - 2);
 	planeSize[1] = mats[0].getSize(mats[0].getDims() - 1);
 	int cnt;
 	int dims;
 	bool valid;
-	for (int i = 1; i < num; ++i)
-	{
-		if (mats[i].getType() != type)
-		{
-			cv::error(cv::Exception(CV_StsAssert, "at least one dataObject differ in type", "", __FILE__, __LINE__));
-			planeSize = NULL;
-			delete[] planeSize;
-		}
-		//check the last size of the last two dimensions 
-		if (mats[i].getSize(mats[i].getDims() - 1) != planeSize[1] || mats[i].getSize(mats[i].getDims() - 2) != planeSize[0])
-		{
-			cv::error(cv::Exception(CV_StsAssert, "the last two dimensions of the given dataObjects differ in size", "", __FILE__, __LINE__));
-			planeSize = NULL;
-			delete[] planeSize;
-		}
+	std::vector<int> sizes;
+	sizes.resize(2);
+	sizes[0] = mats[0].getSize(mats[0].getDims() - 2);
+	sizes[1] = mats[0].getSize(mats[0].getDims() - 1);
 
-		
-
-	}
 	//check if only one dimension excluding the last but two has a size greater than one and find the location of this  dimension
 	unsigned int stackLayers = 0;
 	int size;
@@ -7017,8 +7106,6 @@ The result is stored in a result matrix of the same plane size and type. Only on
 					{
 						objLayers = NULL;
 						delete[] objLayers;
-						planeSize = NULL;
-						delete[] planeSize;
 						cv::error(cv::Exception(CV_StsAssert, cv::format("%i-th element of sequence has more than one dimension of a size greater than one (regardless the last two).", i), "", __FILE__, __LINE__));
 					}
 				}
@@ -7033,52 +7120,128 @@ The result is stored in a result matrix of the same plane size and type. Only on
 			++stackLayers; 
 			objLayers[i] = 1;
 		}
-	}
-	
-	cv::Mat * planes = new cv::Mat[stackLayers];
-	const cv::Mat* tempPlane;
-	int planeCount = 0;
-	//copy
-	for (int i = 0; i < num; ++i)
-	{
-		for (int cnt = 0; cnt < objLayers[i]; ++cnt)
+		if (mats[i].getType() != type)
 		{
-			tempPlane = mats[i].get_mdata()[mats[i].seekMat(cnt)];
-#if (CV_MAJOR_VERSION >= 3)
-			if (tempPlane->u)
-#else
-			if (tempPlane->refcount)
-#endif
-			{
-				//the opencv matrix has its own reference counter and manages its memory -> simple shallow copies are sufficient
-				planes[planeCount++] = *tempPlane;
-			}
-			else
-			{
-				//the opencv matrix points to user-allocated data (e.g. continuous data block allocated by dataObject). In
-				//this case, a shallow copy is dangerous if the base object is deleted. Therefore, all planes have to be deeply copied:
-				tempPlane->copyTo(planes[planeCount++]);
-			}
-
+			cv::error(cv::Exception(CV_StsAssert, "At least one dataObject differ in type.", "", __FILE__, __LINE__));
+			planeSize = NULL;
+			delete[] planeSize;
 		}
 	}
-	int *shape = new int[3];
-	shape[0] = stackLayers;
-	shape[1] = planeSize[0];
-	shape[2] = planeSize[1];
-	
-	DataObject resObj(3, shape, type, planes, stackLayers);
+	switch (axis)
+	{
+	case 0:
+		for (int i = 1; i < num; ++i)//check if the shapes fit
+		{
+			if (mats[i].getType() != type)
+			{
+				cv::error(cv::Exception(CV_StsAssert, "At least one dataObject differ in type.", "", __FILE__, __LINE__));
+				planeSize = NULL;
+				delete[] planeSize;
+			}
+			//check the last size of the last two dimensions 
+			if (mats[i].getSize(mats[i].getDims() - 1) != planeSize[1] || mats[i].getSize(mats[i].getDims() - 2) != planeSize[0])
+			{
+				cv::error(cv::Exception(CV_StsAssert, "The last two dimensions of the given dataObjects differ in size.", "", __FILE__, __LINE__));
+				planeSize = NULL;
+				delete[] planeSize;
+			}
+		}
+		break;
+	case 1:
+		for (int i = 1; i < num; ++i)//check if the shapes fit
+		{
+			if (mats[i].getType() != type)
+			{
+				cv::error(cv::Exception(CV_StsAssert, "At least one dataObject differ in type.", "", __FILE__, __LINE__));
+				planeSize = NULL;
+				delete[] planeSize;
+			}
+			//check the last size of the last two dimensions 
+			if (mats[i].getSize(mats[i].getDims() - 1) != planeSize[1] || objLayers[i] != objLayers[1])
+			{
+				cv::error(cv::Exception(CV_StsAssert, "At least one dataObject has a different number of layers or a shape of the last dimension that does not fit.", "", __FILE__, __LINE__));
+				planeSize = NULL;
+				delete[] planeSize;
+			}
+			sizes[0] += mats[i].getSize(mats[i].getDims() - 2);
+		}
+		break;
+	case 2:
+		for (int i = 1; i < num; ++i)//check if the shapes fit
+		{
+			if (mats[i].getType() != type)
+			{
+				cv::error(cv::Exception(CV_StsAssert, "At least one dataObject differ in type.", "", __FILE__, __LINE__));
+				planeSize = NULL;
+				delete[] planeSize;
+			}
+			//check the last size of the last two dimensions 
+			if (mats[i].getSize(mats[i].getDims() - 2) != planeSize[0] || objLayers[i] != objLayers[1])
+			{
+				cv::error(cv::Exception(CV_StsAssert, "At least one dataObject has a different number of layers or a shape of the last but one dimension that does not fit.", "", __FILE__, __LINE__));
+				planeSize = NULL;
+				delete[] planeSize;
+			}
+			sizes[1] += mats[i].getSize(mats[i].getDims() - 1);
+		}
+		break;
+	}
+	DataObject resObj;
+	//copy
+	if (axis == 0)
+	{
+		int planeCount = 0;
+		const cv::Mat* tempPlane;
+		cv::Mat * planes = new cv::Mat[stackLayers];
+		for (int i = 0; i < num; ++i)
+		{
+			for (int cnt = 0; cnt < objLayers[i]; ++cnt)
+			{
+				tempPlane = mats[i].get_mdata()[mats[i].seekMat(cnt)];
+#if (CV_MAJOR_VERSION >= 3)
+				if (tempPlane->u)
+#else
+				if (tempPlane->refcount)
+#endif
+				{
+					//the opencv matrix has its own reference counter and manages its memory -> simple shallow copies are sufficient
+					planes[planeCount++] = *tempPlane;
+				}
+				else
+				{
+					//the opencv matrix points to user-allocated data (e.g. continuous data block allocated by dataObject). In
+					//this case, a shallow copy is dangerous if the base object is deleted. Therefore, all planes have to be deeply copied:
+					tempPlane->copyTo(planes[planeCount++]);
+				}
 
+			}
+		}
+		int *shape = new int[3];
+		shape[0] = stackLayers;
+		shape[1] = planeSize[0];
+		shape[2] = planeSize[1];
 
-	
+		resObj = DataObject(3, shape, type, planes, stackLayers);
+		shape = NULL;
+		delete[] shape;
+		planes = NULL;
+		delete[] planes;
+	}
+	else if (axis == 1)
+	{
+		resObj = DataObject(objLayers[0], sizes[0],sizes[1],type);
+		fListplaneStackFunc[type](mats, num, axis, &resObj);
+	}
+	else if (axis == 2)
+	{
 
-
-	shape = NULL;
-	delete[] shape;
+		resObj = DataObject(objLayers[0], sizes[0], sizes[1], type);
+		fListplaneStackFunc[type](mats, num, axis, &resObj);
+	}
+	objLayers = NULL;
+	delete[] objLayers;
 	planeSize = NULL;
 	delete[] planeSize;
-	planes = NULL;
-	delete[] planes;
 	return resObj;
 }
 
@@ -9834,8 +9997,7 @@ bool DataObject::deleteAllTags()
 //----------------------------------------------------------------------------------------------------------------------------------
 //!<  Function adds value to the protocol-tag. If this object is an ROI, the ROI-coordinates are added. If string do not end with an \n, \n is added.
 int DataObject::addToProtocol(const std::string &value)
-{
-    if(!m_pDataObjectTags || m_dims < 1) return 1; //error
+{    if(!m_pDataObjectTags || m_dims < 1) return 1; //error
     /* Check if object is only an ROI */
     bool isROI = false;
     ByteArray newcontent; // Start with an empty sting
