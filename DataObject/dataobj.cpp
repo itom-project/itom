@@ -8111,66 +8111,86 @@ DataObject DataObject::splitColor(const char* destinationColor, const int& dtype
 
     return resObj;
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+//! low-level, templated method to take a line cut across the planes of a dataObject. 
+/*!
+This method takes a line cut across the planes of a 2d or 3d dataObject. The result is stored in a result matrix.
+The list containing coordinates of the start and endpoint is interpretated as followed: [x0,y0,x1,y1]
+
+\param *src is source matrix
+\param *coordinates points to a int arrray containing len elements
+\param *len length of coordinates list
+\param *res result dataObject of the right shape
+\return retOk
+*/
 template<typename _Tp> RetVal lineCutFunc(const DataObject *src, const int* coordinates,const int& len , DataObject *res)
 {
-	int nrPoints = res->getSize(1);
-	bool _unused;
 	const int dims = src->getDims();
-	int matIdx = src->seekMat(0);
+	const int nrPoints = res->getSize(res->getDims()-1);
+	const int nrPlanes = dims == 3 ? src->getSize(0) : 1;
+	bool _unused;
+	int matIdx;
+	const _Tp* srcPtr;
+	_Tp* dstPtr;
 	if (coordinates[0] == coordinates[2])//pure line in y direction
 	{
 		
+		size_t step;
+		for (int plane = 0; plane < nrPlanes; ++plane)
+		{
+			matIdx = src->seekMat(plane);
+			srcPtr = (src->rowPtr<_Tp>(matIdx, coordinates[1])) + coordinates[0];
+			dstPtr = res->rowPtr<_Tp>(0, plane);
+			step = static_cast<const cv::Mat_<_Tp> *>(src->get_mdata()[matIdx])->step1();
+			step = src->getType() == ito::tRGBA32 ? step / 4 : step;
+			step = src->getType() == ito::tComplex64 || src->getType() == ito::tComplex128 ? step / 2 : step;
+			step = coordinates[3] < coordinates[1] ? step*-1 : step;
 
-		const _Tp* srcPtr = (src->rowPtr<_Tp>(matIdx, coordinates[1])) + coordinates[0];
-		_Tp* dstPtr = (_Tp*)(static_cast<cv::Mat_<_Tp> *>((res->get_mdata())[0])->data);
-		size_t step = static_cast<const cv::Mat_<_Tp> *>(src->get_mdata()[matIdx])->step1();
-		step = src->getType() == ito::tRGBA32 ? step / 4 : step;
-		step = src->getType() == ito::tComplex64 || src->getType() == ito::tComplex128 ? step / 2 : step;
-		step = coordinates[3] < coordinates[1] ? step*-1 : step;
-		for (int row = 0; row < nrPoints; ++row)
-		{
-			dstPtr[row] = *(srcPtr+step*row);
+			for (int row = 0; row < nrPoints; ++row)
+			{
+				dstPtr[row] = *(srcPtr + step*row);
+			}
 		}
-		std::string  description(src->getAxisDescription(dims - 2, _unused));
-		std::string unit(src->getAxisUnit(dims - 2, _unused));
-		if (description == "")
-		{
-			description = "y-axis";
-		}
-		res->setAxisDescription(1, description);
-		if (unit == "")
-		{
-			unit = "px";
-		}
-		res->setAxisScale(1,src->getAxisScale(dims - 2));
-		res->setAxisOffset(1,src->getAxisOffset(dims - 2));
-		res->setAxisUnit(1, unit);
-		res->setValueDescription(src->getValueDescription());
-		res->setValueUnit(src->getValueUnit());
+			std::string  description(src->getAxisDescription(dims - 2, _unused));
+			std::string unit(src->getAxisUnit(dims - 2, _unused));
+			if (description == "")
+			{
+				description = "y-axis";
+			}
+			res->setAxisDescription(1, description);
+			if (unit == "")
+			{
+				unit = "px";
+			}
+			res->setAxisScale(1, src->getAxisScale(dims - 2));
+			res->setAxisOffset(1, src->getAxisOffset(dims - 2));
+			res->setAxisUnit(1, unit);
+			res->setValueDescription(src->getValueDescription());
+			res->setValueUnit(src->getValueUnit());
+		
 
 	}
 	else if (coordinates[1] == coordinates[3])//pure line in x direction
 	{
-		
-		const _Tp* srcPtr = (src->rowPtr<_Tp>(matIdx, coordinates[1])) + coordinates[0];
-
-		_Tp* dstPtr((_Tp*)(static_cast<cv::Mat_<_Tp> *>((res->get_mdata())[0])->data));
-		if (coordinates[2] > coordinates[0])
+		for (int plane = 0; plane < nrPlanes; ++plane)
 		{
-			
-			memcpy(dstPtr, srcPtr, res->getSize()[1] * sizeof(_Tp));
-		}
-		else
-		{
-			for (int col = 0; col < nrPoints; ++col)
+			matIdx = src->seekMat(plane);
+			srcPtr = (src->rowPtr<_Tp>(matIdx, coordinates[1])) + coordinates[0];
+			dstPtr = res->rowPtr<_Tp>(0, plane);
+			if (coordinates[2] > coordinates[0])
 			{
-				dstPtr[col] = srcPtr[-col];
+
+				memcpy(dstPtr, srcPtr, res->getSize()[1] * sizeof(_Tp));
 			}
+			else
+			{
+				for (int col = 0; col < nrPoints; ++col)
+				{
+					dstPtr[col] = srcPtr[-col];
+				}
+			}
+
 		}
-
-		
-		
-
 		std::string  description(src->getAxisDescription(dims - 1, _unused));
 		std::string unit(src->getAxisUnit(dims - 1, _unused));
 		if (description == "")
@@ -8189,6 +8209,7 @@ template<typename _Tp> RetVal lineCutFunc(const DataObject *src, const int* coor
 		res->setValueUnit(src->getValueUnit());
 
 
+		
 	}
 	else
 	{
@@ -8199,11 +8220,7 @@ template<typename _Tp> RetVal lineCutFunc(const DataObject *src, const int* coor
 
 		cv::Mat_<_Tp>* dstMat(static_cast<cv::Mat_<_Tp> *>((res->get_mdata())[0]));
 
-		std::vector<size_t> matSteps;
-		matSteps.resize(nrPoints);
-		float stepSizePhys;
-
-		if (nrPoints > 0)
+		if (nrPoints > 1)
 		{
 			double dxPhys = src->getPixToPhys(dims - 1, coordinates[2], _unused) - src->getPixToPhys(dims - 1, coordinates[0], _unused);
 			double dyPhys = src->getPixToPhys(dims - 2, coordinates[3], _unused) - src->getPixToPhys(dims - 2, coordinates[1], _unused);
@@ -8213,8 +8230,7 @@ template<typename _Tp> RetVal lineCutFunc(const DataObject *src, const int* coor
 		{
 			res->setAxisScale(1, 0.0);
 		}
-		int matIdx = src->seekMat(0);
-
+		
 		int pdx, pdy, ddx, ddy, es, el;
 		if (dx > dy)
 		{
@@ -8237,215 +8253,39 @@ template<typename _Tp> RetVal lineCutFunc(const DataObject *src, const int* coor
 		int err = el / 2; //0; /* error value e_xy */
 		long x = coordinates[0];
 		long y = coordinates[1];
-		_Tp* dstData((_Tp*)(dstMat->data));
+		_Tp* dstData = (_Tp*)dstMat->data;
+		size_t dstStep = dstMat->step1();
+		dstStep = src->getType() == ito::tRGBA32 ? dstStep / 4 : dstStep;
+		dstStep = src->getType() == ito::tComplex64 || src->getType() == ito::tComplex128 ? dstStep / 2 : dstStep;
 
-		dstData[0] = src->rowPtr<_Tp>(matIdx, coordinates[1])[coordinates[0]]; //set the first element
+		int plane;
+		int *matIdxArr = new int[nrPlanes];
+		for (plane = 0; plane < nrPlanes; ++plane)
+		{
+			matIdxArr[plane] = src->seekMat(plane);
+			dstData[plane*dstStep] = src->rowPtr<_Tp>(matIdxArr[plane], coordinates[1])[coordinates[0]]; //set the first element
+		}
 		for (unsigned int n = 1; n < (unsigned int)nrPoints; n++)
-		{
-
-
-			err -= es;
-			if (err < 0)
 			{
-				err += el;
-				x += ddx;
-				y += ddy;
+				err -= es;
+				if (err < 0)
+				{
+					err += el;
+					x += ddx;
+					y += ddy;
+				}
+				else
+				{
+					x += pdx;
+					y += pdy;
+				}
+				for (plane = 0; plane < nrPlanes; ++plane)
+				{
+					dstData[n+plane*dstStep] = src->rowPtr<_Tp>(matIdxArr[plane], y)[x];
+				}
 			}
-			else
-			{
-				x += pdx;
-				y += pdy;
-			}
-
-			dstData[n] = src->rowPtr<_Tp>(matIdx, y)[x];
-		}
-
-		std::string  description(src->getAxisDescription(dims - 2, _unused));
-		std::string unit(src->getAxisUnit(dims - 2, _unused));
-		if (unit == "") unit = "px";
-
-		std::string descr2 = src->getAxisDescription(dims - 1, _unused);
-		std::string unit2 = src->getAxisUnit(dims - 1, _unused);
-		if (unit2 == "")
-		{
-			unit2 = "px";
-		}
-		if (description == "" && descr2 == "")
-		{
-			if (unit == "" && unit2 == "")
-			{
-				res->setAxisDescription(1, "x/y-axis");
-				res->setAxisUnit(1, "");
-			}
-			else
-			{
-				res->setAxisDescription(1, "x/y-axis");
-				res->setAxisUnit(1, unit + '/' + unit2);
-			}
-		}
-		else
-		{
-			if (unit == "" && unit2 == "")
-			{
-				res->setAxisDescription(1, description + '/' + descr2);
-				res->setAxisUnit(1, "");
-			}
-			else
-			{
-				res->setAxisDescription(1, description + '/' + descr2);
-				res->setAxisUnit(1, unit + '/' + unit2);
-
-			}
-		}
-		res->setValueDescription(src->getValueDescription());
-		res->setValueUnit(src->getValueUnit());
-
-
-	}
-
-	return ito::retOk;
-}
-template<> RetVal lineCutFunc<ito::uint32>(const DataObject *src, const int* coordinates, const int& len, DataObject *res)
-{
-	int nrPoints = res->getSize(1);
-	bool _unused;
-	const int dims = src->getDims();
-	int matIdx = src->seekMat(0);
-
-	if (coordinates[0] == coordinates[2])//pure line in y direction
-	{
-
-
-		ito::uint32* dstPtr = (ito::uint32*)(static_cast<cv::Mat_<ito::uint32> *>((res->get_mdata())[0])->data);
-		int direction = coordinates[3] < coordinates[1] ? -1 : 1;
-		for (int row = 0; row < nrPoints; ++row)
-		{
-			dstPtr[row] = src->rowPtr<ito::uint32>(matIdx, direction*row+coordinates[1])[coordinates[0]];// need to use rowPtr function sinze the step1 method of openCv does not work for this type
-		}
-		std::string  description(src->getAxisDescription(dims - 2, _unused));
-		std::string unit(src->getAxisUnit(dims - 2, _unused));
-		if (description == "")
-		{
-			description = "y-axis";
-		}
-		res->setAxisDescription(1, description);
-		if (unit == "")
-		{
-			unit = "px";
-		}
-		res->setAxisScale(1, src->getAxisScale(dims - 2));
-		res->setAxisOffset(1, src->getAxisOffset(dims - 2));
-		res->setAxisUnit(1, unit);
-		res->setValueDescription(src->getValueDescription());
-		res->setValueUnit(src->getValueUnit());
-
-	}
-	else if (coordinates[1] == coordinates[3])//pure line in x direction
-	{
-
-		const ito::uint32* srcPtr = (src->rowPtr<ito::uint32>(matIdx, coordinates[1])) + coordinates[0];
-
-		ito::uint32* dstPtr((ito::uint32*)(static_cast<cv::Mat_<ito::uint32> *>((res->get_mdata())[0])->data));
-		if (coordinates[2] > coordinates[0])
-		{
-
-			memcpy(dstPtr, srcPtr, res->getSize()[1] * sizeof(ito::uint32));
-		}
-		else
-		{
-			for (int col = 0; col < nrPoints; ++col)
-			{
-				dstPtr[col] = srcPtr[-col];
-			}
-		}
-		std::string  description(src->getAxisDescription(dims - 1, _unused));
-		std::string unit(src->getAxisUnit(dims - 1, _unused));
-		if (description == "")
-		{
-			description = "x-axis";
-		}
-		res->setAxisDescription(1, description);
-		if (unit == "")
-		{
-			unit = "px";
-		}
-		res->setAxisScale(1, src->getAxisScale(dims - 1));
-		res->setAxisOffset(1, src->getAxisOffset(dims - 1));
-		res->setAxisUnit(1, unit);
-		res->setValueDescription(src->getValueDescription());
-		res->setValueUnit(src->getValueUnit());
-
-
-	}
-	else
-	{
-
-		int dx = std::abs(coordinates[0] - coordinates[2]);
-		int incx = coordinates[0] <= coordinates[2] ? 1 : -1;
-		int dy = std::abs(coordinates[1] - coordinates[3]);
-		int incy = coordinates[1] <= coordinates[3] ? 1 : -1;
-		cv::Mat_<ito::uint32>* dstMat(static_cast<cv::Mat_<ito::uint32> *>((res->get_mdata())[0]));
-
-		std::vector<size_t> matSteps;
-		matSteps.resize(nrPoints);
-		float stepSizePhys;
-
-		if (nrPoints > 0)
-		{
-			double dxPhys = src->getPixToPhys(dims - 1, coordinates[2], _unused) - src->getPixToPhys(dims - 1, coordinates[0], _unused);
-			double dyPhys = src->getPixToPhys(dims - 2, coordinates[3], _unused) - src->getPixToPhys(dims - 2, coordinates[1], _unused);
-			res->setAxisScale(1, std::sqrt((dxPhys * dxPhys) + (dyPhys * dyPhys)) / (nrPoints - 1));
-		}
-		else
-		{
-			res->setAxisScale(1, 0.0);
-		}
-		int matIdx = src->seekMat(0);
-
-		int pdx, pdy, ddx, ddy, es, el;
-		if (dx > dy)
-		{
-			pdx = incx;
-			pdy = 0;
-			ddx = incx;
-			ddy = incy;
-			es = dy;
-			el = dx;
-		}
-		else
-		{
-			pdx = 0;
-			pdy = incy;
-			ddx = incx;
-			ddy = incy;
-			es = dx;
-			el = dy;
-		}
-		int err = el / 2; //0; /* error value e_xy */
-		long x = coordinates[0];
-		long y = coordinates[1];
-		ito::uint32* dstData((ito::uint32*)(dstMat->data));
-
-		dstData[0] = src->rowPtr<ito::uint32>(matIdx, coordinates[1])[coordinates[0]]; //set the first element
-		for (unsigned int n = 1; n < (unsigned int)nrPoints; n++)
-		{
-
-
-			err -= es;
-			if (err < 0)
-			{
-				err += el;
-				x += ddx;
-				y += ddy;
-			}
-			else
-			{
-				x += pdx;
-				y += pdy;
-			}
-
-			dstData[n] = src->rowPtr<ito::uint32>(matIdx, y)[x];
-		}
+		matIdxArr = NULL;
+		delete[] matIdxArr;
 
 		std::string  description(src->getAxisDescription(dims - 2, _unused));
 		std::string unit(src->getAxisUnit(dims - 2, _unused));
@@ -8495,20 +8335,31 @@ template<> RetVal lineCutFunc<ito::uint32>(const DataObject *src, const int* coo
 typedef RetVal(*tlineCutFunc)(const DataObject *src, const int* coordinates, const int& len, DataObject *res);
 MAKEFUNCLIST(lineCutFunc)
 //----------------------------------------------------------------------------------------------------------------------------------
+//! high-level method which takes a line cut across the planes of a dataObject. 
+/*!
+The result is stored in a 2d result matrix of the same type.
+\param *coordinates start and end point coordinates of line cut. The coordinates are interpreted as followed: [x0,y0,x1,y1].
+\param &len length of coordinates list.
+\return result dataObject
+*/
 DataObject DataObject::lineCut(const int* coordinates, const int& len) const
 {
+	if (this->getType() == ito::tUInt32)
+	{
+		cv::error(cv::Exception(CV_StsAssert, "This function does not support uint32", "", __FILE__, __LINE__));
+	}
 	if (len != 4)
 	{
-		cv::error(cv::Exception(CV_StsAssert, "the length of the coordinate list has to be four", "", __FILE__, __LINE__));
+		cv::error(cv::Exception(CV_StsAssert, "The length of the coordinate list has to be four", "", __FILE__, __LINE__));
 	}
 	int dims(this -> getDims());
 	if (dims > 3)
 	{
-		cv::error(cv::Exception(CV_StsAssert, "function only supprts 2D dataObjects", "", __FILE__, __LINE__));
+		cv::error(cv::Exception(CV_StsAssert, "Function only supports input dataObject up to 3 dimensions", "", __FILE__, __LINE__));
 	}
-	int sizeX = -1;
-	int sizeY = -1;
-	int sizeZ = -1;
+	int sizeX;
+	int sizeY;
+	int sizeZ = 1;
 	//validate coordinates
 	if (dims == 3)
 	{
@@ -8528,21 +8379,22 @@ DataObject DataObject::lineCut(const int* coordinates, const int& len) const
 		{
 			if (coordinates[i] < 0 || coordinates[i] >= sizeY)
 			{
-				cv::error(cv::Exception(CV_StsAssert, cv::format("the %i-th entry of the coordinate list exeeds the size of the dataObject", i+1), "", __FILE__, __LINE__));
+				cv::error(cv::Exception(CV_StsAssert, cv::format("The %i-th entry of the coordinate list exeeds the size of the dataObject", i+1), "", __FILE__, __LINE__));
 			}
 		}
 		else
 		{
 			if (coordinates[i] < 0 || coordinates[i] >= sizeX)
 			{
-				cv::error(cv::Exception(CV_StsAssert, cv::format("the %i-th entry of the coordinate list exeeds the size of the dataObject",i+1), "", __FILE__, __LINE__));
+				cv::error(cv::Exception(CV_StsAssert, cv::format("The %i-th entry of the coordinate list exeeds the size of the dataObject",i+1), "", __FILE__, __LINE__));
 			}
 		}
 	}
 	//calculate the shape of the new object
 
 	int numElements = 1 + std::max(std::abs(coordinates[0] - coordinates[2]), std::abs(coordinates[1] - coordinates[3]));
-	DataObject resObj(numElements, this->getType());
+	
+	DataObject resObj(sizeZ, numElements, this->getType());
 	fListlineCutFunc[this->getType()](this, coordinates, len, &resObj);
 	return resObj;
 
