@@ -4099,9 +4099,12 @@ bool PythonEngine::deleteVariable(bool globalNotLocal, const QStringList &fullIt
             PyObject *parentContainer = NULL;
             PyObject *name = NULL;
 
-            foreach(const QString &fullItemName, fullItemNames)
+            QStringList fullItemNamesAsc = fullItemNames;
+            fullItemNamesAsc.sort(); //ascending sorting, however if several indices in one list or tuple should be deleted, it is necessary to start with the last one...
+
+            for (int i = fullItemNamesAsc.size() - 1; i >= 0; --i)
             {
-                fullNameSplit = fullItemName.split(PyWorkspaceContainer::delimiter);
+                fullNameSplit = fullItemNamesAsc[i].split(PyWorkspaceContainer::delimiter);
                 if (fullNameSplit.size() > 0 && fullNameSplit[0] == "")
                 {
                     fullNameSplit.removeFirst();
