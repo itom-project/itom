@@ -174,7 +174,7 @@ namespace ito {
         // pythonMessageDock
         m_pythonMessageDock = new PythonMessageDockWidget(tr("Python Messages"), "itomPythonMessageDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
         m_pythonMessageDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
-        addDockWidget(Qt::LeftDockWidgetArea, m_pythonMessageDock);
+        addDockWidget(Qt::BottomDockWidgetArea, m_pythonMessageDock);
 
         // helpDock
         m_helpDock = new HelpDockWidget(tr("Help"), "itomHelpDockWidget", this, true, true, AbstractDockWidget::floatingWindow);
