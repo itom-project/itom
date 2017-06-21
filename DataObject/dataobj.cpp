@@ -8338,11 +8338,11 @@ MAKEFUNCLIST(lineCutFunc)
 //! high-level method which takes a line cut across the planes of a dataObject. 
 /*!
 The result is stored in a 2d result matrix of the same type.
-\param *coordinates start and end point coordinates of line cut. The coordinates are interpreted as followed: [x0,y0,x1,y1].
+\param *coordinates start and end point coordinates of line cut (phyiscal). The coordinates are interpreted as followed: [x0,y0,x1,y1].
 \param &len length of coordinates list.
 \return result dataObject
 */
-DataObject DataObject::lineCut(const int* coordinates, const int& len) const
+DataObject DataObject::lineCut(const double* coordinates, const int& len) const
 {
 	if (this->getType() == ito::tUInt32)
 	{
@@ -8373,18 +8373,29 @@ DataObject DataObject::lineCut(const int* coordinates, const int& len) const
 		sizeY = this->getSize(0);
 		
 	}
+
+    int *coordinatesd = new int[4];
+
+    for (int i = 0; i < 4; ++i)
+    {
+        coordinatesd[i] = (int)(this->getPhysToPix(dims - 1, coordinates[i]) + 0.5);
+    }
+
+
 	for (int i = 0; i < len; ++i)
 	{
 		if (i % 2)
 		{
-			if (coordinates[i] < 0 || coordinates[i] >= sizeY)
+            coordinatesd[i] = (int)(this->getPhysToPix(dims - 2, coordinates[i]));
+            if (coordinatesd[i] < 0 || coordinatesd[i] >= sizeY)
 			{
 				cv::error(cv::Exception(CV_StsAssert, cv::format("The %i-th entry of the coordinate list exeeds the size of the dataObject", i+1), "", __FILE__, __LINE__));
 			}
 		}
 		else
 		{
-			if (coordinates[i] < 0 || coordinates[i] >= sizeX)
+            coordinatesd[i] = (int)(this->getPhysToPix(dims - 1, coordinates[i]));
+            if (coordinatesd[i] < 0 || coordinatesd[i] >= sizeX)
 			{
 				cv::error(cv::Exception(CV_StsAssert, cv::format("The %i-th entry of the coordinate list exeeds the size of the dataObject",i+1), "", __FILE__, __LINE__));
 			}
@@ -8392,10 +8403,10 @@ DataObject DataObject::lineCut(const int* coordinates, const int& len) const
 	}
 	//calculate the shape of the new object
 
-	int numElements = 1 + std::max(std::abs(coordinates[0] - coordinates[2]), std::abs(coordinates[1] - coordinates[3]));
+    int numElements = 1 + std::max(std::abs(coordinatesd[0] - coordinatesd[2]), std::abs(coordinatesd[1] - coordinatesd[3]));
 	
 	DataObject resObj(sizeZ, numElements, this->getType());
-	fListlineCutFunc[this->getType()](this, coordinates, len, &resObj);
+    fListlineCutFunc[this->getType()](this, coordinatesd, len, &resObj);
 	return resObj;
 
 }

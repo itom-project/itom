@@ -7565,8 +7565,8 @@ The returned dataObject contains a lineCut across the 2d source dataObject.\n\
 \n\
 Parameters \n\
 ----------- \n\
-obj : {sequence of int} \n\
-	Sequence (list) containing four integers representing the coordinates of the start- and endpoint. The values are interpreted as followed: [x0,y0,x1,y1]\n\
+obj : {sequence of double} \n\
+	Sequence (list) containing four floating-point values representing the physical coordinates of the start- and endpoint. The values are interpreted as followed: [x0,y0,x1,y1]\n\
 \n\
 Returns \n\
 ------- \n\
@@ -7579,25 +7579,26 @@ PyObject* PythonDataObject::PyDataObj_lineCut(PyDataObject *self, PyObject *args
 	PyObject *sequence = NULL;
 	if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &sequence))
 	{
-		return PyErr_Format(PyExc_RuntimeError, "the given parameters do not fit. The filter only supports a list of integers.");
+		return PyErr_Format(PyExc_RuntimeError, "the given parameters do not fit. The filter only supports a list of doubles.");
 	}
 
 	Py_ssize_t len = PySequence_Size(sequence);
 	if (len != 4)
 	{
-		return PyErr_Format(PyExc_RuntimeError, "a list containig four integers was expected (%i where given)",len);
+		return PyErr_Format(PyExc_RuntimeError, "a list containig four doubles was expected (%i where given)",len);
 	}
-	int* coordinates = new int[len];
+
+	double* coordinates = new double[len];
 	PyObject *temp = NULL;
 	for (int i = 0; i < len; ++i)
 	{
 		temp = PyList_GetItem(sequence, i); //borrowed
-		if (!PyLong_Check(temp))
+        if (!(PyLong_Check(temp) || PyFloat_Check(temp)))
 		{
-			PyErr_SetString(PyExc_ValueError, "at least one element in the offset list has no integer type");
-			break;
+			return PyErr_Format(PyExc_ValueError, "at least one element in the coordinate list has no double type");
 		}
-		coordinates[i] = PyLong_AsLong(temp); 
+        coordinates[i] = PyFloat_AsDouble(temp);
+        
 	}
 	PyDataObject* retObj = PythonDataObject::createEmptyPyDataObject(); // new reference
 	
@@ -7616,14 +7617,8 @@ PyObject* PythonDataObject::PyDataObj_lineCut(PyDataObject *self, PyObject *args
 		retObj->dataObject->addToProtocol("Created taking a lineCut across a dataObject.");
 	}
 	
-
-
-
-
 	DELETE_AND_SET_NULL_ARRAY(coordinates);
 	return (PyObject*)retObj;
-
-
 
 }
 
