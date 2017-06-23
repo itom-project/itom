@@ -257,6 +257,11 @@ Unpack the PCL source on your hard drive. Create a build_x64/build_x86 folder an
 .. note::
 
     PCL compiles only with Eigen3.2.7 version. Version 3.2.8 does not work. 
+    
+.. warning::
+    
+    PCL version 1.8.0 causes a compilation error due to some syntax error. 
+    A workaround can be find here: https://stackoverflow.com/questions/38508319/pcl-visualizer-cpp-vs-2015-build-error/
 
 Changes in the setup.py file
 -----------------------------
