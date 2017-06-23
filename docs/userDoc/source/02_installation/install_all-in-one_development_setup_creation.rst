@@ -179,8 +179,14 @@ Creating the 3rdPartyPCL folder
 -------------------------------
 
 For the 3rdPartyPCL folder the software packages Boost, Eigen, Flann, QHull and Glew can be downloaded as binaries. VTK and PCL must be compiled on your computer. 
-If Flann or QHull is compile add the entry **CMAKE_DEBUG_POSTFIX** of type **STRING** with the value = **"-gd"**.
 
+Compile Flann, QHull
+=====================
+
+If you compile Flann or QHull by yourself, add the entry **CMAKE_DEBUG_POSTFIX** of type **STRING** with the value = **"-gd"**. 
+* Uncheck in CMake **BUILD_DOC, BUILD_EXAMPLES, BUILD_EXAMPLES, BUILD_MATLAB_BINDINGS, BUILD_PYTHON_BINDINGS, BUILD_TESTS**. 
+* Set the **CMAKE_INSTALL_PREFIX** to the Flann or QHull folder in the **${MAINDIR}/3rdPartyPCL** folder. 
+* Compile the **INSTALL** solution of the MSVC Project. 
 
 Create Boost, Eigen, Flann, QHull, Glew
 ========================================
