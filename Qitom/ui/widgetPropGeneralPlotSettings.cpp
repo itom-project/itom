@@ -62,6 +62,7 @@ namespace ito
         ui.shapeLabelFontBtn->setCurrentFont(settings.value("shapeLabelFont", ("Verdana", 10)).value<QFont>());
         ui.geometricShapePenBtn->setPen(settings.value("geometricShapePen", QPen(QBrush(Qt::red), 1, Qt::SolidLine)).value<QPen>());
         ui.shapeLabelTextColorBtn->setColor(settings.value("shapeLabelTextColor", QColor(Qt::white)).value<QColor>());
+		ui.legendLabelWidthSpin->setValue(settings.value("legendLabelWidth", 15).value<int>());
         settings.endGroup();
         settings.endGroup();
     }
@@ -92,6 +93,7 @@ namespace ito
       settings.setValue("shapeLabelFont", ui.shapeLabelFontBtn->currentFont());
       settings.setValue("geometricShapePen", ui.geometricShapePenBtn->getPen());
       settings.setValue("shapeLabelTextColor", ui.shapeLabelTextColorBtn->color());
+	  settings.setValue("legendLabelWidth", ui.legendLabelWidthSpin->value());
 
 
       settings.endGroup();
@@ -120,6 +122,7 @@ namespace ito
         ui.shapeLabelFontBtn->setCurrentFont(QFont("Verdana", 10));
         ui.geometricShapePenBtn->setPen(QPen(QBrush(Qt::red), 1, Qt::SolidLine));
         ui.shapeLabelTextColorBtn->setColor(Qt::red);
+		ui.legendLabelWidthSpin->setValue(15);
         this->update();
     }
 
