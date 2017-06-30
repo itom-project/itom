@@ -2062,7 +2062,8 @@ namespace ito
         else
         {
             ReadSigns = stream.documentVersion();
-            if (ReadSigns.compare("1.0") == 0)
+			const QString stringToComp = "1.0";
+            if (ReadSigns.compare(stringToComp) == 0)
             {
                 paramFile.close();
                 return  RetVal(retError, 0, QObject::tr("Load object failed: wrong xml version").toLatin1().data());
@@ -2070,7 +2071,8 @@ namespace ito
         }
 
         ReadSigns = stream.documentEncoding();
-        if (ReadSigns.compare("UTF-8") == 0)
+		const QString stringToComp = "UTF-8";
+        if (ReadSigns.compare(stringToComp) == 0)
         {
             paramFile.close();
             return RetVal(retError, 0, QObject::tr("Load object failed: wrong document encoding").toLatin1().data());

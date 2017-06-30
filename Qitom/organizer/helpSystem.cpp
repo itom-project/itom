@@ -325,14 +325,16 @@ RetVal HelpSystem::getCheckSumOfBuild(QDir &helpDir, QString &projectFileName, q
         }
 
         ReadSigns = stream.documentVersion();
-        if(!ReadSigns.compare("1.0"))
+		const QString stringToComp = "1.0";
+        if(!ReadSigns.compare(stringToComp))
         {
             file.close();
             return RetVal(retWarning, 0, QObject::tr("Load XML file failed:  wrong xml version").toLatin1().data());
         }
 
         ReadSigns = stream.documentEncoding();
-        if(!ReadSigns.compare("UTF-8"))
+		const QString stringToCompUTF = "UTF-8";
+        if(!ReadSigns.compare(stringToCompUTF))
         {
             file.close();
             return RetVal(retWarning, 0, QObject::tr("Load XML file failed: wrong document encoding").toLatin1().data());
