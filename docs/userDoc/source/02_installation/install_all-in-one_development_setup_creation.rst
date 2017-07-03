@@ -76,7 +76,7 @@ This folder is for optional software, which is not necessary to build and compil
 qpatch folder
 ``````````````
 
-The folder *qpatch* contains the files, which are needed to patch the prebuild version of Qt version. Copy following files into **${MAINDIR}**/_install_/qpatch folder.
+The folder *qpatch* contains the files, which are needed to patch the prebuild version of Qt version. Copy following files into **${MAINDIR}**/_install_/qpatch folder. Change the **root** Qt path and the target path in the **create_files_to_patch.py** file. Execute the script and check if the filenames in the **files-to-patch-windows** has been found. 
 
 .. figure:: images/all-in-one-create/folder_qpatch.png
    :scale: 100%
