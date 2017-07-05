@@ -1079,7 +1079,7 @@ RetVal ConsoleWidget::executeCmdQueue()
         }
 
         autoAdaptLineNumberColumnWidth();
-		autoLineDelete();
+		//autoLineDelete();
     }
 
     return RetVal(retOk);
@@ -1262,7 +1262,7 @@ void ConsoleWidget::receiveStream(QString text, ito::QDebugStream::MsgStreamType
     }
 
     autoAdaptLineNumberColumnWidth();
-	autoLineDelete();
+	//autoLineDelete();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
