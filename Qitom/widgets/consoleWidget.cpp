@@ -1079,6 +1079,7 @@ RetVal ConsoleWidget::executeCmdQueue()
         }
 
         autoAdaptLineNumberColumnWidth();
+		autoLineDelete();
     }
 
     return RetVal(retOk);
@@ -1261,6 +1262,7 @@ void ConsoleWidget::receiveStream(QString text, ito::QDebugStream::MsgStreamType
     }
 
     autoAdaptLineNumberColumnWidth();
+	autoLineDelete();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1675,7 +1677,15 @@ void ConsoleWidget::contextMenuEvent(QContextMenuEvent *e)
         menu->popup(e->globalPos());
     }
 }
-
+//----------------------------------------------------------------------------------------------------------------------------------
+void ConsoleWidget::autoLineDelete()
+{
+	if (lines() > 50000)
+	{
+		setSelection(0, 0, 25000, lineLength(25000));
+		removeSelectedText();	
+	}
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------------------------------------
 DequeCommandList::DequeCommandList(int maxLength)

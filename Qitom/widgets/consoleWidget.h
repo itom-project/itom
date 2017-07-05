@@ -112,6 +112,7 @@ private:
 
     RetVal executeCmdQueue();
 
+	void autoLineDelete();
     void moveCursorToEnd();
     void moveCursorToValidRegion();
 
