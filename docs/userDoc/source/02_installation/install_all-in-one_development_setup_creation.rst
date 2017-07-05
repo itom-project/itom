@@ -38,7 +38,6 @@ Download packages for the 3rdPartyPCL tools
 * `Eigen 3.2.7 repository <http://bitbucket.org/eigen/eigen/downloads/>`_ (eigen-eigen-af907dececc0.zip)
 * `VTK 7.0.0 source <http://www.vtk.org/download/>`_ (VTK-7.0.0.zip)
 * `PCL 1.8.0 source <http://github.com/PointCloudLibrary/pcl/>`_ (pcl-master.zip)
-* `Glew 1.13.0 binaries <http://glew.sourceforge.net/>`_ (glew-1.13.0-win32.zip)
 * FLANN and QHULL can be copied from the current all-in-one development version. 
 
 Install Visual Studio 2013
@@ -178,7 +177,7 @@ Execute the **qscintilla_install.bat** file. After the successfull compilation, 
 Creating the 3rdPartyPCL folder
 -------------------------------
 
-For the 3rdPartyPCL folder the software packages Boost, Eigen, Flann, QHull and Glew can be downloaded as binaries. VTK and PCL must be compiled on your computer. 
+For the 3rdPartyPCL folder the software packages Boost, Eigen, Flann and QHull can be downloaded as binaries. VTK and PCL must be compiled on your computer. 
 
 Compile Flann, QHull
 =====================
@@ -188,7 +187,7 @@ If you compile Flann or QHull by yourself, add the entry **CMAKE_DEBUG_POSTFIX**
 * Set the **CMAKE_INSTALL_PREFIX** to the Flann or QHull folder in the **${MAINDIR}/3rdPartyPCL** folder. 
 * Compile the **INSTALL** solution of the MSVC Project. 
 
-Create Boost, Eigen, Flann, QHull, Glew
+Create Boost, Eigen, Flann, QHull
 ========================================
 
 Execute the **boost_1_60_0-msvc-12.0-64.exe** file and install boost on your hard drive. Copy than the folders **boost** and **lib** into **${MAINDIR}/3rdPartyPCL/boost1.60.0-64**. 
@@ -197,7 +196,6 @@ Unzip from the Eigen zip-file the folders **Eigen** and **unupported** into the 
 
 * Copy flann1.7.1 into **${MAINDIR}/3rdPartyPCL/flann1.7.12**. 
 * Copy qhull-2012.1 into **${MAINDIR}/3rdPartyPCL/qhull-2012.1**. 
-* Unzip the Glew folders into **${MAINDIR}/3rdPartyPCL/glew-1.13.0**. 
 
 Compile VTK
 ===========
@@ -238,8 +236,6 @@ Unpack the PCL source on your hard drive. Create a build_x64/build_x86 folder an
 * Set **QHULL_INCLUDE_DIR** include dir to ${MAINDIR}/3rdPartyPCL/qhull-2012.1/include
 * Set **QHULL_LIBRARY** dir to ${MAINDIR}/3rdPartyPCL/qhull-2012.1/lib/qhullstatic.lib
 * Set **QHULL_LIBRARY_DEBURG** dir to ${MAINDIR}/3rdPartyPCL/qhull-2012.1/lib/qhullstatic_d.lib
-* Set **GLEW_GLEW_LIBRARY** ${MAINDIR}/3rdPartyPCL/glew-1.13.0/lib/Release/x64/glew32.lib
-* Set **GLEW_INCLUDE_DIR** ${MAINDIR}/3rdParty/glew-1.13.0/include
 * Set **VTK_DIR** to ${MAINDIR}/3rdPartyPCL/vtk7.0.0/lib/cmake/vtk-7.0
 * Add new entry: **QVTK_LIBRARY_DEBUG** with **FILEPATH** ${MAINDIR}/3rdPartyPCL/vtk7.0.0/lib/vtkGUISupportQtOpenGL-7.0-gd.lib
 * Add new entry: **QVTK_LIBRARY_RELEASE** with **FILEPATH** ${MAINDIR}/3rdPartyPCL/vtk7.0.0/lib/vtkGUISupportQtOpenGL-7.0.lib
