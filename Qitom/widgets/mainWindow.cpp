@@ -68,7 +68,7 @@ namespace ito {
 	m_contentLayout(NULL),
 	m_breakPointDock(NULL),
 	m_lastCommandDock(NULL),
-    m_pythonMessageDock(NULL),
+//    m_pythonMessageDock(NULL),
 	m_helpDock(NULL),
 	m_globalWorkspaceDock(NULL),
 	m_localWorkspaceDock(NULL),
@@ -172,9 +172,9 @@ namespace ito {
         addDockWidget(Qt::LeftDockWidgetArea, m_lastCommandDock);
         
         // pythonMessageDock
-        m_pythonMessageDock = new PythonMessageDockWidget(tr("Python Messages"), "itomPythonMessageDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
+/*        m_pythonMessageDock = new PythonMessageDockWidget(tr("Python Messages"), "itomPythonMessageDockWidget", this, true, true, AbstractDockWidget::floatingStandard);
         m_pythonMessageDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
-        addDockWidget(Qt::BottomDockWidgetArea, m_pythonMessageDock);
+        addDockWidget(Qt::BottomDockWidgetArea, m_pythonMessageDock);*/
 
         // helpDock
         m_helpDock = new HelpDockWidget(tr("Help"), "itomHelpDockWidget", this, true, true, AbstractDockWidget::floatingWindow);
@@ -266,7 +266,7 @@ namespace ito {
 
     connect(m_lastCommandDock, SIGNAL(runPythonCommand(QString)), m_console, SLOT(pythonRunSelection(QString)));
     connect(m_console, SIGNAL(sendToLastCommand(QString)), m_lastCommandDock, SLOT(addLastCommand(QString)));
-    connect(m_console, SIGNAL(sendToPythonMessage(QString)), m_pythonMessageDock, SLOT(addPythonMessage(QString)));
+//    connect(m_console, SIGNAL(sendToPythonMessage(QString)), m_pythonMessageDock, SLOT(addPythonMessage(QString)));
 
     // Signalmapper for dynamic lastFile Menu
     m_lastFilesMapper = new QSignalMapper(this);
@@ -431,10 +431,10 @@ MainWindow::~MainWindow()
         disconnect(m_console, SIGNAL(sendToLastCommand(QString)), m_lastCommandDock, SLOT(addLastCommand(QString)));
     }
 
-    if (m_pythonMessageDock && m_console)
+/*    if (m_pythonMessageDock && m_console)
     {
         disconnect(m_console, SIGNAL(sendToPythonMessage(QString)), m_pythonMessageDock, SLOT(addPythonMessage(QString)));
-    }
+    }*/
 
     DELETE_AND_SET_NULL(m_pAIManagerWidget);
     DELETE_AND_SET_NULL(m_fileSystemDock);
@@ -541,6 +541,12 @@ void MainWindow::removeAbstractDock(AbstractDockWidget* dockWidget)
         dockWidget->setParent(NULL);
         removeDockWidget(dockWidget);
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void MainWindow::connectPythonMessageBox(QListWidget* pythonMessageBox)
+{
+    connect(m_console, SIGNAL(sendToPythonMessage(QString)), pythonMessageBox, SLOT(addNewMessage(QString)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

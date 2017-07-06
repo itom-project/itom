@@ -31,7 +31,7 @@
 #include "breakPointDockWidget.h"
 #include "helpDockWidget.h"
 #include "lastCommandDockWidget.h"
-#include "pythonMessageDockWidget.h"
+//#include "pythonMessageDockWidget.h"
 #include "userManagement.h"
 
 #include <qtableview.h>
@@ -89,7 +89,7 @@ private:
     
     BreakPointDockWidget  *m_breakPointDock;
     LastCommandDockWidget *m_lastCommandDock;
-    PythonMessageDockWidget *m_pythonMessageDock;
+//    PythonMessageDockWidget *m_pythonMessageDock;
     HelpDockWidget        *m_helpDock;
     WorkspaceDockWidget   *m_globalWorkspaceDock;
     WorkspaceDockWidget   *m_localWorkspaceDock;
@@ -150,6 +150,7 @@ signals:
 public slots:
     void addAbstractDock(AbstractDockWidget* dockWidget, Qt::DockWidgetArea area = Qt::TopDockWidgetArea);
     void removeAbstractDock(AbstractDockWidget* dockWidget);
+    void connectPythonMessageBox(QListWidget* pythonMessageBox);
 
     void pythonStateChanged(tPythonTransitions pyTransition);
 

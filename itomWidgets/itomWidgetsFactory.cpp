@@ -51,6 +51,7 @@
 #include "factories/statusLedFactory.h"
 #include "factories/fontButtonFactory.h"
 #include "factories/paramEditorFactory.h"
+#include "factories/pythonMessageBoxFactory.h"
 
 //------------------------------------------------------------------------------------------------
 ItomWidgetsFactory::ItomWidgetsFactory(QObject *parent)
@@ -82,6 +83,7 @@ ItomWidgetsFactory::ItomWidgetsFactory(QObject *parent)
     widgets.append(new StatusLedFactory(this));
     widgets.append(new FontButtonFactory(this));
     widgets.append(new ParamEditorFactory(this));
+    widgets.append(new PythonMessageBoxFactory(this));
 }
 
 //------------------------------------------------------------------------------------------------

@@ -6038,12 +6038,11 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation></translation>
     </message>
     <message>
-        <location line="+59"/>
         <source>Python Messages</source>
-        <translation type="unfinished">Python-Meldungen</translation>
+        <translation type="obsolete">Python-Meldungen</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+69"/>
         <source>Call Stack</source>
         <translation>Aufrufliste</translation>
     </message>
@@ -6063,7 +6062,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation></translation>
     </message>
     <message>
-        <location line="+377"/>
+        <location line="+383"/>
         <source>Exit</source>
         <translation>Beenden</translation>
     </message>
@@ -6189,7 +6188,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation type="vanished">Geladene Plugins...</translation>
     </message>
     <message>
-        <location line="-448"/>
+        <location line="-454"/>
         <source>Command History</source>
         <translation>Befehlsliste</translation>
     </message>
@@ -6201,7 +6200,7 @@ Start itom again with the argument &apos;log&apos; and look-up the error message
 Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldungen in der Datei &apos;itomlog.txt&apos; auswerten.</translation>
     </message>
     <message>
-        <location line="+362"/>
+        <location line="+368"/>
         <source>Loaded Plugins...</source>
         <translation>Geladene Plugins...</translation>
     </message>
@@ -6306,8 +6305,8 @@ Bitte itom mit dem Argument &apos;log&apos; erneut starten und die Fehlermeldung
         <translation>Der UI-Designer (QT-Designer) konnte nicht geöffnet werden (%1).</translation>
     </message>
     <message>
-        <location line="-1714"/>
-        <location line="+603"/>
+        <location line="-1720"/>
+        <location line="+609"/>
         <source>Help</source>
         <translation>Hilfe</translation>
     </message>
@@ -6764,7 +6763,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished">Fehler beim Löschen aller Haltepunkte im ITO-Debugger.</translation>
     </message>
     <message>
-        <location line="+2262"/>
+        <location line="+2265"/>
         <source>It is not allowed to save a variable in modes pyStateRunning, pyStateDebugging or pyStateDebuggingWaitingButBusy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6819,7 +6818,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-4419"/>
+        <location line="-4422"/>
         <source>The itom subdirectory of Python &apos;%s&apos; is not existing.
 Please change setting in the property dialog of itom.</source>
         <translation type="unfinished"></translation>
@@ -6995,7 +6994,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+2540"/>
+        <location line="+2543"/>
         <source>Error while transforming value &apos;%s&apos; to PyObject*.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7192,9 +7191,8 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
 <context>
     <name>ito::PythonMessageDockWidget</name>
     <message>
-        <location filename="../widgets/pythonMessageDockWidget.cpp" line="+114"/>
         <source>Clear List</source>
-        <translation type="unfinished">Liste löschen</translation>
+        <translation type="obsolete">Liste löschen</translation>
     </message>
 </context>
 <context>
