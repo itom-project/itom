@@ -345,24 +345,6 @@ QVariant BreakPointModel::data(const QModelIndex &index, int role) const
     {
         return QVariant();
     }
-
-    // Size policy
-    if (role == Qt::SizeHintRole)
-    {
-        switch(index.column())
-        {
-        case 0:
-            return QSize(COLWIDTH, ROWHEIGHT);
-        case 1: //condition
-            return QSize(20,ROWHEIGHT);
-        case 2: //temporary
-            return QSize(30,ROWHEIGHT);
-        case 3: //enabled
-            return QSize(20,ROWHEIGHT);
-        case 4: //ignore count
-            return QSize(20,ROWHEIGHT);
-        }
-    }
     
     if (!index.parent().isValid()) // toplevel-item
     {
@@ -567,22 +549,25 @@ QVariant BreakPointModel::headerData(int section, Qt::Orientation orientation, i
         }
         return QVariant();
     }
-    else if (role == Qt::SizeHintRole)
+    else if (role == (Qt::UserRole + Qt::SizeHintRole))
     {
+        //this is a "special role" that only returns the desired column width. The
+        //view that uses these hints has to multiply these pixel values by the screen dpi resolution factor.
         switch(section)
         {
-        case 0:
-            return QSize(COLWIDTH, ROWHEIGHT);
+        case 0: //filename
+            return 180;
         case 1: //condition
-            return QSize(20,ROWHEIGHT);
+            return 70;
         case 2: //temporary
-            return QSize(30,ROWHEIGHT);
+            return 60;
         case 3: //enabled
-            return QSize(20,ROWHEIGHT);
+            return 50;
         case 4: //ignore count
-            return QSize(20,ROWHEIGHT);
+            return 80;
         }
     }
+
     return QVariant();
 }
 

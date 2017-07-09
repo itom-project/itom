@@ -28,6 +28,7 @@
 #include "ui/dialogEditBreakpoint.h"
 
 #include "../organizer/scriptEditorOrganizer.h"
+#include "../helper/guiHelper.h"
 
 #include <qheaderview.h>
 
@@ -44,7 +45,7 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
 
     AbstractDockWidget::init();
 
-    setContentWidget(m_breakPointView);
+    
     m_breakPointView->setContextMenuPolicy(Qt::CustomContextMenu);
 
     connect(m_breakPointView, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(doubleClicked(const QModelIndex &)));
@@ -64,7 +65,27 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
         connect(pe->getBreakPointModel(), SIGNAL(rowsInserted(const QModelIndex &, int, int)), this, SLOT(actualizeTree(const QModelIndex &, int, int)));
         // maybe it would be good to connect the rowsRemoved-Signal as well. Just to be shure!
     }
-    m_breakPointView->setColumnWidth(0, 200);
+
+    QAbstractItemModel *model = m_breakPointView->model();
+    if (model)
+    {
+        QVariant width; //user defined role: UserRole + SizeHintRole to get width only
+        int width_;
+        bool ok;
+        float dpiFactor = GuiHelper::screenDpiFactor(); //factor related to 96dpi (1.0)
+
+        for (int i = 0; i < model->columnCount(); ++i)
+        {
+            width = model->headerData(i, Qt::Horizontal, Qt::UserRole + Qt::SizeHintRole);
+            width_ = width.toInt(&ok);
+            if (ok)
+            {
+                m_breakPointView->setColumnWidth(i, dpiFactor * width_);
+            }
+        }
+    }
+
+    setContentWidget(m_breakPointView);
 
     updateActions();
 }
