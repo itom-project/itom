@@ -112,7 +112,7 @@ private:
 
     RetVal executeCmdQueue();
 
-	void autoLineDelete();
+	void autoLineDelete(); //!< delete the first N lines if the command line has more than M (M>=N) lines
     void moveCursorToEnd();
     void moveCursorToValidRegion();
 
@@ -141,8 +141,8 @@ private:
 
     ItomSharedSemaphore *m_inputStreamWaitCond; //!< if this is != NULL, a input(...) command is currently running in Python and the command line is ready to receive inputs from the user.
     QSharedPointer<QByteArray> m_inputStreamBuffer;
-    int m_inputStartLine;
-    int m_inputStartCol;
+    int m_inputStartLine; //!< if python-input command is currently used to ask for user-input, this variable holds the line of the input command
+    int m_inputStartCol; //!< if python-input command is currently used to ask for user-input, this variable holds the column in line m_inputStartLine, where the first input character starts
     bool m_autoWheel; //!< true if command line should automatically move to the last line if new lines are appended, this is set to false upon a wheel event and will be reset to true if the command line is cleared (clc) or if a new input is added
 };
 

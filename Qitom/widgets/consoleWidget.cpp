@@ -1079,7 +1079,7 @@ RetVal ConsoleWidget::executeCmdQueue()
         }
 
         autoAdaptLineNumberColumnWidth();
-		//autoLineDelete();
+		autoLineDelete();
     }
 
     return RetVal(retOk);
@@ -1262,7 +1262,7 @@ void ConsoleWidget::receiveStream(QString text, ito::QDebugStream::MsgStreamType
     }
 
     autoAdaptLineNumberColumnWidth();
-	//autoLineDelete();
+	autoLineDelete();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1680,10 +1680,28 @@ void ConsoleWidget::contextMenuEvent(QContextMenuEvent *e)
 //----------------------------------------------------------------------------------------------------------------------------------
 void ConsoleWidget::autoLineDelete()
 {
-	if (lines() > 50000)
+    const int cutoffLine = 50000;
+    const int removeLines = 25000;
+
+	if (lines() > cutoffLine)
 	{
-		setSelection(0, 0, 25000, lineLength(25000));
+		setSelection(0, 0, removeLines, lineLength(removeLines));
 		removeSelectedText();	
+
+        //adapt lines numbers of items in execution queue
+        std::queue<cmdQueueStruct> newQueue;
+        while (m_cmdQueue.empty() == false)
+        {
+            cmdQueueStruct q = m_cmdQueue.front();
+            m_cmdQueue.pop();
+            if (q.m_lineBegin > removeLines)
+            {
+                q.m_lineBegin -= (removeLines + 1);
+                newQueue.push(q);
+            }
+        }
+
+        m_cmdQueue = newQueue;
 	}
 }
 //----------------------------------------------------------------------------------------------------------------------------------
