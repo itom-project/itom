@@ -390,6 +390,7 @@ class FigureCanvasItom(FigureCanvasBase):
         
         if(self._destroying == False):
             self._destroying = True
+            FigureCanvasBase.close_event(self)
             try:
                 Gcf.destroy(self.num)
             except AttributeError:
@@ -473,6 +474,7 @@ class FigureManagerItom( FigureManagerBase ):
         if DEBUG: print("_widgetclosed called")
         if self.canvas._destroying: return
         self.canvas._destroying = True
+        self.canvas.close_event()
         try:
             Gcf.destroy(self.num)
         except AttributeError:
