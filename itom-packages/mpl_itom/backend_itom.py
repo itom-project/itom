@@ -229,6 +229,7 @@ class FigureCanvasItom(FigureCanvasBase):
         self.canvas.connect("eventWheel(int,int,int,int)", self.wheelEvent)
         self.canvas.connect("eventKey(int,int,int,bool)", self.keyEvent)
         self.canvas.connect("eventResize(int,int)", self.resizeEvent)
+        self.canvas.connect("eventCopyToClipboard(int)", self.copyToClipboardEvent)
         self.canvas.connect("eventIdle()", self.idle_event)
         
         w, h = self.get_width_height()
@@ -306,6 +307,9 @@ class FigureCanvasItom(FigureCanvasBase):
             FigureCanvasBase.resize_event(self)
             if draw:
                 self.draw_idle()
+
+    def copyToClipboardEvent(self, dpi):
+        self.copyToClipboard(dpi)
 
     def _get_key(self, event_key, event_mods, autoRepeat):
         if autoRepeat:

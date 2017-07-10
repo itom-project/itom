@@ -143,6 +143,39 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
                 self.signalDestroyedWidget()
                 print("Matplotlib figure is not available (err: %s)" % str(e))
             self.blitbox = None
+            
+    def copyToClipboard(self, dpi):
+        if not hasattr(self, 'renderer'):
+            return
+        
+        origDPI = self.figure.dpi
+        origfacecolor = self.figure.get_facecolor()
+        origedgecolor = self.figure.get_edgecolor()
+
+        self.figure.dpi = dpi
+        self.figure.set_facecolor('w')
+        self.figure.set_edgecolor('w')
+        
+        FigureCanvasAgg.draw(self)
+        
+        renderer = self.get_renderer()
+        original_dpi = renderer.dpi
+        renderer.dpi = dpi
+        stringBuffer = renderer._renderer.tostring_bgra()
+        width = renderer.width
+        height = renderer.height
+        renderer.dpi = original_dpi
+        try:
+            self.canvas.call("copyToClipboardResult", stringBuffer, 0, 0, width, height)
+        except RuntimeError as e:
+            # it is possible that the figure has currently be closed by the user
+            self.signalDestroyedWidget()
+            print("Matplotlib figure is not available (err: %s)" % str(e))
+            
+        self.figure.dpi = origDPI
+        self.figure.set_facecolor(origfacecolor)
+        self.figure.set_edgecolor(origedgecolor)
+        self.figure.set_canvas(self)
 
     def draw(self):
         """
