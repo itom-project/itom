@@ -114,7 +114,9 @@ MainApplication::MainApplication(tGuiType guiType) :
     m_uiOrganizer(NULL), 
     m_designerWidgetOrganizer(NULL),
     m_processOrganizer(NULL),
-    m_splashScreen(NULL)
+    m_splashScreen(NULL),
+    m_pQout(NULL),
+    m_pQerr(NULL)
 {
     m_guiType = guiType;
     MainApplication::mainApplicationInstance = this;
@@ -149,6 +151,8 @@ void MainApplication::registerMetaObjects()
     qRegisterMetaTypeStreamOperators<QList<ito::ScriptEditorStorage> >("QList<ito::ScriptEditorStorage>");
 
     qRegisterMetaTypeStreamOperators<ito::BreakPointItem>("BreakPointItem");
+
+    qRegisterMetaType<ito::tStreamMessageType>("ito::tStreamMessageType");
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -265,6 +269,11 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
     
     m_splashScreen->show();
     QCoreApplication::processEvents();
+
+    //load std::cout and std::cerr stream redirections
+    m_pQout = new QDebugStream(std::cout, ito::msgStreamOut);
+    m_pQerr = new QDebugStream(std::cerr, ito::msgStreamErr);
+    AppManagement::setStdCoutCerrStreamRedirections(m_pQout, m_pQerr);
 
     QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
 
@@ -823,6 +832,11 @@ void MainApplication::finalizeApplication()
     settings->endGroup();
 
     delete settings;
+
+
+    //close std::cout and std::cerr stream redirection
+    DELETE_AND_SET_NULL(m_pQout);
+    DELETE_AND_SET_NULL(m_pQerr);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

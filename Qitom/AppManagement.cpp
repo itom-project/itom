@@ -44,6 +44,8 @@ QObject* AppManagement::m_uiOrganizer = NULL;
 QObject* AppManagement::m_processOrganizer = NULL;
 QObject* AppManagement::m_userOrganizer = NULL;
 QObject* AppManagement::m_addInManager = NULL;
+QObject* AppManagement::m_cerrStream = NULL;
+QObject* AppManagement::m_coutStream = NULL;
 QMutex AppManagement::m_mutex;
 AppManagement::Timeouts AppManagement::timeouts;
 QTextCodec* AppManagement::m_scriptTextCodec = NULL;

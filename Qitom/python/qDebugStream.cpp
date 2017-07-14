@@ -35,7 +35,7 @@ namespace ito {
     \return description
     \sa tMsgType
 */
-QDebugStream::QDebugStream(std::ostream &stream, ito::QDebugStream::MsgStreamType type) :
+QDebugStream::QDebugStream(std::ostream &stream, ito::tStreamMessageType type) :
     m_stream(stream),
     msg_type(type)
 {

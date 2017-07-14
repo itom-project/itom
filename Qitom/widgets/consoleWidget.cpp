@@ -21,6 +21,7 @@
 *********************************************************************** */
 
 #include "../python/pythonEngineInc.h"
+#include "../python/qDebugStream.h"
 #include "consoleWidget.h"
 #include "../global.h"
 #include "../AppManagement.h"
@@ -54,8 +55,6 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
     m_waitForCmdExecutionDone(false),
     m_pythonBusy(false),
     m_pCmdList(NULL),
-    m_pQout(NULL),
-    m_pQerr(NULL),
     m_inputStreamWaitCond(NULL),
     m_inputStartLine(0),
     m_markErrorLine(-1),
@@ -70,23 +69,19 @@ ConsoleWidget::ConsoleWidget(QWidget* parent) :
 
     connect(AppManagement::getMainApplication(), SIGNAL(propertiesChanged()), this, SLOT(reloadSettings()));
 
-    qRegisterMetaType<ito::QDebugStream::MsgStreamType>("ito::QDebugStream::MsgStreamType");
-
-    //redirect cout and cerr to this console
-    m_pQout = new QDebugStream(std::cout, QDebugStream::msgStreamOut);
-    m_pQerr = new QDebugStream(std::cerr, QDebugStream::msgStreamErr);
     
+
     connect(this, SIGNAL(wantToCopy()), SLOT(copy()));
     connect(this, SIGNAL(selectionChanged()), SLOT(selChanged()));
     connect(this, SIGNAL(SCN_DOUBLECLICK(int,int,int)), SLOT(textDoubleClicked(int,int,int)));
 
-    if (m_pQout)
+    if (AppManagement::getCoutStream())
     {
-        connect(m_pQout, SIGNAL(flushStream(QString, ito::QDebugStream::MsgStreamType)), this, SLOT(receiveStream(QString, ito::QDebugStream::MsgStreamType)));
+        connect(AppManagement::getCoutStream(), SIGNAL(flushStream(QString, ito::tStreamMessageType)), this, SLOT(receiveStream(QString, ito::tStreamMessageType)));
     }
-    if (m_pQerr)
+    if (AppManagement::getCerrStream())
     {
-        connect(m_pQerr, SIGNAL(flushStream(QString, ito::QDebugStream::MsgStreamType)), this, SLOT(receiveStream(QString, ito::QDebugStream::MsgStreamType)));
+        connect(AppManagement::getCerrStream(), SIGNAL(flushStream(QString, ito::tStreamMessageType)), this, SLOT(receiveStream(QString, ito::tStreamMessageType)));
     }
 
     const QObject *pyEngine = AppManagement::getPythonEngine(); //PythonEngine::getInstance();
@@ -153,8 +148,6 @@ ConsoleWidget::~ConsoleWidget()
     }
 
     DELETE_AND_SET_NULL(m_pCmdList);
-    DELETE_AND_SET_NULL(m_pQout);
-    DELETE_AND_SET_NULL(m_pQerr);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1197,13 +1190,13 @@ RetVal ConsoleWidget::execCommand(int beginLine, int endLine)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void ConsoleWidget::receiveStream(QString text, ito::QDebugStream::MsgStreamType msgType)
+void ConsoleWidget::receiveStream(QString text, ito::tStreamMessageType msgType)
 {
     int fromLine, toLine;
 
     switch (msgType)
     {
-    case ito::QDebugStream::msgStreamErr:
+    case ito::msgStreamErr:
         //case msgReturnError:
         //!> insert msg after last line
         fromLine = lines() - 1;
@@ -1232,7 +1225,7 @@ void ConsoleWidget::receiveStream(QString text, ito::QDebugStream::MsgStreamType
         emit sendToPythonMessage(text);
         break;
 
-    case ito::QDebugStream::msgStreamOut:
+    case ito::msgStreamOut:
         //case msgReturnInfo:
         //case msgReturnWarning:
         //!> insert msg after last line

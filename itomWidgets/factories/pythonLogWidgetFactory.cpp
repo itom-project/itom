@@ -1,7 +1,7 @@
 /* ********************************************************************
    itom measurement system
    URL: http://www.uni-stuttgart.de/ito
-   Copyright (C) 2016, Institut fuer Technische Optik (ITO), 
+   Copyright (C) 2017, Institut fuer Technische Optik (ITO), 
    Universitaet Stuttgart, Germany 
  
    This file is part of itom.
@@ -22,74 +22,74 @@
 
 
 #include <QtCore/QtPlugin>
-#include "pythonMessageBoxFactory.h"
-#include "pythonMessageBox.h"
+#include "pythonLogWidgetFactory.h"
+#include "pythonLogWidget.h"
 
 
 // --------------------------------------------------------------------------
-PythonMessageBoxFactory::PythonMessageBoxFactory(QObject *_parent)
+PythonLogWidgetFactory::PythonLogWidgetFactory(QObject *_parent)
   : QObject(_parent)
 {
 }
 
 // --------------------------------------------------------------------------
-QWidget *PythonMessageBoxFactory::createWidget(QWidget *_parent)
+QWidget *PythonLogWidgetFactory::createWidget(QWidget *_parent)
 {
-    PythonMessageBox* widget = new PythonMessageBox(_parent);
+    PythonLogWidget* widget = new PythonLogWidget(_parent);
     return widget;
 }
 
 // --------------------------------------------------------------------------
-QString PythonMessageBoxFactory::domXml() const
+QString PythonLogWidgetFactory::domXml() const
 {
-  return "<widget class=\"PythonMessageBox\" name=\"pythonMessageBox\">\n"
+  return "<widget class=\"PythonLogWidget\" name=\"pythonLogWidget\">\n"
           "</widget>\n";
 }
 
 // --------------------------------------------------------------------------
-QIcon PythonMessageBoxFactory::icon() const
+QIcon PythonLogWidgetFactory::icon() const
 {
   return QIcon(":/icons/widget.png");
 }
 
 // --------------------------------------------------------------------------
-QString PythonMessageBoxFactory::includeFile() const
+QString PythonLogWidgetFactory::includeFile() const
 {
-    return "pythonMessageBox.h";
+    return "pythonLogWidget.h";
 }
 
 // --------------------------------------------------------------------------
-bool PythonMessageBoxFactory::isContainer() const
+bool PythonLogWidgetFactory::isContainer() const
 {
     return false;
 }
 
 // --------------------------------------------------------------------------
-QString PythonMessageBoxFactory::name() const
+QString PythonLogWidgetFactory::name() const
 {
-    return "PythonMessageBox";
+    return "PythonLogWidget";
 }
 
 //-----------------------------------------------------------------------------
-QString PythonMessageBoxFactory::group() const
+QString PythonLogWidgetFactory::group() const
 { 
     return "itom [widgets]";
 }
 
 //-----------------------------------------------------------------------------
-QString PythonMessageBoxFactory::toolTip() const
+QString PythonLogWidgetFactory::toolTip() const
 { 
     return QString(); 
 }
 
 //-----------------------------------------------------------------------------
-QString PythonMessageBoxFactory::whatsThis() const
+QString PythonLogWidgetFactory::whatsThis() const
 {
     return QString(); 
 }
 
 //-----------------------------------------------------------------------------
-void PythonMessageBoxFactory::initialize(QDesignerFormEditorInterface *formEditor)
+void PythonLogWidgetFactory::initialize(QDesignerFormEditorInterface *formEditor)
 {
     Q_UNUSED(formEditor);
     if (initialized)

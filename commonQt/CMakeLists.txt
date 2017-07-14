@@ -104,6 +104,7 @@ set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresGraphics.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresQt.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractApiWidget.h
 )
 
 IF(NOT QT5_FOUND)
@@ -120,6 +121,7 @@ set(itomCommonQt_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedFunctionsQt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresPrimitives.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresQt.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/abstractApiWidget.cpp
 )
 
 if(MSVC)

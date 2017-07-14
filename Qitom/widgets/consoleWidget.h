@@ -67,7 +67,7 @@ public slots:
     virtual void copy();
     virtual void paste();
     virtual void cut();
-    void receiveStream(QString text, ito::QDebugStream::MsgStreamType msgType);
+    void receiveStream(QString text, ito::tStreamMessageType msgType);
     void pythonRunSelection(QString selectionText);
     void pythonStateChanged(tPythonTransitions pyTransition);
     void clearCommandLine();
@@ -126,9 +126,6 @@ private:
 
     bool m_canCopy;
     bool m_canCut;
-
-    QDebugStream *m_pQout;
-    QDebugStream *m_pQerr;
 
     unsigned int m_markErrorLine;
     unsigned int m_markCurrentLine;

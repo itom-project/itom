@@ -53,6 +53,8 @@ class AppManagement
         inline static QObject* getUiOrganizer() { QMutexLocker locker (&m_mutex); return m_uiOrganizer; }  /*!< returns static pointer to UiOrganizer instance */
         inline static QObject* getProcessOrganizer() { QMutexLocker locker (&m_mutex); return m_processOrganizer; }  /*!< returns static pointer to ProcessOrganizer instance */
         inline static QObject* getUserOrganizer() { QMutexLocker locker (&m_mutex); return m_userOrganizer; }
+        inline static QObject* getCoutStream() { QMutexLocker locker (&m_mutex); return m_coutStream; }
+        inline static QObject* getCerrStream() { QMutexLocker locker (&m_mutex); return m_cerrStream; }
         
         static QTextCodec* getScriptTextCodec();
         static void setScriptTextCodec(QTextCodec *codec);
@@ -118,6 +120,13 @@ class AppManagement
             m_userOrganizer = userOrganizer;
         }
 
+        static void setStdCoutCerrStreamRedirections(QObject* coutStream, QObject* cerrStream)
+        {
+            QMutexLocker locker(&m_mutex);
+            m_coutStream = coutStream;
+            m_cerrStream = cerrStream;
+        }
+
         struct Timeouts
         {
             int pluginInitClose;
@@ -138,6 +147,8 @@ class AppManagement
         static QObject* m_uiOrganizer; /*!< static pointer to UiOrganizer (default: NULL) */
         static QObject* m_processOrganizer; /*!< static pointer to ProcessOrganizer (default: NULL) */
         static QObject *m_userOrganizer;    /*!< static pointer to UserOrganizer (default: NULL) */
+        static QObject* m_coutStream; /*!< static pointer to QDebugStream for std::cout redirection */
+        static QObject* m_cerrStream; /*!< static pointer to QDebugStream for std::cerr redirection */
         static QTextCodec *m_scriptTextCodec; /*!< static, borrowed pointer to the text codec used for loading and saving script files */
         static QMutex m_mutex;  /*!< static mutex, protecting every read and write operation in class AppManagement */
 

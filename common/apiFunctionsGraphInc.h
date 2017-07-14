@@ -154,6 +154,28 @@ namespace ito
     */
     #define apiQObjectPropertyWrite \
                 (* (ito::RetVal (*)(QObject *object, const char* propName, const QVariant &value)) ito::ITOM_API_FUNCS_GRAPH[17])
+    
+    //! connect a slot of a receiver object to the signal flushStream of the std::cout or std::cerr stream
+    /*!
+    \param receiver is the receiver object
+    \param method is the slot-name of the receiver, should be something like SLOT(receiveStream(QString, ito::tStreamMessageType))
+    \param messageType is either ito::msgStreamOut if std::cout stream should be connected or ito::msgStreamErr for std::cerr stream
+
+    \return ito::retOk if connection could be established
+    */
+    #define apiConnectToOutputAndErrorStream \
+                (* (ito::RetVal (*)(const QObject *receiver, const char *method, ito::tStreamMessageType messageType)) ito::ITOM_API_FUNCS_GRAPH[18])
+    
+    //! disconnect a slot of a receiver object from the signal flushStream of the std::cout or std::cerr stream
+    /*!
+    \param receiver is the receiver object
+    \param method is the slot-name of the receiver, should be something like SLOT(receiveStream(QString, ito::tStreamMessageType))
+    \param messageType is either ito::msgStreamOut if std::cout stream should be disconnected or ito::msgStreamErr for std::cerr stream
+
+    \return ito::retOk if connection could not be disconnected
+    */
+    #define apiDisconnectFromOutputAndErrorStream \
+                (* (ito::RetVal (*)(const QObject *receiver, const char *method, ito::tStreamMessageType messageType)) ito::ITOM_API_FUNCS_GRAPH[19])
 
 } //end namespace ito
 

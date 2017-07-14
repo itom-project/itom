@@ -25,54 +25,67 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef PYTHONMESSAGEWIDGET_H
-#define PYTHONMESSAGEWIDGET_H
+#ifndef PYTHONLOGWIDGET_H
+#define PYTHONLOGWIDGET_H
 
 #ifdef __APPLE__
 extern "C++" {
 #endif
 
 #include "../common/commonGlobal.h"
+
+#include "common/abstractApiWidget.h"
+
 #include "../common/typeDefs.h"
 
 #include "commonWidgets.h"
-#include <qlistwidget.h>
-//#include "../../itom/Qitom/widgets/abstractDockWidget.h"
 
-class ITOMWIDGETS_EXPORT PythonMessageBox : public QListWidget
+#include <qscopedpointer.h>
+
+class PythonLogWidgetPrivate;
+
+class ITOMWIDGETS_EXPORT PythonLogWidget : public ito::AbstractApiWidget
 {
     Q_OBJECT
 
     Q_PROPERTY(int maxMessages READ getMaxMessages WRITE setMaxMessages NOTIFY maxMessagesChanged)
+    Q_PROPERTY(bool outputStream READ getOutputStream WRITE setOutputStream)
+    Q_PROPERTY(bool errorStream READ getErrorStream WRITE setErrorStream)
+
+    WIDGET_ITOM_API
 
     public Q_SLOTS:
         void setMaxMessages(const int newMaxMessages);
+        ito::RetVal setOutputStream(bool enabled);
+        ito::RetVal setErrorStream(bool enabled);
 
     Q_SIGNALS:
         void maxMessagesChanged(const int newMaxMessages);
 
-
     public:
-        PythonMessageBox(QWidget* parent = NULL);
-        int getMaxMessages()const { return m_maxMessages; };
+        explicit PythonLogWidget(QWidget* parent = NULL);
+        ~PythonLogWidget();
+
+        int getMaxMessages() const;
+        bool getOutputStream() const;
+        bool getErrorStream() const;
 
     protected:
 //        void createActions();
+        virtual ito::RetVal init();
 
-    private:
-        QListWidgetItem *m_newItem;
-        int m_maxMessages;
-        HWND m_mainWindowHandle;
-        void removeFirstItem();
+        QScopedPointer<PythonLogWidgetPrivate> d_ptr;
 
     public slots:
-        void addNewMessage(QString newMessage);
+        void messageReceived(QString message, ito::tStreamMessageType messageType);
 
-    private slots:
+    private:
+        Q_DECLARE_PRIVATE(PythonLogWidget);
+        Q_DISABLE_COPY(PythonLogWidget);
 };
 
 #ifdef __APPLE__
 }
 #endif
 
-#endif // PYTHONMESSAGEWIDGET_H
+#endif // PYTHONLOGWIDGET_H

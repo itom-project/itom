@@ -24,6 +24,7 @@
 #define MAINAPPLICATION_H
 
 #include "python/pythonEngineInc.h"
+#include "python/qDebugStream.h"
 #include "organizer/scriptEditorOrganizer.h"
 #include "organizer/paletteOrganizer.h"
 #include "organizer/uiOrganizer.h"
@@ -79,7 +80,6 @@ class MainApplication : public QObject
         DesignerWidgetOrganizer* m_designerWidgetOrganizer;   /*!< designerWidgetOrganizer */
 
         ito::ProcessOrganizer* m_processOrganizer;            /*!< pointer to processOrganizer */
-//        bool m_hasGIL;                                        /*!< python global interpreter lock GIL */
 
         QTranslator m_translator;                             /*!< pointer to a language-translation, different than the standard language (en) */
         QTranslator m_qtTranslator;
@@ -88,6 +88,9 @@ class MainApplication : public QObject
         QTranslator m_widgetsTranslator;
 
         QSplashScreen *m_splashScreen;
+
+        QDebugStream *m_pQout;                                /*!< std::cout is redirected to this instance*/
+        QDebugStream *m_pQerr;                                /*!< std::cerr is redirected to this instance*/
 
     signals:
         void propertiesChanged();

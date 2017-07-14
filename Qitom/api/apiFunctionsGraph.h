@@ -64,6 +64,9 @@ namespace ito
             //! function called by apiSendParamsToPyWorkspace
             static ito::RetVal sendParamsToPyWorkspaceThreadSafe(const QStringList &varnames, const QVector<QSharedPointer<ito::ParamBase> > &values);
 
+            static ito::RetVal mConnectToOutputAndErrorStream(const QObject *receiver, const char *method, ito::tStreamMessageType messageType);
+            static ito::RetVal mDisconnectFromOutputAndErrorStream(const QObject *receiver, const char *method, ito::tStreamMessageType messageType);
+
         private:
     };
 }

@@ -69,6 +69,16 @@ namespace ito
         tCmpCompatible,
         tCmpFailed 
     };
+    
+    /**
+    * enumeration of stream (std::cout, std::cerr, std::cin) message type
+    */
+    enum tStreamMessageType
+    {
+        msgStreamOut = 1,
+        msgStreamErr = 2,
+        msgStreamIn = 3
+    };
 
     /**
     * DataType enumeration

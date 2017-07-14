@@ -139,7 +139,7 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoMarkerFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoPickerFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoShapesFactory.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/factories/pythonMessageBoxFactory.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/pythonLogWidgetFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/motorAxisControllerFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/statusLedFactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/paramEditorFactory.h
@@ -154,7 +154,7 @@ set(itomWidgets_Factory_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoMarker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoPicker.h
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoShapes.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pythonMessageBox.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/pythonLogWidget.h
     ${CMAKE_CURRENT_SOURCE_DIR}/paramEditorWidget.h
     #${CMAKE_CURRENT_SOURCE_DIR}/paramEditorModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/valueProxy.h
@@ -310,7 +310,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoMarkerFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoPickerFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/plotInfoShapesFactory.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/factories/pythonMessageBoxFactory.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/factories/pythonLogWidgetFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/menuComboBoxFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/motorAxisControllerFactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/factories/statusLedFactory.cpp
@@ -348,7 +348,7 @@ set(itomWidgets_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoPicker.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/plotInfoShapes.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/paramEditorWidget.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/pythonMessageBox.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/pythonLogWidget.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/motorAxisController.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/statusLed.cpp
 )

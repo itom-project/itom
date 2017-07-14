@@ -55,10 +55,12 @@ namespace ito
         (void*)&singleApiFunctionsGraph.mgetPluginWidget,       /* [11] */
         (void*)&singleApiFunctionsGraph.mgetFigureUIDByHandle,  /* [12] */
         (void*)&singleApiFunctionsGraph.mgetPlotHandleByID,     /* [13] */
-        (void*)&singleApiFunctionsGraph.sendParamToPyWorkspaceThreadSafe, /* [14] */
-        (void*)&singleApiFunctionsGraph.sendParamsToPyWorkspaceThreadSafe, /* [15] */
-        (void*)&QPropertyHelper::readProperty,                  /* [16] */
-        (void*)&QPropertyHelper::writeProperty,                 /* [17] */
+        (void*)&singleApiFunctionsGraph.sendParamToPyWorkspaceThreadSafe,       /* [14] */
+        (void*)&singleApiFunctionsGraph.sendParamsToPyWorkspaceThreadSafe,      /* [15] */
+        (void*)&QPropertyHelper::readProperty,                                  /* [16] */
+        (void*)&QPropertyHelper::writeProperty,                                 /* [17] */
+        (void*)&singleApiFunctionsGraph.mConnectToOutputAndErrorStream,         /* [18] */
+        (void*)&singleApiFunctionsGraph.mDisconnectFromOutputAndErrorStream,    /* [19] */
         NULL
     };
 
@@ -544,6 +546,79 @@ ito::RetVal apiFunctionsGraph::sendParamsToPyWorkspaceThreadSafe(const QStringLi
     else
     {
         retval += ito::RetVal(ito::retError, 0, QObject::tr("Python is not available.").toLatin1().data());
+    }
+
+    return retval;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal apiFunctionsGraph::mConnectToOutputAndErrorStream(const QObject *receiver, const char *method, ito::tStreamMessageType messageType)
+{
+    ito::RetVal retval;
+    QObject *sender = NULL;
+    switch (messageType)
+    {
+    case ito::msgStreamOut:
+        sender = AppManagement::getCoutStream();
+        break;
+    case ito::msgStreamErr:
+        sender = AppManagement::getCerrStream();
+        break;
+    default:
+        retval += ito::RetVal(ito::retError, 0, "connection only possible for output or error stream");
+        break;
+    }
+
+    if (!sender)
+    {
+        retval += ito::RetVal(ito::retError, 0, "output or error stream is not available");
+    }
+    else
+    {
+#if QT_VERSION >= 0x050000
+        QMetaObject::Connection conn = QObject::connect(sender, SIGNAL(flushStream(QString, ito::tStreamMessageType)), receiver, method);
+#else
+        int conn = QObject::connect(sender, SIGNAL(flushStream(QString, ito::tStreamMessageType)), receiver, method);
+#endif
+        if (!conn)
+        {
+            retval += ito::RetVal(ito::retError, 0, "connection cannot be established");
+        }
+    }
+
+    return retval;
+}
+            
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal apiFunctionsGraph::mDisconnectFromOutputAndErrorStream(const QObject *receiver, const char *method, ito::tStreamMessageType messageType)
+{
+    ito::RetVal retval;
+    QObject *sender = NULL;
+    switch (messageType)
+    {
+    case ito::msgStreamOut:
+        sender = AppManagement::getCoutStream();
+        break;
+    case ito::msgStreamErr:
+        sender = AppManagement::getCerrStream();
+        break;
+    default:
+        retval += ito::RetVal(ito::retError, 0, "connection only possible for output or error stream");
+        break;
+    }
+
+    if (!sender)
+    {
+        retval += ito::RetVal(ito::retError, 0, "output or error stream is not available");
+    }
+    else
+    {
+        bool conn = QObject::disconnect(sender, SIGNAL(flushStream(QString, ito::tStreamMessageType)), receiver, method);
+
+        if (!conn)
+        {
+            retval += ito::RetVal(ito::retError, 0, "connection cannot be disconnected");
+        }
     }
 
     return retval;

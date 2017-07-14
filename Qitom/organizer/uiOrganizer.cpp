@@ -29,6 +29,7 @@
 
 #include "common/helperCommon.h"
 #include "common/addInInterface.h"
+#include "common/abstractApiWidget.h"
 #include "../AppManagement.h"
 #include "plot/AbstractFigure.h"
 #include "plot/AbstractDObjFigure.h"
@@ -757,6 +758,20 @@ void UiOrganizer::setApiPointersToWidgetAndChildren(QWidget *widget)
         {
             ((ito::AbstractFigure*)widget)->setApiFunctionGraphBasePtr(ITOM_API_FUNCS_GRAPH);
             ((ito::AbstractFigure*)widget)->setApiFunctionBasePtr(ITOM_API_FUNCS);
+
+            //the event User+123 is emitted by UiOrganizer, if the API has been prepared and can
+            //transmitted to the plugin. This assignment cannot be done directly, since 
+            //the array ITOM_API_FUNCS is in another scope if called from itom. By sending an
+            //event from itom to the plugin, this method is called and ITOM_API_FUNCS is in the
+            //right scope. The methods above only set the pointers in the "wrong"-itom-scope (which
+            //also is necessary if any methods of the plugin are directly called from itom).
+            QEvent evt((QEvent::Type)(QEvent::User+123));
+            QCoreApplication::sendEvent(widget, &evt);
+        }
+        else if (widget->inherits("ito::AbstractApiWidget"))
+        {
+            ((ito::AbstractApiWidget*)widget)->setApiFunctionGraphBasePtr(ITOM_API_FUNCS_GRAPH);
+            ((ito::AbstractApiWidget*)widget)->setApiFunctionBasePtr(ITOM_API_FUNCS);
 
             //the event User+123 is emitted by UiOrganizer, if the API has been prepared and can
             //transmitted to the plugin. This assignment cannot be done directly, since 

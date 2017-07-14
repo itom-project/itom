@@ -1,7 +1,7 @@
 /* ********************************************************************
    itom measurement system
    URL: http://www.uni-stuttgart.de/ito
-   Copyright (C) 2016, Institut fuer Technische Optik (ITO), 
+   Copyright (C) 2017, Institut fuer Technische Optik (ITO), 
    Universitaet Stuttgart, Germany 
  
    This file is part of itom.
@@ -20,8 +20,8 @@
    along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-#ifndef PYTHONMESSAGEWIDGETFACTORY_H
-#define PYTHONMESSAGEWIDGETFACTORY_H
+#ifndef PYTHONLOGWIDGETFACTORY_H
+#define PYTHONLOGWIDGETFACTORY_H
 
 #include "qglobal.h"
 #if QT_VERSION < 0x050500 //hex-code must be used since Qt4 moc process does not understand QT_VERSION_CHECK(5,5,0)
@@ -31,13 +31,13 @@
 #endif
 
 
-class PythonMessageBoxFactory : public QObject, public QDesignerCustomWidgetInterface
+class PythonLogWidgetFactory : public QObject, public QDesignerCustomWidgetInterface
 {
     Q_OBJECT
     Q_INTERFACES(QDesignerCustomWidgetInterface)
 
 public:
-    PythonMessageBoxFactory(QObject *parent = 0);
+    PythonLogWidgetFactory(QObject *parent = 0);
 
     bool isContainer() const;
     bool isInitialized() const { return initialized; }
@@ -55,4 +55,4 @@ private:
     bool initialized;
 };
 
-#endif // PYTHONMESSAGEWIDGETFACTORY_H
+#endif // PYTHONLOGWIDGETFACTORY_H
