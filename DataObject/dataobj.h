@@ -482,7 +482,7 @@ namespace ito {
     template<typename _Tp> RetVal CopyToFunc(const DataObject &lhs, DataObject &rhs, unsigned char regionOnly);
     template<typename _Tp> RetVal ConvertToFunc(const DataObject &lhs, DataObject &rhs, const int type, const double alpha, const double beta);
     template<typename _Tp> RetVal AdjustROIFunc(DataObject *dObj, const int *lims);
-    template<typename _Tp> RetVal MinMaxLocFunc(const DataObject &dObj, double *minVal, double *maxVal, int *minPos, int *maxPos);
+    //template<typename _Tp> RetVal MinMaxLocFunc(const DataObject &dObj, double *minVal, double *maxVal, int *minPos, int *maxPos);
     template<typename _Tp> RetVal AssignScalarFunc(const DataObject *src, const ito::tDataType type, const void *scalar);
     template<typename _Tp> RetVal MakeContinuousFunc(const DataObject &dObj, DataObject &resDObj);
     template<typename _Tp> RetVal EvaluateTransposeFlagFunc(DataObject *dObj);
@@ -604,7 +604,7 @@ namespace ito {
         template<typename _Tp> friend RetVal CopyToFunc(const DataObject &lhs, DataObject &rhs, unsigned char regionOnly);
         template<typename _Tp> friend RetVal ConvertToFunc(const DataObject &lhs, DataObject &rhs, const int type, const double alpha, const double beta);
         template<typename _Tp> friend RetVal AdjustROIFunc(DataObject *dObj, const int *lims);
-        template<typename _Tp> friend RetVal MinMaxLocFunc(const DataObject &dObj, double *minVal, double *maxVal, int *minPos, int *maxPos);
+        //template<typename _Tp> friend RetVal MinMaxLocFunc(const DataObject &dObj, double *minVal, double *maxVal, int *minPos, int *maxPos);
         template<typename _Tp> friend RetVal AssignScalarFunc(const DataObject *src, const ito::tDataType type, const void *scalar);
         template<typename _Tp> friend RetVal MakeContinuousFunc(const DataObject &dObj, DataObject &resDObj);
         template<typename _Tp> friend RetVal EvaluateTransposeFlagFunc(DataObject *dObj);
