@@ -1,7 +1,7 @@
 SET (target_name itomCommonQtLib)
 project(${target_name}) 
     cmake_minimum_required(VERSION 2.8.9)
-         
+	 
 #CMAKE Policies
 IF(APPLE AND CMAKE_VERSION VERSION_GREATER 2.8.7)
     if(POLICY CMP0042)
@@ -105,6 +105,7 @@ set(itomCommonQt_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresPrimitives.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sharedStructuresQt.h
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/abstractApiWidget.h
+	${CMAKE_CURRENT_SOURCE_DIR}/../common/fileUtils.h
 )
 
 IF(NOT QT5_FOUND)
@@ -122,6 +123,7 @@ set(itomCommonQt_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresPrimitives.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/sharedStructuresQt.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/abstractApiWidget.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/../common/sources/fileUtils.cpp
 )
 
 if(MSVC)
