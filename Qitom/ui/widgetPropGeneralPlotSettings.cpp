@@ -63,6 +63,7 @@ namespace ito
         ui.geometricShapePenBtn->setPen(settings.value("geometricShapePen", QPen(QBrush(Qt::red), 1, Qt::SolidLine)).value<QPen>());
         ui.shapeLabelTextColorBtn->setColor(settings.value("shapeLabelTextColor", QColor(Qt::white)).value<QColor>());
 		ui.legendLabelWidthSpin->setValue(settings.value("legendLabelWidth", 15).value<int>());
+        ui.clipboardResolutionSpin->setValue(settings.value("copyClipboardResolutionDpi", 200).value<int>());
         settings.endGroup();
         settings.endGroup();
     }
@@ -94,7 +95,7 @@ namespace ito
       settings.setValue("geometricShapePen", ui.geometricShapePenBtn->getPen());
       settings.setValue("shapeLabelTextColor", ui.shapeLabelTextColorBtn->color());
 	  settings.setValue("legendLabelWidth", ui.legendLabelWidthSpin->value());
-
+      settings.setValue("copyClipboardResolutionDpi", ui.clipboardResolutionSpin->value());
 
       settings.endGroup();
       settings.endGroup();
