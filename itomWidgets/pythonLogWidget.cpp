@@ -25,8 +25,6 @@
     along with itom. If not, see <http://www.gnu.org/licenses/>.
 *********************************************************************** */
 
-
-
 #define ITOM_IMPORT_API
 #define ITOM_IMPORT_PLOTAPI
 #include "pythonLogWidget.h"
@@ -41,7 +39,7 @@
 
 
 //-----------------------------------------------------------------------------
-// DoubleSliderPrivate
+// PythonLogWidgetPrivate
 
 //-----------------------------------------------------------------------------
 class PythonLogWidgetPrivate
@@ -86,7 +84,8 @@ PythonLogWidget::PythonLogWidget(QWidget* parent /*= NULL*/) :
     d->textEdit->setFont(f);
 
     //this is for the QtDesigner only (to have something like a preview)
-    d->textEdit->appendHtml(tr("This widget automatically display the selected type of python output or error messages.<br><font color=\"red\">Errors are displayed in red.</font>"));
+    d->textEdit->appendHtml(tr("This widget automatically display the selected type of python output or error messages.") + 
+        "<br><font color=\"red\">" + tr("Errors are displayed in red.") + "</font>");
 
     QHBoxLayout *layout = new QHBoxLayout();
     layout->addWidget(d->textEdit);
@@ -149,7 +148,7 @@ ito::RetVal PythonLogWidget::setOutputStream(bool enabled)
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 0, "itom plot api not available");
+            retval += ito::RetVal(ito::retError, 0, tr("itom plot api not available").toLatin1().data());
         }
 
         d->outputStream = enabled;
@@ -180,7 +179,7 @@ ito::RetVal PythonLogWidget::setErrorStream(bool enabled)
         }
         else
         {
-            retval += ito::RetVal(ito::retError, 0, "itom plot api not available");
+            retval += ito::RetVal(ito::retError, 0, tr("itom plot api not available").toLatin1().data());
         }
 
         d->errorStream = enabled;
@@ -209,7 +208,7 @@ ito::RetVal PythonLogWidget::init()
     }
     else
     {
-        return ito::RetVal(ito::retError, 0, "itom plot api not available");
+        return ito::RetVal(ito::retError, 0, tr("itom plot api not available").toLatin1().data());
     }
 }
 
