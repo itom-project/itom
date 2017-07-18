@@ -1868,12 +1868,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Das Öffnen der XML-Datei schlug fehl: Datei scheint defekt zu sein</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+8"/>
         <source>Load XML file failed:  wrong xml version</source>
         <translation type="unfinished">Das Öffnen der XML-Datei schlug fehl: Falsche XML-Version</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+8"/>
         <source>Load XML file failed: wrong document encoding</source>
         <translation type="unfinished">Das Öffnen der XML-Datei schlug fehl: Falscher Dokumenten-Encoder</translation>
     </message>
@@ -1943,7 +1943,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+198"/>
+        <location filename="../organizer/designerWidgetOrganizer.cpp" line="+199"/>
         <source>Unable to load translation file &apos;%1&apos;. Translation file is empty.</source>
         <translation type="unfinished">Die Übersetzungsdatei &apos;%1&apos; kann nicht geladen werden. Diese Datei ist leer.</translation>
     </message>
@@ -2154,7 +2154,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">ITOM-Dateien</translation>
     </message>
     <message>
-        <location filename="../api/apiFunctionsGraph.cpp" line="+103"/>
+        <location filename="../api/apiFunctionsGraph.cpp" line="+105"/>
         <location line="+33"/>
         <source>Color map &apos;%s&apos; not found</source>
         <translation type="unfinished"></translation>
@@ -3104,7 +3104,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Wenn über itom ein Plot geöffnet wird, werden diese Werte standardmäßig geladen. Dabei werden natürlich nur Werte berücksichtigt, die für den entsprechenden Typ des Plots relevant sind (so z. B. hat der Linienstil keinen Effekt auf einen 2D-Plot).</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+30"/>
         <source>Tracker Settings</source>
         <translation type="unfinished">Cursor-Positionsmarker</translation>
     </message>
@@ -3154,7 +3154,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Linienstil</translation>
     </message>
     <message>
-        <location line="+66"/>
+        <location line="+17"/>
+        <source>Legend label width</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+127"/>
         <source>Center marker size</source>
         <translation type="unfinished">Größe des zentrierten Fadenkreuzes</translation>
     </message>
@@ -3164,7 +3169,27 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Stil des zentrierten Fadenkreuzes</translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+13"/>
+        <source>Print and Export</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+32"/>
+        <source>Clipboard resolution</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>This resolution is used, if the plot is copied to the clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source> dpi</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="-169"/>
         <source>Label font</source>
         <translation type="unfinished">Schriftart für Label</translation>
     </message>
@@ -3184,7 +3209,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Schriftart der Legende</translation>
     </message>
     <message>
-        <location line="-205"/>
+        <location line="-153"/>
         <source>Geometric Shape Settings</source>
         <translation type="unfinished">Einstellungen der Geometrischen Formen</translation>
     </message>
@@ -3194,7 +3219,7 @@ p, li { white-space: pre-wrap; }
         <translation></translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+104"/>
         <source>2D Plot</source>
         <translation></translation>
     </message>
@@ -3209,12 +3234,12 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished">Größe der Z-Stapelmarkierung</translation>
     </message>
     <message>
-        <location line="+43"/>
+        <location line="-87"/>
         <source>Axes Settings</source>
         <translation type="unfinished">Achsenbeschriftung</translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="-180"/>
         <source>Set To Default</source>
         <translation type="unfinished">Zurücksetzen</translation>
     </message>
@@ -3854,7 +3879,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::BreakPointDockWidget</name>
     <message>
-        <location filename="../widgets/breakPointDockWidget.cpp" line="+93"/>
+        <location filename="../widgets/breakPointDockWidget.cpp" line="+114"/>
         <source>Breakpoints</source>
         <translation>Haltepunkte</translation>
     </message>
@@ -3912,7 +3937,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Anzahl Ignorierungen</translation>
     </message>
     <message>
-        <location line="+344"/>
+        <location line="+326"/>
         <location line="+2"/>
         <source>yes</source>
         <translation>ja</translation>
@@ -3924,7 +3949,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>nein</translation>
     </message>
     <message>
-        <location line="+427"/>
+        <location line="+430"/>
         <source>Given modelIndex of breakpoint is invalid</source>
         <translation>Der übergebene &apos;modelIndex&apos; ist kein Index eines Haltepunkts</translation>
     </message>
@@ -3960,7 +3985,7 @@ Meldung: &apos;%1&apos;</translation>
 <context>
     <name>ito::ConsoleWidget</name>
     <message>
-        <location filename="../widgets/consoleWidget.cpp" line="+1070"/>
+        <location filename="../widgets/consoleWidget.cpp" line="+1063"/>
         <source>Python is not available</source>
         <translation>Python ist nicht verfügbar</translation>
     </message>
@@ -3970,7 +3995,7 @@ Meldung: &apos;%1&apos;</translation>
         <translation>Skript wird ausgeführt</translation>
     </message>
     <message>
-        <location line="+572"/>
+        <location line="+574"/>
         <source>&amp;Undo</source>
         <translation>&amp;Rückgängig</translation>
     </message>
@@ -5938,7 +5963,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
 <context>
     <name>ito::MainApplication</name>
     <message>
-        <location filename="../mainApplication.cpp" line="+247"/>
+        <location filename="../mainApplication.cpp" line="+251"/>
         <location line="+4"/>
         <source>Version %1
 %2</source>
@@ -5955,7 +5980,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation></translation>
     </message>
     <message>
-        <location line="+106"/>
+        <location line="+111"/>
         <source>load translations...</source>
         <translation>Übersetzungen werden geladen...</translation>
     </message>
@@ -6010,7 +6035,7 @@ Bitte unter Optionen -&gt; Allgemein -&gt; Hilfeanzeige die Einstellungen prüfe
         <translation>Skripts im Autostartordner werden gescannt und ausgeführt...</translation>
     </message>
     <message>
-        <location line="+160"/>
+        <location line="+165"/>
         <source>Do you really want to exit the application?</source>
         <translation>Soll itom wirklich beendet werden?</translation>
     </message>
@@ -7867,7 +7892,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
 <context>
     <name>ito::UiOrganizer</name>
     <message>
-        <location filename="../organizer/uiOrganizer.cpp" line="+303"/>
+        <location filename="../organizer/uiOrganizer.cpp" line="+304"/>
         <source>the plugin did not return a valid widget pointer.</source>
         <translation type="unfinished">Das Plugin gibt keinen gültigen Widget-Pointer zurück.</translation>
     </message>
@@ -7917,7 +7942,7 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation type="unfinished">Das Hauptfenster ist zum Andocken nicht verfügbar.</translation>
     </message>
     <message>
-        <location line="+345"/>
+        <location line="+359"/>
         <source>designer plugin widget (&apos;%1&apos;) could not be created</source>
         <translation type="unfinished">Das Designer-Plugin-Widget (&apos;%1&apos;) konnte nicht erstellt werden</translation>
     </message>
@@ -8095,8 +8120,8 @@ oder in itom unter Optionen das Python-Verzeichnis korrigieren.</translation>
         <translation></translation>
     </message>
     <message>
-        <location line="-2900"/>
-        <location line="+2673"/>
+        <location line="-2914"/>
+        <location line="+2687"/>
         <location line="+64"/>
         <location line="+64"/>
         <location line="+188"/>

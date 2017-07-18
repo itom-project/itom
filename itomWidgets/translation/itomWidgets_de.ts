@@ -149,7 +149,7 @@
     <name>ParamEditorWidget</name>
     <message>
         <source>slot &apos;setParam&apos; could not be invoked since it does not exist.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Slot &apos;setParam&apos; existiert nicht.</translation>
     </message>
     <message>
         <source>pointer to plugin is invalid.</source>
@@ -165,7 +165,7 @@
     </message>
     <message>
         <source>slot &apos;setParamVector&apos; could not be invoked since it does not exist.</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Der Slot &apos;setParamVector&apos; existiert nicht.</translation>
     </message>
     <message>
         <source>Timeout while waiting for answer from plugin instance.</source>
@@ -173,11 +173,11 @@
     </message>
     <message>
         <source>Error while execution</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Fehler bei der Ausführung</translation>
     </message>
     <message>
         <source>Warning while execution</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Bei der Ausführung ist eine Warnung aufgetreten</translation>
     </message>
 </context>
 <context>
@@ -244,10 +244,25 @@
     </message>
 </context>
 <context>
+    <name>PythonLogWidget</name>
+    <message>
+        <source>This widget automatically display the selected type of python output or error messages.</source>
+        <translation type="unfinished">Dieses Widget zeigt automatisch die optional auswählbaren Arten von Python-Nachrichten (Ausgaben und/oder Fehlermeldungen) an.</translation>
+    </message>
+    <message>
+        <source>Errors are displayed in red.</source>
+        <translation type="unfinished">Fehler werden in rot dargestellt.</translation>
+    </message>
+    <message>
+        <source>itom plot api not available</source>
+        <translation type="unfinished">Die itom-Plot-API ist nicht verfügbar</translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <source>Basic</source>
-        <translation type="unfinished"></translation>
+        <translation></translation>
     </message>
 </context>
 <context>

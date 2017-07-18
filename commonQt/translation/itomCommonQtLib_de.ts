@@ -283,32 +283,32 @@ Type conflict for %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2068"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2069"/>
         <source>Load object failed: wrong xml version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2076"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2078"/>
         <source>Load object failed: wrong document encoding</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2082"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2084"/>
         <source>Load object failed: unexpected file ending</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2101"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2103"/>
         <source>Load object failed: file is no itomDataObjectFile</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2129"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2131"/>
         <source>Load object failed: illegal format version</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2134"/>
+        <location filename="../../common/sources/sharedFunctionsQt.cpp" line="2136"/>
         <source>Load object failed: object header not valied</source>
         <translation type="unfinished"></translation>
     </message>
