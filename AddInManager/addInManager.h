@@ -130,6 +130,9 @@ namespace ito
             //!> get parameters for plugin initialization, based on plugin number \ref getItemIndexList
             const RetVal getInitParams(const QString &name, const int pluginType, int *pluginNum, QVector<ito::Param> *&paramsMand, QVector<ito::Param> *&paramsOpt);
 
+            //!> returns the a string containing the about string based on plugin number and type
+            const RetVal getAboutInfo(const QString &name, QString &versionString);
+
             //!> return plugin information based on plugin number and type
             const RetVal getPluginInfo(const QString &name, int &pluginType, int &pluginNum, int &version, QString &typeString, QString &author, QString &description, QString &detaildescription, QString &license, QString &about);
 

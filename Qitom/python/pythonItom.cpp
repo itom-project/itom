@@ -1953,7 +1953,52 @@ PyObject* PythonItom::PyPluginHelp(PyObject* /*pSelf*/, PyObject* pArgs, PyObjec
         Py_RETURN_NONE;
     }
 }
+//---------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyAboutInfo_doc,"aboutInfo(pluginName) -> returns the about information for the specified plugin.\n\
+\n\
+Parameters \n\
+----------- \n\
+pluginName : {str} \n\
+    is the fullname of a plugin as specified in the plugin window.\n\
+\n\
+Returns \n\
+------- \n\
+out : {None or dict} \n\
+    Returns a string containing the about information.");
+PyObject* PythonItom::PyAboutInfo(PyObject* /*pSelf*/, PyObject* pArgs)
+{
+    const char* pluginName = NULL;
 
+    if (!PyArg_ParseTuple(pArgs, "s", &pluginName))
+    {
+        return NULL;
+    }
+
+    QVector<ito::Param> *paramsMand = NULL;
+
+    ito::RetVal retval = ito::retOk;
+
+    QString version;
+    PyObject *result = NULL;
+    PyObject *resultmand = NULL;
+    PyObject *resultopt = NULL;
+    PyObject *item = NULL;
+
+
+    ito::AddInManager *AIM = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
+    if (!AIM)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "No addin-manager found");
+        return NULL;
+    }
+
+    retval = AIM->getAboutInfo(pluginName, version);
+    if (!retval.containsError())
+    {
+        return PythonQtConversion::QStringToPyObject(version);
+    }
+    return NULL;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyITOMVersion_doc,"version([toggle-output [, include-plugins]])) -> retrieve complete information about itom version numbers\n\
 \n\
@@ -4509,6 +4554,7 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"filterHelp", (PyCFunction)PythonItom::PyFilterHelp, METH_VARARGS | METH_KEYWORDS, pyFilterHelp_doc},
     {"widgetHelp", (PyCFunction)PythonItom::PyWidgetHelp, METH_VARARGS | METH_KEYWORDS, pyWidgetHelp_doc},
     {"pluginHelp", (PyCFunction)PythonItom::PyPluginHelp, METH_VARARGS | METH_KEYWORDS, pyPluginHelp_doc},
+    {"aboutInfo", (PyCFunction)PythonItom::PyAboutInfo, METH_VARARGS, pyAboutInfo_doc},
     {"pluginLoaded", (PyCFunction)PythonItom::PyPluginLoaded, METH_VARARGS, pyPluginLoaded_doc},
     {"plotHelp", (PyCFunction)PythonItom::PyPlotHelp, METH_VARARGS | METH_KEYWORDS, pyPlotHelp_doc},
     {"plotLoaded", (PyCFunction)PythonItom::PyPlotLoaded, METH_VARARGS, pyPlotLoaded_doc},

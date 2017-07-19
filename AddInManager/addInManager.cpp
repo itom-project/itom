@@ -430,7 +430,126 @@ const RetVal AddInManager::getInitParams(const QString &name, const int pluginTy
 
     return ret;
 }
-    
+
+//----------------------------------------------------------------------------------------------------------------------------------
+/** getAboutString
+*   @param [in]  name               plugin name for which type and number should be retrieved
+*   @param [out] versionString      plugin version string
+*   @return      ito::retOk on success ito::retError otherwise
+*
+*   The getVersionString method searches in all three plugin lists for a plugin wirh the name 'name'. In case the according
+*   plugin is found its inforamtion about the plugin version string is returned. In contrast to the version number returned
+*   by the function 'getPluginInfo' the plugin version string can also handle alphanumerical signs.
+*/
+const RetVal ito::AddInManager::getAboutInfo(const QString &name, QString &versionString)
+{
+    Q_D(AddInManager);
+
+    ito::RetVal ret = ito::RetVal(ito::retError, 0, QObject::tr("plugin not found").toLatin1().data());
+    int found = 0;
+    ito::AddInInterfaceBase *aib = NULL;
+    try
+    {
+        //test actuator (objectName)
+        for (int n = 0; n < d->m_addInListAct.size(); n++)
+        {
+            if (QString::compare(d->m_addInListAct[n]->objectName(), name, Qt::CaseInsensitive) == 0)
+            {
+
+                aib = qobject_cast<ito::AddInInterfaceBase *>(d->m_addInListAct[n]);
+                found = 1;
+                break;
+            }
+        }
+        if (!found) //test dataIO (objectName)
+        {
+            for (int n = 0; n < d->m_addInListDataIO.size(); n++)
+            {
+                if (QString::compare(d->m_addInListDataIO[n]->objectName(), name, Qt::CaseInsensitive) == 0)
+                {
+
+
+                    aib = qobject_cast<ito::AddInInterfaceBase *>(d->m_addInListDataIO[n]);
+                    found = 1;
+                    break;
+                }
+            }
+        }
+        if (!found) //test Algorithm (objectName)
+        {
+            for (int n = 0; n < d->m_addInListAlgo.size(); n++)
+            {
+                if (QString::compare(d->m_addInListAlgo[n]->objectName(), name, Qt::CaseInsensitive) == 0)
+                {
+                    aib = qobject_cast<ito::AddInInterfaceBase *>(d->m_addInListAlgo[n]);
+                    found = 1;
+                    break;
+                }
+            }
+        }
+        //if nothing found try to find by the name of the dll
+        if (!found)
+        {
+            QFileInfo fi;
+            QString name_(name);
+#ifdef _DEBUG
+            name_ += "d"; //since we are now comparing with the filename, we append 'd' that corresponds to the debug versions of the plugin dll filenames
+#endif
+
+                          //test actuator (objectName)
+            for (int n = 0; n < d->m_addInListAct.size(); n++)
+            {
+                aib = qobject_cast<ito::AddInInterfaceBase *>(d->m_addInListAct[n]);
+                fi.setFile(aib->getFilename());
+                if (QString::compare(fi.completeBaseName(), name_, Qt::CaseInsensitive) == 0)
+                {
+                    found = 1;
+                    break;
+                }
+            }
+
+            if (!found) //test dataIO (objectName)
+            {
+                for (int n = 0; n < d->m_addInListDataIO.size(); n++)
+                {
+                    aib = qobject_cast<ito::AddInInterfaceBase *>(d->m_addInListDataIO[n]);
+                    fi.setFile(aib->getFilename());
+                    if (QString::compare(fi.completeBaseName(), name_, Qt::CaseInsensitive) == 0)
+                    {
+                        found = 1;
+                        break;
+                    }
+                }
+            }
+
+            if (!found) //test Algorithm (objectName)
+            {
+                for (int n = 0; n < d->m_addInListAlgo.size(); n++)
+                {
+                    aib = qobject_cast<ito::AddInInterfaceBase *>(d->m_addInListAlgo[n]);
+                    fi.setFile(aib->getFilename());
+                    if (QString::compare(fi.completeBaseName(), name_, Qt::CaseInsensitive) == 0)
+                    {
+                        found = 1;
+                        break;
+                    }
+                }
+            }
+        }
+        if (aib && found)
+        {
+            versionString = aib->getAboutInfo();
+
+            ret = ito::retOk;
+        }
+    }
+    catch (...)
+    {
+        ret += ito::RetVal(ito::retError, 0, tr("Caught exception during getPluginInfo of: %1").arg(name).toLatin1().data());
+    }
+
+    return ret;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 /** getPlugInInfo
 *   @param [in]  name               plugin name for which type and number should be retrieved
