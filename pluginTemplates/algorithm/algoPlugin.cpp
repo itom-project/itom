@@ -10,6 +10,7 @@
 
 #include "algoPlugin.h"
 #include "pluginVersion.h"
+#include "gitVersion.h"
 
 #include <QtCore/QtPlugin>
 
@@ -52,7 +53,7 @@ Put a detailed description about what the plugin is doing, what is needed to get
     m_minItomVer = MINVERSION;
     m_maxItomVer = MAXVERSION;
     m_license = QObject::tr("The plugin's license string");
-    m_aboutThis = QObject::tr("");
+    m_aboutThis = QObject::tr(GITVERSION);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
