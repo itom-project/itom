@@ -197,6 +197,7 @@ Source: "{#SourceDirItomBuild}\itomShapeLib.dll"; DestDir: "{app}"; Flags: ignor
 Source: "{#SourceDirItomBuild}\itomWidgets.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\pointcloud.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\qpropertyeditor.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "{#SourceDirItomBuild}\addinmanager.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourcePythonDir}\python36.dll"; DestDir: "{app}"; Flags: ignoreversion
 
 ; DLLs Redistributable 2010,2012,2013
@@ -308,9 +309,13 @@ Source: "{#SourceDirItomBuild}\itomSettings\itomDefault.ini"; DestDir: "{app}\it
 ; Lizenz-Datei
 Source: "{#SourceDirItomSource}\Qitom\COPYING.txt"; DestDir: "{app}"; Flags: ignoreversion
 
-; itom-packages
+; Plugin-Docs-Template
 Source: "{#SourceDirItomBuild}\docs\pluginDoc\template\*.*"; DestDir: "{app}\docs\pluginDoc\template"; Flags: ignoreversion recursesubdirs
-Source: "{#SourceDirItomBuild}\demo\*.*"; DestDir: "{app}\demo"; Flags: ignoreversion recursesubdirs
+
+; Demo
+Source: "{#SourceDirItomSource}\demo\*.*"; DestDir: "{app}\demo"; Flags: ignoreversion recursesubdirs
+
+; itom-packages
 Source: "{#SourceDirItomBuild}\itom-packages\*.*"; DestDir: "{app}\itom-packages"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\itom-packages\apps\*.*"; DestDir: "{app}\itom-packages\apps"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\itom-packages\api_generator\*.*"; DestDir: "{app}\itom-packages\api_generator"; Flags: ignoreversion
@@ -323,11 +328,15 @@ Source: "{#SourceDirItomBuild}\itom-packages\mpl_itom\*.*"; DestDir: "{app}\itom
 Source: "{#SourceDirItomBuild}\itom-packages\numpy_utils\*.*"; DestDir: "{app}\itom-packages\numpy_utils"; Flags: ignoreversion recursesubdirs
 Source: "{#SourceDirItomBuild}\itom-packages\plotToolBar\*.*"; DestDir: "{app}\itom-packages\plotToolBar"; Flags: ignoreversion
 Source: "{#SourceDirItomBuild}\itom-packages\SurfaceCharakteristics\*.*"; DestDir: "{app}\itom-packages\SurfaceCharakteristics"; Flags: ignoreversion
+
+; SDK
 Source: "{#SourceDirItomBuild}\SDK\*.*"; DestDir: "{app}\SDK"; Flags: ignoreversion; Components: SDK
 Source: "{#SourceDirItomBuild}\SDK\include\*.*"; DestDir: "{app}\SDK\include"; Flags: ignoreversion recursesubdirs; Components: SDK
 Source: "{#SourceDirItomBuild}\SDK\docs\*.*"; DestDir: "{app}\SDK\docs"; Flags: ignoreversion recursesubdirs; Components: SDK
 Source: "{#SourceDirItomBuild}\SDK\pluginTemplates\*.*"; DestDir: "{app}\SDK\pluginTemplates"; Flags: ignoreversion recursesubdirs; Components: SDK
 Source: "{#SourceDirItomBuild}\SDK\lib\vc12_x86\*.*"; DestDir: "{app}\SDK\lib\vc12_x86"; Flags: ignoreversion; Components: SDK
+
+; Python
 Source: "{#SourcePythonDir}\*.*"; DestDir: "{app}\python3"; Flags: ignoreversion recursesubdirs
 
 ; DesignerPlugins
@@ -487,9 +496,6 @@ Source: "{#SourceDirPCL}\bin\pcl_sample_consensus_release.dll"; DestDir: "{app}"
 Source: "{#SourceDirPCL}\bin\pcl_search_release.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirPCL}\bin\pcl_surface_release.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#SourceDirPCL}\bin\pcl_visualization_release.dll"; DestDir: "{app}"; Flags: ignoreversion
-
-; Demo
-Source: "{#SourceDirItomSource}\demo\*.*"; DestDir: "{app}\demo"; Flags: ignoreversion recursesubdirs
 
 [Run]
 ;Filename: "{tmp}\MS_VS_12_vcredist_x86.exe"; Flags: shellexec waituntilterminated; StatusMsg: "Microsoft Visual C++ 2012 Redistributable Package (x86)..."; Components: CREDPACK2012;
