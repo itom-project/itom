@@ -31,6 +31,7 @@
 #include <qapplication.h>
 #include <qheaderview.h>
 #include <qfileinfo.h>
+#include <qsettings.h>
 
 namespace ito {
 
@@ -65,6 +66,18 @@ CallStackDockWidget::CallStackDockWidget(const QString &title, const QString &ob
     
     setContentWidget(m_table);
 
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("itomCallStackDockWidget");
+    int size = settings.beginReadArray("ColWidth");
+    for (int i = 0; i < size; ++i)
+    {
+        settings.setArrayIndex(i);
+        m_table->setColumnWidth(i, settings.value("width", 100).toInt());
+        m_table->setColumnHidden(i, m_table->columnWidth(i) == 0);
+    }
+    settings.endArray();    
+    settings.endGroup();
+
     PythonEngine* eng = qobject_cast<PythonEngine*>(AppManagement::getPythonEngine());
     
     if (eng)
@@ -85,6 +98,17 @@ CallStackDockWidget::CallStackDockWidget(const QString &title, const QString &ob
 */
 CallStackDockWidget::~CallStackDockWidget()
 {
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("itomCallStackDockWidget");
+    settings.beginWriteArray("ColWidth");
+    for (int i = 0; i < m_table->columnCount(); i++)
+    {
+        settings.setArrayIndex(i);
+        settings.setValue("width", m_table->columnWidth(i));
+    }
+    settings.endArray();
+    settings.endGroup();
+
     DELETE_AND_SET_NULL(m_table);
 }
 
