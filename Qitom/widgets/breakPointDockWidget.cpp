@@ -31,6 +31,7 @@
 #include "../helper/guiHelper.h"
 
 #include <qheaderview.h>
+#include <qsettings.h>
 
 
 namespace ito {
@@ -87,13 +88,38 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
 
     setContentWidget(m_breakPointView);
 
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("itomBreakPointDockWidget");
+    int size = settings.beginReadArray("ColWidth");
+    for (int i = 0; i < size; ++i)
+    {
+        settings.setArrayIndex(i);
+        m_breakPointView->setColumnWidth(i, settings.value("width", 100).toInt());
+        m_breakPointView->setColumnHidden(i, m_breakPointView->columnWidth(i) == 0);
+    }
+    settings.endArray();
+    settings.endGroup();
+
     updateActions();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
 BreakPointDockWidget::~BreakPointDockWidget()
 {
-
+    QAbstractItemModel *model = m_breakPointView->model();
+    if (model)
+    {
+        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+        settings.beginGroup("itomBreakPointDockWidget");
+        settings.beginWriteArray("ColWidth");
+        for (int i = 0; i < model->columnCount(); i++)
+        {
+            settings.setArrayIndex(i);
+            settings.setValue("width", m_breakPointView->columnWidth(i));
+        }
+        settings.endArray();
+        settings.endGroup();
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

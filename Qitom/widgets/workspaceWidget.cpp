@@ -28,6 +28,7 @@
 
 #include <qstringlist.h>
 #include <qdrag.h>
+#include <qsettings.h>
 
 namespace ito
 {
@@ -58,14 +59,18 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
     setColumnCount(3);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
     
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
     if (m_globalNotLocal)
     {
         headers << tr("Globals") << tr("Value") << tr("Type");
+        settings.beginGroup("itomGlobalWorkspaceDockWidget");
     }
     else
     {    
         headers << tr("Locals") << tr("Value") << tr("Type");
+        settings.beginGroup("itomLocalWorkspaceDockWidget");
     }
+
     setHeaderLabels(headers);
     setSortingEnabled(true);
     sortByColumn(0,Qt::AscendingOrder);
@@ -75,7 +80,7 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
     m_itemHash.clear();
 
     QIcon icon(":/application/icons/preferences-python.png");
-    m_dragPixmap = icon.pixmap(22,22);
+    m_dragPixmap = icon.pixmap(22, 22);
   
    /* '__', 'NoneType', 'type',\
         'bool', 'int', 'long', 'float', 'complex',\
@@ -87,9 +92,19 @@ WorkspaceWidget::WorkspaceWidget(bool globalNotLocal, QWidget* parent) :
         'ellipsis', 'traceback', 'frame', 'other']*/
 
     m_workspaceContainer = new ito::PyWorkspaceContainer(m_globalNotLocal);
-    connect(m_workspaceContainer,SIGNAL(updateAvailable(PyWorkspaceItem*,QString,QStringList)),this,SLOT(workspaceContainerUpdated(PyWorkspaceItem*,QString,QStringList)));
-    connect(this,SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),this,SLOT(itemDoubleClicked(QTreeWidgetItem*, int))); //when double-clicking on an item, its content is showed in DialogVariableDetail-Dialog
-    connect(this,SIGNAL(itemExpanded(QTreeWidgetItem*)),this,SLOT(itemExpanded(QTreeWidgetItem*)));
+    connect(m_workspaceContainer, SIGNAL(updateAvailable(PyWorkspaceItem*, QString,QStringList)), this, SLOT(workspaceContainerUpdated(PyWorkspaceItem*, QString, QStringList)));
+    connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem*, int))); //when double-clicking on an item, its content is showed in DialogVariableDetail-Dialog
+    connect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(itemExpanded(QTreeWidgetItem*)));
+
+    int size = settings.beginReadArray("ColWidth");
+    for (int i = 0; i < size; ++i)
+    {
+        settings.setArrayIndex(i);
+        setColumnWidth(i, settings.value("width", 100).toInt());
+        setColumnHidden(i, columnWidth(i) == 0);
+    }
+    settings.endArray();
+    settings.endGroup();
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -104,10 +119,29 @@ Qt::DropActions WorkspaceWidget::supportedDragActions() const
 //! destructor
 WorkspaceWidget::~WorkspaceWidget()
 {
-    disconnect(m_workspaceContainer,SIGNAL(updateAvailable(PyWorkspaceItem*,QString,QStringList)),this,SLOT(workspaceContainerUpdated(PyWorkspaceItem*,QString,QStringList)));
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    if (m_globalNotLocal)
+    {
+        settings.beginGroup("itomGlobalWorkspaceDockWidget");
+    }
+    else
+    {
+        settings.beginGroup("itomLocalWorkspaceDockWidget");
+    }
+
+    settings.beginWriteArray("ColWidth");
+    for (int i = 0; i < columnCount(); i++)
+    {
+        settings.setArrayIndex(i);
+        settings.setValue("width", columnWidth(i));
+    }
+    settings.endArray();
+    settings.endGroup();
+
+    disconnect(m_workspaceContainer, SIGNAL(updateAvailable(PyWorkspaceItem*, QString, QStringList)), this, SLOT(workspaceContainerUpdated(PyWorkspaceItem*, QString, QStringList)));
     m_workspaceContainer->deleteLater();
-    disconnect(this,SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)),this,SLOT(itemDoubleClicked(QTreeWidgetItem*, int)));
-    disconnect(this,SIGNAL(itemExpanded(QTreeWidgetItem*)),this,SLOT(itemExpanded(QTreeWidgetItem*)));
+    disconnect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(itemDoubleClicked(QTreeWidgetItem*, int)));
+    disconnect(this, SIGNAL(itemExpanded(QTreeWidgetItem*)), this, SLOT(itemExpanded(QTreeWidgetItem*)));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -284,7 +318,7 @@ void WorkspaceWidget::updateView(QHash<QString,ito::PyWorkspaceItem*> items, QSt
             }
             else
             {
-                updateView(item->m_childs,hashName,actItem);
+                updateView(item->m_childs, hashName, actItem);
             }
         }
     }
@@ -311,7 +345,11 @@ void WorkspaceWidget::workspaceContainerUpdated(PyWorkspaceItem *rootItem, QStri
         else
         {
             QHash<QString, QTreeWidgetItem*>::const_iterator it = m_itemHash.find(fullNameRoot);
-            if (it == m_itemHash.constEnd()) return; //error
+            if (it == m_itemHash.constEnd())
+            {
+                return; //error
+            }
+
             parent = *it;
         }
 
