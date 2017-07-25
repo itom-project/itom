@@ -21,7 +21,7 @@ can be configured independently (for more information see the example **demo/plo
     
 Examples about the Vtk3dVisualizer plot can be found in the folder **demo/plot**.
 
-.. info::
+.. note::
     
     Newer versions of VTK (compiled with OpenGL 2) might not work via a remote desktop connection under Windows, since newer OpenGL
     standards are not supported by remote desktop.

@@ -184,7 +184,7 @@ the new shape already exists on the canvas.
 To move the rectangle, assigned in the example above, it is possible to use the following snippet:
 
 .. code-block:: python
-    :lineos:
+    :linenos:
     
     shapes = handle["geometricShapes"]
     rectangle = shapes[0]
@@ -245,7 +245,7 @@ values:
 The following example is the same than above, however the rectangle can only be moved while the circle can only be resized. The line can be both moved and resized:
 
 .. code-block:: python
-    :lineos:
+    :linenos:
     
     data = dataObject.zeros([200,200],'uint8')
     data.axisScales=(0.1,0.1)
