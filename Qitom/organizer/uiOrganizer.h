@@ -283,6 +283,16 @@ struct ClassInfoContainer
     QString m_description;
 };
 
+template <>
+class QT_DEPRECATED_X("Use std::less") qLess<ClassInfoContainer>
+{
+public:
+    inline bool operator()(const ClassInfoContainer &t1, const ClassInfoContainer &t2) const
+    {
+        return (t1.m_name < t2.m_name);
+    }
+};
+
 struct TimerContainer
 {
 	QPointer<QTimer> timer;

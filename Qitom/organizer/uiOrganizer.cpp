@@ -2898,6 +2898,11 @@ RetVal UiOrganizer::getObjectInfo(const QObject *obj, int type, bool pythonNotCS
 
         if (!objectInfo)
         {
+            if (tmpObjectInfo.length() > 0)
+            {
+                qSort(tmpObjectInfo);
+            }
+
             std::cout << "Widget '" << firstClassName.data() << "'\n--------------------------\n" << std::endl;
             valid = false;
             foreach(const ClassInfoContainer &c, tmpObjectInfo)
