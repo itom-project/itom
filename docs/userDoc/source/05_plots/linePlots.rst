@@ -480,7 +480,7 @@ Properties
 .. py:attribute:: baseLine : float 
     :noindex:
     
-    the position of the baseline if curveStyle is set to 'Sticks', 'SticksVertical' or 'SticksHorizontal'.
+    If curveStyle is set to 'Sticks', 'SticksVertical' or 'SticksHorizontal', the baseline indicates the start point of each line either in vertical or horizontal direction. For all other curve types, the baseline is considered if fillCurve is set to 'FillBaseLine'.
 
 .. py:attribute:: lineSymbolSize : int 
     :noindex:
