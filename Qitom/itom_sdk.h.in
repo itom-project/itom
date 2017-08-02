@@ -31,7 +31,7 @@
 #define INTERFACE_VERSION   "${ITOM_VERSION_STRING_WITH_API}"
 #define ITOM_APP_NAME       "itom - ito measurement software"
 
-#define CREATE_VERSION(major,minor,patch) ((major<<16)|(major<<8)|(patch))
-#define CREATE_VERSION_STRING(major,minor,patch) #major"."#minor"."patch
+#define CREATE_VERSION(major,minor,patch) ((major<<16)|(minor<<8)|(patch))
+#define CREATE_VERSION_STRING(major,minor,patch) #major"."#minor"."#patch
 
 #endif
