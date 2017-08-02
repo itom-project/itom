@@ -251,7 +251,14 @@ PyObject* PythonRgba::PyRgba_nbLshift(PyObject* o1, PyObject* o2)
 
     PyRgba *rgba1 = (PyRgba*)(o1);
 
-    int shift = PyLong_AsLong(o2);
+    int overflow;
+    int shift = PyLong_AsLongAndOverflow(o2, &overflow);
+
+    if (overflow)
+    {
+        PyErr_SetString(PyExc_ValueError, "shift value exceeds integer range");
+        return NULL;
+    }
 
     if(PyErr_Occurred()) return NULL;
     if(shift<0)
@@ -273,7 +280,14 @@ PyObject* PythonRgba::PyRgba_nbRshift(PyObject* o1, PyObject* o2)
 
     PyRgba *rgba1 = (PyRgba*)(o1);
 
-    int shift = PyLong_AsLong(o2);
+    int overflow;
+    int shift = PyLong_AsLongAndOverflow(o2, &overflow);
+
+    if (overflow)
+    {
+        PyErr_SetString(PyExc_ValueError, "shift value exceeds integer range");
+        return NULL;
+    }
 
     if(PyErr_Occurred()) return NULL;
     if(shift<0)
@@ -379,7 +393,14 @@ PyObject* PythonRgba::PyRgba_nbInplaceLshift(PyObject* o1, PyObject* o2)
 
     PyRgba *rgba1 = (PyRgba*)(o1);
 
-    int shift = PyLong_AsLong(o2);
+    int overflow;
+    int shift = PyLong_AsLongAndOverflow(o2, &overflow);
+
+    if (overflow)
+    {
+        PyErr_SetString(PyExc_ValueError, "shift value exceeds integer range");
+        return NULL;
+    }
 
     if(PyErr_Occurred()) return NULL;
     if(shift<0)
@@ -402,7 +423,14 @@ PyObject* PythonRgba::PyRgba_nbInplaceRshift(PyObject* o1, PyObject* o2)
 
     PyRgba *rgba1 = (PyRgba*)(o1);
 
-    int shift = PyLong_AsLong(o2);
+    int overflow;
+    int shift = PyLong_AsLongAndOverflow(o2, &overflow);
+
+    if (overflow)
+    {
+        PyErr_SetString(PyExc_ValueError, "shift value exceeds integer range");
+        return NULL;
+    }
 
     if(PyErr_Occurred()) return NULL;
     if(shift<0)

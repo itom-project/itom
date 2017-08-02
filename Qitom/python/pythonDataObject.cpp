@@ -397,22 +397,24 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
 
                     int totalElems = 1;
                     PyObject *dimListItem = NULL;
+                    bool ok;
 
                     //try to parse list to values of unsigned int
                     for (Py_ssize_t i = 0; i < dims; i++)
                     {
                         dimListItem = PySequence_GetItem(dimList,i); //new reference
-                        if (!PyArg_Parse(dimListItem , "I" , &tempSizes /*&sizes[i]*/)) //borrowed ref
+                        tempSizes = PythonQtConversion::PyObjGetInt(dimListItem, true, ok); 
+                        if (!ok)
                         {
                             PyErr_PrintEx(0);
                             PyErr_Clear();
-                            PyErr_Format(PyExc_TypeError,"Size of %d. dimension is no integer number", i+1);
+                            PyErr_Format(PyExc_TypeError,"Size of %d. dimension is no integer number or exceeds the valid value range.", i+1);
                             retValue += RetVal(retError);
                             break;
                         }
                         else if (tempSizes <= 0)
                         {
-                            PyErr_Format(PyExc_TypeError,"Size of %d. dimension must be bigger than 1", i+1);
+                            PyErr_Format(PyExc_TypeError,"Size of %d. dimension must be a positive number.", i+1);
                             retValue += RetVal(retError);
                             break;
                         }
@@ -459,11 +461,16 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                             {
                                 if (PyLong_Check(data))
                                 {
-                                    *(self->dataObject) = (float64)PyFloat_AsDouble(data);
+                                    int overflow;
+                                    *(self->dataObject) = (int32)PyLong_AsLongAndOverflow(data, &overflow);
+                                    if (overflow)
+                                    {
+                                        throw cv::Exception(0, "overflow: given data exceeds the integer boundaries.","PyDataObject_init",__FILE__,__LINE__);
+                                    }
                                 }
                                 else if (PyFloat_Check(data))
                                 {
-                                    *(self->dataObject) = (int32)PyLong_AsLong(data);
+                                    *(self->dataObject) = (float64)PyFloat_AsDouble(data);
                                 }
                                 else if (PyComplex_Check(data))
                                 {
@@ -3471,10 +3478,21 @@ PyObject* PythonDataObject::PyDataObj_nbLshift(PyObject* o1, PyObject* o2)
 
     PyDataObject *dobj1 = (PyDataObject*)(o1);
 
-    int shift = PyLong_AsLong(o2);
+    int overflow;
+    int shift = PyLong_AsLongAndOverflow(o2, &overflow);
 
-    if (PyErr_Occurred()) return NULL;
-    if (shift<0)
+    if (PyErr_Occurred())
+    {
+        return NULL;
+    }
+
+    if (overflow)
+    {
+        PyErr_SetString(PyExc_ValueError, "shift value exceeds integer range");
+        return NULL;
+    }
+
+    if (shift < 0)
     {
         PyErr_SetString(PyExc_TypeError,"shift value must not be negative");
         return NULL;
@@ -3510,12 +3528,20 @@ PyObject* PythonDataObject::PyDataObj_nbRshift(PyObject* o1, PyObject* o2)
 
     PyDataObject *dobj1 = (PyDataObject*)(o1);
 
-    int shift = PyLong_AsLong(o2);
+    int overflow;
+    int shift = PyLong_AsLongAndOverflow(o2, &overflow);
 
     if (PyErr_Occurred())
     {
         return NULL;
     }
+
+    if (overflow)
+    {
+        PyErr_SetString(PyExc_ValueError, "shift value exceeds integer range");
+        return NULL;
+    }
+
     if (shift<0)
     {
         PyErr_SetString(PyExc_TypeError,"shift value must not be negative");
@@ -3985,10 +4011,21 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceLshift(PyObject* o1, PyObject* o2
 
     PyDataObject *dobj1 = (PyDataObject*)(o1);
 
-    int shift = PyLong_AsLong(o2);
+    int overflow;
+    int shift = PyLong_AsLongAndOverflow(o2, &overflow);
 
-    if (PyErr_Occurred()) return NULL;
-    if (shift<0)
+    if (PyErr_Occurred())
+    {
+        return NULL;
+    }
+
+    if (overflow)
+    {
+        PyErr_SetString(PyExc_ValueError, "shift value exceeds integer range");
+        return NULL;
+    }
+
+    if (shift < 0)
     {
         PyErr_SetString(PyExc_TypeError,"shift value must not be negative");
         return NULL;
@@ -4016,10 +4053,21 @@ PyObject* PythonDataObject::PyDataObj_nbInplaceRshift(PyObject* o1, PyObject* o2
 
     PyDataObject *dobj1 = (PyDataObject*)(o1);
 
-    int shift = PyLong_AsLong(o2);
+    int overflow;
+    int shift = PyLong_AsLongAndOverflow(o2, &overflow);
 
-    if (PyErr_Occurred()) return NULL;
-    if (shift<0)
+    if (PyErr_Occurred())
+    {
+        return NULL;
+    }
+
+    if (overflow)
+    {
+        PyErr_SetString(PyExc_ValueError, "shift value exceeds integer range");
+        return NULL;
+    }
+
+    if (shift < 0)
     {
         PyErr_SetString(PyExc_TypeError,"shift value must not be negative");
         return NULL;
@@ -4984,16 +5032,17 @@ PyObject* PythonDataObject::PyDataObject_adjustROI(PyDataObject *self, PyObject*
     {
         int *offsetVector = new int[2*dims];
         PyObject *temp;
+        bool ok;
 
-        for (int i=0;i<2*dims;i++)
+        for (int i = 0; i < 2*dims; i++)
         {
             temp = PyList_GetItem(offsets,i); //borrowed
-            if (!PyLong_Check(temp))
+            offsetVector[i] = PythonQtConversion::PyObjGetInt(temp, true, ok);
+            if (!ok)
             {
-                PyErr_SetString(PyExc_ValueError, "at least one element in the offset list has no integer type");
+                PyErr_SetString(PyExc_ValueError, "at least one element in the offset list has no integer type or exceeds the integer range.");
                 break;
             }
-            offsetVector[i] = PyLong_AsLong(temp);
         }
         try
         {
@@ -5161,15 +5210,16 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
             //check type of elem, must be int or stride
             if (PyLong_Check(elem))
             {
-                temp1 = PyLong_AsLong(elem);
+                int overflow;
+                temp1 = PyLong_AsLongAndOverflow(elem, &overflow);
 
                 //index -1 will be the last element, -2 the element before the last...
-                if (temp1 < 0)
+                if (!overflow && (temp1 < 0))
                 {
                     temp1 = axisSize + temp1;
                 }
 
-                if (temp1 >= 0 && temp1 < axisSize) //temp1 is still the virtual order, therefore check agains the getSize-method which considers the transpose-flag
+                if (!overflow && (temp1 >= 0 && temp1 < axisSize)) //temp1 is still the virtual order, therefore check agains the getSize-method which considers the transpose-flag
                 {
                     ranges[i].start = temp1;
                     ranges[i].end = temp1 + 1;
@@ -5179,7 +5229,7 @@ PyObject* PythonDataObject::PyDataObj_mappingGetElem(PyDataObject* self, PyObjec
                 {
                     singlePointIdx[i] = 0;
                     error = true;
-                    PyErr_Format(PyExc_IndexError, "index %i is out of bounds for axis %i with size %i", PyLong_AsLong(elem), i, axisSize);
+                    PyErr_Format(PyExc_IndexError, "index %i is out of bounds for axis %i with size %i.", PyLong_AsLong(elem), i, axisSize);
                 }
             }
             else if (PySlice_Check(elem))
@@ -5358,15 +5408,16 @@ int PythonDataObject::PyDataObj_mappingSetElem(PyDataObject* self, PyObject* key
             //check type of elem, must be int or stride
             if (PyLong_Check(elem))
             {
-                temp1 = PyLong_AsLong(elem);
+                int overflow;
+                temp1 = PyLong_AsLongAndOverflow(elem, &overflow);
 
                 //index -1 will be the last element, -2 the element before the last...
-                if (temp1 < 0)
+                if (!overflow && (temp1 < 0))
                 {
                     temp1 = axisSize + temp1;
                 }
 
-                if (temp1 >= 0 && temp1 < axisSize)
+                if (!overflow && (temp1 >= 0 && temp1 < axisSize))
                 {
                     ranges[i].start = temp1;
                     ranges[i].end = temp1+1;
