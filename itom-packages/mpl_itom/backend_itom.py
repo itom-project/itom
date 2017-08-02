@@ -494,6 +494,10 @@ class FigureManagerItom( FigureManagerBase ):
 
     def resize(self, width, height):
         'set the canvas size in pixels'
+        if "do_not_resize_window" in self.canvas.__dict__:
+            #savefig or copyToClipboard will force to resize the window if dpi is higher than default (only in matplotlib >= 2.0). This is not wanted.
+            if self.canvas.do_not_resize_window:
+                return
         self.canvas.canvas.call("externalResize",width,height)
         self.canvas.resizeEvent(width,height, draw =self._shown)
 

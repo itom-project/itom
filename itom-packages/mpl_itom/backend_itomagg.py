@@ -151,6 +151,12 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         origDPI = self.figure.dpi
         origfacecolor = self.figure.get_facecolor()
         origedgecolor = self.figure.get_edgecolor()
+        
+        #if dpi is higher than the current value, matplotlib >= 2.0 will temporarily set the new dpi and
+        #force the window to be resized. We do not want a resized window, but only an internal change
+        #of the dpi value. The property 'do_not_resize_window' is considered in FigureManagerItom.resize
+        #and the resize is not executed if do_not_resize_window is True.
+        self.do_not_resize_window = True
 
         self.figure.dpi = dpi
         self.figure.set_facecolor('w')
@@ -175,7 +181,11 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         self.figure.dpi = origDPI
         self.figure.set_facecolor(origfacecolor)
         self.figure.set_edgecolor(origedgecolor)
+        
+        self.do_not_resize_window = False
+        
         self.figure.set_canvas(self)
+        
 
     def draw(self):
         """
@@ -220,7 +230,13 @@ class FigureCanvasItomAgg( FigureCanvasItom, FigureCanvasAgg ):
         self.paintEvent()
 
     def print_figure(self, *args, **kwargs):
+        #if dpi is higher than the current value, matplotlib >= 2.0 will temporarily set the new dpi and
+        #force the window to be resized. We do not want a resized window, but only an internal change
+        #of the dpi value. The property 'do_not_resize_window' is considered in FigureManagerItom.resize
+        #and the resize is not executed if do_not_resize_window is True.
+        self.do_not_resize_window = True
         FigureCanvasAgg.print_figure(self, *args, **kwargs)
+        self.do_not_resize_window = False
         self.draw()
 
 
