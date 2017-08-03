@@ -283,15 +283,21 @@ struct ClassInfoContainer
     QString m_description;
 };
 
+} // namespace ito
+
+QT_BEGIN_NAMESPACE
 template <>
-class QT_DEPRECATED_X("Use std::less") qLess<ClassInfoContainer>
+class QT_DEPRECATED_X("Use std::less") qLess<ito::ClassInfoContainer>
 {
 public:
-    inline bool operator()(const ClassInfoContainer &t1, const ClassInfoContainer &t2) const
+    inline bool operator()(const ito::ClassInfoContainer &t1, const ito::ClassInfoContainer &t2) const
     {
         return (t1.m_name < t2.m_name);
     }
 };
+QT_END_NAMESPACE
+
+namespace ito {
 
 struct TimerContainer
 {
