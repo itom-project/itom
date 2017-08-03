@@ -11,8 +11,7 @@ if exist "%InstallDir%\MSBuild\15.0\Bin\MSBuild.exe" (
     CALL "%InstallDir%\Common7\Tools\VsDevCmd.bat"
 
     msbuild.exe "%~dp0\ALL_BUILD.vcxproj" /p:configuration=release /p:platform=x64
-)
-else (
+) else (
     echo "Could not find MS VS build tool path"
 )
 pause
