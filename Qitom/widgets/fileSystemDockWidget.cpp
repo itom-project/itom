@@ -570,7 +570,7 @@ RetVal FileSystemDockWidget::changeBaseDirectory(QString dir)
     }
     else
     {
-        retValue += ito::RetVal(ito::retError, 0, tr("Directory '%1' does not existing!").arg(dir).toLatin1().data());
+        retValue += ito::RetVal(ito::retError, 0, tr("Directory '%1' does not exist!").arg(dir).toLatin1().data());
     }
 
     // not existing
@@ -1276,6 +1276,7 @@ void FileSystemDockWidget::pathAnchorClicked(const QUrl &link)
     {
 #endif
         QString dir = link.toLocalFile();
+
         if (dir.size() == 2)
         {
             dir += "/";
@@ -1295,6 +1296,7 @@ QString FileSystemDockWidget::getHtmlTag(const QString &tag)
 
     QString link = "";
     QStringList tagList = tag.split("/");
+
     QString text = QString("<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.0//EN' 'http://www.w3.org/TR/REC-html40/strict.dtd'>\n\
 <html><head><meta name='qrichtext' content='1' /><style type='text/css'>\n\
 p, li { white-space: pre-wrap; }\n\
@@ -1310,7 +1312,17 @@ a { color: %1; }\n\
         }
         link += tagList[x];
 
-        text += "<a href='file:///" + link + "'>" + tagList[x] + "</a>";
+		if (tagList[x].size() > 0)
+		{
+			if (link.startsWith("//"))
+			{
+				text += "<a href='file://" + link + "'>" + tagList[x] + "</a>";
+			}
+			else
+			{
+				text += "<a href='file:///" + link + "'>" + tagList[x] + "</a>";
+			}
+		}
     }
     text += "<a name=\"last\"></a></span></p></body></html>";
     //qDebug() << txt;

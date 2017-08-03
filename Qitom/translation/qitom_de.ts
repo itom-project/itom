@@ -5169,7 +5169,7 @@ Meldung: &apos;%1&apos;</translation>
     </message>
     <message>
         <location line="+246"/>
-        <source>Directory &apos;%1&apos; does not existing!</source>
+        <source>Directory &apos;%1&apos; does not exist!</source>
         <translation>Verzeichnis &apos;%1&apos; existiert nicht!</translation>
     </message>
     <message>
