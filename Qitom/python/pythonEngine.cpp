@@ -2367,39 +2367,6 @@ ito::RetVal PythonEngine::modifyTracebackDepth(int NrOfLevelsToPopAtFront, bool 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal PythonEngine::checkForPyExceptions()
-{
-    ito::RetVal retval;
-
-    if (PyErr_Occurred())
-    {
-        PyObject* pyErrType = NULL;
-        PyObject* pyErrValue = NULL;
-        PyObject* pyErrTrace = NULL;
-//        PyObject* pyErrSubValue = NULL;
-        QString errType;
-        QString errText;
-        QString errLine;
-
-        PyErr_Fetch(&pyErrType, &pyErrValue, &pyErrTrace); //new references
-        PyErr_NormalizeException(&pyErrType, &pyErrValue, &pyErrTrace);
-
-        errType = PythonQtConversion::PyObjGetString(pyErrType);
-        errText = PythonQtConversion::PyObjGetString(pyErrValue);
-
-        retval += ito::RetVal::format(ito::retError, 0, "%s (%s)", errText.toLatin1().data(), errType.toLatin1().data());
-
-        Py_XDECREF(pyErrTrace);
-        Py_DECREF(pyErrType);
-        Py_DECREF(pyErrValue);
-
-        PyErr_Clear();
-    }
-
-    return retval;
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
 void PythonEngine::printPythonErrorWithoutTraceback()
 {
     PyObject *exception, *v, *tb;
@@ -4268,7 +4235,7 @@ ito::RetVal PythonEngine::saveMatlabVariables(bool globalNotLocal, QString filen
             PyTuple_SetItem(pArgs,2,keyList);
             PyObject* pyRet = ito::PythonItom::PySaveMatlabMat(NULL, pArgs);
 
-            retVal += checkForPyExceptions();
+            retVal += PythonCommon::checkForPyExceptions(true);
 
             Py_XDECREF(pArgs);
             Py_XDECREF(pyRet);
@@ -4407,7 +4374,7 @@ ito::RetVal PythonEngine::saveMatlabSingleParam(QString filename, QSharedPointer
             PyTuple_SetItem(pArgs, 1, item); //steals ref.
             PyTuple_SetItem(pArgs, 2, PyUnicode_DecodeLatin1(valueName.toLatin1().data(), valueName.length(), NULL)); //steals ref.
             PyObject *pyRet = ito::PythonItom::PySaveMatlabMat(NULL, pArgs);
-            retVal += checkForPyExceptions();
+            retVal += PythonCommon::checkForPyExceptions(true);
             Py_XDECREF(pyRet);
             Py_XDECREF(pArgs);
 
@@ -4483,7 +4450,7 @@ ito::RetVal PythonEngine::loadMatlabVariables(bool globalNotLocal, QString filen
             PyObject *dict = ito::PythonItom::PyLoadMatlabMat(NULL, pArgs);
             Py_DECREF(pArgs);
 
-            retVal += checkForPyExceptions();
+            retVal += PythonCommon::checkForPyExceptions(true);
 
             if (dict == NULL || retVal.containsError())
             {
@@ -5571,7 +5538,7 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
 
     if (pickleModule == NULL)
     {
-        retval += checkForPyExceptions();
+        retval += PythonCommon::checkForPyExceptions(true);
         return retval;
     }
 
@@ -5579,7 +5546,7 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
 
     if (builtinsModule == NULL)
     {
-        retval += checkForPyExceptions();
+        retval += PythonCommon::checkForPyExceptions(true);
         return retval;
     }
 
@@ -5602,7 +5569,7 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
 
     if (fileHandle == NULL)
     {
-        retval += checkForPyExceptions();
+        retval += PythonCommon::checkForPyExceptions(true);
     }
     else
     {
@@ -5639,14 +5606,14 @@ ito::RetVal PythonEngine::pickleDictionary(PyObject *dict, const QString &filena
 
         if (result == NULL)
         {
-            retval += checkForPyExceptions();
+            retval += PythonCommon::checkForPyExceptions(true);
         }
 
         Py_XDECREF(result);
 
         if (!PyObject_CallMethod(fileHandle, "close", ""))
         {
-            retval += checkForPyExceptions();
+            retval += PythonCommon::checkForPyExceptions(true);
         }
     }
 
@@ -5779,7 +5746,7 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
 
     if (pickleModule == NULL)
     {
-        retval += checkForPyExceptions();
+        retval += PythonCommon::checkForPyExceptions(true);
         return retval;
     }
 
@@ -5787,7 +5754,7 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
 
     if (builtinsModule == NULL)
     {
-        retval += checkForPyExceptions();
+        retval += PythonCommon::checkForPyExceptions(true);
         return retval;
     }
 
@@ -5809,7 +5776,7 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
 
     if (fileHandle == NULL)
     {
-        retval += checkForPyExceptions();
+        retval += PythonCommon::checkForPyExceptions(true);
     }
     else
     {
@@ -5842,7 +5809,7 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
 
         if (unpickledItem == NULL)
         {
-            retval += checkForPyExceptions();
+            retval += PythonCommon::checkForPyExceptions(true);
         }
         else if (!PyDict_Check(unpickledItem))
         {
@@ -5902,7 +5869,7 @@ ito::RetVal PythonEngine::unpickleDictionary(PyObject *destinationDict, const QS
 
         if (!PyObject_CallMethod(fileHandle, "close", ""))
         {
-            retval += checkForPyExceptions();
+            retval += PythonCommon::checkForPyExceptions(true);
         }
 
         Py_XDECREF(fileHandle);

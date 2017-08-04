@@ -144,7 +144,6 @@ public:
     inline bool isPythonDebuggingAndWaiting() const { return pythonState == ito::pyStateDebuggingWaiting; }
     inline bool execInternalCodeByDebugger() const  { return m_executeInternalPythonCodeInDebugMode; }
     inline void setExecInternalCodeByDebugger(bool value) { m_executeInternalPythonCodeInDebugMode = value; }
-    ito::RetVal checkForPyExceptions();
     void printPythonErrorWithoutTraceback();
     void pythonDebugFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);
     void pythonRunFunction(PyObject *callable, PyObject *argTuple, bool gilExternal = false);    

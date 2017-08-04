@@ -325,7 +325,17 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                     if(steps[dimensions-1] == PyArray_ITEMSIZE(ndArray))
                     {
                         DELETE_AND_SET_NULL(self->dataObject);
-                        self->dataObject = new ito::DataObject(dimensions, sizes, typeno, data, steps);
+
+                        try
+                        {
+                            self->dataObject = new ito::DataObject(dimensions, sizes, typeno, data, steps);
+                        }
+                        catch (cv::Exception &exc)
+                        {
+                            PyErr_Format(PyExc_RuntimeError, "failed to create data object: %s", (exc.err).c_str());
+                            self->dataObject = NULL;
+                            retValue += RetVal::format(retError, 0, "failed to create data object: %s", (exc.err).c_str());
+                        }
                     }
                     else
                     {
@@ -342,7 +352,17 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                         sizes_inc[dimensions - 1] = 1;
                         steps_inc[dimensions - 1] = PyArray_ITEMSIZE(ndArray);
                         DELETE_AND_SET_NULL(self->dataObject);
-                        self->dataObject = new ito::DataObject(dimensions, sizes_inc, typeno, data, steps_inc);
+
+                        try
+                        {
+                            self->dataObject = new ito::DataObject(dimensions, sizes_inc, typeno, data, steps_inc);
+                        }
+						catch (cv::Exception &exc)
+						{
+                            PyErr_Format(PyExc_RuntimeError, "failed to create data object: %s", (exc.err).c_str());
+                            self->dataObject = NULL;
+                            retValue += RetVal::format(retError, 0, "failed to create data object: %s", (exc.err).c_str());
+                        }
 
                         DELETE_AND_SET_NULL_ARRAY(sizes_inc);
                         DELETE_AND_SET_NULL_ARRAY(steps_inc);
@@ -355,8 +375,6 @@ int PythonDataObject::PyDataObject_init(PyDataObject *self, PyObject *args, PyOb
                     //Py_XINCREF(copyObject); (we don't have to increment reference of ndArray here, since this is already done in the steps above, where the flags c_contiguous and the type is checked)
                     self->base = (PyObject*)ndArray;
                     done = true;
-
-                    retValue += RetVal(retOk);
                 }
             }
         }

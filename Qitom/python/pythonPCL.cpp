@@ -2045,11 +2045,10 @@ pointCloud.");
         }
         else
         {
-            XYZ = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok));
+            XYZ = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok, &retval));
             if (!ok)
             {
-                PyErr_SetString(PyExc_RuntimeError, "XYZ argument could not be converted to a data object");
-                return NULL;
+                return PyErr_Format(PyExc_RuntimeError, "XYZ argument could not be converted to a data object (%s)", retval.errorMessage());
             }
             
             ito::RetVal tmpRetval = ito::dObjHelper::verify3DDataObject(XYZ.data(), "XYZ", 3, 3, 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
@@ -2097,25 +2096,22 @@ pointCloud.");
     }
     else
     {
-        X = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok));
+        X = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok, &retval));
         if (!ok)
         {
-            PyErr_SetString(PyExc_RuntimeError, "X argument could not be converted to a data object");
-            return NULL;
+            return PyErr_Format(PyExc_RuntimeError, "X argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
-        Y = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objY, false, ok));
+        Y = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objY, false, ok, &retval));
         if (!ok)
         {
-            PyErr_SetString(PyExc_RuntimeError, "Y argument could not be converted to a data object");
-            return NULL;
+            return PyErr_Format(PyExc_RuntimeError, "Y argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
-        Z = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objZ, false, ok));
+        Z = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objZ, false, ok, &retval));
         if (!ok)
         {
-            PyErr_SetString(PyExc_RuntimeError, "Z argument could not be converted to a data object");
-            return NULL;
+            return PyErr_Format(PyExc_RuntimeError, "Z argument could not be converted to a data object (%s)", retval.errorMessage());
         }
     }
 
@@ -2176,11 +2172,10 @@ pointCloud.");
         }
         else
         {
-            XYZ = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok));
+            XYZ = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok, &retval));
             if (!ok)
             {
-                PyErr_SetString(PyExc_RuntimeError, "XYZ argument could not be converted to a data object");
-                return NULL;
+                return PyErr_Format(PyExc_RuntimeError, "XYZ argument could not be converted to a data object (%s)", retval.errorMessage());
             }
             
             ito::RetVal tmpRetval = ito::dObjHelper::verify3DDataObject(XYZ.data(), "XYZ", 3, 3, 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
@@ -2217,42 +2212,37 @@ pointCloud.");
                 Z = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
             }
 
-            I = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objI, false, ok));
+            I = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objI, false, ok, &retval));
             if (!ok)
             {
-                PyErr_SetString(PyExc_RuntimeError, "Intensity argument could not be converted to a data object");
-                return NULL;
+                return PyErr_Format(PyExc_RuntimeError, "Intensity argument could not be converted to a data object (%s)", retval.errorMessage());
             }
         }
     }
     else
     {
-        X = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok));
+        X = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok, &retval));
         if (!ok)
         {
-            PyErr_SetString(PyExc_RuntimeError, "X argument could not be converted to a data object");
-            return NULL;
+            return PyErr_Format(PyExc_RuntimeError, "X argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
-        Y = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objY, false, ok));
+        Y = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objY, false, ok, &retval));
         if (!ok)
         {
-            PyErr_SetString(PyExc_RuntimeError, "Y argument could not be converted to a data object");
-            return NULL;
+            return PyErr_Format(PyExc_RuntimeError, "Y argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
-        Z = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objZ, false, ok));
+        Z = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objZ, false, ok, &retval));
         if (!ok)
         {
-            PyErr_SetString(PyExc_RuntimeError, "Z argument could not be converted to a data object");
-            return NULL;
+            return PyErr_Format(PyExc_RuntimeError, "Z argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
-        I = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objI, false, ok));
+        I = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objI, false, ok, &retval));
         if (!ok)
         {
-            PyErr_SetString(PyExc_RuntimeError, "Intensity argument could not be converted to a data object");
-            return NULL;
+            return PyErr_Format(PyExc_RuntimeError, "Intensity argument could not be converted to a data object (%s)", retval.errorMessage());
         }
     }
 
@@ -2313,11 +2303,10 @@ pointCloud.");
         }
         else
         {
-            XYZ = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok));
+            XYZ = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok, &retval));
             if (!ok)
             {
-                PyErr_SetString(PyExc_RuntimeError, "XYZ argument could not be converted to a data object");
-                return NULL;
+                return PyErr_Format(PyExc_RuntimeError, "XYZ argument could not be converted to a data object (%s)", retval.errorMessage());
             }
             
             ito::RetVal tmpRetval = ito::dObjHelper::verify3DDataObject(XYZ.data(), "XYZ", 3, 3, 1, std::numeric_limits<int>::max(), 1, std::numeric_limits<int>::max(), 1, ito::tFloat32);
@@ -2354,42 +2343,37 @@ pointCloud.");
                 Z = QSharedPointer<ito::DataObject>(new ito::DataObject(XYZ->at(ranges).squeeze()));
             }
 
-            color = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objColor, false, ok));
+            color = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objColor, false, ok, &retval));
             if (!ok)
             {
-                PyErr_SetString(PyExc_RuntimeError, "color argument could not be converted to a data object");
-                return NULL;
+                return PyErr_Format(PyExc_RuntimeError, "color argument could not be converted to a data object (%s)", retval.errorMessage());
             }
         }
     }
     else
     {
-        X = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok));
+        X = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objX, false, ok, &retval));
         if (!ok)
         {
-            PyErr_SetString(PyExc_RuntimeError, "X argument could not be converted to a data object");
-            return NULL;
+            return PyErr_Format(PyExc_RuntimeError, "X argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
-        Y = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objY, false, ok));
+        Y = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objY, false, ok, &retval));
         if (!ok)
         {
-            PyErr_SetString(PyExc_RuntimeError, "Y argument could not be converted to a data object");
-            return NULL;
+            return PyErr_Format(PyExc_RuntimeError, "Y argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
-        Z = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objZ, false, ok));
+        Z = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objZ, false, ok, &retval));
         if (!ok)
         {
-            PyErr_SetString(PyExc_RuntimeError, "Z argument could not be converted to a data object");
-            return NULL;
+            return PyErr_Format(PyExc_RuntimeError, "Z argument could not be converted to a data object (%s)", retval.errorMessage());
         }
 
-        color = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objColor, false, ok));
+        color = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objColor, false, ok, &retval));
         if (!ok)
         {
-            PyErr_SetString(PyExc_RuntimeError, "color argument could not be converted to a data object");
-            return NULL;
+            return PyErr_Format(PyExc_RuntimeError, "color argument could not be converted to a data object (%s)", retval.errorMessage());
         }
     }
 
@@ -2473,30 +2457,27 @@ PointCloud.");
         }
     }
     
-    dispMap = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objDisp, false, ok));
+    dispMap = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objDisp, false, ok, &retval));
     if (!ok)
     {
-        PyErr_SetString(PyExc_RuntimeError, "topography map argument could not be converted to a data object");
-        return NULL;
+        return PyErr_Format(PyExc_RuntimeError, "topography map argument could not be converted to a data object (%s)", retval.errorMessage());
     }
 
     if (objI)
     {
-        IntMap = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objI, false, ok));
+        IntMap = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objI, false, ok, &retval));
         if (!ok)
         {
-            PyErr_SetString(PyExc_RuntimeError, "topography map argument could not be converted to a data object");
-            return NULL;
+            return PyErr_Format(PyExc_RuntimeError, "topography map argument could not be converted to a data object (%s)", retval.errorMessage());
         }
         colorMap = QSharedPointer<ito::DataObject>(NULL);
     }
     else if (objColor)
     {
-        colorMap = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objColor, false, ok));
+        colorMap = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(objColor, false, ok, &retval));
         if (!ok)
         {
-            PyErr_SetString(PyExc_RuntimeError, "color map argument could not be converted to a data object");
-            return NULL;
+            return PyErr_Format(PyExc_RuntimeError, "color map argument could not be converted to a data object (%s)", retval.errorMessage());
         }
         IntMap = QSharedPointer<ito::DataObject>(NULL);
     }

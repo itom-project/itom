@@ -282,6 +282,7 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
     }
 
     ito::UiDataContainer dataCont;
+    ito::RetVal retval2;
 
     //at first try to strictly convert to a point cloud or polygon mesh (non strict conversion not available for this)
     //if this fails, try to non-strictly convert to data object, such that numpy arrays are considered as well.
@@ -297,17 +298,16 @@ PyObject* PythonFigure::PyFigure_plot(PyFigure *self, PyObject *args, PyObject *
 
     if (!ok)
     {
-        dataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok));
+        dataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok, &retval2));
     }
 
     if (!ok)
     {
 #if ITOM_POINTCLOUDLIBRARY > 0
-        PyErr_SetString(PyExc_RuntimeError, "first argument cannot be converted to dataObject, pointCloud or polygonMesh.");
+        return PyErr_Format(PyExc_RuntimeError, "first argument cannot be converted to dataObject, pointCloud or polygonMesh (%s).", retval2.errorMessage());
 #else
-        PyErr_SetString(PyExc_RuntimeError, "first argument cannot be converted to dataObject.");
+        return PyErr_Format(PyExc_RuntimeError, "first argument cannot be converted to dataObject (%s).", retval2.errorMessage());
 #endif
-        return NULL;
     }
 
     if (areaIndex >= self->cols * self->rows || areaIndex < 0)

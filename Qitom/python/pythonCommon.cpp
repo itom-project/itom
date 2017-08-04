@@ -1920,5 +1920,43 @@ bool PythonCommon::setReturnValueMessage(ito::RetVal &retVal,const char *objName
     QString pName(objName);
     return PythonCommon::setReturnValueMessage(retVal, pName, errorMSG, exceptionIfError, exceptionIfWarning);
 }
+
+
+//----------------------------------------------------------------------------------------------------------------------------------
+ito::RetVal PythonCommon::checkForPyExceptions(bool clearError /*= true*/)
+{
+    ito::RetVal retval;
+
+    if (PyErr_Occurred())
+    {
+        PyObject* pyErrType = NULL;
+        PyObject* pyErrValue = NULL;
+        PyObject* pyErrTrace = NULL;
+        //        PyObject* pyErrSubValue = NULL;
+        QString errType;
+        QString errText;
+        QString errLine;
+
+        PyErr_Fetch(&pyErrType, &pyErrValue, &pyErrTrace); //new references
+        PyErr_NormalizeException(&pyErrType, &pyErrValue, &pyErrTrace);
+
+        errType = PythonQtConversion::PyObjGetString(pyErrType);
+        errText = PythonQtConversion::PyObjGetString(pyErrValue);
+
+        retval += ito::RetVal::format(ito::retError, 0, "%s (%s)", errText.toLatin1().data(), errType.toLatin1().data());
+
+        Py_XDECREF(pyErrTrace);
+        Py_DECREF(pyErrType);
+        Py_DECREF(pyErrValue);
+
+        if (clearError)
+        {
+            PyErr_Clear();
+        }
+    }
+
+    return retval;
+}
+
 //------------------------------------------------------------------------------------------------------------------
 } //end namespace ito

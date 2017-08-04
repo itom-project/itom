@@ -132,7 +132,7 @@ public:
     static ito::PCLPolygonMesh* PyObjGetPolygonMeshNewPtr(PyObject *val, bool strict, bool &ok);
 #endif
 
-    static ito::DataObject* PyObjGetDataObjectNewPtr(PyObject *val, bool strict, bool &ok);
+    static ito::DataObject* PyObjGetDataObjectNewPtr(PyObject *val, bool strict, bool &ok, ito::RetVal *retVal = NULL);
 
     static QSharedPointer<ito::DataObject> PyObjGetSharedDataObject(PyObject *val, bool &ok); //is always strict, only dataobjects are allowed
 

@@ -1047,7 +1047,7 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
 
 //----------------------------------------------------------------------------------------------------------------------------------
-/*static*/ ito::DataObject* PythonQtConversion::PyObjGetDataObjectNewPtr(PyObject *val, bool strict, bool &ok)
+/*static*/ ito::DataObject* PythonQtConversion::PyObjGetDataObjectNewPtr(PyObject *val, bool strict, bool &ok, ito::RetVal *retVal /*= NULL*/)
 {
     if (Py_TYPE(val) == &ito::PythonDataObject::PyDataObjectType)
     {
@@ -1083,22 +1083,32 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
         Py_DECREF(args);
         if (result)
         {
-            dObj = PyObjGetDataObjectNewPtr((PyObject*)result, true, ok);
+            dObj = PyObjGetDataObjectNewPtr((PyObject*)result, true, ok, retVal);
             Py_XDECREF(result);
             return dObj;
         }
         else
         {
+            ito::RetVal ret = PythonCommon::checkForPyExceptions(true);
+            if (retVal)
+            {
+                *retVal += ret;
+            }
+
             ok = false;
             return NULL;
         }
     }
-    else
+    else //strict
     {
+        if (retVal)
+        {
+            *retVal += ito::RetVal(ito::retError, 0, "given object must be of type itom.dataObject.");
+        }
+
         ok = false;
         return NULL;
     }
-    return NULL;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

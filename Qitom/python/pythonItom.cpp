@@ -306,6 +306,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     }
 
     ito::UiDataContainer dataCont;
+    ito::RetVal retval2;
 
     //at first try to strictly convert to a point cloud or polygon mesh (non strict conversion not available for this)
     //if this fails, try to non-strictly convert to data object, such that numpy arrays are considered as well.
@@ -321,17 +322,16 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 
     if (!ok)
     {
-        dataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok));
+        dataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok, &retval2));
     }
 
     if (!ok)
     {
 #if ITOM_POINTCLOUDLIBRARY > 0
-        PyErr_SetString(PyExc_RuntimeError, "First argument cannot be converted to dataObject, pointCloud or polygonMesh.");
+        return PyErr_Format(PyExc_RuntimeError, "First argument cannot be converted to dataObject, pointCloud or polygonMesh (%s).", retval2.errorMessage());
 #else
-        PyErr_SetString(PyExc_RuntimeError, "First argument cannot be converted to dataObject.");
+        return PyErr_Format(PyExc_RuntimeError, "First argument cannot be converted to dataObject (%s).", retval2.errorMessage());
 #endif
-        return NULL;
     }
 
     QVariantMap properties;

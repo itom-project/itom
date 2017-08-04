@@ -86,6 +86,7 @@ namespace ito
             static bool transformRetValToPyException(ito::RetVal &retVal, PyObject *exceptionIfError = PyExc_RuntimeError, PyObject *exceptionIfWarning = PyExc_RuntimeWarning);
             static bool setReturnValueMessage(ito::RetVal &retVal, const QString &objName, const tErrMsg &errorMSG, PyObject *exceptionIfError = PyExc_RuntimeError, PyObject *exceptionIfWarning = PyExc_RuntimeWarning);
             static bool setReturnValueMessage(ito::RetVal &retVal, const char *objName, const tErrMsg &errorMSG, PyObject *exceptionIfError = PyExc_RuntimeError, PyObject *exceptionIfWarning = PyExc_RuntimeWarning);
+            static ito::RetVal checkForPyExceptions(bool clearError = true); //!> checks if a Python exception is currently set and returns ito::retError with the corresponding error message, if this is the case (else retOk). The python exception is only cleared, if clearError is true (default)
     };
 
 } //end namespace ito

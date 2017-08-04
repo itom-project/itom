@@ -286,6 +286,8 @@ namespace ito
 
 /*static*/ SharedParamBasePointer PythonParamConversion::PyObjectToParamBase(PyObject* obj, const char *name, ito::RetVal &retVal, int paramBaseType /*= 0*/, bool strict /*= true*/)
 {
+    ito::RetVal retVal2; //used for return values from conversion methods (if available). In case of an error, retVal is set to retVal2 if it is set, else a generic error message is generated.
+
     //if paramBaseType == 0, type has to be guessed first
     if (paramBaseType <= 0) 
     {
@@ -451,7 +453,7 @@ namespace ito
         }
     case ito::ParamBase::DObjPtr & ito::paramTypeMask:
         {
-            ito::DataObject *dObj = PythonQtConversion::PyObjGetDataObjectNewPtr(obj, strict, ok);
+            ito::DataObject *dObj = PythonQtConversion::PyObjGetDataObjectNewPtr(obj, strict, ok, &retVal2);
             ok &= (dObj != NULL);
             if(ok)
             {
@@ -484,13 +486,20 @@ namespace ito
     default:
         {
             retVal += ito::RetVal(ito::retError, 0, QObject::tr("Given paramBaseType is unsupported.").toLatin1().data());
-        return QSharedPointer<ito::ParamBase>();
+		    return QSharedPointer<ito::ParamBase>();
         }
     }
 
     if(!ok)
     {
-        retVal += ito::RetVal(ito::retError, 0, QObject::tr("Error while converting value from PyObject to ParamBase").toLatin1().data());
+        if (retVal2 != ito::retError)
+        {
+            retVal += ito::RetVal(ito::retError, 0, QObject::tr("Error while converting value from PyObject to ParamBase").toLatin1().data());
+        }
+        else
+        {
+            retVal += retVal2;
+        }
     }
     return QSharedPointer<ito::ParamBase>();
 
