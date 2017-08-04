@@ -136,73 +136,79 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
     {
     case 1: //Filter
         {
-            const QHash <QString, ito::AddInAlgo::FilterDef *> *filterHashTable = aim->getFilterList();
             // build Main Node
             mainNodeText = tr("Algorithms");
             mainNode->setText(mainNodeText);
             mainNode->setData(typeCategory, m_urType);
-			mainNode->setData(mainNodeText, m_urPath);
+            mainNode->setData(mainNodeText, m_urPath);
             mainNode->setIcon(iconGallery->value(iconPluginAlgo));
-            QHash<QString, ito::AddInAlgo::FilterDef *>::const_iterator i = filterHashTable->constBegin();
-            while (i != filterHashTable->constEnd()) 
+            if (aim)
             {
-                if (!plugins.contains(i.value()->m_pBasePlugin->objectName()))
-                { // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das Filter-Node anzuhaengen
-                    QStandardItem *plugin = new QStandardItem(i.value()->m_pBasePlugin->objectName());
-                    plugin->setEditable(false);
-                    plugin->setData(typeFPlugin, m_urType);
-					plugin->setData(mainNodeText + "." + plugin->text(), m_urPath);
-                    plugin->setIcon(iconGallery->value(iconPluginAlgo));
-                    plugin->setToolTip(i.value()->m_pBasePlugin->getFilename() + "; v" + QString::number(i.value()->m_pBasePlugin->getVersion()));
-                    plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
-                    mainNode->appendRow(plugin);
+                const QHash <QString, ito::AddInAlgo::FilterDef *> *filterHashTable = aim->getFilterList();
+                QHash<QString, ito::AddInAlgo::FilterDef *>::const_iterator i = filterHashTable->constBegin();
+                while (i != filterHashTable->constEnd())
+                {
+                    if (!plugins.contains(i.value()->m_pBasePlugin->objectName()))
+                    { // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das Filter-Node anzuhaengen
+                        QStandardItem *plugin = new QStandardItem(i.value()->m_pBasePlugin->objectName());
+                        plugin->setEditable(false);
+                        plugin->setData(typeFPlugin, m_urType);
+                        plugin->setData(mainNodeText + "." + plugin->text(), m_urPath);
+                        plugin->setIcon(iconGallery->value(iconPluginAlgo));
+                        plugin->setToolTip(i.value()->m_pBasePlugin->getFilename() + "; v" + QString::number(i.value()->m_pBasePlugin->getVersion()));
+                        plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
+                        mainNode->appendRow(plugin);
+                    }
+                    // Filter-Node anhaengen
+                    QStandardItem *filter = new QStandardItem(i.value()->m_name);
+                    filter->setEditable(false);
+                    filter->setData(typeFilter, m_urType);
+                    filter->setData(mainNodeText + "." + i.value()->m_pBasePlugin->objectName() + "." + filter->text(), m_urPath);
+                    filter->setIcon(iconGallery->value(iconPluginFilter));
+                    filter->setToolTip(i.value()->m_pBasePlugin->getAuthor());
+                    QStandardItem *test = plugins[i.value()->m_pBasePlugin->objectName()];
+                    test->appendRow(filter);
+                    ++i;
                 }
-                // Filter-Node anhaengen
-                QStandardItem *filter = new QStandardItem(i.value()->m_name);
-                filter->setEditable(false);
-                filter->setData(typeFilter, m_urType);
-				filter->setData(mainNodeText + "." + i.value()->m_pBasePlugin->objectName() + "." + filter->text(), m_urPath);
-                filter->setIcon(iconGallery->value(iconPluginFilter));
-                filter->setToolTip(i.value()->m_pBasePlugin->getAuthor());
-                QStandardItem *test = plugins[i.value()->m_pBasePlugin->objectName()];
-                test->appendRow(filter);
-                ++i;
             }
             break;
         }
     case 2: //Widgets
         {
-            const QHash <QString, ito::AddInAlgo::AlgoWidgetDef *> *widgetHashTable = aim->getAlgoWidgetList();
             // Main Node zusammenbauen
             mainNodeText = tr("Widgets");
             mainNode->setText(mainNodeText);
             mainNode->setData(typeCategory, m_urType);
 			mainNode->setData(mainNodeText, m_urPath);
             mainNode->setIcon(iconGallery->value(iconWidget));
-            QHash<QString, ito::AddInAlgo::AlgoWidgetDef *>::const_iterator i = widgetHashTable->constBegin();
-            while (i != widgetHashTable->constEnd()) 
+            if (aim)
             {
-                if (!plugins.contains(i.value()->m_pBasePlugin->objectName()))
-                { // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das Filter-Node anzuhaengen
-                    QStandardItem *plugin = new QStandardItem(i.value()->m_pBasePlugin->objectName());
-                    plugin->setEditable(false);
-                    plugin->setData(typeWPlugin, m_urType);
-					plugin->setData(mainNodeText + "." + plugin->text(), m_urPath);
-                    plugin->setIcon(iconGallery->value(iconPluginAlgo));
-                    plugin->setToolTip(i.value()->m_pBasePlugin->getFilename() + "; v" + QString::number(i.value()->m_pBasePlugin->getVersion()));
-                    plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
-                    mainNode->appendRow(plugin);
+                const QHash <QString, ito::AddInAlgo::AlgoWidgetDef *> *widgetHashTable = aim->getAlgoWidgetList();
+                QHash<QString, ito::AddInAlgo::AlgoWidgetDef *>::const_iterator i = widgetHashTable->constBegin();
+                while (i != widgetHashTable->constEnd())
+                {
+                    if (!plugins.contains(i.value()->m_pBasePlugin->objectName()))
+                    { // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das Filter-Node anzuhaengen
+                        QStandardItem *plugin = new QStandardItem(i.value()->m_pBasePlugin->objectName());
+                        plugin->setEditable(false);
+                        plugin->setData(typeWPlugin, m_urType);
+                        plugin->setData(mainNodeText + "." + plugin->text(), m_urPath);
+                        plugin->setIcon(iconGallery->value(iconPluginAlgo));
+                        plugin->setToolTip(i.value()->m_pBasePlugin->getFilename() + "; v" + QString::number(i.value()->m_pBasePlugin->getVersion()));
+                        plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
+                        mainNode->appendRow(plugin);
+                    }
+                    // Filter-Node anhaengen
+                    QStandardItem *filter = new QStandardItem(i.value()->m_name);
+                    filter->setEditable(false);
+                    filter->setData(typeWidget, m_urType);
+                    filter->setData(mainNodeText + "." + i.value()->m_pBasePlugin->objectName() + "." + filter->text(), m_urPath);
+                    filter->setIcon(iconGallery->value(iconWidget));
+                    filter->setToolTip(i.value()->m_pBasePlugin->getAuthor());
+                    QStandardItem *test = plugins[i.value()->m_pBasePlugin->objectName()];
+                    test->appendRow(filter);
+                    ++i;
                 }
-                // Filter-Node anhaengen
-                QStandardItem *filter = new QStandardItem(i.value()->m_name);
-                filter->setEditable(false);
-                filter->setData(typeWidget, m_urType);
-				filter->setData(mainNodeText + "." + i.value()->m_pBasePlugin->objectName() + "." + filter->text(), m_urPath);
-                filter->setIcon(iconGallery->value(iconWidget));
-                filter->setToolTip(i.value()->m_pBasePlugin->getAuthor());
-                QStandardItem *test = plugins[i.value()->m_pBasePlugin->objectName()];
-                test->appendRow(filter);
-                ++i;
             }
             break;
         }
@@ -236,40 +242,43 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
             pluginRawIO->setData(mainNodeText + "." + tr("Raw IO"), m_urPath);
             pluginRawIO->setIcon(iconGallery->value(iconPluginRawIO));
 
-            const QList<QObject*> *dataIOList = aim->getDataIOList();
-            for(int i = 0; i < dataIOList->length(); i++)
+            if (aim)
             {
-                QObject *obj = dataIOList->at(i);
-                const ito::AddInInterfaceBase *aib = qobject_cast<ito::AddInInterfaceBase*>(obj);
-                if (aib != NULL)
+                const QList<QObject*> *dataIOList = aim->getDataIOList();
+                for(int i = 0; i < dataIOList->length(); i++)
                 {
-                    QStandardItem *plugin = new QStandardItem(aib->objectName());
-                    plugin->setEditable(false);
-                    plugin->setData(typeDataIO, m_urType);
-                    switch (aib->getType())
+                    QObject *obj = dataIOList->at(i);
+                    const ito::AddInInterfaceBase *aib = qobject_cast<ito::AddInInterfaceBase*>(obj);
+                    if (aib != NULL)
                     {
-                        case 129:
-                        {// Grabber
-                            plugin->setIcon(iconGallery->value(iconPluginGrabber));
-                            plugin->setData(pluginGrabber->data(m_urPath).toString() + "."+plugin->text(), m_urPath);
-                            pluginGrabber->appendRow(plugin);
-                            break;
+                        QStandardItem *plugin = new QStandardItem(aib->objectName());
+                        plugin->setEditable(false);
+                        plugin->setData(typeDataIO, m_urType);
+                        switch (aib->getType())
+                        {
+                            case 129:
+                            {// Grabber
+                                plugin->setIcon(iconGallery->value(iconPluginGrabber));
+                                plugin->setData(pluginGrabber->data(m_urPath).toString() + "."+plugin->text(), m_urPath);
+                                pluginGrabber->appendRow(plugin);
+                                break;
+                            }
+                            case 257:
+                            {// ADDA
+                                plugin->setIcon(iconGallery->value(iconPluginAdda));
+                                plugin->setData(pluginAdda->data(m_urPath).toString() + "."+plugin->text(), m_urPath);
+                                pluginAdda->appendRow(plugin);
+                                break;
+                            }
+                            case 513:
+                            {// Raw IO
+                                plugin->setIcon(iconGallery->value(iconPluginRawIO));
+                                plugin->setData(pluginRawIO->data(m_urPath).toString() + "."+plugin->text(), m_urPath);
+                                pluginRawIO->appendRow(plugin);
+                                break;
+                            }
                         }
-                        case 257:
-                        {// ADDA
-                            plugin->setIcon(iconGallery->value(iconPluginAdda));
-                            plugin->setData(pluginAdda->data(m_urPath).toString() + "."+plugin->text(), m_urPath);
-                            pluginAdda->appendRow(plugin);
-                            break;
-                        }
-                        case 513:
-                        {// Raw IO
-                            plugin->setIcon(iconGallery->value(iconPluginRawIO));
-                            plugin->setData(pluginRawIO->data(m_urPath).toString() + "."+plugin->text(), m_urPath);
-                            pluginRawIO->appendRow(plugin);
-                            break;
-                        }
-                    }                   
+                    }
                 }
             }
 
@@ -286,19 +295,23 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
             mainNode->setData(typeCategory, m_urType);
 			mainNode->setData(mainNodeText, m_urPath);
             mainNode->setIcon(iconGallery->value(iconPluginActuator));
-            const QList<QObject*> *ActuatorList = aim->getActList();
-            for(int i = 0; i < ActuatorList->length(); i++)
+
+            if (aim)
             {
-                QObject *obj = ActuatorList->at(i);
-                const ito::AddInInterfaceBase *aib = qobject_cast<ito::AddInInterfaceBase*>(obj);
-                if (aib != NULL)
+                const QList<QObject*> *ActuatorList = aim->getActList();
+                for(int i = 0; i < ActuatorList->length(); i++)
                 {
-                    QStandardItem *plugin = new QStandardItem(aib->objectName());
-                    plugin->setEditable(false);
-                    plugin->setData(typeActuator, m_urType);
-					plugin->setData(mainNodeText + "." + plugin->text(), m_urPath);
-                    plugin->setIcon(iconGallery->value(iconPluginActuator));
-                    mainNode->appendRow(plugin);             
+                    QObject *obj = ActuatorList->at(i);
+                    const ito::AddInInterfaceBase *aib = qobject_cast<ito::AddInInterfaceBase*>(obj);
+                    if (aib != NULL)
+                    {
+                        QStandardItem *plugin = new QStandardItem(aib->objectName());
+                        plugin->setEditable(false);
+                        plugin->setData(typeActuator, m_urType);
+                        plugin->setData(mainNodeText + "." + plugin->text(), m_urPath);
+                        plugin->setIcon(iconGallery->value(iconPluginActuator));
+                        mainNode->appendRow(plugin);
+                    }
                 }
             }
             break;
@@ -544,7 +557,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                             parameterSection.replace("<!--%PARAMOPT_CAPTION%-->", tr("optional"));
                         }
 
-                        //remove returns section (Widgets can´t return something)
+                        //remove returns section (Widgets canï¿½t return something)
                         returnsSection = "";
 
                         // Example-Section
@@ -705,7 +718,7 @@ ito::RetVal HelpTreeDockWidget::showFilterWidgetPluginHelp(const QString &filter
                                 parameterSection.replace("<!--%PARAMOPT_CAPTION%-->", tr("optional"));
                             }
 
-                            //remove returns section (Widgets can´t return something)
+                            //remove returns section (Widgets canï¿½t return something)
                             returnsSection = "";
 
                             // Example-Section
@@ -1221,7 +1234,7 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
 
     ito::uint32 inOut = param.getFlags();
 
-    // TODO: already tried to avoid the linewrap inside [] bit <td nowrap> didn´t work!
+    // TODO: already tried to avoid the linewrap inside [] bit <td nowrap> didnï¿½t work!
     if ((inOut & ito::ParamBase::In) && (inOut & ito::ParamBase::Out))
     {
         type.append(" [in/out]");
@@ -1251,7 +1264,7 @@ QString HelpTreeDockWidget::parseParam(const QString &tmpl, const ito::Param &pa
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! This function detects if a range minimum of a variable is equal to the minimum of the type
-/*! For example if a range is min 0 and it´s a byte, this function returns -inf
+/*! For example if a range is min 0 and itï¿½s a byte, this function returns -inf
 
     \param minimum
     \return QString int as String or -inf
@@ -1268,7 +1281,7 @@ QString HelpTreeDockWidget::minText(int minimum) const
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! This function detects if a range minimum of a variable is equal to the minimum of the type
-/*! For example if a range is min 0 and it´s a byte, this function returns -inf
+/*! For example if a range is min 0 and itï¿½s a byte, this function returns -inf
 
     \param minimum
     \return double as String or -inf
@@ -1285,7 +1298,7 @@ QString HelpTreeDockWidget::minText(double minimum) const
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! This function detects if a range minimum of a variable is equal to the minimum of the type
-/*! For example if a range is min 0 and it´s a byte, this function returns -inf
+/*! For example if a range is min 0 and itï¿½s a byte, this function returns -inf
 
     \param minimum
     \return char as String or -inf
@@ -1302,7 +1315,7 @@ QString HelpTreeDockWidget::minText(char minimum) const
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! This function detects if a range maximum of a variable is equal to the maximum of the type
-/*! For example if a range is max 255 and it´s a byte, this function returns inf
+/*! For example if a range is max 255 and itï¿½s a byte, this function returns inf
 
     \param maximum
     \return maximum as String or inf
@@ -1319,7 +1332,7 @@ QString HelpTreeDockWidget::maxText(int maximum) const
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! This function detects if a range maximum of a variable is equal to the maximum of the type
-/*! For example if a range is max 255 and it´s a byte, this function returns inf
+/*! For example if a range is max 255 and itï¿½s a byte, this function returns inf
 
     \param maximum
     \return maximum as String or inf
@@ -1336,7 +1349,7 @@ QString HelpTreeDockWidget::maxText(double maximum) const
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! This function detects if a range maximum of a variable is equal to the maximum of the type
-/*! For example if a range is max 255 and it´s a byte, this function returns inf
+/*! For example if a range is max 255 and itï¿½s a byte, this function returns inf
 
     \param maximum
     \return maximum as String or inf
@@ -1353,7 +1366,7 @@ QString HelpTreeDockWidget::maxText(char maximum) const
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! This function detects if a range minimum or maximum of a variable is equal to the minimum or maximum of the type
-/*! For example if a range is max 255 and it´s a byte, this function returns inf
+/*! For example if a range is max 255 and itï¿½s a byte, this function returns inf
 
 \param value
 \return maximum as String, -inf or inf
@@ -1374,7 +1387,7 @@ QString HelpTreeDockWidget::minmaxText(int value) const
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! This function detects if a range minimum or maximum of a variable is equal to the minimum or maximum of the type
-/*! For example if a range is max 255 and it´s a byte, this function returns inf
+/*! For example if a range is max 255 and itï¿½s a byte, this function returns inf
 
 \param value
 \return maximum as String, -inf or inf
@@ -1395,7 +1408,7 @@ QString HelpTreeDockWidget::minmaxText(double value) const
 
 //----------------------------------------------------------------------------------------------------------------------------------
 //! This function detects if a range minimum or maximum of a variable is equal to the minimum or maximum of the type
-/*! For example if a range is max 255 and it´s a byte, this function returns inf
+/*! For example if a range is max 255 and itï¿½s a byte, this function returns inf
 
 \param value
 \return maximum as String, -inf or inf
@@ -1790,7 +1803,7 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Highlight (parse) the Helptext to make it nice and readable for non docutils Docstrings
-// ERROR decides whether it´s already formatted by docutils (Error = 0) or it must be parsed by this function (Error != 0)
+// ERROR decides whether itï¿½s already formatted by docutils (Error = 0) or it must be parsed by this function (Error != 0)
 ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QString &name, const QString &param, const QString &shortDesc, const QString &helpText, const QString &error, QTextDocument *document)
 {
     QString errorS = error.left(error.indexOf(" ", 0));
@@ -2040,12 +2053,12 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
 
     \param name name of the function that is supposed to be displayed
     \param type it decides wheather the help is stored in a database (1) or calls showFilterWidgetPluginHelp(...) (2-8)
-    \param modelIndex that was clicked. If it´s empty, it´s a call from a link or from extern
+    \param modelIndex that was clicked. If itï¿½s empty, itï¿½s a call from a link or from extern
     \param fromLink if true, a link called that slot
 */
 void HelpTreeDockWidget::showPluginInfo(const QString &name, int type, const QModelIndex &modelIndex, bool fromLink)
 {
-    // Check if it´s a click by the back or forward button
+    // Check if itï¿½s a click by the back or forward button
     if (modelIndex.isValid())
     {
         m_historyIndex++;
@@ -2055,7 +2068,7 @@ void HelpTreeDockWidget::showPluginInfo(const QString &name, int type, const QMo
             m_history.removeAt(i);
         }
     }
-    // Check if it´s 
+    // Check if itï¿½s 
     if (fromLink)
     {
         m_internalCall = true;
@@ -2238,12 +2251,12 @@ void HelpTreeDockWidget::on_helpTreeContent_anchorClicked(const QUrl & link)
     {
         if (parts1[0] == "Widgets")
         {
-            //Widget (This is a workaround for the Linklist. Without this else if the links wouldn´t work
+            //Widget (This is a workaround for the Linklist. Without this else if the links wouldnï¿½t work
             showPluginInfo(parts[1], typeWidget, findIndexByPath(2, parts1, m_pMainModel->invisibleRootItem()), true);
         }
         else
         {
-            //Filter (This is a workaround for the Linklist. Without this else if the links wouldn´t work
+            //Filter (This is a workaround for the Linklist. Without this else if the links wouldnï¿½t work
             showPluginInfo(parts[1], typeFilter, findIndexByPath(2, parts1, m_pMainModel->invisibleRootItem()), true);
         }
     }

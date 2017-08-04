@@ -126,53 +126,56 @@ AIManagerWidget::AIManagerWidget(const QString &title, const QString &objName, Q
     m_pContextMenu->addAction(m_pActSendToPython);
 
     m_pSortFilterProxyModel = new QSortFilterProxyModel(this);
-    m_pSortFilterProxyModel->setSourceModel(aim->getPluginModel());
-    m_pAIManagerView->setModel(m_pSortFilterProxyModel);
-    m_pAIManagerView->sortByColumn(0, Qt::AscendingOrder);
-    connect(m_pAIManagerView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)), Qt::DirectConnection);
-
-    // expanding DataIO node
-    PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
-    QModelIndex index = plugInModel->getTypeNode(typeDataIO);
-    if (index.isValid() && m_pSortFilterProxyModel)
+    if (aim)
     {
-        index = m_pSortFilterProxyModel->mapFromSource(index);
-        m_pAIManagerView->expand(index);
-    }
+        m_pSortFilterProxyModel->setSourceModel(aim->getPluginModel());
+        m_pAIManagerView->setModel(m_pSortFilterProxyModel);
+        m_pAIManagerView->sortByColumn(0, Qt::AscendingOrder);
+        connect(m_pAIManagerView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)), Qt::DirectConnection);
+
+        // expanding DataIO node
+        PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
+        QModelIndex index = plugInModel->getTypeNode(typeDataIO);
+        if (index.isValid() && m_pSortFilterProxyModel)
+        {
+            index = m_pSortFilterProxyModel->mapFromSource(index);
+            m_pAIManagerView->expand(index);
+        }
+
+        QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+        settings->beginGroup("itomPluginsDockWidget");
+        size = settings->beginReadArray("ColWidth");
+        for (int i = 0; i < size; ++i)
+        {
+            settings->setArrayIndex(i);
+            m_pAIManagerView->setColumnWidth(i, settings->value("width", 100).toInt());
+            m_pAIManagerView->setColumnHidden(i, m_pAIManagerView->columnWidth(i) == 0);
+        }
+        settings->endArray();
     
-    QSettings *settings = new QSettings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings->beginGroup("itomPluginsDockWidget");
-    size = settings->beginReadArray("ColWidth");
-    for (int i = 0; i < size; ++i)
-    {
-        settings->setArrayIndex(i);
-        m_pAIManagerView->setColumnWidth(i, settings->value("width", 100).toInt());
-        m_pAIManagerView->setColumnHidden(i, m_pAIManagerView->columnWidth(i) == 0);
-    }
-    settings->endArray();
-
-    m_pColumnWidth = new int[plugInModel->columnCount()];
-    size = settings->beginReadArray("StandardColWidth");
-    if (size != plugInModel->columnCount())
-    {
-        m_pColumnWidth[0] = 200;
-        for (int i = 1; i < plugInModel->columnCount(); ++i) 
+        m_pColumnWidth = new int[plugInModel->columnCount()];
+        size = settings->beginReadArray("StandardColWidth");
+        if (size != plugInModel->columnCount())
         {
-            m_pColumnWidth[i] = 120;
+            m_pColumnWidth[0] = 200;
+            for (int i = 1; i < plugInModel->columnCount(); ++i)
+            {
+                m_pColumnWidth[i] = 120;
+            }
         }
-    }
-    for (int i = 0; i < size; ++i)
-    {
-        settings->setArrayIndex(i);
-        m_pColumnWidth[i] = settings->value("width", 100).toInt();
-        if (m_pColumnWidth[i] == 0)
+        for (int i = 0; i < size; ++i)
         {
-            m_pColumnWidth[i] = 120;
+            settings->setArrayIndex(i);
+            m_pColumnWidth[i] = settings->value("width", 100).toInt();
+            if (m_pColumnWidth[i] == 0)
+            {
+                m_pColumnWidth[i] = 120;
+            }
         }
+        settings->endArray();
+        settings->endGroup();
+        delete settings;
     }
-    settings->endArray();
-    settings->endGroup();
-    delete settings;    
 
     AbstractDockWidget::init();
     setContentWidget(m_pAIManagerView);
@@ -198,36 +201,39 @@ m_pMainToolbar->setOrientation(Qt::Vertical);*/
 AIManagerWidget::~AIManagerWidget()
 {
     ito::AddInManager *aim = qobject_cast<ito::AddInManager*>(AppManagement::getAddInManager());
-    PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
-    QString setFile(AppManagement::getSettingsFile());
-    QSettings *settings = new QSettings(setFile, QSettings::IniFormat);
-
-    settings->beginGroup("itomPluginsDockWidget");
-
-//    QByteArray state = m_pMainToolbar->saveGeometry();
-//    settings->setValue("stateToolBar", state);
-    
-    settings->beginWriteArray("ColWidth");
-    
-    for (int i = 0; i < plugInModel->columnCount(); i++)
+    if (aim)
     {
-        settings->setArrayIndex(i);
-        settings->setValue("width", m_pAIManagerView->columnWidth(i));
-    }
-    settings->endArray();
-    settings->sync();
+        PlugInModel *plugInModel = (PlugInModel*)(aim->getPluginModel());
+        QString setFile(AppManagement::getSettingsFile());
+        QSettings *settings = new QSettings(setFile, QSettings::IniFormat);
 
-    settings->beginWriteArray("StandardColWidth");
-    for (int i = 0; i < plugInModel->columnCount(); i++)
-    {
-        settings->setArrayIndex(i);
-        settings->setValue("width", m_pColumnWidth[i]);
-    }
+        settings->beginGroup("itomPluginsDockWidget");
     
-    settings->endArray();    
-    settings->endGroup();
-    settings->sync();
-    delete settings;
+    //    QByteArray state = m_pMainToolbar->saveGeometry();
+    //    settings->setValue("stateToolBar", state);
+
+        settings->beginWriteArray("ColWidth");
+
+        for (int i = 0; i < plugInModel->columnCount(); i++)
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("width", m_pAIManagerView->columnWidth(i));
+        }
+        settings->endArray();
+        settings->sync();
+    
+        settings->beginWriteArray("StandardColWidth");
+        for (int i = 0; i < plugInModel->columnCount(); i++)
+        {
+            settings->setArrayIndex(i);
+            settings->setValue("width", m_pColumnWidth[i]);
+        }
+
+        settings->endArray();
+        settings->endGroup();
+        settings->sync();
+        delete settings;
+    }
 
     disconnect(m_pAIManagerView, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(treeViewContextMenuRequested(const QPoint &)));
     disconnect(m_pAIManagerView->selectionModel(), SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)), this, SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));

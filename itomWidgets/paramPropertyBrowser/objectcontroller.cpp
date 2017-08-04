@@ -370,8 +370,8 @@ void ObjectControllerPrivate::saveState()
 		for (int i = 0; i < m_topLevelProperties.count(); i++)
 		{
 			QtProperty *prop = m_topLevelProperties.at(i);
-			
-			saveState(prop);
+			if (prop)
+			    saveState(prop);
 		}
 	}
 }
@@ -380,11 +380,11 @@ void ObjectControllerPrivate::saveState(QtProperty *prop, QString prefix)
 {
 	QtTreePropertyBrowser *treeBrowser = qobject_cast<QtTreePropertyBrowser*>(m_browser);
 	
-	if (treeBrowser != NULL)
+	if (treeBrowser != NULL && prop != NULL)
 	{
 		QList<QtBrowserItem *> items = treeBrowser->items(prop);
 		
-		if (items.count() > 0)
+		if (items != NULL && items.count() > 0)
 		{
 			QtBrowserItem *item = items.first();
 			QString name = prop->propertyName();
@@ -432,11 +432,11 @@ void ObjectControllerPrivate::restoreState(QtProperty *prop, QString prefix)
 {
 	QtTreePropertyBrowser *treeBrowser = qobject_cast<QtTreePropertyBrowser*>(m_browser);
 	
-	if (treeBrowser != NULL)
+	if (treeBrowser != NULL && prop != NULL)
 	{
 		QList<QtBrowserItem *> items = treeBrowser->items(prop);
 		
-		if (items.count() > 0)
+		if (items != NULL && items.count() > 0)
 		{
 			QtBrowserItem *item = items.first();
 			QString name = prop->propertyName();
@@ -464,12 +464,15 @@ void ObjectControllerPrivate::restoreState(QtProperty *prop, QString prefix)
 
 void ObjectControllerPrivate::slotValueChanged(QtProperty *property, const QVariant &value)
 {
-    if (!m_propertyToIndex.contains(property))
+    if (property == NULL || !m_propertyToIndex.contains(property))
         return;
 
     int idx = m_propertyToIndex.value(property);
 
     const QMetaObject *metaObject = m_object->metaObject();
+    if (metaObject == NULL)
+        return;
+
     QMetaProperty metaProperty = metaObject->property(idx);
     if (metaProperty.isEnumType()) {
         if (metaProperty.isFlagType())
@@ -525,7 +528,7 @@ ObjectController::~ObjectController()
 
 void ObjectController::setObject(QObject *object)
 {
-    if (d_ptr->m_object == object)
+    if (object == NULL || d_ptr->m_object == object)
         return;
 
     if (d_ptr->m_object) {

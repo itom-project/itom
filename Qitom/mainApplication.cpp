@@ -526,10 +526,11 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
 
     qDebug("MainApplication::setupApplication");
 
-   // starting AddInManager
+    // starting AddInManager
     m_splashScreen->showMessage(tr("scan and load plugins..."), Qt::AlignRight | Qt::AlignBottom);
     QCoreApplication::processEvents();
 
+    //AddInManager *AIM = NULL;
     AddInManager *AIM = AddInManager::createInstance(AppManagement::getSettingsFile(), ito::ITOM_API_FUNCS_GRAPH, AppManagement::getMainWindow(), AppManagement::getMainApplication());
     ito::ITOM_API_FUNCS = AIM->getItomApiFuncsPtr();
     AppManagement::setAddInManager(AIM);
@@ -620,14 +621,17 @@ void MainApplication::setupApplication(const QStringList &scriptsToOpen)
         connect(m_scriptEditorOrganizer, SIGNAL(removeScriptDockWidgetFromMainWindow(AbstractDockWidget*)), m_mainWin, SLOT(removeAbstractDock(AbstractDockWidget*)));
         connect(m_mainWin, SIGNAL(mainWindowCloseRequest()), this, SLOT(mainWindowCloseRequest()));
 
-        m_scriptEditorOrganizer->restoreScriptState();
-
-        foreach(const QString &script, scriptsToOpen)
+        if (m_scriptEditorOrganizer)
         {
-            QFileInfo info(script);
-            if (info.exists())
+            m_scriptEditorOrganizer->restoreScriptState();
+
+            foreach(const QString &script, scriptsToOpen)
             {
-                m_scriptEditorOrganizer->openScript(script);
+                QFileInfo info(script);
+                if (info.exists())
+                {
+                    m_scriptEditorOrganizer->openScript(script);
+                }
             }
         }
     }
@@ -805,8 +809,11 @@ void MainApplication::finalizeApplication()
     DELETE_AND_SET_NULL(m_pyEngine);
     AppManagement::setPythonEngine(NULL);
 
-    m_pyThread->quit();
-    m_pyThread->wait();
+    if (m_pyThread)
+    {
+        m_pyThread->quit();
+        m_pyThread->wait();
+    }
     DELETE_AND_SET_NULL(m_pyThread);
 
     AddInManager::closeInstance();
@@ -897,9 +904,12 @@ void MainApplication::mainWindowCloseRequest()
 		if (retValue.containsError()) return;
 
 		//saves the state of all opened scripts to the settings file
-		m_scriptEditorOrganizer->saveScriptState();
+		if (m_scriptEditorOrganizer)
+		{
+            m_scriptEditorOrganizer->saveScriptState();
 
-		retValue += m_scriptEditorOrganizer->closeAllScripts(true);
+            retValue += m_scriptEditorOrganizer->closeAllScripts(true);
+		}
 	
 		if (m_mainWin)
 		{
