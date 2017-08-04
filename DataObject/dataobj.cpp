@@ -2071,6 +2071,11 @@ void DataObject::create(const unsigned char dimensions, const int *sizes, const 
             {
                 cv::error(cv::Exception(CV_StsUnsupportedFormat, "the element size of at least one cv::Mat-plane does not correspond to the given dataObject-type.", "", __FILE__, __LINE__));
             }
+
+            if (planes[i].data == NULL)
+            {
+                cv::error(cv::Exception(CV_StsUnsupportedFormat, "data pointer of cv::Mat is zeros.", "", __FILE__, __LINE__));
+            }
         }
     }
     else if (type == ito::tRGBA32)
@@ -2093,6 +2098,11 @@ void DataObject::create(const unsigned char dimensions, const int *sizes, const 
             {
                 cv::error(cv::Exception(CV_StsUnsupportedFormat, "the element size of at least one cv::Mat-plane does not correspond to the given dataObject-type.", "", __FILE__, __LINE__));
             }
+
+            if (planes[i].data == NULL)
+            {
+                cv::error(cv::Exception(CV_StsUnsupportedFormat, "data pointer of cv::Mat is zeros.", "", __FILE__, __LINE__));
+            }
         }
     }
     else
@@ -2114,6 +2124,11 @@ void DataObject::create(const unsigned char dimensions, const int *sizes, const 
             if(planes[i].elemSize1() != requiredElemSize)
             {
                 cv::error(cv::Exception(CV_StsUnsupportedFormat, "the element size of at least one cv::Mat-plane does not correspond to the given dataObject-type.", "", __FILE__, __LINE__));
+            }
+
+            if (planes[i].data == NULL)
+            {
+                cv::error(cv::Exception(CV_StsUnsupportedFormat, "data pointer of cv::Mat is zeros.", "", __FILE__, __LINE__));
             }
         }
     }
