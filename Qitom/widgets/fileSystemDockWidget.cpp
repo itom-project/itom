@@ -25,6 +25,7 @@
 #include "../global.h"
 #include "../AppManagement.h"
 #include "../helper/IOHelper.h"
+#include <QtWidgets/QHeaderView>
 
 #include <qclipboard.h>
 #include <qsettings.h>
@@ -160,7 +161,18 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pTreeView->setIndentation(15);
     m_pTreeView->setSortingEnabled(true);
 
-    m_pTreeView->sortByColumn(0, Qt::AscendingOrder);
+    //TODO save to ini-file 
+
+    int column = settings.value("sortColumn", 0).toInt();
+
+    if (settings.value("sortOrder", 0).toInt() == 1)
+    {
+        m_pTreeView->sortByColumn(column, Qt::DescendingOrder);
+    }
+    else
+    {
+        m_pTreeView->sortByColumn(column, Qt::AscendingOrder);
+    }    
 
     m_pTreeView->setContextMenuPolicy(Qt::CustomContextMenu);
     m_pTreeView->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -245,6 +257,7 @@ FileSystemDockWidget::~FileSystemDockWidget()
         settings.setArrayIndex(i);
         settings.setValue("dir", m_pShowDirListMenu->actions()[i]->whatsThis() + m_pShowDirListMenu->actions()[i]->data().toString());
     }
+
     settings.endArray();
 
     settings.beginWriteArray("ColWidth");
@@ -262,6 +275,10 @@ FileSystemDockWidget::~FileSystemDockWidget()
         settings.setValue("width", m_pColumnWidth[i]);
     }
     settings.endArray();
+
+    settings.setValue("sortColumn", m_pTreeView->header()->sortIndicatorSection());
+    settings.setValue("sortOrder", m_pTreeView->header()->sortIndicatorOrder());
+
     settings.endGroup();
 
     DELETE_AND_SET_NULL_ARRAY(m_pColumnWidth);
