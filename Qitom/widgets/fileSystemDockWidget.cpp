@@ -25,8 +25,8 @@
 #include "../global.h"
 #include "../AppManagement.h"
 #include "../helper/IOHelper.h"
-#include <QtWidgets/QHeaderView>
 
+#include <qheaderview.h>
 #include <qclipboard.h>
 #include <qsettings.h>
 #include <qfiledialog.h>
@@ -165,7 +165,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 
     int column = settings.value("sortColumn", 0).toInt();
 
-    if (settings.value("sortOrder", 0).toInt() == 1)
+    if (settings.value("sortOrder", Qt::AscendingOrder).toInt() == Qt::DescendingOrder)
     {
         m_pTreeView->sortByColumn(column, Qt::DescendingOrder);
     }
