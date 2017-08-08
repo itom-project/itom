@@ -34,8 +34,8 @@ struct StaticQtMetaObject : public QObject
 #endif
 
 BrushCreatorDialog::BrushCreatorDialog(QBrush &inputBrush, QWidget *parent) :
-QDialog(parent),
-brush(inputBrush)
+    QDialog(parent),
+    brush(inputBrush)
 {
     ui.setupUi(this);
     //connect(ui.buttonBox, SIGNAL(accepted()), this, SLOT(close()));
@@ -70,6 +70,24 @@ void BrushCreatorDialog::setBrush(const QBrush &brush)
     this->brush = brush;
     synchronizeGUI();
 }
+
+//-----------------------------------------------------------------------------
+void BrushCreatorDialog::setShowAlphaChannel(bool showAlphaChannel)
+{
+    ColorPickerButton::ColorDialogOptions options = ui.colorBtn->dialogOptions();
+    
+    if (showAlphaChannel)
+    {
+        options |= ColorPickerButton::ShowAlphaChannel;
+    }
+    else
+    {
+        options ^= ColorPickerButton::ShowAlphaChannel;
+    }
+
+    ui.colorBtn->setDialogOptions(options);
+}
+
 //-----------------------------------------------------------------------------
 void BrushCreatorDialog::synchronizeGUI()
 {

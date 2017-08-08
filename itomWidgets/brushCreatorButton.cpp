@@ -38,6 +38,7 @@ protected:
 public:
     BrushCreatorButtonPrivate(BrushCreatorButton& object, QBrush inputBrush = QBrush(Qt::black, Qt::SolidPattern));
     QBrush brush;
+    bool m_showAlphaChannel;
     QIcon m_icon;
     QSize m_iconSizeCache;
     mutable QSize m_sizeHintCache;
@@ -49,7 +50,8 @@ public:
 BrushCreatorButtonPrivate::BrushCreatorButtonPrivate(BrushCreatorButton& object, QBrush inputBrush)
     : q_ptr(&object),
     dialog(NULL),
-    brush(inputBrush)
+    brush(inputBrush),
+    m_showAlphaChannel(false)
 {
 
 }
@@ -148,6 +150,24 @@ QBrush BrushCreatorButton::getBrush() const
 
 
 //-----------------------------------------------------------------------------
+bool BrushCreatorButton::getShowAlphaChannel() const
+{
+    Q_D(const BrushCreatorButton);
+    return d->m_showAlphaChannel;
+}
+
+//-----------------------------------------------------------------------------
+void BrushCreatorButton::setShowAlphaChannel(bool showAlphaChannel)
+{
+    Q_D(BrushCreatorButton);
+
+    if (d->m_showAlphaChannel != showAlphaChannel)
+    {
+        d->m_showAlphaChannel = showAlphaChannel;
+    }
+}
+
+//-----------------------------------------------------------------------------
 void BrushCreatorButton::changeBrush()
 {
     Q_D(BrushCreatorButton);
@@ -159,6 +179,9 @@ void BrushCreatorButton::changeBrush()
     {
         d->dialog->synchronizeGUI();
     }
+
+    d->dialog->setShowAlphaChannel(d->m_showAlphaChannel);
+
     if (d->dialog->exec())
     {
         d->m_icon = QIcon();

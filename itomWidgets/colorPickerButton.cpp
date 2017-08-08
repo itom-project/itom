@@ -99,7 +99,15 @@ QString ColorPickerButtonPrivate::text()const
     }
   if (this->ColorName.isEmpty())
     {
-    return this->Color.name();
+      if (this->DialogOptions & ColorPickerButton::ShowAlphaChannel)
+      {
+          return QString("#%1%2%3%4").arg(this->Color.alpha(), 2, 16, QLatin1Char('0')).arg(this->Color.red(), 2, 16, QLatin1Char('0')) \
+              .arg(this->Color.green(), 2, 16, QLatin1Char('0')).arg(this->Color.blue(), 2, 16, QLatin1Char('0'));
+      }
+      else
+      {
+        return this->Color.name();
+      }
     }
   else
     {
