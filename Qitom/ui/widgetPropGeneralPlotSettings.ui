@@ -83,7 +83,11 @@
           </widget>
          </item>
          <item row="2" column="1">
-          <widget class="BrushCreatorButton" name="trackerBackgroundBtn"/>
+          <widget class="BrushCreatorButton" name="trackerBackgroundBtn">
+           <property name="showAlphaChannel">
+            <bool>true</bool>
+           </property>
+          </widget>
          </item>
          <item row="0" column="0">
           <widget class="QLabel" name="label_17">
@@ -135,7 +139,11 @@
         </property>
         <layout class="QGridLayout" name="gridLayout_4">
          <item row="0" column="1">
-          <widget class="BrushCreatorButton" name="shapeLabelBgBtn"/>
+          <widget class="BrushCreatorButton" name="shapeLabelBgBtn">
+           <property name="showAlphaChannel">
+            <bool>true</bool>
+           </property>
+          </widget>
          </item>
          <item row="1" column="1">
           <widget class="FontButton" name="shapeLabelFontBtn"/>
