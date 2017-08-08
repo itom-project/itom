@@ -1,19 +1,23 @@
 #ifndef HELPTREEDOCKWIDGET_H
 #define HELPTREEDOCKWIDGET_H
 
-#if QT_VERSION < 0x050800
-    #include <QtSql/qsql.h>
-#else
-    #include <QtSql/qtsqlglobal.h>
-#endif
+#include "../../common/sharedStructures.h"
+
 #include <qwidget.h>
 #include <qstandarditemmodel.h>
-#include "../../common/sharedStructures.h"
-#include "ui_helpTreeDockWidget.h"
 #include <qtimer.h>
 #include <qfuturewatcher.h>
 #include <qmovie.h>
+
+#if QT_VERSION < 0x050800
+#include <QtSql/qsql.h>
+#else
+#include <QtSql/qtsqlglobal.h>
+#endif
+
 #include "../widgets/abstractDockWidget.h"
+
+#include "ui_helpTreeDockWidget.h"
 
 class QShowEvent; //forward declaration
 
