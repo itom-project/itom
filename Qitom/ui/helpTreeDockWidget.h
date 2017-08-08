@@ -1,7 +1,11 @@
 #ifndef HELPTREEDOCKWIDGET_H
 #define HELPTREEDOCKWIDGET_H
 
-#include <QtSql/qsql.h>
+#if QT_VERSION < 0x050800
+    #include <QtSql/qsql.h>
+#else
+    #include <QtSql/qtsqlglobal.h>
+#endif
 #include <qwidget.h>
 #include <qstandarditemmodel.h>
 #include "../../common/sharedStructures.h"
