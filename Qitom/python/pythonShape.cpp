@@ -29,6 +29,7 @@
 #include "pythonCommon.h"
 #include "../common/shape.h"
 #include "../DataObject/dataobj.h"
+#include "../DataObject/dataObjectFuncs.h"
 #include <qrect.h>
 
 
@@ -1494,6 +1495,107 @@ PyObject* PythonShape::PyShape_contour(PyShape *self, PyObject *args, PyObject *
     return (PyObject*)obj;
 }
 
+PyDoc_STRVAR(shape_contains_doc, "contains(points) -> return contour points as a 2xNumPoints float64 dataObject \n\
+\n\
+Tests one or multiple points if they lie within the contour of the given shape. If the shape has an empty area (e.g. points, line...) \n\
+the test will always fail.\n\
+\n\
+Parameters  \n\
+------------\n\
+points : {seq. of two floats or dataObject}\n\
+    Pass one point by a seq. of two floats (x,y) or an numpy.array with two elements.\n\
+    A sequence of points is passed by a 2xN dataObject (1st row: x, 2nd row: y) that is internally converted to float64. \n\
+\n\
+Returns \n\
+-------- \n\
+result : {bool or uint8 dataObject} \n\
+    If one point is passed, True is returned if this point is within the shape's contour, else False. \n\
+    In the case of multiple points, an 1xN dataObject (uint8) is returned where 255 indicates, that the corresponding point is inside of the shape's contour (else 0)");
+/*static*/ PyObject* PythonShape::PyShape_contains(PyShape *self, PyObject *args, PyObject *kwds)
+{
+    if (!self || self->shape == NULL)
+    {
+        PyErr_SetString(PyExc_RuntimeError, "shape is not available");
+        return NULL;
+    }
+
+    PyObject *points = NULL;
+    const char *kwlist[] = { "points", NULL };
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O", const_cast<char**>(kwlist), &points))
+    {
+        return NULL;
+    }
+
+    bool ok;
+    ito::RetVal pointsRetVal;
+    QVector<double> values = PythonQtConversion::PyObjGetDoubleArray(points, false, ok);
+    if (ok)
+    {
+        if (values.size() == 2)
+        {
+            QPointF point(values[0], values[1]);
+            if (self->shape->contains(point))
+            {
+                Py_RETURN_TRUE;
+            }
+            else
+            {
+                Py_RETURN_FALSE;
+            }
+        }
+        else
+        {
+            PyErr_SetString(PyExc_RuntimeError, "given point coordinate must be a sequence of two floats (x,y) or an 2xN dataObject / array.");
+            return NULL;
+        }
+    }
+
+    ito::DataObject* dataobj = PythonQtConversion::PyObjGetDataObjectNewPtr(points, false, ok, &pointsRetVal);
+
+    if (ok)
+    {
+        ito::DataObject dataobj_ = ito::dObjHelper::squeezeConvertCheck2DDataObject(dataobj, "points", ito::Range(2, 2), ito::Range::all(), pointsRetVal, ito::tFloat64, 8, ito::tUInt8, ito::tInt8, ito::tUInt16, ito::tInt16, ito::tUInt32, ito::tInt32, ito::tFloat32, ito::tFloat64);
+
+        if (PythonCommon::transformRetValToPyException(pointsRetVal))
+        {
+            QPolygonF points_;
+            points_.resize(dataobj_.getSize(1));
+            const ito::float64 *row1 = dataobj_.rowPtr<const ito::float64>(0, 0);
+            const ito::float64 *row2 = dataobj_.rowPtr<const ito::float64>(0, 1);
+            for (int i = 0; i < points_.size(); ++i)
+            {
+                points_[i].rx() = row1[i];
+                points_[i].ry() = row2[i];
+            }
+
+            QVector<bool> result = self->shape->contains(points_);
+
+            ito::DataObject result_(1, points_.size(), ito::tUInt8);
+            ito::uint8 *row3 = result_.rowPtr<ito::uint8>(0, 0);
+            for (int i = 0; i < points_.size(); ++i)
+            {
+                row3[i] = (result[i] ? 255 : 0);
+            }
+
+            ito::PythonDataObject::PyDataObject *obj = PythonDataObject::createEmptyPyDataObject();
+            if (obj)
+            {
+                obj->dataObject = new DataObject(result_);
+            }
+
+            return (PyObject*)obj;
+        }
+        else
+        {
+            return NULL;
+        }
+    }
+
+    PythonCommon::transformRetValToPyException(pointsRetVal);
+    return NULL;
+}
+
 //-------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(shape_normalized_doc, "normalized() -> return a normalized shape (this has only an impact on rectangles, squares, ellipses and circles) \n\
 \n\
@@ -1605,6 +1707,7 @@ PyMethodDef PythonShape::PyShape_methods[] = {
     { "translate", (PyCFunction)PyShape_translate, METH_VARARGS, shape_translate_doc },
     { "region", (PyCFunction)PyShape_region, METH_NOARGS, shape_region_doc },
     { "contour", (PyCFunction)PyShape_contour, METH_VARARGS | METH_KEYWORDS, shape_contour_doc },
+    { "contains", (PyCFunction)PyShape_contains, METH_VARARGS | METH_KEYWORDS, shape_contains_doc },
     { "normalized", (PyCFunction)PyShape_normalized, METH_NOARGS, shape_normalized_doc },
     {NULL}  /* Sentinel */
 };

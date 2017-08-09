@@ -1,7 +1,7 @@
 /* ********************************************************************
     itom software
     URL: http://www.uni-stuttgart.de/ito
-    Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+    Copyright (C) 2017, Institut fuer Technische Optik (ITO),
     Universitaet Stuttgart, Germany
 
     This file is part of itom and its software development toolkit (SDK).
@@ -445,6 +445,125 @@ QPolygonF Shape::contour(bool applyTrafo /*= false*/, qreal tol /*= -1.0*/) cons
 }
 
 //----------------------------------------------------------------------------------------------
+bool Shape::contains(const QPointF &point) const /*!< returns true if shape contains the given point, or false if this is not the case. In case of shapes with an area of 0, this method always returns false.*/
+{
+    QTransform invTrafo = d->m_transform.inverted();
+    QPointF pointInvTrafo = invTrafo.map(point);
+
+    switch (type())
+    {
+        case Point:
+        case MultiPointPick:
+        case Line:
+        default:
+        {
+            return false;
+        }
+        case Rectangle:
+        case Square:
+        {
+            QRectF rect(d->m_polygon[0], d->m_polygon[1]);
+            return rect.contains(pointInvTrafo);
+        }
+        case Polygon:
+        {
+            return d->m_polygon.containsPoint(pointInvTrafo, Qt::OddEvenFill);
+        }
+        case Circle:
+        {
+            QPointF center = (d->m_polygon[0] + d->m_polygon[1]) / 2.0;
+            qreal radius = (d->m_polygon[1] - d->m_polygon[0]).x() / 2.0;
+            QPointF dist = pointInvTrafo - center;
+            return (dist.rx() * dist.rx() + dist.ry() * dist.ry()) <= (radius * radius);
+        }
+        case Ellipse:
+        {
+            QPointF center = (d->m_polygon[0] + d->m_polygon[1]) / 2.0;
+            QPointF radius = (d->m_polygon[1] - d->m_polygon[0]) / 2.0;
+            qreal a2inv = 1.0 / (radius.rx() * radius.rx());
+            qreal b2inv = 1.0 / (radius.ry() * radius.ry());
+            QPointF dist = pointInvTrafo - center;
+            return (a2inv * dist.rx() * dist.rx() + b2inv * dist.ry() * dist.ry()) <= 1.0;
+        }
+    }
+}
+
+//----------------------------------------------------------------------------------------------
+QVector<bool> Shape::contains(const QPolygonF &points) const /*!< repeatedly calls contains(point) for each point in points and returns a vector of boolean values to tell for each point if it is contained in the shape or not. */
+{
+    QVector<bool> result;
+
+    if (points.size() > 0)
+    {
+        QTransform invTrafo = d->m_transform.inverted();
+        QPolygonF pointsInvTrafo = invTrafo.map(points);
+        result.resize(pointsInvTrafo.size());
+
+        
+        switch (type())
+        {
+            case Point:
+            case MultiPointPick:
+            case Line:
+            default:
+            {
+                result.fill(false, pointsInvTrafo.size());
+                break;
+            }
+            case Rectangle:
+            case Square:
+            {
+                QRectF rect(d->m_polygon[0], d->m_polygon[1]);
+
+                for (int i = 0; i < pointsInvTrafo.size(); ++i)
+                {
+                    result[i] = rect.contains(pointsInvTrafo[i]);
+                }
+                break;
+            }
+            case Polygon:
+            {
+                for (int i = 0; i < pointsInvTrafo.size(); ++i)
+                {
+                    result[i] = d->m_polygon.containsPoint(pointsInvTrafo[i], Qt::OddEvenFill);
+                }
+                break;
+            }
+            case Circle:
+            {
+                QPointF center = (d->m_polygon[0] + d->m_polygon[1]) / 2.0;
+                qreal radius = (d->m_polygon[1] - d->m_polygon[0]).x() / 2.0;
+                QPointF dist;
+
+                for (int i = 0; i < pointsInvTrafo.size(); ++i)
+                {
+                    dist = pointsInvTrafo[i] - center;
+                    result[i] = (dist.rx() * dist.rx() + dist.ry() * dist.ry()) <= (radius * radius);
+                }
+                break;
+            }
+            case Ellipse:
+            {
+                QPointF center = (d->m_polygon[0] + d->m_polygon[1]) / 2.0;
+                QPointF radius = (d->m_polygon[1] - d->m_polygon[0]) / 2.0;
+                qreal a2inv = 1.0 / (radius.rx() * radius.rx());
+                qreal b2inv = 1.0 / (radius.ry() * radius.ry());
+                QPointF dist;
+
+                for (int i = 0; i < pointsInvTrafo.size(); ++i)
+                {
+                    dist = pointsInvTrafo[i] - center;
+                    result[i] = (a2inv * dist.rx() * dist.rx() + b2inv * dist.ry() * dist.ry()) <= 1.0;
+                }
+                break;
+            }
+        }
+    }
+
+    return result;
+}
+
+//----------------------------------------------------------------------------------------------
 //this struct is used, since it is faster to pass one argument by-ref to the iterative function call instead of multiple variables
 struct RamerDouglasPeuckerData
 {
@@ -693,6 +812,7 @@ double Shape::area() const
         return 0.0;
     }
 }
+
 //----------------------------------------------------------------------------------------------
 double Shape::circumference() const
 {
@@ -766,6 +886,7 @@ double Shape::circumference() const
         return 0.0;
     }
 }
+
 //----------------------------------------------------------------------------------------------
 double Shape::distance(const Shape &otherShape) const
 {
@@ -797,11 +918,13 @@ double Shape::distance(const Shape &otherShape) const
 	}
 	return 0.0;
 }
+
 //----------------------------------------------------------------------------------------------
 double Shape::centerDistance(const Shape &otherShape) const
 {
 	return distancePoint2Point2D(this->centerPoint(), otherShape.centerPoint());
 }
+
 //----------------------------------------------------------------------------------------------
 double Shape::radius() const
 {
@@ -830,6 +953,7 @@ double Shape::radius() const
 	res /= 2.0;
 	return res;
 }
+
 //----------------------------------------------------------------------------------------------
 double Shape::radiusX() const
 {
@@ -857,6 +981,7 @@ double Shape::radiusX() const
 	double res = std::fabs((this->rbasePoints()[0].x() - this->rbasePoints()[1].x()) / 2.0);
 	return res;
 }
+
 //----------------------------------------------------------------------------------------------
 double Shape::radiusY() const
 {
@@ -885,6 +1010,7 @@ double Shape::radiusY() const
 	double res = std::fabs((this->rbasePoints()[0].y() - this->rbasePoints()[1].y()) / 2.0);
 	return res;
 }
+
 //----------------------------------------------------------------------------------------------
 double Shape::distanceLine2Point2D(const Shape &line, const QPointF &point)
 {
@@ -926,6 +1052,7 @@ double Shape::distanceLine2Point2D(const Shape &line, const QPointF &point)
 	result = ((point.y() - baseVec.y()) * dirVec.x() / dirVec.y() + baseVec.x() - point.x()) / (normVec.x() - normVec.y() * dirVec.x() / dirVec.y());
 	return result;
 }
+
 //----------------------------------------------------------------------------------------------
 double Shape::distanceLine2Line2D(const Shape &line1, const Shape &line2)
 {

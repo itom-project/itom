@@ -13,7 +13,7 @@ class PlotTest(unittest.TestCase):
         res=True
         testObj=dataObject([1024,2048],'uint8')
         testObj[:,:]=255
-        sumUp=np.sum(testObj,axis=0)
+        sumUp=np.sum(testObj,axis=0).astype('int32')
         i,h=plot(sumUp)
         displayed=h.call('getDisplayed')
         displayed=np.array(displayed)

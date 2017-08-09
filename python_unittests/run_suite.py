@@ -5,6 +5,7 @@ import dataobject_mapping
 import dataobject_np_conversion
 import dataobject_makecontinuous
 import plot_test
+import shape_test
 
 def suite():
     suite = unittest.TestSuite()
@@ -14,6 +15,7 @@ def suite():
     suite.addTest (unittest.makeSuite(dataobject_np_conversion.DataObjectNpConversion))
     suite.addTest (unittest.makeSuite(dataobject_makecontinuous.DataObjectMakeContinuous))
     suite.addTest (unittest.makeSuite(plot_test.PlotTest))
+    suite.addTest (unittest.makeSuite(shape_test.ShapeTest))
     return suite
     
 if (__name__ == "__main__"):
