@@ -3278,7 +3278,7 @@ RetVal UiOrganizer::getObjectID(const QObject *obj, QSharedPointer<unsigned int>
 //}
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore /*= NULL*/)
+ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, ito::UiDataContainer &xAxisCont, QSharedPointer<unsigned int> figHandle, QSharedPointer<unsigned int> objectID, int areaRow, int areaCol, QString className, QVariantMap properties, ItomSharedSemaphore *semaphore /*= NULL*/)
 {
     RetVal retval;
     ItomSharedSemaphoreLocker locker(semaphore);
@@ -3325,7 +3325,7 @@ ito::RetVal UiOrganizer::figurePlot(ito::UiDataContainer &dataCont, QSharedPoint
                 if (dataCont.getType() == ito::ParamBase::DObjPtr)
 #endif
                 {
-                    retval += fig->plot(dataCont.getDataObject(), areaRow, areaCol, className, &destWidget);
+                    retval += fig->plot(dataCont.getDataObject(), xAxisCont.getDataObject() ,areaRow, areaCol, className, &destWidget);
                 }
                 else
                 {

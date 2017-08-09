@@ -570,8 +570,9 @@ void WorkspaceDockWidget::mnuPlotGeneric(const QString &plotClass)
                 }
 
                 QSharedPointer<unsigned int> objectID(new unsigned int);
+                ito::UiDataContainer xAxisCont;
 
-                QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, plotClass), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore()));
+                QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(ito::UiDataContainer&, xAxisCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, plotClass), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*, locker2.getSemaphore()));
                 if (!locker2.getSemaphore()->wait(PLUGINWAIT * 5))
                 {
                     retVal += RetVal(retError, 0, tr("Timeout while plotting dataObject or numpy.array").toLatin1().data());

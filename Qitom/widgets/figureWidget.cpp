@@ -276,7 +276,7 @@ RetVal FigureWidget::plot(QSharedPointer<ito::PCLPolygonMesh> pm, int areaRow, i
 #endif // #if ITOM_POINTCLOUDLIBRARY > 0
 
 //----------------------------------------------------------------------------------------------------------------------------------------
-RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, int areaCol, const QString &className, QWidget **canvasWidget)
+RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<ito::DataObject> xAxisObj,int areaRow, int areaCol, const QString &className, QWidget **canvasWidget)
 {
     DesignerWidgetOrganizer *dwo = qobject_cast<DesignerWidgetOrganizer*>(AppManagement::getDesignerWidgetOrganizer());
     RetVal retval;

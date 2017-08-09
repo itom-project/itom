@@ -54,7 +54,7 @@ public:
     FigureWidget(const QString &title, bool docked, bool isDockAvailable, int rows, int cols, QWidget *parent = 0, Qt::WindowFlags flags = 0);
     ~FigureWidget();
 
-    RetVal plot(QSharedPointer<ito::DataObject> dataObj, int areaRow, int areaCol, const QString &className, QWidget **canvasWidget);
+    RetVal plot(QSharedPointer<ito::DataObject> dataObj, QSharedPointer<ito::DataObject> xAxisObj, int areaRow, int areaCol, const QString &className, QWidget **canvasWidget);
 #if ITOM_POINTCLOUDLIBRARY > 0
     RetVal plot(QSharedPointer<ito::PCLPointCloud> dataObj, int areaRow, int areaCol, const QString &className, QWidget **canvasWidget);
     RetVal plot(QSharedPointer<ito::PCLPolygonMesh> dataObj, int areaRow, int areaCol, const QString &className, QWidget **canvasWidget);

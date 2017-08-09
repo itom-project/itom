@@ -362,6 +362,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
     int areaCol = 0;
     int areaRow = 0;
+    ito::UiDataContainer xAxisCont;
     QSharedPointer<unsigned int> figHandle(new unsigned int);
     *figHandle = 0; //new figure will be requested
 
@@ -371,7 +372,7 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
 
     QSharedPointer<unsigned int> objectID(new unsigned int);
 
-    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
+    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(ito::UiDataContainer&, xAxisCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*,locker.getSemaphore()));
     if (!locker.getSemaphore()->wait(PLUGINWAIT * 5))
     {
         PyErr_SetString(PyExc_RuntimeError, "Timeout while plotting object");
@@ -413,7 +414,173 @@ PyObject* PythonItom::PyPlotImage(PyObject * /*pSelf*/, PyObject *pArgs, PyObjec
     Py_XDECREF(pyPlotItem);
     return res;
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+PyDoc_STRVAR(pyPlot1d_doc, "plot(data, [className, properties]) -> plots a dataObject, pointCloud or polygonMesh in a new figure \n\
+\n\
+Plots an existing dataObject, pointCloud or polygonMesh in a dockable, not blocking window. \n\
+The style of the plot depends on the object dimensions.\n\
+\n\
+If no 'className' is given, the type of the plot is chosen depending on the type and the size \n\
+of the object. The defaults for several plot classes can be adjusted in the property dialog of itom. \n\
+\n\
+You can also set a class name of your preferred plot plugin (see also property dialog of itom). \n\
+If your preffered plot is not able to display the given object, a warning is returned and the default \n\
+plot type is used again. For dataObjects, it is also possible to simply set 'className' to '1D', '2D' \n\
+or '2.5D' in order to choose the default plot type depending on these aliases. For pointCloud and \n\
+polygonMesh only the alias '2.5D' is valid. \n\
+\n\
+Every plot has several properties that can be configured in the Qt Designer (if the plot is embedded in a GUI), \n\
+or by the property toolbox in the plot itself or by using the info() method of the corresponding itom.uiItem instance. \n\
+\n\
+Use the 'properties' argument to pass a dictionary with properties you want to set to a certain value. \n\
+\n\
+Parameters \n\
+----------- \n\
+data : {DataObject, PointCloud, PolygonMesh} \n\
+    Is the data object whose region of interest will be plotted.\n\
+className : {str}, optional \n\
+    class name of desired plot (if not indicated or if the className can not be found, the default plot will be used (see application settings)) \n\
+	Depending on the object, you can also use '1D', '2D' or '2.5D' for displaying the object in the default plot of \n\
+	the indicated categories. \n\
+properties : {dict}, optional \n\
+    optional dictionary of properties that will be directly applied to the plot widget. \n\
+\n\
+Returns \n\
+-------- \n\
+index : {int} \n\
+    This index is the figure index of the plot figure that is opened by this command. Use *figure(index)* to get a reference to the figure window of this plot. The plot can be closed by 'close(index)'. \n\
+plotHandle: {plotItem} \n\
+    Handle of the plot. This handle is used to control the properties of the plot, connect to its signals or call slots of the plot. \n\
+\n\
+See Also \n\
+---------- \n\
+liveImage, plotItem");
+PyObject* PythonItom::PyPlot1d(PyObject * /*pSelf*/, PyObject *pArgs, PyObject *pKwds)
+{
+    const char *kwlist[] = { "data", "xAxis", "properties", NULL };
+    PyObject *data = NULL;
+    PyObject *propDict = NULL;
+    //    int areaIndex = 0;
+    PyObject *xAxis = NULL;
+    bool ok = false;
 
+    if (!PyArg_ParseTupleAndKeywords(pArgs, pKwds, "O|OO!", const_cast<char**>(kwlist), &data, &xAxis, &PyDict_Type, &propDict))
+    {
+        return NULL;
+    }
+
+    ito::UiDataContainer dataCont;
+    ito::UiDataContainer xAxisCont; //= QSharedPointer<ito::DataObject>(); //this is a null pointer
+    //at first try to strictly convert to a point cloud or polygon mesh (non strict conversion not available for this)
+    //if this fails, try to non-strictly convert to data object, such that numpy arrays are considered as well.
+#if ITOM_POINTCLOUDLIBRARY > 0
+    dataCont = QSharedPointer<ito::PCLPointCloud>(PythonQtConversion::PyObjGetPointCloudNewPtr(data, true, ok));
+    if (!ok)
+    {
+        dataCont = QSharedPointer<ito::PCLPolygonMesh>(PythonQtConversion::PyObjGetPolygonMeshNewPtr(data, true, ok));
+    }
+#else
+    ok = false;
+#endif
+
+    if (!ok)
+    {
+        dataCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(data, false, ok));
+        if (xAxis)
+        {
+            xAxisCont = QSharedPointer<ito::DataObject>(PythonQtConversion::PyObjGetDataObjectNewPtr(xAxis, false, ok));
+        }
+    }
+
+    if (!ok)
+    {
+#if ITOM_POINTCLOUDLIBRARY > 0
+        PyErr_SetString(PyExc_RuntimeError, "First argument cannot be converted to dataObject, pointCloud or polygonMesh.");
+#else
+        PyErr_SetString(PyExc_RuntimeError, "First argument cannot be converted to dataObject.");
+#endif
+        return NULL;
+    }
+
+    QVariantMap properties;
+
+    if (propDict)
+    {
+        PyObject *key, *value;
+        Py_ssize_t pos = 0;
+        QVariant valueV;
+        QString keyS;
+
+        while (PyDict_Next(propDict, &pos, &key, &value)) //key and value are borrowed
+        {
+            keyS = PythonQtConversion::PyObjGetString(key, true, ok);
+            valueV = PythonQtConversion::PyObjToQVariant(value);
+            if (valueV.isValid())
+            {
+                properties[keyS] = valueV;
+            }
+            else
+            {
+                PyErr_SetString(PyExc_RuntimeError, "At least one property value could not be parsed to QVariant.");
+                return NULL;
+            }
+        }
+    }
+
+    ItomSharedSemaphoreLocker locker(new ItomSharedSemaphore());
+    int areaCol = 0;
+    int areaRow = 0;
+    QSharedPointer<unsigned int> figHandle(new unsigned int);
+    *figHandle = 0; //new figure will be requested
+
+    UiOrganizer *uiOrg = (UiOrganizer*)AppManagement::getUiOrganizer();
+    QString defaultPlotClassName("1d");
+
+
+    QSharedPointer<unsigned int> objectID(new unsigned int);
+
+    QMetaObject::invokeMethod(uiOrg, "figurePlot", Q_ARG(ito::UiDataContainer&, dataCont), Q_ARG(ito::UiDataContainer&, xAxisCont), Q_ARG(QSharedPointer<uint>, figHandle), Q_ARG(QSharedPointer<uint>, objectID), Q_ARG(int, areaRow), Q_ARG(int, areaCol), Q_ARG(QString, defaultPlotClassName), Q_ARG(QVariantMap, properties), Q_ARG(ItomSharedSemaphore*, locker.getSemaphore()));
+    if (!locker.getSemaphore()->wait(PLUGINWAIT * 5))
+    {
+        PyErr_SetString(PyExc_RuntimeError, "Timeout while plotting object");
+        return NULL;
+    }
+
+    if (!PythonCommon::transformRetValToPyException(locker.getSemaphore()->returnValue))
+    {
+        return NULL;
+    }
+
+    //return new instance of PyUiItem
+    PyObject *args2 = PyTuple_New(0); //Py_BuildValue("OO", self, name);
+    PyObject *kwds2 = PyDict_New();
+    PyDict_SetItemString(kwds2, "objectID", PyLong_FromLong(*objectID));
+    PythonPlotItem::PyPlotItem *pyPlotItem = (PythonPlotItem::PyPlotItem *)PyObject_Call((PyObject *)&PythonPlotItem::PyPlotItemType, args2, kwds2);
+    Py_DECREF(args2);
+    Py_DECREF(kwds2);
+
+    if (pyPlotItem == NULL)
+    {
+        PyErr_SetString(PyExc_AttributeError, "Could not create plotItem of plot widget");
+        return NULL;
+    }
+
+    //try to get figure handle of plot, to set the baseItem of the plot to the figure.
+    //this is important such that one can connect to signals of the plot (e.g. userInteractionDone) since signals can only be handled if the last item
+    //in the baseItem-chain is of type itom.ui or itom.figure
+    args2 = PyTuple_New(0);
+    kwds2 = PyDict_New();
+    PyDict_SetItemString(kwds2, "handle", PyLong_FromLong(*figHandle));
+    PythonFigure::PyFigure *pyFigure = (PythonFigure::PyFigure *)PyObject_Call((PyObject *)&PythonFigure::PyFigureType, args2, kwds2);
+    Py_XDECREF(pyPlotItem->uiItem.baseItem);
+    pyPlotItem->uiItem.baseItem = (PyObject*)pyFigure;
+    Py_DECREF(args2);
+    Py_DECREF(kwds2);
+
+    PyObject *res = Py_BuildValue("iO", *figHandle, (PyObject*)pyPlotItem); //returns handle
+    Py_XDECREF(pyPlotItem);
+    return res;
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 PyDoc_STRVAR(pyLiveImage_doc,"liveImage(cam, [className, properties]) -> show a camera live image in a new figure\n\
 \n\
@@ -4548,6 +4715,7 @@ PyMethodDef PythonItom::PythonMethodItom[] = {
     {"openScript", (PyCFunction)PythonItom::PyOpenScript, METH_VARARGS, pyOpenScript_doc},
 	{"showHelpViewer", (PyCFunction)PythonItom::PyShowHelpViewer, METH_VARARGS, pyShowHelpViewer_doc },
     {"plot", (PyCFunction)PythonItom::PyPlotImage, METH_VARARGS | METH_KEYWORDS, pyPlotImage_doc},
+    {"plot1", (PyCFunction)PythonItom::PyPlot1d, METH_VARARGS | METH_KEYWORDS, pyPlot1d_doc},
     {"liveImage", (PyCFunction)PythonItom::PyLiveImage, METH_VARARGS | METH_KEYWORDS, pyLiveImage_doc},
     {"close", (PyCFunction)PythonFigure::PyFigure_close, METH_VARARGS, pyItom_FigureClose_doc}, /*class static figure.close(...)*/
     {"filter", (PyCFunction)PythonItom::PyFilter, METH_VARARGS | METH_KEYWORDS, pyFilter_doc},
