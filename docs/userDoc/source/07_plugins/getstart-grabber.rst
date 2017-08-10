@@ -94,10 +94,6 @@ A grabber can provide a live image using the :py:meth:`itom.liveImage` command (
 Taking pictures
 -----------------------
 Most times a grabber is used, one would like to acquire and store pictures. The procedure is fairly easy: once you have a running instance of your grabber, 
-calling **acquire()** triggers an image to be acquired. The image is then retrieved either by the **getVal()** or the **copyVal()** command. Here, **getVal()** 
-makes a shallow copy, and **copyVal()** gives you a deep copy. Both methods take a dataObject as argument, which has to have suitable size and data type.
-
-Most times a grabber is used, one would like to acquire and store pictures. The procedure is fairly easy: once you have a running instance of your grabber, 
 calling :py:meth:`~itom.dataIO.acquire` triggers an image to be acquired. The image is then retrieved either by the :py:meth:`~itom.dataIO.getVal()` or 
 the :py:meth:`~itom.dataIO.copyVal` command. Here, :py:meth:`~itom.dataIO.getVal` makes a shallow 
 copy, and :py:meth:`~itom.dataIO.copyVal` gives you a deep copy. In the case of the shallow copy, pass an arbitrary initialized dataObject to :py:meth:`~itom.dataIO.getVal`. This
