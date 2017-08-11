@@ -1075,24 +1075,37 @@ ito::PCLPolygonMesh PythonQtConversion::PyObjGetPolygonMesh(PyObject *val, bool 
         ok = false;
         return NULL;
     }
-    else if (strict == false) //try to convert to dataObject
+    else if (strict == false) //try to convert numpy.array to dataObject
     {
-        PyObject *args = Py_BuildValue("(O)", val);
-        ito::PythonDataObject::PyDataObject *result = (ito::PythonDataObject::PyDataObject*)PyObject_Call((PyObject*)&ito::PythonDataObject::PyDataObjectType, args, NULL); //new reference
-        ito::DataObject *dObj = NULL;
-        Py_DECREF(args);
-        if (result)
+        if (PyArray_Check(val))
         {
-            dObj = PyObjGetDataObjectNewPtr((PyObject*)result, true, ok, retVal);
-            Py_XDECREF(result);
-            return dObj;
+            PyObject *args = Py_BuildValue("(O)", val);
+            ito::PythonDataObject::PyDataObject *result = (ito::PythonDataObject::PyDataObject*)PyObject_Call((PyObject*)&ito::PythonDataObject::PyDataObjectType, args, NULL); //new reference
+            ito::DataObject *dObj = NULL;
+            Py_DECREF(args);
+            if (result)
+            {
+                dObj = PyObjGetDataObjectNewPtr((PyObject*)result, true, ok, retVal);
+                Py_XDECREF(result);
+                return dObj;
+            }
+            else
+            {
+                ito::RetVal ret = PythonCommon::checkForPyExceptions(true);
+                if (retVal)
+                {
+                    *retVal += ret;
+                }
+
+                ok = false;
+                return NULL;
+            }
         }
         else
         {
-            ito::RetVal ret = PythonCommon::checkForPyExceptions(true);
             if (retVal)
             {
-                *retVal += ret;
+                *retVal += ito::RetVal(ito::retError, 0, "given object must be of type itom.dataObject or numpy.array.");
             }
 
             ok = false;
