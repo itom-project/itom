@@ -1,4 +1,4 @@
-SET (target_name qitom)
+SET (target_name qitom) 
  
 project(${target_name})
 
@@ -56,6 +56,9 @@ find_package(QScintilla REQUIRED)
 find_package(OpenCV COMPONENTS core REQUIRED)
 IF (BUILD_WITH_PCL)
     find_package(PCL 1.5.1 REQUIRED COMPONENTS common)
+    # actually we need this only to configure the itom.bat including vtk, otherwise 
+    # eventually pcl-tools plugin will not be loaded
+    find_package(VTK QUIET)    
 ENDIF (BUILD_WITH_PCL)
 find_package(NumPy REQUIRED)
 find_package(VisualLeakDetector QUIET)
