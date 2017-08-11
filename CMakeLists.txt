@@ -138,7 +138,7 @@ ELSEIF(MSVC_VERSION EQUAL 1910)
         configure_file(${CMAKE_CURRENT_SOURCE_DIR}/compile_debug32_v15.bat ${CMAKE_CURRENT_BINARY_DIR}/compile_debug.bat COPYONLY)
         configure_file(${CMAKE_CURRENT_SOURCE_DIR}/compile_release32_v15.bat ${CMAKE_CURRENT_BINARY_DIR}/compile_release.bat COPYONLY)
     ENDIF(CMAKE_CL_64)    
-ENDIF(MSVC10)
+ENDIF(MSVC_VERSION EQUAL 1600)
 
 #ADD a batch file for itom-release
 CONFIGURE_FILE( ${CMAKE_CURRENT_SOURCE_DIR}/COPYING.txt ${CMAKE_CURRENT_BINARY_DIR}/COPYING.txt )
