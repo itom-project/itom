@@ -759,9 +759,11 @@ MACRO (ADD_OUTPUTLIBRARY_TO_SDK_LIB target sources destinations)
       SET(SDK_PLATFORM "x64")
     ENDIF ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
     
+    # The following list has to be consistent with FindITOM_SDK.cmake! 
+    # From VS higher than 1900, the default case vc${MSVC_VERSION} is used.
     IF(MSVC_VERSION EQUAL 1900)
         SET(SDK_COMPILER "vc14")
-    ELSEIF(MSVC_VERSION EQUAL 18ß0)
+    ELSEIF(MSVC_VERSION EQUAL 1800)
         SET(SDK_COMPILER "vc12")
     ELSEIF(MSVC_VERSION EQUAL 1700)
         SET(SDK_COMPILER "vc11")
@@ -803,13 +805,15 @@ MACRO (ADD_LIBRARY_TO_APPDIR_AND_SDK target sources destinations)
     IF(${ITOM_APP_DIR} STREQUAL "")
         message(SEND_ERROR "ITOM_APP_DIR is not indicated")
     ENDIF()
-
+    
     IF ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
         SET(SDK_PLATFORM "x86")
     ELSE ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
         SET(SDK_PLATFORM "x64")
     ENDIF ( CMAKE_SIZEOF_VOID_P EQUAL 4 )
-
+    
+    # The following list has to be consistent with FindITOM_SDK.cmake! 
+    # From VS higher than 1900, the default case vc${MSVC_VERSION} is used.
     IF(MSVC_VERSION EQUAL 1900)
         SET(SDK_COMPILER "vc14")
     ELSEIF(MSVC_VERSION EQUAL 1800)
