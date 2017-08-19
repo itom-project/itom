@@ -25,6 +25,7 @@
 
 #include <qapplication.h>
 #include <qdebug.h>
+#include <iostream>
 #include "opencv/cv.h"
 
 class QItomApplication : public QApplication
@@ -45,20 +46,28 @@ public:
             qWarning("Itom-Application has caught a cv::exception");
             qWarning() << (exc.err).c_str() << " from" << receiver->objectName();
             //qDebug() << "Itom-Application caught an exception from" <<  receiver->objectName() << "from event type" << event->type();
+#ifdef _DEBUG
             qFatal("Exiting due to exception caught. OpenCV-Exception: %s", (exc.err).c_str());
+#endif
+            std::cerr << "Itom-Application has caught a cv::exception: " << (exc.err).c_str() << " from: " << receiver->objectName().toLatin1().data();
         }
         catch(std::exception &exc)
         {
             qWarning("Itom-Application has caught an exception");
             qWarning() << "Message:" << exc.what() << " from" << receiver->objectName();
+#ifdef _DEBUG
             qFatal("Exiting due to exception caught. Exception: %s", exc.what());
+#endif
+            std::cerr << "Itom-Application has caught an exception: " << exc.what() << " from: " << receiver->objectName().toLatin1().data();
         }
         catch (...)
         {
             qWarning("Itom-Application has caught an exception");
             qDebug() << "Itom-Application caught an exception from" <<  receiver->objectName() << "from event type" << event->type();
+#ifdef _DEBUG
             qFatal("Exiting due to exception caught");
-            
+#endif
+            std::cerr << "Itom-Application caught an exception from: " << receiver->objectName().toLatin1().data() << " from event type " << event->type();
         }
         return false;
     }
