@@ -1111,8 +1111,6 @@ bool RangeSlider::event(QEvent* _event)
 void RangeSlider::setLimitsFromIntervalMeta(const ito::IntervalMeta &intervalMeta)
 {
     Q_D(RangeSlider);
-    //qDebug() << "before: " << minimum() << maximum() <<  d->m_MinimumRange << maximumRange() << stepSizePosition() << stepSizeRange() << minimumValue() << maximumValue();
-    int m = maximum();
 
     d->m_RangeIncludesLimits = !intervalMeta.isIntervalNotRange();
     int offset = d->m_RangeIncludesLimits ? 1 : 0;
@@ -1121,13 +1119,11 @@ void RangeSlider::setLimitsFromIntervalMeta(const ito::IntervalMeta &intervalMet
     d->m_PositionStepSize = intervalMeta.getStepSize();
     d->m_StepSizeRange = d->bound(d->m_PositionStepSize, std::numeric_limits<int>::max(), d->m_PositionStepSize, intervalMeta.getSizeStepSize());
 
+    blockSignals(true); //slider-changed signal should only be emitted after the setMaximum call (in order to avoid intermediate state, that can crash due to wrong Q_ASSERT checks!
     setMinimum(d->bound(0, intervalMeta.getMin() + d->m_PositionStepSize, d->m_PositionStepSize, intervalMeta.getMin()));
+    blockSignals(false);
     setMaximum(d->bound(minimum(), intervalMeta.getMax() + d->m_PositionStepSize + offset, d->m_PositionStepSize, intervalMeta.getMax() + offset) - offset);
-
-    int e = m - maximum();
 
     d->m_MinimumRange = d->boundUnsigned(0, intervalMeta.getSizeMin() + d->m_StepSizeRange, d->m_StepSizeRange, intervalMeta.getSizeMin());
     setMaximumRange( std::min(intervalMeta.getMax() - intervalMeta.getMin() + offset,intervalMeta.getSizeMax()) ); //using setMaximumRange in order to finally adapt the current values to allowed values
-
-    //qDebug() << "after: " << minimum() << maximum() <<  d->m_MinimumRange << maximumRange() << stepSizePosition() << stepSizeRange() << minimumValue() << maximumValue();
 }
