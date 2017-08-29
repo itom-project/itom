@@ -1380,9 +1380,25 @@ int DataObject::getStep(int index) const
     }
 
     int step = 1;
-    for (int i = index + 1; i < m_dims; ++i)
+    //for (int i = index + 1; i < m_dims; ++i)
+    // last two dimensions we take from cv::Mat
+    if (index > 2)
     {
-        step *= m_osize[i];
+        for (int i = index + 1; i < m_dims - 2; ++i)
+        {
+            step *= m_osize[i];
+        }
+        step *= ((cv::Mat*)(this->m_data[0]))->u->size / ((cv::Mat*)(this->m_data[0]))->step.buf[0];
+        step *= ((cv::Mat*)(this->m_data[0]))->step.buf[0] / ((cv::Mat*)(this->m_data[0]))->step.buf[1];
+    }
+    else if (index > 1)
+    {
+        step *= ((cv::Mat*)(this->m_data[0]))->u->size / ((cv::Mat*)(this->m_data[0]))->step.buf[0];
+        step *= ((cv::Mat*)(this->m_data[0]))->step.buf[0] / ((cv::Mat*)(this->m_data[0]))->step.buf[1];
+    }
+    else
+    {
+        step *= ((cv::Mat*)(this->m_data[0]))->step.buf[0] / ((cv::Mat*)(this->m_data[0]))->step.buf[1];
     }
     return step;
 }
@@ -3551,6 +3567,17 @@ DataObject::DataObject(const DataObject& dObj, bool transposed)
             try
             {
                 fListCopyMatFunc[m_type](const_cast<const uchar**>(dObj.m_data), m_data, true, m_sizeofs);
+                // transposing can have side effects, so reset sizes of matrices according to cv values
+                // probably still need fixing up roi
+                if (dObj.m_dims >= 2)
+                {
+                    m_size.m_p[0] = m_osize.m_p[0] = ((cv::Mat*)(m_data[0]))->u->size / ((cv::Mat*)(m_data[0]))->step.buf[0];
+                    m_size.m_p[1] = ((cv::Mat*)(m_data[0]))->step.buf[0] / ((cv::Mat*)(m_data[0]))->step.buf[1];
+                }
+                else
+                {
+                    m_size.m_p[0] = m_osize.m_p[0] = ((cv::Mat*)(m_data[0]))->step.buf[0] / ((cv::Mat*)(m_data[0]))->step.buf[1];
+                }
             }
             catch(cv::Exception /*&exc*/) //memory error
             {
@@ -6210,18 +6237,18 @@ DataObject DataObject::at(const DataObject &mask) const
 */
 template<typename _Tp> RetVal AdjustROIFunc(DataObject *dObj, int dtop, int dbottom, int dleft, int dright)
 {
-   if (dObj->getDims() > 1) //new version: adjusts ROI for every plane
-   {
-      int numMats = dObj->mdata_size();
-      cv::Mat_<_Tp> **mats = reinterpret_cast<cv::Mat_<_Tp>** >(dObj->get_mdata());
+    if (dObj->getDims() > 1) //new version: adjusts ROI for every plane
+    {
+        int numMats = dObj->mdata_size();
+        cv::Mat_<_Tp> **mats = reinterpret_cast<cv::Mat_<_Tp>** >(dObj->get_mdata());
 
-      for (int nmat = 0; nmat < numMats; nmat++)
-      {
-         mats[nmat]->adjustROI(dtop, dbottom, dleft, dright);
-      }
-   }
+        for (int nmat = 0; nmat < numMats; nmat++)
+        {
+            mats[nmat]->adjustROI(dtop, dbottom, dleft, dright);
+        }
+    }
 
-   return 0;
+    return 0;
 }
 
 typedef RetVal (*tAdjustROIFunc)(DataObject *dObj, int dtop, int dbottom, int dleft, int dright);
