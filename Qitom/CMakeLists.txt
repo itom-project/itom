@@ -217,6 +217,7 @@ set(qitom_HEADERS
     ${CMAKE_CURRENT_SOURCE_DIR}/helper/qpropertyHelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.h
     #${CMAKE_CURRENT_SOURCE_DIR}/models/pluginModel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.h
@@ -429,6 +430,7 @@ set(qitom_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/helpViewer/qtHelpUrlSchemeHandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/breakPointModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/classNavigatorItem.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/itomFileSystemModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/leafFilterProxyModel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/pipManager.cpp
     #${CMAKE_CURRENT_SOURCE_DIR}/models/pluginModel.cpp
