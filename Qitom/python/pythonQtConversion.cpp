@@ -2304,19 +2304,6 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                         }
                     }
                 }
-                else if (type == QMetaType::type("QSharedPointer<char>"))
-                {
-                    QSharedPointer<char> text = PyObjGetBytesShared(val, strict, ok);
-                    if (ok)
-                    {
-                        #if QT_VERSION >= 0x050000
-                        *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&text));
-                        #else
-                        *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&text));
-                        #endif
-                    }
-                    break;
-                }
                 else if (type == QMetaType::type("ito::PCLPoint"))
                 {
                     bool ok;
@@ -2336,6 +2323,19 @@ bool PythonQtConversion::PyObjToVoidPtr(PyObject* val, void **retPtr, int *retTy
                     }
                 }
 #endif //#if ITOM_POINTCLOUDLIBRARY > 0
+                else if (type == QMetaType::type("QSharedPointer<char>"))
+                {
+                    QSharedPointer<char> text = PyObjGetBytesShared(val, strict, ok);
+                    if (ok)
+                    {
+                        #if QT_VERSION >= 0x050000
+                        *retPtr = QMetaType::create(type, reinterpret_cast<char*>(&text));
+                        #else
+                        *retPtr = QMetaType::construct(type, reinterpret_cast<char*>(&text));
+                        #endif
+                    }
+                    break;
+                }
                 else if (type == QMetaType::type("QVector<double>"))
                 {
                     bool ok;
