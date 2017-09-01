@@ -324,6 +324,7 @@ RetVal FigureWidget::plot(QSharedPointer<ito::DataObject> dataObj, QSharedPointe
             {
                 ito::AbstractDObjFigure *dObjFigure = NULL;
                 dObjFigure = (ito::AbstractDObjFigure*)(destWidget);
+                dObjFigure->setXVec(xAxisObj);
                 dObjFigure->setSource(dataObj);
                 *canvasWidget = destWidget;
             }

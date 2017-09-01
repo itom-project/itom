@@ -76,7 +76,41 @@ ito::RetVal AbstractDObjFigure::update(void)
 
     return retval;
 }
+//----------------------------------------------------------------------------------------------------------------------------------
+void ito::AbstractDObjFigure::setXVec(QSharedPointer<ito::DataObject> xObj)
+{
+    ito::RetVal retval = ito::retOk;
 
+
+    if (m_dataPointer.contains("xVec"))
+    {
+
+        if (m_dataPointer["xVec"].data() != xObj.data())
+        {
+            QSharedPointer<ito::DataObject> oldSource = m_dataPointer["source"]; //possible backup for previous xVec, this backup must be alive until updateParam with the new one has been completely propagated
+            m_dataPointer["xVec"] = xObj;
+        }
+    }
+    else
+    {
+        m_dataPointer["xVec"] = xObj;
+    }
+
+    ito::ParamBase thisParam("xVec", ito::ParamBase::DObjPtr, (const char*)xObj.data());
+    retval += updateParam(&thisParam, 1);
+
+    updatePropertyDock();
+}
+//----------------------------------------------------------------------------------------------------------------------------------
+QSharedPointer<ito::DataObject> ito::AbstractDObjFigure::getXVec(void) const
+{
+        ito::DataObject *dObj = m_pInput["xVec"]->getVal<ito::DataObject*>();
+        if (dObj)
+        {
+            return QSharedPointer<ito::DataObject>(new ito::DataObject(*dObj));
+        }
+        return QSharedPointer<ito::DataObject>();
+}
 //----------------------------------------------------------------------------------------------------------------------------------
 QSharedPointer<ito::DataObject> AbstractDObjFigure::getSource(void) const 
 {

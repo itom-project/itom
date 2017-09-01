@@ -76,6 +76,9 @@ public:
     virtual QSharedPointer<ito::DataObject> getSource(void) const;
     virtual void setSource(QSharedPointer<ito::DataObject> source);
 
+    virtual void setXVec(QSharedPointer<ito::DataObject> xObj);
+    virtual QSharedPointer<ito::DataObject> getXVec() const;
+
     virtual QSharedPointer<ito::DataObject> getDisplayed(void); // { return QSharedPointer<ito::DataObject>(m_pOutput["displayed"]->getVal<ito::DataObject*>()); }
 
     virtual QPointer<ito::AddInDataIO> getCamera(void) const;
