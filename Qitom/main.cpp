@@ -183,7 +183,8 @@ int main(int argc, char *argv[])
 #endif
     }    
 
-#if defined _DEBUG
+//#if defined _DEBUG
+#if 1
     //in debug mode uncaught exceptions as well as uncaught cv::Exceptions will be parsed and also passed to qWarning and qFatal.
     cv::redirectError(itomCvError);
     QItomApplication a(argc, argv);

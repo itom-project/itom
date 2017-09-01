@@ -27,6 +27,7 @@
 #include "abstractDockWidget.h"
 
 #include "itomQWidgets.h"
+#include "../models/itomFileSystemModel.h"
 
 #include <qwidget.h>
 #include <qaction.h>
@@ -35,7 +36,6 @@
 #include <qtextbrowser.h>
 #include <qtreeview.h>
 #include <qlabel.h>
-#include <qfilesystemmodel.h>
 #include <qhash.h>
 #include <qmutex.h>
 #include <qmenu.h>
@@ -86,7 +86,7 @@ namespace ito
             QTreeViewItom* m_pTreeView;
             QLabel* m_pLblFilter;
             QComboBox* m_pCmbFilter;
-            QFileSystemModel* m_pFileSystemModel;
+            ItomFileSystemModel* m_pFileSystemModel;
             QSignalMapper *m_newDirSelectedMapper;
             QString baseDirectory;
             QHash<QString,QStringList> defaultFilterPatterns;

@@ -22,12 +22,67 @@
 
 #include "dialogReplace.h"
 #include "../AppManagement.h"
+#include <qcompleter.h>
 
 namespace ito
 {
 
 //----------------------------------------------------------------------------------------------------------------------------------
-int DialogReplace::comboBoxGetIndex(const QString text, QComboBox *comboBox)
+DialogReplace::DialogReplace(QWidget *parent) :
+    QDialog(parent),
+    m_pCompleter(NULL)
+{
+    int size = 0;
+    ui.setupUi(this);
+
+    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+    settings.beginGroup("dialogReplace");
+    size = settings.beginReadArray("lastFindText");
+    for (int i = 0; i < size; ++i)
+    {
+        settings.setArrayIndex(i);
+        ui.comboBoxFindText->addItem(settings.value("find", QString()).toString());
+    }
+    settings.endArray();
+
+    size = settings.beginReadArray("lastReplacedText");
+    for (int i = 0; i < size; ++i)
+    {
+        settings.setArrayIndex(i);
+        ui.comboBoxReplacedText->addItem(settings.value("replace", QString()).toString());
+    }
+    settings.endArray();
+
+    ui.checkBoxWholeWord->setChecked(settings.value("WholeWord").toBool());
+    ui.checkBoxCase->setChecked(settings.value("Case").toBool());
+    ui.checkBoxWrapAround->setChecked(settings.value("WrapAround").toBool());
+    ui.checkBoxRegular->setChecked(settings.value("Regular").toBool());
+    ui.checkBoxReplaceWith->setChecked(settings.value("ReplaceWith").toBool());
+
+    if (settings.value("Direction").toString() == "Up")
+    {
+        ui.radioButtonUp->setChecked(true);
+    }
+    else
+    {
+        ui.radioButtonDown->setChecked(true);
+    }
+
+    settings.endGroup();
+
+    on_checkBoxReplaceWith_clicked();
+    ui.groupBoxOptions->setVisible(false);
+    setMaximumHeight(100);
+
+    m_pCompleter = new QCompleter(this);
+    m_pCompleter->setCompletionMode(QCompleter::InlineCompletion);
+    m_pCompleter->setCaseSensitivity(Qt::CaseSensitive);
+    ui.comboBoxFindText->setCompleter(m_pCompleter);
+    ui.comboBoxReplacedText->setCompleter(m_pCompleter);
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+int DialogReplace::comboBoxGetIndex(const QString &text, QComboBox *comboBox) const
 {
     Qt::CaseSensitivity cs = Qt::CaseInsensitive;
     if (ui.checkBoxCase->isChecked())
@@ -50,7 +105,7 @@ int DialogReplace::comboBoxGetIndex(const QString text, QComboBox *comboBox)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-void DialogReplace::comboBoxAddItem(const QString text, QComboBox *comboBox)
+void DialogReplace::comboBoxAddItem(const QString &text, QComboBox *comboBox)
 {
     if (text != "")
     {
@@ -103,53 +158,6 @@ void DialogReplace::on_checkBoxReplaceWith_clicked()
     ui.pushButtonReplace->setEnabled(isChecked);
     ui.pushButtonReplaceAll->setEnabled(isChecked);
     ui.checkBoxReplaceInSelection->setEnabled(isChecked);
-}
-
-//----------------------------------------------------------------------------------------------------------------------------------
-DialogReplace::DialogReplace(QWidget *parent) :
-    QDialog(parent)
-{
-    int size = 0;
-    ui.setupUi(this);
-
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("dialogReplace");
-    size = settings.beginReadArray("lastFindText");
-    for (int i = 0; i < size; ++i)
-    {
-        settings.setArrayIndex(i);
-        ui.comboBoxFindText->addItem(settings.value("find", QString()).toString());
-    }
-    settings.endArray();
-
-    size = settings.beginReadArray("lastReplacedText");
-    for (int i = 0; i < size; ++i)
-    {
-        settings.setArrayIndex(i);
-        ui.comboBoxReplacedText->addItem(settings.value("replace", QString()).toString());
-    }
-    settings.endArray();
-    
-    ui.checkBoxWholeWord->setChecked(settings.value("WholeWord").toBool());
-    ui.checkBoxCase->setChecked(settings.value("Case").toBool());
-    ui.checkBoxWrapAround->setChecked(settings.value("WrapAround").toBool());
-    ui.checkBoxRegular->setChecked(settings.value("Regular").toBool());
-    ui.checkBoxReplaceWith->setChecked(settings.value("ReplaceWith").toBool());
-
-    if (settings.value("Direction").toString() == "Up")
-    {
-        ui.radioButtonUp->setChecked(true);
-    }
-    else
-    {
-        ui.radioButtonDown->setChecked(true);
-    }
-
-    settings.endGroup();
-
-    on_checkBoxReplaceWith_clicked();
-    ui.groupBoxOptions->setVisible(false);
-    this->setMaximumHeight(100);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

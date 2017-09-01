@@ -1293,7 +1293,7 @@ void ScriptDockWidget::createActions()
     m_scriptRunAction = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("Run"), this, QKeySequence(tr("F5", "QShortcut")), Qt::WidgetWithChildrenShortcut);
     m_scriptRunAction->connectTrigger(this, SLOT(mnuScriptRun()));
 
-    m_scriptRunSelectionAction = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("Run Selection"), this, QKeySequence(tr("Ctrl+F5", "QShortcut")));
+    m_scriptRunSelectionAction = new ShortcutAction(QIcon(":/script/icons/runScript.png"), tr("Run Selection"), this, QKeySequence(tr("F9", "QShortcut")));
     m_scriptRunSelectionAction->connectTrigger(this, SLOT(mnuScriptRunSelection()));
 
     m_scriptDebugAction = new ShortcutAction(QIcon(":/script/icons/debugScript.png"), tr("Debug"), this, QKeySequence(tr("F6", "QShortcut")), Qt::WidgetWithChildrenShortcut);

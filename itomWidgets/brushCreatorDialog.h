@@ -34,6 +34,7 @@ public:
     BrushCreatorDialog(QBrush &inputBrush, QWidget *parent = NULL);
     ~BrushCreatorDialog();
     void setBrush(const QBrush &brush);
+    void setShowAlphaChannel(bool showAlphaChannel);
     void synchronizeGUI();
     QBrush getBrush();
 
@@ -42,7 +43,7 @@ private:
     QBrush &brush;
 
     void updateBrush();
-    private slots:
+private slots:
     void on_buttonBox_clicked(QAbstractButton* btn);
 
 };

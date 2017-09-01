@@ -36,6 +36,7 @@ class ITOMWIDGETS_EXPORT BrushCreatorButton : public QPushButton
     Q_OBJECT
 
         Q_PROPERTY(QBrush brush READ getBrush WRITE setBrush)
+        Q_PROPERTY(bool showAlphaChannel READ getShowAlphaChannel WRITE setShowAlphaChannel)
 
 public:
     explicit BrushCreatorButton(QWidget* parent = 0);
@@ -44,18 +45,21 @@ public:
 
     QSize sizeHint() const;
     QBrush getBrush() const;
+    bool getShowAlphaChannel() const;
 
 protected:
     virtual void paintEvent(QPaintEvent* event);
     void changeBrush();
 
     QScopedPointer<BrushCreatorButtonPrivate> d_ptr;
-    protected slots:
+protected slots:
     void onToggled(bool change = true);
-    public slots:
+public slots:
     ///
     ///  Set a new current pen without opening a dialog
     void setBrush(const QBrush &brush);
+
+    void setShowAlphaChannel(bool showAlphaChannel);
 private:
 
     Q_DECLARE_PRIVATE(BrushCreatorButton);

@@ -78,6 +78,7 @@ public:
     static PyObject* PyShape_region(PyShape *self);
     static PyObject* PyShape_normalized(PyShape *self);
     static PyObject* PyShape_contour(PyShape *self, PyObject *args, PyObject *kwds);
+    static PyObject* PyShape_contains(PyShape *self, PyObject *args, PyObject *kwds);
 
     //-------------------------------------------------------------------------------------------------
     // pickling

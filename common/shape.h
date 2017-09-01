@@ -1,7 +1,7 @@
 /* ********************************************************************
 itom software
 URL: http://www.uni-stuttgart.de/ito
-Copyright (C) 2016, Institut fuer Technische Optik (ITO),
+Copyright (C) 2017, Institut fuer Technische Optik (ITO),
 Universitaet Stuttgart, Germany
 
 This file is part of itom and its software development toolkit (SDK).
@@ -144,6 +144,9 @@ namespace ito
 		double radius() const;
 		double radiusX() const;
 		double radiusY() const;
+
+        bool contains(const QPointF &point) const; /*!< returns true if shape contains the given point, or false if this is not the case. In case of shapes with an area of 0, this method always returns false.*/
+        QVector<bool> contains(const QPolygonF &points) const; /*!< repeatedly calls contains(point) for each point in points and returns a vector of boolean values to tell for each point if it is contained in the shape or not. */
 
         static Shape fromRectangle(const QRectF &rect, int index = -1, QString name = "", const QTransform &trafo = QTransform());
         static Shape fromRectangle(qreal x1, qreal y1, qreal x2, qreal y2, int index = -1, QString name = "", const QTransform &trafo = QTransform());

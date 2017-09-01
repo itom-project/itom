@@ -98,7 +98,7 @@ If the dataObject which is plotted has defined tags named **legendTitle0, legend
 
 .. _itom1dqwtplot-ref:
 
-.. BEGIN The following part is obtained by the script plot_help_to_rst_format.py from the designer plugin itom1dqwtplot
+.. BEGIN The following part is obtained by the script plot_help_to_rst_format.py (source/itom/docs/userDoc) from the designer plugin itom1dqwtplot
 
 Properties
 -------------------------

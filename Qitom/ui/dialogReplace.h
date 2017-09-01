@@ -29,6 +29,8 @@
 #include "ui_dialogReplace.h"
 #include "itomSpinBox.h"
 
+class QCompleter; //forward declaration
+
 namespace ito
 {
 
@@ -49,14 +51,11 @@ protected:
 private:
     Ui::DialogReplace ui;
 
-    void comboBoxAddItem(const QString text, QComboBox *comboBox);
-    int comboBoxGetIndex(const QString text, QComboBox *comboBox);
+    void comboBoxAddItem(const QString &text, QComboBox *comboBox);
+    int comboBoxGetIndex(const QString &text, QComboBox *comboBox) const;
     void setRegularMode(const bool isRegularMode);
 
-/*    int m_lineFrom;
-    int m_indexFrom;
-    int m_lineTo;
-    int m_indexTo;*/
+    QCompleter *m_pCompleter;
 
 private slots:
     void on_pushButtonFindNext_clicked();

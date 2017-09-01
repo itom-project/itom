@@ -6,10 +6,11 @@ import os, re
 
 def replaceInFiles(path, ending):
     dirList=os.listdir(path)
+    coding = "iso-8859-15"
     # Files in Ordner durchlaufen
     for fname in dirList:
         if fname.endswith(ending):
-            with open(path+"\\"+fname, "r") as f:
+            with open(path+"\\"+fname, "r", encoding = coding) as f:
                 s = f.read()
                 s = s.replace("\\begin{quote}\\begin{description}", "\\begin{description}")
                 s = s.replace("\\end{description}\\end{quote}", "\\end{description}")
@@ -21,7 +22,7 @@ def replaceInFiles(path, ending):
                 
                 s = s.replace(".gif", ".png") # replace gif by png images for pdf
                 
-                # nach Bildern suchen und nach jedem ca. 10. Bild ein \newpage einfügen
+                # nach Bildern suchen und nach jedem ca. 10. Bild ein \newpage einfÃ¼gen
                 p = re.compile(r'\\begin{figure}\[htbp\]')
                 
                 #chapter, sections... unterbrechen die suche
@@ -59,8 +60,8 @@ def replaceInFiles(path, ending):
                 
                 # leere Descriptions rausschmeißen
                 s = re.sub(r'\\begin{description}\s\\end{description}','\n',s)
-            with open(path+"\\"+fname,"w") as f:
-                f.write(s)
+            with open(path+"\\"+fname,"w", encoding = coding) as f:
+                f.write(s,)
 
 
 
