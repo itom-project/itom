@@ -260,15 +260,15 @@ int WorkspaceWidget::numberOfSelectedItems(bool ableToBeRenamed /*= false*/) con
 //----------------------------------------------------------------------------------------------------------------------------------
 void WorkspaceWidget::updateView(QHash<QString,ito::PyWorkspaceItem*> items, QString baseName, QTreeWidgetItem *parent)
 {
-    QHash<QString,QTreeWidgetItem*>::iterator it;
+    QHash<QString,QTreeWidgetItem*>::const_iterator it;
     QString hashName;
     QTreeWidgetItem *actItem;
     QTreeWidgetItem *tempItem;
     foreach(const ito::PyWorkspaceItem *item, items)
     {
         hashName = baseName + ito::PyWorkspaceContainer::delimiter + item->m_key;
-        it = m_itemHash.find(hashName);
-        if (it != m_itemHash.end())
+        it = m_itemHash.constFind(hashName);
+        if (it != m_itemHash.constEnd())
         {
             actItem = *it;
         }
@@ -344,7 +344,7 @@ void WorkspaceWidget::workspaceContainerUpdated(PyWorkspaceItem *rootItem, QStri
         }
         else
         {
-            QHash<QString, QTreeWidgetItem*>::const_iterator it = m_itemHash.find(fullNameRoot);
+            QHash<QString, QTreeWidgetItem*>::const_iterator it = m_itemHash.constFind(fullNameRoot);
             if (it == m_itemHash.constEnd())
             {
                 return; //error
@@ -353,18 +353,18 @@ void WorkspaceWidget::workspaceContainerUpdated(PyWorkspaceItem *rootItem, QStri
             parent = *it;
         }
 
-        QHash<QString,QTreeWidgetItem*>::iterator it;
+        QHash<QString,QTreeWidgetItem*>::const_iterator it;
         foreach(const QString& deleteHashName, recentlyDeletedFullNames)
         {
             temp = NULL;
-            it = m_itemHash.find(deleteHashName);
-            if (it != m_itemHash.end())
+            it = m_itemHash.constFind(deleteHashName);
+            if (it != m_itemHash.constEnd())
             {
                 temp = (*it);
             }
             recursivelyDeleteHash(deleteHashName);
             
-            delete temp;
+            DELETE_AND_SET_NULL(temp);
         }
 
         if (m_workspaceContainer->m_accessMutex.tryLock(1000))
