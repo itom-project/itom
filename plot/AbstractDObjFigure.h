@@ -76,8 +76,8 @@ public:
     virtual QSharedPointer<ito::DataObject> getSource(void) const;
     virtual void setSource(QSharedPointer<ito::DataObject> source);
 
-    virtual void setXVec(QSharedPointer<ito::DataObject> xObj);
-    virtual QSharedPointer<ito::DataObject> getXVec() const;
+    virtual void setAxisObj(QSharedPointer<ito::DataObject> xObj, unsigned int axisNum);
+    virtual QSharedPointer<ito::DataObject> getAxisObj(unsigned int axisNum) const;
 
     virtual QSharedPointer<ito::DataObject> getDisplayed(void); // { return QSharedPointer<ito::DataObject>(m_pOutput["displayed"]->getVal<ito::DataObject*>()); }
 

@@ -77,38 +77,43 @@ ito::RetVal AbstractDObjFigure::update(void)
     return retval;
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-void ito::AbstractDObjFigure::setXVec(QSharedPointer<ito::DataObject> xObj)
+void AbstractDObjFigure::setAxisObj(QSharedPointer<ito::DataObject> xObj, unsigned int axisNum)
 {
     ito::RetVal retval = ito::retOk;
-
-
-    if (m_dataPointer.contains("xVec"))
+    qDebug() << "setAxisObj called";
+    if (axisNum == 1)
     {
-
-        if (m_dataPointer["xVec"].data() != xObj.data())
+        if (m_dataPointer.contains("xVec"))
         {
-            QSharedPointer<ito::DataObject> oldSource = m_dataPointer["source"]; //possible backup for previous xVec, this backup must be alive until updateParam with the new one has been completely propagated
+
+            if (m_dataPointer["xVec"].data() != xObj.data())
+            {
+                QSharedPointer<ito::DataObject> oldSource = m_dataPointer["xVec"]; //possible backup for previous xVec, this backup must be alive until updateParam with the new one has been completely propagated
+                m_dataPointer["xVec"] = xObj;
+            }
+        }
+        else
+        {
             m_dataPointer["xVec"] = xObj;
         }
-    }
-    else
-    {
-        m_dataPointer["xVec"] = xObj;
+        ito::ParamBase thisParam("xVec", ito::ParamBase::DObjPtr, (const char*)xObj.data());
+        retval += updateParam(&thisParam, 1);
     }
 
-    ito::ParamBase thisParam("xVec", ito::ParamBase::DObjPtr, (const char*)xObj.data());
-    retval += updateParam(&thisParam, 1);
 
     updatePropertyDock();
 }
 //----------------------------------------------------------------------------------------------------------------------------------
-QSharedPointer<ito::DataObject> ito::AbstractDObjFigure::getXVec(void) const
+QSharedPointer<ito::DataObject> AbstractDObjFigure::getAxisObj(unsigned int axisNum) const
 {
-        ito::DataObject *dObj = m_pInput["xVec"]->getVal<ito::DataObject*>();
-        if (dObj)
+    if (axisNum == 1)
+    {
+        ito::DataObject *dobj = m_pInput["xvec"]->getVal<ito::DataObject*>();
+        if (dobj)
         {
-            return QSharedPointer<ito::DataObject>(new ito::DataObject(*dObj));
+            return QSharedPointer<ito::DataObject>(new ito::DataObject(*dobj));
         }
+    }
         return QSharedPointer<ito::DataObject>();
 }
 //----------------------------------------------------------------------------------------------------------------------------------
