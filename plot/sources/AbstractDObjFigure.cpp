@@ -80,7 +80,6 @@ ito::RetVal AbstractDObjFigure::update(void)
 void AbstractDObjFigure::setAxisObj(QSharedPointer<ito::DataObject> xObj, unsigned int axisNum)
 {
     ito::RetVal retval = ito::retOk;
-    qDebug() << "setAxisObj called";
     if (axisNum == 1)
     {
         if (m_dataPointer.contains("xVec"))
