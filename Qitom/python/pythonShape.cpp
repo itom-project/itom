@@ -1314,7 +1314,10 @@ PyObject* PythonShape::PyShape_rotateDeg(PyShape *self, PyObject *args)
         return NULL;
     }
 
+    self->shape->rtransform().translate(self->shape->centerPoint().x(), self->shape->centerPoint().y());
     self->shape->rtransform().rotate(rot, Qt::ZAxis);
+    self->shape->rtransform().translate(-self->shape->centerPoint().x(), -self->shape->centerPoint().y());
+
     Py_RETURN_NONE;
 }
 
@@ -1334,7 +1337,10 @@ PyObject* PythonShape::PyShape_rotateRad(PyShape *self, PyObject *args)
         return NULL;
     }
 
+    self->shape->rtransform().translate(self->shape->centerPoint().x(), self->shape->centerPoint().y());
     self->shape->rtransform().rotateRadians(rot, Qt::ZAxis);
+    self->shape->rtransform().translate(-self->shape->centerPoint().x(), -self->shape->centerPoint().y());
+
     Py_RETURN_NONE;
 }
 
