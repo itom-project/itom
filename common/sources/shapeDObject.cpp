@@ -26,6 +26,7 @@
 *********************************************************************** */
 
 #include "../shapeDObject.h"
+#include "opencv2/imgproc/imgproc.hpp"
 #define _USE_MATH_DEFINES
 #include "math.h"
 
@@ -77,8 +78,25 @@ namespace ito
 		case Shape::Rectangle:
 		case Shape::Square:
         {
-			QPointF p1 = shape.rtransform().map(shape.rbasePoints()[0]);
-			QPointF p2 = shape.rtransform().map(shape.rbasePoints()[1]);
+            QPointF p1 = shape.rbasePoints()[0];
+            QPointF p2 = shape.rbasePoints()[1];
+            QPointF p3 = shape.centerPoint();
+
+            cv::Scalar col;
+            if (inverse)
+                col = cv::Scalar(0, 0, 0);
+            else
+                col = cv::Scalar(255, 255, 255);
+
+            cv::RotatedRect rRect = cv::RotatedRect(cv::Point2f(p3.x(), p3.y()),
+                cv::Size(fabs(p2.x() - p1.x()), fabs(p2.y() - p1.y())), -shape.rotationAngleDeg());
+            cv::Rect brect = rRect.boundingRect();
+            cv::rectangle(*mask.getCvPlaneMat(0), brect, col, -1);
+
+/*
+            QPointF p1 = shape.rtransform().map(shape.rbasePoints()[0]);
+            QPointF p2 = shape.rtransform().map(shape.rbasePoints()[1]);
+
             //QPointF p1 = d->m_transform.map(d->m_polygon[0]);
             //QPointF p2 = d->m_transform.map(d->m_polygon[1]);
 
@@ -114,6 +132,7 @@ namespace ito
                     }
                 }
             }
+*/
         }
 		case Shape::Polygon:
         {
@@ -165,6 +184,20 @@ namespace ito
 		case Shape::Ellipse:
 		case Shape::Circle:
         {
+            QPointF p1 = shape.rbasePoints()[0];
+            QPointF p2 = shape.rbasePoints()[1];
+            QPointF p3 = shape.centerPoint();
+
+            cv::Scalar col;
+            if (inverse)
+                col = cv::Scalar(0, 0, 0);
+            else
+                col = cv::Scalar(255, 255, 255);
+
+            cv::ellipse(*mask.getCvPlaneMat(0), cv::Point2f(p3.x(), p3.y()), 
+                cv::Size(fabs(p2.x() - p1.x()), fabs(p2.y() - p1.y())), -shape.rotationAngleDeg(), 0, 360,
+                col, -1);
+/*
             //QPointF p1 = d->m_transform.map(d->m_polygon[0]);
             //QPointF p2 = d->m_transform.map(d->m_polygon[1]);
 			QPointF p1 = shape.rtransform().map(shape.rbasePoints()[0]);
@@ -214,6 +247,7 @@ namespace ito
                     }
                 }
             }
+*/
         }
         default:
             break;
