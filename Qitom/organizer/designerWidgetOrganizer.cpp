@@ -591,11 +591,10 @@ RetVal DesignerWidgetOrganizer::setFigureDefaultClass(const QString &figureCateg
 
     \param className
     \param parentWidget
-    \param name
     \param winMode
     \return QWidget
 */
-QWidget* DesignerWidgetOrganizer::createWidget(const QString &className, QWidget *parentWidget, const QString &name /*= QString()*/, AbstractFigure::WindowMode winMode /*= AbstractFigure::ModeStandaloneInUi*/)
+QWidget* DesignerWidgetOrganizer::createWidget(const QString &className, QWidget *parentWidget, AbstractFigure::WindowMode winMode /*= AbstractFigure::ModeStandaloneInUi*/)
 {
     QPluginLoader *factory = NULL;
     foreach(const FigurePlugin &plugin, m_figurePlugins)
