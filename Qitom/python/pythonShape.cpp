@@ -156,111 +156,118 @@ int PythonShape::PyShape_init(PyShape *self, PyObject *args, PyObject * kwds)
 
     switch (type)
     {
-    case Shape::Invalid:
+        case Shape::Invalid:
         break;
-    case Shape::Point:
-        pt1 = PyObject2PointF(param1, retval, "param1");
-        if (!retval.containsError())
-        {
-            self->shape = new ito::Shape(ito::Shape::fromPoint(pt1, index, name_));
-        }
-        break;
-    case Shape::Line:
-        pt1 = PyObject2PointF(param1, retval, "param1");
-        pt2 = PyObject2PointF(param2, retval, "param2");
-        if (!retval.containsError())
-        {
-            self->shape = new ito::Shape(ito::Shape::fromLine(pt1, pt2, index, name_));
-        }
-        break;
-    case Shape::Rectangle:
-        pt1 = PyObject2PointF(param1, retval, "param1");
-        pt2 = PyObject2PointF(param2, retval, "param2");
-        if (!retval.containsError())
-        {
-            self->shape = new ito::Shape(ito::Shape::fromRectangle(pt1.rx(), pt1.ry(), pt2.rx(), pt2.ry(), index, name_));
-        }
-        break;
-    case Shape::Square:
-        pt1 = PyObject2PointF(param1, retval, "param1");
-        dbl = param2 ? PythonQtConversion::PyObjGetDouble(param2, false, ok) : 0.0;
-        if (!ok)
-        {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("param2 must be a double value.").toLatin1().data());
-        }
 
-        if (!retval.containsError())
-        {
-            self->shape = new ito::Shape(ito::Shape::fromSquare(pt1, dbl, index, name_));
-        }
-        break;
-    case Shape::Polygon:
-    {
-        if (!param1)
-        {
-            PyErr_SetString(PyExc_RuntimeError, "param1: 2xM float64 array like object with polygon data required.");
-            return -1;
-        }
-
-        PyObject *arr = PyArray_ContiguousFromAny(param1, NPY_DOUBLE, 2, 2);
-        PyArrayObject* npArray = (PyArrayObject*)arr;
-        if (arr)
-        {
-            const npy_intp *shape = PyArray_SHAPE(npArray);
-            if (shape[0] == 2 && shape[1] == 3)
+        case Shape::Point:
+            pt1 = PyObject2PointF(param1, retval, "param1");
+            if (!retval.containsError())
             {
-                QPolygonF polygon;
-                polygon.reserve(shape[1]);
-                const npy_double *ptr1 = (npy_double*)PyArray_GETPTR1(npArray, 0);
-                const npy_double *ptr2 = (const npy_double*)PyArray_GETPTR1(npArray, 1);
-                for (int i = 0; i < shape[1]; ++i)
-                {
-                    polygon.push_back(QPointF(ptr1[i], ptr2[i]));
-                }
-                self->shape = new ito::Shape(ito::Shape::fromPolygon(polygon, index, name_));
+                self->shape = new ito::Shape(ito::Shape::fromPoint(pt1, index, name_));
             }
-            else
+        break;
+
+        case Shape::Line:
+            pt1 = PyObject2PointF(param1, retval, "param1");
+            pt2 = PyObject2PointF(param2, retval, "param2");
+            if (!retval.containsError())
             {
-                Py_XDECREF(arr);
+                self->shape = new ito::Shape(ito::Shape::fromLine(pt1, pt2, index, name_));
+            }
+        break;
+    
+        case Shape::Rectangle:
+            pt1 = PyObject2PointF(param1, retval, "param1");
+            pt2 = PyObject2PointF(param2, retval, "param2");
+            if (!retval.containsError())
+            {
+                self->shape = new ito::Shape(ito::Shape::fromRectangle(pt1.rx(), pt1.ry(), pt2.rx(), pt2.ry(), index, name_));
+            }
+        break;
+
+        case Shape::Square:
+            pt1 = PyObject2PointF(param1, retval, "param1");
+            dbl = param2 ? PythonQtConversion::PyObjGetDouble(param2, false, ok) : 0.0;
+            if (!ok)
+            {
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("param2 must be a double value.").toLatin1().data());
+            }
+
+            if (!retval.containsError())
+            {
+                self->shape = new ito::Shape(ito::Shape::fromSquare(pt1, dbl, index, name_));
+            }
+        break;
+
+        case Shape::Polygon:
+        {
+            if (!param1)
+            {
                 PyErr_SetString(PyExc_RuntimeError, "param1: 2xM float64 array like object with polygon data required.");
                 return -1;
             }
-        }
-        else
-        {
-            return -1;
-        }
 
-        Py_XDECREF(arr);
-    }
+            PyObject *arr = PyArray_ContiguousFromAny(param1, NPY_DOUBLE, 2, 2);
+            PyArrayObject* npArray = (PyArrayObject*)arr;
+            if (arr)
+            {
+                const npy_intp *shape = PyArray_SHAPE(npArray);
+                if (shape[0] == 2 && shape[1] >= 3)
+                {
+                    QPolygonF polygon;
+                    polygon.reserve(shape[1]);
+                    const npy_double *ptr1 = (npy_double*)PyArray_GETPTR1(npArray, 0);
+                    const npy_double *ptr2 = (const npy_double*)PyArray_GETPTR1(npArray, 1);
+                    for (int i = 0; i < shape[1]; ++i)
+                    {
+                        polygon.push_back(QPointF(ptr1[i], ptr2[i]));
+                    }
+                    self->shape = new ito::Shape(ito::Shape::fromPolygon(polygon, index, name_));
+                }
+                else
+                {
+                    Py_XDECREF(arr);
+                    PyErr_SetString(PyExc_RuntimeError, "param1: 2xM float64 array like object with polygon data required.");
+                    return -1;
+                }
+            }
+            else
+            {
+                return -1;
+            }
 
-    case Shape::Ellipse:
-    {
-        pt1 = PyObject2PointF(param1, retval, "param1");
-        pt2 = PyObject2PointF(param2, retval, "param2");
-        if (!retval.containsError())
-        {
-            self->shape = new ito::Shape(ito::Shape::fromEllipse(pt1.rx(), pt1.ry(), pt2.rx(), pt2.ry(), index, name_));
+            Py_XDECREF(arr);
         }
         break;
-    }
-    case Shape::Circle:
-        pt1 = PyObject2PointF(param1, retval, "param1");
-        dbl = param2 ? PythonQtConversion::PyObjGetDouble(param2, false, ok) : 0.0;
-        if (!ok)
-        {
-            retval += ito::RetVal(ito::retError, 0, QObject::tr("param2 must be a double value.").toLatin1().data());
-        }
 
-        if (!retval.containsError())
+        case Shape::Ellipse:
         {
-            self->shape = new ito::Shape(ito::Shape::fromCircle(pt1, dbl, index, name_));
+            pt1 = PyObject2PointF(param1, retval, "param1");
+            pt2 = PyObject2PointF(param2, retval, "param2");
+            if (!retval.containsError())
+            {
+                self->shape = new ito::Shape(ito::Shape::fromEllipse(pt1.rx(), pt1.ry(), pt2.rx(), pt2.ry(), index, name_));
+            }
         }
+        break;
+
+        case Shape::Circle:
+            pt1 = PyObject2PointF(param1, retval, "param1");
+            dbl = param2 ? PythonQtConversion::PyObjGetDouble(param2, false, ok) : 0.0;
+            if (!ok)
+            {
+                retval += ito::RetVal(ito::retError, 0, QObject::tr("param2 must be a double value.").toLatin1().data());
+            }
+
+            if (!retval.containsError())
+            {
+                self->shape = new ito::Shape(ito::Shape::fromCircle(pt1, dbl, index, name_));
+            }
         break;
     
-    default:
-        PyErr_SetString(PyExc_RuntimeError, "unknown type");
-        return -1;
+        default:
+            PyErr_SetString(PyExc_RuntimeError, "unknown type");
+            return -1;
     }
 
     if (!PythonCommon::transformRetValToPyException(retval)) return -1;

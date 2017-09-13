@@ -1490,7 +1490,7 @@ Shape Shape::normalized() const
 /*static*/ Shape Shape::fromPolygon(const QPolygonF &polygon, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)
 {
     Shape s;
-    s.d->m_type = Line;
+    s.d->m_type = Polygon;
     s.d->m_polygon = polygon;
     s.d->m_transform = trafo;
     s.d->m_index = index;
