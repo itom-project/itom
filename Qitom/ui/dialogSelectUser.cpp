@@ -24,6 +24,9 @@
 #include "../AppManagement.h"
 #include "../organizer/userOrganizer.h"
 
+#include <qcryptographichash.h>
+#include <qmessagebox.h>
+
 namespace ito {
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -86,6 +89,19 @@ void DialogSelectUser::userListCurrentChanged(const QModelIndex &current, const 
 
             ito::UserRole role = m_userModel->index(curRow, UserModel::umiRole).data().value<ito::UserRole>();
             UserFeatures features = m_userModel->index(curRow, UserModel::umiFeatures).data().value<UserFeatures>();
+            QVariant paswd = m_userModel->index(curRow, UserModel::umiPassword).data();
+            QByteArray password = m_userModel->index(curRow, UserModel::umiPassword).data().toByteArray();
+            bool hasPassword = !password.isEmpty();
+            if (hasPassword)
+            {
+                ui.lineEdit_password->setEnabled(true);
+                ui.label_password->setEnabled(true);
+            }
+            else
+            {
+                ui.lineEdit_password->setEnabled(false);
+                ui.label_password->setEnabled(false);
+            }
             
             ui.permissionList->addItem(tr("Role") + ": " + m_userModel->getRoleName(role));
             
@@ -134,9 +150,29 @@ void DialogSelectUser::userListCurrentChanged(const QModelIndex &current, const 
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
+int DialogSelectUser::checkPassword()
+{
+    QModelIndex curIdx = ui.userList->currentIndex();
+    QByteArray password;
+    if (curIdx.isValid())
+    {
+        int curRow = curIdx.row();
+        password = m_userModel->index(curRow, UserModel::umiPassword).data().toByteArray();
+    }
+    QByteArray passwdIn = QCryptographicHash::hash(ui.lineEdit_password->text().toUtf8(), QCryptographicHash::Sha3_512);
+    if (!password.isEmpty() && passwdIn != password)
+        return false;
+    else
+        return true;
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
 void DialogSelectUser::on_userList_doubleClicked(const QModelIndex current)
 {
-    this->accept();
+    if (checkPassword())
+        this->accept();
+    else
+        QMessageBox::critical(this, tr("Wrong password"), tr("Wrong password, select user or try again"));
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -146,7 +182,10 @@ void DialogSelectUser::on_buttonBox_clicked(QAbstractButton* btn)
 
     if (role == QDialogButtonBox::AcceptRole)
     {
-        accept(); //AcceptRole
+        if (checkPassword())
+            this->accept();
+        else
+            QMessageBox::critical(this, tr("Wrong password"), tr("Wrong password, select user or try again"));
     }
     else
     {

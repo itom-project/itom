@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>475</width>
-    <height>371</height>
+    <width>556</width>
+    <height>449</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,15 +22,8 @@
         <string>User</string>
        </property>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0">
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>Name</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLineEdit" name="lineEdit_name">
+        <item row="1" column="2">
+         <widget class="QLineEdit" name="lineEdit_id">
           <property name="enabled">
            <bool>true</bool>
           </property>
@@ -46,13 +39,34 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
-         <widget class="QLineEdit" name="lineEdit_id">
+        <item row="0" column="2">
+         <widget class="QLineEdit" name="lineEdit_name">
           <property name="enabled">
            <bool>true</bool>
           </property>
           <property name="readOnly">
            <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Name</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Password</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QLineEdit" name="lineEdit_password">
+          <property name="echoMode">
+           <enum>QLineEdit::Password</enum>
           </property>
          </widget>
         </item>
@@ -206,6 +220,22 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>lineEdit_name</tabstop>
+  <tabstop>lineEdit_id</tabstop>
+  <tabstop>lineEdit_password</tabstop>
+  <tabstop>checkBox_devTools</tabstop>
+  <tabstop>checkBox_editProperties</tabstop>
+  <tabstop>checkBox_addInManager</tabstop>
+  <tabstop>checkBox_fileSystem</tabstop>
+  <tabstop>checkBox_userManag</tabstop>
+  <tabstop>radioButton_consoleNormal</tabstop>
+  <tabstop>radioButton_consoleRO</tabstop>
+  <tabstop>radioButton_consoleOff</tabstop>
+  <tabstop>radioButton_roleAdmin</tabstop>
+  <tabstop>radioButton_roleDevel</tabstop>
+  <tabstop>radioButton_roleUser</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

@@ -160,7 +160,7 @@ ito::RetVal UserOrganizer::loadSettings(const QString &defUserName)
 
         QString uid;
         QDateTime modified;
-        retval += readUserDataFromFile(settingsFile, m_userName, uid, m_features, m_userRole, modified);
+        retval += readUserDataFromFile(settingsFile, m_userName, uid, m_features, m_userRole, m_password, modified);
     }
     else
     {
@@ -231,7 +231,7 @@ ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
             UserInfoStruct uis;
             uis.iniFile = absfile;
             uis.standardUser = false;
-            if (readUserDataFromFile(absfile, uis.name, uis.id, uis.features, uis.role, lastModified) == ito::retOk)
+            if (readUserDataFromFile(absfile, uis.name, uis.id, uis.features, uis.role, uis.password, lastModified) == ito::retOk)
             {
                 if (youngestModificationDate.isNull() || (youngestModificationDate < lastModified))
                 {
@@ -246,7 +246,7 @@ ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
 
     // 09/02/15 ck changed default role to developer
     QString itomIniPath = QDir::cleanPath(appDir.absoluteFilePath("itom.ini"));
-    UserInfoStruct uis(m_strConstStdUser, "itom.ini", itomIniPath, userRoleDeveloper, ~UserFeatures(), true);
+    UserInfoStruct uis(m_strConstStdUser, "itom.ini", itomIniPath, userRoleDeveloper, ~UserFeatures(), QByteArray(), true);
 
     QFileInfo fi(itomIniPath);
     if (fi.exists() && fi.lastModified() > youngestModificationDate)
@@ -261,7 +261,8 @@ ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal UserOrganizer::readUserDataFromFile(const QString &filename, QString &username, QString &uid, UserFeatures &features, UserRole &role, QDateTime &lastModified)
+ito::RetVal UserOrganizer::readUserDataFromFile(const QString &filename, QString &username, QString &uid, UserFeatures &features, 
+    UserRole &role, QByteArray &password, QDateTime &lastModified)
 {
     ito::RetVal retval;
     QFileInfo fi(filename);
@@ -293,6 +294,15 @@ ito::RetVal UserOrganizer::readUserDataFromFile(const QString &filename, QString
         else
         {
             role = userRoleBasic;
+        }
+
+        if (settings.contains("password"))
+        {
+            password = settings.value("password").toByteArray();
+        }
+        else
+        {
+            password = "";
         }
 
         //features        
@@ -338,7 +348,8 @@ ito::RetVal UserOrganizer::readUserDataFromFile(const QString &filename, QString
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-ito::RetVal UserOrganizer::writeUserDataToFile(const QString &username, const QString &uid, const UserFeatures &features, const UserRole &role)
+ito::RetVal UserOrganizer::writeUserDataToFile(const QString &username, const QString &uid, const UserFeatures &features, 
+    const UserRole &role, const QByteArray &password)
 {
     ito::RetVal retval;
     QString filename;
@@ -382,6 +393,8 @@ ito::RetVal UserOrganizer::writeUserDataToFile(const QString &username, const QS
             settings.setValue("role", "user");
             break;
         }
+
+        settings.setValue("password", password);
 
         QCryptographicHash nameHash(QCryptographicHash::Sha1);
         nameHash.addData(uid.toLatin1().data(), uid.length());
