@@ -306,6 +306,12 @@ void RangeWidget::setRange(int min, int max)
   d->SettingSliderRange = true;
   d->Slider->setRange(d->MinimumSpinBox->minimum(), d->MaximumSpinBox->maximum());
   d->SettingSliderRange = false;
+#if _DEBUG
+  qDebug() << "minimum left:" << d->MinimumSpinBox->minimum() << d->Slider->minimum();
+  qDebug() << "maximum right:" << d->MaximumSpinBox->maximum() <<  d->Slider->maximum();
+  qDebug() << "minimum vs value min spinbox:" << d->Slider->minimumValue() << d->MinimumSpinBox->value();
+  qDebug() << "maximum vs value max spinbox:" << d->Slider->maximumValue() << d->MaximumSpinBox->value();
+#endif
   Q_ASSERT(d->equal(d->MinimumSpinBox->minimum(), d->Slider->minimum()));
   Q_ASSERT(d->equal(d->MaximumSpinBox->maximum(), d->Slider->maximum()));
   Q_ASSERT(d->equal(d->Slider->minimumValue(), d->MinimumSpinBox->value()));

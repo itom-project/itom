@@ -113,7 +113,7 @@ public:
     QStringList getPlotFeatures(const int plotFeatures);
     QStringList getPlotDataFormats(const int plotDataFormats);
 
-    QWidget* createWidget(const QString &className, QWidget *parentWidget, const QString &name = QString(), AbstractFigure::WindowMode winMode = AbstractFigure::ModeStandaloneInUi);
+    QWidget* createWidget(const QString &className, QWidget *parentWidget, AbstractFigure::WindowMode winMode = AbstractFigure::ModeStandaloneInUi);
 
 protected:
     RetVal scanDesignerPlugins();

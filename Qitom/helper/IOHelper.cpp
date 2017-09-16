@@ -120,12 +120,12 @@ QString IOHelper::allItomFilesName = QObject::tr("Itom Files");
         }
         else if (suffix == "idc") //itom data collection
         {
-            retval += importPyWorkspaceVars(generalFileName, globalNotLocalWorkspace);
+            retval += importPyWorkspaceVars(generalFileName, globalNotLocalWorkspace, parent);
             goto end;
         }
         else if (suffix == "mat") //matlab file
         {
-            retval += importPyWorkspaceVars(generalFileName, globalNotLocalWorkspace);
+            retval += importPyWorkspaceVars(generalFileName, globalNotLocalWorkspace, parent);
             goto end;
         }
         else if (suffix == "ui") //UI file
@@ -502,7 +502,7 @@ end:
     \return success of the import as RetVal
     \sa unpickleVariables, loadMatlabVariables
 */
-/*static */RetVal IOHelper::importPyWorkspaceVars(const QString &filename, bool globalNotLocal)
+/*static */RetVal IOHelper::importPyWorkspaceVars(const QString &filename, bool globalNotLocal, QWidget* parent /*= NULL*/)
 {
     RetVal retValue(retOk);
 
@@ -558,7 +558,13 @@ end:
         }
 
         bool ok = true;
-        packedVarname = QInputDialog::getText(NULL, tr("Variable name of imported dictionary"), tr("Please indicate a variable name for the dictionary in file '%1' \n(name must start with a letter followed by numbers or letters).").arg(info.fileName()), QLineEdit::Normal, defaultName, &ok);
+
+        if (parent)
+        {
+            parent->activateWindow();
+        }
+
+        packedVarname = QInputDialog::getText(parent, tr("Variable name of imported dictionary"), tr("Please indicate a variable name for the dictionary in file '%1' \n(name must start with a letter followed by numbers or letters).").arg(info.fileName()), QLineEdit::Normal, defaultName, &ok);
         if (!ok)
         {
             return ito::retOk;

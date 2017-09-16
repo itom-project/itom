@@ -2236,6 +2236,7 @@ PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *ar
     static const char *kwlist[] = {"values","axes", NULL};
     double value;
     int axis = 0;
+    bool axisScalar = false;
     PyObject *values = NULL;
     PyObject *axes = NULL;
     bool single = false;
@@ -2264,33 +2265,51 @@ PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *ar
     }
     else
     {
-        if (!PySequence_Check(values))
+        PyObject* valuesSeq = PySequence_Fast(values, "values must be a float value or a sequence of floats.");
+        if (!valuesSeq)
         {
-            PyErr_SetString(PyExc_ValueError, "values must be a float value or a sequence of floats");
             return NULL;
         }
-        else if (axes && !PySequence_Check(axes))
+
+        PyObject* axesSeq = NULL;
+
+        if (axes)
         {
-            PyErr_SetString(PyExc_ValueError, "axes must be an integer value or a sequence of integers");
-            return NULL;
-        }
-        else if (axes && PySequence_Length(values) != PySequence_Length(axes))
-        {
-            PyErr_SetString(PyExc_ValueError, "values and axes must have the same size");
-            return NULL;
+            if (PyLong_Check(axes))
+            {
+                axis = PyLong_AsLong(axes);
+                axisScalar = true;
+            }
+            else
+            {
+                axesSeq = PySequence_Fast(axes, "axes must be an integer value or a sequence of integers.");
+
+                if (!axesSeq)
+                {
+                    Py_XDECREF(valuesSeq);
+                    return NULL;
+                }
+
+                if (PySequence_Length(valuesSeq) != PySequence_Length(axes))
+                {
+                    Py_XDECREF(valuesSeq);
+                    PyErr_SetString(PyExc_ValueError, "values and axes must have the same size or axes has to be a scalar integer value.");
+                    return NULL;
+                }
+            }
         }
 
         PyObject *v = NULL;
         PyObject *a = NULL;
-        PyObject *result = PyTuple_New(PySequence_Length(values));
+        PyObject *result = PyTuple_New(PySequence_Length(valuesSeq));
         bool isInsideImage;
 
-        for (Py_ssize_t i = 0; i < PySequence_Length(values); ++i)
+        for (Py_ssize_t i = 0; i < PySequence_Length(valuesSeq); ++i)
         {
-            v = PySequence_Fast_GET_ITEM(values, i); //borrowed
-            if (axes)
+            v = PySequence_Fast_GET_ITEM(valuesSeq, i); //borrowed
+            if (axesSeq)
             {
-                a = PySequence_Fast_GET_ITEM(axes, i); //borrowed
+                a = PySequence_Fast_GET_ITEM(axesSeq, i); //borrowed
             }
 
             if (PyFloat_Check(v))
@@ -2304,7 +2323,9 @@ PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *ar
             else
             {
                 Py_DECREF(result);
-                return PyErr_Format(PyExc_ValueError, "%i. value cannot be interpreted as float", i);
+                Py_XDECREF(axesSeq);
+                Py_XDECREF(valuesSeq);
+                return PyErr_Format(PyExc_ValueError, "%i. value cannot be interpreted as float.", i);
             }
 
             if (a)
@@ -2316,10 +2337,12 @@ PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *ar
                 else
                 {
                     Py_DECREF(result);
-                    return PyErr_Format(PyExc_ValueError, "%i. axis cannot be interpreted as integer", i);
+                    Py_XDECREF(axesSeq);
+                    Py_XDECREF(valuesSeq);
+                    return PyErr_Format(PyExc_ValueError, "%i. axis cannot be interpreted as integer.", i);
                 }
             }
-            else
+            else if (!axisScalar)
             {
                 axis = i;
             }
@@ -2327,6 +2350,8 @@ PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *ar
             if (axis < 0 || axis >= dims)
             {
                 Py_DECREF(result);
+                Py_XDECREF(axesSeq);
+                Py_XDECREF(valuesSeq);
                 return PyErr_Format(PyExc_ValueError, "%i. axis index out of range [0,%i]", i, dims - 1);
             }
 
@@ -2337,6 +2362,8 @@ PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *ar
                 if (PyErr_WarnFormat(PyExc_RuntimeWarning, 1, "the returned pixel for axis %i is clipped to the boundaries of the axis [0,%i]", axis, self->dataObject->getSize(axis) - 1) == -1)
                 {
                     Py_DECREF(result);
+                    Py_XDECREF(axesSeq);
+                    Py_XDECREF(valuesSeq);
                     return NULL; //warning was turned into a real exception, 
                 }
                 //else
@@ -2345,6 +2372,9 @@ PyObject* PythonDataObject::PyDataObj_PhysToPix(PyDataObject *self, PyObject *ar
                 //}
             }
         }
+
+        Py_XDECREF(axesSeq);
+        Py_XDECREF(valuesSeq);
 
         return result;
     }
@@ -2382,6 +2412,7 @@ PyObject* PythonDataObject::PyDataObj_PixToPhys(PyDataObject *self, PyObject *ar
         static const char *kwlist[] = {"values","axes", NULL};
     double value;
     int axis = 0;
+    bool axisScalar = false;
     PyObject *values = NULL;
     PyObject *axes = NULL;
     bool single = false;
@@ -2410,32 +2441,50 @@ PyObject* PythonDataObject::PyDataObj_PixToPhys(PyDataObject *self, PyObject *ar
     }
     else
     {
-        if (!PySequence_Check(values))
+        PyObject* valuesSeq = PySequence_Fast(values, "values must be a float value or a sequence of floats.");
+        if (!valuesSeq)
         {
-            PyErr_SetString(PyExc_ValueError, "values must be a float value or a sequence of floats");
             return NULL;
         }
-        else if (axes && !PySequence_Check(axes))
+
+        PyObject* axesSeq = NULL;
+
+        if (axes)
         {
-            PyErr_SetString(PyExc_ValueError, "axes must be an integer value or a sequence of integers");
-            return NULL;
-        }
-        else if (axes && PySequence_Length(values) != PySequence_Length(axes))
-        {
-            PyErr_SetString(PyExc_ValueError, "values and axes must have the same size");
-            return NULL;
+            if (PyLong_Check(axes))
+            {
+                axis = PyLong_AsLong(axes);
+                axisScalar = true;
+            }
+            else
+            {
+                axesSeq = PySequence_Fast(axes, "axes must be an integer value or a sequence of integers.");
+
+                if (!axesSeq)
+                {
+                    Py_XDECREF(valuesSeq);
+                    return NULL;
+                }
+
+                if (PySequence_Length(valuesSeq) != PySequence_Length(axes))
+                {
+                    Py_XDECREF(valuesSeq);
+                    PyErr_SetString(PyExc_ValueError, "values and axes must have the same size or axes has to be a scalar integer value.");
+                    return NULL;
+                }
+            }
         }
 
         PyObject *v = NULL;
         PyObject *a = NULL;
-        PyObject *result = PyTuple_New(PySequence_Length(values));
+        PyObject *result = PyTuple_New(PySequence_Length(valuesSeq));
 
-        for (Py_ssize_t i = 0; i < PySequence_Length(values); ++i)
+        for (Py_ssize_t i = 0; i < PySequence_Length(valuesSeq); ++i)
         {
-            v = PySequence_Fast_GET_ITEM(values, i); //borrowed
-            if (axes)
+            v = PySequence_Fast_GET_ITEM(valuesSeq, i); //borrowed
+            if (axesSeq)
             {
-                a = PySequence_Fast_GET_ITEM(axes, i); //borrowed
+                a = PySequence_Fast_GET_ITEM(axesSeq, i); //borrowed
             }
 
             if (PyFloat_Check(v))
@@ -2448,6 +2497,8 @@ PyObject* PythonDataObject::PyDataObj_PixToPhys(PyDataObject *self, PyObject *ar
             }
             else
             {
+                Py_XDECREF(valuesSeq);
+                Py_XDECREF(axesSeq);
                 Py_DECREF(result);
                 return PyErr_Format(PyExc_ValueError, "%i. value cannot be interpreted as float", i);
             }
@@ -2460,17 +2511,21 @@ PyObject* PythonDataObject::PyDataObj_PixToPhys(PyDataObject *self, PyObject *ar
                 }
                 else
                 {
+                    Py_XDECREF(valuesSeq);
+                    Py_XDECREF(axesSeq);
                     Py_DECREF(result);
                     return PyErr_Format(PyExc_ValueError, "%i. axis cannot be interpreted as integer", i);
                 }
             }
-            else
+            else if (!axisScalar)
             {
                 axis = i;
             }
 
             if (axis < 0 || axis >= dims)
             {
+                Py_XDECREF(valuesSeq);
+                Py_XDECREF(axesSeq);
                 Py_DECREF(result);
                 return PyErr_Format(PyExc_ValueError, "%i. axis index out of range [0,%i]", i, dims - 1);
             }
@@ -2478,8 +2533,10 @@ PyObject* PythonDataObject::PyDataObj_PixToPhys(PyDataObject *self, PyObject *ar
             PyTuple_SetItem(result, i, PyFloat_FromDouble(self->dataObject->getPixToPhys(axis, value)));
         }
 
-        return result;
+        Py_XDECREF(valuesSeq);
+        Py_XDECREF(axesSeq);
 
+        return result;
     }
 
     Py_RETURN_NONE;
@@ -7507,9 +7564,15 @@ PyObject* PythonDataObject::PyDataObject_createMask(PyDataObject *self, PyObject
         PyObject *obj;
         PythonShape::PyShape* shape;
 
-        for (Py_ssize_t i = 0; i < PySequence_Length(shapes); ++i)
+        PyObject *shapeseq = PySequence_Fast(shapes, "shape is no sequence.");
+        if (!shapeseq)
         {
-            obj = PySequence_Fast_GET_ITEM(shapes, i); //borrowed
+            return NULL;
+        }
+
+        for (Py_ssize_t i = 0; i < PySequence_Length(shapeseq); ++i)
+        {
+            obj = PySequence_Fast_GET_ITEM(shapeseq, i); //borrowed
             if (PyShape_Check(obj))
             {
                 shape = (PythonShape::PyShape*)obj;
@@ -7519,16 +7582,20 @@ PyObject* PythonDataObject::PyDataObject_createMask(PyDataObject *self, PyObject
                 }
                 else
                 {
+                    Py_DECREF(shapeseq);
                     PyErr_SetString(PyExc_TypeError, "at least one shape item is invalid.");
                     return NULL;
                 }
             }
             else
             {
+                Py_DECREF(shapeseq);
                 PyErr_SetString(PyExc_TypeError, "at least one item of parameter 'shape' is no type itom.shape.");
                 return NULL;
             }
         }
+
+        Py_DECREF(shapeseq);
 
         //ito::DataObject mask = ito::Shape::maskFromMultipleShapes(*self->dataObject, shape_vector, inverse > 0);
 		ito::DataObject mask = ito::ShapeDObject::maskFromMultipleShapes(*self->dataObject, shape_vector, inverse > 0);

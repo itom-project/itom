@@ -33,6 +33,10 @@
 #include <qmutex.h>
 #include <qregexp.h>
 #include "opencv/cv.h"
+#include <iostream>
+#include "DataObject\dataobj.h"
+#include "common/typeDefs.h"
+#include "common/color.h"
 
 void benchmarkTest1()
 {
@@ -243,12 +247,12 @@ void benchmarkTestColor()
     double freq = cv::getTickFrequency();
     size_t j = 0;
 
-    ito::rgba32 c1, c2;
+    ito::Rgba32 c1, c2;
 
     start = cv::getTickCount();
     for (size_t i = 0 ; i < 1000000; i++)
     {
-        ito::rgba32 e1;
+        ito::Rgba32 e1;
     }
     ende = cv::getTickCount();
     qDebug() << "time: " << (ende-start)/freq;
@@ -256,7 +260,7 @@ void benchmarkTestColor()
     start = cv::getTickCount();
     for (size_t i = 0 ; i < 1000000; i++)
     {
-        c1 = ito::rgba32(12,13,14,15);
+        c1 = ito::Rgba32(12,13,14,15);
     }
     ende = cv::getTickCount();
     qDebug() << "time: " << (ende-start)/freq;
@@ -320,7 +324,7 @@ void benchmarkTestColor()
 
     qDebug() << "array construction";
     start = cv::getTickCount();
-    ito::rgba32 h1[100000];
+    ito::Rgba32 h1[100000];
     ende = cv::getTickCount();
     qDebug() << "time: " << (ende-start)/freq;
 

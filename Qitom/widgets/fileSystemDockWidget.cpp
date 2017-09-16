@@ -147,7 +147,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
 
     connect(m_pCmbFilter, SIGNAL(editTextChanged(const QString&)), this, SLOT(cmbFilterEditTextChanged(const QString &)));
 
-    m_pFileSystemModel = new QFileSystemModel(m_pTreeView);
+    m_pFileSystemModel = new ItomFileSystemModel(m_pTreeView);
     //m_pFileSystemModel->setFilter(QDir::AllEntries | QDir::AllDirs);
     m_pFileSystemModel->setRootPath("");
     m_pFileSystemModel->setReadOnly(false);
@@ -160,6 +160,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pTreeView->setAnimated(true);
     m_pTreeView->setIndentation(15);
     m_pTreeView->setSortingEnabled(true);
+    m_pTreeView->setDefaultDropAction(Qt::MoveAction);
 
     //TODO save to ini-file 
 
@@ -1017,7 +1018,7 @@ void FileSystemDockWidget::mnuPasteItems()
 
         if (!result)
         {
-            QMessageBox::warning(this, tr("Error pasting items"), tr("The selected items could not be pasted from the clipboard. Maybe their URLs already exist"));
+            QMessageBox::warning(this, tr("Error pasting or copying files"), tr("At least one of the selected items could not be moved or copied. Maybe an existing file should have been overwritten, but could not be deleted first."));
         }
     }
 }

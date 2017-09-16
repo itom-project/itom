@@ -847,7 +847,7 @@ QWidget* UiOrganizer::loadDesignerPluginWidget(const QString &className, RetVal 
 
     if (found)
     {
-        widget = dwo->createWidget(tempClassName,parent,QString(),winMode); //loader.createWidget(className, parent);
+        widget = dwo->createWidget(tempClassName,parent, winMode); //loader.createWidget(className, parent);
 
         if (widget == NULL)
         {

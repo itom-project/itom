@@ -126,6 +126,8 @@ namespace ito {
 
     tempIcon = QIcon(":/plugins/icons/sendToPython.png");
     ui.lblImage->setPixmap(tempIcon.pixmap(16 * dpiFactor, 16 * dpiFactor));
+
+    activateWindow(); //let the import dialog be shown on top even if a file is currently dropped from another explorer window...
 }
 
 //------------------------------------------------------------------------------------------------------------
