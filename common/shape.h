@@ -103,6 +103,9 @@ namespace ito
         unsigned int flags() const;
         void setFlags(const unsigned int &flags);
 
+        bool unclosed() const; //!< return true if this shape (e.g. polygon) is currently being created and not closed, yet.
+        void setUnclosed(bool unclosed);
+
         int index() const;
         void setIndex(const int &index);
 
