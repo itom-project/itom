@@ -238,7 +238,7 @@ void PlotInfoShapes::setItem2Poly(QTreeWidgetItem* curItem, const ito::Shape &el
 	curItem->child(0)->setData(1, Qt::DisplayRole, QString("%1; %2").arg(QString::number(center.x()), QString::number(center.y())));
 	curItem->child(1)->setData(0, Qt::DisplayRole, "Length");
 	curItem->child(1)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(element.circumference())));
-	curItem->child(2)->setData(0, Qt::DisplayRole, "Notes");
+	curItem->child(2)->setData(0, Qt::DisplayRole, "Nodes");
 	curItem->child(2)->setData(1, Qt::DisplayRole, QString("%1").arg(QString::number(element.rbasePoints().size())));
 }
 //---------------------------------------------------------------------------------------------------------

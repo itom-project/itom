@@ -65,6 +65,9 @@
         </item>
         <item row="2" column="2">
          <widget class="QLineEdit" name="lineEdit_password">
+          <property name="toolTip">
+           <string>This password provides a basic protection from loading itom with this user profile.</string>
+          </property>
           <property name="echoMode">
            <enum>QLineEdit::Password</enum>
           </property>
