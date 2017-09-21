@@ -246,7 +246,8 @@ ito::RetVal UserOrganizer::scanSettingFilesAndLoadModel()
 
     // 09/02/15 ck changed default role to developer
     QString itomIniPath = QDir::cleanPath(appDir.absoluteFilePath("itom.ini"));
-    UserInfoStruct uis(m_strConstStdUser, "itom.ini", itomIniPath, userRoleDeveloper, ~UserFeatures(), QByteArray(), true);
+    QByteArray tmpArray;
+    UserInfoStruct uis(m_strConstStdUser, "itom.ini", itomIniPath, userRoleDeveloper, ~UserFeatures(), tmpArray, true);
 
     QFileInfo fi(itomIniPath);
     if (fi.exists() && fi.lastModified() > youngestModificationDate)

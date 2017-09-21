@@ -57,7 +57,7 @@ private slots:
     void on_buttonBox_clicked(QAbstractButton* btn);
 
 private:
-    int DialogSelectUser::checkPassword();
+    int checkPassword();
 };
 
 } //end namespace ito
