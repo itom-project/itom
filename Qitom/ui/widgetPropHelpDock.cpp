@@ -326,55 +326,65 @@ void WidgetPropHelpDock::refreshUpdatableDBs()
     // now start parsing the new List
     if (status == FileDownloader::sFinished)
     {
-        QXmlStreamReader xml;
-        xml.addData(downloader->downloadedData());
-        while(!xml.atEnd() && !xml.hasError())
-        {
-            QXmlStreamReader::TokenType token = xml.readNext();
-            if (token == QXmlStreamReader::StartDocument)
-            {
-                continue;
-            }
-            if (token == QXmlStreamReader::StartElement)
-            {
-                if (xml.name() == "databases")
-                {
-                    if (xml.attributes().hasAttribute("type"))
-                    {
-                        if (xml.attributes().value("type") == "itom.repository.helpDatabase")
-                        {
-                            dbFound = true;
-                        }
-                        else
-                        {
-                            dbError = tr("Invalid type attribute of xml file");
-                        }
-                    }
-                    else
-                    {
-                        dbError = tr("Type attribute node 'database' of xml file is missing.");
-                    }
-                }
-                else if (dbFound && xml.name() == "file")
-                {
-                    QPair <int, WidgetPropHelpDock::DatabaseInfo> p = this->parseFile(xml);
-                    if (updatableDBs.contains(p.first))
-                    {
-                        if (p.second.schemeID == SCHEME_ID)
-                        {
-                            if (updatableDBs[p.first].version < p.second.version)
-                            {
-                                updatableDBs.insert(p.first, p.second);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        updatableDBs.insert(p.first, p.second);
-                    }
-                }
-            }
-        }
+		QXmlStreamReader xml;
+		QByteArray downloadedData = downloader->downloadedData();
+
+		if (downloadedData.contains("website is temporarily in static offline mode") || downloadedData.contains("the Sourceforge site is currently in Disaster Recovery mode"))
+		{
+			dbFound = false;
+			dbError = tr("Download website seems to be in an temporary offline mode.");
+		}
+		else
+		{
+			xml.addData(downloadedData);
+			while (!xml.atEnd() && !xml.hasError())
+			{
+				QXmlStreamReader::TokenType token = xml.readNext();
+				if (token == QXmlStreamReader::StartDocument)
+				{
+					continue;
+				}
+				if (token == QXmlStreamReader::StartElement)
+				{
+					if (xml.name() == "databases")
+					{
+						if (xml.attributes().hasAttribute("type"))
+						{
+							if (xml.attributes().value("type") == "itom.repository.helpDatabase")
+							{
+								dbFound = true;
+							}
+							else
+							{
+								dbError = tr("Invalid type attribute of xml file");
+							}
+						}
+						else
+						{
+							dbError = tr("Type attribute node 'database' of xml file is missing.");
+						}
+					}
+					else if (dbFound && xml.name() == "file")
+					{
+						QPair <int, WidgetPropHelpDock::DatabaseInfo> p = this->parseFile(xml);
+						if (updatableDBs.contains(p.first))
+						{
+							if (p.second.schemeID == SCHEME_ID)
+							{
+								if (updatableDBs[p.first].version < p.second.version)
+								{
+									updatableDBs.insert(p.first, p.second);
+								}
+							}
+						}
+						else
+						{
+							updatableDBs.insert(p.first, p.second);
+						}
+					}
+				}
+			}
+		}
 
         if (xml.hasError())
         {

@@ -4,6 +4,10 @@
 #include <qdebug.h>
 #include <qnetworkcookiejar.h>
 
+//for support of OpenSSL (windows):
+//Download OpenSSL in the latest version from https://indy.fulgan.com/SSL/
+//copy the two libraries libeay32.dll and ssleay32.dll in the itom application directory
+
 namespace ito
 {
 
@@ -23,6 +27,7 @@ FileDownloader::FileDownloader(QUrl Url, int nrOfAllowedRedirects /*= 0*/, QObje
     m_pCurrentNetworkReply = m_WebCtrl.get(request);
 
     connect(m_pCurrentNetworkReply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64,qint64)));
+	connect(m_pCurrentNetworkReply, SIGNAL(sslErrors(QList<QSslError>)), this, SLOT(sslErrors(QList<QSslError>)));
 }
 
 //-------------------------------------------------------------------------------------
@@ -78,10 +83,20 @@ FileDownloader::Status FileDownloader::getStatus(QString &errorMsg)
     Status status;
     if (m_pCurrentNetworkReply)
     {
-        if (m_pCurrentNetworkReply->error() != QNetworkReply::NoError)
+        if ((m_pCurrentNetworkReply->error() != QNetworkReply::NoError) || (m_latestSslErrorString != ""))
         {
             status = sError;
             errorMsg = m_pCurrentNetworkReply->errorString();
+			if ((m_latestSslErrorString != "") && (errorMsg != ""))
+			{
+				errorMsg.append("\nSSL-Errors:\n").append(m_latestSslErrorString);
+			}
+			else if ((m_latestSslErrorString != ""))
+			{
+				errorMsg.append("SSL-Errors:\n").append(m_latestSslErrorString);
+			}
+
+			m_latestSslErrorString = "";
         }
         else if (m_pCurrentNetworkReply->isRunning())
         {
@@ -147,8 +162,21 @@ void FileDownloader::fileDownloaded(QNetworkReply* pReply)
     }
     else
     {
-       int bp = 0; // Error occured
+       int bp = pReply->error(); // Error occurred
+	   qDebug() << "network error no " << bp;
     }
+}
+
+//-------------------------------------------------------------------------------------
+void FileDownloader::sslErrors(const QList<QSslError> &errors)
+{
+	QStringList errorStrings;
+	foreach(const QSslError &sslErr, errors)
+	{
+		errorStrings << sslErr.errorString();
+	}
+
+	m_latestSslErrorString = errorStrings.join("\n");
 }
 
 //-------------------------------------------------------------------------------------

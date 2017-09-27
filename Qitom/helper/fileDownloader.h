@@ -7,6 +7,7 @@
 #include <qnetworkrequest.h>
 #include <qnetworkreply.h>
 #include <qurl.h>
+#include <qsslerror.h>
 
 namespace ito
 {
@@ -32,10 +33,10 @@ public:
 signals:
     //void downloaded();
      
-private slots:
-     
+private slots :
     void fileDownloaded(QNetworkReply* pReply);
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
+	void sslErrors(const QList<QSslError> &errors);
      
 private:
 
@@ -51,6 +52,7 @@ private:
     qint64 m_bytesTotal;
 
     int m_nrOfAllowedRedirects;
+	QString m_latestSslErrorString;
      
 };
 
