@@ -84,6 +84,10 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
                 m_breakPointView->setColumnWidth(i, dpiFactor * width_);
             }
         }
+
+		//to adjust colspan of filename-rows
+		connect(model, SIGNAL(rowsInserted(QModelIndex, int, int)), this, SLOT(dataChanged()));
+		connect(model, SIGNAL(rowsRemoved(QModelIndex, int, int)), this, SLOT(dataChanged()));
     }
 
     setContentWidget(m_breakPointView);
@@ -101,6 +105,8 @@ BreakPointDockWidget::BreakPointDockWidget(const QString &title, const QString &
     settings.endGroup();
 
     updateActions();
+
+	dataChanged(); //initially adjust colspan of filename-rows
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -346,6 +352,18 @@ void BreakPointDockWidget::doubleClicked(const QModelIndex &index)
             }
         }
     }
+}
+
+//----------------------------------------------------------------------------------------------------------------------------------
+void BreakPointDockWidget::dataChanged()
+{
+	//this slot is only necessary until the span-method of AbstractItemModel will be automatically considered and changes the column span.
+	for (int row = 0; row < m_breakPointView->model()->rowCount(); row++)
+	{
+		QSize span = m_breakPointView->model()->span(m_breakPointView->model()->index(row, 0));
+		m_breakPointView->setFirstColumnSpanned(row, QModelIndex(), span.width() > 1);
+	}
+
 }
 
 } //end namespace ito
