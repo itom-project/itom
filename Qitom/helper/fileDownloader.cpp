@@ -27,7 +27,9 @@ FileDownloader::FileDownloader(QUrl Url, int nrOfAllowedRedirects /*= 0*/, QObje
     m_pCurrentNetworkReply = m_WebCtrl.get(request);
 
     connect(m_pCurrentNetworkReply, SIGNAL(downloadProgress(qint64, qint64)), this, SLOT(downloadProgress(qint64,qint64)));
+#ifndef QT_NO_SSL
 	connect(m_pCurrentNetworkReply, SIGNAL(sslErrors(QList<QSslError>)), this, SLOT(sslErrors(QList<QSslError>)));
+#endif
 }
 
 //-------------------------------------------------------------------------------------
@@ -167,17 +169,19 @@ void FileDownloader::fileDownloaded(QNetworkReply* pReply)
     }
 }
 
+#ifndef QT_NO_SSL
 //-------------------------------------------------------------------------------------
 void FileDownloader::sslErrors(const QList<QSslError> &errors)
 {
 	QStringList errorStrings;
 	foreach(const QSslError &sslErr, errors)
 	{
-		errorStrings << sslErr.errorString();
+        errorStrings << sslErr.errorString();
 	}
 
 	m_latestSslErrorString = errorStrings.join("\n");
 }
+#endif
 
 //-------------------------------------------------------------------------------------
 //! This function returns the downloaded data. 

@@ -36,7 +36,10 @@ signals:
 private slots :
     void fileDownloaded(QNetworkReply* pReply);
     void downloadProgress(qint64 bytesReceived, qint64 bytesTotal);
+
+#ifndef QT_NO_SSL
 	void sslErrors(const QList<QSslError> &errors);
+#endif
      
 private:
 
