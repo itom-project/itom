@@ -749,11 +749,17 @@ void MainWindow::createMenus()
     // Add these menus dynamically
 
     ito::UserOrganizer *uOrg = (UserOrganizer*)AppManagement::getUserOrganizer();
-    if (uOrg->hasFeature(featUserManag))
+
+    if (uOrg->hasFeature(featProperties))
     {
         m_pMenuFile->addAction(m_actions["properties"]);
+    }
+
+    if (uOrg->hasFeature(featUserManag))
+    {
         m_pMenuFile->addAction(m_actions["usermanagement"]);
     }
+
     m_pMenuFile->addAction(m_actions["show_loaded_plugins"]);
     m_pMenuFile->addSeparator();
     m_pMenuFile->addAction(m_actions["exit"]);
