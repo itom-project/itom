@@ -1051,7 +1051,7 @@ void AbstractDockWidget::undockWidget(bool show_it /*= true*/)
             show();
         }
 
-        setTopLevel(m_recentTopLevelStyle);
+        setTopLevel(m_recentTopLevelStyle, show_it);
 
 #if QT_VERSION < 0x050000
         //under Qt5 (probably), this line causes mouse event and position errors especially under Ubuntu.
@@ -1122,7 +1122,7 @@ void AbstractDockWidget::undockWidget(bool show_it /*= true*/)
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
-RetVal AbstractDockWidget::setTopLevel(tTopLevelStyle topLevel)
+RetVal AbstractDockWidget::setTopLevel(tTopLevelStyle topLevel, bool showWindow /*= true*/)
 {
     //only feasible if undocked and floatingStyle == floatingWindow
     if (!m_docked && m_floatingStyle == floatingWindow)
@@ -1150,7 +1150,11 @@ RetVal AbstractDockWidget::setTopLevel(tTopLevelStyle topLevel)
             m_actStayOnTopOfApp->setChecked(true);
             break;
         }
-        m_pWindow->show();
+
+        if (showWindow)
+        {
+            m_pWindow->show();
+        }
     }
 
     m_recentTopLevelStyle = topLevel;
