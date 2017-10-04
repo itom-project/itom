@@ -453,8 +453,8 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
     if (id != 0):
         m = re.search(r'->.*?\n',docstr,re.DOTALL)
         if (m != None):
-            s = docstr[m.start()+3:m.end()-2]
-            line[4] = s
+            s = docstr[m.start()+2:m.end()].strip()
+            line[4] = s + "\n"
         else:
             line[4] = ''
     else:
@@ -488,10 +488,11 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
             line[6] = '0'
             line[5] = itom.compressData(sout)
         elif (nametype == '06'):
-            line[5] = itom.compressData('"'+name+'" is a const with the value: '+docstr)
+            exec('value = ' + prefix + name, ns)
+            line[5] = itom.compressData('"'+name+'" is the constant: '+ str(ns["value"]))
             line[6] = '0'
         else:
-            # wenn der String keine Shortdescription hat dann einfach komplett einfÃ¼gen
+            # wenn der String keine Shortdescription hat dann einfach komplett einfügen
             line[5] = itom.compressData(docstr)
             line[6] = '3'
     else:
