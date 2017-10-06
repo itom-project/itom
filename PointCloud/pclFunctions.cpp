@@ -1035,49 +1035,17 @@ ito::RetVal pointCloudFromXYZ(const DataObject* mapX, const DataObject* mapY, co
         const cv::Mat *y = mapY->get_mdata()[ mapY->seekMat(0) ];
         const cv::Mat *z = mapZ->get_mdata()[ mapZ->seekMat(0) ];
 
+		cv::Mat x_f32, y_f32, z_f32;
+		x->convertTo(x_f32, CV_32FC1, 1.0, 0.0);
+		y->convertTo(y_f32, CV_32FC1, 1.0, 0.0);
+		z->convertTo(z_f32, CV_32FC1, 1.0, 0.0);
+
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
         pcl::PointXYZ point;
         ito::PCLPointCloud pointCloud;
         pointCloud = ito::PCLPointCloud(ito::pclXYZ);
         cloud = pointCloud.toPointXYZ();
-
-        switch (mapZ->getType())
-        {
-            case tUInt8:
-                readXYZData<ito::uint8>(x, y, z, cloud, deleteNaNorInf);
-            break;
-
-            case tInt8:
-                readXYZData<ito::int8>(x, y, z, cloud, deleteNaNorInf);
-            break;
-
-            case tUInt16:
-                readXYZData<ito::uint16>(x, y, z, cloud, deleteNaNorInf);
-            break;
-
-            case tInt16:
-                readXYZData<ito::int16>(x, y, z, cloud, deleteNaNorInf);
-            break;
-
-            case tUInt32:
-                readXYZData<ito::uint32>(x, y, z, cloud, deleteNaNorInf);
-            break;
-
-            case tInt32:
-                readXYZData<ito::int32>(x, y, z, cloud, deleteNaNorInf);
-            break;
-
-            case tFloat32:
-                readXYZData<ito::float32>(x, y, z, cloud, deleteNaNorInf);
-            break;
-
-            case tFloat64:
-                readXYZData<ito::float64>(x, y, z, cloud, deleteNaNorInf);
-            break;
-
-            default:
-            break;
-        }
+		retval += readXYZData<ito::float32>(&x_f32, &y_f32, &z_f32, cloud, deleteNaNorInf);
         out = pointCloud;
     }
 
@@ -1101,49 +1069,19 @@ ito::RetVal pointCloudFromXYZI(const DataObject* mapX, const DataObject* mapY, c
         const cv::Mat *z = mapZ->get_mdata()[ mapZ->seekMat(0) ];
         const cv::Mat *intensity = mapI->get_mdata()[ mapI->seekMat(0) ];
 
+		cv::Mat x_f32, y_f32, z_f32, i_f32;
+		x->convertTo(x_f32, CV_32FC1, 1.0, 0.0);
+		y->convertTo(y_f32, CV_32FC1, 1.0, 0.0);
+		z->convertTo(z_f32, CV_32FC1, 1.0, 0.0);
+		intensity->convertTo(i_f32, CV_32FC1, 1.0, 0.0);
+
         pcl::PointCloud<pcl::PointXYZI>::Ptr cloud;
         pcl::PointXYZI point;
         ito::PCLPointCloud pointCloud;
         pointCloud = ito::PCLPointCloud(ito::pclXYZI);
         cloud = pointCloud.toPointXYZI();
 
-        switch (mapZ->getType())
-        {
-            case tUInt8:
-                readXYZIData<ito::uint8>(x, y, z, intensity, cloud, deleteNaNorInf);
-            break;
-
-            case tInt8:
-                readXYZIData<ito::int8>(x, y, z, intensity, cloud, deleteNaNorInf);
-            break;
-
-            case tUInt16:
-                readXYZIData<ito::uint16>(x, y, z, intensity, cloud, deleteNaNorInf);
-            break;
-
-            case tInt16:
-                readXYZIData<ito::int16>(x, y, z, intensity, cloud, deleteNaNorInf);
-            break;
-
-            case tUInt32:
-                readXYZIData<ito::uint32>(x, y, z, intensity, cloud, deleteNaNorInf);
-            break;
-
-            case tInt32:
-                readXYZIData<ito::int32>(x, y, z, intensity, cloud, deleteNaNorInf);
-            break;
-
-            case tFloat32:
-                readXYZIData<ito::float32>(x, y, z, intensity, cloud, deleteNaNorInf);
-            break;
-
-            case tFloat64:
-                readXYZIData<ito::float64>(x, y, z, intensity, cloud, deleteNaNorInf);
-            break;
-
-            default:
-            break;
-        }
+        retval += readXYZIData<ito::float32>(&x_f32, &y_f32, &z_f32, &i_f32, cloud, deleteNaNorInf);
 
         out = pointCloud;
     }
@@ -1166,7 +1104,12 @@ ito::RetVal pointCloudFromXYZRGBA(const DataObject* mapX, const DataObject* mapY
         const cv::Mat *x = mapX->get_mdata()[ mapX->seekMat(0) ];
         const cv::Mat *y = mapY->get_mdata()[ mapY->seekMat(0) ];
         const cv::Mat *z = mapZ->get_mdata()[ mapZ->seekMat(0) ];
-        const cv::Mat *color = mapColor->get_mdata()[ mapColor->seekMat(0) ];
+        const cv::Mat *color = mapColor->get_mdata()[ mapColor->seekMat(0) ]; //always rgba32
+
+		cv::Mat x_f32, y_f32, z_f32;
+		x->convertTo(x_f32, CV_32FC1, 1.0, 0.0);
+		y->convertTo(y_f32, CV_32FC1, 1.0, 0.0);
+		z->convertTo(z_f32, CV_32FC1, 1.0, 0.0);
 
         pcl::PointCloud<pcl::PointXYZRGBA>::Ptr cloud;
         pcl::PointXYZRGBA point;
@@ -1174,43 +1117,7 @@ ito::RetVal pointCloudFromXYZRGBA(const DataObject* mapX, const DataObject* mapY
         pointCloud = ito::PCLPointCloud(ito::pclXYZRGBA);
         cloud = pointCloud.toPointXYZRGBA();
 
-        switch (mapZ->getType())
-        {
-            case tUInt8:
-                readXYZRGBAData<ito::uint8>(x, y, z, color, cloud, deleteNaNorInf);
-            break;
-
-            case tInt8:
-                readXYZRGBAData<ito::int8>(x, y, z, color, cloud, deleteNaNorInf);
-            break;
-
-            case tUInt16:
-                readXYZRGBAData<ito::uint16>(x, y, z, color, cloud, deleteNaNorInf);
-            break;
-
-            case tInt16:
-                readXYZRGBAData<ito::int16>(x, y, z, color, cloud, deleteNaNorInf);
-            break;
-
-            case tUInt32:
-                readXYZRGBAData<ito::uint32>(x, y, z, color, cloud, deleteNaNorInf);
-            break;
-
-            case tInt32:
-                readXYZRGBAData<ito::int32>(x, y, z, color, cloud, deleteNaNorInf);
-            break;
-
-            case tFloat32:
-                readXYZRGBAData<ito::float32>(x, y, z, color, cloud, deleteNaNorInf);
-            break;
-
-            case tFloat64:
-                readXYZRGBAData<ito::float64>(x, y, z, color, cloud, deleteNaNorInf);
-            break;
-
-            default:
-            break;
-        }
+        retval += readXYZRGBAData<ito::float32>(&x_f32, &y_f32, &z_f32, color, cloud, deleteNaNorInf);
 
         out = pointCloud;
     }
