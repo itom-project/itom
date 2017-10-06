@@ -396,7 +396,7 @@ namespace ito
             ito::tCompareResult result;
             
             // checking if the number of parameters is equal, otherwise this might crash
-            if (paramsMand.size() != it->mandParams.size())
+            if (paramsMand.size() < it->mandParams.size())
                 return false;
 
             for (int i=0; i < it->mandParams.size(); i++)
@@ -409,7 +409,7 @@ namespace ito
             }
 
             // checking if the number of parameters is equal, otherwise this might crash
-            if (paramsOut.size() != it->outParams.size())
+            if (paramsOut.size() < it->outParams.size())
                 return false;
 
             for(int i=0; i < it->outParams.size(); i++)
