@@ -2032,9 +2032,24 @@ ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path, const QString &
 */
 void HelpTreeDockWidget::liveFilter(const QString &filterText)
 {
+    m_filterTextPending = filterText;
+    if (m_filterTextPendingTimer >= 0)
+    {
+        killTimer(m_filterTextPendingTimer);
+    }
+    m_filterTextPendingTimer = startTimer(250);
+    
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------
+void HelpTreeDockWidget::timerEvent(QTimerEvent *event)
+{
     showTreeview();
-    m_pMainFilterModel->setFilterRegExp(filterText);
+    m_pMainFilterModel->setFilterRegExp(m_filterTextPending);
     expandTree();
+
+    killTimer(m_filterTextPendingTimer);
+    m_filterTextPendingTimer = -1;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2429,7 +2444,10 @@ void HelpTreeDockWidget::showTreeview()
     m_treeVisible = true;
     QList<int> intList;
     intList  <<  ui.splitter->width()*m_treeWidthVisible/100  <<  ui.splitter->width() * (100 - m_treeWidthVisible) / 100;
-    ui.splitter->setSizes(intList);
+    if (ui.splitter->sizes() != intList)
+    {
+        ui.splitter->setSizes(intList);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2439,7 +2457,10 @@ void HelpTreeDockWidget::unshowTreeview()
     m_treeVisible = false;
     QList<int> intList;
     intList  <<  ui.splitter->width()*m_treeWidthInvisible/100  <<  ui.splitter->width() * (100 - m_treeWidthInvisible) / 100;
-    ui.splitter->setSizes(intList);
+    if (ui.splitter->sizes() != intList)
+    {
+        ui.splitter->setSizes(intList);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
