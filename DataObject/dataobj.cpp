@@ -3578,7 +3578,7 @@ DataObject::DataObject(const DataObject& dObj, bool transposed)
                 // adjust the dataObject roi, according to cv::Mat
                 cv::Size osize;
                 cv::Point ofs;
-                ((cv::Mat*)(dObj.m_data[0]))->locateROI(osize, ofs);
+                ((cv::Mat*)(m_data[0]))->locateROI(osize, ofs); //test the original size of the NEW matrix!
                 m_size.m_p[m_dims - 1] = ((cv::Mat*)m_data[0])->cols;
                 m_size.m_p[m_dims - 2] = ((cv::Mat*)m_data[0])->rows;
                 m_osize.m_p[m_dims - 1] = osize.width;
