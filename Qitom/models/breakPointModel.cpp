@@ -493,6 +493,24 @@ QModelIndex BreakPointModel::index(int row, int column, const QModelIndex &paren
 }
 
 //-------------------------------------------------------------------------------------------------------
+QSize BreakPointModel::span(const QModelIndex &index) const
+{
+	if (!index.isValid())
+	{
+		return QAbstractItemModel::span(index);
+	}
+	else if (index.internalPointer() == NULL)
+	{
+		//file
+		return QSize(columnCount(), 1);
+	}
+	else
+	{
+		return QAbstractItemModel::span(index);
+	}
+}
+
+//-------------------------------------------------------------------------------------------------------
 //! returns parent of given QModelIndex
 /*!
     since this model is not a tree model, returns always an empty QModelIndex
@@ -518,6 +536,7 @@ QModelIndex BreakPointModel::parent(const QModelIndex &index) const
     }
 }
 
+//-------------------------------------------------------------------------------------------------------
 int BreakPointModel::getFileIndexFromInternalPtr(const void* ptr) const
 {
     for (int i = 0; i < m_scriptFiles.size(); ++i)

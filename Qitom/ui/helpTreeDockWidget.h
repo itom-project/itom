@@ -30,11 +30,23 @@ class HelpTreeDockWidget : public QWidget
 {
     Q_OBJECT
 
+    Q_FLAGS(State States)
+
 public:
     HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget *dock = 0, Qt::WindowFlags flags = 0);
     ~HelpTreeDockWidget();
 
-    enum itemType { typeSqlItem = 1, typeFilter = 2, typeWidget = 3, typeFPlugin = 4, typeWPlugin = 5, typeCategory = 6, typeDataIO = 7, typeActuator = 8 };
+    enum itemType 
+    { 
+        typeSqlItem = 1, 
+        typeFilter = 2, 
+        typeWidget = 3, 
+        typeFPlugin = 4, 
+        typeWPlugin = 5, 
+        typeCategory = 6, 
+        typeDataIO = 7, 
+        typeActuator = 8 
+    };
 
     enum iconType 
     {
@@ -48,6 +60,16 @@ public:
         iconPluginRawIO = 107,
         iconPluginActuator = 108
     };
+
+    enum State
+    {
+        stateIdle = 0x00,
+        stateVisible = 0x01,
+        stateUpdatesPending = 0x02
+    };
+    Q_DECLARE_FLAGS(States, State)
+    
+        
 
 public slots:
     void navigateBackwards();
@@ -91,14 +113,14 @@ private:
     };
 
     static void createFilterWidgetNode(int fOrW, QStandardItemModel* model, const QMap<int,QIcon> *iconGallery);
-    static void createItemRek(QStandardItem& parent, const QString &parentPath, QList<SqlItem> &items, const QMap<int,QIcon> *iconGallery);
+    static void createItemRek(QStandardItem& parent, const QString &parentPath, const QString &filename, QList<SqlItem> &items, const QMap<int,QIcon> *iconGallery);
     static ito::RetVal loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel, const QMap<int,QIcon> *iconGallery, const DisplayBool &show);
     static ito::RetVal readSQL(const QString &file, QList<SqlItem> &items);
 
     void CreateItem(QStandardItemModel& model, QStringList &items);
     void saveIni();
     void loadIni();
-    ito::RetVal displayHelp(const QString &path);
+    ito::RetVal displayHelp(const QString &path, const QString &possibleFileName = "");
     QStringList separateLink(const QUrl &link);
     ito::RetVal highlightContent(const QString &prefix , const QString &name , const QString &param , const QString &shortDesc, const QString &helpText, const QString &error, QTextDocument *document);
     QModelIndex findIndexByPath(const int type, QStringList path, const QStandardItem* current);
@@ -110,8 +132,9 @@ private:
     QFutureWatcher<ito::RetVal> dbLoaderWatcher;
 
     // Const
-    static const int m_urPath = Qt::UserRole + 1;
-    static const int m_urType = Qt::UserRole + 2;
+    static const int rolePath = Qt::UserRole + 1;
+    static const int roleType = Qt::UserRole + 2;
+    static const int roleFilename = Qt::UserRole + 3;
 
     QString minText(int minimum) const;
     QString minText(double minimum) const;
@@ -145,10 +168,14 @@ private:
     bool                     m_forced;
     bool                     m_internalCall;        /*!< If a page is called by the history buttons, this bool prevents from that this page is stored in the historylist again*/
     bool                     m_doingExpandAll;      /*!< if expand all is executed from somewhere, the slots on_treeView_expanded or on_treeView_collapsed should not be called to avoid crazy never-ending loops in Qt5, debug.*/
+    States                   m_state;
+    QString                  m_filterTextPending;
+    int                      m_filterTextPendingTimer;
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
     void showEvent(QShowEvent *event);
+    void timerEvent(QTimerEvent *event);
 };
 
 } //end namespace ito

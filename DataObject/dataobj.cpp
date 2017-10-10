@@ -1380,10 +1380,21 @@ int DataObject::getStep(int index) const
     }
 
     int step = 1;
-    for (int i = index + 1; i < m_dims; ++i)
+    //for (int i = index + 1; i < m_dims; ++i)
+    // last two dimensions we take from cv::Mat
+    for (int i = index + 1; i < m_dims - 2; ++i)
     {
         step *= m_osize[i];
     }
+
+    cv::Size osize;
+    cv::Point ofs;
+    ((cv::Mat*)(this->m_data[0]))->locateROI(osize, ofs);
+    if (index > 2)
+        step *= osize.height * osize.width;
+    else
+        step *= osize.width;
+
     return step;
 }
 
@@ -1991,7 +2002,6 @@ void DataObject::create(const unsigned char dimensions, const int *sizes, const 
 {
     m_type = type;
     m_owndata = 1;
-   
 
     if(dimensions == 0 || dimensions == 2)
     {
@@ -2015,29 +2025,34 @@ void DataObject::create(const unsigned char dimensions, const int *sizes, const 
 
     switch(type)
     {
-    case ito::tUInt8:
-    case ito::tInt8:
-        requiredElemSize = 1;
+        case ito::tUInt8:
+        case ito::tInt8:
+            requiredElemSize = 1;
         break;
-    case ito::tUInt16:
-    case ito::tInt16:
-        requiredElemSize = 2;
+
+        case ito::tUInt16:
+        case ito::tInt16:
+            requiredElemSize = 2;
         break;
-    case ito::tUInt32:
-    case ito::tInt32:
-    case ito::tFloat32:
-    case ito::tRGBA32:
-        requiredElemSize = 4;
+
+        case ito::tUInt32:
+        case ito::tInt32:
+        case ito::tFloat32:
+        case ito::tRGBA32:
+            requiredElemSize = 4;
         break;
-    case ito::tFloat64:
-    case ito::tComplex64:
-        requiredElemSize = 8;
+
+        case ito::tFloat64:
+        case ito::tComplex64:
+            requiredElemSize = 8;
         break;
-    case ito::tComplex128:
-        requiredElemSize = 16;
+
+        case ito::tComplex128:
+            requiredElemSize = 16;
         break;
-    default:
-        cv::error(cv::Exception(CV_StsError, "unkown type." ,"", __FILE__, __LINE__));
+
+        default:
+            cv::error(cv::Exception(CV_StsError, "unkown type." ,"", __FILE__, __LINE__));
         break;
     }
 
@@ -3299,9 +3314,16 @@ template<typename _Tp> RetVal CopyMatFunc(const uchar **src, uchar **&dst, bool 
 
     if(transposed)
     {
+        cv::Mat_<_Tp> *dataMat = NULL;
+        cv::Mat_<_Tp> srcMat;
+        // for transposed matrices we always make a deep copy
         for( int i = 0 ; i < size ; i++)
         {
-            dst[i] = reinterpret_cast<uchar *>( new cv::Mat_<_Tp>( ((const cv::Mat_<_Tp> *)(src[i]))->t() ) );
+            dataMat = new cv::Mat_<_Tp>();
+            srcMat = ((const cv::Mat_<_Tp> *)src[i])->t();
+            srcMat.copyTo(*dataMat);
+            dst[i] = reinterpret_cast<uchar *>(dataMat);
+            //dst[i] = reinterpret_cast<uchar *>( new cv::Mat_<_Tp>( ((const cv::Mat_<_Tp> *)(src[i]))->t() ) );
         }
     }
     else
@@ -3462,7 +3484,8 @@ DataObject::DataObject(const DataObject& copyConstr) : m_pRefCount(0), m_dims(0)
 //-----------------------------------------------------------------------------------------------------------
 DataObject::DataObject(const DataObject& dObj, bool transposed)
 {
-    if(!transposed) //shallow copy of dataobject
+    //shallow copy of dataobject
+    if(!transposed)
     {
         createHeaderWithROI(dObj.m_dims, dObj.m_size.m_p, dObj.m_osize.m_p, dObj.m_roi.m_p);
         m_pRefCount = dObj.m_pRefCount;
@@ -3494,7 +3517,7 @@ DataObject::DataObject(const DataObject& dObj, bool transposed)
             }
         }
     }
-    else //deep, transposed copy of dataObject
+    else //deep, eventually transposed copy of dataObject
     {
         int dims = dObj.m_dims;
         int *newSize = new int[dims];
@@ -3505,11 +3528,11 @@ DataObject::DataObject(const DataObject& dObj, bool transposed)
         memcpy(newRoi, dObj.m_roi.m_p, dims * sizeof(int));
 
         //flip the last two dimensions
-        if(dims >= 2)
+        if (dims >= 2)
         {
-            std::swap( newSize[dims-1], newSize[dims-2] );
-            std::swap( newOSize[dims-1], newOSize[dims-2] );
-            std::swap( newRoi[dims-1], newRoi[dims-2] );
+            std::swap(newSize[dims - 1], newSize[dims - 2]);
+            std::swap(newOSize[dims - 1], newOSize[dims - 2]);
+            std::swap(newRoi[dims - 1], newRoi[dims - 2]);
         }
 
         createHeaderWithROI(dims, newSize, newOSize, newRoi); 
@@ -3551,6 +3574,15 @@ DataObject::DataObject(const DataObject& dObj, bool transposed)
             try
             {
                 fListCopyMatFunc[m_type](const_cast<const uchar**>(dObj.m_data), m_data, true, m_sizeofs);
+
+                // adjust the dataObject roi, according to cv::Mat
+                cv::Size osize;
+                cv::Point ofs;
+                ((cv::Mat*)(dObj.m_data[0]))->locateROI(osize, ofs);
+                m_size.m_p[m_dims - 1] = ((cv::Mat*)m_data[0])->cols;
+                m_size.m_p[m_dims - 2] = ((cv::Mat*)m_data[0])->rows;
+                m_osize.m_p[m_dims - 1] = osize.width;
+                m_osize.m_p[m_dims - 2] = osize.height;
             }
             catch(cv::Exception /*&exc*/) //memory error
             {
@@ -6210,18 +6242,18 @@ DataObject DataObject::at(const DataObject &mask) const
 */
 template<typename _Tp> RetVal AdjustROIFunc(DataObject *dObj, int dtop, int dbottom, int dleft, int dright)
 {
-   if (dObj->getDims() > 1) //new version: adjusts ROI for every plane
-   {
-      int numMats = dObj->mdata_size();
-      cv::Mat_<_Tp> **mats = reinterpret_cast<cv::Mat_<_Tp>** >(dObj->get_mdata());
+    if (dObj->getDims() > 1) //new version: adjusts ROI for every plane
+    {
+        int numMats = dObj->mdata_size();
+        cv::Mat_<_Tp> **mats = reinterpret_cast<cv::Mat_<_Tp>** >(dObj->get_mdata());
 
-      for (int nmat = 0; nmat < numMats; nmat++)
-      {
-         mats[nmat]->adjustROI(dtop, dbottom, dleft, dright);
-      }
-   }
+        for (int nmat = 0; nmat < numMats; nmat++)
+        {
+            mats[nmat]->adjustROI(dtop, dbottom, dleft, dright);
+        }
+    }
 
-   return 0;
+    return 0;
 }
 
 typedef RetVal (*tAdjustROIFunc)(DataObject *dObj, int dtop, int dbottom, int dleft, int dright);

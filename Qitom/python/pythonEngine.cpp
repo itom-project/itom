@@ -314,6 +314,8 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
     {
         if (PythonEngine::instatiated.tryLock(5000))
         {
+            //if something is changed in the following initialization process, please upgrade
+            //pipManager::initPythonIfStandalone, too
             QString pythonSubDir = QCoreApplication::applicationDirPath() + QString("/python%1").arg(PY_MAJOR_VERSION);
             QString pythonAllInOneDir = QCoreApplication::applicationDirPath() + QString("/../../3rdParty/Python");
             qDebug() << "pythonAllInOneDir:" << pythonAllInOneDir;
@@ -392,26 +394,6 @@ void PythonEngine::pythonSetup(ito::RetVal *retValue)
 #endif
                 Py_SetPythonHome(m_pUserDefinedPythonHome);
             }
-
-/*            if (pythonHomeDirectory != "")
-            {
-                if (QDir(pythonHomeDirectory).exists())
-                {
-                    //the python home path given to Py_SetPythonHome must be persistent for the whole Python session
-#if PY_VERSION_HEX < 0x03050000
-                    m_pUserDefinedPythonHome = (wchar_t*)PyMem_RawMalloc((pythonHomeDirectory.size() + 10) * sizeof(wchar_t));
-                    memset(m_pUserDefinedPythonHome, 0, (pythonHomeDirectory.size() + 10) * sizeof(wchar_t));
-                    pythonHomeDirectory.toWCharArray(m_pUserDefinedPythonHome);
-#else
-                    m_pUserDefinedPythonHome = Py_DecodeLocale(pythonHomeDirectory.toLatin1().data(), NULL);
-#endif
-                    Py_SetPythonHome(m_pUserDefinedPythonHome);
-                }
-                else
-                {
-                    qDebug() << "Settings value Python::pyHome has not been set as Python Home directory since it does not exist: " << pythonHomeDirectory;
-                }
-            }*/
 
             //read directory values from Python
             qDebug() << "Py_GetPythonHome:" << QString::fromWCharArray(Py_GetPythonHome());

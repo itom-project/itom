@@ -1,3 +1,4 @@
+# coding=iso-8859-15
 '''Python API Sql Creator
 ---------------------------
 
@@ -11,7 +12,14 @@ that should be created
 
 #  Systemstuff
 import inspect, time, sys, os, pkgutil, re, types, sqlite3, docutils.core, keyword
+from sphinx import environment
+from sphinx.application import Sphinx
 import itom
+import pprint
+import docutils
+from sphinx import addnodes
+
+docutils.nodes.NodeVisitor.optional = () #'pending_xref', 'tabular_col_spec', 'autosummary_table', 'autosummary_toc', 'displaymath', 'only', 'toctree')
 
 blacklist = ['this','__future__','argparse','ast','bdb','tkinter','turtle','turtledemo','win32traceutil', 
                      'win32pdh', 'perfmondata', 'tzparse', '__next__',
@@ -42,12 +50,12 @@ idDict = {"builtins":1000, "itom":1001, "numpy":1002, "scipy":1003, "matplotlib"
 # --->>>Global simple Settings<<<---
 
 # Filename and DB-Name
-databasename = 'builtins'
+databasename = 'numpy'
 
 name = databasename
 
 # Always increase the version by one to allow automatic updates
-dbVersion = '3'
+dbVersion = '2'
 
 # Only change if there was a SchemeID change in Itom
 itomMinVersion = '1'            # SchemeID
@@ -81,13 +89,15 @@ if (databasename == 'itom') or (databasename == 'numpy') or (databasename == 'sc
     add_builtin_modules =        0      
     add_package_modules =        0  
     add_manual_modules =         1
+    if databasename != 'numpy':
+        blacklist += ['numpy', ]
     print(name)
 elif databasename == 'builtins':
     add_builtins =                   1
     add_builtin_modules =        1
-    add_package_modules =     1
+    add_package_modules =     0
     add_manual_modules =       0
-    blacklist.append(['itom','itomEnum','itomSyntaxCheck','itomUi'])
+    blacklist += ['itom','matlab','itomEnum','itomSyntaxCheck','itomUi']
     print(name)
 else:
     add_builtins =                0
@@ -115,7 +125,7 @@ oldPercentage = 0
 
 
 # Filename is created by name and .db
-filename = name + '.db'
+filename = "%s_v%s.db" % (name, dbVersion)
 
 # finished db-Info
 dbInfo = [id, name, dbVersion, date, itomMinVersion]
@@ -190,13 +200,14 @@ def reportMessage(message, typ):
 def ispackage(obj):
     """Guess whether a path refers to a package directory."""
     if hasattr(obj, '__path__'):
-        path = obj.__path__[0]
-        if (type(path) is list and len(path) > 0):
-            path = path[0]
-        if os.path.isdir(path):
-            for ext in ('.py', '.pyc', '.pyo'):
-                if os.path.isfile(os.path.join(path, '__init__' + ext)):
-                    return True
+        try:
+            for path in obj.__path__:
+                if os.path.isdir(path):
+                    for ext in ('.py', '.pyc', '.pyo'):
+                        if os.path.isfile(os.path.join(path, '__init__' + ext)):
+                            return True
+        except:
+            return False
     return False
 
 
@@ -289,7 +300,7 @@ def getAllModules(ns):
     if add_package_modules:
         # remove the current directory from the list
         selPath = sys.path
-        dirsToRemove = [os.getcwd().lower(), os.getcwd()]
+        dirsToRemove = ['',os.getcwd().lower(), os.getcwd()]
         for dtr in dirsToRemove:
             if (dtr in selPath):
                 selPath.remove(dtr)
@@ -305,19 +316,18 @@ def getAllModules(ns):
 
 def processModules(ns):
     global stackList
+    start_time = time.time()
     while len(stackList)>0:
-        #print(len(stackList))
+        
+        if time.time() - start_time > 5:
+            print("%i items on stack" % len(stackList))
+            start_time = time.time()
+        
         if stackList[0].split('.')[-1:][0] not in blacklist and stackList[0] not in blacklist:
             if not inspect.ismodule(stackList[0]):
                 if not stackList[0].startswith('__') or stackList[0][0] != '_':
-                    try:
-                        ret = processName(stackList[0], ns)
-                        del stackList[0]
-                        if ret is not None:
-                            stackList.append(ret)
-                    except:
-                        del stackList[0]
-                        #reportMessage(module+stackList[0],'e')
+                    processName(stackList[0], ns)
+                    del stackList[0]
                 else:
                     del stackList[0]
             else:
@@ -327,6 +337,7 @@ def processModules(ns):
 
 
 def processName(moduleP, ns, recLevel = 0):
+    print("process module '%s'" % moduleP)
     # extract prefix from name
     global stackList
     prefixP = moduleP.split('.')[:-1]
@@ -360,17 +371,18 @@ def processName(moduleP, ns, recLevel = 0):
         
         if ns['hasdoc']:
             exec('doc = '+prefix+module+'.__doc__', ns)
-            if (nametype == '6'): # '6' = const
-                exec('doc = str('+prefix+module+')', ns)
-                createSQLEntry(ns['doc'], prefix, module, '0'+nametype,ns['mID'])
-            else:
-                createSQLEntry(ns['doc'], prefix, module, '0'+nametype,ns['mID'])
+            createSQLEntry(ns['doc'], prefix, module, '0'+nametype,ns['mID'])
+        elif nametype == '6': #const
+            exec('doc = str('+prefix+module+')', ns)
+            createSQLEntry(ns['doc'], prefix, module, '0'+nametype,ns['mID'])
         
         try:
             #this object can only have 'childs' if it is either a class, module or package
             if (nametype == '2' or nametype == '3' or nametype == '4'):
                 exec('sublist = inspect.getmembers('+prefix+module+')', ns)
-                stackList += [prefix+module+'.'+ s[0] for s in ns['sublist']]
+                newlist = [prefix+module+'.'+ s[0] for s in ns['sublist']]
+                print("add %i members from %s" % (len(newlist), prefix + module))
+                stackList += newlist
                 # remove the processed items
                 return
         except:
@@ -397,7 +409,7 @@ def processName(moduleP, ns, recLevel = 0):
         except:
             reportMessage('Error in: '+prefix+module,'e')
         return
-    exec('class test:\n    class config:\n        numpydoc_edit_link = False', ns)
+    #exec('class test:\n    class config:\n        numpydoc_edit_link = False', ns)
 
 def createSQLEntry(docstrIn, prefix, name, nametype, id):
     #print(prefix+name)
@@ -416,9 +428,9 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
     
     # 2. prefix
     if (prefix[:prefix.find('.')] in builtinList) or (prefix in builtinList) or (name in builtinList):
-        line[1] = 'python.' + prefix[:len(prefix)] + name
+        line[1] = 'python.' + prefix + name
     else:
-        line[1] = prefix[:len(prefix)]+name
+        line[1] = prefix+name
     
     # 3. Name
     if (name != ''):
@@ -429,7 +441,7 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
     # 4. Parameter
     
     # Falls ein Befehl laenger als 20 Zeichen ist, klappt die erkennung der Parameter nicht mehr
-    m = re.search(r'^.{0:20}[(].*?[)]',docstr,re.DOTALL)
+    m = re.search(r'^.{0:20}[(].*?[)]',docstr[0:min(20000, len(docstr))],re.DOTALL)
     if (m != None):
         s = docstr[m.start():m.end()]
         s2 = s[s.find('('):]
@@ -441,8 +453,8 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
     if (id != 0):
         m = re.search(r'->.*?\n',docstr,re.DOTALL)
         if (m != None):
-            s = docstr[m.start()+3:m.end()-2]
-            line[4] = s
+            s = docstr[m.start()+2:m.end()].strip()
+            line[4] = s + "\n"
         else:
             line[4] = ''
     else:
@@ -460,18 +472,27 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
             ns["lines"] = lines
             # numpy docstring korrigieren
             global types
-            exec('numpydoc.mangle_docstrings(test,\''+types[int(nametype)]+'\', '+line[1]+'.__name__,'+line[1]+', None, lines)', ns)
+            try:
+                exec('numpydoc.mangle_docstrings(SphinxApp,\''+types[int(nametype)]+'\', '+ prefix + name +'.__name__,'+ prefix + name +', None, lines)', ns)
+            except Exception as ex:
+                reportMessage('Error in createSQLEntry \'numpydoc.mangle_docstrings\' (%s%s): %s' % (prefix, name, str(ex)),'e')
+                return
             lines = ns['lines']
             # Linien wieder zusamensetzen
             cor = "\n".join(lines)
-            sout =docutils.core.publish_string(cor, writer_name='html',settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'stylesheet_path':'', 'stylesheet':''})#, 'env':app.env.settings["env"]})
+            try:
+                sout =docutils.core.publish_string(cor, writer_name='html',settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'stylesheet_path':'', 'stylesheet':'', 'env':SphinxApp.env})
+            except Exception as ex:
+                reportMessage('Error in createSQLEntry \'docutils.core.publish_string\' (%s%s): %s' % (prefix, name, str(ex)),'e')
+                return
             line[6] = '0'
             line[5] = itom.compressData(sout)
         elif (nametype == '06'):
-            line[5] = itom.compressData('"'+name+'" is a const with the value: '+docstr)
+            exec('value = ' + prefix + name, ns)
+            line[5] = itom.compressData('"'+name+'" is the constant: '+ str(ns["value"]))
             line[6] = '0'
         else:
-            # wenn der String keine Shortdescription hat dann einfach komplett einfÃ¼gen
+            # wenn der String keine Shortdescription hat dann einfach komplett einfügen
             line[5] = itom.compressData(docstr)
             line[6] = '3'
     else:
@@ -548,16 +569,49 @@ print('-------------START-------------')
 
 types = {2 : 'module', 3 : 'module', 4 : 'class', 5 : 'method', 6 : 'attribute'}
 
-# pseudo Klasse
-class test:
-    class config:
-        numpydoc_edit_link = False
+SphinxApp = Sphinx(".", ".", ".", ".", "html")
+SphinxApp.config.numpydoc_use_plots = False
+SphinxApp.config.numpydoc_edit_link = False
+SphinxApp.config.numpydoc_use_plots = False
+SphinxApp.config.numpydoc_show_class_members = True
+SphinxApp.config.numpydoc_show_inherited_class_members = True
+SphinxApp.config.numpydoc_class_members_toctree = True
+SphinxApp.config.numpydoc_citation_re = '[a-z0-9_.-]+'
+SphinxApp.config.numpydoc_edit_link = False
+#SphinxApp.env.read_doc("")
+
+SphinxApp.env.temp_data['docname'] = ""
+# defaults to the global default, but can be re-set in a document
+SphinxApp.env.temp_data['default_domain'] = SphinxApp.env.domains.get(SphinxApp.env.config.primary_domain)
+
+SphinxApp.env.settings['input_encoding'] = SphinxApp.env.config.source_encoding
+SphinxApp.env.settings['trim_footnote_reference_space'] = \
+    SphinxApp.env.config.trim_footnote_reference_space
+SphinxApp.env.settings['gettext_compact'] = SphinxApp.env.config.gettext_compact
+
+## pseudo Klasse
+#class SphinxApp:
+    #builder = None
+    #class config:
+        #numpydoc_edit_link = False
+        #numpydoc_use_plots = False
+        #numpydoc_show_class_members = True
+        #numpydoc_show_inherited_class_members = True
+        #numpydoc_class_members_toctree = True
+        #numpydoc_citation_re = '[a-z0-9_.-]+'
+        #numpydoc_edit_link = False
+    #class sphinx_env_config:
+        #show_authors = True
+    #env = environment.BuildEnvironment(srcdir = "", doctreedir = "", config = sphinx_env_config)
+    #env.read_doc("")
+        
+        
         
 ns['ispackage'] = ispackage
 
 ns['numpydoc'] = numpydoc
 ns['sys'] = sys
-ns['test'] = test
+ns['SphinxApp'] = SphinxApp
 
 # If you want the script to replace the file directly... not possible because of access violation
 #filename = 'F:\\itom-git\\build\\itom\\PythonHelp.db'

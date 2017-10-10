@@ -33,8 +33,8 @@ namespace ito
 */
 UserModel::UserModel()
 {
-    m_headers << tr("Name") << tr("Id") << tr("role") << tr("iniFile") << tr("features");
-    m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft);
+    m_headers << tr("Name") << tr("Id") << tr("role") << tr("iniFile") << tr("features") << tr("password");
+    m_alignment << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft) << QVariant(Qt::AlignLeft);
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -120,6 +120,8 @@ QVariant UserModel::data(const QModelIndex &index, int role) const
                 return m_userInfo.at(index.row()).iniFile;
             case umiFeatures:
                 return QVariant::fromValue<UserFeatures>(m_userInfo.at(index.row()).features);
+            case umiPassword:
+                return m_userInfo.at(index.row()).password;
         }
     }
     else if (role == Qt::EditRole)
@@ -143,6 +145,8 @@ QVariant UserModel::data(const QModelIndex &index, int role) const
                     return m_userInfo.at(index.row()).iniFile;
                 case umiFeatures:
                     return QVariant::fromValue<UserFeatures>(m_userInfo.at(index.row()).features);
+                case umiPassword:
+                    return m_userInfo.at(index.row()).password;
             }
         }
     }

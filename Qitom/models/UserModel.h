@@ -55,10 +55,14 @@ Q_DECLARE_FLAGS(UserFeatures, UserFeature)
 struct UserInfoStruct
 {
     UserInfoStruct() {};
-    UserInfoStruct(const QString &sname, const QString &suid, const QString siniFile, UserRole srole, UserFeatures sfeatures, bool sStandardUser) : name(sname), id(suid), iniFile(siniFile), role(srole), features(sfeatures), standardUser(sStandardUser) {}
+    UserInfoStruct(const QString &sname, const QString &suid, const QString siniFile, UserRole srole, 
+        UserFeatures sfeatures, QByteArray &spassword, bool sStandardUser)
+        : name(sname), id(suid), iniFile(siniFile), role(srole), password(spassword),
+        features(sfeatures), standardUser(sStandardUser) {}
     QString name;
     QString id;
     QString iniFile;
+    QByteArray password;
     UserRole role;
     UserFeatures features;
     bool standardUser;
@@ -84,7 +88,8 @@ class UserModel : public QAbstractItemModel
             umiId = 1,
             umiRole = 2,
             umiIniFile = 3,
-            umiFeatures = 4
+            umiFeatures = 4,
+            umiPassword = 5
         };
 
         QString getRoleName(const UserRole &role) const;
@@ -103,7 +108,7 @@ class UserModel : public QAbstractItemModel
     private:
         QList<QString> m_headers;               //!<  string list of names of column headers
         QList<QVariant> m_alignment;            //!<  list of alignments for the corresponding headers
-        QList<UserInfoStruct> m_userInfo;     //!<  list with user information
+        QList<UserInfoStruct> m_userInfo;       //!<  list with user information
 };
 } //end namespace ito
 

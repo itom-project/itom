@@ -30,6 +30,7 @@
 #include <common/addInInterface.h>
 #include <QtSql/qsqldatabase.h>
 #include <QtSql/qsqlquery.h>
+#include <QtSql/qsqlerror.h>
 
 #include "../widgets/helpDockWidget.h"
 #include "../models/leafFilterProxyModel.h"
@@ -47,7 +48,8 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
     m_dbPath(qApp->applicationDirPath() + "/help"),
     m_pParent(dock),
     m_internalCall(false),
-    m_doingExpandAll(false)
+    m_doingExpandAll(false),
+    m_state(stateIdle)
 {
     ui.setupUi(this);
 
@@ -101,8 +103,8 @@ HelpTreeDockWidget::HelpTreeDockWidget(QWidget *parent, ito::AbstractDockWidget 
 
     loadIni();
     m_forced = true;
-    propertiesChanged();
-    //reloadDB();
+
+    m_state |= stateUpdatesPending;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -139,8 +141,8 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
             // build Main Node
             mainNodeText = tr("Algorithms");
             mainNode->setText(mainNodeText);
-            mainNode->setData(typeCategory, m_urType);
-            mainNode->setData(mainNodeText, m_urPath);
+            mainNode->setData(typeCategory, roleType);
+            mainNode->setData(mainNodeText, rolePath);
             mainNode->setIcon(iconGallery->value(iconPluginAlgo));
             if (aim)
             {
@@ -152,8 +154,8 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                     { // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das Filter-Node anzuhaengen
                         QStandardItem *plugin = new QStandardItem(i.value()->m_pBasePlugin->objectName());
                         plugin->setEditable(false);
-                        plugin->setData(typeFPlugin, m_urType);
-                        plugin->setData(mainNodeText + "." + plugin->text(), m_urPath);
+                        plugin->setData(typeFPlugin, roleType);
+                        plugin->setData(mainNodeText + "." + plugin->text(), rolePath);
                         plugin->setIcon(iconGallery->value(iconPluginAlgo));
                         plugin->setToolTip(i.value()->m_pBasePlugin->getFilename() + "; v" + QString::number(i.value()->m_pBasePlugin->getVersion()));
                         plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
@@ -162,8 +164,8 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                     // Filter-Node anhaengen
                     QStandardItem *filter = new QStandardItem(i.value()->m_name);
                     filter->setEditable(false);
-                    filter->setData(typeFilter, m_urType);
-                    filter->setData(mainNodeText + "." + i.value()->m_pBasePlugin->objectName() + "." + filter->text(), m_urPath);
+                    filter->setData(typeFilter, roleType);
+                    filter->setData(mainNodeText + "." + i.value()->m_pBasePlugin->objectName() + "." + filter->text(), rolePath);
                     filter->setIcon(iconGallery->value(iconPluginFilter));
                     filter->setToolTip(i.value()->m_pBasePlugin->getAuthor());
                     QStandardItem *test = plugins[i.value()->m_pBasePlugin->objectName()];
@@ -178,8 +180,8 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
             // Main Node zusammenbauen
             mainNodeText = tr("Widgets");
             mainNode->setText(mainNodeText);
-            mainNode->setData(typeCategory, m_urType);
-			mainNode->setData(mainNodeText, m_urPath);
+            mainNode->setData(typeCategory, roleType);
+			mainNode->setData(mainNodeText, rolePath);
             mainNode->setIcon(iconGallery->value(iconWidget));
             if (aim)
             {
@@ -191,8 +193,8 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                     { // Plugin existiert noch nicht, erst das Plugin-Node erstellen um dann das Filter-Node anzuhaengen
                         QStandardItem *plugin = new QStandardItem(i.value()->m_pBasePlugin->objectName());
                         plugin->setEditable(false);
-                        plugin->setData(typeWPlugin, m_urType);
-                        plugin->setData(mainNodeText + "." + plugin->text(), m_urPath);
+                        plugin->setData(typeWPlugin, roleType);
+                        plugin->setData(mainNodeText + "." + plugin->text(), rolePath);
                         plugin->setIcon(iconGallery->value(iconPluginAlgo));
                         plugin->setToolTip(i.value()->m_pBasePlugin->getFilename() + "; v" + QString::number(i.value()->m_pBasePlugin->getVersion()));
                         plugins.insert(i.value()->m_pBasePlugin->objectName(), plugin);
@@ -201,8 +203,8 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                     // Filter-Node anhaengen
                     QStandardItem *filter = new QStandardItem(i.value()->m_name);
                     filter->setEditable(false);
-                    filter->setData(typeWidget, m_urType);
-                    filter->setData(mainNodeText + "." + i.value()->m_pBasePlugin->objectName() + "." + filter->text(), m_urPath);
+                    filter->setData(typeWidget, roleType);
+                    filter->setData(mainNodeText + "." + i.value()->m_pBasePlugin->objectName() + "." + filter->text(), rolePath);
                     filter->setIcon(iconGallery->value(iconWidget));
                     filter->setToolTip(i.value()->m_pBasePlugin->getAuthor());
                     QStandardItem *test = plugins[i.value()->m_pBasePlugin->objectName()];
@@ -217,29 +219,29 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
             // Main Node zusammenbauen
             mainNodeText = tr("DataIO");
             mainNode->setText(mainNodeText);
-            mainNode->setData(typeCategory, m_urType);
-			mainNode->setData(mainNodeText, m_urPath);
+            mainNode->setData(typeCategory, roleType);
+			mainNode->setData(mainNodeText, rolePath);
             mainNode->setIcon(iconGallery->value(iconPluginDataIO));
 
             // Subcategory Node "Grabber"
             QStandardItem *pluginGrabber = new QStandardItem(tr("Grabber"));
             pluginGrabber->setEditable(false);
-            pluginGrabber->setData(typeCategory, m_urType);
-            pluginGrabber->setData(mainNodeText + "." + tr("Grabber"), m_urPath);
+            pluginGrabber->setData(typeCategory, roleType);
+            pluginGrabber->setData(mainNodeText + "." + tr("Grabber"), rolePath);
             pluginGrabber->setIcon(iconGallery->value(iconPluginGrabber));
             
             // Subcategory Node "ADDA"
             QStandardItem *pluginAdda = new QStandardItem(tr("ADDA"));
             pluginAdda->setEditable(false);
-            pluginAdda->setData(typeCategory, m_urType);
-            pluginAdda->setData(mainNodeText + "." + tr("ADDA"), m_urPath);
+            pluginAdda->setData(typeCategory, roleType);
+            pluginAdda->setData(mainNodeText + "." + tr("ADDA"), rolePath);
             pluginAdda->setIcon(iconGallery->value(iconPluginAdda));
             
             // Subcategory Node "Raw IO"
             QStandardItem *pluginRawIO = new QStandardItem(tr("Raw IO"));
             pluginRawIO->setEditable(false);
-            pluginRawIO->setData(typeCategory, m_urType);
-            pluginRawIO->setData(mainNodeText + "." + tr("Raw IO"), m_urPath);
+            pluginRawIO->setData(typeCategory, roleType);
+            pluginRawIO->setData(mainNodeText + "." + tr("Raw IO"), rolePath);
             pluginRawIO->setIcon(iconGallery->value(iconPluginRawIO));
 
             if (aim)
@@ -253,27 +255,27 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                     {
                         QStandardItem *plugin = new QStandardItem(aib->objectName());
                         plugin->setEditable(false);
-                        plugin->setData(typeDataIO, m_urType);
+                        plugin->setData(typeDataIO, roleType);
                         switch (aib->getType())
                         {
                             case 129:
                             {// Grabber
                                 plugin->setIcon(iconGallery->value(iconPluginGrabber));
-                                plugin->setData(pluginGrabber->data(m_urPath).toString() + "."+plugin->text(), m_urPath);
+                                plugin->setData(pluginGrabber->data(rolePath).toString() + "."+plugin->text(), rolePath);
                                 pluginGrabber->appendRow(plugin);
                                 break;
                             }
                             case 257:
                             {// ADDA
                                 plugin->setIcon(iconGallery->value(iconPluginAdda));
-                                plugin->setData(pluginAdda->data(m_urPath).toString() + "."+plugin->text(), m_urPath);
+                                plugin->setData(pluginAdda->data(rolePath).toString() + "."+plugin->text(), rolePath);
                                 pluginAdda->appendRow(plugin);
                                 break;
                             }
                             case 513:
                             {// Raw IO
                                 plugin->setIcon(iconGallery->value(iconPluginRawIO));
-                                plugin->setData(pluginRawIO->data(m_urPath).toString() + "."+plugin->text(), m_urPath);
+                                plugin->setData(pluginRawIO->data(rolePath).toString() + "."+plugin->text(), rolePath);
                                 pluginRawIO->appendRow(plugin);
                                 break;
                             }
@@ -292,8 +294,8 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
             // Main Node zusammenbauen
             mainNodeText = tr("Actuator");
             mainNode->setText(mainNodeText);
-            mainNode->setData(typeCategory, m_urType);
-			mainNode->setData(mainNodeText, m_urPath);
+            mainNode->setData(typeCategory, roleType);
+			mainNode->setData(mainNodeText, rolePath);
             mainNode->setIcon(iconGallery->value(iconPluginActuator));
 
             if (aim)
@@ -307,8 +309,8 @@ void HelpTreeDockWidget::createFilterWidgetNode(int fOrW, QStandardItemModel* mo
                     {
                         QStandardItem *plugin = new QStandardItem(aib->objectName());
                         plugin->setEditable(false);
-                        plugin->setData(typeActuator, m_urType);
-                        plugin->setData(mainNodeText + "." + plugin->text(), m_urPath);
+                        plugin->setData(typeActuator, roleType);
+                        plugin->setData(mainNodeText + "." + plugin->text(), rolePath);
                         plugin->setIcon(iconGallery->value(iconPluginActuator));
                         mainNode->appendRow(plugin);
                     }
@@ -1489,7 +1491,14 @@ void HelpTreeDockWidget::loadIni()
 //----------------------------------------------------------------------------------------------------------------------------------
 void HelpTreeDockWidget::showEvent(QShowEvent *event)
 {
+    m_state |= stateVisible;
+
     QWidget::showEvent(event);
+
+    if (m_state & stateUpdatesPending)
+    {
+        propertiesChanged();
+    }
 
     QList<int> intList;
     if (m_treeVisible)
@@ -1500,6 +1509,7 @@ void HelpTreeDockWidget::showEvent(QShowEvent *event)
     {
         intList  <<  ui.splitter->width()*m_treeWidthInvisible/100  <<  ui.splitter->width() * (100 - m_treeWidthInvisible) / 100;
     }
+
     ui.splitter->setSizes(intList);
 }
 
@@ -1509,39 +1519,46 @@ void HelpTreeDockWidget::showEvent(QShowEvent *event)
 */
 void HelpTreeDockWidget::propertiesChanged()
 { // Load the new list of DBs with checkstates from the INI-File
-    
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("HelpScriptReference");
-    // Read the other Options
-    m_openLinks = settings.value("openExtLinks", true).toBool();
-    m_plaintext = settings.value("plaintext", false).toBool();
-    m_showSelection.Filters = settings.value("showFilters", true).toBool();
-    m_showSelection.Widgets = settings.value("showWidgets", true).toBool();
-    m_showSelection.DataIO  = settings.value("showDataIO" , true).toBool();
-    m_showSelection.Modules = settings.value("showModules", true).toBool();
-
-    // if the setting of the loaded DBs has changed:
-    // This setting exists only from the time when the property dialog was open till this routine is done!
-    if (settings.value("reLoadDBs", false).toBool() | m_forced)
+    if (m_state & stateVisible)
     {
-        // Read the List
-        m_includedDBs.clear();
-        int size = settings.beginReadArray("Databases");
-        for (int i = 0; i < size; ++i)
+        QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+        settings.beginGroup("HelpScriptReference");
+        // Read the other Options
+        m_openLinks = settings.value("openExtLinks", true).toBool();
+        m_plaintext = settings.value("plaintext", false).toBool();
+        m_showSelection.Filters = settings.value("showFilters", true).toBool();
+        m_showSelection.Widgets = settings.value("showWidgets", true).toBool();
+        m_showSelection.DataIO  = settings.value("showDataIO" , true).toBool();
+        m_showSelection.Modules = settings.value("showModules", true).toBool();
+
+        // if the setting of the loaded DBs has changed:
+        // This setting exists only from the time when the property dialog was open till this routine is done!
+        if (settings.value("reLoadDBs", false).toBool() | m_forced)
         {
-            settings.setArrayIndex(i);
-            QString nameID = settings.value("DB", QString()).toString();
-            QString name = nameID.left(nameID.indexOf(QChar(0x00, 0xA7) /*section or paragraph sign*/));
-            QString dbName = name + ".db";
-            //Add to m_pMainlist
-            m_includedDBs.append(dbName);
+            // Read the List
+            m_includedDBs.clear();
+            int size = settings.beginReadArray("Databases");
+            for (int i = 0; i < size; ++i)
+            {
+                settings.setArrayIndex(i);
+                QString nameID = settings.value("DB", QString()).toString();
+                QString name = nameID.left(nameID.indexOf(QChar(0x00, 0xA7) /*section or paragraph sign*/));
+                //Add to m_pMainlist
+                m_includedDBs.append(name);
+            }
+            settings.endArray();
+            reloadDB();
         }
-        settings.endArray();
-        reloadDB();
+        settings.remove("reLoadDBs");
+        settings.endGroup();
+        m_forced = false;
+
+        m_state = stateVisible;
     }
-    settings.remove("reLoadDBs");
-    settings.endGroup();
-    m_forced = false;
+    else
+    {
+        m_state = stateUpdatesPending;
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -1554,11 +1571,9 @@ void HelpTreeDockWidget::propertiesChanged()
     \param iconGallery Gallery with icons for classes, modules etc.
     
 */
-/*static*/ void HelpTreeDockWidget::createItemRek(QStandardItem& parent, const QString &parentPath, QList<SqlItem> &items, const QMap<int,QIcon> *iconGallery)
+/*static*/ void HelpTreeDockWidget::createItemRek(QStandardItem& parent, const QString &parentPath, const QString &filename, QList<SqlItem> &items, const QMap<int,QIcon> *iconGallery)
 {
     SqlItem firstItem;
-    int m_urPath = Qt::UserRole + 1;
-    int m_urType = Qt::UserRole + 2;
 
     while(items.count() > 0)
     {
@@ -1579,10 +1594,11 @@ void HelpTreeDockWidget::propertiesChanged()
                 node->setIcon(iconGallery->value(firstItem.type)); //Don't load icons here from file since operations on QPixmap are not allowed in another thread
             }
             node->setEditable(false);
-            node->setData(firstItem.path, m_urPath);
-            node->setData(1, m_urType);
+            node->setData(firstItem.path, rolePath);
+            node->setData(1, roleType);
+            node->setData(filename, roleFilename);
             node->setToolTip(firstItem.path);
-            createItemRek(*node, firstItem.path, items, iconGallery);
+            createItemRek(*node, firstItem.path, filename, items, iconGallery);
             parent.appendRow(node);
         }
         else if (firstItem.prefix.indexOf(parentPath) == 0) //parentPath is the first part of path
@@ -1599,9 +1615,10 @@ void HelpTreeDockWidget::propertiesChanged()
                 node->setIcon(iconGallery->value(firstItem.type));
             }
             node->setEditable(false);
-            node->setData(firstItem.prefix, m_urPath); 
-            node->setData(1, m_urType); //typ 1 = docstring wird aus sql gelesen
-            createItemRek(*node, firstItem.prefix, items, iconGallery);  
+            node->setData(firstItem.prefix, rolePath); 
+            node->setData(typeSqlItem, roleType); //typ typeSqlItem = docstring wird aus sql gelesen
+            node->setData(filename, roleFilename);
+            createItemRek(*node, firstItem.prefix, filename, items, iconGallery);  
             parent.appendRow(node);
         }
         else
@@ -1637,7 +1654,15 @@ void HelpTreeDockWidget::propertiesChanged()
         {
             //QSqlQuery query("SELECT type, prefix, prefixL, name FROM itomCTL ORDER BY prefix", database);
             QSqlQuery query("SELECT type, prefix, name FROM itomCTL ORDER BY prefix", database);
-            query.exec();
+            if (!query.exec())
+            {
+                QSqlError err = query.lastError();
+                if (err.type() != QSqlError::NoError)
+                {
+                    retval += ito::RetVal(ito::retError, err.type(), err.text().toLatin1().constData());
+                }
+            }
+
             while (query.next())
             {
                 item.type = query.value(0).toInt();
@@ -1760,25 +1785,34 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
 */
 /*static*/ ito::RetVal HelpTreeDockWidget::loadDBinThread(const QString &path, const QStringList &includedDBs, QStandardItemModel *mainModel, const QMap<int,QIcon> *iconGallery, const DisplayBool &show)
 {
-    QList<SqlItem> sqlList;
     ito::RetVal retval;
+
     if (show.Modules)
     {
+        QList<SqlItem> sqlList;
+        QDir folder(path);
+        QStringList nameFilters;
+
         for (int i = 0; i < includedDBs.length(); i++)
         {
             sqlList.clear();
-            QString temp;
-            temp = path+'/'+includedDBs.at(i);
-            retval = readSQL(temp, sqlList);
-            QCoreApplication::processEvents();
-            if (!retval.containsWarningOrError())
+
+            nameFilters = QStringList() << QString("%1*.db").arg(includedDBs[i]);
+
+            QStringList files = folder.entryList(nameFilters, QDir::NoDotAndDotDot | QDir::Files, QDir::IgnoreCase | QDir::Name);
+            if (files.size() > 0)
             {
-                createItemRek(*(mainModel->invisibleRootItem()), "", sqlList, iconGallery);
+                retval = readSQL(folder.absoluteFilePath(files.last()), sqlList);
+                QCoreApplication::processEvents();
+                if (!retval.containsWarningOrError())
+                {
+                    createItemRek(*(mainModel->invisibleRootItem()), "", files.last(), sqlList, iconGallery);
+                }
+                else
+                {
+				    /* The Database named: m_pIncludedDBs[i] is not available anymore!!! show Error*/
+			    }
             }
-            else
-            {
-				/* The Database named: m_pIncludedDBs[i] is not available anymore!!! show Error*/
-			}
         }
     }
 
@@ -1803,7 +1837,7 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Highlight (parse) the Helptext to make it nice and readable for non docutils Docstrings
-// ERROR decides whether it�s already formatted by docutils (Error = 0) or it must be parsed by this function (Error != 0)
+// ERROR decides whether it's already formatted by docutils (Error = 0) or it must be parsed by this function (Error != 0)
 ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QString &name, const QString &param, const QString &shortDesc, const QString &helpText, const QString &error, QTextDocument *document)
 {
     QString errorS = error.left(error.indexOf(" ", 0));
@@ -1916,53 +1950,72 @@ ito::RetVal HelpTreeDockWidget::highlightContent(const QString &prefix, const QS
   
   \param path Path to the entry, read from the model.
 */
-ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path)
+ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path, const QString &possibleFileName /*= ""*/)
 { 
     ito::RetVal retval = ito::retOk;
 
     ui.helpTreeContent->clear();
     bool ok = false;
     bool found = false;
+    QStringList possibleFileNames;
+    QDir basePath(m_dbPath);
+
+    if (possibleFileName != "")
+    {
+        
+        possibleFileNames << basePath.absoluteFilePath(possibleFileName);
+    }
+    else
+    {
+        QStringList nameFilters = QStringList() << QString("*.db");
+        QStringList files = basePath.entryList(nameFilters, QDir::NoDotAndDotDot | QDir::Files, QDir::IgnoreCase | QDir::Name);
+        foreach (const QString &filename, files)
+        {
+            possibleFileNames << basePath.absoluteFilePath(filename);
+        }
+    }
+
 
     // Das ist ein kleiner workaround mit dem if 5 Zeilen spaeter. Man koennt auch direkt ueber die includeddbs list iterieren
     // dann waere folgende Zeile hinfaellig
     QDirIterator it(m_dbPath, QStringList("*.db"), QDir::Files | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
 
-    while(it.hasNext() && !found)
+    foreach (const QString &filename, possibleFileNames)
     {
-        QString temp = it.next();
-        if (m_includedDBs.contains(temp.right(temp.length() - m_dbPath.length() - 1)))
-        {
-            QFile file(temp);
+        QFile file(filename);
         
-            if (file.exists())
-            {
-                { //important to have variables database and query in local scope such that removeDatabase (outside of this scope) can securly free all resources! -> see docs about removeDatabase
-                    // display the help: Run through all the files in the directory
-                    QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE", temp);
-                    database.setDatabaseName(temp);
-                    ok = database.open();
-                    if (ok)
+        if (file.exists())
+        {
+            { //important to have variables database and query in local scope such that removeDatabase (outside of this scope) can securly free all resources! -> see docs about removeDatabase
+                // display the help: Run through all the files in the directory
+                QSqlDatabase database = QSqlDatabase::addDatabase("QSQLITE", filename);
+                database.setDatabaseName(filename);
+                ok = database.open();
+                if (ok)
+                {
+                    QSqlQuery query("SELECT type, prefix, name, param, sdesc, doc, htmlERROR  FROM itomCTL WHERE LOWER(prefix) IS '" + path.toUtf8().toLower() + "'", database);
+                    query.exec();
+                    found = query.next();
+                    if (found)
                     {
-                        QSqlQuery query("SELECT type, prefix, name, param, sdesc, doc, htmlERROR  FROM itomCTL WHERE LOWER(prefix) IS '" + path.toUtf8().toLower() + "'", database);
-                        query.exec();
-                        found = query.next();
-                        if (found)
+                        QByteArray docCompressed = query.value(5).toByteArray();
+                        QString doc;
+                        if (docCompressed.size() > 0)
                         {
-                            QByteArray docCompressed = query.value(5).toByteArray();
-                            QString doc;
-                            if (docCompressed.size() > 0)
-                            {
-                                doc = qUncompress(docCompressed);
-                            }
-
-                            highlightContent(query.value(1).toString(), query.value(2).toString(), query.value(3).toString(), query.value(4).toString(), doc, query.value(6).toString(), ui.helpTreeContent->document());
+                            doc = qUncompress(docCompressed);
                         }
-                        database.close();
-                    }
-                }
 
-                QSqlDatabase::removeDatabase(temp);
+                        highlightContent(query.value(1).toString(), query.value(2).toString(), query.value(3).toString(), query.value(4).toString(), doc, query.value(6).toString(), ui.helpTreeContent->document());
+                    }
+                    database.close();
+                }
+            }
+
+            QSqlDatabase::removeDatabase(filename);
+
+            if (found)
+            {
+                break;
             }
         }
     }
@@ -1979,9 +2032,24 @@ ito::RetVal HelpTreeDockWidget::displayHelp(const QString &path)
 */
 void HelpTreeDockWidget::liveFilter(const QString &filterText)
 {
+    m_filterTextPending = filterText;
+    if (m_filterTextPendingTimer >= 0)
+    {
+        killTimer(m_filterTextPendingTimer);
+    }
+    m_filterTextPendingTimer = startTimer(250);
+    
+}
+
+//---------------------------------------------------------------------------------------------------------------------------------
+void HelpTreeDockWidget::timerEvent(QTimerEvent *event)
+{
     showTreeview();
-    m_pMainFilterModel->setFilterRegExp(filterText);
+    m_pMainFilterModel->setFilterRegExp(m_filterTextPending);
     expandTree();
+
+    killTimer(m_filterTextPendingTimer);
+    m_filterTextPendingTimer = -1;
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2053,22 +2121,22 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
 
     \param name name of the function that is supposed to be displayed
     \param type it decides wheather the help is stored in a database (1) or calls showFilterWidgetPluginHelp(...) (2-8)
-    \param modelIndex that was clicked. If it�s empty, it�s a call from a link or from extern
+    \param modelIndex that was clicked. If it's empty, it's a call from a link or from extern
     \param fromLink if true, a link called that slot
 */
 void HelpTreeDockWidget::showPluginInfo(const QString &name, int type, const QModelIndex &modelIndex, bool fromLink)
 {
-    // Check if it�s a click by the back or forward button
+    // Check if it is a click by the back or forward button
     if (modelIndex.isValid())
     {
         m_historyIndex++;
         m_history.insert(m_historyIndex, modelIndex);
-        for (int i = m_history.length(); i > m_historyIndex; i--)
+        for (int i = m_history.length() - 1; i > m_historyIndex; i--)
         {
             m_history.removeAt(i);
         }
     }
-    // Check if it�s 
+    // Check if it is it 
     if (fromLink)
     {
         m_internalCall = true;
@@ -2093,7 +2161,14 @@ void HelpTreeDockWidget::showPluginInfo(const QString &name, int type, const QMo
     {
         case 1:
         {
-            displayHelp(name);
+            if (modelIndex.isValid())
+            {
+                displayHelp(name, m_pMainModel->data(modelIndex, roleFilename).toString());
+            }
+            else
+            {
+                displayHelp(name, "");
+            }
             break;
         }
         case 2:
@@ -2156,7 +2231,7 @@ QModelIndex HelpTreeDockWidget::findIndexByPath(const int type, QStringList path
         for (int j = 0; j < counts; ++j)
         {
             temp = current->child(j,0);
-            if (temp->data(m_urType) == 1)
+            if (temp->data(roleType) == typeSqlItem)
             {
                 if (path.length() == 0 && temp->text().toLower() == firstPath.toLower())
                 {
@@ -2305,19 +2380,19 @@ void HelpTreeDockWidget::on_splitter_splitterMoved (int pos, int index)
 
 //----------------------------------------------------------------------------------------------------------------------------------
 // Show the Help in the right Memo
-void HelpTreeDockWidget::selectedItemChanged(const QModelIndex &current, const QModelIndex &/*previous*/)
+void HelpTreeDockWidget::selectedItemChanged(const QModelIndex &current, const QModelIndex &previous)
 {
     if (m_internalCall == false)
     {
-        int type = current.data(m_urType).toInt();
-        QString t = current.data(m_urPath).toString();
-        if (type == 1) 
+        int type = current.data(roleType).toInt();
+        QString t = current.data(rolePath).toString();
+        if (type == typeSqlItem) 
         {
-            showPluginInfo(current.data(m_urPath).toString(), type, m_pMainFilterModel->mapToSource(current), false);
+            showPluginInfo(current.data(rolePath).toString(), type, m_pMainFilterModel->mapToSource(current), false);
         }
         else
         {
-            showPluginInfo(current.data(m_urPath).toString(), type, m_pMainFilterModel->mapToSource(current), false);
+            showPluginInfo(current.data(rolePath).toString(), type, m_pMainFilterModel->mapToSource(current), false);
         }
     }
 }
@@ -2330,14 +2405,14 @@ void HelpTreeDockWidget::navigateBackwards()
     {
         m_historyIndex--;
         QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource(m_history.at(m_historyIndex));    
-        int type = filteredIndex.data(m_urType).toInt();
-        if (type == 1) 
+        int type = filteredIndex.data(roleType).toInt();
+        if (type == typeSqlItem) 
         {
-            showPluginInfo(filteredIndex.data(m_urPath).toString(), type, QModelIndex(), true);
+            showPluginInfo(filteredIndex.data(rolePath).toString(), type, QModelIndex(), true);
         }
         else
         {
-            showPluginInfo(filteredIndex.data(m_urPath).toString(), type, QModelIndex(), true);
+            showPluginInfo(filteredIndex.data(rolePath).toString(), type, QModelIndex(), true);
         }
     }
 }
@@ -2350,14 +2425,14 @@ void HelpTreeDockWidget::navigateForwards()
     {
         m_historyIndex++;
         QModelIndex filteredIndex = m_pMainFilterModel->mapFromSource(m_history.at(m_historyIndex));
-        int type = filteredIndex.data(m_urType).toInt();
-        if (type == 1) 
+        int type = filteredIndex.data(roleType).toInt();
+        if (type == typeSqlItem) 
         {
-            showPluginInfo(filteredIndex.data(m_urPath).toString(), type, QModelIndex(), true);
+            showPluginInfo(filteredIndex.data(rolePath).toString(), type, QModelIndex(), true);
         }
         else
         {
-            showPluginInfo(filteredIndex.data(m_urPath).toString(), type, QModelIndex(), true);
+            showPluginInfo(filteredIndex.data(rolePath).toString(), type, QModelIndex(), true);
         }
     }
 }
@@ -2369,7 +2444,10 @@ void HelpTreeDockWidget::showTreeview()
     m_treeVisible = true;
     QList<int> intList;
     intList  <<  ui.splitter->width()*m_treeWidthVisible/100  <<  ui.splitter->width() * (100 - m_treeWidthVisible) / 100;
-    ui.splitter->setSizes(intList);
+    if (ui.splitter->sizes() != intList)
+    {
+        ui.splitter->setSizes(intList);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------
@@ -2379,7 +2457,10 @@ void HelpTreeDockWidget::unshowTreeview()
     m_treeVisible = false;
     QList<int> intList;
     intList  <<  ui.splitter->width()*m_treeWidthInvisible/100  <<  ui.splitter->width() * (100 - m_treeWidthInvisible) / 100;
-    ui.splitter->setSizes(intList);
+    if (ui.splitter->sizes() != intList)
+    {
+        ui.splitter->setSizes(intList);
+    }
 }
 
 //----------------------------------------------------------------------------------------------------------------------------------

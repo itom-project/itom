@@ -39,6 +39,7 @@ bool DialogUserManagementEdit::saveUser()
     QString uid;
     QString group;
     QString username = ui.lineEdit_name->text();
+    QByteArray password;
     QString iniFile;
 
     if (newUser && ui.lineEdit_id->text().isEmpty())
@@ -68,6 +69,16 @@ bool DialogUserManagementEdit::saveUser()
         QMessageBox::critical(this, tr("Error"), tr("No user name entered, aborting!"), QMessageBox::Ok);
         return false;
     }
+
+    if (!ui.lineEdit_name->text().isEmpty())
+    {
+        if (m_userModel->index(0, 5).data().toByteArray() != ui.lineEdit_password->text().toUtf8())
+            password = QCryptographicHash::hash(ui.lineEdit_password->text().toUtf8(), QCryptographicHash::Sha3_512);
+        else
+            password = ui.lineEdit_password->text().toUtf8();
+    }
+    else
+        password = "";
 
     UserOrganizer *uio = qobject_cast<UserOrganizer*>(AppManagement::getUserOrganizer());
     if (uio)
@@ -118,7 +129,7 @@ bool DialogUserManagementEdit::saveUser()
             flags |= featConsoleRead;
         }
 
-        ito::RetVal retval = uio->writeUserDataToFile(username, uid, flags, role); 
+        ito::RetVal retval = uio->writeUserDataToFile(username, uid, flags, role, password); 
         if (retval.containsError())
         {
             QMessageBox::critical(this, tr("Error"), QLatin1String(retval.errorMessage()), QMessageBox::Ok);
@@ -171,15 +182,17 @@ DialogUserManagementEdit::DialogUserManagementEdit(const QString &filename, User
         {
             QString username;
             QString uid;
+            QByteArray password;
             UserFeatures features;
             UserRole role;
             QDateTime modified;
-            if (uio->readUserDataFromFile(filename, username, uid, features, role, modified) == ito::retOk)
+            if (uio->readUserDataFromFile(filename, username, uid, features, role, password, modified) == ito::retOk)
             {
                 ui.lineEdit_name->setText(username);
                 
                 ui.lineEdit_id->setText(uid);
                 ui.lineEdit_id->setEnabled(false);
+                ui.lineEdit_password->setText(password);
                 
                 switch (role)
                 {

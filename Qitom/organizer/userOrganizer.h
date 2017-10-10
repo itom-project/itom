@@ -26,6 +26,7 @@
 #include "../global.h"
 #include <qobject.h>
 #include <qdatetime.h>
+#include <qhash.h>
 
 #include "models/UserModel.h"
 
@@ -47,8 +48,10 @@ class UserOrganizer : public QObject
         inline UserModel* getUserModel() const { return m_userModel; }
         
 
-        ito::RetVal readUserDataFromFile(const QString &filename, QString &username, QString &uid, UserFeatures &features, UserRole &role, QDateTime &lastModified);
-        ito::RetVal writeUserDataToFile(const QString &username, const QString &uid, const UserFeatures &features, const UserRole &role);
+        ito::RetVal readUserDataFromFile(const QString &filename, QString &username, QString &uid, UserFeatures &features, 
+            UserRole &role, QByteArray &password, QDateTime &lastModified);
+        ito::RetVal writeUserDataToFile(const QString &username, const QString &uid, const UserFeatures &features, 
+            const UserRole &role, const QByteArray &password);
 
         UserFeatures getUserFeatures(void) const { return m_features; }
 
@@ -73,6 +76,7 @@ class UserOrganizer : public QObject
         QString m_userName;  /*< id of current user */
         UserFeatures m_features; /*< switch for enabeling and disabeling functions of itom */
         QString m_settingsFile;
+        QByteArray m_password;
 
         QString m_strConstStdUser;
         QString m_lastOpenedUserName;

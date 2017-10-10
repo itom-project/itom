@@ -329,9 +329,8 @@ Tuple of class itom.shape for all created geometric shapes.");
     switch(elementType & ito::Shape::TypeMask)
     {
         case ito::Shape::Polygon:
-            PyErr_SetString(PyExc_RuntimeError, "Drawing of element type currently not supported");
-            return NULL;
-
+//            PyErr_SetString(PyExc_RuntimeError, "Drawing of element type currently not supported");
+//            return NULL;
         case ito::Shape::Square:
         case ito::Shape::Circle:
         case ito::Shape::MultiPointPick:

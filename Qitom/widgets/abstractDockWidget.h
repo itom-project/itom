@@ -87,7 +87,7 @@ namespace ito
 
             RetVal setAdvancedWindowTitle( QString newCompleteTitle = QString(), bool appendToBasicTitle = true );
 
-            RetVal setTopLevel( tTopLevelStyle topLevel );
+            RetVal setTopLevel( tTopLevelStyle topLevel, bool showWindow = true );
 
             void setParent ( QWidget * parent ) { m_overallParent = parent; QDockWidget::setParent(parent); }
 

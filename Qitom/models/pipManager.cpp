@@ -156,68 +156,124 @@ ito::RetVal PipManager::initPythonIfStandalone()
 {
     ito::RetVal retval;
 
-    //check if an alternative home directory of Python should be set:
-    QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
-    settings.beginGroup("Python");
-    QString pythonHomeDirectory = settings.value("pyHome", "").toString();
-    settings.endGroup();
+	//keep this method consistent to PythonEngine::pythonSetup
 
-    if (pythonHomeDirectory != "")
-    {
-        if (QDir(pythonHomeDirectory).exists())
-        {
-            //the python home path given to Py_SetPythonHome must be persistent for the whole Python session
-#if PY_VERSION_HEX < 0x03050000
-            m_pUserDefinedPythonHome = (wchar_t*)PyMem_RawMalloc((pythonHomeDirectory.size() + 10) * sizeof(wchar_t));
-            memset(m_pUserDefinedPythonHome, 0, (pythonHomeDirectory.size() + 10) * sizeof(wchar_t));
-            pythonHomeDirectory.toWCharArray(m_pUserDefinedPythonHome);
-#else
-            m_pUserDefinedPythonHome = Py_DecodeLocale(pythonHomeDirectory.toLatin1().data(), NULL);
-#endif
-            Py_SetPythonHome(m_pUserDefinedPythonHome);
-        }
-        else
-        {
-            qDebug() << "Settings value Python::pyHome has not been set as Python Home directory since it does not exist: " << pythonHomeDirectory;
-        }
-    }
-
-    //read directory values from Python
-    qDebug() << "Py_GetPythonHome:" << QString::fromWCharArray(Py_GetPythonHome());
-    qDebug() << "Py_GetPath:" << QString::fromWCharArray(Py_GetPath());
-    qDebug() << "Py_GetProgramName:" << QString::fromWCharArray(Py_GetProgramName());
-
-    //check PythonHome to prevent crash upon initialization of Python:
-    QString pythonHome = QString::fromWCharArray(Py_GetPythonHome());
+	QString pythonSubDir = QCoreApplication::applicationDirPath() + QString("/python%1").arg(PY_MAJOR_VERSION);
+	QString pythonAllInOneDir = QCoreApplication::applicationDirPath() + QString("/../../3rdParty/Python");
+	qDebug() << "pythonAllInOneDir:" << pythonAllInOneDir;
+	//check if an alternative home directory of Python should be set:
+	QSettings settings(AppManagement::getSettingsFile(), QSettings::IniFormat);
+	settings.beginGroup("Python");
+	QString pythonHomeFromSettings = settings.value("pyHome", "").toString();
+	int pythonDirState = settings.value("pyDirState", -1).toInt();
+	if (pythonDirState == -1) //not yet decided
+	{
 #ifdef WIN32
-    QStringList pythonPath = QString::fromWCharArray(Py_GetPath()).split(";");
+		if (QDir(pythonSubDir).exists() && \
+			QFileInfo(pythonSubDir + QString("/python%1%2.dll").arg(PY_MAJOR_VERSION).arg(PY_MINOR_VERSION)).exists())
+		{
+			pythonDirState = 0; //use pythonXX subdirectory of itom as python home path
+	}
+		else if (QDir(pythonAllInOneDir).exists() && \
+			QFileInfo(pythonAllInOneDir + QString("/python%1%2.dll").arg(PY_MAJOR_VERSION).arg(PY_MINOR_VERSION)).exists())
+		{
+			pythonDirState = 2;
+			pythonHomeFromSettings = pythonAllInOneDir;
+			settings.setValue("pyHome", pythonHomeFromSettings);
+		}
+		else
+		{
+			pythonDirState = 1; //use python default search mechanism for home path (e.g. registry...)
+		}
 #else
-    QStringList pythonPath = QString::fromWCharArray(Py_GetPath()).split(":");
+		pythonDirState = 1;
 #endif
-    QDir pythonHomeDir(pythonHome);
-    bool pythonPathValid = false;
-    if (!pythonHomeDir.exists() && pythonHome != "")
-    {
-        retval += RetVal::format(retError, 0, tr("The home directory of Python is currently set to the non-existing directory '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the property dialog of itom.").toLatin1().data(), 
-            pythonHomeDir.absolutePath().toLatin1().data());
-        return retval;
-    }
+		qDebug() << "pythonDirState:" << pythonDirState;
+		qDebug() << "pythonHomeFromSettings:" << pythonHomeFromSettings;
+		settings.setValue("pyDirState", pythonDirState);
+}
 
-    foreach(const QString &path, pythonPath)
-    {
-        QDir pathDir(path);
-        if (pathDir.exists("os.py") || pathDir.exists("os.pyc"))
-        {
-            pythonPathValid = true;
-            break;
-        }
-    }
+	settings.endGroup();
 
-    if (!pythonPathValid)
-    {
-        retval += RetVal::format(retError, 0, tr("The built-in library path of Python could not be found. The current home directory is '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the preferences dialog of itom.").toLatin1().data(), pythonHomeDir.absolutePath().toLatin1().data());
-        return retval;
-    }
+	QString pythonDir = "";
+	if (pythonDirState == 0) //use pythonXX subdirectory of itom as python home path
+	{
+		if (QDir(pythonSubDir).exists())
+		{
+			pythonDir = pythonSubDir;
+		}
+		else
+		{
+			retval += RetVal::format(retError, 0, tr("The itom subdirectory of Python '%s' is not existing.\nPlease change setting in the property dialog of itom.").toLatin1().data(),
+				pythonSubDir.toLatin1().data());
+			return retval;
+		}
+	}
+	else if (pythonDirState == 2) //user-defined value
+	{
+
+		if (QDir(pythonHomeFromSettings).exists())
+		{
+			pythonDir = pythonHomeFromSettings;
+		}
+		else
+		{
+			retval += RetVal::format(retError, 0, tr("Settings value Python::pyHome has not been set as Python Home directory since it does not exist:  %s").toLatin1().data(),
+				pythonHomeFromSettings.toLatin1().data());
+			return retval;
+		}
+	}
+
+	if (pythonDir != "")
+	{
+		//the python home path given to Py_SetPythonHome must be persistent for the whole Python session
+#if PY_VERSION_HEX < 0x03050000
+		m_pUserDefinedPythonHome = (wchar_t*)PyMem_RawMalloc((pythonDir.size() + 10) * sizeof(wchar_t));
+		memset(m_pUserDefinedPythonHome, 0, (pythonDir.size() + 10) * sizeof(wchar_t));
+		pythonDir.toWCharArray(m_pUserDefinedPythonHome);
+#else
+		m_pUserDefinedPythonHome = Py_DecodeLocale(pythonDir.toLatin1().data(), NULL);
+#endif
+		Py_SetPythonHome(m_pUserDefinedPythonHome);
+	}
+
+	//read directory values from Python
+	qDebug() << "Py_GetPythonHome:" << QString::fromWCharArray(Py_GetPythonHome());
+	qDebug() << "Py_GetPath:" << QString::fromWCharArray(Py_GetPath());
+	qDebug() << "Py_GetProgramName:" << QString::fromWCharArray(Py_GetProgramName());
+
+	//check PythonHome to prevent crash upon initialization of Python:
+	QString pythonHome = QString::fromWCharArray(Py_GetPythonHome());
+#ifdef WIN32
+	QStringList pythonPath = QString::fromWCharArray(Py_GetPath()).split(";");
+#else
+	QStringList pythonPath = QString::fromWCharArray(Py_GetPath()).split(":");
+#endif
+	QDir pythonHomeDir(pythonHome);
+	bool pythonPathValid = false;
+	if (!pythonHomeDir.exists() && pythonHome != "")
+	{
+		retval += RetVal::format(retError, 0, tr("The home directory of Python is currently set to the non-existing directory '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the property dialog of itom.").toLatin1().data(),
+			pythonHomeDir.absolutePath().toLatin1().data());
+		return retval;
+	}
+
+	foreach(const QString &path, pythonPath)
+	{
+		QDir pathDir(path);
+		if (pathDir.exists("os.py") || pathDir.exists("os.pyc"))
+		{
+			pythonPathValid = true;
+			break;
+		}
+	}
+
+	if (!pythonPathValid)
+	{
+		retval += RetVal::format(retError, 0, tr("The built-in library path of Python could not be found. The current home directory is '%s'\nPython cannot be started. Please set either the environment variable PYTHONHOME to the base directory of python \nor correct the base directory in the preferences dialog of itom.").toLatin1().data(),
+			pythonHomeDir.absolutePath().toLatin1().data());
+		return retval;
+	}
 
     return retval;
 }

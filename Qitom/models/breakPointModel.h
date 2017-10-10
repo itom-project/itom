@@ -109,6 +109,8 @@ public:
     RetVal resetAllPyBpNumbers();
     RetVal setPyBpNumber(const BreakPointItem &item, int pyBpNumber);
 
+	QSize span(const QModelIndex &index) const;
+
 protected:
 
 private:

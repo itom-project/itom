@@ -55,6 +55,9 @@ private slots:
     void userListCurrentChanged(const QModelIndex &current, const QModelIndex &previous);
     void on_userList_doubleClicked(const QModelIndex current);
     void on_buttonBox_clicked(QAbstractButton* btn);
+
+private:
+    int checkPassword();
 };
 
 } //end namespace ito

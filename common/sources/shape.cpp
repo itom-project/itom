@@ -56,7 +56,8 @@ class ShapePrivate
 {
 public:
     ShapePrivate() :
-      m_type(Shape::Invalid)
+      m_type(Shape::Invalid),
+      m_unclosed(false)
     {
     }
 
@@ -75,6 +76,7 @@ public:
     int m_index; /*!< index of shape, -1: no specific index*/
     QString m_name; /*!< name (label) of shape */
     ito::float64 m_userData[2]; /*!< two user defined value for further meta information */
+    bool m_unclosed; /*!< true if this shape is currently created and hence unclosed, e.g. an open polygon which is closed after the final corner point */
 };
 
 //----------------------------------------------------------------------------------------------
@@ -189,6 +191,18 @@ unsigned int Shape::flags() const
 void Shape::setFlags(const unsigned int &flags)
 {
     d->m_type = (d->m_type & Shape::TypeMask) | (flags & Shape::FlagMask);
+}
+
+//----------------------------------------------------------------------------------------------
+bool Shape::unclosed() const
+{
+    return d->m_unclosed;
+}
+
+//----------------------------------------------------------------------------------------------
+void Shape::setUnclosed(bool unclosed)
+{
+    d->m_unclosed = unclosed;
 }
 
 //----------------------------------------------------------------------------------------------
@@ -1490,7 +1504,7 @@ Shape Shape::normalized() const
 /*static*/ Shape Shape::fromPolygon(const QPolygonF &polygon, int index /*= -1*/, QString name /*= ""*/, const QTransform &trafo /*= QTransform()*/)
 {
     Shape s;
-    s.d->m_type = Line;
+    s.d->m_type = Polygon;
     s.d->m_polygon = polygon;
     s.d->m_transform = trafo;
     s.d->m_index = index;

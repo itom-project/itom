@@ -48,11 +48,36 @@ ENDIF (${CMAKE_MAJOR_VERSION} LESS 3)
 #Apple:
 #       __APPLE__
 IF(CMAKE_HOST_WIN32)
-    IF(BUILD_TARGET64)
-        SET(CMAKE_CXX_FLAGS "/DWIN32 /D_WIN32 /DWIN64 /D_WIN64" ${CMAKE_CXX_FLAGS})
-    ELSE(BUILD_TARGET64)
-        SET(CMAKE_CXX_FLAGS "/DWIN32 /D_WIN32" ${CMAKE_CXX_FLAGS})
-    ENDIF(BUILD_TARGET64)
+    # check for EHa flag, as CMake does not set it by default we use this to determine if want
+    # to add the itom compiler flags
+    string(FIND ${CMAKE_CXX_FLAGS} "/EHa" _index)
+    if (NOT ${_index} GREATER -1)
+        # enable catching of machine exceptions, e.g. access violations
+        string(REPLACE "/EHsc" "/EHa" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+
+        # check some if some other flags are set, and if not set them
+        string(FIND ${CMAKE_CXX_FLAGS} "/DWIN32" _index)
+        if (NOT ${_index} GREATER -1)
+            SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DWIN32")
+        endif ()
+        string(FIND ${CMAKE_CXX_FLAGS} "/D_WIN32" _index)
+        if (NOT ${_index} GREATER -1)
+            SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_WIN32")
+        endif ()
+
+        # some more additional flags for win64
+        IF(BUILD_TARGET64)
+            string(FIND ${CMAKE_CXX_FLAGS} "/DWIN64" _index)
+            if (NOT ${_index} GREATER -1)
+                SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /DWIN64")
+            endif ()
+            string(FIND ${CMAKE_CXX_FLAGS} "/D_WIN64" _index)
+            if (NOT ${_index} GREATER -1)
+                SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_WIN64")
+            endif ()
+        ENDIF(BUILD_TARGET64)        
+        SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" CACHE STRING "common C++ build flags" FORCE)
+    ENDIF()    
 ELSEIF(CMAKE_HOST_APPLE)
     ADD_DEFINITIONS(-D__APPLE__)
 ELSEIF(CMAKE_HOST_UNIX) #this also includes apple, which is however already handled above

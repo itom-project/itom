@@ -160,6 +160,7 @@ FileSystemDockWidget::FileSystemDockWidget(const QString &title, const QString &
     m_pTreeView->setAnimated(true);
     m_pTreeView->setIndentation(15);
     m_pTreeView->setSortingEnabled(true);
+    m_pTreeView->setDefaultDropAction(Qt::MoveAction);
 
     //TODO save to ini-file 
 

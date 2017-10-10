@@ -180,6 +180,16 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>userList</tabstop>
+  <tabstop>pushButton_newUser</tabstop>
+  <tabstop>pushButton_delUser</tabstop>
+  <tabstop>pushButton_editUser</tabstop>
+  <tabstop>lineEdit_name</tabstop>
+  <tabstop>lineEdit_id</tabstop>
+  <tabstop>lineEdit_iniFile</tabstop>
+  <tabstop>permissionList</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>

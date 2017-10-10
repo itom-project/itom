@@ -81,7 +81,7 @@ public:
     static RetVal exportPyWorkspaceVars(const QString &filename, bool globalNotLocal, const QStringList &varNames);
 
     static RetVal uiImportPyWorkspaceVars(bool globalNotLocal, const IOFilters &IOfilters, QString defaultPath = QString::Null(), QWidget* parent = NULL);
-    static RetVal importPyWorkspaceVars(const QString &filename, bool globalNotLocal);
+    static RetVal importPyWorkspaceVars(const QString &filename, bool globalNotLocal, QWidget* parent = NULL);
 
     static RetVal openPythonScript(const QString &filename);
 

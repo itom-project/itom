@@ -81,6 +81,8 @@ namespace ito
             void treeViewSelectionChanged(const QItemSelection &selected, const QItemSelection &deselected);
             void actualizeTree(const QModelIndex &parent, int start, int end);
 
+			void dataChanged();
+
     };
 
 } //end namespace ito
