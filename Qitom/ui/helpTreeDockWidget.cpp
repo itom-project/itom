@@ -1744,6 +1744,9 @@ void HelpTreeDockWidget::dbLoaderFinished(int /*index*/)
 
     m_pMainFilterModel->sort(0, Qt::AscendingOrder);
 
+    //disconnect earlier connections (if available)
+    disconnect(ui.treeView->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(selectedItemChanged(const QModelIndex &, const QModelIndex &)));
+
     //model has been 
     ui.treeView->setModel(m_pMainFilterModel);
 
@@ -2065,8 +2068,9 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
 {
     QStringList result;
     QByteArray examplePrefix = "example:";
+    QString scheme = link.scheme();
 
-    if (link.scheme() == "itom")
+    if (scheme == "itom")
     {
         if (link.host() == "widget.html")
         {
@@ -2092,12 +2096,12 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
             result.append(link.host());
         }
     }
-    else if (link.scheme() == "mailto")
+    else if (scheme == "mailto")
     {
         result.append("mailto");
         result.append(link.path());
     }
-    else if (link.scheme() == "example")
+    else if (scheme == "example")
     {
         result.append("example");
 #if QT_VERSION < 0x050000
@@ -2105,6 +2109,11 @@ QStringList HelpTreeDockWidget::separateLink(const QUrl &link)
 #else
         result.append(QUrl::fromPercentEncoding(link.fragment().toLatin1()));
 #endif
+    }
+    else if (scheme == "http" || scheme == "https")
+    {
+        result.append("http");
+        result.append(link.toString());
     }
     else
     {

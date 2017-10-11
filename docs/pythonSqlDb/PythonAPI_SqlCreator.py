@@ -18,8 +18,10 @@ import itom
 import pprint
 import docutils
 from sphinx import addnodes
+from sphinx import directives
+from sphinx.writers.html import HTMLWriter
 
-docutils.nodes.NodeVisitor.optional = () #'pending_xref', 'tabular_col_spec', 'autosummary_table', 'autosummary_toc', 'displaymath', 'only', 'toctree')
+docutils.nodes.NodeVisitor.optional = ('only', 'displaymath', 'tabular_col_spec', 'autosummary_table', 'autosummary_toc', 'toctree') #'pending_xref', 'tabular_col_spec', 'autosummary_table', 'autosummary_toc', 'displaymath', 'only', 'toctree')
 
 blacklist = ['this','__future__','argparse','ast','bdb','tkinter','turtle','turtledemo','win32traceutil', 
                      'win32pdh', 'perfmondata', 'tzparse', '__next__',
@@ -50,12 +52,12 @@ idDict = {"builtins":1000, "itom":1001, "numpy":1002, "scipy":1003, "matplotlib"
 # --->>>Global simple Settings<<<---
 
 # Filename and DB-Name
-databasename = 'numpy'
+databasename = 'itom'
 
 name = databasename
 
 # Always increase the version by one to allow automatic updates
-dbVersion = '2'
+dbVersion = '5'
 
 # Only change if there was a SchemeID change in Itom
 itomMinVersion = '1'            # SchemeID
@@ -108,7 +110,7 @@ else:
 
 
 # If you would like to have a Report File for your Databasecreation
-createReportFile = 0
+createReportFile = True
 reportFile = open("HelpReport.txt","w")
 # and what do you want to be in that file:
 reportE = 0
@@ -157,6 +159,9 @@ locale.init([], "en")
 from docutils import languages
 language = languages.get_language("en")
 language.labels.update(locale.admonitionlabels)
+if not "versionmodified" in locale.versionlabels:
+    locale.versionlabels["versionmodified"] = ''
+language.labels.update(locale.versionlabels)
 
 from sphinxext import numpydoc
 
@@ -381,6 +386,17 @@ def processName(moduleP, ns, recLevel = 0):
             if (nametype == '2' or nametype == '3' or nametype == '4'):
                 exec('sublist = inspect.getmembers('+prefix+module+')', ns)
                 newlist = [prefix+module+'.'+ s[0] for s in ns['sublist']]
+                exec('hasdir = hasattr('+prefix+module+', "__dir__")', ns)
+                if (ns["hasdir"]):
+                    exec('sublist = dir('+prefix+module+')', ns)
+                    newlist2 = [prefix + module + '.' + s for s in ns['sublist']]
+                    for n in newlist2:
+                        if not n in newlist:
+                            newlist.append(n)
+                types = [getPyType(i, ns) for i in newlist]
+                
+                newlist = [name for name, _ in sorted(zip(newlist, types), key=lambda pair: pair[1], reverse = True)]
+                
                 print("add %i members from %s" % (len(newlist), prefix + module))
                 stackList += newlist
                 # remove the processed items
@@ -449,12 +465,15 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
     else:
         line[3] = ''
         
+    remainingDocStr = docstr
+    
     # 5. Shortdescription
     if (id != 0):
         m = re.search(r'->.*?\n',docstr,re.DOTALL)
         if (m != None):
             s = docstr[m.start()+2:m.end()].strip()
             line[4] = s + "\n"
+            remainingDocStr = docstr[m.end():]
         else:
             line[4] = ''
     else:
@@ -462,13 +481,10 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
         
     # 6. Doc
     if (id != 0):
-        m = re.search(r'.*?\n',docstr,re.DOTALL)
-        if (m != None and nametype != '06'):
-            # Shortdescription extrahieren (Enposition der S.Desc finden)
-            s = docstr[m.end():]
+        if (nametype != '06'):
             
             # String in lines aufsplitten
-            lines = s.split('\n')
+            lines = remainingDocStr.split('\n')
             ns["lines"] = lines
             # numpy docstring korrigieren
             global types
@@ -481,15 +497,18 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
             # Linien wieder zusamensetzen
             cor = "\n".join(lines)
             try:
-                sout =docutils.core.publish_string(cor, writer_name='html',settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'stylesheet_path':'', 'stylesheet':'', 'env':SphinxApp.env})
+                sout =docutils.core.publish_string(cor, writer=SphinxAppWriter, writer_name = 'html', settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'strict_visitor':False, 'stylesheet_path':'', 'stylesheet':'', 'env':SphinxApp.env})
             except Exception as ex:
-                reportMessage('Error in createSQLEntry \'docutils.core.publish_string\' (%s%s): %s' % (prefix, name, str(ex)),'e')
+                try:
+                    sout =docutils.core.publish_string(".\n" + cor, writer=SphinxAppWriter, writer_name = 'html', settings_overrides = {'report_level': 5, 'embed_stylesheet': 0, 'strict_visitor':False, 'stylesheet_path':'', 'stylesheet':'', 'env':SphinxApp.env})
+                except Exception as ex:
+                    reportMessage('Error in createSQLEntry \'docutils.core.publish_string\' (%s%s): %s' % (prefix, name, str(ex)),'e')
                 return
             line[6] = '0'
             line[5] = itom.compressData(sout)
         elif (nametype == '06'):
             exec('value = ' + prefix + name, ns)
-            line[5] = itom.compressData('"'+name+'" is the constant: '+ str(ns["value"]))
+            line[5] = itom.compressData('constant: '+ str(ns["value"]))
             line[6] = '0'
         else:
             # wenn der String keine Shortdescription hat dann einfach komplett einfügen
@@ -588,6 +607,11 @@ SphinxApp.env.settings['input_encoding'] = SphinxApp.env.config.source_encoding
 SphinxApp.env.settings['trim_footnote_reference_space'] = \
     SphinxApp.env.config.trim_footnote_reference_space
 SphinxApp.env.settings['gettext_compact'] = SphinxApp.env.config.gettext_compact
+
+SphinxApp.env.app = SphinxApp
+
+SphinxAppWriter = HTMLWriter(SphinxApp.builder) #use sphinx html parser (math-ext works...)
+SphinxAppWriter = None #use docutils html parser (internal links work better)
 
 ## pseudo Klasse
 #class SphinxApp:

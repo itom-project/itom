@@ -52,6 +52,11 @@ table.borderless td, table.borderless th {
 a.toc-backref {
   text-decoration: none ;
   color: black }
+  
+a.headerlink {
+    /* permalinks */
+    display: none;
+}
 
 blockquote.epigraph {
   margin: 2em 5em ; }
