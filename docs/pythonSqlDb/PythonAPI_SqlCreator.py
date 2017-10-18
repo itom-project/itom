@@ -52,7 +52,7 @@ idDict = {"builtins":1000, "itom":1001, "numpy":1002, "scipy":1003, "matplotlib"
 # --->>>Global simple Settings<<<---
 
 # Filename and DB-Name
-databasename = 'itom'
+databasename = 'matplotlib'
 
 name = databasename
 
@@ -85,7 +85,10 @@ date = time.strftime("%d.%m.%Y")
 
 
 
-if (databasename == 'itom') or (databasename == 'numpy') or (databasename == 'scipy') or (databasename == 'matplotlib'):
+if (databasename == 'itom') or \
+   (databasename == 'numpy') or \
+   (databasename == 'scipy') or \
+   (databasename == 'matplotlib'):
     manualList = [databasename]
     add_builtins =               0      
     add_builtin_modules =        0      
@@ -477,7 +480,7 @@ def createSQLEntry(docstrIn, prefix, name, nametype, id):
         else:
             line[4] = ''
     else:
-        line[4] = 'This Package is only referenced here. Its original position is: \n'
+        line[4] = 'This item is only referenced here. Its original position is: \n'
         
     # 6. Doc
     if (id != 0):
@@ -588,7 +591,8 @@ print('-------------START-------------')
 
 types = {2 : 'module', 3 : 'module', 4 : 'class', 5 : 'method', 6 : 'attribute'}
 
-SphinxApp = Sphinx(".", ".", ".", ".", "html")
+confoverrides = {"html_add_permalinks": ""}
+SphinxApp = Sphinx(".", ".", ".", ".", "html", confoverrides = confoverrides)
 SphinxApp.config.numpydoc_use_plots = False
 SphinxApp.config.numpydoc_edit_link = False
 SphinxApp.config.numpydoc_use_plots = False
@@ -611,7 +615,7 @@ SphinxApp.env.settings['gettext_compact'] = SphinxApp.env.config.gettext_compact
 SphinxApp.env.app = SphinxApp
 
 SphinxAppWriter = HTMLWriter(SphinxApp.builder) #use sphinx html parser (math-ext works...)
-SphinxAppWriter = None #use docutils html parser (internal links work better)
+#SphinxAppWriter = None #use docutils html parser (internal links work better)
 
 ## pseudo Klasse
 #class SphinxApp:

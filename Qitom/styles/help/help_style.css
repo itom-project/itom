@@ -47,16 +47,12 @@ table.borderless td, table.borderless th {
   margin-bottom: 0 ! important }
 
 .hidden {
-  display: none }
+  display: none; 
+  }
 
 a.toc-backref {
   text-decoration: none ;
   color: black }
-  
-a.headerlink {
-    /* permalinks */
-    display: none;
-}
 
 blockquote.epigraph {
   margin: 2em 5em ; }
