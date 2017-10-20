@@ -172,6 +172,9 @@ private:
     QString                  m_filterTextPending;
     int                      m_filterTextPendingTimer;
 
+    QString                  m_possibleFileNameCacheHash;
+    QStringList              m_possibleFileNameCache;
+
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
     void showEvent(QShowEvent *event);

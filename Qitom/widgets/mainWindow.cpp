@@ -177,7 +177,7 @@ namespace ito {
         addDockWidget(Qt::BottomDockWidgetArea, m_pythonMessageDock);*/
 
         // helpDock
-        m_helpDock = new HelpDockWidget(tr("Help"), "itomHelpDockWidget", this, true, true, AbstractDockWidget::floatingWindow);
+        m_helpDock = new HelpDockWidget(tr("Help Viewer"), "itomHelpDockWidget", this, true, true, AbstractDockWidget::floatingWindow);
         m_helpDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea | Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
         addDockWidget(Qt::LeftDockWidgetArea, m_helpDock);
 
